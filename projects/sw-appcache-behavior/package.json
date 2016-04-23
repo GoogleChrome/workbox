@@ -1,0 +1,19 @@
+{
+  "name": "sw-appcache-behavior",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A service worker that mimics the behavior defined in a page's App Cache manifest.",
+  "keywords": [
+    "appcache",
+    "service worker",
+    "sw",
+    "offline",
+    "manifest"
+  ],
+  "author": {
+    "name": "Jeff Posnick",
+    "email": "jeffy@google.com",
+    "url": "https://jeffy.info"
+  },
+  "license": "Apache-2.0"
+}
