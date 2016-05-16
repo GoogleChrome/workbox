@@ -1,0 +1,17 @@
+{
+  "extends": "google",
+  "rules": {
+    "max-nested-callbacks": 0,
+    "valid-jsdoc": [
+      2,
+      {
+        "requireParamDescription": false,
+        "requireReturnDescription": false,
+        "prefer": {
+          "return": "returns"
+        }
+      }
+    ],
+    "no-warning-comments": 0
+  }
+}
