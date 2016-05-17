@@ -1,5 +1,7 @@
 <!-- To make changes, edit templates/README.hbs, not README.md! -->
-[![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-url]][daviddm-image]
+[![NPM version][npm-image]][npm-url]
+[![Build Status][travis-image]][travis-url]
+[![devDependency Status](https://david-dm.org/googlechrome/sw-helpers/dev-status.svg)](https://david-dm.org/googlechrome/sw-helpers#info=devDependencies)
 
 # Service Worker Helpers
 
@@ -80,5 +82,3 @@ limitations under the License.
 [npm-image]: https://badge.fury.io/js/sw-helpers.svg
 [travis-url]: https://travis-ci.org/GoogleChrome/sw-helpers
 [travis-image]: https://travis-ci.org/GoogleChrome/sw-helpers.svg?branch=master
-[daviddm-url]: https://david-dm.org/googlechrome/sw-helpers#info=devDependencies
-[daviddm-image]: https://david-dm.org/googlechrome/sw-helpers/dev-status.svg
