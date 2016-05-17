@@ -2,7 +2,7 @@
   "name": "sw-appcache-behavior",
   "version": "0.0.1",
   "private": true,
-  "description": "A service worker that mimics the behavior defined in a page's App Cache manifest.",
+  "description": "A service worker fetch handler that mimics the behavior defined in a page's App Cache manifest.",
   "keywords": [
     "appcache",
     "service worker",

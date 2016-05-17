@@ -11,16 +11,18 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
+ */
 
 import eslint from 'gulp-eslint';
 import express from 'express';
 import gulp from 'gulp';
+import handlebars from 'gulp-compile-handlebars';
 import minimist from 'minimist';
 import mocha from 'gulp-mocha';
 import npmPath from 'npm-path';
 import path from 'path';
 import promisify from 'promisify-node';
+import rename from 'gulp-rename';
 import runSequence from 'run-sequence';
 import serveIndex from 'serve-index';
 import serveStatic from 'serve-static';
@@ -133,7 +135,7 @@ gulp.task('serve', unusedCallback => {
   });
 });
 
-gulp.task('documentation', () => {
+gulp.task('documentation', ['templates'], () => {
   if (projectOrStar !== '*') {
     throw Error('Please do not use the --project= parameter when generating ' +
       'documentation.');
@@ -142,6 +144,20 @@ gulp.task('documentation', () => {
   return tmpPromise.dir().then(tmpDir => {
     return taskHarness(documentPackage, projectOrStar, tmpDir)
       .then(() => ghPagesPromise.publish(tmpDir));
+  });
+});
+
+gulp.task('templates', () => {
+  return new Promise(resolve => {
+    return globPromise(`projects/${projectOrStar}/package.json`)
+      .then(pkgs => pkgs.map(pkg => require(`./${pkg}`)))
+      .then(projects => {
+        gulp.src('templates/README.hbs')
+          .pipe(handlebars({projects: projects}))
+          .pipe(rename({extname: '.md'}))
+          .pipe(gulp.dest('.'))
+          .on('end', resolve);
+      });
   });
 });
 
