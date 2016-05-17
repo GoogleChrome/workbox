@@ -80,5 +80,5 @@ limitations under the License.
 [npm-image]: https://badge.fury.io/js/sw-helpers.svg
 [travis-url]: https://travis-ci.org/GoogleChrome/sw-helpers
 [travis-image]: https://travis-ci.org/GoogleChrome/sw-helpers.svg?branch=master
-[daviddm-url]: https://david-dm.org/googlechrome/sw-helpers.svg?theme=shields.io
-[daviddm-image]: https://david-dm.org/googlechrome/sw-helpers
+[daviddm-url]: https://david-dm.org/googlechrome/sw-helpers#info=devDependencies
+[daviddm-image]: https://david-dm.org/googlechrome/sw-helpers/dev-status.svg
