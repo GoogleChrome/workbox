@@ -12,15 +12,17 @@ approach is used to manage multiple helper libraries, each of which is versioned
 and published to `npm` independently.
 
 ## The Libraries
-### sw-appcache-behavior
-A service worker fetch handler that mimics the behavior defined in a page&#x27;s App Cache manifest.
+{{#each projects}}
+### {{name}}
+{{description}}
 
-**Install**: `npm install --save-dev sw-appcache-behavior`
+**Install**: `npm install --save-dev {{name}}`
 
-**Learn More**: [About](projects/sw-appcache-behavior#about) •
-                [Usage](projects/sw-appcache-behavior#usage) •
-                [API](projects/sw-appcache-behavior#api)
+**Learn More**: [About](projects/{{name}}#about) •
+                [Usage](projects/{{name}}#usage) •
+                [API](projects/{{name}}#api)
 
+{{/each}}
 
 ## Development
 
