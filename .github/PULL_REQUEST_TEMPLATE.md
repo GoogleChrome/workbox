@@ -1,4 +1,4 @@
-R: @jeffposnick @addyosmani @wibblymat @guantface
+R: @jeffposnick @addyosmani @wibblymat @gauntface
 
 Fixes #*issue number*
 
