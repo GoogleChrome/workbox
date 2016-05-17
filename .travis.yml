@@ -3,7 +3,7 @@ dist: trusty
 language: node_js
 env:
   global:
-    - FF_BETA_PATH: './firefox/firefox'
+  # - FF_BETA_PATH: './firefox/firefox'
 node_js:
   - 'stable'
 addons:
@@ -19,7 +19,7 @@ addons:
 
 before_install:
   # Get firefbox beta and extract to tar for the test runner to use.
-  - wget 'https://download.mozilla.org/?product=firefox-beta-latest&lang=en-US&os=linux64' -O firefox-beta.tar.bz2 && tar xvjf firefox-beta.tar.bz2
+  # - wget 'https://download.mozilla.org/?product=firefox-beta-latest&lang=en-US&os=linux64' -O firefox-beta.tar.bz2 && tar xvjf firefox-beta.tar.bz2
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
