@@ -15,7 +15,7 @@ Browse sample source code in the [demo directory](demo/), or
 
 ### goog.legacyAppCacheBehavior
 
-[projects/sw-appcache-behavior/src/appcache-behavior-import.js:501-514](https://github.com/GoogleChrome/sw-helpers/blob/931219008dad0d53d5cc0a630680b104d7bdc2ff/projects/sw-appcache-behavior/src/appcache-behavior-import.js#L501-L514 "Source code on GitHub")
+[projects/sw-appcache-behavior/src/appcache-behavior-import.js:501-514](https://github.com/GoogleChrome/sw-helpers/blob/a263acc564fb00bda1ba770327da49d6c31ceed8/projects/sw-appcache-behavior/src/appcache-behavior-import.js#L501-L514 "Source code on GitHub")
 
 `goog.legacyAppCacheBehavior` is the main entry point to the library
 from within service worker code.
@@ -38,8 +38,8 @@ for you.)
 
 Once you've added `<script src="path/to/client-runtime.js"></script>` to
 your HTML pages, you can use `goog.legacyAppCacheBehavior` within your
-service worker script to get a Response`suitable for passing to
-[`FetchEvent.respondWidth()\`](<https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/respondWith>):
+service worker script to get a `Response` suitable for passing to
+[`FetchEvent.respondWidth()`](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/respondWith):
 
 ```js
 // Import the library into the service worker global scope:

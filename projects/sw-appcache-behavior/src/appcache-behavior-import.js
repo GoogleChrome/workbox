@@ -461,7 +461,7 @@
    *
    * Once you've added `<script src="path/to/client-runtime.js"></script>` to
    * your HTML pages, you can use `goog.legacyAppCacheBehavior` within your
-   * service worker script to get a Response` suitable for passing to
+   * service worker script to get a `Response` suitable for passing to
    * [`FetchEvent.respondWidth()`](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/respondWith):
    *
    * ```js
@@ -484,7 +484,7 @@
    * // Import the library into the service worker global scope:
    * // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
    * importScripts('path/to/appcache-behavior-import.js');
-   * 
+   *
    * self.addEventListener('fetch', event => {
    *   if (event.request.url.match(/legacyRegex/)) {
    *     event.respondWith(goog.legacyAppCacheBehavior(event));
