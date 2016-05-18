@@ -26,7 +26,7 @@ import rename from 'gulp-rename';
 import runSequence from 'run-sequence';
 import serveIndex from 'serve-index';
 import serveStatic from 'serve-static';
-import {globPromise, processPromiseWrapper, promiseAllWrapper, taskHarness} from './build-utils.js';
+import {globPromise, processPromiseWrapper, taskHarness} from './build-utils.js';
 
 const fsePromise = promisify('fs-extra');
 const tmpPromise = promisify('tmp');
@@ -86,12 +86,25 @@ const buildPackage = project => {
  * @param project The path to a project directory.
  * @returns {Promise} Resolves if documenting succeeds, rejects if it fails.
  */
-const documentPackage = (project, tmpDir) => {
-  // TODO: Reconsider the docuementation process.
-  return globPromise(`${project}/src/**/*.js`).then(files => {
-    const args = ['build', ...files, '--format', 'html', '--output',
-      path.join(tmpDir, project)];
-    return processPromiseWrapper('documentation', args);
+const documentPackage = project => {
+  const projectMetadata = require(`./${project}/package.json`);
+  return new Promise(resolve => {
+    // First, use metadata from package.json to write out an initial README.md.
+    gulp.src('templates/Project-README.hbs')
+      .pipe(handlebars({
+        name: projectMetadata.name,
+        description: projectMetadata.description
+      }))
+      .pipe(rename('README.md'))
+      .pipe(gulp.dest(project))
+      .on('end', resolve);
+  }).then(() => {
+    // Then use the inline JSDoc to populate the "API" section.
+    return globPromise(`${project}/src/**/*.js`).then(files => {
+      const args = ['readme', ...files, '--github', '--section', 'API',
+        '--readme-file', `${project}/README.md`];
+      return processPromiseWrapper('documentation', args);
+    });
   });
 };
 
@@ -135,21 +148,18 @@ gulp.task('serve', unusedCallback => {
   });
 });
 
-gulp.task('documentation', ['templates'], () => {
-  if (projectOrStar !== '*') {
-    throw Error('Please do not use the --project= parameter when generating ' +
-      'documentation.');
-  }
-
-  return tmpPromise.dir().then(tmpDir => {
-    return taskHarness(documentPackage, projectOrStar, tmpDir)
-      .then(() => ghPagesPromise.publish(tmpDir));
-  });
+gulp.task('documentation:projects', () => {
+  return taskHarness(documentPackage, projectOrStar);
 });
 
-gulp.task('templates', () => {
+gulp.task('documentation:repo', ['build'], () => {
+  if (projectOrStar !== '*') {
+    throw Error('Please do not use --project= with documentation:repo.');
+  }
+
   return new Promise(resolve => {
-    return globPromise(`projects/${projectOrStar}/package.json`)
+    // First, generate a repo README.md based on metadata from each project.
+    return globPromise('projects/*/package.json')
       .then(pkgs => pkgs.map(pkg => require(`./${pkg}`)))
       .then(projects => {
         gulp.src('templates/README.hbs')
@@ -158,10 +168,21 @@ gulp.task('templates', () => {
           .pipe(gulp.dest('.'))
           .on('end', resolve);
       });
+  }).then(() => {
+    // Then publish all of the build + demo files to gh-pages.
+    return tmpPromise.dir().then(tmpDir => {
+      return new Promise(resolve => {
+        gulp.src('projects/*/{build,demo}/**')
+          .pipe(gulp.dest(tmpDir))
+          .on('end', resolve);
+      }).then(() => ghPagesPromise.publish(tmpDir));
+    });
   });
 });
 
-gulp.task('publish', ['lint', 'build'], () => {
+gulp.task('documentation', ['documentation:repo', 'documentation:projects']);
+
+gulp.task('publish', ['lint', 'test', 'build', 'documentation:projects'], () => {
   if (projectOrStar === '*') {
     throw Error('Please use the --project= parameter to specify a project.');
   }
@@ -170,5 +191,5 @@ gulp.task('publish', ['lint', 'build'], () => {
 });
 
 gulp.task('default', callback => {
-  runSequence(['lint', 'test'], 'documentation', 'build', callback);
+  runSequence(['lint', 'test'], 'documentation', callback);
 });
