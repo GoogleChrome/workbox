@@ -465,6 +465,10 @@
    * [`FetchEvent.respondWidth()`](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/respondWith):
    *
    * ```js
+   * // Import the library into the service worker global scope:
+   * // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
+   * importScripts('path/to/appcache-behavior-import.js');
+   *
    * self.addEventListener('fetch', event => {
    *   event.respondWith(goog.legacyAppCacheBehavior(event).catch(error => {
    *     // Fallback behavior goes here, e.g. return fetch(event.request);
@@ -477,6 +481,10 @@
    * robust service worker implementation:
    *
    * ```js
+   * // Import the library into the service worker global scope:
+   * // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
+   * importScripts('path/to/appcache-behavior-import.js');
+   * 
    * self.addEventListener('fetch', event => {
    *   if (event.request.url.match(/legacyRegex/)) {
    *     event.respondWith(goog.legacyAppCacheBehavior(event));

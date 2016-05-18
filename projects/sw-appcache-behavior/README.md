@@ -15,7 +15,7 @@ Browse sample source code in the [demo directory](demo/), or
 
 ### goog.legacyAppCacheBehavior
 
-[projects/sw-appcache-behavior/src/appcache-behavior-import.js:493-506](https://github.com/GoogleChrome/sw-helpers/blob/a97d1aaafaaa6829255a525a5f6cb0b4c811e045/projects/sw-appcache-behavior/src/appcache-behavior-import.js#L493-L506 "Source code on GitHub")
+[projects/sw-appcache-behavior/src/appcache-behavior-import.js:501-514](https://github.com/GoogleChrome/sw-helpers/blob/931219008dad0d53d5cc0a630680b104d7bdc2ff/projects/sw-appcache-behavior/src/appcache-behavior-import.js#L501-L514 "Source code on GitHub")
 
 `goog.legacyAppCacheBehavior` is the main entry point to the library
 from within service worker code.
@@ -42,6 +42,10 @@ service worker script to get a Response`suitable for passing to
 [`FetchEvent.respondWidth()\`](<https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/respondWith>):
 
 ```js
+// Import the library into the service worker global scope:
+// https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
+importScripts('path/to/appcache-behavior-import.js');
+
 self.addEventListener('fetch', event => {
   event.respondWith(goog.legacyAppCacheBehavior(event).catch(error => {
     // Fallback behavior goes here, e.g. return fetch(event.request);
@@ -54,6 +58,10 @@ of requests, to aid in the migration off of App Cache and onto a more
 robust service worker implementation:
 
 ```js
+// Import the library into the service worker global scope:
+// https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
+importScripts('path/to/appcache-behavior-import.js');
+
 self.addEventListener('fetch', event => {
   if (event.request.url.match(/legacyRegex/)) {
     event.respondWith(goog.legacyAppCacheBehavior(event));
