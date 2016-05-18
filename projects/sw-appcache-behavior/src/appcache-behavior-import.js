@@ -440,27 +440,61 @@
   }
 
   /**
-   * The main entry point into the library.
-   * It is meant to be called by a service worker's `fetch` event handler:
+   * `goog.legacyAppCacheBehavior` is the main entry point to the library
+   * from within service worker code.
    *
-   *     self.addEventListener('fetch', event => {
-   *       event.respondWith(goog.legacyAppCacheBehavior(event).catch(error => {
-   *         // Fallback behavior goes here, e.g. return fetch(event.request);
-   *       }));
-   *     });
+   * **Important**
+   * In addition to calling `goog.legacyAppCacheBehavior` from within your
+   * service worker, you *must* add the following to each HTML document that
+   * contains an App Cache Manifest:
    *
-   * `goog.legacyAppCacheBehavior()` can be selectively applied to only a subset
+   * ```html
+   * <script src="path/to/client-runtime.js"
+   *         data-service-worker="service-worker.js">
+   * </script>
+   * ```
+   *
+   * (The `data-service-worker` attribute is optional. If provided, it will
+   * automatically call
+   * [`navigator.serviceWorker.register()`](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register)
+   * for you.)
+   *
+   * Once you've added `<script src="path/to/client-runtime.js"></script>` to
+   * your HTML pages, you can use `goog.legacyAppCacheBehavior` within your
+   * service worker script to get a `Response` suitable for passing to
+   * [`FetchEvent.respondWidth()`](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/respondWith):
+   *
+   * ```js
+   * // Import the library into the service worker global scope:
+   * // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
+   * importScripts('path/to/appcache-behavior-import.js');
+   *
+   * self.addEventListener('fetch', event => {
+   *   event.respondWith(goog.legacyAppCacheBehavior(event).catch(error => {
+   *     // Fallback behavior goes here, e.g. return fetch(event.request);
+   *   }));
+   * });
+   * ```
+   *
+   * `goog.legacyAppCacheBehavior` can be selectively applied to only a subset
    * of requests, to aid in the migration off of App Cache and onto a more
    * robust service worker implementation:
    *
-   *     self.addEventListener('fetch', event => {
-   *       if (event.request.url.match(/legacyRegex/)) {
-   *         event.respondWith(goog.legacyAppCacheBehavior(event));
-   *       } else {
-   *         event.respondWith(robustServiceWorkerBehavior(event));
-   *       }
-   *     });
+   * ```js
+   * // Import the library into the service worker global scope:
+   * // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
+   * importScripts('path/to/appcache-behavior-import.js');
    *
+   * self.addEventListener('fetch', event => {
+   *   if (event.request.url.match(/legacyRegex/)) {
+   *     event.respondWith(goog.legacyAppCacheBehavior(event));
+   *   } else {
+   *     event.respondWith(robustServiceWorkerBehavior(event));
+   *   }
+   * });
+   * ```
+   *
+   * @alias goog.legacyAppCacheBehavior
    * @param {FetchEvent} event
    * @returns {Promise.<Response>}
    */

@@ -15,12 +15,12 @@ and published to `npm` independently.
 
 ## The Libraries
 ### sw-appcache-behavior
-A service worker fetch handler that mimics the behavior defined in a page&#x27;s App Cache manifest.
+A service worker implementation of the behavior defined in a page&#x27;s App Cache manifest.
 
 **Install**: `npm install --save-dev sw-appcache-behavior`
 
-**Learn More**: [About](projects/sw-appcache-behavior#about) •
-                [Usage](projects/sw-appcache-behavior#usage) •
+**Learn More**: [About](projects/sw-appcache-behavior) •
+                [Demo](projects/sw-appcache-behavior#demo) •
                 [API](projects/sw-appcache-behavior#api)
 
 
