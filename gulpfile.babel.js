@@ -182,12 +182,17 @@ gulp.task('documentation:repo', ['build'], () => {
 
 gulp.task('documentation', ['documentation:repo', 'documentation:projects']);
 
-gulp.task('publish', ['lint', 'test', 'build', 'documentation:projects'], () => {
+gulp.task('publish', callback => {
   if (projectOrStar === '*') {
     throw Error('Please use the --project= parameter to specify a project.');
   }
 
-  return taskHarness(publishPackage, projectOrStar);
+  // We need things run in a specific sequence: the project-level documentation
+  // needs to be created before build, so that the correct README.md is copied
+  // over to the build/ directory.
+  runSequence(['lint', 'test'], 'documentation:projects', 'build', () => {
+    return taskHarness(publishPackage, projectOrStar).then(() => callback());
+  });
 });
 
 gulp.task('default', callback => {
