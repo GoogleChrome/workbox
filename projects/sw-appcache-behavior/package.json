@@ -1,6 +1,6 @@
 {
   "name": "sw-appcache-behavior",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "A service worker implementation of the behavior defined in a page's App Cache manifest.",
   "keywords": [
     "appcache",
@@ -15,5 +15,8 @@
     "email": "jeffy@google.com",
     "url": "https://jeffy.info"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-appcache-behavior"
 }
