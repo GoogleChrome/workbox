@@ -13,6 +13,10 @@
  limitations under the License.
 */
 
+// It's unclear whether a bespoke build process is needed for each sub-project,
+// or whether the top-level gulp task can just use a common, browserify-based
+// build with each sub-project exporting a list of files to use as entry points.
+
 import browserify from 'browserify';
 import fs from 'fs';
 import path from 'path';
