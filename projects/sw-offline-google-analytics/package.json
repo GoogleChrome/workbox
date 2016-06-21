@@ -1,0 +1,21 @@
+{
+  "name": "sw-offline-google-analytics",
+  "version": "1.0.0",
+  "description": "A service worker implementation of the behavior defined in a page's App Cache manifest.",
+  "keywords": [
+    "service worker",
+    "sw",
+    "offline",
+    "analytics"
+  ],
+  "author": {
+    "name": "Jeff Posnick",
+    "email": "jeffy@google.com",
+    "url": "https://jeffy.info"
+  },
+  "main": "build/offline-google-analytics.js",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-offline-google-analytics"
+}

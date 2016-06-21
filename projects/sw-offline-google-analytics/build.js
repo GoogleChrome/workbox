@@ -13,22 +13,14 @@
  limitations under the License.
 */
 
-import browserify from 'browserify';
-import fs from 'fs';
 import path from 'path';
+import promisify from 'promisify-node';
+const fsePromise = promisify('fs-extra');
 
 module.exports = () => {
-  return Promise.all([
-    'client-runtime.js',
-    'appcache-behavior-import.js'
-  ].map(file => {
-    return new Promise((resolve, reject) => {
-      const bundler = browserify(path.join(__dirname, 'src', file));
-
-      bundler.bundle()
-        .pipe(fs.createWriteStream(path.join(__dirname, 'build', file)))
-        .on('error', reject)
-        .on('finish', resolve);
-    });
-  }));
+  const source = path.join(__dirname, 'src',
+    'offline-google-analytics-import.js');
+  const destination = path.join(__dirname, 'build',
+    'offline-google-analytics-import.js');
+  return fsePromise.copy(source, destination, {replace: true});
 };
