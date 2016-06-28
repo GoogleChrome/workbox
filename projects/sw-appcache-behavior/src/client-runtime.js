@@ -145,7 +145,7 @@ function checkManifestVersion(db, manifestUrl) {
         // If the age is greater than 24 hours, then we need to refetch without
         // hitting the cache.
         console.log(manifestAgeInMillis);
-        if (manifestAgeInMillis > (24 * 60 * 1000)) {
+        if (manifestAgeInMillis > (24 * 60 * 60 * 1000)) {
           var noCacheRequest = new Request(manifestUrl, {
             credentials: 'include',
             // See https://fetch.spec.whatwg.org/#requestcache
