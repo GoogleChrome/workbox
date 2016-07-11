@@ -1,9 +1,0 @@
-{
-  "name": "sw-testing-helpers",
-  "version": "0.0.14",
-  "dependencies": {
-    "selenium-webdriver": {
-      "version": "2.52.0"
-    }
-  }
-}
