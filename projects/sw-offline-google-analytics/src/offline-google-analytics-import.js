@@ -11,6 +11,8 @@
  limitations under the License.
  */
 
+/* eslint-env worker, serviceworker */
+
 (function(global) {
   global.goog = global.goog || {};
 
@@ -20,14 +22,19 @@
   var IDB_VERSION = 1;
   var STOP_RETRYING_AFTER = 86400000; // One day, in milliseconds.
   var STORE_NAME = 'urls';
+  var CACHE_NAME = 'offline-google-analytics';
 
   /**
    * This is basic boilerplate for interacting with IndexedDB. Adapted from
    * https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
    *
+   * This is a private method that is exposed on the `goog` object to
+   * facilitate testing.
+   *
    * @private
+   * @returns {undefined}
    */
-  function openDatabaseAndReplayRequests() {
+  global.goog.openDatabaseAndReplayRequests = function() {
     var indexedDBOpenRequest = indexedDB.open('offline-analytics', IDB_VERSION);
 
     // This top-level error handler will be invoked any time there's an
@@ -47,7 +54,7 @@
       idbDatabase = this.result;
       replayAnalyticsRequests();
     };
-  }
+  };
 
   /**
    * Helper method to get the object store that we care about.
@@ -66,6 +73,7 @@
    * with an additional qt= parameter.
    *
    * @private
+   * @returns {undefined}
    */
   function replayAnalyticsRequests() {
     var savedRequests = [];
@@ -117,21 +125,59 @@
   }
 
   /**
+   * Adds a URL to IndexedDB, along with the current timestamp.
+   *
+   * This is a private method that is exposed on the `goog` object to
+   * facilitate testing.
+   *
+   * @private
+   * @param {Request} request
+   * @returns {undefined}
+   */
+  global.goog.enqueueRequest = function(request) {
+    var url = new URL(request.url);
+    // TODO: This is done asynchronously without coordinating its completion
+    // with the fetch handler that triggers it. It should ideally return
+    // a promise that reflects the status of the IndexedDB transaction, and
+    // the fetch handler should call event.waitUntil() on that promise.
+    // In the current implementation, there's a very small chance the service
+    // worker will be killed before the IndexedDB transaction completes.
+    request.text().then(function(body) {
+      // If there's a request body, then use it as the URL's search value.
+      // This is most likely because the original request was an HTTP POST
+      // that uses the beacon transport.
+      if (body) {
+        url.search = body;
+      }
+
+      getObjectStore(STORE_NAME, 'readwrite').add({
+        url: url.toString(),
+        timestamp: Date.now()
+      });
+    });
+  };
+
+  /**
    * `goog.useOfflineGoogleAnalytics` is the main entry point to the library
    * from within service worker code.
-   * 
+   *
    * ```js
-   * // Inside your service worker JavaScript file:
-   * 
-   * // Import the library into the service worker global scope:
+   * // Inside your service worker JavaScript, ideally before any other
+   * // 'fetch' event handlers are defined:
+   *
+   * // 1) Import the library into the service worker global scope, using
    * // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
    * importScripts('path/to/offline-google-analytics-import.js');
    *
-   * // Call goog.useOfflineGoogleAnalytics() to activate the library.
+   * // 2) Call goog.useOfflineGoogleAnalytics() to activate the library.
    * goog.useOfflineGoogleAnalytics();
+   *
+   * // At this point, implement any other service worker caching strategies
+   * // appropriate for your web app.
    * ```
    *
    * @alias goog.useOfflineGoogleAnalytics
+   * @returns {undefined}
    */
   global.goog.useOfflineGoogleAnalytics = function() {
     // Open the IndexedDB and check for requests to replay each time the service
@@ -139,30 +185,45 @@
     // Since the service worker is terminated fairly frequently, it should start
     // up again for most page navigations. It also might start up if it's used
     // in a background sync or a push notification context.
-    openDatabaseAndReplayRequests();
+    global.goog.openDatabaseAndReplayRequests();
 
     global.addEventListener('fetch', function(event) {
       var url = new URL(event.request.url);
+      var request = event.request;
 
       if ((url.hostname === 'www.google-analytics.com' ||
-        url.hostname === 'ssl.google-analytics.com') &&
-        url.pathname === '/collect') {
-        event.respondWith(
-          fetch(event.request).then(function(response) {
-            if (response.status >= 400) {
-              throw Error('Error returned from Google Analytics request.');
-            }
+           url.hostname === 'ssl.google-analytics.com')) {
+        if (url.pathname === '/collect') {
+          // If this is a /collect request, then use a network-first strategy,
+          // falling back to queueing the request in IndexedDB.
 
-            return response;
-          }).catch(function(error) {
-            getObjectStore(STORE_NAME, 'readwrite').add({
-              url: event.request.url,
-              timestamp: Date.now()
-            });
+          // Make a clone of the request before we use it, in case we need
+          // to read the request body later on.
+          var clonedRequest = request.clone();
 
-            return error;
-          })
-        );
+          event.respondWith(
+            fetch(request).catch(function(error) {
+              global.goog.enqueueRequest(clonedRequest);
+
+              return error;
+            })
+          );
+        } else if (url.pathname === '/analytics.js') {
+          // If this is a request for the Google Analytics JavaScript library,
+          // use the network first, falling back to the previously cached copy.
+          event.respondWith(
+            caches.open(CACHE_NAME).then(function(cache) {
+              return fetch(request).then(function(response) {
+                return cache.put(request, response.clone()).then(function() {
+                  return response;
+                });
+              }).catch(function(error) {
+                log(error);
+                return cache.match(request);
+              });
+            })
+          );
+        }
       }
     });
   };

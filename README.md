@@ -23,6 +23,15 @@ A service worker implementation of the behavior defined in a page&#x27;s App Cac
                 [Demo](projects/sw-appcache-behavior#demo) •
                 [API](projects/sw-appcache-behavior#api)
 
+### sw-offline-google-analytics
+A service worker implementation of the behavior defined in a page&#x27;s App Cache manifest.
+
+**Install**: `npm install --save-dev sw-offline-google-analytics`
+
+**Learn More**: [About](projects/sw-offline-google-analytics) •
+                [Demo](projects/sw-offline-google-analytics#demo) •
+                [API](projects/sw-offline-google-analytics#api)
+
 
 ## Development
 

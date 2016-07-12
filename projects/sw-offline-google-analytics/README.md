@@ -15,25 +15,24 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### goog.useOfflineGoogleAnalytics
 
-[projects/sw-offline-google-analytics/src/offline-google-analytics-import.js:134-166](https://github.com/GoogleChrome/sw-helpers/blob/a219fc9188654420fed08c4218c09f9cbc4b6de8/projects/sw-offline-google-analytics/src/offline-google-analytics-import.js#L134-L166 "Source code on GitHub")
+[projects/sw-offline-google-analytics/src/offline-google-analytics-import.js:182-229](https://github.com/GoogleChrome/sw-helpers/blob/213765485d2c3378497e2a80c2b80993a7b09cdf/projects/sw-offline-google-analytics/src/offline-google-analytics-import.js#L182-L229 "Source code on GitHub")
 
 `goog.useOfflineGoogleAnalytics` is the main entry point to the library
 from within service worker code.
 
 ```js
-// Inside your service worker JavaScript file:
+// Inside your service worker JavaScript, ideally before any other
+// 'fetch' event handlers are defined:
 
-// Import the library into the service worker global scope:
+// 1) Import the library into the service worker global scope, using
 // https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope/importScripts
 importScripts('path/to/offline-google-analytics-import.js');
 
-// Call goog.useOfflineGoogleAnalytics() to set things up.
-goog.useOfflineGoogleAnalytics()
+// 2) Call goog.useOfflineGoogleAnalytics() to activate the library.
+goog.useOfflineGoogleAnalytics();
+
+// At this point, implement any other service worker caching strategies
+// appropriate for your web app.
 ```
 
-### replayAnalyticsRequests
-
-[projects/sw-offline-google-analytics/src/offline-google-analytics-import.js:68-115](https://github.com/GoogleChrome/sw-helpers/blob/a219fc9188654420fed08c4218c09f9cbc4b6de8/projects/sw-offline-google-analytics/src/offline-google-analytics-import.js#L68-L115 "Source code on GitHub")
-
-Replays all the queued requests found in IndexedDB, by calling fetch()
-with an additional qt= parameter.
+Returns **[undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined)** 
