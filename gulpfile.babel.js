@@ -30,7 +30,6 @@ import {globPromise, processPromiseWrapper, taskHarness} from './build-utils.js'
 
 const fsePromise = promisify('fs-extra');
 const tmpPromise = promisify('tmp');
-const ghPagesPromise = promisify('gh-pages');
 
 const options = minimist(process.argv.slice(2));
 const projectOrStar = options.project || '*';
@@ -123,7 +122,10 @@ gulp.task('lint', () => {
 
 gulp.task('test', () => {
   return gulp.src(`projects/${projectOrStar}/test/*.js`, {read: false})
-    .pipe(mocha());
+    .pipe(mocha())
+    .once('error', () => {
+      process.exit(1);
+    });
 });
 
 gulp.task('build', () => {
@@ -169,6 +171,13 @@ gulp.task('documentation:repo', ['build'], () => {
           .on('end', resolve);
       });
   }).then(() => {
+    // The gh-pages module ends up pulling in https://www.npmjs.com/package/collections
+    // which in turn breaks the native Array.filter() implementation in some
+    // versions of Node, triggering a bug in selenium-webdriver (sigh).
+    // To work around this, only pull in gh-pages when it's needed, rather than
+    // globally at the top of this file.
+    const ghPagesPromise = promisify('gh-pages');
+    
     // Then publish all of the build + demo files to gh-pages.
     return tmpPromise.dir().then(tmpDir => {
       return new Promise(resolve => {
