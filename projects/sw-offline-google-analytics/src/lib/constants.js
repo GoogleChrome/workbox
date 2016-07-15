@@ -13,18 +13,18 @@
  limitations under the License.
 */
 
-import browserify from 'browserify';
-import fs from 'fs';
-import path from 'path';
-
-module.exports = () => {
-  var file = 'offline-google-analytics-import.js';
-  return new Promise((resolve, reject) => {
-    const bundler = browserify(path.join(__dirname, 'src', file));
-
-    bundler.bundle()
-      .pipe(fs.createWriteStream(path.join(__dirname, 'build', file)))
-      .on('error', reject)
-      .on('finish', resolve);
-  });
+module.exports = {
+  CACHE_NAME: 'offline-google-analytics',
+  IDB: {
+    NAME: 'offline-google-analytics',
+    STORE: 'urls',
+    VERSION: 1
+  },
+  MAX_ANALYTICS_BATCH_SIZE: 20,
+  STOP_RETRYING_AFTER: 86400000, // One day, in milliseconds.
+  URL: {
+    ANALYTICS_JS_PATH: '/analytics.js',
+    COLLECT_PATH: '/collect',
+    HOST: 'www.google-analytics.com'
+  }
 };

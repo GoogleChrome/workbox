@@ -1,7 +1,5 @@
 <!-- To make changes, edit templates/README.hbs, not README.md! -->
-[![NPM version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
-[![devDependency Status](https://david-dm.org/googlechrome/sw-helpers/dev-status.svg)](https://david-dm.org/googlechrome/sw-helpers#info=devDependencies)
 
 # Service Worker Helpers
 
@@ -24,7 +22,7 @@ A service worker implementation of the behavior defined in a page&#x27;s App Cac
                 [API](projects/sw-appcache-behavior#api)
 
 ### sw-offline-google-analytics
-A service worker implementation of the behavior defined in a page&#x27;s App Cache manifest.
+A library to extend a service worker&#x27;s behavior, allowing it to retry failed Google Analytics requests.
 
 **Install**: `npm install --save-dev sw-offline-google-analytics`
 

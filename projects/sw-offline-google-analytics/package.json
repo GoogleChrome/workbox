@@ -1,7 +1,7 @@
 {
   "name": "sw-offline-google-analytics",
   "version": "1.0.0",
-  "description": "A service worker implementation of the behavior defined in a page's App Cache manifest.",
+  "description": "A library to extend a service worker's behavior, allowing it to retry failed Google Analytics requests.",
   "keywords": [
     "service worker",
     "sw",

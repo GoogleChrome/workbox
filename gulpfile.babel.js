@@ -93,7 +93,8 @@ const documentPackage = project => {
     gulp.src('templates/Project-README.hbs')
       .pipe(handlebars({
         name: projectMetadata.name,
-        description: projectMetadata.description
+        description: projectMetadata.description,
+        background: projectMetadata.background
       }))
       .pipe(rename('README.md'))
       .pipe(gulp.dest(project))
@@ -132,6 +133,7 @@ gulp.task('build', () => {
 
 gulp.task('build:watch', unusedCallback => {
   gulp.watch(`projects/${projectOrStar}/src/**/*`, ['build']);
+  gulp.watch(`lib/**/*`, ['build']);
 });
 
 gulp.task('serve', unusedCallback => {

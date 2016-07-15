@@ -22,3 +22,7 @@ self.addEventListener('fetch', event => {
     })
   );
 });
+
+// Have the service worker take control as soon as possible.
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', () => self.clients.claim());
