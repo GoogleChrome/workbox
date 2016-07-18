@@ -136,8 +136,30 @@ function checkManifestVersion(db, manifestUrl) {
 
   return Promise.all([
     // TODO: Handle manifest fetch failure errors.
-    // TODO: Consider cache-busting if the manifest response > 24 hours old.
     fetch(manifestRequest).then(function(manifestResponse) {
+      var dateHeaderValue = manifestResponse.headers.get('date');
+      if (dateHeaderValue) {
+        var manifestDate = new Date(dateHeaderValue).valueOf();
+        // Calculate the age of the manifest in milliseconds.
+        var manifestAgeInMillis = Date.now() - manifestDate;
+        // If the age is greater than 24 hours, then we need to refetch without
+        // hitting the cache.
+        if (manifestAgeInMillis > (24 * 60 * 60 * 1000)) {
+          var noCacheRequest = new Request(manifestUrl, {
+            credentials: 'include',
+            // See https://fetch.spec.whatwg.org/#requestcache
+            cache: 'reload',
+            headers: {
+              'X-Use-Fetch': true
+            }
+          });
+
+          return fetch(noCacheRequest).then(function(noCacheResponse) {
+            return noCacheResponse.text();
+          });
+        }
+      }
+
       return manifestResponse.text();
     }).then(function(text) {
       var md5 = require('blueimp-md5');
