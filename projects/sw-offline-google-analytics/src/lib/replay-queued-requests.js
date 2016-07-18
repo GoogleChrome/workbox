@@ -32,7 +32,9 @@ module.exports = () => {
   return idbHelper.getAllKeys().then(urls => {
     return Promise.all(urls.map(url => {
       return idbHelper.get(url).then(queuedTime => {
-        return fetch(`${url}&qt=${queuedTime}`).catch(error => {
+        const newUrl = new URL(url);
+        newUrl.search += (newUrl.search ? '&' : '') + 'qt=' + queuedTime;
+        return fetch(newUrl.toString()).catch(error => {
           // If this was queued recently, then rethrow the error, to prevent
           // the entry from being deleted. It will be retried again later.
           if ((Date.now() - queuedTime) < constants.STOP_RETRYING_AFTER) {
