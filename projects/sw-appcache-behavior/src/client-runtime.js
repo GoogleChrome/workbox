@@ -144,7 +144,6 @@ function checkManifestVersion(db, manifestUrl) {
         var manifestAgeInMillis = Date.now() - manifestDate;
         // If the age is greater than 24 hours, then we need to refetch without
         // hitting the cache.
-        console.log(manifestAgeInMillis);
         if (manifestAgeInMillis > (24 * 60 * 60 * 1000)) {
           var noCacheRequest = new Request(manifestUrl, {
             credentials: 'include',
