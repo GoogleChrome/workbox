@@ -45,7 +45,7 @@ npmPath.setSync();
  */
 const lintPackage = project => {
   return new Promise((resolve, reject) => {
-    gulp.src([`${project}/**/*.js`, `!${project}/build/**`])
+    gulp.src([`${project}/**/*.js`, `!${project}/**/build/**`])
       .pipe(eslint())
       .pipe(eslint.format())
       .pipe(eslint.results(results => {

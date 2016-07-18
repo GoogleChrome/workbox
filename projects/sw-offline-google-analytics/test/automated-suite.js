@@ -23,10 +23,7 @@
 // documentation here: http://selenium.googlecode.com/git/docs/api/javascript/index.html
 
 const browserifyTests = require('../../../lib/browserify-tests.js');
-const chai = require('chai');
-const del = require('del');
 const path = require('path');
-const promisify = require('promisify-node');
 const swTestingHelpers = require('sw-testing-helpers');
 
 const automatedBrowserTesting = swTestingHelpers.automatedBrowserTesting;

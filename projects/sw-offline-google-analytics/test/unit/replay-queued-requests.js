@@ -12,6 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
+/* global chai */
 
 'use strict';
 
@@ -43,7 +44,8 @@ describe('replay-queued-requests', () => {
     return Promise.all(urls.map(url => enqueueRequest(new Request(url), time)))
       .then(() => replayRequests())
       .then(() => fetchMock.calls().matched.map(match => match[0]))
-      .then(matchedUrls => chai.expect(matchedUrls).to.include.members(urlsWithQt))
+      .then(matchedUrls =>
+        chai.expect(matchedUrls).to.include.members(urlsWithQt))
       .then(() => idbHelper.getAllKeys())
       .then(keys => chai.expect(keys).to.not.include.members(urlsWithQt));
   });

@@ -12,6 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
+/* global chai */
 
 'use strict';
 
@@ -37,7 +38,7 @@ describe('enqueue-request', () => {
     const url = `${baseUrl}?${body}`;
 
     const request = new Request(url, {method: 'POST', body});
-    return enqueueRequest(request, time)
+    return enqueueRequest(request)
       .then(() => idbHelper.getAllKeys())
       .then(keys => chai.expect(keys).to.include(url));
   });
