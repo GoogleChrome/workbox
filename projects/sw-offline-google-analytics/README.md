@@ -1,6 +1,6 @@
 # sw-offline-google-analytics
 
-A library to extend a service worker's behavior, allowing it to retry failed Google Analytics requests.
+A service worker helper library to retry offline Google Analytics requests when a connection is available.
 
 ## Installation
 
@@ -15,7 +15,7 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### goog.useOfflineGoogleAnalytics
 
-[projects/sw-offline-google-analytics/src/offline-google-analytics-import.js:45-83](https://github.com/GoogleChrome/sw-helpers/blob/5320c8269f3368939bf792c4bc1a47487ca7963f/projects/sw-offline-google-analytics/src/offline-google-analytics-import.js#L45-L83 "Source code on GitHub")
+[projects/sw-offline-google-analytics/src/offline-google-analytics-import.js:45-83](https://github.com/GoogleChrome/sw-helpers/blob/47105b1837b0d8f5b059f3f5d470ce4deda51816/projects/sw-offline-google-analytics/src/offline-google-analytics-import.js#L45-L83 "Source code on GitHub")
 
 In order to use the library, call`goog.useOfflineGoogleAnalytics()`.
 It will take care of setting up service worker `fetch` handlers to ensure
