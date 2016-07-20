@@ -13,15 +13,23 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ## API
 
-### goog.useOfflineGoogleAnalytics
+### goog.offlineGoogleAnalytics.initialize
 
-[projects/sw-offline-google-analytics/src/offline-google-analytics-import.js:45-83](https://github.com/GoogleChrome/sw-helpers/blob/47105b1837b0d8f5b059f3f5d470ce4deda51816/projects/sw-offline-google-analytics/src/offline-google-analytics-import.js#L45-L83 "Source code on GitHub")
+[projects/sw-offline-google-analytics/src/offline-google-analytics-import.js:57-97](https://github.com/GoogleChrome/sw-helpers/blob/ad8545442f0f6238b43a84cef79b90124bd83cfd/projects/sw-offline-google-analytics/src/offline-google-analytics-import.js#L57-L97 "Source code on GitHub")
 
-In order to use the library, call`goog.useOfflineGoogleAnalytics()`.
+In order to use the library, call`goog.offlineGoogleAnalytics.initialize()`.
 It will take care of setting up service worker `fetch` handlers to ensure
 that the Google Analytics JavaScript is available offline, and that any
 Google Analytics requests made while offline are saved (using `IndexedDB`)
 and retried the next time the service worker starts up.
+
+**Parameters**
+
+-   `config` **\[[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)]** Optional configuration arguments.
+    -   `config.parameterOverrides` **\[[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)]** Optional URL parameters, expressed
+                         as key/value pairs, to be added to replayed Google Analytics
+                         requests. This can be used to, e.g., set a custom dimension
+                         indicating that the request was replayed.
 
 **Examples**
 
@@ -32,8 +40,15 @@ and retried the next time the service worker starts up.
 // First, import the library into the service worker global scope:
 importScripts('path/to/offline-google-analytics-import.js');
 
-// Then, call goog.useOfflineGoogleAnalytics() to activate the library.:
-goog.useOfflineGoogleAnalytics();
+// Then, call goog.offlineGoogleAnalytics.initialize():
+goog.offlineGoogleAnalytics.initialize({
+  parameterOverrides: {
+    // Optionally, pass in an Object with additional parameters that will be
+    // included in each replayed request.
+    dimension1: 'Some Value',
+    dimension2: 'Some Other Value'
+  }
+});
 
 // At this point, implement any other service worker caching strategies
 // appropriate for your web app.

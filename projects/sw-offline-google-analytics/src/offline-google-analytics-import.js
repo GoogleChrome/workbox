@@ -20,7 +20,7 @@ const replayQueuedRequests = require('./lib/replay-queued-requests.js');
 const scope = require('../../../lib/scope.js');
 
 /**
- * In order to use the library, call`goog.useOfflineGoogleAnalytics()`.
+ * In order to use the library, call`goog.offlineGoogleAnalytics.initialize()`.
  * It will take care of setting up service worker `fetch` handlers to ensure
  * that the Google Analytics JavaScript is available offline, and that any
  * Google Analytics requests made while offline are saved (using `IndexedDB`)
@@ -33,16 +33,30 @@ const scope = require('../../../lib/scope.js');
  * // First, import the library into the service worker global scope:
  * importScripts('path/to/offline-google-analytics-import.js');
  *
- * // Then, call goog.useOfflineGoogleAnalytics() to activate the library.:
- * goog.useOfflineGoogleAnalytics();
+ * // Then, call goog.offlineGoogleAnalytics.initialize():
+ * goog.offlineGoogleAnalytics.initialize({
+ *   parameterOverrides: {
+ *     // Optionally, pass in an Object with additional parameters that will be
+ *     // included in each replayed request.
+ *     dimension1: 'Some Value',
+ *     dimension2: 'Some Other Value'
+ *   }
+ * });
  *
  * // At this point, implement any other service worker caching strategies
  * // appropriate for your web app.
  *
- * @alias goog.useOfflineGoogleAnalytics
+ * @alias goog.offlineGoogleAnalytics.initialize
+ * @param {Object=} config Optional configuration arguments.
+ * @param {Object=} config.parameterOverrides Optional URL parameters, expressed
+ *                  as key/value pairs, to be added to replayed Google Analytics
+ *                  requests. This can be used to, e.g., set a custom dimension
+ *                  indicating that the request was replayed.
  * @returns {undefined}
  */
-const useOfflineGoogleAnalytics = () => {
+const initialize = config => {
+  config = config || {};
+
   self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
     const request = event.request;
@@ -79,9 +93,11 @@ const useOfflineGoogleAnalytics = () => {
     }
   });
 
-  replayQueuedRequests();
+  replayQueuedRequests(config.parameterOverrides || {});
 };
 
 // Add the function to the global service worker scope,
-// as goog.useOfflineGoogleAnalytics.
-scope('useOfflineGoogleAnalytics', useOfflineGoogleAnalytics);
+// as goog.offlineGoogleAnalytics.initialize.
+scope('offlineGoogleAnalytics', {
+  initialize: initialize
+});

@@ -25,6 +25,17 @@ const replayRequests = require('../../src/lib/replay-queued-requests.js');
 const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
   constants.IDB.STORE);
 
+const testLogic = (initialUrls, expectedUrls, time, additionalParameters) => {
+  return Promise.all(initialUrls.map(url => {
+    return enqueueRequest(new Request(url), time);
+  })).then(() => replayRequests(additionalParameters))
+    .then(() => fetchMock.calls().matched.map(match => match[0]))
+    .then(matchedUrls =>
+      chai.expect(matchedUrls).to.include.members(expectedUrls))
+    .then(() => idbHelper.getAllKeys())
+    .then(keys => chai.expect(keys).to.not.include.members(expectedUrls));
+};
+
 describe('replay-queued-requests', () => {
   const urlPrefix = 'https://replay-queued-requests.com/';
 
@@ -32,22 +43,36 @@ describe('replay-queued-requests', () => {
     fetchMock.mock(`^${urlPrefix}`, new Response());
   });
 
-  it('should replay requests saved in IndexedDB', () => {
+  it('should replay queued requests', () => {
     const urls = ['one', 'two?three=4'].map(suffix => urlPrefix + suffix);
     const time = Date.now();
     const urlsWithQt = urls.map(url => {
       const newUrl = new URL(url);
-      newUrl.search += (newUrl.search ? '&' : '') + 'qt=' + time;
+      newUrl.searchParams.set('qt', time);
       return newUrl.toString();
     });
 
-    return Promise.all(urls.map(url => enqueueRequest(new Request(url), time)))
-      .then(() => replayRequests())
-      .then(() => fetchMock.calls().matched.map(match => match[0]))
-      .then(matchedUrls =>
-        chai.expect(matchedUrls).to.include.members(urlsWithQt))
-      .then(() => idbHelper.getAllKeys())
-      .then(keys => chai.expect(keys).to.not.include.members(urlsWithQt));
+    return testLogic(urls, urlsWithQt, time);
+  });
+
+  it('should replay queued requests with additional parameters', () => {
+    const urls = ['one', 'two?three=4'].map(suffix => urlPrefix + suffix);
+    const time = Date.now();
+    const additionalParameters = {
+      three: 5,
+      four: 'six',
+      qt: time
+    };
+    const urlsWithAdditionalParameters = urls.map(url => {
+      const newUrl = new URL(url);
+      Object.keys(additionalParameters).sort().forEach(parameter => {
+        newUrl.searchParams.set(parameter, additionalParameters[parameter]);
+      });
+      return newUrl.toString();
+    });
+
+    return testLogic(urls, urlsWithAdditionalParameters, time,
+      additionalParameters);
   });
 
   after(() => {

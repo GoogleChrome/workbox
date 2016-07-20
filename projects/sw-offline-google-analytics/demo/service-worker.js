@@ -8,7 +8,13 @@ importScripts('../build/offline-google-analytics-import.js');
 // First, enable the offline Google Analytics behavior.
 // This will get "first shot" at responding to Google Analytics requests, before
 // our catch-all fetch event listener can handle it.
-goog.useOfflineGoogleAnalytics();
+goog.offlineGoogleAnalytics.initialize({
+  parameterOverrides: {
+    // Add in any additional parameters here, or omit this section to
+    // replay the Google Analytics request without additional parameters.
+    dimension1: 'My Custom Dimension Value'
+  }
+});
 
 // Use a basic network-first caching strategy as a catch-all for everything
 // other than the Google Analytics requests.
