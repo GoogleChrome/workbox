@@ -13,7 +13,6 @@
     "email": "jeffy@google.com",
     "url": "https://jeffy.info"
   },
-  "main": "build/offline-google-analytics.js",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
