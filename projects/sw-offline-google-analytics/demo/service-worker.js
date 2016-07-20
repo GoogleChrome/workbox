@@ -12,7 +12,8 @@ goog.offlineGoogleAnalytics.initialize({
   parameterOverrides: {
     // Add in any additional parameters here, or omit this section to
     // replay the Google Analytics request without additional parameters.
-    dimension1: 'My Custom Dimension Value'
+    // See https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
+    cd1: 'My Custom Dimension Value'
   }
 });
 

@@ -15,7 +15,7 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### goog.offlineGoogleAnalytics.initialize
 
-[projects/sw-offline-google-analytics/src/offline-google-analytics-import.js:57-97](https://github.com/GoogleChrome/sw-helpers/blob/ad8545442f0f6238b43a84cef79b90124bd83cfd/projects/sw-offline-google-analytics/src/offline-google-analytics-import.js#L57-L97 "Source code on GitHub")
+[projects/sw-offline-google-analytics/src/offline-google-analytics-import.js:59-99](https://github.com/GoogleChrome/sw-helpers/blob/abc05d9a3763f5db6c6bf650e23f997c7c1eccb2/projects/sw-offline-google-analytics/src/offline-google-analytics-import.js#L59-L99 "Source code on GitHub")
 
 In order to use the library, call`goog.offlineGoogleAnalytics.initialize()`.
 It will take care of setting up service worker `fetch` handlers to ensure
@@ -26,10 +26,11 @@ and retried the next time the service worker starts up.
 **Parameters**
 
 -   `config` **\[[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)]** Optional configuration arguments.
-    -   `config.parameterOverrides` **\[[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)]** Optional URL parameters, expressed
-                         as key/value pairs, to be added to replayed Google Analytics
-                         requests. This can be used to, e.g., set a custom dimension
-                         indicating that the request was replayed.
+    -   `config.parameterOverrides` **\[[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)]** Optional
+                         [Measurement Protocol parameters](https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters),
+                         expressed as key/value pairs, to be added to replayed Google
+                         Analytics requests. This can be used to, e.g., set a custom
+                         dimension indicating that the request was replayed.
 
 **Examples**
 
@@ -45,8 +46,9 @@ goog.offlineGoogleAnalytics.initialize({
   parameterOverrides: {
     // Optionally, pass in an Object with additional parameters that will be
     // included in each replayed request.
-    dimension1: 'Some Value',
-    dimension2: 'Some Other Value'
+    // See https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
+    cd1: 'Some Value',
+    cd2: 'Some Other Value'
   }
 });
 

@@ -38,8 +38,9 @@ const scope = require('../../../lib/scope.js');
  *   parameterOverrides: {
  *     // Optionally, pass in an Object with additional parameters that will be
  *     // included in each replayed request.
- *     dimension1: 'Some Value',
- *     dimension2: 'Some Other Value'
+ *     // See https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
+ *     cd1: 'Some Value',
+ *     cd2: 'Some Other Value'
  *   }
  * });
  *
@@ -48,10 +49,11 @@ const scope = require('../../../lib/scope.js');
  *
  * @alias goog.offlineGoogleAnalytics.initialize
  * @param {Object=} config Optional configuration arguments.
- * @param {Object=} config.parameterOverrides Optional URL parameters, expressed
- *                  as key/value pairs, to be added to replayed Google Analytics
- *                  requests. This can be used to, e.g., set a custom dimension
- *                  indicating that the request was replayed.
+ * @param {Object=} config.parameterOverrides Optional
+ *                  [Measurement Protocol parameters](https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters),
+ *                  expressed as key/value pairs, to be added to replayed Google
+ *                  Analytics requests. This can be used to, e.g., set a custom
+ *                  dimension indicating that the request was replayed.
  * @returns {undefined}
  */
 const initialize = config => {
