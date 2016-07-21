@@ -45,7 +45,7 @@ npmPath.setSync();
  */
 const lintPackage = project => {
   return new Promise((resolve, reject) => {
-    gulp.src([`${project}/**/*.js`, `!${project}/build/**`])
+    gulp.src([`${project}/**/*.js`, `!${project}/**/build/**`])
       .pipe(eslint())
       .pipe(eslint.format())
       .pipe(eslint.results(results => {
@@ -92,7 +92,8 @@ const documentPackage = project => {
     gulp.src('templates/Project-README.hbs')
       .pipe(handlebars({
         name: projectMetadata.name,
-        description: projectMetadata.description
+        description: projectMetadata.description,
+        background: projectMetadata.background
       }))
       .pipe(rename('README.md'))
       .pipe(gulp.dest(project))
@@ -134,6 +135,7 @@ gulp.task('build', () => {
 
 gulp.task('build:watch', unusedCallback => {
   gulp.watch(`projects/${projectOrStar}/src/**/*`, ['build']);
+  gulp.watch(`lib/**/*`, ['build']);
 });
 
 gulp.task('serve', unusedCallback => {
