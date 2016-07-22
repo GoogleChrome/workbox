@@ -448,6 +448,14 @@ function cleanupOldCaches() {
  * `goog.appCacheBehavior.fetch` is the main entry point to the library
  * from within service worker code.
  *
+ * The goal of the library is to provide equivalent behavior to AppCache
+ * whenever possible. The one difference in how this library behaves compared to
+ * a native AppCache implementation is that its client-side code will attempt to
+ * fetch a fresh AppCache manifest once any cached version is older than 24
+ * hours. This works around a
+ * [major pitfall](http://alistapart.com/article/application-cache-is-a-douchebag#section6)
+ * in the native AppCache implementation.
+ *
  * **Important**
  * In addition to calling `goog.appCacheBehavior.fetch()` from within your
  * service worker, you *must* add the following to each HTML document that
@@ -492,14 +500,14 @@ function cleanupOldCaches() {
  *
  * self.addEventListener('fetch', event => {
  *   if (event.request.url.match(/legacyRegex/)) {
- *     event.respondWith(goog.goog.appCacheBehavior.fetch(event));
+ *     event.respondWith(goog.appCacheBehavior.fetch(event));
  *   } else {
  *     event.respondWith(goog.appCacheBehavior.fetch(event));
  *   }
  * });
  * ```
  *
- * @alias goog.appCacheBehavior.fetch()
+ * @alias goog.appCacheBehavior.fetch
  * @param {FetchEvent} event
  * @returns {Promise.<Response>}
  */
