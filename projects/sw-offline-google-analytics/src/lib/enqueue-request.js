@@ -18,7 +18,6 @@ const constants = require('./constants.js');
 
 const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
   constants.IDB.STORE);
-self.a = idbHelper;
 
 /**
  * Adds a URL to IndexedDB, along with the current timestamp.
