@@ -39,8 +39,8 @@ const testLogic = (initialUrls, expectedUrls, time, additionalParameters) => {
 
 describe('replay-queued-requests', () => {
   const urlPrefix = 'https://replay-queued-requests.com/';
-  const initialTimestamp = 1470405670000;
-  const timestampOffset = 1000;
+  const initialTimestamp = 1470405670000; // An arbitrary, but valid, timestamp in milliseconds.
+  const timestampOffset = 1000; // A 1000 millisecond offset.
 
   before(() => {
     fetchMock.mock(`^${urlPrefix}`, new Response());
