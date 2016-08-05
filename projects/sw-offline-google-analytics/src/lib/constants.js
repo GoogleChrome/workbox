@@ -21,7 +21,7 @@ module.exports = {
     VERSION: 1
   },
   MAX_ANALYTICS_BATCH_SIZE: 20,
-  STOP_RETRYING_AFTER: 86400000, // One day, in milliseconds.
+  STOP_RETRYING_AFTER: 1000 * 60 * 60 * 48, // Two days, in milliseconds.
   URL: {
     ANALYTICS_JS_PATH: '/analytics.js',
     COLLECT_PATH: '/collect',
