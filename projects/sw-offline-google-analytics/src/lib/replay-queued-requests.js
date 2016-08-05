@@ -38,14 +38,15 @@ module.exports = additionalParameters => {
 
   return idbHelper.getAllKeys().then(urls => {
     return Promise.all(urls.map(url => {
-      return idbHelper.get(url).then(queuedTime => {
+      return idbHelper.get(url).then(hitTime => {
+        const queueTime = Date.now() - hitTime;
         const newUrl = new URL(url);
 
         // URLSearchParams was added in Chrome 49.
         // On the off chance we're on a browser that lacks support, we won't
         // set additionParameters, but at least we'll set qt=.
         if ('searchParams' in newUrl) {
-          additionalParameters.qt = queuedTime;
+          additionalParameters.qt = queueTime;
           // Call sort() on the keys so that there's a reliable order of calls
           // to searchParams.set(). This isn't important in terms of
           // functionality, but it will make testing easier, since the
@@ -56,13 +57,13 @@ module.exports = additionalParameters => {
         } else {
           log('The browser does not support URLSearchParams, ' +
             'so not setting additional parameters.');
-          newUrl.search += (newUrl.search ? '&' : '') + 'qt=' + queuedTime;
+          newUrl.search += (newUrl.search ? '&' : '') + 'qt=' + queueTime;
         }
 
         return fetch(newUrl.toString()).catch(error => {
           // If this was queued recently, then rethrow the error, to prevent
           // the entry from being deleted. It will be retried again later.
-          if ((Date.now() - queuedTime) < constants.STOP_RETRYING_AFTER) {
+          if ((Date.now() - queueTime) < constants.STOP_RETRYING_AFTER) {
             throw error;
           }
         });
