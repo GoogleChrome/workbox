@@ -37,6 +37,7 @@
     "gulp-rename": "^1.2.2",
     "idb": "^1.1.0",
     "minimist": "^1.2.0",
+    "mockdate": "^1.0.4",
     "npm-path": "^1.1.0",
     "parse-appcache-manifest": "^0.2.0",
     "promisify-node": "^0.4.0",

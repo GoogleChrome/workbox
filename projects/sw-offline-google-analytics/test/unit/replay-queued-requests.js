@@ -17,6 +17,7 @@
 'use strict';
 
 const IDBHelper = require('../../../../lib/idb-helper.js');
+const MockDate = require('mockdate');
 const constants = require('../../src/lib/constants.js');
 const enqueueRequest = require('../../src/lib/enqueue-request');
 const fetchMock = require('fetch-mock');
@@ -38,17 +39,24 @@ const testLogic = (initialUrls, expectedUrls, time, additionalParameters) => {
 
 describe('replay-queued-requests', () => {
   const urlPrefix = 'https://replay-queued-requests.com/';
+  const initialTimestamp = 1470405670000; // An arbitrary, but valid, timestamp in milliseconds.
+  const timestampOffset = 1000; // A 1000 millisecond offset.
 
   before(() => {
     fetchMock.mock(`^${urlPrefix}`, new Response());
+    MockDate.set(initialTimestamp + timestampOffset);
+  });
+
+  after(() => {
+    MockDate.reset();
   });
 
   it('should replay queued requests', () => {
     const urls = ['one', 'two?three=4'].map(suffix => urlPrefix + suffix);
-    const time = Date.now();
+    const time = initialTimestamp;
     const urlsWithQt = urls.map(url => {
       const newUrl = new URL(url);
-      newUrl.searchParams.set('qt', time);
+      newUrl.searchParams.set('qt', timestampOffset);
       return newUrl.toString();
     });
 
@@ -57,11 +65,11 @@ describe('replay-queued-requests', () => {
 
   it('should replay queued requests with additional parameters', () => {
     const urls = ['one', 'two?three=4'].map(suffix => urlPrefix + suffix);
-    const time = Date.now();
+    const time = initialTimestamp;
     const additionalParameters = {
       three: 5,
       four: 'six',
-      qt: time
+      qt: timestampOffset
     };
     const urlsWithAdditionalParameters = urls.map(url => {
       const newUrl = new URL(url);
