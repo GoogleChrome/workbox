@@ -57,6 +57,7 @@ const replayQueuedRequests = require('./lib/replay-queued-requests.js');
  */
 const initialize = config => {
   config = config || {};
+  let previousHitFailed = false;
 
   self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
@@ -72,8 +73,15 @@ const initialize = config => {
         const clonedRequest = request.clone();
 
         event.respondWith(
-          fetch(request).catch(error => {
+          fetch(request).then(response => {
+            if (previousHitFailed) {
+              replayQueuedRequests(config.parameterOverrides || {});
+            }
+            previousHitFailed = false;
+            return response;
+          }, error => {
             log('Enqueuing failed request...');
+            previousHitFailed = true;
             return enqueueRequest(clonedRequest).then(() => error);
           })
         );
