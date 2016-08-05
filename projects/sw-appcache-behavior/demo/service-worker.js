@@ -4,5 +4,5 @@
 importScripts('../build/appcache-behavior-import.js');
 
 self.addEventListener('fetch', event => {
-  event.respondWith(goog.legacyAppCacheBehavior(event));
+  event.respondWith(goog.appCacheBehavior.fetch(event));
 });

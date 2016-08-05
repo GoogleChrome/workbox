@@ -191,7 +191,7 @@ NETWORK:
                   // This will resolve with an array of arrays, with each item
                   // in the inner array corresponding to a cache entry.
                   window.caches.keys().then(callback);
-                }, 100); // Timeouts... ugh.
+                }, 500); // Timeouts... ugh.
               });
             }).then(currentCaches => {
               // This is a roundabout way of checking to make sure there's one
