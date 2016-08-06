@@ -33,9 +33,7 @@ const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
  *                 that the request was replayed from the service worker.
  * @returns {Promise.<T>}
  */
-module.exports = additionalParameters => {
-  additionalParameters = additionalParameters || {};
-
+module.exports = (additionalParameters = {}) => {
   return idbHelper.getAllKeys().then(urls => {
     return Promise.all(urls.map(url => {
       return idbHelper.get(url).then(hitTime => {

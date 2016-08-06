@@ -55,8 +55,7 @@ const replayQueuedRequests = require('./lib/replay-queued-requests.js');
  *                  dimension indicating that the request was replayed.
  * @returns {undefined}
  */
-const initialize = config => {
-  config = config || {};
+const initialize = (config = {}) => {
   let previousHitFailed = false;
 
   self.addEventListener('fetch', event => {
@@ -75,7 +74,7 @@ const initialize = config => {
         event.respondWith(
           fetch(request).then(response => {
             if (previousHitFailed) {
-              replayQueuedRequests(config.parameterOverrides || {});
+              replayQueuedRequests(config.parameterOverrides);
             }
             previousHitFailed = false;
             return response;
@@ -102,7 +101,7 @@ const initialize = config => {
     }
   });
 
-  replayQueuedRequests(config.parameterOverrides || {});
+  replayQueuedRequests(config.parameterOverrides);
 };
 
 module.exports = {initialize};
