@@ -14,6 +14,9 @@
     "url": "https://github.com/GoogleChrome/sw-helpers/issues"
   },
   "homepage": "https://github.com/GoogleChrome/sw-helpers#readme",
+  "dependencies": {
+    "idb": "^1.1.0"
+  },
   "devDependencies": {
     "babel": "^6.5.2",
     "babel-plugin-transform-object-assign": "^6.8.0",
@@ -35,7 +38,6 @@
     "gulp-eslint": "^2.0.0",
     "gulp-mocha": "^2.2.0",
     "gulp-rename": "^1.2.2",
-    "idb": "^1.1.0",
     "minimist": "^1.2.0",
     "mockdate": "^1.0.4",
     "npm-path": "^1.1.0",
