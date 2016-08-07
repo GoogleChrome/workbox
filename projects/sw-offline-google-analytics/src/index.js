@@ -81,7 +81,7 @@ const initialize = (config = {}) => {
           }, error => {
             log('Enqueuing failed request...');
             previousHitFailed = true;
-            return enqueueRequest(clonedRequest).then(() => error);
+            return enqueueRequest(clonedRequest).then(() => Response.error());
           })
         );
       } else if (url.pathname === constants.URL.ANALYTICS_JS_PATH) {
