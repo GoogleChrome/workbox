@@ -29,7 +29,6 @@ Object.keys(constants.STORES).forEach(storeId => {
   idbHelpers[constants.STORES[storeId]] = new IDBHelper(
     constants.DB_NAME, constants.DB_VERSION, constants.STORES[storeId]);
 });
-console.log(idbHelpers);
 
 /**
  * Determines what the most likely URL is associated with the client page from
