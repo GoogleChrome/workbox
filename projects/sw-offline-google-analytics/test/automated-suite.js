@@ -24,10 +24,10 @@
 
 const browserifyTests = require('../../../lib/browserify-tests.js');
 const path = require('path');
+const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
-
-const automatedBrowserTesting = swTestingHelpers.automatedBrowserTesting;
 const testServer = new swTestingHelpers.TestServer();
+
 const TIMEOUT = 10 * 1000;
 
 describe('sw-offline-google-analytics Test Suite', function() {
@@ -49,36 +49,33 @@ describe('sw-offline-google-analytics Test Suite', function() {
     return testServer.killServer();
   });
 
-  automatedBrowserTesting.getDiscoverableBrowsers().forEach(function(browser) {
-    let driver = null;
-
-    // Before each sub-suite, initialize a new driver so that we can start with
-    // a fresh environment.
-    before(function() {
-      driver = browser.getSeleniumDriver();
-      driver.manage().timeouts().setScriptTimeout(TIMEOUT);
-    });
+  seleniumAssistant.getAvailableBrowsers().forEach(function(browser) {
+    let globalDriverReference = null;
 
     // Tear down the driver at the end of each sub-suite.
     after(function() {
-      return automatedBrowserTesting.killWebDriver(driver);
+      return seleniumAssistant.killWebDriver(globalDriverReference);
     });
 
     describe(`Unit Tests (${browser.getPrettyName()})`, function() {
       it('should pass all tests', function() {
-        return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
-          browser.getPrettyName(),
-          driver,
-          `${baseTestUrl}unit/`
-        ).then(function(testResults) {
-          if (testResults.failed.length > 0) {
-            const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
-              browser.prettyName,
-              testResults
-            );
+        return browser.getSeleniumDriver().then(function(driver) {
+          globalDriverReference = driver;
+          globalDriverReference.manage().timeouts().setScriptTimeout(TIMEOUT);
+          return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
+            browser.getPrettyName(),
+            globalDriverReference,
+            `${baseTestUrl}unit/`
+          ).then(function(testResults) {
+            if (testResults.failed.length > 0) {
+              const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
+                browser.prettyName,
+                testResults
+              );
 
-            throw new Error(errorMessage);
-          }
+              throw new Error(errorMessage);
+            }
+          });
         });
       });
     });

@@ -26,10 +26,10 @@ const chai = require('chai');
 const parseManifest = require('parse-appcache-manifest');
 const path = require('path');
 const promisify = require('promisify-node');
+const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
 
 const fsePromise = promisify('fs-extra');
-const automatedBrowserTesting = swTestingHelpers.automatedBrowserTesting;
 const testServer = new swTestingHelpers.TestServer();
 const expect = chai.expect;
 const TIMEOUT = 10 * 1000;
@@ -37,6 +37,19 @@ const TIMEOUT = 10 * 1000;
 describe('sw-appcache-behavior Test Suite', function() {
   this.timeout(TIMEOUT);
   let baseTestUrl;
+
+  // Helper method to generate the text of an App Cache manifest with a
+  // specific version.
+  const generateManifestText = version => {
+    return `CACHE MANIFEST
+# Version: ${version}
+
+CACHE:
+../common.css
+
+NETWORK:
+*`;
+  };
 
   // Set up the web server before running any tests in this suite.
   before(function() {
@@ -50,43 +63,28 @@ describe('sw-appcache-behavior Test Suite', function() {
     return testServer.killServer();
   });
 
-  automatedBrowserTesting.getDiscoverableBrowsers().forEach(function(browser) {
-    let driver = null;
-
-    // Helper method to generate the text of an App Cache manifest with a
-    // specific version.
-    const generateManifestText = version => {
-      return `CACHE MANIFEST
-# Version: ${version}
-
-CACHE:
-../common.css
-
-NETWORK:
-*`;
-    };
-
-    // Before each sub-suite, initialize a new driver so that we can start with
-    // a fresh environment.
-    before(function() {
-      driver = browser.getSeleniumDriver();
-      driver.manage().timeouts().setScriptTimeout(TIMEOUT);
-    });
+  seleniumAssistant.getAvailableBrowsers().forEach(function(browser) {
+    let globalDriverReference = null;
 
     // Tear down the driver at the end of each sub-suite.
     after(function() {
-      return automatedBrowserTesting.killWebDriver(driver);
+      return seleniumAssistant.killWebDriver(globalDriverReference);
     });
 
     describe(`End to End Caching Test (${browser.getPrettyName()})`, function() {
       let tempDirectory = path.join(__dirname, 'end-to-end-caching', 'temp');
 
       before(function() {
+        const driverPromise = browser.getSeleniumDriver().then(function(driver) {
+          globalDriverReference = driver;
+          globalDriverReference.manage().timeouts().setScriptTimeout(TIMEOUT);
+        });
+
         return Promise.all(
           ['manifest1.appcache', 'manifest2.appcache'].map(filename => {
             const outputPath = path.join(tempDirectory, filename);
             return fsePromise.outputFile(outputPath, generateManifestText(1));
-          })
+          }).concat(driverPromise)
         );
       });
 
@@ -96,8 +94,8 @@ NETWORK:
 
       it('should register a service worker to control the client', function() {
         const url = `${baseTestUrl}end-to-end-caching/step1.html`;
-        return driver.get(url).then(() => {
-          return driver.executeAsyncScript(callback => {
+        return globalDriverReference.get(url).then(() => {
+          return globalDriverReference.executeAsyncScript(callback => {
             if (navigator.serviceWorker.controller) {
               callback(navigator.serviceWorker.controller);
             } else {
@@ -112,7 +110,7 @@ NETWORK:
       });
 
       it('should create one cache', function() {
-        return driver.executeAsyncScript(callback => {
+        return globalDriverReference.executeAsyncScript(callback => {
           window.caches.keys().then(callback);
         }).then(caches => {
           expect(caches).to.have.lengthOf(1);
@@ -123,7 +121,7 @@ NETWORK:
         const parsedManifest = parseManifest(generateManifestText(1));
         expect(parsedManifest.cache).to.have.length.above(0);
 
-        return driver.executeAsyncScript((entries, callback) => {
+        return globalDriverReference.executeAsyncScript((entries, callback) => {
           Promise.all(
             entries.map(entry => {
               // The App Cache manifest URL is the base for any relative URLs.
@@ -142,7 +140,7 @@ NETWORK:
       });
 
       it('should cache a master entry for initial navigation', function() {
-        return driver.executeAsyncScript(callback => {
+        return globalDriverReference.executeAsyncScript(callback => {
           window.caches.match(window.location).then(callback);
         }).then(match => {
           expect(match).to.be.ok;
@@ -151,8 +149,8 @@ NETWORK:
 
       it('should cache another master entry for subsequent navigation', function() {
         const url = `${baseTestUrl}end-to-end-caching/step2.html`;
-        return driver.get(url).then(() => {
-          return driver.executeAsyncScript(callback => {
+        return globalDriverReference.get(url).then(() => {
+          return globalDriverReference.executeAsyncScript(callback => {
             window.setTimeout(() => {
               window.caches.match(window.location).then(callback);
             }, 100); // Timeouts... ugh.
@@ -164,8 +162,8 @@ NETWORK:
 
       it('should not cache a master entry when there is no manifest', function() {
         const url = `${baseTestUrl}end-to-end-caching/step3.html`;
-        return driver.get(url).then(() => {
-          return driver.executeAsyncScript(callback => {
+        return globalDriverReference.get(url).then(() => {
+          return globalDriverReference.executeAsyncScript(callback => {
             window.setTimeout(() => {
               window.caches.match(window.location).then(callback);
             }, 100); // Timeouts... ugh.
@@ -176,7 +174,7 @@ NETWORK:
       });
 
       it('should use a different cache when an existing manifest is updated', function() {
-        return driver.executeAsyncScript(callback => {
+        return globalDriverReference.executeAsyncScript(callback => {
           window.caches.keys().then(callback);
         }).then(previousCaches => {
           const url = `${baseTestUrl}end-to-end-caching/step1.html`;
@@ -184,9 +182,9 @@ NETWORK:
           // update flow.
           const outputPath = path.join(tempDirectory, 'manifest1.appcache');
           return fsePromise.outputFile(outputPath, generateManifestText(2))
-            .then(() => driver.get(url))
+            .then(() => globalDriverReference.get(url))
             .then(() => {
-              return driver.executeAsyncScript(callback => {
+              return globalDriverReference.executeAsyncScript(callback => {
                 window.setTimeout(() => {
                   // This will resolve with an array of arrays, with each item
                   // in the inner array corresponding to a cache entry.
@@ -205,12 +203,12 @@ NETWORK:
       });
 
       it('should use a different cache when the manifest is different', function() {
-        return driver.executeAsyncScript(callback => {
+        return globalDriverReference.executeAsyncScript(callback => {
           window.caches.keys().then(callback);
         }).then(previousCaches => {
           const url = `${baseTestUrl}end-to-end-caching/step4.html`;
-          return driver.get(url).then(() => {
-            return driver.executeAsyncScript(callback => {
+          return globalDriverReference.get(url).then(() => {
+            return globalDriverReference.executeAsyncScript(callback => {
               window.setTimeout(() => window.caches.keys().then(callback), 100);
             }).then(currentCaches => {
               // This is a roundabout way of checking to make sure there's one
