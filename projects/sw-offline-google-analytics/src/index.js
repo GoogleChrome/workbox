@@ -74,7 +74,7 @@ const initialize = (config = {}) => {
         event.respondWith(
           fetch(request).then(response => {
             if (previousHitFailed) {
-              replayQueuedRequests(config.parameterOverrides);
+              replayQueuedRequests(config);
             }
             previousHitFailed = false;
             return response;
@@ -101,7 +101,7 @@ const initialize = (config = {}) => {
     }
   });
 
-  replayQueuedRequests(config.parameterOverrides);
+  replayQueuedRequests(config);
 };
 
 module.exports = {initialize};
