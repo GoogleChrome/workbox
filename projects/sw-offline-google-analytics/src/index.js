@@ -40,6 +40,11 @@ const replayQueuedRequests = require('./lib/replay-queued-requests.js');
  *     // See https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
  *     cd1: 'Some Value',
  *     cd2: 'Some Other Value'
+ *   },
+ *   hitFilter: (searchParams) =>
+ *     // Sets the `qt` param as a custom metric.
+ *     const qt = searchParams.get('qt');
+ *     searchParams.set('qt', qt);
  *   }
  * });
  *
@@ -47,12 +52,19 @@ const replayQueuedRequests = require('./lib/replay-queued-requests.js');
  * // appropriate for your web app.
  *
  * @alias goog.offlineGoogleAnalytics.initialize
- * @param {Object=} config Optional configuration arguments.
- * @param {Object=} config.parameterOverrides Optional
- *                  [Measurement Protocol parameters](https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters),
- *                  expressed as key/value pairs, to be added to replayed Google
- *                  Analytics requests. This can be used to, e.g., set a custom
- *                  dimension indicating that the request was replayed.
+ * @param {Object=}   config Optional configuration arguments.
+ * @param {Object=}   config.parameterOverrides Optional
+ *                    [Measurement Protocol parameters](https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters),
+ *                    expressed as key/value pairs, to be added to replayed
+ *                    Google Analytics requests. This can be used to, e.g., set
+ *                    a custom dimension indicating that the request was
+ *                    replayed.
+ * @param {Function=} config.hitFilter Optional
+ *                    A function that allows you to modify the hit parameters
+ *                    prior to replaying the hit. The function is invoked with
+ *                    the original hit's URLSearchParams object as its only
+ *                    argument. To abort the hit and prevent it from being
+ *                    replayed, throw an error.
  * @returns {undefined}
  */
 const initialize = (config = {}) => {

@@ -15,7 +15,6 @@
 
 const IDBHelper = require('../../../../lib/idb-helper.js');
 const constants = require('./constants.js');
-const log = require('../../../../lib/log.js');
 
 const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
   constants.IDB.STORE);
@@ -36,7 +35,7 @@ const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
 module.exports = ({parameterOverrides = {}, hitFilter} = {}) => {
   return idbHelper.getAllKeys().then(urls => {
     return Promise.all(urls.map(url => {
-      return idbHelper.get(url).then((hitTime) => {
+      return idbHelper.get(url).then(hitTime => {
         const queueTime = Date.now() - hitTime;
         const newUrl = new URL(url);
 
@@ -60,10 +59,10 @@ module.exports = ({parameterOverrides = {}, hitFilter} = {}) => {
         // invoke it with searchParams as its argument allowing the function
         // to modify the hit prior to sending it. The function can also
         // throw an error to abort the hit if needed.
-        if (typeof hitFilter == 'function') {
+        if (typeof hitFilter === 'function') {
           try {
-            hitFilter(newUrl.searchParams)
-          } catch(err) {
+            hitFilter(newUrl.searchParams);
+          } catch (err) {
             return;
           }
         }

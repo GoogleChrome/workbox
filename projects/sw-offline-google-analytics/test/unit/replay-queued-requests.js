@@ -86,7 +86,7 @@ describe('replay-queued-requests', () => {
   it('should replay queued requests with a hit filter', () => {
     const urls = ['one', 'two?three=4'].map(suffix => urlPrefix + suffix);
     const time = initialTimestamp;
-    const hitFilter = (searchParams) => {
+    const hitFilter = searchParams => {
       const qt = searchParams.get('qt');
       searchParams.set('cm1', qt);
     };
@@ -104,11 +104,11 @@ describe('replay-queued-requests', () => {
   it('should not a replay queued requests when hit filter throws', () => {
     const urls = ['one', 'two?three=4'].map(suffix => urlPrefix + suffix);
     const time = initialTimestamp;
-    const hitFilter = (searchParams) => {
+    const hitFilter = searchParams => {
       const qt = searchParams.get('qt');
       searchParams.set('cm1', qt);
-      if (searchParams.get('three') == 4) {
-        throw 'abort!';
+      if (searchParams.get('three') === '4') {
+        throw new Error('abort!');
       }
     };
     const urlsWithHitFilterApplied = urls.slice(0, 1).map(url => {
