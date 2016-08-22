@@ -33,23 +33,35 @@ const replayQueuedRequests = require('./lib/replay-queued-requests.js');
  * importScripts('path/to/offline-google-analytics-import.js');
  *
  * // Then, call goog.offlineGoogleAnalytics.initialize():
- * goog.offlineGoogleAnalytics.initialize({
- *   parameterOverrides: {
- *     // Optionally, pass in an Object with additional parameters that will be
- *     // included in each replayed request.
- *     // See https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
- *     cd1: 'Some Value',
- *     cd2: 'Some Other Value'
- *   },
- *   hitFilter: (searchParams) =>
- *     // Sets the `qt` param as a custom metric.
- *     const qt = searchParams.get('qt');
- *     searchParams.set('qt', qt);
- *   }
- * });
+ * goog.offlineGoogleAnalytics.initialize();
  *
  * // At this point, implement any other service worker caching strategies
  * // appropriate for your web app.
+ *
+ * @example
+ * // If you need to specify parameters to be sent with each hit, you can use
+ * // the `parameterOverrides` configuration option. This is useful in cases
+ * // where you want to set a custom dimension on all hits sent by the service
+ * // worker to differentiate them in your reports later.
+ * goog.offlineGoogleAnalytics.initialize({
+ *   parameterOverrides: {
+ *     cd1: 'replay'
+ *   }
+ * });
+ *
+ * @example
+ * // In situations where you need to programmatically modify a hit's
+ * // parameters you can use the `hitFilter` option. One example of when this
+ * // might be useful is if you wanted to track the amount of time that elapsed
+ * // between when the hit was attempted and when it was successfully replayed.
+ * goog.offlineGoogleAnalytics.initialize({
+ *   hitFilter: searchParams =>
+ *     // Sets the `qt` param as a custom metric.
+ *     const qt = searchParams.get('qt');
+ *     searchParams.set('cm1', qt);
+ *   }
+ * });
+ *
  *
  * @alias goog.offlineGoogleAnalytics.initialize
  * @param {Object=}   config Optional configuration arguments.
@@ -67,7 +79,10 @@ const replayQueuedRequests = require('./lib/replay-queued-requests.js');
  *                    replayed, throw an error.
  * @returns {undefined}
  */
-const initialize = (config = {}) => {
+const initialize = (config) => {
+  config = config || {};
+
+  // Stores whether or not the previous /collect request failed.
   let previousHitFailed = false;
 
   self.addEventListener('fetch', event => {

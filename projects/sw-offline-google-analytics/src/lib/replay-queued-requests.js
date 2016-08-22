@@ -26,13 +26,24 @@ const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
  * Returns a promise that resolves when the replaying is complete.
  *
  * @private
- * @param {Object=} parameterOverrides URL parameters, expressed as key/value
- *                 pairs, to be added to replayed Google Analytics requests.
- *                 This can be used to, e.g., set a custom dimension indicating
- *                 that the request was replayed from the service worker.
+ * @param {Object=}   config Optional configuration arguments.
+ * @param {Object=}   config.parameterOverrides Optional
+ *                    [Measurement Protocol parameters](https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters),
+ *                    expressed as key/value pairs, to be added to replayed
+ *                    Google Analytics requests. This can be used to, e.g., set
+ *                    a custom dimension indicating that the request was
+ *                    replayed.
+ * @param {Function=} config.hitFilter Optional
+ *                    A function that allows you to modify the hit parameters
+ *                    prior to replaying the hit. The function is invoked with
+ *                    the original hit's URLSearchParams object as its only
+ *                    argument. To abort the hit and prevent it from being
+ *                    replayed, throw an error.
  * @returns {Promise.<T>}
  */
-module.exports = ({parameterOverrides = {}, hitFilter} = {}) => {
+module.exports = (config) => {
+  config = config || {};
+
   return idbHelper.getAllKeys().then(urls => {
     return Promise.all(urls.map(url => {
       return idbHelper.get(url).then(hitTime => {
@@ -40,11 +51,17 @@ module.exports = ({parameterOverrides = {}, hitFilter} = {}) => {
         const newUrl = new URL(url);
 
         // Do not attempt to replay hits that are too old.
-        if (queueTime > constants.STOP_RETRYING_AFTER) return;
+        if (queueTime > constants.STOP_RETRYING_AFTER) {
+          return;
+        }
 
-        // Do not attempt to replay hits in browsers without URLSearchParams support.
-        if (!('searchParams' in newUrl)) return;
+        // Do not attempt to replay hits in browsers without
+        // URLSearchParams support.
+        if (!('searchParams' in newUrl)) {
+          return;
+        }
 
+        let parameterOverrides = config.parameterOverrides || {};
         parameterOverrides.qt = queueTime;
 
         // Call sort() on the keys so that there's a reliable order of calls
@@ -59,6 +76,7 @@ module.exports = ({parameterOverrides = {}, hitFilter} = {}) => {
         // invoke it with searchParams as its argument allowing the function
         // to modify the hit prior to sending it. The function can also
         // throw an error to abort the hit if needed.
+        let hitFilter = config.hitFilter;
         if (typeof hitFilter === 'function') {
           try {
             hitFilter(newUrl.searchParams);
