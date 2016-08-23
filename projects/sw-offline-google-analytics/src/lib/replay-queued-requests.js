@@ -41,7 +41,7 @@ const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
  *                    replayed, throw an error.
  * @returns {Promise.<T>}
  */
-module.exports = (config) => {
+module.exports = config => {
   config = config || {};
 
   return idbHelper.getAllKeys().then(urls => {

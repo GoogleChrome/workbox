@@ -79,7 +79,7 @@ const replayQueuedRequests = require('./lib/replay-queued-requests.js');
  *                    replayed, throw an error.
  * @returns {undefined}
  */
-const initialize = (config) => {
+const initialize = config => {
   config = config || {};
 
   // Stores whether or not the previous /collect request failed.
