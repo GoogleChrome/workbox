@@ -201,7 +201,13 @@ gulp.task('publish', callback => {
   // We need things run in a specific sequence: the project-level documentation
   // needs to be created before build, so that the correct README.md is copied
   // over to the build/ directory.
-  runSequence(['lint', 'test'], 'documentation:projects', 'build', () => {
+  runSequence(['lint', 'test'], 'documentation:projects', 'build', error => {
+    // If any of the previous steps in the sequence generated an error, then
+    // bail without publishing.
+    if (error) {
+      return callback(error);
+    }
+
     return taskHarness(publishPackage, projectOrStar).then(() => callback());
   });
 });
