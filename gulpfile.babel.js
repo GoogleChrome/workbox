@@ -124,7 +124,8 @@ gulp.task('lint', () => {
 gulp.task('test', () => {
   return gulp.src(`projects/${projectOrStar}/test/*.js`, {read: false})
     .pipe(mocha())
-    .once('error', () => {
+    .once('error', error => {
+      console.error(error);
       process.exit(1);
     });
 });

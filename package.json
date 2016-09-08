@@ -44,9 +44,10 @@
     "parse-appcache-manifest": "^0.2.0",
     "promisify-node": "^0.4.0",
     "run-sequence": "^1.1.5",
+    "selenium-assistant": "^0.3.0",
     "serve-index": "^1.7.3",
     "serve-static": "^1.10.2",
-    "sw-testing-helpers": "0.0.14",
+    "sw-testing-helpers": "0.1.1",
     "tmp": "0.0.28"
   }
 }
