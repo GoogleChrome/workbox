@@ -31,6 +31,7 @@
     "express": "^4.14.0",
     "fetch-mock": "^5.1.5",
     "fs-extra": "^0.30.0",
+    "geckodriver": "^1.1.2",
     "gh-pages": "^0.11.0",
     "glob": "^7.1.0",
     "gulp": "^3.9.1",
