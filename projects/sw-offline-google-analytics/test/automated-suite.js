@@ -36,6 +36,7 @@ describe('sw-offline-google-analytics Test Suite', function() {
 
   // Set up the web server before running any tests in this suite.
   before(function() {
+    seleniumAssistant.printAvailableBrowserInfo();
     const baseDirectory = __dirname.replace(path.sep, '/');
     return browserifyTests(`${baseDirectory}/unit/`).then(() => {
       return testServer.startServer('.').then(portNumber => {

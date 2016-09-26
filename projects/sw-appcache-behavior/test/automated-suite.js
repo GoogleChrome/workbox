@@ -53,6 +53,7 @@ NETWORK:
 
   // Set up the web server before running any tests in this suite.
   before(function() {
+    seleniumAssistant.printAvailableBrowserInfo();
     return testServer.startServer('.').then(portNumber => {
       baseTestUrl = `http://localhost:${portNumber}/projects/sw-appcache-behavior/test/`;
     });
