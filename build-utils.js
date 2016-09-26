@@ -1,8 +1,8 @@
-import childProcess from 'child_process';
-import path from 'path';
-import promisify from 'promisify-node';
+const childProcess = require('child_process');
+const path = require('path');
+const promisify = require('promisify-node');
 
-export let globPromise = promisify('glob');
+const globPromise = promisify('glob');
 
 /**
  * Wrapper on top of childProcess.spawn() that returns a promise which rejects
@@ -13,7 +13,7 @@ export let globPromise = promisify('glob');
  * @returns {Promise} Settles once command completes. Resolves if the exit code
  *                    is 0, and rejects otherwise.
  */
-export function processPromiseWrapper(command, args) {
+function processPromiseWrapper(command, args) {
   return new Promise((resolve, reject) => {
     const process = childProcess.spawn(command, args, {stdio: 'inherit'});
     process.on('error', reject);
@@ -36,7 +36,7 @@ export function processPromiseWrapper(command, args) {
  * @returns {Promise.<*>} Resolves with null if all the promises resolve.
  *                        Otherwise, rejects with a concatenated error.
  */
-export function promiseAllWrapper(promises) {
+function promiseAllWrapper(promises) {
   let rejected = [];
   return Promise.all(promises.map(promise => {
     return promise.catch(error => rejected.push(error));
@@ -53,9 +53,12 @@ export function promiseAllWrapper(promises) {
  * @returns {Promise.<*>} Resolves with null if all the promises resolve.
  *                        Otherwise, rejects with a concatenated error.
  */
-export function taskHarness(task, projectOrStar, ...args) {
+function taskHarness(task, projectOrStar, ...args) {
   return globPromise(`projects/${projectOrStar}/package.json`)
     .then(projects => promiseAllWrapper(
       projects.map(project => task(path.dirname(project), ...args))
     ));
 }
+
+module.exports = {globPromise, processPromiseWrapper,
+  promiseAllWrapper, taskHarness};

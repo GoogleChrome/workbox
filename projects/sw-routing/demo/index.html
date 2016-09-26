@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <title>Service Worker Routing Demo</title>
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <p>
+      Test.
+    </p>
+
+    <script>
+      // Register our service worker.
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js');
+      }
+    </script>
+  </body>
+</html>

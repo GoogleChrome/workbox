@@ -11,22 +11,22 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- */
+*/
 
-import eslint from 'gulp-eslint';
-import express from 'express';
-import gulp from 'gulp';
-import handlebars from 'gulp-compile-handlebars';
-import minimist from 'minimist';
-import mocha from 'gulp-mocha';
-import npmPath from 'npm-path';
-import path from 'path';
-import promisify from 'promisify-node';
-import rename from 'gulp-rename';
-import runSequence from 'run-sequence';
-import serveIndex from 'serve-index';
-import serveStatic from 'serve-static';
-import {globPromise, processPromiseWrapper, taskHarness} from './build-utils.js';
+const eslint = require('gulp-eslint');
+const express = require('express');
+const gulp = require('gulp');
+const handlebars = require('gulp-compile-handlebars');
+const minimist = require('minimist');
+const mocha = require('gulp-mocha');
+const npmPath = require('npm-path');
+const path = require('path');
+const promisify = require('promisify-node');
+const rename = require('gulp-rename');
+const runSequence = require('run-sequence');
+const serveIndex = require('serve-index');
+const serveStatic = require('serve-static');
+const {globPromise, processPromiseWrapper, taskHarness} = require('./build-utils');
 
 const fsePromise = promisify('fs-extra');
 const tmpPromise = promisify('tmp');
@@ -88,7 +88,7 @@ const buildPackage = project => {
 const documentPackage = project => {
   const projectMetadata = require(`./${project}/package.json`);
   return new Promise(resolve => {
-    // First, use metadata from package.json to write out an initial README.md.
+    // First, use metadata require(package.json to write out an initial README.md.
     gulp.src('templates/Project-README.hbs')
       .pipe(handlebars({
         name: projectMetadata.name,
@@ -134,7 +134,7 @@ gulp.task('build', () => {
   return taskHarness(buildPackage, projectOrStar);
 });
 
-gulp.task('build:watch', unusedCallback => {
+gulp.task('build:watch', ['build'], unusedCallback => {
   gulp.watch(`projects/${projectOrStar}/src/**/*`, ['build']);
   gulp.watch(`lib/**/*`, ['build']);
 });
@@ -163,7 +163,7 @@ gulp.task('documentation:repo', ['build'], () => {
   }
 
   return new Promise(resolve => {
-    // First, generate a repo README.md based on metadata from each project.
+    // First, generate a repo README.md based on metadata require(each project.
     return globPromise('projects/*/package.json')
       .then(pkgs => pkgs.map(pkg => require(`./${pkg}`)))
       .then(projects => {
