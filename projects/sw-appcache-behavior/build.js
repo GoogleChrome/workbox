@@ -17,9 +17,9 @@
 // or whether the top-level gulp task can just use a common, browserify-based
 // build with each sub-project exporting a list of files to use as entry points.
 
-import browserify from 'browserify';
-import fs from 'fs';
-import path from 'path';
+const browserify = require('browserify');
+const fs = require('fs');
+const path = require('path');
 
 module.exports = () => {
   return Promise.all([
