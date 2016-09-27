@@ -28,7 +28,7 @@
     "browserify": "^13.1.0",
     "chai": "^3.5.0",
     "chromedriver": "^2.24.1",
-    "documentation": "^4.0.0-beta2",
+    "documentation": "^4.0.0-beta10",
     "eslint": "^3.5.0",
     "eslint-config-google": "^0.6.0",
     "express": "^4.14.0",
