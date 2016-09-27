@@ -14,5 +14,6 @@
 */
 
 import CacheExpirationManager from './lib/cache-expiration-manager';
+import Configuration from './lib/configuration';
 
-export default CacheExpirationManager;
+export {CacheExpirationManager, Configuration};
