@@ -13,17 +13,30 @@
  limitations under the License.
 */
 
+import Configuration from './configuration';
+import assert from '../../../../lib/assert';
 import idb from 'idb';
 import {idbName, idbVersion} from './constants';
 
 export default class {
-  constructor({cacheName, maxEntries, maxAgeSeconds}) {
-    this.cacheName = cacheName;
-    this.maxEntries = maxEntries;
-    this.maxAgeSeconds = maxAgeSeconds;
+  constructor({configuration}={}) {
+    assert.isInstance({configuration}, Configuration);
+    this.configuration = configuration;
   }
 
-  getDb() {
+  get cacheName() {
+    return this.configuration.cacheName;
+  }
+
+  get maxEntries() {
+    return this.configuration.maxEntries;
+  }
+
+  get maxAgeSeconds() {
+    return this.configuration.maxAgeSeconds;
+  }
+
+  get db() {
     if (!this._db) {
       return idb.open(idbName, idbVersion, upgradeDB => {
         upgradeDB.createObjectStore(this.cacheName);
@@ -34,7 +47,7 @@ export default class {
   }
 
   updateTimestamp(url, now=Date.now()) {
-    return this.getDb().then(db => {
+    return this.db.then(db => {
       const tx = db.transaction(this.cacheName, 'readwrite');
       tx.objectStore(this.cacheName).put(now, url);
       return tx.complete;
@@ -53,7 +66,7 @@ export default class {
   _expireOldEntries(now=Date.now()) {
     const expireOlderThan = now - (this.maxAgeSeconds * 1000);
     const urls = [];
-    return this.getDb().then(db => {
+    return this.db.then(db => {
       const tx = db.transaction(this.cacheName, 'readwrite');
       const store = tx.objectStore(this.cacheName);
       store.iterateCursor(cursor => {

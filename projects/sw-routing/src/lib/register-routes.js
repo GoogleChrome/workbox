@@ -13,7 +13,11 @@
  limitations under the License.
 */
 
-export default ({routes=[], defaultRoute, catchHandler}) => {
+import assert from '../../../../lib/assert';
+
+export default ({routes, defaultRoute, catchHandler}={}) => {
+  assert.atLeastOne({routes, defaultRoute});
+
   self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
     if (!(event.request.method === 'GET' && url.protocol.startsWith('http'))) {
@@ -21,15 +25,15 @@ export default ({routes=[], defaultRoute, catchHandler}) => {
     }
 
     let responsePromise;
-    for (let route of routes) {
+    for (let route of (routes || [])) {
       if ((route.when)({url, event})) {
-        responsePromise = (route.handler)({url, event, options: route.options});
+        responsePromise = (route.handler)({url, event, configuration: route.configuration});
         break;
       }
     }
 
     if (!responsePromise && defaultRoute) {
-      responsePromise = (defaultRoute.handler)({url, event, options: defaultRoute.options});
+      responsePromise = (defaultRoute.handler)({url, event, configuration: defaultRoute.configuration});
     }
     if (responsePromise && catchHandler) {
       responsePromise = responsePromise.catch(error => catchHandler({url, event, error}));

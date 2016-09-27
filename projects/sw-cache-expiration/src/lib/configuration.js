@@ -16,10 +16,12 @@
 import assert from '../../../../lib/assert';
 
 export default class {
-  constructor({when, handler, configuration}={}) {
-    assert.isType({handler}, 'function');
-    this.when = when;
-    this.handler = handler;
-    this.configuration = configuration || [];
+  constructor({cacheName, maxEntries, maxAgeSeconds}={}) {
+    assert.isType({cacheName}, 'string');
+    assert.atLeastOne({maxEntries, maxAgeSeconds});
+
+    this.cacheName = cacheName;
+    this.maxEntries = maxEntries;
+    this.maxAgeSeconds = maxAgeSeconds;
   }
-}
+};
