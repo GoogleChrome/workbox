@@ -13,6 +13,9 @@
  limitations under the License.
 */
 
-export default async ({event}) => {
+import assert from '../../../../lib/assert';
+
+export default async ({event}={}) => {
+  assert.isInstance({event}, FetchEvent);
   return await fetch(event.request);
 };

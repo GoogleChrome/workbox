@@ -20,7 +20,7 @@ export default ({routes, defaultRoute, catchHandler}={}) => {
 
   self.addEventListener('fetch', event => {
     const url = new URL(event.request.url);
-    if (!(event.request.method === 'GET' && url.protocol.startsWith('http'))) {
+    if (!(event.request.method === 'GET' && url.protocol.startsWith('https'))) {
       return;
     }
 

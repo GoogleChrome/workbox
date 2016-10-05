@@ -18,7 +18,7 @@ import assert from '../../../../lib/assert';
 import idb from 'idb';
 import {idbName, idbVersion} from './constants';
 
-export default class {
+export default class CacheExpirationManager {
   constructor({configuration}={}) {
     assert.isInstance({configuration}, Configuration);
     this.configuration = configuration;

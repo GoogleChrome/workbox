@@ -1,5 +1,5 @@
 {
-  "name": "sw-routing",
+  "name": "sw-cache-expiration",
   "version": "1.0.0",
   "description": "A Cache Storage API helper library to restrict cache sizes and impose expiration policies.",
   "keywords": [

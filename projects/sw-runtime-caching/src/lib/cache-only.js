@@ -13,9 +13,12 @@
  limitations under the License.
 */
 
-import {cacheName} from './defaults';
+import CacheManager from './cache-manager';
+import assert from '../../../../lib/assert';
 
-export default async ({event, options={}}) => {
-  const cache = await caches.open((options.cache && options.cache.cacheName) ? options.cache.cacheName : cacheName);
-  return await cache.match(event.request);
+export default async ({event, configuration}={}) => {
+  assert.isInstance({event}, FetchEvent);
+  const cacheManager = new CacheManager({configuration});
+
+  return await cacheManager.match(event.request);
 };

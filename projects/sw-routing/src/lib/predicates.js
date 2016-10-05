@@ -13,8 +13,14 @@
  limitations under the License.
 */
 
-import Route from './lib/route';
-import registerRoutes from './lib/register-routes';
-import {pathEquals, urlMatches} from './lib/predicates';
+import assert from '../../../../lib/assert';
 
-export {Route, registerRoutes, pathEquals, urlMatches};
+export function urlMatches(regExp) {
+  assert.isInstance({regExp}, RegExp);
+  return ({url}) => url.href.matches(regExp);
+}
+
+export function pathEquals(path) {
+  assert.isType({path}, 'string');
+  return ({url}) => url.origin === self.location.origin && url.pathname === path;
+}

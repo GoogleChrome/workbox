@@ -15,7 +15,7 @@
 
 import assert from '../../../../lib/assert';
 
-export default class {
+export default class Route {
   constructor({when, handler, configuration}={}) {
     assert.isType({handler}, 'function');
     this.when = when;

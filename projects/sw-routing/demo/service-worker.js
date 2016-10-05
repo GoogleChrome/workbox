@@ -24,12 +24,7 @@ const routes = [
 
 const defaultRoute = new goog.routing.Route({
   handler: goog.runtimeCaching.networkFirst,
-  options: {
-    cache: {
-      cacheName: 'default',
-      maxAgeSeconds: 15
-    }
-  }
+  configuration: [new goog.cacheExpiration.Configuration({cacheName: 'testing', maxAgeSeconds: 1})]
 });
 
 goog.routing.registerRoutes({routes, defaultRoute});
