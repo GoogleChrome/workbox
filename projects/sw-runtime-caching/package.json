@@ -5,8 +5,8 @@
   "keywords": [
     "service worker",
     "sw",
-    "router",
-    "routing"
+    "caching",
+    "cache"
   ],
   "author": {
     "name": "Jeff Posnick",

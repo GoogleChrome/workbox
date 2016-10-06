@@ -13,8 +13,11 @@
  limitations under the License.
 */
 
-import Route from './lib/route';
-import registerRoutes from './lib/register-routes';
-import * as predicates from './lib/predicates';
+import assert from '../../../lib/assert';
+import glob from 'glob';
 
-export {Route, registerRoutes, predicates};
+export default configuration => {
+  const {filePatterns} = configuration;
+  assert.isType(filePatterns, 'array');
+
+};

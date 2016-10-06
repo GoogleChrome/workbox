@@ -13,8 +13,15 @@
  limitations under the License.
 */
 
-import Route from './lib/route';
-import registerRoutes from './lib/register-routes';
-import * as predicates from './lib/predicates';
+import assert from '../../../../lib/assert';
 
-export {Route, registerRoutes, predicates};
+export default ({first, second, headersToCheck}={}) => {
+  assert.isInstance({first}, Response);
+  assert.isInstance({second}, Response);
+  assert.isInstance({headersToCheck}, Array);
+
+  return headersToCheck.every(header => {
+    return (first.headers.has(header) === second.headers.has(header)) &&
+      (first.headers.get(header) === second.headers.get(header));
+  });
+};

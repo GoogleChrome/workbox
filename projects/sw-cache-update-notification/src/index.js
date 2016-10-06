@@ -13,8 +13,8 @@
  limitations under the License.
 */
 
-import Route from './lib/route';
-import registerRoutes from './lib/register-routes';
-import * as predicates from './lib/predicates';
+import broadcastUpdate from './lib/broadcast-update';
+import sameResponses from './lib/same-responses';
+import CacheUpdateNotificationManager from './lib/cache-update-notification-manager';
 
-export {Route, registerRoutes, predicates};
+export {broadcastUpdate, sameResponses, CacheUpdateNotificationManager};

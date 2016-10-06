@@ -24,3 +24,16 @@ export function pathEquals(path) {
   assert.isType({path}, 'string');
   return ({url}) => url.origin === self.location.origin && url.pathname === path;
 }
+
+export function extensionIsOneOf(extensions) {
+  assert.isType({extensions}, 'array');
+
+  return ({url}) => extensions.includes(url.pathname.split('.').pop());
+}
+
+export function headerHasValue({header, value}={}) {
+  assert.isType({header}, 'string');
+  assert.isType({value}, 'string');
+
+  return ({event}) => event.request.headers.get(header) === value;
+}

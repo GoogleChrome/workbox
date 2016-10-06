@@ -13,8 +13,4 @@
  limitations under the License.
 */
 
-import Route from './lib/route';
-import registerRoutes from './lib/register-routes';
-import * as predicates from './lib/predicates';
-
-export {Route, registerRoutes, predicates};
+export function a() {};

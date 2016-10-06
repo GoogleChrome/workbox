@@ -13,8 +13,6 @@
  limitations under the License.
 */
 
-import Route from './lib/route';
-import registerRoutes from './lib/register-routes';
-import * as predicates from './lib/predicates';
-
-export {Route, registerRoutes, predicates};
+export const cacheUpdatedMessageType = 'CACHE_UPDATED';
+export const defaultHeadersToCheck = ['content-length', 'last-modified', 'etag'];
+export const defaultSource = 'n/a';

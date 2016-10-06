@@ -13,8 +13,19 @@
  limitations under the License.
 */
 
-import Route from './lib/route';
-import registerRoutes from './lib/register-routes';
-import * as predicates from './lib/predicates';
+import assert from '../../../../lib/assert';
+import {cacheUpdatedMessageType} from './constants';
 
-export {Route, registerRoutes, predicates};
+export default ({channel, cacheName, url, source}={}) => {
+  assert.isInstance({channel}, BroadcastChannel);
+  assert.isType({url}, 'string');
+
+  channel.postMessage({
+    type: cacheUpdatedMessageType,
+    meta: source,
+    payload: {
+      cacheName: cacheName,
+      updatedUrl: url
+    }
+  });
+};
