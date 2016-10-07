@@ -1,7 +1,11 @@
 /* eslint-env worker, serviceworker */
 /* global goog */
 
-importScripts('../build/routing.js', '../../sw-runtime-caching/build/runtime-caching.js', '../../sw-cache-update-notification/build/cache-update-notification.js');
+importScripts(
+  '../build/routing.js',
+  '../../sw-runtime-caching/build/runtime-caching.js',
+  '../../sw-cache-update-notification/build/cache-update-notification.js'
+);
 
 // Have the service worker take control as soon as possible.
 self.addEventListener('install', () => self.skipWaiting());
@@ -12,7 +16,7 @@ const routes = [
     when: goog.routing.predicates.extensionIsOneOf(['txt']),
     handler: goog.runtimeCaching.staleWhileRevalidate,
     configuration: [
-      new goog.cacheUpdateNotification.Manager({channelName: 'cache-updates'})
+      new goog.cacheUpdateNotification.Behavior({channelName: 'cache-updates'})
     ]
   })
 ];

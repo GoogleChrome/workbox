@@ -13,13 +13,13 @@
  limitations under the License.
 */
 
-import Manager from './lib/manager';
+import Behavior from './lib/behavior';
 import broadcastUpdate from './lib/broadcast-update';
 import {cacheUpdatedMessageType} from './lib/constants';
 import sameResponses from './lib/responses-are-same';
 
 export {
-  Manager,
+  Behavior,
   broadcastUpdate,
   cacheUpdatedMessageType,
   sameResponses

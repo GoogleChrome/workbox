@@ -18,7 +18,7 @@ import broadcastUpdate from './broadcast-update';
 import responsesAreSame from './responses-are-same';
 import {defaultHeadersToCheck, defaultSource} from './constants';
 
-export default class Manager {
+export default class Behavior {
   constructor({channelName, headersToCheck, source}={}) {
     assert.isType({channelName}, 'string');
 
