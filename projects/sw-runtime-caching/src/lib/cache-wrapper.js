@@ -16,7 +16,7 @@
 import assert from '../../../../lib/assert';
 import {cacheName as defaultCacheName} from './defaults';
 
-export default class CacheManager {
+export default class CacheWrapper {
   constructor({configuration=[]}={}) {
     assert.isInstance({configuration}, Array);
 
@@ -78,7 +78,7 @@ export default class CacheManager {
         // If oldResponse is set, we want to trigger cacheDidUpdateCallbacks.
         if (oldResponse) {
           this.cacheDidUpdateCallbacks.forEach(instance => {
-            instance.cacheDidUpdate({cacheName: this.cacheName, oldResponse, newResponse});
+            instance.classDidUpdate({cacheName: this.cacheName, oldResponse, newResponse});
           });
         }
       });

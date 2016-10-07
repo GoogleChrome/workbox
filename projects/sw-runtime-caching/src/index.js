@@ -13,12 +13,20 @@
  limitations under the License.
 */
 
+import CacheWrapper from './lib/cache-wrapper';
 import cacheFirst from './lib/cache-first';
 import cacheOnly from './lib/cache-only';
-import networkOnly from './lib/network-only';
 import networkFirst from './lib/network-first';
+import networkOnly from './lib/network-only';
 import staleWhileRevalidate from './lib/stale-while-revalidate';
 import {cacheName as defaultCacheName} from './lib/defaults';
 
-export {cacheFirst, cacheOnly, defaultCacheName, networkFirst, networkOnly,
-  staleWhileRevalidate};
+export {
+  CacheWrapper,
+  cacheFirst,
+  cacheOnly,
+  defaultCacheName,
+  networkFirst,
+  networkOnly,
+  staleWhileRevalidate
+};
