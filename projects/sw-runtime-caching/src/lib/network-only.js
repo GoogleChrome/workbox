@@ -17,5 +17,6 @@ import assert from '../../../../lib/assert';
 
 export default async ({event}={}) => {
   assert.isInstance({event}, FetchEvent);
+
   return await fetch(event.request);
 };

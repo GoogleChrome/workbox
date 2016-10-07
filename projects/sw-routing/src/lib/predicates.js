@@ -26,7 +26,7 @@ export function pathEquals(path) {
 }
 
 export function extensionIsOneOf(extensions) {
-  assert.isType({extensions}, 'array');
+  assert.isInstance({extensions}, Array);
 
   return ({url}) => extensions.includes(url.pathname.split('.').pop());
 }

@@ -13,6 +13,9 @@
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('service-worker.js');
       }
+
+      const cacheUpdatesChannel = new BroadcastChannel('cache-updates');
+      cacheUpdatesChannel.addEventListener('message', console.info);
     </script>
   </body>
 </html>

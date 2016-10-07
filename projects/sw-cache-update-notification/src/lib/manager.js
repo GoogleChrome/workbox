@@ -15,18 +15,16 @@
 
 import assert from '../../../../lib/assert';
 import broadcastUpdate from './broadcast-update';
-import sameResponses from './same-responses';
+import responsesAreSame from './responses-are-same';
 import {defaultHeadersToCheck, defaultSource} from './constants';
 
-export default class CacheUpdateNotificationManager {
-  constructor({channelName, cacheName, headersToCheck, source}={}) {
+export default class Manager {
+  constructor({channelName, headersToCheck, source}={}) {
     assert.isType({channelName}, 'string');
-    assert.isType({cacheName}, 'string');
 
     this.headersToCheck = headersToCheck || defaultHeadersToCheck;
     this.source = source || defaultSource;
     this.channelName = channelName;
-    this.cacheName = cacheName;
   }
 
   get channel() {
@@ -36,11 +34,20 @@ export default class CacheUpdateNotificationManager {
     return this._channel;
   }
 
-  notifyIfUpdated({first, second}={}) {
+  cacheDidUpdate({cacheName, oldResponse, newResponse}={}) {
+    assert.isType({cacheName}, 'string');
+    assert.isInstance({newResponse}, Response);
+
+    if (oldResponse) {
+      this.notifyIfUpdated({cacheName, first: oldResponse, second: newResponse});
+    }
+  }
+
+  notifyIfUpdated({first, second, cacheName}={}) {
     assert.isType({cacheName}, 'string');
 
-    if (!sameResponses({first, second, headersToCheck: this.headersToCheck})) {
-      broadcastUpdate({cacheName: this.cacheName, url: second.url,
+    if (!responsesAreSame({first, second, headersToCheck: this.headersToCheck})) {
+      broadcastUpdate({cacheName, url: second.url,
         channel: this.channel, source: this.source});
     }
   }

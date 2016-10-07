@@ -17,20 +17,26 @@ import assert from '../../../../lib/assert';
 import {cacheName as defaultCacheName} from './defaults';
 
 export default class CacheManager {
-  constructor({configuration}={}) {
-    this.configuration = configuration || [];
-  }
+  constructor({configuration=[]}={}) {
+    assert.isInstance({configuration}, Array);
 
-  get cacheName() {
-    return defaultCacheName;
-  }
+    this.cacheName = defaultCacheName;
+    this.fetchOptions = {};
+    this.matchOptions = {};
+    this.cacheDidUpdateCallbacks = [];
 
-  get matchOptions() {
-    return {};
-  }
+    configuration.forEach(c => {
+      if ('cacheName' in c) {
+        this.cacheName = c.cacheName;
+      }
 
-  get fetchOptions() {
-    return {};
+      Object.assign(this.fetchOptions, c.fetchOptions);
+      Object.assign(this.matchOptions, c.matchOptions);
+
+      if (typeof c.cacheDidUpdate === 'function') {
+        this.cacheDidUpdateCallbacks.push(c);
+      }
+    });
   }
 
   async getCache() {
@@ -42,21 +48,44 @@ export default class CacheManager {
 
   async match({request}) {
     assert.atLeastOne({request});
+
     const cache = await this.getCache();
     return await cache.match(request, this.matchOptions);
   }
 
-  async fetchAndCache({request}) {
-    assert.atLeastOne({request});
-    const response = await fetch(request, this.fetchOptions);
+  async fetchAndCache({event}) {
+    assert.isInstance({event}, FetchEvent);
 
+    const response = await fetch(event.request, this.fetchOptions);
     if (response.ok || response.type === 'opaque') {
-      const cache = await this.getCache();
-      await cache.put(request, response.clone());
-    } else {
-      console.warn('Not caching error', response, 'for', event.request);
+      // Run the cache update sequence asynchronously, without blocking the
+      // response from getting to the client.
+      this.getCache().then(async cache => {
+        let oldResponse;
+        const newResponse = response.clone();
+
+        // Only bother getting the old response if the new response isn't opaque
+        // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
+        // need it.
+        if (response.type !== 'opaque' && this.cacheDidUpdateCallbacks.length) {
+          oldResponse = await this.match({request: event.request});
+        }
+
+        // Regardless of whether or not we'll end up invoking
+        // cacheDidUpdateCallbacks, wait until the cache is updated.
+        await cache.put(event.request, newResponse);
+
+        // If oldResponse is set, we want to trigger cacheDidUpdateCallbacks.
+        if (oldResponse) {
+          this.cacheDidUpdateCallbacks.forEach(instance => {
+            instance.cacheDidUpdate({cacheName: this.cacheName, oldResponse, newResponse});
+          });
+        }
+      });
     }
 
+    // Return a response right away, so that the client could make use of it,
+    // without waiting for the cache update sequence to complete.
     return response;
   }
 };

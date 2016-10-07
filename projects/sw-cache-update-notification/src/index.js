@@ -13,8 +13,14 @@
  limitations under the License.
 */
 
+import Manager from './lib/manager';
 import broadcastUpdate from './lib/broadcast-update';
-import sameResponses from './lib/same-responses';
-import CacheUpdateNotificationManager from './lib/cache-update-notification-manager';
+import {cacheUpdatedMessageType} from './lib/constants';
+import sameResponses from './lib/responses-are-same';
 
-export {broadcastUpdate, sameResponses, CacheUpdateNotificationManager};
+export {
+  Manager,
+  broadcastUpdate,
+  cacheUpdatedMessageType,
+  sameResponses
+};

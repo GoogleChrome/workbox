@@ -18,8 +18,9 @@ import assert from '../../../../lib/assert';
 
 export default async ({event, configuration}={}) => {
   assert.isInstance({event}, FetchEvent);
-  const cacheManager = new CacheManager({configuration});
 
-  const response = await cacheManager.fetchAndCache({request: event.request});
+  const cacheManager = new CacheManager({configuration});
+  const response = await cacheManager.fetchAndCache({event});
+
   return response || await cacheManager.match({request: event.request});
 };
