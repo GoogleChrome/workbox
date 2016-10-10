@@ -26,8 +26,9 @@ export default ({routes, defaultRoute, catchHandler}={}) => {
 
     let responsePromise;
     for (let route of (routes || [])) {
-      if ((route.when)({url, event})) {
-        responsePromise = (route.handler)({url, event, configuration: route.configuration});
+      const whenResult = (route.when)({url, event});
+      if (whenResult || whenResult === 0 || whenResult === '') {
+        responsePromise = (route.handler)({url, event, configuration: route.configuration, params: whenResult});
         break;
       }
     }
