@@ -13,7 +13,6 @@
  limitations under the License.
 */
 
-import CacheExpirationManager from './lib/cache-expiration-manager';
-import Configuration from './lib/configuration';
+import Behavior from './lib/behavior';
 
-export {CacheExpirationManager, Configuration};
+export {Behavior};
