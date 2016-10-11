@@ -13,14 +13,16 @@
  limitations under the License.
 */
 
-import RegExpRoute from './lib/regexp-route';
-import Route from './lib/route';
-import registerRoutes from './lib/register-routes';
-import * as predicates from './lib/predicates';
+import Route from './route';
+import assert from '../../../../lib/assert';
 
-export {
-  RegExpRoute,
-  Route,
-  predicates,
-  registerRoutes
-};
+export default class RegExpRoute extends Route{
+  constructor(regExp, handler) {
+    assert.isInstance({regExp}, RegExp);
+    assert.isType({handler}, 'function');
+
+    this.when = ({url}) => url.href.match(regExp);
+    this.handler = handler;
+    this.configuration = [];
+  }
+}
