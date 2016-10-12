@@ -16,7 +16,7 @@
 import Route from './route';
 import assert from '../../../../lib/assert';
 
-export default class RegExpRoute extends Route{
+export default class RegExpRoute extends Route {
   constructor(regExp, handler) {
     assert.isInstance({regExp}, RegExp);
     assert.isType({handler}, 'function');

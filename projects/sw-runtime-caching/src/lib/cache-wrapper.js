@@ -58,11 +58,12 @@ export default class CacheWrapper {
 
     const response = await fetch(event.request, this.fetchOptions);
     if (response.ok || response.type === 'opaque') {
+      const newResponse = response.clone();
+
       // Run the cache update sequence asynchronously, without blocking the
       // response from getting to the client.
       this.getCache().then(async cache => {
         let oldResponse;
-        const newResponse = response.clone();
 
         // Only bother getting the old response if the new response isn't opaque
         // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
@@ -78,7 +79,7 @@ export default class CacheWrapper {
         // If oldResponse is set, we want to trigger cacheDidUpdateCallbacks.
         if (oldResponse) {
           this.cacheDidUpdateCallbacks.forEach(instance => {
-            instance.classDidUpdate({cacheName: this.cacheName, oldResponse, newResponse});
+            instance.cacheDidUpdate({cacheName: this.cacheName, oldResponse, newResponse});
           });
         }
       });

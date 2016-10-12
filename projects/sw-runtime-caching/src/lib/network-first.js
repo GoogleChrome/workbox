@@ -20,7 +20,15 @@ export default async ({event, configuration}={}) => {
   assert.isInstance({event}, FetchEvent);
 
   const cacheWrapper = new CacheWrapper({configuration});
-  const response = await cacheWrapper.fetchAndCache({event});
+  let response;
+  try {
+    response = await cacheWrapper.fetchAndCache({event});
+    if (response) {
+      return response;
+    }
+  } catch(error) {
+    // no-op
+  }
 
-  return response || await cacheWrapper.match({request: event.request});
+  return await cacheWrapper.match({request: event.request});
 };
