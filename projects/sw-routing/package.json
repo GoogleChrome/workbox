@@ -13,6 +13,11 @@
     "email": "jeffy@google.com",
     "url": "https://jeffy.info"
   },
+  "scripts": {
+    "lint": "eslint '.'",
+    "build-docs": "./../../node_modules/jsdoc/jsdoc.js -c ./jsdoc.conf -d ",
+    "publish-docs": "./../../node_modules/npm-publish-scripts/publish-docs.sh"
+  },
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",

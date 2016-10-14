@@ -20,7 +20,9 @@ const routes = [
     ]
   })
 ];
-const defaultRoute = new goog.routing.Route({handler: goog.runtimeCaching.networkFirst});
+const defaultRoute = new goog.routing.Route({
+  handler: goog.runtimeCaching.networkFirst
+});
 
 const router = new goog.routing.Router();
 router.registerRoutes({routes, defaultRoute});

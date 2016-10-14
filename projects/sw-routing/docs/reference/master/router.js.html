@@ -1,4 +1,23 @@
-/*
+---
+layout: jsdoc
+title: "Source: router.js"
+jsdocNav: 
+  - Modules:
+    - <a href="sw-routing.module_RegExpRoute.html">RegExpRoute</a>
+    - <a href="sw-routing.module_Route.html">Route</a>
+  - Classes:
+    - <a href="Router.html">Router</a>
+    - <a href="sw-routing.module_RegExpRoute-RegExpRoute.html">RegExpRoute</a>
+    - <a href="sw-routing.module_Route-Route.html">Route</a>
+---
+
+
+
+
+
+    
+
+<pre><code>/*
  Copyright 2016 Google Inc. All Rights Reserved.
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -37,7 +56,7 @@ class Router {
    * router.
    *
    * @param {Object} options
-   * @param {Array<Route>} options.routes
+   * @param {Array&lt;Route>} options.routes
    * @returns {void}
    */
   registerRoutes({routes, defaultRoute, catchHandler} = {}) {
@@ -45,7 +64,7 @@ class Router {
 
     self.addEventListener('fetch', event => {
       const url = new URL(event.request.url);
-      if (!(this.httpMethods.includes(event.request.method) &&
+      if (!(this.httpMethods.includes(event.request.method) &amp;&amp;
         url.protocol.startsWith('http'))) {
         return;
       }
@@ -64,7 +83,7 @@ class Router {
         }
       }
 
-      if (!responsePromise && defaultRoute) {
+      if (!responsePromise &amp;&amp; defaultRoute) {
         responsePromise = (defaultRoute.handler)({
           url,
           event,
@@ -72,7 +91,7 @@ class Router {
         });
       }
 
-      if (responsePromise && catchHandler) {
+      if (responsePromise &amp;&amp; catchHandler) {
         responsePromise = responsePromise.catch(error => catchHandler({
           url,
           event,
@@ -88,3 +107,9 @@ class Router {
 }
 
 export default Router;
+</code></pre>
+
+
+
+
+

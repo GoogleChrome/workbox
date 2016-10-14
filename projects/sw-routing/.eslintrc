@@ -1,0 +1,16 @@
+{
+  "env": {
+    "serviceworker": true,
+    "browser": true
+  },
+  "rules": {
+    "valid-jsdoc": "error",
+    "require-jsdoc": ["error", {
+        "require": {
+            "FunctionDeclaration": true,
+            "MethodDefinition": true,
+            "ClassDeclaration": true
+        }
+    }]
+  }
+}

@@ -42,6 +42,7 @@
     "gulp-eslint": "^3.0.1",
     "gulp-mocha": "^3.0.1",
     "gulp-rename": "^1.2.2",
+    "jsdoc": "^3.4.2",
     "minimist": "^1.2.0",
     "mockdate": "^1.0.4",
     "npm-path": "^2.0.2",
