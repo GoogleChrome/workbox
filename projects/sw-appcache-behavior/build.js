@@ -24,8 +24,8 @@ const path = require('path');
 module.exports = () => {
   return Promise.all([
     'client-runtime.js',
-    'appcache-behavior-import.js'
-  ].map(file => {
+    'appcache-behavior-import.js',
+  ].map((file) => {
     return new Promise((resolve, reject) => {
       const bundler = browserify(path.join(__dirname, 'src', file));
 

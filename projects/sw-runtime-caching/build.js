@@ -24,11 +24,11 @@ const targets = [{
   dest: path.join(__dirname, 'build', pkg.main),
   format: 'umd',
   moduleName: 'goog.runtimeCaching',
-  sourceMap: true
+  sourceMap: true,
 }, {
   dest: path.join(__dirname, 'build', pkg['jsnext:main']),
   format: 'es',
-  sourceMap: true
+  sourceMap: true,
 }];
 
 /** module.exports = () => {
@@ -49,15 +49,15 @@ module.exports = () => {
       resolve({
         jsnext: true,
         main: true,
-        browser: true
+        browser: true,
       }),
       commonjs(),
       babel({
         plugins: ['transform-async-to-generator', 'external-helpers'],
-        exclude: 'node_modules/**'
-      })
-    ]
-  }).then(bundle => Promise.all(
-    targets.map(target => bundle.write(target))
+        exclude: 'node_modules/**',
+      }),
+    ],
+  }).then((bundle) => Promise.all(
+    targets.map((target) => bundle.write(target))
   ));
 };

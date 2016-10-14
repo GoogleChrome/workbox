@@ -22,5 +22,5 @@ export {
   RegExpRoute,
   Route,
   Router,
-  predicates
+  predicates,
 };

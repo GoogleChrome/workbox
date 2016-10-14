@@ -15,7 +15,7 @@
 
 import assert from '../../../lib/assert';
 
-export default configuration => {
+export default (configuration) => {
   const {filePatterns} = configuration;
   assert.isType(filePatterns, 'array');
 };

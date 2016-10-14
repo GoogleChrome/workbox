@@ -41,12 +41,12 @@ const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
  *                    replayed, throw an error.
  * @returns {Promise.<T>}
  */
-module.exports = config => {
+module.exports = (config) => {
   config = config || {};
 
-  return idbHelper.getAllKeys().then(urls => {
-    return Promise.all(urls.map(url => {
-      return idbHelper.get(url).then(hitTime => {
+  return idbHelper.getAllKeys().then((urls) => {
+    return Promise.all(urls.map((url) => {
+      return idbHelper.get(url).then((hitTime) => {
         const queueTime = Date.now() - hitTime;
         const newUrl = new URL(url);
 
@@ -68,7 +68,7 @@ module.exports = config => {
         // to searchParams.set(). This isn't important in terms of
         // functionality, but it will make testing easier, since the
         // URL serialization depends on the order in which .set() is called.
-        Object.keys(parameterOverrides).sort().forEach(parameter => {
+        Object.keys(parameterOverrides).sort().forEach((parameter) => {
           newUrl.searchParams.set(parameter, parameterOverrides[parameter]);
         });
 

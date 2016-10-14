@@ -18,7 +18,7 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = () => {
-  var file = 'offline-google-analytics-import.js';
+  const file = 'offline-google-analytics-import.js';
   return new Promise((resolve, reject) => {
     const bundler = browserify(path.join(__dirname, 'src', file));
 

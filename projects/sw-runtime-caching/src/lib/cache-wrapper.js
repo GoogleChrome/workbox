@@ -25,7 +25,7 @@ export default class CacheWrapper {
     this.matchOptions = {};
     this.cacheDidUpdateCallbacks = [];
 
-    configuration.forEach(c => {
+    configuration.forEach((c) => {
       if ('cacheName' in c) {
         this.cacheName = c.cacheName;
       }
@@ -62,7 +62,7 @@ export default class CacheWrapper {
 
       // Run the cache update sequence asynchronously, without blocking the
       // response from getting to the client.
-      this.getCache().then(async cache => {
+      this.getCache().then(async (cache) => {
         let oldResponse;
 
         // Only bother getting the old response if the new response isn't opaque
@@ -78,11 +78,11 @@ export default class CacheWrapper {
 
         // If oldResponse is set, we want to trigger cacheDidUpdateCallbacks.
         if (oldResponse) {
-          this.cacheDidUpdateCallbacks.forEach(instance => {
+          this.cacheDidUpdateCallbacks.forEach((instance) => {
             instance.cacheDidUpdate({
               cacheName: this.cacheName,
               oldResponse,
-              newResponse
+              newResponse,
             });
           });
         }

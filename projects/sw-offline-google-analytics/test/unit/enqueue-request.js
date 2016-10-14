@@ -29,7 +29,7 @@ describe('enqueue-request', () => {
     const request = new Request(url);
     return enqueueRequest(request)
       .then(() => idbHelper.getAllKeys())
-      .then(keys => chai.expect(keys).to.include(url));
+      .then((keys) => chai.expect(keys).to.include(url));
   });
 
   it('should use the request body, when present, in the IndexedDB key', () => {
@@ -40,6 +40,6 @@ describe('enqueue-request', () => {
     const request = new Request(url, {method: 'POST', body});
     return enqueueRequest(request)
       .then(() => idbHelper.getAllKeys())
-      .then(keys => chai.expect(keys).to.include(url));
+      .then((keys) => chai.expect(keys).to.include(url));
   });
 });

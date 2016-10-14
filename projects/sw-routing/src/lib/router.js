@@ -43,7 +43,7 @@ class Router {
   registerRoutes({routes, defaultRoute, catchHandler} = {}) {
     assert.atLeastOne({routes, defaultRoute});
 
-    self.addEventListener('fetch', event => {
+    self.addEventListener('fetch', (event) => {
       const url = new URL(event.request.url);
       if (!(this.httpMethods.includes(event.request.method) &&
         url.protocol.startsWith('http'))) {
@@ -58,7 +58,7 @@ class Router {
             url,
             event,
             configuration: route.configuration,
-            params: whenResult
+            params: whenResult,
           });
           break;
         }
@@ -68,15 +68,15 @@ class Router {
         responsePromise = (defaultRoute.handler)({
           url,
           event,
-          configuration: defaultRoute.configuration
+          configuration: defaultRoute.configuration,
         });
       }
 
       if (responsePromise && catchHandler) {
-        responsePromise = responsePromise.catch(error => catchHandler({
+        responsePromise = responsePromise.catch((error) => catchHandler({
           url,
           event,
-          error
+          error,
         }));
       }
 

@@ -25,7 +25,7 @@ export default ({channel, cacheName, url, source} = {}) => {
     meta: source,
     payload: {
       cacheName: cacheName,
-      updatedUrl: url
-    }
+      updatedUrl: url,
+    },
   });
 };
