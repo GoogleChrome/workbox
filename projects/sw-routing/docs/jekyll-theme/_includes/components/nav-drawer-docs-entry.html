@@ -1,0 +1,31 @@
+{% if include.docsPath %}
+  {% capture docsUrl %}{{ project_root_url }}{{ include.docsPath }}{% endcapture %}
+  <li>
+    <a href="{{ docsUrl }}" {% if docsUrl == page.url %}class="active"{% endif %}>
+      {{ include.text }}
+    </a>
+  </li>
+
+  {% capture filename         %}{{ page.url | split: "/"       | last         }}{% endcapture %}
+  {% capture currentUrl       %}{{ page.url | remove: filename | remove: "//" }}{% endcapture %}
+  {% capture filteredDocsUrl  %}{{ docsUrl  | append: "/"                     }}{% endcapture %}
+
+  {% if filteredDocsUrl == currentUrl and page.jsdocNav %}
+  <li>
+    <ul>
+      {% for navGroupHash in page.jsdocNav %}
+      {% for navGroup in navGroupHash %}
+      <li class="subheading">{{ navGroup[0] }}</li>
+      <li>
+        <ul>
+          {% for navGroupItem in navGroup[1] %}
+          <li>{{ navGroupItem }}</li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endfor %}
+      {% endfor %}
+    </ul>
+  </li>
+  {% endif %}
+{% endif %}

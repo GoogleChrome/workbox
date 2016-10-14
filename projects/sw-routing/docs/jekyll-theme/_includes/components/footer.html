@@ -1,0 +1,27 @@
+<footer>
+  <ul class="social-btns">
+    <li>
+      <a href="https://twitter.com/chromiumdev" class="social-btn social-btns__twitter" role="button" title="Twitter">
+        {% include svgs/twitter.svg %}
+      </a>
+    </li>
+    <li>
+      <a href="{{ site.github.repository_url }}" class="social-btn social-btns__github" role="button" title="GitHub">
+        {% include svgs/github.svg %}
+      </a>
+    </li>
+    <li>
+      <a href="https://plus.google.com/+GoogleChromeDevelopers" class="social-btn social-btns__gplus" role="button" title="Google+">
+        {% include svgs/gplus.svg %}
+      </a>
+    </li>
+  </ul>
+
+  {% if site.github.issues_url %}
+  <ul class="footer-links">
+    <li>
+      <a href="{{ site.github.issues_url }}">Help</a>
+    </li>
+  </ul>
+  {% endif %}
+</footer>

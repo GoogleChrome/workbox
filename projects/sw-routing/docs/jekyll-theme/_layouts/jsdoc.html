@@ -1,0 +1,14 @@
+---
+layout: default
+---
+{% include variables.html %}
+
+{% include components/site-header.html title=project_title subtitle=project_tagline %}
+
+{% include components/nav-drawer.html %}
+
+<main class="is-jsdoc-page">
+  {{ content }}
+</main>
+
+{% include components/footer.html made_by='variables.project_owner' made_by_url='varaibles.project_owner_url' %}
