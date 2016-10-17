@@ -19,7 +19,7 @@ import responsesAreSame from './responses-are-same';
 import {defaultHeadersToCheck, defaultSource} from './constants';
 
 export default class Behavior {
-  constructor({channelName, headersToCheck, source}={}) {
+  constructor({channelName, headersToCheck, source} = {}) {
     assert.isType({channelName}, 'string');
 
     this.headersToCheck = headersToCheck || defaultHeadersToCheck;
@@ -29,26 +29,31 @@ export default class Behavior {
 
   get channel() {
     if (!this._channel) {
-      this._channel = new BroadcastChannel(this.channelName);
+      this._channel = new self.BroadcastChannel(this.channelName);
     }
     return this._channel;
   }
 
-  cacheDidUpdate({cacheName, oldResponse, newResponse}={}) {
+  cacheDidUpdate({cacheName, oldResponse, newResponse} = {}) {
     assert.isType({cacheName}, 'string');
     assert.isInstance({newResponse}, Response);
 
     if (oldResponse) {
-      this.notifyIfUpdated({cacheName, first: oldResponse, second: newResponse});
+      this.notifyIfUpdated({
+        cacheName,
+        first: oldResponse,
+        second: newResponse}
+      );
     }
   }
 
-  notifyIfUpdated({first, second, cacheName}={}) {
+  notifyIfUpdated({first, second, cacheName} = {}) {
     assert.isType({cacheName}, 'string');
 
-    if (!responsesAreSame({first, second, headersToCheck: this.headersToCheck})) {
+    if (
+      !responsesAreSame({first, second, headersToCheck: this.headersToCheck})) {
       broadcastUpdate({cacheName, url: second.url,
         channel: this.channel, source: this.source});
     }
   }
-};
+}

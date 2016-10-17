@@ -29,7 +29,6 @@
     "chai": "^3.5.0",
     "chromedriver": "^2.24.1",
     "documentation": "^4.0.0-beta10",
-    "eslint": "^3.5.0",
     "eslint-config-google": "^0.6.0",
     "express": "^4.14.0",
     "fetch-mock": "^5.1.5",

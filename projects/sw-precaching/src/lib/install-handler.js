@@ -14,7 +14,7 @@
 */
 
 import assert from '../../../../lib/assert';
-import {version, defaultCacheId, hashParamName} from './constants';
+import {version, defaultCacheId} from './constants';
 
 const setOfCachedUrls = cache => {
   return cache.keys()
@@ -23,20 +23,21 @@ const setOfCachedUrls = cache => {
 };
 
 const urlsToCacheKeys = precacheConfig => new Map(
-  urls.map(item => {
+  /** urls.map(item => {
     var relativeUrl = item[0];
     var hash = item[1];
     var absoluteUrl = new URL(relativeUrl, self.location);
     var cacheKey = createCacheKey(absoluteUrl, hashParamName, hash, /a/);
     return [absoluteUrl.toString(), cacheKey];
-  })
+  })**/
 );
 
-export default ({assetsAndHahes, cacheId}={}) => {
-  assert.isType(assetManifest, 'array');
+export default ({assetsAndHahes, cacheId} = {}) => {
+  assert.isType(assetsAndHahes, 'array');
 
   self.addEventListener('install', event => {
-    const cacheName = `${cacheId || defaultCacheId}-${version}-${self.registration.scope}`;
+    const cacheName =
+      `${cacheId || defaultCacheId}-${version}-${self.registration.scope}`;
 
     event.waitUntil(
       caches.open(cacheName).then(cache => {
@@ -45,8 +46,11 @@ export default ({assetsAndHahes, cacheId}={}) => {
             Array.from(urlsToCacheKeys.values()).map(function(cacheKey) {
               // If we don't have a key matching url in the cache already, add it.
               if (!cachedUrls.has(cacheKey)) {
-                return cache.add(new Request(cacheKey, {credentials: 'same-origin'}));
+                return cache.add(
+                  new Request(cacheKey, {credentials: 'same-origin'}));
               }
+
+              return Promise.resolve();
             })
           );
         });
