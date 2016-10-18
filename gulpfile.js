@@ -122,7 +122,7 @@ gulp.task('lint', () => {
   return taskHarness(lintPackage, projectOrStar);
 });
 
-gulp.task('test', () => {
+gulp.task('download-browsers', function() {
   console.log('    Starting browser download.....');
   return Promise.all([
     seleniumAssistant.downloadBrowser('firefox', 'stable', 48),
@@ -134,13 +134,16 @@ gulp.task('test', () => {
   ])
   .then(() => {
     console.log('    Browser download complete.');
-    return gulp.src(`projects/${projectOrStar}/test/*.js`, {read: false})
-      .pipe(mocha())
-      .once('error', error => {
-        console.error(error);
-        process.exit(1);
-      });
   });
+});
+
+gulp.task('test', ['download-browsers'], () => {
+  return gulp.src(`projects/${projectOrStar}/test/*.js`, {read: false})
+    .pipe(mocha())
+    .once('error', error => {
+      console.error(error);
+      process.exit(1);
+    });
 });
 
 gulp.task('build', () => {
