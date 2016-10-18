@@ -40,17 +40,18 @@ npmPath.setSync();
 
 /**
  * Lints a given project.
- * @param project The path to a project directory.
+ * @param {String} projectPath The path to a project directory.
  * @returns {Promise} Resolves if linting succeeds, rejects if it fails.
  */
-const lintPackage = project => {
+const lintPackage = projectPath => {
+  console.log(projectPath);
   return new Promise((resolve, reject) => {
-    gulp.src([`${project}/**/*.js`, `!${project}/**/build/**`])
+    gulp.src([`${projectPath}/**/*.js`, `!${projectPath}/**/build/**`])
       .pipe(eslint())
       .pipe(eslint.format())
       .pipe(eslint.results(results => {
         if ((results.errorCount) > 0) {
-          reject(`Linting '${project}' failed.`);
+          reject(`Linting '${projectPath}' failed.`);
         } else {
           resolve();
         }
