@@ -14,10 +14,8 @@
 */
 
 import assert from '../../../lib/assert';
-import glob from 'glob';
 
 export default configuration => {
   const {filePatterns} = configuration;
   assert.isType(filePatterns, 'array');
-
 };

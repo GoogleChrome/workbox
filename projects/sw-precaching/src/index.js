@@ -13,4 +13,4 @@
  limitations under the License.
 */
 
-export function a() {};
+export function a() {}

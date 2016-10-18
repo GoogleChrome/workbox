@@ -13,13 +13,36 @@
  limitations under the License.
 */
 
+/** @module sw-routing.Route **/
+
 import assert from '../../../../lib/assert';
 
-export default class Route {
-  constructor({when, handler, configuration}={}) {
+/**
+ * The Route class is used to configure a *when*
+ * [predicate](https://en.wikipedia.org/wiki/Predicate_(mathematical_logic))
+ * a handler.
+ *
+ * The *when* predicate is used by the Router to determine if a given request
+ * matches this Route. If *when* returns true (i.e. this route matches the
+ * current request), then the handler will be given the
+ * [FetchEvent](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent)
+ * so that it can respond to the request.
+ */
+class Route {
+  /**
+   * The constructor for Route expects an object with `when` and `handler`
+   * properties which should both be functions.
+   * @param {Object} options - Options to initialize the Route with.
+   * @param {function} options.when - The when predicate function.
+   * @param {function} options.handler - The handler function that will respond
+   * to a FetchEvent.
+   */
+  constructor({when, handler} = {}) {
+    assert.isType({when}, 'function');
     assert.isType({handler}, 'function');
     this.when = when;
     this.handler = handler;
-    this.configuration = configuration || [];
   }
 }
+
+export default Route;

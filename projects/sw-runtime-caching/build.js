@@ -21,7 +21,7 @@ const rollup = require('rollup').rollup;
 
 const pkg = require('./package.json');
 const targets = [{
-  dest: path.join(__dirname, 'build', pkg['main']),
+  dest: path.join(__dirname, 'build', pkg.main),
   format: 'umd',
   moduleName: 'goog.runtimeCaching',
   sourceMap: true
@@ -49,7 +49,7 @@ module.exports = () => {
       resolve({
         jsnext: true,
         main: true,
-        browser: true,
+        browser: true
       }),
       commonjs(),
       babel({

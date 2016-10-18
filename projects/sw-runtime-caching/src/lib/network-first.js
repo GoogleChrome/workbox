@@ -16,7 +16,7 @@
 import CacheWrapper from './cache-wrapper';
 import assert from '../../../../lib/assert';
 
-export default async ({event, configuration}={}) => {
+export default async ({event, configuration} = {}) => {
   assert.isInstance({event}, FetchEvent);
 
   const cacheWrapper = new CacheWrapper({configuration});
@@ -26,7 +26,7 @@ export default async ({event, configuration}={}) => {
     if (response) {
       return response;
     }
-  } catch(error) {
+  } catch (error) {
     // no-op
   }
 

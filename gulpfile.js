@@ -49,7 +49,7 @@ const lintPackage = project => {
       .pipe(eslint())
       .pipe(eslint.format())
       .pipe(eslint.results(results => {
-        if ((results.warningCount + results.errorCount) > 0) {
+        if ((results.errorCount) > 0) {
           reject(`Linting '${project}' failed.`);
         } else {
           resolve();
@@ -180,7 +180,7 @@ gulp.task('documentation:repo', ['build'], () => {
     // To work around this, only pull in gh-pages when it's needed, rather than
     // globally at the top of this file.
     const ghPagesPromise = promisify('gh-pages');
-    
+
     // Then publish all of the build + demo files to gh-pages.
     return tmpPromise.dir().then(tmpDir => {
       return new Promise(resolve => {

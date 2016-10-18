@@ -16,7 +16,7 @@
 import assert from '../../../../lib/assert';
 
 export default class Configuration {
-  constructor({cacheName, maxEntries, maxAgeSeconds}={}) {
+  constructor({cacheName, maxEntries, maxAgeSeconds} = {}) {
     assert.isType({cacheName}, 'string');
     assert.atLeastOne({maxEntries, maxAgeSeconds});
 
@@ -24,4 +24,4 @@ export default class Configuration {
     this.maxEntries = maxEntries;
     this.maxAgeSeconds = maxAgeSeconds;
   }
-};
+}

@@ -15,8 +15,16 @@
 
 import assert from '../../../../lib/assert';
 
-export default class Router {
-  constructor({httpMethods}={}) {
+/**
+ * The Router takes a set of {@link Route}'s and will direct fetch events
+ * to those Route in the order they are registered.
+ */
+class Router {
+  /**
+   * The Route consutructor expects an Object.
+   * @param {Object} options - Options to initialize the Router.
+   */
+  constructor({httpMethods} = {}) {
     this.httpMethods = ['GET'];
     if (httpMethods) {
       assert.isInstance({httpMethods}, Array);
@@ -24,12 +32,21 @@ export default class Router {
     }
   }
 
-  registerRoutes({routes, defaultRoute, catchHandler}={}) {
+  /**
+   * Register routes will take an array of Routes to register with the
+   * router.
+   *
+   * @param {Object} options
+   * @param {Array<Route>} options.routes
+   * @returns {void}
+   */
+  registerRoutes({routes, defaultRoute, catchHandler} = {}) {
     assert.atLeastOne({routes, defaultRoute});
 
     self.addEventListener('fetch', event => {
       const url = new URL(event.request.url);
-      if (!(this.httpMethods.includes(event.request.method) && url.protocol.startsWith('http'))) {
+      if (!(this.httpMethods.includes(event.request.method) &&
+        url.protocol.startsWith('http'))) {
         return;
       }
 
@@ -69,3 +86,5 @@ export default class Router {
     });
   }
 }
+
+export default Router;

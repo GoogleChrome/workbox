@@ -16,8 +16,8 @@
 import assert from '../../../../lib/assert';
 import {cacheUpdatedMessageType} from './constants';
 
-export default ({channel, cacheName, url, source}={}) => {
-  assert.isInstance({channel}, BroadcastChannel);
+export default ({channel, cacheName, url, source} = {}) => {
+  assert.isInstance({channel}, self.BroadcastChannel);
   assert.isType({url}, 'string');
 
   channel.postMessage({
