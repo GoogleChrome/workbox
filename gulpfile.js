@@ -26,6 +26,7 @@ const rename = require('gulp-rename');
 const runSequence = require('run-sequence');
 const serveIndex = require('serve-index');
 const serveStatic = require('serve-static');
+const seleniumAssistant = require('selenium-assistant');
 const {globPromise, processPromiseWrapper, taskHarness} = require('./build-utils');
 
 const fsePromise = promisify('fs-extra');
@@ -122,12 +123,24 @@ gulp.task('lint', () => {
 });
 
 gulp.task('test', () => {
-  return gulp.src(`projects/${projectOrStar}/test/*.js`, {read: false})
-    .pipe(mocha())
-    .once('error', error => {
-      console.error(error);
-      process.exit(1);
-    });
+  console.log('Download browsers.');
+  return Promise.all([
+    seleniumAssistant.downloadBrowser('firefox', 'stable', 48),
+    seleniumAssistant.downloadBrowser('firefox', 'beta', 48),
+    seleniumAssistant.downloadBrowser('firefox', 'unstable', 48),
+    seleniumAssistant.downloadBrowser('chrome', 'stable', 48),
+    seleniumAssistant.downloadBrowser('chrome', 'beta', 48),
+    seleniumAssistant.downloadBrowser('chrome', 'unstable', 48)
+  ])
+  .then(() => {
+    console.log('Browsers downloaded.');
+    return gulp.src(`projects/${projectOrStar}/test/*.js`, {read: false})
+      .pipe(mocha())
+      .once('error', error => {
+        console.error(error);
+        process.exit(1);
+      });
+  });
 });
 
 gulp.task('build', () => {
