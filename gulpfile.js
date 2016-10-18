@@ -123,7 +123,7 @@ gulp.task('lint', () => {
 });
 
 gulp.task('test', () => {
-  console.log('Download browsers.');
+  console.log('    Starting browser download.....');
   return Promise.all([
     seleniumAssistant.downloadBrowser('firefox', 'stable', 48),
     seleniumAssistant.downloadBrowser('firefox', 'beta', 48),
@@ -133,7 +133,7 @@ gulp.task('test', () => {
     seleniumAssistant.downloadBrowser('chrome', 'unstable', 48)
   ])
   .then(() => {
-    console.log('Browsers downloaded.');
+    console.log('    Browser download complete.');
     return gulp.src(`projects/${projectOrStar}/test/*.js`, {read: false})
       .pipe(mocha())
       .once('error', error => {
