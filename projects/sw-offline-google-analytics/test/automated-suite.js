@@ -28,57 +28,80 @@ const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
 const testServer = new swTestingHelpers.TestServer();
 
+// Ensure the selenium drivers are added Node scripts path.
+require('geckodriver');
+require('chromedriver');
+require('operadriver');
+
 const TIMEOUT = 10 * 1000;
 
-describe('sw-offline-google-analytics Test Suite', function() {
-  this.timeout(TIMEOUT);
+const configureTestSuite = function(browser) {
+  let globalDriverReference = null;
   let baseTestUrl;
 
-  // Set up the web server before running any tests in this suite.
-  before(function() {
-    seleniumAssistant.printAvailableBrowserInfo();
-    const baseDirectory = __dirname.replace(path.sep, '/');
-    return browserifyTests(`${baseDirectory}/unit/`).then(() => {
-      return testServer.startServer('.').then(portNumber => {
-        baseTestUrl = `http://localhost:${portNumber}/projects/sw-offline-google-analytics/test/`;
-      });
-    });
-  });
+  describe(`sw-offline-google-analytics Test Suite with (${browser.getPrettyName()} - ${browser.getVersionNumber()})`, function() {
+    this.timeout(TIMEOUT);
 
-  // Kill the web server once all tests are complete.
-  after(function() {
-    return testServer.killServer();
-  });
-
-  seleniumAssistant.getAvailableBrowsers().forEach(function(browser) {
-    let globalDriverReference = null;
-
-    // Tear down the driver at the end of each sub-suite.
-    after(function() {
-      return seleniumAssistant.killWebDriver(globalDriverReference);
-    });
-
-    describe(`Unit Tests (${browser.getPrettyName()})`, function() {
-      it('should pass all tests', function() {
-        return browser.getSeleniumDriver().then(function(driver) {
-          globalDriverReference = driver;
-          globalDriverReference.manage().timeouts().setScriptTimeout(TIMEOUT);
-          return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
-            browser.getPrettyName(),
-            globalDriverReference,
-            `${baseTestUrl}unit/`
-          ).then(function(testResults) {
-            if (testResults.failed.length > 0) {
-              const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
-                browser.prettyName,
-                testResults
-              );
-
-              throw new Error(errorMessage);
-            }
-          });
+    // Set up the web server before running any tests in this suite.
+    before(function() {
+      const baseDirectory = __dirname.replace(path.sep, '/');
+      return browserifyTests(`${baseDirectory}/unit/`).then(() => {
+        return testServer.startServer('.').then(portNumber => {
+          baseTestUrl = `http://localhost:${portNumber}/projects/sw-offline-google-analytics/test/`;
         });
       });
     });
+
+    // Kill the web server once all tests are complete.
+    after(function() {
+      return seleniumAssistant.killWebDriver(globalDriverReference)
+      .then(() => {
+        return testServer.killServer();
+      });
+    });
+
+    it('should pass all tests', function() {
+      return browser.getSeleniumDriver()
+      .then(driver => {
+        globalDriverReference = driver;
+        globalDriverReference.manage().timeouts().setScriptTimeout(TIMEOUT);
+      })
+      .then(() => {
+        return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
+          browser.getPrettyName(),
+          globalDriverReference,
+          `${baseTestUrl}unit/`
+        );
+      })
+      .then(testResults => {
+        if (testResults.failed.length > 0) {
+          const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
+            browser.prettyName,
+            testResults
+          );
+
+          throw new Error(errorMessage);
+        }
+      });
+    });
   });
+};
+
+seleniumAssistant.getAvailableBrowsers().forEach(function(browser) {
+  // Blackliist browsers here if needed.
+  if (browser.getSeleniumBrowserId() === 'opera' && browser.getVersionNumber() === 41) {
+    console.warn('Skipping Opera version 41 due to operadriver error.');
+    return;
+  }
+
+  switch (browser.getSeleniumBrowserId()) {
+    case 'chrome':
+    case 'firefox':
+    case 'opera':
+      configureTestSuite(browser);
+      break;
+    default:
+      console.warn(`Skipping ${browser.getPrettyName()}.`);
+      break;
+  }
 });
