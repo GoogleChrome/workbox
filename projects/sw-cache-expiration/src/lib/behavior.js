@@ -19,7 +19,7 @@ import idb from 'idb';
 import {idbName, idbVersion} from './constants';
 
 export default class Behavior {
-  constructor({configuration}={}) {
+  constructor({configuration} = {}) {
     assert.isInstance({configuration}, Configuration);
     this.configuration = configuration;
   }
@@ -40,13 +40,15 @@ export default class Behavior {
     if (!this._db) {
       return idb.open(idbName, idbVersion, upgradeDB => {
         upgradeDB.createObjectStore(this.cacheName);
-      }).then(db => this._db = db);
+      }).then(db => {
+        this._db = db;
+      });
     }
 
     return Promise.resolve(this._db);
   }
 
-  updateTimestamp(url, now=Date.now()) {
+  updateTimestamp(url, now = Date.now()) {
     return this.db.then(db => {
       const tx = db.transaction(this.cacheName, 'readwrite');
       tx.objectStore(this.cacheName).put(now, url);
@@ -54,16 +56,18 @@ export default class Behavior {
     });
   }
 
-  expireEntries(now=Date.now()) {
+  expireEntries(now = Date.now()) {
     const promises = [];
-    promises.push(this.maxAgeSeconds ? this._expireOldEntries(now) : Promise.resolve([]));
-    promises.push(this.maxEntries ? this._expireExtraEntries() : Promise.resolve([]));
+    promises.push(
+      this.maxAgeSeconds ? this._expireOldEntries(now) : Promise.resolve([]));
+    promises.push(
+      this.maxEntries ? this._expireExtraEntries() : Promise.resolve([]));
 
     return Promise.all(promises)
       .then(([oldEntries, extraEntries]) => oldEntries.concat(extraEntries));
   }
 
-  _expireOldEntries(now=Date.now()) {
+  _expireOldEntries(now = Date.now()) {
     const expireOlderThan = now - (this.maxAgeSeconds * 1000);
     const urls = [];
     return this.db.then(db => {
@@ -86,4 +90,4 @@ export default class Behavior {
   _expireExtraEntries() {
     return Promise.resolve([]);
   }
-};
+}

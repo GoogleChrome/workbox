@@ -15,7 +15,7 @@
 
 import assert from '../../../../lib/assert';
 
-export default ({first, second, headersToCheck}={}) => {
+export default ({first, second, headersToCheck} = {}) => {
   assert.isInstance({first}, Response);
   assert.isInstance({second}, Response);
   assert.isInstance({headersToCheck}, Array);

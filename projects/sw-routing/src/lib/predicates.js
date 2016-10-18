@@ -22,7 +22,9 @@ export function urlMatches(regExp) {
 
 export function pathEquals(path) {
   assert.isType({path}, 'string');
-  return ({url}) => url.origin === self.location.origin && url.pathname === path;
+  return ({url}) => {
+    return url.origin === self.location.origin && url.pathname === path;
+  };
 }
 
 export function extensionIsOneOf(extensions) {
@@ -31,7 +33,7 @@ export function extensionIsOneOf(extensions) {
   return ({url}) => extensions.includes(url.pathname.split('.').pop());
 }
 
-export function headerHasValue({header, value}={}) {
+export function headerHasValue({header, value} = {}) {
   assert.isType({header}, 'string');
   assert.isType({value}, 'string');
 

@@ -13,16 +13,29 @@
  limitations under the License.
 */
 
+/** @module sw-routing.RegExpRoute **/
+
 import Route from './route';
 import assert from '../../../../lib/assert';
 
-export default class RegExpRoute extends Route {
+/**
+ * RegExpRoute is a helper class to make defining Regular Expression based
+ * [Routes]{@link Route} easy.
+ *
+ * @extends Route
+ */
+class RegExpRoute extends Route {
+  /**
+   * @param {RegExp} regExp The regular expression to match against URL's.
+   * @param {funcation} handler The handler to manage the response.
+   */
   constructor(regExp, handler) {
     assert.isInstance({regExp}, RegExp);
     assert.isType({handler}, 'function');
 
-    this.when = ({url}) => url.href.match(regExp);
-    this.handler = handler;
-    this.configuration = [];
+    const when = ({url}) => url.href.match(regExp);
+    super(when, handler, []);
   }
 }
+
+export default RegExpRoute;

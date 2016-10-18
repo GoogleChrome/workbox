@@ -16,11 +16,12 @@
 import CacheWrapper from './cache-wrapper';
 import assert from '../../../../lib/assert';
 
-export default async ({event, configuration}={}) => {
+export default async ({event, configuration} = {}) => {
   assert.isInstance({event}, FetchEvent);
 
   const cacheWrapper = new CacheWrapper({configuration});
-  const fetchAndCacheResponse = cacheWrapper.fetchAndCache({event}).catch(() => Response.error());
+  const fetchAndCacheResponse = cacheWrapper.fetchAndCache({event})
+    .catch(() => Response.error());
   const cachedResponse = await cacheWrapper.match({request: event.request});
 
   return cachedResponse || await fetchAndCacheResponse;
