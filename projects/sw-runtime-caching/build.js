@@ -31,7 +31,7 @@ const targets = [{
   sourceMap: true
 }];
 
-module.exports = () => {
+/** module.exports = () => {
   return rollup({
     entry: path.join(__dirname, 'src', 'index.js'),
     plugins: [
@@ -40,7 +40,7 @@ module.exports = () => {
   }).then(bundle => Promise.all(
     targets.map(target => bundle.write(target))
   ));
-};
+};**/
 
 module.exports = () => {
   return rollup({

@@ -26,6 +26,7 @@ const rename = require('gulp-rename');
 const runSequence = require('run-sequence');
 const serveIndex = require('serve-index');
 const serveStatic = require('serve-static');
+const seleniumAssistant = require('selenium-assistant');
 const {globPromise, processPromiseWrapper, taskHarness} = require('./build-utils');
 
 const fsePromise = promisify('fs-extra');
@@ -40,17 +41,17 @@ npmPath.setSync();
 
 /**
  * Lints a given project.
- * @param project The path to a project directory.
+ * @param {String} projectPath The path to a project directory.
  * @returns {Promise} Resolves if linting succeeds, rejects if it fails.
  */
-const lintPackage = project => {
+const lintPackage = projectPath => {
   return new Promise((resolve, reject) => {
-    gulp.src([`${project}/**/*.js`, `!${project}/**/build/**`])
+    gulp.src([`${projectPath}/**/*.js`, `!${projectPath}/**/build/**`])
       .pipe(eslint())
       .pipe(eslint.format())
       .pipe(eslint.results(results => {
         if ((results.errorCount) > 0) {
-          reject(`Linting '${project}' failed.`);
+          reject(`Linting '${projectPath}' failed.`);
         } else {
           resolve();
         }
@@ -60,33 +61,33 @@ const lintPackage = project => {
 
 /**
  * Buids a given project.
- * @param project The path to a project directory.
+ * @param {String} projectPath The path to a project directory.
  * @returns {Promise} Resolves if building succeeds, rejects if it fails.
  */
-const buildPackage = project => {
-  const buildDir = `${project}/build`;
+const buildPackage = projectPath => {
+  const buildDir = `${projectPath}/build`;
 
   // Copy over package.json and README.md so that build/ contains what we
   // need to publish to npm.
   return fsePromise.emptyDir(buildDir)
-    .then(() => fsePromise.copy(`${project}/package.json`,
+    .then(() => fsePromise.copy(`${projectPath}/package.json`,
       `${buildDir}/package.json`))
-    .then(() => fsePromise.copy(`${project}/README.md`,
+    .then(() => fsePromise.copy(`${projectPath}/README.md`,
       `${buildDir}/README.md`))
     .then(() => {
       // Let each project define its own build process.
-      const build = require(`./${project}/build.js`);
+      const build = require(`./${projectPath}/build.js`);
       return build();
     });
 };
 
 /**
  * Documents a given project.
- * @param project The path to a project directory.
+ * @param {String} projectPath The path to a project directory.
  * @returns {Promise} Resolves if documenting succeeds, rejects if it fails.
  */
-const documentPackage = project => {
-  const projectMetadata = require(`./${project}/package.json`);
+const documentPackage = projectPath => {
+  const projectMetadata = require(`./${projectPath}/package.json`);
   return new Promise(resolve => {
     // First, use metadata require(package.json to write out an initial README.md.
     gulp.src('templates/Project-README.hbs')
@@ -96,13 +97,13 @@ const documentPackage = project => {
         background: projectMetadata.background
       }))
       .pipe(rename('README.md'))
-      .pipe(gulp.dest(project))
+      .pipe(gulp.dest(projectPath))
       .on('end', resolve);
   }).then(() => {
     // Then use the inline JSDoc to populate the "API" section.
-    return globPromise(`${project}/src/**/*.js`).then(files => {
+    return globPromise(`${projectPath}/src/**/*.js`).then(files => {
       const args = ['readme', ...files, '--github', '--section', 'API',
-        '--readme-file', `${project}/README.md`];
+        '--readme-file', `${projectPath}/README.md`];
       return processPromiseWrapper('documentation', args);
     });
   });
@@ -110,18 +111,33 @@ const documentPackage = project => {
 
 /**
  * Publishes a given project to npm.
- * @param project The path to a project directory.
+ * @param {String} projectPath The path to a project directory.
  * @returns {Promise} Resolves if publishing succeeds, rejects if it fails.
  */
-const publishPackage = project => {
-  return processPromiseWrapper('npm', ['publish', `${project}/build`]);
+const publishPackage = projectPath => {
+  return processPromiseWrapper('npm', ['publish', `${projectPath}/build`]);
 };
 
 gulp.task('lint', () => {
   return taskHarness(lintPackage, projectOrStar);
 });
 
-gulp.task('test', () => {
+gulp.task('download-browsers', function() {
+  console.log('    Starting browser download.....');
+  return Promise.all([
+    seleniumAssistant.downloadBrowser('firefox', 'stable', 48),
+    seleniumAssistant.downloadBrowser('firefox', 'beta', 48),
+    seleniumAssistant.downloadBrowser('firefox', 'unstable', 48),
+    seleniumAssistant.downloadBrowser('chrome', 'stable', 48),
+    seleniumAssistant.downloadBrowser('chrome', 'beta', 48),
+    seleniumAssistant.downloadBrowser('chrome', 'unstable', 48)
+  ])
+  .then(() => {
+    console.log('    Browser download complete.');
+  });
+});
+
+gulp.task('test', ['download-browsers'], () => {
   return gulp.src(`projects/${projectOrStar}/test/*.js`, {read: false})
     .pipe(mocha())
     .once('error', error => {
