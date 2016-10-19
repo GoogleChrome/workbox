@@ -24,6 +24,8 @@
     "babel": "^6.5.2",
     "babel-plugin-external-helpers": "^6.8.0",
     "babel-plugin-transform-async-to-generator": "^6.8.0",
+    "babel-preset-babili": "0.0.5",
+    "babel-preset-es2015": "^6.16.0",
     "blueimp-md5": "^2.3.1",
     "browserify": "^13.1.0",
     "chai": "^3.5.0",
@@ -41,6 +43,7 @@
     "gulp-eslint": "^3.0.1",
     "gulp-mocha": "^3.0.1",
     "gulp-rename": "^1.2.2",
+    "gulp-rollup": "^2.5.1",
     "minimist": "^1.2.0",
     "mockdate": "^1.0.4",
     "npm-path": "^2.0.2",
@@ -51,11 +54,13 @@
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-commonjs": "^5.0.4",
     "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-uglify": "^1.0.1",
     "run-sequence": "^1.2.2",
     "selenium-assistant": "^2.0.5",
     "serve-index": "^1.8.0",
     "serve-static": "^1.11.1",
     "sw-testing-helpers": "0.1.4",
-    "tmp": "0.0.29"
+    "tmp": "0.0.29",
+    "uglify-js": "^2.7.3"
   }
 }
