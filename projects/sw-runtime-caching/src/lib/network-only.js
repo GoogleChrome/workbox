@@ -13,10 +13,13 @@
  limitations under the License.
 */
 
+import Handler from './handler';
 import assert from '../../../../lib/assert';
 
-export default async ({event} = {}) => {
-  assert.isInstance({event}, FetchEvent);
+export default class NetworkOnly extends Handler {
+  async handle({event} = {}) {
+    assert.isInstance({event}, FetchEvent);
 
-  return await fetch(event.request);
-};
+    return await fetch(event.request);
+  }
+}

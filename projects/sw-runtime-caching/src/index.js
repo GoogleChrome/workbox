@@ -14,19 +14,19 @@
 */
 
 import CacheWrapper from './lib/cache-wrapper';
-import cacheFirst from './lib/cache-first';
-import cacheOnly from './lib/cache-only';
-import networkFirst from './lib/network-first';
-import networkOnly from './lib/network-only';
-import staleWhileRevalidate from './lib/stale-while-revalidate';
+import CacheFirst from './lib/cache-first';
+import CacheOnly from './lib/cache-only';
+import NetworkFirst from './lib/network-first';
+import NetworkOnly from './lib/network-only';
+import StaleWhileRevalidate from './lib/stale-while-revalidate';
 import {cacheName as defaultCacheName} from './lib/defaults';
 
 export {
   CacheWrapper,
-  cacheFirst,
-  cacheOnly,
+  CacheFirst,
+  CacheOnly,
   defaultCacheName,
-  networkFirst,
-  networkOnly,
-  staleWhileRevalidate
+  NetworkFirst,
+  NetworkOnly,
+  StaleWhileRevalidate
 };
