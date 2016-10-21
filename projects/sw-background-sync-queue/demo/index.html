@@ -1,0 +1,27 @@
+<html>
+	<head></head>
+	<body>
+		<div>Hello dear</div>
+		<button onclick="putReqInQ('t1')">send req</button>
+		<button onclick="putReqInQ('t2')">send req</button>
+		<button onclick="putReqInQ('t3')">send req</button>
+		<button onclick="putReqInQ('t4')">send req</button>
+		<button onclick="putReqInQ('t5')">send req</button>
+		<script>
+			var _reg;
+			function putReqInQ(t){
+				console.log("queing");
+				_reg.sync.register(t).then(() => {
+						console.log('Sync registered');
+				});
+			}
+			// Register our service worker.
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').then(reg=>{
+					_reg=reg;
+					console.log("Service worker registered");
+				});
+      }
+		</script>
+	</body>
+</html>
