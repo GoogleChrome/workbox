@@ -11,4 +11,5 @@
  limitations under the License.
  */
 
-
+var initialize = require ('./lib/initialization');
+module.exports = { initialize };

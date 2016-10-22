@@ -27,11 +27,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-
+var ___dirname = process.cwd();
+const babel = require('rollup-plugin-babel');
+const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
+const resolve = require('rollup-plugin-node-resolve');
 const rollup = require('rollup').rollup;
 
 const pkg = require('./package.json');
+
 const targets = [{
   dest: path.join(__dirname, 'build', pkg['main']),
   format: 'umd',
@@ -46,6 +50,18 @@ const targets = [{
 module.exports = () => {
   return rollup({
     entry: path.join(__dirname, 'src', 'index.js'),
+    plugins: [
+      resolve({
+        jsnext: true,
+        main: true,
+        browser: true,
+      }),
+      commonjs(),
+      babel({
+        plugins: ['transform-async-to-generator', 'external-helpers'],
+        exclude: 'node_modules/**'
+      })
+    ]
   }).then(bundle => Promise.all(
     targets.map(target => bundle.write(target))
   ));

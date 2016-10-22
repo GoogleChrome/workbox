@@ -18,5 +18,7 @@
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-background-sync-queue",
   "devDependencies": {
     "idb-keyval": "^2.1.2"
-  }
+  },
+  "main": "background-sync-queue.js",
+  "jsnext:main": "background-sync-queue.mjs"
 }
