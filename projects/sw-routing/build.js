@@ -19,63 +19,11 @@ const path = require('path');
 const rename = require('gulp-rename');
 const rollup = require('gulp-rollup');
 const babel = require('gulp-babel');
-// const babel = require('rollup-plugin-babel');
-const uglify = require('rollup-plugin-uglify');
 const pkg = require('./package.json');
 
 const destPath = path.join(__dirname, 'build');
 
-// This defines how the 'src/' is transpiled
-// (i.e. one for ES Modules, one for UMD)
-const umdBuildTargets = {
-  dest: path.join(destPath, pkg.main),
-  format: 'umd',
-  moduleName: 'goog.routing',
-  sourceMap: true
-};
-
-const esNextBuildTarget = {
-  dest: path.join(destPath, pkg['jsnext:main']),
-  format: 'es',
-  sourceMap: true
-};
-
-const minifiedUMD = () => {
-  return rollup({
-    entry: path.join(__dirname, 'src', 'index.js'),
-    plugins: [
-      babel({
-        presets: [
-          [
-            'es2015',
-            {modules: false}
-          ]
-        ],
-        plugins: ['external-helpers']
-      }),
-      uglify()
-    ]
-  })
-  .then(bundle => {
-    return bundle.write(umdBuildTargets);
-  });
-};
-
-const bundledJSNext = () => {
-  return rollup({
-    entry: path.join(__dirname, 'src', 'index.js')
-  })
-  .then(bundle => {
-    return bundle.write(esNextBuildTarget);
-  });
-};
-
-/** module.exports = () => {
-  return Promise.all([minifiedUMD(), bundledJSNext()]);
-};**/
-
-module.exports = () => {
-  console.log('Here :S');
+const buildBundle = (options) => {
   return new Promise((resolve, reject) => {
     gulp.src([
       path.join(__dirname, 'src', '**', '*.js'),
@@ -83,24 +31,40 @@ module.exports = () => {
     ])
     .pipe(sourcemaps.init())
     // transform the files here.
-    .pipe(rollup({
-      entry: path.join(__dirname, 'src', 'index.js')
-    }))
+    .pipe(rollup(options.rollupConfig))
     .pipe(babel({
-      plugins: ['remove-comments'],
-      presets: ['babili']
+      plugins: ['external-helpers'],
+      presets: ['babili', {comments: false}]
     }))
-    .pipe(sourcemaps.write())
-    .pipe(rename(pkg.main))
-    // This is just the UMD model for now.
+    .pipe(rename(options.outputName))
+    // Source maps are written relative tot he gulp.dest() path
+    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(destPath))
     .on('error', err => {
-      console.error(err);
       reject(err);
     })
     .on('end', () => {
-      console.log('Here ENDED:S');
       resolve();
     });
   });
+};
+
+module.exports = () => {
+  return Promise.all([
+    buildBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'umd',
+        moduleName: 'goog.routing'
+      },
+      outputName: pkg.main
+    }),
+    buildBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'es'
+      },
+      outputName: pkg.module
+    })
+  ]);
 };
