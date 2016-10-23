@@ -1,5 +1,9 @@
 {
   "extends": "google",
+  "env": {
+    "serviceworker": true,
+    "browser": true
+  },
   "rules": {
     "max-nested-callbacks": 0,
     "valid-jsdoc": [
@@ -13,5 +17,8 @@
       }
     ],
     "no-warning-comments": 0
+  },
+  "parserOptions": {
+    "ecmaVersion": 2017
   }
 }

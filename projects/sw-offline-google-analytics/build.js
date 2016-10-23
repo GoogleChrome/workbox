@@ -13,9 +13,9 @@
  limitations under the License.
 */
 
-import browserify from 'browserify';
-import fs from 'fs';
-import path from 'path';
+const browserify = require('browserify');
+const fs = require('fs');
+const path = require('path');
 
 module.exports = () => {
   var file = 'offline-google-analytics-import.js';
