@@ -21,18 +21,6 @@ import assert from '../../../../lib/assert';
  */
 class Router {
   /**
-   * The Route consutructor expects an Object.
-   * @param {Object} options - Options to initialize the Router.
-   */
-  constructor({httpMethods} = {}) {
-    this.httpMethods = ['GET'];
-    if (httpMethods) {
-      assert.isInstance({httpMethods}, Array);
-      this.httpMethods = httpMethods;
-    }
-  }
-
-  /**
    * Register routes will take an array of Routes to register with the
    * router.
    *
@@ -40,8 +28,8 @@ class Router {
    * @param {Array<Route>} options.routes
    * @returns {void}
    */
-  registerRoutes({routes, defaultRoute, catchHandler} = {}) {
-    assert.atLeastOne({routes, defaultRoute});
+  registerRoutes({routes} = {}) {
+    assert.isInstance({routes}, Array);
 
     self.addEventListener('fetch', event => {
       const url = new URL(event.request.url);

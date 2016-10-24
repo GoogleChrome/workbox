@@ -78,8 +78,9 @@ const buildPackage = projectPath => {
       // Let each project define its own build process.
       const build = require(`./${projectPath}/build.js`);
       return build();
-    }).catch(e => {
-      console.log('err', buildDir, e);
+    }).catch(error => {
+      console.error(error);
+      process.exit(1);
     });
 };
 

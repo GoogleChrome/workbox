@@ -13,22 +13,4 @@
  limitations under the License.
 */
 
-import CacheWrapper from './lib/cache-wrapper';
-import CacheFirst from './lib/cache-first';
-import CacheOnly from './lib/cache-only';
-import Handler from './lib/handler';
-import NetworkFirst from './lib/network-first';
-import NetworkOnly from './lib/network-only';
-import StaleWhileRevalidate from './lib/stale-while-revalidate';
-import {cacheName as defaultCacheName} from './lib/defaults';
-
-export {
-  CacheFirst,
-  CacheOnly,
-  CacheWrapper,
-  Handler,
-  NetworkFirst,
-  NetworkOnly,
-  StaleWhileRevalidate,
-  defaultCacheName
-};
+export const method = 'GET';

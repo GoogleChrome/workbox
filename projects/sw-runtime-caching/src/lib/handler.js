@@ -44,7 +44,7 @@ export default class Handler {
    * @param {Object} params - Any parameters passed in via the when predicate.
    * @returns {Promise<Response} - The Response used to fulfill the request.
    */
-  async handle({event, params} = {}) {
+  handle({event, params} = {}) {
     throw Error('This abstract method must be overridden in a subclass.');
   }
 }
