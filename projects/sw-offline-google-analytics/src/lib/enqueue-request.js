@@ -34,7 +34,7 @@ const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
  */
 module.exports = (request, time) => {
   const url = new URL(request.url);
-  return request.text().then(body => {
+  return request.text().then((body) => {
     // If there's a request body, then use it as the URL's search value.
     // This is most likely because the original request was an HTTP POST
     // that uses the beacon transport.

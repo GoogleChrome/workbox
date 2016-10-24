@@ -28,5 +28,5 @@ export {
   defaultCacheName,
   networkFirst,
   networkOnly,
-  staleWhileRevalidate
+  staleWhileRevalidate,
 };

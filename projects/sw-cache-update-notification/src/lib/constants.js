@@ -14,5 +14,6 @@
 */
 
 export const cacheUpdatedMessageType = 'CACHE_UPDATED';
-export const defaultHeadersToCheck = ['content-length', 'last-modified', 'etag'];
+export const defaultHeadersToCheck =
+  ['content-length', 'last-modified', 'etag'];
 export const defaultSource = 'n/a';

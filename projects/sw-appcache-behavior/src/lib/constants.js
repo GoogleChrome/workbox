@@ -19,6 +19,6 @@ module.exports = {
   STORES: {
     CLIENT_ID_TO_HASH: 'client-to-hash',
     MANIFEST_URL_TO_CONTENTS: 'manifest-url-to-contents',
-    PATH_TO_MANIFEST: 'path-to-manifest'
-  }
+    PATH_TO_MANIFEST: 'path-to-manifest',
+  },
 };

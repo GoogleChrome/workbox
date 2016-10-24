@@ -18,13 +18,13 @@ module.exports = {
   IDB: {
     NAME: 'offline-google-analytics',
     STORE: 'urls',
-    VERSION: 1
+    VERSION: 1,
   },
   MAX_ANALYTICS_BATCH_SIZE: 20,
   STOP_RETRYING_AFTER: 1000 * 60 * 60 * 48, // Two days, in milliseconds.
   URL: {
     ANALYTICS_JS_PATH: '/analytics.js',
     COLLECT_PATH: '/collect',
-    HOST: 'www.google-analytics.com'
-  }
+    HOST: 'www.google-analytics.com',
+  },
 };

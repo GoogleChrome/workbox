@@ -23,11 +23,11 @@ const targets = [{
   dest: path.join(__dirname, 'build', pkg.main),
   format: 'umd',
   moduleName: 'goog.cacheExpiration',
-  sourceMap: true
+  sourceMap: true,
 }, {
   dest: path.join(__dirname, 'build', pkg['jsnext:main']),
   format: 'es',
-  sourceMap: true
+  sourceMap: true,
 }];
 
 module.exports = () => {
@@ -37,11 +37,11 @@ module.exports = () => {
       resolve({
         jsnext: true,
         main: true,
-        browser: true
+        browser: true,
       }),
-      commonjs()
-    ]
-  }).then(bundle => Promise.all(
-    targets.map(target => bundle.write(target))
+      commonjs(),
+    ],
+  }).then((bundle) => Promise.all(
+    targets.map((target) => bundle.write(target))
   ));
 };

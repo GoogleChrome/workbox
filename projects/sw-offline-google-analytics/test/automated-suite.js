@@ -46,7 +46,7 @@ const configureTestSuite = function(browser) {
     before(function() {
       const baseDirectory = __dirname.replace(path.sep, '/');
       return browserifyTests(`${baseDirectory}/unit/`).then(() => {
-        return testServer.startServer('.').then(portNumber => {
+        return testServer.startServer('.').then((portNumber) => {
           baseTestUrl = `http://localhost:${portNumber}/projects/sw-offline-google-analytics/test/`;
         });
       });
@@ -62,7 +62,7 @@ const configureTestSuite = function(browser) {
 
     it('should pass all tests', function() {
       return browser.getSeleniumDriver()
-      .then(driver => {
+      .then((driver) => {
         globalDriverReference = driver;
         globalDriverReference.manage().timeouts().setScriptTimeout(TIMEOUT);
       })
@@ -73,7 +73,7 @@ const configureTestSuite = function(browser) {
           `${baseTestUrl}unit/`
         );
       })
-      .then(testResults => {
+      .then((testResults) => {
         if (testResults.failed.length > 0) {
           const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
             browser.prettyName,

@@ -26,28 +26,28 @@ const pkg = require('./package.json');
 
 const destPath = path.join(__dirname, 'build');
 
-const buildBundle = options => {
+const buildBundle = (options) => {
   const licensePath = path.join(__dirname, '..', '..', 'LICENSE-HEADER');
   const licenseHeader = fs.readFileSync(licensePath, 'utf8');
 
   return new Promise((resolve, reject) => {
     gulp.src([
       path.join(__dirname, 'src', '**', '*.js'),
-      path.join(__dirname, '..', '..', 'lib', '**', '*.js')
+      path.join(__dirname, '..', '..', 'lib', '**', '*.js'),
     ])
     .pipe(sourcemaps.init())
     // transform the files here.
     .pipe(rollup(options.rollupConfig))
     .pipe(babel({
       plugins: ['external-helpers'],
-      presets: ['babili', {comments: false}]
+      presets: ['babili', {comments: false}],
     }))
     .pipe(header(licenseHeader))
     .pipe(rename(options.outputName))
     // Source maps are written relative tot he gulp.dest() path
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(destPath))
-    .on('error', err => {
+    .on('error', (err) => {
       reject(err);
     })
     .on('end', () => {
@@ -62,16 +62,16 @@ module.exports = () => {
       rollupConfig: {
         entry: path.join(__dirname, 'src', 'index.js'),
         format: 'umd',
-        moduleName: 'goog.routing'
+        moduleName: 'goog.routing',
       },
-      outputName: pkg.main
+      outputName: pkg.main,
     }),
     buildBundle({
       rollupConfig: {
         entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'es'
+        format: 'es',
       },
-      outputName: pkg.module
-    })
+      outputName: pkg.module,
+    }),
   ]);
 };

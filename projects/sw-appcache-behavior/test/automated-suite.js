@@ -44,7 +44,7 @@ let tempDirectory = path.join(__dirname, 'end-to-end-caching', 'temp');
 
 // Helper method to generate the text of an App Cache manifest with a
 // specific version.
-const generateManifestText = version => {
+const generateManifestText = (version) => {
   return `CACHE MANIFEST
 # Version: ${version}
 
@@ -58,11 +58,11 @@ NETWORK:
 /**
  * These manifests must be dynamically generated to ensure that the version
  * numbers can be bumped for the same file.
- * @returns {Promise} Resolves once the files are written.
+ * @return {Promise} Resolves once the files are written.
  */
 const generateInitialManifests = () => {
   const manifestNames = ['manifest1.appcache', 'manifest2.appcache'];
-  const fileCreationPromisees = manifestNames.map(filename => {
+  const fileCreationPromisees = manifestNames.map((filename) => {
     const outputPath = path.join(tempDirectory, filename);
     return fsePromise.outputFile(outputPath, generateManifestText(1));
   });
@@ -83,14 +83,14 @@ const configureTestSuite = function(browser) {
       .then(() => {
         return browser.getSeleniumDriver();
       })
-      .then(driver => {
+      .then((driver) => {
         globalDriverReference = driver;
         globalDriverReference.manage().timeouts().setScriptTimeout(TIMEOUT);
       })
       .then(() => {
         return testServer.startServer('.');
       })
-      .then(portNumber => {
+      .then((portNumber) => {
         baseTestUrl = `http://localhost:${portNumber}/projects/sw-appcache-behavior/test/`;
         console.log('Test Server: ' + baseTestUrl);
         console.log('');
@@ -134,10 +134,10 @@ const configureTestSuite = function(browser) {
     });
 
     it('should create one cache', function() {
-      return globalDriverReference.executeAsyncScript(callback => {
+      return globalDriverReference.executeAsyncScript((callback) => {
         window.caches.keys().then(callback);
       })
-      .then(caches => {
+      .then((caches) => {
         expect(caches).to.have.lengthOf(1);
       });
     });
@@ -149,7 +149,7 @@ const configureTestSuite = function(browser) {
 
       return globalDriverReference.executeAsyncScript((entries, callback) => {
         Promise.all(
-          entries.map(entry => {
+          entries.map((entry) => {
             // The App Cache manifest URL is the base for any relative URLs.
             const manifestUrl = new URL(
               document.documentElement.getAttribute('manifest'),
@@ -160,15 +160,15 @@ const configureTestSuite = function(browser) {
             return window.caches.match(url.toString());
           })
         ).then(callback);
-      }, parsedManifest.cache).then(matches => {
+      }, parsedManifest.cache).then((matches) => {
         expect(matches).to.not.include(null);
       });
     });
 
     it('should cache a master entry for initial navigation', function() {
-      return globalDriverReference.executeAsyncScript(callback => {
+      return globalDriverReference.executeAsyncScript((callback) => {
         window.caches.match(window.location).then(callback);
-      }).then(match => {
+      }).then((match) => {
         expect(match).to.be.ok;
       });
     });
@@ -182,13 +182,13 @@ const configureTestSuite = function(browser) {
       const url = `${baseTestUrl}end-to-end-caching/step2.html`;
       return globalDriverReference.get(url)
       .then(() => {
-        return globalDriverReference.executeAsyncScript(callback => {
+        return globalDriverReference.executeAsyncScript((callback) => {
           window.setTimeout(() => {
             window.caches.match(window.location).then(callback);
           }, 100); // Timeouts... ugh.
         });
       })
-      .then(match => {
+      .then((match) => {
         expect(match).to.be.ok;
       });
     });
@@ -197,22 +197,22 @@ const configureTestSuite = function(browser) {
       const url = `${baseTestUrl}end-to-end-caching/step3.html`;
       return globalDriverReference.get(url)
       .then(() => {
-        return globalDriverReference.executeAsyncScript(callback => {
+        return globalDriverReference.executeAsyncScript((callback) => {
           window.setTimeout(() => {
             window.caches.match(window.location).then(callback);
           }, 100); // Timeouts... ugh.
         });
       })
-      .then(match => {
+      .then((match) => {
         expect(match).to.be.null;
       });
     });
 
     it('should use a different cache when an existing manifest is updated', function() {
-      return globalDriverReference.executeAsyncScript(callback => {
+      return globalDriverReference.executeAsyncScript((callback) => {
         window.caches.keys().then(callback);
       })
-      .then(previousCaches => {
+      .then((previousCaches) => {
         const url = `${baseTestUrl}end-to-end-caching/step1.html`;
         // Write out an update to manifest1.appcache to trigger the App Cache
         // update flow.
@@ -220,38 +220,38 @@ const configureTestSuite = function(browser) {
         return fsePromise.outputFile(outputPath, generateManifestText(2))
           .then(() => globalDriverReference.get(url))
           .then(() => {
-            return globalDriverReference.executeAsyncScript(callback => {
+            return globalDriverReference.executeAsyncScript((callback) => {
               window.setTimeout(() => {
                 // This will resolve with an array of arrays, with each item
                 // in the inner array corresponding to a cache entry.
                 window.caches.keys().then(callback);
               }, 500); // Timeouts... ugh.
             });
-          }).then(currentCaches => {
+          }).then((currentCaches) => {
             // This is a roundabout way of checking to make sure there's one
             // entry in the set of new caches that wasn't in the previous
             // set. That new entry should be due to the updated manifest.
             const filtered = currentCaches.filter(
-              cache => previousCaches.indexOf(cache) === -1);
+              (cache) => previousCaches.indexOf(cache) === -1);
             expect(filtered).to.have.lengthOf(1);
           });
       });
     });
 
     it('should use a different cache when the manifest is different', function() {
-      return globalDriverReference.executeAsyncScript(callback => {
+      return globalDriverReference.executeAsyncScript((callback) => {
         window.caches.keys().then(callback);
-      }).then(previousCaches => {
+      }).then((previousCaches) => {
         const url = `${baseTestUrl}end-to-end-caching/step4.html`;
         return globalDriverReference.get(url).then(() => {
-          return globalDriverReference.executeAsyncScript(callback => {
+          return globalDriverReference.executeAsyncScript((callback) => {
             window.setTimeout(() => window.caches.keys().then(callback), 100);
-          }).then(currentCaches => {
+          }).then((currentCaches) => {
             // This is a roundabout way of checking to make sure there's one
             // entry in the set of new caches that wasn't in the previous
             // set. That new entry should be due to the new manifest.
             const filtered = currentCaches.filter(
-              cache => previousCaches.indexOf(cache) === -1);
+              (cache) => previousCaches.indexOf(cache) === -1);
             expect(filtered).to.have.lengthOf(1);
           });
         });

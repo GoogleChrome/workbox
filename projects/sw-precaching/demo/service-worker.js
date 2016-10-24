@@ -13,8 +13,8 @@ const routes = [
     handler: ({event}) => {
       console.log('JavaScript!');
       return fetch(event.request);
-    }
-  })
+    },
+  }),
 ];
 
 const defaultHandler = ({event}) => {
