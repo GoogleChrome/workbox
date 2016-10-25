@@ -1,6 +1,30 @@
+/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+/* eslint-disable no-console, valid-jsdoc */
+
 const childProcess = require('child_process');
 const path = require('path');
 const promisify = require('promisify-node');
+const fs = require('fs');
+const gulp = require('gulp');
+const sourcemaps = require('gulp-sourcemaps');
+const rename = require('gulp-rename');
+const rollup = require('gulp-rollup');
+const babel = require('gulp-babel');
+const header = require('gulp-header');
 
 const globPromise = promisify('glob');
 
@@ -17,7 +41,7 @@ function processPromiseWrapper(command, args) {
   return new Promise((resolve, reject) => {
     const process = childProcess.spawn(command, args, {stdio: 'inherit'});
     process.on('error', reject);
-    process.on('close', code => {
+    process.on('close', (code) => {
       if (code === 0) {
         resolve();
       } else {
@@ -38,8 +62,8 @@ function processPromiseWrapper(command, args) {
  */
 function promiseAllWrapper(promises) {
   let rejected = [];
-  return Promise.all(promises.map(promise => {
-    return promise.catch(error => rejected.push(error));
+  return Promise.all(promises.map((promise) => {
+    return promise.catch((error) => rejected.push(error));
   })).then(() => rejected.length ? Promise.reject(rejected.join('\n')) : null);
 }
 
@@ -55,10 +79,48 @@ function promiseAllWrapper(promises) {
  */
 function taskHarness(task, projectOrStar, ...args) {
   return globPromise(`projects/${projectOrStar}/package.json`)
-    .then(projects => promiseAllWrapper(
-      projects.map(project => task(path.dirname(project), ...args))
+    .then((projects) => promiseAllWrapper(
+      projects.map((project) =>
+        task(path.join(__dirname, path.dirname(project)), ...args))
     ));
 }
 
+/**
+ * This method will bundle JS with Rollup and then run through Babel for
+ * async and await transpilation and minification with babili. This will
+ * also add a license header and create sourcemaps.
+ *
+ * @param  {Object} options Options object with 'projectDir' and 'rollupConfig'
+ * @return {[type]}         [description]
+ */
+function buildJSBundle(options) {
+  const destPath = path.join(options.projectDir, 'build');
+  const licenseHeader = fs.readFileSync('LICENSE-HEADER', 'utf8');
+
+  return new Promise((resolve, reject) => {
+    gulp.src([
+      path.join(options.projectDir, 'src', '**', '*.js'),
+      path.join('lib', '**', '*.js'),
+      path.join('node_modules', '*', '**', '*.js'),
+    ])
+    .pipe(sourcemaps.init())
+    .pipe(rollup(options.rollupConfig))
+    .pipe(babel({
+      presets: ['babili', {comments: false}],
+    }))
+    .pipe(header(licenseHeader))
+    .pipe(rename(options.outputName))
+    // Source maps are written relative tot he gulp.dest() path
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(destPath))
+    .on('error', (err) => {
+      reject(err);
+    })
+    .on('end', () => {
+      resolve();
+    });
+  });
+}
+
 module.exports = {globPromise, processPromiseWrapper,
-  promiseAllWrapper, taskHarness};
+  promiseAllWrapper, taskHarness, buildJSBundle};

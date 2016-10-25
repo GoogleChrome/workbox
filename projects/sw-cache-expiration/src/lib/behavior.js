@@ -13,9 +13,9 @@
  limitations under the License.
 */
 
+import idb from 'idb';
 import Configuration from './configuration';
 import assert from '../../../../lib/assert';
-import idb from 'idb';
 import {idbName, idbVersion} from './constants';
 
 export default class Behavior {

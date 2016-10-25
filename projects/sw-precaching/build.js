@@ -12,49 +12,41 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-
-const babel = require('rollup-plugin-babel');
-const commonjs = require('rollup-plugin-commonjs');
+const rollupBabel = require('rollup-plugin-babel');
 const path = require('path');
-const resolve = require('rollup-plugin-node-resolve');
-const rollup = require('rollup').rollup;
-
+const {buildJSBundle} = require('../../build-utils');
 const pkg = require('./package.json');
-const targets = [{
-  dest: path.join(__dirname, 'build', pkg.main),
-  format: 'umd',
-  moduleName: 'goog.precaching',
-  sourceMap: true,
-}, {
-  dest: path.join(__dirname, 'build', pkg['jsnext:main']),
-  format: 'es',
-  sourceMap: true,
-}];
 
 module.exports = () => {
-  return rollup({
-    entry: path.join(__dirname, 'src', 'index.js'),
-  }).then((bundle) => Promise.all(
-    targets.map((target) => bundle.write(target))
-  ));
-};
-
-module.exports = () => {
-  return rollup({
-    entry: path.join(__dirname, 'src', 'index.js'),
-    plugins: [
-      resolve({
-        jsnext: true,
-        main: true,
-        browser: true,
-      }),
-      commonjs(),
-      babel({
-        plugins: ['transform-async-to-generator', 'external-helpers'],
-        exclude: 'node_modules/**',
-      }),
-    ],
-  }).then((bundle) => Promise.all(
-    targets.map((target) => bundle.write(target))
-  ));
+  return Promise.all([
+    buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'umd',
+        moduleName: 'goog.precaching',
+        plugins: [
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
+        ],
+      },
+      outputName: pkg.main,
+      projectDir: __dirname,
+    }),
+    buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'es',
+        plugins: [
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
+        ],
+      },
+      outputName: pkg['jsnext:main'],
+      projectDir: __dirname,
+    }),
+  ]);
 };
