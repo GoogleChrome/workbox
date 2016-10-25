@@ -12,6 +12,7 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script:
-  - gulp build
   - gulp lint
-  - gulp test
+  - gulp build
+  - gulp testgit st
+  # - TODO: Fix gulp documentation to ensure documentation will build

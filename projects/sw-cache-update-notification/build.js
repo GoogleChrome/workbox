@@ -13,12 +13,12 @@
  limitations under the License.
 */
 const path = require('path');
-const buildBundle = require('../../shared-build/build-bundle');
+const {buildJSBundle} = require('../../build-utils');
 const pkg = require('./package.json');
 
 module.exports = () => {
   return Promise.all([
-    buildBundle({
+    buildJSBundle({
       rollupConfig: {
         entry: path.join(__dirname, 'src', 'index.js'),
         format: 'umd',
@@ -27,7 +27,7 @@ module.exports = () => {
       outputName: pkg.main,
       projectDir: __dirname,
     }),
-    buildBundle({
+    buildJSBundle({
       rollupConfig: {
         entry: path.join(__dirname, 'src', 'index.js'),
         format: 'es',
