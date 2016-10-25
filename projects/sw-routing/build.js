@@ -33,7 +33,7 @@ module.exports = () => {
         entry: path.join(__dirname, 'src', 'index.js'),
         format: 'es',
       },
-      outputName: pkg.module,
+      outputName: pkg['jsnext:main'],
       projectDir: __dirname,
     }),
   ]);

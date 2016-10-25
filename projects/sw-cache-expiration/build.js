@@ -13,7 +13,10 @@
  limitations under the License.
 */
 
+const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
+
+/**
 const path = require('path');
 const resolve = require('rollup-plugin-node-resolve');
 const rollup = require('rollup').rollup;
@@ -44,4 +47,38 @@ module.exports = () => {
   }).then((bundle) => Promise.all(
     targets.map((target) => bundle.write(target))
   ));
+};**/
+
+const path = require('path');
+const buildBundle = require('../../shared-build/build-bundle');
+const pkg = require('./package.json');
+
+module.exports = () => {
+  return Promise.all([
+    buildBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'umd',
+        moduleName: 'goog.cacheExpiration',
+        plugins: [
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          commonjs(),
+        ],
+      },
+      outputName: pkg.main,
+      projectDir: __dirname,
+    }),
+    /** buildBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'es',
+      },
+      outputName: pkg['jsnext:main'],
+      projectDir: __dirname,
+    }),**/
+  ]);
 };

@@ -12,36 +12,28 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-
-const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
-const resolve = require('rollup-plugin-node-resolve');
-const rollup = require('rollup').rollup;
-
+const buildBundle = require('../../shared-build/build-bundle');
 const pkg = require('./package.json');
-const targets = [{
-  dest: path.join(__dirname, 'build', pkg.main),
-  format: 'umd',
-  moduleName: 'goog.cacheUpdateNotification',
-  sourceMap: true,
-}, {
-  dest: path.join(__dirname, 'build', pkg['jsnext:main']),
-  format: 'es',
-  sourceMap: true,
-}];
 
 module.exports = () => {
-  return rollup({
-    entry: path.join(__dirname, 'src', 'index.js'),
-    plugins: [
-      resolve({
-        jsnext: true,
-        main: true,
-        browser: true,
-      }),
-      commonjs(),
-    ],
-  }).then((bundle) => Promise.all(
-    targets.map((target) => bundle.write(target))
-  ));
+  return Promise.all([
+    buildBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'umd',
+        moduleName: 'goog.cacheUpdateNotification',
+      },
+      outputName: pkg.main,
+      projectDir: __dirname,
+    }),
+    buildBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'es',
+      },
+      outputName: pkg['jsnext:main'],
+      projectDir: __dirname,
+    }),
+  ]);
 };

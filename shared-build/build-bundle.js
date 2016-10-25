@@ -31,12 +31,12 @@ module.exports = (options) => {
     gulp.src([
       path.join(options.projectDir, 'src', '**', '*.js'),
       path.join(__dirname, '..', 'lib', '**', '*.js'),
+      path.join(__dirname, '..', 'node_modules', '**', '*.js'),
     ])
     .pipe(sourcemaps.init())
-    // transform the files here.
     .pipe(rollup(options.rollupConfig))
     .pipe(babel({
-      plugins: ['external-helpers'],
+      plugins: ['transform-async-to-generator', 'external-helpers'],
       presets: ['babili', {comments: false}],
     }))
     .pipe(header(licenseHeader))
