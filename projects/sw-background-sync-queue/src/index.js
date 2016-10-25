@@ -11,5 +11,7 @@
  limitations under the License.
  */
 
-var initialize = require ('./lib/initialization');
-module.exports = { initialize };
+import initialize from './lib/initialization';
+import pushIntoQueue from './lib/enqueue';
+
+export default { initialize, pushIntoQueue };

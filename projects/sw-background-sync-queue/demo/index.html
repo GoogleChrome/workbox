@@ -10,10 +10,7 @@
 		<script>
 			var _reg;
 			function putReqInQ(t){
-				console.log("queing");
-				_reg.sync.register(t).then(() => {
-						console.log('Sync registered');
-				});
+				fetch('/api/'+t)
 			}
 			// Register our service worker.
       if ('serviceWorker' in navigator) {
