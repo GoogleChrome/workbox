@@ -12,6 +12,6 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script:
-  - gulp build
   - gulp lint
+  - gulp build
   - gulp test

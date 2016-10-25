@@ -22,5 +22,5 @@ export {
   Behavior,
   broadcastUpdate,
   cacheUpdatedMessageType,
-  sameResponses
+  sameResponses,
 };

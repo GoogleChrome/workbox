@@ -27,19 +27,21 @@ const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
   constants.IDB.STORE);
 
 const testLogic = (initialUrls, expectedUrls, time, opts) => {
-  return Promise.all(initialUrls.map(url => {
+  return Promise.all(initialUrls.map((url) => {
     return enqueueRequest(new Request(url), time);
   })).then(() => replayRequests(opts))
-    .then(() => fetchMock.calls().matched.map(match => match[0]))
-    .then(matchedUrls => chai.expect(matchedUrls).to.deep.equal(expectedUrls))
+    .then(() => fetchMock.calls().matched.map((match) => match[0]))
+    .then((matchedUrls) => chai.expect(matchedUrls).to.deep.equal(expectedUrls))
     .then(() => idbHelper.getAllKeys())
-    .then(keys => chai.expect(keys.length).to.equal(0));
+    .then((keys) => chai.expect(keys.length).to.equal(0));
 };
 
 describe('replay-queued-requests', () => {
   const urlPrefix = 'https://replay-queued-requests.com/';
-  const initialTimestamp = 1470405670000; // An arbitrary, but valid, timestamp in milliseconds.
-  const timestampOffset = 1000; // A 1000 millisecond offset.
+  // An arbitrary, but valid, timestamp in milliseconds.
+  const initialTimestamp = 1470405670000;
+  // A 1000 millisecond offset.
+  const timestampOffset = 1000;
 
   beforeEach(() => {
     fetchMock.mock(`^${urlPrefix}`, new Response());
@@ -52,9 +54,9 @@ describe('replay-queued-requests', () => {
   });
 
   it('should replay queued requests', () => {
-    const urls = ['one', 'two?three=4'].map(suffix => urlPrefix + suffix);
+    const urls = ['one', 'two?three=4'].map((suffix) => urlPrefix + suffix);
     const time = initialTimestamp;
-    const urlsWithQt = urls.map(url => {
+    const urlsWithQt = urls.map((url) => {
       const newUrl = new URL(url);
       newUrl.searchParams.set('qt', timestampOffset);
       return newUrl.toString();
@@ -64,16 +66,16 @@ describe('replay-queued-requests', () => {
   });
 
   it('should replay queued requests with parameters overrides', () => {
-    const urls = ['one', 'two?three=4'].map(suffix => urlPrefix + suffix);
+    const urls = ['one', 'two?three=4'].map((suffix) => urlPrefix + suffix);
     const time = initialTimestamp;
     const parameterOverrides = {
       three: 5,
       four: 'six',
-      qt: timestampOffset
+      qt: timestampOffset,
     };
-    const urlsWithParameterOverrides = urls.map(url => {
+    const urlsWithParameterOverrides = urls.map((url) => {
       const newUrl = new URL(url);
-      Object.keys(parameterOverrides).sort().forEach(parameter => {
+      Object.keys(parameterOverrides).sort().forEach((parameter) => {
         newUrl.searchParams.set(parameter, parameterOverrides[parameter]);
       });
       return newUrl.toString();
@@ -84,13 +86,13 @@ describe('replay-queued-requests', () => {
   });
 
   it('should replay queued requests with a hit filter', () => {
-    const urls = ['one', 'two?three=4'].map(suffix => urlPrefix + suffix);
+    const urls = ['one', 'two?three=4'].map((suffix) => urlPrefix + suffix);
     const time = initialTimestamp;
-    const hitFilter = searchParams => {
+    const hitFilter = (searchParams) => {
       const qt = searchParams.get('qt');
       searchParams.set('cm1', qt);
     };
-    const urlsWithHitFilterApplied = urls.map(url => {
+    const urlsWithHitFilterApplied = urls.map((url) => {
       const newUrl = new URL(url);
       newUrl.searchParams.set('qt', timestampOffset);
       newUrl.searchParams.set('cm1', timestampOffset);
@@ -102,16 +104,16 @@ describe('replay-queued-requests', () => {
   });
 
   it('should not a replay queued requests when hit filter throws', () => {
-    const urls = ['one', 'two?three=4'].map(suffix => urlPrefix + suffix);
+    const urls = ['one', 'two?three=4'].map((suffix) => urlPrefix + suffix);
     const time = initialTimestamp;
-    const hitFilter = searchParams => {
+    const hitFilter = (searchParams) => {
       const qt = searchParams.get('qt');
       searchParams.set('cm1', qt);
       if (searchParams.get('three') === '4') {
         throw new Error('abort!');
       }
     };
-    const urlsWithHitFilterApplied = urls.slice(0, 1).map(url => {
+    const urlsWithHitFilterApplied = urls.slice(0, 1).map((url) => {
       const newUrl = new URL(url);
       newUrl.searchParams.set('qt', timestampOffset);
       newUrl.searchParams.set('cm1', timestampOffset);

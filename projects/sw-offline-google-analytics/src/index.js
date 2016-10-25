@@ -79,13 +79,13 @@ const replayQueuedRequests = require('./lib/replay-queued-requests.js');
  *                    replayed, throw an error.
  * @returns {undefined}
  */
-const initialize = config => {
+const initialize = (config) => {
   config = config || {};
 
   // Stores whether or not the previous /collect request failed.
   let previousHitFailed = false;
 
-  self.addEventListener('fetch', event => {
+  self.addEventListener('fetch', (event) => {
     const url = new URL(event.request.url);
     const request = event.request;
 
@@ -99,13 +99,13 @@ const initialize = config => {
         const clonedRequest = request.clone();
 
         event.respondWith(
-          fetch(request).then(response => {
+          fetch(request).then((response) => {
             if (previousHitFailed) {
               replayQueuedRequests(config);
             }
             previousHitFailed = false;
             return response;
-          }, error => {
+          }, (error) => {
             log('Enqueuing failed request...');
             previousHitFailed = true;
             return enqueueRequest(clonedRequest).then(() => Response.error());
@@ -115,10 +115,10 @@ const initialize = config => {
         // If this is a request for the Google Analytics JavaScript library,
         // use the network first, falling back to the previously cached copy.
         event.respondWith(
-          caches.open(constants.CACHE_NAME).then(cache => {
-            return fetch(request).then(response => {
+          caches.open(constants.CACHE_NAME).then((cache) => {
+            return fetch(request).then((response) => {
               return cache.put(request, response.clone()).then(() => response);
-            }).catch(error => {
+            }).catch((error) => {
               log(error);
               return cache.match(request);
             });

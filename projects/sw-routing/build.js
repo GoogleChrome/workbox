@@ -14,27 +14,27 @@
 */
 
 const path = require('path');
-const rollup = require('rollup').rollup;
+const {buildJSBundle} = require('../../build-utils');
 const pkg = require('./package.json');
 
-const destPath = path.join(__dirname, 'build');
-
-// This defines our the src is transpiled (i.e. one for ES Modules, one for UMD)
-const buildTargets = [{
-  dest: path.join(destPath, pkg.main),
-  format: 'umd',
-  moduleName: 'goog.routing',
-  sourceMap: true
-}, {
-  dest: path.join(destPath, pkg['jsnext:main']),
-  format: 'es',
-  sourceMap: true
-}];
-
 module.exports = () => {
-  return rollup({
-    entry: path.join(__dirname, 'src', 'index.js')
-  }).then(bundle => Promise.all(
-    buildTargets.map(target => bundle.write(target))
-  ));
+  return Promise.all([
+    buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'umd',
+        moduleName: 'goog.routing',
+      },
+      outputName: pkg.main,
+      projectDir: __dirname,
+    }),
+    buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'es',
+      },
+      outputName: pkg['jsnext:main'],
+      projectDir: __dirname,
+    }),
+  ]);
 };

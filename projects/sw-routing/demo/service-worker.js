@@ -16,12 +16,12 @@ const routes = [
     when: goog.routing.predicates.extensionIsOneOf(['txt']),
     handler: goog.runtimeCaching.staleWhileRevalidate,
     configuration: [
-      new goog.cacheUpdateNotification.Behavior({channelName: 'cache-updates'})
-    ]
-  })
+      new goog.cacheUpdateNotification.Behavior({channelName: 'cache-updates'}),
+    ],
+  }),
 ];
 const defaultRoute = new goog.routing.Route({
-  handler: goog.runtimeCaching.networkFirst
+  handler: goog.runtimeCaching.networkFirst,
 });
 
 const router = new goog.routing.Router();

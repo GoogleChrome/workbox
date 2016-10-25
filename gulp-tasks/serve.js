@@ -16,20 +16,21 @@
 /* eslint-disable no-console, valid-jsdoc */
 
 const gulp = require('gulp');
-const minimist = require('minimist');
-const runSequence = require('run-sequence');
+const path = require('path');
+const express = require('express');
+const serveIndex = require('serve-index');
+const serveStatic = require('serve-static');
 
-const options = minimist(process.argv.slice(2));
-global.port = options.port || 3000;
-global.projectOrStar = options.project || '*';
+gulp.task('serve', (unusedCallback) => {
+  const app = express();
+  const rootDirectory = global.projectOrStar === '*' ?
+    'projects' :
+    path.join('projects', global.projectOrStar);
 
-require('./gulp-tasks/lint.js');
-require('./gulp-tasks/build.js');
-require('./gulp-tasks/test.js');
-require('./gulp-tasks/documentation.js');
-require('./gulp-tasks/publish.js');
-require('./gulp-tasks/serve.js');
-
-gulp.task('default', (callback) => {
-  runSequence(['lint', 'test'], 'documentation', callback);
+  app.use(serveStatic(rootDirectory));
+  app.use(serveIndex(rootDirectory, {view: 'details'}));
+  app.listen(global.port, () => {
+    console.log(`Serving '${rootDirectory}' at ` +
+      `http://localhost:${global.port}/`);
+  });
 });

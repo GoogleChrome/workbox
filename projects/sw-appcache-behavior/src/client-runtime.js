@@ -15,13 +15,13 @@
 
 /* eslint-env browser */
 
-var constants = require('./lib/constants.js');
+const constants = require('./lib/constants.js');
 
-var swScript = document.currentScript.dataset.serviceWorker;
-var manifestAttribute = document.documentElement.getAttribute('manifest');
+const swScript = document.currentScript.dataset.serviceWorker;
+const manifestAttribute = document.documentElement.getAttribute('manifest');
 
 if (manifestAttribute && 'serviceWorker' in navigator) {
-  var manifestUrl = (new URL(manifestAttribute, location.href)).href;
+  const manifestUrl = (new URL(manifestAttribute, location.href)).href;
 
   openIdb().then(function(db) {
     return checkManifestVersion(db, manifestUrl).then(function(hash) {
@@ -42,7 +42,7 @@ if (manifestAttribute && 'serviceWorker' in navigator) {
  */
 function openIdb() {
   // TODO: Use idb-helpers.js instead.
-  var idb = require('idb');
+  const idb = require('idb');
   return idb.open(constants.DB_NAME, constants.DB_VERSION, function(upgradeDB) {
     if (upgradeDB.oldVersion === 0) {
       Object.keys(constants.STORES).forEach(function(objectStore) {
@@ -63,18 +63,18 @@ function openIdb() {
 function addToCache(hash, urls) {
   // Use the manifest hash as the name of the Cache to open.
   return caches.open(hash).then(function(cache) {
-    var fetchRequests = urls.map(function(url) {
+    const fetchRequests = urls.map(function(url) {
       // See Item 18.3 of https://html.spec.whatwg.org/multipage/browsers.html#downloading-or-updating-an-application-cache
-      var request = new Request(url, {
+      const request = new Request(url, {
         credentials: 'include',
         headers: {
-          'X-Use-Fetch': true
+          'X-Use-Fetch': true,
         },
-        redirect: 'manual'
+        redirect: 'manual',
       });
 
       return fetch(request).then(function(response) {
-        var cacheControl = response.headers.get('Cache-Control');
+        const cacheControl = response.headers.get('Cache-Control');
         if (cacheControl && cacheControl.indexOf('no-store') !== -1) {
           // Bail early if we're told not to cache this response.
           return;
@@ -122,36 +122,36 @@ function addToCache(hash, urls) {
  * @returns {Promise.<String>}
  */
 function checkManifestVersion(db, manifestUrl) {
-  var tx = db.transaction(constants.STORES.MANIFEST_URL_TO_CONTENTS);
-  var store = tx.objectStore(
+  const tx = db.transaction(constants.STORES.MANIFEST_URL_TO_CONTENTS);
+  const store = tx.objectStore(
     constants.STORES.MANIFEST_URL_TO_CONTENTS);
 
   // See Item 4 of https://html.spec.whatwg.org/multipage/browsers.html#downloading-or-updating-an-application-cache
-  var manifestRequest = new Request(manifestUrl, {
+  const manifestRequest = new Request(manifestUrl, {
     credentials: 'include',
     headers: {
-      'X-Use-Fetch': true
-    }
+      'X-Use-Fetch': true,
+    },
   });
 
   return Promise.all([
     // TODO: Handle manifest fetch failure errors.
     fetch(manifestRequest).then(function(manifestResponse) {
-      var dateHeaderValue = manifestResponse.headers.get('date');
+      const dateHeaderValue = manifestResponse.headers.get('date');
       if (dateHeaderValue) {
-        var manifestDate = new Date(dateHeaderValue).valueOf();
+        const manifestDate = new Date(dateHeaderValue).valueOf();
         // Calculate the age of the manifest in milliseconds.
-        var manifestAgeInMillis = Date.now() - manifestDate;
+        const manifestAgeInMillis = Date.now() - manifestDate;
         // If the age is greater than 24 hours, then we need to refetch without
         // hitting the cache.
         if (manifestAgeInMillis > (24 * 60 * 60 * 1000)) {
-          var noCacheRequest = new Request(manifestUrl, {
+          const noCacheRequest = new Request(manifestUrl, {
             credentials: 'include',
             // See https://fetch.spec.whatwg.org/#requestcache
             cache: 'reload',
             headers: {
-              'X-Use-Fetch': true
-            }
+              'X-Use-Fetch': true,
+            },
           });
 
           return fetch(noCacheRequest).then(function(noCacheResponse) {
@@ -162,21 +162,21 @@ function checkManifestVersion(db, manifestUrl) {
 
       return manifestResponse.text();
     }).then(function(text) {
-      var md5 = require('blueimp-md5');
+      const md5 = require('blueimp-md5');
       return {
         // Hash a combination of URL and text so that two identical manifests
         // served from a different location are treated distinctly.
         hash: md5(manifestUrl + text),
-        text: text
+        text: text,
       };
     }),
-    store.get(manifestUrl)
+    store.get(manifestUrl),
   ]).then(function(values) {
     // values[0].hash is the MD5 hash of the manifest returned by fetch().
     // values[0].text is the manifest text returned by fetch().
     // values[1] is array of Objects with {hash, parsed} properties, or null.
-    var knownManifests = values[1] || [];
-    var knownManifestVersion = knownManifests.some(function(entry) {
+    const knownManifests = values[1] || [];
+    const knownManifestVersion = knownManifests.some(function(entry) {
       return entry.hash === values[0].hash;
     });
 
@@ -209,25 +209,25 @@ function checkManifestVersion(db, manifestUrl) {
  * @returns {Promise.<String>}
  */
 function performManifestUpdate(db, manifestUrl, hash, text, knownManifests) {
-  var parseAppCacheManifest = require('parse-appcache-manifest');
-  var parsedManifest = makeManifestUrlsAbsolute(manifestUrl,
+  const parseAppCacheManifest = require('parse-appcache-manifest');
+  const parsedManifest = makeManifestUrlsAbsolute(manifestUrl,
     parseAppCacheManifest(text));
 
   knownManifests.push({
     hash: hash,
-    parsed: parsedManifest
+    parsed: parsedManifest,
   });
 
-  var fallbackUrls = Object.keys(parsedManifest.fallback).map(function(key) {
+  const fallbackUrls = Object.keys(parsedManifest.fallback).map(function(key) {
     return parsedManifest.fallback[key];
   });
 
-  var urlsToCache = parsedManifest.cache.concat(fallbackUrls);
+  const urlsToCache = parsedManifest.cache.concat(fallbackUrls);
 
   // All the master entries, i.e. those pages that were associated with an older
   // version of the manifest at the same URL, should be copied over to the new
   // cache as well.
-  var readTx = db.transaction(constants.STORES.PATH_TO_MANIFEST, 'readonly');
+  const readTx = db.transaction(constants.STORES.PATH_TO_MANIFEST, 'readonly');
   readTx.objectStore(constants.STORES.PATH_TO_MANIFEST).iterateCursor(
     function(cursor) {
       if (cursor) {
@@ -240,16 +240,16 @@ function performManifestUpdate(db, manifestUrl, hash, text, knownManifests) {
   );
 
   return readTx.complete.then(function() {
-    var writeTx = db.transaction(constants.STORES.MANIFEST_URL_TO_CONTENTS,
+    const writeTx = db.transaction(constants.STORES.MANIFEST_URL_TO_CONTENTS,
       'readwrite');
-    var manifestUrlToContentsStore = writeTx.objectStore(
+    const manifestUrlToContentsStore = writeTx.objectStore(
       constants.STORES.MANIFEST_URL_TO_CONTENTS);
 
     return Promise.all([
       manifestUrlToContentsStore.put(knownManifests, manifestUrl),
       // Wait on tx.complete to ensure that the transaction succeeded.
       writeTx.complete,
-      addToCache(hash, urlsToCache)
+      addToCache(hash, urlsToCache),
     ]);
   }).then(function() {
     return hash;
@@ -269,15 +269,15 @@ function performManifestUpdate(db, manifestUrl, hash, text, knownManifests) {
  * @returns {Promise.<T>}
  */
 function updateManifestAssociationForCurrentPage(db, manifestUrl, hash) {
-  var tx = db.transaction(constants.STORES.PATH_TO_MANIFEST,
+  const tx = db.transaction(constants.STORES.PATH_TO_MANIFEST,
     'readwrite');
-  var store = tx.objectStore(constants.STORES.PATH_TO_MANIFEST);
+  const store = tx.objectStore(constants.STORES.PATH_TO_MANIFEST);
 
   return Promise.all([
     store.put(manifestUrl, location.href),
     // Wait on tx.complete to ensure that the transaction succeeded.
     tx.complete,
-    addToCache(hash, [location.href])
+    addToCache(hash, [location.href]),
   ]);
 }
 
@@ -291,7 +291,7 @@ function updateManifestAssociationForCurrentPage(db, manifestUrl, hash) {
  * @returns {Object}
  */
 function makeManifestUrlsAbsolute(baseUrl, originalManifest) {
-  var manifest = {};
+  const manifest = {};
 
   manifest.cache = originalManifest.cache.map(function(relativeUrl) {
     return (new URL(relativeUrl, baseUrl)).href;

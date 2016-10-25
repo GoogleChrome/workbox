@@ -13,35 +13,46 @@
  limitations under the License.
 */
 
+const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
-const resolve = require('rollup-plugin-node-resolve');
-const rollup = require('rollup').rollup;
-
+const {buildJSBundle} = require('../../build-utils');
 const pkg = require('./package.json');
-const targets = [{
-  dest: path.join(__dirname, 'build', pkg.main),
-  format: 'umd',
-  moduleName: 'goog.cacheExpiration',
-  sourceMap: true
-}, {
-  dest: path.join(__dirname, 'build', pkg['jsnext:main']),
-  format: 'es',
-  sourceMap: true
-}];
 
 module.exports = () => {
-  return rollup({
-    entry: path.join(__dirname, 'src', 'index.js'),
-    plugins: [
-      resolve({
-        jsnext: true,
-        main: true,
-        browser: true
-      }),
-      commonjs()
-    ]
-  }).then(bundle => Promise.all(
-    targets.map(target => bundle.write(target))
-  ));
+  return Promise.all([
+    buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'umd',
+        moduleName: 'goog.cacheExpiration',
+        plugins: [
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          commonjs(),
+        ],
+      },
+      outputName: pkg.main,
+      projectDir: __dirname,
+    }),
+    buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'es',
+        plugins: [
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          commonjs(),
+        ],
+      },
+      outputName: pkg['jsnext:main'],
+      projectDir: __dirname,
+    }),
+  ]);
 };

@@ -20,7 +20,7 @@ export default ({first, second, headersToCheck} = {}) => {
   assert.isInstance({second}, Response);
   assert.isInstance({headersToCheck}, Array);
 
-  return headersToCheck.every(header => {
+  return headersToCheck.every((header) => {
     return (first.headers.has(header) === second.headers.has(header)) &&
       (first.headers.get(header) === second.headers.get(header));
   });

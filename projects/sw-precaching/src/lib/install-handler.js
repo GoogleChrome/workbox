@@ -16,13 +16,13 @@
 import assert from '../../../../lib/assert';
 import {version, defaultCacheId} from './constants';
 
-const setOfCachedUrls = cache => {
+const setOfCachedUrls = (cache) => {
   return cache.keys()
-    .then(requests => requests.map(request => request.url))
-    .then(urls => new Set(urls));
+    .then((requests) => requests.map((request) => request.url))
+    .then((urls) => new Set(urls));
 };
 
-const urlsToCacheKeys = precacheConfig => new Map(
+const urlsToCacheKeys = (precacheConfig) => new Map(
   /** urls.map(item => {
     var relativeUrl = item[0];
     var hash = item[1];
@@ -35,16 +35,17 @@ const urlsToCacheKeys = precacheConfig => new Map(
 export default ({assetsAndHahes, cacheId} = {}) => {
   assert.isType(assetsAndHahes, 'array');
 
-  self.addEventListener('install', event => {
+  self.addEventListener('install', (event) => {
     const cacheName =
       `${cacheId || defaultCacheId}-${version}-${self.registration.scope}`;
 
     event.waitUntil(
-      caches.open(cacheName).then(cache => {
-        return setOfCachedUrls(cache).then(cachedUrls => {
+      caches.open(cacheName).then((cache) => {
+        return setOfCachedUrls(cache).then((cachedUrls) => {
           return Promise.all(
             Array.from(urlsToCacheKeys.values()).map(function(cacheKey) {
-              // If we don't have a key matching url in the cache already, add it.
+              // If we don't have a key matching url in the cache already,
+              // add it.
               if (!cachedUrls.has(cacheKey)) {
                 return cache.add(
                   new Request(cacheKey, {credentials: 'same-origin'}));
