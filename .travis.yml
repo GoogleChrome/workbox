@@ -15,4 +15,3 @@ script:
   - gulp lint
   - gulp build
   - gulp test
-  # - TODO: Fix gulp documentation to ensure documentation will build
