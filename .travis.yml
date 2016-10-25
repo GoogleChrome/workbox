@@ -14,5 +14,5 @@ before_script:
 script:
   - gulp lint
   - gulp build
-  - gulp testgit st
+  - gulp test
   # - TODO: Fix gulp documentation to ensure documentation will build
