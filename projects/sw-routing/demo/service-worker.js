@@ -11,8 +11,8 @@ importScripts(
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', () => self.clients.claim());
 
-const cacheWrapper = new goog.runtimeCaching.CacheWrapper({
-  name: 'text-files',
+const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+  cacheName: 'text-files',
   behaviors: [
     new goog.broadcastCacheUpdate.Behavior({channelName: 'cache-updates'})
   ]
@@ -20,7 +20,7 @@ const cacheWrapper = new goog.runtimeCaching.CacheWrapper({
 
 const route = new goog.routing.RegExpRoute({
   regExp: /\.txt$/,
-  handler: new goog.runtimeCaching.StaleWhileRevalidate({cacheWrapper}),
+  handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper}),
 });
 
 const router = new goog.routing.Router();
