@@ -56,9 +56,9 @@ class Router {
           continue;
         }
 
-        const matchResult = (route.match)({url, event});
+        const matchResult = route.match({url, event});
         if (matchResult || matchResult === 0 || matchResult === '') {
-          responsePromise = (route.handler)({
+          responsePromise = route.handler.handle({
             url,
             event,
             params: matchResult,
@@ -68,11 +68,11 @@ class Router {
       }
 
       if (!responsePromise && this.defaultHandler) {
-        responsePromise = (this.defaultHandler)({url, event});
+        responsePromise = this.defaultHandler.handle({url, event});
       }
 
       if (responsePromise && this.catchHandler) {
-        responsePromise = responsePromise.catch((error) => this.catchHandler({
+        responsePromise = responsePromise.catch((error) => this.catchHandler.handle({
           url,
           event,
           error,

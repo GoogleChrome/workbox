@@ -29,12 +29,12 @@ class RegExpRoute extends Route {
    * @param {RegExp} regExp The regular expression to match against URL's.
    * @param {function} handler The handler to manage the response.
    */
-  constructor(regExp, handler) {
+  constructor({regExp, handler, method}) {
     assert.isInstance({regExp}, RegExp);
     assert.hasMethod({handler}, 'handle');
 
     const match = ({url}) => url.href.match(regExp);
-    super({match, handler});
+    super({match, handler, method});
   }
 }
 
