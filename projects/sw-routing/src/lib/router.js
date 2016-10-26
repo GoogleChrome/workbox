@@ -13,6 +13,7 @@
  limitations under the License.
 */
 
+import Route from './route';
 import assert from '../../../../lib/assert';
 
 /**
@@ -20,6 +21,18 @@ import assert from '../../../../lib/assert';
  * to those Route in the order they are registered.
  */
 class Router {
+  setDefaultHandler({handler} = {}) {
+    assert.hasMethod({handler}, 'handle');
+
+    this.defaultHandler = handler;
+  }
+
+  setCatchHandler({handler} = {}) {
+    assert.hasMethod({handler}, 'handle');
+
+    this.catchHandler = handler;
+  }
+
   /**
    * Register routes will take an array of Routes to register with the
    * router.
@@ -33,35 +46,33 @@ class Router {
 
     self.addEventListener('fetch', (event) => {
       const url = new URL(event.request.url);
-      if (!(this.httpMethods.includes(event.request.method) &&
-        url.protocol.startsWith('http'))) {
+      if (!url.protocol.startsWith('http')) {
         return;
       }
 
       let responsePromise;
       for (let route of (routes || [])) {
-        const whenResult = (route.when)({url, event});
-        if (whenResult || whenResult === 0 || whenResult === '') {
+        if (route.method !== event.request.method) {
+          continue;
+        }
+
+        const matchResult = (route.match)({url, event});
+        if (matchResult || matchResult === 0 || matchResult === '') {
           responsePromise = (route.handler)({
             url,
             event,
-            configuration: route.configuration,
-            params: whenResult,
+            params: matchResult,
           });
           break;
         }
       }
 
-      if (!responsePromise && defaultRoute) {
-        responsePromise = (defaultRoute.handler)({
-          url,
-          event,
-          configuration: defaultRoute.configuration,
-        });
+      if (!responsePromise && this.defaultHandler) {
+        responsePromise = (this.defaultHandler)({url, event});
       }
 
-      if (responsePromise && catchHandler) {
-        responsePromise = responsePromise.catch((error) => catchHandler({
+      if (responsePromise && this.catchHandler) {
+        responsePromise = responsePromise.catch((error) => this.catchHandler({
           url,
           event,
           error,
@@ -72,6 +83,12 @@ class Router {
         event.respondWith(responsePromise);
       }
     });
+  }
+
+  registerRoute({route} = {}) {
+    assert.isInstance({route}, Route);
+
+    this.registerRoutes({routes: [route]});
   }
 }
 

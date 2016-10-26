@@ -13,4 +13,11 @@
  limitations under the License.
 */
 
-export const method = 'GET';
+export const defaultMethod = 'GET';
+export const validMethods = [
+  'DELETE',
+  'GET',
+  'HEAD',
+  'POST',
+  'PUT'
+];
