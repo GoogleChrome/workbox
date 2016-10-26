@@ -2,27 +2,27 @@
 /* global goog */
 
 importScripts(
-  '../build/routing.js',
-  '../../sw-runtime-caching/build/runtime-caching.js',
-  '../../sw-cache-update-notification/build/cache-update-notification.js'
+  '../build/routing.min.js',
+  '../../sw-runtime-caching/build/runtime-caching.min.js',
+  '../../sw-broadcast-cache-update/build/broadcast-cache-update.min.js'
 );
 
 // Have the service worker take control as soon as possible.
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', () => self.clients.claim());
 
-const routes = [
-  new goog.routing.Route({
-    when: goog.routing.predicates.extensionIsOneOf(['txt']),
-    handler: goog.runtimeCaching.staleWhileRevalidate,
-    configuration: [
-      new goog.cacheUpdateNotification.Behavior({channelName: 'cache-updates'}),
-    ],
-  }),
-];
-const defaultRoute = new goog.routing.Route({
-  handler: goog.runtimeCaching.networkFirst,
+const cacheWrapper = new goog.runtimeCaching.CacheWrapper({
+  name: 'text-files',
+  behaviors: [
+    new goog.broadcastCacheUpdate.Behavior({channelName: 'cache-updates'})
+  ]
+});
+
+const route = new goog.routing.RegExpRoute({
+  regExp: /\.txt$/,
+  handler: new goog.runtimeCaching.StaleWhileRevalidate({cacheWrapper}),
 });
 
 const router = new goog.routing.Router();
-router.registerRoutes({routes, defaultRoute});
+router.registerRoute({route});
+router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
