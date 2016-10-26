@@ -1,6 +1,11 @@
 import { initializationDefaults } from './constants';
+import queue from './queue';
 
-export default function pushIntoQueue(request, options){
+export default async function pushIntoQueue(request, options){
 	let config = Object.assign({}, initializationDefaults, options);
-	console.log(request, config);
+	queue.push(request, config);
+}
+
+function createQueableTask(request){
+
 }

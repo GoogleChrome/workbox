@@ -1,5 +1,4 @@
 importScripts('../build/background-sync-queue.js')
-console.log(goog);
 
 //initialize bdQ
 goog.backgroundSyncQueue.initialize()
@@ -11,3 +10,8 @@ self.addEventListener('fetch',function(e){
 		goog.backgroundSyncQueue.pushIntoQueue(clone);
 	}
 });
+
+
+// Have the service worker take control as soon as possible.
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', () => self.clients.claim());
