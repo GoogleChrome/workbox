@@ -13,19 +13,10 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
-import {cacheUpdatedMessageType} from './constants';
-
-export default ({channel, cacheName, url, source} = {}) => {
-  assert.isInstance({channel}, self.BroadcastChannel);
-  assert.isType({url}, 'string');
-
-  channel.postMessage({
-    type: cacheUpdatedMessageType,
-    meta: source,
-    payload: {
-      cacheName: cacheName,
-      updatedUrl: url,
-    },
-  });
-};
+export const cacheUpdatedMessageType = 'CACHE_UPDATED';
+export const defaultHeadersToCheck = [
+  'content-length',
+  'etag',
+  'last-modified'
+];
+export const defaultSource = 'sw-broadcast-cache-update';

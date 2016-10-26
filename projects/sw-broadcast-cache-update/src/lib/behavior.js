@@ -22,14 +22,14 @@ export default class Behavior {
   constructor({channelName, headersToCheck, source} = {}) {
     assert.isType({channelName}, 'string');
 
+    this.channelName = channelName;
     this.headersToCheck = headersToCheck || defaultHeadersToCheck;
     this.source = source || defaultSource;
-    this.channelName = channelName;
   }
 
   get channel() {
     if (!this._channel) {
-      this._channel = new self.BroadcastChannel(this.channelName);
+      this._channel = new BroadcastChannel(this.channelName);
     }
     return this._channel;
   }
