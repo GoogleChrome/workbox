@@ -13,4 +13,8 @@
  limitations under the License.
 */
 
-export const cacheName = `sw-runtime-caching-${self.registration.scope}`;
+export const defaultCacheName = `sw-runtime-caching-${self.registration.scope}`;
+export const behaviorCallbacks = [
+  'cacheDidUpdate',
+  'fetchDidFail'
+];

@@ -16,25 +16,18 @@
 /** @module sw-runtime-caching.Handler **/
 
 import CacheWrapper from './cache-wrapper';
+import {defaultCacheName} from './constants';
 
 /**
  * The Handler class...
  */
 export default class Handler {
-  constructor({behaviors} = {}) {
-    if (behaviors) {
-      this.cacheConfiguration = behaviors;
+  constructor({cacheWrapper} = {}) {
+    if (cacheWrapper) {
+      this.cacheWrapper = cacheWrapper;
+    } else {
+      this.cacheWrapper = new CacheWrapper({name: defaultCacheName});
     }
-  }
-
-  get cacheWrapper() {
-    if (!this._cacheWrapper) {
-      this._cacheWrapper = new CacheWrapper({
-        configuration: this.cacheConfiguration
-      });
-    }
-
-    return this._cacheWrapper;
   }
 
   /**
@@ -42,7 +35,7 @@ export default class Handler {
    *
    * @param {FetchEvent} event - The event triggered by a network request.
    * @param {Object} params - Any parameters passed in via the when predicate.
-   * @returns {Promise<Response} - The Response used to fulfill the request.
+   * @returns {Promise<Response>} - The Response used to fulfill the request.
    */
   handle({event, params} = {}) {
     throw Error('This abstract method must be overridden in a subclass.');

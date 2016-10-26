@@ -14,29 +14,39 @@
 */
 
 import assert from '../../../../lib/assert';
-import {cacheName as defaultCacheName} from './defaults';
+import {behaviorCallbacks} from './constants';
 
 export default class CacheWrapper {
-  constructor({configuration = []} = {}) {
-    assert.isInstance({configuration}, Array);
+  constructor({name, behaviors, fetchOptions, matchOptions} = {}) {
+    assert.isType({name}, 'string');
+    this.cacheName = name;
 
-    this.cacheName = defaultCacheName;
-    this.fetchOptions = {};
-    this.matchOptions = {};
-    this.cacheDidUpdateCallbacks = [];
+    if (fetchOptions) {
+      assert.isType({fetchOptions}, 'object');
+      this.fetchOptions = fetchOptions;
+    }
 
-    configuration.forEach((c) => {
-      if ('cacheName' in c) {
-        this.cacheName = c.cacheName;
-      }
+    if (matchOptions) {
+      assert.isType({matchOptions}, 'object');
+      this.matchOptions = matchOptions;
+    }
 
-      Object.assign(this.fetchOptions, c.fetchOptions);
-      Object.assign(this.matchOptions, c.matchOptions);
+    this.callbacks = {};
 
-      if (typeof c.cacheDidUpdate === 'function') {
-        this.cacheDidUpdateCallbacks.push(c);
-      }
-    });
+    if (behaviors) {
+      assert.isInstance({behaviors}, Array);
+
+      behaviors.forEach((behavior) => {
+        for (let callbackName of behaviorCallbacks) {
+          if (typeof behavior[callbackName] === 'function') {
+            if (!this.callbacks[callbackName]) {
+              this.callbacks[callbackName] = [];
+            }
+            this.callbacks[callbackName].push(behavior[callbackName]);
+          }
+        }
+      });
+    }
   }
 
   async getCache() {
@@ -53,10 +63,24 @@ export default class CacheWrapper {
     return await cache.match(request, this.matchOptions);
   }
 
-  async fetchAndCache({event}) {
-    assert.isInstance({event}, FetchEvent);
+  async fetch({request}) {
+    assert.atLeastOne({request});
 
-    const response = await fetch(event.request, this.fetchOptions);
+    return await fetch(request, this.fetchOptions).catch((error) => {
+      if (this.callbacks.fetchDidFail) {
+        for (let callback of this.callbacks.fetchDidFail) {
+          callback(request);
+        }
+      }
+
+      throw error;
+    });
+  }
+
+  async fetchAndCache({request}) {
+    assert.atLeastOne({request});
+
+    const response = await this.fetch({request});
     if (response.ok || response.type === 'opaque') {
       const newResponse = response.clone();
 
@@ -68,23 +92,19 @@ export default class CacheWrapper {
         // Only bother getting the old response if the new response isn't opaque
         // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
         // need it.
-        if (response.type !== 'opaque' && this.cacheDidUpdateCallbacks.length) {
-          oldResponse = await this.match({request: event.request});
+        if (response.type !== 'opaque' && this.callbacks.cacheDidUpdate) {
+          oldResponse = await this.match({request});
         }
 
         // Regardless of whether or not we'll end up invoking
         // cacheDidUpdateCallbacks, wait until the cache is updated.
-        await cache.put(event.request, newResponse);
+        await cache.put(request, newResponse);
 
         // If oldResponse is set, we want to trigger cacheDidUpdateCallbacks.
         if (oldResponse) {
-          this.cacheDidUpdateCallbacks.forEach((instance) => {
-            instance.cacheDidUpdate({
-              cacheName: this.cacheName,
-              oldResponse,
-              newResponse,
-            });
-          });
+          for (let callback of this.callbacks.cacheDidUpdate) {
+            callback({cacheName: this.cacheName, oldResponse, newResponse});
+          }
         }
       });
     }

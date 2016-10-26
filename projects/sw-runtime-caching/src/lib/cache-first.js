@@ -22,6 +22,6 @@ export default class CacheFirst extends Handler {
 
     const cachedResponse = await this.cacheWrapper.match({request: event.request});
 
-    return cachedResponse || await this.cacheWrapper.fetchAndCache({event});
+    return cachedResponse || await this.cacheWrapper.fetchAndCache({request: event.request});
   }
 }

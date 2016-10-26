@@ -20,7 +20,7 @@ import Handler from './lib/handler';
 import NetworkFirst from './lib/network-first';
 import NetworkOnly from './lib/network-only';
 import StaleWhileRevalidate from './lib/stale-while-revalidate';
-import {cacheName as defaultCacheName} from './lib/defaults';
+import {defaultCacheName} from './lib/constants';
 
 export {
   CacheFirst,

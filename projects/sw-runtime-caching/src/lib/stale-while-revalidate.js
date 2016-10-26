@@ -20,8 +20,8 @@ export default class StaleWhileRevalidate extends Handler {
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);
 
-    const fetchAndCacheResponse = this.cacheWrapper.fetchAndCache({event})
-      .catch(() => Response.error());
+    const fetchAndCacheResponse = this.cacheWrapper.fetchAndCache({
+      request: event.request}).catch(() => Response.error());
     const cachedResponse = await this.cacheWrapper.match({request: event.request});
 
     return cachedResponse || await fetchAndCacheResponse;
