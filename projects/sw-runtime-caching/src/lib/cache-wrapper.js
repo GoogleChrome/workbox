@@ -42,7 +42,7 @@ export default class CacheWrapper {
             if (!this.callbacks[callbackName]) {
               this.callbacks[callbackName] = [];
             }
-            this.callbacks[callbackName].push(behavior[callbackName]);
+            this.callbacks[callbackName].push(behavior[callbackName].bind(behavior));
           }
         }
       });
