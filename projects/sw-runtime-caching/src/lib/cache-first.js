@@ -20,8 +20,8 @@ export default class CacheFirst extends Handler {
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);
 
-    const cachedResponse = await this.cacheWrapper.match({request: event.request});
+    const cachedResponse = await this.requestWrapper.match({request: event.request});
 
-    return cachedResponse || await this.cacheWrapper.fetchAndCache({request: event.request});
+    return cachedResponse || await this.requestWrapper.fetchAndCache({request: event.request});
   }
 }

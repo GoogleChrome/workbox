@@ -20,6 +20,6 @@ export default class NetworkOnly extends Handler {
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);
 
-    return await this.cacheWrapper.fetch({request: event.request});
+    return await this.requestWrapper.fetch({request: event.request});
   }
 }

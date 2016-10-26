@@ -15,18 +15,18 @@
 
 /** @module sw-runtime-caching.Handler **/
 
-import CacheWrapper from './cache-wrapper';
+import RequestWrapper from './request-wrapper';
 import {defaultCacheName} from './constants';
 
 /**
  * The Handler class...
  */
 export default class Handler {
-  constructor({cacheWrapper} = {}) {
-    if (cacheWrapper) {
-      this.cacheWrapper = cacheWrapper;
+  constructor({requestWrapper} = {}) {
+    if (requestWrapper) {
+      this.requestWrapper = requestWrapper;
     } else {
-      this.cacheWrapper = new CacheWrapper({name: defaultCacheName});
+      this.requestWrapper = new RequestWrapper();
     }
   }
 

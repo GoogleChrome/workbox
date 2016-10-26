@@ -20,6 +20,6 @@ export default class CacheOnly extends Handler {
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);
 
-    return await this.cacheWrapper.match({request: event.request});
+    return await this.requestWrapper.match({request: event.request});
   }
 }

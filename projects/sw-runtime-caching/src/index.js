@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import CacheWrapper from './lib/cache-wrapper';
+import RequestWrapper from './lib/request-wrapper';
 import CacheFirst from './lib/cache-first';
 import CacheOnly from './lib/cache-only';
 import Handler from './lib/handler';
@@ -25,10 +25,10 @@ import {defaultCacheName} from './lib/constants';
 export {
   CacheFirst,
   CacheOnly,
-  CacheWrapper,
   Handler,
   NetworkFirst,
   NetworkOnly,
+  RequestWrapper,
   StaleWhileRevalidate,
   defaultCacheName
 };

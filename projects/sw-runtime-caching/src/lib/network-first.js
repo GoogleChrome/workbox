@@ -22,7 +22,7 @@ export default class NetworkFirst extends Handler {
 
     let response;
     try {
-      response = await this.cacheWrapper.fetchAndCache({request: event.request});
+      response = await this.requestWrapper.fetchAndCache({request: event.request});
       if (response) {
         return response;
       }
@@ -30,6 +30,6 @@ export default class NetworkFirst extends Handler {
       // no-op
     }
 
-    return await this.cacheWrapper.match({request: event.request});
+    return await this.requestWrapper.match({request: event.request});
   }
 }

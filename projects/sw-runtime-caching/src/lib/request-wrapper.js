@@ -14,12 +14,16 @@
 */
 
 import assert from '../../../../lib/assert';
-import {behaviorCallbacks} from './constants';
+import {behaviorCallbacks, defaultCacheName} from './constants';
 
-export default class CacheWrapper {
-  constructor({name, behaviors, fetchOptions, matchOptions} = {}) {
-    assert.isType({name}, 'string');
-    this.cacheName = name;
+export default class RequestWrapper {
+  constructor({cacheName, behaviors, fetchOptions, matchOptions} = {}) {
+    if (cacheName) {
+      assert.isType({cacheName}, 'string');
+      this.cacheName = cacheName;
+    } else {
+      this.cacheName = defaultCacheName;
+    }
 
     if (fetchOptions) {
       assert.isType({fetchOptions}, 'object');
