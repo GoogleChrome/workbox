@@ -22,7 +22,9 @@ export default class NetworkFirst extends Handler {
 
     let response;
     try {
-      response = await this.requestWrapper.fetchAndCache({request: event.request});
+      response = await this.requestWrapper.fetchAndCache({
+        request: event.request,
+      });
       if (response) {
         return response;
       }

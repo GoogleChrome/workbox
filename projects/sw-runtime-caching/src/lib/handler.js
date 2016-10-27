@@ -16,7 +16,6 @@
 /** @module sw-runtime-caching.Handler **/
 
 import RequestWrapper from './request-wrapper';
-import {defaultCacheName} from './constants';
 
 /**
  * The Handler class...

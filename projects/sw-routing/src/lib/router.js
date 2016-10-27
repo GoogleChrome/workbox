@@ -72,11 +72,9 @@ class Router {
       }
 
       if (responsePromise && this.catchHandler) {
-        responsePromise = responsePromise.catch((error) => this.catchHandler.handle({
-          url,
-          event,
-          error,
-        }));
+        responsePromise = responsePromise.catch((error) => {
+          return this.catchHandler.handle({url, event, error});
+        });
       }
 
       if (responsePromise) {

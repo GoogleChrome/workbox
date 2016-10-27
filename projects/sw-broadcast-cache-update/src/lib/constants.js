@@ -17,6 +17,6 @@ export const cacheUpdatedMessageType = 'CACHE_UPDATED';
 export const defaultHeadersToCheck = [
   'content-length',
   'etag',
-  'last-modified'
+  'last-modified',
 ];
 export const defaultSource = 'sw-broadcast-cache-update';

@@ -14,8 +14,8 @@ self.addEventListener('activate', () => self.clients.claim());
 const requestWrapper = new goog.runtimeCaching.RequestWrapper({
   cacheName: 'text-files',
   behaviors: [
-    new goog.broadcastCacheUpdate.Behavior({channelName: 'cache-updates'})
-  ]
+    new goog.broadcastCacheUpdate.Behavior({channelName: 'cache-updates'}),
+  ],
 });
 
 const route = new goog.routing.RegExpRoute({

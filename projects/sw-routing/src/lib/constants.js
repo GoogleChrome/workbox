@@ -19,5 +19,5 @@ export const validMethods = [
   'GET',
   'HEAD',
   'POST',
-  'PUT'
+  'PUT',
 ];

@@ -16,5 +16,5 @@
 export const defaultCacheName = `sw-runtime-caching-${self.registration.scope}`;
 export const behaviorCallbacks = [
   'cacheDidUpdate',
-  'fetchDidFail'
+  'fetchDidFail',
 ];

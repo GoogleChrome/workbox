@@ -21,8 +21,11 @@ export default class StaleWhileRevalidate extends Handler {
     assert.isInstance({event}, FetchEvent);
 
     const fetchAndCacheResponse = this.requestWrapper.fetchAndCache({
-      request: event.request}).catch(() => Response.error());
-    const cachedResponse = await this.requestWrapper.match({request: event.request});
+      request: event.request,
+    }).catch(() => Response.error());
+    const cachedResponse = await this.requestWrapper.match({
+      request: event.request,
+    });
 
     return cachedResponse || await fetchAndCacheResponse;
   }

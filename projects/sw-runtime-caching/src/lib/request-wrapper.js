@@ -46,7 +46,8 @@ export default class RequestWrapper {
             if (!this.callbacks[callbackName]) {
               this.callbacks[callbackName] = [];
             }
-            this.callbacks[callbackName].push(behavior[callbackName].bind(behavior));
+            this.callbacks[callbackName].push(
+              behavior[callbackName].bind(behavior));
           }
         }
       });

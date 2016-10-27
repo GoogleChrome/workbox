@@ -30,5 +30,5 @@ export {
   NetworkOnly,
   RequestWrapper,
   StaleWhileRevalidate,
-  defaultCacheName
+  defaultCacheName,
 };
