@@ -13,19 +13,11 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
-import {cacheUpdatedMessageType} from './constants';
-
-export default ({channel, cacheName, url, source} = {}) => {
-  assert.isInstance({channel}, self.BroadcastChannel);
-  assert.isType({url}, 'string');
-
-  channel.postMessage({
-    type: cacheUpdatedMessageType,
-    meta: source,
-    payload: {
-      cacheName: cacheName,
-      updatedUrl: url,
-    },
-  });
-};
+export const defaultMethod = 'GET';
+export const validMethods = [
+  'DELETE',
+  'GET',
+  'HEAD',
+  'POST',
+  'PUT',
+];

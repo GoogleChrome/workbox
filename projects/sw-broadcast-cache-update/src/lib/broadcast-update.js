@@ -13,22 +13,21 @@
  limitations under the License.
 */
 
-import RequestWrapper from './lib/request-wrapper';
-import CacheFirst from './lib/cache-first';
-import CacheOnly from './lib/cache-only';
-import Handler from './lib/handler';
-import NetworkFirst from './lib/network-first';
-import NetworkOnly from './lib/network-only';
-import StaleWhileRevalidate from './lib/stale-while-revalidate';
-import {defaultCacheName} from './lib/constants';
+import assert from '../../../../lib/assert';
+import {cacheUpdatedMessageType} from './constants';
 
-export {
-  CacheFirst,
-  CacheOnly,
-  Handler,
-  NetworkFirst,
-  NetworkOnly,
-  RequestWrapper,
-  StaleWhileRevalidate,
-  defaultCacheName,
+export default ({channel, cacheName, url, source} = {}) => {
+  assert.isInstance({channel}, BroadcastChannel);
+  assert.isType({cacheName}, 'string');
+  assert.isType({source}, 'string');
+  assert.isType({url}, 'string');
+
+  channel.postMessage({
+    type: cacheUpdatedMessageType,
+    meta: source,
+    payload: {
+      cacheName: cacheName,
+      updatedUrl: url,
+    },
+  });
 };

@@ -16,6 +16,7 @@
 /** @module sw-routing.Route **/
 
 import assert from '../../../../lib/assert';
+import {defaultMethod, validMethods} from './constants';
 
 /**
  * The Route class is used to configure a *when*
@@ -37,11 +38,18 @@ class Route {
    * @param {function} options.handler - The handler function that will respond
    * to a FetchEvent.
    */
-  constructor({when, handler} = {}) {
-    assert.isType({when}, 'function');
-    assert.isType({handler}, 'function');
-    this.when = when;
+  constructor({match, handler, method} = {}) {
+    assert.isType({match}, 'function');
+    assert.hasMethod({handler}, 'handle');
+
+    this.match = match;
     this.handler = handler;
+    if (method) {
+      assert.isOneOf({method}, validMethods);
+      this.method = method;
+    } else {
+      this.method = defaultMethod;
+    }
   }
 }
 

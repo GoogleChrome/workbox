@@ -27,14 +27,14 @@ import assert from '../../../../lib/assert';
 class RegExpRoute extends Route {
   /**
    * @param {RegExp} regExp The regular expression to match against URL's.
-   * @param {funcation} handler The handler to manage the response.
+   * @param {function} handler The handler to manage the response.
    */
-  constructor(regExp, handler) {
+  constructor({regExp, handler, method}) {
     assert.isInstance({regExp}, RegExp);
-    assert.isType({handler}, 'function');
+    assert.hasMethod({handler}, 'handle');
 
-    const when = ({url}) => url.href.match(regExp);
-    super(when, handler, []);
+    const match = ({url}) => url.href.match(regExp);
+    super({match, handler, method});
   }
 }
 

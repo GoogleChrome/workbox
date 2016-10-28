@@ -17,7 +17,7 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-runtime-caching",
-  "main": "runtime-caching.js",
+  "main": "runtime-caching.min.js",
   "module": "runtime-caching.mjs",
   "jsnext:main": "runtime-caching.mjs"
 }

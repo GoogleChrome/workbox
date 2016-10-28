@@ -22,7 +22,7 @@ module.exports = () => {
       rollupConfig: {
         entry: path.join(__dirname, 'src', 'index.js'),
         format: 'umd',
-        moduleName: 'goog.cacheUpdateNotification',
+        moduleName: 'goog.broadcastCacheUpdate',
       },
       outputName: pkg.main,
       projectDir: __dirname,

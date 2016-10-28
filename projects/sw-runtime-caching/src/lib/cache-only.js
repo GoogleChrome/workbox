@@ -13,13 +13,13 @@
  limitations under the License.
 */
 
-import CacheWrapper from './cache-wrapper';
+import Handler from './handler';
 import assert from '../../../../lib/assert';
 
-export default async ({event, configuration} = {}) => {
-  assert.isInstance({event}, FetchEvent);
+export default class CacheOnly extends Handler {
+  async handle({event} = {}) {
+    assert.isInstance({event}, FetchEvent);
 
-  const cacheWrapper = new CacheWrapper({configuration});
-
-  return await cacheWrapper.match({request: event.request});
-};
+    return await this.requestWrapper.match({request: event.request});
+  }
+}

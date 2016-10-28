@@ -13,6 +13,7 @@
  limitations under the License.
 */
 
+import Route from './route';
 import assert from '../../../../lib/assert';
 
 /**
@@ -20,16 +21,16 @@ import assert from '../../../../lib/assert';
  * to those Route in the order they are registered.
  */
 class Router {
-  /**
-   * The Route consutructor expects an Object.
-   * @param {Object} options - Options to initialize the Router.
-   */
-  constructor({httpMethods} = {}) {
-    this.httpMethods = ['GET'];
-    if (httpMethods) {
-      assert.isInstance({httpMethods}, Array);
-      this.httpMethods = httpMethods;
-    }
+  setDefaultHandler({handler} = {}) {
+    assert.hasMethod({handler}, 'handle');
+
+    this.defaultHandler = handler;
+  }
+
+  setCatchHandler({handler} = {}) {
+    assert.hasMethod({handler}, 'handle');
+
+    this.catchHandler = handler;
   }
 
   /**
@@ -40,50 +41,52 @@ class Router {
    * @param {Array<Route>} options.routes
    * @returns {void}
    */
-  registerRoutes({routes, defaultRoute, catchHandler} = {}) {
-    assert.atLeastOne({routes, defaultRoute});
+  registerRoutes({routes} = {}) {
+    assert.isInstance({routes}, Array);
 
     self.addEventListener('fetch', (event) => {
       const url = new URL(event.request.url);
-      if (!(this.httpMethods.includes(event.request.method) &&
-        url.protocol.startsWith('http'))) {
+      if (!url.protocol.startsWith('http')) {
         return;
       }
 
       let responsePromise;
       for (let route of (routes || [])) {
-        const whenResult = (route.when)({url, event});
-        if (whenResult || whenResult === 0 || whenResult === '') {
-          responsePromise = (route.handler)({
+        if (route.method !== event.request.method) {
+          continue;
+        }
+
+        const matchResult = route.match({url, event});
+        if (matchResult || matchResult === 0 || matchResult === '') {
+          responsePromise = route.handler.handle({
             url,
             event,
-            configuration: route.configuration,
-            params: whenResult,
+            params: matchResult,
           });
           break;
         }
       }
 
-      if (!responsePromise && defaultRoute) {
-        responsePromise = (defaultRoute.handler)({
-          url,
-          event,
-          configuration: defaultRoute.configuration,
-        });
+      if (!responsePromise && this.defaultHandler) {
+        responsePromise = this.defaultHandler.handle({url, event});
       }
 
-      if (responsePromise && catchHandler) {
-        responsePromise = responsePromise.catch((error) => catchHandler({
-          url,
-          event,
-          error,
-        }));
+      if (responsePromise && this.catchHandler) {
+        responsePromise = responsePromise.catch((error) => {
+          return this.catchHandler.handle({url, event, error});
+        });
       }
 
       if (responsePromise) {
         event.respondWith(responsePromise);
       }
     });
+  }
+
+  registerRoute({route} = {}) {
+    assert.isInstance({route}, Route);
+
+    this.registerRoutes({routes: [route]});
   }
 }
 
