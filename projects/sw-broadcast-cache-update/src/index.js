@@ -18,6 +18,9 @@ import broadcastUpdate from './lib/broadcast-update';
 import {cacheUpdatedMessageType} from './lib/constants';
 import sameResponses from './lib/responses-are-same';
 
+/**
+ * @namespace goog.broadcastCacheUpdate
+ */
 export {
   Behavior,
   broadcastUpdate,

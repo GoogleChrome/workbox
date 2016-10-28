@@ -18,8 +18,72 @@ import broadcastUpdate from './broadcast-update';
 import responsesAreSame from './responses-are-same';
 import {defaultHeadersToCheck, defaultSource} from './constants';
 
-export default class Behavior {
-  constructor({channelName, headersToCheck, source} = {}) {
+/**
+ * @example
+ * // Used as an automatically invoked as "behavior" by a RequestWrapper:
+ *
+ * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+ *   cacheName: 'runtime-cache',
+ *   behaviors: [
+ *     new goog.broadcastCacheUpdate.Behavior({channelName: 'cache-updates'})
+ *   ]
+ * });
+ *
+ * // Set up a route to match any requests made against the example.com domain.
+ * // The requests will be handled with a stale-while-revalidate policy, and the
+ * // cache update notification behavior, as configured in requestWrapper, will
+ * // be automatically applied.
+ * const route = new goog.routing.RegExpRoute({
+ *   match: ({url}) => url.domain === 'example.com',
+ *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
+ * });
+ *
+ * @example
+ * // Explicitly invoked usage independent of the goog.routing framework, via
+ * // the notifyIfUpdated() method:
+ *
+ * const cacheUpdateBehavior = new goog.broadcastCacheUpdates.Behavior({
+ *   channelName: 'cache-updates'
+ * });
+ *
+ * const url = 'https://example.com';
+ * const cacheName = 'runtime-cache';
+ *
+ * const cache = await caches.open(cacheName);
+ * const oldResponse = await cache.match(url);
+ * const newResponse = await fetch(url);
+ * await cache.put(url, newResponse);
+ *
+ * // Only check for an update if there was a previously cached Response.
+ * if (oldResponse) {
+ *   cacheUpdateBehavior.notifyIfUpdated({
+ *     first: oldResponse,
+ *     second: newResponse,
+ *     cacheName
+ *   });
+ * }
+ */
+class Behavior {
+  /**
+   * Creates a new `Behavior` instance, which is used to compare two
+   * [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response)s
+   * and use the {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel API}
+   * to notify interested parties when those `Response`s differ.
+   *
+   * For efficiency's sake, the underlying response bodies are not compared;
+   * only specific response headers are checked.
+   *
+   * @param {string} $0.channelName The name that will be used when creating the
+   *        [`BroadcastChannel`](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel/BroadcastChannel).
+   * @param {Array.<string>} [$0.headersToCheck] A list of headers that will be
+   *        used to determine whether the `Response`s differ. If not provided,
+   *        the values `['content-length', 'etag', 'last-modified']` are used.
+   * @param {string} [$0.source] An attribution value that will be used in the
+   *        broadcast message to indicate where the update originated. If not
+   *        provided, a
+   *        {@link constants#defaultSource|default value} will be used.
+   */
+  constructor({channelName, headersToCheck, source}) {
     assert.isType({channelName}, 'string');
 
     this.channelName = channelName;
@@ -27,6 +91,12 @@ export default class Behavior {
     this.source = source || defaultSource;
   }
 
+  /**
+   * @private
+   * @returns {BroadcastChannel} The underlying
+   *          [`BroadcastChannel`](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel/BroadcastChannel)
+   *          instance used for broadcasting updates.
+   */
   get channel() {
     if (!this._channel) {
       this._channel = new BroadcastChannel(this.channelName);
@@ -34,7 +104,20 @@ export default class Behavior {
     return this._channel;
   }
 
-  cacheDidUpdate({cacheName, oldResponse, newResponse} = {}) {
+  /**
+   * A "lifecycle" callback that will be triggered automatically by the
+   * goog.runtimeCaching handlers when an entry is added to a cache.
+   *
+   * Developers would normally not call this method directly; instead,
+   * [`notifyIfUpdated`](#notifyIfUpdated) provides equivalent functionality
+   * with a slightly more efficient interface.
+   *
+   * @private
+   * @param {string} $0.cacheName The name of the cache the `Response`s belong to.
+   * @param {Response} [$0.oldResponse] The previous value in the cache, if any.
+   * @param {Response} $0.newResponse The new value in the cache.
+   */
+  cacheDidUpdate({cacheName, oldResponse, newResponse}) {
     assert.isType({cacheName}, 'string');
     assert.isInstance({newResponse}, Response);
 
@@ -47,7 +130,20 @@ export default class Behavior {
     }
   }
 
-  notifyIfUpdated({first, second, cacheName} = {}) {
+  /**
+   * An explicit method to call from your own code to trigger the comparison of
+   * two [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response)
+   * and fire off a notification via the
+   * {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel API}
+   * if they differ.
+   *
+   * @param {Response} $0.first One of the responses to compare.
+   *        This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
+   * @param {Response} $0.second Another of the respones to compare.
+   *        This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
+   * @param {string} $0.cacheName The name of the cache the `Response`s belong to.
+   */
+  notifyIfUpdated({first, second, cacheName}) {
     assert.isType({cacheName}, 'string');
 
     if (
@@ -57,3 +153,5 @@ export default class Behavior {
     }
   }
 }
+
+export default Behavior;

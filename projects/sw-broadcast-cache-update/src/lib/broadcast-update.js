@@ -16,7 +16,39 @@
 import assert from '../../../../lib/assert';
 import {cacheUpdatedMessageType} from './constants';
 
-export default ({channel, cacheName, url, source} = {}) => {
+/**
+ * Uses the {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel API}
+ * to notify interested subscribers about a change to a cached resource.
+ *
+ * You would not normally call this method directly; it's called automatically
+ * by an instance of the {@link Behavior} class. It's exposed here for the
+ * benefit of developers who would rather not use the full `Behavior`
+ * implementation.
+ *
+ * The message that's posted takes the following format, inspired by the
+ * [Flux standard action](https://github.com/acdlite/flux-standard-action#introduction)
+ * format. (Usage of [Flux](https://facebook.github.io/flux/) itself is not at
+ * all required.)
+ *
+ * ```
+ * {
+ *   type: 'CACHE_UPDATED',
+ *   meta: 'sw-broadcast-cache-update',
+ *   payload: {
+ *     cacheName: 'the-cache-name',
+ *     updatedUrl: 'https://example.com/'
+ *   }
+ * }
+ * ```
+ *
+ * @param {BroadcastChannel} $0.channel The `BroadcastChannel` to use.
+ * @param {string} $0.cacheName The name of the cache in which the updated
+ *        `Response` was stored.
+ * @param {string} $0.url The URL associated with the updated `Response`.
+ * @param {string} $0.source A string identifying this library as the source of
+ *        the update message.
+ */
+function broadcastUpdate({channel, cacheName, url, source}) {
   assert.isInstance({channel}, BroadcastChannel);
   assert.isType({cacheName}, 'string');
   assert.isType({source}, 'string');
@@ -30,4 +62,6 @@ export default ({channel, cacheName, url, source} = {}) => {
       updatedUrl: url,
     },
   });
-};
+}
+
+export default broadcastUpdate;
