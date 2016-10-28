@@ -93,7 +93,7 @@ class Behavior {
 
   /**
    * @private
-   * @returns {BroadcastChannel} The underlying
+   * @return {BroadcastChannel} The underlying
    *          [`BroadcastChannel`](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel/BroadcastChannel)
    *          instance used for broadcasting updates.
    */
@@ -113,7 +113,7 @@ class Behavior {
    * with a slightly more efficient interface.
    *
    * @private
-   * @param {string} $0.cacheName The name of the cache the `Response`s belong to.
+   * @param {string} $0.cacheName Name of the cache the `Response`s belong to.
    * @param {Response} [$0.oldResponse] The previous value in the cache, if any.
    * @param {Response} $0.newResponse The new value in the cache.
    */
@@ -141,7 +141,7 @@ class Behavior {
    *        This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
    * @param {Response} $0.second Another of the respones to compare.
    *        This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
-   * @param {string} $0.cacheName The name of the cache the `Response`s belong to.
+   * @param {string} $0.cacheName Name of the cache the `Response`s belong to.
    */
   notifyIfUpdated({first, second, cacheName}) {
     assert.isType({cacheName}, 'string');

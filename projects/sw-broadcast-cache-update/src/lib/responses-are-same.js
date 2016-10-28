@@ -23,7 +23,8 @@ import assert from '../../../../lib/assert';
  * @param {Response} $0.second Another of the `Response`s.
  * @param {Array.<string>} $0.headersToCheck A list of headers that will be
  *        used to determine whether the `Response`s differ.
- * @returns {boolean}
+ * @return {boolean} Whether or not the `Response` objects are assumed to be
+ *         the same.
  */
 function responsesAreSame({first, second, headersToCheck}) {
   assert.isInstance({first}, Response);
