@@ -13,10 +13,33 @@
  limitations under the License.
 */
 
-export const cacheUpdatedMessageType = 'CACHE_UPDATED';
-export const defaultHeadersToCheck = [
+
+/**
+ * @type {string} The value `'CACHE_UPDATED'`, used as the `type` field of the
+ *       update message.
+ */
+const cacheUpdatedMessageType = 'CACHE_UPDATED';
+
+/**
+ * @private
+ * @type {Array.<string>} The default headers to compare when determining
+ *       whether two `Response` objects are different.
+ */
+const defaultHeadersToCheck = [
   'content-length',
   'etag',
   'last-modified',
 ];
-export const defaultSource = 'sw-broadcast-cache-update';
+
+/**
+ * @private
+ * @type {string} The value `'sw-broadcast-cache-update'`, used as the `meta`
+ *       field of the update message.
+ */
+const defaultSource = 'sw-broadcast-cache-update';
+
+export {
+  cacheUpdatedMessageType,
+  defaultHeadersToCheck,
+  defaultSource,
+};

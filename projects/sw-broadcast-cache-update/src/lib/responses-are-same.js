@@ -15,7 +15,18 @@
 
 import assert from '../../../../lib/assert';
 
-export default ({first, second, headersToCheck} = {}) => {
+/**
+ * Given two `Response`s, compares several header values to see if they are
+ * the same or not.
+ *
+ * @param {Response} $0.first One of the `Response`s.
+ * @param {Response} $0.second Another of the `Response`s.
+ * @param {Array.<string>} $0.headersToCheck A list of headers that will be
+ *        used to determine whether the `Response`s differ.
+ * @return {boolean} Whether or not the `Response` objects are assumed to be
+ *         the same.
+ */
+function responsesAreSame({first, second, headersToCheck}) {
   assert.isInstance({first}, Response);
   assert.isInstance({second}, Response);
   assert.isInstance({headersToCheck}, Array);
@@ -24,4 +35,6 @@ export default ({first, second, headersToCheck} = {}) => {
     return (first.headers.has(header) === second.headers.has(header)) &&
       (first.headers.get(header) === second.headers.get(header));
   });
-};
+}
+
+export default responsesAreSame;
