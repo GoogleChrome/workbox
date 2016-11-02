@@ -13,15 +13,26 @@
  limitations under the License.
 */
 
+const commonjs = require('rollup-plugin-commonjs');
+const nodeResolve = require('rollup-plugin-node-resolve');
 const path = require('path');
-const {buildJSBundle} = require('../../build-utils');
 const pkg = require('./package.json');
+const {buildJSBundle} = require('../../build-utils');
+
+const pluginsConfig = [
+  nodeResolve({
+    jsnext: true,
+    main: true
+  }),
+  commonjs()
+];
 
 module.exports = () => {
   return Promise.all([
     buildJSBundle({
       rollupConfig: {
         entry: path.join(__dirname, 'src', 'index.js'),
+        plugins: pluginsConfig,
         format: 'umd',
         moduleName: 'goog.routing',
       },
@@ -31,6 +42,7 @@ module.exports = () => {
     buildJSBundle({
       rollupConfig: {
         entry: path.join(__dirname, 'src', 'index.js'),
+        plugins: pluginsConfig,
         format: 'es',
       },
       outputName: pkg['jsnext:main'],

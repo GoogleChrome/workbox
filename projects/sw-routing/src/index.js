@@ -13,14 +13,14 @@
  limitations under the License.
 */
 
-import * as predicates from './lib/predicates';
+import ExpressRoute from './lib/express-route';
 import RegExpRoute from './lib/regexp-route';
 import Route from './lib/route';
 import Router from './lib/router';
 
 export {
+  ExpressRoute,
   RegExpRoute,
   Route,
   Router,
-  predicates,
 };
