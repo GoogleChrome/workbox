@@ -5,8 +5,9 @@ let globalConfig = initializationDefaults;
 
 async function initialize(config){
 	globalConfig = Object.assign({}, initializationDefaults, config);
+	await queue.initialize();
+	await queue.cleanupQueue();
 	attachSyncHandler();
-	//TODO: call IDB cleanup.
 }
 
 function attachSyncHandler(){
