@@ -2,6 +2,8 @@ import stringHash from 'string-hash';
 import IDBHelper from '../../../../lib/idb-helper';
 
 let _queue;
+let _config;
+let _callbacks;
 
 const idbQHelper = new IDBHelper("bgQueueSyncDB",1,"QueueStore");
 
@@ -10,13 +12,16 @@ class Queue {
 		this.initialize();
 	}
 
-	async initialize( config ){
+	async initialize( config, callbacks ){
+		_config = config;
 		_queue = await idbQHelper.get("queue") || [];
+		_callbacks = callbacks;
 	}
 
 	async push(request, config){
 		let hash = stringHash(request.url + JSON.stringify(request.headers) + await request.text() + Date.now());
 		_queue.push(hash);
+		config = Object.assign({}, config, _config);
 
 		//add to queue
 		idbQHelper.put("queue", _queue);
@@ -88,15 +93,19 @@ async function doFetch(index){
 	if(!_queue[index])
 		return;
 	let req = await getRequestFromQueueAtIndex(index);
+	let reqClone = req.clone();
+	increaseAttemptCount(index);
 	return fetch( req )
-		.then( r => r.json() )
+		.then( response => {
+			putResponse(response.clone());
+			return response.json(); 
+		})
 		.then( data =>{
 			//TODO: put data in idb
-			increaseAttemptCount(index);
 			return doFetch( index + 1);
 		})
 		.catch (e => {
-			increaseAttemptCount(index);
+			_callbacks.onResponseFailure && _callbacks.onResponseFailure( reqClone ); 
 			doFetch( index + 1);
 		});
 }
@@ -108,6 +117,10 @@ async function increaseAttemptCount( index ){
 	reqData.metadata.attemptsDone += 1;
 	idbQHelper.put(hash, reqData);
 } 
+
+async function putResponse( reponse ){
+	//TODO: implement this
+}
 
 const queue = new Queue();
 
