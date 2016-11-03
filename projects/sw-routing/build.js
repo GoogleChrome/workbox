@@ -22,9 +22,9 @@ const {buildJSBundle} = require('../../build-utils');
 const pluginsConfig = [
   nodeResolve({
     jsnext: true,
-    main: true
+    main: true,
   }),
-  commonjs()
+  commonjs(),
 ];
 
 module.exports = () => {
