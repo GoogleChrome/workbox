@@ -2,15 +2,17 @@
 	<head></head>
 	<body>
 		<div>Hello dear</div>
-		<button onclick="putReqInQ('t1')">send req</button>
-		<button onclick="putReqInQ('t2')">send req</button>
-		<button onclick="putReqInQ('t3')">send req</button>
-		<button onclick="putReqInQ('t4')">send req</button>
-		<button onclick="putReqInQ('t5')">send req</button>
+		<button onclick="putReqInQ('1')">send req</button>
+		<button onclick="putReqInQ('2')">send req</button>
+		<button onclick="putReqInQ('3')">send req</button>
+		<button onclick="putReqInQ('4')">send req</button>
+		<button onclick="putReqInQ('5')">send req</button>
 		<script>
 			var _reg;
 			function putReqInQ(t){
-				fetch('/api/'+t)
+				fetch('http://message-list.appspot.com/messages?pageToken='+t).then(r=>r.json()).then(data=>{
+					console.log(data);
+				})
 			}
 			// Register our service worker.
       if ('serviceWorker' in navigator) {

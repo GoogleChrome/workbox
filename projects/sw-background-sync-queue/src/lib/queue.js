@@ -97,7 +97,8 @@ async function doFetch(index){
 	increaseAttemptCount(index);
 	return fetch( req )
 		.then( response => {
-			putResponse(response.clone());
+			//putResponse(response.clone());
+			_callbacks.onRetrySuccess && _callbacks.onRetrySuccess( reqClone, response);
 			return response.json(); 
 		})
 		.then( data =>{
@@ -105,7 +106,7 @@ async function doFetch(index){
 			return doFetch( index + 1);
 		})
 		.catch (e => {
-			_callbacks.onResponseFailure && _callbacks.onResponseFailure( reqClone ); 
+			_callbacks.onRetryFailure && _callbacks.onRetryFailure( reqClone ); 
 			doFetch( index + 1);
 		});
 }
