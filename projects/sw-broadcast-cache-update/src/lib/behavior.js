@@ -19,6 +19,8 @@ import responsesAreSame from './responses-are-same';
 import {defaultHeadersToCheck, defaultSource} from './constants';
 
 /**
+ * @memberof module:sw-broadcast-cache-update
+ *
  * @example
  * // Used as an automatically invoked as "behavior" by a RequestWrapper:
  *
@@ -66,19 +68,20 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
 class Behavior {
   /**
    * Creates a new `Behavior` instance, which is used to compare two
-   * [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response)s
+   * [Responses](https://developer.mozilla.org/en-US/docs/Web/API/Response)
    * and use the {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel API}
-   * to notify interested parties when those `Response`s differ.
+   * to notify interested parties when those Responses differ.
    *
    * For efficiency's sake, the underlying response bodies are not compared;
    * only specific response headers are checked.
    *
-   * @param {string} $0.channelName The name that will be used when creating the
-   *        [`BroadcastChannel`](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel/BroadcastChannel).
-   * @param {Array.<string>} [$0.headersToCheck] A list of headers that will be
+   * @param {Object} input The input object to this function.
+   * @param {string} input.channelName The name that will be used when creating
+   *        the [`BroadcastChannel`](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel/BroadcastChannel).
+   * @param {Array<string>} input.headersToCheck A list of headers that will be
    *        used to determine whether the `Response`s differ. If not provided,
    *        the values `['content-length', 'etag', 'last-modified']` are used.
-   * @param {string} [$0.source] An attribution value that will be used in the
+   * @param {string} input.source An attribution value that will be used in the
    *        broadcast message to indicate where the update originated. If not
    *        provided, a
    *        {@link constants#defaultSource|default value} will be used.
@@ -132,7 +135,7 @@ class Behavior {
 
   /**
    * An explicit method to call from your own code to trigger the comparison of
-   * two [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response)
+   * two [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response)
    * and fire off a notification via the
    * {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel API}
    * if they differ.

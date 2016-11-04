@@ -16,7 +16,7 @@
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
-export default class CacheFirst extends Handler {
+class CacheFirst extends Handler {
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);
 
@@ -29,3 +29,5 @@ export default class CacheFirst extends Handler {
     });
   }
 }
+
+export default CacheFirst;

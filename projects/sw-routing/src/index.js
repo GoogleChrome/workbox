@@ -13,6 +13,11 @@
  limitations under the License.
 */
 
+/**
+ * sw-routing Module
+ * @module sw-routing
+ */
+
 import * as predicates from './lib/predicates';
 import RegExpRoute from './lib/regexp-route';
 import Route from './lib/route';

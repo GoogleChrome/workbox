@@ -19,9 +19,13 @@ import assert from '../../../../lib/assert';
  * Given two `Response`s, compares several header values to see if they are
  * the same or not.
  *
- * @param {Response} $0.first One of the `Response`s.
- * @param {Response} $0.second Another of the `Response`s.
- * @param {Array.<string>} $0.headersToCheck A list of headers that will be
+ * @memberof module:sw-broadcast-cache-update
+ * @type {function}
+ *
+ * @param {Object} input
+ * @param {Response} input.first One of the `Response`s.
+ * @param {Response} input.second Another of the `Response`s.
+ * @param {Array<string>} input.headersToCheck A list of headers that will be
  *        used to determine whether the `Response`s differ.
  * @return {boolean} Whether or not the `Response` objects are assumed to be
  *         the same.

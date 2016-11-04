@@ -13,17 +13,20 @@
  limitations under the License.
 */
 
-
 /**
- * @type {string} The value `'CACHE_UPDATED'`, used as the `type` field of the
- *       update message.
+ * The value `'CACHE_UPDATED'`, used as the `type` field of the update message.
+ *
+ * @memberof module:sw-broadcast-cache-update
+ * @type {string}
  */
 const cacheUpdatedMessageType = 'CACHE_UPDATED';
 
 /**
+ * The default headers to compare when determining whether two `Response`
+ * objects are different.
+ *
  * @private
- * @type {Array.<string>} The default headers to compare when determining
- *       whether two `Response` objects are different.
+ * @type {Array<string>}
  */
 const defaultHeadersToCheck = [
   'content-length',
@@ -32,9 +35,11 @@ const defaultHeadersToCheck = [
 ];
 
 /**
+ * The value `'sw-broadcast-cache-update'`, used as the `meta` field of the
+ * update message.
+ *
  * @private
- * @type {string} The value `'sw-broadcast-cache-update'`, used as the `meta`
- *       field of the update message.
+ * @type {string}
  */
 const defaultSource = 'sw-broadcast-cache-update';
 

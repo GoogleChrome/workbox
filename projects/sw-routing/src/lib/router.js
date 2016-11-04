@@ -19,14 +19,28 @@ import assert from '../../../../lib/assert';
 /**
  * The Router takes a set of {@link Route}'s and will direct fetch events
  * to those Route in the order they are registered.
+ *
+ * @memberof module:sw-routing
  */
 class Router {
+  /**
+   * A default handler will have it's handle method called when a
+   * request doesn't have a matching route.
+   * @param {Object} input
+   * @param {Handler} input.handler A handler to deal with default routes.
+   */
   setDefaultHandler({handler} = {}) {
     assert.hasMethod({handler}, 'handle');
 
     this.defaultHandler = handler;
   }
 
+  /**
+   * If a Route throws an error while handling a request, this catch handler
+   * will be called to return an error case.
+   * @param {Object} input
+   * @param {Handler} input.handler A handler to deal with errors in routes.
+   */
   setCatchHandler({handler} = {}) {
     assert.hasMethod({handler}, 'handle');
 
@@ -39,7 +53,7 @@ class Router {
    *
    * @param {Object} options
    * @param {Array<Route>} options.routes
-   * @returns {void}
+   * @return {void}
    */
   registerRoutes({routes} = {}) {
     assert.isInstance({routes}, Array);
@@ -83,6 +97,11 @@ class Router {
     });
   }
 
+  /**
+   * Registers a route with the router.
+   * @param {Object} input
+   * @param {Route} input.route The route to register.
+   */
   registerRoute({route} = {}) {
     assert.isInstance({route}, Route);
 

@@ -13,8 +13,6 @@
  limitations under the License.
 */
 
-/** @module sw-routing.RegExpRoute **/
-
 import Route from './route';
 import assert from '../../../../lib/assert';
 
@@ -22,6 +20,7 @@ import assert from '../../../../lib/assert';
  * RegExpRoute is a helper class to make defining Regular Expression based
  * [Routes]{@link Route} easy.
  *
+ * @memberof module:sw-routing
  * @extends Route
  */
 class RegExpRoute extends Route {
