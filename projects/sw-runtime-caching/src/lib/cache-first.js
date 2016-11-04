@@ -16,7 +16,14 @@
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
+/**
+ * @memberof module:sw-runtime-caching
+ * @extends module:sw-runtime-caching.Handler
+ */
 class CacheFirst extends Handler {
+  /**
+   * @return {Promise<Response>} Returns cached response.
+   */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);
 

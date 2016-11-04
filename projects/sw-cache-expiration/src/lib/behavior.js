@@ -18,24 +18,53 @@ import Configuration from './configuration';
 import assert from '../../../../lib/assert';
 import {idbName, idbVersion} from './constants';
 
-export default class Behavior {
-  constructor({configuration} = {}) {
+/**
+ * TODO Behavior Description
+ * @memberof module:sw-cache-expiration
+ */
+class Behavior {
+  /**
+   * @param {Object} input
+   * @param {Object} input.configuration
+   */
+  constructor({configuration}) {
+    if (typeof configuration === 'undefined') {
+      configuration = {};
+    }
+
     assert.isInstance({configuration}, Configuration);
     this.configuration = configuration;
   }
 
+  /**
+   * Get the cache name
+   * @memberof module:sw-cache-expiration.Behavior
+   * @member {String} cacheName
+   */
   get cacheName() {
     return this.configuration.cacheName;
   }
 
+  /**
+   * Get the max cache entries.
+   * @return {Number} Returns the number of max entries
+   */
   get maxEntries() {
     return this.configuration.maxEntries;
   }
 
+  /**
+   * Get the max age for the cache entries.
+   * @return {Number} Max age in seconds for cache entries.
+   */
   get maxAgeSeconds() {
     return this.configuration.maxAgeSeconds;
   }
 
+  /**
+   * @private
+   * @return {idb} Get open idb.
+   */
   get db() {
     if (!this._db) {
       return idb.open(idbName, idbVersion, (upgradeDB) => {
@@ -48,7 +77,18 @@ export default class Behavior {
     return Promise.resolve(this._db);
   }
 
-  updateTimestamp(url, now = Date.now()) {
+  /**
+   * TODO updateTimestamp description
+   * @private
+   * @param {string} url
+   * @param {Number} now Defaults to current date.
+   * @return {Promise} Resolves once updated.
+   */
+  updateTimestamp(url, now) {
+    if (typeof now === 'undefined') {
+      now = Date.now();
+    }
+
     return this.db.then((db) => {
       const tx = db.transaction(this.cacheName, 'readwrite');
       tx.objectStore(this.cacheName).put(now, url);
@@ -56,7 +96,16 @@ export default class Behavior {
     });
   }
 
-  expireEntries(now = Date.now()) {
+  /**
+   * TODO expireEntries description
+   * @param {Number} now Defaults to the current time
+   * @return {Promise} List of removed entries.
+   */
+  expireEntries(now) {
+    if (typeof now === 'undefined') {
+      now = Date.now();
+    }
+
     const promises = [];
     promises.push(
       this.maxAgeSeconds ? this._expireOldEntries(now) : Promise.resolve([]));
@@ -67,7 +116,17 @@ export default class Behavior {
       .then(([oldEntries, extraEntries]) => oldEntries.concat(extraEntries));
   }
 
-  _expireOldEntries(now = Date.now()) {
+  /**
+   * @private
+   * @param {Number} now
+   * @return {Promise<Array<String>>} Promise that resolves to an
+   *         array of urls.
+   */
+  _expireOldEntries(now) {
+    if (typeof now === 'undefined') {
+      now = Date.now();
+    }
+
     const expireOlderThan = now - (this.maxAgeSeconds * 1000);
     const urls = [];
     return this.db.then((db) => {
@@ -87,7 +146,13 @@ export default class Behavior {
     });
   }
 
+  /**
+   * @private
+   * @return {Promise} Resolve to empty array.
+   */
   _expireExtraEntries() {
     return Promise.resolve([]);
   }
 }
+
+export default Behavior;

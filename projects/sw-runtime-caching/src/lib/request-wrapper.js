@@ -16,7 +16,17 @@
 import assert from '../../../../lib/assert';
 import {behaviorCallbacks, defaultCacheName} from './constants';
 
-export default class RequestWrapper {
+/**
+ * @memberof module:sw-runtime-caching
+ */
+class RequestWrapper {
+  /**
+   * @param {Object} input
+   * @param {String} input.cacheName
+   * @param {Array<Behavior>} input.behaviors
+   * @param {Object} input.fetchOptions
+   * @oaram {Object} input.matchOptions
+   */
   constructor({cacheName, behaviors, fetchOptions, matchOptions} = {}) {
     if (cacheName) {
       assert.isType({cacheName}, 'string');
@@ -54,6 +64,9 @@ export default class RequestWrapper {
     }
   }
 
+  /**
+   * @return {Cache} The cache for this RequestWrapper.
+   */
   async getCache() {
     if (!this._cache) {
       this._cache = await caches.open(this.cacheName);
@@ -61,6 +74,11 @@ export default class RequestWrapper {
     return this._cache;
   }
 
+  /**
+   * @param {Object} input
+   * @param {Request} input.request
+   * @return {Promise<Response>} The cache response.
+   */
   async match({request}) {
     assert.atLeastOne({request});
 
@@ -68,6 +86,11 @@ export default class RequestWrapper {
     return await cache.match(request, this.matchOptions);
   }
 
+  /**
+   * @param {Object} input
+   * @param {Request} input.request
+   * @return {Promise<Response>} The network response.
+   */
   async fetch({request}) {
     assert.atLeastOne({request});
 
@@ -82,6 +105,11 @@ export default class RequestWrapper {
     });
   }
 
+  /**
+   * @param {Object} input
+   * @param {Request} input.request
+   * @return {Promise<Response>} The network response.
+   */
   async fetchAndCache({request}) {
     assert.atLeastOne({request});
 
@@ -119,3 +147,5 @@ export default class RequestWrapper {
     return response;
   }
 }
+
+export default RequestWrapper;

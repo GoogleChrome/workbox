@@ -16,7 +16,14 @@
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
-export default class NetworkFirst extends Handler {
+/**
+ * @memberof module:sw-runtime-caching
+ * @extends module:sw-runtime-caching.Handler
+ */
+class NetworkFirst extends Handler {
+  /**
+   * @return {Promise<Response>} The network response.
+   */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);
 
@@ -35,3 +42,5 @@ export default class NetworkFirst extends Handler {
     return await this.requestWrapper.match({request: event.request});
   }
 }
+
+export default NetworkFirst;

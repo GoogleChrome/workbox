@@ -16,10 +16,19 @@
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
-export default class CacheOnly extends Handler {
+/**
+ * @memberof module:sw-runtime-caching
+ * @extends module:sw-runtime-caching.Handler
+ */
+class CacheOnly extends Handler {
+  /**
+   * @return {Promise<Response>} The cached response.
+   */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);
 
     return await this.requestWrapper.match({request: event.request});
   }
 }
+
+export default CacheOnly;

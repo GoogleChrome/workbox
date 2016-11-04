@@ -13,6 +13,11 @@
  limitations under the License.
 */
 
+/**
+ * sw-runtime-caching Module
+ * @module sw-runtime-caching
+ */
+
 import RequestWrapper from './lib/request-wrapper';
 import CacheFirst from './lib/cache-first';
 import CacheOnly from './lib/cache-only';

@@ -16,7 +16,14 @@
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
-export default class StaleWhileRevalidate extends Handler {
+/**
+ * @memberof module:sw-runtime-caching
+ * @extends module:sw-runtime-caching.Handler
+ */
+class StaleWhileRevalidate extends Handler {
+  /**
+   * @return {Promise<Response>} The response for cached / fetched response.
+   */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);
 
@@ -30,3 +37,5 @@ export default class StaleWhileRevalidate extends Handler {
     return cachedResponse || await fetchAndCacheResponse;
   }
 }
+
+export default StaleWhileRevalidate;
