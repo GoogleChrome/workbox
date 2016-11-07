@@ -60,6 +60,7 @@
     "selenium-assistant": "^3.0.0",
     "serve-index": "^1.8.0",
     "serve-static": "^1.11.1",
-    "sw-testing-helpers": "0.1.4"
+    "sw-testing-helpers": "0.1.4",
+    "lerna": "2.0.0-beta.30"
   }
 }

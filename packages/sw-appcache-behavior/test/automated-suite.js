@@ -91,7 +91,7 @@ const configureTestSuite = function(browser) {
         return testServer.startServer('.');
       })
       .then((portNumber) => {
-        baseTestUrl = `http://localhost:${portNumber}/projects/sw-appcache-behavior/test/`;
+        baseTestUrl = `http://localhost:${portNumber}/packages/sw-appcache-behavior/test/`;
         console.log('Test Server: ' + baseTestUrl);
         console.log('');
       });

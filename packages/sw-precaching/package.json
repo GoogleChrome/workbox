@@ -17,7 +17,7 @@
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-precaching",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-precaching",
   "main": "precaching.js",
   "module": "precaching.mjs",
   "jsnext:main": "precaching.mjs"

@@ -46,6 +46,6 @@ gulp.task('build', () => {
 });
 
 gulp.task('build:watch', ['build'], (unusedCallback) => {
-  gulp.watch(`projects/${global.projectOrStar}/src/**/*`, ['build']);
+  gulp.watch(`packages/${global.projectOrStar}/src/**/*`, ['build']);
   gulp.watch(`lib/**/*`, ['build']);
 });

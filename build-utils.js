@@ -78,7 +78,7 @@ function promiseAllWrapper(promises) {
  *                        Otherwise, rejects with a concatenated error.
  */
 function taskHarness(task, projectOrStar, ...args) {
-  return globPromise(`projects/${projectOrStar}/package.json`)
+  return globPromise(`packages/${projectOrStar}/package.json`)
     .then((projects) => promiseAllWrapper(
       projects.map((project) =>
         task(path.join(__dirname, path.dirname(project)), ...args))

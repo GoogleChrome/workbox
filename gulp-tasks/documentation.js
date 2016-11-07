@@ -62,7 +62,7 @@ gulp.task('documentation:repo', ['build'], () => {
 
   return new Promise((resolve) => {
     // First, generate a repo README.md based on metadata require(each project.
-    return globPromise('../projects/*/package.json')
+    return globPromise('../packages/*/package.json')
       .then((pkgs) => pkgs.map((pkg) => require(`./${pkg}`)))
       .then((projects) => {
         gulp.src('templates/README.hbs')
@@ -82,7 +82,7 @@ gulp.task('documentation:repo', ['build'], () => {
     // Then publish all of the build + demo files to gh-pages.
     return tmpPromise.dir().then((tmpDir) => {
       return new Promise((resolve) => {
-        gulp.src('projects/*/{build,demo}/**')
+        gulp.src('packages/*/{build,demo}/**')
           .pipe(gulp.dest(tmpDir))
           .on('end', resolve);
       }).then(() => ghPagesPromise.publish(tmpDir));

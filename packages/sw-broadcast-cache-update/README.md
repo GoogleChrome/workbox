@@ -8,7 +8,7 @@ A helper library that uses the Broadcast Channel API to announce when two Respon
 
 ## Demo
 
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-broadcast-cache-update/demo), or
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-broadcast-cache-update/demo), or
 [try it out](https://googlechrome.github.io/sw-helpers/sw-broadcast-cache-update/demo/) directly.
 
 ## API
@@ -17,11 +17,11 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### goog.broadcastCacheUpdate
 
-[projects/sw-broadcast-cache-update/src/index.js:24-29](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/projects/sw-broadcast-cache-update/src/index.js#L24-L29 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/index.js:24-29](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/packages/sw-broadcast-cache-update/src/index.js#L24-L29 "Source code on GitHub")
 
 ### Behavior
 
-[projects/sw-broadcast-cache-update/src/lib/behavior.js:66-155](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/projects/sw-broadcast-cache-update/src/lib/behavior.js#L66-L155 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/behavior.js:66-155](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/packages/sw-broadcast-cache-update/src/lib/behavior.js#L66-L155 "Source code on GitHub")
 
 **Examples**
 
@@ -73,7 +73,7 @@ if (oldResponse) {
 
 #### constructor
 
-[projects/sw-broadcast-cache-update/src/lib/behavior.js:86-92](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/projects/sw-broadcast-cache-update/src/lib/behavior.js#L86-L92 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/behavior.js:86-92](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/packages/sw-broadcast-cache-update/src/lib/behavior.js#L86-L92 "Source code on GitHub")
 
 Creates a new `Behavior` instance, which is used to compare two
 [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response)s
@@ -98,7 +98,7 @@ only specific response headers are checked.
 
 #### notifyIfUpdated
 
-[projects/sw-broadcast-cache-update/src/lib/behavior.js:146-154](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/projects/sw-broadcast-cache-update/src/lib/behavior.js#L146-L154 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/behavior.js:146-154](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/packages/sw-broadcast-cache-update/src/lib/behavior.js#L146-L154 "Source code on GitHub")
 
 An explicit method to call from your own code to trigger the comparison of
 two [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response)
@@ -117,7 +117,7 @@ if they differ.
 
 ### broadcastUpdate
 
-[projects/sw-broadcast-cache-update/src/lib/broadcast-update.js:51-65](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/projects/sw-broadcast-cache-update/src/lib/broadcast-update.js#L51-L65 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/broadcast-update.js:51-65](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/packages/sw-broadcast-cache-update/src/lib/broadcast-update.js#L51-L65 "Source code on GitHub")
 
 Uses the [Broadcast Channel API](https://developers.google.com/web/updates/2016/09/broadcastchannel)
 to notify interested subscribers about a change to a cached resource.
@@ -153,11 +153,11 @@ all required.)
 
 ### cacheUpdatedMessageType
 
-[projects/sw-broadcast-cache-update/src/lib/constants.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/projects/sw-broadcast-cache-update/src/lib/constants.js#L21-L21 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/constants.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/packages/sw-broadcast-cache-update/src/lib/constants.js#L21-L21 "Source code on GitHub")
 
 ### responsesAreSame
 
-[projects/sw-broadcast-cache-update/src/lib/responses-are-same.js:29-38](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/projects/sw-broadcast-cache-update/src/lib/responses-are-same.js#L29-L38 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/responses-are-same.js:29-38](https://github.com/GoogleChrome/sw-helpers/blob/22ad29135f05f0599df57de01f1556af6218e47d/packages/sw-broadcast-cache-update/src/lib/responses-are-same.js#L29-L38 "Source code on GitHub")
 
 Given two `Response`s, compares several header values to see if they are
 the same or not.

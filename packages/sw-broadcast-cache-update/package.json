@@ -16,7 +16,7 @@
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-broadcast-cache-update",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-broadcast-cache-update",
   "main": "broadcast-cache-update.min.js",
   "module": "broadcast-cache-update.mjs",
   "jsnext:main": "broadcast-cache-update.mjs"

@@ -47,7 +47,7 @@ const configureTestSuite = function(browser) {
       const baseDirectory = __dirname.replace(path.sep, '/');
       return browserifyTests(`${baseDirectory}/unit/`).then(() => {
         return testServer.startServer('.').then((portNumber) => {
-          baseTestUrl = `http://localhost:${portNumber}/projects/sw-offline-google-analytics/test/`;
+          baseTestUrl = `http://localhost:${portNumber}/packages/sw-offline-google-analytics/test/`;
         });
       });
     });

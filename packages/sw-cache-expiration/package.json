@@ -16,7 +16,7 @@
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-cache-expiration",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cache-expiration",
   "main": "cache-expiration.js",
   "module": "cache-expiration.mjs",
   "jsnext:main": "cache-expiration.mjs"

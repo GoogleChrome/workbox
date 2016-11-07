@@ -17,18 +17,18 @@ A service worker implementation of the behavior defined in a page&#x27;s App Cac
 
 **Install**: `npm install --save-dev sw-appcache-behavior`
 
-**Learn More**: [About](projects/sw-appcache-behavior) •
-                [Demo](projects/sw-appcache-behavior#demo) •
-                [API](projects/sw-appcache-behavior#api)
+**Learn More**: [About](packages/sw-appcache-behavior) •
+                [Demo](packages/sw-appcache-behavior#demo) •
+                [API](packages/sw-appcache-behavior#api)
 
 ### sw-offline-google-analytics
 A service worker helper library to retry offline Google Analytics requests when a connection is available.
 
 **Install**: `npm install --save-dev sw-offline-google-analytics`
 
-**Learn More**: [About](projects/sw-offline-google-analytics) •
-                [Demo](projects/sw-offline-google-analytics#demo) •
-                [API](projects/sw-offline-google-analytics#api)
+**Learn More**: [About](packages/sw-offline-google-analytics) •
+                [Demo](packages/sw-offline-google-analytics#demo) •
+                [API](packages/sw-offline-google-analytics#api)
 
 
 ## Development
@@ -46,7 +46,7 @@ By default the task will be run against all projects.
 
 ### New Projects
 
-New projects should be created as sub-directories of [projects](projects/),
+New projects should be created as sub-directories of [projects](packages/),
 following the basic layout of the existing projects. It's recommended that each
 library adopts the `sw-` prefix, for consistency.
 

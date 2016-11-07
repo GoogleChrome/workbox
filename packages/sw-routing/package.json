@@ -16,7 +16,7 @@
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-routing",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-routing",
   "main": "routing.min.js",
   "module": "routing.mjs",
   "jsnext:main": "routing.mjs"

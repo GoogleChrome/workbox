@@ -8,14 +8,14 @@ A service worker implementation of the behavior defined in a page's App Cache ma
 
 ## Demo
 
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-appcache-behavior/demo), or
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-appcache-behavior/demo), or
 [try it out](https://googlechrome.github.io/sw-helpers/sw-appcache-behavior/demo/) directly.
 
 ## API
 
 ### goog.appCacheBehavior.fetch
 
-[projects/sw-appcache-behavior/src/appcache-behavior-import.js:514-527](https://github.com/GoogleChrome/sw-helpers/blob/8769cb5ff7d131573fe90aafac4a6b2ba7991b41/projects/sw-appcache-behavior/src/appcache-behavior-import.js#L514-L527 "Source code on GitHub")
+[packages/sw-appcache-behavior/src/appcache-behavior-import.js:514-527](https://github.com/GoogleChrome/sw-helpers/blob/8769cb5ff7d131573fe90aafac4a6b2ba7991b41/packages/sw-appcache-behavior/src/appcache-behavior-import.js#L514-L527 "Source code on GitHub")
 
 `goog.appCacheBehavior.fetch` is the main entry point to the library
 from within service worker code.
