@@ -64,10 +64,6 @@ function taskPromiseWrapper(projects, task, args) {
   let rejected = [];
   return projects.reduce((promiseChain, project) => {
     return promiseChain.then(() => {
-      console.log('');
-      console.log('');
-      console.log('Building: ', project);
-      console.log('');
       return task(path.join(__dirname, path.dirname(project)), args)
       .catch((error) => {
         rejected.push(error);
@@ -104,6 +100,10 @@ function buildJSBundle(options) {
   const destPath = path.join(options.projectDir, 'build');
   const licenseHeader = fs.readFileSync('LICENSE-HEADER', 'utf8');
 
+  if (options.outputName.indexOf('build/') !== 0) {
+    throw new Error('Expected options.ouputName to start with \'build/\'');
+  }
+
   return new Promise((resolve, reject) => {
     gulp.src([
       path.join(options.projectDir, 'src', '**', '*.js'),
@@ -116,7 +116,7 @@ function buildJSBundle(options) {
       presets: ['babili', {comments: false}],
     }))
     .pipe(header(licenseHeader))
-    .pipe(rename(options.outputName))
+    .pipe(rename(options.outputName.substring('build/'.length)))
     // Source maps are written relative tot he gulp.dest() path
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(destPath))

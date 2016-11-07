@@ -9,7 +9,6 @@
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the sw-helpers monorepo. Not meant to be published to npm.",
   "private": true,
-  "main": "gulpfile.babel.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GoogleChrome/sw-helpers.git"

@@ -7,18 +7,15 @@
     "sw",
     "caching",
     "cache",
-    "precache"
+    "precache",
+    "sw-fw"
   ],
-  "author": {
-    "name": "Jeff Posnick",
-    "email": "jeffy@google.com",
-    "url": "https://jeffy.info"
-  },
+  "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-precaching",
-  "main": "precaching.js",
-  "module": "precaching.mjs",
-  "jsnext:main": "precaching.mjs"
+  "main": "build/precaching.umd.min.js",
+  "module": "build/precaching.min.mjs",
+  "jsnext:main": "build/precaching.min.mjs"
 }

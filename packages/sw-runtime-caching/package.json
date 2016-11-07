@@ -6,18 +6,15 @@
     "service worker",
     "sw",
     "caching",
-    "cache"
+    "cache",
+    "sw-fw"
   ],
-  "author": {
-    "name": "Jeff Posnick",
-    "email": "jeffy@google.com",
-    "url": "https://jeffy.info"
-  },
+  "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-runtime-caching",
-  "main": "runtime-caching.min.js",
-  "module": "runtime-caching.mjs",
-  "jsnext:main": "runtime-caching.mjs"
+  "main": "build/runtime-caching.umd.min.js",
+  "module": "build/runtime-caching.min.mjs",
+  "jsnext:main": "build/runtime-caching.min.mjs"
 }
