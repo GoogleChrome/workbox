@@ -3,6 +3,9 @@
   "engines": {
     "node": ">=6.0.0"
   },
+  "scripts": {
+    "publish-release": "gulp build && gulp test && lerna publish --"
+  },
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the sw-helpers monorepo. Not meant to be published to npm.",
   "private": true,
