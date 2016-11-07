@@ -1,6 +1,6 @@
 {
   "name": "sw-precaching",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A service worker helper library that precaches local resources and keeps that cache up to date.",
   "keywords": [
     "service worker",
