@@ -60,11 +60,21 @@ function processPromiseWrapper(command, args) {
  * @returns {Promise.<*>} Resolves with null if all the promises resolve.
  *                        Otherwise, rejects with a concatenated error.
  */
-function promiseAllWrapper(promises) {
+function taskPromiseWrapper(projects, task, args) {
   let rejected = [];
-  return Promise.all(promises.map((promise) => {
-    return promise.catch((error) => rejected.push(error));
-  })).then(() => rejected.length ? Promise.reject(rejected.join('\n')) : null);
+  return projects.reduce((promiseChain, project) => {
+    return promiseChain.then(() => {
+      console.log('');
+      console.log('');
+      console.log('Building: ', project);
+      console.log('');
+      return task(path.join(__dirname, path.dirname(project)), args)
+      .catch((error) => {
+        rejected.push(error);
+      });
+    });
+  }, Promise.resolve())
+  .then(() => rejected.length ? Promise.reject(rejected.join('\n')) : null);
 }
 
 /**
@@ -79,10 +89,7 @@ function promiseAllWrapper(promises) {
  */
 function taskHarness(task, projectOrStar, ...args) {
   return globPromise(`packages/${projectOrStar}/package.json`)
-    .then((projects) => promiseAllWrapper(
-      projects.map((project) =>
-        task(path.join(__dirname, path.dirname(project)), ...args))
-    ));
+    .then((projects) => taskPromiseWrapper(projects, task));
 }
 
 /**
@@ -123,4 +130,4 @@ function buildJSBundle(options) {
 }
 
 module.exports = {globPromise, processPromiseWrapper,
-  promiseAllWrapper, taskHarness, buildJSBundle};
+  taskHarness, buildJSBundle};

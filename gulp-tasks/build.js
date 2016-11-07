@@ -22,7 +22,7 @@ const fsePromise = promisify('fs-extra');
 /**
  * Buids a given project.
  * @param {String} projectPath The path to a project directory.
- * @returns {Promise} Resolves if building succeeds, rejects if it fails.
+ * @return {Promise} Resolves if building succeeds, rejects if it fails.
  */
 const buildPackage = (projectPath) => {
   const buildDir = `${projectPath}/build`;
