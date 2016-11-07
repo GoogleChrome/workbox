@@ -13,8 +13,6 @@
  limitations under the License.
 */
 
-/** @module sw-routing.ExpressRoute **/
-
 import Route from './route';
 import assert from '../../../../lib/assert';
 import pathToRegExp from 'path-to-regexp';
@@ -27,6 +25,7 @@ import pathToRegExp from 'path-to-regexp';
  * library to transform the `path` parameter into a regular expression, which is
  * then matched against the URL's path.
  *
+ * @memberof module:sw-routing
  * @extends Route
  */
 class ExpressRoute extends Route {

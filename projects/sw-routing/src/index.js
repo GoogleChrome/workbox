@@ -13,6 +13,11 @@
  limitations under the License.
 */
 
+/**
+ * sw-routing Module
+ * @module sw-routing
+ */
+
 import ExpressRoute from './lib/express-route';
 import RegExpRoute from './lib/regexp-route';
 import Route from './lib/route';

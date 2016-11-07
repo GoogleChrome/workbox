@@ -13,14 +13,16 @@
  limitations under the License.
 */
 
+/**
+ * sw-broadcast-cache-update Module
+ * @module sw-broadcast-cache-update
+ */
+
 import Behavior from './lib/behavior';
 import broadcastUpdate from './lib/broadcast-update';
 import {cacheUpdatedMessageType} from './lib/constants';
 import sameResponses from './lib/responses-are-same';
 
-/**
- * @namespace goog.broadcastCacheUpdate
- */
 export {
   Behavior,
   broadcastUpdate,

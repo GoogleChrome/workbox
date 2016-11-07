@@ -16,10 +16,18 @@
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
-export default class NetworkOnly extends Handler {
+/**
+ * @memberof module:sw-runtime-caching
+ */
+class NetworkOnly extends Handler {
+  /**
+   * @return {Promise<Response>} The network response.
+   */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);
 
     return await this.requestWrapper.fetch({request: event.request});
   }
 }
+
+export default NetworkOnly;

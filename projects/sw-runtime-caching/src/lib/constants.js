@@ -13,6 +13,11 @@
  limitations under the License.
 */
 
+/**
+ * TODO defaultCacheName description
+ * @type {string}
+ * @memberof module:sw-runtime-caching
+ */
 export const defaultCacheName = `sw-runtime-caching-${self.registration.scope}`;
 export const behaviorCallbacks = [
   'cacheDidUpdate',

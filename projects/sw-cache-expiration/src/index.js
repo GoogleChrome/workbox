@@ -13,6 +13,11 @@
  limitations under the License.
 */
 
+/**
+ * sw-cache-expiration Module
+ * @module sw-cache-expiration
+ */
+
 import Behavior from './lib/behavior';
 
 export {Behavior};

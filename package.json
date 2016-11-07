@@ -46,6 +46,7 @@
     "gulp-mocha": "^3.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-rollup": "^2.5.1",
+    "jsdoc-strip-async-await": "^0.1.0",
     "minimist": "^1.2.0",
     "mockdate": "^1.0.4",
     "operadriver": "^0.2.2",
@@ -56,7 +57,7 @@
     "rollup-plugin-commonjs": "^5.0.4",
     "rollup-plugin-node-resolve": "^2.0.0",
     "run-sequence": "^1.2.2",
-    "selenium-assistant": "^2.0.5",
+    "selenium-assistant": "^3.0.0",
     "serve-index": "^1.8.0",
     "serve-static": "^1.11.1",
     "sw-testing-helpers": "0.1.4"

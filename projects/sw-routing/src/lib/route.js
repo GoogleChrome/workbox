@@ -13,8 +13,6 @@
  limitations under the License.
 */
 
-/** @module sw-routing.Route **/
-
 import assert from '../../../../lib/assert';
 import {defaultMethod, validMethods} from './constants';
 
@@ -28,6 +26,8 @@ import {defaultMethod, validMethods} from './constants';
  * current request), then the handler will be given the
  * [FetchEvent](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent)
  * so that it can respond to the request.
+ *
+ * @memberof module:sw-routing
  */
 class Route {
   /**

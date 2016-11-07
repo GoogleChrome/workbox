@@ -41,12 +41,16 @@ import {cacheUpdatedMessageType} from './constants';
  * }
  * ```
  *
- * @param {BroadcastChannel} $0.channel The `BroadcastChannel` to use.
- * @param {string} $0.cacheName The name of the cache in which the updated
+ * @memberof module:sw-broadcast-cache-update
+ * @type {function}
+ *
+ * @param {Object} input
+ * @param {BroadcastChannel} input.channel The `BroadcastChannel` to use.
+ * @param {string} input.cacheName The name of the cache in which the updated
  *        `Response` was stored.
- * @param {string} $0.url The URL associated with the updated `Response`.
- * @param {string} $0.source A string identifying this library as the source of
- *        the update message.
+ * @param {string} input.url The URL associated with the updated `Response`.
+ * @param {string} input.source A string identifying this library as the source
+ *        of the update message.
  */
 function broadcastUpdate({channel, cacheName, url, source}) {
   assert.isInstance({channel}, BroadcastChannel);

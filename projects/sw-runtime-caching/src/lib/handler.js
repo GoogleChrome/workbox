@@ -13,14 +13,17 @@
  limitations under the License.
 */
 
-/** @module sw-runtime-caching.Handler **/
-
 import RequestWrapper from './request-wrapper';
 
 /**
  * The Handler class...
+ * @memberof module:sw-runtime-caching
  */
-export default class Handler {
+class Handler {
+  /**
+   * @param {Object} input
+   * @param {RequestWrapper} [input.requestWrapper]
+   */
   constructor({requestWrapper} = {}) {
     if (requestWrapper) {
       this.requestWrapper = requestWrapper;
@@ -32,11 +35,14 @@ export default class Handler {
   /**
    * An abstract method that must be overriden in a subclass.
    *
+   * @abstract
    * @param {FetchEvent} event - The event triggered by a network request.
    * @param {Object} params - Any parameters passed in via the when predicate.
-   * @returns {Promise<Response>} - The Response used to fulfill the request.
+   * @return {Promise<Response>} - The Response used to fulfill the request.
    */
   handle({event, params} = {}) {
     throw Error('This abstract method must be overridden in a subclass.');
   }
 }
+
+export default Handler;
