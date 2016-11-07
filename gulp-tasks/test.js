@@ -32,7 +32,7 @@ gulp.task('download-browsers', function() {
 });
 
 gulp.task('test', ['download-browsers'], () => {
-  return gulp.src(`projects/${global.projectOrStar}/test/*.js`, {read: false})
+  return gulp.src(`packages/${global.projectOrStar}/test/*.js`, {read: false})
     .pipe(mocha())
     .once('error', (error) => {
       console.error(error);

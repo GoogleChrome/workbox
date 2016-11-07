@@ -60,11 +60,17 @@ function processPromiseWrapper(command, args) {
  * @returns {Promise.<*>} Resolves with null if all the promises resolve.
  *                        Otherwise, rejects with a concatenated error.
  */
-function promiseAllWrapper(promises) {
+function taskPromiseWrapper(projects, task, args) {
   let rejected = [];
-  return Promise.all(promises.map((promise) => {
-    return promise.catch((error) => rejected.push(error));
-  })).then(() => rejected.length ? Promise.reject(rejected.join('\n')) : null);
+  return projects.reduce((promiseChain, project) => {
+    return promiseChain.then(() => {
+      return task(path.join(__dirname, path.dirname(project)), args)
+      .catch((error) => {
+        rejected.push(error);
+      });
+    });
+  }, Promise.resolve())
+  .then(() => rejected.length ? Promise.reject(rejected.join('\n')) : null);
 }
 
 /**
@@ -78,11 +84,8 @@ function promiseAllWrapper(promises) {
  *                        Otherwise, rejects with a concatenated error.
  */
 function taskHarness(task, projectOrStar, ...args) {
-  return globPromise(`projects/${projectOrStar}/package.json`)
-    .then((projects) => promiseAllWrapper(
-      projects.map((project) =>
-        task(path.join(__dirname, path.dirname(project)), ...args))
-    ));
+  return globPromise(`packages/${projectOrStar}/package.json`)
+    .then((projects) => taskPromiseWrapper(projects, task));
 }
 
 /**
@@ -97,6 +100,10 @@ function buildJSBundle(options) {
   const destPath = path.join(options.projectDir, 'build');
   const licenseHeader = fs.readFileSync('LICENSE-HEADER', 'utf8');
 
+  if (options.outputName.indexOf('build/') !== 0) {
+    throw new Error('Expected options.ouputName to start with \'build/\'');
+  }
+
   return new Promise((resolve, reject) => {
     gulp.src([
       path.join(options.projectDir, 'src', '**', '*.js'),
@@ -109,7 +116,7 @@ function buildJSBundle(options) {
       presets: ['babili', {comments: false}],
     }))
     .pipe(header(licenseHeader))
-    .pipe(rename(options.outputName))
+    .pipe(rename(options.outputName.substring('build/'.length)))
     // Source maps are written relative tot he gulp.dest() path
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(destPath))
@@ -123,4 +130,4 @@ function buildJSBundle(options) {
 }
 
 module.exports = {globPromise, processPromiseWrapper,
-  promiseAllWrapper, taskHarness, buildJSBundle};
+  taskHarness, buildJSBundle};

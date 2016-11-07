@@ -12,6 +12,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
+const path = require('path');
 const gulp = require('gulp');
 const promisify = require('promisify-node');
 
@@ -22,7 +23,7 @@ const fsePromise = promisify('fs-extra');
 /**
  * Buids a given project.
  * @param {String} projectPath The path to a project directory.
- * @returns {Promise} Resolves if building succeeds, rejects if it fails.
+ * @return {Promise} Resolves if building succeeds, rejects if it fails.
  */
 const buildPackage = (projectPath) => {
   const buildDir = `${projectPath}/build`;
@@ -30,14 +31,15 @@ const buildPackage = (projectPath) => {
   // Copy over package.json and README.md so that build/ contains what we
   // need to publish to npm.
   return fsePromise.emptyDir(buildDir)
-    .then(() => fsePromise.copy(`${projectPath}/package.json`,
-      `${buildDir}/package.json`))
-    .then(() => fsePromise.copy(`${projectPath}/README.md`,
-      `${buildDir}/README.md`))
     .then(() => {
       // Let each project define its own build process.
       const build = require(`${projectPath}/build.js`);
       return build();
+    })
+    .then(() => {
+      return fsePromise.copy(
+        path.join(__dirname, '..', 'LICENSE'),
+        path.join(projectPath, 'LICENSE'));
     });
 };
 
@@ -46,6 +48,6 @@ gulp.task('build', () => {
 });
 
 gulp.task('build:watch', ['build'], (unusedCallback) => {
-  gulp.watch(`projects/${global.projectOrStar}/src/**/*`, ['build']);
+  gulp.watch(`packages/${global.projectOrStar}/src/**/*`, ['build']);
   gulp.watch(`lib/**/*`, ['build']);
 });

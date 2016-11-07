@@ -3,10 +3,12 @@
   "engines": {
     "node": ">=6.0.0"
   },
+  "scripts": {
+    "publish-release": "gulp build && gulp test && lerna publish"
+  },
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the sw-helpers monorepo. Not meant to be published to npm.",
   "private": true,
-  "main": "gulpfile.babel.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GoogleChrome/sw-helpers.git"
@@ -60,6 +62,7 @@
     "selenium-assistant": "^3.0.0",
     "serve-index": "^1.8.0",
     "serve-static": "^1.11.1",
-    "sw-testing-helpers": "0.1.4"
+    "sw-testing-helpers": "0.1.4",
+    "lerna": "2.0.0-beta.30"
   }
 }
