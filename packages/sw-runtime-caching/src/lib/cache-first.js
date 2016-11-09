@@ -29,7 +29,7 @@ class CacheFirst extends Handler {
    * @param {Object} input
    * @param {FetchEvent} input.event The event that triggered the service
    *        worker's fetch handler.
-   * @returns {Promise.<Response>} The response, either from the cache,
+   * @return {Promise.<Response>} The response, either from the cache,
    *          or if that isn't available, from the network.
    */
   async handle({event} = {}) {

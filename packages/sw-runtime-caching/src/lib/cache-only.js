@@ -33,7 +33,7 @@ class CacheOnly extends Handler {
    * @param {Object} input An object wrapper for the underlying parameters.
    * @param {FetchEvent} input.event The event that triggered the service
    *        worker's fetch handler.
-   * @returns {Promise.<Response>} The response from the cache.
+   * @return {Promise.<Response>} The response from the cache.
    */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);

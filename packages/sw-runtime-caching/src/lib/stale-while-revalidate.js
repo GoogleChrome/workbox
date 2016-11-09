@@ -32,7 +32,7 @@ class StaleWhileRevalidate extends Handler {
    * @param {Object} input An object wrapper for the underlying parameters.
    * @param {FetchEvent} input.event The event that triggered the service
    *        worker's fetch handler.
-   * @returns {Promise.<Response>} The response from the cache, if present, or
+   * @return {Promise.<Response>} The response from the cache, if present, or
    *          from the network if not.
    */
   async handle({event} = {}) {

@@ -15,7 +15,17 @@
 
 import assert from '../../../../lib/assert';
 
+/**
+ * Placeholder.
+ */
 export default class Configuration {
+  /**
+   * Placeholder.
+   *
+   * @param {string} cacheName
+   * @param {Number} maxEntries
+   * @param {Number} maxAgeSeconds
+   */
   constructor({cacheName, maxEntries, maxAgeSeconds} = {}) {
     assert.isType({cacheName}, 'string');
     assert.atLeastOne({maxEntries, maxAgeSeconds});

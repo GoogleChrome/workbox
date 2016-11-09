@@ -29,7 +29,7 @@ class NetworkFirst extends Handler {
    * @param {Object} input An object wrapper for the underlying parameters.
    * @param {FetchEvent} input.event The event that triggered the service
    *        worker's fetch handler.
-   * @returns {Promise.<Response>} The response from the network, or if that's
+   * @return {Promise.<Response>} The response from the network, or if that's
    *          not available, a previously cached response.
    */
   async handle({event} = {}) {
