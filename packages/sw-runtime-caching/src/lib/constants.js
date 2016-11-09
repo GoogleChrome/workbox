@@ -14,12 +14,25 @@
 */
 
 /**
- * TODO defaultCacheName description
+ * The default cache name, used by RequestWrapper when there's no name provided.
+ * It combines a constant prefix with the `registration.scope` value associated
+ * with the current service worker, ensuring that multiple service workers used
+ * on the same origin will have different default caches.
+ *
  * @type {string}
  * @memberof module:sw-runtime-caching
  */
 export const defaultCacheName = `sw-runtime-caching-${self.registration.scope}`;
+
+/**
+ * A list of the callback methdo names that the RequestWrapper might trigger.
+ *
+ * @private
+ * @type {Array.<string>}
+ * @memberof module:sw-runtime-caching
+ */
 export const behaviorCallbacks = [
   'cacheDidUpdate',
   'fetchDidFail',
+  'requestWillFetch'
 ];

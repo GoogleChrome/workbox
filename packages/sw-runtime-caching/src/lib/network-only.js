@@ -18,10 +18,21 @@ import assert from '../../../../lib/assert';
 
 /**
  * @memberof module:sw-runtime-caching
+ * @extends module:sw-runtime-caching.Handler
  */
 class NetworkOnly extends Handler {
   /**
-   * @return {Promise<Response>} The network response.
+   * An implementation of a [network-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only)
+   * request strategy.
+   *
+   * The advantage to using this vs. directly calling `fetch()` is that it will
+   * trigger the behaviors defined in the underlying `RequestWrapper`.
+   *
+   * @alias NetworkOnly.handle
+   * @param {Object} input An object wrapper for the underlying parameters.
+   * @param {FetchEvent} input.event The event that triggered the service
+   *        worker's fetch handler.
+   * @returns {Promise.<Response>} The response from the network.
    */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);

@@ -1,17 +1,23 @@
 <html>
   <head>
     <title>Service Worker Routing Demo</title>
+    <link rel="stylesheet" href="index.css">
   </head>
   <body>
     <p>
       Test.
     </p>
-
+    
     <script>
       // Register our service worker.
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('service-worker.js');
       }
+
+      const cacheUpdatesChannel = new BroadcastChannel('cache-updates');
+      cacheUpdatesChannel.addEventListener('message', event => {
+        console.log(`There was an update to ${event.data.payload.updatedUrl}`);
+      });
     </script>
   </body>
 </html>

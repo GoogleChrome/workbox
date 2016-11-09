@@ -1,25 +1,28 @@
 /* eslint-env worker, serviceworker */
 /* global goog */
 
-importScripts('../build/router.js');
+importScripts(
+  '../build/routing.min.js',
+  '../../sw-runtime-caching/build/runtime-caching.min.js',
+  '../../sw-broadcast-cache-update/build/broadcast-cache-update.min.js'
+);
 
 // Have the service worker take control as soon as possible.
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', () => self.clients.claim());
 
-const routes = [
-  new goog.routing.Route({
-    when: ({url}) => url.pathname.endsWith('.js'),
-    handler: ({event}) => {
-      console.log('JavaScript!');
-      return fetch(event.request);
-    },
-  }),
-];
+const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+  cacheName: 'text-files',
+  behaviors: [
+    new goog.broadcastCacheUpdate.Behavior({channelName: 'cache-updates'}),
+  ],
+});
 
-const defaultHandler = ({event}) => {
-  console.log('Default!');
-  return fetch(event.request);
-};
+const route = new goog.routing.RegExpRoute({
+  regExp: /\.txt$/,
+  handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper}),
+});
 
-goog.routing.registerRoutes({routes, defaultHandler});
+const router = new goog.routing.Router();
+router.registerRoute({route});
+router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});

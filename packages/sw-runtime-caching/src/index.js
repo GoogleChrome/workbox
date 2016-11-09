@@ -15,6 +15,7 @@
 
 /**
  * sw-runtime-caching Module
+ *
  * @module sw-runtime-caching
  */
 

@@ -22,7 +22,15 @@ import assert from '../../../../lib/assert';
  */
 class NetworkFirst extends Handler {
   /**
-   * @return {Promise<Response>} The network response.
+   * An implementation of a [network first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache)
+   * request strategy.
+   *
+   * @alias NetworkFirst.handle
+   * @param {Object} input An object wrapper for the underlying parameters.
+   * @param {FetchEvent} input.event The event that triggered the service
+   *        worker's fetch handler.
+   * @returns {Promise.<Response>} The response from the network, or if that's
+   *          not available, a previously cached response.
    */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);

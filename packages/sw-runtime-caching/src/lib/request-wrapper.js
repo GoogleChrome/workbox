@@ -17,15 +17,32 @@ import assert from '../../../../lib/assert';
 import {behaviorCallbacks, defaultCacheName} from './constants';
 
 /**
+ * This class is used by the various subclasses of `Handler` to configure the
+ * cache name and any desired request/cache behaviors.
+ *
+ * It automatically triggers any registered behaviors at the appropriate time.
+ * The current set of behavior callbacks, along with the parameters they're
+ * given and when they're called, is:
+ *
+ *   - `cacheDidUpdate({cacheName, oldResponse, newResponse})`: Called whenever
+ *   a new entry is written to the cache.
+ *   - `fetchDidFail({request})`: Called whenever a network request fails.
+ *   - `requestWillFetch({request})`: Called prior to making a network request.
+ *
  * @memberof module:sw-runtime-caching
  */
 class RequestWrapper {
   /**
-   * @param {Object} input
-   * @param {String} input.cacheName
-   * @param {Array<Behavior>} input.behaviors
-   * @param {Object} input.fetchOptions
-   * @oaram {Object} input.matchOptions
+   * @param {string} [cacheName] The name of the cache to use for Handlers that
+   *        involve caching. If none is provided, a default name that uses the
+   *        current service worker scope will be used.
+   * @param {Array.<Object>} [behaviors] Any behaviors that should be invoked.
+   * @param {Object} [fetchOptions] Values passed along to the
+   *        [`init`](https://developer.mozilla.org/en-US/docs/Web/API/GlobalFetch/fetch#Parameters)
+   *        of all `fetch()` requests made by this wrapper.
+   * @param {Object} [matchOptions] Values passed along to the
+   *        [`options`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match#Parameters)
+   *        of all cache `match()` requests made by this wrapper.
    */
   constructor({cacheName, behaviors, fetchOptions, matchOptions} = {}) {
     if (cacheName) {
@@ -75,9 +92,12 @@ class RequestWrapper {
   }
 
   /**
+   * Wraps `cache.match()`, using the previously configured cache name and match
+   * options.
+   *
    * @param {Object} input
-   * @param {Request} input.request
-   * @return {Promise<Response>} The cache response.
+   * @param {Request|string} input.request The key for the cache lookup.
+   * @return {Promise.<Response>} The cached response.
    */
   async match({request}) {
     assert.atLeastOne({request});
@@ -87,9 +107,12 @@ class RequestWrapper {
   }
 
   /**
+   * Wraps `fetch()`, and calls any `fetchDidFail` callbacks from the
+   * registered behaviors if the request fails.
+   *
    * @param {Object} input
-   * @param {Request} input.request
-   * @return {Promise<Response>} The network response.
+   * @param {Request|string} input.request The request or URL to be fetched.
+   * @return {Promise.<Response>} The network response.
    */
   async fetch({request}) {
     assert.atLeastOne({request});
@@ -97,7 +120,7 @@ class RequestWrapper {
     return await fetch(request, this.fetchOptions).catch((error) => {
       if (this.callbacks.fetchDidFail) {
         for (let callback of this.callbacks.fetchDidFail) {
-          callback(request);
+          callback({request});
         }
       }
 
@@ -106,9 +129,12 @@ class RequestWrapper {
   }
 
   /**
+   * Combines both fetching and caching, using the previously configured options
+   * and calling the appropriate behaviors.
+   *
    * @param {Object} input
    * @param {Request} input.request
-   * @return {Promise<Response>} The network response.
+   * @return {Promise.<Response>} The network response.
    */
   async fetchAndCache({request}) {
     assert.atLeastOne({request});

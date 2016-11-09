@@ -49,6 +49,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-rollup": "^2.5.1",
     "jsdoc-strip-async-await": "^0.1.0",
+    "lerna": "2.0.0-beta.30",
     "minimist": "^1.2.0",
     "mockdate": "^1.0.4",
     "operadriver": "^0.2.2",
@@ -62,7 +63,6 @@
     "selenium-assistant": "^3.0.0",
     "serve-index": "^1.8.0",
     "serve-static": "^1.11.1",
-    "sw-testing-helpers": "0.1.4",
-    "lerna": "2.0.0-beta.30"
+    "sw-testing-helpers": "0.1.4"
   }
 }

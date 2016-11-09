@@ -22,7 +22,18 @@ import assert from '../../../../lib/assert';
  */
 class StaleWhileRevalidate extends Handler {
   /**
-   * @return {Promise<Response>} The response for cached / fetched response.
+   * An implementation of a [stale-while-revalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
+   * request strategy.
+   *
+   * In addition to updating the appropriate caches, if will also trigger any
+   * appropriate behaviors defined in the underlying `RequestWrapper`.
+   *
+   * @alias StaleWhileRevalidate.handle
+   * @param {Object} input An object wrapper for the underlying parameters.
+   * @param {FetchEvent} input.event The event that triggered the service
+   *        worker's fetch handler.
+   * @returns {Promise.<Response>} The response from the cache, if present, or
+   *          from the network if not.
    */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);

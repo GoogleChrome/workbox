@@ -22,7 +22,18 @@ import assert from '../../../../lib/assert';
  */
 class CacheOnly extends Handler {
   /**
-   * @return {Promise<Response>} The cached response.
+   * An implementation of a [cache-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only)
+   * request strategy.
+   *
+   * The advantage to using this vs. directly calling `caches.match()` is that
+   * it will use the cache configuration and trigger the behaviors defined in
+   * the underlying `RequestWrapper`.
+   *
+   * @alias CacheOnly.handle
+   * @param {Object} input An object wrapper for the underlying parameters.
+   * @param {FetchEvent} input.event The event that triggered the service
+   *        worker's fetch handler.
+   * @returns {Promise.<Response>} The response from the cache.
    */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);

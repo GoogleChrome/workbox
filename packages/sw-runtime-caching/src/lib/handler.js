@@ -16,13 +16,18 @@
 import RequestWrapper from './request-wrapper';
 
 /**
- * The Handler class...
+ * This a base class meant to be extended by other classes that implement
+ * specific request strategies.
+ *
  * @memberof module:sw-runtime-caching
  */
 class Handler {
   /**
    * @param {Object} input
-   * @param {RequestWrapper} [input.requestWrapper]
+   * @param {RequestWrapper} [input.requestWrapper] An optional `RequestWrapper`
+   *        that is used to configure the cache name and request behaviors. If
+   *        not provided, a new `RequestWrapper` using the
+   *        [default cache name](#defaultCacheName) will be used.
    */
   constructor({requestWrapper} = {}) {
     if (requestWrapper) {
@@ -33,15 +38,21 @@ class Handler {
   }
 
   /**
-   * An abstract method that must be overriden in a subclass.
+   * An abstract method that each subclass must implement.
    *
    * @abstract
-   * @param {FetchEvent} event - The event triggered by a network request.
-   * @param {Object} params - Any parameters passed in via the when predicate.
-   * @return {Promise<Response>} - The Response used to fulfill the request.
+   * @param {Object} input
+   * @param {FetchEvent} input.event The event that triggered the service
+   *        worker's fetch handler.
+   * @param {Object} [input.params] Additional parameters that might be passed
+   *        in to the method. If used in conjunction with the `Route` class,
+   *        then the return value from the `match` function in `Route` will
+   *        be passed in via this parameter.
+   * @return {Promise.<Response>} A response, obtained from whichever strategy
+   *         is implemented.
    */
   handle({event, params} = {}) {
-    throw Error('This abstract method must be overridden in a subclass.');
+    throw Error('This abstract method must be implemented in a subclass.');
   }
 }
 
