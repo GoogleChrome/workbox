@@ -1,7 +1,7 @@
 {
   "name": "sw-cache-expiration",
   "version": "0.0.3",
-  "description": "A Cache Storage API helper library to restrict cache sizes and impose expiration policies.",
+  "description": "This library is still a work in progress and is not functional.",
   "keywords": [
     "service worker",
     "sw",
