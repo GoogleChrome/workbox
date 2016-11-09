@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import assert from '../../../lib/assert';
+import assert from '../../../../lib/assert';
 
 export default (configuration) => {
   const {filePatterns} = configuration;

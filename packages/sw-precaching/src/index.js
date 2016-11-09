@@ -13,4 +13,11 @@
  limitations under the License.
 */
 
-export function a() {}
+/**
+ * **This library is still a work in progress and is not functional.**
+ *
+ * @module sw-precaching
+ */
+export default function DO_NOT_USE() {
+
+}
