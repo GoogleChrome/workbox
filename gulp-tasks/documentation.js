@@ -61,9 +61,9 @@ gulp.task('documentation:repo', ['build'], () => {
   }
 
   return new Promise((resolve) => {
-    // First, generate a repo README.md based on metadata require(each project.
-    return globPromise('../packages/*/package.json')
-      .then((pkgs) => pkgs.map((pkg) => require(`./${pkg}`)))
+    // First, generate a repo README.md based on metadata from each project.
+    return globPromise('packages/*/package.json')
+      .then((pkgs) => pkgs.map((pkg) => require(`../${pkg}`)))
       .then((projects) => {
         gulp.src('templates/README.hbs')
           .pipe(handlebars({projects: projects}))
