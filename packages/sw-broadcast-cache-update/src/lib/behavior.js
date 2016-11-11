@@ -117,8 +117,8 @@ class Behavior {
    *
    * @private
    * @param {Object} input The input object to this function.
-   * @param {string} input.cacheName Name of the cache the `Response`s belong to.
-   * @param {Response} [input.oldResponse] The previous value in the cache, if any.
+   * @param {string} input.cacheName Name of the cache the Responses belong to.
+   * @param {Response} [input.oldResponse] The previous cached value, if any.
    * @param {Response} input.newResponse The new value in the cache.
    */
   cacheDidUpdate({cacheName, oldResponse, newResponse}) {
@@ -146,7 +146,7 @@ class Behavior {
    *        This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
    * @param {Response} input.second Another of the respones to compare.
    *        This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
-   * @param {string} input.cacheName Name of the cache the `Response`s belong to.
+   * @param {string} input.cacheName Name of the cache the Responses belong to.
    */
   notifyIfUpdated({first, second, cacheName}) {
     assert.isType({cacheName}, 'string');

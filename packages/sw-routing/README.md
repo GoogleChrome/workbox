@@ -17,13 +17,13 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-routing
 
-[packages/sw-routing/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/index.js#L21-L21 "Source code on GitHub")
+[packages/sw-routing/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/index.js#L21-L21 "Source code on GitHub")
 
 sw-routing Module
 
 ### ExpressRoute
 
-[packages/sw-routing/src/lib/express-route.js:31-44](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/lib/express-route.js#L31-L44 "Source code on GitHub")
+[packages/sw-routing/src/lib/express-route.js:31-44](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/lib/express-route.js#L31-L44 "Source code on GitHub")
 
 **Extends Route**
 
@@ -36,7 +36,7 @@ then matched against the URL's path.
 
 ### RegExpRoute
 
-[packages/sw-routing/src/lib/regexp-route.js:26-38](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/lib/regexp-route.js#L26-L38 "Source code on GitHub")
+[packages/sw-routing/src/lib/regexp-route.js:26-38](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/lib/regexp-route.js#L26-L38 "Source code on GitHub")
 
 **Extends Route**
 
@@ -45,7 +45,7 @@ RegExpRoute is a helper class to make defining Regular Expression based
 
 ### Route
 
-[packages/sw-routing/src/lib/route.js:32-54](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/lib/route.js#L32-L54 "Source code on GitHub")
+[packages/sw-routing/src/lib/route.js:32-54](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/lib/route.js#L32-L54 "Source code on GitHub")
 
 The Route class is used to configure a _when_
 [predicate](https://en.wikipedia.org/wiki/Predicate_(mathematical_logic))
@@ -59,14 +59,14 @@ so that it can respond to the request.
 
 ### Router
 
-[packages/sw-routing/src/lib/router.js:25-110](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/lib/router.js#L25-L110 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:25-110](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/lib/router.js#L25-L110 "Source code on GitHub")
 
 The Router takes a set of [Route](#route)'s and will direct fetch events
 to those Route in the order they are registered.
 
 ### constructor
 
-[packages/sw-routing/src/lib/express-route.js:36-43](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/lib/express-route.js#L36-L43 "Source code on GitHub")
+[packages/sw-routing/src/lib/express-route.js:36-43](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/lib/express-route.js#L36-L43 "Source code on GitHub")
 
 **Parameters**
 
@@ -79,7 +79,7 @@ to those Route in the order they are registered.
 
 ### constructor
 
-[packages/sw-routing/src/lib/regexp-route.js:31-37](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/lib/regexp-route.js#L31-L37 "Source code on GitHub")
+[packages/sw-routing/src/lib/regexp-route.js:31-37](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/lib/regexp-route.js#L31-L37 "Source code on GitHub")
 
 **Parameters**
 
@@ -92,7 +92,7 @@ to those Route in the order they are registered.
 
 ### constructor
 
-[packages/sw-routing/src/lib/route.js:41-53](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/lib/route.js#L41-L53 "Source code on GitHub")
+[packages/sw-routing/src/lib/route.js:41-53](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/lib/route.js#L41-L53 "Source code on GitHub")
 
 The constructor for Route expects an object with `when` and `handler`
 properties which should both be functions.
@@ -110,7 +110,7 @@ properties which should both be functions.
 
 ### setDefaultHandler
 
-[packages/sw-routing/src/lib/router.js:32-36](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/lib/router.js#L32-L36 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:32-36](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/lib/router.js#L32-L36 "Source code on GitHub")
 
 A default handler will have it's handle method called when a
 request doesn't have a matching route.
@@ -124,7 +124,7 @@ request doesn't have a matching route.
 
 ### setCatchHandler
 
-[packages/sw-routing/src/lib/router.js:44-48](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/lib/router.js#L44-L48 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:44-48](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/lib/router.js#L44-L48 "Source code on GitHub")
 
 If a Route throws an error while handling a request, this catch handler
 will be called to return an error case.
@@ -138,7 +138,7 @@ will be called to return an error case.
 
 ### registerRoutes
 
-[packages/sw-routing/src/lib/router.js:58-98](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/lib/router.js#L58-L98 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:58-98](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/lib/router.js#L58-L98 "Source code on GitHub")
 
 Register routes will take an array of Routes to register with the
 router.
@@ -154,7 +154,7 @@ Returns **void**
 
 ### registerRoute
 
-[packages/sw-routing/src/lib/router.js:105-109](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-routing/src/lib/router.js#L105-L109 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:105-109](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-routing/src/lib/router.js#L105-L109 "Source code on GitHub")
 
 Registers a route with the router.
 

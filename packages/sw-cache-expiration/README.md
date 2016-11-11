@@ -17,25 +17,25 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-cache-expiration
 
-[packages/sw-cache-expiration/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-cache-expiration/src/index.js#L21-L21 "Source code on GitHub")
+[packages/sw-cache-expiration/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/index.js#L21-L21 "Source code on GitHub")
 
 sw-cache-expiration Module
 
 ### Behavior
 
-[packages/sw-cache-expiration/src/lib/behavior.js:25-156](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-cache-expiration/src/lib/behavior.js#L25-L156 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:25-156](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L25-L156 "Source code on GitHub")
 
 TODO Behavior Description
 
 #### cacheName
 
-[packages/sw-cache-expiration/src/lib/behavior.js:44-46](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-cache-expiration/src/lib/behavior.js#L44-L46 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:44-46](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L44-L46 "Source code on GitHub")
 
 Get the cache name
 
 ### constructor
 
-[packages/sw-cache-expiration/src/lib/behavior.js:30-37](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-cache-expiration/src/lib/behavior.js#L30-L37 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:30-37](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L30-L37 "Source code on GitHub")
 
 **Parameters**
 
@@ -46,7 +46,7 @@ Get the cache name
 
 ### maxEntries
 
-[packages/sw-cache-expiration/src/lib/behavior.js:52-54](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-cache-expiration/src/lib/behavior.js#L52-L54 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:52-54](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L52-L54 "Source code on GitHub")
 
 Get the max cache entries.
 
@@ -54,7 +54,7 @@ Returns **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refer
 
 ### maxAgeSeconds
 
-[packages/sw-cache-expiration/src/lib/behavior.js:60-62](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-cache-expiration/src/lib/behavior.js#L60-L62 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:60-62](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L60-L62 "Source code on GitHub")
 
 Get the max age for the cache entries.
 
@@ -62,7 +62,7 @@ Returns **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refer
 
 ### expireEntries
 
-[packages/sw-cache-expiration/src/lib/behavior.js:104-117](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-cache-expiration/src/lib/behavior.js#L104-L117 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:104-117](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L104-L117 "Source code on GitHub")
 
 TODO expireEntries description
 
@@ -74,13 +74,13 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### Configuration
 
-[packages/sw-cache-expiration/src/lib/configuration.js:21-37](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-cache-expiration/src/lib/configuration.js#L21-L37 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/configuration.js:21-37](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/configuration.js#L21-L37 "Source code on GitHub")
 
 Placeholder.
 
 #### constructor
 
-[packages/sw-cache-expiration/src/lib/configuration.js:29-36](https://github.com/GoogleChrome/sw-helpers/blob/3eb2f8799138e54768cf7466f6e319b7cc6194e0/packages/sw-cache-expiration/src/lib/configuration.js#L29-L36 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/configuration.js:29-36](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/configuration.js#L29-L36 "Source code on GitHub")
 
 Placeholder.
 
