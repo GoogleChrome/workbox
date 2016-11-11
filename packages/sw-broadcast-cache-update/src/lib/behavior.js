@@ -116,9 +116,10 @@ class Behavior {
    * with a slightly more efficient interface.
    *
    * @private
-   * @param {string} $0.cacheName Name of the cache the `Response`s belong to.
-   * @param {Response} [$0.oldResponse] The previous value in the cache, if any.
-   * @param {Response} $0.newResponse The new value in the cache.
+   * @param {Object} input The input object to this function.
+   * @param {string} input.cacheName Name of the cache the `Response`s belong to.
+   * @param {Response} [input.oldResponse] The previous value in the cache, if any.
+   * @param {Response} input.newResponse The new value in the cache.
    */
   cacheDidUpdate({cacheName, oldResponse, newResponse}) {
     assert.isType({cacheName}, 'string');
@@ -140,11 +141,12 @@ class Behavior {
    * {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel API}
    * if they differ.
    *
-   * @param {Response} $0.first One of the responses to compare.
+   * @param {Object} input The input object to this function.
+   * @param {Response} input.first One of the responses to compare.
    *        This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
-   * @param {Response} $0.second Another of the respones to compare.
+   * @param {Response} input.second Another of the respones to compare.
    *        This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
-   * @param {string} $0.cacheName Name of the cache the `Response`s belong to.
+   * @param {string} input.cacheName Name of the cache the `Response`s belong to.
    */
   notifyIfUpdated({first, second, cacheName}) {
     assert.isType({cacheName}, 'string');
