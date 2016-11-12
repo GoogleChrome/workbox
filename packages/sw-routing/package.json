@@ -1,0 +1,24 @@
+{
+  "name": "sw-routing",
+  "version": "0.0.4",
+  "description": "A service worker helper library to route request URLs to handlers.",
+  "keywords": [
+    "service worker",
+    "sw",
+    "router",
+    "routing",
+    "sw-fw"
+  ],
+  "files": [
+    "src",
+    "build"
+  ],
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-routing",
+  "main": "build/routing.umd.min.js",
+  "module": "build/routing.min.mjs",
+  "jsnext:main": "build/routing.min.mjs"
+}
