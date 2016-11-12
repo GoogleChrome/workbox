@@ -1,21 +1,18 @@
 import stringHash from 'string-hash';
-import IDBHelper from '../../../../lib/idb-helper';
+import { idbQueue } from './idbHelper';
+import requestManager from './requestManager';
 
 let _queue;
 let _config;
-let _callbacks;
-
-const idbQHelper = new IDBHelper("bgQueueSyncDB",1,"QueueStore");
 
 class Queue {
 	constructor(){
 		this.initialize();
 	}
 
-	async initialize( config, callbacks ){
+	async initialize( config ){
 		_config = config;
-		_queue = await idbQHelper.get("queue") || [];
-		_callbacks = callbacks;
+		_queue = idbQueue || [];
 	}
 
 	async push(request, config){
@@ -25,34 +22,10 @@ class Queue {
 
 		//add to queue
 		idbQHelper.put("queue", _queue);
-		idbQHelper.put(hash, {
-			request:{
-				url: request.url,
-				headers: JSON.stringify(request.headers),
-				body: await request.text(),
-				mode: request.mode,
-				method: request.method,
-				redirect: request.redirect
-			},
-			config: config,
-			metadata:{
-				attemptsDone: 0,
-				creationTimestamp: Date.now()
-			}
-		});
+		idbQHelper.put(hash, requestManager.getQueueableRequest(request));
 
 		//register sync
 		self.registration.sync.register("bgqueue");
-	}
-
-	replayRequests(){
-		return idbQHelper.get("queue").then(queue => {
-			if (queue.length < 1){
-				return ;
-			}
-			
-			return doFetch(0);
-		});
 	}
 
 	async cleanupQueue(){
@@ -71,53 +44,14 @@ class Queue {
 		}
 		idbQHelper.put("queue", _queue);
 	}
-}
 
-async function getRequestFromQueueAtIndex( index ){
-	let hash = _queue[index];
-	let reqData = await idbQHelper.get(hash);
-
-	let request = new Request(reqData.request.url,{
-		method: reqData.request.method,
-		headers: JSON.parse(reqData.request.headers)
-	});
-
-	if(request.method === "POST"){
-		request.body = reqData.request.body;
+	async getRequestFromQueueAtIndex( index ){
+		let hash = _queue[index];
+		let reqData = await idbQHelper.get(hash);
+		return reqData;
 	}
 
-	return request;
 }
-
-async function doFetch(index){
-	if(!_queue[index])
-		return;
-	let req = await getRequestFromQueueAtIndex(index);
-	let reqClone = req.clone();
-	increaseAttemptCount(index);
-	return fetch( req )
-		.then( response => {
-			//putResponse(response.clone());
-			_callbacks.onRetrySuccess && _callbacks.onRetrySuccess( reqClone, response);
-			return response.json(); 
-		})
-		.then( data =>{
-			//TODO: put data in idb
-			return doFetch( index + 1);
-		})
-		.catch (e => {
-			_callbacks.onRetryFailure && _callbacks.onRetryFailure( reqClone ); 
-			doFetch( index + 1);
-		});
-}
-
-async function increaseAttemptCount( index ){
-	let hash = _queue[index];
-	let reqData = await idbQHelper.get(hash);
-
-	reqData.metadata.attemptsDone += 1;
-	idbQHelper.put(hash, reqData);
-} 
 
 async function putResponse( reponse ){
 	//TODO: implement this

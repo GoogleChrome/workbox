@@ -11,7 +11,9 @@
  limitations under the License.
  */
 
-import initialize from './lib/initialization';
+import requestManager from './lib/requestManager';
 import pushIntoQueue from './lib/enqueue';
+
+var initialize = requestManager.initialize;
 
 export default { initialize, pushIntoQueue };
