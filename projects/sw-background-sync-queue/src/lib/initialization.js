@@ -6,8 +6,6 @@ let globalConfig = initializationDefaults;
 
 async function initialize(config, callbacks){
 	globalConfig = Object.assign({}, initializationDefaults, config);
-	
-	
 }
 
 function attachSyncHandler(){

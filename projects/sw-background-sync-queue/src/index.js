@@ -12,8 +12,14 @@
  */
 
 import requestManager from './lib/requestManager';
-import pushIntoQueue from './lib/enqueue';
+import queue from './lib/queue';
 
-var initialize = requestManager.initialize;
+function initialize(config, callbacks){
+	requestManager.initialize(config,callbacks);
+}
 
-export default { initialize, pushIntoQueue };
+function pushIntoQueue(request, config){
+	queue.push(request, config);
+}
+
+export { initialize, pushIntoQueue };

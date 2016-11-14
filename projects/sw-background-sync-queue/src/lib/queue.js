@@ -1,5 +1,5 @@
 import stringHash from 'string-hash';
-import { idbQueue } from './idbHelper';
+import idbQHelper from './idbHelper';
 import requestManager from './requestManager';
 
 let _queue;
@@ -12,17 +12,17 @@ class Queue {
 
 	async initialize( config ){
 		_config = config;
-		_queue = idbQueue || [];
+		_queue = await idbQHelper.get("queue") || [];
 	}
 
 	async push(request, config){
+		let localConfig = Object.assign({}, _config, config);
 		let hash = stringHash(request.url + JSON.stringify(request.headers) + await request.text() + Date.now());
 		_queue.push(hash);
-		config = Object.assign({}, config, _config);
 
 		//add to queue
 		idbQHelper.put("queue", _queue);
-		idbQHelper.put(hash, requestManager.getQueueableRequest(request));
+		idbQHelper.put(hash, await requestManager.getQueueableRequest(request, localConfig));
 
 		//register sync
 		self.registration.sync.register("bgqueue");
@@ -46,11 +46,18 @@ class Queue {
 	}
 
 	async getRequestFromQueueAtIndex( index ){
+		if(!_queue[index]){
+			return;
+		}
+		
 		let hash = _queue[index];
 		let reqData = await idbQHelper.get(hash);
 		return reqData;
 	}
 
+	getTotalTasks(){
+		return _queue.length;
+	}
 }
 
 async function putResponse( reponse ){

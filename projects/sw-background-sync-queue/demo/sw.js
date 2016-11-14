@@ -20,24 +20,11 @@ self.addEventListener('fetch',function(e){
 			fetch(e.request).then(r=>{
 				res(r);
 			}).catch(e=>{
-				console.log("offline mode");
 				goog.backgroundSyncQueue.pushIntoQueue(clone);
 				rej(e);
 			});
 		});
 		e.respondWith(p);
-		/*var p = new Promise((resolve, reject)=>{
-			const r2= e.request.clone();
-			fetch(e.request).then(res=>{
-				resolve(res);
-			}).catch(err=>{
-				console.log("offline mode");
-				goog.backgroundSyncQueue.pushIntoQueue(clone);
-				reject(err);
-			});
-		});
-		console.log("responding");
-		e.respondWith(p);*/
 	}
 });
 
