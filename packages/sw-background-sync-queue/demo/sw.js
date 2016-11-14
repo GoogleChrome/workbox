@@ -15,16 +15,10 @@ goog.backgroundSyncQueue.initialize({},{
 self.addEventListener('fetch',function(e){
 	if(e.request.url.startsWith("http://message-list.appspot.com/messages"))
 	{
-		var p = new Promise((res,rej)=>{
-			const clone = e.request.clone();
-			fetch(e.request).then(r=>{
-				res(r);
-			}).catch(e=>{
-				goog.backgroundSyncQueue.pushIntoQueue(clone);
-				rej(e);
-			});
-		});
-		e.respondWith(p);
+		const clone = e.request.clone();
+		e.respondWith(fetch(e.request).catch(err=>{
+			goog.backgroundSyncQueue.pushIntoQueue(clone);
+		}));
 	}
 });
 

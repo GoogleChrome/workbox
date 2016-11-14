@@ -2,14 +2,14 @@ import { initializationDefaults } from './constants';
 import queue from './queue.js';
 import responseManager from './responseManager';
 let globalConfig = initializationDefaults;
-let callbacks = {};
+let globalCallbacks = {};
 
 class RequestManager{
 	async initialize(config, callbacks){
 		this.attachSyncHandler();
 		globalConfig = Object.assign({}, initializationDefaults, config);
-		callbacks = callbacks;
-		await queue.initialize( globalConfig, callbacks );
+		globalCallbacks = callbacks;
+		await queue.initialize( globalConfig );
 		//await queue.cleanupQueue();
 	}
 
@@ -52,11 +52,11 @@ class RequestManager{
 		return fetch( request )
 			.then( response => {
 				responseManager.putResponse(queue.getHash(index), reqData,  response.clone());
-				//callbacks.onRetrySuccess && callbacks.onRetrySuccess( reqClone, response);
+				globalCallbacks.onRetrySuccess && globalCallbacks.onRetrySuccess( reqClone, response);
 				return this.doFetch( index + 1); 
 			})
 			.catch (e => {
-				callbacks.onRetryFailure && callbacks.onRetryFailure( reqClone, e );
+				globalCallbacks.onRetryFailure && globalCallbacks.onRetryFailure( reqClone, e );
 				return this.doFetch( index + 1);
 			});
 	}
