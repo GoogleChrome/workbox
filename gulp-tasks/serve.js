@@ -24,8 +24,8 @@ const serveStatic = require('serve-static');
 gulp.task('serve', (unusedCallback) => {
   const app = express();
   const rootDirectory = global.projectOrStar === '*' ?
-    'projects' :
-    path.join('projects', global.projectOrStar);
+    'packages' :
+    path.join('packages', global.projectOrStar);
 
   app.use(serveStatic(rootDirectory));
   app.use(serveIndex(rootDirectory, {view: 'details'}));
