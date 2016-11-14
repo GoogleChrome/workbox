@@ -55,13 +55,13 @@ class Queue {
 		return reqData;
 	}
 
+	getHash( index ){
+		return _queue[index];
+	}
+
 	getTotalTasks(){
 		return _queue.length;
 	}
-}
-
-async function putResponse( reponse ){
-	//TODO: implement this
 }
 
 const queue = new Queue();

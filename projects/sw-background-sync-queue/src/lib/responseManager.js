@@ -1,6 +1,13 @@
-class ResponseManager{
- putResponse(){
+import idbQHelper from './idbHelper';
 
+class ResponseManager{
+	async putResponse(hash, idbObject,  response){
+	 idbObject.response = {
+		 headers: JSON.stringify(response.headers),
+		 status: response.status,
+		 body: await response.blob()
+	 }
+	 idbQHelper.put(hash, idbObject);
  }
  getResponse(reqId){
 

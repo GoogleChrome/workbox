@@ -1,6 +1,6 @@
 import { initializationDefaults } from './constants';
 import queue from './queue.js';
-
+import responseManager from './responseManager';
 let globalConfig = initializationDefaults;
 let callbacks = {};
 
@@ -15,9 +15,7 @@ class RequestManager{
 
 	attachSyncHandler(){
 		self.addEventListener('sync', e => {
-			this.replayRequests().then(e=>{
-				console.log("done");
-			})
+			e.waitUntil(this.replayRequests());
 		});
 	}
 
@@ -30,9 +28,16 @@ class RequestManager{
 
 	async doFetch(index){
 		let reqData = await queue.getRequestFromQueueAtIndex(index);
+		//exit point
 		if(!reqData){
 			return;
 		}
+
+		//proceed if response do not already exist
+		if(reqData.response){
+			return this.doFetch(index + 1);
+		}
+
 
 		let request = new Request(reqData.request.url,{
 			method: reqData.request.method,
@@ -46,13 +51,12 @@ class RequestManager{
 		let reqClone = request.clone();
 		return fetch( request )
 			.then( response => {
-				//putResponse(response.clone());
+				responseManager.putResponse(queue.getHash(index), reqData,  response.clone());
 				//callbacks.onRetrySuccess && callbacks.onRetrySuccess( reqClone, response);
 				return this.doFetch( index + 1); 
 			})
 			.catch (e => {
 				callbacks.onRetryFailure && callbacks.onRetryFailure( reqClone, e );
-				console.log("calling from fetch", index, e);
 				return this.doFetch( index + 1);
 			});
 	}
