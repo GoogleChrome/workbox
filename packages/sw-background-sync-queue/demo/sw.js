@@ -1,3 +1,4 @@
+/* global goog*/
 importScripts('../build/background-sync-queue.js');
 
 // initialize bdQ

@@ -11,6 +11,12 @@
  limitations under the License.
  */
 
+/**
+ * sw-background-sync-queue Module
+ *
+ * @module sw-background-sync-queue
+ */
+
 import requestManager from './lib/requestManager';
 import queue from './lib/queue';
 

@@ -17,12 +17,12 @@ class Queue {
 	}
 
 	async push(request, config) {
+		let localConfig = Object.assign({}, _config, config);
+		let hash = stringHash(request.url + JSON.stringify(request.headers)
+			+ await request.text() + Date.now());
+		let queuableRequest =
+			await requestManager.getQueueableRequest(request, localConfig);
 		try{
-			let localConfig = Object.assign({}, _config, config);
-			let hash = stringHash(request.url + JSON.stringify(request.headers)
-				+ await request.text() + Date.now());
-			let queuableRequest =
-				await requestManager.getQueueableRequest(request, localConfig);
 			_queue.push(hash);
 
 			// add to queue
@@ -42,7 +42,7 @@ class Queue {
 			// broadcast the success
 			bcmanager.postMessage({
 				status: 'failed',
-				request: queuableRequest,
+				request: request,
 			});
 		}
 	}
