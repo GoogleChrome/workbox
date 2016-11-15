@@ -10,7 +10,7 @@ class RequestManager{
 		globalConfig = Object.assign({}, initializationDefaults, config);
 		globalCallbacks = callbacks;
 		await queue.initialize( globalConfig );
-		//await queue.cleanupQueue();
+		await queue.cleanupQueue();
 	}
 
 	attachSyncHandler(){
@@ -28,6 +28,7 @@ class RequestManager{
 
 	async doFetch(index){
 		let reqData = await queue.getRequestFromQueueAtIndex(index);
+		let hash = queue.getHash(index);
 		//exit point
 		if(!reqData){
 			return;
@@ -51,12 +52,13 @@ class RequestManager{
 		let reqClone = request.clone();
 		return fetch( request )
 			.then( response => {
-				responseManager.putResponse(queue.getHash(index), reqData,  response.clone());
-				globalCallbacks.onRetrySuccess && globalCallbacks.onRetrySuccess( reqClone, response);
+				responseManager.putResponse(hash, reqData,  response.clone());
+				globalCallbacks.onRetrySuccess && globalCallbacks.onRetrySuccess( hash, reqClone, response);
 				return this.doFetch( index + 1); 
 			})
 			.catch (e => {
-				globalCallbacks.onRetryFailure && globalCallbacks.onRetryFailure( reqClone, e );
+				
+				globalCallbacks.onRetryFailure && globalCallbacks.onRetryFailure( hash, reqClone, e );
 				return this.doFetch( index + 1);
 			});
 	}
@@ -75,7 +77,6 @@ class RequestManager{
 			},
 			config: config,
 			metadata:{
-				attemptsDone: 0,
 				creationTimestamp: Date.now()
 			}
 		};

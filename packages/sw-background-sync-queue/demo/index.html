@@ -12,6 +12,8 @@
 			function putReqInQ(t){
 				fetch('http://message-list.appspot.com/messages?pageToken='+t).then(r=>r.json()).then(data=>{
 					console.log(data);
+				}).catch(err=>{
+					console.log("error:",err);
 				})
 			}
 			// Register our service worker.

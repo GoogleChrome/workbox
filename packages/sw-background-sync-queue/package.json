@@ -16,9 +16,6 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-background-sync-queue",
-  "devDependencies": {
-    "string-hash": "^1.1.0"
-  },
   "main": "background-sync-queue.js",
   "jsnext:main": "background-sync-queue.mjs"
 }

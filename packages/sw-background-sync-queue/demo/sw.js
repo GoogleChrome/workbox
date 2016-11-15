@@ -2,14 +2,14 @@ importScripts('../build/background-sync-queue.js')
 
 //initialize bdQ
 goog.backgroundSyncQueue.initialize({},{
-	onRetrySuccess: async (req, res)=>{
+	onRetrySuccess: async (hash, req, res)=>{
 		console.log("success", req, res);
 		var data = await res.json();
 		self.registration.showNotification("Successfull with count: "+ data.count)
 	},
-	onRetryFailure: (req)=>{
+	onRetryFailure: (hash, req)=>{
 		console.log("failed", req);
-	} 
+	}
 })
 
 self.addEventListener('fetch',function(e){
@@ -18,6 +18,7 @@ self.addEventListener('fetch',function(e){
 		const clone = e.request.clone();
 		e.respondWith(fetch(e.request).catch(err=>{
 			goog.backgroundSyncQueue.pushIntoQueue(clone);
+			throw err;
 		}));
 	}
 });
