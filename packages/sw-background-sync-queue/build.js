@@ -27,7 +27,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-var ___dirname = process.cwd();
 const babel = require('rollup-plugin-babel');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
@@ -40,11 +39,11 @@ const targets = [{
   dest: path.join(__dirname, 'build', pkg['main']),
   format: 'umd',
   moduleName: 'goog.backgroundSyncQueue',
-  sourceMap: true
+  sourceMap: true,
 }, {
   dest: path.join(__dirname, 'build', pkg['jsnext:main']),
   format: 'es',
-  sourceMap: true
+  sourceMap: true,
 }];
 
 module.exports = () => {
@@ -59,10 +58,10 @@ module.exports = () => {
       commonjs(),
       babel({
         plugins: ['transform-async-to-generator', 'external-helpers'],
-        exclude: 'node_modules/**'
-      })
-    ]
-  }).then(bundle => Promise.all(
-    targets.map(target => bundle.write(target))
+        exclude: 'node_modules/**',
+      }),
+    ],
+  }).then((bundle) => Promise.all(
+    targets.map((target) => bundle.write(target))
   ));
 };
