@@ -24,7 +24,8 @@ class Queue {
 	/**
 	 * initialize the queue object from the idb
 	 * giving access to any penging queues
-	 * @param {Object} config config that gives values like maxAge to specify the
+	 * @param {Object} config config that gives values like
+	 * maxAge of requests in iDB
 	 *
 	 * @memberOf Queue
 	 */
