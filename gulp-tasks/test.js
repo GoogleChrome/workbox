@@ -32,8 +32,12 @@ gulp.task('download-browsers', function() {
 });
 
 gulp.task('test', ['download-browsers'], () => {
+  const mochaOptions = {};
+  if (global.cliOptions.grep) {
+    mochaOptions.grep = global.cliOptions.grep;
+  }
   return gulp.src(`packages/${global.projectOrStar}/test/*.js`, {read: false})
-    .pipe(mocha())
+    .pipe(mocha(mochaOptions))
     .once('error', (error) => {
       console.error(error);
       process.exit(1);

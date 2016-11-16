@@ -13,11 +13,12 @@
  limitations under the License.
 */
 
-export default () => {
-  // Evaluate goog.DEBUG at runtime rather than once at export time to allow
-  // developers to enable logging "on-the-fly" by setting `goog.DEBUG = true`
-  // in the JavaScript console.
-  return (self && self.goog && self.goog.DEBUG) ?
-    console.debug.bind(console) :
-    function() {};
+export default {
+  DB_NAME: 'appcache-to-service-worker',
+  DB_VERSION: 1,
+  STORES: {
+    CLIENT_ID_TO_HASH: 'client-to-hash',
+    MANIFEST_URL_TO_CONTENTS: 'manifest-url-to-contents',
+    PATH_TO_MANIFEST: 'path-to-manifest',
+  },
 };

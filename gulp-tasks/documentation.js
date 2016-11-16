@@ -25,7 +25,7 @@ const tmpPromise = promisify('tmp');
 /**
  * Documents a given project.
  * @param {String} projectPath The path to a project directory.
- * @returns {Promise} Resolves if documenting succeeds, rejects if it fails.
+ * @return {Promise} Resolves if documenting succeeds, rejects if it fails.
  */
 const documentPackage = (projectPath) => {
   const projectMetadata = require(`${projectPath}/package.json`);

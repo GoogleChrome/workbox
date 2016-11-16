@@ -34,7 +34,7 @@ const globPromise = promisify('glob');
  *
  * @param {String} command The command to spawn.
  * @param {Array.<String>} args The parameters to pass to the command.
- * @returns {Promise} Settles once command completes. Resolves if the exit code
+ * @return {Promise} Settles once command completes. Resolves if the exit code
  *                    is 0, and rejects otherwise.
  */
 function processPromiseWrapper(command, args) {
@@ -57,7 +57,7 @@ function processPromiseWrapper(command, args) {
  * rejected, reject at the end with a concatenated error message.
  *
  * @param {Array.<Promise>} promises The promises to wait on.
- * @returns {Promise.<*>} Resolves with null if all the promises resolve.
+ * @return {Promise.<*>} Resolves with null if all the promises resolve.
  *                        Otherwise, rejects with a concatenated error.
  */
 function taskPromiseWrapper(projects, task, args) {
@@ -80,7 +80,7 @@ function taskPromiseWrapper(projects, task, args) {
  * @param {Function} task The function to run.
  * @param {String} projectOrStar Either the name of a project, or '*' for all.
  * @param {...Object} [args] Optional additional arguments to pass to task.
- * @returns {Promise.<*>} Resolves with null if all the promises resolve.
+ * @return {Promise.<*>} Resolves with null if all the promises resolve.
  *                        Otherwise, rejects with a concatenated error.
  */
 function taskHarness(task, projectOrStar, ...args) {
