@@ -3,5 +3,5 @@ const broadcastChannelName = 'sw-backgroundsync';
 
 export {
 	maxAge,
-	broadcastChannelName
+	broadcastChannelName,
 };

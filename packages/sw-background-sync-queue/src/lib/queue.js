@@ -99,22 +99,21 @@ class Queue {
 
 		await Promise.all(deletionPromises);
 		await idbQHelper.put('queue', itemsToKeep);
-		this.queue=itemsToKeep
+		this.queue = itemsToKeep;
 	}
 
 	/**
 	 * get the Request from the queue at a particular index
 	 *
-	 * @param {int} index
-	 * @return {Request} hash of the request at the given index
+	 * @param {string} hash hash of the request at the given index
+	 * @return {Request}
 	 *
 	 * @memberOf Queue
 	 */
-	async getRequestFromQueueAtIndex( index ) {
-		if(!this.queue[index]) {
+	async getRequestFromQueue(hash) {
+		if(this.queue.indexOf(hash)===-1) {
 			return;
 		}
-		let hash = this.queue[index];
 		let reqData = await idbQHelper.get(hash);
 		return reqData;
 	}
@@ -141,7 +140,6 @@ class Queue {
 	getTotalTasks() {
 		return this.queue.length;
 	}
-	
 }
 
 

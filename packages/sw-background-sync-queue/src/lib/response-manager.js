@@ -10,5 +10,5 @@ async function putResponse(hash, idbObject, response) {
 }
 
 export {
-	putResponse
+	putResponse,
 };

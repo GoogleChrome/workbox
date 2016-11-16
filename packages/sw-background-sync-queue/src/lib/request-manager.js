@@ -3,7 +3,7 @@ import Queue from './queue.js';
 import {putResponse} from './response-manager';
 
 let globalConfig = {
-	maxAge: maxAge
+	maxAge: maxAge,
 };
 
 let globalCallbacks = {};
@@ -15,7 +15,7 @@ let queue;
  * @class RequestManager
  */
 class RequestManager {
-	constructor({config, callbacks}){
+	constructor({config, callbacks}) {
 		globalConfig = Object.assign({}, globalConfig, config);
 		globalCallbacks = callbacks;
 		queue = new Queue(globalConfig);
@@ -52,57 +52,37 @@ class RequestManager {
 	/**
 	 * function to start playing requests
 	 * in sequence
-	 * @return {Promise} promise that will resolve whenn all requests complete
-	 *
-	 * @memberOf RequestManager
-	 */
-	replayRequests() {
-		if (queue.getTotalTasks() < 1) {
-			return;
-		}
-		return this.doFetch(0);
-	}
-
-	/**
-	 * takes starting index and play all then
-	 * requests from that index onwards till the end
-	 *
-	 * @param {int} index starting point of playing
 	 * @return {void}
 	 *
 	 * @memberOf RequestManager
 	 */
-	async doFetch(index) {
-		let reqData = await queue.getRequestFromQueueAtIndex(index);
-		let hash = queue.getHash(index);
-		// exit point
-		if(!reqData) {
-			return;
-		}
+	replayRequests() {
+		queue.queue.reduce((promise, hash) => {
+			return promise
+				.then(async (item) => {
+					let reqData = await queue.getRequestFromQueue(hash);
+					if(reqData.response) {
+						// check if request is not played already
+						return Promise.reject();
+					}
 
-		// proceed if response do not already exist
-		if(reqData.response) {
-			return this.doFetch(index + 1);
-		}
-
-		let request = await getFetchableRequest(reqData.request);
-
-		return fetch(request)
-			.then( (response) => {
-				putResponse(hash, reqData, response.clone());
-				globalCallbacks.onRetrySuccess
-					&& globalCallbacks.onRetrySuccess(hash, response);
-				return this.doFetch(index + 1);
-			})
-			.catch((err) => {
-				globalCallbacks.onRetryFailure
-					&& globalCallbacks.onRetryFailure(hash, err);
-				return this.doFetch( index + 1);
-			});
+					let request = await getFetchableRequest(reqData.request);
+					return fetch(request)
+						.then((response)=>{
+							putResponse(hash, reqData, response.clone());
+							globalCallbacks.onRetrySuccess
+								&& globalCallbacks.onRetrySuccess(hash, response);
+						})
+						.catch((err)=>{
+							globalCallbacks.onRetryFailure
+								&& globalCallbacks.onRetryFailure(hash, err);
+						});
+				});
+		}, Promise.resolve());
 	}
 
-	pushIntoQueue(request, config){
-		queue.push(request, config)
+	pushIntoQueue(request, config) {
+		queue.push(request, config);
 	}
 }
 
@@ -122,10 +102,10 @@ async function getQueueableRequest(request, config) {
 		config: config,
 		metadata: {
 			creationTimestamp: Date.now(),
-		}
-	}
+		},
+	};
 	let headerObject = {};
-	request.headers.forEach((value,field)=>{
+	request.headers.forEach((value, field)=> {
 		headerObject[field] = value;
 	});
 	requestObject.request = {
@@ -142,20 +122,20 @@ async function getQueueableRequest(request, config) {
 	return requestObject;
 }
 
-async function getFetchableRequest(idbRequestObject){
+async function getFetchableRequest(idbRequestObject) {
 	let reqObject = {
 		mode: idbRequestObject.mode,
 		method: idbRequestObject.method,
 		redirect: idbRequestObject.redirect,
-		headers: new Headers(idbRequestObject.headers)
+		headers: new Headers(idbRequestObject.headers),
 	};
-	if(idbRequestObject.body){
-		reqObject.body = idbRequestObject.body
+	if(idbRequestObject.body) {
+		reqObject.body = idbRequestObject.body;
 	}
 	return new Request(idbRequestObject.url, reqObject);
 }
 
 export default RequestManager;
 export {
-	getQueueableRequest
+	getQueueableRequest,
 };

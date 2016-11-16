@@ -2,7 +2,7 @@
 importScripts('../build/background-sync-queue.js');
 
 // initialize bdQ
-goog.backgroundSyncQueue.initialize({callbacks:{
+goog.backgroundSyncQueue.initialize({callbacks: {
 	onRetrySuccess: async (hash, res)=>{
 		let data = await res.json();
 		self.registration.showNotification('Successfull with count: '+ data.count);
