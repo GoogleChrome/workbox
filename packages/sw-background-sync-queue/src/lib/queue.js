@@ -118,8 +118,8 @@ class Queue {
 		return reqData;
 	}
 
-	get queue(){
-		return Object.assign([],this._queue);
+	get queue() {
+		return Object.assign([], this._queue);
 	}
 }
 
