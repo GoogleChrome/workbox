@@ -39,6 +39,7 @@ module.exports = () => {
       rollupConfig: {
         entry: path.join(__dirname, 'src', 'appcache-behavior-import.js'),
         format: 'umd',
+        moduleName: 'goog.appCacheBehavior',
         plugins: [
           resolve({
             jsnext: true,

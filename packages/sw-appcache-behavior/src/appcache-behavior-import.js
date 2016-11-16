@@ -19,7 +19,6 @@
 
 import IDBHelper from '../../../lib/idb-helper.js';
 import log from '../../../lib/log.js';
-import scope from '../../../lib/scope.js';
 import constants from './lib/constants.js';
 
 const idbHelpers = {};
@@ -522,8 +521,4 @@ function fetchBehavior(event) {
   });
 }
 
-// Add the function to the global service worker scope,
-// as goog.appCacheBehavior.fetch.
-scope('appCacheBehavior', {
-  fetch: fetchBehavior,
-});
+export {fetchBehavior as fetch};
