@@ -12,7 +12,7 @@ let queue;
  * Class to handle all the request related
  * transformations, replaying, event handling
  * broadcasting back to controlled pages etc.
- * @class RequestManager
+ * @memberof module:sw-background-sync-queue
  */
 class RequestManager {
 	constructor({config, callbacks}) {
@@ -33,7 +33,7 @@ class RequestManager {
 	 * @memberOf RequestManager
 	 */
 	async initialize() {
-		await queue.initialize( globalConfig );
+		await queue.initialize();
 		await queue.cleanupQueue();
 	}
 
@@ -57,13 +57,13 @@ class RequestManager {
 	 * @memberOf RequestManager
 	 */
 	replayRequests() {
-		queue.queue.reduce((promise, hash) => {
+		return queue.queue.reduce((promise, hash) => {
 			return promise
 				.then(async (item) => {
 					let reqData = await queue.getRequestFromQueue(hash);
 					if(reqData.response) {
 						// check if request is not played already
-						return Promise.reject();
+						return;
 					}
 
 					let request = await getFetchableRequest(reqData.request);
@@ -92,7 +92,7 @@ class RequestManager {
  * @param {Request} request request object to transform
  * into iDB storable object
  * @param {Object} config config object to be
- * stored along inthe iDB
+ * stored along in the iDB
  * @return {Object} indexable object for iDB
  *
  * @memberOf RequestManager

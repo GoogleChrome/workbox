@@ -8,7 +8,7 @@ let _counter = 0;
 /**
  * Core queue class that handles all the enqueue and dequeue
  * as well as cleanup code for the background sync queue
- * @class Queue
+ * @memberof module:sw-background-sync-queue
  */
 class Queue {
 	/**
@@ -18,24 +18,24 @@ class Queue {
 	 */
 	constructor(config) {
 		_config = config;
-		this.queue = [];
+		this._queue = [];
 	}
 
 	/**
-	 * initialize the queue object from the idb
-	 * giving access to any penging queues
+	 * initialize the queue object from idb
+	 * giving access to any pending queues
 	 * @param {Object} config config that gives values like
 	 * maxAge of requests in iDB
 	 *
 	 * @memberOf Queue
 	 */
 	async initialize() {
-		this.queue = await idbQHelper.get('queue') || [];
+		this._queue = await idbQHelper.get('queue') || [];
 	}
 
 	/**
 	 * push any request to background sync queue which would be played later
-	 * prefferably when network comes back
+	 * preferably when network comes back
 	 *
 	 * @param {Request} request request object to be queued by this
 	 * @param {Object} config optional config to override config params
@@ -48,10 +48,10 @@ class Queue {
 		let queuableRequest =
 			await getQueueableRequest(request, localConfig);
 		try{
-			this.queue.push(hash);
+			this._queue.push(hash);
 
 			// add to queue
-			idbQHelper.put('queue', this.queue);
+			idbQHelper.put('queue', this._queue);
 			idbQHelper.put(hash, queuableRequest);
 
 			// register sync
@@ -83,7 +83,7 @@ class Queue {
 		const itemsToKeep = [];
 		const deletionPromises = [];
 
-		for (const hash of this.queue) {
+		for (const hash of this._queue) {
 			let requestData = await idbQHelper.get(hash);
 
 			if (requestData && requestData.metadata &&
@@ -99,7 +99,7 @@ class Queue {
 
 		await Promise.all(deletionPromises);
 		await idbQHelper.put('queue', itemsToKeep);
-		this.queue = itemsToKeep;
+		this._queue = itemsToKeep;
 	}
 
 	/**
@@ -111,34 +111,15 @@ class Queue {
 	 * @memberOf Queue
 	 */
 	async getRequestFromQueue(hash) {
-		if(this.queue.indexOf(hash)===-1) {
+		if(this._queue.indexOf(hash)===-1) {
 			return;
 		}
 		let reqData = await idbQHelper.get(hash);
 		return reqData;
 	}
 
-	/**
-	 * get the hash from the queue at a particular index
-	 *
-	 * @param {int} index
-	 * @return {string} hash of the request at the given index
-	 *
-	 * @memberOf Queue
-	 */
-	getHash( index ) {
-		return this.queue[index];
-	}
-
-	/**
-	 * get the total no of tasks in the queue
-	 *
-	 * @return {int} total number of tasks
-	 *
-	 * @memberOf Queue
-	 */
-	getTotalTasks() {
-		return this.queue.length;
+	get queue(){
+		return Object.assign([],this._queue);
 	}
 }
 
