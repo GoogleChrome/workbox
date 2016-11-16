@@ -17,7 +17,7 @@
  * @module sw-background-sync-queue
  */
 
-import requestManager from './lib/requestManager';
+import requestManager from './lib/request-manager';
 import queue from './lib/queue';
 
 function initialize(config, callbacks) {

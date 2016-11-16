@@ -1,6 +1,6 @@
 import {initializationDefaults} from './constants';
 import queue from './queue.js';
-import responseManager from './responseManager';
+import responseManager from './response-manager';
 let globalConfig = initializationDefaults;
 let globalCallbacks = {};
 
@@ -13,7 +13,7 @@ let globalCallbacks = {};
 class RequestManager {
 	/**
 	 * Initializes the request manager
-	 * stores the callbacks object, maintins global config and
+	 * stores the callbacks object, maintins config and
 	 * attaches event handler
 	 * @param {Object} config config that gives values like
 	 * maxAge of requests in iDB

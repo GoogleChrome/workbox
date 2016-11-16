@@ -1,4 +1,4 @@
-import idbQHelper from './idbHelper';
+import idbQHelper from './idb-helper';
 
 class ResponseManager {
 	async putResponse(hash, idbObject, response) {

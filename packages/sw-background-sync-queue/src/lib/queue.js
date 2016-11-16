@@ -1,7 +1,7 @@
 import stringHash from 'string-hash';
-import idbQHelper from './idbHelper';
-import requestManager from './requestManager';
-import bcmanager from './broadcastManager';
+import idbQHelper from './idb-helper';
+import requestManager from './request-manager';
+import bcmanager from './broadcast-manager';
 
 let _queue;
 let _config;
