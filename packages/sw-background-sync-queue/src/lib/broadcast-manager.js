@@ -1,4 +1,15 @@
-import {broadcastChannelName} from './constants';
+import {defaultBroadcastChannelName} from './constants';
+let bcmanager;
 
-let bcmanager = new BroadcastChannel(broadcastChannelName);
-export default bcmanager;
+function initiazileBroadcastManager(channelName){
+	bcmanager = new BroadcastChannel(channelName || defaultBroadcastChannelName);
+}
+
+function broadcastMessage(message){
+	bcmanager && bcmanager.postMessage(message);
+}
+
+export {
+	initiazileBroadcastManager,
+	broadcastMessage
+};

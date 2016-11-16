@@ -1,6 +1,6 @@
 import idbQHelper from './idb-helper';
 import {getQueueableRequest} from './request-manager';
-import bcmanager from './broadcast-manager';
+import {broadcastMessage} from './broadcast-manager';
 
 let _config;
 let _counter = 0;
@@ -8,7 +8,7 @@ let _counter = 0;
 /**
  * Core queue class that handles all the enqueue and dequeue
  * as well as cleanup code for the background sync queue
- * @memberof module:sw-background-sync-queue
+ * @class
  */
 class Queue {
 	/**
@@ -24,8 +24,6 @@ class Queue {
 	/**
 	 * initialize the queue object from idb
 	 * giving access to any pending queues
-	 * @param {Object} config config that gives values like
-	 * maxAge of requests in iDB
 	 *
 	 * @memberOf Queue
 	 */
@@ -59,14 +57,14 @@ class Queue {
 
 			// broadcast the success
 			// TODO: put fsa format here
-			bcmanager.postMessage({
+			broadcastMessage({
 				status: 'success',
 				id: hash,
 				request: queuableRequest,
 			});
 		} catch(e) {
 			// broadcast the success
-			bcmanager.postMessage({
+			broadcastMessage({
 				status: 'failed',
 				request: request,
 			});

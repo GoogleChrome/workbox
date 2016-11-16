@@ -18,10 +18,13 @@
  */
 
 import RequestManager from './lib/request-manager';
+import {initiazileBroadcastManager} from './lib/broadcast-manager';
+
 let reqManager;
-function initialize({config, callbacks}) {
+function initialize({config, callbacks, broadcastChannel}) {
 	reqManager = new RequestManager({config, callbacks});
 	reqManager.initialize();
+	initiazileBroadcastManager(broadcastChannel);
 }
 
 function pushIntoQueue(request, config) {

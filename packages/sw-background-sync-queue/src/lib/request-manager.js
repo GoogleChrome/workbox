@@ -12,9 +12,17 @@ let queue;
  * Class to handle all the request related
  * transformations, replaying, event handling
  * broadcasting back to controlled pages etc.
- * @memberof module:sw-background-sync-queue
+ * @class
  */
 class RequestManager {
+	/**
+	 * Initializes the request manager
+	 * stores the callbacks object, maintins config and
+	 * attaches event handler 
+	 * @param {any} {config, callbacks}
+	 * 
+	 * @memberOf RequestManager
+	 */
 	constructor({config, callbacks}) {
 		globalConfig = Object.assign({}, globalConfig, config);
 		globalCallbacks = callbacks;
@@ -22,14 +30,6 @@ class RequestManager {
 		this.attachSyncHandler();
 	}
 	/**
-	 * Initializes the request manager
-	 * stores the callbacks object, maintins config and
-	 * attaches event handler
-	 * @param {Object} config config that gives values like
-	 * maxAge of requests in iDB
-	 * @param {Object} callbacks object that contains function
-	 * ref for various lifecycle callbacks
-	 *
 	 * @memberOf RequestManager
 	 */
 	async initialize() {
