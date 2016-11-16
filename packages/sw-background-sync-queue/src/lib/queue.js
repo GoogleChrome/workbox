@@ -1,10 +1,9 @@
-import stringHash from 'string-hash';
 import idbQHelper from './idb-helper';
-import requestManager from './request-manager';
+import {getQueueableRequest} from './request-manager';
 import bcmanager from './broadcast-manager';
 
-let _queue;
 let _config;
+let _counter = 0;
 
 /**
  * Core queue class that handles all the enqueue and dequeue
@@ -17,8 +16,9 @@ class Queue {
 	 *
 	 * @memberOf Queue
 	 */
-	constructor() {
-		this.initialize();
+	constructor(config) {
+		_config = config;
+		this.queue = [];
 	}
 
 	/**
@@ -29,9 +29,8 @@ class Queue {
 	 *
 	 * @memberOf Queue
 	 */
-	async initialize(config) {
-		_config = config;
-		_queue = await idbQHelper.get('queue') || [];
+	async initialize() {
+		this.queue = await idbQHelper.get('queue') || [];
 	}
 
 	/**
@@ -45,21 +44,21 @@ class Queue {
 	 */
 	async push(request, config) {
 		let localConfig = Object.assign({}, _config, config);
-		let hash = stringHash(request.url + JSON.stringify(request.headers)
-			+ await request.text() + Date.now());
+		const hash = `${request.url}!${Date.now()}!${_counter++}`;
 		let queuableRequest =
-			await requestManager.getQueueableRequest(request, localConfig);
+			await getQueueableRequest(request, localConfig);
 		try{
-			_queue.push(hash);
+			this.queue.push(hash);
 
 			// add to queue
-			idbQHelper.put('queue', _queue);
+			idbQHelper.put('queue', this.queue);
 			idbQHelper.put(hash, queuableRequest);
 
 			// register sync
 			self.registration.sync.register('bgqueue');
 
 			// broadcast the success
+			// TODO: put fsa format here
 			bcmanager.postMessage({
 				status: 'success',
 				id: hash,
@@ -81,20 +80,26 @@ class Queue {
 	 * @memberOf Queue
 	 */
 	async cleanupQueue() {
-		let currIndex = 0;
-		for(const hash of _queue) {
+		const itemsToKeep = [];
+		const deletionPromises = [];
+
+		for (const hash of this.queue) {
 			let requestData = await idbQHelper.get(hash);
-			if (requestData && requestData.metadata.creationTimestamp
-				+ requestData.config.maxAge > Date.now() ) {
-					_queue.splice(currIndex, 1);
-					idbQHelper.delete(hash);
-			} else if(!requestData) {
-				// remove elements from queue whose defination do not exist in idb
-				_queue.splice(currIndex, 1);
+
+			if (requestData && requestData.metadata &&
+					requestData.metadata.creationTimestamp
+					+ requestData.config.maxAge > Date.now()) {
+					// Delete items that are too old.
+					deletionPromises.push(idbQHelper.delete(hash));
+			} else if (requestData) {
+				// Keep elements whose definition exists in idb.
+				itemsToKeep.push(hash);
 			}
-			currIndex ++;
 		}
-		idbQHelper.put('queue', _queue);
+
+		await Promise.all(deletionPromises);
+		await idbQHelper.put('queue', itemsToKeep);
+		this.queue=itemsToKeep
 	}
 
 	/**
@@ -106,10 +111,10 @@ class Queue {
 	 * @memberOf Queue
 	 */
 	async getRequestFromQueueAtIndex( index ) {
-		if(!_queue[index]) {
+		if(!this.queue[index]) {
 			return;
 		}
-		let hash = _queue[index];
+		let hash = this.queue[index];
 		let reqData = await idbQHelper.get(hash);
 		return reqData;
 	}
@@ -123,7 +128,7 @@ class Queue {
 	 * @memberOf Queue
 	 */
 	getHash( index ) {
-		return _queue[index];
+		return this.queue[index];
 	}
 
 	/**
@@ -134,10 +139,10 @@ class Queue {
 	 * @memberOf Queue
 	 */
 	getTotalTasks() {
-		return _queue.length;
+		return this.queue.length;
 	}
+	
 }
 
-const queue = new Queue();
 
-export default queue;
+export default Queue;

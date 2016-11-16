@@ -1,2 +1,4 @@
-let bcmanager = new BroadcastChannel('sw-backgroundsync');
+import {broadcastChannelName} from './constants';
+
+let bcmanager = new BroadcastChannel(broadcastChannelName);
 export default bcmanager;

@@ -17,15 +17,15 @@
  * @module sw-background-sync-queue
  */
 
-import requestManager from './lib/request-manager';
-import queue from './lib/queue';
-
-function initialize(config, callbacks) {
-	requestManager.initialize(config, callbacks);
+import RequestManager from './lib/request-manager';
+let reqManager;
+function initialize({config, callbacks}) {
+	reqManager = new RequestManager({config, callbacks});
+	reqManager.initialize();
 }
 
 function pushIntoQueue(request, config) {
-	queue.push(request, config);
+	reqManager.pushIntoQueue(request, config);
 }
 
 export {initialize, pushIntoQueue};
