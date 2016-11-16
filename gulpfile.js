@@ -22,6 +22,7 @@ const runSequence = require('run-sequence');
 const options = minimist(process.argv.slice(2));
 global.port = options.port || 3000;
 global.projectOrStar = options.project || '*';
+global.cliOptions = options;
 
 require('./gulp-tasks/lint.js');
 require('./gulp-tasks/build.js');
