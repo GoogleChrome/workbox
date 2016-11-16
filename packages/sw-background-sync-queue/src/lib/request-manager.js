@@ -135,24 +135,24 @@ async function getQueueableRequest(request, config) {
 		method: request.method,
 		redirect: request.redirect,
 	};
-	if(request.body){
-		requestObject.request.body = await request.blob();
+	let requestBody = await request.text();
+	if (requestBody.length > 0) {
+		requestObject.request.body = requestBody;
 	}
 	return requestObject;
 }
 
 async function getFetchableRequest(idbRequestObject){
-	let request = new Request(idbRequestObject.url, {
-			mode: idbRequestObject.mode,
-			method: idbRequestObject.method,
-			redirect: idbRequestObject.redirect,
-			headers: new Headers(idbRequestObject.headers)
-	});
-	if(idbRequestObject.body){
-		request.body = idbRequestObject.body
+	let reqObject = {
+		mode: idbRequestObject.mode,
+		method: idbRequestObject.method,
+		redirect: idbRequestObject.redirect,
+		headers: new Headers(idbRequestObject.headers)
 	};
-
-	return request;
+	if(idbRequestObject.body){
+		reqObject.body = idbRequestObject.body
+	}
+	return new Request(idbRequestObject.url, reqObject);
 }
 
 export default RequestManager;
