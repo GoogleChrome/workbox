@@ -36,12 +36,12 @@ const rollup = require('rollup').rollup;
 const pkg = require('./package.json');
 
 const targets = [{
-  dest: path.join(__dirname, 'build', pkg['main']),
+  dest: path.join(__dirname, pkg['main']),
   format: 'umd',
   moduleName: 'goog.backgroundSyncQueue',
   sourceMap: true,
 }, {
-  dest: path.join(__dirname, 'build', pkg['jsnext:main']),
+  dest: path.join(__dirname, pkg['jsnext:main']),
   format: 'es',
   sourceMap: true,
 }];

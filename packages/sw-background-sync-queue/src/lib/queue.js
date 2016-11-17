@@ -1,10 +1,10 @@
-import idbQHelper from './idb-helper';
+import {getDb} from './idb-helper';
 import {getQueueableRequest} from './request-manager';
 import {broadcastMessage} from './broadcast-manager';
 
 let _config;
 let _counter = 0;
-
+let _idbQHelper = getDb();
 /**
  * Core queue class that handles all the enqueue and dequeue
  * as well as cleanup code for the background sync queue
@@ -28,7 +28,7 @@ class Queue {
 	 * @memberOf Queue
 	 */
 	async initialize() {
-		this._queue = await idbQHelper.get('queue') || [];
+		this._queue = await _idbQHelper.get('queue') || [];
 	}
 
 	/**
@@ -49,8 +49,8 @@ class Queue {
 			this._queue.push(hash);
 
 			// add to queue
-			idbQHelper.put('queue', this._queue);
-			idbQHelper.put(hash, queuableRequest);
+			_idbQHelper.put('queue', this._queue);
+			_idbQHelper.put(hash, queuableRequest);
 
 			// register sync
 			self.registration.sync.register('bgqueue');
@@ -82,13 +82,13 @@ class Queue {
 		const deletionPromises = [];
 
 		for (const hash of this._queue) {
-			let requestData = await idbQHelper.get(hash);
+			let requestData = await _idbQHelper.get(hash);
 
 			if (requestData && requestData.metadata &&
 					requestData.metadata.creationTimestamp
 					+ requestData.config.maxAge > Date.now()) {
 					// Delete items that are too old.
-					deletionPromises.push(idbQHelper.delete(hash));
+					deletionPromises.push(_idbQHelper.delete(hash));
 			} else if (requestData) {
 				// Keep elements whose definition exists in idb.
 				itemsToKeep.push(hash);
@@ -96,7 +96,7 @@ class Queue {
 		}
 
 		await Promise.all(deletionPromises);
-		await idbQHelper.put('queue', itemsToKeep);
+		await _idbQHelper.put('queue', itemsToKeep);
 		this._queue = itemsToKeep;
 	}
 
@@ -112,7 +112,7 @@ class Queue {
 		if(this._queue.indexOf(hash)===-1) {
 			return;
 		}
-		let reqData = await idbQHelper.get(hash);
+		let reqData = await _idbQHelper.get(hash);
 		return reqData;
 	}
 

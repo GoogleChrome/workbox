@@ -1,4 +1,5 @@
-import idbQHelper from './idb-helper';
+import {getDb} from './idb-helper';
+let _idbQHelper = getDb();
 
 async function putResponse(hash, idbObject, response) {
 	idbObject.response = {
@@ -6,7 +7,7 @@ async function putResponse(hash, idbObject, response) {
 		status: response.status,
 		body: await response.blob(),
 	};
-	idbQHelper.put(hash, idbObject);
+	_idbQHelper.put(hash, idbObject);
 }
 
 export {

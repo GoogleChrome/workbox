@@ -19,12 +19,14 @@
 
 import RequestManager from './lib/request-manager';
 import {initiazileBroadcastManager} from './lib/broadcast-manager';
+import {initDb} from './lib/idb-helper';
 
 let reqManager;
-function initialize({config, callbacks, broadcastChannel}) {
+function initialize({config, callbacks, broadcastChannel, dbName}) {
+	initiazileBroadcastManager(broadcastChannel);
+	initDb(dbName);
 	reqManager = new RequestManager({config, callbacks});
 	reqManager.initialize();
-	initiazileBroadcastManager(broadcastChannel);
 }
 
 function pushIntoQueue(request, config) {
