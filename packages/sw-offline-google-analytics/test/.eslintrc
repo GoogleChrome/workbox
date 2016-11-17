@@ -3,6 +3,7 @@
     "no-invalid-this": 0,
     "no-console": 0,
     "valid-jsdoc": 0,
-    "no-native-reassign": 0
+    "no-native-reassign": 0,
+    "no-global-assign": 0
   }
 }
