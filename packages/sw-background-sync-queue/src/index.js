@@ -29,8 +29,8 @@ function initialize({config, callbacks, broadcastChannel, dbName}) {
 	reqManager.initialize();
 }
 
-function pushIntoQueue(request, config) {
-	reqManager.pushIntoQueue(request, config);
+function pushIntoQueue({request, config}) {
+	reqManager.pushIntoQueue({request, config});
 }
 
 export {initialize, pushIntoQueue};

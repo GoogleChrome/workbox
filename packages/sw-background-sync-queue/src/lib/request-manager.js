@@ -81,8 +81,8 @@ class RequestManager {
 		}, Promise.resolve());
 	}
 
-	pushIntoQueue(request, config) {
-		queue.push(request, config);
+	pushIntoQueue({request, config}) {
+		queue.push({request, config});
 	}
 }
 

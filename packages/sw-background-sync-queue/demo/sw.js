@@ -15,7 +15,9 @@ self.addEventListener('fetch', function(e) {
 	if (e.request.url.startsWith('https://jsonplaceholder.typicode.com')) {
 		const clone = e.request.clone();
 		e.respondWith(fetch(e.request).catch((err)=>{
-			goog.backgroundSyncQueue.pushIntoQueue(clone);
+			goog.backgroundSyncQueue.pushIntoQueue({
+				request: clone
+			});
 			throw err;
 		}));
 	}

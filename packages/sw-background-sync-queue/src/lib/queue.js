@@ -41,7 +41,7 @@ class Queue {
 	 *
 	 * @memberOf Queue
 	 */
-	async push(request, config) {
+	async push({request, config}) {
 		let localConfig = Object.assign({}, _config, config);
 		const hash = `${request.url}!${Date.now()}!${_counter++}`;
 		let queuableRequest =
