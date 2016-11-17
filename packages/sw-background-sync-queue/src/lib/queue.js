@@ -87,7 +87,7 @@ class Queue {
 
 			if (requestData && requestData.metadata &&
 					requestData.metadata.creationTimestamp
-					+ requestData.config.maxAge > Date.now()) {
+					+ requestData.config.maxAge <= Date.now()) {
 					// Delete items that are too old.
 					deletionPromises.push(_idbQHelper.delete(hash));
 			} else if (requestData) {
