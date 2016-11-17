@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, goog, fetch, MockDate */
+/* global chai, goog, MockDate, sinon */
 
 'use strict';
 
@@ -31,21 +31,21 @@ describe('replay-queued-requests', () => {
   const initialTimestamp = 1470405670000;
   // A 1000 millisecond offset.
   const timestampOffset = 1000;
-  const originalFetch = window.fetch;
+  let fetchStub;
 
   beforeEach(function() {
     MockDate.set(initialTimestamp + timestampOffset);
     fetchedUrls = [];
-    fetch = (requestUrl) => {
+    fetchStub = sinon.stub(window, 'fetch', (requestUrl) => {
       const regex = /^https:\/\/replay-queued-requests.com\//g;
       if (regex.test(requestUrl)) {
         fetchedUrls.push(requestUrl);
       }
-    };
+    });
   });
 
   afterEach(function() {
-    fetch = originalFetch;
+    fetchStub.restore();
     MockDate.reset();
   });
 
