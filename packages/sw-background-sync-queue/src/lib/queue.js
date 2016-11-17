@@ -1,6 +1,7 @@
 import {getDb} from './idb-helper';
 import {getQueueableRequest} from './request-manager';
 import {broadcastMessage} from './broadcast-manager';
+import {broadcastMessageAddedType, broadcastMessageFailedType} from './constants';
 
 let _config;
 let _counter = 0;
@@ -55,18 +56,18 @@ class Queue {
 			// register sync
 			self.registration.sync.register('bgqueue');
 
-			// broadcast the success
-			// TODO: put fsa format here
+			// broadcast the success of request added to the queue
 			broadcastMessage({
-				status: 'success',
+				type: broadcastMessageAddedType,
 				id: hash,
-				request: queuableRequest,
+				url: request.url,
 			});
 		} catch(e) {
-			// broadcast the success
+			// broadcast the failure of request added to the queue
 			broadcastMessage({
-				status: 'failed',
-				request: request,
+				type: broadcastMessageFailedType,
+				id: hash,
+				url: request.url,
 			});
 		}
 	}
