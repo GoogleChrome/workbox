@@ -43,7 +43,7 @@ const configureTestSuite = function(browser) {
     // Set up the web server before running any tests in this suite.
     before(function() {
       return testServer.startServer('.').then((portNumber) => {
-        baseTestUrl = `http://localhost:${portNumber}/projects/sw-offline-google-analytics/test/`;
+        baseTestUrl = `http://localhost:${portNumber}/packages/sw-offline-google-analytics/test/`;
       });
     });
 

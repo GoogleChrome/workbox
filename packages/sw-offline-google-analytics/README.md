@@ -8,14 +8,14 @@ A service worker helper library to retry offline Google Analytics requests when 
 
 ## Demo
 
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/projects/sw-offline-google-analytics/demo), or
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-offline-google-analytics/demo), or
 [try it out](https://googlechrome.github.io/sw-helpers/sw-offline-google-analytics/demo/) directly.
 
 ## API
 
 ### goog.offlineGoogleAnalytics.initialize
 
-[projects/sw-offline-google-analytics/src/index.js:82-132](https://github.com/GoogleChrome/sw-helpers/blob/6618776516d4738d9626f115ff44d643ede71903/projects/sw-offline-google-analytics/src/index.js#L82-L132 "Source code on GitHub")
+[packages/sw-offline-google-analytics/src/index.js:82-132](https://github.com/GoogleChrome/sw-helpers/blob/6618776516d4738d9626f115ff44d643ede71903/packages/sw-offline-google-analytics/src/index.js#L82-L132 "Source code on GitHub")
 
 In order to use the library, call`goog.offlineGoogleAnalytics.initialize()`.
 It will take care of setting up service worker `fetch` handlers to ensure
@@ -81,4 +81,4 @@ goog.offlineGoogleAnalytics.initialize({
 });
 ```
 
-Returns **[undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined)** 
+Returns **[undefined](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined)**
