@@ -40,6 +40,7 @@ const fsePromise = promisify('fs-extra');
 const testServer = new swTestingHelpers.TestServer();
 const expect = chai.expect;
 const TIMEOUT = 10 * 1000;
+const RETRIES = 3;
 let tempDirectory = path.join(__dirname, 'end-to-end-caching', 'temp');
 
 // Helper method to generate the text of an App Cache manifest with a
@@ -76,6 +77,7 @@ const configureTestSuite = function(browser) {
 
   describe(`sw-appcache-behavior Test Suite with (${browser.getPrettyName()} - ${browser.getVersionNumber()})`, function() {
     this.timeout(TIMEOUT);
+    this.retries(RETRIES);
 
     // Set up the web server before running any tests in this suite.
     before(function() {
