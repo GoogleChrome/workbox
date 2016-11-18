@@ -14,9 +14,9 @@ class RequestManager {
 	/**
 	 * Initializes the request manager
 	 * stores the callbacks object, maintins config and
-	 * attaches event handler 
+	 * attaches event handler
 	 * @param {any} {config, callbacks}
-	 * 
+	 *
 	 * @memberOf RequestManager
 	 */
 	constructor({config, callbacks}) {

@@ -1,7 +1,10 @@
 import {getDb} from './background-sync-idb-helper';
 import {getQueueableRequest} from './request-manager';
 import {broadcastMessage} from './broadcast-manager';
-import {broadcastMessageAddedType, broadcastMessageFailedType} from './constants';
+import {
+	broadcastMessageAddedType,
+	broadcastMessageFailedType,
+} from './constants';
 
 let _config;
 let _counter = 0;

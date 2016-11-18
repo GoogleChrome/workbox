@@ -16,7 +16,7 @@ self.addEventListener('fetch', function(e) {
 		const clone = e.request.clone();
 		e.respondWith(fetch(e.request).catch((err)=>{
 			goog.backgroundSyncQueue.pushIntoQueue({
-				request: clone
+				request: clone,
 			});
 			throw err;
 		}));
