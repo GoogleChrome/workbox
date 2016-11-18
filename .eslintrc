@@ -1,17 +1,19 @@
 {
-  "extends": "google",
+  "extends": ["eslint:recommended", "google"],
+  "env": {
+    "serviceworker": true,
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
   "rules": {
-    "max-nested-callbacks": 0,
-    "valid-jsdoc": [
-      2,
-      {
-        "requireParamDescription": false,
-        "requireReturnDescription": false,
-        "prefer": {
-          "return": "returns"
-        }
-      }
-    ],
-    "no-warning-comments": 0
+    "valid-jsdoc": 1,
+    "require-jsdoc": 1
+  },
+  "parserOptions": {
+    "ecmaVersion": 2017
+  },
+  "globals": {
+    "BroadcastChannel": false
   }
 }

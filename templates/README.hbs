@@ -1,15 +1,7 @@
 <!-- To make changes, edit templates/README.hbs, not README.md! -->
 [![Build Status][travis-image]][travis-url]
 
-# Service Worker Helpers
-
-A [collection of libraries](#the-libraries) that help enhance your existing
-[service worker](http://www.html5rocks.com/en/tutorials/service-worker/introduction/)
-by providing commonly-needed functionality.
-
-A [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md)
-approach is used to manage multiple helper libraries, each of which is versioned
-and published to `npm` independently.
+# Service Worker Framework
 
 ## The Libraries
 {{#each projects}}
@@ -18,46 +10,13 @@ and published to `npm` independently.
 
 **Install**: `npm install --save-dev {{name}}`
 
-**Learn More**: [About](projects/{{name}}) •
-                [Demo](projects/{{name}}#demo) •
-                [API](projects/{{name}}#api)
+**Learn More**: [About](packages/{{name}}) •
+                [Demo](packages/{{name}}#demo) •
+                [API](packages/{{name}}#api)
 
 {{/each}}
 
-## Development
-
-### Existing Build Tasks
-
-Tasks are run via [`gulp`](http://gulpjs.com/), and assume that you have a
-globally installed `gulp` binary (`npm install -g gulp`) as well as
-a locally installed set of `node_module` dependencies (`npm install` from within
-the top-level directory).
-
-When running a task, an optional `--project=project-name` parameter can be used.
-For example, `gulp build:watch --project=sw-appcache-behavior`.
-By default the task will be run against all projects.
-
-### New Projects
-
-New projects should be created as sub-directories of [projects](projects/),
-following the basic layout of the existing projects. It's recommended that each
-library adopts the `sw-` prefix, for consistency.
-
-Always include the following:
-
-- `src/` - raw source files, with [JSDoc](http://usejsdoc.org/)-formatted
-comments.
-- `build.js` - Should `export` a function that performs all the steps needed to
-produce a ready-to-use library in local `build/` directory.
-- `test/*.js` - One or more [Mocha](https://mochajs.org/) test suites.
-- `package.json` - The `npm` metadata for the library. Each library is
-versioned independently.
-
-A `demo/` directory is optional but encouraged. The project's `README.md` file
-will be automatically generated based on a template using the metadata found in
-the `JSDoc` comments.
-
-### External Contributions
+## External Contributions
 
 Please read the [guide to contributing](CONTRIBUTING.md) prior to filing any
 pull requests.

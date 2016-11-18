@@ -1,0 +1,20 @@
+{
+  "name": "sw-offline-google-analytics",
+  "version": "1.1.1",
+  "description": "A service worker helper library to retry offline Google Analytics requests when a connection is available.",
+  "keywords": [
+    "service worker",
+    "sw",
+    "offline",
+    "analytics"
+  ],
+  "author": {
+    "name": "Jeff Posnick",
+    "email": "jeffy@google.com",
+    "url": "https://jeffy.info"
+  },
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-offline-google-analytics"
+}

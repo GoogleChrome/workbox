@@ -1,0 +1,24 @@
+{
+  "name": "sw-cache-expiration",
+  "version": "0.0.4",
+  "description": "This library is still a work in progress and is not functional.",
+  "keywords": [
+    "service worker",
+    "sw",
+    "caching",
+    "cache",
+    "sw-fw"
+  ],
+  "files": [
+    "src",
+    "build"
+  ],
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cache-expiration",
+  "main": "build/cache-expiration.umd.min.js",
+  "module": "build/cache-expiration.min.mjs",
+  "jsnext:main": "build/cache-expiration.min.mjs"
+}
