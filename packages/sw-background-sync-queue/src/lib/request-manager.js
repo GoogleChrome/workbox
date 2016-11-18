@@ -2,10 +2,6 @@ import {maxAge} from './constants';
 import Queue from './queue.js';
 import {putResponse} from './response-manager';
 
-let globalConfig = {
-	maxAge: maxAge,
-};
-
 let globalCallbacks = {};
 let queue;
 /**
@@ -24,9 +20,8 @@ class RequestManager {
 	 * @memberOf RequestManager
 	 */
 	constructor({config, callbacks}) {
-		globalConfig = Object.assign({}, globalConfig, config);
 		globalCallbacks = callbacks;
-		queue = new Queue(globalConfig);
+		queue = new Queue(Object.assign({}, {maxAge: maxAge}, config));
 		this.attachSyncHandler();
 	}
 	/**
