@@ -19,7 +19,7 @@
 
 import RequestManager from './lib/request-manager';
 import {initiazileBroadcastManager} from './lib/broadcast-manager';
-import {initDb} from './lib/idb-helper';
+import {initDb} from './lib/background-sync-idb-helper';
 
 let reqManager;
 function initialize({config, callbacks, broadcastChannel, dbName}) {

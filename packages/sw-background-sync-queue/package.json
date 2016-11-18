@@ -16,5 +16,5 @@
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-background-sync-queue",
   "main": "build/background-sync-queue.js",
   "module": "build/background-sync-queue.min.mjs",
-  "jsnext:main": "build/background-sync-queue.mjs"
+  "jsnext:main": "build/background-sync-queue.min.mjs"
 }

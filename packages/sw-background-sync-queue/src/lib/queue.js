@@ -1,4 +1,4 @@
-import {getDb} from './idb-helper';
+import {getDb} from './background-sync-idb-helper';
 import {getQueueableRequest} from './request-manager';
 import {broadcastMessage} from './broadcast-manager';
 import {broadcastMessageAddedType, broadcastMessageFailedType} from './constants';

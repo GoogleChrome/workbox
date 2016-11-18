@@ -1,4 +1,4 @@
-import {getDb} from './idb-helper';
+import {getDb} from './background-sync-idb-helper';
 let _idbQHelper = getDb();
 
 async function putResponse(hash, idbObject, response) {
