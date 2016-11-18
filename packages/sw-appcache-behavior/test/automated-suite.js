@@ -93,13 +93,6 @@ const configureTestSuite = function(browser) {
 
       return generateInitialManifests()
       .then(() => {
-        return browser.getSeleniumDriver();
-      })
-      .then((driver) => {
-        globalDriverReference = driver;
-        globalDriverReference.manage().timeouts().setScriptTimeout(TIMEOUT);
-      })
-      .then(() => {
         return testServer.startServer('.');
       })
       .then((portNumber) => {
@@ -116,7 +109,15 @@ const configureTestSuite = function(browser) {
         return testServer.killServer();
       })
       .then(() => {
-        // return fsePromise.remove(tempDirectory);
+        return fsePromise.remove(tempDirectory);
+      });
+    });
+
+    it('should be able to get a global driver.', function() {
+      return browser.getSeleniumDriver()
+      .then((driver) => {
+        globalDriverReference = driver;
+        globalDriverReference.manage().timeouts().setScriptTimeout(TIMEOUT);
       });
     });
 
@@ -180,7 +181,8 @@ const configureTestSuite = function(browser) {
     it('should cache a master entry for initial navigation', function() {
       return globalDriverReference.executeAsyncScript((callback) => {
         window.caches.match(window.location).then(callback);
-      }).then((match) => {
+      })
+      .then((match) => {
         expect(match).to.be.ok;
       });
     });
