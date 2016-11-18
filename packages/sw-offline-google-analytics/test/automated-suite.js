@@ -51,9 +51,15 @@ const configureTestSuite = function(browser) {
 
     // Kill the web server once all tests are complete.
     after(function() {
+      return testServer.killServer();
+    });
+
+    afterEach(function() {
+      this.timeout(6000);
+
       return seleniumAssistant.killWebDriver(globalDriverReference)
       .then(() => {
-        return testServer.killServer();
+        globalDriverReference = null;
       });
     });
 
