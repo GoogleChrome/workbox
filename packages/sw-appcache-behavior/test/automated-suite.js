@@ -40,6 +40,7 @@ const fsePromise = promisify('fs-extra');
 const testServer = new swTestingHelpers.TestServer();
 const expect = chai.expect;
 const TIMEOUT = 10 * 1000;
+const RETRIES = 3;
 let tempDirectory = path.join(__dirname, 'end-to-end-caching', 'temp');
 
 // Helper method to generate the text of an App Cache manifest with a
@@ -76,6 +77,7 @@ const configureTestSuite = function(browser) {
 
   describe(`sw-appcache-behavior Test Suite with (${browser.getPrettyName()} - ${browser.getVersionNumber()})`, function() {
     this.timeout(TIMEOUT);
+    this.retries(RETRIES);
 
     // Set up the web server before running any tests in this suite.
     before(function() {
@@ -90,13 +92,6 @@ const configureTestSuite = function(browser) {
 
 
       return generateInitialManifests()
-      .then(() => {
-        return browser.getSeleniumDriver();
-      })
-      .then((driver) => {
-        globalDriverReference = driver;
-        globalDriverReference.manage().timeouts().setScriptTimeout(TIMEOUT);
-      })
       .then(() => {
         return testServer.startServer('.');
       })
@@ -114,7 +109,15 @@ const configureTestSuite = function(browser) {
         return testServer.killServer();
       })
       .then(() => {
-        // return fsePromise.remove(tempDirectory);
+        return fsePromise.remove(tempDirectory);
+      });
+    });
+
+    it('should be able to get a global driver.', function() {
+      return browser.getSeleniumDriver()
+      .then((driver) => {
+        globalDriverReference = driver;
+        globalDriverReference.manage().timeouts().setScriptTimeout(TIMEOUT);
       });
     });
 
@@ -178,7 +181,8 @@ const configureTestSuite = function(browser) {
     it('should cache a master entry for initial navigation', function() {
       return globalDriverReference.executeAsyncScript((callback) => {
         window.caches.match(window.location).then(callback);
-      }).then((match) => {
+      })
+      .then((match) => {
         expect(match).to.be.ok;
       });
     });
