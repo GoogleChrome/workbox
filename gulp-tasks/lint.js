@@ -20,7 +20,7 @@ const {taskHarness} = require('../build-utils');
 /**
  * Lints a given project.
  * @param {String} projectPath The path to a project directory.
- * @returns {Promise} Resolves if linting succeeds, rejects if it fails.
+ * @return {Promise} Resolves if linting succeeds, rejects if it fails.
  */
 const lintPackage = (projectPath) => {
   return new Promise((resolve, reject) => {

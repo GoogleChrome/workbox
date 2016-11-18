@@ -13,11 +13,18 @@
  limitations under the License.
 */
 
-export default () => {
-  // Evaluate goog.DEBUG at runtime rather than once at export time to allow
-  // developers to enable logging "on-the-fly" by setting `goog.DEBUG = true`
-  // in the JavaScript console.
-  return (self && self.goog && self.goog.DEBUG) ?
-    console.debug.bind(console) :
-    function() {};
+export default {
+  CACHE_NAME: 'offline-google-analytics',
+  IDB: {
+    NAME: 'offline-google-analytics',
+    STORE: 'urls',
+    VERSION: 1,
+  },
+  MAX_ANALYTICS_BATCH_SIZE: 20,
+  STOP_RETRYING_AFTER: 1000 * 60 * 60 * 48, // Two days, in milliseconds.
+  URL: {
+    ANALYTICS_JS_PATH: '/analytics.js',
+    COLLECT_PATH: '/collect',
+    HOST: 'www.google-analytics.com',
+  },
 };
