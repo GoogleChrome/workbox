@@ -32,12 +32,14 @@ require('chromedriver');
 require('operadriver');
 
 const TIMEOUT = 10 * 1000;
+const RETRIES = 3;
 
 const configureTestSuite = function(browser) {
   let globalDriverReference = null;
   let baseTestUrl;
 
   describe(`sw-offline-google-analytics Test Suite with (${browser.getPrettyName()} - ${browser.getVersionNumber()})`, function() {
+    this.retries(RETRIES);
     this.timeout(TIMEOUT);
 
     // Set up the web server before running any tests in this suite.
