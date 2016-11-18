@@ -13,13 +13,14 @@
  limitations under the License.
 */
 
-/* eslint-disable no-console */
+import ErrorFactory from '../../../../lib/error-factory';
 
-export default () => {
-  // Evaluate goog.DEBUG at runtime rather than once at export time to allow
-  // developers to enable logging "on-the-fly" by setting `goog.DEBUG = true`
-  // in the JavaScript console.
-  return (self && self.goog && self.goog.DEBUG) ?
-    console.debug.bind(console) :
-    function() {};
+const errors = {
+  'not-in-sw': 'sw-lib must be loaded in your service worker file.',
+  'unsupported-route-type': 'Routes must be either a express style route ' +
+    'string, a Regex to capture request URLs or a Route instance.',
+  'empty-express-string': 'The Express style route string must have some ' +
+    'characters, an empty string is invalid.',
 };
+
+export default new ErrorFactory(errors);

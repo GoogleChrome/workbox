@@ -108,6 +108,7 @@ function buildJSBundle(options) {
     gulp.src([
       path.join(options.projectDir, 'src', '**', '*.js'),
       path.join('lib', '**', '*.js'),
+      path.join('packages', '**', '*.js'),
       path.join('node_modules', '*', '**', '*.js'),
     ])
     .pipe(sourcemaps.init())

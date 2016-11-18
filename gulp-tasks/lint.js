@@ -39,15 +39,16 @@ const lintPackage = (projectPath) => {
 
 gulp.task('lint:repo', () => {
   return gulp.src([
+    `!./packages/**/*`,
     // Gulp -tasks
-    `./*.js`,
+    `./**/*.js`,
     // Root level JS Files
     `../*.js`,
   ])
   .pipe(eslint())
   .pipe(eslint.format())
   .pipe(eslint.results((results) => {
-    if (results.errorCount > 0 || results.warningCount > 0) {
+    if (results.errorCount > 0) {
       throw new Error(`Linting repo files failed.`);
     }
   }));
