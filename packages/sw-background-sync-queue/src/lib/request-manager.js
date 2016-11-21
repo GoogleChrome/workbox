@@ -64,9 +64,13 @@ class RequestManager {
 					let request = await getFetchableRequest(reqData.request);
 					return fetch(request)
 						.then((response)=>{
-							putResponse(hash, reqData, response.clone());
-							globalCallbacks.onRetrySuccess
-								&& globalCallbacks.onRetrySuccess(hash, response);
+							if(!response.ok) {
+								Promise.resolve();
+							} else {
+								putResponse(hash, reqData, response.clone());
+								globalCallbacks.onRetrySuccess
+									&& globalCallbacks.onRetrySuccess(hash, response);
+							}
 						})
 						.catch((err)=>{
 							globalCallbacks.onRetryFailure
