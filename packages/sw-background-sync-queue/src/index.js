@@ -19,6 +19,7 @@
 
 import RequestManager from './lib/request-manager';
 import {initiazileBroadcastManager} from './lib/broadcast-manager';
+import {getResponse} from './lib/response-manager';
 import {initDb} from './lib/background-sync-idb-helper';
 
 let reqManager;
@@ -33,4 +34,4 @@ function pushIntoQueue({request, config}) {
 	reqManager.pushIntoQueue({request, config});
 }
 
-export {initialize, pushIntoQueue};
+export {initialize, pushIntoQueue, getResponse};
