@@ -10,9 +10,9 @@ async function putResponse(hash, idbObject, response) {
 	_idbQHelper.put(hash, idbObject);
 }
 
-async function getResponse(hash){
+async function getResponse(hash) {
 	let object = _idbQHelper.get(hash);
-	if (object && object.response){
+	if (object && object.response) {
 		return object.response;
 	} else {
 		return null;
@@ -21,5 +21,5 @@ async function getResponse(hash){
 
 export {
 	putResponse,
-	getResponse
+	getResponse,
 };
