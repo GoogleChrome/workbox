@@ -19,7 +19,7 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-precaching",
-  "main": "build/precaching.umd.min.js",
-  "module": "build/precaching.min.mjs",
-  "jsnext:main": "build/precaching.min.mjs"
+  "main": "build/sw-precaching.min.js",
+  "module": "build/sw-precaching.min.mjs",
+  "jsnext:main": "build/sw-precaching.min.mjs"
 }
