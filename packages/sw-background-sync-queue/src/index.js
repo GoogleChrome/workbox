@@ -23,6 +23,14 @@ import {getResponse} from './lib/response-manager';
 import {initDb} from './lib/background-sync-idb-helper';
 
 let reqManager;
+/**
+ * Initialize the library by initializing broadcast manager,
+ * indexedDB, and request manager
+ * @param {Object=} config
+ * @param {Object=} callbacks
+ * @param {Object=} broadcastChannel
+ * @param {Object=} dbname
+ */
 function initialize({config, callbacks, broadcastChannel, dbName}) {
 	initiazileBroadcastManager(broadcastChannel);
 	initDb(dbName);
@@ -30,6 +38,12 @@ function initialize({config, callbacks, broadcastChannel, dbName}) {
 	reqManager.initialize();
 }
 
+/**
+ * pushes the given request inthe backgroun sync queue
+ *
+ * @param {Request=} request
+ * @param {Object=} config
+ */
 function pushIntoQueue({request, config}) {
 	reqManager.pushIntoQueue({request, config});
 }
