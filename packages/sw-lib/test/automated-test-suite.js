@@ -25,7 +25,7 @@ const RETRIES = 4;
 const TIMEOUT = 10 * 1000;
 
 const setupTestSuite = (assistantDriver) => {
-  describe(`Browser Unit Tests in ${assistantDriver.getPrettyName()}`, function() {
+  describe(`sw-lib Tests in ${assistantDriver.getPrettyName()}`, function() {
     this.retries(RETRIES);
     this.timeout(TIMEOUT);
 
@@ -51,7 +51,7 @@ const setupTestSuite = (assistantDriver) => {
       });
     });
 
-    it('should pass all unit tests', function() {
+    it('should pass all browser based unit tests', function() {
       return assistantDriver.getSeleniumDriver()
       .then((driver) => {
         globalDriverBrowser = driver;
