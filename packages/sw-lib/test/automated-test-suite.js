@@ -84,8 +84,8 @@ availableBrowsers.forEach((browser) => {
     case 'firefox':
     case 'opera':
       if (browser.getSeleniumBrowserId() === 'opera' &&
-        browser.getVersionNumber() === 41) {
-        console.log(`Skipping Opera 41 due to driver issues.`);
+        browser.getVersionNumber() <= 43) {
+        console.log(`Skipping Opera <= 43 due to driver issues.`);
         return;
       }
       setupTestSuite(browser);
