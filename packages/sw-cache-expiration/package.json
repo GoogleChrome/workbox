@@ -18,7 +18,7 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cache-expiration",
-  "main": "build/cache-expiration.umd.min.js",
-  "module": "build/cache-expiration.min.mjs",
-  "jsnext:main": "build/cache-expiration.min.mjs"
+  "main": "build/sw-cache-expiration.min.js",
+  "module": "build/sw-cache-expiration.min.mjs",
+  "jsnext:main": "build/sw-cache-expiration.min.mjs"
 }

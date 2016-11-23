@@ -18,7 +18,7 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-broadcast-cache-update",
-  "main": "build/broadcast-cache-update.umd.min.js",
-  "module": "build/broadcast-cache-update.min.mjs",
-  "jsnext:main": "build/broadcast-cache-update.min.mjs"
+  "main": "build/sw-broadcast-cache-update.min.js",
+  "module": "build/sw-broadcast-cache-update.min.mjs",
+  "jsnext:main": "build/sw-broadcast-cache-update.min.mjs"
 }
