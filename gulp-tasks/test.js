@@ -14,7 +14,7 @@
 */
 const seleniumAssistant = require('selenium-assistant');
 const gulp = require('gulp');
-const mocha = require('gulp-mocha');
+const mocha = require('gulp-spawn-mocha');
 
 gulp.task('download-browsers', function() {
   console.log('    Starting browser download.....');

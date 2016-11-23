@@ -13,13 +13,19 @@
  limitations under the License.
 */
 
+/* eslint-env browser */
 /* eslint-disable no-console */
 
-export default () => {
-  // Evaluate goog.DEBUG at runtime rather than once at export time to allow
-  // developers to enable logging "on-the-fly" by setting `goog.DEBUG = true`
-  // in the JavaScript console.
-  return (self && self.goog && self.goog.DEBUG) ?
-    console.debug.bind(console) :
-    function() {};
-};
+import ErrorFactory from './lib/error-factory';
+import SWLib from './lib/sw-lib';
+import {Route} from '../../sw-routing/src/index.js';
+import assert from '../../../lib/assert.js';
+
+if (!assert.isSWEnv()) {
+  // We are not running in a service worker, print error message
+  throw ErrorFactory.createError('not-in-sw');
+}
+
+const swLibInstance = new SWLib();
+swLibInstance.Route = Route;
+export default swLibInstance;
