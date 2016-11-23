@@ -12,11 +12,12 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai */
+/* global chai, goog */
+
 'use strict';
 
 describe('queue', () => {
-  it('should write to IndexedDB', () => {
-		chai.expect(true).to.be(true);
+  it('should be true', () => {
+    chai.assert.isObject(goog.backgroundSyncQueue);
   });
 });

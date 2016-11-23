@@ -27,41 +27,61 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
+
 const babel = require('rollup-plugin-babel');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
 const resolve = require('rollup-plugin-node-resolve');
 const rollup = require('rollup').rollup;
+const rollupBabel = require('rollup-plugin-babel');
+const {buildJSBundle} = require('../../build-utils');
 
 const pkg = require('./package.json');
 
-const targets = [{
-  dest: path.join(__dirname, pkg['main']),
-  format: 'umd',
-  moduleName: 'goog.backgroundSyncQueue',
-  sourceMap: true,
-}, {
-  dest: path.join(__dirname, pkg['jsnext:main']),
-  format: 'es',
-  sourceMap: true,
-}];
-
 module.exports = () => {
-  return rollup({
-    entry: path.join(__dirname, 'src', 'index.js'),
-    plugins: [
-      resolve({
-        jsnext: true,
-        main: true,
-        browser: true,
-      }),
-      commonjs(),
-      babel({
-        plugins: ['transform-async-to-generator', 'external-helpers'],
-        exclude: 'node_modules/**',
-      }),
-    ],
-  }).then((bundle) => Promise.all(
-    targets.map((target) => bundle.write(target))
-  ));
+  return Promise.all([
+    buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'index.js'),
+        format: 'umd',
+        moduleName: 'goog.backgroundSyncQueue',
+        plugins: [
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
+          commonjs(),
+        ],
+      },
+      outputName: 'build/background-sync-queue.js',
+      projectDir: __dirname,
+    }),
+    buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'lib', 'queue.js'),
+        format: 'umd',
+        moduleName: 'goog.backgroundSyncQueue.test',
+        plugins: [
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
+          commonjs(),
+        ],
+      },
+      outputName: 'build/test/unit/queue.js',
+      projectDir: __dirname,
+    }),
+  ]);
+  
 };
