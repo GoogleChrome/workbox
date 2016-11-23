@@ -13,22 +13,10 @@
  limitations under the License.
 */
 
-/**
- * **This library is still a work in progress and is not functional.**
- *
- * @module sw-precaching
- */
+import ErrorFactory from '../../../../lib/error-factory';
 
-import ErrorFactory from './lib/error-factory';
-import RevisionedCacheManager from './lib/revisioned-cache-manager';
-
-import assert from '../../../lib/assert.js';
-
-if (!assert.isSWEnv()) {
-  // We are not running in a service worker, print error message
-  throw ErrorFactory.createError('not-in-sw');
-}
-
-export {
-  RevisionedCacheManager
+const errors = {
+  'not-in-sw': 'sw-precaching must be loaded in your service worker file.',
 };
+
+export default new ErrorFactory(errors);

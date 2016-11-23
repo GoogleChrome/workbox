@@ -12,7 +12,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-
 describe('Test Behaviors of Loading the Script', function() {
   this.timeout(5 * 60 * 1000);
 
@@ -33,33 +32,28 @@ describe('Test Behaviors of Loading the Script', function() {
       };
 
       const scriptElement = document.createElement('script');
-      scriptElement.src = '/packages/sw-precaching/build/sw-lib.min.js';
+      scriptElement.src = '/packages/sw-precaching/build/sw-precaching.min.js';
       scriptElement.addEventListener('error', (event) => {
+        console.log(event);
         reject();
       });
       document.head.appendChild(scriptElement);
     });
   });
 
-  it('should perform basic.js sw tests', function() {
-    const serviceWorkerPath = 'sw-unit/basic.js';
-    return window.goog.mochaUtils.startServiceWorkerMochaTests(serviceWorkerPath)
-    .then((testResults) => {
-      if (testResults.failed.length > 0) {
-        const errorMessage = window.goog.mochaUtils.prettyPrintErrors(serviceWorkerPath, testResults);
-        throw new Error(errorMessage);
-      }
-    });
-  });
-
-  it('should perform router.js sw tests', function() {
-    const serviceWorkerPath = 'sw-unit/router.js';
-    return window.goog.mochaUtils.startServiceWorkerMochaTests(serviceWorkerPath)
-    .then((testResults) => {
-      if (testResults.failed.length > 0) {
-        const errorMessage = window.goog.mochaUtils.prettyPrintErrors(serviceWorkerPath, testResults);
-        throw new Error(errorMessage);
-      }
+  const swUnitTests = [
+    'sw-unit/basic.js',
+    'sw-unit/revisioned-cache-manager.js',
+  ];
+  swUnitTests.forEach((swUnitTestPath) => {
+    it(`should perform ${swUnitTestPath} sw tests`, function() {
+      return window.goog.mochaUtils.startServiceWorkerMochaTests(swUnitTestPath)
+      .then((testResults) => {
+        if (testResults.failed.length > 0) {
+          const errorMessage = window.goog.mochaUtils.prettyPrintErrors(swUnitTestPath, testResults);
+          throw new Error(errorMessage);
+        }
+      });
     });
   });
 });
