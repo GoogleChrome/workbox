@@ -30,5 +30,5 @@ if (!assert.isSWEnv()) {
 }
 
 export {
-  RevisionedCacheManager
+  RevisionedCacheManager,
 };
