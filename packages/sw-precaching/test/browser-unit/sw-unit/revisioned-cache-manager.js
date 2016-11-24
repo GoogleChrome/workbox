@@ -51,7 +51,6 @@ describe('Test RevisionedCacheManager', function() {
     }).to.throw('instance of \'Array\'');
   });
 
-  const nullUndefinedError = 'Cannot match against \'undefined\' or \'null\'';
   it(`should handle null / undefined inputs`, function() {
     expect(() => {
       const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
@@ -61,6 +60,6 @@ describe('Test RevisionedCacheManager', function() {
     expect(() => {
       const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
       revisionedCacheManager.cache(null);
-    }).to.throw(nullUndefinedError);
+    }).to.throw('null');
   });
 });

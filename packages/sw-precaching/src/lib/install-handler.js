@@ -13,49 +13,63 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
-import {version, defaultCacheId} from './constants';
+import ErrorFactory from './error-factory';
+import {version, defaultCacheId, hashParamName} from './constants';
 
-const setOfCachedUrls = (cache) => {
+const getCachedUrls = (cache) => {
   return cache.keys()
-    .then((requests) => requests.map((request) => request.url))
-    .then((urls) => new Set(urls));
+    .then((requests) => {
+      return requests.map((request) => request.url);
+    });
 };
 
-const urlsToCacheKeys = (precacheConfig) => new Map(
-  /** urls.map(item => {
-    var relativeUrl = item[0];
-    var hash = item[1];
-    var absoluteUrl = new URL(relativeUrl, self.location);
-    var cacheKey = createCacheKey(absoluteUrl, hashParamName, hash, /a/);
-    return [absoluteUrl.toString(), cacheKey];
-  })**/
-);
+const createRevisionedUrl = (assetAndHash) => {
+  const absoluteUrl = new URL(assetAndHash.path, self.location);
+  absoluteUrl.search += (absoluteUrl.search ? '&' : '') +
+    encodeURIComponent(hashParamName) + '=' +
+    encodeURIComponent(assetAndHash.revision);
+  return absoluteUrl.toString();
+};
 
-export default ({assetsAndHahes, cacheId} = {}) => {
-  assert.isType(assetsAndHahes, 'array');
+const parseToRevisionedUrls = (assetsAndHahes) => {
+  return assetsAndHahes.map((assetAndHash) => {
+    let assetUrl = assetAndHash;
 
-  self.addEventListener('install', (event) => {
-    const cacheName =
-      `${cacheId || defaultCacheId}-${version}-${self.registration.scope}`;
+    if (typeof assetAndHash !== 'string') {
+      // Asset is an object with {path: '', revision: ''}
+      assetUrl = createRevisionedUrl(assetAndHash);
+    }
 
-    event.waitUntil(
-      caches.open(cacheName).then((cache) => {
-        return setOfCachedUrls(cache).then((cachedUrls) => {
-          return Promise.all(
-            Array.from(urlsToCacheKeys.values()).map(function(cacheKey) {
-              // If we don't have a key matching url in the cache already,
-              // add it.
-              if (!cachedUrls.has(cacheKey)) {
-                return cache.add(
-                  new Request(cacheKey, {credentials: 'same-origin'}));
-              }
-
-              return Promise.resolve();
-            })
-          );
-        });
-      })
-    );
+    return assetUrl;
   });
 };
+
+const installHandler = ({assetsAndHahes, cacheId} = {}) => {
+  if (!Array.isArray(assetsAndHahes)) {
+    throw ErrorFactory.createError('assets-not-an-array');
+  }
+
+  const cacheName =
+    `${cacheId || defaultCacheId}-${version}-${self.registration.scope}`;
+  const revisionedUrls = parseToRevisionedUrls(assetsAndHahes);
+
+  return caches.open(cacheName)
+  .then((cache) => {
+    return getCachedUrls(cache)
+    .then((cachedUrls) => {
+      const cacheAddPromises = revisionedUrls.map((revisionedUrl) => {
+        if (cachedUrls.includes(revisionedUrl)) {
+          return Promise.resolve();
+        }
+
+        return cache.add(new Request(revisionedUrl, {
+          credentials: 'same-origin',
+        }));
+      });
+
+      return Promise.all(cacheAddPromises);
+    });
+  });
+};
+
+export default installHandler;

@@ -14,15 +14,20 @@
 */
 
 import assert from '../../../../lib/assert';
+import installHandler from './install-handler';
 
 class RevisionedCacheManager {
   constructor() {
     this._eventsRegistered = false;
+    this._cachedAssets = [];
   }
 
   cache({revisionedFiles} = {}) {
     assert.isInstance({revisionedFiles: revisionedFiles}, Array);
-    // this._registerEvents();
+
+    this._cachedAssets = this._cachedAssets.concat(revisionedFiles);
+
+    this._registerEvents();
   }
 
   _registerEvents() {
@@ -31,12 +36,12 @@ class RevisionedCacheManager {
       return;
     }
 
-    self.addEventListener('install', function() {
-      console.log('Install event fired');
-    });
+    this._eventsRegistered = true;
 
-    self.addEventListener('activate', function() {
-      console.log('activate event fired');
+    self.addEventListener('install', (event) => {
+      event.waitUntil(
+        installHandler({assetsAndHahes: this._cachedAssets})
+      );
     });
   }
 }

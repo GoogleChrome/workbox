@@ -17,6 +17,8 @@ import ErrorFactory from '../../../../lib/error-factory';
 
 const errors = {
   'not-in-sw': 'sw-precaching must be loaded in your service worker file.',
+  'assets-not-an-array': 'Assets passed to \'install-handler.js\' must be ' +
+    'an array',
 };
 
 export default new ErrorFactory(errors);
