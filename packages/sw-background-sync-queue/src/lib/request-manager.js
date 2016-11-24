@@ -1,9 +1,5 @@
-import {maxAge} from './constants';
-import Queue from './queue.js';
 import {putResponse} from './response-manager';
 
-let globalCallbacks = {};
-let queue;
 /**
  * Class to handle all the request related
  * transformations, replaying, event handling
@@ -15,21 +11,14 @@ class RequestManager {
 	 * Initializes the request manager
 	 * stores the callbacks object, maintins config and
 	 * attaches event handler
-	 * @param {any} {config, callbacks}
+	 * @param {any} {callbacks, queue}
 	 *
 	 * @memberOf RequestManager
 	 */
-	constructor({config, callbacks}) {
-		globalCallbacks = callbacks;
-		queue = new Queue(Object.assign({}, {maxAge: maxAge}, config));
+	constructor({callbacks, queue}) {
+		this._globalCallbacks = callbacks || {};
+		this._queue = queue;
 		this.attachSyncHandler();
-	}
-	/**
-	 * @memberOf RequestManager
-	 */
-	async initialize() {
-		await queue.initialize();
-		await queue.cleanupQueue();
 	}
 
 	/**
@@ -52,10 +41,10 @@ class RequestManager {
 	 * @memberOf RequestManager
 	 */
 	replayRequests() {
-		return queue.queue.reduce((promise, hash) => {
+		return this._queue.queue.reduce((promise, hash) => {
 			return promise
 				.then(async (item) => {
-					let reqData = await queue.getRequestFromQueue(hash);
+					let reqData = await this._queue.getRequestFromQueue(hash);
 					if(reqData.response) {
 						// check if request is not played already
 						return;
@@ -68,20 +57,16 @@ class RequestManager {
 								Promise.resolve();
 							} else {
 								putResponse(hash, reqData, response.clone());
-								globalCallbacks.onRetrySuccess
-									&& globalCallbacks.onRetrySuccess(hash, response);
+								this._globalCallbacks.onRetrySuccess
+									&& this._globalCallbacks.onRetrySuccess(hash, response);
 							}
 						})
 						.catch((err)=>{
-							globalCallbacks.onRetryFailure
-								&& globalCallbacks.onRetryFailure(hash, err);
+							this._globalCallbacks.onRetryFailure
+								&& this._globalCallbacks.onRetryFailure(hash, err);
 						});
 				});
 		}, Promise.resolve());
-	}
-
-	pushIntoQueue({request, config}) {
-		queue.push({request, config});
 	}
 }
 

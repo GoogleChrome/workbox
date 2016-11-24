@@ -17,35 +17,28 @@
  * @module sw-background-sync-queue
  */
 
-import RequestManager from './lib/request-manager';
 import {initiazileBroadcastManager} from './lib/broadcast-manager';
 import {getResponse} from './lib/response-manager';
-import {initDb} from './lib/background-sync-idb-helper';
+import {initDb, initQueue} from './lib/background-sync-idb-helper';
+import BackgroundSyncQueue from './lib/background-sync-queue';
+import {cleanupQueue} from './lib/queue';
 
 let reqManager;
 /**
  * Initialize the library by initializing broadcast manager,
  * indexedDB, and request manager
- * @param {Object=} config
- * @param {Object=} callbacks
  * @param {Object=} broadcastChannel
  * @param {Object=} dbname
  */
-function initialize({config, callbacks, broadcastChannel, dbName}) {
+async function initialize({broadcastChannel, dbName}) {
 	initiazileBroadcastManager(broadcastChannel);
 	initDb(dbName);
-	reqManager = new RequestManager({config, callbacks});
-	reqManager.initialize();
+	await cleanupQueue();
+	await initQueue();
 }
 
-/**
- * pushes the given request inthe backgroun sync queue
- *
- * @param {Request=} request
- * @param {Object=} config
- */
-function pushIntoQueue({request, config}) {
-	reqManager.pushIntoQueue({request, config});
-}
-
-export {initialize, pushIntoQueue, getResponse};
+export {
+	initialize,  
+	getResponse,
+	BackgroundSyncQueue
+};

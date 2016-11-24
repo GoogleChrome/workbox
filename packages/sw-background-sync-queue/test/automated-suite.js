@@ -45,7 +45,7 @@ const configureTestSuite = function(browser) {
     // Set up the web server before running any tests in this suite.
     before(function() {
       return testServer.startServer('.').then((portNumber) => {
-        baseTestUrl = `http://localhost:${portNumber}/packages/sw-background-sync-queue/test/unit/`;
+        baseTestUrl = `http://localhost:${portNumber}/packages/sw-background-sync-queue/test/`;
       });
     });
 
