@@ -10,12 +10,12 @@ function initDb(dbName) {
 	idbQHelper = new IDBHelper(dbName || defaultDBName, 1, 'QueueStore');
 }
 
-async function initQueue() {
-	queueObject = await idbQHelper.get('queue') || queueObject;
-}
-
 function getDb() {
 	return idbQHelper;
+}
+
+async function initQueue() {
+	queueObject = await idbQHelper.get('queue') || queueObject;
 }
 
 function getQueue(queueName) {

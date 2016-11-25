@@ -75,7 +75,7 @@ module.exports = () => {
           commonjs(),
         ],
       },
-      outputName: 'build/test/unit/queue.js',
+      outputName: 'build/test/queue.js',
       projectDir: __dirname,
     }),
   ]);

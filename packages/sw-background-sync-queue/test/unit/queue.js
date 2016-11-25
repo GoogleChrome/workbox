@@ -17,7 +17,31 @@
 'use strict';
 
 describe('queue', () => {
-  it('should be true', () => {
-    chai.assert.isObject(goog.backgroundSyncQueue);
+  const QUEUE_NAME = 'QUEUE_NAME';
+  let queue = new goog.backgroundSyncQueue.test['default']({maxAge: 6}, QUEUE_NAME);
+
+  it('queue object should exist', () => {
+    chai.assert.isObject(queue);
+    chai.assert.isArray(queue._queue);
+    chai.assert.isString(queue._queueName);
+    chai.assert.isObject(queue._config);
   });
+
+  it('queueName is corrent', () =>{
+    chai.assert.equal(queue._queueName, QUEUE_NAME);
+  });
+
+  it('config is corrent',() => {
+
+  });
+
+  it('pushRequest is working',() => {
+
+  });
+
+  it('default config is corrent',() => {
+
+  });
+
+
 });
