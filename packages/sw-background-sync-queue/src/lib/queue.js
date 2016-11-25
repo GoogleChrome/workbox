@@ -1,9 +1,8 @@
 import {
-	getDb, 
-	getQueue, 
-	setIdbQueue, 
-	putRequest,
-	createQueue
+	getDb,
+	getQueue,
+	setIdbQueue,
+	createQueue,
 } from './background-sync-idb-helper';
 import {getQueueableRequest} from './request-manager';
 import {broadcastMessage} from './broadcast-manager';
@@ -13,7 +12,8 @@ import {
 	defaultQueueName,
 } from './constants';
 
-let _counter = 0;
+let _requestCounter = 0;
+let _queueCounter = 0;
 /**
  * Core queue class that handles all the enqueue and dequeue
  * as well as cleanup code for the background sync queue
@@ -26,11 +26,11 @@ class Queue {
 	 * @memberOf Queue
 	 */
 	constructor(config, queueName) {
-		this._queueName = queueName || defaultQueueName;
+		this._queueName = queueName || defaultQueueName + '_' + _queueCounter++;
 		this._config = config;
 		this._idbQHelper = getDb();
 		this._queue = getQueue(this._queueName);
-		if(!this._queue){
+		if(!this._queue) {
 			this._queue = createQueue(this._queueName);
 		}
 	}
@@ -44,11 +44,10 @@ class Queue {
 	 *
 	 * @memberOf Queue
 	 */
-	async push({request, config}) {
-		let localConfig = Object.assign({}, this._config, config);
-		const hash = `${request.url}!${Date.now()}!${_counter++}`;
+	async push({request}) {
+		const hash = `${request.url}!${Date.now()}!${_requestCounter++}`;
 		let queuableRequest =
-			await getQueueableRequest(request, localConfig);
+			await getQueueableRequest(request, this._config);
 		try{
 			this._queue.push(hash);
 
@@ -66,7 +65,6 @@ class Queue {
 				url: request.url,
 			});
 		} catch(e) {
-			console.log('err',e);
 			// broadcast the failure of request added to the queue
 			broadcastMessage({
 				type: broadcastMessageFailedType,
@@ -105,29 +103,31 @@ class Queue {
  */
 async function cleanupQueue() {
 	const deletionPromises = [];
-	const itemsToKeep = [];
+	let itemsToKeep = [];
 	let db = getDb();
 	let queueObj = db.get('queue');
 	if(!queueObj) {
 		return null;
 	}
 
-	for(var taskQueue in queueObj){
-		itemsToKeep = [];
-		for (const hash of taskQueue) {
-			let requestData = await db.get(hash);
+	for(const taskQueue in queueObj) {
+		if (queueObj.hasOwnProperty(taskQueue)) {
+			itemsToKeep = [];
+			for (const hash of taskQueue) {
+				let requestData = await db.get(hash);
 
-			if (requestData && requestData.metadata &&
-					requestData.metadata.creationTimestamp
-					+ requestData.config.maxAge <= Date.now()) {
-					// Delete items that are too old.
-					deletionPromises.push(db.delete(hash));
-			} else if (requestData) {
-				// Keep elements whose definition exists in idb.
-				itemsToKeep.push(hash);
+				if (requestData && requestData.metadata &&
+						requestData.metadata.creationTimestamp
+						+ requestData.config.maxAge <= Date.now()) {
+						// Delete items that are too old.
+						deletionPromises.push(db.delete(hash));
+				} else if (requestData) {
+					// Keep elements whose definition exists in idb.
+					itemsToKeep.push(hash);
+				}
 			}
+			queueObj[taskQueue] = itemsToKeep;
 		}
-		queueObj[taskQueue] = itemsToKeep;
 	}
 
 	await Promise.all(deletionPromises);

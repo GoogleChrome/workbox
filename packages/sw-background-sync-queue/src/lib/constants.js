@@ -4,11 +4,12 @@ const defaultDBName = 'bgQueueSyncDB';
 const broadcastMessageAddedType = 'BACKGROUND_REQUESTED_ADDED';
 const broadcastMessageFailedType = 'BACKGROUND_REQUESTED_FAILED';
 const defaultQueueName = 'DEFAULT_QUEUE';
+
 export {
 	maxAge,
 	defaultBroadcastChannelName,
 	defaultDBName,
 	broadcastMessageAddedType,
 	broadcastMessageFailedType,
-	defaultQueueName
+	defaultQueueName,
 };

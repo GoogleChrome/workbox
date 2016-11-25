@@ -23,7 +23,6 @@ import {initDb, initQueue} from './lib/background-sync-idb-helper';
 import BackgroundSyncQueue from './lib/background-sync-queue';
 import {cleanupQueue} from './lib/queue';
 
-let reqManager;
 /**
  * Initialize the library by initializing broadcast manager,
  * indexedDB, and request manager
@@ -38,7 +37,7 @@ async function initialize({broadcastChannel, dbName}) {
 }
 
 export {
-	initialize,  
+	initialize,
 	getResponse,
-	BackgroundSyncQueue
+	BackgroundSyncQueue,
 };

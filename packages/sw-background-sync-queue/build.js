@@ -28,15 +28,11 @@
  limitations under the License.
 */
 
-const babel = require('rollup-plugin-babel');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
 const resolve = require('rollup-plugin-node-resolve');
-const rollup = require('rollup').rollup;
 const rollupBabel = require('rollup-plugin-babel');
 const {buildJSBundle} = require('../../build-utils');
-
-const pkg = require('./package.json');
 
 module.exports = () => {
   return Promise.all([
@@ -83,5 +79,4 @@ module.exports = () => {
       projectDir: __dirname,
     }),
   ]);
-  
 };

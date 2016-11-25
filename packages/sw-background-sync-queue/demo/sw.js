@@ -4,29 +4,25 @@ importScripts('../build/background-sync-queue.js');
 // initialize bdQ
 goog.backgroundSyncQueue.initialize({});
 
-let bgQPost = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks: 
+let bgQPost = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
 	{
 		onRetrySuccess: async(hash, res) => {
 			let data = await res.json();
-			self.registration.showNotification('Successfull with count: ' + data.id);
+			self.registration.showNotification('Successfull with id: ' + data.id);
 		},
-		onRetryFailure: (hash) => {
-			console.log('retry failed');
-		},
-	}
+		onRetryFailure: (hash) => {},
+	},
 });
 
-let bgQGet = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks: 
+let bgQGet = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
 	{
 		onRetrySuccess: async(hash, res) => {
 			let data = await res.json();
-			self.registration.showNotification('Successfull with count: ' + data.count);
+			self.registration.showNotification('Successfull with count: '
+				+ data.count);
 		},
-		onRetryFailure: (hash) => {
-			console.log('retry failed');
-		},
+		onRetryFailure: (hash) => {},
 	},
-	queueName: 'getreq',
 });
 
 

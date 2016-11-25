@@ -100,7 +100,7 @@ const configureTestSuite = function(browser) {
   switch (browser.getSeleniumBrowserId()) {
     case 'chrome':
       configureTestSuite(browser);
-      break
+      break;
     case 'firefox':
     case 'opera':
     default:

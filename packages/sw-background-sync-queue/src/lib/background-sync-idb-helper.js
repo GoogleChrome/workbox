@@ -10,7 +10,7 @@ function initDb(dbName) {
 	idbQHelper = new IDBHelper(dbName || defaultDBName, 1, 'QueueStore');
 }
 
-async function initQueue(){
+async function initQueue() {
 	queueObject = await idbQHelper.get('queue') || queueObject;
 }
 
@@ -22,14 +22,14 @@ function getQueue(queueName) {
 	return queueObject[queueName || defaultQueueName];
 }
 
-function createQueue(queueName){
+function createQueue(queueName) {
 	queueObject[queueName] = [];
 	return queueObject[queueName];
 }
 
-async function setIdbQueue(queueName, queue){
+async function setIdbQueue(queueName, queue) {
 	queueObject[queueName] = queue;
-	await idbQHelper.put('queue',queueObject);
+	await idbQHelper.put('queue', queueObject);
 }
 
 export {
@@ -38,6 +38,5 @@ export {
 	initQueue,
 	getQueue,
 	setIdbQueue,
-	putRequest,
-	createQueue
+	createQueue,
 };
