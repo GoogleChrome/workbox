@@ -4,7 +4,7 @@ import {
 	setIdbQueue,
 	createQueue,
 } from './background-sync-idb-helper';
-import {getQueueableRequest} from './request-manager';
+import {getQueueableRequest} from './queue-utils';
 import {broadcastMessage} from './broadcast-manager';
 import {
 	broadcastMessageAddedType,
@@ -95,46 +95,4 @@ class Queue {
 	}
 }
 
-/**
- * clean up the queue, deleting all the tasks who are either damaged or
- * whose maxAge has expired
- *
- * @memberOf Queue
- */
-async function cleanupQueue() {
-	const deletionPromises = [];
-	let itemsToKeep = [];
-	let db = getDb();
-	let queueObj = db.get('queue');
-	if(!queueObj) {
-		return null;
-	}
-
-	for(const taskQueue in queueObj) {
-		if (queueObj.hasOwnProperty(taskQueue)) {
-			itemsToKeep = [];
-			for (const hash of taskQueue) {
-				let requestData = await db.get(hash);
-
-				if (requestData && requestData.metadata &&
-						requestData.metadata.creationTimestamp
-						+ requestData.config.maxAge <= Date.now()) {
-						// Delete items that are too old.
-						deletionPromises.push(db.delete(hash));
-				} else if (requestData) {
-					// Keep elements whose definition exists in idb.
-					itemsToKeep.push(hash);
-				}
-			}
-			queueObj[taskQueue] = itemsToKeep;
-		}
-	}
-
-	await Promise.all(deletionPromises);
-	db.put('queue', itemsToKeep);
-}
-
 export default Queue;
-export {
-	cleanupQueue,
-};

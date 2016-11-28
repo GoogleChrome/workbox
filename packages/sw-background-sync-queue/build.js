@@ -59,7 +59,7 @@ module.exports = () => {
     }),
     buildJSBundle({
       rollupConfig: {
-        entry: path.join(__dirname, 'src', 'lib', 'queue.js'),
+        entry: path.join(__dirname, 'src', 'lib', 'request-queue.js'),
         format: 'umd',
         moduleName: 'goog.backgroundSyncQueue.test',
         plugins: [
@@ -75,7 +75,28 @@ module.exports = () => {
           commonjs(),
         ],
       },
-      outputName: 'build/test/queue.js',
+      outputName: 'build/test/request-queue.js',
+      projectDir: __dirname,
+    }),
+    buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'lib', 'constants.js'),
+        format: 'umd',
+        moduleName: 'goog.backgroundSyncQueue.test',
+        plugins: [
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
+          commonjs(),
+        ],
+      },
+      outputName: 'build/test/constants.js',
       projectDir: __dirname,
     }),
   ]);

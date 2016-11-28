@@ -36,7 +36,7 @@ gulp.task('test', () => {
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
   }
-  return gulp.src(`packages/sw-background-sync-queue/test/**/*.js`, {read: false})
+  return gulp.src(`packages/sw-background-sync-queue/test/*.js`, {read: false})
     .pipe(mocha(mochaOptions))
     .once('error', (error) => {
       console.error(error);

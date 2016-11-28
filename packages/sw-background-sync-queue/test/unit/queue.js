@@ -31,15 +31,15 @@ describe('queue', () => {
     chai.assert.equal(queue._queueName, QUEUE_NAME);
   });
 
-  it('config is corrent',() => {
-
+  it('config is correct',() => {
+    chai.assert.equal(queue._config.maxAge, maxAge);
   });
 
   it('pushRequest is working',() => {
 
   });
 
-  it('default config is corrent',() => {
+  it('default config is correct',() => {
 
   });
 

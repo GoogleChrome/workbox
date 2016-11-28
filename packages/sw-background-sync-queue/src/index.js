@@ -21,7 +21,7 @@ import {initiazileBroadcastManager} from './lib/broadcast-manager';
 import {getResponse} from './lib/response-manager';
 import {initDb, initQueue} from './lib/background-sync-idb-helper';
 import BackgroundSyncQueue from './lib/background-sync-queue';
-import {cleanupQueue} from './lib/queue';
+import {cleanupQueue} from './lib/queue-utils';
 
 /**
  * Initialize the library by initializing broadcast manager,
