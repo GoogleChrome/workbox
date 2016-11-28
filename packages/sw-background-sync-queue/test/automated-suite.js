@@ -91,7 +91,7 @@ const configureTestSuite = function(browser) {
 };
 
 (function(browser) {
-  // Blackliist browsers here if needed.
+  // Blacklist browsers here if needed.
   if (browser.getSeleniumBrowserId() === 'opera' && browser.getVersionNumber() === 41) {
     console.warn('Skipping Opera version 41 due to operadriver error.');
     return;

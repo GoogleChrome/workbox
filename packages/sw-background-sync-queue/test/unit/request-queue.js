@@ -33,10 +33,13 @@ describe('queue', () => {
 
   it('config is correct',() => {
     chai.assert.equal(queue._config.maxAge, maxAge);
+    chai.assert.notEqual(queue._config.maxAge, goog.backgroundSyncQueue.test.constants.maxAge);
   });
 
   it('pushRequest is working',() => {
-
+    chai.assert.equal(queue._queue.length,0);
+    queue.push(new Request("http://lipsum.com/generate"))
+    chai.assert.equal(queue._queue.length,1);
   });
 
   it('default config is correct',() => {

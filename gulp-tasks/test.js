@@ -31,12 +31,12 @@ gulp.task('download-browsers', function() {
   });
 });
 
-gulp.task('test', () => {
+gulp.task('test', ['download-browsers'],  () => {
   const mochaOptions = {};
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
   }
-  return gulp.src(`packages/sw-background-sync-queue/test/*.js`, {read: false})
+  return gulp.src(`packages/${global.projectOrStar}/test/*.js`, {read: false})
     .pipe(mocha(mochaOptions))
     .once('error', (error) => {
       console.error(error);
