@@ -18,7 +18,11 @@
 
 describe('queue', () => {
   const QUEUE_NAME = 'QUEUE_NAME';
-  let queue = new goog.backgroundSyncQueue.test['default']({maxAge: 6}, QUEUE_NAME);
+  const MAX_AGE = 6;
+  let queue =
+    new goog.backgroundSyncQueue.test.RequestQueue(
+      {maxAge: MAX_AGE}, QUEUE_NAME
+    );
 
   it('queue object should exist', () => {
     chai.assert.isObject(queue);
@@ -31,20 +35,21 @@ describe('queue', () => {
     chai.assert.equal(queue._queueName, QUEUE_NAME);
   });
 
-  it('config is correct',() => {
-    chai.assert.equal(queue._config.maxAge, maxAge);
-    chai.assert.notEqual(queue._config.maxAge, goog.backgroundSyncQueue.test.constants.maxAge);
+  it('config is correct', () => {
+    chai.assert.equal(queue._config.maxAge, MAX_AGE);
+    chai.assert.notEqual(
+      queue._config.maxAge, goog.backgroundSyncQueue.test.constants.maxAge);
   });
 
-  it('pushRequest is working',() => {
-    chai.assert.equal(queue._queue.length,0);
-    queue.push(new Request("http://lipsum.com/generate"))
-    chai.assert.equal(queue._queue.length,1);
+  it('pushRequest is working', () => {
+    let queueLength = queue._queue.length;
+    return queue.push({request: new Request('http://lipsum.com/generate')})
+      .then(() => {
+        chai.assert.equal(queue._queue.length, queueLength + 1);
+      });
   });
 
-  it('default config is correct',() => {
+  it('default config is correct', () => {
 
   });
-
-
 });

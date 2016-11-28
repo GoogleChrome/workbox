@@ -1,5 +1,5 @@
 import {putResponse} from './response-manager';
-import {getQueueableRequest, getFetchableRequest} from './queue-utils';
+import {getFetchableRequest} from './queue-utils';
 /**
  * Class to handle all the request related
  * transformations, replaying, event handling

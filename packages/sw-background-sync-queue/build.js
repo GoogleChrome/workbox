@@ -61,7 +61,7 @@ module.exports = () => {
       rollupConfig: {
         entry: path.join(__dirname, 'src', 'lib', 'request-queue.js'),
         format: 'umd',
-        moduleName: 'goog.backgroundSyncQueue.test.requestQueue',
+        moduleName: 'goog.backgroundSyncQueue.test.RequestQueue',
         plugins: [
           resolve({
             jsnext: true,

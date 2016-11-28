@@ -91,5 +91,5 @@ async function cleanupQueue() {
 export {
 	getQueueableRequest,
 	getFetchableRequest,
-	cleanupQueue
+	cleanupQueue,
 };
