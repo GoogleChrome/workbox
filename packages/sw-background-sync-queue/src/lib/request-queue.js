@@ -46,6 +46,7 @@ class Queue {
 	 * @memberOf Queue
 	 */
 	async push({request}) {
+		this._queue = getQueue(this._queueName);
 		const hash = `${request.url}!${Date.now()}!${_requestCounter++}`;
 		let queuableRequest =
 			await getQueueableRequest(request, this._config);
@@ -95,7 +96,7 @@ class Queue {
 		return Object.assign([], this._queue);
 	}
 
-	get queueName(){
+	get queueName() {
 		return this._queueName;
 	}
 }

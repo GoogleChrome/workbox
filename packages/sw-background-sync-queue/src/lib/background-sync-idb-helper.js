@@ -1,12 +1,12 @@
 import IDBHelper from '../../../../lib/idb-helper';
-import {defaultDBName, defaultQueueName} from './constants';
+import {defaultDBName} from './constants';
 
 let idbQHelper;
 let queueObject = {};
 
 
 function initDb(dbName) {
-	queueObject[defaultQueueName] =[];
+	queueObject = {};
 	idbQHelper = new IDBHelper(dbName || defaultDBName, 1, 'QueueStore');
 }
 
@@ -19,7 +19,7 @@ async function initQueue() {
 }
 
 function getQueue(queueName) {
-	return queueObject[queueName || defaultQueueName];
+	return queueObject[queueName];
 }
 
 function createQueue(queueName) {

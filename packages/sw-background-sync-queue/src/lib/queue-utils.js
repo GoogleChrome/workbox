@@ -57,19 +57,18 @@ async function getFetchableRequest(idbRequestObject) {
  */
 async function cleanupQueue() {
 	const deletionPromises = [];
-	let itemsToKeep = [];
 	let db = getDb();
-	let queueObj = db.get('queue');
+	let queueObj = await db.get('queue');
+
 	if(!queueObj) {
 		return null;
 	}
 
 	for(const taskQueue in queueObj) {
 		if (queueObj.hasOwnProperty(taskQueue)) {
-			itemsToKeep = [];
-			for (const hash of taskQueue) {
+			let itemsToKeep = [];
+			for (const hash of queueObj[taskQueue]) {
 				let requestData = await db.get(hash);
-
 				if (requestData && requestData.metadata &&
 						requestData.metadata.creationTimestamp
 						+ requestData.config.maxAge <= Date.now()) {
@@ -85,7 +84,7 @@ async function cleanupQueue() {
 	}
 
 	await Promise.all(deletionPromises);
-	db.put('queue', itemsToKeep);
+	db.put('queue', queueObj);
 }
 
 export {
