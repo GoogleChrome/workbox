@@ -10,6 +10,7 @@ import {
 	broadcastMessageAddedType,
 	broadcastMessageFailedType,
 	defaultQueueName,
+	tagNamePrefix,
 } from './constants';
 
 let _requestCounter = 0;
@@ -56,7 +57,7 @@ class Queue {
 			this._idbQHelper.put(hash, queuableRequest);
 
 			// register sync
-			self.registration.sync.register('bgqueue');
+			self.registration.sync.register(tagNamePrefix + this._queueName);
 
 			// broadcast the success of request added to the queue
 			broadcastMessage({
@@ -92,6 +93,10 @@ class Queue {
 
 	get queue() {
 		return Object.assign([], this._queue);
+	}
+
+	get queueName(){
+		return this._queueName;
 	}
 }
 

@@ -4,6 +4,7 @@ const defaultDBName = 'bgQueueSyncDB';
 const broadcastMessageAddedType = 'BACKGROUND_REQUESTED_ADDED';
 const broadcastMessageFailedType = 'BACKGROUND_REQUESTED_FAILED';
 const defaultQueueName = 'DEFAULT_QUEUE';
+const tagNamePrefix = 'SW_BACKGROUND_QUEUE_TAG_';
 
 export {
 	maxAge,
@@ -12,4 +13,5 @@ export {
 	broadcastMessageAddedType,
 	broadcastMessageFailedType,
 	defaultQueueName,
+	tagNamePrefix,
 };
