@@ -10,8 +10,8 @@ class BackgroundSyncQueue {
 		this._requestManager = new RequestManager({callbacks, queue: this._queue});
 	}
 
-	pushIntoQueue({request, config}) {
-		this._queue.push({request, config});
+	pushIntoQueue({request}) {
+		this._queue.push({request});
 	}
 }
 
