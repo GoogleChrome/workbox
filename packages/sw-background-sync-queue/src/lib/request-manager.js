@@ -60,8 +60,8 @@ class RequestManager {
 								Promise.resolve();
 							} else {
 								putResponse(hash, reqData, response.clone());
-								this._globalCallbacks.onRetrySuccess
-									&& this._globalCallbacks.onRetrySuccess(hash, response);
+								this._globalCallbacks.onResponse
+									&& this._globalCallbacks.onResponse(hash, response);
 							}
 						})
 						.catch((err)=>{

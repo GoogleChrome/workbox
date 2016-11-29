@@ -6,7 +6,7 @@ goog.backgroundSyncQueue.initialize({});
 
 let bgQPost = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
 	{
-		onRetrySuccess: async(hash, res) => {
+		onResponse: async(hash, res) => {
 			let data = await res.json();
 			self.registration.showNotification('Successfull with id: ' + data.id);
 		},
@@ -16,7 +16,7 @@ let bgQPost = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
 
 let bgQGet = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
 	{
-		onRetrySuccess: async(hash, res) => {
+		onResponse: async(hash, res) => {
 			let data = await res.json();
 			self.registration.showNotification('Successfull with count: '
 				+ data.count);
