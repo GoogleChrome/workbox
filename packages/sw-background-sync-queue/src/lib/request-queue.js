@@ -26,8 +26,8 @@ class RequestQueue {
 	 *
 	 * @memberOf Queue
 	 */
-	constructor({config, queueName}) {
-		this._queueName = queueName || defaultQueueName + '_' + _queueCounter++;
+	constructor({config, queueName = defaultQueueName + '_' + _queueCounter++}) {
+		this._queueName = queueName;
 		this._config = config;
 		this._idbQHelper = getDb();
 		this._queue = getQueue(this._queueName);
@@ -49,7 +49,10 @@ class RequestQueue {
 		this._queue = getQueue(this._queueName);
 		const hash = `${request.url}!${Date.now()}!${_requestCounter++}`;
 		let queuableRequest =
-			await getQueueableRequest(request, this._config);
+			await getQueueableRequest({
+				request,
+				config: this._config,
+			});
 		try{
 			this._queue.push(hash);
 
@@ -84,7 +87,7 @@ class RequestQueue {
 	 *
 	 * @memberOf Queue
 	 */
-	async getRequestFromQueue(hash) {
+	async getRequestFromQueue({hash}) {
 		if(this._queue.includes(hash)) {
 			let reqData = await this._idbQHelper.get(hash);
 			return reqData;

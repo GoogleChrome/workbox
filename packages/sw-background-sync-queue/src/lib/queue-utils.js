@@ -11,7 +11,7 @@ import {getDb} from './background-sync-idb-helper';
  *
  * @memberOf RequestManager
  */
-async function getQueueableRequest(request, config) {
+async function getQueueableRequest({request, config}) {
 	let requestObject={
 		config: config,
 		metadata: {
@@ -36,7 +36,7 @@ async function getQueueableRequest(request, config) {
 	return requestObject;
 }
 
-async function getFetchableRequest(idbRequestObject) {
+async function getFetchableRequest({idbRequestObject}) {
 	let reqObject = {
 		mode: idbRequestObject.mode,
 		method: idbRequestObject.method,

@@ -3,7 +3,7 @@ import RequestQueue from './request-queue';
 import {maxAge} from './constants';
 
 class BackgroundSyncQueue {
-	constructor({config, callbacks, queueName}) {
+	constructor({config, callbacks, queueName} = {}) {
 		this._queue = new RequestQueue({
 			config: Object.assign({}, {maxAge: maxAge}, config),
 			queueName,

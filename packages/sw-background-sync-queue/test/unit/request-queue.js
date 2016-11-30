@@ -50,7 +50,12 @@ describe('queue', () => {
   });
 
   it('default config is correct', () => {
-    let tempQueue = new goog.backgroundSyncQueue.test.RequestQueue();
+    let tempQueue = new goog.backgroundSyncQueue.test.RequestQueue({});
+    let tempQueue2 = new goog.backgroundSyncQueue.test.RequestQueue({});
     chai.assert.equal(tempQueue._config, undefined);
+    chai.assert.equal(tempQueue._queueName,
+      goog.backgroundSyncQueue.test.constants.defaultQueueName + '_0');
+    chai.assert.equal(tempQueue2._queueName,
+      goog.backgroundSyncQueue.test.constants.defaultQueueName + '_1');
   });
 });
