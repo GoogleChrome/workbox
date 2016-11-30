@@ -14,6 +14,8 @@
 */
 const rollupBabel = require('rollup-plugin-babel');
 const path = require('path');
+const resolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
 const {buildJSBundle} = require('../../build-utils');
 const pkg = require('./package.json');
 
@@ -25,6 +27,12 @@ module.exports = () => {
         format: 'umd',
         moduleName: 'goog.precaching',
         plugins: [
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          commonjs(),
           rollupBabel({
             plugins: ['transform-async-to-generator', 'external-helpers'],
             exclude: 'node_modules/**',
@@ -39,6 +47,12 @@ module.exports = () => {
         entry: path.join(__dirname, 'src', 'index.js'),
         format: 'es',
         plugins: [
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          commonjs(),
           rollupBabel({
             plugins: ['transform-async-to-generator', 'external-helpers'],
             exclude: 'node_modules/**',

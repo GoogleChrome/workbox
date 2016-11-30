@@ -25,7 +25,16 @@ class RevisionedCacheManager {
   cache({revisionedFiles} = {}) {
     assert.isInstance({revisionedFiles: revisionedFiles}, Array);
 
-    this._cachedAssets = this._cachedAssets.concat(revisionedFiles);
+    const parsedFileList = revisionedFiles.map((revisionedFile) => {
+      if (typeof revisionedFile === 'string') {
+        return {path: revisionedFile, revision: revisionedFile};
+      } else {
+        // TODO Check revisionedFile.path and revisionedFile.revision
+        return revisionedFile;
+      }
+    });
+
+    this._cachedAssets = this._cachedAssets.concat(parsedFileList);
 
     this._registerEvents();
   }

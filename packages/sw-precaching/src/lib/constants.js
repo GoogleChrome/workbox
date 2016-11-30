@@ -16,3 +16,6 @@
 export const defaultCacheId = `sw-precaching`;
 export const hashParamName = '_sw-precaching';
 export const version = 'v1';
+export const DB_NAME = 'sw-precaching';
+export const DB_VERSION = '1';
+export const DB_STORENAME = 'asset-revisions';
