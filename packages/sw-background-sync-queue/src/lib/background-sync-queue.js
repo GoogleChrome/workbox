@@ -5,8 +5,8 @@ import assert from '../../../../lib/assert';
 
 class BackgroundSyncQueue {
 	constructor({maxItemAge = maxAge, callbacks, queueName} = {}) {
-		assert.isType({queueName}, 'string');
-		assert.isType({queueName}, 'number');
+		// assert.isType({queueName}, 'string');
+		// assert.isType({queueName}, 'number');
 
 		this._queue = new RequestQueue({
 			config: {
