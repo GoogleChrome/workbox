@@ -2,7 +2,7 @@
 importScripts('../build/background-sync-queue.js');
 
 // initialize bdQ
-goog.backgroundSyncQueue.initialize({});
+goog.backgroundSyncQueue.initialize();
 
 let bgQPost = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
 	{

@@ -2,9 +2,8 @@ import {getDb} from './background-sync-idb-helper';
 
 async function putResponse(hash, idbObject, response) {
 	let _idbQHelper = getDb();
-	// TODO: change desrialization of headers
 	idbObject.response = {
-		headers: JSON.stringify(response.headers),
+		headers: JSON.stringify([...response.headers]),
 		status: response.status,
 		body: await response.blob(),
 	};

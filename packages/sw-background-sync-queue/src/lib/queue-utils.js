@@ -13,18 +13,14 @@ import {getDb} from './background-sync-idb-helper';
  */
 async function getQueueableRequest({request, config}) {
 	let requestObject={
-		config: config,
+		config,
 		metadata: {
 			creationTimestamp: Date.now(),
 		},
 	};
-	let headerObject = {};
-	request.headers.forEach((value, field)=> {
-		headerObject[field] = value;
-	});
 	requestObject.request = {
 		url: request.url,
-		headers: headerObject,
+		headers: JSON.stringify([...request.headers]),
 		mode: request.mode,
 		method: request.method,
 		redirect: request.redirect,
@@ -41,7 +37,7 @@ async function getFetchableRequest({idbRequestObject}) {
 		mode: idbRequestObject.mode,
 		method: idbRequestObject.method,
 		redirect: idbRequestObject.redirect,
-		headers: new Headers(idbRequestObject.headers),
+		headers: new Headers(JSON.parse(idbRequestObject.headers)),
 	};
 	if(idbRequestObject.body) {
 		reqObject.body = idbRequestObject.body;

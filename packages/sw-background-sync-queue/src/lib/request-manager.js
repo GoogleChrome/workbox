@@ -1,6 +1,9 @@
 import {putResponse} from './response-manager';
 import {getFetchableRequest} from './queue-utils';
 import {tagNamePrefix} from './constants';
+import RequestQueue from './request-queue';
+import assert from '../../../../lib/assert';
+
 /**
  * Class to handle all the request related
  * transformations, replaying, event handling
@@ -10,13 +13,15 @@ import {tagNamePrefix} from './constants';
 class RequestManager {
 	/**
 	 * Initializes the request manager
-	 * stores the callbacks object, maintins config and
+	 * stores the callbacks object, maintains config and
 	 * attaches event handler
 	 * @param {any} {callbacks, queue}
 	 *
 	 * @memberOf RequestManager
 	 */
 	constructor({callbacks, queue}) {
+		assert.isInstance({queue}, RequestQueue);
+
 		this._globalCallbacks = callbacks || {};
 		this._queue = queue;
 		this.attachSyncHandler();
@@ -54,13 +59,13 @@ class RequestManager {
 					}
 
 					let request = await getFetchableRequest({
-						idbRequestObject: reqData.request
+						idbRequestObject: reqData.request,
 					});
 
 					return fetch(request)
 						.then((response)=>{
 							if(!response.ok) {
-								Promise.resolve();
+								return Promise.resolve();
 							} else {
 								// not blocking on putResponse.
 								putResponse(hash, reqData, response.clone());
