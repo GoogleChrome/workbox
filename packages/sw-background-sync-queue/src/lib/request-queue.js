@@ -20,7 +20,7 @@ let _queueCounter = 0;
  * as well as cleanup code for the background sync queue
  * @class
  */
-class Queue {
+class RequestQueue {
 	/**
 	 * Creates an instance of Queue.
 	 *
@@ -85,11 +85,10 @@ class Queue {
 	 * @memberOf Queue
 	 */
 	async getRequestFromQueue(hash) {
-		if(this._queue.indexOf(hash)===-1) {
-			return;
+		if(this._queue.includes(hash)) {
+			let reqData = await this._idbQHelper.get(hash);
+			return reqData;
 		}
-		let reqData = await this._idbQHelper.get(hash);
-		return reqData;
 	}
 
 	get queue() {
@@ -101,4 +100,4 @@ class Queue {
 	}
 }
 
-export default Queue;
+export default RequestQueue;

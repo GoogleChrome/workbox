@@ -1,4 +1,4 @@
-import {defaultBroadcastChannelName} from './constants';
+import {defaultBroadcastChannelName, broadcastMeta} from './constants';
 let bcmanager;
 
 function initiazileBroadcastManager(channelName) {
@@ -8,7 +8,7 @@ function initiazileBroadcastManager(channelName) {
 function broadcastMessage({type, id, url}) {
 	bcmanager && bcmanager.postMessage({
 		type: type,
-		meta: 'SW_BACKGROUND_SYNC_QUEUE',
+		meta: broadcastMeta,
 		payload: {
 			url: url,
 		},

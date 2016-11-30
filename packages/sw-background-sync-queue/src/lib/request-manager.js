@@ -59,6 +59,7 @@ class RequestManager {
 							if(!response.ok) {
 								Promise.resolve();
 							} else {
+								// not blocking on putResponse.
 								putResponse(hash, reqData, response.clone());
 								this._globalCallbacks.onResponse
 									&& this._globalCallbacks.onResponse(hash, response);

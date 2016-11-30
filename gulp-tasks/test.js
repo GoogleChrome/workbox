@@ -31,7 +31,7 @@ gulp.task('download-browsers', function() {
   });
 });
 
-gulp.task('test', ['download-browsers'],  () => {
+gulp.task('test', ['download-browsers'], () => {
   const mochaOptions = {};
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
