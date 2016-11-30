@@ -52,13 +52,13 @@ class RequestManager {
 		return this._queue.queue.reduce((promise, hash) => {
 			return promise
 				.then(async (item) => {
-					let reqData = await this._queue.getRequestFromQueue({hash});
+					const reqData = await this._queue.getRequestFromQueue({hash});
 					if(reqData.response) {
 						// check if request is not played already
 						return;
 					}
 
-					let request = await getFetchableRequest({
+					const request = await getFetchableRequest({
 						idbRequestObject: reqData.request,
 					});
 

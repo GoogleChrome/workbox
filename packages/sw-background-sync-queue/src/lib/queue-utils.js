@@ -25,7 +25,7 @@ async function getQueueableRequest({request, config}) {
 		method: request.method,
 		redirect: request.redirect,
 	};
-	let requestBody = await request.text();
+	const requestBody = await request.text();
 	if (requestBody.length > 0) {
 		requestObject.request.body = requestBody;
 	}
@@ -64,7 +64,7 @@ async function cleanupQueue() {
 		if (queueObj.hasOwnProperty(taskQueue)) {
 			let itemsToKeep = [];
 			for (const hash of queueObj[taskQueue]) {
-				let requestData = await db.get(hash);
+				const requestData = await db.get(hash);
 				if (requestData && requestData.metadata &&
 						requestData.metadata.creationTimestamp
 						+ requestData.config.maxAge <= Date.now()) {

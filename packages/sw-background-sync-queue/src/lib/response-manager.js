@@ -1,7 +1,7 @@
 import {getDb} from './background-sync-idb-helper';
 
 async function putResponse(hash, idbObject, response) {
-	let _idbQHelper = getDb();
+	const _idbQHelper = getDb();
 	idbObject.response = {
 		headers: JSON.stringify([...response.headers]),
 		status: response.status,
@@ -11,8 +11,8 @@ async function putResponse(hash, idbObject, response) {
 }
 
 async function getResponse(hash) {
-	let _idbQHelper = getDb();
-	let object = _idbQHelper.get(hash);
+	const _idbQHelper = getDb();
+	const object = _idbQHelper.get(hash);
 	if (object && object.response) {
 		return object.response;
 	} else {

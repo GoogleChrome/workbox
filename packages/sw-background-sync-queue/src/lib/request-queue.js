@@ -51,7 +51,7 @@ class RequestQueue {
 
 		this._queue = getQueue(this._queueName);
 		const hash = `${request.url}!${Date.now()}!${_requestCounter++}`;
-		let queuableRequest =
+		const queuableRequest =
 			await getQueueableRequest({
 				request,
 				config: this._config,
@@ -94,8 +94,7 @@ class RequestQueue {
 		assert.isType({hash}, 'string');
 
 		if(this._queue.includes(hash)) {
-			let reqData = await this._idbQHelper.get(hash);
-			return reqData;
+			return await this._idbQHelper.get(hash);
 		}
 	}
 
