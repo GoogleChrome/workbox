@@ -26,12 +26,20 @@ class RevisionedCacheManager {
     assert.isInstance({revisionedFiles: revisionedFiles}, Array);
 
     const parsedFileList = revisionedFiles.map((revisionedFile) => {
+      let parsedAssetHash = revisionedFile;
       if (typeof revisionedFile === 'string') {
-        return {path: revisionedFile, revision: revisionedFile};
-      } else {
-        // TODO Check revisionedFile.path and revisionedFile.revision
-        return revisionedFile;
+        parsedAssetHash = {path: revisionedFile, revision: revisionedFile};
       }
+
+      // TODO Check revisionedFile.path and revisionedFile.revision
+
+      if (parsedAssetHash.path.indexOf('http') !== 0) {
+        // Must be a relative path
+        parsedAssetHash.path =
+          new URL(parsedAssetHash.path, location.origin).toString();
+      }
+
+      return parsedAssetHash;
     });
 
     this._cachedAssets = this._cachedAssets.concat(parsedFileList);

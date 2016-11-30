@@ -15,7 +15,7 @@
 
 const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
-const testServer = new swTestingHelpers.TestServer();
+const testServer = require('../../../utils/test-server.js');
 
 require('chromedriver');
 require('operadriver');
