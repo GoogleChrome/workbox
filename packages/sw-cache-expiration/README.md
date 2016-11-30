@@ -17,79 +17,92 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-cache-expiration
 
-[packages/sw-cache-expiration/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/index.js#L21-L21 "Source code on GitHub")
+[packages/sw-cache-expiration/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/43dea0fe7c5c2dca3500b988667de8b9ead46a3a/packages/sw-cache-expiration/src/index.js#L21-L21 "Source code on GitHub")
 
 sw-cache-expiration Module
 
 ### Behavior
 
-[packages/sw-cache-expiration/src/lib/behavior.js:25-156](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L25-L156 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:48-263](https://github.com/GoogleChrome/sw-helpers/blob/43dea0fe7c5c2dca3500b988667de8b9ead46a3a/packages/sw-cache-expiration/src/lib/behavior.js#L48-L263 "Source code on GitHub")
 
-TODO Behavior Description
+**Examples**
 
-#### cacheName
+```javascript
+// Used as an automatically invoked as "behavior" by a RequestWrapper:
 
-[packages/sw-cache-expiration/src/lib/behavior.js:44-46](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L44-L46 "Source code on GitHub")
+const cacheName = 'runtime-cache';
+const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+  cacheName,
+  behaviors: [
+    new goog.cacheExpiration.Behavior({cacheName, maxEntries: 10})
+  ]
+});
 
-Get the cache name
+// Set up a route to match any requests made against the example.com domain.
+// The requests will be handled with a stale-while-revalidate policy, and the
+// cache size will be capped at 10 entries.
+const route = new goog.routing.RegExpRoute({
+  match: ({url}) => url.domain === 'example.com',
+  handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
+});
+```
+
+```javascript
+// Explicitly invoked usage independent of the goog.routing framework, via
+// the expireOldEntries() method:
+
+// TODO: Write sample code.
+```
 
 ### constructor
 
-[packages/sw-cache-expiration/src/lib/behavior.js:30-37](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L30-L37 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:60-67](https://github.com/GoogleChrome/sw-helpers/blob/43dea0fe7c5c2dca3500b988667de8b9ead46a3a/packages/sw-cache-expiration/src/lib/behavior.js#L60-L67 "Source code on GitHub")
+
+Creates a new `Behavior` instance, which is used to remove entries from a
+[`Cache`](https://developer.mozilla.org/en-US/docs/Web/API/Cache) once
+certain criteria—maximum number of entries, age of entry, or both—is met.
 
 **Parameters**
 
--   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
-    -   `input.configuration` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
--   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
-    -   `$0.configuration`  
-
-### maxEntries
-
-[packages/sw-cache-expiration/src/lib/behavior.js:52-54](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L52-L54 "Source code on GitHub")
-
-Get the max cache entries.
-
-Returns **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Returns the number of max entries
-
-### maxAgeSeconds
-
-[packages/sw-cache-expiration/src/lib/behavior.js:60-62](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L60-L62 "Source code on GitHub")
-
-Get the max age for the cache entries.
-
-Returns **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Max age in seconds for cache entries.
-
-### expireEntries
-
-[packages/sw-cache-expiration/src/lib/behavior.js:104-117](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/behavior.js#L104-L117 "Source code on GitHub")
-
-TODO expireEntries description
-
-**Parameters**
-
--   `now` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Defaults to the current time
-
-Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** List of removed entries.
-
-### Configuration
-
-[packages/sw-cache-expiration/src/lib/configuration.js:21-37](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/configuration.js#L21-L37 "Source code on GitHub")
-
-Placeholder.
-
-#### constructor
-
-[packages/sw-cache-expiration/src/lib/configuration.js:29-36](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-cache-expiration/src/lib/configuration.js#L29-L36 "Source code on GitHub")
-
-Placeholder.
-
-**Parameters**
-
--   `cacheName` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
--   `maxEntries` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
--   `maxAgeSeconds` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** 
+-   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** The input object to this function.
+    -   `input.cacheName` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The name of the cache.
+    -   `input.maxEntries` **\[[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)]** The maximum size of the cache. Entries
+               will be expired using a LRU policy once the cache reaches this size.
+    -   `input.maxAgeSeconds` **\[[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)]** The maximum age for fresh entries.
 -   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)**  (optional, default `{}`)
     -   `$0.cacheName`  
     -   `$0.maxEntries`  
     -   `$0.maxAgeSeconds`  
+
+### updateTimestamp
+
+[packages/sw-cache-expiration/src/lib/behavior.js:135-150](https://github.com/GoogleChrome/sw-helpers/blob/43dea0fe7c5c2dca3500b988667de8b9ead46a3a/packages/sw-cache-expiration/src/lib/behavior.js#L135-L150 "Source code on GitHub")
+
+Updates the timestamp stored in IndexedDB for `url` to be equal to `now`.
+
+**Parameters**
+
+-   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** The input object to this function.
+    -   `input.url` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+    -   `input.now` **\[[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)]** A timestamp. Defaults to the current time.
+-   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `$0.url`  
+    -   `$0.now`  
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Resolves once the update transaction is complete.
+
+### expireEntries
+
+[packages/sw-cache-expiration/src/lib/behavior.js:160-179](https://github.com/GoogleChrome/sw-helpers/blob/43dea0fe7c5c2dca3500b988667de8b9ead46a3a/packages/sw-cache-expiration/src/lib/behavior.js#L160-L179 "Source code on GitHub")
+
+Expires entries, both based on the the maximum age and the maximum number
+of entries, depending on how this instance is configured.
+
+**Parameters**
+
+-   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** The input object to this function.
+    -   `input.now` **\[[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)]** A timestamp. Defaults to the current time.
+-   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)**  (optional, default `{}`)
+    -   `$0.now`  
+
+Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>** A list of the URLs that were expired.

@@ -13,11 +13,12 @@
  limitations under the License.
 */
 
-const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
-const {buildJSBundle} = require('../../build-utils');
 const pkg = require('./package.json');
+const resolve = require('rollup-plugin-node-resolve');
+const rollupBabel = require('rollup-plugin-babel');
+const {buildJSBundle} = require('../../build-utils');
 
 module.exports = () => {
   return Promise.all([
@@ -27,6 +28,10 @@ module.exports = () => {
         format: 'umd',
         moduleName: 'goog.cacheExpiration',
         plugins: [
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
           resolve({
             jsnext: true,
             main: true,
@@ -43,6 +48,10 @@ module.exports = () => {
         entry: path.join(__dirname, 'src', 'index.js'),
         format: 'es',
         plugins: [
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
           resolve({
             jsnext: true,
             main: true,
