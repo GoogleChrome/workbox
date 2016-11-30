@@ -20,10 +20,10 @@ describe('queue', () => {
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
   let queue =
-    new goog.backgroundSyncQueue.test.RequestQueue(
-      {maxAge: MAX_AGE}, QUEUE_NAME
-    );
-
+    new goog.backgroundSyncQueue.test.RequestQueue({
+      config: {maxAge: MAX_AGE},
+      queueName: QUEUE_NAME,
+    });
   it('queue object should exist', () => {
     chai.assert.isObject(queue);
     chai.assert.isArray(queue._queue);

@@ -12,24 +12,16 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, goog */
 
 'use strict';
 
 describe('background sync queue', () => {
-  let bgSyncQ = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
-
-  });
-
   it('check defaults', () => {
-    
   });
 
   it('check parameterised constructor', () =>{
-
   });
 
   it('check push proxy', () => {
-    
   });
 });

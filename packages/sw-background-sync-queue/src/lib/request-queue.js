@@ -26,7 +26,7 @@ class RequestQueue {
 	 *
 	 * @memberOf Queue
 	 */
-	constructor(config, queueName) {
+	constructor({config, queueName}) {
 		this._queueName = queueName || defaultQueueName + '_' + _queueCounter++;
 		this._config = config;
 		this._idbQHelper = getDb();
