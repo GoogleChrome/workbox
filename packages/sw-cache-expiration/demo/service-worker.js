@@ -18,7 +18,7 @@ const requestWrapper = new goog.runtimeCaching.RequestWrapper({
     new goog.cacheExpiration.Behavior({
       cacheName,
       maxEntries: 2,
-      maxAgeSeconds: 10
+      maxAgeSeconds: 10,
     }),
   ],
 });

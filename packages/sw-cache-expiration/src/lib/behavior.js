@@ -130,7 +130,6 @@ class Behavior {
    * @param {Object} input The input object to this function.
    * @param {string} input.url
    * @param {Number} [input.now] A timestamp. Defaults to the current time.
-   * @return {Promise} Resolves once the update transaction is complete.
    */
   async updateTimestamp({url, now}) {
     assert.isType({url}, 'string');
@@ -244,6 +243,13 @@ class Behavior {
     return urls;
   }
 
+  /**
+   * Removes entries corresponding to each of the URLs from both the Cache
+   * Storage API and from IndexedDB.
+   *
+   * @private
+   * @param {Array<string>} urls The URLs to delete.
+   */
   async deleteFromCacheAndIDB({urls} = {}) {
     assert.isInstance({urls}, Array);
 
