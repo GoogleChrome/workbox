@@ -1,27 +1,33 @@
 /* global goog, expect */
 
 describe('sw-precaching Test Revisioned Caching', function() {
+  const deleteIndexedDB = () => {
+    console.log('Deleting idexedDB');
+    return new Promise((resolve, reject) => {
+      // TODO: Move to constants
+      const req = indexedDB.deleteDatabase('sw-precaching');
+      req.onsuccess = function() {
+        console.log('on success');
+        resolve();
+      };
+      req.onerror = function() {
+        console.log('on error');
+        reject();
+      };
+      req.onblocked = function() {
+        console.error('Database deletion is blocked.');
+      };
+    });
+  };
+
   beforeEach(function() {
     return window.goog.swUtils.cleanState()
-    .then(() => {
-      return new Promise((resolve, reject) => {
-        // TODO: Move to constants
-        const req = indexedDB.deleteDatabase('sw-precaching');
-        req.onsuccess = function() {
-          resolve();
-        };
-        req.onerror = function() {
-          reject();
-        };
-        req.onblocked = function() {
-          console.log('Database delete blocked.');
-        };
-      });
-    });
+    .then(deleteIndexedDB);
   });
 
-  after(function() {
-    // return window.goog.swUtils.cleanState();
+  afterEach(function() {
+    return window.goog.swUtils.cleanState()
+    .then(deleteIndexedDB);
   });
 
   const testFileSet = (iframe, fileSet) => {
@@ -123,16 +129,21 @@ describe('sw-precaching Test Revisioned Caching', function() {
   };
 
   it('should cache and fetch files', function() {
+    console.log('Activating service worker 1');
     return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
     .then((iframe) => {
+      console.log('Testing service worker 1 cached set 1 step 1 assets correctly.');
       return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
+      console.log('Activating service worker 2');
       return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js')
       .then((iframe) => {
+        console.log('Testing service worker 1 cached set 1 step 2 assets correctly.');
         return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
       })
       .then((step2Responses) => {
+        console.log('Comparing two file assets');
         compareCachedAssets({
           cacheList: goog.__TEST_DATA['set-1']['step-1'],
           cachedResponses: step1Responses,

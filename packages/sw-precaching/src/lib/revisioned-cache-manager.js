@@ -14,13 +14,16 @@
 */
 
 import assert from '../../../../lib/assert';
-import installHandler from './install-handler';
 import ErrorFactory from './error-factory';
+import IDBHelper from '../../../../lib/idb-helper.js';
+import {defaultCacheName, dbName, dbVersion, dbStorename}
+  from './constants';
 
 class RevisionedCacheManager {
   constructor() {
     this._eventsRegistered = false;
     this._cachedAssets = [];
+    this._idbHelper = new IDBHelper(dbName, dbVersion, dbStorename);
 
     this._registerEvents();
   }
@@ -77,54 +80,6 @@ class RevisionedCacheManager {
       return parsedFileEntry;
     });
 
-    /**
-
-    let parsedUrl = null;
-    let parsedRevision = null;
-    let cacheBust = true;
-
-    if (typeof revisionedFile === 'string') {
-      try {
-        parsedUrl = ;
-      } catch (err) {
-        // NOOP
-      }
-
-      parsedRevision = parsedUrl;
-      cacheBust = false;
-    } else if (revisionedFile && typeof revisionedFile === 'object' &&
-      typeof revisionedFile.path === 'string' &&
-      typeof revisionedFile.revision === 'string' &&
-      revisionedFile.length > 0
-    ) {
-      try {
-        parsedUrl = new URL(revisionedFile.path, location.origin).toString();
-      } catch (err) {
-        // NOOP
-      }
-
-      parsedRevision = revisionedFile.revision;
-
-      if (typeof revisionedFile.cacheBust === 'boolean') {
-          cacheBust = revisionedFile.cacheBust;
-      } else if (typeof revisionedFile.cachebust !== 'undefined') {
-        throw ErrorFactory.createError('bad-cache-bust');
-      }
-    }
-
-    if (
-      typeof parsedUrl !== 'string' ||
-      typeof parsedRevision !== 'string'
-    ) {
-    throw ErrorFactory.createError('invalid-file-manifest-entry',
-      new Error('Invalid path: ' + JSON.stringify(revisionedFile)));
-    }
-
-    return {path: parsedUrl, revision: parsedRevision, cacheBust};
-
-
-     */
-
     this._cachedAssets = this._cachedAssets.concat(parsedFileList);
   }
 
@@ -142,9 +97,77 @@ class RevisionedCacheManager {
       }
 
       event.waitUntil(
-        installHandler({assetsAndHahes: this._cachedAssets})
+        this._performInstallStep()
+        .then(() => {
+          this._close();
+        })
       );
     });
+  }
+
+  _performInstallStep() {
+    const assetsAndHahes = this._cachedAssets;
+    const cacheId = null;
+    if (!Array.isArray(assetsAndHahes)) {
+      throw ErrorFactory.createError('assets-not-an-array');
+    }
+
+    const cacheName = cacheId || defaultCacheName;
+
+    return caches.open(cacheName)
+    .then((openCache) => {
+      const cachePromises = assetsAndHahes.map((assetAndHash) => {
+        return this._getRevisionDetails(assetAndHash.path)
+        .then((previousRevisionDetails) => {
+          if (previousRevisionDetails) {
+            if (previousRevisionDetails === assetAndHash.revision) {
+              /* eslint-disable no-console */
+              console.log('    Already Cached? TODO: Need to check cache to ' +
+                'ensure it\'s actually already cached.');
+              /* eslint-enable no-console */
+              return Promise.resolve();
+            }
+          }
+
+          return openCache.add(new Request(assetAndHash.path, {
+            credentials: 'same-origin',
+          }))
+          .then(() => {
+            return this._putRevisionDetails(
+              assetAndHash.path, assetAndHash.revision);
+          });
+        });
+      });
+      return Promise.all(cachePromises)
+      .then(() => {
+        return openCache.keys();
+      })
+      .then((openCacheKeys) => {
+        const urlsCachedOnInstall = assetsAndHahes.map((assetAndHash) => {
+          return assetAndHash.path;
+        });
+
+        const cacheDeletePromises = openCacheKeys.map((cachedRequest) => {
+          if (!urlsCachedOnInstall.includes(cachedRequest.url)) {
+            return openCache.delete(cachedRequest);
+          }
+          return Promise.resolve();
+        });
+        return Promise.all(cacheDeletePromises);
+      });
+    });
+  }
+
+  _getRevisionDetails(path) {
+    return this._idbHelper.get(path);
+  }
+
+  _putRevisionDetails (path, revision) {
+    return this._idbHelper.put(path, revision);
+  }
+
+  _close() {
+    this._idbHelper.close();
   }
 }
 

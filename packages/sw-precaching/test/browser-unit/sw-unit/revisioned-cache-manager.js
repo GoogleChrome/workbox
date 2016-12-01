@@ -15,6 +15,16 @@ mocha.setup({
 });
 
 describe('Test RevisionedCacheManager', function() {
+  let revisionedCacheManager;
+
+  before(function() {
+    revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
+  });
+
+  after(function() {
+    revisionedCacheManager._close();
+  });
+
   const badRevisionFileInputs = [
     undefined,
     '',
@@ -29,7 +39,6 @@ describe('Test RevisionedCacheManager', function() {
   badRevisionFileInputs.forEach((badInput) => {
     it(`should handle bad cache({revisionedFiles='${badInput}'}) input`, function() {
       expect(() => {
-        const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
         revisionedCacheManager.cache({
           revisionedFiles: badInput,
         });
@@ -38,7 +47,6 @@ describe('Test RevisionedCacheManager', function() {
 
     it(`should handle bad cache('${badInput}') input`, function() {
       expect(() => {
-        const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
         revisionedCacheManager.cache(badInput);
       }).to.throw('instance of \'Array\'');
     });
@@ -46,19 +54,16 @@ describe('Test RevisionedCacheManager', function() {
 
   it(`should handle bad cache('[]') input`, function() {
     expect(() => {
-      const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
       revisionedCacheManager.cache([]);
     }).to.throw('instance of \'Array\'');
   });
 
   it(`should handle null / undefined inputs`, function() {
     expect(() => {
-      const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
       revisionedCacheManager.cache({revisionedFiles: null});
     }).to.throw('instance of \'Array\'');
 
     expect(() => {
-      const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
       revisionedCacheManager.cache(null);
     }).to.throw('null');
   });
@@ -101,7 +106,6 @@ describe('Test RevisionedCacheManager', function() {
     it(`should throw an errror for a page file manifest entry '${JSON.stringify(badFileManifest)}'`, function() {
       let caughtError;
       try {
-        const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
         revisionedCacheManager.cache({revisionedFiles: badFileManifest});
       } catch (err) {
         caughtError = err;
@@ -128,7 +132,6 @@ describe('Test RevisionedCacheManager', function() {
     it(`should be able to handle bad cache input '${JSON.stringify(badCacheBust)}'`, function() {
       let caughtError;
       try {
-        const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
         revisionedCacheManager.cache({revisionedFiles: [
           {path: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: badCacheBust},
         ]});
@@ -155,7 +158,8 @@ describe('Test RevisionedCacheManager', function() {
     {path: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: false},
   ];
   goodManifestInputs.forEach((goodInput) => {
-    const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
-    revisionedCacheManager.cache({revisionedFiles: [goodInput]});
+    it(`should be able to handle good cache input '${JSON.stringify(goodInput)}'`, function() {
+      revisionedCacheManager.cache({revisionedFiles: [goodInput]});
+    });
   });
 });

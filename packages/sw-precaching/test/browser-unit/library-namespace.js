@@ -13,7 +13,7 @@
  limitations under the License.
 */
 describe('Test Behaviors of Loading the Script', function() {
-  this.timeout(5 * 60 * 1000);
+  this.timeout(60 * 1000);
 
   it('should print an error when added to the window.', function() {
     this.timeout(2000);
