@@ -63,7 +63,8 @@ describe('Test RevisionedCacheManager', function() {
     }).to.throw('null');
   });
 
-  const VALID_PATH = '/__echo/date/example.txt';
+  const VALID_PATH_REL = '/__echo/date/example.txt';
+  const VALID_PATH_ABS = `${location.origin}${VALID_PATH_REL}`;
   const VALID_REVISION = '1234';
 
   const badPaths = [
@@ -93,12 +94,11 @@ describe('Test RevisionedCacheManager', function() {
     badFileManifests.push([{path: badPath, revision: VALID_REVISION}]);
   });
   badRevisions.forEach((badRevision) => {
-    badFileManifests.push([{path: VALID_PATH, revision: badRevision}]);
+    badFileManifests.push([{path: VALID_PATH_REL, revision: badRevision}]);
   });
 
   badFileManifests.forEach((badFileManifest) => {
     it(`should throw an errror for a page file manifest entry '${JSON.stringify(badFileManifest)}'`, function() {
-      console.log(JSON.stringify({revisionedFiles: badFileManifest}));
       let caughtError;
       try {
         const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
@@ -113,5 +113,49 @@ describe('Test RevisionedCacheManager', function() {
 
       caughtError.name.should.equal('invalid-file-manifest-entry');
     });
+  });
+
+  const badCacheBusts = [
+    null,
+    '',
+    '1234sgdgh',
+    12345,
+    {},
+    [],
+  ];
+
+  badCacheBusts.forEach((badCacheBust) => {
+    it(`should be able to handle bad cache input '${JSON.stringify(badCacheBust)}'`, function() {
+      let caughtError;
+      try {
+        const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
+        revisionedCacheManager.cache({revisionedFiles: [
+          {path: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: badCacheBust},
+        ]});
+      } catch (err) {
+        caughtError = err;
+      }
+
+      if (!caughtError) {
+        throw new Error('Expected file manifest to cause an error.');
+      }
+
+      caughtError.name.should.equal('invalid-file-manifest-entry');
+    });
+  });
+
+  const goodManifestInputs = [
+    VALID_PATH_REL,
+    {path: VALID_PATH_REL, revision: VALID_REVISION},
+    {path: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: true},
+    {path: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: false},
+    VALID_PATH_ABS,
+    {path: VALID_PATH_ABS, revision: VALID_REVISION},
+    {path: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: true},
+    {path: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: false},
+  ];
+  goodManifestInputs.forEach((goodInput) => {
+    const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
+    revisionedCacheManager.cache({revisionedFiles: [goodInput]});
   });
 });
