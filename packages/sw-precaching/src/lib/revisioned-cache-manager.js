@@ -16,7 +16,7 @@
 import assert from '../../../../lib/assert';
 import ErrorFactory from './error-factory';
 import IDBHelper from '../../../../lib/idb-helper.js';
-import {defaultCacheName, dbName, dbVersion, dbStorename}
+import {defaultCacheName, dbName, dbVersion, dbStorename, cacheBustParamName}
   from './constants';
 
 class RevisionedCacheManager {
@@ -37,7 +37,7 @@ class RevisionedCacheManager {
         parsedFileEntry = {
           path: revisionedFileEntry,
           revision: revisionedFileEntry,
-          cacheBust: true,
+          cacheBust: false,
         };
       }
 
@@ -70,7 +70,7 @@ class RevisionedCacheManager {
 
       // Add cache bust if its not defined
       if (typeof parsedFileEntry.cacheBust === 'undefined') {
-        parsedFileEntry.cached = true;
+        parsedFileEntry.cacheBust = true;
       } else if (typeof parsedFileEntry.cacheBust !== 'boolean') {
         throw ErrorFactory.createError('invalid-file-manifest-entry',
           new Error('Invalid cacheBust: ' +
@@ -129,9 +129,17 @@ class RevisionedCacheManager {
             }
           }
 
-          return openCache.add(new Request(assetAndHash.path, {
+          let requestUrl = assetAndHash.path;
+          if (assetAndHash.cacheBust) {
+            requestUrl = this._cacheBustUrl(requestUrl, assetAndHash.revision);
+          }
+
+          return fetch(requestUrl, {
             credentials: 'same-origin',
-          }))
+          })
+          .then((response) => {
+            return openCache.put(assetAndHash.path, response);
+          })
           .then(() => {
             return this._putRevisionDetails(
               assetAndHash.path, assetAndHash.revision);
@@ -162,8 +170,16 @@ class RevisionedCacheManager {
     return this._idbHelper.get(path);
   }
 
-  _putRevisionDetails (path, revision) {
+  _putRevisionDetails(path, revision) {
     return this._idbHelper.put(path, revision);
+  }
+
+  _cacheBustUrl(url, cacheBust) {
+    const parsedURL = new URL(url);
+    parsedURL.search += (parsedURL.search ? '&' : '') +
+      encodeURIComponent(cacheBustParamName) + '=' +
+      encodeURIComponent(cacheBust);
+    return parsedURL.toString();
   }
 
   _close() {

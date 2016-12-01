@@ -27,8 +27,8 @@ const parseManifest = require('parse-appcache-manifest');
 const path = require('path');
 const promisify = require('promisify-node');
 const seleniumAssistant = require('selenium-assistant');
-const swTestingHelpers = require('sw-testing-helpers');
 const fs = require('fs');
+const testServer = require('../../../utils/test-server');
 
 // Ensure the selenium drivers are added Node scripts path.
 require('geckodriver');
@@ -37,7 +37,6 @@ require('operadriver');
 
 const fsePromise = promisify('fs-extra');
 
-const testServer = new swTestingHelpers.TestServer();
 const expect = chai.expect;
 const TIMEOUT = 10 * 1000;
 const RETRIES = 3;
@@ -285,6 +284,11 @@ seleniumAssistant.getAvailableBrowsers().forEach(function(browser) {
     case 'chrome':
     case 'firefox':
     case 'opera':
+      if (browser.getSeleniumBrowserId() === 'opera' &&
+        browser.getVersionNumber() <= 43) {
+        console.log(`Skipping Opera <= 43 due to driver issues.`);
+        return;
+      }
       configureTestSuite(browser);
       break;
     default:

@@ -33,12 +33,12 @@ app.get('/test/iframe/:random', function(req, res) {
 });
 
 app.get('/__echo/filename/:file', function(req, res) {
-  res.setHeader('Cache-Control', 24 * 60 * 60 * 1000);
+  res.setHeader('Cache-Control', 'max-age=' + (24 * 60 * 60));
   res.send(req.params.file);
 });
 
 app.get('/__echo/date/:file', function(req, res) {
-  res.setHeader('Cache-Control', 24 * 60 * 60 * 1000);
+  res.setHeader('Cache-Control', 'max-age=' + (24 * 60 * 60));
   res.send(`${req.params.file}-${Date.now()}`);
 });
 

@@ -24,7 +24,7 @@
 
 const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
-const testServer = new swTestingHelpers.TestServer();
+const testServer = require('../../../utils/test-server');
 
 // Ensure the selenium drivers are added Node scripts path.
 require('geckodriver');
@@ -101,6 +101,11 @@ seleniumAssistant.getAvailableBrowsers().forEach(function(browser) {
     case 'chrome':
     case 'firefox':
     case 'opera':
+      if (browser.getSeleniumBrowserId() === 'opera' &&
+        browser.getVersionNumber() <= 43) {
+        console.log(`Skipping Opera <= 43 due to driver issues.`);
+        return;
+      }
       configureTestSuite(browser);
       break;
     default:

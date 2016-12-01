@@ -34,7 +34,6 @@ describe('Test Behaviors of Loading the Script', function() {
       const scriptElement = document.createElement('script');
       scriptElement.src = '/packages/sw-precaching/build/sw-precaching.min.js';
       scriptElement.addEventListener('error', (event) => {
-        console.log(event);
         reject();
       });
       document.head.appendChild(scriptElement);
@@ -47,7 +46,6 @@ describe('Test Behaviors of Loading the Script', function() {
   ];
   swUnitTests.forEach((swUnitTestPath) => {
     it(`should perform ${swUnitTestPath} sw tests`, function() {
-      console.log(swUnitTestPath);
       return window.goog.mochaUtils.startServiceWorkerMochaTests(swUnitTestPath)
       .then((testResults) => {
         if (testResults.failed.length > 0) {
