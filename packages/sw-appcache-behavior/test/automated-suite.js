@@ -93,7 +93,7 @@ const configureTestSuite = function(browser) {
 
       return generateInitialManifests()
       .then(() => {
-        return testServer.startServer('.');
+        return testServer.start('.');
       })
       .then((portNumber) => {
         baseTestUrl = `http://localhost:${portNumber}/packages/sw-appcache-behavior/test/`;
@@ -106,7 +106,7 @@ const configureTestSuite = function(browser) {
     after(function() {
       return seleniumAssistant.killWebDriver(globalDriverReference)
       .then(() => {
-        return testServer.killServer();
+        return testServer.stop();
       })
       .then(() => {
         return fsePromise.remove(tempDirectory);

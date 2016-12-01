@@ -107,10 +107,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
         return;
       }
 
-      let pathToCheck = afterAssetAndHash.path;
-      if (pathToCheck.indexOf('http') !== 0) {
-        pathToCheck = new URL(pathToCheck, location.origin).toString();
-      }
+      let pathToCheck = new URL(afterAssetAndHash.path, location.origin).toString();
 
       const beforeResponseBody = beforeData.cachedResponses[pathToCheck];
       const afterResponseBody = afterData.cachedResponses[pathToCheck];

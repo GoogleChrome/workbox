@@ -20,6 +20,8 @@ class RevisionedCacheManager {
   constructor() {
     this._eventsRegistered = false;
     this._cachedAssets = [];
+
+    this._registerEvents();
   }
 
   cache({revisionedFiles} = {}) {
@@ -28,23 +30,24 @@ class RevisionedCacheManager {
     const parsedFileList = revisionedFiles.map((revisionedFile) => {
       let parsedAssetHash = revisionedFile;
       if (typeof revisionedFile === 'string') {
-        parsedAssetHash = {path: revisionedFile, revision: revisionedFile};
+        parsedAssetHash = {
+          path: revisionedFile,
+          revision: revisionedFile,
+          cacheBust: false,
+        };
       }
 
       // TODO Check revisionedFile.path and revisionedFile.revision
 
-      if (parsedAssetHash.path.indexOf('http') !== 0) {
-        // Must be a relative path
-        parsedAssetHash.path =
-          new URL(parsedAssetHash.path, location.origin).toString();
-      }
+      // Make relative paths absolute.
+      // Absolute URLS will ignore the base url.
+      parsedAssetHash.path =
+        new URL(parsedAssetHash.path, location.origin).toString();
 
       return parsedAssetHash;
     });
 
     this._cachedAssets = this._cachedAssets.concat(parsedFileList);
-
-    this._registerEvents();
   }
 
   _registerEvents() {
@@ -56,6 +59,10 @@ class RevisionedCacheManager {
     this._eventsRegistered = true;
 
     self.addEventListener('install', (event) => {
+      if (this._cachedAssets.length === 0) {
+        return;
+      }
+
       event.waitUntil(
         installHandler({assetsAndHahes: this._cachedAssets})
       );

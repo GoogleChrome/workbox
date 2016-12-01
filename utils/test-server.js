@@ -13,12 +13,21 @@
  limitations under the License.
 */
 
-const swTestingHelpers = require('sw-testing-helpers');
+/**
+ * README:
+ * This test server is used in unit tests as well as
+ * by the 'gulp serve' task, so please make sure
+ * changes here work in all scenarios.
+ */
+
 const path = require('path');
+const express = require('express');
+const serveIndex = require('serve-index');
+const serveStatic = require('serve-static');
 
-const testServer = new swTestingHelpers.TestServer();
-const app = testServer.getExpressApp();
+const app = express();
 
+// Test iframe is used by sw-testing-helpers to scope service workers
 app.get('/test/iframe/:random', function(req, res) {
   res.sendFile(path.join(__dirname, 'test-iframe.html'));
 });
@@ -26,8 +35,35 @@ app.get('/test/iframe/:random', function(req, res) {
 app.get('/__echo/filename/:file', function(req, res) {
   res.send(req.params.file);
 });
+
 app.get('/__echo/date/:file', function(req, res) {
   res.send(`${req.params.file}-${Date.now()}`);
 });
 
-module.exports = testServer;
+let server;
+module.exports = {
+  start: (rootDirectory, port) => {
+    if (server) {
+      return Promise.reject(new Error('Server already started.'));
+    }
+
+    app.use('/', express.static(rootDirectory, {
+      setHeaders: (res) => {
+        res.setHeader('Service-Worker-Allowed', '/');
+      },
+    }));
+
+    app.use(serveStatic(rootDirectory));
+    app.use(serveIndex(rootDirectory, {view: 'details'}));
+
+    return new Promise((resolve, reject) => {
+      server = app.listen(port, 'localhost', () => {
+        resolve(server.address().port);
+      });
+    });
+  },
+  stop: () => {
+    server.close();
+    server = null;
+  },
+};

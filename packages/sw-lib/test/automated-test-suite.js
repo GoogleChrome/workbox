@@ -34,14 +34,14 @@ const setupTestSuite = (assistantDriver) => {
 
     // Set up the web server before running any tests in this suite.
     before(function() {
-      return testServer.startServer('.').then((portNumber) => {
+      return testServer.start('.').then((portNumber) => {
         baseTestUrl = `http://localhost:${portNumber}/packages/sw-lib`;
       });
     });
 
     // Kill the web server once all tests are complete.
     after(function() {
-      return testServer.killServer();
+      return testServer.stop();
     });
 
     afterEach(function() {

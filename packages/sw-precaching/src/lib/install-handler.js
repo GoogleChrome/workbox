@@ -15,58 +15,24 @@
 
 import ErrorFactory from './error-factory';
 import IDBHelper from '../../../../lib/idb-helper.js';
-<<<<<<< HEAD
 import {defaultCacheName, dbName, dbVersion, dbStorename}
-  from './constants';
-
-const getPreviousRevisionDetails = () => {
-  console.warn('getPreviousRevisionDetails always returns null.');
-  return Promise.resolve(null);
-=======
-import {version, defaultCacheId, DB_NAME, DB_VERSION, DB_STORENAME}
   from './constants';
 
 const getPreviousRevisionDetails = (idbHelper, path) => {
   return idbHelper.get(path);
->>>>>>> e497c07936d4652641b6f86853d8c72631252d05
 };
 
 const addAssetHashToIndexedDB = (idbHelper, assetAndHash) => {
   return idbHelper.put(assetAndHash.path, assetAndHash.revision);
 };
 
-const installHandler = async ({assetsAndHahes, cacheId} = {}) => {
+const installHandler = ({assetsAndHahes, cacheId} = {}) => {
   if (!Array.isArray(assetsAndHahes)) {
     throw ErrorFactory.createError('assets-not-an-array');
   }
 
-<<<<<<< HEAD
   const cacheName = cacheId || defaultCacheName;
   const idbHelper = new IDBHelper(dbName, dbVersion, dbStorename);
-
-  const openCache = await caches.open(cacheName);
-  const cachePromises = assetsAndHahes.map((assetAndHash) => {
-    return getPreviousRevisionDetails(assetAndHash.path)
-    .then((previousRevisionDetails) => {
-      if (previousRevisionDetails) {
-        console.warn('Need to handle previous revision details');
-        return Promise.resolve();
-      }
-
-      return openCache.add(new Request(assetAndHash.path, {
-        credentials: 'same-origin',
-      }))
-      .then(() => {
-        return addAssetHashToIndexedDB(idbHelper, assetAndHash);
-      });
-    });
-  });
-
-  return Promise.all(cachePromises);
-=======
-  const cacheName =
-    `${cacheId || defaultCacheId}-${version}-${self.registration.scope}`;
-  const idbHelper = new IDBHelper(DB_NAME, DB_VERSION, DB_STORENAME);
 
   return caches.open(cacheName)
   .then((openCache) => {
@@ -109,7 +75,6 @@ const installHandler = async ({assetsAndHahes, cacheId} = {}) => {
       return Promise.all(cacheDeletePromises);
     });
   });
->>>>>>> e497c07936d4652641b6f86853d8c72631252d05
 };
 
 export default installHandler;
