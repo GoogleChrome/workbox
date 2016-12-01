@@ -15,12 +15,20 @@
 
 import ErrorFactory from './error-factory';
 import IDBHelper from '../../../../lib/idb-helper.js';
+<<<<<<< HEAD
 import {defaultCacheName, dbName, dbVersion, dbStorename}
   from './constants';
 
 const getPreviousRevisionDetails = () => {
   console.warn('getPreviousRevisionDetails always returns null.');
   return Promise.resolve(null);
+=======
+import {version, defaultCacheId, DB_NAME, DB_VERSION, DB_STORENAME}
+  from './constants';
+
+const getPreviousRevisionDetails = (idbHelper, path) => {
+  return idbHelper.get(path);
+>>>>>>> e497c07936d4652641b6f86853d8c72631252d05
 };
 
 const addAssetHashToIndexedDB = (idbHelper, assetAndHash) => {
@@ -32,6 +40,7 @@ const installHandler = async ({assetsAndHahes, cacheId} = {}) => {
     throw ErrorFactory.createError('assets-not-an-array');
   }
 
+<<<<<<< HEAD
   const cacheName = cacheId || defaultCacheName;
   const idbHelper = new IDBHelper(dbName, dbVersion, dbStorename);
 
@@ -54,6 +63,53 @@ const installHandler = async ({assetsAndHahes, cacheId} = {}) => {
   });
 
   return Promise.all(cachePromises);
+=======
+  const cacheName =
+    `${cacheId || defaultCacheId}-${version}-${self.registration.scope}`;
+  const idbHelper = new IDBHelper(DB_NAME, DB_VERSION, DB_STORENAME);
+
+  return caches.open(cacheName)
+  .then((openCache) => {
+    const cachePromises = assetsAndHahes.map((assetAndHash) => {
+      return getPreviousRevisionDetails(idbHelper, assetAndHash.path)
+      .then((previousRevisionDetails) => {
+        if (previousRevisionDetails) {
+          if (previousRevisionDetails === assetAndHash.revision) {
+            /* eslint-disable no-console */
+            console.log('    Already Cached? TODO: Need to check cache to ' +
+              'ensure it\'s actually already cached.');
+            /* eslint-enable no-console */
+            return Promise.resolve();
+          }
+        }
+
+        return Promise.all([
+          addAssetHashToIndexedDB(idbHelper, assetAndHash),
+          openCache.add(new Request(assetAndHash.path, {
+            credentials: 'same-origin',
+          })),
+        ]);
+      });
+    });
+    return Promise.all(cachePromises)
+    .then(() => {
+      return openCache.keys();
+    })
+    .then((openCacheKeys) => {
+      const urlsCachedOnInstall = assetsAndHahes.map((assetAndHash) => {
+        return assetAndHash.path;
+      });
+
+      const cacheDeletePromises = openCacheKeys.map((cachedRequest) => {
+        if (!urlsCachedOnInstall.includes(cachedRequest.url)) {
+          return openCache.delete(cachedRequest);
+        }
+        return Promise.resolve();
+      });
+      return Promise.all(cacheDeletePromises);
+    });
+  });
+>>>>>>> e497c07936d4652641b6f86853d8c72631252d05
 };
 
 export default installHandler;

@@ -15,7 +15,7 @@
 
 const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
-const testServer = new swTestingHelpers.TestServer();
+const testServer = require('../../../utils/test-server.js');
 
 require('chromedriver');
 require('operadriver');
@@ -35,7 +35,7 @@ const setupTestSuite = (assistantDriver) => {
     // Set up the web server before running any tests in this suite.
     before(function() {
       return testServer.startServer('.').then((portNumber) => {
-        baseTestUrl = `http://localhost:${portNumber}/packages/sw-precaching`;
+       baseTestUrl = `http://localhost:${portNumber}/packages/sw-precaching`;
       });
     });
 
