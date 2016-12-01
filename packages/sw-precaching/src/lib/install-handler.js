@@ -15,34 +15,8 @@
 
 import ErrorFactory from './error-factory';
 import IDBHelper from '../../../../lib/idb-helper.js';
-import {version, defaultCacheId, DB_NAME, DB_VERSION, DB_STORENAME} from './constants';
-
-const getCurrentlyCachedUrls = (cache) => {
-  return cache.keys()
-    .then((requests) => {
-      return requests.map((request) => request.url);
-    });
-};
-
-/** const createRevisionedUrl = (assetAndHash) => {
-  const absoluteUrl = new URL(assetAndHash.path, self.location);
-  absoluteUrl.search += (absoluteUrl.search ? '&' : '') +
-    encodeURIComponent(hashParamName) + '=' +
-    encodeURIComponent(assetAndHash.revision);
-  return absoluteUrl.toString();
-};**/
-
-const getPathsOnly = (assetsAndHahes) => {
-  return assetsAndHahes.map((assetAndHash) => {
-    let assetUrl = assetAndHash;
-
-    if (typeof assetAndHash !== 'string') {
-      // Asset is an object with {path: '', revision: ''}
-      assetUrl = assetAndHash.path; // createRevisionedUrl(assetAndHash);
-    }
-    return assetUrl;
-  });
-};
+import {defaultCacheName, dbName, dbVersion, dbStorename}
+  from './constants';
 
 const getPreviousRevisionDetails = () => {
   console.warn('getPreviousRevisionDetails always returns null.');
@@ -53,62 +27,33 @@ const addAssetHashToIndexedDB = (idbHelper, assetAndHash) => {
   return idbHelper.put(assetAndHash.path, assetAndHash.revision);
 };
 
-const installHandler = ({assetsAndHahes, cacheId} = {}) => {
+const installHandler = async ({assetsAndHahes, cacheId} = {}) => {
   if (!Array.isArray(assetsAndHahes)) {
     throw ErrorFactory.createError('assets-not-an-array');
   }
 
-  const cacheName =
-    `${cacheId || defaultCacheId}-${version}-${self.registration.scope}`;
-  const idbHelper = new IDBHelper(DB_NAME, DB_VERSION, DB_STORENAME);
+  const cacheName = cacheId || defaultCacheName;
+  const idbHelper = new IDBHelper(dbName, dbVersion, dbStorename);
 
-  return caches.open(cacheName)
-  .then((openCache) => {
-    const cachePromises = assetsAndHahes.map((assetAndHash) => {
-      console.log('Caching: ', assetAndHash);
-      return getPreviousRevisionDetails(assetAndHash.path)
-      .then((previousRevisionDetails) => {
-        if (previousRevisionDetails) {
-          console.warn('Need to handle previous revision detilas');
-          return Promise.resolve();
-        }
+  const openCache = await caches.open(cacheName);
+  const cachePromises = assetsAndHahes.map((assetAndHash) => {
+    return getPreviousRevisionDetails(assetAndHash.path)
+    .then((previousRevisionDetails) => {
+      if (previousRevisionDetails) {
+        console.warn('Need to handle previous revision details');
+        return Promise.resolve();
+      }
 
-        console.log('caching response.');
-        return Promise.all([
-          addAssetHashToIndexedDB(idbHelper, assetAndHash),
-          openCache.add(new Request(assetAndHash.path, {
-            credentials: 'same-origin',
-          })),
-        ]);
+      return openCache.add(new Request(assetAndHash.path, {
+        credentials: 'same-origin',
+      }))
+      .then(() => {
+        return addAssetHashToIndexedDB(idbHelper, assetAndHash);
       });
     });
-    return Promise.all(cachePromises);
   });
 
-  /**
-  return caches.open(cacheName)
-  .then((cache) => {
-    return getCurrentlyCachedUrls(cache)
-    .then((cachedUrls) => {
-      const cacheAddPromises = assetsAndHahes.map(({path, revision}) => {
-        if (cachedUrls.includes(path)) {
-          // TODO: Check the file revision matches.
-          return Promise.resolve();
-        }
-
-        return cache.add(new Request(path, {
-          credentials: 'same-origin',
-        }));
-      });
-
-      return Promise.all(cacheAddPromises);
-    })
-    .then(() => {
-      // All cached assets are cached, we now need to remove any remaining
-      // cached assets
-    });
-  });
-  **/
+  return Promise.all(cachePromises);
 };
 
 export default installHandler;

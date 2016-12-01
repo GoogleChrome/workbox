@@ -23,7 +23,7 @@ class RevisionedCacheManager {
   }
 
   cache({revisionedFiles} = {}) {
-    assert.isInstance({revisionedFiles: revisionedFiles}, Array);
+    assert.isInstance({revisionedFiles}, Array);
 
     const parsedFileList = revisionedFiles.map((revisionedFile) => {
       if (typeof revisionedFile === 'string') {
