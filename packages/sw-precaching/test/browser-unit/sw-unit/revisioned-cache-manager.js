@@ -62,4 +62,56 @@ describe('Test RevisionedCacheManager', function() {
       revisionedCacheManager.cache(null);
     }).to.throw('null');
   });
+
+  const VALID_PATH = '/__echo/date/example.txt';
+  const VALID_REVISION = '1234';
+
+  const badPaths = [
+    null,
+    undefined,
+    false,
+    true,
+    12345,
+    {},
+    [],
+  ];
+
+  const badRevisions = [
+    null,
+    undefined,
+    false,
+    true,
+    '',
+    12345,
+    {},
+    [],
+  ];
+
+  const badFileManifests = [];
+  badPaths.forEach((badPath) => {
+    badFileManifests.push([badPath]);
+    badFileManifests.push([{path: badPath, revision: VALID_REVISION}]);
+  });
+  badRevisions.forEach((badRevision) => {
+    badFileManifests.push([{path: VALID_PATH, revision: badRevision}]);
+  });
+
+  badFileManifests.forEach((badFileManifest) => {
+    it(`should throw an errror for a page file manifest entry '${JSON.stringify(badFileManifest)}'`, function() {
+      console.log(JSON.stringify({revisionedFiles: badFileManifest}));
+      let caughtError;
+      try {
+        const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
+        revisionedCacheManager.cache({revisionedFiles: badFileManifest});
+      } catch (err) {
+        caughtError = err;
+      }
+
+      if (!caughtError) {
+        throw new Error('Expected file manifest to cause an error.');
+      }
+
+      caughtError.name.should.equal('invalid-file-manifest-entry');
+    });
+  });
 });
