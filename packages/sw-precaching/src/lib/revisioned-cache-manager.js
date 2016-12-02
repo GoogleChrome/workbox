@@ -154,52 +154,42 @@ class RevisionedCacheManager {
    * @return {Promise} The promise resolves when all the desired assets are
    * cached.
    */
-  _performInstallStep(cacheName) {
+  async _performInstallStep(cacheName) {
     cacheName = cacheName || defaultCacheName;
 
-    let openCache;
-    return caches.open(cacheName)
-    .then((oC) => {
-      openCache = oC;
-      const cachePromises = this._fileEntriesToCache.map((fileEntry) => {
-        return this._isAlreadyCached(fileEntry, openCache)
-        .then((isCached) => {
-          if (isCached) {
-            return;
-          }
+    let openCache = await caches.open(cacheName);
+    const cachePromises = this._fileEntriesToCache.map(async (fileEntry) => {
+      const isCached = await this._isAlreadyCached(fileEntry, openCache);
+      if (isCached) {
+        return;
+      }
 
-          let requestUrl = this._cacheBustUrl(fileEntry);
-          return fetch(requestUrl, {
-            credentials: 'same-origin',
-          })
-          .then((response) => {
-            return openCache.put(fileEntry.path, response);
-          })
-          .then(() => {
-            return this._putRevisionDetails(fileEntry.path, fileEntry.revision);
-          });
-        });
+      let requestUrl = this._cacheBustUrl(fileEntry);
+      const response = await fetch(requestUrl, {
+        credentials: 'same-origin',
       });
-      return Promise.all(cachePromises);
-    })
-    .then(() => {
-      return openCache.keys();
-    })
-    .then((allCachedRequests) => {
-      const urlsCachedOnInstall = this._fileEntriesToCache
-        .map((fileEntry) => fileEntry.path);
-      const cacheDeletePromises = allCachedRequests.map((cachedRequest) => {
-        if (urlsCachedOnInstall.includes(cachedRequest.url)) {
-          return;
-        }
-        return openCache.delete(cachedRequest);
-      });
-      return Promise.all(cacheDeletePromises);
-    })
-    .then(() => {
-      // Closed indexedDB now that we are done with the install step
-      this._close();
+      await openCache.put(fileEntry.path, response);
+      await this._putRevisionDetails(fileEntry.path, fileEntry.revision);
     });
+
+    await Promise.all(cachePromises);
+
+    const urlsCachedOnInstall = this._fileEntriesToCache
+      .map((fileEntry) => fileEntry.path);
+    const allCachedRequests = await openCache.keys();
+
+    const cacheDeletePromises = allCachedRequests.map((cachedRequest) => {
+      if (urlsCachedOnInstall.includes(cachedRequest.url)) {
+        return;
+      }
+
+      return openCache.delete(cachedRequest);
+    });
+
+    await Promise.all(cacheDeletePromises);
+
+    // Closed indexedDB now that we are done with the install step
+    this._close();
   }
 
   /**
@@ -214,22 +204,14 @@ class RevisionedCacheManager {
    * @return {Promise<Boolean>} Returns true is the fileEntry is already
    * cached, false otherwise.
    */
-  _isAlreadyCached(fileEntry, openCache) {
-    return this._getRevisionDetails(fileEntry.path)
-    .then((previousRevisionDetails) => {
-      if (previousRevisionDetails !== fileEntry.revision) {
-        return false;
-      }
+  async _isAlreadyCached(fileEntry, openCache) {
+    const revisionDetails = await this._getRevisionDetails(fileEntry.path);
+    if (revisionDetails !== fileEntry.revision) {
+      return false;
+    }
 
-      return openCache.match(fileEntry.path)
-      .then((cacheMatch) => {
-        if (cacheMatch) {
-          return true;
-        }
-
-        return false;
-      });
-    });
+    const cachedResponse = await openCache.match(fileEntry.path);
+    return cachedResponse ? true : false;
   }
 
   /**

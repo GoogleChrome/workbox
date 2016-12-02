@@ -27,16 +27,16 @@ module.exports = () => {
         format: 'umd',
         moduleName: 'goog.precaching',
         plugins: [
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
           resolve({
             jsnext: true,
             main: true,
             browser: true,
           }),
           commonjs(),
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
         ],
       },
       outputName: pkg.main,
@@ -47,16 +47,16 @@ module.exports = () => {
         entry: path.join(__dirname, 'src', 'index.js'),
         format: 'es',
         plugins: [
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
           resolve({
             jsnext: true,
             main: true,
             browser: true,
           }),
           commonjs(),
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
         ],
       },
       outputName: pkg['jsnext:main'],
