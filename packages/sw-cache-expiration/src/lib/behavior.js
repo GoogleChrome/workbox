@@ -15,7 +15,12 @@
 
 import idb from 'idb';
 import assert from '../../../../lib/assert';
-import {idbName, idbVersion, urlProperty, timestampProperty} from './constants';
+import {
+  idbName,
+  idbVersion,
+  urlPropertyName,
+  timestampPropertyName,
+} from './constants';
 
 /**
  * @memberof module:sw-cache-expiration
@@ -60,6 +65,12 @@ class Behavior {
   constructor({cacheName, maxEntries, maxAgeSeconds} = {}) {
     assert.isType({cacheName}, 'string');
     assert.atLeastOne({maxEntries, maxAgeSeconds});
+    if (maxEntries !== undefined) {
+      assert.isType({maxEntries}, 'number');
+    }
+    if (maxAgeSeconds !== undefined) {
+      assert.isType({maxAgeSeconds}, 'number');
+    }
 
     this.cacheName = cacheName;
     this.maxEntries = maxEntries;
@@ -77,8 +88,8 @@ class Behavior {
     if (!this._db) {
       this._db = await idb.open(idbName, idbVersion, (upgradeDB) => {
         const objectStore = upgradeDB.createObjectStore(this.cacheName,
-          {keyPath: urlProperty});
-        objectStore.createIndex(timestampProperty, timestampProperty,
+          {keyPath: urlPropertyName});
+        objectStore.createIndex(timestampPropertyName, timestampPropertyName,
           {unique: false});
       });
     }
@@ -141,8 +152,8 @@ class Behavior {
     const db = await this.getDB();
     const tx = db.transaction(this.cacheName, 'readwrite');
     tx.objectStore(this.cacheName).put({
-      [timestampProperty]: now,
-      [urlProperty]: url,
+      [timestampPropertyName]: now,
+      [urlPropertyName]: url,
     });
 
     await tx.complete;
@@ -171,6 +182,8 @@ class Behavior {
       await this.findExtraEntries() :
       [];
 
+    // Use a Set to remove any duplicates following the concatenation, then
+    // convert back into an array.
     const urls = [...new Set(oldEntries.concat(extraEntries))];
     await this.deleteFromCacheAndIDB({urls});
 
@@ -193,15 +206,15 @@ class Behavior {
     const db = await this.getDB();
     const tx = db.transaction(this.cacheName, 'readonly');
     const store = tx.objectStore(this.cacheName);
-    const index = store.index(timestampProperty);
+    const timestampIndex = store.index(timestampPropertyName);
 
-    index.iterateCursor(async (cursor) => {
+    timestampIndex.iterateCursor((cursor) => {
       if (!cursor) {
         return;
       }
 
-      if (cursor.value[timestampProperty] < expireOlderThan) {
-        urls.push(cursor.value[urlProperty]);
+      if (cursor.value[timestampPropertyName] < expireOlderThan) {
+        urls.push(cursor.value[urlPropertyName]);
       }
 
       cursor.continue();
@@ -222,16 +235,16 @@ class Behavior {
     const db = await this.getDB();
     const tx = db.transaction(this.cacheName, 'readonly');
     const store = tx.objectStore(this.cacheName);
-    const index = store.index(timestampProperty);
-    const initialCount = await index.count();
+    const timestampIndex = store.index(timestampPropertyName);
+    const initialCount = await timestampIndex.count();
 
     if (initialCount > this.maxEntries) {
-      index.iterateCursor(async (cursor) => {
+      timestampIndex.iterateCursor((cursor) => {
         if (!cursor) {
           return;
         }
 
-        urls.push(cursor.value[urlProperty]);
+        urls.push(cursor.value[urlPropertyName]);
 
         if (initialCount - urls.length > this.maxEntries) {
           cursor.continue();

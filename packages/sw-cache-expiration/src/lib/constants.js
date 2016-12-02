@@ -15,5 +15,5 @@
 
 export const idbName = `sw-cache-expiration-${self.registration.scope}`;
 export const idbVersion = 1;
-export const urlProperty = 'url';
-export const timestampProperty = 'timestamp';
+export const urlPropertyName = 'url';
+export const timestampPropertyName = 'timestamp';
