@@ -15,7 +15,7 @@
 
 const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
-const createTestServer = require('../../../utils/create-test-server.js');
+const testServer = require('../../../utils/test-server.js');
 
 require('chromedriver');
 require('operadriver');
@@ -31,32 +31,18 @@ const setupTestSuite = (assistantDriver) => {
 
     let globalDriverBrowser;
     let baseTestUrl;
-    let thirdPartyServer;
-
-    let testServers = [];
 
     // Set up the web server before running any tests in this suite.
     before(function() {
-      let primaryTestServer = createTestServer();
-      let secondaryTestServer = createTestServer();
-      testServers.push(primaryTestServer);
-      testServers.push(secondaryTestServer);
-
-      return primaryTestServer.start('.')
+      return testServer.start('.')
       .then((portNumber) => {
         baseTestUrl = `http://localhost:${portNumber}/packages/sw-precaching`;
-        return secondaryTestServer.start('.');
-      })
-      .then((portNumber) => {
-        thirdPartyServer = `http://localhost:${portNumber}`;
       });
     });
 
     // Kill the web server once all tests are complete.
     after(function() {
-      return Promise.all(testServers.map((testServer) => {
-        return testServer.stop();
-      }));
+      return testServer.stop();
     });
 
     afterEach(function() {
@@ -75,7 +61,7 @@ const setupTestSuite = (assistantDriver) => {
         return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
           assistantDriver.getPrettyName(),
           globalDriverBrowser,
-          `${baseTestUrl}/test/browser-unit/?thirdPartyServer=${encodeURIComponent(thirdPartyServer)}`
+          `${baseTestUrl}/test/browser-unit/`
         );
       })
       .then((testResults) => {

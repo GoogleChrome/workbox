@@ -1,91 +1,48 @@
-let EXAMPLE_REVISIONED_FILES_SET_1_STEP_1 = [
-  '/__echo/date/1.1234.txt',
-  '/__echo/date/2.1234.txt',
-  {
-    path: '/__echo/date/3.txt',
-    revision: '1234',
-  },
-  {
-    path: '/__echo/date/4.txt',
-    revision: '1234',
-  },
-  new URL('/__echo/date/5.1234.txt', location.origin).toString(),
-  new URL('/__echo/date/6.1234.txt', location.origin).toString(),
-  {
-    path: new URL('/__echo/date/7.txt', location.origin).toString(),
-    revision: '1234',
-  },
-  {
-    path: new URL('/__echo/date/8.txt', location.origin).toString(),
-    revision: '1234',
-  },
-];
-let EXAMPLE_REVISIONED_FILES_SET_1_STEP_2 = [
-  '/__echo/date/1.5678.txt',
-  '/__echo/date/2.1234.txt',
-  {
-    path: '/__echo/date/3.txt',
-    revision: '5678',
-  },
-  {
-    path: '/__echo/date/4.txt',
-    revision: '1234',
-  },
-  new URL('/__echo/date/5.5678.txt', location.origin).toString(),
-  new URL('/__echo/date/6.1234.txt', location.origin).toString(),
-  {
-    path: new URL('/__echo/date/7.txt', location.origin).toString(),
-    revision: '5678',
-  },
-  {
-    path: new URL('/__echo/date/8.txt', location.origin).toString(),
-    revision: '1234',
-  },
-];
+let secondaryServer = `${location.protocol}//${location.hostname}:${parseInt(location.port) + 1}`;
 
-let thirdPartyServer;
-if (location.origin === 'http://localhost:3000') {
-  thirdPartyServer = 'http://localhost:3001';
-} else {
-  const getParameterByName = (name) => {
-    const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
-    const results = regex.exec(location.href);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-  };
+const EXAMPLE_REVISIONED_FILES_SET_1_STEP_1 = [];
+const EXAMPLE_REVISIONED_FILES_SET_1_STEP_2 = [];
 
-  thirdPartyServer = getParameterByName('thirdPartyServer');
-}
+const revision1 = ['1234', '1234'];
+const revision2 = ['5678', '1234'];
 
-if (thirdPartyServer) {
-  const thirdPartySet1 = [
-    new URL('/__echo/date-with-cors/9.1234.txt', thirdPartyServer).toString(),
-    new URL('/__echo/date-with-cors/10.1234.txt', thirdPartyServer).toString(),
-    {
-      path: new URL('/__echo/date-with-cors/11.txt', thirdPartyServer).toString(),
-      revision: '1234',
-    },
-    {
-      path: new URL('/__echo/date-with-cors/12.txt', thirdPartyServer).toString(),
-      revision: '1234',
-    },
-  ];
-  const thirdPartySet2 = [
-    new URL('/__echo/date-with-cors/9.5678.txt', thirdPartyServer).toString(),
-    new URL('/__echo/date-with-cors/10.1234.txt', thirdPartyServer).toString(),
-    {
-      path: new URL('/__echo/date-with-cors/11.txt', thirdPartyServer).toString(),
-      revision: '5678',
-    },
-    {
-      path: new URL('/__echo/date-with-cors/12.txt', thirdPartyServer).toString(),
-      revision: '1234',
-    },
-  ];
-  EXAMPLE_REVISIONED_FILES_SET_1_STEP_1 = EXAMPLE_REVISIONED_FILES_SET_1_STEP_1.concat(thirdPartySet1);
-  EXAMPLE_REVISIONED_FILES_SET_1_STEP_2 = EXAMPLE_REVISIONED_FILES_SET_1_STEP_2.concat(thirdPartySet2);
-}
+let fileIndex = 0;
+
+const addNewEntry = (origin) => {
+  let echoPath = '/__echo/date';
+  if (!origin) {
+    origin = '';
+  }
+
+  if (origin === secondaryServer) {
+    echoPath = '/__echo/date-with-cors';
+  }
+
+  for (let i = 0; i < revision1.length; i++) {
+    EXAMPLE_REVISIONED_FILES_SET_1_STEP_1.push(`${origin}${echoPath}/${fileIndex}.${revision1[i]}.txt`);
+    EXAMPLE_REVISIONED_FILES_SET_1_STEP_2.push(`${origin}${echoPath}/${fileIndex}.${revision2[i]}.txt`);
+    fileIndex++;
+
+    EXAMPLE_REVISIONED_FILES_SET_1_STEP_1.push({
+      path: `${origin}${echoPath}/${fileIndex}.txt`,
+      revision: revision1[i],
+    });
+    EXAMPLE_REVISIONED_FILES_SET_1_STEP_2.push({
+      path: `${origin}${echoPath}/${fileIndex}.txt`,
+      revision: revision2[i],
+    });
+    fileIndex++;
+  }
+};
+
+// Add entries with relative path
+addNewEntry();
+
+// Add entries with absolute path for this origin
+addNewEntry(location.origin);
+
+// Add entries with absolute path for a foreign origin
+addNewEntry(secondaryServer);
 
 self.goog = self.goog || {};
 self.goog.__TEST_DATA = {
