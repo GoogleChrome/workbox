@@ -19,70 +19,106 @@ import IDBHelper from '../../../../lib/idb-helper.js';
 import {defaultCacheName, dbName, dbVersion, dbStorename, cacheBustParamName}
   from './constants';
 
+/**
+ * RevisionedCacheManager manages efficient caching of a file manifest,
+ * only downloading assets that have a new file revision. This module will
+ * also manage Cache Busting for URL's by adding a search a parameter on to
+ * the end of requests for assets before caching them.
+ */
 class RevisionedCacheManager {
+  /**
+   * Constructing this object will register the require events for this
+   * module to work (i.e. install and activate events).
+   */
   constructor() {
     this._eventsRegistered = false;
-    this._cachedAssets = [];
+    this._fileEntriesToCache = [];
     this._idbHelper = new IDBHelper(dbName, dbVersion, dbStorename);
 
     this._registerEvents();
   }
 
+  /**
+   * The method expects an array of file entries in the revisionedFiles
+   * parameter. Each fileEntry should be either a string or an object.
+   *
+   * A string file entry should be paths / URL's that are revisions in the
+   * name (i.e. '/example/hello.1234.txt').
+   *
+   * A file entry can also be an object that *must* have a 'path' and
+   * 'revision' parameter. The revision cannot be an empty string. With These
+   * entries you can prevent cacheBusting by setting a 'cacheBust' parameter
+   * to false. (i.e. {path: '/exmaple/hello.txt', revision: '1234'} or
+   * {path: '/exmaple/hello.txt', revision: '1234', cacheBust: false})
+   *
+   * @param {object} options
+   * @param {array<object>} options.revisionedFiles This should a list of
+   * file entries.
+   */
   cache({revisionedFiles} = {}) {
     assert.isInstance({revisionedFiles}, Array);
 
     const parsedFileList = revisionedFiles.map((revisionedFileEntry) => {
-      let parsedFileEntry = revisionedFileEntry;
-      if (typeof parsedFileEntry === 'string') {
-        parsedFileEntry = {
-          path: revisionedFileEntry,
-          revision: revisionedFileEntry,
-          cacheBust: false,
-        };
-      }
-
-      if (!parsedFileEntry || typeof parsedFileEntry !== 'object') {
-        throw ErrorFactory.createError('invalid-file-manifest-entry',
-          new Error('Invalid file entry: ' +
-            JSON.stringify(revisionedFileEntry)));
-      }
-
-      if (typeof parsedFileEntry.path !== 'string') {
-        throw ErrorFactory.createError('invalid-file-manifest-entry',
-          new Error('Invalid path: ' + JSON.stringify(revisionedFileEntry)));
-      }
-
-      try {
-        parsedFileEntry.path =
-          new URL(parsedFileEntry.path, location.origin).toString();
-      } catch (err) {
-        throw ErrorFactory.createError('invalid-file-manifest-entry',
-          new Error('Unable to parse path as URL: ' +
-            JSON.stringify(revisionedFileEntry)));
-      }
-
-      if (typeof parsedFileEntry.revision !== 'string' ||
-        parsedFileEntry.revision.length == 0) {
-        throw ErrorFactory.createError('invalid-file-manifest-entry',
-          new Error('Invalid revision: ' +
-            JSON.stringify(revisionedFileEntry)));
-      }
-
-      // Add cache bust if its not defined
-      if (typeof parsedFileEntry.cacheBust === 'undefined') {
-        parsedFileEntry.cacheBust = true;
-      } else if (typeof parsedFileEntry.cacheBust !== 'boolean') {
-        throw ErrorFactory.createError('invalid-file-manifest-entry',
-          new Error('Invalid cacheBust: ' +
-            JSON.stringify(revisionedFileEntry)));
-      }
-
-      return parsedFileEntry;
+      return this._validateFileEntry(revisionedFileEntry);
     });
 
-    this._cachedAssets = this._cachedAssets.concat(parsedFileList);
+    this._fileEntriesToCache = this._fileEntriesToCache.concat(parsedFileList);
   }
 
+  _validateFileEntry(fileEntry) {
+    let parsedFileEntry = fileEntry;
+    if (typeof parsedFileEntry === 'string') {
+      parsedFileEntry = {
+        path: fileEntry,
+        revision: fileEntry,
+        cacheBust: false,
+      };
+    }
+
+    if (!parsedFileEntry || typeof parsedFileEntry !== 'object') {
+      throw ErrorFactory.createError('invalid-file-manifest-entry',
+        new Error('Invalid file entry: ' +
+          JSON.stringify(fileEntry)));
+    }
+
+    if (typeof parsedFileEntry.path !== 'string') {
+      throw ErrorFactory.createError('invalid-file-manifest-entry',
+        new Error('Invalid path: ' + JSON.stringify(fileEntry)));
+    }
+
+    try {
+      parsedFileEntry.path =
+        new URL(parsedFileEntry.path, location.origin).toString();
+    } catch (err) {
+      throw ErrorFactory.createError('invalid-file-manifest-entry',
+        new Error('Unable to parse path as URL: ' +
+          JSON.stringify(fileEntry)));
+    }
+
+    if (typeof parsedFileEntry.revision !== 'string' ||
+      parsedFileEntry.revision.length == 0) {
+      throw ErrorFactory.createError('invalid-file-manifest-entry',
+        new Error('Invalid revision: ' +
+          JSON.stringify(fileEntry)));
+    }
+
+    // Add cache bust if its not defined
+    if (typeof parsedFileEntry.cacheBust === 'undefined') {
+      parsedFileEntry.cacheBust = true;
+    } else if (typeof parsedFileEntry.cacheBust !== 'boolean') {
+      throw ErrorFactory.createError('invalid-file-manifest-entry',
+        new Error('Invalid cacheBust: ' +
+          JSON.stringify(fileEntry)));
+    }
+
+    return parsedFileEntry;
+  }
+
+  /**
+   * This method registers the service worker events. This should only
+   * be called once in the constructor and will do nothing if called
+   * multiple times.
+   */
   _registerEvents() {
     if (this._eventsRegistered) {
       // Only need to register events once.
@@ -92,101 +128,132 @@ class RevisionedCacheManager {
     this._eventsRegistered = true;
 
     self.addEventListener('install', (event) => {
-      if (this._cachedAssets.length === 0) {
+      if (this._fileEntriesToCache.length === 0) {
         return;
       }
 
       event.waitUntil(
         this._performInstallStep()
-        .then(() => {
-          this._close();
-        })
       );
     });
   }
 
-  _performInstallStep() {
-    const assetsAndHahes = this._cachedAssets;
-    const cacheId = null;
-    if (!Array.isArray(assetsAndHahes)) {
-      throw ErrorFactory.createError('assets-not-an-array');
-    }
+  _performInstallStep(cacheName) {
+    cacheName = cacheName || defaultCacheName;
 
-    const cacheName = cacheId || defaultCacheName;
-
+    let openCache;
     return caches.open(cacheName)
-    .then((openCache) => {
-      const cachePromises = assetsAndHahes.map((assetAndHash) => {
-        return this._getRevisionDetails(assetAndHash.path)
-        .then((previousRevisionDetails) => {
-          if (previousRevisionDetails === assetAndHash.revision) {
-            return openCache.match(assetAndHash.path)
-            .then((result) => {
-              if (result) {
-                return true;
-              }
-              return false;
-            });
-          } else {
-            return false;
-          }
-        })
-        .then((isAlreadyCached) => {
-          if (isAlreadyCached) {
+    .then((oC) => {
+      openCache = oC;
+      const cachePromises = this._fileEntriesToCache.map((fileEntry) => {
+        return this._isAlreadyCached(fileEntry, openCache)
+        .then((isCached) => {
+          if (isCached) {
             return;
           }
 
-          let requestUrl = assetAndHash.path;
-          if (assetAndHash.cacheBust) {
-            requestUrl = this._cacheBustUrl(requestUrl, assetAndHash.revision);
-          }
-
+          let requestUrl = this._cacheBustUrl(fileEntry);
           return fetch(requestUrl, {
             credentials: 'same-origin',
           })
           .then((response) => {
-            return openCache.put(assetAndHash.path, response);
+            return openCache.put(fileEntry.path, response);
           })
           .then(() => {
-            return this._putRevisionDetails(
-              assetAndHash.path, assetAndHash.revision);
+            return this._putRevisionDetails(fileEntry.path, fileEntry.revision);
           });
         });
       });
+      return Promise.all(cachePromises);
+    })
+    .then(() => {
+      return openCache.keys();
+    })
+    .then((allCachedRequests) => {
+      const urlsCachedOnInstall = this._fileEntriesToCache
+        .map((fileEntry) => fileEntry.path);
+      const cacheDeletePromises = allCachedRequests.map((cachedRequest) => {
+        if (urlsCachedOnInstall.includes(cachedRequest.url)) {
+          return;
+        }
+        return openCache.delete(cachedRequest);
+      });
+      return Promise.all(cacheDeletePromises);
+    })
+    .then(() => {
+      // Closed indexedDB now that we are done with the install step
+      this._close();
+    });
+  }
 
-      return Promise.all(cachePromises)
-      .then(() => {
-        return openCache.keys();
-      })
-      .then((openCacheKeys) => {
-        const urlsCachedOnInstall = assetsAndHahes.map((assetAndHash) => {
-          return assetAndHash.path;
-        });
+  /**
+   * This method confirms with a fileEntry is already in the cache with the
+   * appropriate revision.
+   * If the revision is known, matching the requested `fileEntry.revision` and
+   * the cache entry exists for the `fileEntry.path` this method returns true.
+   * False otherwise.
+   * @param {Object} fileEntry A file entry with `path` and `revision`
+   * parameters.
+   * @param {Cache} openCache The cache to look for the asset in.
+   * @return {Promise<Boolean>} Returns true is the fileEntry is already
+   * cached, false otherwise.
+   */
+  _isAlreadyCached(fileEntry, openCache) {
+    return this._getRevisionDetails(fileEntry.path)
+    .then((previousRevisionDetails) => {
+      if (previousRevisionDetails !== fileEntry.revision) {
+        return false;
+      }
 
-        const cacheDeletePromises = openCacheKeys.map((cachedRequest) => {
-          if (!urlsCachedOnInstall.includes(cachedRequest.url)) {
-            return openCache.delete(cachedRequest);
-          }
-          return Promise.resolve();
-        });
-        return Promise.all(cacheDeletePromises);
+      return openCache.match(fileEntry.path)
+      .then((cacheMatch) => {
+        if (cacheMatch) {
+          return true;
+        }
+
+        return false;
       });
     });
   }
 
+  /**
+   * This method gets the revision details for a given path.
+   * @param {String} path The path of an asset to look up.
+   * @return {Promise<String|null>} Returns a string for the last revision or
+   * returns null if there is no revision information.
+   */
   _getRevisionDetails(path) {
     return this._idbHelper.get(path);
   }
 
+  /**
+   * This method saves the revision details to indexedDB.
+   * @param {String} path The path for the asset.
+   * @param {String} revision The current revision for this asset path.
+   * @return {Promise} Promise that resolves once the data has been saved.
+   */
   _putRevisionDetails(path, revision) {
     return this._idbHelper.put(path, revision);
   }
 
-  _cacheBustUrl(url, cacheBust) {
-    const parsedURL = new URL(url);
+  /**
+   * This method takes a file entry and if the `cacheBust` parameter is set to
+   * true, the cacheBust parameter will be added to the URL before making the
+   * request. The response will be cached with the absolute URL without
+   * the cache busting search param.
+   * @param {Object} fileEntry This is an object with `path`, `revision` and
+   * `cacheBust` parameters.
+   * @return {String} The final URL to make the request to then cache.
+   */
+  _cacheBustUrl(fileEntry) {
+    if (fileEntry.cacheBust === false) {
+      return fileEntry.path;
+    }
+
+    const parsedURL = new URL(fileEntry.path);
     parsedURL.search += (parsedURL.search ? '&' : '') +
       encodeURIComponent(cacheBustParamName) + '=' +
-      encodeURIComponent(cacheBust);
+      encodeURIComponent(fileEntry.revision);
     return parsedURL.toString();
   }
 

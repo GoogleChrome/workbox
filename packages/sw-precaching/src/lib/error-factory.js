@@ -17,8 +17,6 @@ import ErrorFactory from '../../../../lib/error-factory';
 
 const errors = {
   'not-in-sw': 'sw-precaching must be loaded in your service worker file.',
-  'assets-not-an-array': 'Assets passed to \'install-handler.js\' must be ' +
-    'an array',
   'invalid-file-manifest-entry': `File manifest entries must be either a ` +
     `string with revision info in the path or an object with path and ` +
     `revision and parameters.`,
