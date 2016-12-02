@@ -24,7 +24,7 @@
 
 const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
-const testServer = new swTestingHelpers.TestServer();
+const testServer = require('../../../utils/test-server');
 
 // Ensure the selenium drivers are added Node scripts path.
 require('geckodriver');
@@ -34,36 +34,36 @@ require('operadriver');
 const TIMEOUT = 10 * 1000;
 const RETRIES = 3;
 
-const configureTestSuite = function(browser) {
+describe(`sw-offline-google-analytics Test Suite`, function() {
+  this.retries(RETRIES);
+  this.timeout(TIMEOUT);
+
   let globalDriverReference = null;
   let baseTestUrl;
 
-  describe(`sw-offline-google-analytics Test Suite with (${browser.getPrettyName()} - ${browser.getVersionNumber()})`, function() {
-    this.retries(RETRIES);
-    this.timeout(TIMEOUT);
-
-    // Set up the web server before running any tests in this suite.
-    before(function() {
-      return testServer.startServer('.').then((portNumber) => {
-        baseTestUrl = `http://localhost:${portNumber}/packages/sw-offline-google-analytics/test/`;
-      });
+  // Set up the web server before running any tests in this suite.
+  before(function() {
+    return testServer.start('.').then((portNumber) => {
+      baseTestUrl = `http://localhost:${portNumber}/packages/sw-offline-google-analytics/test/`;
     });
+  });
 
-    // Kill the web server once all tests are complete.
-    after(function() {
-      return testServer.killServer();
+  // Kill the web server once all tests are complete.
+  after(function() {
+    return testServer.stop();
+  });
+
+  afterEach(function() {
+    this.timeout(6000);
+
+    return seleniumAssistant.killWebDriver(globalDriverReference)
+    .then(() => {
+      globalDriverReference = null;
     });
+  });
 
-    afterEach(function() {
-      this.timeout(6000);
-
-      return seleniumAssistant.killWebDriver(globalDriverReference)
-      .then(() => {
-        globalDriverReference = null;
-      });
-    });
-
-    it('should pass all tests', function() {
+  const configureTestSuite = function(browser) {
+    it(`should pass all tests in (${browser.getPrettyName()} - ${browser.getVersionNumber()})`, function() {
       return browser.getSeleniumDriver()
       .then((driver) => {
         globalDriverReference = driver;
@@ -87,24 +87,29 @@ const configureTestSuite = function(browser) {
         }
       });
     });
+  };
+
+  seleniumAssistant.getAvailableBrowsers().forEach(function(browser) {
+    // Blackliist browsers here if needed.
+    if (browser.getSeleniumBrowserId() === 'opera' && browser.getVersionNumber() === 41) {
+      console.warn('Skipping Opera version 41 due to operadriver error.');
+      return;
+    }
+
+    switch (browser.getSeleniumBrowserId()) {
+      case 'chrome':
+      case 'firefox':
+      case 'opera':
+        if (browser.getSeleniumBrowserId() === 'opera' &&
+          browser.getVersionNumber() <= 43) {
+          console.log(`Skipping Opera <= 43 due to driver issues.`);
+          return;
+        }
+        configureTestSuite(browser);
+        break;
+      default:
+        console.warn(`Skipping ${browser.getPrettyName()}.`);
+        break;
+    }
   });
-};
-
-seleniumAssistant.getAvailableBrowsers().forEach(function(browser) {
-  // Blackliist browsers here if needed.
-  if (browser.getSeleniumBrowserId() === 'opera' && browser.getVersionNumber() === 41) {
-    console.warn('Skipping Opera version 41 due to operadriver error.');
-    return;
-  }
-
-  switch (browser.getSeleniumBrowserId()) {
-    case 'chrome':
-    case 'firefox':
-    case 'opera':
-      configureTestSuite(browser);
-      break;
-    default:
-      console.warn(`Skipping ${browser.getPrettyName()}.`);
-      break;
-  }
 });

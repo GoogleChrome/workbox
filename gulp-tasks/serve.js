@@ -16,21 +16,12 @@
 /* eslint-disable no-console, valid-jsdoc */
 
 const gulp = require('gulp');
-const path = require('path');
-const express = require('express');
-const serveIndex = require('serve-index');
-const serveStatic = require('serve-static');
+const testServer = require('../utils/test-server.js');
 
 gulp.task('serve', (unusedCallback) => {
-  const app = express();
-  const rootDirectory = global.projectOrStar === '*' ?
-    'packages' :
-    path.join('packages', global.projectOrStar);
-
-  app.use(serveStatic(rootDirectory));
-  app.use(serveIndex(rootDirectory, {view: 'details'}));
-  app.listen(global.port, () => {
-    console.log(`Serving '${rootDirectory}' at ` +
-      `http://localhost:${global.port}/`);
+  return testServer.start('.', global.port)
+  .then((port) => {
+    console.log(`Primary Server               http://localhost:${port}/`);
+    console.log(`Secondary Server             http://localhost:${port + 1}/`);
   });
 });

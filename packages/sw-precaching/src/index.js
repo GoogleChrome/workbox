@@ -18,6 +18,17 @@
  *
  * @module sw-precaching
  */
-export default function DO_NOT_USE() {
 
+import ErrorFactory from './lib/error-factory';
+import RevisionedCacheManager from './lib/revisioned-cache-manager';
+
+import assert from '../../../lib/assert.js';
+
+if (!assert.isSWEnv()) {
+  // We are not running in a service worker, print error message
+  throw ErrorFactory.createError('not-in-sw');
 }
+
+export {
+  RevisionedCacheManager,
+};

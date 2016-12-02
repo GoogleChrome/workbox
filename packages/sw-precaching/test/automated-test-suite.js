@@ -24,34 +24,35 @@ require('geckodriver');
 const RETRIES = 4;
 const TIMEOUT = 10 * 1000;
 
-const setupTestSuite = (assistantDriver) => {
-  describe(`sw-lib Tests in ${assistantDriver.getPrettyName()}`, function() {
-    this.retries(RETRIES);
-    this.timeout(TIMEOUT);
+describe(`sw-precaching Browser Tests`, function() {
+  this.retries(RETRIES);
+  this.timeout(TIMEOUT);
 
-    let globalDriverBrowser;
-    let baseTestUrl;
+  let globalDriverBrowser;
+  let baseTestUrl;
 
-    // Set up the web server before running any tests in this suite.
-    before(function() {
-      return testServer.start('.').then((portNumber) => {
-        baseTestUrl = `http://localhost:${portNumber}/packages/sw-lib`;
-      });
+  // Set up the web server before running any tests in this suite.
+  before(function() {
+    return testServer.start('.')
+    .then((portNumber) => {
+      baseTestUrl = `http://localhost:${portNumber}/packages/sw-precaching`;
     });
+  });
 
-    // Kill the web server once all tests are complete.
-    after(function() {
-      return testServer.stop();
+  // Kill the web server once all tests are complete.
+  after(function() {
+    return testServer.stop();
+  });
+
+  afterEach(function() {
+    return seleniumAssistant.killWebDriver(globalDriverBrowser)
+    .then(() => {
+      globalDriverBrowser = null;
     });
+  });
 
-    afterEach(function() {
-      return seleniumAssistant.killWebDriver(globalDriverBrowser)
-      .then(() => {
-        globalDriverBrowser = null;
-      });
-    });
-
-    it('should pass all browser based unit tests', function() {
+  const setupTestSuite = (assistantDriver) => {
+    it(`should pass all browser based unit tests in  ${assistantDriver.getPrettyName()}`, function() {
       return assistantDriver.getSeleniumDriver()
       .then((driver) => {
         globalDriverBrowser = driver;
@@ -74,24 +75,24 @@ const setupTestSuite = (assistantDriver) => {
         }
       });
     });
-  });
-};
+  };
 
-const availableBrowsers = seleniumAssistant.getAvailableBrowsers();
-availableBrowsers.forEach((browser) => {
-  switch(browser.getSeleniumBrowserId()) {
-    case 'chrome':
-    case 'firefox':
-    case 'opera':
-      if (browser.getSeleniumBrowserId() === 'opera' &&
-        browser.getVersionNumber() <= 43) {
-        console.log(`Skipping Opera <= 43 due to driver issues.`);
-        return;
-      }
-      setupTestSuite(browser);
-      break;
-    default:
-      console.log(`Skipping tests for ${browser.getSeleniumBrowserId()}`);
-      break;
-  }
+  const availableBrowsers = seleniumAssistant.getAvailableBrowsers();
+  availableBrowsers.forEach((browser) => {
+    switch(browser.getSeleniumBrowserId()) {
+      case 'chrome':
+      case 'firefox':
+      case 'opera':
+        if (browser.getSeleniumBrowserId() === 'opera' &&
+          browser.getVersionNumber() <= 43) {
+          console.log(`Skipping Opera <= 43 due to driver issues.`);
+          return;
+        }
+        setupTestSuite(browser);
+        break;
+      default:
+        console.log(`Skipping tests for ${browser.getSeleniumBrowserId()}`);
+        break;
+    }
+  });
 });
