@@ -42,30 +42,38 @@ app.get('/__echo/date/:file', function(req, res) {
   res.send(`${req.params.file}-${Date.now()}`);
 });
 
-let server;
-module.exports = {
-  start: (rootDirectory, port) => {
-    if (server) {
-      return Promise.reject(new Error('Server already started.'));
-    }
+app.get('/__echo/date-with-cors/:file', function(req, res) {
+  res.setHeader('Cache-Control', 'max-age=' + (24 * 60 * 60));
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.send(`${req.params.file}-${Date.now()}`);
+});
 
-    app.use('/', express.static(rootDirectory, {
-      setHeaders: (res) => {
-        res.setHeader('Service-Worker-Allowed', '/');
-      },
-    }));
+module.exports = () => {
+  let server;
+  return {
+    start: (rootDirectory, port) => {
+      if (server) {
+        return Promise.reject(new Error('Server already started.'));
+      }
 
-    app.use(serveStatic(rootDirectory));
-    app.use(serveIndex(rootDirectory, {view: 'details'}));
+      app.use('/', express.static(rootDirectory, {
+        setHeaders: (res) => {
+          res.setHeader('Service-Worker-Allowed', '/');
+        },
+      }));
 
-    return new Promise((resolve, reject) => {
-      server = app.listen(port, 'localhost', () => {
-        resolve(server.address().port);
+      app.use(serveStatic(rootDirectory));
+      app.use(serveIndex(rootDirectory, {view: 'details'}));
+
+      return new Promise((resolve, reject) => {
+        server = app.listen(port, 'localhost', () => {
+          resolve(server.address().port);
+        });
       });
-    });
-  },
-  stop: () => {
-    server.close();
-    server = null;
-  },
+    },
+    stop: () => {
+      server.close();
+      server = null;
+    },
+  };
 };

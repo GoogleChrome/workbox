@@ -23,8 +23,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   afterEach(function() {
-    return window.goog.swUtils.cleanState()
-    .then(deleteIndexedDB);
+    /** return window.goog.swUtils.cleanState()
+    .then(deleteIndexedDB);**/
   });
 
   const testFileSet = (iframe, fileSet) => {
@@ -119,12 +119,12 @@ describe('sw-precaching Test Revisioned Caching', function() {
   };
 
   it('should cache and fetch files', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
+    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js?' + location.search)
     .then((iframe) => {
       return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
-      return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js')
+      return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js' + location.search)
       .then((iframe) => {
         return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
       })
@@ -141,14 +141,14 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should manage cache deletion', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
+    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js' + location.search)
     .then((iframe) => {
       return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
       return window.goog.swUtils.clearAllCaches()
       .then(() => {
-        return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js');
+        return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js' + location.search);
       })
       .then((iframe) => {
         return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
@@ -157,14 +157,14 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should manage indexedDB deletion', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
+    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js' + location.search)
     .then((iframe) => {
       return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
       return deleteIndexedDB()
       .then(() => {
-        return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js');
+        return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js' + location.search);
       })
       .then((iframe) => {
         return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
