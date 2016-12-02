@@ -65,6 +65,15 @@ class RevisionedCacheManager {
     this._fileEntriesToCache = this._fileEntriesToCache.concat(parsedFileList);
   }
 
+  /**
+   * This method ensures that the file entry in the file maniest is valid and
+   * if the entry is a revisioned string path, it is converted to an object
+   * with the desired fields.
+   * @param {String | object} fileEntry Either a path for a file or an object
+   * with a `path`, `revision` and optional `cacheBust` parameter.
+   * @return {object} Returns a parsed version of the file entry with absolute
+   * URL, revision and a cacheBust value.
+   */
   _validateFileEntry(fileEntry) {
     let parsedFileEntry = fileEntry;
     if (typeof parsedFileEntry === 'string') {
@@ -138,6 +147,13 @@ class RevisionedCacheManager {
     });
   }
 
+  /**
+   * This method manages the actual install event to cache the revisioned
+   * assets.
+   * @param {String} cacheName The name to use for the cache
+   * @return {Promise} The promise resolves when all the desired assets are
+   * cached.
+   */
   _performInstallStep(cacheName) {
     cacheName = cacheName || defaultCacheName;
 
@@ -257,6 +273,9 @@ class RevisionedCacheManager {
     return parsedURL.toString();
   }
 
+  /**
+   * This method closes the indexdDB helper.
+   */
   _close() {
     this._idbHelper.close();
   }
