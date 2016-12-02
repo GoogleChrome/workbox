@@ -68,7 +68,12 @@ class RequestManager {
 								return Promise.resolve();
 							} else {
 								// not blocking on putResponse.
-								putResponse(hash, reqData, response.clone());
+								putResponse({
+									hash,
+									idbObject: reqData,
+									response: response.clone(),
+									idbQDb: this._queue.idbQDb,
+								});
 								this._globalCallbacks.onResponse
 									&& this._globalCallbacks.onResponse(hash, response);
 							}

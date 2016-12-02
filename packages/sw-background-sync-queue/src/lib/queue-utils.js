@@ -1,5 +1,6 @@
-import {getDb} from './background-sync-idb-helper';
-
+import IDBHelper from '../../../../lib/idb-helper';
+import {getDbName} from './background-sync-idb-helper';
+import {allQueuesPlaceholder} from './constants';
 /**
  * takes a request and gives back JSON object that is storable in IDB
  *
@@ -52,35 +53,32 @@ async function getFetchableRequest({idbRequestObject}) {
  * @memberOf Queue
  */
 async function cleanupQueue() {
-	const deletionPromises = [];
-	let db = getDb();
-	let queueObj = await db.get('queue');
+	let db = new IDBHelper(getDbName(), 1, 'QueueStore');
+	let queueObj = await db.get(allQueuesPlaceholder);
 
 	if(!queueObj) {
 		return null;
 	}
 
-	for(const taskQueue in queueObj) {
-		if (queueObj.hasOwnProperty(taskQueue)) {
-			let itemsToKeep = [];
-			for (const hash of queueObj[taskQueue]) {
-				const requestData = await db.get(hash);
-				if (requestData && requestData.metadata &&
-						requestData.metadata.creationTimestamp
-						+ requestData.config.maxAge <= Date.now()) {
-						// Delete items that are too old.
-						deletionPromises.push(db.delete(hash));
-				} else if (requestData) {
-					// Keep elements whose definition exists in idb.
-					itemsToKeep.push(hash);
-				}
+	queueObj.forEach(async (queueName)=>{
+		const requestQueues = await db.get(queueName);
+		let itemsToKeep = [];
+		let deletionPromises = [];
+		requestQueues.forEach( async (hash) => {
+			const requestData = await db.get(hash);
+			if (requestData && requestData.metadata
+				&& requestData.metadata.creationTimestamp + requestData.config.maxAge
+					<= Date.now()) {
+				// Delete items that are too old.
+				deletionPromises.push(db.delete(hash));
+			} else {
+				// Keep elements whose definition exists in idb.
+				itemsToKeep.push(hash);
 			}
-			queueObj[taskQueue] = itemsToKeep;
-		}
-	}
-
-	await Promise.all(deletionPromises);
-	db.put('queue', queueObj);
+		});
+		await Promise.all(deletionPromises);
+		db.put(queueName, itemsToKeep);
+	});
 }
 
 export {

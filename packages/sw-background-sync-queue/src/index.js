@@ -19,10 +19,10 @@
 
 import {initiazileBroadcastManager} from './lib/broadcast-manager';
 import {getResponse} from './lib/response-manager';
-import {initDb, initQueue} from './lib/background-sync-idb-helper';
+import {setDbName} from './lib/background-sync-idb-helper';
 import BackgroundSyncQueue from './lib/background-sync-queue';
 import {cleanupQueue} from './lib/queue-utils';
-// import assert from '../../../lib/assert';
+import assert from '../../../lib/assert';
 /**
  * Initialize the library by initializing broadcast manager,
  * indexedDB, and request manager
@@ -30,12 +30,15 @@ import {cleanupQueue} from './lib/queue-utils';
  * @param {Object=} dbName
  */
 async function initialize({broadcastChannel, dbName} = {}) {
-	// assert.isType({broadcastChannel}, 'string');
-	// assert.isType({dbName}, 'string');
+	if(broadcastChannel) {
+		assert.isType({broadcastChannel}, 'string');
+	}
+	if(dbName) {
+		assert.isType({dbName}, 'string');
+		setDbName(dbName);
+	}
 	initiazileBroadcastManager(broadcastChannel);
-	initDb(dbName);
 	await cleanupQueue();
-	await initQueue();
 }
 
 export {

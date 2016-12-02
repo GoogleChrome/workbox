@@ -1,9 +1,3 @@
-import {
-	getDb,
-	getQueue,
-	setIdbQueue,
-	createQueue,
-} from './background-sync-idb-helper';
 import {getQueueableRequest} from './queue-utils';
 import {broadcastMessage} from './broadcast-manager';
 import {
@@ -11,6 +5,7 @@ import {
 	broadcastMessageFailedType,
 	defaultQueueName,
 	tagNamePrefix,
+	allQueuesPlaceholder,
 } from './constants';
 import assert from '../../../../lib/assert';
 
@@ -27,14 +22,38 @@ class RequestQueue {
 	 *
 	 * @memberOf Queue
 	 */
-	constructor({config, queueName = defaultQueueName + '_' + _queueCounter++}) {
+	constructor({
+		config,
+		queueName = defaultQueueName + '_' + _queueCounter++,
+		idbQDb,
+	}) {
+		this._isQueueNameAddedToAllQueue = false;
 		this._queueName = queueName;
 		this._config = config;
-		this._idbQHelper = getDb();
-		this._queue = getQueue(this._queueName);
-		if(!this._queue) {
-			this._queue = createQueue(this._queueName);
+		this._idbQDb = idbQDb;
+		this._queue = [];
+		this.initQueue();
+	}
+
+	async initQueue() {
+		const idbQueue = await this._idbQDb.get(this._queueName);
+		this._queue.concat(idbQueue);
+	}
+
+	async addQueueNameToAllQueues() {
+		if(!this._isQueueNameAddedToAllQueue) {
+			let allQueues = await this._idbQDb.get(allQueuesPlaceholder);
+			allQueues = allQueues || [];
+			if(!allQueues.includes(this._queueName)) {
+				allQueues.push(this._queueName);
+			}
+			this._idbQDb.put(allQueuesPlaceholder, allQueues);
+			this._isQueueNameAddedToAllQueue = true;
 		}
+	}
+
+	async saveQueue() {
+		await this._idbQDb.put(this._queueName, this._queue);
 	}
 
 	/**
@@ -49,7 +68,6 @@ class RequestQueue {
 	async push({request}) {
 		assert.isInstance({request}, Request);
 
-		this._queue = getQueue(this._queueName);
 		const hash = `${request.url}!${Date.now()}!${_requestCounter++}`;
 		const queuableRequest =
 			await getQueueableRequest({
@@ -60,9 +78,9 @@ class RequestQueue {
 			this._queue.push(hash);
 
 			// add to queue
-			setIdbQueue(this._queueName, this._queue);
-			this._idbQHelper.put(hash, queuableRequest);
-
+			this.saveQueue();
+			this._idbQDb.put(hash, queuableRequest);
+			this.addQueueNameToAllQueues();
 			// register sync
 			self.registration.sync.register(tagNamePrefix + this._queueName);
 
@@ -94,7 +112,7 @@ class RequestQueue {
 		assert.isType({hash}, 'string');
 
 		if(this._queue.includes(hash)) {
-			return await this._idbQHelper.get(hash);
+			return await this._idbQDb.get(hash);
 		}
 	}
 
@@ -104,6 +122,10 @@ class RequestQueue {
 
 	get queueName() {
 		return this._queueName;
+	}
+
+	get idbQDb() {
+		return this._idbQDb;
 	}
 }
 

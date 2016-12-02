@@ -6,6 +6,7 @@ const broadcastMessageFailedType = 'BACKGROUND_REQUESTED_FAILED';
 const defaultQueueName = 'DEFAULT_QUEUE';
 const tagNamePrefix = 'SW_BACKGROUND_QUEUE_TAG_';
 const broadcastMeta = 'SW_BACKGROUND_SYNC_QUEUE';
+const allQueuesPlaceholder = 'QUEUES';
 export {
 	maxAge,
 	defaultBroadcastChannelName,
@@ -15,4 +16,5 @@ export {
 	defaultQueueName,
 	tagNamePrefix,
 	broadcastMeta,
+	allQueuesPlaceholder,
 };
