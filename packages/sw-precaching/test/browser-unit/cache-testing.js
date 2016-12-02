@@ -139,4 +139,36 @@ describe('sw-precaching Test Revisioned Caching', function() {
       });
     });
   });
+
+  it('should manage cache deletion', function() {
+    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
+    .then((iframe) => {
+      return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
+    })
+    .then((step1Responses) => {
+      return window.goog.swUtils.clearAllCaches()
+      .then(() => {
+        return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js');
+      })
+      .then((iframe) => {
+        return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
+      });
+    });
+  });
+
+  it('should manage indexedDB deletion', function() {
+    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
+    .then((iframe) => {
+      return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
+    })
+    .then((step1Responses) => {
+      return deleteIndexedDB()
+      .then(() => {
+        return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js');
+      })
+      .then((iframe) => {
+        return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
+      });
+    });
+  });
 });

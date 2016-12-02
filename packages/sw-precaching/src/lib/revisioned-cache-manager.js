@@ -119,14 +119,21 @@ class RevisionedCacheManager {
       const cachePromises = assetsAndHahes.map((assetAndHash) => {
         return this._getRevisionDetails(assetAndHash.path)
         .then((previousRevisionDetails) => {
-          if (previousRevisionDetails) {
-            if (previousRevisionDetails === assetAndHash.revision) {
-              /* eslint-disable no-console */
-              console.log('    Already Cached? TODO: Need to check cache to ' +
-                'ensure it\'s actually already cached.');
-              /* eslint-enable no-console */
-              return Promise.resolve();
-            }
+          if (previousRevisionDetails === assetAndHash.revision) {
+            return openCache.match(assetAndHash.path)
+            .then((result) => {
+              if (result) {
+                return true;
+              }
+              return false;
+            });
+          } else {
+            return false;
+          }
+        })
+        .then((isAlreadyCached) => {
+          if (isAlreadyCached) {
+            return;
           }
 
           let requestUrl = assetAndHash.path;
@@ -146,6 +153,7 @@ class RevisionedCacheManager {
           });
         });
       });
+
       return Promise.all(cachePromises)
       .then(() => {
         return openCache.keys();
