@@ -11,8 +11,8 @@ class BackgroundSyncQueue {
 			assert.isType({queueName}, 'string');
 		}
 
-		if(queueName) {
-			assert.isType({queueName}, 'number');
+		if(maxRetentionTime) {
+			assert.isType({maxRetentionTime}, 'number');
 		}
 
 		this._queue = new RequestQueue({
