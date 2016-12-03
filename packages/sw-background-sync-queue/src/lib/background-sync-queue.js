@@ -27,7 +27,7 @@ class BackgroundSyncQueue {
 
 	pushIntoQueue({request}) {
 		assert.isInstance({request}, Request);
-		this._queue.push({request});
+		return this._queue.push({request});
 	}
 }
 
