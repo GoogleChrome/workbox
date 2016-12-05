@@ -59,7 +59,7 @@ describe('Test swlib.cacheRevisionedAssets', function() {
     });
   });
 
-  it('should be able to add array of items to the cache.', function() {
+  it('should be able to add arrays of items to the cache.', function() {
     const corsOrigin = `${location.protocol}//${location.hostname}:${location.port}`;
     const validAssets1 = [
       '/__echo/date/1.1234.txt',
@@ -85,46 +85,4 @@ describe('Test swlib.cacheRevisionedAssets', function() {
     goog.swlib.cacheRevisionedAssets(validAssets1);
     goog.swlib.cacheRevisionedAssets(validAssets2);
   });
-
-  /** it('should be able to register a valid regex route', function() {
-    const regexRoute = /\/1234567890\/\w+\//;
-    const exampleRoute = `/1234567890/test/`;
-
-    return new Promise((resolve, reject) => {
-      goog.swlib.router.registerRoute(regexRoute, () => {
-        // TODO: Checking 'test' capture group makes it through to here.
-
-        resolve();
-      });
-      const fetchEvent = new FetchEvent('fetch', {
-        request: new Request(self.location.origin + exampleRoute),
-      });
-
-      self.dispatchEvent(fetchEvent);
-    });
-  });
-
-  it('should be able to register a valid Route instance route', function() {
-    const exampleRoute = `/1234567890/test/`;
-
-    return new Promise((resolve, reject) => {
-      const routeInstance = new goog.swlib.Route({
-        match: (url) => true,
-        handler: {
-          handle: () => {
-            // TODO: Check returned value from match makes it through to here.
-
-            resolve();
-          },
-        },
-      });
-
-      goog.swlib.router.registerRoute(routeInstance);
-      const fetchEvent = new FetchEvent('fetch', {
-        request: new Request(self.location.origin + exampleRoute),
-      });
-
-      self.dispatchEvent(fetchEvent);
-    });
-  });**/
 });

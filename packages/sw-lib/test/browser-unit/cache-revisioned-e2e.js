@@ -1,6 +1,6 @@
 /* global goog, expect */
 
-describe('sw-precaching Test Revisioned Caching', function() {
+describe('sw-lib Test Revisioned Caching', function() {
   const deleteIndexedDB = () => {
     return new Promise((resolve, reject) => {
       // TODO: Move to constants
@@ -119,55 +119,31 @@ describe('sw-precaching Test Revisioned Caching', function() {
   };
 
   it('should cache and fetch files', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
+    const allAssets1 = goog.__TEST_DATA['sw-lib']['set-1']
+      .concat(goog.__TEST_DATA['sw-lib']['set-2'])
+      .concat(goog.__TEST_DATA['sw-lib']['set-3']);
+
+    const allAssets2 = goog.__TEST_DATA['sw-lib']['set-4']
+      .concat(goog.__TEST_DATA['sw-lib']['set-5'])
+      .concat(goog.__TEST_DATA['sw-lib']['set-6']);
+
+    return window.goog.swUtils.activateSW('data/sw/cache-revisioned-1.js')
     .then((iframe) => {
-      return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
+      return testFileSet(iframe, allAssets1);
     })
     .then((step1Responses) => {
-      return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js')
+      return window.goog.swUtils.activateSW('data/sw/cache-revisioned-2.js')
       .then((iframe) => {
-        return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
+        return testFileSet(iframe, allAssets2);
       })
       .then((step2Responses) => {
         compareCachedAssets({
-          cacheList: goog.__TEST_DATA['set-1']['step-1'],
+          cacheList: allAssets1,
           cachedResponses: step1Responses,
         }, {
-          cacheList: goog.__TEST_DATA['set-1']['step-2'],
+          cacheList: allAssets2,
           cachedResponses: step2Responses,
         });
-      });
-    });
-  });
-
-  it('should manage cache deletion', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
-    .then((iframe) => {
-      return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
-    })
-    .then((step1Responses) => {
-      return window.goog.swUtils.clearAllCaches()
-      .then(() => {
-        return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js');
-      })
-      .then((iframe) => {
-        return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
-      });
-    });
-  });
-
-  it('should manage indexedDB deletion', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
-    .then((iframe) => {
-      return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
-    })
-    .then((step1Responses) => {
-      return deleteIndexedDB()
-      .then(() => {
-        return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js');
-      })
-      .then((iframe) => {
-        return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
       });
     });
   });
