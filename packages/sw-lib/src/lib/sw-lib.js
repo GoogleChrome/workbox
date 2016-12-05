@@ -16,6 +16,9 @@
 /* eslint-env browser, serviceworker */
 
 import RouterWrapper from './router-wrapper.js';
+import ErrorFactory from './error-factory.js';
+import {RevisionedCacheManager}
+  from '../../../sw-precaching/src/index.js';
 
 /**
  * This is a high level library to help with using service worker
@@ -27,6 +30,7 @@ class SWLib {
    */
   constructor() {
     this._router = new RouterWrapper();
+    this._revisionedCacheManager = new RevisionedCacheManager();
   }
 
   /**
@@ -41,12 +45,18 @@ class SWLib {
    * If there are assets that are revisioned, they can be cached intelligently
    * during the install (i.e. old files are cleared from the cache, new files
    * are added tot he cache and unchanged files are left as is).
-   * @param {Array<String>} revisionedUrls A set of urls to cache when the
+   * @param {Array<String>} revisionedFiles A set of urls to cache when the
    * service worker is installed.
-   * @return {Promise} Promise resolves if the install could be configured.
    */
-  cacheRevisionedAssets(revisionedUrls) {
-    return Promise.resolve();
+  cacheRevisionedAssets(revisionedFiles) {
+    // Add a more helpful error message than assertion error.
+    if (!Array.isArray(revisionedFiles)) {
+      throw ErrorFactory.createError('bad-revisioned-cache-list');
+    }
+
+    this._revisionedCacheManager.cache({
+      revisionedFiles,
+    });
   }
 
   /**
