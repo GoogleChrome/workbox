@@ -1,0 +1,20 @@
+{
+  "name": "sw-background-sync-queue",
+  "version": "0.0.1",
+  "description": "A service worker implementation of the a queue which is triggered by the background sync event.",
+  "keywords": [
+    "service worker",
+    "sw",
+    "offline",
+    "queue",
+    "sw-fw"
+  ],
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-background-sync-queue",
+  "main": "build/background-sync-queue.js",
+  "module": "build/background-sync-queue.min.mjs",
+  "jsnext:main": "build/background-sync-queue.min.mjs"
+}
