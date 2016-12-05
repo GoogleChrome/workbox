@@ -13,9 +13,14 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
+import ErrorFactory from '../../../../lib/error-factory';
 
-export default (configuration) => {
-  const {filePatterns} = configuration;
-  assert.isType(filePatterns, 'array');
+const errors = {
+  'not-in-sw': 'sw-lib must be loaded in your service worker file.',
+  'unsupported-route-type': 'Routes must be either a express style route ' +
+    'string, a Regex to capture request URLs or a Route instance.',
+  'empty-express-string': 'The Express style route string must have some ' +
+    'characters, an empty string is invalid.',
 };
+
+export default new ErrorFactory(errors);

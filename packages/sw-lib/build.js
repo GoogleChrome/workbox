@@ -12,12 +12,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-
+const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
-const pkg = require('./package.json');
-const resolve = require('rollup-plugin-node-resolve');
-const rollupBabel = require('rollup-plugin-babel');
+const packageJson = require('./package.json');
 const {buildJSBundle} = require('../../build-utils');
 
 module.exports = () => {
@@ -26,12 +24,8 @@ module.exports = () => {
       rollupConfig: {
         entry: path.join(__dirname, 'src', 'index.js'),
         format: 'umd',
-        moduleName: 'goog.cacheExpiration',
+        moduleName: 'goog.swlib',
         plugins: [
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
           resolve({
             jsnext: true,
             main: true,
@@ -40,27 +34,7 @@ module.exports = () => {
           commonjs(),
         ],
       },
-      outputName: pkg.main,
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'es',
-        plugins: [
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: pkg['jsnext:main'],
+      outputName: packageJson.main,
       projectDir: __dirname,
     }),
   ]);

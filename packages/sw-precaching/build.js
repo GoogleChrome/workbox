@@ -14,6 +14,8 @@
 */
 const rollupBabel = require('rollup-plugin-babel');
 const path = require('path');
+const resolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
 const {buildJSBundle} = require('../../build-utils');
 const pkg = require('./package.json');
 
@@ -29,6 +31,12 @@ module.exports = () => {
             plugins: ['transform-async-to-generator', 'external-helpers'],
             exclude: 'node_modules/**',
           }),
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          commonjs(),
         ],
       },
       outputName: pkg.main,
@@ -43,6 +51,12 @@ module.exports = () => {
             plugins: ['transform-async-to-generator', 'external-helpers'],
             exclude: 'node_modules/**',
           }),
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          commonjs(),
         ],
       },
       outputName: pkg['jsnext:main'],

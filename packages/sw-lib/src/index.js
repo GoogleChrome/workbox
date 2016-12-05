@@ -13,7 +13,19 @@
  limitations under the License.
 */
 
-export const idbName = `sw-cache-expiration-${self.registration.scope}`;
-export const idbVersion = 1;
-export const urlPropertyName = 'url';
-export const timestampPropertyName = 'timestamp';
+/* eslint-env browser */
+/* eslint-disable no-console */
+
+import ErrorFactory from './lib/error-factory';
+import SWLib from './lib/sw-lib';
+import {Route} from '../../sw-routing/src/index.js';
+import assert from '../../../lib/assert.js';
+
+if (!assert.isSWEnv()) {
+  // We are not running in a service worker, print error message
+  throw ErrorFactory.createError('not-in-sw');
+}
+
+const swLibInstance = new SWLib();
+swLibInstance.Route = Route;
+export default swLibInstance;

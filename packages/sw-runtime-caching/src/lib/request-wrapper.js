@@ -159,11 +159,8 @@ class RequestWrapper {
         // cacheDidUpdateCallbacks, wait until the cache is updated.
         await cache.put(request, newResponse);
 
-        // If oldResponse is set, we want to trigger cacheDidUpdateCallbacks.
-        if (oldResponse) {
-          for (let callback of this.callbacks.cacheDidUpdate) {
-            callback({cacheName: this.cacheName, oldResponse, newResponse});
-          }
+        for (let callback of (this.callbacks.cacheDidUpdate || [])) {
+          callback({cacheName: this.cacheName, oldResponse, newResponse});
         }
       });
     }

@@ -13,25 +13,14 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
+import ErrorFactory from '../../../../lib/error-factory';
 
-/**
- * Placeholder.
- */
-export default class Configuration {
-  /**
-   * Placeholder.
-   *
-   * @param {string} cacheName
-   * @param {Number} maxEntries
-   * @param {Number} maxAgeSeconds
-   */
-  constructor({cacheName, maxEntries, maxAgeSeconds} = {}) {
-    assert.isType({cacheName}, 'string');
-    assert.atLeastOne({maxEntries, maxAgeSeconds});
+const errors = {
+  'not-in-sw': 'sw-precaching must be loaded in your service worker file.',
+  'invalid-file-manifest-entry': `File manifest entries must be either a ` +
+    `string with revision info in the path or an object with path and ` +
+    `revision and parameters.`,
+  'bad-cache-bust': `The cache bust parameter must be a boolean.`,
+};
 
-    this.cacheName = cacheName;
-    this.maxEntries = maxEntries;
-    this.maxAgeSeconds = maxAgeSeconds;
-  }
-}
+export default new ErrorFactory(errors);

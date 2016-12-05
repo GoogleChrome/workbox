@@ -13,6 +13,14 @@
  limitations under the License.
 */
 
-export const defaultCacheId = `sw-precaching`;
-export const hashParamName = '_sw-precaching';
+export const cacheBustParamName = '_sw-precaching';
 export const version = 'v1';
+export const dbName = 'sw-precaching';
+export const dbVersion = '1';
+export const dbStorename = 'asset-revisions';
+
+let tmpCacheName = `sw-precaching-${version}`;
+if (self && self.registration) {
+  tmpCacheName += `-${self.registration.scope}`;
+}
+export const defaultCacheName = tmpCacheName;
