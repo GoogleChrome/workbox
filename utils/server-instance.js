@@ -39,10 +39,16 @@ class ServerInstance {
       res.send(`${req.params.file}-${Date.now()}`);
     });
 
-    this._app.get('/__echo/date-with-cors/:file', function(req, res) {
+    this._app.all('/__echo/date-with-cors/:file', function(req, res) {
+      res.setHeader('Access-Control-Allow-Methods',
+        'POST, GET, PUT, DELETE, OPTIONS');
       res.setHeader('Cache-Control', 'max-age=' + (24 * 60 * 60));
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.send(`${req.params.file}-${Date.now()}`);
+    });
+
+    this._app.get('/__test/404/', function(req, res) {
+      res.status(404).send('404');
     });
   }
 
