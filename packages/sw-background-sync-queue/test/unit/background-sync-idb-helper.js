@@ -17,10 +17,17 @@
 'use strict';
 
 describe('background-sync-indb-helper test', () => {
-
   it('check defaults', () => {
     chai.assert.equal(
       goog.backgroundSyncQueue.test.backgroundSyncIdbHelper.getDbName(),
       goog.backgroundSyncQueue.test.constants.defaultDBName);
+  });
+
+  it('check getters and setters', () => {
+    const newDbName = 'DB_NAME_2';
+    goog.backgroundSyncQueue.test.backgroundSyncIdbHelper.setDbName(newDbName);
+    chai.assert.equal(
+      goog.backgroundSyncQueue.test.backgroundSyncIdbHelper.getDbName(),
+      newDbName);
   });
 });

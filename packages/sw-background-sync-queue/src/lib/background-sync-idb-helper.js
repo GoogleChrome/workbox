@@ -1,9 +1,11 @@
 import {defaultDBName} from './constants';
+import assert from '../../../../lib/assert';
 
 let _dbName = defaultDBName;
 
 function setDbName(dbName) {
-	_dbName = dbName || defaultDBName;
+	assert.isType({dbName}, 'string');
+	_dbName = dbName;
 }
 
 function getDbName() {
