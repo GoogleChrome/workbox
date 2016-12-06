@@ -69,13 +69,28 @@ describe('sw-lib Tests', function() {
           );
         })
         .then((testResults) => {
-          if (testResults.failed.length > 0) {
-            const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
-              assistantDriver.getPrettyName(),
-              testResults
-            );
+          // Print test failues
+          const passedTests = testResults.passed;
+          const passedStrings = passedTests.map((test, i) => {
+            return `[Passed Test ${i + 1}]\n` +
+                   `    - ${test.parentTitle} > ${test.title}\n`;
+          });
+          const failedTests = testResults.failed;
+          const failedStrings = failedTests.map((test, i) => {
+            return `[Failed Test ${i + 1}]\n` +
+                   `    - ${test.parentTitle} > ${test.title}\n`;
+          });
+          console.log('-------------------------------------------');
+          if (passedTests.length > 0) {
+            console.log(passedStrings.join('\n'));
+          }
+          if (failedTests.length > 0) {
+            console.log(failedStrings.join('\n'));
+          }
+          console.log('---------------------------------------------------');
 
-            throw new Error(errorMessage);
+          if (testResults.failed.length > 0) {
+            throw new Error('Failing tests');
           }
         });
       });
