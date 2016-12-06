@@ -105,5 +105,27 @@ module.exports = () => {
       outputName: 'build/test/constants.js',
       projectDir: __dirname,
     }),
+    buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'lib',
+         'background-sync-idb-helper.js'),
+        format: 'umd',
+        moduleName: 'goog.backgroundSyncQueue.test.backgroundSyncIdbHelper',
+        plugins: [
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
+          commonjs(),
+        ],
+      },
+      outputName: 'build/test/background-sync-idb-helper.js',
+      projectDir: __dirname,
+    }),
   ]);
 };

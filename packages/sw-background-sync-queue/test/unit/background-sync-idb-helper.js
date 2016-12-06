@@ -17,7 +17,10 @@
 'use strict';
 
 describe('background-sync-indb-helper test', () => {
-  it('check defaults', () => {
 
+  it('check defaults', () => {
+    chai.assert.equal(
+      goog.backgroundSyncQueue.test.backgroundSyncIdbHelper.getDbName(),
+      goog.backgroundSyncQueue.test.constants.defaultDBName);
   });
 });
