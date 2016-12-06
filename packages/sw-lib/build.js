@@ -12,6 +12,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
+const rollupBabel = require('rollup-plugin-babel');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
@@ -26,6 +27,10 @@ module.exports = () => {
         format: 'umd',
         moduleName: 'goog.swlib',
         plugins: [
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
           resolve({
             jsnext: true,
             main: true,

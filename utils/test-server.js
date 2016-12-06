@@ -37,6 +37,10 @@ module.exports = {
       return Promise.reject('Server already running');
     }
 
+    if (!port) {
+      port = 0;
+    }
+
     primaryServer = new ServerInstance();
     secondaryServer = new ServerInstance();
 

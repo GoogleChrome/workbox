@@ -21,6 +21,9 @@ const errors = {
     'string, a Regex to capture request URLs or a Route instance.',
   'empty-express-string': 'The Express style route string must have some ' +
     'characters, an empty string is invalid.',
+  'bad-revisioned-cache-list': `The 'cacheRevisionedAssets()' method expects` +
+    `an array of revisioned urls like so: ['/example/hello.1234.txt', ` +
+    `{path: 'hello.txt', revision: '1234'}]`,
 };
 
 export default new ErrorFactory(errors);
