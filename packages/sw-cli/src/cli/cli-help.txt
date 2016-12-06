@@ -5,10 +5,10 @@ Usage:
 
 Commands:
 
-    generate-sw  [<path of project>]
-    build-file-manifest [<path of project>]
+    generate-sw
+    build-file-manifest
 
 Options
 
-    -h --help       Show this help text.
-    -v --version    Show current version of sw-cli
+    -h --help               Show this help text.
+    -v --version            Show current version of sw-cli
