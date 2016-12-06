@@ -32,7 +32,7 @@ class RevisionedCacheManager {
    */
   constructor() {
     this._eventsRegistered = false;
-    this._fileEntriesToCache = [];
+    this._fileEntriesToCache = {};
     this._idbHelper = new IDBHelper(dbName, dbVersion, dbStorename);
 
     this._registerEvents();
@@ -58,11 +58,24 @@ class RevisionedCacheManager {
   cache({revisionedFiles} = {}) {
     assert.isInstance({revisionedFiles}, Array);
 
-    const parsedFileList = revisionedFiles.map((revisionedFileEntry) => {
-      return this._validateFileEntry(revisionedFileEntry);
-    });
+    revisionedFiles.forEach((revisionedFileEntry) => {
+      const parsedEntry = this._validateFileEntry(revisionedFileEntry);
+      if (!this._fileEntriesToCache[parsedEntry.path]) {
+        // Only cache new entries.
+        this._fileEntriesToCache[parsedEntry.path] = parsedEntry;
+        return;
+      }
 
-    this._fileEntriesToCache = this._fileEntriesToCache.concat(parsedFileList);
+      // If entry exists, ensure the revision is different
+      const previousEntry = this._fileEntriesToCache[parsedEntry.path];
+      if (previousEntry.revision !== parsedEntry.revision) {
+        throw ErrorFactory.createError(
+          'duplicate-entry-diff-revisions',
+          new Error(`${JSON.stringify(previousEntry)} <=> ` +
+            `${JSON.stringify(parsedEntry)}`),
+        );
+      }
+    });
   }
 
   /**
@@ -143,6 +156,14 @@ class RevisionedCacheManager {
 
       event.waitUntil(
         this._performInstallStep()
+        .then(() => {
+          // Closed indexedDB now that we are done with the install step
+          this._close();
+        }, (err) => {
+          this._close();
+
+          throw err;
+        })
       );
     });
   }
@@ -158,23 +179,43 @@ class RevisionedCacheManager {
     cacheName = cacheName || defaultCacheName;
 
     let openCache = await caches.open(cacheName);
-    const cachePromises = this._fileEntriesToCache.map(async (fileEntry) => {
+    const fileEntriesToCache = Object.values(this._fileEntriesToCache);
+    const cachePromises = fileEntriesToCache.map(async (fileEntry) => {
       const isCached = await this._isAlreadyCached(fileEntry, openCache);
       if (isCached) {
         return;
       }
 
       let requestUrl = this._cacheBustUrl(fileEntry);
-      const response = await fetch(requestUrl, {
+      let fetchOptions = {
         credentials: 'same-origin',
-      });
-      await openCache.put(fileEntry.path, response);
-      await this._putRevisionDetails(fileEntry.path, fileEntry.revision);
+      };
+
+      if (requestUrl.indexOf(location.origin) !== 0) {
+        try {
+        await fetch(requestUrl, {
+          method: 'OPTIONS',
+        });
+      } catch (err) {
+        // If this error is received, it means pre-flight failed.
+        fetchOptions.mode = 'no-cors';
+      }
+      }
+
+      const response = await fetch(requestUrl, fetchOptions);
+      if (response.ok || response.type === 'opaque') {
+        await openCache.put(fileEntry.path, response);
+        await this._putRevisionDetails(fileEntry.path, fileEntry.revision);
+      } else {
+        throw ErrorFactory.createError('request-not-cached', {
+          message: `Failed to get a cacheable response for '${requestUrl}'`,
+        });
+      }
     });
 
     await Promise.all(cachePromises);
 
-    const urlsCachedOnInstall = this._fileEntriesToCache
+    const urlsCachedOnInstall = fileEntriesToCache
       .map((fileEntry) => fileEntry.path);
     const allCachedRequests = await openCache.keys();
 
@@ -187,9 +228,6 @@ class RevisionedCacheManager {
     });
 
     await Promise.all(cacheDeletePromises);
-
-    // Closed indexedDB now that we are done with the install step
-    this._close();
   }
 
   /**
