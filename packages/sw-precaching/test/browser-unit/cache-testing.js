@@ -27,7 +27,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
     .then(deleteIndexedDB);**/
   });
 
-  const testFileSet = (iframe, fileSet) => {
+  const testCacheEntries = (fileSet) => {
     return window.caches.keys()
     .then((cacheNames) => {
       cacheNames.length.should.equal(1);
@@ -55,7 +55,11 @@ describe('sw-precaching Test Revisioned Caching', function() {
 
         expect(matchingResponse).to.exist;
       });
-    })
+    });
+  };
+
+  const testFileSet = (iframe, fileSet) => {
+    return testCacheEntries(fileSet)
     .then(() => {
       const promises = fileSet.map((assetAndHash) => {
         let url = assetAndHash;
@@ -70,10 +74,14 @@ describe('sw-precaching Test Revisioned Caching', function() {
     .then((cachedResponses) => {
       let responses = {};
       const promises = cachedResponses.map((cachedResponse) => {
-        return cachedResponse.text()
-        .then((bodyText) => {
-          responses[cachedResponse.url] = bodyText;
-        });
+        if (cachedResponse.type === 'opaque') {
+          responses[cachedResponse.url] = null;
+        } else {
+          return cachedResponse.text()
+          .then((bodyText) => {
+            responses[cachedResponse.url] = bodyText;
+          });
+        }
       });
       return Promise.all(promises)
       .then(() => {
@@ -169,6 +177,53 @@ describe('sw-precaching Test Revisioned Caching', function() {
       .then((iframe) => {
         return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
       });
+    });
+  });
+
+  it('should only request duplicate entries once', function() {
+    let allEntries = [];
+    goog.__TEST_DATA['duplicate-entries'].forEach((entries) => {
+      allEntries = allEntries.concat(entries);
+    });
+    allEntries = [...new Set(allEntries)];
+
+    return window.goog.swUtils.activateSW('data/duplicate-entries/duplicate-entries-sw.js')
+    .then((iframe) => {
+      return iframe.contentWindow.fetch('/__api/get-requests-made/')
+      .then((response) => {
+        return response.json();
+      })
+      .then((requestsMade) => {
+        if (allEntries.length !== requestsMade.length) {
+          throw new Error('Duplicate requests have been made: ' + JSON.stringify(requestsMade));
+        }
+      })
+      .then(() => {
+        return iframe;
+      });
+    })
+    .then((iframe) => {
+      return testFileSet(iframe, allEntries);
+    })
+    .then((responses) => {
+    });
+  });
+
+  it('should fail to install with 404 cache request', function() {
+    return window.goog.swUtils.activateSW('data/response-types/404-sw.js')
+    .then(() => {
+      throw new Error('Expected SW to fail installation due to caching 404 entry.');
+    }, (err) => {
+      // NOOP - The error is not to do with the error throw in SW, so nothing
+      // to check.
+    });
+  });
+
+  it('should cache opaque responses by default', function() {
+    return window.goog.swUtils.activateSW('data/response-types/opaque-sw.js')
+    .then(() => {
+      // The iframe doesn't allow no-cors requests from the window.
+      return testCacheEntries( goog.__TEST_DATA['opaque']);
     });
   });
 });

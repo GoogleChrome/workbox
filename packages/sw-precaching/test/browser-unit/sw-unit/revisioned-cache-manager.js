@@ -17,12 +17,13 @@ mocha.setup({
 describe('Test RevisionedCacheManager', function() {
   let revisionedCacheManager;
 
-  before(function() {
+  beforeEach(function() {
     revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
   });
 
-  after(function() {
+  afterEach(function() {
     revisionedCacheManager._close();
+    revisionedCacheManager = null;
   });
 
   const badRevisionFileInputs = [
@@ -161,5 +162,22 @@ describe('Test RevisionedCacheManager', function() {
     it(`should be able to handle good cache input '${JSON.stringify(goodInput)}'`, function() {
       revisionedCacheManager.cache({revisionedFiles: [goodInput]});
     });
+  });
+
+  it('should throw error when precaching the same path but different revision', function() {
+    const TEST_PATH = '/__echo/date/hello.txt';
+    let thrownError = null;
+    try {
+      revisionedCacheManager.cache({revisionedFiles: [
+        {path: TEST_PATH, revision: '1234'},
+      ]});
+      revisionedCacheManager.cache({revisionedFiles: [
+        {path: TEST_PATH, revision: '5678'},
+      ]});
+    } catch (err) {
+      thrownError = err;
+    }
+    expect(thrownError).to.exist;
+    thrownError.name.should.equal('duplicate-entry-diff-revisions');
   });
 });

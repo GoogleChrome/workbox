@@ -21,6 +21,11 @@ const errors = {
     `string with revision info in the path or an object with path and ` +
     `revision and parameters.`,
   'bad-cache-bust': `The cache bust parameter must be a boolean.`,
+  'duplicate-entry-diff-revisions': `An attempt was made to cache the same ` +
+    `path twice with each having different revisions. This is not supported.`,
+  'request-not-cached': `A request failed the criteria to be cached. By ` +
+    `default, only responses with 'response.ok = true' or opaque responses ` +
+    `are cached.`,
 };
 
 export default new ErrorFactory(errors);
