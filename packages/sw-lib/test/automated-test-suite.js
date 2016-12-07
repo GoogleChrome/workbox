@@ -24,74 +24,80 @@ require('geckodriver');
 const RETRIES = 4;
 const TIMEOUT = 10 * 1000;
 
-const setupTestSuite = (assistantDriver) => {
-  describe(`sw-lib Tests in ${assistantDriver.getPrettyName()}`, function() {
-    this.retries(RETRIES);
-    this.timeout(TIMEOUT);
+describe('sw-lib Tests', function() {
+  this.retries(RETRIES);
+  this.timeout(TIMEOUT);
 
-    let globalDriverBrowser;
-    let baseTestUrl;
+  let globalDriverBrowser;
+  let baseTestUrl;
 
-    // Set up the web server before running any tests in this suite.
-    before(function() {
-      return testServer.start('.').then((portNumber) => {
-        baseTestUrl = `http://localhost:${portNumber}/packages/sw-lib`;
-      });
-    });
-
-    // Kill the web server once all tests are complete.
-    after(function() {
-      return testServer.stop();
-    });
-
-    afterEach(function() {
-      return seleniumAssistant.killWebDriver(globalDriverBrowser)
-      .then(() => {
-        globalDriverBrowser = null;
-      });
-    });
-
-    it('should pass all browser based unit tests', function() {
-      return assistantDriver.getSeleniumDriver()
-      .then((driver) => {
-        globalDriverBrowser = driver;
-      })
-      .then(() => {
-        return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
-          assistantDriver.getPrettyName(),
-          globalDriverBrowser,
-          `${baseTestUrl}/test/browser-unit/`
-        );
-      })
-      .then((testResults) => {
-        if (testResults.failed.length > 0) {
-          const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
-            assistantDriver.getPrettyName(),
-            testResults
-          );
-
-          throw new Error(errorMessage);
-        }
-      });
+  // Set up the web server before running any tests in this suite.
+  before(function() {
+    return testServer.start('.').then((portNumber) => {
+      baseTestUrl = `http://localhost:${portNumber}/packages/sw-lib`;
     });
   });
-};
 
-const availableBrowsers = seleniumAssistant.getAvailableBrowsers();
-availableBrowsers.forEach((browser) => {
-  switch(browser.getSeleniumBrowserId()) {
-    case 'chrome':
-    case 'firefox':
-    case 'opera':
-      if (browser.getSeleniumBrowserId() === 'opera' &&
-        browser.getVersionNumber() <= 43) {
-        console.log(`Skipping Opera <= 43 due to driver issues.`);
-        return;
-      }
-      setupTestSuite(browser);
-      break;
-    default:
-      console.log(`Skipping tests for ${browser.getSeleniumBrowserId()}`);
-      break;
-  }
+  // Kill the web server once all tests are complete.
+  after(function() {
+    return testServer.stop();
+  });
+
+  afterEach(function() {
+    if (!globalDriverBrowser) {
+      return;
+    }
+
+    return seleniumAssistant.killWebDriver(globalDriverBrowser)
+    .then(() => {
+      globalDriverBrowser = null;
+    });
+  });
+
+  const setupTestSuite = (assistantDriver) => {
+    describe(`sw-lib Tests in ${assistantDriver.getPrettyName()}`, function() {
+      it('should pass all browser based unit tests', function() {
+        return assistantDriver.getSeleniumDriver()
+        .then((driver) => {
+          globalDriverBrowser = driver;
+        })
+        .then(() => {
+          return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
+            assistantDriver.getPrettyName(),
+            globalDriverBrowser,
+            `${baseTestUrl}/test/browser-unit/`
+          );
+        })
+        .then((testResults) => {
+          if (testResults.failed.length > 0) {
+            const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
+              assistantDriver.getPrettyName(),
+              testResults
+            );
+
+            throw new Error(errorMessage);
+          }
+        });
+      });
+    });
+  };
+
+  const availableBrowsers = seleniumAssistant.getAvailableBrowsers();
+  availableBrowsers.forEach((browser) => {
+    switch(browser.getSeleniumBrowserId()) {
+      case 'chrome':
+      case 'firefox':
+      case 'opera':
+        if (browser.getSeleniumBrowserId() === 'opera' &&
+          browser.getVersionNumber() <= 43) {
+          console.log(`Skipping Opera <= 43 due to driver issues.`);
+          return;
+        }
+        setupTestSuite(browser);
+        break;
+      default:
+        console.log(`Skipping tests for ${browser.getSeleniumBrowserId()}`);
+        break;
+    }
+  });
 });

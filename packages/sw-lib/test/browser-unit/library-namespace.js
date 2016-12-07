@@ -62,4 +62,15 @@ describe('Test Behaviors of Loading the Script', function() {
       }
     });
   });
+
+  it('should perform cache-revisioned-assets.js sw tests', function() {
+    const serviceWorkerPath = 'sw-unit/cache-revisioned-assets.js';
+    return window.goog.mochaUtils.startServiceWorkerMochaTests(serviceWorkerPath)
+    .then((testResults) => {
+      if (testResults.failed.length > 0) {
+        const errorMessage = window.goog.mochaUtils.prettyPrintErrors(serviceWorkerPath, testResults);
+        throw new Error(errorMessage);
+      }
+    });
+  });
 });
