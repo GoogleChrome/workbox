@@ -30,5 +30,13 @@ describe('request-manager test', () => {
 	});
   it('check instances', () => {
 		chai.assert.isObject(reqManager);
+		chai.assert.isFunction(reqManager.attachSyncHandler);
+		chai.assert.isFunction(reqManager.replayRequests);
+		chai.assert.equal(reqManager._globalCallbacks, callbacks);
+		chai.assert.equal(reqManager._queue, queue);
   });
+
+	it('check replay', () => {
+		queue.push({request: new Request('http://lipsum.com/')});
+	});
 });
