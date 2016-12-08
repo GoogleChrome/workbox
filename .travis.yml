@@ -6,8 +6,6 @@ node_js:
   - 'stable'
 
 env:
-  # Keep star at top so it runs first - it'll be the longest task
-  - PROJECT="*"
   - PROJECT="sw-appcache-behavior"
   - PROJECT="sw-background-sync-queue"
   - PROJECT="sw-broadcast-cache-update"
