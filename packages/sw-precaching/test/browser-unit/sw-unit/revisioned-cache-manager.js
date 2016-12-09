@@ -17,6 +17,10 @@ mocha.setup({
 describe('Test RevisionedCacheManager', function() {
   let revisionedCacheManager;
 
+  const VALID_PATH_REL = '/__echo/date/example.txt';
+  const VALID_PATH_ABS = `${location.origin}${VALID_PATH_REL}`;
+  const VALID_REVISION = '1234';
+
   beforeEach(function() {
     revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
   });
@@ -31,11 +35,13 @@ describe('Test RevisionedCacheManager', function() {
     '',
     '/example.js',
     {},
-    {path: 'hello'},
+    {request: 'hello'},
     {revision: '0987'},
     true,
     false,
     123,
+    new Request(VALID_PATH_ABS),
+    new Request(VALID_PATH_REL),
   ];
   badRevisionFileInputs.forEach((badInput) => {
     it(`should handle bad cache({revisionedFiles='${badInput}'}) input`, function() {
@@ -69,10 +75,6 @@ describe('Test RevisionedCacheManager', function() {
     }).to.throw('null');
   });
 
-  const VALID_PATH_REL = '/__echo/date/example.txt';
-  const VALID_PATH_ABS = `${location.origin}${VALID_PATH_REL}`;
-  const VALID_REVISION = '1234';
-
   const badPaths = [
     null,
     undefined,
@@ -97,10 +99,10 @@ describe('Test RevisionedCacheManager', function() {
   const badFileManifests = [];
   badPaths.forEach((badPath) => {
     badFileManifests.push([badPath]);
-    badFileManifests.push([{path: badPath, revision: VALID_REVISION}]);
+    badFileManifests.push([{request: badPath, revision: VALID_REVISION}]);
   });
   badRevisions.forEach((badRevision) => {
-    badFileManifests.push([{path: VALID_PATH_REL, revision: badRevision}]);
+    badFileManifests.push([{request: VALID_PATH_REL, revision: badRevision}]);
   });
 
   badFileManifests.forEach((badFileManifest) => {
@@ -115,7 +117,6 @@ describe('Test RevisionedCacheManager', function() {
       if (!caughtError) {
         throw new Error('Expected file manifest to cause an error.');
       }
-
       caughtError.name.should.equal('invalid-file-manifest-entry');
     });
   });
@@ -134,7 +135,7 @@ describe('Test RevisionedCacheManager', function() {
       let caughtError;
       try {
         revisionedCacheManager.cache({revisionedFiles: [
-          {path: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: badCacheBust},
+          {request: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: badCacheBust},
         ]});
       } catch (err) {
         caughtError = err;
@@ -150,13 +151,19 @@ describe('Test RevisionedCacheManager', function() {
 
   const goodManifestInputs = [
     VALID_PATH_REL,
-    {path: VALID_PATH_REL, revision: VALID_REVISION},
-    {path: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: true},
-    {path: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: false},
+    {request: VALID_PATH_REL, revision: VALID_REVISION},
+    {request: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: true},
+    {request: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: false},
+    {request: new Request(VALID_PATH_REL), revision: VALID_REVISION},
+    {request: new Request(VALID_PATH_REL), revision: VALID_REVISION, cacheBust: true},
+    {request: new Request(VALID_PATH_REL), revision: VALID_REVISION, cacheBust: false},
     VALID_PATH_ABS,
-    {path: VALID_PATH_ABS, revision: VALID_REVISION},
-    {path: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: true},
-    {path: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: false},
+    {request: VALID_PATH_ABS, revision: VALID_REVISION},
+    {request: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: true},
+    {request: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: false},
+    {request: new Request(VALID_PATH_ABS), revision: VALID_REVISION},
+    {request: new Request(VALID_PATH_ABS), revision: VALID_REVISION, cacheBust: true},
+    {request: new Request(VALID_PATH_ABS), revision: VALID_REVISION, cacheBust: false},
   ];
   goodManifestInputs.forEach((goodInput) => {
     it(`should be able to handle good cache input '${JSON.stringify(goodInput)}'`, function() {
@@ -169,10 +176,10 @@ describe('Test RevisionedCacheManager', function() {
     let thrownError = null;
     try {
       revisionedCacheManager.cache({revisionedFiles: [
-        {path: TEST_PATH, revision: '1234'},
+        {request: TEST_PATH, revision: '1234'},
       ]});
       revisionedCacheManager.cache({revisionedFiles: [
-        {path: TEST_PATH, revision: '5678'},
+        {request: TEST_PATH, revision: '5678'},
       ]});
     } catch (err) {
       thrownError = err;

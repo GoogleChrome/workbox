@@ -16,7 +16,9 @@
 import assert from '../../../../lib/assert';
 import ErrorFactory from './error-factory';
 import IDBHelper from '../../../../lib/idb-helper.js';
-import {defaultCacheName, dbName, dbVersion, dbStorename, cacheBustParamName}
+import StringCacheEntry from './models/string-cache-entry.js';
+import DefaultsCacheEntry from './models/defaults-cache-entry.js';
+import {defaultCacheName, dbName, dbVersion, dbStorename}
   from './constants';
 
 /**
@@ -59,20 +61,20 @@ class RevisionedCacheManager {
     assert.isInstance({revisionedFiles}, Array);
 
     revisionedFiles.forEach((revisionedFileEntry) => {
-      const parsedEntry = this._validateFileEntry(revisionedFileEntry);
-      if (!this._fileEntriesToCache[parsedEntry.path]) {
+      const fileEntry = this._validateFileEntry(revisionedFileEntry);
+      if (!this._fileEntriesToCache[fileEntry.revisionID]) {
         // Only cache new entries.
-        this._fileEntriesToCache[parsedEntry.path] = parsedEntry;
+        this._fileEntriesToCache[fileEntry.revisionID] = fileEntry;
         return;
       }
 
       // If entry exists, ensure the revision is different
-      const previousEntry = this._fileEntriesToCache[parsedEntry.path];
-      if (previousEntry.revision !== parsedEntry.revision) {
+      const previousEntry = this._fileEntriesToCache[fileEntry.revisionID];
+      if (previousEntry.revision !== fileEntry.revision) {
         throw ErrorFactory.createError(
           'duplicate-entry-diff-revisions',
           new Error(`${JSON.stringify(previousEntry)} <=> ` +
-            `${JSON.stringify(parsedEntry)}`),
+            `${JSON.stringify(fileEntry)}`),
         );
       }
     });
@@ -82,39 +84,56 @@ class RevisionedCacheManager {
    * This method ensures that the file entry in the file maniest is valid and
    * if the entry is a revisioned string path, it is converted to an object
    * with the desired fields.
-   * @param {String | object} fileEntry Either a path for a file or an object
+   * @param {String | object} input Either a path for a file or an object
    * with a `path`, `revision` and optional `cacheBust` parameter.
    * @return {object} Returns a parsed version of the file entry with absolute
    * URL, revision and a cacheBust value.
    */
-  _validateFileEntry(fileEntry) {
-    let parsedFileEntry = fileEntry;
-    if (typeof parsedFileEntry === 'string') {
-      parsedFileEntry = {
-        path: fileEntry,
-        revision: fileEntry,
-        cacheBust: false,
-      };
+  _validateFileEntry(input) {
+    if (typeof input === 'undefined' || input === null) {
+      throw ErrorFactory.createError('invalid-file-manifest-entry',
+        new Error('Invalid file entry: ' + JSON.stringify(input)));
+    }
+
+    let fileEntry;
+    switch(typeof input) {
+      case 'string': {
+        fileEntry = new StringCacheEntry({fileEntry: input});
+        break;
+      }
+      case 'object': {
+        fileEntry = new DefaultsCacheEntry(input);
+        break;
+      }
+      default: {
+        throw ErrorFactory.createError('invalid-file-manifest-entry',
+          new Error('Invalid file entry: ' +
+            JSON.stringify(fileEntry)));
+      }
+    }
+
+    return fileEntry;
+
+    /** if (parsedFileEntry &&
+      parsedFileEntry.path && typeof parsedFileEntry.path === 'string') {
+      try {
+        const absUrl =
+          new URL(parsedFileEntry.path, location.origin).toString();
+        parsedFileEntry.path = new Request(absUrl);
+      } catch (err) {
+        throw ErrorFactory.createError('invalid-file-manifest-entry',
+          new Error('Unable to parse path as URL: ' +
+            JSON.stringify(fileEntry)));
+      }
     }
 
     if (!parsedFileEntry || typeof parsedFileEntry !== 'object') {
-      throw ErrorFactory.createError('invalid-file-manifest-entry',
-        new Error('Invalid file entry: ' +
-          JSON.stringify(fileEntry)));
+
     }
 
-    if (typeof parsedFileEntry.path !== 'string') {
+    if (!(parsedFileEntry.path instanceof Request)) {
       throw ErrorFactory.createError('invalid-file-manifest-entry',
         new Error('Invalid path: ' + JSON.stringify(fileEntry)));
-    }
-
-    try {
-      parsedFileEntry.path =
-        new URL(parsedFileEntry.path, location.origin).toString();
-    } catch (err) {
-      throw ErrorFactory.createError('invalid-file-manifest-entry',
-        new Error('Unable to parse path as URL: ' +
-          JSON.stringify(fileEntry)));
     }
 
     if (typeof parsedFileEntry.revision !== 'string' ||
@@ -133,7 +152,19 @@ class RevisionedCacheManager {
           JSON.stringify(fileEntry)));
     }
 
-    return parsedFileEntry;
+    if (fileEntry.revisionID && typeof fileEntry.revisionID !== 'string') {
+      throw ErrorFactory.createError('invalid-file-manifest-entry',
+        new Error('Invalid revisionID: ' +
+          JSON.stringify(fileEntry)));
+    }
+
+    let revisionID = parsedFileEntry.path.url;
+    if (fileEntry.revisionID) {
+      revisionID = fileEntry.revisionID;
+    }
+    parsedFileEntry.revisionID = revisionID;
+
+    return parsedFileEntry;**/
   }
 
   /**
@@ -159,7 +190,8 @@ class RevisionedCacheManager {
         .then(() => {
           // Closed indexedDB now that we are done with the install step
           this._close();
-        }, (err) => {
+        })
+        .catch((err) => {
           this._close();
 
           throw err;
@@ -186,41 +218,36 @@ class RevisionedCacheManager {
         return;
       }
 
-      let requestUrl = this._cacheBustUrl(fileEntry);
-      let fetchOptions = {
-        credentials: 'same-origin',
-      };
-
-      if (requestUrl.indexOf(location.origin) !== 0) {
-        try {
-        await fetch(requestUrl, {
-          method: 'OPTIONS',
+      let response = null;
+      try {
+        response = await fetch(fileEntry.request, {
+          credentials: 'same-origin',
         });
       } catch (err) {
-        // If this error is received, it means pre-flight failed.
-        fetchOptions.mode = 'no-cors';
-      }
+        throw err;
       }
 
-      const response = await fetch(requestUrl, fetchOptions);
-      if (response.ok || response.type === 'opaque') {
-        await openCache.put(fileEntry.path, response);
-        await this._putRevisionDetails(fileEntry.path, fileEntry.revision);
+      if (response.ok) {
+        await openCache.put(fileEntry.request, response);
+
+        await this._putRevisionDetails(
+          fileEntry.revisionID, fileEntry.revision);
       } else {
         throw ErrorFactory.createError('request-not-cached', {
-          message: `Failed to get a cacheable response for '${requestUrl}'`,
+          message: `Failed to get a cacheable response for ` +
+            `'${fileEntry.request.url}'`,
         });
       }
     });
 
     await Promise.all(cachePromises);
 
-    const urlsCachedOnInstall = fileEntriesToCache
-      .map((fileEntry) => fileEntry.path);
+    const requestsCachedOnInstall = fileEntriesToCache
+      .map((fileEntry) => fileEntry.request.url);
     const allCachedRequests = await openCache.keys();
 
     const cacheDeletePromises = allCachedRequests.map((cachedRequest) => {
-      if (urlsCachedOnInstall.includes(cachedRequest.url)) {
+      if (requestsCachedOnInstall.includes(cachedRequest.url)) {
         return;
       }
 
@@ -243,12 +270,13 @@ class RevisionedCacheManager {
    * cached, false otherwise.
    */
   async _isAlreadyCached(fileEntry, openCache) {
-    const revisionDetails = await this._getRevisionDetails(fileEntry.path);
+    const revisionDetails = await
+      this._getRevisionDetails(fileEntry.revisionID);
     if (revisionDetails !== fileEntry.revision) {
       return false;
     }
 
-    const cachedResponse = await openCache.match(fileEntry.path);
+    const cachedResponse = await openCache.match(fileEntry.request);
     return cachedResponse ? true : false;
   }
 
@@ -270,27 +298,6 @@ class RevisionedCacheManager {
    */
   _putRevisionDetails(path, revision) {
     return this._idbHelper.put(path, revision);
-  }
-
-  /**
-   * This method takes a file entry and if the `cacheBust` parameter is set to
-   * true, the cacheBust parameter will be added to the URL before making the
-   * request. The response will be cached with the absolute URL without
-   * the cache busting search param.
-   * @param {Object} fileEntry This is an object with `path`, `revision` and
-   * `cacheBust` parameters.
-   * @return {String} The final URL to make the request to then cache.
-   */
-  _cacheBustUrl(fileEntry) {
-    if (fileEntry.cacheBust === false) {
-      return fileEntry.path;
-    }
-
-    const parsedURL = new URL(fileEntry.path);
-    parsedURL.search += (parsedURL.search ? '&' : '') +
-      encodeURIComponent(cacheBustParamName) + '=' +
-      encodeURIComponent(fileEntry.revision);
-    return parsedURL.toString();
   }
 
   /**
