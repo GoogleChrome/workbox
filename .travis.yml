@@ -2,6 +2,10 @@ sudo: required
 dist: trusty
 language: node_js
 
+cache:
+  directories:
+    - node_modules
+
 node_js:
   - 'stable'
 
