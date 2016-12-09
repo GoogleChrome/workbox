@@ -1,0 +1,14 @@
+sw-cli
+
+Usage:
+    sw-cli [command] [options]
+
+Commands:
+
+    generate-sw
+    build-file-manifest
+
+Options
+
+    -h --help               Show this help text.
+    -v --version            Show current version of sw-cli
