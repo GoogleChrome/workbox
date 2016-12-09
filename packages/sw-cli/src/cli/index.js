@@ -107,9 +107,8 @@ class SWCli {
     switch (command) {
       case 'generate-sw':
         return this.generateSW();
-      case 'build-file-manifest': {
+      case 'build-file-manifest':
         return this.buildFileManifest();
-      }
       default:
         logHelper.error(`Invlaid command given '${command}'`);
         return Promise.reject();
