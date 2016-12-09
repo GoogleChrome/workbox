@@ -47,6 +47,10 @@ class ServerInstance {
   }
 
   start(rootDirectory, port) {
+    if (typeof port === 'undefined') {
+      port = 0;
+    }
+
     if (this._server) {
       return Promise.reject(new Error('Server already started.'));
     }
@@ -62,6 +66,13 @@ class ServerInstance {
 
     return new Promise((resolve, reject) => {
       this._server = this._app.listen(port, 'localhost', () => {
+        if (process.env.TRAVIS) {
+          /* eslint-disable no-console */
+          console.log(`[Debug Info] Test Server: ` +
+            `http://localhost:${this._server.address().port}`);
+          console.log('');
+          /* eslint-enable no-console */
+        }
         resolve(this._server.address().port);
       });
     });
