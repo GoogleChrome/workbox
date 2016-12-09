@@ -17,6 +17,9 @@
   "bin": {
     "sw-cli": "src/bin/index.js"
   },
+  "engines": {
+    "node" : ">=4.0.0"
+  },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
