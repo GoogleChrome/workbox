@@ -154,16 +154,10 @@ describe('Test RevisionedCacheManager', function() {
     {request: VALID_PATH_REL, revision: VALID_REVISION},
     {request: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: true},
     {request: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: false},
-    {request: new Request(VALID_PATH_REL), revision: VALID_REVISION},
-    {request: new Request(VALID_PATH_REL), revision: VALID_REVISION, cacheBust: true},
-    {request: new Request(VALID_PATH_REL), revision: VALID_REVISION, cacheBust: false},
     VALID_PATH_ABS,
     {request: VALID_PATH_ABS, revision: VALID_REVISION},
     {request: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: true},
     {request: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: false},
-    {request: new Request(VALID_PATH_ABS), revision: VALID_REVISION},
-    {request: new Request(VALID_PATH_ABS), revision: VALID_REVISION, cacheBust: true},
-    {request: new Request(VALID_PATH_ABS), revision: VALID_REVISION, cacheBust: false},
   ];
   goodManifestInputs.forEach((goodInput) => {
     it(`should be able to handle good cache input '${JSON.stringify(goodInput)}'`, function() {
