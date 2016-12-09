@@ -3,7 +3,6 @@ importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sw-testing-helpers/browser/mocha-utils.js');
 
 importScripts('/packages/sw-lib/build/sw-lib.min.js');
-importScripts('/packages/sw-routing/build/sw-routing.min.js');
 
 /* global goog */
 
