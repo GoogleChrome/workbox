@@ -63,21 +63,21 @@ describe('Test swlib.cacheRevisionedAssets', function() {
     const validAssets1 = [
       '/__echo/date/1.1234.txt',
       {
-        path: '/__echo/date/2.txt', revision: '1234',
+        url: '/__echo/date/2.txt', revision: '1234',
       },
       `${corsOrigin}/__echo/date/3.1234.txt`,
       {
-        path: `${corsOrigin}/__echo/date/4.txt`, revision: '1234',
+        url: `${corsOrigin}/__echo/date/4.txt`, revision: '1234',
       },
     ];
     const validAssets2 = [
       '/__echo/date/5.1234.txt',
       {
-        path: '/__echo/date/6.txt', revision: '1234',
+        url: '/__echo/date/6.txt', revision: '1234',
       },
       `${corsOrigin}/__echo/date/7.1234.txt`,
       {
-        path: `${corsOrigin}/__echo/date/8.txt`, revision: '1234',
+        url: `${corsOrigin}/__echo/date/8.txt`, revision: '1234',
       },
     ];
 

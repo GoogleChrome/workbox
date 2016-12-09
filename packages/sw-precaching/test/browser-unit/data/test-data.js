@@ -24,11 +24,11 @@ const addNewEntry = (origin) => {
     fileIndex++;
 
     EXAMPLE_REVISIONED_FILES_SET_1_STEP_1.push({
-      request: `${origin}${echoPath}/${fileIndex}.txt`,
+      url: `${origin}${echoPath}/${fileIndex}.txt`,
       revision: revision1[i],
     });
     EXAMPLE_REVISIONED_FILES_SET_1_STEP_2.push({
-      request: `${origin}${echoPath}/${fileIndex}.txt`,
+      url: `${origin}${echoPath}/${fileIndex}.txt`,
       revision: revision2[i],
     });
     fileIndex++;

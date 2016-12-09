@@ -35,7 +35,7 @@ describe('Test RevisionedCacheManager', function() {
     '',
     '/example.js',
     {},
-    {request: 'hello'},
+    {url: 'hello'},
     {revision: '0987'},
     true,
     false,
@@ -99,10 +99,10 @@ describe('Test RevisionedCacheManager', function() {
   const badFileManifests = [];
   badPaths.forEach((badPath) => {
     badFileManifests.push([badPath]);
-    badFileManifests.push([{request: badPath, revision: VALID_REVISION}]);
+    badFileManifests.push([{url: badPath, revision: VALID_REVISION}]);
   });
   badRevisions.forEach((badRevision) => {
-    badFileManifests.push([{request: VALID_PATH_REL, revision: badRevision}]);
+    badFileManifests.push([{url: VALID_PATH_REL, revision: badRevision}]);
   });
 
   badFileManifests.forEach((badFileManifest) => {
@@ -135,7 +135,7 @@ describe('Test RevisionedCacheManager', function() {
       let caughtError;
       try {
         revisionedCacheManager.cache({revisionedFiles: [
-          {request: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: badCacheBust},
+          {url: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: badCacheBust},
         ]});
       } catch (err) {
         caughtError = err;
@@ -151,13 +151,13 @@ describe('Test RevisionedCacheManager', function() {
 
   const goodManifestInputs = [
     VALID_PATH_REL,
-    {request: VALID_PATH_REL, revision: VALID_REVISION},
-    {request: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: true},
-    {request: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: false},
+    {url: VALID_PATH_REL, revision: VALID_REVISION},
+    {url: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: true},
+    {url: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: false},
     VALID_PATH_ABS,
-    {request: VALID_PATH_ABS, revision: VALID_REVISION},
-    {request: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: true},
-    {request: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: false},
+    {url: VALID_PATH_ABS, revision: VALID_REVISION},
+    {url: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: true},
+    {url: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: false},
   ];
   goodManifestInputs.forEach((goodInput) => {
     it(`should be able to handle good cache input '${JSON.stringify(goodInput)}'`, function() {
@@ -170,10 +170,10 @@ describe('Test RevisionedCacheManager', function() {
     let thrownError = null;
     try {
       revisionedCacheManager.cache({revisionedFiles: [
-        {request: TEST_PATH, revision: '1234'},
+        {url: TEST_PATH, revision: '1234'},
       ]});
       revisionedCacheManager.cache({revisionedFiles: [
-        {request: TEST_PATH, revision: '5678'},
+        {url: TEST_PATH, revision: '5678'},
       ]});
     } catch (err) {
       thrownError = err;

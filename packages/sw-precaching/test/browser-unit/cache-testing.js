@@ -44,7 +44,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
         cachedResponses.forEach((cachedResponse) => {
           let desiredPath = assetAndHash;
           if (typeof assetAndHash !== 'string') {
-            desiredPath = assetAndHash.request;
+            desiredPath = assetAndHash.url;
           }
 
           if (cachedResponse.url.indexOf(desiredPath) !== -1) {
@@ -64,7 +64,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
       const promises = fileSet.map((assetAndHash) => {
         let url = assetAndHash;
         if (typeof assetAndHash === 'object') {
-          url = assetAndHash.request;
+          url = assetAndHash.url;
         }
 
         return iframe.contentWindow.fetch(url);
@@ -93,16 +93,16 @@ describe('sw-precaching Test Revisioned Caching', function() {
   const compareCachedAssets = function(beforeData, afterData) {
     afterData.cacheList.forEach((afterAssetAndHash) => {
       if (typeof assetAndHash === 'string') {
-        afterAssetAndHash = {request: afterAssetAndHash, revision: afterAssetAndHash};
+        afterAssetAndHash = {url: afterAssetAndHash, revision: afterAssetAndHash};
       }
 
       let matchingBeforeAssetAndHash = null;
       beforeData.cacheList.forEach((beforeAssetAndHash) => {
         if (typeof beforeAssetAndHash === 'string') {
-          beforeAssetAndHash = {request: beforeAssetAndHash, revision: beforeAssetAndHash};
+          beforeAssetAndHash = {url: beforeAssetAndHash, revision: beforeAssetAndHash};
         }
 
-        if (beforeAssetAndHash.request === afterAssetAndHash.request) {
+        if (beforeAssetAndHash.url === afterAssetAndHash.url) {
           matchingBeforeAssetAndHash = beforeAssetAndHash;
         }
       });
@@ -111,7 +111,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
         return;
       }
 
-      let pathToCheck = new URL(afterAssetAndHash.request, location.origin).toString();
+      let pathToCheck = new URL(afterAssetAndHash.url, location.origin).toString();
       const beforeResponseBody = beforeData.cachedResponses[pathToCheck];
       const afterResponseBody = afterData.cachedResponses[pathToCheck];
 
