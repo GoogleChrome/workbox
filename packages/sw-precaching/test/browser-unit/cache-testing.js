@@ -64,7 +64,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
       const promises = fileSet.map((assetAndHash) => {
         let url = assetAndHash;
         if (typeof assetAndHash === 'object') {
-          url = assetAndHash.path;
+          url = assetAndHash.request;
         }
 
         return iframe.contentWindow.fetch(url);
@@ -93,16 +93,16 @@ describe('sw-precaching Test Revisioned Caching', function() {
   const compareCachedAssets = function(beforeData, afterData) {
     afterData.cacheList.forEach((afterAssetAndHash) => {
       if (typeof assetAndHash === 'string') {
-        afterAssetAndHash = {path: afterAssetAndHash, revision: afterAssetAndHash};
+        afterAssetAndHash = {request: afterAssetAndHash, revision: afterAssetAndHash};
       }
 
       let matchingBeforeAssetAndHash = null;
       beforeData.cacheList.forEach((beforeAssetAndHash) => {
         if (typeof beforeAssetAndHash === 'string') {
-          beforeAssetAndHash = {path: beforeAssetAndHash, revision: beforeAssetAndHash};
+          beforeAssetAndHash = {request: beforeAssetAndHash, revision: beforeAssetAndHash};
         }
 
-        if (beforeAssetAndHash.path === afterAssetAndHash.path) {
+        if (beforeAssetAndHash.request === afterAssetAndHash.request) {
           matchingBeforeAssetAndHash = beforeAssetAndHash;
         }
       });
@@ -111,8 +111,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
         return;
       }
 
-      let pathToCheck = new URL(afterAssetAndHash.path, location.origin).toString();
-
+      let pathToCheck = new URL(afterAssetAndHash.request, location.origin).toString();
       const beforeResponseBody = beforeData.cachedResponses[pathToCheck];
       const afterResponseBody = afterData.cachedResponses[pathToCheck];
 
@@ -132,7 +131,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
       return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
-      /** return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js')
+      return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js')
       .then((iframe) => {
         return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
       })
@@ -144,7 +143,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
           cacheList: goog.__TEST_DATA['set-1']['step-2'],
           cachedResponses: step2Responses,
         });
-      });**/
+      });
     });
   });
 

@@ -1,28 +1,9 @@
 import ErrorFactory from '../error-factory';
 import RevisionedCacheEntry from './revisioned-cache-entry.js';
-import {cacheBustParamName} from '../constants';
-
-/**
- * This method takes a file entry and if the `cacheBust` parameter is set to
- * true, the cacheBust parameter will be added to the URL before making the
- * request. The response will be cached with the absolute URL without
- * the cache busting search param.
- * @param {String} requestURL This is an object with `path`, `revision` and
- * `cacheBust` parameters.
- * @param {String} revision Revision to use in the cache bust.
- * @return {String} The final URL to make the request to then cache.
- */
-const _cacheBustUrl = (requestURL, revision) => {
-  const parsedURL = new URL(requestURL, location.origin);
-  parsedURL.search += (parsedURL.search ? '&' : '') +
-    encodeURIComponent(cacheBustParamName) + '=' +
-    encodeURIComponent(revision);
-  return parsedURL.toString();
-};
 
 class DefaultsCacheEntry extends RevisionedCacheEntry {
   constructor({revisionID, revision, request, cacheBust}) {
-    // Check cacheBust type
+    // Check cacheBust is a boolean
     let filteredCacheBust = cacheBust;
     if (typeof filteredCacheBust === 'undefined') {
       filteredCacheBust = true;
@@ -32,27 +13,18 @@ class DefaultsCacheEntry extends RevisionedCacheEntry {
           JSON.stringify(cacheBust)));
     }
 
-    // Check revision type
+    // Check revision is a string with a length
     if (typeof revision !== 'string' || revision.length === 0) {
       throw ErrorFactory.createError('invalid-file-manifest-entry',
         new Error('Bad Revision. It should be a string with at least ' +
           'one character: ' + JSON.stringify(revision)));
     }
 
-    // Check request type
-    if (!(request instanceof Request)) {
-      if (typeof request === 'string') {
-        request = new Request(_cacheBustUrl(request, revision));
-      } else {
-        throw ErrorFactory.createError('invalid-file-manifest-entry',
-          new Error('Bad Request. It should be a string or a Request ' +
-            'object: ' + JSON.stringify(request)));
-      }
-    } else if (cacheBust && cacheBust === true) {
+    // Check request is a string.
+    if (typeof request !== 'string' || request.length === 0) {
       throw ErrorFactory.createError('invalid-file-manifest-entry',
-        new Error('Bad Request + CacheBust Combo. Request URLs cannot ' +
-          'have there URLs altered so must be cache busted in your ' +
-          'servicework: ' + JSON.stringify(request)));
+        new Error('Bad Request. It should be a string:' +
+          JSON.stringify(request)));
     }
 
     // Check revisionID type
@@ -65,9 +37,10 @@ class DefaultsCacheEntry extends RevisionedCacheEntry {
     }
 
     super({
-      revisionID,
+      revisionID: new URL(request, location.origin).toString(),
       revision,
-      request,
+      request: new Request(request),
+      cacheBust,
     });
   }
 }
