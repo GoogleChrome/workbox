@@ -34,7 +34,7 @@ const plugins = [
 
 const buildConfigs = generateBuildConfigs({
   es: pkg['jsnext:main'],
-  umd: pkg.main
+  umd: pkg.main,
 }, __dirname, 'goog.cacheExpiration', plugins);
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

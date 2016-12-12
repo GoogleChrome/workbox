@@ -33,7 +33,7 @@ const plugins = [
 
 const buildConfigs = generateBuildConfigs({
   es: pkg['jsnext:main'],
-  umd: pkg.main
+  umd: pkg.main,
 }, __dirname, 'goog.swcli', plugins);
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

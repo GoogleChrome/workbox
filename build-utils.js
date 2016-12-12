@@ -105,7 +105,7 @@ function buildJSBundle(options) {
     const sources = [
       `${options.projectDir}/src/**/*.js`,
       '{lib,packages}/**/*.js',
-      'node_modules/*/**/*.js'
+      'node_modules/*/**/*.js',
     ];
 
     gulp.src(sources)
@@ -177,5 +177,5 @@ module.exports = {
   generateBuildConfigs,
   globPromise,
   processPromiseWrapper,
-  taskHarness
+  taskHarness,
 };

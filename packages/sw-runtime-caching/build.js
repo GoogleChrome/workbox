@@ -24,7 +24,7 @@ const plugins = [rollupBabel({
 
 const buildConfigs = generateBuildConfigs({
   es: pkg['jsnext:main'],
-  umd: pkg.main
+  umd: pkg.main,
 }, __dirname, 'goog.runtimeCaching', plugins);
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

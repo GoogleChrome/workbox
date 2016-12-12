@@ -35,7 +35,7 @@ const plugins = [
 
 const mainModuleBuilds = generateBuildConfigs({
   es: pkg['jsnext:main'],
-  umd: pkg.main
+  umd: pkg.main,
 }, __dirname, 'goog.backgroundSyncQueue', plugins).map(buildJSBundle);
 
 module.exports = () => Promise.all([

@@ -14,7 +14,6 @@
 */
 
 const commonjs = require('rollup-plugin-commonjs');
-const path = require('path');
 const pkg = require('./package.json');
 const resolve = require('rollup-plugin-node-resolve');
 const rollupBabel = require('rollup-plugin-babel');
@@ -34,7 +33,7 @@ const plugins = [
 ];
 
 const buildConfigs = generateBuildConfigs({
-  umd: pkg.main
+  umd: pkg.main,
 }, __dirname, 'goog.swlib', plugins);
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

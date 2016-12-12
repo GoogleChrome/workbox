@@ -29,7 +29,7 @@ const plugins = [
 ];
 
 const mainModuleBuilds = generateBuildConfigs({
-  umd: pkg.main
+  umd: pkg.main,
 }, __dirname, 'goog.offlineGoogleAnalytics', plugins).map(buildJSBundle);
 
 module.exports = () => Promise.all([

@@ -18,7 +18,7 @@ const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
 
 const buildConfigs = generateBuildConfigs({
   es: pkg['jsnext:main'],
-  umd: pkg.main
+  umd: pkg.main,
 }, __dirname, 'goog.broadcastCacheUpdate');
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));
