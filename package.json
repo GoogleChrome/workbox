@@ -44,6 +44,7 @@
     "gulp-compile-handlebars": "^0.6.1",
     "gulp-eslint": "^3.0.1",
     "gulp-header": "^1.8.8",
+    "gulp-if": "^2.0.2",
     "gulp-rename": "^1.2.2",
     "gulp-rollup": "^2.5.1",
     "gulp-spawn-mocha": "^3.1.0",

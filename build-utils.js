@@ -20,6 +20,7 @@ const path = require('path');
 const promisify = require('promisify-node');
 const fs = require('fs');
 const gulp = require('gulp');
+const gulpif = require('gulp-if');
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
 const rollup = require('gulp-rollup');
@@ -27,6 +28,8 @@ const babel = require('gulp-babel');
 const header = require('gulp-header');
 
 const globPromise = promisify('glob');
+
+const LICENSE_HEADER = fs.readFileSync('LICENSE-HEADER', 'utf8');
 
 /**
  * Wrapper on top of childProcess.spawn() that returns a promise which rejects
@@ -94,41 +97,85 @@ function taskHarness(task, projectOrStar, ...args) {
  * also add a license header and create sourcemaps.
  *
  * @param  {Object} options Options object with 'projectDir' and 'rollupConfig'
- * @return {[type]}         [description]
+ * @return {Promise}
  */
 function buildJSBundle(options) {
-  const destPath = path.join(options.projectDir, 'build');
-  const licenseHeader = fs.readFileSync('LICENSE-HEADER', 'utf8');
-
-  if (options.outputName.indexOf('build/') !== 0) {
-    throw new Error('Expected options.ouputName to start with \'build/\'');
-  }
-
   return new Promise((resolve, reject) => {
-    gulp.src([
-      path.join(options.projectDir, 'src', '**', '*.js'),
-      path.join('lib', '**', '*.js'),
-      path.join('packages', '**', '*.js'),
-      path.join('node_modules', '*', '**', '*.js'),
-    ])
-    .pipe(sourcemaps.init())
-    .pipe(rollup(options.rollupConfig))
-    .pipe(babel({
-      presets: ['babili', {comments: false}],
-    }))
-    .pipe(header(licenseHeader))
-    .pipe(rename(options.outputName.substring('build/'.length)))
-    // Source maps are written relative tot he gulp.dest() path
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest(destPath))
-    .on('error', (err) => {
-      reject(err);
-    })
-    .on('end', () => {
-      resolve();
-    });
+    const outputName = options.buildPath.replace(/^build\//, '');
+    const sources = [
+      `${options.projectDir}/src/**/*.js`,
+      '{lib,packages}/**/*.js',
+      'node_modules/*/**/*.js'
+    ];
+
+    gulp.src(sources)
+      .pipe(sourcemaps.init())
+      .pipe(rollup(options.rollupConfig))
+      .pipe(gulpif(options.minify, babel({
+        presets: ['babili', {comments: false}],
+      })))
+      .pipe(header(LICENSE_HEADER))
+      .pipe(rename(outputName))
+      .pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest(`${options.projectDir}/build`))
+      .on('error', reject)
+      .on('end', resolve);
   });
 }
 
-module.exports = {globPromise, processPromiseWrapper,
-  taskHarness, buildJSBundle};
+/**
+ * A helper to generate Rollup build configurations.
+ *
+ * One build config is generated for each format given in formatToPath.
+ * Both minified and unminified build configs are generated.
+ *
+ * @param {Object.<String,String>} formatToPath A mapping of each format
+ *        ('umd', 'es', etc.) to the path to use for the output.
+ * @param {String} projectDir The path of the project directory.
+ * @param {String} moduleName The name of the module, used in the UMD output.
+ * @param {Array.<Object>} [plugins] A list of Rollup plugins to use.
+ * @returns {Array.<Object>}
+ */
+function generateBuildConfigs(formatToPath, projectDir, moduleName, plugins) {
+  // This is shared throughout the full permutation of build configs.
+  const baseConfig = {
+    rollupConfig: {
+      entry: path.join(projectDir, 'src', 'index.js'),
+      plugins,
+      moduleName,
+    },
+    projectDir,
+  };
+
+  // Use Object.assign() throughout to create copies of the config objects.
+  return [true, false].map((minify) => {
+    return Object.assign({}, baseConfig, {minify});
+  }).map((partialConfig) => {
+    return Object.keys(formatToPath).map((format) => {
+      const fullConfig = Object.assign({}, partialConfig, {
+        buildPath: formatToPath[format],
+      });
+      fullConfig.rollupConfig = Object.assign({}, partialConfig.rollupConfig, {
+        format,
+      });
+
+      // Remove the '.min.' from the file name if the output isn't minified.
+      if (!fullConfig.minify) {
+        fullConfig.buildPath = fullConfig.buildPath.replace('.min.', '.');
+      }
+
+      return fullConfig;
+    });
+  }).reduce((previous, current) => {
+    // Flatten the two-dimensional array.
+    return previous.concat(current);
+  }, []);
+}
+
+module.exports = {
+  buildJSBundle,
+  generateBuildConfigs,
+  globPromise,
+  processPromiseWrapper,
+  taskHarness
+};

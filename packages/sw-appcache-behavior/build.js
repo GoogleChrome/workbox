@@ -32,7 +32,7 @@ module.exports = () => {
           commonjs(),
         ],
       },
-      outputName: 'build/client-runtime.js',
+      buildPath: 'build/client-runtime.js',
       projectDir: __dirname,
     }),
     buildJSBundle({
@@ -49,7 +49,7 @@ module.exports = () => {
           commonjs(),
         ],
       },
-      outputName: 'build/appcache-behavior-import.js',
+      buildPath: 'build/appcache-behavior-import.js',
       projectDir: __dirname,
     }),
   ]);

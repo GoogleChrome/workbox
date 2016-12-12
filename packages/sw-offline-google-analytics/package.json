@@ -16,5 +16,6 @@
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-offline-google-analytics"
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-offline-google-analytics",
+  "main": "build/offline-google-analytics-import.min.js"
 }

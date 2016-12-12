@@ -12,35 +12,29 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-const rollupBabel = require('rollup-plugin-babel');
-const resolve = require('rollup-plugin-node-resolve');
+
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
-const packageJson = require('./package.json');
-const {buildJSBundle} = require('../../build-utils');
+const pkg = require('./package.json');
+const resolve = require('rollup-plugin-node-resolve');
+const rollupBabel = require('rollup-plugin-babel');
+const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
 
-module.exports = () => {
-  return Promise.all([
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'umd',
-        moduleName: 'goog.swlib',
-        plugins: [
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: packageJson.main,
-      projectDir: __dirname,
-    }),
-  ]);
-};
+const plugins = [
+  rollupBabel({
+    plugins: ['transform-async-to-generator', 'external-helpers'],
+    exclude: 'node_modules/**',
+  }),
+  resolve({
+    jsnext: true,
+    main: true,
+    browser: true,
+  }),
+  commonjs(),
+];
+
+const buildConfigs = generateBuildConfigs({
+  umd: pkg.main
+}, __dirname, 'goog.swlib', plugins);
+
+module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));
