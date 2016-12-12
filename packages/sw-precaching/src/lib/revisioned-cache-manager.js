@@ -18,8 +18,7 @@ import ErrorFactory from './error-factory';
 import StringCacheEntry from './models/string-cache-entry.js';
 import DefaultsCacheEntry from './models/defaults-cache-entry.js';
 import RevisionDetailsModel from './models/revision-details-model.js';
-import {defaultCacheName}
-  from './constants';
+import {defaultCacheName} from './constants';
 
 /**
  * RevisionedCacheManager manages efficient caching of a file manifest,

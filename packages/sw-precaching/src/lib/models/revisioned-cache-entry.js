@@ -23,6 +23,13 @@ class RevisionedCacheEntry {
    * @return {String} The final URL to make the request to then cache.
    */
   _cacheBustUrl(requestURL, revision) {
+    if ('cache' in Request.prototype) {
+      // Make use of the Request cache mode where we can.
+      // Reload skips the HTTP cache for outgoing requests and updates
+      // the cache with the returned reponse.
+      return new Request(requestURL, {cache: 'reload'});
+    }
+
     const parsedURL = new URL(requestURL, location.origin);
     parsedURL.search += (parsedURL.search ? '&' : '') +
       encodeURIComponent(cacheBustParamName) + '=' +
