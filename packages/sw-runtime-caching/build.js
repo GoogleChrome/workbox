@@ -14,17 +14,11 @@
 */
 
 const pkg = require('./package.json');
-const rollupBabel = require('rollup-plugin-babel');
 const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
-
-const plugins = [rollupBabel({
-  plugins: ['transform-async-to-generator', 'external-helpers'],
-  exclude: 'node_modules/**',
-})];
 
 const buildConfigs = generateBuildConfigs({
   es: pkg['jsnext:main'],
   umd: pkg.main,
-}, __dirname, 'goog.runtimeCaching', plugins);
+}, __dirname, 'goog.runtimeCaching');
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

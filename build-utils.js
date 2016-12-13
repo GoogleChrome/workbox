@@ -15,17 +15,20 @@
 
 /* eslint-disable no-console, valid-jsdoc */
 
+const babel = require('gulp-babel');
 const childProcess = require('child_process');
-const path = require('path');
-const promisify = require('promisify-node');
+const commonjs = require('rollup-plugin-commonjs');
 const fs = require('fs');
 const gulp = require('gulp');
 const gulpif = require('gulp-if');
-const sourcemaps = require('gulp-sourcemaps');
-const rename = require('gulp-rename');
-const rollup = require('gulp-rollup');
-const babel = require('gulp-babel');
 const header = require('gulp-header');
+const path = require('path');
+const promisify = require('promisify-node');
+const rename = require('gulp-rename');
+const resolve = require('rollup-plugin-node-resolve');
+const rollup = require('gulp-rollup');
+const rollupBabel = require('rollup-plugin-babel');
+const sourcemaps = require('gulp-sourcemaps');
 
 const globPromise = promisify('glob');
 
@@ -105,6 +108,7 @@ function buildJSBundle(options) {
     const sources = [
       `${options.projectDir}/src/**/*.js`,
       '{lib,packages}/**/*.js',
+      // Explicitly avoid matching node_modules/.bin/*.js
       'node_modules/*/**/*.js',
     ];
 
@@ -133,10 +137,22 @@ function buildJSBundle(options) {
  *        ('umd', 'es', etc.) to the path to use for the output.
  * @param {String} projectDir The path of the project directory.
  * @param {String} moduleName The name of the module, used in the UMD output.
- * @param {Array.<Object>} [plugins] A list of Rollup plugins to use.
  * @returns {Array.<Object>}
  */
-function generateBuildConfigs(formatToPath, projectDir, moduleName, plugins) {
+function generateBuildConfigs(formatToPath, projectDir, moduleName) {
+  const plugins = [
+    rollupBabel({
+      plugins: ['transform-async-to-generator', 'external-helpers'],
+      exclude: 'node_modules/**',
+    }),
+    resolve({
+      jsnext: true,
+      main: true,
+      browser: true,
+    }),
+    commonjs(),
+  ];
+
   // This is shared throughout the full permutation of build configs.
   const baseConfig = {
     rollupConfig: {
@@ -167,7 +183,9 @@ function generateBuildConfigs(formatToPath, projectDir, moduleName, plugins) {
       return fullConfig;
     });
   }).reduce((previous, current) => {
-    // Flatten the two-dimensional array.
+    // Flatten the two-dimensional array. E.g.:
+    // Input is [[umd-minified, umd-unminified], [es-minified, es-unminified]]
+    // Output is [umd-minified, umd-unminified, es-minified, es-unminified]
     return previous.concat(current);
   }, []);
 }

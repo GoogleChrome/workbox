@@ -12,28 +12,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-const resolve = require('rollup-plugin-node-resolve');
-const commonjs = require('rollup-plugin-commonjs');
-const pkg = require('./package.json');
-const rollupBabel = require('rollup-plugin-babel');
-const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
 
-const plugins = [
-  rollupBabel({
-    plugins: ['transform-async-to-generator', 'external-helpers'],
-    exclude: 'node_modules/**',
-  }),
-  resolve({
-    jsnext: true,
-    main: true,
-    browser: true,
-  }),
-  commonjs(),
-];
+const pkg = require('./package.json');
+const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
 
 const buildConfigs = generateBuildConfigs({
   es: pkg['jsnext:main'],
   umd: pkg.main,
-}, __dirname, 'goog.swcli', plugins);
+}, __dirname, 'goog.swcli');
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

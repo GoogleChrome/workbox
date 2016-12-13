@@ -20,23 +20,10 @@ const resolve = require('rollup-plugin-node-resolve');
 const rollupBabel = require('rollup-plugin-babel');
 const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
 
-const plugins = [
-  resolve({
-    jsnext: true,
-    main: true,
-    browser: true,
-  }),
-  rollupBabel({
-    plugins: ['transform-async-to-generator', 'external-helpers'],
-    exclude: 'node_modules/**',
-  }),
-  commonjs(),
-];
-
 const mainModuleBuilds = generateBuildConfigs({
   es: pkg['jsnext:main'],
   umd: pkg.main,
-}, __dirname, 'goog.backgroundSyncQueue', plugins).map(buildJSBundle);
+}, __dirname, 'goog.backgroundSyncQueue').map(buildJSBundle);
 
 module.exports = () => Promise.all([
   ...mainModuleBuilds,

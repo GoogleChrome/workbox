@@ -30,7 +30,7 @@ const plugins = [
 
 const mainModuleBuilds = generateBuildConfigs({
   umd: pkg.main,
-}, __dirname, 'goog.offlineGoogleAnalytics', plugins).map(buildJSBundle);
+}, __dirname, 'goog.offlineGoogleAnalytics').map(buildJSBundle);
 
 module.exports = () => Promise.all([
   ...mainModuleBuilds,

@@ -13,28 +13,12 @@
  limitations under the License.
 */
 
-const commonjs = require('rollup-plugin-commonjs');
 const pkg = require('./package.json');
-const resolve = require('rollup-plugin-node-resolve');
-const rollupBabel = require('rollup-plugin-babel');
 const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
-
-const plugins = [
-  rollupBabel({
-    plugins: ['transform-async-to-generator', 'external-helpers'],
-    exclude: 'node_modules/**',
-  }),
-  resolve({
-    jsnext: true,
-    main: true,
-    browser: true,
-  }),
-  commonjs(),
-];
 
 const buildConfigs = generateBuildConfigs({
   es: pkg['jsnext:main'],
   umd: pkg.main,
-}, __dirname, 'goog.cacheExpiration', plugins);
+}, __dirname, 'goog.cacheExpiration');
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));
