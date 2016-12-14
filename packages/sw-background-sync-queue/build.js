@@ -127,5 +127,26 @@ module.exports = () => {
       outputName: 'build/test/background-sync-idb-helper.js',
       projectDir: __dirname,
     }),
+    buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, 'src', 'lib', 'queue-utils.js'),
+        format: 'umd',
+        moduleName: 'goog.backgroundSyncQueue.test.queueUtils',
+        plugins: [
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
+          commonjs(),
+        ],
+      },
+      outputName: 'build/test/queue-utils.js',
+      projectDir: __dirname,
+    }),
   ]);
 };

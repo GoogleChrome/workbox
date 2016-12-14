@@ -16,23 +16,27 @@
 
 'use strict';
 
-describe('request-manager test', () => {
-	let responseCounter = 0;
-	const callbacks = {
-		onResponse: function() {
-			responseCounter++;
-		},
+describe('queue-utils test', () => {
+	const queueUtils = goog.backgroundSyncQueue.test.queueUtils;
+	const config = {
+		maxAge: 1000*60*60*24,
 	};
-	const reqManager = new goog.backgroundSyncQueue.test.RequestManager({
-		callbacks,
-		new goog.backgroundSyncQueue.test.RequestQueue(),
+
+  it('test queueableRequest', () => {
+		const request = new Request('http://localhost:3001/__echo/date-with-cors/random');
+		queueUtils.getQueueableRequest({
+			request,
+			config,
+		}).then((reqObj) => {
+			chai.assert.isObject(reqObj);
+			chai.assert.isObject(reqObj.config);
+			chai.assert.isObject(reqObj.request);
+		});
+  });
+
+	it('test fetchableRequest', () => {
 	});
 
-  it('check constructor', () => {
-		chai.assert.isFunction(reqManager);
-		chai.assert.isFunction(reqManager.attachSyncHandler);
-		chai.assert.isFunction(reqManager.replayRequests);
-		chai.assert.equal(reqManager._globalCallbacks, callbacks);
-		chai.assert.equal(reqManager._queue, queue);
-  });
+	it('test queue cleanup', () => {
+	});
 });
