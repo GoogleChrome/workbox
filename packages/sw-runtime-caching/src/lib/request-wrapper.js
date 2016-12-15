@@ -62,7 +62,7 @@ class RequestWrapper {
       this.matchOptions = matchOptions;
     }
 
-    this.callbacks = {};
+    this.behaviorCallbacks = {};
 
     if (behaviors) {
       assert.isInstance({behaviors}, Array);
@@ -70,14 +70,21 @@ class RequestWrapper {
       behaviors.forEach((behavior) => {
         for (let callbackName of behaviorCallbacks) {
           if (typeof behavior[callbackName] === 'function') {
-            if (!this.callbacks[callbackName]) {
-              this.callbacks[callbackName] = [];
+            if (!this.behaviorCallbacks[callbackName]) {
+              this.behaviorCallbacks[callbackName] = [];
             }
-            this.callbacks[callbackName].push(
+            this.behaviorCallbacks[callbackName].push(
               behavior[callbackName].bind(behavior));
           }
         }
       });
+    }
+
+    if (this.behaviorCallbacks.cacheWillUpdate) {
+      if (this.behaviorCallbacks.cacheWillUpdate.length !== 1) {
+        throw Error('You cannot register more than one behavior that ' +
+          'implements cacheWillUpdate.');
+      }
     }
   }
 
@@ -118,8 +125,8 @@ class RequestWrapper {
     assert.atLeastOne({request});
 
     return await fetch(request, this.fetchOptions).catch((error) => {
-      if (this.callbacks.fetchDidFail) {
-        for (let callback of this.callbacks.fetchDidFail) {
+      if (this.behaviorCallbacks.fetchDidFail) {
+        for (let callback of this.behaviorCallbacks.fetchDidFail) {
           callback({request});
         }
       }
@@ -148,17 +155,9 @@ class RequestWrapper {
 
     // .ok is true if the response status is 2xx. That's the default condition.
     let cacheable = response.ok;
-    // If we have any cacheWillUpdate callbacks defined...
-    if (this.callbacks.cacheWillUpdate) {
-      // ...run throuh the callbacks one at a time, using reduce() to keep track
-      // of the previous result. We explicitly use reduce() here rather than
-      // some() since we want to make sure to run all of the callbacks, even
-      // if we already have a true result from one.
-      // This allows cacheWillUpdate callbacks to have side effects other, than
-      // just returning true or false.
-      cacheable = this.callbacks.cacheWillUpdate.reduce((previous, cb) => {
-        return cb({newResponse: response}) || previous;
-      }, false);
+    if (this.behaviorCallbacks.cacheWillUpdate) {
+      cacheable = this.behaviorCallbacks.cacheWillUpdate[0](
+        {request, response});
     }
 
     if (cacheable) {
@@ -172,7 +171,8 @@ class RequestWrapper {
         // Only bother getting the old response if the new response isn't opaque
         // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
         // need it.
-        if (response.type !== 'opaque' && this.callbacks.cacheDidUpdate) {
+        if (response.type !== 'opaque' &&
+          this.behaviorCallbacks.cacheDidUpdate) {
           oldResponse = await this.match({request});
         }
 
@@ -180,7 +180,7 @@ class RequestWrapper {
         // cacheDidUpdateCallbacks, wait until the cache is updated.
         await cache.put(request, newResponse);
 
-        for (let callback of (this.callbacks.cacheDidUpdate || [])) {
+        for (let callback of (this.behaviorCallbacks.cacheDidUpdate || [])) {
           callback({cacheName: this.cacheName, oldResponse, newResponse});
         }
       });

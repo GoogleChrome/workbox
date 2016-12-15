@@ -86,8 +86,8 @@ class Behavior {
    * @return {boolean} `true` if the `Response` is cacheable, based on the
    *          configuration of this object, and `false` otherwise.
    */
-  cacheWillUpdate({newResponse} = {}) {
-    return this.isResponseCacheable({response: newResponse});
+  cacheWillUpdate({response} = {}) {
+    return this.isResponseCacheable({response});
   }
 
   /**
