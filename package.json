@@ -64,6 +64,6 @@
     "serve-index": "^1.8.0",
     "serve-static": "^1.11.1",
     "sinon": "^1.17.6",
-    "sw-testing-helpers": "0.1.4"
+    "sw-testing-helpers": "1.0.1"
   }
 }

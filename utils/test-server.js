@@ -38,7 +38,7 @@ module.exports = {
     }
 
     if (!port) {
-      port = 0;
+      port = 3004;
     }
 
     primaryServer = new ServerInstance();
