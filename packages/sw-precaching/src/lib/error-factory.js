@@ -18,9 +18,13 @@ import ErrorFactory from '../../../../lib/error-factory';
 const errors = {
   'not-in-sw': 'sw-precaching must be loaded in your service worker file.',
   'invalid-file-manifest-entry': `File manifest entries must be either a ` +
-    `string with revision info in the path or an object with path and ` +
-    `revision and parameters.`,
+    `string with revision info in the url or an object with a 'url' and ` +
+    `'revision' parameters.`,
   'bad-cache-bust': `The cache bust parameter must be a boolean.`,
+  'duplicate-entry-diff-revisions': `An attempt was made to cache the same ` +
+    `url twice with each having different revisions. This is not supported.`,
+  'request-not-cached': `A request failed the criteria to be cached. By ` +
+    `default, only responses with 'response.ok = true' are cached.`,
 };
 
 export default new ErrorFactory(errors);

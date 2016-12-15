@@ -27,7 +27,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
     .then(deleteIndexedDB);**/
   });
 
-  const testFileSet = (iframe, fileSet) => {
+  const testCacheEntries = (fileSet) => {
     return window.caches.keys()
     .then((cacheNames) => {
       cacheNames.length.should.equal(1);
@@ -44,7 +44,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
         cachedResponses.forEach((cachedResponse) => {
           let desiredPath = assetAndHash;
           if (typeof assetAndHash !== 'string') {
-            desiredPath = assetAndHash.path;
+            desiredPath = assetAndHash.url;
           }
 
           if (cachedResponse.url.indexOf(desiredPath) !== -1) {
@@ -55,24 +55,29 @@ describe('sw-precaching Test Revisioned Caching', function() {
 
         expect(matchingResponse).to.exist;
       });
-    })
+    });
+  };
+
+  const testFileSet = (iframe, fileSet) => {
+    return testCacheEntries(fileSet)
     .then(() => {
+      let responses = {};
       const promises = fileSet.map((assetAndHash) => {
         let url = assetAndHash;
         if (typeof assetAndHash === 'object') {
-          url = assetAndHash.path;
+          url = assetAndHash.url;
         }
 
-        return iframe.contentWindow.fetch(url);
-      });
-      return Promise.all(promises);
-    })
-    .then((cachedResponses) => {
-      let responses = {};
-      const promises = cachedResponses.map((cachedResponse) => {
-        return cachedResponse.text()
-        .then((bodyText) => {
-          responses[cachedResponse.url] = bodyText;
+        return iframe.contentWindow.fetch(url)
+        .then((cachedResponse) => {
+          if (cachedResponse.type === 'opaque') {
+            responses[url] = null;
+          } else {
+            return cachedResponse.text()
+            .then((bodyText) => {
+              responses[url] = bodyText;
+            });
+          }
         });
       });
       return Promise.all(promises)
@@ -84,17 +89,17 @@ describe('sw-precaching Test Revisioned Caching', function() {
 
   const compareCachedAssets = function(beforeData, afterData) {
     afterData.cacheList.forEach((afterAssetAndHash) => {
-      if (typeof assetAndHash === 'string') {
-        afterAssetAndHash = {path: afterAssetAndHash, revision: afterAssetAndHash};
+      if (typeof afterAssetAndHash === 'string') {
+        afterAssetAndHash = {url: afterAssetAndHash, revision: afterAssetAndHash};
       }
 
       let matchingBeforeAssetAndHash = null;
       beforeData.cacheList.forEach((beforeAssetAndHash) => {
         if (typeof beforeAssetAndHash === 'string') {
-          beforeAssetAndHash = {path: beforeAssetAndHash, revision: beforeAssetAndHash};
+          beforeAssetAndHash = {url: beforeAssetAndHash, revision: beforeAssetAndHash};
         }
 
-        if (beforeAssetAndHash.path === afterAssetAndHash.path) {
+        if (beforeAssetAndHash.url === afterAssetAndHash.url) {
           matchingBeforeAssetAndHash = beforeAssetAndHash;
         }
       });
@@ -103,10 +108,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
         return;
       }
 
-      let pathToCheck = new URL(afterAssetAndHash.path, location.origin).toString();
-
-      const beforeResponseBody = beforeData.cachedResponses[pathToCheck];
-      const afterResponseBody = afterData.cachedResponses[pathToCheck];
+      const beforeResponseBody = beforeData.cachedResponses[afterAssetAndHash.url];
+      const afterResponseBody = afterData.cachedResponses[afterAssetAndHash.url];
 
       if (matchingBeforeAssetAndHash.revision === afterAssetAndHash.revision) {
         // The request should be the same
@@ -169,6 +172,55 @@ describe('sw-precaching Test Revisioned Caching', function() {
       .then((iframe) => {
         return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
       });
+    });
+  });
+
+  it('should only request duplicate entries once', function() {
+    let allEntries = [];
+    goog.__TEST_DATA['duplicate-entries'].forEach((entries) => {
+      allEntries = allEntries.concat(entries);
+    });
+    allEntries = [...new Set(allEntries)];
+
+    return window.goog.swUtils.activateSW('data/duplicate-entries/duplicate-entries-sw.js')
+    .then((iframe) => {
+      return iframe.contentWindow.fetch('/__api/get-requests-made/')
+      .then((response) => {
+        return response.json();
+      })
+      .then((requestsMade) => {
+        if (allEntries.length !== requestsMade.length) {
+          throw new Error('Duplicate requests have been made: ' + JSON.stringify(requestsMade));
+        }
+      })
+      .then(() => {
+        return iframe;
+      });
+    })
+    .then((iframe) => {
+      return testFileSet(iframe, allEntries);
+    })
+    .then((responses) => {
+    });
+  });
+
+  it('should fail to install with 404 cache request', function() {
+    return window.goog.swUtils.activateSW('data/response-types/404-sw.js')
+    .then(() => {
+      throw new Error('Expected SW to fail installation due to caching 404 entry.');
+    }, (err) => {
+      // NOOP - The error is not to do with the error throw in SW, so nothing
+      // to check.
+    });
+  });
+
+  it('should cache opaque responses by default', function() {
+    return window.goog.swUtils.activateSW('data/response-types/opaque-sw.js')
+    .then(() => {
+      throw new Error('Expected SW to fail installation due to caching 404 entry.');
+    }, (err) => {
+      // NOOP - The error is not to do with the error throw in SW, so nothing
+      // to check.
     });
   });
 });

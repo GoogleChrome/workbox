@@ -27,7 +27,7 @@ describe('sw-lib Test Revisioned Caching', function() {
     .then(deleteIndexedDB);**/
   });
 
-  const testFileSet = (iframe, fileSet) => {
+  const testCacheEntries = (fileSet) => {
     return window.caches.keys()
     .then((cacheNames) => {
       cacheNames.length.should.equal(1);
@@ -44,7 +44,7 @@ describe('sw-lib Test Revisioned Caching', function() {
         cachedResponses.forEach((cachedResponse) => {
           let desiredPath = assetAndHash;
           if (typeof assetAndHash !== 'string') {
-            desiredPath = assetAndHash.path;
+            desiredPath = assetAndHash.url;
           }
 
           if (cachedResponse.url.indexOf(desiredPath) !== -1) {
@@ -55,24 +55,29 @@ describe('sw-lib Test Revisioned Caching', function() {
 
         expect(matchingResponse).to.exist;
       });
-    })
+    });
+  };
+
+  const testFileSet = (iframe, fileSet) => {
+    return testCacheEntries(fileSet)
     .then(() => {
+      let responses = {};
       const promises = fileSet.map((assetAndHash) => {
         let url = assetAndHash;
         if (typeof assetAndHash === 'object') {
-          url = assetAndHash.path;
+          url = assetAndHash.url;
         }
 
-        return iframe.contentWindow.fetch(url);
-      });
-      return Promise.all(promises);
-    })
-    .then((cachedResponses) => {
-      let responses = {};
-      const promises = cachedResponses.map((cachedResponse) => {
-        return cachedResponse.text()
-        .then((bodyText) => {
-          responses[cachedResponse.url] = bodyText;
+        return iframe.contentWindow.fetch(url)
+        .then((cachedResponse) => {
+          if (cachedResponse.type === 'opaque') {
+            responses[url] = null;
+          } else {
+            return cachedResponse.text()
+            .then((bodyText) => {
+              responses[url] = bodyText;
+            });
+          }
         });
       });
       return Promise.all(promises)
@@ -84,17 +89,17 @@ describe('sw-lib Test Revisioned Caching', function() {
 
   const compareCachedAssets = function(beforeData, afterData) {
     afterData.cacheList.forEach((afterAssetAndHash) => {
-      if (typeof assetAndHash === 'string') {
-        afterAssetAndHash = {path: afterAssetAndHash, revision: afterAssetAndHash};
+      if (typeof afterAssetAndHash === 'string') {
+        afterAssetAndHash = {url: afterAssetAndHash, revision: afterAssetAndHash};
       }
 
       let matchingBeforeAssetAndHash = null;
       beforeData.cacheList.forEach((beforeAssetAndHash) => {
         if (typeof beforeAssetAndHash === 'string') {
-          beforeAssetAndHash = {path: beforeAssetAndHash, revision: beforeAssetAndHash};
+          beforeAssetAndHash = {url: beforeAssetAndHash, revision: beforeAssetAndHash};
         }
 
-        if (beforeAssetAndHash.path === afterAssetAndHash.path) {
+        if (beforeAssetAndHash.url === afterAssetAndHash.url) {
           matchingBeforeAssetAndHash = beforeAssetAndHash;
         }
       });
@@ -103,10 +108,8 @@ describe('sw-lib Test Revisioned Caching', function() {
         return;
       }
 
-      let pathToCheck = new URL(afterAssetAndHash.path, location.origin).toString();
-
-      const beforeResponseBody = beforeData.cachedResponses[pathToCheck];
-      const afterResponseBody = afterData.cachedResponses[pathToCheck];
+      const beforeResponseBody = beforeData.cachedResponses[afterAssetAndHash.url];
+      const afterResponseBody = afterData.cachedResponses[afterAssetAndHash.url];
 
       if (matchingBeforeAssetAndHash.revision === afterAssetAndHash.revision) {
         // The request should be the same
