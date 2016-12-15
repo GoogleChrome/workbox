@@ -37,11 +37,11 @@ class LogHelper {
    * Print an error message to the console (Colored red).
    * @param {string} msg Message to print to the console
    */
-  error(msg) {
-    if (msg.stack) {
-      console.error(chalk.red(msg.stack));
-    } else {
-      console.error(chalk.red(msg));
+  error(msg, err) {
+    console.error(chalk.red(msg));
+
+    if (err && err.stack) {
+      console.error(chalk.red(err.stack));
     }
   }
 

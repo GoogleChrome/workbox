@@ -121,7 +121,7 @@ describe('sw-lib Test Revisioned Caching', function() {
     });
   };
 
-  it('should cache and fetch files', function() {
+  it('should cache and fetch files (sw-lib)', function() {
     const allAssets1 = goog.__TEST_DATA['sw-lib']['set-1']
       .concat(goog.__TEST_DATA['sw-lib']['set-2'])
       .concat(goog.__TEST_DATA['sw-lib']['set-3']);

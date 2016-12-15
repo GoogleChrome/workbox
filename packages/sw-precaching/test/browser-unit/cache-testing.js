@@ -23,8 +23,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   afterEach(function() {
-    /** return window.goog.swUtils.cleanState()
-    .then(deleteIndexedDB);**/
+    return window.goog.swUtils.cleanState()
+    .then(deleteIndexedDB);
   });
 
   const testCacheEntries = (fileSet) => {
@@ -121,7 +121,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
   };
 
-  it('should cache and fetch files', function() {
+  it('should cache and fetch files (sw-precaching)', function() {
     return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
     .then((iframe) => {
       return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
