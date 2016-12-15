@@ -2,7 +2,7 @@ const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 const path = require('path');
 const cliHelper = require('./helpers/cli-test-helper.js');
-const errors = require('../src/cli/errors.js');
+const errors = require('../src/lib/errors.js');
 
 describe('Ask for Root Directory', function() {
   const globalStubs = [];

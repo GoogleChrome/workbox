@@ -21,9 +21,10 @@ const path = require('path');
 const inquirer = require('inquirer');
 const minimist = require('minimist');
 
-const errors = require('./errors');
+const errors = require('../lib/errors');
 const logHelper = require('../lib/log-helper');
 const pkg = require('../../package.json');
+const constants = require('../lib/constants.js');
 
 /**
  * This class is a wrapper to make test easier. This is used by
@@ -192,11 +193,8 @@ class SWCli {
       });
     })
     .then((subdirectories) => {
-      const blacklistDirectoryNames = [
-        'node_modules',
-      ];
       return subdirectories.filter((subdirectory) => {
-        return !blacklistDirectoryNames.includes(subdirectory);
+        return !constants.blacklistDirectoryNames.includes(subdirectory);
       });
     })
     .then((subdirectories) => {
