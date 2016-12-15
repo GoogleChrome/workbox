@@ -20,55 +20,13 @@ const fs = require('fs');
 const path = require('path');
 const pkg = require('../package.json');
 const CLI = require('../src/cli/index.js');
+const cliHelper = require('./helpers/cli-test-helper.js');
 
 require('chai').should();
 
 describe('Test CLI Flags', function() {
-  const originalExit = process.exit;
-
-  const originalLog = console.log;
-  const originalWarn = console.warn;
-  const originalError = console.error;
-
-  let consoleLogs = [];
-  let consoleWarns = [];
-  let consoleErrors = [];
-
-  let globalExitCode;
-
-  const startLogCapture = () => {
-    console.log = (string) => {
-      consoleLogs.push(string);
-    };
-    console.warn = (string) => {
-      consoleWarns.push(string);
-    };
-    console.error = (string) => {
-      consoleErrors.push(string);
-    };
-  };
-
-  const endLogCapture = () => {
-    console.log = originalLog;
-    console.warn = originalWarn;
-    console.error = originalError;
-  };
-
-  beforeEach(function() {
-    consoleLogs = [];
-    consoleWarns = [];
-    consoleErrors = [];
-    globalExitCode = -1;
-
-    process.exit = (code) => {
-      globalExitCode = code;
-    };
-  });
-
   afterEach(function() {
-    endLogCapture();
-
-    process.exit = originalExit;
+    cliHelper.endLogCapture();
   });
 
   const versionFlags = [
@@ -77,16 +35,16 @@ describe('Test CLI Flags', function() {
   ];
   versionFlags.forEach((versionFlag) => {
     it(`should handle version flags: ${versionFlag}`, function() {
-      startLogCapture();
+      cliHelper.startLogCapture();
       return new CLI().argv([versionFlag])
       .then(() => {
-        endLogCapture();
+        const captured = cliHelper.endLogCapture();
 
-        globalExitCode.should.equal(0);
+        captured.exitCode.should.equal(0);
 
-        consoleLogs.length.should.equal(1);
+        captured.consoleLogs.length.should.equal(1);
 
-        consoleLogs[0].indexOf(pkg.version).should.not.equal(-1);
+        captured.consoleLogs[0].indexOf(pkg.version).should.not.equal(-1);
       });
     });
   });
@@ -98,16 +56,16 @@ describe('Test CLI Flags', function() {
   const helpText = fs.readFileSync(path.join(__dirname, '..', 'src', 'cli', 'cli-help.txt'), 'utf8');
   helpFlags.forEach((helpFlag) => {
     it(`should handle version flags: ${helpFlag}`, function() {
-      startLogCapture();
+      cliHelper.startLogCapture();
       return new CLI().argv([helpFlag])
       .then(() => {
-        endLogCapture();
+        const captured = cliHelper.endLogCapture();
 
-        globalExitCode.should.equal(0);
+        captured.exitCode.should.equal(0);
 
-        consoleLogs.length.should.equal(1);
+        captured.consoleLogs.length.should.equal(1);
 
-        consoleLogs[0].indexOf(helpText).should.not.equal(-1);
+        captured.consoleLogs[0].indexOf(helpText).should.not.equal(-1);
       });
     });
   });

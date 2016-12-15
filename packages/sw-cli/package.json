@@ -27,6 +27,7 @@
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cli",
   "dependencies": {
     "chalk": "^1.1.3",
+    "inquirer": "^2.0.0",
     "minimist": "^1.2.0"
   }
 }
