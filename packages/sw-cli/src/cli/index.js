@@ -18,10 +18,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const inquirer = require('inquirer');
 const minimist = require('minimist');
 
+const errors = require('../lib/errors');
 const logHelper = require('../lib/log-helper');
 const pkg = require('../../package.json');
+const constants = require('../lib/constants.js');
 
 /**
  * This class is a wrapper to make test easier. This is used by
@@ -121,8 +124,110 @@ class SWCli {
    * node process cleanly or not.
    */
   generateSW() {
-    // TODO: Generate SW
-    return Promise.resolve();
+    return this._getRootOfWebApp()
+    .then((rootDirectory) => {
+
+    });
+    /** return inquirer.prompt([
+      {
+        name: 'rootDir',
+        message: 'What is the root of your web app?',
+        validate: () => {
+          // TODO: Validate user input
+          return true;
+        },
+      },
+      {
+        name: 'fileExtensions',
+        message: 'Which file types would you like to cache?',
+        type: 'checkbox',
+        choices: [
+          {name: '*.html', checked: true},
+          {name: '*.css', checked: true},
+          {name: '*.TODO OTHERS', checked: true},
+        ],
+      },
+      {
+        name: 'fileManifestName',
+        message: 'What should we name the file manifest?',
+        default: 'precache-manifest.json',
+      },
+      {
+        name: 'serviceWorkerName',
+        message: 'What should we name the service worker file?',
+        default: 'sw.js',
+      },
+      {
+        name: 'saveConfig',
+        message: 'Last Question - Would you like to save these settings ' +
+          'to a config file?',
+        type: 'confirm',
+        default: true,
+      },
+    ]);**/
+  }
+
+  /**
+   * This method requests the root directory of the web app.
+   * The user can opt to type in the directory OR select from a list of
+   * directories in the current path.
+   * @return {Promise<string>} Promise the resolves with the name of the root
+   * directory if given.
+   */
+  _getRootOfWebApp() {
+    const manualEntryChoice = 'Manually Enter Path';
+    const currentDirectory = process.cwd();
+
+    return new Promise((resolve, reject) => {
+      fs.readdir(currentDirectory, (err, directoryContents) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(directoryContents);
+      });
+    })
+    .then((directoryContents) => {
+      return directoryContents.filter((directoryContent) => {
+        return fs.statSync(directoryContent).isDirectory();
+      });
+    })
+    .then((subdirectories) => {
+      return subdirectories.filter((subdirectory) => {
+        return !constants.blacklistDirectoryNames.includes(subdirectory);
+      });
+    })
+    .then((subdirectories) => {
+      const choices = subdirectories.concat([
+        new inquirer.Separator(),
+        manualEntryChoice,
+      ]);
+      return inquirer.prompt([
+        {
+          name: 'rootDir',
+          message: 'What is the root of your web app?',
+          type: 'list',
+          choices: choices,
+        },
+        {
+          name: 'rootDir',
+          message: 'Please manually enter the root of your web app?',
+          when: (answers) => {
+            return answers.rootDir === manualEntryChoice;
+          },
+        },
+      ]);
+    })
+    .then((answers) => {
+      return path.join(currentDirectory, answers.rootDir);
+    })
+    .catch((err) => {
+      logHelper.error(
+        errors['unable-to-get-rootdir'],
+        err
+      );
+      throw err;
+    });
   }
 
   /**
