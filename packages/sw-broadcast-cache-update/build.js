@@ -12,28 +12,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-const path = require('path');
-const {buildJSBundle} = require('../../build-utils');
-const pkg = require('./package.json');
 
-module.exports = () => {
-  return Promise.all([
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'umd',
-        moduleName: 'goog.broadcastCacheUpdate',
-      },
-      outputName: pkg.main,
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'es',
-      },
-      outputName: pkg['jsnext:main'],
-      projectDir: __dirname,
-    }),
-  ]);
-};
+const pkg = require('./package.json');
+const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
+
+const buildConfigs = generateBuildConfigs({
+  es: pkg['jsnext:main'],
+  umd: pkg.main,
+}, __dirname, 'goog.broadcastCacheUpdate');
+
+module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

@@ -13,40 +13,12 @@
  limitations under the License.
 */
 
-const commonjs = require('rollup-plugin-commonjs');
-const nodeResolve = require('rollup-plugin-node-resolve');
-const path = require('path');
 const pkg = require('./package.json');
-const {buildJSBundle} = require('../../build-utils');
+const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
 
-const pluginsConfig = [
-  nodeResolve({
-    jsnext: true,
-    main: true,
-  }),
-  commonjs(),
-];
+const buildConfigs = generateBuildConfigs({
+  es: pkg['jsnext:main'],
+  umd: pkg.main,
+}, __dirname, 'goog.routing');
 
-module.exports = () => {
-  return Promise.all([
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        plugins: pluginsConfig,
-        format: 'umd',
-        moduleName: 'goog.routing',
-      },
-      outputName: pkg.main,
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        plugins: pluginsConfig,
-        format: 'es',
-      },
-      outputName: pkg['jsnext:main'],
-      projectDir: __dirname,
-    }),
-  ]);
-};
+module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

@@ -13,55 +13,12 @@
  limitations under the License.
 */
 
-const commonjs = require('rollup-plugin-commonjs');
-const path = require('path');
 const pkg = require('./package.json');
-const resolve = require('rollup-plugin-node-resolve');
-const rollupBabel = require('rollup-plugin-babel');
-const {buildJSBundle} = require('../../build-utils');
+const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
 
-module.exports = () => {
-  return Promise.all([
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'umd',
-        moduleName: 'goog.cacheExpiration',
-        plugins: [
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: pkg.main,
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'es',
-        plugins: [
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: pkg['jsnext:main'],
-      projectDir: __dirname,
-    }),
-  ]);
-};
+const buildConfigs = generateBuildConfigs({
+  es: pkg['jsnext:main'],
+  umd: pkg.main,
+}, __dirname, 'goog.cacheExpiration');
+
+module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

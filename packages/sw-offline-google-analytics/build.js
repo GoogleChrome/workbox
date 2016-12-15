@@ -12,97 +12,70 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
+
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
-const {buildJSBundle} = require('../../build-utils');
+const pkg = require('./package.json');
+const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
 
-module.exports = () => {
-  return Promise.all([
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'umd',
-        moduleName: 'goog.offlineGoogleAnalytics',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/offline-google-analytics-import.js',
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'lib', 'enqueue-request.js'),
-        format: 'umd',
-        moduleName: 'goog.offlineGoogleAnalytics.test.enqueueRequest',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/test/enqueue-request.js',
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'lib', 'replay-queued-requests.js'),
-        format: 'umd',
-        moduleName: 'goog.offlineGoogleAnalytics.test.replayRequests',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/test/replay-queued-requests.js',
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'lib', 'constants.js'),
-        format: 'umd',
-        moduleName: 'goog.offlineGoogleAnalytics.test.constants',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/test/constants.js',
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, '..', '..', 'lib', 'idb-helper.js'),
-        format: 'umd',
-        moduleName: 'goog.offlineGoogleAnalytics.test.IDBHelper',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/test/idb-helper.js',
-      projectDir: __dirname,
-    }),
-  ]);
-};
+const plugins = [
+  resolve({
+    jsnext: true,
+    main: true,
+    browser: true,
+  }),
+  commonjs(),
+];
+
+const mainModuleBuilds = generateBuildConfigs({
+  umd: pkg.main,
+}, __dirname, 'goog.offlineGoogleAnalytics').map(buildJSBundle);
+
+module.exports = () => Promise.all([
+  ...mainModuleBuilds,
+
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'enqueue-request.js'),
+      format: 'umd',
+      moduleName: 'goog.offlineGoogleAnalytics.test.enqueueRequest',
+      plugins,
+    },
+    buildPath: 'build/test/enqueue-request.js',
+    projectDir: __dirname,
+  }),
+
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'replay-queued-requests.js'),
+      format: 'umd',
+      moduleName: 'goog.offlineGoogleAnalytics.test.replayRequests',
+      plugins,
+    },
+    buildPath: 'build/test/replay-queued-requests.js',
+    projectDir: __dirname,
+  }),
+
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'constants.js'),
+      format: 'umd',
+      moduleName: 'goog.offlineGoogleAnalytics.test.constants',
+      plugins,
+    },
+    buildPath: 'build/test/constants.js',
+    projectDir: __dirname,
+  }),
+
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, '..', '..', 'lib', 'idb-helper.js'),
+      format: 'umd',
+      moduleName: 'goog.offlineGoogleAnalytics.test.IDBHelper',
+      plugins,
+    },
+    buildPath: 'build/test/idb-helper.js',
+    projectDir: __dirname,
+  }),
+]);
