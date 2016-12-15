@@ -21,7 +21,7 @@ require('chromedriver');
 require('operadriver');
 require('geckodriver');
 
-const RETRIES = 4;
+const RETRIES = 3;
 const TIMEOUT = 10 * 1000;
 
 describe(`sw-precaching Browser Tests`, function() {
