@@ -132,6 +132,11 @@ class RequestWrapper {
    * Combines both fetching and caching, using the previously configured options
    * and calling the appropriate behaviors.
    *
+   * By default, responses with a status of [2xx](https://fetch.spec.whatwg.org/#ok-status)
+   * will be considered valid and cacheable, but this could be overridden by
+   * configuring one or more behaviors that implement the `cacheWillUpdate`
+   * lifecycle callback.
+   *
    * @param {Object} input
    * @param {Request} input.request
    * @return {Promise.<Response>} The network response.
@@ -140,7 +145,23 @@ class RequestWrapper {
     assert.atLeastOne({request});
 
     const response = await this.fetch({request});
-    if (response.ok || response.type === 'opaque') {
+
+    // .ok is true if the response status is 2xx. That's the default condition.
+    let cacheable = response.ok;
+    // If we have any cacheWillUpdate callbacks defined...
+    if (this.callbacks.cacheWillUpdate) {
+      // ...run throuh the callbacks one at a time, using reduce() to keep track
+      // of the previous result. We explicitly use reduce() here rather than
+      // some() since we want to make sure to run all of the callbacks, even
+      // if we already have a true result from one.
+      // This allows cacheWillUpdate callbacks to have side effects other, than
+      // just returning true or false.
+      cacheable = this.callbacks.cacheWillUpdate.reduce((previous, cb) => {
+        return cb({newResponse: response}) || previous;
+      }, false);
+    }
+
+    if (cacheable) {
       const newResponse = response.clone();
 
       // Run the cache update sequence asynchronously, without blocking the

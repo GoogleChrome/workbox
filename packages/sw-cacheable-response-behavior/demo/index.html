@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <title>Service Worker Cache Expiration Demo</title>
+    <link rel="stylesheet" href="index.css">
+  </head>
+  <body>
+    <p>
+      This is a basic demo of the <code>sw-cacheable-response-behavior</code>
+      library. The button will make a response to a https://httpbin.org/ URL,
+      which will return a response with the specified status. Only responses
+      with a status code of 200 or 404 will be cached.
+    </p>
+    <p>
+      You can confirm the behavior by making requests, then looking at the
+      entries in the
+      <a href="https://developers.google.com/web/tools/chrome-devtools/progressive-web-apps#caches">Cache Storage</a>
+      pane of Chrome's DevTools.
+    </p>
+
+    <p>
+      Make a request returning status
+      <input id="status" type="number" value="200">:
+      <button id="request">Make Request</button>
+    </p>
+
+    <script>
+      document.querySelector('#request').addEventListener('click', () => {
+        const status = document.querySelector('#status').value;
+        const url = 'https://httpbin.org/status/' + encodeURIComponent(status);
+        fetch(new Request(url, {mode: 'cors'}));
+      });
+
+      // Register our service worker.
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js');
+      }
+    </script>
+  </body>
+</html>

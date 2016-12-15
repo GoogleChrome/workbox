@@ -1,0 +1,24 @@
+{
+  "name": "sw-cacheable-response-behavior",
+  "version": "0.0.4",
+  "description": "This library takes a Response object and determines whether it's cacheable, based on a specific configuration.",
+  "keywords": [
+    "service worker",
+    "sw",
+    "caching",
+    "cache",
+    "sw-fw"
+  ],
+  "files": [
+    "src",
+    "build"
+  ],
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cacheable-response-behavior",
+  "main": "build/sw-cacheable-response-behavior.min.js",
+  "module": "build/sw-cacheable-response-behavior.min.mjs",
+  "jsnext:main": "build/sw-cacheable-response-behavior.min.mjs"
+}
