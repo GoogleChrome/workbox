@@ -3,6 +3,9 @@ let secondaryServer = `${location.protocol}//${location.hostname}:${parseInt(loc
 const EXAMPLE_REVISIONED_FILES_SET_1_STEP_1 = [];
 const EXAMPLE_REVISIONED_FILES_SET_1_STEP_2 = [];
 
+const EXAMPLE_UNREVISIONED_FILES_SET_1_STEP_1 = [];
+const EXAMPLE_UNREVISIONED_FILES_SET_1_STEP_2 = [];
+
 const revision1 = ['1234', '1234'];
 const revision2 = ['5678', '1234'];
 
@@ -17,7 +20,7 @@ const addNewEntry = (origin) => {
   if (origin === secondaryServer) {
     echoPath = '/__echo/date-with-cors';
   }
-
+  // Revisioned Entries
   for (let i = 0; i < revision1.length; i++) {
     EXAMPLE_REVISIONED_FILES_SET_1_STEP_1.push(`${origin}${echoPath}/${fileIndex}.${revision1[i]}.txt`);
     EXAMPLE_REVISIONED_FILES_SET_1_STEP_2.push(`${origin}${echoPath}/${fileIndex}.${revision2[i]}.txt`);
@@ -32,17 +35,14 @@ const addNewEntry = (origin) => {
       revision: revision2[i],
     });
     fileIndex++;
-
-    /** EXAMPLE_REVISIONED_FILES_SET_1_STEP_1.push({
-      path: new Request(`${origin}${echoPath}/${fileIndex}.${revision1[i]}.txt`),
-      revision: revision1[i],
-    });
-    EXAMPLE_REVISIONED_FILES_SET_1_STEP_2.push({
-      path: new Request(`${origin}${echoPath}/${fileIndex}.${revision2[i]}.txt`),
-      revision: revision2[i],
-    });
-    fileIndex++;**/
   }
+
+  // Unrevisioned Entries
+  EXAMPLE_UNREVISIONED_FILES_SET_1_STEP_1.push(`${origin}${echoPath}/${fileIndex}-string.txt`);
+  EXAMPLE_UNREVISIONED_FILES_SET_1_STEP_2.push(`${origin}${echoPath}/${fileIndex}-string.txt`);
+
+  EXAMPLE_UNREVISIONED_FILES_SET_1_STEP_1.push(new Request(`${origin}${echoPath}/${fileIndex}-request.txt`));
+  EXAMPLE_UNREVISIONED_FILES_SET_1_STEP_2.push(new Request(`${origin}${echoPath}/${fileIndex}-request.txt`));
 };
 
 // Add entries with relative path
@@ -59,6 +59,10 @@ self.goog.__TEST_DATA = {
   'set-1': {
     'step-1': EXAMPLE_REVISIONED_FILES_SET_1_STEP_1,
     'step-2': EXAMPLE_REVISIONED_FILES_SET_1_STEP_2,
+  },
+  'set-2': {
+    'step-1': EXAMPLE_UNREVISIONED_FILES_SET_1_STEP_1,
+    'step-2': EXAMPLE_UNREVISIONED_FILES_SET_1_STEP_2,
   },
   'duplicate-entries': [
     [

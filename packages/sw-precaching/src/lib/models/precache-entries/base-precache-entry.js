@@ -1,12 +1,11 @@
 import {cacheBustParamName} from '../../constants';
 
 class RevisionedCacheEntry {
-  constructor({entryID, revision, request, cacheBust, isRevisioned}) {
+  constructor({entryID, revision, request, cacheBust}) {
     this.entryID = entryID;
     this.revision = revision;
     this.request = request;
     this.cacheBust = cacheBust;
-    this.isRevisioned = isRevisioned;
   }
 
   getNetworkRequest() {

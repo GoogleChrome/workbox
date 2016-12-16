@@ -1,17 +1,45 @@
+import ErrorFactory from '../error-factory';
 import BaseCacheManager from './base-manager.js';
+import RequestPrecacheEntry from '../models/precache-entries/request-entry.js';
+import {defaultUnrevisionedCacheName} from '../constants';
 
 class UnrevisionedManger extends BaseCacheManager {
+  constructor() {
+    super(defaultUnrevisionedCacheName);
+  }
+  /**
+   * This method ensures that the file entry in the maniest is valid and
+   * if the entry is a revisioned string path, it is converted to an object
+   * with the desired fields.
+   * @param {String | object} input Either a URL string or an object
+   * with a `url`, `revision` and optional `cacheBust` parameter.
+   * @return {object} Returns a parsed version of the file entry with absolute
+   * URL, revision and a cacheBust value.
+   */
+  _parseEntry(input) {
+    if (typeof input === 'undefined' || input === null) {
+      throw ErrorFactory.createError('invalid-unrevisioned-entry',
+        new Error('Invalid file entry: ' + JSON.stringify(input)));
+    }
+
+    let precacheEntry;
+    if(typeof input === 'string') {
+        precacheEntry = new RequestPrecacheEntry(new Request(input, {
+          credentials: 'include',
+        }));
+    } else if (input instanceof Request) {
+      precacheEntry = new RequestPrecacheEntry(input);
+    } else {
+      throw ErrorFactory.createError('invalid-unrevisioned-entry',
+        new Error('Invalid file entry: ' +
+          JSON.stringify(precacheEntry)));
+    }
+
+    return precacheEntry;
+  }
 
   _onDuplicateEntryFound(newEntry, previous) {
     // NOOP. Just ignore duplication entries.
-  }
-
-  /**
-   * A simple helper method to get the cache used for precaching assets.
-   * @return {Cache} The cache to be used for precaching.
-   */
-  _getCache() {
-    return caches.open(defaultCacheName);
   }
 
   /**

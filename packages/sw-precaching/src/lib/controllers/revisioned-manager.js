@@ -1,13 +1,52 @@
 import ErrorFactory from '../error-factory';
 import BaseCacheManager from './base-manager.js';
 import RevisionDetailsModel from '../models/revision-details-model.js';
-import {defaultCacheName} from '../constants';
+import {defaultRevisionedCacheName} from '../constants';
+import StringPrecacheEntry from
+  '../models/precache-entries/string-precache-entry.js';
+import ObjectPrecacheEntry from
+  '../models/precache-entries/object-precache-entry.js';
 
 class RevisionedManger extends BaseCacheManager {
   constructor() {
-    super();
+    super(defaultRevisionedCacheName);
 
     this._revisionDetailsModel = new RevisionDetailsModel();
+  }
+
+  /**
+   * This method ensures that the file entry in the maniest is valid and
+   * if the entry is a revisioned string path, it is converted to an object
+   * with the desired fields.
+   * @param {String | object} input Either a URL string or an object
+   * with a `url`, `revision` and optional `cacheBust` parameter.
+   * @return {object} Returns a parsed version of the file entry with absolute
+   * URL, revision and a cacheBust value.
+   */
+  _parseEntry(input) {
+    if (typeof input === 'undefined' || input === null) {
+      throw ErrorFactory.createError('invalid-revisioned-entry',
+        new Error('Invalid file entry: ' + JSON.stringify(input)));
+    }
+
+    let precacheEntry;
+    switch(typeof input) {
+      case 'string': {
+        precacheEntry = new StringPrecacheEntry(input);
+        break;
+      }
+      case 'object': {
+        precacheEntry = new ObjectPrecacheEntry(input);
+        break;
+      }
+      default: {
+        throw ErrorFactory.createError('invalid-revisioned-entry',
+          new Error('Invalid file entry: ' +
+            JSON.stringify(precacheEntry)));
+      }
+    }
+
+    return precacheEntry;
   }
 
   _onDuplicateEntryFound(newEntry, previousEntry) {
@@ -22,14 +61,6 @@ class RevisionedManger extends BaseCacheManager {
           `${JSON.stringify(newEntry)}`),
       );
     }
-  }
-
-  /**
-   * A simple helper method to get the cache used for precaching assets.
-   * @return {Cache} The cache to be used for precaching.
-   */
-  _getCache() {
-    return caches.open(defaultCacheName);
   }
 
   /**

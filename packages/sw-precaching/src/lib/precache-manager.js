@@ -41,7 +41,7 @@ class PrecacheManager {
     self.addEventListener('install', (event) => {
       const promiseChain = Promise.all([
         this._revisionedManager._performInstallStep(),
-        // this._unrevisionedManager._performInstallStep(),
+        this._unrevisionedManager._performInstallStep(),
       ])
       .then(() => {
         // Closed indexedDB now that we are done with the install step
@@ -59,7 +59,7 @@ class PrecacheManager {
     self.addEventListener('activate', (event) => {
       const promiseChain = Promise.all([
         this._revisionedManager._cleanUpOldEntries(),
-        // this._unrevisionedManager._cleanUpOldEntries(),
+        this._unrevisionedManager._cleanUpOldEntries(),
       ])
       .then(() => {
         // Closed indexedDB now that we are done with the install step
@@ -82,7 +82,6 @@ class PrecacheManager {
 
   cacheUnrevisioned({unrevisionedFiles} = {}) {
     assert.isInstance({unrevisionedFiles}, Array);
-
     this._unrevisionedManager.cache(unrevisionedFiles);
   }
 
