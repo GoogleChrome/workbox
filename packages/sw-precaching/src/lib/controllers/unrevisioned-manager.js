@@ -25,7 +25,7 @@ class UnrevisionedManger extends BaseCacheManager {
     let precacheEntry;
     if(typeof input === 'string') {
         precacheEntry = new RequestPrecacheEntry(new Request(input, {
-          credentials: 'include',
+          credentials: 'same-origin',
         }));
     } else if (input instanceof Request) {
       precacheEntry = new RequestPrecacheEntry(input);
