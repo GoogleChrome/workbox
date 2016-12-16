@@ -14,20 +14,20 @@ mocha.setup({
   reporter: null,
 });
 
-describe('Test RevisionedCacheManager', function() {
-  let revisionedCacheManager;
+describe('Test PrecacheManager.cacheRevisioned', function() {
+  let cacheManager;
 
   const VALID_PATH_REL = '/__echo/date/example.txt';
   const VALID_PATH_ABS = `${location.origin}${VALID_PATH_REL}`;
   const VALID_REVISION = '1234';
 
   beforeEach(function() {
-    revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
+    cacheManager = new goog.precaching.PrecacheManager();
   });
 
   afterEach(function() {
-    revisionedCacheManager._close();
-    revisionedCacheManager = null;
+    cacheManager._close();
+    cacheManager = null;
   });
 
   const badRevisionFileInputs = [
@@ -46,7 +46,7 @@ describe('Test RevisionedCacheManager', function() {
   badRevisionFileInputs.forEach((badInput) => {
     it(`should handle bad cache({revisionedFiles='${badInput}'}) input`, function() {
       expect(() => {
-        revisionedCacheManager.cache({
+        cacheManager.cacheRevisioned({
           revisionedFiles: badInput,
         });
       }).to.throw('instance of \'Array\'');
@@ -54,24 +54,24 @@ describe('Test RevisionedCacheManager', function() {
 
     it(`should handle bad cache('${badInput}') input`, function() {
       expect(() => {
-        revisionedCacheManager.cache(badInput);
+        cacheManager.cacheRevisioned(badInput);
       }).to.throw('instance of \'Array\'');
     });
   });
 
   it(`should handle bad cache('[]') input`, function() {
     expect(() => {
-      revisionedCacheManager.cache([]);
+      cacheManager.cacheRevisioned([]);
     }).to.throw('instance of \'Array\'');
   });
 
   it(`should handle null / undefined inputs`, function() {
     expect(() => {
-      revisionedCacheManager.cache({revisionedFiles: null});
+      cacheManager.cacheRevisioned({revisionedFiles: null});
     }).to.throw('instance of \'Array\'');
 
     expect(() => {
-      revisionedCacheManager.cache(null);
+      cacheManager.cacheRevisioned(null);
     }).to.throw('null');
   });
 
@@ -109,7 +109,7 @@ describe('Test RevisionedCacheManager', function() {
     it(`should throw an errror for a page file manifest entry '${JSON.stringify(badFileManifest)}'`, function() {
       let caughtError;
       try {
-        revisionedCacheManager.cache({revisionedFiles: badFileManifest});
+        cacheManager.cacheRevisioned({revisionedFiles: badFileManifest});
       } catch (err) {
         caughtError = err;
       }
@@ -134,7 +134,7 @@ describe('Test RevisionedCacheManager', function() {
     it(`should be able to handle bad cache input '${JSON.stringify(badCacheBust)}'`, function() {
       let caughtError;
       try {
-        revisionedCacheManager.cache({revisionedFiles: [
+        cacheManager.cacheRevisioned({revisionedFiles: [
           {url: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: badCacheBust},
         ]});
       } catch (err) {
@@ -161,7 +161,7 @@ describe('Test RevisionedCacheManager', function() {
   ];
   goodManifestInputs.forEach((goodInput) => {
     it(`should be able to handle good cache input '${JSON.stringify(goodInput)}'`, function() {
-      revisionedCacheManager.cache({revisionedFiles: [goodInput]});
+      cacheManager.cacheRevisioned({revisionedFiles: [goodInput]});
     });
   });
 
@@ -169,10 +169,10 @@ describe('Test RevisionedCacheManager', function() {
     const TEST_PATH = '/__echo/date/hello.txt';
     let thrownError = null;
     try {
-      revisionedCacheManager.cache({revisionedFiles: [
+      cacheManager.cacheRevisioned({revisionedFiles: [
         {url: TEST_PATH, revision: '1234'},
       ]});
-      revisionedCacheManager.cache({revisionedFiles: [
+      cacheManager.cacheRevisioned({revisionedFiles: [
         {url: TEST_PATH, revision: '5678'},
       ]});
     } catch (err) {

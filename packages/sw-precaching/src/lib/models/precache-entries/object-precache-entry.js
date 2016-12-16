@@ -1,8 +1,8 @@
-import ErrorFactory from '../error-factory';
-import RevisionedCacheEntry from './revisioned-cache-entry.js';
+import ErrorFactory from '../../error-factory';
+import RevisionedCacheEntry from './base-precache-entry.js';
 
 class DefaultsCacheEntry extends RevisionedCacheEntry {
-  constructor({revisionID, revision, url, cacheBust}) {
+  constructor({entryID, revision, url, cacheBust}) {
     // Check cacheBust is a boolean
     let filteredCacheBust = cacheBust;
     if (typeof filteredCacheBust === 'undefined') {
@@ -27,17 +27,17 @@ class DefaultsCacheEntry extends RevisionedCacheEntry {
           JSON.stringify(url)));
     }
 
-    // Check revisionID type
-    if (typeof revisionID === 'undefined') {
-      revisionID = new URL(url, location.origin).toString();
-    } else if (typeof revisionID !== 'string' || revisionID.length === 0) {
+    // Check entryID type
+    if (typeof entryID === 'undefined') {
+      entryID = new URL(url, location.origin).toString();
+    } else if (typeof entryID !== 'string' || entryID.length === 0) {
       throw ErrorFactory.createError('invalid-file-manifest-entry',
-        new Error('Bad revisionID Parameter. It should be a string with at ' +
-          'least one character: ' + JSON.stringify(revisionID)));
+        new Error('Bad entryID Parameter. It should be a string with at ' +
+          'least one character: ' + JSON.stringify(entryID)));
     }
 
     super({
-      revisionID,
+      entryID,
       revision,
       request: new Request(url),
       cacheBust,

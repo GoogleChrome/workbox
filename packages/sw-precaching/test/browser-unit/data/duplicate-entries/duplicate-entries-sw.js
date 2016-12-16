@@ -11,9 +11,9 @@ sinon.stub(self, 'fetch', (requestUrl) => {
   return Promise.resolve(new Response());
 });
 
-const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
+const precacheManager = new goog.precaching.PrecacheManager();
 goog.__TEST_DATA['duplicate-entries'].forEach((entries) => {
-  revisionedCacheManager.cache({
+  precacheManager.cacheRevisioned({
     revisionedFiles: entries,
   });
 });

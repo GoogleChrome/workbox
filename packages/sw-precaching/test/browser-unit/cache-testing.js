@@ -209,6 +209,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
     .then(() => {
       throw new Error('Expected SW to fail installation due to caching 404 entry.');
     }, (err) => {
+      console.log(err);
       // NOOP - The error is not to do with the error throw in SW, so nothing
       // to check.
     });
