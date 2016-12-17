@@ -121,35 +121,6 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
   };
 
-  const compareUnrevisionedCachedAssets = function(beforeData, afterData) {
-    afterData.cacheList.forEach((afterURL) => {
-      if (afterURL instanceof Request) {
-        afterURL = afterURL.url;
-      }
-
-      let matchingBeforeUrl = null;
-      beforeData.cacheList.forEach((beforeUrl) => {
-        if (beforeUrl instanceof Request) {
-          beforeUrl = beforeUrl.url;
-        }
-
-        if (beforeUrl === afterURL) {
-          matchingBeforeUrl = beforeUrl;
-        }
-      });
-
-      if (!matchingBeforeUrl) {
-        return;
-      }
-
-      const beforeResponseBody = beforeData.cachedResponses[afterURL];
-      const afterResponseBody = afterData.cachedResponses[afterURL];
-
-      // The request should be different
-      beforeResponseBody.should.not.equal(afterResponseBody);
-    });
-  };
-
   it('should cache and fetch revisioned urls', function() {
     return window.goog.swUtils.activateSW('data/basic-cache/basic-revisioned-cache-sw.js')
     .then((iframe) => {
@@ -181,15 +152,6 @@ describe('sw-precaching Test Revisioned Caching', function() {
       return window.goog.swUtils.activateSW('data/basic-cache/basic-unrevisioned-cache-sw-2.js')
       .then((iframe) => {
         return testFileSet(iframe, goog.__TEST_DATA['set-2']['step-2']);
-      })
-      .then((step2Responses) => {
-        compareUnrevisionedCachedAssets({
-          cacheList: goog.__TEST_DATA['set-2']['step-1'],
-          cachedResponses: step1Responses,
-        }, {
-          cacheList: goog.__TEST_DATA['set-2']['step-2'],
-          cachedResponses: step2Responses,
-        });
       });
     });
   });
