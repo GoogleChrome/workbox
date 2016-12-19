@@ -33,6 +33,12 @@ async function getQueueableRequest({request, config}) {
 	return requestObject;
 }
 
+/**
+ * takes JSON object and return a Request object to be executed by
+ * the browser
+ * @param {Object} idbRequestObject
+ * @return {Request}
+ */
 async function getFetchableRequest({idbRequestObject}) {
 	let reqObject = {
 		mode: idbRequestObject.mode,
@@ -51,6 +57,7 @@ async function getFetchableRequest({idbRequestObject}) {
  * whose maxAge has expired
  *
  * @memberOf Queue
+ * @return {void}
  */
 async function cleanupQueue() {
 	let db = new IDBHelper(getDbName(), 1, 'QueueStore');

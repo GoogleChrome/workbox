@@ -13,7 +13,7 @@ class RequestManager {
 	 * Initializes the request manager
 	 * stores the callbacks object, maintains config and
 	 * attaches event handler
-	 * @param {any} {callbacks, queue}
+	 * @param {Object=} config
 	 *
 	 * @memberOf RequestManager
 	 */

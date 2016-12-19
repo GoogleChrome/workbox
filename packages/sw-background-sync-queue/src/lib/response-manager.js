@@ -1,6 +1,11 @@
 import {getDbName} from './background-sync-idb-helper';
 import IDBHelper from '../../../../lib/idb-helper';
 
+/**
+ * Puts the fetched response in the IDB
+ *
+ * @param {Object} config
+ */
 async function putResponse({hash, idbObject, response, idbQDb}) {
 	const _idbQHelper = idbQDb;
 	idbObject.response = {
@@ -11,6 +16,12 @@ async function putResponse({hash, idbObject, response, idbQDb}) {
 	_idbQHelper.put(hash, idbObject);
 }
 
+/**
+ * response fetched for the request for given hash
+ *
+ * @param {String} hash
+ * @return {Object} response
+ */
 async function getResponse(hash) {
 	const _idbQHelper = new IDBHelper(getDbName(), 1, 'QueueStore');
 	const object = _idbQHelper.get(hash);

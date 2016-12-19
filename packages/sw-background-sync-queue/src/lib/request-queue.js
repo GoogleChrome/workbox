@@ -11,16 +11,19 @@ import assert from '../../../../lib/assert';
 
 let _requestCounter = 0;
 let _queueCounter = 0;
+
 /**
- * Core queue class that handles all the enqueue and dequeue
- * as well as cleanup code for the background sync queue
- * @class
+ * Queue class to maintain and perform on the logical requests queue
+ *
+ * @class RequestQueue
  */
 class RequestQueue {
 	/**
-	 * Creates an instance of Queue.
+	 * Creates an instance of RequestQueue.
 	 *
-	 * @memberOf Queue
+	 * @param {Object} config
+	 *
+	 * @memberOf RequestQueue
 	 */
 	constructor({
 		config,
@@ -35,11 +38,21 @@ class RequestQueue {
 		this.initQueue();
 	}
 
+	/**
+	 * initializes the queue from the IDB store
+	 *
+	 * @memberOf RequestQueue
+	 */
 	async initQueue() {
 		const idbQueue = await this._idbQDb.get(this._queueName);
 		this._queue.concat(idbQueue);
 	}
 
+	/**
+	 * adds the current queueName to all queue array
+	 *
+	 * @memberOf RequestQueue
+	 */
 	async addQueueNameToAllQueues() {
 		if(!this._isQueueNameAddedToAllQueue) {
 			let allQueues = await this._idbQDb.get(allQueuesPlaceholder);
@@ -52,6 +65,11 @@ class RequestQueue {
 		}
 	}
 
+	/**
+	 * saves the logical queue to DIB
+	 *
+	 * @memberOf RequestQueue
+	 */
 	async saveQueue() {
 		await this._idbQDb.put(this._queueName, this._queue);
 	}
@@ -61,7 +79,6 @@ class RequestQueue {
 	 * preferably when network comes back
 	 *
 	 * @param {Request} request request object to be queued by this
-	 * @param {Object} config optional config to override config params
 	 *
 	 * @memberOf Queue
 	 */
@@ -104,8 +121,7 @@ class RequestQueue {
 	 * get the Request from the queue at a particular index
 	 *
 	 * @param {string} hash hash of the request at the given index
-	 * @return {Request}
-	 *
+	 * @return {Request} request object corresponding to given hash
 	 * @memberOf Queue
 	 */
 	async getRequestFromQueue({hash}) {
@@ -116,14 +132,35 @@ class RequestQueue {
 		}
 	}
 
+	/**
+	 * returns the instance of queue.
+	 *
+	 * @readonly
+	 *
+	 * @memberOf RequestQueue
+	 */
 	get queue() {
 		return Object.assign([], this._queue);
 	}
 
+	/**
+	 * returns the name of the current queue
+	 *
+	 * @readonly
+	 *
+	 * @memberOf RequestQueue
+	 */
 	get queueName() {
 		return this._queueName;
 	}
 
+	/**
+	 * returns the instance of IDBStore
+	 *
+	 * @readonly
+	 *
+	 * @memberOf RequestQueue
+	 */
 	get idbQDb() {
 		return this._idbQDb;
 	}
