@@ -18,23 +18,45 @@
 
 describe('queue-utils test', () => {
 	const queueUtils = goog.backgroundSyncQueue.test.queueUtils;
+	const maxAgeTimeStamp = 1000*60*60*24;
 	const config = {
-		maxAge: 1000*60*60*24,
+		maxAge: maxAgeTimeStamp,
 	};
 
   it('test queueableRequest', () => {
 		const request = new Request('http://localhost:3001/__echo/date-with-cors/random');
-		queueUtils.getQueueableRequest({
+		return queueUtils.getQueueableRequest({
 			request,
 			config,
 		}).then((reqObj) => {
 			chai.assert.isObject(reqObj);
 			chai.assert.isObject(reqObj.config);
 			chai.assert.isObject(reqObj.request);
+
+			chai.assert.equal(reqObj.config.maxAge, maxAgeTimeStamp);
+			chai.assert.equal(reqObj.request.url, request.url);
+			chai.assert.equal(reqObj.request.mode, request.mode);
+			chai.assert.equal(reqObj.request.method, request.method);
+			chai.assert.equal(reqObj.request.redirect, request.redirect);
 		});
   });
 
 	it('test fetchableRequest', () => {
+		const reqObj = {
+			'url': 'http://localhost:3001/__echo/date-with-cors/random',
+			'headers': '[]',
+			'mode': 'cors',
+			'method': 'GET',
+			'redirect': 'follow',
+		};
+
+		return queueUtils.getFetchableRequest({idbRequestObject: reqObj})
+			.then( (request) => {
+				chai.assert.equal(reqObj.url, request.url);
+				chai.assert.equal(reqObj.mode, request.mode);
+				chai.assert.equal(reqObj.method, request.method);
+				chai.assert.equal(reqObj.redirect, request.redirect);
+			});
 	});
 
 	it('test queue cleanup', () => {
