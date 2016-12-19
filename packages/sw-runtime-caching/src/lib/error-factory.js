@@ -17,7 +17,7 @@ import ErrorFactory from '../../../../lib/error-factory';
 
 const errors = {
   'multiple-cache-will-update-behaviors': 'You cannot register more than one ' +
-    'behavior that implements cacheWillUpdate.'
+    'behavior that implements cacheWillUpdate.',
 };
 
 export default new ErrorFactory(errors);
