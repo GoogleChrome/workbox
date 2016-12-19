@@ -15,9 +15,10 @@
 
 import assert from '../../../../lib/assert';
 import ErrorFactory from './error-factory';
-import IDBHelper from '../../../../lib/idb-helper.js';
-import {defaultCacheName, dbName, dbVersion, dbStorename, cacheBustParamName}
-  from './constants';
+import StringCacheEntry from './models/string-cache-entry.js';
+import DefaultsCacheEntry from './models/defaults-cache-entry.js';
+import RevisionDetailsModel from './models/revision-details-model.js';
+import {defaultCacheName} from './constants';
 
 /**
  * RevisionedCacheManager manages efficient caching of a file manifest,
@@ -32,8 +33,8 @@ class RevisionedCacheManager {
    */
   constructor() {
     this._eventsRegistered = false;
-    this._fileEntriesToCache = [];
-    this._idbHelper = new IDBHelper(dbName, dbVersion, dbStorename);
+    this._installCacheList = {};
+    this._revisionDetailsModel = new RevisionDetailsModel();
 
     this._registerEvents();
   }
@@ -42,10 +43,10 @@ class RevisionedCacheManager {
    * The method expects an array of file entries in the revisionedFiles
    * parameter. Each fileEntry should be either a string or an object.
    *
-   * A string file entry should be paths / URL's that are revisions in the
-   * name (i.e. '/example/hello.1234.txt').
+   * If the entry is a string, the URL should be revisioned like
+   * '/example/hello.1234.txt' for example is revisioned by '1234'.
    *
-   * A file entry can also be an object that *must* have a 'path' and
+   * If the entry is an object, it *must* have a 'url' and
    * 'revision' parameter. The revision cannot be an empty string. With These
    * entries you can prevent cacheBusting by setting a 'cacheBust' parameter
    * to false. (i.e. {path: '/exmaple/hello.txt', revision: '1234'} or
@@ -58,69 +59,84 @@ class RevisionedCacheManager {
   cache({revisionedFiles} = {}) {
     assert.isInstance({revisionedFiles}, Array);
 
-    const parsedFileList = revisionedFiles.map((revisionedFileEntry) => {
-      return this._validateFileEntry(revisionedFileEntry);
+    revisionedFiles.forEach((revisionedFileEntry) => {
+      const fileEntry = this._validateFileEntry(revisionedFileEntry);
+      this._addFileEntryToInstallList(fileEntry);
     });
-
-    this._fileEntriesToCache = this._fileEntriesToCache.concat(parsedFileList);
   }
 
   /**
-   * This method ensures that the file entry in the file maniest is valid and
+   * This method ensures that the file entry in the maniest is valid and
    * if the entry is a revisioned string path, it is converted to an object
    * with the desired fields.
-   * @param {String | object} fileEntry Either a path for a file or an object
-   * with a `path`, `revision` and optional `cacheBust` parameter.
+   * @param {String | object} input Either a URL string or an object
+   * with a `url`, `revision` and optional `cacheBust` parameter.
    * @return {object} Returns a parsed version of the file entry with absolute
    * URL, revision and a cacheBust value.
    */
-  _validateFileEntry(fileEntry) {
-    let parsedFileEntry = fileEntry;
-    if (typeof parsedFileEntry === 'string') {
-      parsedFileEntry = {
-        path: fileEntry,
-        revision: fileEntry,
-        cacheBust: false,
-      };
-    }
-
-    if (!parsedFileEntry || typeof parsedFileEntry !== 'object') {
+  _validateFileEntry(input) {
+    if (typeof input === 'undefined' || input === null) {
       throw ErrorFactory.createError('invalid-file-manifest-entry',
-        new Error('Invalid file entry: ' +
-          JSON.stringify(fileEntry)));
+        new Error('Invalid file entry: ' + JSON.stringify(input)));
     }
 
-    if (typeof parsedFileEntry.path !== 'string') {
-      throw ErrorFactory.createError('invalid-file-manifest-entry',
-        new Error('Invalid path: ' + JSON.stringify(fileEntry)));
+    let fileEntry;
+    switch(typeof input) {
+      case 'string': {
+        fileEntry = new StringCacheEntry({fileEntry: input});
+        break;
+      }
+      case 'object': {
+        fileEntry = new DefaultsCacheEntry(input);
+        break;
+      }
+      default: {
+        throw ErrorFactory.createError('invalid-file-manifest-entry',
+          new Error('Invalid file entry: ' +
+            JSON.stringify(fileEntry)));
+      }
     }
 
-    try {
-      parsedFileEntry.path =
-        new URL(parsedFileEntry.path, location.origin).toString();
-    } catch (err) {
-      throw ErrorFactory.createError('invalid-file-manifest-entry',
-        new Error('Unable to parse path as URL: ' +
-          JSON.stringify(fileEntry)));
-    }
+    return fileEntry;
+  }
 
-    if (typeof parsedFileEntry.revision !== 'string' ||
-      parsedFileEntry.revision.length == 0) {
-      throw ErrorFactory.createError('invalid-file-manifest-entry',
-        new Error('Invalid revision: ' +
-          JSON.stringify(fileEntry)));
-    }
+  /**
+   * This method will add an entry to the install list.
+   *
+   * This method will filter out duplicates and also checks for the scenario
+   * where two entries have the same URL but different revisions. For example
+   * caching:
+   * [
+   *   {url: '/hello.txt', revision: '1'},
+   *   {url: '/hello.txt', revision: '2'},
+   * ]
+   * Will throw an error as the library can't determine the correct revision
+   * and this may cause issues in future when updating the service worker
+   * with new revisions.
+   *
+   * @param {RevisionedCacheEntry} fileEntry The file entry to be cached during
+   * the next install event.
+   */
+  _addFileEntryToInstallList(fileEntry) {
+    const revisionID = fileEntry.revisionID;
+    const previousEntry = this._installCacheList[fileEntry.revisionID];
 
-    // Add cache bust if its not defined
-    if (typeof parsedFileEntry.cacheBust === 'undefined') {
-      parsedFileEntry.cacheBust = true;
-    } else if (typeof parsedFileEntry.cacheBust !== 'boolean') {
-      throw ErrorFactory.createError('invalid-file-manifest-entry',
-        new Error('Invalid cacheBust: ' +
-          JSON.stringify(fileEntry)));
+    // If entry exists, check the revision. If the revisions are the same
+    // it's simply a duplicate entry. If they are different, we have two
+    // identical requests with two different revisions which will put this
+    // module into a bad state.
+    if (previousEntry) {
+      if (previousEntry.revision !== fileEntry.revision) {
+        throw ErrorFactory.createError(
+          'duplicate-entry-diff-revisions',
+          new Error(`${JSON.stringify(previousEntry)} <=> ` +
+            `${JSON.stringify(fileEntry)}`),
+        );
+      }
+    } else {
+      // This entry isn't in the install list
+      this._installCacheList[revisionID] = fileEntry;
     }
-
-    return parsedFileEntry;
   }
 
   /**
@@ -137,59 +153,122 @@ class RevisionedCacheManager {
     this._eventsRegistered = true;
 
     self.addEventListener('install', (event) => {
-      if (this._fileEntriesToCache.length === 0) {
+      if (this._installCacheList.length === 0) {
         return;
       }
 
       event.waitUntil(
         this._performInstallStep()
+        .then(() => {
+          // Closed indexedDB now that we are done with the install step
+          this._close();
+        })
+        .catch((err) => {
+          this._close();
+
+          throw err;
+        })
+      );
+    });
+
+    self.addEventListener('activate', (event) => {
+      event.waitUntil(
+        this._cleanUpOldEntries()
+        .then(() => {
+          // Closed indexedDB now that we are done with the install step
+          this._close();
+        })
+        .catch((err) => {
+          this._close();
+
+          throw err;
+        })
       );
     });
   }
 
   /**
+   * A simple helper method to get the cache used for precaching assets.
+   * @return {Cache} The cache to be used for precaching.
+   */
+  _getCache() {
+    return caches.open(defaultCacheName);
+  }
+
+  /**
    * This method manages the actual install event to cache the revisioned
    * assets.
-   * @param {String} cacheName The name to use for the cache
    * @return {Promise} The promise resolves when all the desired assets are
    * cached.
    */
   async _performInstallStep(cacheName) {
-    cacheName = cacheName || defaultCacheName;
+    let openCache = await this._getCache();
 
-    let openCache = await caches.open(cacheName);
-    const cachePromises = this._fileEntriesToCache.map(async (fileEntry) => {
-      const isCached = await this._isAlreadyCached(fileEntry, openCache);
-      if (isCached) {
-        return;
-      }
-
-      let requestUrl = this._cacheBustUrl(fileEntry);
-      const response = await fetch(requestUrl, {
-        credentials: 'same-origin',
-      });
-      await openCache.put(fileEntry.path, response);
-      await this._putRevisionDetails(fileEntry.path, fileEntry.revision);
+    const entriesToCache = Object.values(this._installCacheList);
+    const cachePromises = entriesToCache.map(async (fileEntry) => {
+      return this._cacheRevisionedEntry(fileEntry, openCache);
     });
 
+    // Wait for all requests to be cached.
     await Promise.all(cachePromises);
+  }
 
-    const urlsCachedOnInstall = this._fileEntriesToCache
-      .map((fileEntry) => fileEntry.path);
+  /**
+   * Once the install event has occured and the previous entries need
+   * to be deleted from the cache, this method will compare the URL's
+   * and figure out which assets are no longer required to be precached.
+   */
+  async _cleanUpOldEntries() {
+    const requestsCachedOnInstall = Object.values(this._installCacheList)
+      .map((fileEntry) => fileEntry.request.url);
+
+    let openCache = await this._getCache();
     const allCachedRequests = await openCache.keys();
 
-    const cacheDeletePromises = allCachedRequests.map((cachedRequest) => {
-      if (urlsCachedOnInstall.includes(cachedRequest.url)) {
-        return;
+    const cachedRequestsToDelete = allCachedRequests.filter((cachedRequest) => {
+      if (requestsCachedOnInstall.includes(cachedRequest.url)) {
+        return false;
       }
-
-      return openCache.delete(cachedRequest);
+      return true;
     });
 
-    await Promise.all(cacheDeletePromises);
+    await Promise.all(
+      cachedRequestsToDelete.map((cachedRequest) => {
+        return openCache.delete(cachedRequest);
+      })
+    );
+  }
 
-    // Closed indexedDB now that we are done with the install step
-    this._close();
+
+  /**
+   * This method will take a file entry, cache it and add the revision details
+   * to the RevisionDetailsModel.
+   * @param {RevisionCacheEntry} fileEntry
+   * @param {Cache} openCache
+   * @return {Promise} Resolves once the entry is cached and details are
+   * stored by REvisionDetailsModel.
+   */
+  async _cacheRevisionedEntry(fileEntry, openCache) {
+    const isCached = await this._isAlreadyCached(fileEntry, openCache);
+    if (isCached) {
+      return;
+    }
+
+    let response = await fetch(fileEntry.cacheBustRequest, {
+        credentials: 'same-origin',
+      });
+
+    if (response.ok) {
+      await openCache.put(fileEntry.request, response);
+
+      await this._revisionDetailsModel.put(
+        fileEntry.revisionID, fileEntry.revision);
+    } else {
+      throw ErrorFactory.createError('request-not-cached', {
+        message: `Failed to get a cacheable response for ` +
+          `'${fileEntry.request.url}'`,
+      });
+    }
   }
 
   /**
@@ -205,61 +284,21 @@ class RevisionedCacheManager {
    * cached, false otherwise.
    */
   async _isAlreadyCached(fileEntry, openCache) {
-    const revisionDetails = await this._getRevisionDetails(fileEntry.path);
+    const revisionDetails = await
+      this._revisionDetailsModel.get(fileEntry.revisionID);
     if (revisionDetails !== fileEntry.revision) {
       return false;
     }
 
-    const cachedResponse = await openCache.match(fileEntry.path);
+    const cachedResponse = await openCache.match(fileEntry.request);
     return cachedResponse ? true : false;
-  }
-
-  /**
-   * This method gets the revision details for a given path.
-   * @param {String} path The path of an asset to look up.
-   * @return {Promise<String|null>} Returns a string for the last revision or
-   * returns null if there is no revision information.
-   */
-  _getRevisionDetails(path) {
-    return this._idbHelper.get(path);
-  }
-
-  /**
-   * This method saves the revision details to indexedDB.
-   * @param {String} path The path for the asset.
-   * @param {String} revision The current revision for this asset path.
-   * @return {Promise} Promise that resolves once the data has been saved.
-   */
-  _putRevisionDetails(path, revision) {
-    return this._idbHelper.put(path, revision);
-  }
-
-  /**
-   * This method takes a file entry and if the `cacheBust` parameter is set to
-   * true, the cacheBust parameter will be added to the URL before making the
-   * request. The response will be cached with the absolute URL without
-   * the cache busting search param.
-   * @param {Object} fileEntry This is an object with `path`, `revision` and
-   * `cacheBust` parameters.
-   * @return {String} The final URL to make the request to then cache.
-   */
-  _cacheBustUrl(fileEntry) {
-    if (fileEntry.cacheBust === false) {
-      return fileEntry.path;
-    }
-
-    const parsedURL = new URL(fileEntry.path);
-    parsedURL.search += (parsedURL.search ? '&' : '') +
-      encodeURIComponent(cacheBustParamName) + '=' +
-      encodeURIComponent(fileEntry.revision);
-    return parsedURL.toString();
   }
 
   /**
    * This method closes the indexdDB helper.
    */
   _close() {
-    this._idbHelper.close();
+    this._revisionDetailsModel._close();
   }
 }
 

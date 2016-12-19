@@ -39,14 +39,24 @@ class ServerInstance {
       res.send(`${req.params.file}-${Date.now()}`);
     });
 
-    this._app.get('/__echo/date-with-cors/:file', function(req, res) {
+    this._app.all('/__echo/date-with-cors/:file', function(req, res) {
+      res.setHeader('Access-Control-Allow-Methods',
+        'POST, GET, PUT, DELETE, OPTIONS');
       res.setHeader('Cache-Control', 'max-age=' + (24 * 60 * 60));
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.send(`${req.params.file}-${Date.now()}`);
     });
+
+    this._app.get('/__test/404/', function(req, res) {
+      res.status(404).send('404');
+    });
   }
 
   start(rootDirectory, port) {
+    if (typeof port === 'undefined') {
+      port = 0;
+    }
+
     if (this._server) {
       return Promise.reject(new Error('Server already started.'));
     }
@@ -62,6 +72,13 @@ class ServerInstance {
 
     return new Promise((resolve, reject) => {
       this._server = this._app.listen(port, 'localhost', () => {
+        if (process.env.TRAVIS) {
+          /* eslint-disable no-console */
+          console.log(`[Debug Info] Test Server: ` +
+            `http://localhost:${this._server.address().port}`);
+          console.log('');
+          /* eslint-enable no-console */
+        }
         resolve(this._server.address().port);
       });
     });

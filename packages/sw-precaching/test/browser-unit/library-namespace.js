@@ -46,13 +46,7 @@ describe('Test Behaviors of Loading the Script', function() {
   ];
   swUnitTests.forEach((swUnitTestPath) => {
     it(`should perform ${swUnitTestPath} sw tests`, function() {
-      return window.goog.mochaUtils.startServiceWorkerMochaTests(swUnitTestPath)
-      .then((testResults) => {
-        if (testResults.failed.length > 0) {
-          const errorMessage = window.goog.mochaUtils.prettyPrintErrors(swUnitTestPath, testResults);
-          throw new Error(errorMessage);
-        }
-      });
+      return window.goog.mochaUtils.registerServiceWorkerMochaTests(swUnitTestPath);
     });
   });
 });

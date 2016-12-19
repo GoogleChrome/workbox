@@ -21,7 +21,7 @@ require('chromedriver');
 require('operadriver');
 require('geckodriver');
 
-const RETRIES = 4;
+const RETRIES = 3;
 const TIMEOUT = 10 * 1000;
 
 describe('sw-lib Tests', function() {
@@ -69,13 +69,12 @@ describe('sw-lib Tests', function() {
           );
         })
         .then((testResults) => {
-          if (testResults.failed.length > 0) {
-            const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
-              assistantDriver.getPrettyName(),
-              testResults
-            );
+          console.log(
+            swTestingHelpers.mochaUtils.prettyPrintResults(testResults)
+          );
 
-            throw new Error(errorMessage);
+          if (testResults.failed.length > 0) {
+            throw new Error('Failing tests');
           }
         });
       });

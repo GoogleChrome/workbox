@@ -12,55 +12,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-const rollupBabel = require('rollup-plugin-babel');
-const path = require('path');
-const resolve = require('rollup-plugin-node-resolve');
-const commonjs = require('rollup-plugin-commonjs');
-const {buildJSBundle} = require('../../build-utils');
-const pkg = require('./package.json');
 
-module.exports = () => {
-  return Promise.all([
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'umd',
-        moduleName: 'goog.precaching',
-        plugins: [
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: pkg.main,
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'es',
-        plugins: [
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: pkg['jsnext:main'],
-      projectDir: __dirname,
-    }),
-  ]);
-};
+const pkg = require('./package.json');
+const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
+
+const buildConfigs = generateBuildConfigs({
+  es: pkg['jsnext:main'],
+  umd: pkg.main,
+}, __dirname, 'goog.precaching');
+
+module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

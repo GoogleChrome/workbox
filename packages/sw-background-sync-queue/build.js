@@ -15,159 +15,165 @@
 
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
+const pkg = require('./package.json');
 const resolve = require('rollup-plugin-node-resolve');
 const rollupBabel = require('rollup-plugin-babel');
-const {buildJSBundle} = require('../../build-utils');
+const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
 
-module.exports = () => {
-  return Promise.all([
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'umd',
-        moduleName: 'goog.backgroundSyncQueue',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/background-sync-queue.js',
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'lib', 'request-queue.js'),
-        format: 'umd',
-        moduleName: 'goog.backgroundSyncQueue.test.RequestQueue',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/test/request-queue.js',
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'lib', 'background-sync-queue.js'),
-        format: 'umd',
-        moduleName: 'goog.backgroundSyncQueue.test.BackgroundSyncQueue',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/test/background-sync-queue.js',
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'lib', 'constants.js'),
-        format: 'umd',
-        moduleName: 'goog.backgroundSyncQueue.test.constants',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/test/constants.js',
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'lib',
-         'background-sync-idb-helper.js'),
-        format: 'umd',
-        moduleName: 'goog.backgroundSyncQueue.test.backgroundSyncIdbHelper',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/test/background-sync-idb-helper.js',
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'lib', 'request-manager.js'),
-        format: 'umd',
-        moduleName: 'goog.backgroundSyncQueue.test.RequestManager',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/test/request-manager.js',
-      projectDir: __dirname,
-    }),
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'lib', 'queue-utils.js'),
-        format: 'umd',
-        moduleName: 'goog.backgroundSyncQueue.test.queueUtils',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          rollupBabel({
-            plugins: ['transform-async-to-generator', 'external-helpers'],
-            exclude: 'node_modules/**',
-          }),
-          commonjs(),
-        ],
-      },
-      outputName: 'build/test/queue-utils.js',
-      projectDir: __dirname,
-    }),
-  ]);
-};
+const mainModuleBuilds = generateBuildConfigs({
+  es: pkg['jsnext:main'],
+  umd: pkg.main,
+}, __dirname, 'goog.backgroundSyncQueue').map(buildJSBundle);
+
+module.exports = () => Promise.all([
+
+  ...mainModuleBuilds,
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'index.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    outputName: 'build/background-sync-queue.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'request-queue.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.RequestQueue',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    outputName: 'build/test/request-queue.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'background-sync-queue.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.BackgroundSyncQueue',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    outputName: 'build/test/background-sync-queue.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'constants.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.constants',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    outputName: 'build/test/constants.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib',
+        'background-sync-idb-helper.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.backgroundSyncIdbHelper',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    outputName: 'build/test/background-sync-idb-helper.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'request-manager.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.RequestManager',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    outputName: 'build/test/request-manager.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'queue-utils.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.queueUtils',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    outputName: 'build/test/queue-utils.js',
+    projectDir: __dirname,
+  }),
+]);

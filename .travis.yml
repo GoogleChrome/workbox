@@ -2,8 +2,24 @@ sudo: required
 dist: trusty
 language: node_js
 
+cache:
+  directories:
+    - node_modules
+
 node_js:
   - 'stable'
+
+env:
+  - PROJECT="sw-appcache-behavior"
+  - PROJECT="sw-background-sync-queue"
+  - PROJECT="sw-broadcast-cache-update"
+  - PROJECT="sw-cache-expiration"
+  - PROJECT="sw-cli"
+  - PROJECT="sw-lib"
+  - PROJECT="sw-offline-google-analytics"
+  - PROJECT="sw-precaching"
+  - PROJECT="sw-routing"
+  - PROJECT="sw-runtime-caching"
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
@@ -12,6 +28,6 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script:
-  - gulp lint
-  - gulp build
-  - gulp test
+  - gulp lint --project "${PROJECT}"
+  - gulp build --project "${PROJECT}"
+  - gulp test --project "${PROJECT}"

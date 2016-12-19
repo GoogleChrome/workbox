@@ -24,14 +24,24 @@ const addNewEntry = (origin) => {
     fileIndex++;
 
     EXAMPLE_REVISIONED_FILES_SET_1_STEP_1.push({
-      path: `${origin}${echoPath}/${fileIndex}.txt`,
+      url: `${origin}${echoPath}/${fileIndex}.txt`,
       revision: revision1[i],
     });
     EXAMPLE_REVISIONED_FILES_SET_1_STEP_2.push({
-      path: `${origin}${echoPath}/${fileIndex}.txt`,
+      url: `${origin}${echoPath}/${fileIndex}.txt`,
       revision: revision2[i],
     });
     fileIndex++;
+
+    /** EXAMPLE_REVISIONED_FILES_SET_1_STEP_1.push({
+      path: new Request(`${origin}${echoPath}/${fileIndex}.${revision1[i]}.txt`),
+      revision: revision1[i],
+    });
+    EXAMPLE_REVISIONED_FILES_SET_1_STEP_2.push({
+      path: new Request(`${origin}${echoPath}/${fileIndex}.${revision2[i]}.txt`),
+      revision: revision2[i],
+    });
+    fileIndex++;**/
   }
 };
 
@@ -50,4 +60,28 @@ self.goog.__TEST_DATA = {
     'step-1': EXAMPLE_REVISIONED_FILES_SET_1_STEP_1,
     'step-2': EXAMPLE_REVISIONED_FILES_SET_1_STEP_2,
   },
+  'duplicate-entries': [
+    [
+      '/__echo/date/1.1234.txt',
+      '/__echo/date/2.1234.txt',
+      '/__echo/date/3.1234.txt',
+      '/__echo/date/4.1234.txt',
+    ],
+    [
+      '/__echo/date/2.1234.txt',
+      '/__echo/date/4.1234.txt',
+      '/__echo/date/5.1234.txt',
+    ],
+    [
+      '/__echo/date/1.1234.txt',
+      '/__echo/date/3.1234.txt',
+      '/__echo/date/6.1234.txt',
+    ],
+  ],
+  '404': [
+    '/__test/404/',
+  ],
+  'opaque': [
+    `${secondaryServer}/__echo/date/hello.txt`,
+  ],
 };

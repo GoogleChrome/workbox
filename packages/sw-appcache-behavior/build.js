@@ -12,6 +12,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
+
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
@@ -32,7 +33,7 @@ module.exports = () => {
           commonjs(),
         ],
       },
-      outputName: 'build/client-runtime.js',
+      buildPath: 'build/client-runtime.js',
       projectDir: __dirname,
     }),
     buildJSBundle({
@@ -49,7 +50,7 @@ module.exports = () => {
           commonjs(),
         ],
       },
-      outputName: 'build/appcache-behavior-import.js',
+      buildPath: 'build/appcache-behavior-import.js',
       projectDir: __dirname,
     }),
   ]);

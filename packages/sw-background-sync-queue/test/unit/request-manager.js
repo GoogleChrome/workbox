@@ -47,4 +47,8 @@ describe('request-manager test', () => {
 		chai.assert.equal(reqManager._globalCallbacks, callbacks);
 		chai.assert.equal(reqManager._queue, queue);
   });
+
+	it('check replay', () => {
+		// TODO: check replay
+  });
 });

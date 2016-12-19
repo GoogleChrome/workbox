@@ -15,6 +15,7 @@
 const seleniumAssistant = require('selenium-assistant');
 const gulp = require('gulp');
 const mocha = require('gulp-spawn-mocha');
+const glob = require('glob');
 
 gulp.task('download-browsers', function() {
   console.log('    Starting browser download.....');
@@ -36,7 +37,13 @@ gulp.task('test', ['download-browsers'], () => {
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
   }
-  return gulp.src(`packages/${global.projectOrStar}/test/*.js`, {read: false})
+  const testGlob = `packages/${global.projectOrStar}/test/*.js`;
+  const testFiles = glob.sync(testGlob);
+  if (testFiles.length === 0) {
+    // Mocha fails when no tests are found so return early.
+    return;
+  }
+  return gulp.src(testGlob, {read: false})
     .pipe(mocha(mochaOptions))
     .once('error', (error) => {
       console.error(error);

@@ -60,6 +60,6 @@ describe('queue-utils test', () => {
 	});
 
 	it('test queue cleanup', () => {
-		// TODO: implement this
+
 	});
 });
