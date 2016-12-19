@@ -129,6 +129,27 @@ module.exports = () => {
     }),
     buildJSBundle({
       rollupConfig: {
+        entry: path.join(__dirname, 'src', 'lib', 'request-manager.js'),
+        format: 'umd',
+        moduleName: 'goog.backgroundSyncQueue.test.RequestManager',
+        plugins: [
+          resolve({
+            jsnext: true,
+            main: true,
+            browser: true,
+          }),
+          rollupBabel({
+            plugins: ['transform-async-to-generator', 'external-helpers'],
+            exclude: 'node_modules/**',
+          }),
+          commonjs(),
+        ],
+      },
+      outputName: 'build/test/request-manager.js',
+      projectDir: __dirname,
+    }),
+    buildJSBundle({
+      rollupConfig: {
         entry: path.join(__dirname, 'src', 'lib', 'queue-utils.js'),
         format: 'umd',
         moduleName: 'goog.backgroundSyncQueue.test.queueUtils',

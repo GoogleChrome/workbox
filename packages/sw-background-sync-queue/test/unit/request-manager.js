@@ -17,19 +17,31 @@
 'use strict';
 
 describe('request-manager test', () => {
-	let responseCounter = 0;
 	const callbacks = {
 		onResponse: function() {
-			responseCounter++;
 		},
 	};
-	const reqManager = new goog.backgroundSyncQueue.test.RequestManager({
-		callbacks,
-		new goog.backgroundSyncQueue.test.RequestQueue(),
+
+	let queue;
+	let reqManager;
+
+	before( (done) => {
+		const QUEUE_NAME = 'QUEUE_NAME';
+		const MAX_AGE = 6;
+		queue =
+			new goog.backgroundSyncQueue.test.RequestQueue({
+				config: {maxAge: MAX_AGE},
+				queueName: QUEUE_NAME,
+			});
+		reqManager = new goog.backgroundSyncQueue.test.RequestManager({
+			callbacks,
+			queue,
+		});
+		done();
 	});
 
   it('check constructor', () => {
-		chai.assert.isFunction(reqManager);
+		chai.assert.isObject(reqManager);
 		chai.assert.isFunction(reqManager.attachSyncHandler);
 		chai.assert.isFunction(reqManager.replayRequests);
 		chai.assert.equal(reqManager._globalCallbacks, callbacks);

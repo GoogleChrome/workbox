@@ -1,8 +1,6 @@
 import {putResponse} from './response-manager';
 import {getFetchableRequest} from './queue-utils';
 import {tagNamePrefix} from './constants';
-import RequestQueue from './request-queue';
-import assert from '../../../../lib/assert';
 
 /**
  * Class to handle all the request related
@@ -20,8 +18,6 @@ class RequestManager {
 	 * @memberOf RequestManager
 	 */
 	constructor({callbacks, queue}) {
-		assert.isInstance({queue}, RequestQueue);
-
 		this._globalCallbacks = callbacks || {};
 		this._queue = queue;
 		this.attachSyncHandler();
