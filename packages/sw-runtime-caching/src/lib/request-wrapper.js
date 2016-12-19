@@ -15,6 +15,7 @@
 
 import assert from '../../../../lib/assert';
 import {behaviorCallbacks, defaultCacheName} from './constants';
+import ErrorFactory from './error-factory';
 
 /**
  * This class is used by the various subclasses of `Handler` to configure the
@@ -62,7 +63,7 @@ class RequestWrapper {
       this.matchOptions = matchOptions;
     }
 
-    this.callbacks = {};
+    this.behaviorCallbacks = {};
 
     if (behaviors) {
       assert.isInstance({behaviors}, Array);
@@ -70,14 +71,20 @@ class RequestWrapper {
       behaviors.forEach((behavior) => {
         for (let callbackName of behaviorCallbacks) {
           if (typeof behavior[callbackName] === 'function') {
-            if (!this.callbacks[callbackName]) {
-              this.callbacks[callbackName] = [];
+            if (!this.behaviorCallbacks[callbackName]) {
+              this.behaviorCallbacks[callbackName] = [];
             }
-            this.callbacks[callbackName].push(
+            this.behaviorCallbacks[callbackName].push(
               behavior[callbackName].bind(behavior));
           }
         }
       });
+    }
+
+    if (this.behaviorCallbacks.cacheWillUpdate) {
+      if (this.behaviorCallbacks.cacheWillUpdate.length !== 1) {
+        throw ErrorFactory.createError('multiple-cache-will-update-behaviors');
+      }
     }
   }
 
@@ -118,8 +125,8 @@ class RequestWrapper {
     assert.atLeastOne({request});
 
     return await fetch(request, this.fetchOptions).catch((error) => {
-      if (this.callbacks.fetchDidFail) {
-        for (let callback of this.callbacks.fetchDidFail) {
+      if (this.behaviorCallbacks.fetchDidFail) {
+        for (let callback of this.behaviorCallbacks.fetchDidFail) {
           callback({request});
         }
       }
@@ -132,6 +139,11 @@ class RequestWrapper {
    * Combines both fetching and caching, using the previously configured options
    * and calling the appropriate behaviors.
    *
+   * By default, responses with a status of [2xx](https://fetch.spec.whatwg.org/#ok-status)
+   * will be considered valid and cacheable, but this could be overridden by
+   * configuring one or more behaviors that implement the `cacheWillUpdate`
+   * lifecycle callback.
+   *
    * @param {Object} input
    * @param {Request} input.request
    * @return {Promise.<Response>} The network response.
@@ -140,7 +152,15 @@ class RequestWrapper {
     assert.atLeastOne({request});
 
     const response = await this.fetch({request});
-    if (response.ok || response.type === 'opaque') {
+
+    // .ok is true if the response status is 2xx. That's the default condition.
+    let cacheable = response.ok;
+    if (this.behaviorCallbacks.cacheWillUpdate) {
+      cacheable = this.behaviorCallbacks.cacheWillUpdate[0](
+        {request, response});
+    }
+
+    if (cacheable) {
       const newResponse = response.clone();
 
       // Run the cache update sequence asynchronously, without blocking the
@@ -151,7 +171,8 @@ class RequestWrapper {
         // Only bother getting the old response if the new response isn't opaque
         // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
         // need it.
-        if (response.type !== 'opaque' && this.callbacks.cacheDidUpdate) {
+        if (response.type !== 'opaque' &&
+          this.behaviorCallbacks.cacheDidUpdate) {
           oldResponse = await this.match({request});
         }
 
@@ -159,7 +180,7 @@ class RequestWrapper {
         // cacheDidUpdateCallbacks, wait until the cache is updated.
         await cache.put(request, newResponse);
 
-        for (let callback of (this.callbacks.cacheDidUpdate || [])) {
+        for (let callback of (this.behaviorCallbacks.cacheDidUpdate || [])) {
           callback({cacheName: this.cacheName, oldResponse, newResponse});
         }
       });
