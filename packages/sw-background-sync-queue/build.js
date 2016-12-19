@@ -46,7 +46,7 @@ module.exports = () => Promise.all([
         commonjs(),
       ],
     },
-    outputName: 'build/background-sync-queue.js',
+    buildPath: 'build/background-sync-queue.js',
     projectDir: __dirname,
   }),
   buildJSBundle({
@@ -67,7 +67,7 @@ module.exports = () => Promise.all([
         commonjs(),
       ],
     },
-    outputName: 'build/test/request-queue.js',
+    buildPath: 'build/test/request-queue.js',
     projectDir: __dirname,
   }),
   buildJSBundle({
@@ -88,7 +88,7 @@ module.exports = () => Promise.all([
         commonjs(),
       ],
     },
-    outputName: 'build/test/background-sync-queue.js',
+    buildPath: 'build/test/background-sync-queue.js',
     projectDir: __dirname,
   }),
   buildJSBundle({
@@ -109,7 +109,7 @@ module.exports = () => Promise.all([
         commonjs(),
       ],
     },
-    outputName: 'build/test/constants.js',
+    buildPath: 'build/test/constants.js',
     projectDir: __dirname,
   }),
   buildJSBundle({
@@ -131,7 +131,7 @@ module.exports = () => Promise.all([
         commonjs(),
       ],
     },
-    outputName: 'build/test/background-sync-idb-helper.js',
+    buildPath: 'build/test/background-sync-idb-helper.js',
     projectDir: __dirname,
   }),
   buildJSBundle({
@@ -152,7 +152,7 @@ module.exports = () => Promise.all([
         commonjs(),
       ],
     },
-    outputName: 'build/test/request-manager.js',
+    buildPath: 'build/test/request-manager.js',
     projectDir: __dirname,
   }),
   buildJSBundle({
@@ -173,7 +173,7 @@ module.exports = () => Promise.all([
         commonjs(),
       ],
     },
-    outputName: 'build/test/queue-utils.js',
+    buildPath: 'build/test/queue-utils.js',
     projectDir: __dirname,
   }),
 ]);
