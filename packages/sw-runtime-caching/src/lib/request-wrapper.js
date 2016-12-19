@@ -15,6 +15,7 @@
 
 import assert from '../../../../lib/assert';
 import {behaviorCallbacks, defaultCacheName} from './constants';
+import ErrorFactory from './error-factory';
 
 /**
  * This class is used by the various subclasses of `Handler` to configure the
@@ -82,8 +83,7 @@ class RequestWrapper {
 
     if (this.behaviorCallbacks.cacheWillUpdate) {
       if (this.behaviorCallbacks.cacheWillUpdate.length !== 1) {
-        throw Error('You cannot register more than one behavior that ' +
-          'implements cacheWillUpdate.');
+        throw ErrorFactory.createError('multiple-cache-will-update-behaviors');
       }
     }
   }
