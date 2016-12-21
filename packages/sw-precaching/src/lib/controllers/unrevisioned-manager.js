@@ -1,6 +1,6 @@
 import ErrorFactory from '../error-factory';
-import BaseCacheManager from './base-manager.js';
-import RequestPrecacheEntry from '../models/precache-entries/request-entry.js';
+import BaseCacheManager from './base-manager';
+import RequestPrecacheEntry from '../models/precache-entries/request-entry';
 import {defaultUnrevisionedCacheName} from '../constants';
 
 class UnrevisionedManger extends BaseCacheManager {
@@ -39,7 +39,7 @@ class UnrevisionedManger extends BaseCacheManager {
   }
 
   _onDuplicateEntryFound(newEntry, previous) {
-    // NOOP. Just ignore duplication entries.
+    // NOOP. Just ignore duplicate entries.
   }
 
   /**
@@ -50,11 +50,10 @@ class UnrevisionedManger extends BaseCacheManager {
    * False otherwise.
    * @param {Object} fileEntry A file entry with `path` and `revision`
    * parameters.
-   * @param {Cache} openCache The cache to look for the asset in.
    * @return {Promise<Boolean>} Returns true is the fileEntry is already
    * cached, false otherwise.
    */
-  async _isAlreadyCached(fileEntry, openCache) {
+  async _isAlreadyCached(fileEntry) {
     return false;
   }
 }

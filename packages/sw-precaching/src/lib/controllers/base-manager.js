@@ -2,14 +2,15 @@ import ErrorFactory from '../error-factory';
 
 class BaseCacheManager {
   constructor(cacheName) {
-    this._entriesToCache = {};
+    this._entriesToCache = new Map();
     this._cacheName = cacheName;
   }
 
   cache(rawEntries) {
     rawEntries.forEach((rawEntry) => {
-      const precacheEntry = this._parseEntry(rawEntry);
-      this._addEntryToInstallList(precacheEntry);
+      this._addEntryToInstallList(
+        this._parseEntry(rawEntry)
+      );
     });
   }
 
@@ -32,10 +33,10 @@ class BaseCacheManager {
    */
   _addEntryToInstallList(precacheEntry) {
     const entryID = precacheEntry.entryID;
-    const previousEntry = this._entriesToCache[precacheEntry.entryID];
+    const previousEntry = this._entriesToCache.get(precacheEntry.entryID);
     if (!previousEntry) {
       // This entry isn't in the install list
-      this._entriesToCache[entryID] = precacheEntry;
+      this._entriesToCache.set(entryID, precacheEntry);
       return;
     }
 
@@ -48,23 +49,24 @@ class BaseCacheManager {
    * @return {Promise} The promise resolves when all the desired assets are
    * cached.
    */
-  async _performInstallStep(cacheName) {
-    if (Object.keys(this._entriesToCache).length === 0) {
+  async _performInstallStep() {
+    if (this._entriesToCache.size === 0) {
       return;
     }
 
-    let openCache = await this._getCache();
-    const entriesToCache = Object.values(this._entriesToCache);
-    const cachePromises = entriesToCache.map(async (precacheEntry) => {
-      return this._cacheEntry(precacheEntry, openCache);
+    const cachePromises = [];
+    this._entriesToCache.forEach((precacheEntry) => {
+      cachePromises.push(
+        this._cacheEntry(precacheEntry)
+      );
     });
 
     // Wait for all requests to be cached.
     await Promise.all(cachePromises);
   }
 
-  async _cacheEntry(precacheEntry, openCache) {
-    const isCached = await this._isAlreadyCached(precacheEntry, openCache);
+  async _cacheEntry(precacheEntry) {
+    const isCached = await this._isAlreadyCached(precacheEntry);
     if (isCached) {
       return;
     }
@@ -74,7 +76,8 @@ class BaseCacheManager {
       });
 
     if (response.ok) {
-      await openCache.put(precacheEntry.request, response);
+      const openCache = await this._getCache();
+      openCache.put(precacheEntry.request, response);
 
       await this._onEntryCached(precacheEntry);
     } else {
@@ -96,10 +99,12 @@ class BaseCacheManager {
       return;
     }
 
-    const requestsCachedOnInstall = Object.values(this._entriesToCache)
-      .map((entry) => entry.request.url);
+    const requestsCachedOnInstall = [];
+    this._entriesToCache.forEach((entry) => {
+      requestsCachedOnInstall.push(entry.request.url);
+    });
 
-    let openCache = await this._getCache();
+    const openCache = await this._getCache();
     const allCachedRequests = await openCache.keys();
 
     const cachedRequestsToDelete = allCachedRequests.filter((cachedRequest) => {
@@ -120,8 +125,12 @@ class BaseCacheManager {
    * A simple helper method to get the cache used for precaching assets.
    * @return {Cache} The cache to be used for precaching.
    */
-  _getCache() {
-    return caches.open(this._cacheName);
+  async _getCache() {
+    if (!this._cache) {
+      this._cache = await caches.open(this._cacheName);
+    }
+
+    return this._cache;
   }
 
   _parseEntry(input) {
@@ -133,7 +142,7 @@ class BaseCacheManager {
       'extending class.');
   }
 
-  _isAlreadyCached(precacheEntry, openCache) {
+  _isAlreadyCached(precacheEntry) {
     throw new Error('_isAlreadyCached should be overriden by extending class.');
   }
 

@@ -1,11 +1,11 @@
 import ErrorFactory from '../error-factory';
-import BaseCacheManager from './base-manager.js';
-import RevisionDetailsModel from '../models/revision-details-model.js';
+import BaseCacheManager from './base-manager';
+import RevisionDetailsModel from '../models/revision-details-model';
 import {defaultRevisionedCacheName} from '../constants';
 import StringPrecacheEntry from
-  '../models/precache-entries/string-precache-entry.js';
+  '../models/precache-entries/string-precache-entry';
 import ObjectPrecacheEntry from
-  '../models/precache-entries/object-precache-entry.js';
+  '../models/precache-entries/object-precache-entry';
 
 class RevisionedManger extends BaseCacheManager {
   constructor() {
@@ -31,19 +31,16 @@ class RevisionedManger extends BaseCacheManager {
 
     let precacheEntry;
     switch(typeof input) {
-      case 'string': {
+      case 'string':
         precacheEntry = new StringPrecacheEntry(input);
         break;
-      }
-      case 'object': {
+      case 'object':
         precacheEntry = new ObjectPrecacheEntry(input);
         break;
-      }
-      default: {
+      default:
         throw ErrorFactory.createError('invalid-revisioned-entry',
           new Error('Invalid file entry: ' +
             JSON.stringify(precacheEntry)));
-      }
     }
 
     return precacheEntry;
@@ -71,17 +68,17 @@ class RevisionedManger extends BaseCacheManager {
    * False otherwise.
    * @param {Object} fileEntry A file entry with `path` and `revision`
    * parameters.
-   * @param {Cache} openCache The cache to look for the asset in.
    * @return {Promise<Boolean>} Returns true is the fileEntry is already
    * cached, false otherwise.
    */
-  async _isAlreadyCached(fileEntry, openCache) {
+  async _isAlreadyCached(fileEntry) {
     const revisionDetails = await
       this._revisionDetailsModel.get(fileEntry.entryID);
     if (revisionDetails !== fileEntry.revision) {
       return false;
     }
 
+    const openCache = await this._getCache();
     const cachedResponse = await openCache.match(fileEntry.request);
     return cachedResponse ? true : false;
   }
