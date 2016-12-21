@@ -26,6 +26,7 @@ const errors = {
     `url twice with each having different revisions. This is not supported.`,
   'request-not-cached': `A request failed the criteria to be cached. By ` +
     `default, only responses with 'response.ok = true' are cached.`,
+  'should-override': 'Method should be overridden by the extending class.',
 };
 
 export default new ErrorFactory(errors);

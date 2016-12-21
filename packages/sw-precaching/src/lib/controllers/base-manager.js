@@ -134,20 +134,19 @@ class BaseCacheManager {
   }
 
   _parseEntry(input) {
-    throw new Error('_parseEntry should be overriden by extending class.');
+    throw ErrorFactory.createError('should-override');
   }
 
   _onDuplicateEntryFound(newEntry, previous) {
-    throw new Error('_onDuplicateEntryFound should be overriden by ' +
-      'extending class.');
+    throw ErrorFactory.createError('should-override');
   }
 
   _isAlreadyCached(precacheEntry) {
-    throw new Error('_isAlreadyCached should be overriden by extending class.');
+    throw ErrorFactory.createError('should-override');
   }
 
   _onEntryCached(precacheEntry) {
-    // NOOP
+    throw ErrorFactory.createError('should-override');
   }
 }
 
