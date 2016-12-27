@@ -59,7 +59,10 @@ describe('queue-utils test', () => {
 			});
 	});
 
-	it('test queue cleanup', () => {
-
+	it('test queue cleanup', async () => {
+		const idbHelper = new goog.backgroundSyncQueue.test.IDBHelper(
+			'bgQueueSyncDB', 1, 'QueueStore');
+		const allKeys = await idbHelper.getAllValues();
+		console.log(allKeys);
 	});
 });

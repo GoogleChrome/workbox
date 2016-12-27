@@ -176,4 +176,25 @@ module.exports = () => Promise.all([
     buildPath: 'build/test/queue-utils.js',
     projectDir: __dirname,
   }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, '../../', 'lib', 'idb-helper.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.IDBHelper',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/idb-helper.js',
+    projectDir: __dirname,
+  }),
 ]);
