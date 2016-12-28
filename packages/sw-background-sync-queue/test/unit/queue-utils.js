@@ -16,6 +16,14 @@
 
 'use strict';
 
+function delay(timeout) {
+	return new Promise((resolve, reject) => {
+		setTimeout(function() {
+			resolve();
+		}, timeout);
+	});
+}
+
 describe('queue-utils test', () => {
 	const queueUtils = goog.backgroundSyncQueue.test.queueUtils;
 	const maxAgeTimeStamp = 1000*60*60*24;
@@ -62,7 +70,30 @@ describe('queue-utils test', () => {
 	it('test queue cleanup', async () => {
 		const idbHelper = new goog.backgroundSyncQueue.test.IDBHelper(
 			'bgQueueSyncDB', 1, 'QueueStore');
-		const allKeys = await idbHelper.getAllValues();
-		console.log(allKeys);
+		const allKeys = await idbHelper.getAllKeys();
+		allKeys.forEach(async (element) => {
+			await idbHelper.delete(element);
+		});
+
+		const QUEUE_NAME = 'QUEUE_NAME';
+
+		const backgroundSyncQueue
+    = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
+      maxRetentionTime: 1,
+    });
+
+		const backgroundSyncQueue2
+    = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
+      maxRetentionTime: 10000,
+    });
+
+		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum.com')});
+		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum.com')});
+		await backgroundSyncQueue2.pushIntoQueue({request: new Request('http://lipsum.com')});
+
+		await delay(10);
+		await queueUtils.cleanupQueue();
+
+		chai.assert.equal(allKeys.length, (await idbHelper.getAllKeys()).length + 2);
 	});
 });
