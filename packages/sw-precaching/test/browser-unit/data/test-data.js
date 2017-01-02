@@ -14,6 +14,9 @@ let fileIndex = 0;
 EXAMPLE_REVISIONED_FILES_SET_1_STEP_1.push(`relative-file.${revision1[0]}.txt`);
 EXAMPLE_REVISIONED_FILES_SET_1_STEP_2.push(`relative-file.${revision2[0]}.txt`);
 
+EXAMPLE_UNREVISIONED_FILES_SET_1_STEP_1.push(`relative-file.1234.txt`);
+EXAMPLE_UNREVISIONED_FILES_SET_1_STEP_2.push(`relative-file.1234.txt`);
+
 const addNewEntry = (origin) => {
   let echoPath = '/__echo/date';
   if (!origin) {
