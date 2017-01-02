@@ -23,8 +23,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   afterEach(function() {
-    return window.goog.swUtils.cleanState()
-    .then(deleteIndexedDB);
+    // return window.goog.swUtils.cleanState()
+    // .then(deleteIndexedDB);
   });
 
   const testCacheEntries = (fileSet) => {
@@ -58,7 +58,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
   };
 
-  const testFileSet = (iframe, fileSet) => {
+  const testFileSet = (iframe, swPath, fileSet) => {
     return testCacheEntries(fileSet)
     .then(() => {
       let responses = {};
@@ -68,7 +68,13 @@ describe('sw-precaching Test Revisioned Caching', function() {
           url = assetAndHash.url;
         }
 
-        return iframe.contentWindow.fetch(url)
+        // This handles relative URL's that will be relative to the service
+        // works path.
+        const parsedURL = new URL(
+          url,
+          new URL(swPath, location).toString()
+        ).toString();
+        return iframe.contentWindow.fetch(new URL(parsedURL))
         .then((cachedResponse) => {
           if (cachedResponse.type === 'opaque') {
             responses[url] = null;
@@ -122,14 +128,16 @@ describe('sw-precaching Test Revisioned Caching', function() {
   };
 
   it('should cache and fetch revisioned urls', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-revisioned-cache-sw.js')
+    const sw1 = 'data/basic-cache/basic-revisioned-cache-sw.js';
+    const sw2 = 'data/basic-cache/basic-revisioned-cache-sw-2.js';
+    return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
+      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
-      return window.goog.swUtils.activateSW('data/basic-cache/basic-revisioned-cache-sw-2.js')
+      return window.goog.swUtils.activateSW(sw2)
       .then((iframe) => {
-        return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
+        return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-2']);
       })
       .then((step2Responses) => {
         compareRevisionedCachedAssets({
@@ -144,62 +152,70 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should cache and fetch unrevisioned urls', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-unrevisioned-cache-sw.js')
+    const sw1 = 'data/basic-cache/basic-unrevisioned-cache-sw.js';
+    const sw2 = 'data/basic-cache/basic-unrevisioned-cache-sw-2.js';
+    return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, goog.__TEST_DATA['set-2']['step-1']);
+      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-2']['step-1']);
     })
     .then((step1Responses) => {
-      return window.goog.swUtils.activateSW('data/basic-cache/basic-unrevisioned-cache-sw-2.js')
+      return window.goog.swUtils.activateSW(sw2)
       .then((iframe) => {
-        return testFileSet(iframe, goog.__TEST_DATA['set-2']['step-2']);
+        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-2']['step-2']);
       });
     });
   });
 
   it('should manage revisioned cache deletion', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-revisioned-cache-sw.js')
+    const sw1 = 'data/basic-cache/basic-revisioned-cache-sw.js';
+    const sw2 = 'data/basic-cache/basic-revisioned-cache-sw-2.js';
+    return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
+      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
       return window.goog.swUtils.clearAllCaches()
       .then(() => {
-        return window.goog.swUtils.activateSW('data/basic-cache/basic-revisioned-cache-sw-2.js');
+        return window.goog.swUtils.activateSW(sw2);
       })
       .then((iframe) => {
-        return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
+        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-1']['step-2']);
       });
     });
   });
 
   it('should manage unrevisioned cache deletion', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-unrevisioned-cache-sw.js')
+    const sw1 = 'data/basic-cache/basic-unrevisioned-cache-sw.js';
+    const sw2 = 'data/basic-cache/basic-unrevisioned-cache-sw-2.js';
+    return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, goog.__TEST_DATA['set-2']['step-1']);
+      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-2']['step-1']);
     })
     .then((step1Responses) => {
       return window.goog.swUtils.clearAllCaches()
       .then(() => {
-        return window.goog.swUtils.activateSW('data/basic-cache/basic-unrevisioned-cache-sw-2.js');
+        return window.goog.swUtils.activateSW(sw2);
       })
       .then((iframe) => {
-        return testFileSet(iframe, goog.__TEST_DATA['set-2']['step-2']);
+        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-2']['step-2']);
       });
     });
   });
 
   it('should manage revisioned indexedDB deletion', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-revisioned-cache-sw.js')
+    const sw1 = 'data/basic-cache/basic-revisioned-cache-sw.js';
+    const sw2 = 'data/basic-cache/basic-revisioned-cache-sw-2.js';
+    return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
+      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
       return deleteIndexedDB()
       .then(() => {
-        return window.goog.swUtils.activateSW('data/basic-cache/basic-revisioned-cache-sw-2.js');
+        return window.goog.swUtils.activateSW(sw2);
       })
       .then((iframe) => {
-        return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
+        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-1']['step-2']);
       });
     });
   });
@@ -211,7 +227,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
     allEntries = [...new Set(allEntries)];
 
-    return window.goog.swUtils.activateSW('data/duplicate-entries/duplicate-entries-revisioned-sw.js')
+    const swPath = 'data/duplicate-entries/duplicate-entries-revisioned-sw.js';
+    return window.goog.swUtils.activateSW(swPath)
     .then((iframe) => {
       return iframe.contentWindow.fetch('/__api/get-requests-made/')
       .then((response) => {
@@ -227,10 +244,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
       });
     })
     .then((iframe) => {
-      return testFileSet(iframe, allEntries);
-    })
-    .then((responses) => {
-
+      return testFileSet(iframe, swPath, allEntries);
     });
   });
 
@@ -241,7 +255,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
     allEntries = [...new Set(allEntries)];
 
-    return window.goog.swUtils.activateSW('data/duplicate-entries/duplicate-entries-unrevisioned-sw.js')
+    const swPath = 'data/duplicate-entries/duplicate-entries-unrevisioned-sw.js';
+    return window.goog.swUtils.activateSW(swPath)
     .then((iframe) => {
       return iframe.contentWindow.fetch('/__api/get-requests-made/')
       .then((response) => {
@@ -257,10 +272,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
       });
     })
     .then((iframe) => {
-      return testFileSet(iframe, allEntries);
-    })
-    .then((responses) => {
-
+      return testFileSet(iframe, swPath, allEntries);
     });
   });
 

@@ -11,6 +11,9 @@ const revision2 = ['5678', '1234'];
 
 let fileIndex = 0;
 
+EXAMPLE_REVISIONED_FILES_SET_1_STEP_1.push(`relative-file.${revision1[0]}.txt`);
+EXAMPLE_REVISIONED_FILES_SET_1_STEP_2.push(`relative-file.${revision2[0]}.txt`);
+
 const addNewEntry = (origin) => {
   let echoPath = '/__echo/date';
   if (!origin) {
@@ -20,6 +23,7 @@ const addNewEntry = (origin) => {
   if (origin === secondaryServer) {
     echoPath = '/__echo/date-with-cors';
   }
+
   // Revisioned Entries
   for (let i = 0; i < revision1.length; i++) {
     EXAMPLE_REVISIONED_FILES_SET_1_STEP_1.push(`${origin}${echoPath}/${fileIndex}.${revision1[i]}.txt`);

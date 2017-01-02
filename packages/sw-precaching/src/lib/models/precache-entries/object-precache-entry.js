@@ -8,7 +8,7 @@ class DefaultsCacheEntry extends RevisionedCacheEntry {
       cacheBust = true;
     }
     if (typeof entryID === 'undefined') {
-      entryID = new URL(url, location.origin).toString();
+      entryID = new URL(url, location).toString();
     }
 
     assert.isType({revision}, 'string');

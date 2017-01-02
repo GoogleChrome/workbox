@@ -30,7 +30,7 @@ class RevisionedCacheEntry {
       return new Request(requestURL, {cache: 'reload'});
     }
 
-    const parsedURL = new URL(requestURL, location.origin);
+    const parsedURL = new URL(requestURL, location);
     parsedURL.search += (parsedURL.search ? '&' : '') +
       encodeURIComponent(cacheBustParamName) + '=' +
       encodeURIComponent(revision);

@@ -77,7 +77,7 @@ class BaseCacheManager {
 
     if (response.ok) {
       const openCache = await this._getCache();
-      openCache.put(precacheEntry.request, response);
+      await openCache.put(precacheEntry.request, response);
 
       await this._onEntryCached(precacheEntry);
     } else {
