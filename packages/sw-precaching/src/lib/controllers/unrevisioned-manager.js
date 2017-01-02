@@ -56,6 +56,10 @@ class UnrevisionedManger extends BaseCacheManager {
   async _isAlreadyCached(fileEntry) {
     return false;
   }
+
+  _onEntryCached() {
+    // NOOP
+  }
 }
 
 export default UnrevisionedManger;
