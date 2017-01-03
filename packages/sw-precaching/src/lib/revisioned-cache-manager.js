@@ -256,6 +256,7 @@ class RevisionedCacheManager {
 
     let response = await fetch(fileEntry.cacheBustRequest, {
         credentials: 'same-origin',
+        redirect: 'follow',
       });
 
     if (response.ok) {
