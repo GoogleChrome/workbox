@@ -283,7 +283,7 @@ class SWCli {
             return [];
           }
         } else {
-          return Promise.resolve(fullPath);
+          return fullPath;
         }
       });
 
