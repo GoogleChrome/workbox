@@ -29,8 +29,12 @@ class LogHelper {
    * Print a warning message to the console (Colored yellow).
    * @param {string} msg Message to print to the console
    */
-  warn(msg) {
-    console.warn(chalk.yellow(msg));
+  warn(msg, runtimeInfo) {
+    let loggedMsg = chalk.yellow(msg);
+    if (runtimeInfo) {
+      loggedMsg += ` ${runtimeInfo}`;
+    }
+    console.warn(loggedMsg);
   }
 
   /**
