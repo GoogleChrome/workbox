@@ -54,6 +54,30 @@ This library is still a work in progress and is not functional.
                 [Demo](packages/sw-cache-expiration#demo) •
                 [API](packages/sw-cache-expiration#api)
 
+### sw-cacheable-response-behavior
+
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cacheable-response-behavior%22)][travis-url]
+
+This library takes a Response object and  determines whether it&#x27;s cacheable, based on a specific configuration.
+
+**Install**: `npm install --save-dev sw-cacheable-response-behavior`
+
+**Learn More**: [About](packages/sw-cacheable-response-behavior) •
+                [Demo](packages/sw-cacheable-response-behavior#demo) •
+                [API](packages/sw-cacheable-response-behavior#api)
+
+### sw-lib
+
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-lib%22)][travis-url]
+
+A CLI tool to generate a service worker and file manifest making use of the sw-lib module.
+
+**Install**: `npm install --save-dev sw-lib`
+
+**Learn More**: [About](packages/sw-lib) •
+                [Demo](packages/sw-lib#demo) •
+                [API](packages/sw-lib#api)
+
 ### sw-lib
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-lib%22)][travis-url]
