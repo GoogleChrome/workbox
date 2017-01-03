@@ -178,6 +178,48 @@ module.exports = () => Promise.all([
   }),
   buildJSBundle({
     rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'response-manager.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.ResponseManager',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/response-manager.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'broadcast-manager.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.broadcastManager',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/broadcast-manager.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
       entry: path.join(__dirname, '../../', 'lib', 'idb-helper.js'),
       format: 'umd',
       moduleName: 'goog.backgroundSyncQueue.test.IDBHelper',
