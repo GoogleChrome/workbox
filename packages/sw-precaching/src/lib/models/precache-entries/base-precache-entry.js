@@ -1,6 +1,6 @@
 import {cacheBustParamName} from '../../constants';
 
-class RevisionedCacheEntry {
+class BaseCacheEntry {
   constructor({entryID, revision, request, cacheBust}) {
     this.entryID = entryID;
     this.revision = revision;
@@ -38,4 +38,4 @@ class RevisionedCacheEntry {
   }
 }
 
-export default RevisionedCacheEntry;
+export default BaseCacheEntry;

@@ -1,8 +1,8 @@
 import ErrorFactory from '../../error-factory';
-import RevisionedCacheEntry from './base-precache-entry';
+import BaseCacheEntry from './base-precache-entry';
 import assert from '../../../../../../lib/assert';
 
-class DefaultsCacheEntry extends RevisionedCacheEntry {
+class DefaultsCacheEntry extends BaseCacheEntry {
   constructor({entryID, revision, url, cacheBust}) {
     if (typeof cacheBust === 'undefined') {
       cacheBust = true;

@@ -22,18 +22,7 @@ class UnrevisionedManger extends BaseCacheManager {
         new Error('Invalid file entry: ' + JSON.stringify(input)));
     }
 
-    let precacheEntry;
-    if(typeof input === 'string') {
-        precacheEntry = new RequestPrecacheEntry(new Request(input, {
-          credentials: 'same-origin',
-        }));
-    } else if (input instanceof Request) {
-      precacheEntry = new RequestPrecacheEntry(input);
-    } else {
-      throw ErrorFactory.createError('invalid-unrevisioned-entry',
-        new Error('Invalid file entry: ' +
-          JSON.stringify(precacheEntry)));
-    }
+    const precacheEntry = new RequestPrecacheEntry(input);
 
     return precacheEntry;
   }
