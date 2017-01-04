@@ -1,14 +1,14 @@
-import {cacheBustParamName} from '../constants';
+import {cacheBustParamName} from '../../constants';
 
-class RevisionedCacheEntry {
-  constructor({revisionID, revision, request, cacheBust}) {
-    this.revisionID = revisionID;
+class BaseCacheEntry {
+  constructor({entryID, revision, request, cacheBust}) {
+    this.entryID = entryID;
     this.revision = revision;
     this.request = request;
     this.cacheBust = cacheBust;
   }
 
-  get cacheBustRequest() {
+  getNetworkRequest() {
     return new Request(this._cacheBustUrl(this.request.url, this.revision));
   }
 
@@ -30,7 +30,7 @@ class RevisionedCacheEntry {
       return new Request(requestURL, {cache: 'reload'});
     }
 
-    const parsedURL = new URL(requestURL, location.origin);
+    const parsedURL = new URL(requestURL, location);
     parsedURL.search += (parsedURL.search ? '&' : '') +
       encodeURIComponent(cacheBustParamName) + '=' +
       encodeURIComponent(revision);
@@ -38,4 +38,4 @@ class RevisionedCacheEntry {
   }
 }
 
-export default RevisionedCacheEntry;
+export default BaseCacheEntry;

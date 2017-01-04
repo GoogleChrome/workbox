@@ -20,7 +20,7 @@
  */
 
 import ErrorFactory from './lib/error-factory';
-import RevisionedCacheManager from './lib/revisioned-cache-manager';
+import PrecacheManager from './lib/precache-manager';
 
 import assert from '../../../lib/assert.js';
 
@@ -30,5 +30,5 @@ if (!assert.isSWEnv()) {
 }
 
 export {
-  RevisionedCacheManager,
+  PrecacheManager,
 };

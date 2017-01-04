@@ -77,13 +77,11 @@ const configureTestSuite = function(browser) {
         );
       })
       .then((testResults) => {
+        console.log(
+          swTestingHelpers.mochaUtils.prettyPrintResults(testResults)
+        );
         if (testResults.failed.length > 0) {
-          const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
-            browser.prettyName,
-            testResults
-          );
-
-          throw new Error(errorMessage);
+          throw new Error('Some of the browser tests failed');
         }
       });
     });

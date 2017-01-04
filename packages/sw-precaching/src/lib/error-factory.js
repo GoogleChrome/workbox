@@ -17,14 +17,16 @@ import ErrorFactory from '../../../../lib/error-factory';
 
 const errors = {
   'not-in-sw': 'sw-precaching must be loaded in your service worker file.',
-  'invalid-file-manifest-entry': `File manifest entries must be either a ` +
+  'invalid-revisioned-entry': `File manifest entries must be either a ` +
     `string with revision info in the url or an object with a 'url' and ` +
     `'revision' parameters.`,
+  'invalid-unrevisioned-entry': ``,
   'bad-cache-bust': `The cache bust parameter must be a boolean.`,
   'duplicate-entry-diff-revisions': `An attempt was made to cache the same ` +
     `url twice with each having different revisions. This is not supported.`,
   'request-not-cached': `A request failed the criteria to be cached. By ` +
     `default, only responses with 'response.ok = true' are cached.`,
+  'should-override': 'Method should be overridden by the extending class.',
 };
 
 export default new ErrorFactory(errors);

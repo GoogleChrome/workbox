@@ -77,13 +77,12 @@ describe(`sw-offline-google-analytics Test Suite`, function() {
         );
       })
       .then((testResults) => {
-        if (testResults.failed.length > 0) {
-          const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
-            browser.prettyName,
-            testResults
-          );
+        console.log(
+          swTestingHelpers.mochaUtils.prettyPrintResults(testResults)
+        );
 
-          throw new Error(errorMessage);
+        if (testResults.failed.length > 0) {
+          throw new Error('Some of the browser tests failed.');
         }
       });
     });

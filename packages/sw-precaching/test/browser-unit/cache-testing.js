@@ -23,8 +23,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   afterEach(function() {
-    /** return window.goog.swUtils.cleanState()
-    .then(deleteIndexedDB);**/
+    // return window.goog.swUtils.cleanState()
+    // .then(deleteIndexedDB);
   });
 
   const testCacheEntries = (fileSet) => {
@@ -58,7 +58,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
   };
 
-  const testFileSet = (iframe, fileSet) => {
+  const testFileSet = (iframe, swPath, fileSet) => {
     return testCacheEntries(fileSet)
     .then(() => {
       let responses = {};
@@ -68,7 +68,13 @@ describe('sw-precaching Test Revisioned Caching', function() {
           url = assetAndHash.url;
         }
 
-        return iframe.contentWindow.fetch(url)
+        // This handles relative URL's that will be relative to the service
+        // works path.
+        const parsedURL = new URL(
+          url,
+          new URL(swPath, location).toString()
+        ).toString();
+        return iframe.contentWindow.fetch(new URL(parsedURL))
         .then((cachedResponse) => {
           if (cachedResponse.type === 'opaque') {
             responses[url] = null;
@@ -87,7 +93,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
   };
 
-  const compareCachedAssets = function(beforeData, afterData) {
+  const compareRevisionedCachedAssets = function(beforeData, afterData) {
     afterData.cacheList.forEach((afterAssetAndHash) => {
       if (typeof afterAssetAndHash === 'string') {
         afterAssetAndHash = {url: afterAssetAndHash, revision: afterAssetAndHash};
@@ -121,18 +127,20 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
   };
 
-  it('should cache and fetch files', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
+  it('should cache and fetch revisioned urls', function() {
+    const sw1 = 'data/basic-cache/basic-revisioned-cache-sw.js';
+    const sw2 = 'data/basic-cache/basic-revisioned-cache-sw-2.js';
+    return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
+      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
-      return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js')
+      return window.goog.swUtils.activateSW(sw2)
       .then((iframe) => {
-        return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
+        return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-2']);
       })
       .then((step2Responses) => {
-        compareCachedAssets({
+        compareRevisionedCachedAssets({
           cacheList: goog.__TEST_DATA['set-1']['step-1'],
           cachedResponses: step1Responses,
         }, {
@@ -143,46 +151,84 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
   });
 
-  it('should manage cache deletion', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
+  it('should cache and fetch unrevisioned urls', function() {
+    const sw1 = 'data/basic-cache/basic-unrevisioned-cache-sw.js';
+    const sw2 = 'data/basic-cache/basic-unrevisioned-cache-sw-2.js';
+    return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
+      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-2']['step-1']);
+    })
+    .then((step1Responses) => {
+      return window.goog.swUtils.activateSW(sw2)
+      .then((iframe) => {
+        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-2']['step-2']);
+      });
+    });
+  });
+
+  it('should manage revisioned cache deletion', function() {
+    const sw1 = 'data/basic-cache/basic-revisioned-cache-sw.js';
+    const sw2 = 'data/basic-cache/basic-revisioned-cache-sw-2.js';
+    return window.goog.swUtils.activateSW(sw1)
+    .then((iframe) => {
+      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
       return window.goog.swUtils.clearAllCaches()
       .then(() => {
-        return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js');
+        return window.goog.swUtils.activateSW(sw2);
       })
       .then((iframe) => {
-        return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
+        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-1']['step-2']);
       });
     });
   });
 
-  it('should manage indexedDB deletion', function() {
-    return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw.js')
+  it('should manage unrevisioned cache deletion', function() {
+    const sw1 = 'data/basic-cache/basic-unrevisioned-cache-sw.js';
+    const sw2 = 'data/basic-cache/basic-unrevisioned-cache-sw-2.js';
+    return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-1']);
+      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-2']['step-1']);
+    })
+    .then((step1Responses) => {
+      return window.goog.swUtils.clearAllCaches()
+      .then(() => {
+        return window.goog.swUtils.activateSW(sw2);
+      })
+      .then((iframe) => {
+        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-2']['step-2']);
+      });
+    });
+  });
+
+  it('should manage revisioned indexedDB deletion', function() {
+    const sw1 = 'data/basic-cache/basic-revisioned-cache-sw.js';
+    const sw2 = 'data/basic-cache/basic-revisioned-cache-sw-2.js';
+    return window.goog.swUtils.activateSW(sw1)
+    .then((iframe) => {
+      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
       return deleteIndexedDB()
       .then(() => {
-        return window.goog.swUtils.activateSW('data/basic-cache/basic-cache-sw-2.js');
+        return window.goog.swUtils.activateSW(sw2);
       })
       .then((iframe) => {
-        return testFileSet(iframe, goog.__TEST_DATA['set-1']['step-2']);
+        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-1']['step-2']);
       });
     });
   });
 
-  it('should only request duplicate entries once', function() {
+  it('should only request revisioned duplicate entries once', function() {
     let allEntries = [];
     goog.__TEST_DATA['duplicate-entries'].forEach((entries) => {
       allEntries = allEntries.concat(entries);
     });
     allEntries = [...new Set(allEntries)];
 
-    return window.goog.swUtils.activateSW('data/duplicate-entries/duplicate-entries-sw.js')
+    const swPath = 'data/duplicate-entries/duplicate-entries-revisioned-sw.js';
+    return window.goog.swUtils.activateSW(swPath)
     .then((iframe) => {
       return iframe.contentWindow.fetch('/__api/get-requests-made/')
       .then((response) => {
@@ -198,14 +244,40 @@ describe('sw-precaching Test Revisioned Caching', function() {
       });
     })
     .then((iframe) => {
-      return testFileSet(iframe, allEntries);
-    })
-    .then((responses) => {
+      return testFileSet(iframe, swPath, allEntries);
     });
   });
 
-  it('should fail to install with 404 cache request', function() {
-    return window.goog.swUtils.activateSW('data/response-types/404-sw.js')
+  it('should only request unrevisioned duplicate entries once', function() {
+    let allEntries = [];
+    goog.__TEST_DATA['duplicate-entries'].forEach((entries) => {
+      allEntries = allEntries.concat(entries);
+    });
+    allEntries = [...new Set(allEntries)];
+
+    const swPath = 'data/duplicate-entries/duplicate-entries-unrevisioned-sw.js';
+    return window.goog.swUtils.activateSW(swPath)
+    .then((iframe) => {
+      return iframe.contentWindow.fetch('/__api/get-requests-made/')
+      .then((response) => {
+        return response.json();
+      })
+      .then((requestsMade) => {
+        if (allEntries.length !== requestsMade.length) {
+          throw new Error('Duplicate requests have been made: ' + JSON.stringify(requestsMade));
+        }
+      })
+      .then(() => {
+        return iframe;
+      });
+    })
+    .then((iframe) => {
+      return testFileSet(iframe, swPath, allEntries);
+    });
+  });
+
+  it('should fail to install revisioned with 404 cache request', function() {
+    return window.goog.swUtils.activateSW('data/response-types/404-revisioned-sw.js')
     .then(() => {
       throw new Error('Expected SW to fail installation due to caching 404 entry.');
     }, (err) => {
@@ -214,8 +286,28 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
   });
 
-  it('should cache opaque responses by default', function() {
-    return window.goog.swUtils.activateSW('data/response-types/opaque-sw.js')
+  it('should fail to install unrevisioned with 404 cache request', function() {
+    return window.goog.swUtils.activateSW('data/response-types/404-unrevisioned-sw.js')
+    .then(() => {
+      throw new Error('Expected SW to fail installation due to caching 404 entry.');
+    }, (err) => {
+      // NOOP - The error is not to do with the error throw in SW, so nothing
+      // to check.
+    });
+  });
+
+  it('should fail to cache revisioned opaque responses by default', function() {
+    return window.goog.swUtils.activateSW('data/response-types/opaque-revisioned-sw.js')
+    .then(() => {
+      throw new Error('Expected SW to fail installation due to caching 404 entry.');
+    }, (err) => {
+      // NOOP - The error is not to do with the error throw in SW, so nothing
+      // to check.
+    });
+  });
+
+  it('should cache unrevisioned opaque responses by default', function() {
+    return window.goog.swUtils.activateSW('data/response-types/opaque-unrevisioned-sw.js')
     .then(() => {
       throw new Error('Expected SW to fail installation due to caching 404 entry.');
     }, (err) => {

@@ -18,8 +18,7 @@ describe('Test Library Surface', function() {
     expect(goog.precaching).to.exist;
   });
 
-  // TODO Test options
-  it('should have RevisionedCacheManager via goog.precaching', function() {
-    expect(goog.precaching.RevisionedCacheManager).to.exist;
+  it('should have PrecacheManager via goog.precaching', function() {
+    expect(goog.precaching.PrecacheManager).to.exist;
   });
 });

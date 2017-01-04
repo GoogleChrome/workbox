@@ -17,7 +17,7 @@
 
 import RouterWrapper from './router-wrapper.js';
 import ErrorFactory from './error-factory.js';
-import {RevisionedCacheManager}
+import {PrecacheManager}
   from '../../../sw-precaching/src/index.js';
 
 /**
@@ -30,7 +30,7 @@ class SWLib {
    */
   constructor() {
     this._router = new RouterWrapper();
-    this._revisionedCacheManager = new RevisionedCacheManager();
+    this._precacheManager = new PrecacheManager();
   }
 
   /**
@@ -54,7 +54,7 @@ class SWLib {
       throw ErrorFactory.createError('bad-revisioned-cache-list');
     }
 
-    this._revisionedCacheManager.cache({
+    this._precacheManager.cacheRevisioned({
       revisionedFiles,
     });
   }
