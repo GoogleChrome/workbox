@@ -319,7 +319,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
   it('should manage redirected revisioned requests', function() {
     return window.goog.swUtils.activateSW('data/response-types/redirect-revisioned-sw.js')
     .then((iframe) => {
-      goog.__TEST_DATA['redirect'].map((redirectPath) => {
+      const promises = goog.__TEST_DATA['redirect'].map((redirectPath) => {
         const sections = redirectPath.split('/').filter((section) => {
           return section !== '';
         });
@@ -337,13 +337,14 @@ describe('sw-precaching Test Revisioned Caching', function() {
           }
         });
       });
+      return Promise.all(promises);
     });
   });
 
   it('should manage redirected unrevisioned requests', function() {
     return window.goog.swUtils.activateSW('data/response-types/redirect-unrevisioned-sw.js')
     .then((iframe) => {
-      goog.__TEST_DATA['redirect'].map((redirectPath) => {
+      const promises = goog.__TEST_DATA['redirect'].map((redirectPath) => {
         const sections = redirectPath.split('/').filter((section) => {
           return section !== '';
         });
@@ -361,6 +362,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
           }
         });
       });
+      return Promise.all(promises);
     });
   });
 });
