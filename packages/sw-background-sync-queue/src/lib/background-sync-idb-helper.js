@@ -4,8 +4,8 @@ import assert from '../../../../lib/assert';
 let _dbName = defaultDBName;
 
 /**
- * set the dbName to store the queue and requests
- * defaults to defaultDBName
+ * sets the dbName, which is used to store the queue and requests
+ * defaults to bgQueueSyncDB
  * @param {String} dbName
  */
 function setDbName(dbName) {

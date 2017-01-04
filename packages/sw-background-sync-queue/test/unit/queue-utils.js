@@ -75,8 +75,6 @@ describe('queue-utils test', () => {
 			await idbHelper.delete(element);
 		});
 
-		const QUEUE_NAME = 'QUEUE_NAME';
-
 		const backgroundSyncQueue
     = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
       maxRetentionTime: 1,
@@ -94,6 +92,7 @@ describe('queue-utils test', () => {
 		await delay(10);
 		await queueUtils.cleanupQueue();
 
-		chai.assert.equal(allKeys.length, (await idbHelper.getAllKeys()).length + 2);
+		chai.assert.equal(allKeys.length,
+			(await idbHelper.getAllKeys()).length + 2);
 	});
 });

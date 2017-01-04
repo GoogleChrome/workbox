@@ -66,7 +66,7 @@ class RequestQueue {
 	}
 
 	/**
-	 * saves the logical queue to DIB
+	 * saves the logical queue to IDB
 	 *
 	 * @memberOf RequestQueue
 	 */

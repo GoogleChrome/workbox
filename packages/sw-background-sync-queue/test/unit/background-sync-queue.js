@@ -35,7 +35,7 @@ describe('background sync queue test', () => {
     });
 
   it('check defaults', () => {
-
+    // TODO: write tests here
   });
 
   it('check parameterised constructor', () =>{
