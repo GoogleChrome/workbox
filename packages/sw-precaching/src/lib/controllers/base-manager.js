@@ -73,6 +73,7 @@ class BaseCacheManager {
 
     let response = await fetch(precacheEntry.getNetworkRequest(), {
         credentials: 'same-origin',
+        redirect: 'follow',
       });
 
     if (response.ok) {

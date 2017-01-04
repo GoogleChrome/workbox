@@ -17,25 +17,25 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-runtime-caching
 
-[packages/sw-runtime-caching/src/index.js:22-22](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/index.js#L22-L22 "Source code on GitHub")
+[packages/sw-runtime-caching/src/index.js:22-22](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/index.js#L22-L22 "Source code on GitHub")
 
 sw-runtime-caching Module
 
 ### CacheFirst
 
-[packages/sw-runtime-caching/src/lib/cache-first.js:23-46](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/cache-first.js#L23-L46 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/cache-first.js:23-46](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/cache-first.js#L23-L46 "Source code on GitHub")
 
 **Extends module:sw-runtime-caching.Handler**
 
 ### CacheOnly
 
-[packages/sw-runtime-caching/src/lib/cache-only.js:23-43](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/cache-only.js#L23-L43 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/cache-only.js:23-43](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/cache-only.js#L23-L43 "Source code on GitHub")
 
 **Extends module:sw-runtime-caching.Handler**
 
 ### defaultCacheName
 
-[packages/sw-runtime-caching/src/lib/constants.js:25-25](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/constants.js#L25-L25 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/constants.js:25-25](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/constants.js#L25-L25 "Source code on GitHub")
 
 The default cache name, used by RequestWrapper when there's no name provided.
 It combines a constant prefix with the `registration.scope` value associated
@@ -44,26 +44,26 @@ on the same origin will have different default caches.
 
 ### Handler
 
-[packages/sw-runtime-caching/src/lib/handler.js:24-57](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/handler.js#L24-L57 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/handler.js:24-57](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/handler.js#L24-L57 "Source code on GitHub")
 
 This a base class meant to be extended by other classes that implement
 specific request strategies.
 
 ### NetworkFirst
 
-[packages/sw-runtime-caching/src/lib/network-first.js:23-52](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/network-first.js#L23-L52 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/network-first.js:23-52](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/network-first.js#L23-L52 "Source code on GitHub")
 
 **Extends module:sw-runtime-caching.Handler**
 
 ### NetworkOnly
 
-[packages/sw-runtime-caching/src/lib/network-only.js:23-42](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/network-only.js#L23-L42 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/network-only.js:23-42](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/network-only.js#L23-L42 "Source code on GitHub")
 
 **Extends module:sw-runtime-caching.Handler**
 
 ### RequestWrapper
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:34-175](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/request-wrapper.js#L34-L175 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:34-193](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/request-wrapper.js#L34-L193 "Source code on GitHub")
 
 This class is used by the various subclasses of `Handler` to configure the
 cache name and any desired request/cache behaviors.
@@ -79,13 +79,13 @@ given and when they're called, is:
 
 ### StaleWhileRevalidate
 
-[packages/sw-runtime-caching/src/lib/stale-while-revalidate.js:23-50](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/stale-while-revalidate.js#L23-L50 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/stale-while-revalidate.js:23-50](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/stale-while-revalidate.js#L23-L50 "Source code on GitHub")
 
 **Extends module:sw-runtime-caching.Handler**
 
 ### CacheFirst.handle
 
-[packages/sw-runtime-caching/src/lib/cache-first.js:35-45](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/cache-first.js#L35-L45 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/cache-first.js:35-45](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/cache-first.js#L35-L45 "Source code on GitHub")
 
 An implementation of a [cache-first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network)
 request strategy.
@@ -103,7 +103,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### CacheOnly.handle
 
-[packages/sw-runtime-caching/src/lib/cache-only.js:38-42](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/cache-only.js#L38-L42 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/cache-only.js:38-42](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/cache-only.js#L38-L42 "Source code on GitHub")
 
 An implementation of a [cache-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only)
 request strategy.
@@ -124,7 +124,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### constructor
 
-[packages/sw-runtime-caching/src/lib/handler.js:32-38](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/handler.js#L32-L38 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/handler.js:32-38](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/handler.js#L32-L38 "Source code on GitHub")
 
 **Parameters**
 
@@ -138,7 +138,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### handle
 
-[packages/sw-runtime-caching/src/lib/handler.js:54-56](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/handler.js#L54-L56 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/handler.js:54-56](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/handler.js#L54-L56 "Source code on GitHub")
 
 An abstract method that each subclass must implement.
 
@@ -160,7 +160,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### NetworkFirst.handle
 
-[packages/sw-runtime-caching/src/lib/network-first.js:35-51](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/network-first.js#L35-L51 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/network-first.js:35-51](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/network-first.js#L35-L51 "Source code on GitHub")
 
 An implementation of a [network first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache)
 request strategy.
@@ -178,7 +178,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### NetworkOnly.handle
 
-[packages/sw-runtime-caching/src/lib/network-only.js:37-41](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/network-only.js#L37-L41 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/network-only.js:37-41](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/network-only.js#L37-L41 "Source code on GitHub")
 
 An implementation of a [network-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only)
 request strategy.
@@ -198,7 +198,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### constructor
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:47-82](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/request-wrapper.js#L47-L82 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:47-82](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/request-wrapper.js#L47-L82 "Source code on GitHub")
 
 **Parameters**
 
@@ -220,13 +220,13 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### getCache
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:87-92](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/request-wrapper.js#L87-L92 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:87-92](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/request-wrapper.js#L87-L92 "Source code on GitHub")
 
 Returns **Cache** The cache for this RequestWrapper.
 
 ### match
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:102-107](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/request-wrapper.js#L102-L107 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:102-107](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/request-wrapper.js#L102-L107 "Source code on GitHub")
 
 Wraps `cache.match()`, using the previously configured cache name and match
 options.
@@ -242,7 +242,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### fetch
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:117-129](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/request-wrapper.js#L117-L129 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:117-129](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/request-wrapper.js#L117-L129 "Source code on GitHub")
 
 Wraps `fetch()`, and calls any `fetchDidFail` callbacks from the
 registered behaviors if the request fails.
@@ -258,10 +258,15 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### fetchAndCache
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:139-174](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/request-wrapper.js#L139-L174 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:144-192](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/request-wrapper.js#L144-L192 "Source code on GitHub")
 
 Combines both fetching and caching, using the previously configured options
 and calling the appropriate behaviors.
+
+By default, responses with a status of [2xx](https://fetch.spec.whatwg.org/#ok-status)
+will be considered valid and cacheable, but this could be overridden by
+configuring one or more behaviors that implement the `cacheWillUpdate`
+lifecycle callback.
 
 **Parameters**
 
@@ -274,7 +279,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### StaleWhileRevalidate.handle
 
-[packages/sw-runtime-caching/src/lib/stale-while-revalidate.js:38-49](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-runtime-caching/src/lib/stale-while-revalidate.js#L38-L49 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/stale-while-revalidate.js:38-49](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-runtime-caching/src/lib/stale-while-revalidate.js#L38-L49 "Source code on GitHub")
 
 An implementation of a [stale-while-revalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
 request strategy.
