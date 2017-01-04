@@ -1,12 +1,27 @@
 import {cacheBustParamName} from '../../constants';
 
+/**
+ * This class is extended by a number of classes that take different inputs
+ * and generates the required fields for a BaseCacheEntry.
+ */
 class BaseCacheEntry {
+  /**
+   * This constructor expects an object and a number or required fields.
+   * You shouldn't need to use this constructor directly.
+   *
+   * @param {Object} input
+   * @param {String} input.entryID
+   * @param {String} input.revision
+   * @param {Request} input.request
+   * @param {boolean} input.cacheBust
+   */
   constructor({entryID, revision, request, cacheBust}) {
     this.entryID = entryID;
     this.revision = revision;
     this.request = request;
     this.cacheBust = cacheBust;
   }
+
 
   getNetworkRequest() {
     return new Request(this._cacheBustUrl(this.request.url, this.revision));
