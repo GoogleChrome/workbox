@@ -297,11 +297,11 @@ class SWCli {
   }
 
   _getFileExtensions(files) {
-    const fileExtensions = {};
+    const fileExtensions = new Set();
     files.forEach((file) => {
       const extension = path.extname(file);
       if (extension && extension.length > 0) {
-        fileExtensions[extension] = true;
+        fileExtensions.add(extension);
       } else if (DEBUG) {
         logHelper.warn(
           errors['no-extension'],
@@ -309,7 +309,7 @@ class SWCli {
         );
       }
     });
-    return Object.keys(fileExtensions);
+    return [...fileExtensions];
   }
 
   /**
