@@ -220,6 +220,27 @@ module.exports = () => Promise.all([
   }),
   buildJSBundle({
     rollupConfig: {
+      entry: path.join(__dirname, 'src', 'index.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.broadcastManager',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/sw-background-queue.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
       entry: path.join(__dirname, '../../', 'lib', 'idb-helper.js'),
       format: 'umd',
       moduleName: 'goog.backgroundSyncQueue.test.IDBHelper',
