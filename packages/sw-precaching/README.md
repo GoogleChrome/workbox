@@ -17,6 +17,345 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-precaching
 
-[packages/sw-precaching/src/index.js:21-23](https://github.com/GoogleChrome/sw-helpers/blob/a6f471056b52998c278dcb22dfc96169ea99932a/packages/sw-precaching/src/index.js#L21-L23 "Source code on GitHub")
+[packages/sw-precaching/src/index.js:47-47](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/index.js#L47-L47 "Source code on GitHub")
 
-**This library is still a work in progress and is not functional.**
+The precaching module provides helpers that make it easy to cache files
+during the install step of your service worker.
+
+The revisioned caching will cache bust requests where appropriate and
+only cache assets that have a changed revision asset compared to
+the currently cached value.
+
+**Examples**
+
+```javascript
+importScripts('/<Path to Module>/build/sw-precaching.min.js');
+
+const precacheManager = new goog.precaching.PrecacheManager();
+precacheManager.cacheRevisioned({
+  revisionedFiles: [
+    '/styles/main.1234.css',
+    {
+      url: '/',
+      revision: '1234'
+    }
+  ],
+});
+
+precacheManager.cacheUnrevisioned({
+  unrevisionedFiles: [
+    '/',
+    '/images/logo.png'
+  ]
+});
+```
+
+### PrecacheManager
+
+[packages/sw-precaching/src/lib/precache-manager.js:30-156](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/precache-manager.js#L30-L156 "Source code on GitHub")
+
+The PrecacheManager is the top level API you are likely to use with
+the sw-precaching module.
+
+This class will set up the install listener and orchestrate the caching
+of assets.
+
+### constructor
+
+[packages/sw-precaching/src/lib/controllers/base-cache-manager.js:14-17](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/controllers/base-cache-manager.js#L14-L17 "Source code on GitHub")
+
+Constructor for BaseCacheManager
+
+**Parameters**
+
+-   `cacheName` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** This is the cache name to store requested assets.
+
+### cache
+
+[packages/sw-precaching/src/lib/controllers/base-cache-manager.js:26-32](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/controllers/base-cache-manager.js#L26-L32 "Source code on GitHub")
+
+This method will add the entries to the install list.
+This will manage duplicate entries and perform the caching during
+the install step.
+
+**Parameters**
+
+-   `rawEntries` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object))>** A raw entry that can be
+    parsed into a BaseCacheEntry by the inheriting CacheManager.
+
+### constructor
+
+[packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js:22-26](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js#L22-L26 "Source code on GitHub")
+
+Constructor for RevisionedCacheManager
+
+### cache
+
+[packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js:46-49](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js#L46-L49 "Source code on GitHub")
+
+This method will add the entries to the install list.
+This will manage duplicate entries and perform the caching during
+the install step.
+
+**Parameters**
+
+-   `rawEntries` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object))>** A raw entry that can be
+    parsed into a BaseCacheEntry.
+
+**Examples**
+
+```javascript
+revisionedManager.cache([
+  '/styles/hello.1234.css',
+  {
+    url: '/images/logo.png',
+    revision: '1234'
+  }
+]);
+```
+
+### constructor
+
+[packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js:20-22](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js#L20-L22 "Source code on GitHub")
+
+Constructor for UnreivisionedCacheManager
+
+### cache
+
+[packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js:41-44](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js#L41-L44 "Source code on GitHub")
+
+This method will add the entries to the install list.
+This will manage duplicate entries and perform the caching during
+the install step.
+
+**Parameters**
+
+-   `rawEntries` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request))>** A raw entry that can be
+    parsed into a BaseCacheEntry.
+
+**Examples**
+
+```javascript
+revisionedManager.cache([
+  '/styles/hello.css',
+  new Request('/images/logo.png', {
+    // Custom Request Options.
+  })
+]);
+```
+
+### ErrorFactory
+
+[lib/error-factory.js:21-53](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/lib/error-factory.js#L21-L53 "Source code on GitHub")
+
+A simple class to make errors and to help with testing.
+
+#### constructor
+
+[lib/error-factory.js:26-28](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/lib/error-factory.js#L26-L28 "Source code on GitHub")
+
+**Parameters**
+
+-   `errors` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** A object containing key value pairs where the key
+    is the error name / ID and the value is the error message.
+
+#### createError
+
+[lib/error-factory.js:35-52](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/lib/error-factory.js#L35-L52 "Source code on GitHub")
+
+**Parameters**
+
+-   `name` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The error name to be generated.
+-   `thrownError` **[Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)?** The thrown error that resulted in this
+    message.
+
+Returns **[Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)** The generated error.
+
+### constructor
+
+[packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js:21-26](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js#L21-L26 "Source code on GitHub")
+
+This constructor expects an object and a number or required fields.
+You shouldn't need to use this constructor directly.
+
+**Parameters**
+
+-   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `input.entryID` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+    -   `input.revision` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** 
+    -   `input.request` **[Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request)** 
+    -   `input.cacheBust` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** 
+-   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `$0.entryID`  
+    -   `$0.revision`  
+    -   `$0.request`  
+    -   `$0.cacheBust`  
+
+### getNetworkRequest
+
+[packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js:40-66](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js#L40-L66 "Source code on GitHub")
+
+This method is required since any revisioned request needs to cache bust.
+To ensure this is consistent, CacheManagers will make a network request
+using this specially formatted request.
+
+When caching the response, it will be cached against the origin `request`,
+removing lookup for the cachebusted URL.
+
+Returns **[Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request)** Returns a cache busted request if needed, otherwise
+a normal request with credentials set to 'same-origin' and redirect set to
+follow.
+
+### constructor
+
+[packages/sw-precaching/src/lib/models/precache-entries/object-precache-entry.js:25-62](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/models/precache-entries/object-precache-entry.js#L25-L62 "Source code on GitHub")
+
+This class gives most control over configuring a cache entry.
+
+**Parameters**
+
+-   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `input.entryID` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The ID of the entry. This is the key used
+        with IndexDB to store the revision. Normally this is just the URL.
+    -   `input.revision` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** This is the revision associated with this
+        URL.
+    -   `input.url` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The URL to cache.
+    -   `input.cacheBust` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** A boolean to indicate if this request
+        will require cache busting (i.e. the URL is not unique between SW install).
+-   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `$0.entryID`  
+    -   `$0.revision`  
+    -   `$0.url`  
+    -   `$0.cacheBust`  
+
+### constructor
+
+[packages/sw-precaching/src/lib/models/precache-entries/request-entry.js:17-29](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/models/precache-entries/request-entry.js#L17-L29 "Source code on GitHub")
+
+This is useful for caching unrevisioned requests that require
+special headers etc.
+
+**Parameters**
+
+-   `request` **[Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request)** A request to be cached.
+
+### constructor
+
+[packages/sw-precaching/src/lib/models/precache-entries/string-precache-entry.js:18-32](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/models/precache-entries/string-precache-entry.js#L18-L32 "Source code on GitHub")
+
+Cosntructor for StringCacheEntry.
+
+**Parameters**
+
+-   `url` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** A URL to cache.
+
+### constructor
+
+[packages/sw-precaching/src/lib/models/revision-details-model.js:16-18](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/models/revision-details-model.js#L16-L18 "Source code on GitHub")
+
+Constructor for RevisionDetails Model.
+
+### get
+
+[packages/sw-precaching/src/lib/models/revision-details-model.js:26-28](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/models/revision-details-model.js#L26-L28 "Source code on GitHub")
+
+This method gets the revision details for a given entryID.
+
+**Parameters**
+
+-   `entryID` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The ID of the revision.
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) | null)>** Returns a revision string or
+null if there is no revision information.
+
+### put
+
+[packages/sw-precaching/src/lib/models/revision-details-model.js:36-38](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/models/revision-details-model.js#L36-L38 "Source code on GitHub")
+
+This method saves the revision details to indexedDB.
+
+**Parameters**
+
+-   `entryID` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The ID of the revision.
+-   `revision` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The current revision for this entryID.
+
+Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)** Promise that resolves once the data has been saved.
+
+### constructor
+
+[packages/sw-precaching/src/lib/precache-manager.js:36-41](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/precache-manager.js#L36-L41 "Source code on GitHub")
+
+Creating a PrecacheManager will add an install and activate event listener
+to your service worker. This allows the manager to cache assets and
+tidy up the no longer required assets.
+
+### cacheRevisioned
+
+[packages/sw-precaching/src/lib/precache-manager.js:113-116](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/precache-manager.js#L113-L116 "Source code on GitHub")
+
+To cache revisioned assets (i.e. urls / assets that you have a revision
+for) can be efficiently cached and updated with this method.
+
+**Parameters**
+
+-   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `input.revisionedFiles` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object))>** An array of URL strings
+        , which should have revisioning in the file name (i.e. hello.1234.css)) or
+        an object with a `url` and `revision` parameter.
+-   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)**  (optional, default `Ar`)
+    -   `$0.revisionedFiles`  
+
+**Examples**
+
+```javascript
+precacheManager.cacheRevisioned({
+  revisionedFiles: [
+    // Revision is in the file name
+    '/styles/main.1234.css',
+
+    // Object of url and revision can be used as well
+    {
+      url: '/',
+      revision: '1234'
+    },
+  ]
+});
+```
+
+### cacheUnrevisioned
+
+[packages/sw-precaching/src/lib/precache-manager.js:145-148](https://github.com/GoogleChrome/sw-helpers/blob/eef2f0f9af3691498471eb4950eb544de758d73d/packages/sw-precaching/src/lib/precache-manager.js#L145-L148 "Source code on GitHub")
+
+To cache URLs or assets where you don't know the revisioning, should
+be cached with this method. This method will always cache these files
+on install, regardless of whether they are already cached or not.
+This ensures they are up-to-date after a new service worker install.
+
+**Parameters**
+
+-   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `input.unrevisionedFiles` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request))>** An array of URL
+        strings or a Request object, which allows you to define custom headers.
+-   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
+    -   `$0.unrevisionedFiles`  
+
+**Examples**
+
+```javascript
+precacheManager.cacheUnrevisioned({
+  unrevisionedFiles: [
+    // Normal URL string
+    '/example/',
+
+    // Request with headers
+    new Request(
+      '/user-info.json',
+      {
+        headers: {
+          'CustomHeader': 'Hello World.'
+        }
+      }
+    ),
+  ]
+});
+```
