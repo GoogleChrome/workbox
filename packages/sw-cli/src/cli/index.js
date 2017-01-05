@@ -126,34 +126,34 @@ class SWCli {
    * node process cleanly or not.
    */
   generateSW() {
+    let rootDirectory;
+    let fileExtentionsToCache;
+    let fileManifestName;
+    let serviceWorkerName;
+
     return this._getRootOfWebApp()
-    .then((rootDirectory) => {
+    .then((rDirectory) => {
+      rootDirectory = rDirectory;
       return this._getFileExtensionsToCache(rootDirectory);
     })
-    .then((fileExtensionsToCache) => {
-
+    .then((extensionsToCache) => {
+      fileExtentionsToCache = extensionsToCache;
+      return this._getFileManifestName();
+    })
+    .then((manifestName) => {
+      fileManifestName = manifestName;
+      return this._getServiceWorkerName();
+    })
+    .then((swName) => {
+      serviceWorkerName = swName;
+    })
+    .then(() => {
+      logHelper.log('Root Directory: ', rootDirectory);
+      logHelper.log('File Extensions to Cache: ', fileExtentionsToCache);
+      logHelper.log('File Manifest: ', fileManifestName);
+      logHelper.log('Service Worker: ', serviceWorkerName);
     });
     /** return inquirer.prompt([
-      {
-        name: 'fileExtensions',
-        message: 'Which file types would you like to cache?',
-        type: 'checkbox',
-        choices: [
-          {name: '*.html', checked: true},
-          {name: '*.css', checked: true},
-          {name: '*.TODO OTHERS', checked: true},
-        ],
-      },
-      {
-        name: 'fileManifestName',
-        message: 'What should we name the file manifest?',
-        default: 'precache-manifest.json',
-      },
-      {
-        name: 'serviceWorkerName',
-        message: 'What should we name the service worker file?',
-        default: 'sw.js',
-      },
       {
         name: 'saveConfig',
         message: 'Last Question - Would you like to save these settings ' +
@@ -310,6 +310,64 @@ class SWCli {
       }
     });
     return [...fileExtensions];
+  }
+
+  _getFileManifestName() {
+    return inquirer.prompt([
+      {
+        name: 'fileManifestName',
+        message: 'What should we name the file manifest?',
+        type: 'input',
+        default: 'precache-manifest.json',
+      },
+    ])
+    .then((results) => {
+      const manifestName = results.fileManifestName.trim();
+      if (manifestName.length === 0) {
+        logHelper.error(
+          errors['invalid-file-manifest-name']
+        );
+        throw new Error(errors['invalid-file-manifest-name']);
+      }
+
+      return manifestName;
+    })
+    .catch((err) => {
+      logHelper.error(
+        errors['unable-to-get-file-manifest-name'],
+        err
+      );
+      throw err;
+    });
+  }
+
+  _getServiceWorkerName() {
+    return inquirer.prompt([
+      {
+        name: 'serviceWorkerName',
+        message: 'What should we name your service worker file?',
+        type: 'input',
+        default: 'sw.js',
+      },
+    ])
+    .then((results) => {
+      const serviceWorkerName = results.serviceWorkerName.trim();
+      if (serviceWorkerName.length === 0) {
+        logHelper.error(
+          errors['invalid-sw-name']
+        );
+        throw new Error(errors['invalid-sw-name']);
+      }
+
+      return serviceWorkerName;
+    })
+    .catch((err) => {
+      logHelper.error(
+        errors['unable-to-get-sw-name'],
+        err
+      );
+      throw err;
+    });
   }
 
   /**

@@ -8,4 +8,10 @@ module.exports = {
     'caching.',
   'no-file-extensions-selected': 'No file extensions were selected so nothing '+
     'would be cached.',
+  'invalid-file-manifest-name': 'The File Manifest Name must have at lease ' +
+    'one character.',
+  'unable-to-get-file-manifest-name': 'Unable to get a file manifest name.',
+  'invalid-sw-name': 'The service worker file name must have at least one' +
+    'character.',
+  'unable-to-get-sw-name': 'Unable to get a service worker file name.',
 };
