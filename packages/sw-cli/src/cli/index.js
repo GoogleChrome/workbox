@@ -33,6 +33,11 @@ const constants = require('../lib/constants.js');
 class SWCli {
   /**
    * @private
+   * This is a helper method that allows the test framework to call argv with
+   * arguments without worrying about running as an actual CLI.
+   * @param {Object} argv The value passed in via process.argv.
+   * @return {Promise} Promise is returned so testing framework knows when
+   * handling the request has finished.
    */
   argv(argv) {
     const cliArgs = minimist(argv);
