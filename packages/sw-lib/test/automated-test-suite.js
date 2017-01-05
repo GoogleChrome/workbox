@@ -81,13 +81,13 @@ describe('sw-lib Tests', function() {
     });
   };
 
-  const availableBrowsers = seleniumAssistant.getAvailableBrowsers();
+  const availableBrowsers = seleniumAssistant.getLocalBrowsers();
   availableBrowsers.forEach((browser) => {
-    switch(browser.getSeleniumBrowserId()) {
+    switch(browser.getId()) {
       case 'chrome':
       case 'firefox':
       case 'opera':
-        if (browser.getSeleniumBrowserId() === 'opera' &&
+        if (browser.getId() === 'opera' &&
           browser.getVersionNumber() <= 43) {
           console.log(`Skipping Opera <= 43 due to driver issues.`);
           return;
@@ -95,7 +95,7 @@ describe('sw-lib Tests', function() {
         setupTestSuite(browser);
         break;
       default:
-        console.log(`Skipping tests for ${browser.getSeleniumBrowserId()}`);
+        console.log(`Skipping tests for ${browser.getId()}`);
         break;
     }
   });

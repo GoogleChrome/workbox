@@ -90,12 +90,12 @@ const configureTestSuite = function(browser) {
 
 (function(browser) {
   // Blacklist browsers here if needed.
-  if (browser.getSeleniumBrowserId() === 'opera' && browser.getVersionNumber() === 41) {
+  if (browser.getId() === 'opera' && browser.getVersionNumber() === 41) {
     console.warn('Skipping Opera version 41 due to operadriver error.');
     return;
   }
 
-  switch (browser.getSeleniumBrowserId()) {
+  switch (browser.getId()) {
     case 'chrome':
       configureTestSuite(browser);
       break;
@@ -105,4 +105,4 @@ const configureTestSuite = function(browser) {
       console.warn(`Skipping ${browser.getPrettyName()}.`);
       break;
   }
-})(seleniumAssistant.getAvailableBrowsers()[0]);
+})(seleniumAssistant.getLocalBrowsers()[0]);
