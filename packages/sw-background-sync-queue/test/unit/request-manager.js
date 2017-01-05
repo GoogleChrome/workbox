@@ -17,11 +17,13 @@
 'use strict';
 
 describe('request-manager test', () => {
+	let responseAchieved = 0;
 	const callbacks = {
 		onResponse: function() {
+			responseAchieved ++;
 		},
 	};
-	const swBackgroundQueue = goog.backgroundSyncQueue.test.SwBackgroundQueue;
+	const swBackgroundQueue = goog.backgroundSyncQueue.test.swBackgroundQueue;
 
 	let queue;
 	let reqManager;
@@ -52,14 +54,12 @@ describe('request-manager test', () => {
 	it('check replay', async function() {
 		swBackgroundQueue.initialize();
 		const backgroundSyncQueue
-			= new goog.backgroundSyncQueue.test.BackgroundSyncQueue({});
-		const channel = new BroadcastChannel(
-				goog.backgroundSyncQueue.test.constants.defaultBroadcastChannelName);
-		channel.onmessage = function(msg) {
-			console.log('got Message', msg);
-		};
+			= new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
+				callbacks,
+			});
 		await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/1')});
 		await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/2')});
 		await backgroundSyncQueue._requestManager.replayRequests();
+		chai.assert.equal(responseAchieved, 2);
   });
 });

@@ -68,7 +68,7 @@ describe('queue-utils test', () => {
 	});
 
 	it('test queue cleanup', async () => {
-		/* code for clearing everything from IDB
+		/* code for clearing everything from IDB */
 		const idbHelper = new goog.backgroundSyncQueue.test.IDBHelper(
 			'bgQueueSyncDB', 1, 'QueueStore');
 		let allKeys = await idbHelper.getAllKeys();
@@ -94,6 +94,6 @@ describe('queue-utils test', () => {
 		await queueUtils.cleanupQueue();
 
 		chai.assert.equal(allKeys.length,
-			(await idbHelper.getAllKeys()).length + 2);*/
+			(await idbHelper.getAllKeys()).length + 2);
 	});
 });
