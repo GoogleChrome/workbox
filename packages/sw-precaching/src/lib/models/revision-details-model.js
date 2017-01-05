@@ -1,7 +1,18 @@
 import IDBHelper from '../../../../../lib/idb-helper.js';
 import {dbName, dbVersion, dbStorename} from '../constants';
 
+/**
+ * This class is a simple model that stores EntryID's with their current
+ * revision. This is used when caching revisioned assets so that only entries
+ * with different revisions are downloaded and updated.
+ *
+ * @private
+ * @memberof module:sw-precaching
+ */
 class RevisionDetailsModel {
+  /**
+   * Constructor for RevisionDetails Model.
+   */
   constructor() {
     this._idbHelper = new IDBHelper(dbName, dbVersion, dbStorename);
   }
@@ -9,8 +20,8 @@ class RevisionDetailsModel {
   /**
    * This method gets the revision details for a given entryID.
    * @param {String} entryID The ID of the revision.
-   * @return {Promise<String|null>} Returns a string for the last revision or
-   * returns null if there is no revision information.
+   * @return {Promise<String|null>} Returns a revision string or
+   * null if there is no revision information.
    */
   get(entryID) {
     return this._idbHelper.get(entryID);
@@ -27,7 +38,10 @@ class RevisionDetailsModel {
   }
 
   /**
-   * This method closes the indexdDB helper.
+   * This method closes the indexdDB helper. This is only used for unit testing
+   * to ensure clean state between tests.
+   *
+   * @private
    */
   _close() {
     this._idbHelper.close();

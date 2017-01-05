@@ -1,5 +1,5 @@
 import ErrorFactory from '../error-factory';
-import BaseCacheManager from './base-manager';
+import BaseCacheManager from './base-cache-manager';
 import RevisionDetailsModel from '../models/revision-details-model';
 import {defaultRevisionedCacheName} from '../constants';
 import StringPrecacheEntry from
@@ -7,13 +7,14 @@ import StringPrecacheEntry from
 import ObjectPrecacheEntry from
   '../models/precache-entries/object-precache-entry';
 
-  /**
-   * This class extends a lot of the internal methods from BaseCacheManager
-   * to manage caching of revisioned assets.
-   *
-   * @memberof module:sw-precaching
-   * @extends {module:sw-precaching.BaseCacheManager}
-   */
+/**
+ * This class extends a lot of the internal methods from BaseCacheManager
+ * to manage caching of revisioned assets.
+ *
+ * @private
+ * @memberof module:sw-precaching
+ * @extends {module:sw-precaching.BaseCacheManager}
+ */
 class RevisionedCacheManager extends BaseCacheManager {
   /**
    * Constructor for RevisionedCacheManager
@@ -44,7 +45,7 @@ class RevisionedCacheManager extends BaseCacheManager {
    */
   cache(rawEntries) {
     // This method is here to provide useful docs.
-    super(rawEntries);
+    super.cache(rawEntries);
   }
 
   /**

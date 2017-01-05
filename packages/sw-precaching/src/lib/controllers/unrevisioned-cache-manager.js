@@ -1,12 +1,15 @@
 import ErrorFactory from '../error-factory';
 import BaseCacheManager from './base-cache-manager';
-import RequestPrecacheEntry from '../models/precache-entries/request-entry';
+import RequestCacheEntry from '../models/precache-entries/request-entry';
+import StringPrecacheEntry from
+  '../models/precache-entries/string-precache-entry';
 import {defaultUnrevisionedCacheName} from '../constants';
 
 /**
  * This class extends a lot of the internal methods from BaseCacheManager
  * to manage caching of unrevisioned assets.
  *
+ * @private
  * @memberof module:sw-precaching
  * @extends {module:sw-precaching.BaseCacheManager}
  */
@@ -37,7 +40,7 @@ class UnrevisionedCacheManager extends BaseCacheManager {
    */
   cache(rawEntries) {
     // This method is here to provide useful docs.
-    super(rawEntries);
+    super.cache(rawEntries);
   }
 
   /**
@@ -55,7 +58,16 @@ class UnrevisionedCacheManager extends BaseCacheManager {
         new Error('Invalid file entry: ' + JSON.stringify(input)));
     }
 
-    return new RequestPrecacheEntry(input);
+    if (typeof input === 'string') {
+      return new StringPrecacheEntry(input);
+    } else if (input instanceof Request) {
+      return new RequestCacheEntry(input);
+    } else {
+      throw ErrorFactory.createError('invalid-unrevisioned-entry',
+        new Error('Invalid file entry: ' +
+          JSON.stringify(input))
+        );
+    }
   }
 
   /**

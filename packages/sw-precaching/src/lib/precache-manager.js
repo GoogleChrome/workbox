@@ -23,10 +23,7 @@ import UnrevisionedCacheManager from
  * the sw-precaching module.
  *
  * This class will set up the install listener and orchestrate the caching
- * of assets via the [RevisionedCacheManager]{@link
- *  module:sw-precaching.RevisionedCacheManager} and
- * [UnrevisionedCacheManager]{@link
- *  module:sw-precaching.UnrevisionedCacheManager}.
+ * of assets.
  *
  * @memberof module:sw-precaching
  */
