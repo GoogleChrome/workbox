@@ -23,8 +23,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   afterEach(function() {
-    // return window.goog.swUtils.cleanState()
-    // .then(deleteIndexedDB);
+    return window.goog.swUtils.cleanState()
+    .then(deleteIndexedDB);
   });
 
   const testCacheEntries = (fileSet) => {
@@ -306,13 +306,63 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
   });
 
-  it('should cache unrevisioned opaque responses by default', function() {
+  it('should not cache unrevisioned opaque responses by default', function() {
     return window.goog.swUtils.activateSW('data/response-types/opaque-unrevisioned-sw.js')
     .then(() => {
-      throw new Error('Expected SW to fail installation due to caching 404 entry.');
+      throw new Error('Expected SW to fail installation due to caching opaque entry.');
     }, (err) => {
       // NOOP - The error is not to do with the error throw in SW, so nothing
       // to check.
+    });
+  });
+
+  it('should manage redirected revisioned requests', function() {
+    return window.goog.swUtils.activateSW('data/response-types/redirect-revisioned-sw.js')
+    .then((iframe) => {
+      const promises = goog.__TEST_DATA['redirect'].map((redirectPath) => {
+        const sections = redirectPath.split('/').filter((section) => {
+          return section !== '';
+        });
+        const expectedResponse = sections[sections.length - 1];
+        return iframe.contentWindow.fetch(redirectPath)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Response NOT ok.');
+          }
+          return response.text();
+        })
+        .then((responseText) => {
+          if(responseText !== expectedResponse) {
+            throw new Error('Unexpected response: ' + redirectPath);
+          }
+        });
+      });
+      return Promise.all(promises);
+    });
+  });
+
+  it('should manage redirected unrevisioned requests', function() {
+    return window.goog.swUtils.activateSW('data/response-types/redirect-unrevisioned-sw.js')
+    .then((iframe) => {
+      const promises = goog.__TEST_DATA['redirect'].map((redirectPath) => {
+        const sections = redirectPath.split('/').filter((section) => {
+          return section !== '';
+        });
+        const expectedResponse = sections[sections.length - 1];
+        return iframe.contentWindow.fetch(redirectPath)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Response NOT ok.');
+          }
+          return response.text();
+        })
+        .then((responseText) => {
+          if(responseText !== expectedResponse) {
+            throw new Error('Unexpected response: ' + redirectPath);
+          }
+        });
+      });
+      return Promise.all(promises);
     });
   });
 });

@@ -95,4 +95,11 @@ self.goog.__TEST_DATA = {
   'opaque': [
     `${secondaryServer}/__echo/date/hello.txt`,
   ],
+  'redirect': [
+    '/__test/redirect/301/',
+    '/__test/redirect/302/',
+    '/__test/redirect/303/',
+    '/__test/redirect/307/',
+    '/__test/redirect/308/',
+  ],
 };

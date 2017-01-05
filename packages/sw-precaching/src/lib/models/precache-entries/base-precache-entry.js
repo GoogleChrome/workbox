@@ -23,6 +23,10 @@ class BaseCacheEntry {
    * @return {String} The final URL to make the request to then cache.
    */
   _cacheBustUrl(requestURL, revision) {
+    if (this.cacheBust !== true) {
+      return requestURL;
+    }
+
     if ('cache' in Request.prototype) {
       // Make use of the Request cache mode where we can.
       // Reload skips the HTTP cache for outgoing requests and updates
