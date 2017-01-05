@@ -3,9 +3,7 @@
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
      http://www.apache.org/licenses/LICENSE-2.0
-
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,6 +66,175 @@ module.exports = () => Promise.all([
       ],
     },
     buildPath: 'build/test/sw-background-queue.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'request-queue.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.RequestQueue',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/request-queue.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'background-sync-queue.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.BackgroundSyncQueue',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/background-sync-queue.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'constants.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.constants',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/constants.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib',
+        'background-sync-idb-helper.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.backgroundSyncIdbHelper',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/background-sync-idb-helper.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'request-manager.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.RequestManager',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/request-manager.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'queue-utils.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.queueUtils',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/queue-utils.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'broadcast-manager.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.broadcastManager',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/broadcast-manager.js',
+    projectDir: __dirname,
+  }),
+  buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, 'src', 'lib', 'response-manager.js'),
+      format: 'umd',
+      moduleName: 'goog.backgroundSyncQueue.test.responseManager',
+      plugins: [
+        resolve({
+          jsnext: true,
+          main: true,
+          browser: true,
+        }),
+        rollupBabel({
+          plugins: ['transform-async-to-generator', 'external-helpers'],
+          exclude: 'node_modules/**',
+        }),
+        commonjs(),
+      ],
+    },
+    buildPath: 'build/test/response-manager.js',
     projectDir: __dirname,
   }),
   buildJSBundle({

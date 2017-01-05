@@ -25,13 +25,12 @@ describe('broadcast manager test', () => {
 		let msgRead = false;
     const channelName = 'CHANNEL';
 		const testBroadcastChannel = new BroadcastChannel('CHANNEL');
-		broadcastManager.initiazileBroadcastManager(channelName);
 		testBroadcastChannel.onmessage = function() {
 			msgRead = true;
 			chai.assert.equal(msgRead, true);
 			done();
 		};
-		broadcastManager.broadcastMessage({
+		broadcastManager.broadcastMessage(testBroadcastChannel, {
 			type: 'SUCCESS',
 			url: 'http://google.com',
 		});
