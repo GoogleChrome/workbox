@@ -35,7 +35,17 @@ describe('background sync queue test', () => {
     });
 
   it('check defaults', () => {
-    // TODO: write tests here
+    const defaultsBackgroundSyncQueue
+      = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({});
+    chai.assert.isObject(defaultsBackgroundSyncQueue._queue);
+    chai.assert.isObject(defaultsBackgroundSyncQueue._requestManager);
+    chai.assert.equal(defaultsBackgroundSyncQueue._queue._queueName,
+      goog.backgroundSyncQueue.test.constants.defaultQueueName + '_0');
+    chai.assert.equal(defaultsBackgroundSyncQueue._queue._config.maxAge,
+      goog.backgroundSyncQueue.test.constants.maxAge);
+    chai.assert.equal(
+      JSON.stringify(defaultsBackgroundSyncQueue._requestManager._globalCallbacks),
+      JSON.stringify({}));
   });
 
   it('check parameterised constructor', () =>{
