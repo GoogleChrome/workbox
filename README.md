@@ -165,6 +165,6 @@ limitations under the License.
 [travis-url]: https://travis-ci.org/GoogleChrome/sw-helpers
 [travis-image]: https://travis-ci.org/GoogleChrome/sw-helpers.svg?branch=master
 [dependency-url]: https://david-dm.org/GoogleChrome/sw-helpers/
-[dependency-image]: https://david-dm.org/GoogleChrome/sw-helpers/dev-status.svg
+[dependency-image]: https://david-dm.org/GoogleChrome/sw-helpers/status.svg
 [dev-dependency-url]: https://david-dm.org/GoogleChrome/sw-helpers?type=dev
-[dev-dependency-image]: https://david-dm.org/GoogleChrome/sw-helpers/status.svg
+[dev-dependency-image]: https://david-dm.org/GoogleChrome/sw-helpers/dev-status.svg
