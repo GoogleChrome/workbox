@@ -1,11 +1,28 @@
 import ErrorFactory from '../error-factory';
 
+/**
+ * This class handles the shared logic for caching revisioned and unrevisioned
+ * assets.
+ * @private
+ * @memberof module:sw-precaching
+ */
 class BaseCacheManager {
+  /**
+   * Constructor for BaseCacheManager
+   * @param {String} cacheName This is the cache name to store requested assets.
+   */
   constructor(cacheName) {
     this._entriesToCache = new Map();
     this._cacheName = cacheName;
   }
 
+  /**
+   * This method will add the entries to the install list.
+   * This will manage duplicate entries and perform the caching during
+   * the install step.
+   * @param {Array<String|Request|Object>} rawEntries A raw entry that can be
+   * parsed into a BaseCacheEntry by the inheriting CacheManager.
+   */
   cache(rawEntries) {
     rawEntries.forEach((rawEntry) => {
       this._addEntryToInstallList(
@@ -28,8 +45,9 @@ class BaseCacheManager {
    * and this may cause issues in future when updating the service worker
    * with new revisions.
    *
-   * @param {RevisionedCacheEntry} fileEntry The file entry to be cached during
-   * the next install event.
+   * @private
+   * @param {RevisionedCacheEntry} precacheEntry The file entry to be cached
+   * during the next install event.
    */
   _addEntryToInstallList(precacheEntry) {
     const entryID = precacheEntry.entryID;
@@ -40,12 +58,14 @@ class BaseCacheManager {
       return;
     }
 
-    this._onDuplicateEntryFound(precacheEntry, previousEntry);
+    this._onDuplicateInstallEntryFound(precacheEntry, previousEntry);
   }
 
   /**
    * This method manages the actual install event to cache the revisioned
    * assets.
+   *
+   * @private
    * @return {Promise} The promise resolves when all the desired assets are
    * cached.
    */
@@ -62,9 +82,18 @@ class BaseCacheManager {
     });
 
     // Wait for all requests to be cached.
-    await Promise.all(cachePromises);
+    return Promise.all(cachePromises);
   }
 
+  /**
+   * This method will request the entry and save it to the cache if the response
+   * is valid.
+   *
+   * @private
+   * @param {BaseCacheEntry} precacheEntry The entry to fetch and cache.
+   * @return {Promise} Returns a promise that resolves once the entry is fetched
+   * and cached.
+   */
   async _cacheEntry(precacheEntry) {
     const isCached = await this._isAlreadyCached(precacheEntry);
     if (isCached) {
@@ -72,15 +101,14 @@ class BaseCacheManager {
     }
 
     let response = await fetch(precacheEntry.getNetworkRequest(), {
-        credentials: 'same-origin',
-        redirect: 'follow',
-      });
-
+      credentials: 'same-origin',
+      redirect: 'follow',
+    });
     if (response.ok) {
       const openCache = await this._getCache();
       await openCache.put(precacheEntry.request, response);
 
-      await this._onEntryCached(precacheEntry);
+      return this._onEntryCached(precacheEntry);
     } else {
       throw ErrorFactory.createError('request-not-cached', {
         message: `Failed to get a cacheable response for ` +
@@ -90,9 +118,14 @@ class BaseCacheManager {
   }
 
   /**
-   * Once the install event has occured and the previous entries need
-   * to be deleted from the cache, this method will compare the URL's
-   * and figure out which assets are no longer required to be precached.
+   * This method will compare the URL's
+   * and figure out which assets are no longer required to be cached.
+   *
+   * This should be called in the activate event.
+   *
+   * @private
+   * @return {Promise} Promise that resolves once the cache entries have been
+   * cleaned.
    */
   async _cleanUpOldEntries() {
     if (!await caches.has(this._cacheName)) {
@@ -115,7 +148,7 @@ class BaseCacheManager {
       return true;
     });
 
-    await Promise.all(
+    return Promise.all(
       cachedRequestsToDelete.map((cachedRequest) => {
         return openCache.delete(cachedRequest);
       })
@@ -124,7 +157,9 @@ class BaseCacheManager {
 
   /**
    * A simple helper method to get the cache used for precaching assets.
-   * @return {Cache} The cache to be used for precaching.
+   *
+   * @private
+   * @return {Promise<Cache>} The cache to be used for precaching.
    */
   async _getCache() {
     if (!this._cache) {
@@ -134,18 +169,65 @@ class BaseCacheManager {
     return this._cache;
   }
 
+  /**
+   * This method ensures that the file entry in the maniest is valid and
+   * can be parsed as a BaseCacheEntry.
+   *
+   * @private
+   * @abstract
+   * @param {String | Request | Object} input Either a URL string, a Request
+   * or an object with a `url`, `revision` and optional `cacheBust` parameter.
+   * @return {BaseCacheEntry} Returns a parsed version of the file entry.
+   */
   _parseEntry(input) {
     throw ErrorFactory.createError('should-override');
   }
 
+  /**
+   * This method is called if the consumer of this cache manager has to
+   * cache entries that are to be installed but have the same "entryID".
+   * This means that the user is trying to cache the same thing twice.
+   * This callback gives extending classed a chance to throw an error
+   * if there is an edge case that can't be handled.
+   *
+   * @private
+   * @abstract
+   * @param {BaseCacheEntry} newEntry The entry that is to be cached.
+   * @param {BaseCacheEntry} previous The entry that is currently cached.
+   */
   _onDuplicateEntryFound(newEntry, previous) {
     throw ErrorFactory.createError('should-override');
   }
 
+  /**
+   * This method confirms with a fileEntry is already in the cache with the
+   * appropriate revision.
+   * If the revision is known, matching the requested `fileEntry.revision` and
+   * the cache entry exists for the `fileEntry.path` this method returns true.
+   * False otherwise.
+   *
+   * @private
+   * @abstract
+   * @param {BaseCacheEntry} precacheEntry A file entry with `path` and
+   * `revision` parameters.
+   * @return {Promise<Boolean>} Returns true is the fileEntry is already
+   * cached, false otherwise.
+   */
   _isAlreadyCached(precacheEntry) {
     throw ErrorFactory.createError('should-override');
   }
 
+  /**
+   * This method can be used for any work that needs to be done when a
+   * URL has been cached.
+   *
+   * @private
+   * @abstract
+   * @param {BaseCacheEntry} precacheEntry A file entry with `path` and
+   * `revision` parameters.
+   * @return {Promise} Returns a Promise that resolves once it's work has
+   * been done.
+   */
   _onEntryCached(precacheEntry) {
     throw ErrorFactory.createError('should-override');
   }

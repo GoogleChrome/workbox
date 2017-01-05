@@ -1,6 +1,23 @@
 import {cacheBustParamName} from '../../constants';
 
+/**
+ * This class is extended by a number of classes that take different inputs
+ * and generates the required fields for a BaseCacheEntry.
+ *
+ * @private
+ * @memberof module:sw-precaching
+ */
 class BaseCacheEntry {
+  /**
+   * This constructor expects an object and a number or required fields.
+   * You shouldn't need to use this constructor directly.
+   *
+   * @param {Object} input
+   * @param {String} input.entryID
+   * @param {String} input.revision
+   * @param {Request} input.request
+   * @param {boolean} input.cacheBust
+   */
   constructor({entryID, revision, request, cacheBust}) {
     this.entryID = entryID;
     this.revision = revision;
@@ -8,37 +25,44 @@ class BaseCacheEntry {
     this.cacheBust = cacheBust;
   }
 
-  getNetworkRequest() {
-    return new Request(this._cacheBustUrl(this.request.url, this.revision));
-  }
-
   /**
-   * This method takes a file entry and if the `cacheBust` parameter is set to
-   * true, the cacheBust parameter will be added to the URL before making the
-   * request. The response will be cached with the absolute URL without
-   * the cache busting search param.
-   * @param {String} requestURL This is an object with `url`, `revision` and
-   * `cacheBust` parameters.
-   * @param {String} revision Revision to use in the cache bust.
-   * @return {String} The final URL to make the request to then cache.
+   * This method is required since any revisioned request needs to cache bust.
+   * To ensure this is consistent, CacheManagers will make a network request
+   * using this specially formatted request.
+   *
+   * When caching the response, it will be cached against the origin `request`,
+   * removing lookup for the cachebusted URL.
+   *
+   * @return {Request} Returns a cache busted request if needed, otherwise
+   * a normal request with credentials set to 'same-origin' and redirect set to
+   * follow.
    */
-  _cacheBustUrl(requestURL, revision) {
+  getNetworkRequest() {
     if (this.cacheBust !== true) {
-      return requestURL;
+      // For the RequestCacheEntry we should return it to ensure headers are
+      // kept in tact and part of the request.
+      return this.request;
     }
 
-    if ('cache' in Request.prototype) {
-      // Make use of the Request cache mode where we can.
-      // Reload skips the HTTP cache for outgoing requests and updates
-      // the cache with the returned reponse.
-      return new Request(requestURL, {cache: 'reload'});
+    let url = this.request.url;
+    const requestOptions = {};
+
+    if (this.cacheBust === true) {
+      if ('cache' in Request.prototype) {
+        // Make use of the Request cache mode where we can.
+        // Reload skips the HTTP cache for outgoing requests and updates
+        // the cache with the returned reponse.
+        requestOptions.cache = 'reload';
+      } else {
+        const parsedURL = new URL(url, location);
+        parsedURL.search += (parsedURL.search ? '&' : '') +
+          encodeURIComponent(cacheBustParamName) + '=' +
+          encodeURIComponent(this.revision);
+        url = parsedURL.toString();
+      }
     }
 
-    const parsedURL = new URL(requestURL, location);
-    parsedURL.search += (parsedURL.search ? '&' : '') +
-      encodeURIComponent(cacheBustParamName) + '=' +
-      encodeURIComponent(revision);
-    return parsedURL.toString();
+    return new Request(url, requestOptions);
   }
 }
 
