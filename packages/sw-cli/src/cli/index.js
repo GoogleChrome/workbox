@@ -26,6 +26,8 @@ const logHelper = require('../lib/log-helper');
 const pkg = require('../../package.json');
 const constants = require('../lib/constants.js');
 
+const DEBUG = false;
+
 /**
  * This class is a wrapper to make test easier. This is used by
  * ./bin/index.js to pass in the args when the CLI is used.
@@ -126,17 +128,12 @@ class SWCli {
   generateSW() {
     return this._getRootOfWebApp()
     .then((rootDirectory) => {
+      return this._getFileExtensionsToCache(rootDirectory);
+    })
+    .then((fileExtensionsToCache) => {
 
     });
     /** return inquirer.prompt([
-      {
-        name: 'rootDir',
-        message: 'What is the root of your web app?',
-        validate: () => {
-          // TODO: Validate user input
-          return true;
-        },
-      },
       {
         name: 'fileExtensions',
         message: 'Which file types would you like to cache?',
@@ -228,6 +225,91 @@ class SWCli {
       );
       throw err;
     });
+  }
+
+  _getFileExtensionsToCache(rootDirectory) {
+    return this._getFileContents(rootDirectory)
+    .then((files) => {
+      return this._getFileExtensions(files);
+    })
+    .then((fileExtensions) => {
+      if (fileExtensions.length === 0) {
+        throw new Error(errors['no-file-extensions-found']);
+      }
+
+      return inquirer.prompt([
+        {
+          name: 'cacheExtensions',
+          message: 'Which file types would you like to cache?',
+          type: 'checkbox',
+          choices: fileExtensions,
+          default: fileExtensions,
+        },
+      ]);
+    })
+    .then((results) => {
+      if (results.cacheExtensions.length === 0) {
+        throw new Error(errors['no-file-extensions-selected']);
+      }
+
+      return results.cacheExtensions;
+    })
+    .catch((err) => {
+      logHelper.error(
+        errors['unable-to-get-file-extensions'],
+        err
+      );
+      throw err;
+    });
+  }
+
+  _getFileContents(directory) {
+    return new Promise((resolve, reject) => {
+      fs.readdir(directory, (err, directoryContents) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(directoryContents);
+      });
+    })
+    .then((directoryContents) => {
+      const promises = directoryContents.map((directoryContent) => {
+        const fullPath = path.join(directory, directoryContent);
+        if (fs.statSync(fullPath).isDirectory()) {
+          if (!constants.blacklistDirectoryNames.includes(directoryContent)) {
+            return this._getFileContents(fullPath);
+          } else {
+            return [];
+          }
+        } else {
+          return fullPath;
+        }
+      });
+
+      return Promise.all(promises);
+    })
+    .then((fileResults) => {
+      return fileResults.reduce((collapsedFiles, fileResult) => {
+        return collapsedFiles.concat(fileResult);
+      }, []);
+    });
+  }
+
+  _getFileExtensions(files) {
+    const fileExtensions = new Set();
+    files.forEach((file) => {
+      const extension = path.extname(file);
+      if (extension && extension.length > 0) {
+        fileExtensions.add(extension);
+      } else if (DEBUG) {
+        logHelper.warn(
+          errors['no-extension'],
+          file
+        );
+      }
+    });
+    return [...fileExtensions];
   }
 
   /**
