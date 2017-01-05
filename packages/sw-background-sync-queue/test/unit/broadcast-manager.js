@@ -20,18 +20,20 @@ describe('broadcast manager test', () => {
 	const broadcastManager
     = goog.backgroundSyncQueue.test.broadcastManager;
 
-  it('check broadcast', () => {
+  it('check broadcast', function(done) {
+		this.timeout(10);
 		let msgRead = false;
     const channelName = 'CHANNEL';
 		const testBroadcastChannel = new BroadcastChannel('CHANNEL');
 		broadcastManager.initiazileBroadcastManager(channelName);
 		testBroadcastChannel.onmessage = function() {
 			msgRead = true;
+			chai.assert.equal(msgRead, true);
+			done();
 		};
 		broadcastManager.broadcastMessage({
 			type: 'SUCCESS',
 			url: 'http://google.com',
 		});
-		chai.assert.equal(msgRead, true);
 	});
 });

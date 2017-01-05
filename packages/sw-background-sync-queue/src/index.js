@@ -16,8 +16,6 @@
  *
  * @module sw-background-sync-queue
  */
-
-import {initiazileBroadcastManager} from './lib/broadcast-manager';
 import {getResponse} from './lib/response-manager';
 import {setDbName} from './lib/background-sync-idb-helper';
 import BackgroundSyncQueue from './lib/background-sync-queue';
@@ -29,15 +27,11 @@ import assert from '../../../lib/assert';
  * @param {Object=} broadcastChannel
  * @param {Object=} dbName
  */
-async function initialize({broadcastChannel, dbName} = {}) {
-	if(broadcastChannel) {
-		assert.isType({broadcastChannel}, 'string');
-	}
+async function initialize({dbName} = {}) {
 	if(dbName) {
 		assert.isType({dbName}, 'string');
 		setDbName(dbName);
 	}
-	initiazileBroadcastManager(broadcastChannel);
 	await cleanupQueue();
 }
 

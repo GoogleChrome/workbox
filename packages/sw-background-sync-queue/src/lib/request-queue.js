@@ -29,11 +29,13 @@ class RequestQueue {
 		config,
 		queueName = defaultQueueName + '_' + _queueCounter++,
 		idbQDb,
+		broadcastChannel,
 	}) {
 		this._isQueueNameAddedToAllQueue = false;
 		this._queueName = queueName;
 		this._config = config;
 		this._idbQDb = idbQDb;
+		this._broadcastChannel = broadcastChannel;
 		this._queue = [];
 		this.initQueue();
 	}
@@ -102,14 +104,14 @@ class RequestQueue {
 			self.registration.sync.register(tagNamePrefix + this._queueName);
 
 			// broadcast the success of request added to the queue
-			broadcastMessage({
+			broadcastMessage(this._broadcastChannel, {
 				type: broadcastMessageAddedType,
 				id: hash,
 				url: request.url,
 			});
 		} catch(e) {
 			// broadcast the failure of request added to the queue
-			broadcastMessage({
+			broadcastMessage(this._broadcastChannel, {
 				type: broadcastMessageFailedType,
 				id: hash,
 				url: request.url,

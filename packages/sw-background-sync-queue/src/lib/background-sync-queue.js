@@ -17,23 +17,30 @@ class BackgroundSyncQueue {
 	 * @param {Object} config
 	 * @memberOf BackgroundSyncQueue
 	 */
-	constructor({maxRetentionTime = maxAge, callbacks, queueName} = {}) {
-		if(queueName) {
-			assert.isType({queueName}, 'string');
-		}
+	constructor({maxRetentionTime = maxAge, callbacks, queueName,
+		broadcastChannel} = {}) {
+			if(queueName) {
+				assert.isType({queueName}, 'string');
+			}
 
-		if(maxRetentionTime) {
-			assert.isType({maxRetentionTime}, 'number');
-		}
+			if(maxRetentionTime) {
+				assert.isType({maxRetentionTime}, 'number');
+			}
 
-		this._queue = new RequestQueue({
-			config: {
-				maxAge: maxRetentionTime,
-			},
-			queueName,
-			idbQDb: new IDBHelper(getDbName(), 1, 'QueueStore'),
-		});
-		this._requestManager = new RequestManager({callbacks, queue: this._queue});
+			if(broadcastChannel) {
+				assert.isType({broadcastChannel}, BroadcastChannel);
+			}
+
+			this._queue = new RequestQueue({
+				config: {
+					maxAge: maxRetentionTime,
+				},
+				queueName,
+				idbQDb: new IDBHelper(getDbName(), 1, 'QueueStore'),
+				broadcastChannel,
+			});
+			this._requestManager = new RequestManager({callbacks,
+				queue: this._queue});
 	}
 
 	/**

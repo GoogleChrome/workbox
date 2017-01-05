@@ -21,6 +21,7 @@ describe('request-manager test', () => {
 		onResponse: function() {
 		},
 	};
+	const swBackgroundQueue = goog.backgroundSyncQueue.test.SwBackgroundQueue;
 
 	let queue;
 	let reqManager;
@@ -48,7 +49,17 @@ describe('request-manager test', () => {
 		chai.assert.equal(reqManager._queue, queue);
   });
 
-	it('check replay', () => {
-		// TODO: check replay
+	it('check replay', async function() {
+		swBackgroundQueue.initialize();
+		const backgroundSyncQueue
+			= new goog.backgroundSyncQueue.test.BackgroundSyncQueue({});
+		const channel = new BroadcastChannel(
+				goog.backgroundSyncQueue.test.constants.defaultBroadcastChannelName);
+		channel.onmessage = function(msg) {
+			console.log('got Message', msg);
+		};
+		await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/1')});
+		await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/2')});
+		await backgroundSyncQueue._requestManager.replayRequests();
   });
 });
