@@ -28,7 +28,7 @@ class BackgroundSyncQueue {
 			}
 
 			if(broadcastChannel) {
-				assert.isType({broadcastChannel}, BroadcastChannel);
+				assert.isInstance({broadcastChannel}, BroadcastChannel);
 			}
 
 			this._queue = new RequestQueue({

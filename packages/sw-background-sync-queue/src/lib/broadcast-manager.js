@@ -10,7 +10,7 @@ function broadcastMessage(broadcastManager, {type, url}) {
 	if(!broadcastManager)
 		return;
 
-	assert.isType({broadcastManager}, BroadcastChannel);
+	assert.isInstance({broadcastManager}, BroadcastChannel);
 	assert.isType({type}, 'string');
 	assert.isType({url}, 'string');
 

@@ -24,8 +24,9 @@ describe('broadcast manager test', () => {
 		this.timeout(10);
 		let msgRead = false;
     const channelName = 'CHANNEL';
-		const testBroadcastChannel = new BroadcastChannel('CHANNEL');
-		testBroadcastChannel.onmessage = function() {
+		const testBroadcastChannel = new BroadcastChannel(channelName);
+		const testReceiverChannel = new BroadcastChannel(channelName);
+		testReceiverChannel.onmessage = function() {
 			msgRead = true;
 			chai.assert.equal(msgRead, true);
 			done();
