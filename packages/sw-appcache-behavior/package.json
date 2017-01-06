@@ -1,6 +1,6 @@
 {
   "name": "sw-appcache-behavior",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A service worker implementation of the behavior defined in a page's App Cache manifest.",
   "keywords": [
     "appcache",
