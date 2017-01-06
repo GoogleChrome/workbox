@@ -1,6 +1,6 @@
 {
   "name": "sw-precaching",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "This library is still a work in progress and is not functional.",
   "keywords": [
     "service worker",
