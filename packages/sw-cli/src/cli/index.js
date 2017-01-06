@@ -166,7 +166,9 @@ class SWCli {
       const relativePath = path.relative(process.cwd(), rootDirectory);
 
       const globs = [
-        path.join(relativePath, '**', '*') +
+        // Glob patterns only work with forward slash
+        // https://github.com/isaacs/node-glob#windows
+        path.join(relativePath, '**', '*').replace(path.sep, '/') +
           `.{${fileExtentionsToCache.join(',')}}`,
       ];
 
@@ -322,12 +324,10 @@ class SWCli {
         );
       }
     });
-    return [...fileExtensions].map((fileExtension) => {
-      if (fileExtension.indexOf('.') === 0) {
-        return fileExtension.substring(1);
-      }
-      return fileExtension;
-    });
+
+    // Strip the '.' character if it's the first character.
+    return [...fileExtensions].map(
+      (fileExtension) => fileExtension.replace(/^\./, ''));
   }
 
   _getFileManifestName() {
@@ -398,9 +398,7 @@ class SWCli {
         default: true,
       },
     ])
-    .then((results) => {
-      return results.saveConfig;
-    })
+    .then((results) => results.saveConfig)
     .catch((err) => {
       logHelper.error(
         errors['unable-to-get-save-config'],
@@ -411,11 +409,10 @@ class SWCli {
   }
 
   _buildFileManifestFromGlobs(manifestFilePath, globs) {
-    let globbedFiles = [];
-    globs.forEach((globPattern) => {
-      const files = this._getFileManifestDetails(globPattern);
-      globbedFiles = globbedFiles.concat(files);
-    });
+    const globbedFiles = globs.reduce((accumulated, globPattern) => {
+      const fileDetails = this._getFileManifestDetails(globPattern);
+      return accumulated.concat(fileDetails);
+    }, []);
 
     const manifestEntries = this._filterFiles(globbedFiles);
 
@@ -430,10 +427,10 @@ class SWCli {
       return Promise.reject(err);
     }
 
+    const templatePath = path.join(
+      __dirname, '..', 'lib', 'templates', 'file-manifest.js.tmpl');
     return new Promise((resolve, reject) => {
-      fs.readFile(
-        path.join(__dirname, '../lib/templates/file-manifest.js.tmpl'), 'utf8',
-        (err, data) => {
+      fs.readFile(templatePath, 'utf8', (err, data) => {
         if (err) {
           logHelper.error(errors['read-manifest-template-failure'], err);
           return reject(err);
@@ -469,7 +466,7 @@ class SWCli {
     // Filter oversize files.
     files = files.filter((fileDetails) => {
       if (fileDetails.size > constants.maximumFileSize) {
-        logHelper.warn(`Skipping file '${fileDetails.fil}' due to size. ` +
+        logHelper.warn(`Skipping file '${fileDetails.file}' due to size. ` +
           `[Max size supported is ${constants.maximumFileSize}]`);
         return false;
       }
@@ -517,10 +514,8 @@ class SWCli {
       };
     });
 
-    return fileDetails.filter((details) => {
-      // If !== null, means it's a valid file.
-      return details !== null;
-    });
+    // If !== null, means it's a valid file.
+    return fileDetails.filter((details) => details !== null);
   }
 
   _getFileSize(file) {

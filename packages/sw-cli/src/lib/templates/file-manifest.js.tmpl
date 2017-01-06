@@ -1,6 +1,1 @@
-self.__file_manifest = [<% manifestEntries.forEach((manifestEntry) => { %>
-  {
-    url: '<%- manifestEntry.url %>',
-    revision: '<%- manifestEntry.revision %>',
-  },<% }); %>
-];
+self.__file_manifest = <%= JSON.stringify(manifestEntries) %>;
