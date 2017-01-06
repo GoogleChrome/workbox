@@ -43,7 +43,6 @@ describe('sw-lib Test Unrevisioned Caching', function() {
         let matchingResponse = null;
         cachedResponses.forEach((cachedResponse) => {
           let desiredPath = fileUrl;
-
           if (cachedResponse.url.indexOf(desiredPath) !== -1) {
             matchingResponse = cachedResponse;
             return;
@@ -56,6 +55,13 @@ describe('sw-lib Test Unrevisioned Caching', function() {
   };
 
   const testFileSet = (iframe, swPath, fileSet) => {
+    fileSet = fileSet.map((entry) => {
+      if (entry instanceof Request) {
+        return entry.url;
+      }
+      return entry;
+    });
+
     return testCacheEntries(fileSet)
     .then(() => {
       let responses = {};
