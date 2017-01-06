@@ -66,11 +66,11 @@ async function cleanupQueue() {
 		return null;
 	}
 
-	queueObj.forEach(async (queueName)=>{
+	await Promise.all(queueObj.map(async (queueName)=>{
 		const requestQueues = await db.get(queueName);
 		let itemsToKeep = [];
 		let deletionPromises = [];
-		requestQueues.forEach( async (hash) => {
+		await Promise.all(requestQueues.map( async (hash) => {
 			const requestData = await db.get(hash);
 			if (requestData && requestData.metadata
 				&& requestData.metadata.creationTimestamp + requestData.config.maxAge
@@ -81,10 +81,10 @@ async function cleanupQueue() {
 				// Keep elements whose definition exists in idb.
 				itemsToKeep.push(hash);
 			}
-		});
+		}));
 		await Promise.all(deletionPromises);
 		db.put(queueName, itemsToKeep);
-	});
+	}));
 }
 
 export {

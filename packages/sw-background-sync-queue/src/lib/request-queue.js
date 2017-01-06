@@ -99,9 +99,10 @@ class RequestQueue {
 			// add to queue
 			this.saveQueue();
 			this._idbQDb.put(hash, queuableRequest);
-			this.addQueueNameToAllQueues();
+			await this.addQueueNameToAllQueues();
 			// register sync
-			self.registration.sync.register(tagNamePrefix + this._queueName);
+			self.registration &&
+				self.registration.sync.register(tagNamePrefix + this._queueName);
 
 			// broadcast the success of request added to the queue
 			broadcastMessage(this._broadcastChannel, {

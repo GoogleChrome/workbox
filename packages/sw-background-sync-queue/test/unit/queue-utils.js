@@ -68,17 +68,14 @@ describe('queue-utils test', () => {
 	});
 
 	it('test queue cleanup', async () => {
-		/* code for clearing everything from IDB */
 		const idbHelper = new goog.backgroundSyncQueue.test.IDBHelper(
 			'bgQueueSyncDB', 1, 'QueueStore');
-		let allKeys = await idbHelper.getAllKeys();
-		allKeys.forEach(async (element) => {
-			await idbHelper.delete(element);
-		});
+		await queueUtils.cleanupQueue();
+		/* code for clearing everything from IDB */
 
 		const backgroundSyncQueue
     = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
-      maxRetentionTime: 1000,
+      maxRetentionTime: 1,
     });
 
 		const backgroundSyncQueue2
@@ -86,13 +83,12 @@ describe('queue-utils test', () => {
       maxRetentionTime: 10000,
     });
 
-		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum.com')});
-		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum.com')});
+		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum1.com')});
+		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum2.com')});
 		await backgroundSyncQueue2.pushIntoQueue({request: new Request('http://lipsum.com')});
-
-		await delay(10);
+		const allKeys = (await idbHelper.getAllKeys());
+		await delay(100);
 		await queueUtils.cleanupQueue();
-
 		chai.assert.equal(allKeys.length,
 			(await idbHelper.getAllKeys()).length + 2);
 	});

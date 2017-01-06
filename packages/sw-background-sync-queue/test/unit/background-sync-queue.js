@@ -44,7 +44,8 @@ describe('background sync queue test', () => {
     chai.assert.equal(defaultsBackgroundSyncQueue._queue._config.maxAge,
       goog.backgroundSyncQueue.test.constants.maxAge);
     chai.assert.equal(
-      JSON.stringify(defaultsBackgroundSyncQueue._requestManager._globalCallbacks),
+      JSON.stringify(
+        defaultsBackgroundSyncQueue._requestManager._globalCallbacks),
       JSON.stringify({}));
   });
 

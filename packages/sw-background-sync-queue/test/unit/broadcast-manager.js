@@ -21,7 +21,7 @@ describe('broadcast manager test', () => {
     = goog.backgroundSyncQueue.test.broadcastManager;
 
   it('check broadcast', function(done) {
-		this.timeout(10);
+		this.timeout(100);
 		let msgRead = false;
     const channelName = 'CHANNEL';
 		const testBroadcastChannel = new BroadcastChannel(channelName);
