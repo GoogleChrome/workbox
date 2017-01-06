@@ -191,7 +191,7 @@ class RequestWrapper {
     }
 
     // Only conditionally await the caching completion, giving developers the
-    // option if returning early for, e.g., read-through-caching scenarios.
+    // option of returning early for, e.g., read-through-caching scenarios.
     if (waitOnCache && cachingComplete) {
       await cachingComplete;
     }
