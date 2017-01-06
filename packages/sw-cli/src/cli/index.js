@@ -432,7 +432,7 @@ class SWCli {
 
     return new Promise((resolve, reject) => {
       fs.readFile(
-        path.join(__dirname, '../lib/templates/file-manifest.js'), 'utf8',
+        path.join(__dirname, '../lib/templates/file-manifest.js.tmpl'), 'utf8',
         (err, data) => {
         if (err) {
           logHelper.error(errors['read-manifest-template-failure'], err);
