@@ -66,6 +66,7 @@ describe(`sw-routing Browser Tests`, function() {
           console.log(`Skipping Opera <= 43 due to driver issues.`);
           return;
         }
+        // fall through
       case 'chrome':
       case 'firefox':
         setupTestSuite(browser);
