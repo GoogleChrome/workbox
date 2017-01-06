@@ -156,12 +156,12 @@ class SWCli {
     .then((sConfig) => {
       saveConfig = sConfig;
 
-      /** console.log('Root Directory: ' + rootDirectory);
-      console.log('File Extensions to Cache: ' + fileExtentionsToCache);
-      console.log('File Manifest: ' + fileManifestName);
-      console.log('Service Worker: ' + serviceWorkerName);
-      console.log('Save to Config File: ' + saveConfig);
-      console.log('');**/
+      logHelper.warn('Root Directory: ' + rootDirectory);
+      logHelper.warn('File Extensions to Cache: ' + fileExtentionsToCache);
+      logHelper.warn('File Manifest: ' + fileManifestName);
+      logHelper.warn('Service Worker: ' + serviceWorkerName);
+      logHelper.warn('Save to Config File: ' + saveConfig);
+      logHelper.warn('');
 
       const relativePath = path.relative(process.cwd(), rootDirectory);
 
@@ -411,16 +411,63 @@ class SWCli {
   }
 
   _buildFileManifestFromGlobs(manifestFilePath, globs) {
-    const groupedFileDetails = globs.map((globPattern) => {
-      return this._getFileManifestDetails(globPattern);
+    let globbedFiles = [];
+    globs.forEach((globPattern) => {
+      const files = this._getFileManifestDetails(globPattern);
+      globbedFiles = globbedFiles.concat(files);
     });
 
-    let filesToWrite = groupedFileDetails.reduce((joinedArray, fileGroup) => {
-      return joinedArray.concat(fileGroup);
-    }, []);
+    const manifestEntries = this._filterFiles(globbedFiles);
 
+    return this._writeFilemanifest(manifestFilePath, manifestEntries);
+  }
+
+  _writeFilemanifest(manifestFilePath, manifestEntries) {
+    try {
+      mkdirp.sync(path.dirname(manifestFilePath));
+    } catch (err) {
+      logHelper.error(errors['unable-to-make-manifest-directory'], err);
+      return Promise.reject(err);
+    }
+
+    return new Promise((resolve, reject) => {
+      fs.readFile(
+        path.join(__dirname, '../lib/templates/file-manifest.js'), 'utf8',
+        (err, data) => {
+        if (err) {
+          logHelper.error(errors['read-manifest-template-failure'], err);
+          return reject(err);
+        }
+        resolve(data);
+      });
+    })
+    .then((templateString) => {
+      try {
+        return template(templateString)({
+          manifestEntries: manifestEntries,
+        });
+      } catch (err) {
+        logHelper.error(errors['populating-manifest-tmpl-failed'], err);
+        throw err;
+      }
+    })
+    .then((populatedTemplate) => {
+      return new Promise((resolve, reject) => {
+        fs.writeFile(manifestFilePath, populatedTemplate, (err) => {
+          if (err) {
+            logHelper.error(errors['manifest-file-write-failure'], err);
+            return reject(err);
+          }
+
+          resolve();
+        });
+      });
+    });
+  }
+
+  _filterFiles(files) {
     // Filter oversize files.
-    filesToWrite = filesToWrite.filter((fileDetails) => {
+    files = files.filter((fileDetails) => {
       if (fileDetails.size > constants.maximumFileSize) {
         logHelper.warn(`Skipping file '${fileDetails.fil}' due to size. ` +
           `[Max size supported is ${constants.maximumFileSize}]`);
@@ -439,50 +486,35 @@ class SWCli {
     // TODO: Swap path.sep with '/'
 
     // Convert to manifest format
-    const manifestEntries = filesToWrite.map((fileDetails) => {
+    return files.map((fileDetails) => {
       return {
         url: fileDetails.file,
         revision: fileDetails.hash,
       };
     });
-
-    console.log(manifestEntries);
-
-    mkdirp.sync(path.dirname(manifestFilePath));
-
-    return new Promise((resolve, reject) => {
-      fs.readFile(
-        path.join(__dirname, '../lib/templates/file-manifest.js'), 'utf8',
-        (err, data) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(data);
-      });
-    })
-    .then((templateString) => {
-      const populatedTemplate = template(templateString)({
-        manifestEntries: manifestEntries,
-      });
-      return new Promise((resolve, reject) => {
-        fs.writeFile(manifestFilePath, populatedTemplate, (err) => {
-          if (err) {
-            return reject(err);
-          }
-
-          resolve();
-        });
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
   }
 
   _getFileManifestDetails(globPattern) {
-    const globbedFiles = glob.sync(globPattern);
+    let globbedFiles;
+    try {
+      globbedFiles = glob.sync(globPattern);
+    } catch (err) {
+      logHelper.error(errors['unable-to-glob-files'], err);
+      throw err;
+    }
+
     const fileDetails = globbedFiles.map((file) => {
-      return this._getFileSizeAndHash(file);
+      const fileSize = this._getFileSize(file);
+      if (fileSize === null) {
+        return null;
+      }
+
+      const fileHash = this._getFileHash(file);
+      return {
+        file,
+        hash: fileHash,
+        size: fileSize,
+      };
     });
 
     return fileDetails.filter((details) => {
@@ -491,25 +523,29 @@ class SWCli {
     });
   }
 
-  _getFileSizeAndHash(file) {
-    const stat = fs.statSync(file);
-
-    if (!stat.isFile()) {
-      return null;
+  _getFileSize(file) {
+    try {
+      const stat = fs.statSync(file);
+      if (!stat.isFile()) {
+        return null;
+      }
+      return stat.size;
+    } catch (err) {
+      logHelper.error(errors['unable-to-get-file-size'], err);
+      throw err;
     }
-
-    const buffer = fs.readFileSync(file);
-    return {
-      file: file,
-      size: stat.size,
-      hash: this._getHash(buffer),
-    };
   }
 
-  _getHash(buffer) {
-    const md5 = crypto.createHash('md5');
-    md5.update(buffer);
-    return md5.digest('hex');
+  _getFileHash(file) {
+    try {
+      const buffer = fs.readFileSync(file);
+      const md5 = crypto.createHash('md5');
+      md5.update(buffer);
+      return md5.digest('hex');
+    } catch (err) {
+      logHelper.error(errors['unable-to-get-file-hash'], err);
+      throw err;
+    }
   }
 }
 

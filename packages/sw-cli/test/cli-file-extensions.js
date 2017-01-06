@@ -265,7 +265,7 @@ describe('Ask for File Extensions to Cache', function() {
       const choices = questions[0].choices;
       choices.length.should.equal(FILE_ONLY_INPUT.length);
       FILE_ONLY_INPUT.forEach((fileName, index) => {
-        choices[index].should.equal(path.extname(fileName));
+        choices[index].should.equal(path.extname(fileName).substring(1));
       });
 
       const results = {};
