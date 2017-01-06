@@ -62,12 +62,18 @@ class SWLib {
   /**
    * If there are assets that should be cached on the install step but
    * aren't revisioned, you can cache them here.
-   * @param {Array<String>} unrevisionedUrls A set of urls to cache when the
+   * @param {Array<String>} unrevisionedFiles A set of urls to cache when the
    * service worker is installed.
-   * @return {Promise} Promise resolves if the install could be configured.
    */
-  warmRuntimeCache(unrevisionedUrls) {
-    return Promise.resolve();
+  warmRuntimeCache(unrevisionedFiles) {
+    // Add a more helpful error message than assertion error.
+    if (!Array.isArray(unrevisionedFiles)) {
+      throw ErrorFactory.createError('bad-revisioned-cache-list');
+    }
+
+    this._precacheManager.cacheUnrevisioned({
+      unrevisionedFiles,
+    });
   }
 
   /**

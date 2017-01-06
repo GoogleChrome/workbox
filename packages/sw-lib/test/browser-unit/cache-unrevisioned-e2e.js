@@ -1,6 +1,6 @@
 /* global goog, expect */
 
-describe('sw-lib Test Revisioned Caching', function() {
+describe('sw-lib Test Unrevisioned Caching', function() {
   const deleteIndexedDB = () => {
     return new Promise((resolve, reject) => {
       // TODO: Move to constants
@@ -39,14 +39,10 @@ describe('sw-lib Test Revisioned Caching', function() {
     .then((cachedResponses) => {
       cachedResponses.length.should.equal(fileSet.length);
 
-      fileSet.forEach((assetAndHash) => {
+      fileSet.forEach((fileUrl) => {
         let matchingResponse = null;
         cachedResponses.forEach((cachedResponse) => {
-          let desiredPath = assetAndHash;
-          if (typeof assetAndHash !== 'string') {
-            desiredPath = assetAndHash.url;
-          }
-
+          let desiredPath = fileUrl;
           if (cachedResponse.url.indexOf(desiredPath) !== -1) {
             matchingResponse = cachedResponse;
             return;
@@ -59,14 +55,18 @@ describe('sw-lib Test Revisioned Caching', function() {
   };
 
   const testFileSet = (iframe, swPath, fileSet) => {
+    fileSet = fileSet.map((entry) => {
+      if (entry instanceof Request) {
+        return entry.url;
+      }
+      return entry;
+    });
+
     return testCacheEntries(fileSet)
     .then(() => {
       let responses = {};
-      const promises = fileSet.map((assetAndHash) => {
-        let url = assetAndHash;
-        if (typeof assetAndHash === 'object') {
-          url = assetAndHash.url;
-        }
+      const promises = fileSet.map((fileUrl) => {
+        let url = fileUrl;
 
         // This handles relative URL's that will be relative to the service
         // works path.
@@ -128,17 +128,17 @@ describe('sw-lib Test Revisioned Caching', function() {
   };
 
   it('should cache and fetch files', function() {
-    const testSet = goog.__TEST_DATA['sw-lib']['revisioned'];
-    const allAssets1 = testSet['set-1']
-      .concat(testSet['set-2'])
-      .concat(testSet['set-3']);
+    const unrevisionedData = goog.__TEST_DATA['sw-lib']['unrevisioned'];
+    const allAssets1 = unrevisionedData['set-1']
+      .concat(unrevisionedData['set-2'])
+      .concat(unrevisionedData['set-3']);
 
-    const allAssets2 = testSet['set-4']
-      .concat(testSet['set-5'])
-      .concat(testSet['set-6']);
+    const allAssets2 = unrevisionedData['set-4']
+      .concat(unrevisionedData['set-5'])
+      .concat(unrevisionedData['set-6']);
 
-    const sw1 = 'data/sw/cache-revisioned-1.js';
-    const sw2 = 'data/sw/cache-revisioned-2.js';
+    const sw1 = 'data/sw/cache-unrevisioned-1.js';
+    const sw2 = 'data/sw/cache-unrevisioned-2.js';
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
       return testFileSet(iframe, sw1, allAssets1);
