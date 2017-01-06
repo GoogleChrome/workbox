@@ -26,6 +26,33 @@ if (!assert.isSWEnv()) {
   throw ErrorFactory.createError('not-in-sw');
 }
 
+/**
+ * The sw-lib module is a high-level library that makes it easier to
+ * configure routes with caching strategies as well as manage precaching
+ * of assets during the install step of a service worker.
+ *
+ * @example
+ * importScripts('/<Path to Module>/build/sw-lib.min.js');
+ *
+ * goog.swlib.cacheRevisionedAssets([
+ *     '/styles/main.1234.css',
+ *     {
+ *       url: '/index.html',
+ *       revision: '1234'
+ *     }
+ * ]);
+ *
+ * goog.swlib.warmRuntimeCache([
+ *     '/scripts/main.js',
+ *     new Request('/images/logo.png')
+ * ]);
+ *
+ * goog.swlib.router.registerRoute('/', goog.swlib.cacheFirst);
+ * goog.swlib.router.registerRoute('/example/', goog.swlib.networkFirst);
+ *
+ * @module sw-lib
+ */
+
 const swLibInstance = new SWLib();
 swLibInstance.Route = Route;
 export default swLibInstance;

@@ -17,36 +17,51 @@
 
 import RouterWrapper from './router-wrapper.js';
 import ErrorFactory from './error-factory.js';
-import {PrecacheManager}
-  from '../../../sw-precaching/src/index.js';
+import {PrecacheManager} from '../../../sw-precaching/src/index.js';
+import {
+  CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate,
+} from '../../../sw-runtime-caching/src/index.js';
 
 /**
  * This is a high level library to help with using service worker
  * precaching and run time caching.
+ *
+ * @memberof module:sw-lib
  */
 class SWLib {
   /**
-   * Initialises the classes router wrapper.
+   * Initialises an instance of SWLib. An instance of this class is
+   * accessible when the module is imported into a service worker as
+   * `self.goog.swlib`.
    */
   constructor() {
     this._router = new RouterWrapper();
     this._precacheManager = new PrecacheManager();
+    this._strategies = {
+      cacheFirst: new CacheFirst(),
+      cacheOnly: new CacheOnly(),
+      networkFirst: new NetworkFirst(),
+      networkOnly: new NetworkOnly(),
+      fastest: new StaleWhileRevalidate(),
+    };
   }
 
   /**
-   * Can be used to define debug logging, default cache name etc.
-   * @param {Object} options The options to set.
-   */
-  setOptions(options) {
-
-  }
-
-  /**
-   * If there are assets that are revisioned, they can be cached intelligently
+   * Revisioned assets can be cached intelligently
    * during the install (i.e. old files are cleared from the cache, new files
-   * are added tot he cache and unchanged files are left as is).
-   * @param {Array<String>} revisionedFiles A set of urls to cache when the
-   * service worker is installed.
+   * are added to the cache and unchanged files are left as is).
+   *
+   * @example
+   * self.goog.swlib.cacheRevisionedAssets([
+   *     '/styles/main.1234.css',
+   *     {
+   *       url: '/index.html',
+   *       revision: '1234'
+   *     }
+   * ]);
+   *
+   * @param {Array<String|Object>} revisionedFiles A set of urls to cache
+   * when the service worker is installed.
    */
   cacheRevisionedAssets(revisionedFiles) {
     // Add a more helpful error message than assertion error.
@@ -60,10 +75,18 @@ class SWLib {
   }
 
   /**
-   * If there are assets that should be cached on the install step but
-   * aren't revisioned, you can cache them here.
-   * @param {Array<String>} unrevisionedFiles A set of urls to cache when the
-   * service worker is installed.
+   * Any assets you wish to cache which can't be revisioned should be
+   * cached with this method. All assets are cached on install regardless of
+   * whether an older version of the request is in the cache.
+   *
+   * @example
+   * self.goog.swlib.warmRuntimeCache([
+   *     '/scripts/main.js',
+   *     new Request('/images/logo.png')
+   * ]);
+   *
+   * @param {Array<String|Request>} unrevisionedFiles A set of urls to cache
+   * when the service worker is installed.
    */
   warmRuntimeCache(unrevisionedFiles) {
     // Add a more helpful error message than assertion error.
@@ -77,11 +100,80 @@ class SWLib {
   }
 
   /**
-   * A getter for the Router Wrapper.
-   * @return {RouterWrapper} Returns the Router Wrapper
+   * You can access the [Router]{@link module:sw-lib.RouterWrapper}
+   * with `self.goog.swlib.router`.
+   * @return {RouterWrapper} Returns the Router.
    */
   get router() {
     return this._router;
+  }
+
+  /**
+   * This handler will check is there is a cache response and respond with it if
+   * there is, otherwise it will make a network request and respond with that,
+   * caching the response for the next time it's requested.
+   *
+   * @example
+   * self.goog.swlib.router.registerRoute('/', self.google.swlib.cacheFirst);
+   *
+   * @return {Handler} A CacheFirst response handler.
+   */
+  get cacheFirst() {
+    return this._strategies.cacheFirst;
+  }
+
+  /**
+   * This handler will check is there is a cache response and respond with it if
+   * there is, otherwise it will throw an error.
+   *
+   * @example
+   * self.goog.swlib.router.registerRoute('/', self.google.swlib.cacheOnly);
+   *
+   * @return {Handler} A CacheOnly response handler.
+   */
+  get cacheOnly() {
+    return this._strategies.cacheOnly;
+  }
+
+  /**
+   * This handler will attempt to get a response from the network and respond
+   * with it if available, updating the cache as well. If the network request
+   * fails, it will respond with any cached response available.
+   *
+   * @example
+   * self.goog.swlib.router.registerRoute('/', self.google.swlib.networkFirst);
+   *
+   * @return {Handler} A NetworkFirst response handler.
+   */
+  get networkFirst() {
+    return this._strategies.networkFirst;
+  }
+
+  /**
+   * This handle will only return with network requests.
+   *
+   * @example
+   * self.goog.swlib.router.registerRoute('/', self.google.swlib.networkOnly);
+   *
+   * @return {Handler} A NetworkOnly response handler.
+   */
+  get networkOnly() {
+    return this._strategies.networkOnly;
+  }
+
+  /**
+   * This handler will check the cache and make a network request for all
+   * requests. If the caches has a value it will be returned and when the
+   * network request has finished, the cache will be updated. If there is no
+   * cached response, the request will be forfilled by the network request.
+   *
+   * @example
+   * self.goog.swlib.router.registerRoute('/', self.google.swlib.fastest);
+   *
+   * @return {Handler} A StaleWhileRevalidate response handler.
+   */
+  get fastest() {
+    return this._strategies.fastest;
   }
 }
 

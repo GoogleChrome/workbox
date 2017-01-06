@@ -51,6 +51,11 @@ describe('Test Behaviors of Loading the Script', function() {
     return window.goog.mochaUtils.registerServiceWorkerMochaTests(serviceWorkerPath);
   });
 
+  it('should perform caching-strategies.js sw tests', function() {
+    const serviceWorkerPath = 'sw-unit/caching-strategies.js';
+    return window.goog.mochaUtils.registerServiceWorkerMochaTests(serviceWorkerPath);
+  });
+
   it('should perform cache-revisioned-assets.js sw tests', function() {
     const serviceWorkerPath = 'sw-unit/cache-revisioned-assets.js';
     return window.goog.mochaUtils.registerServiceWorkerMochaTests(serviceWorkerPath);
