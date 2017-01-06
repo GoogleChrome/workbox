@@ -20,6 +20,10 @@ const fs = require('fs');
 const path = require('path');
 const inquirer = require('inquirer');
 const minimist = require('minimist');
+const glob = require('glob');
+const crypto = require('crypto');
+const mkdirp = require('mkdirp');
+const template = require('lodash.template');
 
 const errors = require('../lib/errors');
 const logHelper = require('../lib/log-helper');
@@ -130,6 +134,7 @@ class SWCli {
     let fileExtentionsToCache;
     let fileManifestName;
     let serviceWorkerName;
+    let saveConfig;
 
     return this._getRootOfWebApp()
     .then((rDirectory) => {
@@ -146,22 +151,30 @@ class SWCli {
     })
     .then((swName) => {
       serviceWorkerName = swName;
+      return this._saveConfigFile();
     })
-    .then(() => {
-      logHelper.log('Root Directory: ', rootDirectory);
-      logHelper.log('File Extensions to Cache: ', fileExtentionsToCache);
-      logHelper.log('File Manifest: ', fileManifestName);
-      logHelper.log('Service Worker: ', serviceWorkerName);
+    .then((sConfig) => {
+      saveConfig = sConfig;
+
+      /** console.log('Root Directory: ' + rootDirectory);
+      console.log('File Extensions to Cache: ' + fileExtentionsToCache);
+      console.log('File Manifest: ' + fileManifestName);
+      console.log('Service Worker: ' + serviceWorkerName);
+      console.log('Save to Config File: ' + saveConfig);
+      console.log('');**/
+
+      const relativePath = path.relative(process.cwd(), rootDirectory);
+
+      const globs = [
+        path.join(relativePath, '**', '*') +
+          `.{${fileExtentionsToCache.join(',')}}`,
+      ];
+
+      return this._buildFileManifestFromGlobs(
+        path.join(rootDirectory, fileManifestName),
+        globs
+      );
     });
-    /** return inquirer.prompt([
-      {
-        name: 'saveConfig',
-        message: 'Last Question - Would you like to save these settings ' +
-          'to a config file?',
-        type: 'confirm',
-        default: true,
-      },
-    ]);**/
   }
 
   /**
@@ -309,7 +322,12 @@ class SWCli {
         );
       }
     });
-    return [...fileExtensions];
+    return [...fileExtensions].map((fileExtension) => {
+      if (fileExtension.indexOf('.') === 0) {
+        return fileExtension.substring(1);
+      }
+      return fileExtension;
+    });
   }
 
   _getFileManifestName() {
@@ -318,7 +336,7 @@ class SWCli {
         name: 'fileManifestName',
         message: 'What should we name the file manifest?',
         type: 'input',
-        default: 'precache-manifest.json',
+        default: 'precache-manifest.js',
       },
     ])
     .then((results) => {
@@ -370,14 +388,128 @@ class SWCli {
     });
   }
 
-  /**
-   * This method will generate the file manifest only.
-   * @return {Promise} The promise returned here will be used to exit the
-   * node process cleanly or not.
-   */
-  buildFileManifest() {
-    // TODO: Build File Manifest
-    return Promise.resolve();
+  _saveConfigFile() {
+    return inquirer.prompt([
+      {
+        name: 'saveConfig',
+        message: 'Last Question - Would you like to save these settings to ' +
+          'a config file?',
+        type: 'confirm',
+        default: true,
+      },
+    ])
+    .then((results) => {
+      return results.saveConfig;
+    })
+    .catch((err) => {
+      logHelper.error(
+        errors['unable-to-get-save-config'],
+        err
+      );
+      throw err;
+    });
+  }
+
+  _buildFileManifestFromGlobs(manifestFilePath, globs) {
+    const groupedFileDetails = globs.map((globPattern) => {
+      return this._getFileManifestDetails(globPattern);
+    });
+
+    let filesToWrite = groupedFileDetails.reduce((joinedArray, fileGroup) => {
+      return joinedArray.concat(fileGroup);
+    }, []);
+
+    // Filter oversize files.
+    filesToWrite = filesToWrite.filter((fileDetails) => {
+      if (fileDetails.size > constants.maximumFileSize) {
+        logHelper.warn(`Skipping file '${fileDetails.fil}' due to size. ` +
+          `[Max size supported is ${constants.maximumFileSize}]`);
+        return false;
+      }
+
+      return true;
+    });
+
+    // TODO Filter manifest file itself
+
+    // TODO Filter service worker file itself
+
+    // TODO: Strip prefix
+
+    // TODO: Swap path.sep with '/'
+
+    // Convert to manifest format
+    const manifestEntries = filesToWrite.map((fileDetails) => {
+      return {
+        url: fileDetails.file,
+        revision: fileDetails.hash,
+      };
+    });
+
+    console.log(manifestEntries);
+
+    mkdirp.sync(path.dirname(manifestFilePath));
+
+    return new Promise((resolve, reject) => {
+      fs.readFile(
+        path.join(__dirname, '../lib/templates/file-manifest.js'), 'utf8',
+        (err, data) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(data);
+      });
+    })
+    .then((templateString) => {
+      const populatedTemplate = template(templateString)({
+        manifestEntries: manifestEntries,
+      });
+      return new Promise((resolve, reject) => {
+        fs.writeFile(manifestFilePath, populatedTemplate, (err) => {
+          if (err) {
+            return reject(err);
+          }
+
+          resolve();
+        });
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  }
+
+  _getFileManifestDetails(globPattern) {
+    const globbedFiles = glob.sync(globPattern);
+    const fileDetails = globbedFiles.map((file) => {
+      return this._getFileSizeAndHash(file);
+    });
+
+    return fileDetails.filter((details) => {
+      // If !== null, means it's a valid file.
+      return details !== null;
+    });
+  }
+
+  _getFileSizeAndHash(file) {
+    const stat = fs.statSync(file);
+
+    if (!stat.isFile()) {
+      return null;
+    }
+
+    const buffer = fs.readFileSync(file);
+    return {
+      file: file,
+      size: stat.size,
+      hash: this._getHash(buffer),
+    };
+  }
+
+  _getHash(buffer) {
+    const md5 = crypto.createHash('md5');
+    md5.update(buffer);
+    return md5.digest('hex');
   }
 }
 

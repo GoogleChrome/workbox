@@ -14,4 +14,6 @@ module.exports = {
   'invalid-sw-name': 'The service worker file name must have at least one' +
     'character.',
   'unable-to-get-sw-name': 'Unable to get a service worker file name.',
+  'unable-to-get-save-config': 'An error occured when asking to save details' +
+    'in a config file.',
 };
