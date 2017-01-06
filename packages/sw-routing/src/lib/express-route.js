@@ -35,7 +35,6 @@ class ExpressRoute extends Route {
    */
   constructor({path, handler, method}) {
     assert.isType({path}, 'string');
-    assert.hasMethod({handler}, 'handle');
 
     const regExp = pathToRegExp(path);
     const match = ({url}) => url.pathname.match(regExp);
