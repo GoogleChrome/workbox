@@ -34,17 +34,38 @@ if (!assert.isSWEnv()) {
  * @example
  * importScripts('/<Path to Module>/build/sw-lib.min.js');
  *
+ * // cacheRevisionedAssets() can take an array of strings with
+ * // the revision details in the url.
  * goog.swlib.cacheRevisionedAssets([
  *     '/styles/main.1234.css',
+ *     '/images/logo.abcd.jpg'
+ * ]);
+ *
+ * // Or it can accept objects with the URL and revision data
+ * // kept seperate.
+ * goog.swlib.cacheRevisionedAssets([
  *     {
  *       url: '/index.html',
  *       revision: '1234'
+ *     },
+ *     {
+ *       url: '/about.html',
+ *       revision: 'abcd'
  *     }
  * ]);
  *
+ * // If you have assets that aren't revisioned, you can cache them
+ * // during the installation of you service work using warmRuntimeCache()
  * goog.swlib.warmRuntimeCache([
  *     '/scripts/main.js',
- *     new Request('/images/logo.png')
+ *     '/images/default-avater.png'
+ * ]);
+ *
+ * // warmRuntimeCache can also accept Requests, in case you need greater
+ * // control over the request.
+ * goog.swlib.warmRuntimeCache([
+ *     new Request('/images/logo.png'),
+ *     new Request('/api/data.json')
  * ]);
  *
  * goog.swlib.router.registerRoute('/', goog.swlib.cacheFirst);
