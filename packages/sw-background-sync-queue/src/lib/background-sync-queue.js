@@ -6,7 +6,7 @@ import IDBHelper from '../../../../lib/idb-helper';
 import {getDbName} from './background-sync-idb-helper';
 
 /**
- * Class which maily interacts with outer service worker
+ * BackgroundSync class that exposes public function of underlying libraries
  *
  * @class BackgroundSyncQueue
  */
