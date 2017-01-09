@@ -55,7 +55,7 @@ if (!assert.isSWEnv()) {
  * ]);
  *
  * // If you have assets that aren't revisioned, you can cache them
- * // during the installation of you service work using warmRuntimeCache()
+ * // during the installation of you service worker using warmRuntimeCache()
  * goog.swlib.warmRuntimeCache([
  *     '/scripts/main.js',
  *     '/images/default-avater.png'
