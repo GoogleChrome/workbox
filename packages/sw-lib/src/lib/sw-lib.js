@@ -75,9 +75,9 @@ class SWLib {
   }
 
   /**
-   * Any assets you wish to cache which can't be revisioned should be
-   * cached with this method. All assets are cached on install regardless of
-   * whether an older version of the request is in the cache.
+   * Any assets you wish to cache ahead of time which can't be revisioned
+   * should be cached with this method. All assets are cached on install
+   * regardless of whether an older version of the request is in the cache.
    *
    * @example
    * self.goog.swlib.warmRuntimeCache([
