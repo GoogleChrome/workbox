@@ -37,13 +37,6 @@ class SWLib {
   constructor() {
     this._router = new RouterWrapper();
     this._precacheManager = new PrecacheManager();
-    this._strategies = {
-      cacheFirst: new CacheFirst(),
-      cacheOnly: new CacheOnly(),
-      networkFirst: new NetworkFirst(),
-      networkOnly: new NetworkOnly(),
-      fastest: new StaleWhileRevalidate(),
-    };
   }
 
   /**
@@ -97,83 +90,6 @@ class SWLib {
     this._precacheManager.cacheUnrevisioned({
       unrevisionedFiles,
     });
-  }
-
-  /**
-   * You can access the [Router]{@link module:sw-lib.RouterWrapper}
-   * with `self.goog.swlib.router`.
-   * @return {RouterWrapper} Returns the Router.
-   */
-  get router() {
-    return this._router;
-  }
-
-  /**
-   * This handler will check is there is a cache response and respond with it if
-   * there is, otherwise it will make a network request and respond with that,
-   * caching the response for the next time it's requested.
-   *
-   * @example
-   * self.goog.swlib.router.registerRoute('/', self.google.swlib.cacheFirst);
-   *
-   * @return {Handler} A CacheFirst response handler.
-   */
-  get cacheFirst() {
-    return this._strategies.cacheFirst;
-  }
-
-  /**
-   * This handler will check is there is a cache response and respond with it if
-   * there is, otherwise it will throw an error.
-   *
-   * @example
-   * self.goog.swlib.router.registerRoute('/', self.google.swlib.cacheOnly);
-   *
-   * @return {Handler} A CacheOnly response handler.
-   */
-  get cacheOnly() {
-    return this._strategies.cacheOnly;
-  }
-
-  /**
-   * This handler will attempt to get a response from the network and respond
-   * with it if available, updating the cache as well. If the network request
-   * fails, it will respond with any cached response available.
-   *
-   * @example
-   * self.goog.swlib.router.registerRoute('/', self.google.swlib.networkFirst);
-   *
-   * @return {Handler} A NetworkFirst response handler.
-   */
-  get networkFirst() {
-    return this._strategies.networkFirst;
-  }
-
-  /**
-   * This handle will only return with network requests.
-   *
-   * @example
-   * self.goog.swlib.router.registerRoute('/', self.google.swlib.networkOnly);
-   *
-   * @return {Handler} A NetworkOnly response handler.
-   */
-  get networkOnly() {
-    return this._strategies.networkOnly;
-  }
-
-  /**
-   * This handler will check the cache and make a network request for all
-   * requests. If the caches has a value it will be returned and when the
-   * network request has finished, the cache will be updated. If there is no
-   * cached response, the request will be forfilled by the network request.
-   *
-   * @example
-   * self.goog.swlib.router.registerRoute('/', self.google.swlib.fastest);
-   *
-   * @return {Handler} A StaleWhileRevalidate response handler.
-   */
-  get fastest() {
-    return this._strategies.fastest;
   }
 }
 
