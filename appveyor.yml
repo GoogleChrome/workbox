@@ -1,5 +1,6 @@
 install:
   - npm install
+  - npm install -g gulp
 
 test_script:
   - node --version
