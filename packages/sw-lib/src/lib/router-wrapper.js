@@ -21,7 +21,56 @@ import ErrorFactory from './error-factory.js';
 
 /**
  * A simple class that pulls together a few different pieces from the
- * Router Module to surface them in a slightly easier API surface.
+ * Router Module to surface them in a friendly API.
+ *
+ * @example <caption>How to define a simple route with caching
+ * strategy.</caption>
+ *
+ * self.goog.swlib.router.registerRoute('/about', ....);
+ *
+ * @example <caption>How to define a simple route with custom caching
+ * strategy.</caption>
+ *
+ * self.goog.swlib.router.registerRoute('/about', (args) => {
+ *   // The requested URL
+ *   console.log(args.url);
+ *
+ *   // The FetchEvent to handle
+ *   console.log(args.event);
+ *
+ *   // The parameters from the matching route.
+ *   console.log(args.params);
+ *
+ *   // Return a promise that resolves with a Response.
+ *   return fetch(args.url);
+ * }));
+ *
+ * @example <caption>How to define a route using a Route instance.</caption>
+ *
+ * const routeInstance = new goog.swlib.Route({
+ *   match: (url) => {
+ *     // Return true or false
+ *     return true;
+ *   },
+ *   handler: {
+ *     handle: (args) => {
+ *       // The requested URL
+ *       console.log(args.url);
+ *
+ *       // The FetchEvent to handle
+ *       console.log(args.event);
+ *
+ *       // The parameters from the matching route.
+ *       console.log(args.params);
+ *
+ *       // Return a promise that resolves with a Response.
+ *       return fetch(args.url);
+ *     },
+ *   },
+ * });
+ * self.goog.swlib.router.registerRoute(routeInstance);
+ *
+ * @memberof module:sw-lib
  */
 class RouterWrapper {
   /**
@@ -32,16 +81,16 @@ class RouterWrapper {
   }
 
   /**
-   * @param {String|Regex|Route} capture the The capture for a route can be one
+   * @param {String|Regex|Route} capture The capture for a route can be one
    * of three types.
-   *     1. It can be an Express style route, like: '/example/:anything/route/'
-   *        The only gotcha with this is that it will only capture URL's on your
-   *        origin.
-   *     2. A regex that will be tested against request URL's.
-   *     3. A Route object
+   * 1. It can be an Express style route, like: '/example/:anything/route/'
+   *    The only gotcha with this is that it will only capture URL's on your
+   *    origin.
+   * 1. A regex that will be tested against request URL's.
+   * 1. A [Route]{@link module:sw-routing.Route} instance.
    * @param {function|Handler} handler The handler is ignored if you pass in
-   * a Route, otherwise it's required. The handler will be called when the route
-   * is caught by the capture criteria.
+   * a Route object, otherwise it's required. The handler will be called when
+   * the route is caught by the capture criteria.
    */
   registerRoute(capture, handler) {
     if (typeof handler === 'function') {

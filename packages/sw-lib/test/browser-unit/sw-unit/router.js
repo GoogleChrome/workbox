@@ -58,18 +58,26 @@ describe('Test swlib.router', function() {
       }
 
       expect(thrownError).to.exist;
-      thrownError.name.should.equal(badInput.errorName);
+      if (thrownError.name !== badInput.errorName) {
+        console.error(thrownError);
+        throw new Error(`Expected thrownError.name to equal '${badInput.errorName}'`);
+      }
     });
   });
 
   it('should be able to register a valid express route', function() {
     const date = Date.now();
-    const expressRoute = `/${date}/:id/test/`;
-    const exampleRoute = `/${date}/1234567890/test/`;
+    const fakeID = '1234567890';
+    const expressRoute = `/:date/:id/test/`;
+    const exampleRoute = `/${date}/${fakeID}/test/`;
 
     return new Promise((resolve, reject) => {
-      goog.swlib.router.registerRoute(expressRoute, () => {
-        // TODO: Checking ':id' makes it through to here.
+      goog.swlib.router.registerRoute(expressRoute, (args) => {
+        (args.event instanceof FetchEvent).should.equal(true);
+        args.url.toString().should.equal(new URL(exampleRoute, location).toString());
+        args.params[0].should.equal(exampleRoute);
+        args.params[1].should.equal(date.toString());
+        args.params[2].should.equal(fakeID);
 
         resolve();
       });
@@ -82,12 +90,16 @@ describe('Test swlib.router', function() {
   });
 
   it('should be able to register a valid regex route', function() {
-    const regexRoute = /\/1234567890\/\w+\//;
-    const exampleRoute = `/1234567890/test/`;
+    const capturingGroup = 'test';
+    const regexRoute = /\/1234567890\/(\w+)\//;
+    const exampleRoute = `/1234567890/${capturingGroup}/`;
 
     return new Promise((resolve, reject) => {
-      goog.swlib.router.registerRoute(regexRoute, () => {
-        // TODO: Checking 'test' capture group makes it through to here.
+      goog.swlib.router.registerRoute(regexRoute, (args) => {
+        (args.event instanceof FetchEvent).should.equal(true);
+        args.url.toString().should.equal(new URL(exampleRoute, location).toString());
+        args.params[0].should.equal(exampleRoute);
+        args.params[1].should.equal(capturingGroup);
 
         resolve();
       });
@@ -106,8 +118,9 @@ describe('Test swlib.router', function() {
       const routeInstance = new goog.swlib.Route({
         match: (url) => true,
         handler: {
-          handle: () => {
-            // TODO: Check returned value from match makes it through to here.
+          handle: (args) => {
+            (args.event instanceof FetchEvent).should.equal(true);
+            args.url.toString().should.equal(new URL(exampleRoute, location).toString());
 
             resolve();
           },
