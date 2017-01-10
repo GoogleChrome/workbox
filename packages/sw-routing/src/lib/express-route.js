@@ -31,14 +31,42 @@ import pathToRegExp from 'path-to-regexp';
 class ExpressRoute extends Route {
   /**
    * @param {string} path The path to use for routing.
+   *        If the path contains [named parameters](https://github.com/pillarjs/path-to-regexp#named-parameters),
+   *        then an Object mapping parameter names to the corresponding value
+   *        will be passed to the handler via `params`.
    * @param {function} handler The handler to manage the response.
+   * @param {string} [method] Only match requests that use this
+   *        HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({path, handler, method}) {
     assert.isType({path}, 'string');
     assert.hasMethod({handler}, 'handle');
 
-    const regExp = pathToRegExp(path);
-    const match = ({url}) => url.pathname.match(regExp);
+    let keys = [];
+    // keys is populated as a side effect of pathToRegExp. This isn't the nicest
+    // API, but so it goes.
+    // https://github.com/pillarjs/path-to-regexp#usage
+    const regExp = pathToRegExp(path, keys);
+    const match = ({url}) => {
+      const regexpMatches = url.pathname.match(regExp);
+
+      // Return null immediately if this route doesn't match.
+      if (!regexpMatches) {
+        return null;
+      }
+
+      // If the route does match, then collect values for all the named
+      // parameters that were returned in keys.
+      // If there are no named parameters then this will end up returning {},
+      // which is truthy, and therefore a sufficient return value.
+      const namedParamsToValues = {};
+      keys.forEach((key, index) => {
+        namedParamsToValues[key.name] = regexpMatches[index + 1];
+      });
+
+      return namedParamsToValues;
+    };
+
     super({match, handler, method});
   }
 }
