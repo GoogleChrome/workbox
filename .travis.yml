@@ -28,6 +28,5 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script:
-  - gulp lint --project "${PROJECT}"
-  - gulp build --project "${PROJECT}"
+  # Linting and building is handled in gulp test.
   - gulp test --project "${PROJECT}"

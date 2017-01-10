@@ -42,6 +42,7 @@
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-compile-handlebars": "^0.6.1",
+    "gulp-debug": "^3.0.0",
     "gulp-eslint": "^3.0.1",
     "gulp-header": "^1.8.8",
     "gulp-if": "^2.0.2",

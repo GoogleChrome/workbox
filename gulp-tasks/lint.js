@@ -14,6 +14,7 @@
 */
 const gulp = require('gulp');
 const eslint = require('gulp-eslint');
+const debug = require('gulp-debug');
 
 const {taskHarness} = require('../build-utils');
 
@@ -33,6 +34,9 @@ const lintPackage = (projectPath) => {
         } else {
           resolve();
         }
+      }))
+      .pipe(debug({
+        title: 'eslint-hack/fix: ',
       }));
   });
 };
