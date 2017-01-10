@@ -372,8 +372,4 @@ describe('Build File Manifest', function() {
       });
     });
   });
-
-  describe('Build File Manifest - End to End Tests', function() {
-
-  });
 });
