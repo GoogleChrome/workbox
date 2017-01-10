@@ -1,0 +1,9 @@
+install:
+  - npm install
+
+test_script:
+  - node --version
+  - npm --version
+  - gulp test --project "sw-cli"
+
+build: off
