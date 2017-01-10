@@ -18,9 +18,6 @@
 import RouterWrapper from './router-wrapper.js';
 import ErrorFactory from './error-factory.js';
 import {PrecacheManager} from '../../../sw-precaching/src/index.js';
-import {
-  CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate,
-} from '../../../sw-runtime-caching/src/index.js';
 
 /**
  * This is a high level library to help with using service worker
