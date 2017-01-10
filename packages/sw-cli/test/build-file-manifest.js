@@ -1,5 +1,6 @@
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
+const path = require('path');
 const cliHelper = require('./helpers/cli-test-helper.js');
 const errors = require('../src/lib/errors.js');
 const constants = require('../src/lib/constants.js');
@@ -228,19 +229,19 @@ describe('Build File Manifest', function() {
     it('should filter out files above maximum size', function() {
       const goodFiles = [
         {
-          file: 'ok.txt',
+          file: '/ok.txt',
           size: 1234,
           hash: 'example-hash',
         },
         {
-          file: 'ok-2.txt',
+          file: '/ok-2.txt',
           size: constants.maximumFileSize,
           hash: 'example-hash-2',
         },
       ];
 
       const badFile = {
-        file: 'not-ok.txt',
+        file: '/not-ok.txt',
         size: constants.maximumFileSize + 1,
         hash: 'example-hash',
       };
@@ -250,6 +251,64 @@ describe('Build File Manifest', function() {
       const SWCli = proxyquire('../src/cli/index', {});
       const cli = new SWCli();
       cliHelper.startLogCapture();
+      const manifestEntries = cli._filterFiles(allFiles);
+
+      const captured = cliHelper.endLogCapture();
+      captured.consoleLogs.length.should.equal(0);
+      captured.consoleWarns.length.should.not.equal(0);
+      captured.consoleErrors.length.should.equal(0);
+
+      manifestEntries.length.should.equal(goodFiles.length);
+
+      manifestEntries.forEach((manifestEntry) => {
+        let matchingGoodFile = null;
+        goodFiles.forEach((goodFile) => {
+          if (goodFile.file === manifestEntry.url) {
+            matchingGoodFile = goodFile;
+          }
+        });
+        if (!matchingGoodFile) {
+          console.warn(manifestEntry);
+          throw new Error('Unable to find matching file for manifest entry: ');
+        }
+
+        manifestEntry.url.should.equal(matchingGoodFile.file);
+        manifestEntry.revision.should.equal(matchingGoodFile.hash);
+      });
+    });
+
+    it('should filter manifest and service worker', function() {
+      const SW_FILE = '/example/sw.js';
+      const MANIFEST_FILE = '/example/manifest.js';
+
+      const goodFiles = [
+        {
+          file: '/ok.txt',
+          size: 1234,
+          hash: 'example-hash',
+        },
+        {
+          file: '/ok-2.txt',
+          size: constants.maximumFileSize,
+          hash: 'example-hash-2',
+        },
+      ];
+
+      const badFile = [{
+        file: SW_FILE,
+        size: 10,
+        hash: 'example-hash-sw',
+      }, {
+        file: MANIFEST_FILE,
+        size: 12,
+        hash: 'example-hash-manifest',
+      }];
+
+      const allFiles = goodFiles.concat(badFile);
+
+      const SWCli = proxyquire('../src/cli/index', {});
+      const cli = new SWCli();
+      // cliHelper.startLogCapture();
       const manifestEntries = cli._filterFiles(allFiles);
 
       const captured = cliHelper.endLogCapture();
