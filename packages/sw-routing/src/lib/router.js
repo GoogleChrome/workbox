@@ -71,12 +71,19 @@ class Router {
         }
 
         const matchResult = route.match({url, event});
-        if (matchResult || matchResult === 0 || matchResult === '') {
-          responsePromise = route.handler.handle({
-            url,
-            event,
-            params: matchResult,
-          });
+        if (matchResult) {
+          let params = matchResult;
+
+          if (Array.isArray(params) && params.length === 0) {
+            // Instead of passing an empty array in as params, use undefined.
+            params = undefined;
+          } else if (params.constructor === Object &&
+                     Object.keys(params).length === 0) {
+            // Instead of passing an empty object in as params, use undefined.
+            params = undefined;
+          }
+
+          responsePromise = route.handler.handle({url, event, params});
           break;
         }
       }

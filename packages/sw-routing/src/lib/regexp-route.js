@@ -25,14 +25,32 @@ import assert from '../../../../lib/assert';
  */
 class RegExpRoute extends Route {
   /**
-   * @param {RegExp} regExp The regular expression to match against URL's.
+   * @param {RegExp} regExp The regular expression to match against URLs.
+   *        If the `RegExp` contains [capture groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references),
+   *        then the array of captured values will be passed to the handler via
+   *        `params`.
    * @param {function} handler The handler to manage the response.
+   * @param {string} [method] Only match requests that use this
+   *        HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({regExp, handler, method}) {
     assert.isInstance({regExp}, RegExp);
     assert.hasMethod({handler}, 'handle');
 
-    const match = ({url}) => url.href.match(regExp);
+    const match = ({url}) => {
+      const regexpMatches = url.href.match(regExp);
+      // Return null immediately if this route doesn't match.
+      if (!regexpMatches) {
+        return null;
+      }
+
+      // If the route matches, but there aren't any capture groups defined, then
+      // this will return [], which is truthy and therefore sufficient to
+      // indicate a match.
+      // If there are capture groups, then it will return their values.
+      return regexpMatches.slice(1);
+    };
+
     super({match, handler, method});
   }
 }
