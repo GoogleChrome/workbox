@@ -49,7 +49,7 @@ describe('Test swlib.router', function() {
     },
   ];
   badInput.forEach((badInput) => {
-    it(`should throw on adding invalid route: '${badInput}'`, function() {
+    it(`should throw on adding invalid route: ${JSON.stringify(badInput)}`, function() {
       let thrownError = null;
       try {
         goog.swlib.router.registerRoute(badInput.capture, () => {});
@@ -75,9 +75,9 @@ describe('Test swlib.router', function() {
       goog.swlib.router.registerRoute(expressRoute, (args) => {
         (args.event instanceof FetchEvent).should.equal(true);
         args.url.toString().should.equal(new URL(exampleRoute, location).toString());
-        args.params[0].should.equal(exampleRoute);
-        args.params[1].should.equal(date.toString());
-        args.params[2].should.equal(fakeID);
+        Object.keys(args.params).length.should.equal(2);
+        args.params.date.should.equal(date.toString());
+        args.params.id.should.equal(fakeID);
 
         resolve();
       });
@@ -98,8 +98,8 @@ describe('Test swlib.router', function() {
       goog.swlib.router.registerRoute(regexRoute, (args) => {
         (args.event instanceof FetchEvent).should.equal(true);
         args.url.toString().should.equal(new URL(exampleRoute, location).toString());
-        args.params[0].should.equal(exampleRoute);
-        args.params[1].should.equal(capturingGroup);
+        args.params.length.should.equal(1);
+        args.params[0].should.equal(capturingGroup);
 
         resolve();
       });
