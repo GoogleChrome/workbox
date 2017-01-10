@@ -58,7 +58,10 @@ describe('Test swlib.router', function() {
       }
 
       expect(thrownError).to.exist;
-      thrownError.name.should.equal(badInput.errorName);
+      if (thrownError.name !== badInput.errorName) {
+        console.error(thrownError);
+        throw new Error(`Expected thrownError.name to equal '${badInput.errorName}'`);
+      }
     });
   });
 
