@@ -88,6 +88,14 @@ class SWLib {
       unrevisionedFiles,
     });
   }
+
+  /**
+   * A getter for the Router Wrapper.
+   * @return {RouterWrapper} Returns the Router Wrapper
+   */
+  get router() {
+    return this._router;
+  }
 }
 
 export default SWLib;
