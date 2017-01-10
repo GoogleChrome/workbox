@@ -1,4 +1,5 @@
 install:
+  - ps: Install-Product node Stable
   - npm install
   - npm install -g gulp
 
