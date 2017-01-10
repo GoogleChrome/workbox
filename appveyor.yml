@@ -1,3 +1,7 @@
+only_commits:
+  files:
+    - packages/sw-cli/
+
 install:
   - ps: Install-Product node Stable
   - npm install
