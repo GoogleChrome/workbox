@@ -35,6 +35,9 @@ const lintPackage = (projectPath) => {
           resolve();
         }
       }))
+      // This debug task is sadly a hack to make the lintPackage function
+      // work. Without debug() call, the promise never resolves and
+      // the process exits.
       .pipe(debug({
         title: 'eslint-hack/fix: ',
       }));
