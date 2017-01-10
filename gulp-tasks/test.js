@@ -18,6 +18,11 @@ const mocha = require('gulp-spawn-mocha');
 const glob = require('glob');
 
 gulp.task('download-browsers', function() {
+  if (process.platform === 'win32') {
+    // We only support CLI testing on Windows at the moment.
+    return Promise.resolve();
+  }
+
   console.log('    Starting browser download.....');
   return Promise.all([
     seleniumAssistant.downloadLocalBrowser('firefox', 'stable', 48),
