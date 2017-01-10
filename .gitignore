@@ -4,4 +4,3 @@ temp
 npm-debug.log
 packages/**/LICENSE
 .DS_Store
-**/test/**/*-manifest.js
