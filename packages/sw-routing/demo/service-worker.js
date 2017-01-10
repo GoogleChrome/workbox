@@ -16,8 +16,8 @@ const route = new goog.routing.ExpressRoute({
     handle: ({event, params}) => {
       console.log('The matching params are', params);
       return fetch(event.request);
-    }
-  }
+    },
+  },
 });
 
 const router = new goog.routing.Router();
