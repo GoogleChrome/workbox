@@ -17,16 +17,19 @@
 
 import RouterWrapper from './router-wrapper.js';
 import ErrorFactory from './error-factory.js';
-import {PrecacheManager}
-  from '../../../sw-precaching/src/index.js';
+import {PrecacheManager} from '../../../sw-precaching/src/index.js';
 
 /**
  * This is a high level library to help with using service worker
  * precaching and run time caching.
+ *
+ * @memberof module:sw-lib
  */
 class SWLib {
   /**
-   * Initialises the classes router wrapper.
+   * Initialises an instance of SWLib. An instance of this class is
+   * accessible when the module is imported into a service worker as
+   * `self.goog.swlib`.
    */
   constructor() {
     this._router = new RouterWrapper();
@@ -34,19 +37,21 @@ class SWLib {
   }
 
   /**
-   * Can be used to define debug logging, default cache name etc.
-   * @param {Object} options The options to set.
-   */
-  setOptions(options) {
-
-  }
-
-  /**
-   * If there are assets that are revisioned, they can be cached intelligently
+   * Revisioned assets can be cached intelligently
    * during the install (i.e. old files are cleared from the cache, new files
-   * are added tot he cache and unchanged files are left as is).
-   * @param {Array<String>} revisionedFiles A set of urls to cache when the
-   * service worker is installed.
+   * are added to the cache and unchanged files are left as is).
+   *
+   * @example
+   * self.goog.swlib.cacheRevisionedAssets([
+   *     '/styles/main.1234.css',
+   *     {
+   *       url: '/index.html',
+   *       revision: '1234'
+   *     }
+   * ]);
+   *
+   * @param {Array<String|Object>} revisionedFiles A set of urls to cache
+   * when the service worker is installed.
    */
   cacheRevisionedAssets(revisionedFiles) {
     // Add a more helpful error message than assertion error.
@@ -60,10 +65,18 @@ class SWLib {
   }
 
   /**
-   * If there are assets that should be cached on the install step but
-   * aren't revisioned, you can cache them here.
-   * @param {Array<String>} unrevisionedFiles A set of urls to cache when the
-   * service worker is installed.
+   * Any assets you wish to cache ahead of time which can't be revisioned
+   * should be cached with this method. All assets are cached on install
+   * regardless of whether an older version of the request is in the cache.
+   *
+   * @example
+   * self.goog.swlib.warmRuntimeCache([
+   *     '/scripts/main.js',
+   *     new Request('/images/logo.png')
+   * ]);
+   *
+   * @param {Array<String|Request>} unrevisionedFiles A set of urls to cache
+   * when the service worker is installed.
    */
   warmRuntimeCache(unrevisionedFiles) {
     // Add a more helpful error message than assertion error.
