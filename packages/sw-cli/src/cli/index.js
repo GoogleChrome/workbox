@@ -174,6 +174,7 @@ class SWCli {
 
       return this._buildFileManifestFromGlobs(
         path.join(rootDirectory, fileManifestName),
+        rootDirectory,
         globs
       );
     });
@@ -408,9 +409,10 @@ class SWCli {
     });
   }
 
-  _buildFileManifestFromGlobs(manifestFilePath, globs) {
+  _buildFileManifestFromGlobs(manifestFilePath, rootDirectory, globs) {
     const globbedFiles = globs.reduce((accumulated, globPattern) => {
-      const fileDetails = this._getFileManifestDetails(globPattern);
+      const fileDetails = this._getFileManifestDetails(
+        rootDirectory, globPattern);
       return accumulated.concat(fileDetails);
     }, []);
 
@@ -491,7 +493,7 @@ class SWCli {
     });
   }
 
-  _getFileManifestDetails(globPattern) {
+  _getFileManifestDetails(rootDirectory, globPattern) {
     let globbedFiles;
     try {
       globbedFiles = glob.sync(globPattern);
@@ -508,7 +510,7 @@ class SWCli {
 
       const fileHash = this._getFileHash(file);
       return {
-        file,
+        file: `/${path.relative(rootDirectory, file)}`,
         hash: fileHash,
         size: fileSize,
       };
