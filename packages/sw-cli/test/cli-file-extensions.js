@@ -17,7 +17,7 @@ describe('Ask for File Extensions to Cache', function() {
   });
 
   const INJECTED_ERROR = new Error('Injected Error');
-  const INITIAL_ROOT_DIR = '/';
+  const INITIAL_ROOT_DIR = path.sep;
   const VALID_DIRECTORY_CONTENTS = [
     'injected-file-1.txt',
     'injected-dir-1',
