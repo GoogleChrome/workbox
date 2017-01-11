@@ -163,7 +163,7 @@ describe('Build File Manifest', function() {
       const cli = new SWCli();
       let caughtError;
       try {
-        cli._getFileManifestDetails('fake/glob/pattern/**/*');
+        cli._getFileManifestDetails('.', 'fake/glob/pattern/**/*');
       } catch (err) {
         caughtError = err;
       }
@@ -208,7 +208,7 @@ describe('Build File Manifest', function() {
       globalStubs.push(hashStub);
 
       const cli = new SWCli();
-      const files = cli._getFileManifestDetails('fake/glob/pattern/**/*');
+      const files = cli._getFileManifestDetails('.', 'fake/glob/pattern/**/*');
 
       if (files.length !== 2) {
         throw new Error('Directory not filtered from results');
@@ -217,7 +217,7 @@ describe('Build File Manifest', function() {
       files.forEach((fileDetails) => {
         fileDetails.size.should.equal(INJECTED_SIZE);
         fileDetails.hash.should.equal(INJECTED_HASH);
-        if ([OK_FILE_1, OK_FILE_2].indexOf(fileDetails.file) === -1) {
+        if ([`/${OK_FILE_1}`, `/${OK_FILE_2}`].indexOf(fileDetails.file) === -1) {
           throw new Error('Unexpected Filename: ' + fileDetails.file);
         }
       });
@@ -371,9 +371,5 @@ describe('Build File Manifest', function() {
         checkErrors(caughtError, 'manifest-file-write-failure');
       });
     });
-  });
-
-  describe('Build File Manifest - End to End Tests', function() {
-
   });
 });
