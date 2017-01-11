@@ -14,7 +14,6 @@
 */
 const gulp = require('gulp');
 const eslint = require('gulp-eslint');
-const debug = require('gulp-debug');
 
 const {taskHarness} = require('../build-utils');
 
@@ -34,12 +33,6 @@ const lintPackage = (projectPath) => {
         } else {
           resolve();
         }
-      }))
-      // This debug task is sadly a hack to make the lintPackage function
-      // work. Without debug() call, the promise never resolves and
-      // the process exits.
-      .pipe(debug({
-        title: 'eslint-hack/fix: ',
       }));
   });
 };
