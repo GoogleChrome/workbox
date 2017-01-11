@@ -16,6 +16,7 @@
 const gulp = require('gulp');
 const rename = require('gulp-rename');
 const handlebars = require('gulp-compile-handlebars');
+const path = require('path');
 const promisify = require('promisify-node');
 const {globPromise, processPromiseWrapper, taskHarness} =
   require('../build-utils');
@@ -46,7 +47,8 @@ const documentPackage = (projectPath) => {
     return globPromise(`${projectPath}/src/**/*.js`).then((files) => {
       const args = ['readme', ...files, '--github', '--section', 'API',
         '--readme-file', `${projectPath}/README.md`];
-      return processPromiseWrapper('documentation', args);
+      return processPromiseWrapper(
+        path.join('node_modules', '.bin', 'documentation'), args);
     });
   });
 };
