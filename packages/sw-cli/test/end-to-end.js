@@ -59,6 +59,10 @@ describe('Test Example Projects', function() {
       const injectedSelf = {};
       const manifestContent =
         fs.readFileSync(path.join(exampleProject, manifestName));
+      // To ensure the manifest is valid JavaScript we can run it
+      // in Node's JavaScript parsed. `runInNewContext` comes without
+      // any of the usual APIs (i.e. no require API, no console API, nothing)
+      // so we inject a `self` API to emulate the service worker environment.
       vm.runInNewContext(manifestContent, {
         self: injectedSelf,
       });
