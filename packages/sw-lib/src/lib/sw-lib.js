@@ -18,6 +18,15 @@
 import RouterWrapper from './router-wrapper.js';
 import ErrorFactory from './error-factory.js';
 import {PrecacheManager} from '../../../sw-precaching/src/index.js';
+import {Behavior as CacheExpirationBehavior} from
+  '../../../sw-cache-expiration/src/index.js';
+import {Behavior as BroadcastCacheUpdateBehavior} from
+  '../../../sw-broadcast-cache-update/src/index.js';
+import {
+  CacheFirst, CacheOnly, NetworkFirst,
+  NetworkOnly, StaleWhileRevalidate, RequestWrapper,
+}
+  from '../../../sw-runtime-caching/src/index.js';
 
 /**
  * This is a high level library to help with using service worker
@@ -95,6 +104,100 @@ class SWLib {
    */
   get router() {
     return this._router;
+  }
+
+  /**
+   * A cache first run-time caching strategy.
+   * @param {Object} options Options object that can be used to define
+   * arguments on the caching strategy.
+   * @return {CacheFirst} The caching handler instance.
+   */
+  cacheFirst(options) {
+    return this._getCachingMechanism(CacheFirst, options);
+  }
+
+  /**
+   * A cache only run-time caching strategy.
+   * @param {Object} options Options object that can be used to define
+   * arguments on the caching strategy.
+   * @return {CacheFirst} The caching handler instance.
+   */
+  cacheOnly(options) {
+    return this._getCachingMechanism(CacheOnly, options);
+  }
+
+  /**
+   * A network first run-time caching strategy.
+   * @param {Object} options Options object that can be used to define
+   * arguments on the caching strategy.
+   * @return {CacheFirst} The caching handler instance.
+   */
+  networkFirst(options) {
+    return this._getCachingMechanism(NetworkFirst, options);
+  }
+
+  /**
+   * A network only run-time caching strategy.
+   * @param {Object} options Options object that can be used to define
+   * arguments on the caching strategy.
+   * @return {CacheFirst} The caching handler instance.
+   */
+  networkOnly(options) {
+    return this._getCachingMechanism(NetworkOnly, options);
+  }
+
+  /**
+   * A stale while revalidate run-time caching strategy.
+   * @param {Object} options Options object that can be used to define
+   * arguments on the caching strategy.
+   * @return {CacheFirst} The caching handler instance.
+   */
+  staleWhileRevalidate(options) {
+    return this._getCachingMechanism(StaleWhileRevalidate, options);
+  }
+
+  /**
+   * @private
+   * @param {Class} HandlerClass The class to be configured and instantiated.
+   * @param {Object} options Options to configure the handler.
+   * @return {Handler} A handler instance configured with the appropriate
+   * behaviours
+   */
+  _getCachingMechanism(HandlerClass, options = {}) {
+    const behaviorParamsToClass = {
+      'cacheExpiration': CacheExpirationBehavior,
+      'broadcastCacheUpdate': BroadcastCacheUpdateBehavior,
+    };
+
+    const wrapperOptions = {
+      behaviors: [],
+    };
+
+    if (options['cacheName']) {
+      wrapperOptions['cacheName'] = options['cacheName'];
+    }
+
+    // Iterate over known behaviors and add them to Request Wrapper options.
+    const behaviorKeys = Object.keys(behaviorParamsToClass);
+    behaviorKeys.forEach((behaviorKey) => {
+      if (options[behaviorKey]) {
+        const BehaviorClass = behaviorParamsToClass[behaviorKey];
+        const behaviorParams = options[behaviorKey];
+
+        wrapperOptions.behaviors.push(new BehaviorClass(behaviorParams));
+      }
+    });
+
+    // Add custom behaviors.
+    if (options.behaviors) {
+      options.behaviors.forEach((behavior) => {
+        wrapperOptions.behaviors.push(behavior);
+      });
+    }
+
+    return new HandlerClass({
+      requestWrapper: new RequestWrapper(wrapperOptions),
+    });
   }
 }
 
