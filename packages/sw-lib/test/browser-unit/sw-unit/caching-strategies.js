@@ -26,8 +26,30 @@ describe('Test caching strategies.', function() {
       expect(goog.swlib[strategy]).to.exist;
     });
 
-    it(`should return a Handler when '${strategy}' is instantiated`, function() {
+    const badArguments = [
+      true,
+      false,
+      [],
+      1234,
+      'abcd',
+    ];
+
+    badArguments.forEach((badArgument) => {
+      it(`should throw an error for '${strategy}' when argument is '${JSON.stringify(badArgument)}'`, function() {
+        expect(() => {
+          goog.swlib[strategy]({});
+        }).to.throw;
+      });
+    });
+
+    it(`should return a Handler when '${strategy}' is instantiated without arguments`, function() {
       const handler = goog.swlib[strategy]();
+      expect(handler.handle).to.exist;
+      expect(handler.requestWrapper).to.exist;
+    });
+
+    it(`should return a Handler when '${strategy}' is instantiated with empty object`, function() {
+      const handler = goog.swlib[strategy]({});
       expect(handler.handle).to.exist;
       expect(handler.requestWrapper).to.exist;
     });
