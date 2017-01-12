@@ -29,7 +29,8 @@ import assert from '../../../lib/assert';
  * to `sync` event and replays the queued requeusts.
  *
  * @alias goog.backgroundSyncQueue.initialize
- * @param {Object} [input] The input object to this function.
+ *
+ * @param {Object} [input] The input object to this function
  * @param {string} [input.dbName] The name of the db to store requests and
  * responses
  */

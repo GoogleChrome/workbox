@@ -18,15 +18,17 @@ async function putResponse({hash, idbObject, response, idbQDb}) {
 }
 
 /**
- * response fetched for the request for given hash
+ * This function returns the fetched response for the given id of the request
  *
- * @param {String} hash
- * @return {Object} response
- * @private
+ * @alias goog.backgroundSyncQueue.getResponse
+ *
+ * @param {String} id The ID of the request given back by the broaadcast
+ * channel
+ * @return {Object} response Fetched response of the request.
  */
-async function getResponse(hash) {
+async function getResponse(id) {
 	const _idbQHelper = new IDBHelper(getDbName(), 1, 'QueueStore');
-	const object = _idbQHelper.get(hash);
+	const object = _idbQHelper.get(id);
 	if (object && object.response) {
 		return object.response;
 	} else {

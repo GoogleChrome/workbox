@@ -17,13 +17,13 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-background-sync-queue
 
-[packages/sw-background-sync-queue/src/index.js:19-19](https://github.com/prateekbh/sw-helpers/blob/0406801cde001ff064e418ea2e68f7136139d274/packages/sw-background-sync-queue/src/index.js#L19-L19 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/index.js:19-19](https://github.com/prateekbh/sw-helpers/blob/a29d4b47eea8efb6df4d053d8d39e6c6c95cf3ff/packages/sw-background-sync-queue/src/index.js#L19-L19 "Source code on GitHub")
 
 sw-background-sync-queue Module
 
 ### goog.backgroundSyncQueue.initialize
 
-[packages/sw-background-sync-queue/src/index.js:36-42](https://github.com/prateekbh/sw-helpers/blob/0406801cde001ff064e418ea2e68f7136139d274/packages/sw-background-sync-queue/src/index.js#L36-L42 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/index.js:37-43](https://github.com/prateekbh/sw-helpers/blob/a29d4b47eea8efb6df4d053d8d39e6c6c95cf3ff/packages/sw-background-sync-queue/src/index.js#L37-L43 "Source code on GitHub")
 
 In order to use this library call `goog.backgroundSyncQueue.initialize()`.
 It will take care of setting up IndexedDB for storing requests and broadcast
@@ -32,7 +32,7 @@ to `sync` event and replays the queued requeusts.
 
 **Parameters**
 
--   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** The input object to this function.
+-   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** The input object to this function
     -   `input.dbName` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** The name of the db to store requests and
         responses
 -   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)**  (optional, default `{}`)
@@ -40,7 +40,7 @@ to `sync` event and replays the queued requeusts.
 
 ### BackgroundSyncQueue
 
-[packages/sw-background-sync-queue/src/lib/background-sync-queue.js:33-83](https://github.com/prateekbh/sw-helpers/blob/0406801cde001ff064e418ea2e68f7136139d274/packages/sw-background-sync-queue/src/lib/background-sync-queue.js#L33-L83 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/background-sync-queue.js:33-83](https://github.com/prateekbh/sw-helpers/blob/a29d4b47eea8efb6df4d053d8d39e6c6c95cf3ff/packages/sw-background-sync-queue/src/lib/background-sync-queue.js#L33-L83 "Source code on GitHub")
 
 Use the instance of this class to push the failed requests into the queue.
 
@@ -67,20 +67,20 @@ requests
 
 #### constructor
 
-[packages/sw-background-sync-queue/src/lib/background-sync-queue.js:47-71](https://github.com/prateekbh/sw-helpers/blob/0406801cde001ff064e418ea2e68f7136139d274/packages/sw-background-sync-queue/src/lib/background-sync-queue.js#L47-L71 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/background-sync-queue.js:47-71](https://github.com/prateekbh/sw-helpers/blob/a29d4b47eea8efb6df4d053d8d39e6c6c95cf3ff/packages/sw-background-sync-queue/src/lib/background-sync-queue.js#L47-L71 "Source code on GitHub")
 
 Creates an instance of BackgroundSyncQueue with the given options
 
 **Parameters**
 
--   `config` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** 
-    -   `config.maxRetentionTime` **int?** Time for which a queued
+-   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** 
+    -   `input.maxRetentionTime` **[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)?** Time for which a queued
         request will live in the queue(irespective of failed/success of replay) (optional, default `5days`)
-    -   `config.callbacks` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Callbacks for successfull/ failed
+    -   `input.callbacks` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Callbacks for successfull/ failed
         replay of a request
-    -   `config.queueName` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** Queue name inside db in which
+    -   `input.queueName` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)?** Queue name inside db in which
         requests will be queued
-    -   `config.broadcastChannel` **BroadcastChannel?** BroadcastChannel
+    -   `input.broadcastChannel` **BroadcastChannel?** BroadcastChannel
         which will be used to publish messages when the request will be queued.
 -   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
     -   `$0.maxRetentionTime`  
@@ -90,7 +90,7 @@ Creates an instance of BackgroundSyncQueue with the given options
 
 #### pushIntoQueue
 
-[packages/sw-background-sync-queue/src/lib/background-sync-queue.js:79-82](https://github.com/prateekbh/sw-helpers/blob/0406801cde001ff064e418ea2e68f7136139d274/packages/sw-background-sync-queue/src/lib/background-sync-queue.js#L79-L82 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/background-sync-queue.js:79-82](https://github.com/prateekbh/sw-helpers/blob/a29d4b47eea8efb6df4d053d8d39e6c6c95cf3ff/packages/sw-background-sync-queue/src/lib/background-sync-queue.js#L79-L82 "Source code on GitHub")
 
 This function pushes a given request into the IndexedDb Queue
 
@@ -100,3 +100,16 @@ This function pushes a given request into the IndexedDb Queue
     -   `input.request` **[Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request)** The request which is to be queued
 -   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** 
     -   `$0.request`  
+
+### goog.backgroundSyncQueue.getResponse
+
+[packages/sw-background-sync-queue/src/lib/response-manager.js:29-37](https://github.com/prateekbh/sw-helpers/blob/a29d4b47eea8efb6df4d053d8d39e6c6c95cf3ff/packages/sw-background-sync-queue/src/lib/response-manager.js#L29-L37 "Source code on GitHub")
+
+This function returns the fetched response for the given id of the request
+
+**Parameters**
+
+-   `id` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The ID of the request given back by the broaadcast
+    channel
+
+Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** response Fetched response of the request.
