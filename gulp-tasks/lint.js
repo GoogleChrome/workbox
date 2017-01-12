@@ -33,7 +33,9 @@ const lintPackage = (projectPath) => {
         } else {
           resolve();
         }
-      }));
+      }))
+      // See https://github.com/adametry/gulp-eslint/issues/36#issuecomment-109595391
+      .on('data', () => {});
   });
 };
 
