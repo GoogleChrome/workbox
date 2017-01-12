@@ -65,8 +65,6 @@ describe('Test caching strategies.', function() {
     });
 
     it(`should return a Handler when '${strategy}' is instantiated with cacheExpiration options`, function() {
-      // TODO: Is the cache name needed long term? This introduces a difference
-      // between the request wrapper and the cache expiration behavior.
       const CACHE_NAME = 'hello-world-' + Date.now();
       const CACHE_EXPIRATION = {
         maxEntries: 10,
