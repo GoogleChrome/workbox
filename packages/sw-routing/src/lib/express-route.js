@@ -40,7 +40,6 @@ class ExpressRoute extends Route {
    */
   constructor({path, handler, method}) {
     assert.isType({path}, 'string');
-    assert.hasMethod({handler}, 'handle');
 
     let keys = [];
     // keys is populated as a side effect of pathToRegExp. This isn't the nicest
