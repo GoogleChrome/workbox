@@ -14,4 +14,17 @@ module.exports = {
   'invalid-sw-name': 'The service worker file name must have at least one' +
     'character.',
   'unable-to-get-sw-name': 'Unable to get a service worker file name.',
+  'unable-to-get-save-config': 'An error occured when asking to save details' +
+    'in a config file.',
+  'unable-to-get-file-hash': 'An error occured when attempting to create a ' +
+    'file hash.',
+  'unable-to-get-file-size': 'An error occured when attempting to get a ' +
+    'file size.',
+  'unable-to-glob-files': 'An error occured when globbing for files.',
+  'unable-to-make-manifest-directory': 'Unable to make output directory for ' +
+    'file manifest.',
+  'read-manifest-template-failure': 'Unable to read template for file manifest',
+  'populating-manifest-tmpl-failed': 'An error occured when populating the ' +
+    'file manifest template.',
+  'manifest-file-write-failure': 'Unable to write the file manifest.',
 };

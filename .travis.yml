@@ -29,5 +29,5 @@ before_script:
 
 script:
   - gulp lint --project "${PROJECT}"
-  - gulp build --project "${PROJECT}"
+  # Building is handled in gulp test.
   - gulp test --project "${PROJECT}"

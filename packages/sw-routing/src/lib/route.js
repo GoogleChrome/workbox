@@ -17,26 +17,19 @@ import assert from '../../../../lib/assert';
 import {defaultMethod, validMethods} from './constants';
 
 /**
- * The Route class is used to configure a *when*
- * [predicate](https://en.wikipedia.org/wiki/Predicate_(mathematical_logic))
- * a handler.
- *
- * The *when* predicate is used by the Router to determine if a given request
- * matches this Route. If *when* returns true (i.e. this route matches the
- * current request), then the handler will be given the
- * [FetchEvent](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent)
- * so that it can respond to the request.
- *
  * @memberof module:sw-routing
  */
 class Route {
   /**
-   * The constructor for Route expects an object with `when` and `handler`
+   * The constructor for Route expects an object with `match` and `handler`
    * properties which should both be functions.
-   * @param {Object} options - Options to initialize the Route with.
-   * @param {function} options.when - The when predicate function.
-   * @param {function} options.handler - The handler function that will respond
-   * to a FetchEvent.
+   *
+   * @param {function} match - The function that determines whether the
+   *        route matches.
+   * @param {Object} handler - An Object with a `handle` method. That method
+   *        will be used to respond to matching requests.
+   * @param {string} [method] Only match requests that use this
+   *        HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({match, handler, method} = {}) {
     assert.isType({match}, 'function');
