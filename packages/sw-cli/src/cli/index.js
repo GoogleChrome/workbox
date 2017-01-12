@@ -280,7 +280,6 @@ class SWCli {
   }
 
   _getFileContents(directory) {
-    console.log('Directory: ' + directory);
     return new Promise((resolve, reject) => {
       fs.readdir(directory, (err, directoryContents) => {
         if (err) {
@@ -291,7 +290,6 @@ class SWCli {
       });
     })
     .then((directoryContents) => {
-      console.log('directoryContents: ' + directoryContents);
       const promises = directoryContents.map((directoryContent) => {
         const fullPath = path.join(directory, directoryContent);
         if (fs.statSync(fullPath).isDirectory()) {
@@ -308,7 +306,6 @@ class SWCli {
       return Promise.all(promises);
     })
     .then((fileResults) => {
-      console.log('fileResults: ' + fileResults);
       return fileResults.reduce((collapsedFiles, fileResult) => {
         return collapsedFiles.concat(fileResult);
       }, []);
