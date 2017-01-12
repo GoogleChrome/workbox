@@ -50,7 +50,7 @@ describe('Test of the ExpressRoute class', () => {
     const namedParameterNonMatchingUrl = new URL('/value1/value2', location);
 
     const route = new goog.routing.ExpressRoute({
-      handler, path: namedParameterPath
+      handler, path: namedParameterPath,
     });
 
     const match = route.match({url: namedParameterMatchingUrl});

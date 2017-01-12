@@ -51,7 +51,7 @@ describe('Test of the RegExpRoute class', () => {
     const captureGroupNonMatchingUrl = new URL('/value1/value2', location);
 
     const route = new goog.routing.RegExpRoute({
-      handler, regExp: captureGroupRegExp
+      handler, regExp: captureGroupRegExp,
     });
 
     const match = route.match({url: captureGroupMatchingUrl});
