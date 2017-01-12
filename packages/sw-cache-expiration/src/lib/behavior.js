@@ -28,11 +28,10 @@ import {
  * @example
  * // Used as an automatically invoked as "behavior" by a RequestWrapper:
  *
- * const cacheName = 'runtime-cache';
  * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
- *   cacheName,
+ *   cacheName: 'runtime-cache',
  *   behaviors: [
- *     new goog.cacheExpiration.Behavior({cacheName, maxEntries: 10})
+ *     new goog.cacheExpiration.Behavior({maxEntries: 10})
  *   ]
  * });
  *
@@ -57,13 +56,11 @@ class Behavior {
    * certain criteria—maximum number of entries, age of entry, or both—is met.
    *
    * @param {Object} input The input object to this function.
-   * @param {string} input.cacheName The name of the cache.
    * @param {Number} [input.maxEntries] The maximum size of the cache. Entries
    *        will be expired using a LRU policy once the cache reaches this size.
    * @param {Number} [input.maxAgeSeconds] The maximum age for fresh entries.
    */
-  constructor({cacheName, maxEntries, maxAgeSeconds} = {}) {
-    assert.isType({cacheName}, 'string');
+  constructor({maxEntries, maxAgeSeconds} = {}) {
     assert.atLeastOne({maxEntries, maxAgeSeconds});
     if (maxEntries !== undefined) {
       assert.isType({maxEntries}, 'number');
@@ -72,43 +69,51 @@ class Behavior {
       assert.isType({maxAgeSeconds}, 'number');
     }
 
-    this.cacheName = cacheName;
     this.maxEntries = maxEntries;
     this.maxAgeSeconds = maxAgeSeconds;
+
+    // These are used to keep track of open IndexDB and Caches for a given name.
+    this._dbs = new Map();
+    this._caches = new Map();
   }
 
   /**
-   * Returns a promise for the IndexedDB database used to keep track of state
-   * for `this.cacheName`.
+   * Returns a promise for the IndexedDB database used to keep track of state.
    *
    * @private
+   * @param {Object} input The input object to this function.
+   * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @return {DB} An open DB instance.
    */
-  async getDB() {
-    if (!this._db) {
-      this._db = await idb.open(idbName, idbVersion, (upgradeDB) => {
-        const objectStore = upgradeDB.createObjectStore(this.cacheName,
+  async getDB({cacheName}) {
+    if (!this._dbs.has(cacheName)) {
+      const openDb = await idb.open(idbName, idbVersion, (upgradeDB) => {
+        const objectStore = upgradeDB.createObjectStore(cacheName,
           {keyPath: urlPropertyName});
         objectStore.createIndex(timestampPropertyName, timestampPropertyName,
           {unique: false});
       });
+      this._dbs.set(cacheName, openDb);
     }
 
-    return this._db;
+    return this._dbs.get(cacheName);
   }
 
   /**
-   * Returns a promise for an open Cache instance named `this.cacheName`.
+   * Returns a promise for an open Cache instance named `cacheName`.
    *
    * @private
+   * @param {Object} input The input object to this function.
+   * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @return {Cache} An open Cache instance.
    */
-  async getCache() {
-    if (!this._cache) {
-      this._cache = await caches.open(this.cacheName);
+  async getCache({cacheName}) {
+    if (!this._caches.has(cacheName)) {
+      const openCache = await caches.open(cacheName);
+      this._caches.set(cacheName, openCache);
     }
 
-    return this._cache;
+    return this._caches.get(cacheName);
   }
 
   /**
@@ -126,12 +131,11 @@ class Behavior {
    */
   cacheDidUpdate({cacheName, newResponse} = {}) {
     assert.isType({cacheName}, 'string');
-    assert.isValue({cacheName}, this.cacheName);
     assert.isInstance({newResponse}, Response);
 
     const now = Date.now();
-    this.updateTimestamp({now, url: newResponse.url}).then(() => {
-      this.expireEntries({now});
+    this.updateTimestamp({cacheName, now, url: newResponse.url}).then(() => {
+      this.expireEntries({cacheName, now});
     });
   }
 
@@ -139,19 +143,20 @@ class Behavior {
    * Updates the timestamp stored in IndexedDB for `url` to be equal to `now`.
    *
    * @param {Object} input The input object to this function.
+   * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @param {string} input.url
    * @param {Number} [input.now] A timestamp. Defaults to the current time.
    */
-  async updateTimestamp({url, now}) {
+  async updateTimestamp({cacheName, url, now}) {
     assert.isType({url}, 'string');
 
     if (typeof now === 'undefined') {
       now = Date.now();
     }
 
-    const db = await this.getDB();
-    const tx = db.transaction(this.cacheName, 'readwrite');
-    tx.objectStore(this.cacheName).put({
+    const db = await this.getDB({cacheName});
+    const tx = db.transaction(cacheName, 'readwrite');
+    tx.objectStore(cacheName).put({
       [timestampPropertyName]: now,
       [urlPropertyName]: url,
     });
@@ -164,28 +169,29 @@ class Behavior {
    * of entries, depending on how this instance is configured.
    *
    * @param {Object} input The input object to this function.
+   * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @param {Number} [input.now] A timestamp. Defaults to the current time.
    * @return {Array<string>} A list of the URLs that were expired.
    */
-  async expireEntries({now} = {}) {
+  async expireEntries({cacheName, now} = {}) {
     if (typeof now === 'undefined') {
       now = Date.now();
     }
 
     // First, expire old entries, if maxAgeSeconds is set.
     const oldEntries = this.maxAgeSeconds ?
-      await this.findOldEntries({now}) :
+      await this.findOldEntries({cacheName, now}) :
       [];
 
     // Once that's done, check for the maximum size.
     const extraEntries = this.maxEntries ?
-      await this.findExtraEntries() :
+      await this.findExtraEntries({cacheName}) :
       [];
 
     // Use a Set to remove any duplicates following the concatenation, then
     // convert back into an array.
     const urls = [...new Set(oldEntries.concat(extraEntries))];
-    await this.deleteFromCacheAndIDB({urls});
+    await this.deleteFromCacheAndIDB({cacheName, urls});
 
     return urls;
   }
@@ -195,17 +201,18 @@ class Behavior {
    *
    * @private
    * @param {Object} input The input object to this function.
+   * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @param {Number} [input.now] A timestamp.
    * @return {Array<string>} A list of the URLs that were expired.
    */
-  async findOldEntries({now} = {}) {
+  async findOldEntries({cacheName, now} = {}) {
     assert.isType({now}, 'number');
 
     const expireOlderThan = now - (this.maxAgeSeconds * 1000);
     const urls = [];
-    const db = await this.getDB();
-    const tx = db.transaction(this.cacheName, 'readonly');
-    const store = tx.objectStore(this.cacheName);
+    const db = await this.getDB({cacheName});
+    const tx = db.transaction(cacheName, 'readonly');
+    const store = tx.objectStore(cacheName);
     const timestampIndex = store.index(timestampPropertyName);
 
     timestampIndex.iterateCursor((cursor) => {
@@ -228,13 +235,15 @@ class Behavior {
    * Expires entries base on the the maximum cache size.
    *
    * @private
+   * @param {Object} input The input object to this function.
+   * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @return {Array<string>} A list of the URLs that were expired.
    */
-  async findExtraEntries() {
+  async findExtraEntries({cacheName}) {
     const urls = [];
-    const db = await this.getDB();
-    const tx = db.transaction(this.cacheName, 'readonly');
-    const store = tx.objectStore(this.cacheName);
+    const db = await this.getDB({cacheName});
+    const tx = db.transaction(cacheName, 'readonly');
+    const store = tx.objectStore(cacheName);
     const timestampIndex = store.index(timestampPropertyName);
     const initialCount = await timestampIndex.count();
 
@@ -261,19 +270,21 @@ class Behavior {
    * Storage API and from IndexedDB.
    *
    * @private
+   * @param {Object} input The input object to this function.
+   * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @param {Array<string>} urls The URLs to delete.
    */
-  async deleteFromCacheAndIDB({urls} = {}) {
+  async deleteFromCacheAndIDB({cacheName, urls} = {}) {
     assert.isInstance({urls}, Array);
 
     if (urls.length > 0) {
-      const cache = await this.getCache();
-      const db = await this.getDB();
+      const cache = await this.getCache({cacheName});
+      const db = await this.getDB({cacheName});
 
       await urls.forEach(async (url) => {
         await cache.delete(url);
-        const tx = db.transaction(this.cacheName, 'readwrite');
-        const store = tx.objectStore(this.cacheName);
+        const tx = db.transaction(cacheName, 'readwrite');
+        const store = tx.objectStore(cacheName);
         await store.delete(url);
         await tx.complete;
       });
