@@ -6,18 +6,43 @@ import IDBHelper from '../../../../lib/idb-helper';
 import {getDbName} from './background-sync-idb-helper';
 
 /**
- * BackgroundSync class that exposes public function of underlying libraries
+ * Use the instance of this class to push the failed requests into the queue.
  *
+ * @example
+ * // Case 1: When you want to push the requests manually
+ * let bgQueue = new goog.backgroundSyncQueue.BackgroundSyncQueue();
+ * self.addEventListener('fetch', function(e) {
+ *		if (e.request.url.startsWith('https://jsonplaceholder.typicode.com')) {
+ *			const clone = e.request.clone();
+ *			e.respondWith(fetch(e.request).catch((err)=>{
+ *				bgQueue.pushIntoQueue({
+ *					request: clone,
+ *				});
+ *				throw err;
+ *			}));
+ *	 	}
+ * });
+ * // Case 2: When you want the higher level framework to take care of failed
+ * requests
+ * // TODO: add example here
+ *
+ * @alias goog.backgroundSyncQueue.BackgroundSyncQueue
  * @class BackgroundSyncQueue
- * @private
+ *
  */
 class BackgroundSyncQueue {
 	/**
-	 * Creates an instance of BackgroundSyncQueue.
+	 * Creates an instance of BackgroundSyncQueue with the given options
 	 *
-	 * @param {Object} config
-	 * @memberOf BackgroundSyncQueue
-	 * @private
+	 * @param {Object} [config]
+	 * @param {int} [config.maxRetentionTime = 5 days] Time for which a queued
+	 * request will live in the queue(irespective of failed/success of replay)
+	 * @param {Object} [config.callbacks] Callbacks for successfull/ failed
+	 * replay of a request
+	 * @param {String} [config.queueName] Queue name inside db in which
+	 * requests will be queued
+	 * @param {BroadcastChannel} [config.broadcastChannel] BroadcastChannel
+	 * which will be used to publish messages when the request will be queued.
 	 */
 	constructor({maxRetentionTime = maxAge, callbacks, queueName,
 		broadcastChannel} = {}) {
@@ -46,13 +71,10 @@ class BackgroundSyncQueue {
 	}
 
 	/**
-	 * Pushes a given request into the IDB queue
+	 * This function pushes a given request into the IndexedDb Queue
 	 *
-	 * @param {Request} request
-	 * @return {void}
-	 *
-	 * @memberOf BackgroundSyncQueue
-	 * * @private
+	 * @param {Object} input
+	 * @param {Request} input.request The request which is to be queued
 	 */
 	pushIntoQueue({request}) {
 		assert.isInstance({request}, Request);
