@@ -35,7 +35,6 @@ describe('Ask for File Extensions to Cache', function() {
     })
     .then(() => {
       const captured = cliHelper.endLogCapture();
-      console.log(captured);
       captured.consoleLogs.length.should.equal(0);
       captured.consoleWarns.length.should.equal(0);
       captured.consoleErrors.length.should.not.equal(0);
