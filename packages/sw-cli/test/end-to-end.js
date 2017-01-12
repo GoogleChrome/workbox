@@ -67,12 +67,13 @@ describe('Test Example Projects', function() {
         self: injectedSelf,
       });
 
-      // Delete the manifest so the rest of the test is clean.
-      fs.unlinkSync(path.join(exampleProject, manifestName));
-
+      // Check the manifest is defined by the manifest JS.
       expect(injectedSelf['__file_manifest']).to.exist;
 
-      let expectedFiles = glob.sync(`${exampleProject}/**/*.{${fileExntensions.join(',')}}`);
+      // Check the files that we expect to be defined are.
+      let expectedFiles = glob.sync(`${exampleProject}/**/*.{${fileExntensions.join(',')}}`, {
+        ignore: `${exampleProject}/${manifestName}`,
+      });
       expectedFiles = expectedFiles.map((file) => {
         return `/${path.relative(exampleProject, file)}`;
       });
@@ -104,6 +105,29 @@ describe('Test Example Projects', function() {
       });
 
       expectedFiles.length.should.equal(0);
+    })
+    .then(() => {
+      // Rerun and ensure that the manifest is excluded from the output.
+      return cli.handleCommand('generate-sw');
+    })
+    .then(() => {
+      const injectedSelf = {};
+      const manifestContent =
+        fs.readFileSync(path.join(exampleProject, manifestName));
+      vm.runInNewContext(manifestContent, {
+        self: injectedSelf,
+      });
+
+      const fileManifest = injectedSelf['__file_manifest'];
+      fileManifest.forEach((manifestEntry) => {
+        if (manifestEntry.url === `/${manifestName}`) {
+          throw new Error('The manifest itself was not excluded from the generated file manifest.');
+        }
+      });
+    })
+    .then(() => {
+      // Delete the manifest so the rest of the test is clean.
+      fs.unlinkSync(path.join(exampleProject, manifestName));
     });
   });
 });

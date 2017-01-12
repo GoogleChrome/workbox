@@ -218,7 +218,7 @@ describe('Build File Manifest', function() {
       files.forEach((fileDetails) => {
         fileDetails.size.should.equal(INJECTED_SIZE);
         fileDetails.hash.should.equal(INJECTED_HASH);
-        if ([`/${OK_FILE_1}`, `/${OK_FILE_2}`].indexOf(fileDetails.file) === -1) {
+        if ([OK_FILE_1, OK_FILE_2].indexOf(fileDetails.file) === -1) {
           throw new Error('Unexpected Filename: ' + fileDetails.file);
         }
       });
@@ -229,19 +229,19 @@ describe('Build File Manifest', function() {
     it('should filter out files above maximum size', function() {
       const goodFiles = [
         {
-          file: '/ok.txt',
+          file: 'ok.txt',
           size: 1234,
           hash: 'example-hash',
         },
         {
-          file: '/ok-2.txt',
+          file: 'ok-2.txt',
           size: constants.maximumFileSize,
           hash: 'example-hash-2',
         },
       ];
 
       const badFile = {
-        file: '/not-ok.txt',
+        file: 'not-ok.txt',
         size: constants.maximumFileSize + 1,
         hash: 'example-hash',
       };
@@ -251,7 +251,7 @@ describe('Build File Manifest', function() {
       const SWCli = proxyquire('../src/cli/index', {});
       const cli = new SWCli();
       cliHelper.startLogCapture();
-      const manifestEntries = cli._filterFiles(allFiles);
+      const manifestEntries = cli._filterFiles(allFiles, []);
 
       const captured = cliHelper.endLogCapture();
       captured.consoleLogs.length.should.equal(0);
@@ -263,7 +263,7 @@ describe('Build File Manifest', function() {
       manifestEntries.forEach((manifestEntry) => {
         let matchingGoodFile = null;
         goodFiles.forEach((goodFile) => {
-          if (goodFile.file === manifestEntry.url) {
+          if (`/${goodFile.file}` === manifestEntry.url) {
             matchingGoodFile = goodFile;
           }
         });
@@ -272,23 +272,23 @@ describe('Build File Manifest', function() {
           throw new Error('Unable to find matching file for manifest entry: ');
         }
 
-        manifestEntry.url.should.equal(matchingGoodFile.file);
+        manifestEntry.url.should.equal(`/${matchingGoodFile.file}`);
         manifestEntry.revision.should.equal(matchingGoodFile.hash);
       });
     });
 
     it('should filter manifest and service worker', function() {
-      const SW_FILE = '/example/sw.js';
-      const MANIFEST_FILE = '/example/manifest.js';
+      const SW_FILE = 'sw.js';
+      const MANIFEST_FILE = 'manifest.js';
 
       const goodFiles = [
         {
-          file: '/ok.txt',
+          file: 'ok.txt',
           size: 1234,
           hash: 'example-hash',
         },
         {
-          file: '/ok-2.txt',
+          file: 'ok-2.txt',
           size: constants.maximumFileSize,
           hash: 'example-hash-2',
         },
@@ -309,11 +309,14 @@ describe('Build File Manifest', function() {
       const SWCli = proxyquire('../src/cli/index', {});
       const cli = new SWCli();
       // cliHelper.startLogCapture();
-      const manifestEntries = cli._filterFiles(allFiles);
+      const manifestEntries = cli._filterFiles(allFiles, [
+        SW_FILE,
+        MANIFEST_FILE,
+      ]);
 
       const captured = cliHelper.endLogCapture();
       captured.consoleLogs.length.should.equal(0);
-      captured.consoleWarns.length.should.not.equal(0);
+      captured.consoleWarns.length.should.equal(0);
       captured.consoleErrors.length.should.equal(0);
 
       manifestEntries.length.should.equal(goodFiles.length);
@@ -321,7 +324,7 @@ describe('Build File Manifest', function() {
       manifestEntries.forEach((manifestEntry) => {
         let matchingGoodFile = null;
         goodFiles.forEach((goodFile) => {
-          if (goodFile.file === manifestEntry.url) {
+          if (`/${goodFile.file}` === manifestEntry.url) {
             matchingGoodFile = goodFile;
           }
         });
@@ -330,7 +333,7 @@ describe('Build File Manifest', function() {
           throw new Error('Unable to find matching file for manifest entry: ');
         }
 
-        manifestEntry.url.should.equal(matchingGoodFile.file);
+        manifestEntry.url.should.equal(`/${matchingGoodFile.file}`);
         manifestEntry.revision.should.equal(matchingGoodFile.hash);
       });
     });
