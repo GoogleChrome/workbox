@@ -69,7 +69,6 @@ describe('Test caching strategies.', function() {
       // between the request wrapper and the cache expiration behavior.
       const CACHE_NAME = 'hello-world-' + Date.now();
       const CACHE_EXPIRATION = {
-        cacheName: CACHE_NAME,
         maxEntries: 10,
         maxAgeSeconds: 60 * 60,
       };
