@@ -45,9 +45,12 @@ describe('Test of the ExpressRoute class', () => {
   });
 
   it(`should properly match URLs with named parameters`, () => {
+    const value1 = 'value1';
+    const value2 = 'value2';
+
     const namedParameterPath = '/:param1/dummy/:param2';
-    const namedParameterMatchingUrl = new URL('/value1/dummy/value2', location);
-    const namedParameterNonMatchingUrl = new URL('/value1/value2', location);
+    const namedParameterMatchingUrl = new URL(`/${value1}/dummy/${value2}`, location);
+    const namedParameterNonMatchingUrl = new URL(`/${value1}/${value2}`, location);
 
     const route = new goog.routing.ExpressRoute({
       handler, path: namedParameterPath,
@@ -55,8 +58,8 @@ describe('Test of the ExpressRoute class', () => {
 
     const match = route.match({url: namedParameterMatchingUrl});
     expect(Object.keys(match).length).to.equal(2);
-    expect(match.param1).to.equal('value1');
-    expect(match.param2).to.equal('value2');
+    expect(match.param1).to.equal(value1);
+    expect(match.param2).to.equal(value2);
 
     expect(route.match({url: namedParameterNonMatchingUrl})).not.to.be.ok;
   });

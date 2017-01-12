@@ -46,9 +46,12 @@ describe('Test of the RegExpRoute class', () => {
   });
 
   it(`should properly match URLs with capture groups`, () => {
+    const value1 = 'value1';
+    const value2 = 'value2';
+
     const captureGroupRegExp = new RegExp('/(\\w+)/dummy/(\\w+)');
-    const captureGroupMatchingUrl = new URL('/value1/dummy/value2', location);
-    const captureGroupNonMatchingUrl = new URL('/value1/value2', location);
+    const captureGroupMatchingUrl = new URL(`/${value1}/dummy/${value2}`, location);
+    const captureGroupNonMatchingUrl = new URL(`/${value1}/${value2}`, location);
 
     const route = new goog.routing.RegExpRoute({
       handler, regExp: captureGroupRegExp,
@@ -56,8 +59,8 @@ describe('Test of the RegExpRoute class', () => {
 
     const match = route.match({url: captureGroupMatchingUrl});
     expect(match.length).to.equal(2);
-    expect(match[0]).to.equal('value1');
-    expect(match[1]).to.equal('value2');
+    expect(match[0]).to.equal(value1);
+    expect(match[1]).to.equal(value2);
 
     expect(route.match({url: captureGroupNonMatchingUrl})).not.to.be.ok;
   });

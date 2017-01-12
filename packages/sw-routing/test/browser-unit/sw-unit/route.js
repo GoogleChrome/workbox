@@ -42,8 +42,9 @@ describe('Test of the Route class', () => {
     expect(() => new goog.routing.Route({handler, match, method: invalidMethod})).to.throw();
   });
 
-  it(`should not throw when Route() is called with a valid method`, () => {
-    expect(() => new goog.routing.Route({handler, match, method})).not.to.throw();
+  it(`should use the method provided when Route() is called with a valid method`, () => {
+    const route = new goog.routing.Route({handler, match, method});
+    expect(route.method).to.equal(method);
   });
 
   it(`should use a default of GET when Route() is called without a method`, () => {
