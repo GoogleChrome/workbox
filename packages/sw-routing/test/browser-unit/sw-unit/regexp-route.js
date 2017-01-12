@@ -14,13 +14,10 @@ mocha.setup({
 describe('Test of the RegExpRoute class', () => {
   const path = '/test/path';
   const regExp = new RegExp(path);
-  const matchingUrl = new URL(path, location);
   const handler = {
     handle: () => {},
   };
-
   const invalidHandler = {};
-  const nonMatchingUrl = new URL('/does/not/match', location);
 
   it(`should throw when RegExpRoute() is called without any parameters`, () => {
     expect(() => new goog.routing.RegExpRoute()).to.throw();
@@ -40,8 +37,28 @@ describe('Test of the RegExpRoute class', () => {
   });
 
   it(`should properly match URLs`, () => {
+    const matchingUrl = new URL(path, location);
+    const nonMatchingUrl = new URL('/does/not/match', location);
+
     const route = new goog.routing.RegExpRoute({handler, regExp});
     expect(route.match({url: matchingUrl})).to.be.ok;
     expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
+  });
+
+  it(`should properly match URLs with capture groups`, () => {
+    const captureGroupRegExp = new RegExp('/(\\w+)/dummy/(\\w+)');
+    const captureGroupMatchingUrl = new URL('/value1/dummy/value2', location);
+    const captureGroupNonMatchingUrl = new URL('/value1/value2', location);
+
+    const route = new goog.routing.RegExpRoute({
+      handler, regExp: captureGroupRegExp
+    });
+
+    const match = route.match({url: captureGroupMatchingUrl});
+    expect(match.length).to.equal(2);
+    expect(match[0]).to.equal('value1');
+    expect(match[1]).to.equal('value2');
+
+    expect(route.match({url: captureGroupNonMatchingUrl})).not.to.be.ok;
   });
 });

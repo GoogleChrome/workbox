@@ -13,13 +13,10 @@ mocha.setup({
 
 describe('Test of the ExpressRoute class', () => {
   const path = '/test/path';
-  const matchingUrl = new URL(path, location);
   const handler = {
     handle: () => {},
   };
-
   const invalidHandler = {};
-  const nonMatchingUrl = new URL('/does/not/match', location);
 
   it(`should throw when ExpressRoute() is called without any parameters`, () => {
     expect(() => new goog.routing.ExpressRoute()).to.throw();
@@ -39,8 +36,28 @@ describe('Test of the ExpressRoute class', () => {
   });
 
   it(`should properly match URLs`, () => {
+    const matchingUrl = new URL(path, location);
+    const nonMatchingUrl = new URL('/does/not/match', location);
+
     const route = new goog.routing.ExpressRoute({handler, path});
     expect(route.match({url: matchingUrl})).to.be.ok;
     expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
+  });
+
+  it(`should properly match URLs with named parameters`, () => {
+    const namedParameterPath = '/:param1/dummy/:param2';
+    const namedParameterMatchingUrl = new URL('/value1/dummy/value2', location);
+    const namedParameterNonMatchingUrl = new URL('/value1/value2', location);
+
+    const route = new goog.routing.ExpressRoute({
+      handler, path: namedParameterPath
+    });
+
+    const match = route.match({url: namedParameterMatchingUrl});
+    expect(Object.keys(match).length).to.equal(2);
+    expect(match.param1).to.equal('value1');
+    expect(match.param2).to.equal('value2');
+
+    expect(route.match({url: namedParameterNonMatchingUrl})).not.to.be.ok;
   });
 });
