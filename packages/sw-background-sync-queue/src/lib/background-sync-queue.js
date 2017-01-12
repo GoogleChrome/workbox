@@ -35,13 +35,13 @@ class BackgroundSyncQueue {
 	 * Creates an instance of BackgroundSyncQueue with the given options
 	 *
 	 * @param {Object} [config]
-	 * @param {int} [config.maxRetentionTime = 5 days] Time for which a queued
+	 * @param {Integer} [config.maxRetentionTime = 5 days] Time for which a queued
 	 * request will live in the queue(irespective of failed/success of replay)
-	 * @param {Object} [config.callbacks] Callbacks for successfull/ failed
+	 * @param {Object=} [config.callbacks] Callbacks for successfull/ failed
 	 * replay of a request
-	 * @param {String} [config.queueName] Queue name inside db in which
+	 * @param {string} [config.queueName] Queue name inside db in which
 	 * requests will be queued
-	 * @param {BroadcastChannel} [config.broadcastChannel] BroadcastChannel
+	 * @param {BroadcastChannel=} [config.broadcastChannel] BroadcastChannel
 	 * which will be used to publish messages when the request will be queued.
 	 */
 	constructor({maxRetentionTime = maxAge, callbacks, queueName,
