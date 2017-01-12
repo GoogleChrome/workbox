@@ -169,7 +169,7 @@ describe('Ask for File Extensions to Cache', function() {
         }
       },
       statSync: (directory) => {
-        if (directory === '/injected-file-1.txt') {
+        if (directory === path.sep + 'injected-file-1.txt') {
           return {
             isDirectory: () => {
               return false;
