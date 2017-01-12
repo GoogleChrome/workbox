@@ -5,6 +5,7 @@ import IDBHelper from '../../../../lib/idb-helper';
  * Puts the fetched response in the IDB
  *
  * @param {Object} config
+ * @private
  */
 async function putResponse({hash, idbObject, response, idbQDb}) {
 	const _idbQHelper = idbQDb;
@@ -21,6 +22,7 @@ async function putResponse({hash, idbObject, response, idbQDb}) {
  *
  * @param {String} hash
  * @return {Object} response
+ * @private
  */
 async function getResponse(hash) {
 	const _idbQHelper = new IDBHelper(getDbName(), 1, 'QueueStore');

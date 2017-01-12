@@ -9,6 +9,7 @@ import {getDbName} from './background-sync-idb-helper';
  * BackgroundSync class that exposes public function of underlying libraries
  *
  * @class BackgroundSyncQueue
+ * @private
  */
 class BackgroundSyncQueue {
 	/**
@@ -16,6 +17,7 @@ class BackgroundSyncQueue {
 	 *
 	 * @param {Object} config
 	 * @memberOf BackgroundSyncQueue
+	 * @private
 	 */
 	constructor({maxRetentionTime = maxAge, callbacks, queueName,
 		broadcastChannel} = {}) {
@@ -50,6 +52,7 @@ class BackgroundSyncQueue {
 	 * @return {void}
 	 *
 	 * @memberOf BackgroundSyncQueue
+	 * * @private
 	 */
 	pushIntoQueue({request}) {
 		assert.isInstance({request}, Request);

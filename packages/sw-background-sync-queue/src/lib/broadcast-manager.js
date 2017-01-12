@@ -5,6 +5,7 @@ import assert from '../../../../lib/assert';
  * broadcasts the message with the guven type and url
  *
  * @param {Object} config
+ * @private
  */
 function broadcastMessage(broadcastManager, {type, url}) {
 	if(!broadcastManager)

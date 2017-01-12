@@ -16,6 +16,7 @@ let _queueCounter = 0;
  * Queue class to maintain and perform on the logical requests queue
  *
  * @class RequestQueue
+ * @private
  */
 class RequestQueue {
 	/**
@@ -24,6 +25,7 @@ class RequestQueue {
 	 * @param {Object} config
 	 *
 	 * @memberOf RequestQueue
+	 * @private
 	 */
 	constructor({
 		config,
@@ -44,6 +46,7 @@ class RequestQueue {
 	 * initializes the queue from the IDB store
 	 *
 	 * @memberOf RequestQueue
+	 * @private
 	 */
 	async initQueue() {
 		const idbQueue = await this._idbQDb.get(this._queueName);
@@ -54,6 +57,7 @@ class RequestQueue {
 	 * adds the current queueName to all queue array
 	 *
 	 * @memberOf RequestQueue
+	 * @private
 	 */
 	async addQueueNameToAllQueues() {
 		if(!this._isQueueNameAddedToAllQueue) {
@@ -71,6 +75,7 @@ class RequestQueue {
 	 * saves the logical queue to IDB
 	 *
 	 * @memberOf RequestQueue
+	 * @private
 	 */
 	async saveQueue() {
 		await this._idbQDb.put(this._queueName, this._queue);
@@ -83,6 +88,7 @@ class RequestQueue {
 	 * @param {Request} request request object to be queued by this
 	 *
 	 * @memberOf Queue
+	 * @private
 	 */
 	async push({request}) {
 		assert.isInstance({request}, Request);
@@ -126,6 +132,7 @@ class RequestQueue {
 	 * @param {string} hash hash of the request at the given index
 	 * @return {Request} request object corresponding to given hash
 	 * @memberOf Queue
+	 * @private
 	 */
 	async getRequestFromQueue({hash}) {
 		assert.isType({hash}, 'string');
@@ -141,6 +148,7 @@ class RequestQueue {
 	 * @readonly
 	 *
 	 * @memberOf RequestQueue
+	 * @private
 	 */
 	get queue() {
 		return Object.assign([], this._queue);
@@ -152,6 +160,7 @@ class RequestQueue {
 	 * @readonly
 	 *
 	 * @memberOf RequestQueue
+	 * @private
 	 */
 	get queueName() {
 		return this._queueName;
@@ -163,6 +172,7 @@ class RequestQueue {
 	 * @readonly
 	 *
 	 * @memberOf RequestQueue
+	 * @private
 	 */
 	get idbQDb() {
 		return this._idbQDb;

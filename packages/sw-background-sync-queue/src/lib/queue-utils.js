@@ -11,6 +11,7 @@ import {allQueuesPlaceholder} from './constants';
  * @return {Object} indexable object for iDB
  *
  * @memberOf RequestManager
+ * @private
  */
 async function getQueueableRequest({request, config}) {
 	let requestObject={
@@ -38,6 +39,7 @@ async function getQueueableRequest({request, config}) {
  * the browser
  * @param {Object} idbRequestObject
  * @return {Request}
+ * @private
  */
 async function getFetchableRequest({idbRequestObject}) {
 	let reqObject = {
@@ -57,6 +59,7 @@ async function getFetchableRequest({idbRequestObject}) {
  * whose maxAge has expired
  *
  * @memberOf Queue
+ * @private
  */
 async function cleanupQueue() {
 	let db = new IDBHelper(getDbName(), 1, 'QueueStore');

@@ -7,6 +7,7 @@ import {tagNamePrefix} from './constants';
  * transformations, replaying, event handling
  * broadcasting back to controlled pages etc.
  * @class
+ * @private
  */
 class RequestManager {
 	/**
@@ -16,6 +17,7 @@ class RequestManager {
 	 * @param {Object=} config
 	 *
 	 * @memberOf RequestManager
+	 * @private
 	 */
 	constructor({callbacks, queue}) {
 		this._globalCallbacks = callbacks || {};
@@ -28,6 +30,7 @@ class RequestManager {
 	 * sync event is fired
 	 *
 	 * @memberOf RequestManager
+	 * @private
 	 */
 	attachSyncHandler() {
 		self.addEventListener('sync', (event) => {
@@ -43,6 +46,7 @@ class RequestManager {
 	 * @return {void}
 	 *
 	 * @memberOf RequestManager
+	 * @private
 	 */
 	replayRequests() {
 		return this._queue.queue.reduce((promise, hash) => {
