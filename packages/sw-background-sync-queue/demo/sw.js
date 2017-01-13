@@ -7,7 +7,6 @@ goog.backgroundSyncQueue.initialize();
 let bgQueue = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
 	{
 		onResponse: async(hash, res) => {
-			let data = await res.json();
 			self.registration.showNotification('Background sync demo', {
 				body: 'Product has been purchased.',
 				icon: 'https://shop.polymer-project.org/images/shop-icon-384.png',

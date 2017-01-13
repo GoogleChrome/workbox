@@ -111,14 +111,16 @@ class RequestQueue {
 				self.registration.sync.register(tagNamePrefix + this._queueName);
 
 			// broadcast the success of request added to the queue
-			broadcastMessage(this._broadcastChannel, {
+			broadcastMessage({
+				broadcastChannel: this._broadcastChannel,
 				type: broadcastMessageAddedType,
 				id: hash,
 				url: request.url,
 			});
 		} catch(e) {
 			// broadcast the failure of request added to the queue
-			broadcastMessage(this._broadcastChannel, {
+			broadcastMessage({
+				broadcastChannel: this._broadcastChannel,
 				type: broadcastMessageFailedType,
 				id: hash,
 				url: request.url,

@@ -2,20 +2,24 @@ import {broadcastMeta} from './constants';
 import assert from '../../../../lib/assert';
 
 /**
- * broadcasts the message with the guven type and url
+ * broadcasts the message with the given type and url
  *
- * @param {Object} config
+ * @param {BroadcastChannel} broadcastChannel which is used to push the
+ * updates on
+ * @param {Object} input
+ * @param {string} input.type Type of the message (either success or failure)
+ * @param {string} input.url Url for which the request was queued
  * @private
  */
-function broadcastMessage(broadcastManager, {type, url}) {
-	if(!broadcastManager)
+function broadcastMessage({broadcastChannel, type, url}) {
+	if(!broadcastChannel)
 		return;
 
-	assert.isInstance({broadcastManager}, BroadcastChannel);
+	assert.isInstance({broadcastChannel}, BroadcastChannel);
 	assert.isType({type}, 'string');
 	assert.isType({url}, 'string');
 
-	broadcastManager.postMessage({
+	broadcastChannel.postMessage({
 		type: type,
 		meta: broadcastMeta,
 		payload: {

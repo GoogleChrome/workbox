@@ -75,6 +75,9 @@ class BackgroundSyncQueue {
 	 *
 	 * @param {Object} input
 	 * @param {Request} input.request The request which is to be queued
+	 *
+	 * @returns {Promise} Promise which resolves when the request is pushed in
+	 * the queue
 	 */
 	pushIntoQueue({request}) {
 		assert.isInstance({request}, Request);

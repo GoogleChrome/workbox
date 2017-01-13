@@ -26,7 +26,7 @@ async function putResponse({hash, idbObject, response, idbQDb}) {
  * channel
  * @return {Object} response Fetched response of the request.
  */
-async function getResponse(id) {
+async function getResponse({id}) {
 	const _idbQHelper = new IDBHelper(getDbName(), 1, 'QueueStore');
 	const object = _idbQHelper.get(id);
 	if (object && object.response) {
