@@ -31,7 +31,8 @@ describe('broadcast manager test', () => {
 			chai.assert.equal(msgRead, true);
 			done();
 		};
-		broadcastManager.broadcastMessage(testBroadcastChannel, {
+		broadcastManager.broadcastMessage({
+			broadcastChannel: testBroadcastChannel,
 			type: 'SUCCESS',
 			url: 'http://google.com',
 		});
