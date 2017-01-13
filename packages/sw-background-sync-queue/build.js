@@ -160,4 +160,4 @@ module.exports = () => {
         projectDir: __dirname,
       });
   });
-}
+};
