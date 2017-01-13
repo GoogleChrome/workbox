@@ -21,7 +21,7 @@ import assert from '../../../../lib/assert';
  * @extends Handler
  *
  * @example
- * // Set up a route to match any requests made for URLs that end in .txt
+ * // Set up a route to match any requests made for URLs that end in .txt.
  * // The requests are handled with a network-only strategy.
  * const route = new goog.routing.RegExpRoute({
  *   regExp: /\.txt$/,
