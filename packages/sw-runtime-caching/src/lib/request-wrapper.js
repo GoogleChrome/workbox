@@ -26,11 +26,11 @@ import ErrorFactory from './error-factory';
  * The current set of behavior callbacks, along with the parameters they're
  * given and when they're called, is:
  *
- *   - `cacheWillUpdate({request, response})`: Call prior to writing an entry
+ *   - `cacheWillUpdate({request, response})`: Called prior to writing an entry
  *   to the cache, allowing the callback to decide whether or not the cache
  *   entry should be written.
  *   - `cacheDidUpdate({cacheName, oldResponse, newResponse})`: Called whenever
- *   an entry is written to the cache, given the callback a chance to notify
+ *   an entry is written to the cache, giving the callback a chance to notify
  *   clients about the update or implement cache expiration.
  *   - `fetchDidFail({request})`: Called whenever a network request fails.
  *
@@ -143,7 +143,7 @@ class RequestWrapper {
   }
 
   /**
-   * Combines both fetching and caching, using the previously configured options
+   * Combines both fetching and caching using the previously configured options
    * and calling the appropriate behaviors.
    *
    * By default, responses with a status of [2xx](https://fetch.spec.whatwg.org/#ok-status)
