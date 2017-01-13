@@ -49,7 +49,7 @@ import assert from '../../../../lib/assert';
  */
 class Router {
   /**
-   * An optional default handler will have it's handle method called when a
+   * An optional default handler will have its handle method called when a
    * request doesn't have a matching route.
    *
    * @param {Object} input
