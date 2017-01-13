@@ -58,7 +58,7 @@ describe('sw-lib Test Revisioned Caching', function() {
     });
   };
 
-  const testFileSet = (iframe, fileSet) => {
+  const testFileSet = (iframe, swPath, fileSet) => {
     return testCacheEntries(fileSet)
     .then(() => {
       let responses = {};
@@ -68,7 +68,13 @@ describe('sw-lib Test Revisioned Caching', function() {
           url = assetAndHash.url;
         }
 
-        return iframe.contentWindow.fetch(url)
+        // This handles relative URL's that will be relative to the service
+        // works path.
+        const parsedURL = new URL(
+          url,
+          new URL(swPath, location).toString()
+        ).toString();
+        return iframe.contentWindow.fetch(parsedURL)
         .then((cachedResponse) => {
           if (cachedResponse.type === 'opaque') {
             responses[url] = null;
@@ -122,22 +128,25 @@ describe('sw-lib Test Revisioned Caching', function() {
   };
 
   it('should cache and fetch files', function() {
-    const allAssets1 = goog.__TEST_DATA['sw-lib']['set-1']
-      .concat(goog.__TEST_DATA['sw-lib']['set-2'])
-      .concat(goog.__TEST_DATA['sw-lib']['set-3']);
+    const testSet = goog.__TEST_DATA['sw-lib']['revisioned'];
+    const allAssets1 = testSet['set-1']
+      .concat(testSet['set-2'])
+      .concat(testSet['set-3']);
 
-    const allAssets2 = goog.__TEST_DATA['sw-lib']['set-4']
-      .concat(goog.__TEST_DATA['sw-lib']['set-5'])
-      .concat(goog.__TEST_DATA['sw-lib']['set-6']);
+    const allAssets2 = testSet['set-4']
+      .concat(testSet['set-5'])
+      .concat(testSet['set-6']);
 
-    return window.goog.swUtils.activateSW('data/sw/cache-revisioned-1.js')
+    const sw1 = 'data/sw/cache-revisioned-1.js';
+    const sw2 = 'data/sw/cache-revisioned-2.js';
+    return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, allAssets1);
+      return testFileSet(iframe, sw1, allAssets1);
     })
     .then((step1Responses) => {
-      return window.goog.swUtils.activateSW('data/sw/cache-revisioned-2.js')
+      return window.goog.swUtils.activateSW(sw2)
       .then((iframe) => {
-        return testFileSet(iframe, allAssets2);
+        return testFileSet(iframe, sw2, allAssets2);
       })
       .then((step2Responses) => {
         compareCachedAssets({

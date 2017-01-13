@@ -77,13 +77,11 @@ const configureTestSuite = function(browser) {
         );
       })
       .then((testResults) => {
+        console.log(
+          swTestingHelpers.mochaUtils.prettyPrintResults(testResults)
+        );
         if (testResults.failed.length > 0) {
-          const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
-            browser.prettyName,
-            testResults
-          );
-
-          throw new Error(errorMessage);
+          throw new Error('Some of the browser tests failed');
         }
       });
     });
@@ -92,12 +90,12 @@ const configureTestSuite = function(browser) {
 
 (function(browser) {
   // Blacklist browsers here if needed.
-  if (browser.getSeleniumBrowserId() === 'opera' && browser.getVersionNumber() === 41) {
+  if (browser.getId() === 'opera' && browser.getVersionNumber() === 41) {
     console.warn('Skipping Opera version 41 due to operadriver error.');
     return;
   }
 
-  switch (browser.getSeleniumBrowserId()) {
+  switch (browser.getId()) {
     case 'chrome':
       configureTestSuite(browser);
       break;
@@ -107,4 +105,4 @@ const configureTestSuite = function(browser) {
       console.warn(`Skipping ${browser.getPrettyName()}.`);
       break;
   }
-})(seleniumAssistant.getAvailableBrowsers()[0]);
+})(seleniumAssistant.getLocalBrowsers()[0]);

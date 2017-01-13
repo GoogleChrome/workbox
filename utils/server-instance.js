@@ -50,6 +50,14 @@ class ServerInstance {
     this._app.get('/__test/404/', function(req, res) {
       res.status(404).send('404');
     });
+
+    this._app.get('/__test/redirect/:statusCode/', function(req, res) {
+      const statusCode = parseInt(req.params.statusCode, 10);
+      res.redirect(
+        statusCode,
+        `/__echo/filename/${statusCode}`
+      );
+    });
   }
 
   start(rootDirectory, port) {

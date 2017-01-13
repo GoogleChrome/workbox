@@ -8,7 +8,7 @@ importScripts(
   // This provides the goog.runtimeCaching.* interfaces.
   '../../sw-runtime-caching/build/sw-runtime-caching.min.js',
   // This provides the goog.cacheExpiration.* interfaces.
-  '../build/sw-cache-expiration.min.js'
+  '../../sw-cache-expiration/build/sw-cache-expiration.min.js'
 );
 
 // Have the service worker take control as soon as possible.
@@ -17,12 +17,10 @@ self.addEventListener('activate', () => self.clients.claim());
 
 // Configure a RequestWrapper to use a specific cache and impose a cache
 // expiration when it modifies that cache.
-const cacheName = 'text-files';
 const textFilesRequestWrapper = new goog.runtimeCaching.RequestWrapper({
-  cacheName,
+  cacheName: 'text-files',
   behaviors: [
     new goog.cacheExpiration.Behavior({
-      cacheName,
       maxEntries: 2,
       maxAgeSeconds: 10,
     }),

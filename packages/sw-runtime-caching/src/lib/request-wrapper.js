@@ -145,12 +145,16 @@ class RequestWrapper {
    * lifecycle callback.
    *
    * @param {Object} input
-   * @param {Request} input.request
+   * @param {Request} input.request The request to fetch.
+   * @param {boolean} [input.waitOnCache] `true` means the method should wait
+   *        for the cache.put() to complete before returning. The default value
+   *        of `false` means return without waiting.
    * @return {Promise.<Response>} The network response.
    */
-  async fetchAndCache({request}) {
+  async fetchAndCache({request, waitOnCache}) {
     assert.atLeastOne({request});
 
+    let cachingComplete;
     const response = await this.fetch({request});
 
     // .ok is true if the response status is 2xx. That's the default condition.
@@ -163,9 +167,9 @@ class RequestWrapper {
     if (cacheable) {
       const newResponse = response.clone();
 
-      // Run the cache update sequence asynchronously, without blocking the
-      // response from getting to the client.
-      this.getCache().then(async (cache) => {
+      // cacheDelay is a promise that may or may not be used to delay the
+      // completion of this method, depending on the value of `waitOnCache`.
+      cachingComplete = this.getCache().then(async (cache) => {
         let oldResponse;
 
         // Only bother getting the old response if the new response isn't opaque
@@ -186,8 +190,12 @@ class RequestWrapper {
       });
     }
 
-    // Return a response right away, so that the client could make use of it,
-    // without waiting for the cache update sequence to complete.
+    // Only conditionally await the caching completion, giving developers the
+    // option of returning early for, e.g., read-through-caching scenarios.
+    if (waitOnCache && cachingComplete) {
+      await cachingComplete;
+    }
+
     return response;
   }
 }

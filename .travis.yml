@@ -5,6 +5,7 @@ language: node_js
 cache:
   directories:
     - node_modules
+    - ~/.selenium-assistant
 
 node_js:
   - 'stable'
@@ -29,5 +30,5 @@ before_script:
 
 script:
   - gulp lint --project "${PROJECT}"
-  - gulp build --project "${PROJECT}"
+  # Building is handled in gulp test.
   - gulp test --project "${PROJECT}"

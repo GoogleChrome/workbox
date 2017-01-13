@@ -77,30 +77,29 @@ describe(`sw-offline-google-analytics Test Suite`, function() {
         );
       })
       .then((testResults) => {
-        if (testResults.failed.length > 0) {
-          const errorMessage = swTestingHelpers.mochaUtils.prettyPrintErrors(
-            browser.prettyName,
-            testResults
-          );
+        console.log(
+          swTestingHelpers.mochaUtils.prettyPrintResults(testResults)
+        );
 
-          throw new Error(errorMessage);
+        if (testResults.failed.length > 0) {
+          throw new Error('Some of the browser tests failed.');
         }
       });
     });
   };
 
-  seleniumAssistant.getAvailableBrowsers().forEach(function(browser) {
+  seleniumAssistant.getLocalBrowsers().forEach(function(browser) {
     // Blackliist browsers here if needed.
-    if (browser.getSeleniumBrowserId() === 'opera' && browser.getVersionNumber() === 41) {
+    if (browser.getId() === 'opera' && browser.getVersionNumber() === 41) {
       console.warn('Skipping Opera version 41 due to operadriver error.');
       return;
     }
 
-    switch (browser.getSeleniumBrowserId()) {
+    switch (browser.getId()) {
       case 'chrome':
       case 'firefox':
       case 'opera':
-        if (browser.getSeleniumBrowserId() === 'opera' &&
+        if (browser.getId() === 'opera' &&
           browser.getVersionNumber() <= 43) {
           console.log(`Skipping Opera <= 43 due to driver issues.`);
           return;

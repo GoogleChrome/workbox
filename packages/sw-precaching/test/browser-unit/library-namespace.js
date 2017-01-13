@@ -39,14 +39,4 @@ describe('Test Behaviors of Loading the Script', function() {
       document.head.appendChild(scriptElement);
     });
   });
-
-  const swUnitTests = [
-    'sw-unit/basic.js',
-    'sw-unit/revisioned-cache-manager.js',
-  ];
-  swUnitTests.forEach((swUnitTestPath) => {
-    it(`should perform ${swUnitTestPath} sw tests`, function() {
-      return window.goog.mochaUtils.registerServiceWorkerMochaTests(swUnitTestPath);
-    });
-  });
 });

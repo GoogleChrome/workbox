@@ -14,13 +14,38 @@
 */
 
 /**
- * **This library is still a work in progress and is not functional.**
+ * The precaching module provides helpers that make it easy to cache files
+ * during the install step of your service worker.
+ *
+ * The revisioned caching will cache bust requests where appropriate and
+ * only cache assets that have a changed revision asset compared to
+ * the currently cached value.
+ *
+ * @example
+ * importScripts('/<Path to Module>/build/sw-precaching.min.js');
+ *
+ * const precacheManager = new goog.precaching.PrecacheManager();
+ * precacheManager.cacheRevisioned({
+ *   revisionedFiles: [
+ *     '/styles/main.1234.css',
+ *     {
+ *       url: '/',
+ *       revision: '1234'
+ *     }
+ *   ],
+ * });
+ *
+ * precacheManager.cacheUnrevisioned({
+ *   unrevisionedFiles: [
+ *     '/',
+ *     '/images/logo.png'
+ *   ]
+ * });
  *
  * @module sw-precaching
  */
-
 import ErrorFactory from './lib/error-factory';
-import RevisionedCacheManager from './lib/revisioned-cache-manager';
+import PrecacheManager from './lib/precache-manager';
 
 import assert from '../../../lib/assert.js';
 
@@ -30,5 +55,5 @@ if (!assert.isSWEnv()) {
 }
 
 export {
-  RevisionedCacheManager,
+  PrecacheManager,
 };

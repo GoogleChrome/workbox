@@ -20,19 +20,19 @@ const glob = require('glob');
 gulp.task('download-browsers', function() {
   console.log('    Starting browser download.....');
   return Promise.all([
-    seleniumAssistant.downloadBrowser('firefox', 'stable', 48),
-    seleniumAssistant.downloadBrowser('firefox', 'beta', 48),
-    seleniumAssistant.downloadBrowser('firefox', 'unstable', 48),
-    seleniumAssistant.downloadBrowser('chrome', 'stable', 48),
-    seleniumAssistant.downloadBrowser('chrome', 'beta', 48),
-    seleniumAssistant.downloadBrowser('chrome', 'unstable', 48),
+    seleniumAssistant.downloadLocalBrowser('firefox', 'stable', 48),
+    seleniumAssistant.downloadLocalBrowser('firefox', 'beta', 48),
+    seleniumAssistant.downloadLocalBrowser('firefox', 'unstable', 48),
+    seleniumAssistant.downloadLocalBrowser('chrome', 'stable', 48),
+    seleniumAssistant.downloadLocalBrowser('chrome', 'beta', 48),
+    seleniumAssistant.downloadLocalBrowser('chrome', 'unstable', 48),
   ])
   .then(() => {
     console.log('    Browser download complete.');
   });
 });
 
-gulp.task('test', ['download-browsers'], () => {
+gulp.task('test', ['download-browsers', 'build'], () => {
   const mochaOptions = {};
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
