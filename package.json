@@ -47,6 +47,7 @@
     "gulp-if": "^2.0.2",
     "gulp-rename": "^1.2.2",
     "gulp-rollup": "^2.5.1",
+    "gulp-sourcemaps": "^2.4.0",
     "gulp-spawn-mocha": "^3.1.0",
     "jsdoc-strip-async-await": "^0.1.0",
     "lerna": "2.0.0-beta.30",
@@ -65,6 +66,7 @@
     "serve-index": "^1.8.0",
     "serve-static": "^1.11.1",
     "sinon": "^1.17.6",
-    "sw-testing-helpers": "1.0.1"
+    "sw-testing-helpers": "1.0.1",
+    "tmp": "0.0.31"
   }
 }
