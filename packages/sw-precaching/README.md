@@ -1,7 +1,5 @@
 # sw-precaching
 
-This library is still a work in progress and is not functional.
-
 ## Installation
 
 `npm install --save-dev sw-precaching`
