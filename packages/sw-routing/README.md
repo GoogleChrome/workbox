@@ -53,7 +53,7 @@ requests, you can use either a generic [`Route`][Route](#route) or a
 **Examples**
 
 ```javascript
-// Any same-origin requests that start with /path/to and end with one
+// Any same-origin requests that start with /path/to and ends with one
 // additional path segment will match this route, with the last path
 // segment passed along to the handler via params.file.
 const route = new goog.routing.ExpressRoute({
@@ -113,13 +113,13 @@ certain network requests using a specific response strategy.
 
 Two configuration options are required:
 
--   a `match` function, which examines
+-   A `match` function, which examines
     an incoming [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request)
     to determine whether this `Route` should apply. The function should return
     a [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy) value
     if the `Route` matches, in which case that return value is passed along to
     the `handle` function.
--   a `handler` object, which should in turn have a function defined on it
+-   A `handler` object, which should in turn have a function defined on it
     named `handle`. This `handle` function is given the incoming request along
     with any additional parameters generated during the `match`, and returns a
     Promise for a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response).
@@ -170,7 +170,7 @@ to any requests that throw an exception while being routed.
 ```javascript
 // The following example sets up two routes, one to match requests with
 // "assets" in their URL, and the other for requests with "images", along
-// different runtime caching handlers for each.
+// with different runtime caching handlers for each.
 // Both the routes are registered with the router, and any requests that
 // don't match either route will be handled using the default NetworkFirst
 // strategy.
