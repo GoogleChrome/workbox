@@ -1,0 +1,15 @@
+only_commits:
+  files:
+    - packages/sw-cli/
+
+install:
+  - ps: Install-Product node Stable
+  - npm install
+  - npm install -g gulp
+
+test_script:
+  - node --version
+  - npm --version
+  - gulp test --project "sw-cli"
+
+build: off
