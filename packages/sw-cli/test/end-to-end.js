@@ -75,7 +75,7 @@ describe('Test Example Projects', function() {
         ignore: `${exampleProject}/${manifestName}`,
       });
       expectedFiles = expectedFiles.map((file) => {
-        return `/${path.relative(exampleProject, file)}`;
+        return `/${path.relative(exampleProject, file).replace(path.sep, '/')}`;
       });
 
       const fileManifestOutput = injectedSelf['__file_manifest'];
