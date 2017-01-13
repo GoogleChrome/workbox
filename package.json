@@ -32,7 +32,7 @@
     "browserify": "^13.1.0",
     "chai": "^3.5.0",
     "chromedriver": "^2.26.1",
-    "documentation": "^4.0.0-beta11",
+    "documentation": "^4.0.0-beta.18",
     "eslint-config-google": "^0.7.0",
     "express": "^4.14.0",
     "fs-extra": "^1.0.0",
