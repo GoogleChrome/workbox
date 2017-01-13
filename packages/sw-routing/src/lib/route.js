@@ -22,13 +22,13 @@ import {defaultMethod, validMethods} from './constants';
  *
  * Two configuration options are required:
  *
- * - a `match` function, which examines
+ * - A `match` function, which examines
  * an incoming [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request)
  * to determine whether this `Route` should apply. The function should return
  * a [truthy](https://developer.mozilla.org/en-US/docs/Glossary/Truthy) value
  * if the `Route` matches, in which case that return value is passed along to
  * the `handle` function.
- * - a `handler` object, which should in turn have a function defined on it
+ * - A `handler` object, which should in turn have a function defined on it
  * named `handle`. This `handle` function is given the incoming request along
  * with any additional parameters generated during the `match`, and returns a
  * Promise for a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response).
