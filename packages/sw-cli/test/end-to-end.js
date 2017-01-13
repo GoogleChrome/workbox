@@ -95,7 +95,8 @@ describe('Test Example Projects', function() {
 
         const expectedFileIndex = expectedFiles.indexOf(details.url);
         if (expectedFileIndex === -1) {
-          throw new Error(`Unexpected file in in manifest: '${details.url}'`);
+          console.log(expectedFiles);
+          throw new Error(`Unexpected file in manifest: '${details.url}'`);
         }
 
         expectedFiles.splice(expectedFileIndex, 1);
