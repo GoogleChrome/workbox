@@ -35,7 +35,6 @@ class RegExpRoute extends Route {
    */
   constructor({regExp, handler, method}) {
     assert.isInstance({regExp}, RegExp);
-    assert.hasMethod({handler}, 'handle');
 
     const match = ({url}) => {
       const regexpMatches = url.href.match(regExp);
