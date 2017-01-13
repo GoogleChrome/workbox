@@ -25,7 +25,7 @@ import assert from '../../../../lib/assert';
  * // The requests are handled with a network-only strategy.
  * const route = new goog.routing.RegExpRoute({
  *   regExp: /\.txt$/,
- *   handler: new goog.runtimeCaching.CacheFirst(),
+ *   handler: new goog.runtimeCaching.NetworkOnly(),
  * });
  *
  * const router = new goog.routing.Router();
