@@ -196,7 +196,7 @@ router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
 
 -   `path` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The path to use for routing.
            If the path contains [named parameters](https://github.com/pillarjs/path-to-regexp#named-parameters),
-           then an Object mapping parameter names to the corresponding value
+           then an Object mapping the names of parameter to the corresponding value
            will be passed to the handler via `params`.
 -   `handler` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** An Object with a `handle` method. That method
            will be used to respond to matching requests.
