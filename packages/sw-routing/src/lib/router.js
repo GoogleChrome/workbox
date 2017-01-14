@@ -17,17 +17,44 @@ import Route from './route';
 import assert from '../../../../lib/assert';
 
 /**
- * The Router takes a set of {@link Route}'s and will direct fetch events
- * to those Route in the order they are registered.
+ * The Router takes one or more [Routes]{@link Route} and registers a [`fetch`
+ * event listener](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent)
+ * that will respond to network requests if there's a matching route.
+ *
+ * It also allows you to define a "default" handler that applies to any requests
+ * that don't explicitly match a `Route`, and a "catch" handler that responds
+ * to any requests that throw an exception while being routed.
  *
  * @memberof module:sw-routing
+ *
+ * @example
+ * // The following example sets up two routes, one to match requests with
+ * // "assets" in their URL, and the other for requests with "images", along
+ * // different runtime caching handlers for each.
+ * // Both the routes are registered with the router, and any requests that
+ * // don't match either route will be handled using the default NetworkFirst
+ * // strategy.
+ * const assetRoute = new RegExpRoute({
+ *   regExp: /assets/,
+ *   handler: new goog.runtimeCaching.StaleWhileRevalidate(),
+ * });
+ * const imageRoute = new RegExpRoute({
+ *   regExp: /images/,
+ *   handler: new goog.runtimeCaching.CacheFirst(),
+ * });
+ *
+ * const router = new goog.routing.Router();
+ * router.registerRoutes({routes: [assetRoute, imageRoute]});
+ * router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
  */
 class Router {
   /**
-   * A default handler will have it's handle method called when a
+   * An optional default handler will have its handle method called when a
    * request doesn't have a matching route.
+   *
    * @param {Object} input
-   * @param {Handler} input.handler A handler to deal with default routes.
+   * @param {Object} input.handler An Object with a `handle` method.
+   * @return {void}
    */
   setDefaultHandler({handler} = {}) {
     assert.hasMethod({handler}, 'handle');
@@ -38,8 +65,10 @@ class Router {
   /**
    * If a Route throws an error while handling a request, this catch handler
    * will be called to return an error case.
+   *
    * @param {Object} input
-   * @param {Handler} input.handler A handler to deal with errors in routes.
+   * @param {Object} input.handler An Object with a `handle` method.
+   * @return {void}
    */
   setCatchHandler({handler} = {}) {
     assert.hasMethod({handler}, 'handle');
@@ -51,8 +80,8 @@ class Router {
    * Register routes will take an array of Routes to register with the
    * router.
    *
-   * @param {Object} options
-   * @param {Array<Route>} options.routes
+   * @param {Object} input
+   * @param {Array.<Route>} input.routes
    * @return {void}
    */
   registerRoutes({routes} = {}) {
@@ -105,9 +134,11 @@ class Router {
   }
 
   /**
-   * Registers a route with the router.
+   * Registers a single route with the router.
+   *
    * @param {Object} input
    * @param {Route} input.route The route to register.
+   * @return {void}
    */
   registerRoute({route} = {}) {
     assert.isInstance({route}, Route);

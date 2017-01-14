@@ -17,11 +17,32 @@ import Route from './route';
 import assert from '../../../../lib/assert';
 
 /**
- * RegExpRoute is a helper class to make defining Regular Expression based
+ * RegExpRoute is a helper class to make defining regular expression based
  * [Routes]{@link Route} easy.
+ *
+ * `RegExpRoute` performs its matches against the full request URL, including
+ * the origin. This means that, unlike [`ExpressRoute`]{@link ExpressRoute},
+ * it's able to match cross-origin requests.
  *
  * @memberof module:sw-routing
  * @extends Route
+ *
+ * @example
+ * // Any requests that match the regular expression will match this route, with
+ * // the capture groups passed along to the handler as an array via params.
+ * const route = new goog.routing.RegExpRoute({
+ *   regExp: new RegExp('^https://example.com/path/to/(\\w+)'),
+ *   handler: {
+ *     handle: ({event, params}) => {
+ *       // params[0], etc. will be set based on the regexp capture groups.
+ *       // Do something that returns a Promise.<Response>, like:
+ *       return caches.match(event.request);
+ *     },
+ *   },
+ * });
+ *
+ * const router = new goog.routing.Router();
+ * router.registerRoute({route});
  */
 class RegExpRoute extends Route {
   /**

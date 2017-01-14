@@ -13,7 +13,21 @@
  limitations under the License.
 */
 
+/**
+ * The default HTTP method, 'GET', used when there's no specific method
+ * configured for a route.
+ *
+ * @type {string}
+ * @memberof module:sw-routing
+ */
 export const defaultMethod = 'GET';
+
+/**
+ * The list of valid HTTP methods associated with requests that could be routed.
+ *
+ * @type {Array.<string>}
+ * @memberof module:sw-routing
+ */
 export const validMethods = [
   'DELETE',
   'GET',
