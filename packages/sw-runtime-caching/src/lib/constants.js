@@ -25,7 +25,7 @@
 export const defaultCacheName = `sw-runtime-caching-${self.registration.scope}`;
 
 /**
- * A list of the callback methdo names that the RequestWrapper might trigger.
+ * A list of the callback method names that the RequestWrapper might trigger.
  *
  * @private
  * @type {Array.<string>}
@@ -35,5 +35,4 @@ export const behaviorCallbacks = [
   'cacheDidUpdate',
   'cacheWillUpdate',
   'fetchDidFail',
-  'requestWillFetch',
 ];
