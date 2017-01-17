@@ -24,7 +24,10 @@ const {taskHarness} = require('../build-utils');
  */
 const lintPackage = (projectPath) => {
   return new Promise((resolve, reject) => {
-    gulp.src([`${projectPath}/**/*.js`, `!${projectPath}/**/build/**`])
+    gulp.src([`${projectPath}/**/*.js`,
+      `!${projectPath}/**/build/**`,
+      `!${projectPath}/**/node_modules/**`,
+      ])
       .pipe(eslint())
       .pipe(eslint.format())
       .pipe(eslint.results((results) => {
