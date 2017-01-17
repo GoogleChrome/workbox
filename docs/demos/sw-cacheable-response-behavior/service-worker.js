@@ -1,6 +1,7 @@
 /* eslint-env worker, serviceworker */
 /* global goog */
 
+/* eslint-disable max-len */
 // Import the helper libraries into our service worker's global scope.
 importScripts(
   // This provides the goog.routing.* interfaces.
@@ -10,6 +11,7 @@ importScripts(
   // This provides the goog.cacheExpiration.* interfaces.
   '../node_modules/sw-cacheable-response-behavior/build/sw-cacheable-response-behavior.js'
 );
+/* eslint-enable max-len */
 
 // Have the service worker take control as soon as possible.
 self.addEventListener('install', () => self.skipWaiting());

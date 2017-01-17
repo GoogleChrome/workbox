@@ -3,7 +3,9 @@
 
 const CACHE_NAME = 'runtime-caching';
 self.goog = {DEBUG: true};
+/* eslint-disable max-len */
 importScripts('../node_modules/sw-offline-google-analytics/build/offline-google-analytics-import.js');
+/* eslint-enable max-len */
 
 // First, enable the offline Google Analytics behavior.
 // This will get "first shot" at responding to Google Analytics requests, before

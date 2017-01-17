@@ -1,5 +1,7 @@
 /* global goog*/
+/* eslint-disable max-len */
 importScripts('../node_modules/sw-background-sync-queue/build/background-sync-queue.js');
+/* eslint-enable max-len */
 
 // initialize bdQ
 goog.backgroundSyncQueue.initialize();

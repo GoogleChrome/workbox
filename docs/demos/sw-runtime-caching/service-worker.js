@@ -1,11 +1,13 @@
 /* eslint-env worker, serviceworker */
 /* global goog */
 
+/* eslint-disable max-len */
 importScripts(
   '../node_modules/sw-routing/build/sw-routing.min.js',
   '../node_modules/sw-runtime-caching/build/sw-runtime-caching.min.js',
   '../node_modules/sw-broadcast-cache-update/build/sw-broadcast-cache-update.min.js'
 );
+/* eslint-enable max-len */
 
 // Have the service worker take control as soon as possible.
 self.addEventListener('install', () => self.skipWaiting());
