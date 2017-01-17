@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# v2
+
+CACHE:
+common.css
+../node_modules/sw-appcache-behavior/build/client-runtime.js
+
+NETWORK:
+*
+
+FALLBACK:
+can-fallback.html fallback.html

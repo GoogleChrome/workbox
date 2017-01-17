@@ -45,6 +45,7 @@ const lintPackage = (projectPath) => {
 gulp.task('lint:repo', () => {
   return gulp.src([
     `!./packages/**/*`,
+    `!./docs/demos/node_modules/**/*`,
     // Gulp -tasks
     `./**/*.js`,
     // Root level JS Files

@@ -1,5 +1,6 @@
-node_modules
-build
+/node_modules
+/packages/**/node_modules
+/packages/**/build
 temp
 npm-debug.log
 packages/**/LICENSE

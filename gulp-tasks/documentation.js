@@ -17,11 +17,8 @@ const gulp = require('gulp');
 const rename = require('gulp-rename');
 const handlebars = require('gulp-compile-handlebars');
 const path = require('path');
-const promisify = require('promisify-node');
 const {globPromise, processPromiseWrapper, taskHarness} =
   require('../build-utils');
-
-const tmpPromise = promisify('tmp');
 
 /**
  * Documents a given project.
@@ -62,6 +59,7 @@ gulp.task('documentation:repo', ['build'], () => {
     throw Error('Please do not use --project= with documentation:repo.');
   }
 
+
   return new Promise((resolve) => {
     // First, generate a repo README.md based on metadata from each project.
     return globPromise('packages/*/package.json')
@@ -73,22 +71,6 @@ gulp.task('documentation:repo', ['build'], () => {
           .pipe(gulp.dest('.'))
           .on('end', resolve);
       });
-  }).then(() => {
-    // The gh-pages module ends up pulling in https://www.npmjs.com/package/collections
-    // which in turn breaks the native Array.filter() implementation in some
-    // versions of Node, triggering a bug in selenium-webdriver (sigh).
-    // To work around this, only pull in gh-pages when it's needed, rather than
-    // globally at the top of this file.
-    const ghPagesPromise = promisify('gh-pages');
-
-    // Then publish all of the build + demo files to gh-pages.
-    return tmpPromise.dir().then((tmpDir) => {
-      return new Promise((resolve) => {
-        gulp.src('packages/*/{build,demo}/**')
-          .pipe(gulp.dest(tmpDir))
-          .on('end', resolve);
-      }).then(() => ghPagesPromise.publish(tmpDir));
-    });
   });
 });
 
