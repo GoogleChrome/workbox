@@ -3,7 +3,7 @@
 
 const CACHE_NAME = 'runtime-caching';
 self.goog = {DEBUG: true};
-importScripts('./build/offline-google-analytics-import.js');
+importScripts('../node_modules/sw-offline-google-analytics/build/offline-google-analytics-import.js');
 
 // First, enable the offline Google Analytics behavior.
 // This will get "first shot" at responding to Google Analytics requests, before

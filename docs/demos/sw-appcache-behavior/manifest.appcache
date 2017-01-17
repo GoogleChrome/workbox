@@ -3,7 +3,7 @@ CACHE MANIFEST
 
 CACHE:
 common.css
-./build/client-runtime.js
+../node_modules/sw-appcache-behavior/build/client-runtime.js
 
 NETWORK:
 *

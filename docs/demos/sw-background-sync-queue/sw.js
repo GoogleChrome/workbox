@@ -1,5 +1,5 @@
 /* global goog*/
-importScripts('./build/background-sync-queue.js');
+importScripts('../node_modules/sw-background-sync-queue/build/background-sync-queue.js');
 
 // initialize bdQ
 goog.backgroundSyncQueue.initialize();
