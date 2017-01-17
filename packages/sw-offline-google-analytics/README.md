@@ -17,7 +17,7 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### goog.offlineGoogleAnalytics.initialize
 
-[packages/sw-offline-google-analytics/src/index.js:82-132](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-offline-google-analytics/src/index.js#L82-L132 "Source code on GitHub")
+[packages/sw-offline-google-analytics/src/index.js:82-132](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-offline-google-analytics/src/index.js#L82-L132 "Source code on GitHub")
 
 In order to use the library, call`goog.offlineGoogleAnalytics.initialize()`.
 It will take care of setting up service worker `fetch` handlers to ensure

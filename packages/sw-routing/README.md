@@ -17,13 +17,13 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-routing
 
-[packages/sw-routing/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/index.js#L21-L21 "Source code on GitHub")
+[packages/sw-routing/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/index.js#L21-L21 "Source code on GitHub")
 
 sw-routing Module
 
 ### defaultMethod
 
-[packages/sw-routing/src/lib/constants.js:23-23](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/constants.js#L23-L23 "Source code on GitHub")
+[packages/sw-routing/src/lib/constants.js:23-23](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/constants.js#L23-L23 "Source code on GitHub")
 
 The default HTTP method, 'GET', used when there's no specific method
 configured for a route.
@@ -32,13 +32,13 @@ Type: [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 
 ### validMethods
 
-[packages/sw-routing/src/lib/constants.js:31-37](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/constants.js#L31-L37 "Source code on GitHub")
+[packages/sw-routing/src/lib/constants.js:31-37](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/constants.js#L31-L37 "Source code on GitHub")
 
 The list of valid HTTP methods associated with requests that could be routed.
 
 ### ExpressRoute
 
-[packages/sw-routing/src/lib/express-route.js:54-95](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/express-route.js#L54-L95 "Source code on GitHub")
+[packages/sw-routing/src/lib/express-route.js:54-95](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/express-route.js#L54-L95 "Source code on GitHub")
 
 **Extends Route**
 
@@ -77,7 +77,7 @@ router.registerRoute({route});
 
 ### RegExpRoute
 
-[packages/sw-routing/src/lib/regexp-route.js:47-76](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/regexp-route.js#L47-L76 "Source code on GitHub")
+[packages/sw-routing/src/lib/regexp-route.js:47-76](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/regexp-route.js#L47-L76 "Source code on GitHub")
 
 **Extends Route**
 
@@ -110,7 +110,7 @@ router.registerRoute({route});
 
 ### Route
 
-[packages/sw-routing/src/lib/route.js:64-92](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/route.js#L64-L92 "Source code on GitHub")
+[packages/sw-routing/src/lib/route.js:64-92](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/route.js#L64-L92 "Source code on GitHub")
 
 A `Route` allows you to tell a service worker that it should handle
 certain network requests using a specific response strategy.
@@ -159,7 +159,7 @@ router.registerRoute({route});
 
 ### Router
 
-[packages/sw-routing/src/lib/router.js:50-148](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/router.js#L50-L148 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:50-148](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/router.js#L50-L148 "Source code on GitHub")
 
 The Router takes one or more [Routes][Route](#route) and registers a [`fetch`
 event listener](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent)
@@ -194,7 +194,7 @@ router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
 
 ### constructor
 
-[packages/sw-routing/src/lib/express-route.js:65-94](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/express-route.js#L65-L94 "Source code on GitHub")
+[packages/sw-routing/src/lib/express-route.js:65-94](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/express-route.js#L65-L94 "Source code on GitHub")
 
 **Parameters**
 
@@ -213,7 +213,7 @@ router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
 
 ### constructor
 
-[packages/sw-routing/src/lib/regexp-route.js:57-75](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/regexp-route.js#L57-L75 "Source code on GitHub")
+[packages/sw-routing/src/lib/regexp-route.js:57-75](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/regexp-route.js#L57-L75 "Source code on GitHub")
 
 **Parameters**
 
@@ -231,7 +231,7 @@ router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
 
 ### constructor
 
-[packages/sw-routing/src/lib/route.js:79-91](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/route.js#L79-L91 "Source code on GitHub")
+[packages/sw-routing/src/lib/route.js:79-91](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/route.js#L79-L91 "Source code on GitHub")
 
 **Parameters**
 
@@ -254,7 +254,7 @@ router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
 
 ### setDefaultHandler
 
-[packages/sw-routing/src/lib/router.js:59-63](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/router.js#L59-L63 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:59-63](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/router.js#L59-L63 "Source code on GitHub")
 
 An optional default handler will have its handle method called when a
 request doesn't have a matching route.
@@ -270,7 +270,7 @@ Returns **void**
 
 ### setCatchHandler
 
-[packages/sw-routing/src/lib/router.js:73-77](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/router.js#L73-L77 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:73-77](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/router.js#L73-L77 "Source code on GitHub")
 
 If a Route throws an error while handling a request, this catch handler
 will be called to return an error case.
@@ -287,7 +287,7 @@ Returns **void**
 
 ### registerRoutes
 
-[packages/sw-routing/src/lib/router.js:87-134](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/router.js#L87-L134 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:87-134](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/router.js#L87-L134 "Source code on GitHub")
 
 Register routes will take an array of Routes to register with the
 router.
@@ -303,7 +303,7 @@ Returns **void**
 
 ### registerRoute
 
-[packages/sw-routing/src/lib/router.js:143-147](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/router.js#L143-L147 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:143-147](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-routing/src/lib/router.js#L143-L147 "Source code on GitHub")
 
 Registers a single route with the router.
 

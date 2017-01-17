@@ -17,13 +17,13 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-background-sync-queue
 
-[packages/sw-background-sync-queue/src/index.js:20-20](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/index.js#L20-L20 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/index.js:20-20](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/index.js#L20-L20 "Source code on GitHub")
 
 sw-background-sync-queue Module
 
 ### initialize
 
-[packages/sw-background-sync-queue/src/index.js:32-42](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/index.js#L32-L42 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/index.js:32-42](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/index.js#L32-L42 "Source code on GitHub")
 
 Initialize the library by initializing broadcast manager,
 indexedDB, and request manager
@@ -38,7 +38,7 @@ indexedDB, and request manager
 
 ### getQueueableRequest
 
-[packages/sw-background-sync-queue/src/lib/queue-utils.js:15-34](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/lib/queue-utils.js#L15-L34 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/queue-utils.js:15-34](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/lib/queue-utils.js#L15-L34 "Source code on GitHub")
 
 takes a request and gives back JSON object that is storable in IDB
 
@@ -56,14 +56,14 @@ Returns **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refer
 
 ### cleanupQueue
 
-[packages/sw-background-sync-queue/src/lib/queue-utils.js:55-82](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/lib/queue-utils.js#L55-L82 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/queue-utils.js:55-82](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/lib/queue-utils.js#L55-L82 "Source code on GitHub")
 
 clean up the queue, deleting all the tasks who are either damaged or
 whose maxAge has expired
 
 ### RequestManager
 
-[packages/sw-background-sync-queue/src/lib/request-manager.js:13-88](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/lib/request-manager.js#L13-L88 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/request-manager.js:13-88](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/lib/request-manager.js#L13-L88 "Source code on GitHub")
 
 Class to handle all the request related
 transformations, replaying, event handling
@@ -71,7 +71,7 @@ broadcasting back to controlled pages etc.
 
 #### constructor
 
-[packages/sw-background-sync-queue/src/lib/request-manager.js:22-28](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/lib/request-manager.js#L22-L28 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/request-manager.js:22-28](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/lib/request-manager.js#L22-L28 "Source code on GitHub")
 
 Initializes the request manager
 stores the callbacks object, maintains config and
@@ -86,14 +86,14 @@ attaches event handler
 
 #### attachSyncHandler
 
-[packages/sw-background-sync-queue/src/lib/request-manager.js:36-42](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/lib/request-manager.js#L36-L42 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/request-manager.js:36-42](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/lib/request-manager.js#L36-L42 "Source code on GitHub")
 
 attaches sync handler to replay requests when
 sync event is fired
 
 #### replayRequests
 
-[packages/sw-background-sync-queue/src/lib/request-manager.js:51-87](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/lib/request-manager.js#L51-L87 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/request-manager.js:51-87](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/lib/request-manager.js#L51-L87 "Source code on GitHub")
 
 function to start playing requests
 in sequence
@@ -102,14 +102,14 @@ Returns **void**
 
 ### RequestQueue
 
-[packages/sw-background-sync-queue/src/lib/request-queue.js:19-130](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/lib/request-queue.js#L19-L130 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/request-queue.js:19-130](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/lib/request-queue.js#L19-L130 "Source code on GitHub")
 
 Core queue class that handles all the enqueue and dequeue
 as well as cleanup code for the background sync queue
 
 #### constructor
 
-[packages/sw-background-sync-queue/src/lib/request-queue.js:25-36](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/lib/request-queue.js#L25-L36 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/request-queue.js:25-36](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/lib/request-queue.js#L25-L36 "Source code on GitHub")
 
 Creates an instance of Queue.
 
@@ -123,7 +123,7 @@ Creates an instance of Queue.
 
 #### push
 
-[packages/sw-background-sync-queue/src/lib/request-queue.js:68-101](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/lib/request-queue.js#L68-L101 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/request-queue.js:68-101](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/lib/request-queue.js#L68-L101 "Source code on GitHub")
 
 push any request to background sync queue which would be played later
 preferably when network comes back
@@ -137,7 +137,7 @@ preferably when network comes back
 
 #### getRequestFromQueue
 
-[packages/sw-background-sync-queue/src/lib/request-queue.js:111-117](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-background-sync-queue/src/lib/request-queue.js#L111-L117 "Source code on GitHub")
+[packages/sw-background-sync-queue/src/lib/request-queue.js:111-117](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-background-sync-queue/src/lib/request-queue.js#L111-L117 "Source code on GitHub")
 
 get the Request from the queue at a particular index
 

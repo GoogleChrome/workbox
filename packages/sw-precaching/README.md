@@ -17,7 +17,7 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-precaching
 
-[packages/sw-precaching/src/index.js:47-47](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/index.js#L47-L47 "Source code on GitHub")
+[packages/sw-precaching/src/index.js:47-47](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/index.js#L47-L47 "Source code on GitHub")
 
 The precaching module provides helpers that make it easy to cache files
 during the install step of your service worker.
@@ -52,7 +52,7 @@ precacheManager.cacheUnrevisioned({
 
 ### PrecacheManager
 
-[packages/sw-precaching/src/lib/precache-manager.js:30-156](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/precache-manager.js#L30-L156 "Source code on GitHub")
+[packages/sw-precaching/src/lib/precache-manager.js:30-156](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/precache-manager.js#L30-L156 "Source code on GitHub")
 
 The PrecacheManager is the top level API you are likely to use with
 the sw-precaching module.
@@ -62,7 +62,7 @@ of assets.
 
 ### constructor
 
-[packages/sw-precaching/src/lib/controllers/base-cache-manager.js:14-17](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/base-cache-manager.js#L14-L17 "Source code on GitHub")
+[packages/sw-precaching/src/lib/controllers/base-cache-manager.js:14-17](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/controllers/base-cache-manager.js#L14-L17 "Source code on GitHub")
 
 Constructor for BaseCacheManager
 
@@ -72,7 +72,7 @@ Constructor for BaseCacheManager
 
 ### cache
 
-[packages/sw-precaching/src/lib/controllers/base-cache-manager.js:26-32](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/base-cache-manager.js#L26-L32 "Source code on GitHub")
+[packages/sw-precaching/src/lib/controllers/base-cache-manager.js:26-32](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/controllers/base-cache-manager.js#L26-L32 "Source code on GitHub")
 
 This method will add the entries to the install list.
 This will manage duplicate entries and perform the caching during
@@ -85,13 +85,13 @@ the install step.
 
 ### constructor
 
-[packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js:22-26](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js#L22-L26 "Source code on GitHub")
+[packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js:22-26](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js#L22-L26 "Source code on GitHub")
 
 Constructor for RevisionedCacheManager
 
 ### cache
 
-[packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js:46-49](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js#L46-L49 "Source code on GitHub")
+[packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js:46-49](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js#L46-L49 "Source code on GitHub")
 
 This method will add the entries to the install list.
 This will manage duplicate entries and perform the caching during
@@ -116,13 +116,13 @@ revisionedManager.cache([
 
 ### constructor
 
-[packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js:20-22](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js#L20-L22 "Source code on GitHub")
+[packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js:20-22](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js#L20-L22 "Source code on GitHub")
 
 Constructor for UnreivisionedCacheManager
 
 ### cache
 
-[packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js:41-44](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js#L41-L44 "Source code on GitHub")
+[packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js:41-44](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js#L41-L44 "Source code on GitHub")
 
 This method will add the entries to the install list.
 This will manage duplicate entries and perform the caching during
@@ -146,13 +146,13 @@ revisionedManager.cache([
 
 ### ErrorFactory
 
-[lib/error-factory.js:21-53](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/lib/error-factory.js#L21-L53 "Source code on GitHub")
+[lib/error-factory.js:21-53](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/lib/error-factory.js#L21-L53 "Source code on GitHub")
 
 A simple class to make errors and to help with testing.
 
 #### constructor
 
-[lib/error-factory.js:26-28](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/lib/error-factory.js#L26-L28 "Source code on GitHub")
+[lib/error-factory.js:26-28](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/lib/error-factory.js#L26-L28 "Source code on GitHub")
 
 **Parameters**
 
@@ -161,7 +161,7 @@ A simple class to make errors and to help with testing.
 
 #### createError
 
-[lib/error-factory.js:35-52](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/lib/error-factory.js#L35-L52 "Source code on GitHub")
+[lib/error-factory.js:35-52](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/lib/error-factory.js#L35-L52 "Source code on GitHub")
 
 **Parameters**
 
@@ -173,7 +173,7 @@ Returns **[Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 
 ### constructor
 
-[packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js:21-26](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js#L21-L26 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js:21-26](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js#L21-L26 "Source code on GitHub")
 
 This constructor expects an object and a number or required fields.
 You shouldn't need to use this constructor directly.
@@ -193,7 +193,7 @@ You shouldn't need to use this constructor directly.
 
 ### getNetworkRequest
 
-[packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js:40-66](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js#L40-L66 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js:40-66](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js#L40-L66 "Source code on GitHub")
 
 This method is required since any revisioned request needs to cache bust.
 To ensure this is consistent, CacheManagers will make a network request
@@ -208,7 +208,7 @@ follow.
 
 ### constructor
 
-[packages/sw-precaching/src/lib/models/precache-entries/object-precache-entry.js:25-62](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/precache-entries/object-precache-entry.js#L25-L62 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/precache-entries/object-precache-entry.js:25-62](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/models/precache-entries/object-precache-entry.js#L25-L62 "Source code on GitHub")
 
 This class gives most control over configuring a cache entry.
 
@@ -230,7 +230,7 @@ This class gives most control over configuring a cache entry.
 
 ### constructor
 
-[packages/sw-precaching/src/lib/models/precache-entries/request-entry.js:17-29](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/precache-entries/request-entry.js#L17-L29 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/precache-entries/request-entry.js:17-29](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/models/precache-entries/request-entry.js#L17-L29 "Source code on GitHub")
 
 This is useful for caching unrevisioned requests that require
 special headers etc.
@@ -241,7 +241,7 @@ special headers etc.
 
 ### constructor
 
-[packages/sw-precaching/src/lib/models/precache-entries/string-precache-entry.js:18-32](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/precache-entries/string-precache-entry.js#L18-L32 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/precache-entries/string-precache-entry.js:18-32](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/models/precache-entries/string-precache-entry.js#L18-L32 "Source code on GitHub")
 
 Cosntructor for StringCacheEntry.
 
@@ -251,13 +251,13 @@ Cosntructor for StringCacheEntry.
 
 ### constructor
 
-[packages/sw-precaching/src/lib/models/revision-details-model.js:16-18](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/revision-details-model.js#L16-L18 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/revision-details-model.js:16-18](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/models/revision-details-model.js#L16-L18 "Source code on GitHub")
 
 Constructor for RevisionDetails Model.
 
 ### get
 
-[packages/sw-precaching/src/lib/models/revision-details-model.js:26-28](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/revision-details-model.js#L26-L28 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/revision-details-model.js:26-28](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/models/revision-details-model.js#L26-L28 "Source code on GitHub")
 
 This method gets the revision details for a given entryID.
 
@@ -270,7 +270,7 @@ null if there is no revision information.
 
 ### put
 
-[packages/sw-precaching/src/lib/models/revision-details-model.js:36-38](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/revision-details-model.js#L36-L38 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/revision-details-model.js:36-38](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/models/revision-details-model.js#L36-L38 "Source code on GitHub")
 
 This method saves the revision details to indexedDB.
 
@@ -283,7 +283,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### constructor
 
-[packages/sw-precaching/src/lib/precache-manager.js:36-41](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/precache-manager.js#L36-L41 "Source code on GitHub")
+[packages/sw-precaching/src/lib/precache-manager.js:36-41](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/precache-manager.js#L36-L41 "Source code on GitHub")
 
 Creating a PrecacheManager will add an install and activate event listener
 to your service worker. This allows the manager to cache assets and
@@ -291,7 +291,7 @@ tidy up the no longer required assets.
 
 ### cacheRevisioned
 
-[packages/sw-precaching/src/lib/precache-manager.js:113-116](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/precache-manager.js#L113-L116 "Source code on GitHub")
+[packages/sw-precaching/src/lib/precache-manager.js:113-116](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/precache-manager.js#L113-L116 "Source code on GitHub")
 
 To cache revisioned assets (i.e. urls / assets that you have a revision
 for) can be efficiently cached and updated with this method.
@@ -324,7 +324,7 @@ precacheManager.cacheRevisioned({
 
 ### cacheUnrevisioned
 
-[packages/sw-precaching/src/lib/precache-manager.js:145-148](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/precache-manager.js#L145-L148 "Source code on GitHub")
+[packages/sw-precaching/src/lib/precache-manager.js:145-148](https://github.com/GoogleChrome/sw-helpers/blob/db41146aa1f5528b3e958178c53811602079a7ba/packages/sw-precaching/src/lib/precache-manager.js#L145-L148 "Source code on GitHub")
 
 To cache URLs or assets where you don't know the revisioning, should
 be cached with this method. This method will always cache these files
