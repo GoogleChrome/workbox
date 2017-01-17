@@ -1,0 +1,17 @@
+{
+  "name": "sw-helpers-demos",
+  "version": "0.0.0",
+  "description": "A set of demos of sw-helper libraries.",
+  "private": true,
+  "license": "Apache-2.0",
+  "dependencies": {
+    "sw-appcache-behavior": "0.0.7",
+    "sw-background-sync-queue": "0.0.7",
+    "sw-broadcast-cache-update": "0.0.7",
+    "sw-cache-expiration": "0.0.7",
+    "sw-cacheable-response-behavior": "0.0.7",
+    "sw-offline-google-analytics": "0.0.7",
+    "sw-routing": "0.0.7",
+    "sw-runtime-caching": "0.0.7"
+  }
+}

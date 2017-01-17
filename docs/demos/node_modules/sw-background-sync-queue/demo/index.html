@@ -1,0 +1,46 @@
+<html>
+	<head></head>
+	<body>
+		<div>Hello dear</div>
+		<button onclick="putReqInQ('1')">send req</button>
+		<button onclick="putReqInQ('2')">send req</button>
+		<button onclick="putReqInQ('3')">send req</button>
+		<button onclick="putReqInQ('4')">send req</button>
+		<button onclick="sendPost('5')">send req</button>
+		<script>
+			var _reg;
+			function putReqInQ(t){
+				fetch('http://message-list.appspot.com/messages?pageToken='+t).then(r=>r.json()).then(data=>{
+					console.log(data);
+				}).catch(err=>{
+					console.log("error:",err);
+				})
+			}
+
+			function sendPost(){
+				fetch('https://jsonplaceholder.typicode.com/posts',{
+					method: 'POST',
+					headers:{
+						'custom-header':'myval'
+					},
+					body:JSON.stringify({
+						title: 'foo',
+						body: 'bar',
+						userId: 1
+					})
+				}).then(data => data.json()).then(res=>{
+					console.log(res);
+				})
+			}
+
+			// Register our service worker.
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').then(reg=>{
+					_reg=reg;
+					console.log("Service worker registered");
+				});
+      }
+
+		</script>
+	</body>
+</html>

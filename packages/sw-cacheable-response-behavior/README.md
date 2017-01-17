@@ -1,6 +1,6 @@
 # sw-cacheable-response-behavior
 
-This library takes a Response object and  determines whether it's cacheable, based on a specific configuration.
+This library takes a Response object and determines whether it's cacheable, based on a specific configuration.
 
 ## Installation
 
@@ -8,7 +8,7 @@ This library takes a Response object and  determines whether it's cacheable, bas
 
 ## Demo
 
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/future-of-sw-tooling/packages/sw-cacheable-response-behavior/demo), or
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cacheable-response-behavior/demo), or
 [try it out](https://googlechrome.github.io/sw-helpers/sw-cacheable-response-behavior/demo/) directly.
 
 ## API
@@ -17,13 +17,13 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-cacheable-response-behavior
 
-[packages/sw-cacheable-response-behavior/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-cacheable-response-behavior/src/index.js#L21-L21 "Source code on GitHub")
+[packages/sw-cacheable-response-behavior/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cacheable-response-behavior/src/index.js#L21-L21 "Source code on GitHub")
 
 sw-cacheable-response-behavior Module
 
 ### Behavior
 
-[packages/sw-cacheable-response-behavior/src/lib/behavior.js:48-119](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-cacheable-response-behavior/src/lib/behavior.js#L48-L119 "Source code on GitHub")
+[packages/sw-cacheable-response-behavior/src/lib/behavior.js:48-119](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cacheable-response-behavior/src/lib/behavior.js#L48-L119 "Source code on GitHub")
 
 **Examples**
 
@@ -58,7 +58,7 @@ const route = new goog.routing.RegExpRoute({
 
 ### constructor
 
-[packages/sw-cacheable-response-behavior/src/lib/behavior.js:62-73](https://github.com/GoogleChrome/sw-helpers/blob/5504f5454a124329ec6075addf848e3aeb815437/packages/sw-cacheable-response-behavior/src/lib/behavior.js#L62-L73 "Source code on GitHub")
+[packages/sw-cacheable-response-behavior/src/lib/behavior.js:62-73](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cacheable-response-behavior/src/lib/behavior.js#L62-L73 "Source code on GitHub")
 
 Creates a new `Behavior` instance, which stores configuration and logic
 to determine whether a `Response` object is cacheable or not.
@@ -69,10 +69,11 @@ the `Response` needs to meet all of the criteria to be cacheable.
 **Parameters**
 
 -   `input` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** The input object to this function.
-    -   `input.statuses` **\[[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)>]** The status codes that are
+    -   `input.statuses` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[Number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)>?** The status codes that are
                checked when determining whether a `Response` is cacheable.
-    -   `input.headers` **\[[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String), [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>]** The header values that are
+    -   `input.headers` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)&lt;[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String), [String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>?** The header values that are
                checked when determining whether a `Response` is cacheable.
--   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)**  (optional, default `{}`)
+-   `$0` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)**  (optional, default `{
+    `)
     -   `$0.statuses`  
     -   `$0.headers`  

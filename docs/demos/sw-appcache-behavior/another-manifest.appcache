@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# v1
+
+CACHE:
+common.css
+./build/register-service-worker.js
+
+NETWORK:
+no-cache/
+
+FALLBACK:
+can-fallback.html fallback.html

@@ -58,7 +58,7 @@ This library is still a work in progress and is not functional.
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cacheable-response-behavior%22)][travis-url]
 
-This library takes a Response object and  determines whether it&#x27;s cacheable, based on a specific configuration.
+This library takes a Response object and determines whether it&#x27;s cacheable, based on a specific configuration.
 
 **Install**: `npm install --save-dev sw-cacheable-response-behavior`
 
@@ -66,17 +66,17 @@ This library takes a Response object and  determines whether it&#x27;s cacheable
                 [Demo](packages/sw-cacheable-response-behavior#demo) •
                 [API](packages/sw-cacheable-response-behavior#api)
 
-### sw-lib
+### sw-cli
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-lib%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cli%22)][travis-url]
 
 A CLI tool to generate a service worker and file manifest making use of the sw-lib module.
 
-**Install**: `npm install --save-dev sw-lib`
+**Install**: `npm install --save-dev sw-cli`
 
-**Learn More**: [About](packages/sw-lib) •
-                [Demo](packages/sw-lib#demo) •
-                [API](packages/sw-lib#api)
+**Learn More**: [About](packages/sw-cli) •
+                [Demo](packages/sw-cli#demo) •
+                [API](packages/sw-cli#api)
 
 ### sw-lib
 
@@ -165,6 +165,6 @@ limitations under the License.
 [travis-url]: https://travis-ci.org/GoogleChrome/sw-helpers
 [travis-image]: https://travis-ci.org/GoogleChrome/sw-helpers.svg?branch=master
 [dependency-url]: https://david-dm.org/GoogleChrome/sw-helpers/
-[dependency-image]: https://david-dm.org/GoogleChrome/sw-helpers/status.svg
+[dependency-image]: https://david-dm.org/GoogleChrome/sw-helpers/dev-status.svg
 [dev-dependency-url]: https://david-dm.org/GoogleChrome/sw-helpers?type=dev
-[dev-dependency-image]: https://david-dm.org/GoogleChrome/sw-helpers/dev-status.svg
+[dev-dependency-image]: https://david-dm.org/GoogleChrome/sw-helpers/status.svg
