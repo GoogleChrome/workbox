@@ -8,8 +8,8 @@ A service worker library to make managing fetch requests and caching as easy as 
 
 ## Demo
 
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-lib/demo), or
-[try it out](https://googlechrome.github.io/sw-helpers/sw-lib/demo/) directly.
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/docs/demos/sw-lib/), or
+[try it out](https://googlechrome.github.io/sw-helpers/demos/sw-lib/) directly.
 
 ## API
 
@@ -17,7 +17,7 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-lib
 
-[packages/sw-lib/src/index.js:77-77](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/index.js#L77-L77 "Source code on GitHub")
+[packages/sw-lib/src/index.js:77-77](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/index.js#L77-L77 "Source code on GitHub")
 
 The sw-lib module is a high-level library that makes it easier to
 configure routes with caching strategies as well as manage precaching
@@ -68,13 +68,13 @@ goog.swlib.router.registerRoute('/example/', goog.swlib.networkFirst);
 
 ### sw-routing
 
-[packages/sw-routing/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/index.js#L21-L21 "Source code on GitHub")
+[packages/sw-routing/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/index.js#L21-L21 "Source code on GitHub")
 
 sw-routing Module
 
 ### ExpressRoute
 
-[packages/sw-routing/src/lib/express-route.js:54-95](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/express-route.js#L54-L95 "Source code on GitHub")
+[packages/sw-routing/src/lib/express-route.js:54-95](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/express-route.js#L54-L95 "Source code on GitHub")
 
 **Extends Route**
 
@@ -113,7 +113,7 @@ router.registerRoute({route});
 
 ### RegExpRoute
 
-[packages/sw-routing/src/lib/regexp-route.js:47-76](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/regexp-route.js#L47-L76 "Source code on GitHub")
+[packages/sw-routing/src/lib/regexp-route.js:47-76](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/regexp-route.js#L47-L76 "Source code on GitHub")
 
 **Extends Route**
 
@@ -146,7 +146,7 @@ router.registerRoute({route});
 
 ### Route
 
-[packages/sw-routing/src/lib/route.js:64-92](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/route.js#L64-L92 "Source code on GitHub")
+[packages/sw-routing/src/lib/route.js:64-92](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/route.js#L64-L92 "Source code on GitHub")
 
 A `Route` allows you to tell a service worker that it should handle
 certain network requests using a specific response strategy.
@@ -195,7 +195,7 @@ router.registerRoute({route});
 
 ### defaultMethod
 
-[packages/sw-routing/src/lib/constants.js:23-23](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/constants.js#L23-L23 "Source code on GitHub")
+[packages/sw-routing/src/lib/constants.js:23-23](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/constants.js#L23-L23 "Source code on GitHub")
 
 The default HTTP method, 'GET', used when there's no specific method
 configured for a route.
@@ -204,13 +204,13 @@ Type: [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 
 ### validMethods
 
-[packages/sw-routing/src/lib/constants.js:31-37](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/constants.js#L31-L37 "Source code on GitHub")
+[packages/sw-routing/src/lib/constants.js:31-37](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/constants.js#L31-L37 "Source code on GitHub")
 
 The list of valid HTTP methods associated with requests that could be routed.
 
 ### Router
 
-[packages/sw-routing/src/lib/router.js:50-148](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/router.js#L50-L148 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:50-148](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/router.js#L50-L148 "Source code on GitHub")
 
 The Router takes one or more [Routes][Route](#route) and registers a [`fetch`
 event listener](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent)
@@ -245,7 +245,7 @@ router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
 
 ### constructor
 
-[packages/sw-routing/src/lib/express-route.js:65-94](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/express-route.js#L65-L94 "Source code on GitHub")
+[packages/sw-routing/src/lib/express-route.js:65-94](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/express-route.js#L65-L94 "Source code on GitHub")
 
 **Parameters**
 
@@ -264,7 +264,7 @@ router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
 
 ### constructor
 
-[packages/sw-routing/src/lib/regexp-route.js:57-75](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/regexp-route.js#L57-L75 "Source code on GitHub")
+[packages/sw-routing/src/lib/regexp-route.js:57-75](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/regexp-route.js#L57-L75 "Source code on GitHub")
 
 **Parameters**
 
@@ -282,7 +282,7 @@ router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
 
 ### constructor
 
-[packages/sw-routing/src/lib/route.js:79-91](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/route.js#L79-L91 "Source code on GitHub")
+[packages/sw-routing/src/lib/route.js:79-91](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/route.js#L79-L91 "Source code on GitHub")
 
 **Parameters**
 
@@ -305,7 +305,7 @@ router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
 
 ### setDefaultHandler
 
-[packages/sw-routing/src/lib/router.js:59-63](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/router.js#L59-L63 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:59-63](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/router.js#L59-L63 "Source code on GitHub")
 
 An optional default handler will have its handle method called when a
 request doesn't have a matching route.
@@ -321,7 +321,7 @@ Returns **void**
 
 ### setCatchHandler
 
-[packages/sw-routing/src/lib/router.js:73-77](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/router.js#L73-L77 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:73-77](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/router.js#L73-L77 "Source code on GitHub")
 
 If a Route throws an error while handling a request, this catch handler
 will be called to return an error case.
@@ -338,7 +338,7 @@ Returns **void**
 
 ### registerRoutes
 
-[packages/sw-routing/src/lib/router.js:87-134](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/router.js#L87-L134 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:87-134](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/router.js#L87-L134 "Source code on GitHub")
 
 Register routes will take an array of Routes to register with the
 router.
@@ -354,7 +354,7 @@ Returns **void**
 
 ### registerRoute
 
-[packages/sw-routing/src/lib/router.js:143-147](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-routing/src/lib/router.js#L143-L147 "Source code on GitHub")
+[packages/sw-routing/src/lib/router.js:143-147](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-routing/src/lib/router.js#L143-L147 "Source code on GitHub")
 
 Registers a single route with the router.
 
@@ -369,13 +369,13 @@ Returns **void**
 
 ### ErrorFactory
 
-[lib/error-factory.js:21-53](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/lib/error-factory.js#L21-L53 "Source code on GitHub")
+[lib/error-factory.js:21-53](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/lib/error-factory.js#L21-L53 "Source code on GitHub")
 
 A simple class to make errors and to help with testing.
 
 #### constructor
 
-[lib/error-factory.js:26-28](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/lib/error-factory.js#L26-L28 "Source code on GitHub")
+[lib/error-factory.js:26-28](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/lib/error-factory.js#L26-L28 "Source code on GitHub")
 
 **Parameters**
 
@@ -384,7 +384,7 @@ A simple class to make errors and to help with testing.
 
 #### createError
 
-[lib/error-factory.js:35-52](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/lib/error-factory.js#L35-L52 "Source code on GitHub")
+[lib/error-factory.js:35-52](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/lib/error-factory.js#L35-L52 "Source code on GitHub")
 
 **Parameters**
 
@@ -396,7 +396,7 @@ Returns **[Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 
 ### RouterWrapper
 
-[packages/sw-lib/src/lib/router-wrapper.js:75-120](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/router-wrapper.js#L75-L120 "Source code on GitHub")
+[packages/sw-lib/src/lib/router-wrapper.js:75-120](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/router-wrapper.js#L75-L120 "Source code on GitHub")
 
 A simple class that pulls together a few different pieces from the
 Router Module to surface them in a friendly API.
@@ -458,20 +458,20 @@ self.goog.swlib.router.registerRoute(routeInstance);
 
 ### SWLib
 
-[packages/sw-lib/src/lib/sw-lib.js:37-202](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/sw-lib.js#L37-L202 "Source code on GitHub")
+[packages/sw-lib/src/lib/sw-lib.js:37-202](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/sw-lib.js#L37-L202 "Source code on GitHub")
 
 This is a high level library to help with using service worker
 precaching and run time caching.
 
 ### constructor
 
-[packages/sw-lib/src/lib/router-wrapper.js:79-81](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/router-wrapper.js#L79-L81 "Source code on GitHub")
+[packages/sw-lib/src/lib/router-wrapper.js:79-81](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/router-wrapper.js#L79-L81 "Source code on GitHub")
 
 Constructs a new RouterWrapper.
 
 ### registerRoute
 
-[packages/sw-lib/src/lib/router-wrapper.js:95-119](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/router-wrapper.js#L95-L119 "Source code on GitHub")
+[packages/sw-lib/src/lib/router-wrapper.js:95-119](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/router-wrapper.js#L95-L119 "Source code on GitHub")
 
 **Parameters**
 
@@ -488,7 +488,7 @@ Constructs a new RouterWrapper.
 
 ### constructor
 
-[packages/sw-lib/src/lib/sw-lib.js:43-46](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/sw-lib.js#L43-L46 "Source code on GitHub")
+[packages/sw-lib/src/lib/sw-lib.js:43-46](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/sw-lib.js#L43-L46 "Source code on GitHub")
 
 Initialises an instance of SWLib. An instance of this class is
 accessible when the module is imported into a service worker as
@@ -496,7 +496,7 @@ accessible when the module is imported into a service worker as
 
 ### cacheRevisionedAssets
 
-[packages/sw-lib/src/lib/sw-lib.js:65-74](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/sw-lib.js#L65-L74 "Source code on GitHub")
+[packages/sw-lib/src/lib/sw-lib.js:65-74](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/sw-lib.js#L65-L74 "Source code on GitHub")
 
 Revisioned assets can be cached intelligently
 during the install (i.e. old files are cleared from the cache, new files
@@ -521,7 +521,7 @@ self.goog.swlib.cacheRevisionedAssets([
 
 ### warmRuntimeCache
 
-[packages/sw-lib/src/lib/sw-lib.js:90-99](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/sw-lib.js#L90-L99 "Source code on GitHub")
+[packages/sw-lib/src/lib/sw-lib.js:90-99](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/sw-lib.js#L90-L99 "Source code on GitHub")
 
 Any assets you wish to cache ahead of time which can't be revisioned
 should be cached with this method. All assets are cached on install
@@ -543,7 +543,7 @@ self.goog.swlib.warmRuntimeCache([
 
 ### router
 
-[packages/sw-lib/src/lib/sw-lib.js:105-107](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/sw-lib.js#L105-L107 "Source code on GitHub")
+[packages/sw-lib/src/lib/sw-lib.js:105-107](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/sw-lib.js#L105-L107 "Source code on GitHub")
 
 A getter for the Router Wrapper.
 
@@ -551,7 +551,7 @@ Returns **[RouterWrapper](#routerwrapper)** Returns the Router Wrapper
 
 ### cacheFirst
 
-[packages/sw-lib/src/lib/sw-lib.js:115-117](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/sw-lib.js#L115-L117 "Source code on GitHub")
+[packages/sw-lib/src/lib/sw-lib.js:115-117](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/sw-lib.js#L115-L117 "Source code on GitHub")
 
 A cache first run-time caching strategy.
 
@@ -564,7 +564,7 @@ Returns **[CacheFirst](#cachefirst)** The caching handler instance.
 
 ### cacheOnly
 
-[packages/sw-lib/src/lib/sw-lib.js:125-127](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/sw-lib.js#L125-L127 "Source code on GitHub")
+[packages/sw-lib/src/lib/sw-lib.js:125-127](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/sw-lib.js#L125-L127 "Source code on GitHub")
 
 A cache only run-time caching strategy.
 
@@ -577,7 +577,7 @@ Returns **[CacheFirst](#cachefirst)** The caching handler instance.
 
 ### networkFirst
 
-[packages/sw-lib/src/lib/sw-lib.js:135-137](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/sw-lib.js#L135-L137 "Source code on GitHub")
+[packages/sw-lib/src/lib/sw-lib.js:135-137](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/sw-lib.js#L135-L137 "Source code on GitHub")
 
 A network first run-time caching strategy.
 
@@ -590,7 +590,7 @@ Returns **[CacheFirst](#cachefirst)** The caching handler instance.
 
 ### networkOnly
 
-[packages/sw-lib/src/lib/sw-lib.js:145-147](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/sw-lib.js#L145-L147 "Source code on GitHub")
+[packages/sw-lib/src/lib/sw-lib.js:145-147](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/sw-lib.js#L145-L147 "Source code on GitHub")
 
 A network only run-time caching strategy.
 
@@ -603,7 +603,7 @@ Returns **[CacheFirst](#cachefirst)** The caching handler instance.
 
 ### staleWhileRevalidate
 
-[packages/sw-lib/src/lib/sw-lib.js:155-157](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-lib/src/lib/sw-lib.js#L155-L157 "Source code on GitHub")
+[packages/sw-lib/src/lib/sw-lib.js:155-157](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-lib/src/lib/sw-lib.js#L155-L157 "Source code on GitHub")
 
 A stale while revalidate run-time caching strategy.
 
@@ -616,7 +616,7 @@ Returns **[CacheFirst](#cachefirst)** The caching handler instance.
 
 ### sw-precaching
 
-[packages/sw-precaching/src/index.js:47-47](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/index.js#L47-L47 "Source code on GitHub")
+[packages/sw-precaching/src/index.js:47-47](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/index.js#L47-L47 "Source code on GitHub")
 
 The precaching module provides helpers that make it easy to cache files
 during the install step of your service worker.
@@ -651,7 +651,7 @@ precacheManager.cacheUnrevisioned({
 
 ### PrecacheManager
 
-[packages/sw-precaching/src/lib/precache-manager.js:30-156](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/precache-manager.js#L30-L156 "Source code on GitHub")
+[packages/sw-precaching/src/lib/precache-manager.js:30-156](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/precache-manager.js#L30-L156 "Source code on GitHub")
 
 The PrecacheManager is the top level API you are likely to use with
 the sw-precaching module.
@@ -661,7 +661,7 @@ of assets.
 
 ### constructor
 
-[packages/sw-precaching/src/lib/precache-manager.js:36-41](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/precache-manager.js#L36-L41 "Source code on GitHub")
+[packages/sw-precaching/src/lib/precache-manager.js:36-41](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/precache-manager.js#L36-L41 "Source code on GitHub")
 
 Creating a PrecacheManager will add an install and activate event listener
 to your service worker. This allows the manager to cache assets and
@@ -669,7 +669,7 @@ tidy up the no longer required assets.
 
 ### cacheRevisioned
 
-[packages/sw-precaching/src/lib/precache-manager.js:113-116](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/precache-manager.js#L113-L116 "Source code on GitHub")
+[packages/sw-precaching/src/lib/precache-manager.js:113-116](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/precache-manager.js#L113-L116 "Source code on GitHub")
 
 To cache revisioned assets (i.e. urls / assets that you have a revision
 for) can be efficiently cached and updated with this method.
@@ -702,7 +702,7 @@ precacheManager.cacheRevisioned({
 
 ### cacheUnrevisioned
 
-[packages/sw-precaching/src/lib/precache-manager.js:145-148](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/precache-manager.js#L145-L148 "Source code on GitHub")
+[packages/sw-precaching/src/lib/precache-manager.js:145-148](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/precache-manager.js#L145-L148 "Source code on GitHub")
 
 To cache URLs or assets where you don't know the revisioning, should
 be cached with this method. This method will always cache these files
@@ -740,13 +740,13 @@ precacheManager.cacheUnrevisioned({
 
 ### constructor
 
-[packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js:22-26](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js#L22-L26 "Source code on GitHub")
+[packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js:22-26](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js#L22-L26 "Source code on GitHub")
 
 Constructor for RevisionedCacheManager
 
 ### cache
 
-[packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js:46-49](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js#L46-L49 "Source code on GitHub")
+[packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js:46-49](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/revisioned-cache-manager.js#L46-L49 "Source code on GitHub")
 
 This method will add the entries to the install list.
 This will manage duplicate entries and perform the caching during
@@ -771,13 +771,36 @@ revisionedManager.cache([
 
 ### constructor
 
-[packages/sw-precaching/src/lib/models/revision-details-model.js:16-18](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/models/revision-details-model.js#L16-L18 "Source code on GitHub")
+[packages/sw-precaching/src/lib/controllers/base-cache-manager.js:14-17](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/base-cache-manager.js#L14-L17 "Source code on GitHub")
+
+Constructor for BaseCacheManager
+
+**Parameters**
+
+-   `cacheName` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** This is the cache name to store requested assets.
+
+### cache
+
+[packages/sw-precaching/src/lib/controllers/base-cache-manager.js:26-32](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/base-cache-manager.js#L26-L32 "Source code on GitHub")
+
+This method will add the entries to the install list.
+This will manage duplicate entries and perform the caching during
+the install step.
+
+**Parameters**
+
+-   `rawEntries` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object))>** A raw entry that can be
+    parsed into a BaseCacheEntry by the inheriting CacheManager.
+
+### constructor
+
+[packages/sw-precaching/src/lib/models/revision-details-model.js:16-18](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/revision-details-model.js#L16-L18 "Source code on GitHub")
 
 Constructor for RevisionDetails Model.
 
 ### get
 
-[packages/sw-precaching/src/lib/models/revision-details-model.js:26-28](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/models/revision-details-model.js#L26-L28 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/revision-details-model.js:26-28](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/revision-details-model.js#L26-L28 "Source code on GitHub")
 
 This method gets the revision details for a given entryID.
 
@@ -790,7 +813,7 @@ null if there is no revision information.
 
 ### put
 
-[packages/sw-precaching/src/lib/models/revision-details-model.js:36-38](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/models/revision-details-model.js#L36-L38 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/revision-details-model.js:36-38](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/revision-details-model.js#L36-L38 "Source code on GitHub")
 
 This method saves the revision details to indexedDB.
 
@@ -803,7 +826,17 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### constructor
 
-[packages/sw-precaching/src/lib/models/precache-entries/object-precache-entry.js:25-62](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/models/precache-entries/object-precache-entry.js#L25-L62 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/precache-entries/string-precache-entry.js:18-32](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/precache-entries/string-precache-entry.js#L18-L32 "Source code on GitHub")
+
+Cosntructor for StringCacheEntry.
+
+**Parameters**
+
+-   `url` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** A URL to cache.
+
+### constructor
+
+[packages/sw-precaching/src/lib/models/precache-entries/object-precache-entry.js:25-62](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/precache-entries/object-precache-entry.js#L25-L62 "Source code on GitHub")
 
 This class gives most control over configuring a cache entry.
 
@@ -825,13 +858,13 @@ This class gives most control over configuring a cache entry.
 
 ### constructor
 
-[packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js:20-22](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js#L20-L22 "Source code on GitHub")
+[packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js:20-22](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js#L20-L22 "Source code on GitHub")
 
 Constructor for UnreivisionedCacheManager
 
 ### cache
 
-[packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js:41-44](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js#L41-L44 "Source code on GitHub")
+[packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js:41-44](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/controllers/unrevisioned-cache-manager.js#L41-L44 "Source code on GitHub")
 
 This method will add the entries to the install list.
 This will manage duplicate entries and perform the caching during
@@ -855,30 +888,7 @@ revisionedManager.cache([
 
 ### constructor
 
-[packages/sw-precaching/src/lib/controllers/base-cache-manager.js:14-17](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/controllers/base-cache-manager.js#L14-L17 "Source code on GitHub")
-
-Constructor for BaseCacheManager
-
-**Parameters**
-
--   `cacheName` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** This is the cache name to store requested assets.
-
-### cache
-
-[packages/sw-precaching/src/lib/controllers/base-cache-manager.js:26-32](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/controllers/base-cache-manager.js#L26-L32 "Source code on GitHub")
-
-This method will add the entries to the install list.
-This will manage duplicate entries and perform the caching during
-the install step.
-
-**Parameters**
-
--   `rawEntries` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;([String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String) \| [Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_APIs/request) \| [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object))>** A raw entry that can be
-    parsed into a BaseCacheEntry by the inheriting CacheManager.
-
-### constructor
-
-[packages/sw-precaching/src/lib/models/precache-entries/request-entry.js:17-29](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/models/precache-entries/request-entry.js#L17-L29 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/precache-entries/request-entry.js:17-29](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/precache-entries/request-entry.js#L17-L29 "Source code on GitHub")
 
 This is useful for caching unrevisioned requests that require
 special headers etc.
@@ -889,7 +899,7 @@ special headers etc.
 
 ### constructor
 
-[packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js:21-26](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js#L21-L26 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js:21-26](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js#L21-L26 "Source code on GitHub")
 
 This constructor expects an object and a number or required fields.
 You shouldn't need to use this constructor directly.
@@ -909,7 +919,7 @@ You shouldn't need to use this constructor directly.
 
 ### getNetworkRequest
 
-[packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js:40-66](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js#L40-L66 "Source code on GitHub")
+[packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js:40-66](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-precaching/src/lib/models/precache-entries/base-precache-entry.js#L40-L66 "Source code on GitHub")
 
 This method is required since any revisioned request needs to cache bust.
 To ensure this is consistent, CacheManagers will make a network request
@@ -922,25 +932,15 @@ Returns **[Request](https://developer.mozilla.org/en-US/Add-ons/SDK/High-Level_A
 a normal request with credentials set to 'same-origin' and redirect set to
 follow.
 
-### constructor
-
-[packages/sw-precaching/src/lib/models/precache-entries/string-precache-entry.js:18-32](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-precaching/src/lib/models/precache-entries/string-precache-entry.js#L18-L32 "Source code on GitHub")
-
-Cosntructor for StringCacheEntry.
-
-**Parameters**
-
--   `url` **[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** A URL to cache.
-
 ### sw-cache-expiration
 
-[packages/sw-cache-expiration/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cache-expiration/src/index.js#L21-L21 "Source code on GitHub")
+[packages/sw-cache-expiration/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cache-expiration/src/index.js#L21-L21 "Source code on GitHub")
 
 sw-cache-expiration Module
 
 ### Behavior
 
-[packages/sw-cache-expiration/src/lib/behavior.js:52-293](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cache-expiration/src/lib/behavior.js#L52-L293 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:52-293](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cache-expiration/src/lib/behavior.js#L52-L293 "Source code on GitHub")
 
 **Examples**
 
@@ -972,7 +972,7 @@ const route = new goog.routing.RegExpRoute({
 
 ### constructor
 
-[packages/sw-cache-expiration/src/lib/behavior.js:63-78](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cache-expiration/src/lib/behavior.js#L63-L78 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:63-78](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cache-expiration/src/lib/behavior.js#L63-L78 "Source code on GitHub")
 
 Creates a new `Behavior` instance, which is used to remove entries from a
 [`Cache`](https://developer.mozilla.org/en-US/docs/Web/API/Cache) once
@@ -991,7 +991,7 @@ certain criteria—maximum number of entries, age of entry, or both—is met.
 
 ### constructor
 
-[packages/sw-broadcast-cache-update/src/lib/behavior.js:89-95](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-broadcast-cache-update/src/lib/behavior.js#L89-L95 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/behavior.js:89-95](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-broadcast-cache-update/src/lib/behavior.js#L89-L95 "Source code on GitHub")
 
 Creates a new `Behavior` instance, which is used to compare two
 [Responses](https://developer.mozilla.org/en-US/docs/Web/API/Response)
@@ -1020,7 +1020,7 @@ only specific response headers are checked.
 
 ### updateTimestamp
 
-[packages/sw-cache-expiration/src/lib/behavior.js:150-165](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cache-expiration/src/lib/behavior.js#L150-L165 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:150-165](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cache-expiration/src/lib/behavior.js#L150-L165 "Source code on GitHub")
 
 Updates the timestamp stored in IndexedDB for `url` to be equal to `now`.
 
@@ -1037,7 +1037,7 @@ Updates the timestamp stored in IndexedDB for `url` to be equal to `now`.
 
 ### expireEntries
 
-[packages/sw-cache-expiration/src/lib/behavior.js:176-197](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cache-expiration/src/lib/behavior.js#L176-L197 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:176-197](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cache-expiration/src/lib/behavior.js#L176-L197 "Source code on GitHub")
 
 Expires entries, both based on the the maximum age and the maximum number
 of entries, depending on how this instance is configured.
@@ -1056,7 +1056,7 @@ Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refere
 
 ### notifyIfUpdated
 
-[packages/sw-broadcast-cache-update/src/lib/behavior.js:151-159](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-broadcast-cache-update/src/lib/behavior.js#L151-L159 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/behavior.js:151-159](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-broadcast-cache-update/src/lib/behavior.js#L151-L159 "Source code on GitHub")
 
 An explicit method to call from your own code to trigger the comparison of
 two [Response](https://developer.mozilla.org/en-US/docs/Web/API/Response)
@@ -1079,13 +1079,13 @@ if they differ.
 
 ### sw-broadcast-cache-update
 
-[packages/sw-broadcast-cache-update/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-broadcast-cache-update/src/index.js#L21-L21 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-broadcast-cache-update/src/index.js#L21-L21 "Source code on GitHub")
 
 sw-broadcast-cache-update Module
 
 ### Behavior
 
-[packages/sw-broadcast-cache-update/src/lib/behavior.js:68-160](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-broadcast-cache-update/src/lib/behavior.js#L68-L160 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/behavior.js:68-160](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-broadcast-cache-update/src/lib/behavior.js#L68-L160 "Source code on GitHub")
 
 **Examples**
 
@@ -1137,7 +1137,7 @@ if (oldResponse) {
 
 ### broadcastUpdate
 
-[packages/sw-broadcast-cache-update/src/lib/broadcast-update.js:55-69](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-broadcast-cache-update/src/lib/broadcast-update.js#L55-L69 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/broadcast-update.js:55-69](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-broadcast-cache-update/src/lib/broadcast-update.js#L55-L69 "Source code on GitHub")
 
 Uses the [Broadcast Channel API](https://developers.google.com/web/updates/2016/09/broadcastchannel)
 to notify interested subscribers about a change to a cached resource.
@@ -1178,7 +1178,7 @@ all required.)
 
 ### cacheUpdatedMessageType
 
-[packages/sw-broadcast-cache-update/src/lib/constants.js:22-22](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-broadcast-cache-update/src/lib/constants.js#L22-L22 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/constants.js:22-22](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-broadcast-cache-update/src/lib/constants.js#L22-L22 "Source code on GitHub")
 
 The value `'CACHE_UPDATED'`, used as the `type` field of the update message.
 
@@ -1186,7 +1186,7 @@ Type: [string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 
 ### responsesAreSame
 
-[packages/sw-broadcast-cache-update/src/lib/responses-are-same.js:33-42](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-broadcast-cache-update/src/lib/responses-are-same.js#L33-L42 "Source code on GitHub")
+[packages/sw-broadcast-cache-update/src/lib/responses-are-same.js:33-42](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-broadcast-cache-update/src/lib/responses-are-same.js#L33-L42 "Source code on GitHub")
 
 Given two `Response`s, compares several header values to see if they are
 the same or not.
@@ -1208,13 +1208,13 @@ Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### sw-runtime-caching
 
-[packages/sw-runtime-caching/src/index.js:22-22](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/index.js#L22-L22 "Source code on GitHub")
+[packages/sw-runtime-caching/src/index.js:22-22](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/index.js#L22-L22 "Source code on GitHub")
 
 sw-runtime-caching Module
 
 ### RequestWrapper
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:39-208](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/request-wrapper.js#L39-L208 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:39-208](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/request-wrapper.js#L39-L208 "Source code on GitHub")
 
 This class is used by the various subclasses of `Handler` to configure the
 cache name and any desired behaviors, which is to say classes that implement
@@ -1234,7 +1234,7 @@ given and when they're called, is:
 
 ### CacheFirst
 
-[packages/sw-runtime-caching/src/lib/cache-first.js:34-57](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/cache-first.js#L34-L57 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/cache-first.js:34-57](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/cache-first.js#L34-L57 "Source code on GitHub")
 
 **Extends Handler**
 
@@ -1254,7 +1254,7 @@ router.registerRoute({route});
 
 ### CacheOnly
 
-[packages/sw-runtime-caching/src/lib/cache-only.js:34-54](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/cache-only.js#L34-L54 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/cache-only.js:34-54](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/cache-only.js#L34-L54 "Source code on GitHub")
 
 **Extends Handler**
 
@@ -1274,14 +1274,14 @@ router.registerRoute({route});
 
 ### Handler
 
-[packages/sw-runtime-caching/src/lib/handler.js:24-57](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/handler.js#L24-L57 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/handler.js:24-57](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/handler.js#L24-L57 "Source code on GitHub")
 
 This a base class meant to be extended by other classes that implement
 specific request strategies.
 
 ### NetworkFirst
 
-[packages/sw-runtime-caching/src/lib/network-first.js:34-63](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/network-first.js#L34-L63 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/network-first.js:34-63](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/network-first.js#L34-L63 "Source code on GitHub")
 
 **Extends Handler**
 
@@ -1301,7 +1301,7 @@ router.registerRoute({route});
 
 ### NetworkOnly
 
-[packages/sw-runtime-caching/src/lib/network-only.js:34-53](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/network-only.js#L34-L53 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/network-only.js:34-53](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/network-only.js#L34-L53 "Source code on GitHub")
 
 **Extends Handler**
 
@@ -1321,7 +1321,7 @@ router.registerRoute({route});
 
 ### StaleWhileRevalidate
 
-[packages/sw-runtime-caching/src/lib/stale-while-revalidate.js:34-61](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/stale-while-revalidate.js#L34-L61 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/stale-while-revalidate.js:34-61](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/stale-while-revalidate.js#L34-L61 "Source code on GitHub")
 
 **Extends Handler**
 
@@ -1341,7 +1341,7 @@ router.registerRoute({route});
 
 ### defaultCacheName
 
-[packages/sw-runtime-caching/src/lib/constants.js:25-25](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/constants.js#L25-L25 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/constants.js:25-25](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/constants.js#L25-L25 "Source code on GitHub")
 
 The default cache name, used by RequestWrapper when there's no name provided.
 It combines a constant prefix with the `registration.scope` value associated
@@ -1350,7 +1350,7 @@ on the same origin will have different default caches.
 
 ### constructor
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:54-95](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/request-wrapper.js#L54-L95 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:54-95](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/request-wrapper.js#L54-L95 "Source code on GitHub")
 
 **Parameters**
 
@@ -1374,14 +1374,14 @@ on the same origin will have different default caches.
 
 ### getCache
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:101-106](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/request-wrapper.js#L101-L106 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:101-106](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/request-wrapper.js#L101-L106 "Source code on GitHub")
 
 Returns **Cache** An open `Cache` instance based on the configured
 `cacheName`.
 
 ### match
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:116-121](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/request-wrapper.js#L116-L121 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:116-121](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/request-wrapper.js#L116-L121 "Source code on GitHub")
 
 Wraps `cache.match()`, using the previously configured cache name and match
 options.
@@ -1397,7 +1397,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### fetch
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:131-143](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/request-wrapper.js#L131-L143 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:131-143](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/request-wrapper.js#L131-L143 "Source code on GitHub")
 
 Wraps `fetch()`, and calls any `fetchDidFail` callbacks from the
 registered behaviors if the request fails.
@@ -1413,7 +1413,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### fetchAndCache
 
-[packages/sw-runtime-caching/src/lib/request-wrapper.js:161-207](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/request-wrapper.js#L161-L207 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/request-wrapper.js:161-207](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/request-wrapper.js#L161-L207 "Source code on GitHub")
 
 Combines both fetching and caching using the previously configured options
 and calling the appropriate behaviors.
@@ -1438,7 +1438,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### CacheFirst.handle
 
-[packages/sw-runtime-caching/src/lib/cache-first.js:46-56](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/cache-first.js#L46-L56 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/cache-first.js:46-56](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/cache-first.js#L46-L56 "Source code on GitHub")
 
 An implementation of a [cache-first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network)
 request strategy.
@@ -1456,7 +1456,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### CacheOnly.handle
 
-[packages/sw-runtime-caching/src/lib/cache-only.js:49-53](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/cache-only.js#L49-L53 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/cache-only.js:49-53](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/cache-only.js#L49-L53 "Source code on GitHub")
 
 An implementation of a [cache-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only)
 request strategy.
@@ -1477,7 +1477,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### constructor
 
-[packages/sw-runtime-caching/src/lib/handler.js:32-38](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/handler.js#L32-L38 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/handler.js:32-38](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/handler.js#L32-L38 "Source code on GitHub")
 
 **Parameters**
 
@@ -1491,7 +1491,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### handle
 
-[packages/sw-runtime-caching/src/lib/handler.js:54-56](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/handler.js#L54-L56 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/handler.js:54-56](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/handler.js#L54-L56 "Source code on GitHub")
 
 An abstract method that each subclass must implement.
 
@@ -1513,7 +1513,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### NetworkFirst.handle
 
-[packages/sw-runtime-caching/src/lib/network-first.js:46-62](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/network-first.js#L46-L62 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/network-first.js:46-62](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/network-first.js#L46-L62 "Source code on GitHub")
 
 An implementation of a [network first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache)
 request strategy.
@@ -1531,7 +1531,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### NetworkOnly.handle
 
-[packages/sw-runtime-caching/src/lib/network-only.js:48-52](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/network-only.js#L48-L52 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/network-only.js:48-52](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/network-only.js#L48-L52 "Source code on GitHub")
 
 An implementation of a [network-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only)
 request strategy.
@@ -1551,7 +1551,7 @@ Returns **[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refe
 
 ### StaleWhileRevalidate.handle
 
-[packages/sw-runtime-caching/src/lib/stale-while-revalidate.js:49-60](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-runtime-caching/src/lib/stale-while-revalidate.js#L49-L60 "Source code on GitHub")
+[packages/sw-runtime-caching/src/lib/stale-while-revalidate.js:49-60](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-runtime-caching/src/lib/stale-while-revalidate.js#L49-L60 "Source code on GitHub")
 
 An implementation of a [stale-while-revalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
 request strategy.

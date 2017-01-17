@@ -8,8 +8,8 @@ A service worker helper library to retry offline Google Analytics requests when 
 
 ## Demo
 
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-offline-google-analytics/demo), or
-[try it out](https://googlechrome.github.io/sw-helpers/sw-offline-google-analytics/demo/) directly.
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/docs/demos/sw-offline-google-analytics/), or
+[try it out](https://googlechrome.github.io/sw-helpers/demos/sw-offline-google-analytics/) directly.
 
 ## API
 
@@ -17,7 +17,7 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### goog.offlineGoogleAnalytics.initialize
 
-[packages/sw-offline-google-analytics/src/index.js:82-132](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-offline-google-analytics/src/index.js#L82-L132 "Source code on GitHub")
+[packages/sw-offline-google-analytics/src/index.js:82-132](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-offline-google-analytics/src/index.js#L82-L132 "Source code on GitHub")
 
 In order to use the library, call`goog.offlineGoogleAnalytics.initialize()`.
 It will take care of setting up service worker `fetch` handlers to ensure

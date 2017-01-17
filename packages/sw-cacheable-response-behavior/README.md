@@ -8,8 +8,8 @@ This library takes a Response object and determines whether it's cacheable, base
 
 ## Demo
 
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cacheable-response-behavior/demo), or
-[try it out](https://googlechrome.github.io/sw-helpers/sw-cacheable-response-behavior/demo/) directly.
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/docs/demos/sw-cacheable-response-behavior/), or
+[try it out](https://googlechrome.github.io/sw-helpers/demos/sw-cacheable-response-behavior/) directly.
 
 ## API
 
@@ -17,13 +17,13 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-cacheable-response-behavior
 
-[packages/sw-cacheable-response-behavior/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cacheable-response-behavior/src/index.js#L21-L21 "Source code on GitHub")
+[packages/sw-cacheable-response-behavior/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cacheable-response-behavior/src/index.js#L21-L21 "Source code on GitHub")
 
 sw-cacheable-response-behavior Module
 
 ### Behavior
 
-[packages/sw-cacheable-response-behavior/src/lib/behavior.js:48-119](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cacheable-response-behavior/src/lib/behavior.js#L48-L119 "Source code on GitHub")
+[packages/sw-cacheable-response-behavior/src/lib/behavior.js:48-119](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cacheable-response-behavior/src/lib/behavior.js#L48-L119 "Source code on GitHub")
 
 **Examples**
 
@@ -58,7 +58,7 @@ const route = new goog.routing.RegExpRoute({
 
 ### constructor
 
-[packages/sw-cacheable-response-behavior/src/lib/behavior.js:62-73](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cacheable-response-behavior/src/lib/behavior.js#L62-L73 "Source code on GitHub")
+[packages/sw-cacheable-response-behavior/src/lib/behavior.js:62-73](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cacheable-response-behavior/src/lib/behavior.js#L62-L73 "Source code on GitHub")
 
 Creates a new `Behavior` instance, which stores configuration and logic
 to determine whether a `Response` object is cacheable or not.

@@ -8,8 +8,8 @@ This library is still a work in progress and is not functional.
 
 ## Demo
 
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cache-expiration/demo), or
-[try it out](https://googlechrome.github.io/sw-helpers/sw-cache-expiration/demo/) directly.
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/docs/demos/sw-cache-expiration/), or
+[try it out](https://googlechrome.github.io/sw-helpers/demos/sw-cache-expiration/) directly.
 
 ## API
 
@@ -17,13 +17,13 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ### sw-cache-expiration
 
-[packages/sw-cache-expiration/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cache-expiration/src/index.js#L21-L21 "Source code on GitHub")
+[packages/sw-cache-expiration/src/index.js:21-21](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cache-expiration/src/index.js#L21-L21 "Source code on GitHub")
 
 sw-cache-expiration Module
 
 ### Behavior
 
-[packages/sw-cache-expiration/src/lib/behavior.js:52-293](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cache-expiration/src/lib/behavior.js#L52-L293 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:52-293](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cache-expiration/src/lib/behavior.js#L52-L293 "Source code on GitHub")
 
 **Examples**
 
@@ -55,7 +55,7 @@ const route = new goog.routing.RegExpRoute({
 
 ### constructor
 
-[packages/sw-cache-expiration/src/lib/behavior.js:63-78](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cache-expiration/src/lib/behavior.js#L63-L78 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:63-78](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cache-expiration/src/lib/behavior.js#L63-L78 "Source code on GitHub")
 
 Creates a new `Behavior` instance, which is used to remove entries from a
 [`Cache`](https://developer.mozilla.org/en-US/docs/Web/API/Cache) once
@@ -74,7 +74,7 @@ certain criteria—maximum number of entries, age of entry, or both—is met.
 
 ### updateTimestamp
 
-[packages/sw-cache-expiration/src/lib/behavior.js:150-165](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cache-expiration/src/lib/behavior.js#L150-L165 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:150-165](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cache-expiration/src/lib/behavior.js#L150-L165 "Source code on GitHub")
 
 Updates the timestamp stored in IndexedDB for `url` to be equal to `now`.
 
@@ -91,7 +91,7 @@ Updates the timestamp stored in IndexedDB for `url` to be equal to `now`.
 
 ### expireEntries
 
-[packages/sw-cache-expiration/src/lib/behavior.js:176-197](https://github.com/GoogleChrome/sw-helpers/blob/b592cf16d1ab0d89981f6f6b579b02b711856fd0/packages/sw-cache-expiration/src/lib/behavior.js#L176-L197 "Source code on GitHub")
+[packages/sw-cache-expiration/src/lib/behavior.js:176-197](https://github.com/GoogleChrome/sw-helpers/blob/8cc4a6ad43a96e15ede74e8b1864c9185cfac260/packages/sw-cache-expiration/src/lib/behavior.js#L176-L197 "Source code on GitHub")
 
 Expires entries, both based on the the maximum age and the maximum number
 of entries, depending on how this instance is configured.
