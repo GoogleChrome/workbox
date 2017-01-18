@@ -1,6 +1,7 @@
 only_commits:
   files:
     - packages/sw-cli/
+    - appveyor.yml
 
 install:
   - ps: Install-Product node Stable
