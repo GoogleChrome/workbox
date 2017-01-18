@@ -3,14 +3,58 @@ const path = require('path');
 const fs = require('fs');
 const vm = require('vm');
 const glob = require('glob');
+const fse = require('fs-extra');
 const expect = require('chai').expect;
+const url = require('url');
+const seleniumAssistant = require('selenium-assistant');
+const testServer = require('../../../utils/test-server.js');
+
 
 require('chai').should();
 
 describe('Test Example Projects', function() {
+  let tmpDirectory;
+  let globalDriverBrowser;
+  let baseTestUrl;
+
+  // Kill the web server once all tests are complete.
+  after(function() {
+    return testServer.stop();
+  });
+
+  beforeEach(() => {
+    tmpDirectory = fs.mkdtempSync(
+      path.join(__dirname, 'tmp-')
+    );
+    return testServer.start(tmpDirectory)
+    .then((portNumber) => {
+      baseTestUrl = `http://localhost:${portNumber}`;
+    });
+  });
+
+  afterEach(function() {
+    this.timeout(10 * 1000);
+
+    fse.removeSync(tmpDirectory);
+
+    if (!globalDriverBrowser) {
+      return;
+    }
+
+    return seleniumAssistant.killWebDriver(globalDriverBrowser)
+    .then(() => {
+      globalDriverBrowser = null;
+    });
+  });
+
   it('should be able to generate manifest for example-1', function() {
-    const exampleProject =
-      path.join(__dirname, 'example-projects', 'example-1');
+    this.timeout(60 * 1000);
+
+    fse.copySync(
+      path.join(__dirname, 'example-projects', 'example-1'),
+      tmpDirectory);
+
+    const exampleProject = tmpDirectory;
     const relativeProjPath = path.relative(process.cwd(), exampleProject);
 
     // NOTE: No JPG
@@ -53,6 +97,8 @@ describe('Test Example Projects', function() {
       },
     });
 
+    let fileManifestOutput;
+
     const cli = new SWCli();
     return cli.handleCommand('generate-sw')
     .then(() => {
@@ -71,14 +117,19 @@ describe('Test Example Projects', function() {
       expect(injectedSelf['__file_manifest']).to.exist;
 
       // Check the files that we expect to be defined are.
-      let expectedFiles = glob.sync(`${exampleProject}/**/*.{${fileExntensions.join(',')}}`, {
-        ignore: `${exampleProject}/${manifestName}`,
+      let expectedFiles = glob.sync(
+        `${exampleProject}/**/*.{${fileExntensions.join(',')}}`, {
+        ignore: [
+          `${exampleProject}/${manifestName}`,
+          `${exampleProject}/${swName}`,
+          `${exampleProject}/sw-lib.min.js`,
+        ],
       });
       expectedFiles = expectedFiles.map((file) => {
         return `/${path.relative(exampleProject, file).replace(path.sep, '/')}`;
       });
 
-      const fileManifestOutput = injectedSelf['__file_manifest'];
+      fileManifestOutput = injectedSelf['__file_manifest'];
       if (fileManifestOutput.length !== expectedFiles.length) {
         console.error('File Manifest: ', fileManifestOutput);
         console.error('Globbed Files: ', expectedFiles);
@@ -127,8 +178,57 @@ describe('Test Example Projects', function() {
       });
     })
     .then(() => {
-      // Delete the manifest so the rest of the test is clean.
-      fs.unlinkSync(path.join(exampleProject, manifestName));
+      const browser = seleniumAssistant.getLocalBrowser('chrome', 'stable');
+      return browser.getSeleniumDriver();
+    })
+    .then((browserDriver) => {
+      globalDriverBrowser = browserDriver;
+      return browserDriver.get(`${baseTestUrl}/index.html?sw=${swName}`);
+    })
+    .then(() => {
+      return globalDriverBrowser.wait(() => {
+        return globalDriverBrowser.executeScript(() => {
+          return typeof window.__testresult !== 'undefined';
+        });
+      });
+    })
+    .then(() => {
+      return globalDriverBrowser.executeScript(() => {
+        return window.__testresult;
+      });
+    })
+    .then((testResult) => {
+      if (!testResult.entries) {
+        throw new Error('Bad response: ' + JSON.stringify(testResult));
+      }
+
+      const entries = testResult.entries;
+      entries.length.should.equal(fileManifestOutput.length);
+
+      const pathnames = entries.map((entry) => {
+        return url.parse(entry).pathname;
+      });
+
+      fileManifestOutput.forEach((details) => {
+        try {
+          fs.statSync(path.join(exampleProject, details.url));
+        } catch (err) {
+          throw new Error(`The path '${details.url}' from the manifest doesn't seem valid.`);
+        }
+
+        const expectedFileIndex = pathnames.indexOf(details.url);
+        if (expectedFileIndex === -1) {
+          console.log(pathnames);
+          throw new Error(`Unexpected file in manifest: '${details.url}'`);
+        }
+
+        pathnames.splice(expectedFileIndex, 1);
+
+        (typeof details.revision).should.equal('string');
+        details.revision.length.should.be.gt(0);
+      });
+
+      pathnames.length.should.equal(0);
     });
   });
 });
