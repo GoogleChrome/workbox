@@ -36,7 +36,6 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script:
-  - cd "packages/${PROJECT}/" && npm install && cd ~
   - gulp lint --project "${PROJECT}"
   # Building is handled in gulp test.
   - gulp test --project "${PROJECT}"
