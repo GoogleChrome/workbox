@@ -9,7 +9,6 @@ const url = require('url');
 const seleniumAssistant = require('selenium-assistant');
 const testServer = require('../../../utils/test-server.js');
 
-
 require('chai').should();
 
 describe('Test Example Projects', function() {
@@ -37,13 +36,16 @@ describe('Test Example Projects', function() {
 
     fse.removeSync(tmpDirectory);
 
-    if (!globalDriverBrowser) {
-      return;
-    }
-
-    return seleniumAssistant.killWebDriver(globalDriverBrowser)
+    return seleniumAssistant.stopSaucelabsConnect()
     .then(() => {
-      globalDriverBrowser = null;
+      if (!globalDriverBrowser) {
+        return;
+      }
+
+      return seleniumAssistant.killWebDriver(globalDriverBrowser)
+      .then(() => {
+        globalDriverBrowser = null;
+      });
     });
   });
 
@@ -179,11 +181,29 @@ describe('Test Example Projects', function() {
     })
     .then(() => {
       if (process.platform === 'win32') {
-        return Promise.resolve();
+        if (!process.env['SAUCELABS_USERNAME'] ||
+          !process.env['SAUCELABS_ACCESS_KEY']) {
+          console.warn('Skipping SauceLabs tests due to no credentials in environment');
+          return;
+        }
+
+        const SAUCELABS_USERNAME = process.env['SAUCELABS_USERNAME'];
+        const SAUCELABS_ACCESS_KEY = process.env['SAUCELABS_ACCESS_KEY'];
+        seleniumAssistant.setSaucelabsDetails(SAUCELABS_USERNAME, SAUCELABS_ACCESS_KEY);
+        return seleniumAssistant.startSaucelabsConnect()
+        .then(() => {
+          return seleniumAssistant.getSauceLabsBrowser('chrome', 'latest');
+        });
+      } else {
+        return seleniumAssistant.getLocalBrowser('chrome', 'stable');
+      }
+    })
+    .then((assistantBrowser) => {
+      if (!assistantBrowser) {
+        return;
       }
 
-      const browser = seleniumAssistant.getLocalBrowser('chrome', 'stable');
-      return browser.getSeleniumDriver()
+      return assistantBrowser.getSeleniumDriver()
       .then((browserDriver) => {
         globalDriverBrowser = browserDriver;
         return browserDriver.get(`${baseTestUrl}/index.html?sw=${swName}`);
