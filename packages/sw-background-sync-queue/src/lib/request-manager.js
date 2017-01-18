@@ -1,27 +1,25 @@
 import {putResponse} from './response-manager';
 import {getFetchableRequest} from './queue-utils';
 import {tagNamePrefix} from './constants';
-import RequestQueue from './request-queue';
-import assert from '../../../../lib/assert';
 
 /**
  * Class to handle all the request related
  * transformations, replaying, event handling
  * broadcasting back to controlled pages etc.
  * @class
+ * @private
  */
 class RequestManager {
 	/**
 	 * Initializes the request manager
 	 * stores the callbacks object, maintains config and
 	 * attaches event handler
-	 * @param {any} {callbacks, queue}
+	 * @param {Object=} config
 	 *
 	 * @memberOf RequestManager
+	 * @private
 	 */
 	constructor({callbacks, queue}) {
-		assert.isInstance({queue}, RequestQueue);
-
 		this._globalCallbacks = callbacks || {};
 		this._queue = queue;
 		this.attachSyncHandler();
@@ -32,6 +30,7 @@ class RequestManager {
 	 * sync event is fired
 	 *
 	 * @memberOf RequestManager
+	 * @private
 	 */
 	attachSyncHandler() {
 		self.addEventListener('sync', (event) => {
@@ -47,6 +46,7 @@ class RequestManager {
 	 * @return {void}
 	 *
 	 * @memberOf RequestManager
+	 * @private
 	 */
 	replayRequests() {
 		return this._queue.queue.reduce((promise, hash) => {

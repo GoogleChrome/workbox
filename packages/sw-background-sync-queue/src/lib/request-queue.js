@@ -11,35 +11,54 @@ import assert from '../../../../lib/assert';
 
 let _requestCounter = 0;
 let _queueCounter = 0;
+
 /**
- * Core queue class that handles all the enqueue and dequeue
- * as well as cleanup code for the background sync queue
- * @class
+ * Queue class to maintain and perform on the logical requests queue
+ *
+ * @class RequestQueue
+ * @private
  */
 class RequestQueue {
 	/**
-	 * Creates an instance of Queue.
+	 * Creates an instance of RequestQueue.
 	 *
-	 * @memberOf Queue
+	 * @param {Object} config
+	 *
+	 * @memberOf RequestQueue
+	 * @private
 	 */
 	constructor({
 		config,
 		queueName = defaultQueueName + '_' + _queueCounter++,
 		idbQDb,
+		broadcastChannel,
 	}) {
 		this._isQueueNameAddedToAllQueue = false;
 		this._queueName = queueName;
 		this._config = config;
 		this._idbQDb = idbQDb;
+		this._broadcastChannel = broadcastChannel;
 		this._queue = [];
 		this.initQueue();
 	}
 
+	/**
+	 * initializes the queue from the IDB store
+	 *
+	 * @memberOf RequestQueue
+	 * @private
+	 */
 	async initQueue() {
 		const idbQueue = await this._idbQDb.get(this._queueName);
 		this._queue.concat(idbQueue);
 	}
 
+	/**
+	 * adds the current queueName to all queue array
+	 *
+	 * @memberOf RequestQueue
+	 * @private
+	 */
 	async addQueueNameToAllQueues() {
 		if(!this._isQueueNameAddedToAllQueue) {
 			let allQueues = await this._idbQDb.get(allQueuesPlaceholder);
@@ -52,6 +71,12 @@ class RequestQueue {
 		}
 	}
 
+	/**
+	 * saves the logical queue to IDB
+	 *
+	 * @memberOf RequestQueue
+	 * @private
+	 */
 	async saveQueue() {
 		await this._idbQDb.put(this._queueName, this._queue);
 	}
@@ -61,9 +86,9 @@ class RequestQueue {
 	 * preferably when network comes back
 	 *
 	 * @param {Request} request request object to be queued by this
-	 * @param {Object} config optional config to override config params
 	 *
 	 * @memberOf Queue
+	 * @private
 	 */
 	async push({request}) {
 		assert.isInstance({request}, Request);
@@ -80,12 +105,14 @@ class RequestQueue {
 			// add to queue
 			this.saveQueue();
 			this._idbQDb.put(hash, queuableRequest);
-			this.addQueueNameToAllQueues();
+			await this.addQueueNameToAllQueues();
 			// register sync
-			self.registration.sync.register(tagNamePrefix + this._queueName);
+			self.registration &&
+				self.registration.sync.register(tagNamePrefix + this._queueName);
 
 			// broadcast the success of request added to the queue
 			broadcastMessage({
+				broadcastChannel: this._broadcastChannel,
 				type: broadcastMessageAddedType,
 				id: hash,
 				url: request.url,
@@ -93,6 +120,7 @@ class RequestQueue {
 		} catch(e) {
 			// broadcast the failure of request added to the queue
 			broadcastMessage({
+				broadcastChannel: this._broadcastChannel,
 				type: broadcastMessageFailedType,
 				id: hash,
 				url: request.url,
@@ -104,9 +132,9 @@ class RequestQueue {
 	 * get the Request from the queue at a particular index
 	 *
 	 * @param {string} hash hash of the request at the given index
-	 * @return {Request}
-	 *
+	 * @return {Request} request object corresponding to given hash
 	 * @memberOf Queue
+	 * @private
 	 */
 	async getRequestFromQueue({hash}) {
 		assert.isType({hash}, 'string');
@@ -116,14 +144,38 @@ class RequestQueue {
 		}
 	}
 
+	/**
+	 * returns the instance of queue.
+	 *
+	 * @readonly
+	 *
+	 * @memberOf RequestQueue
+	 * @private
+	 */
 	get queue() {
 		return Object.assign([], this._queue);
 	}
 
+	/**
+	 * returns the name of the current queue
+	 *
+	 * @readonly
+	 *
+	 * @memberOf RequestQueue
+	 * @private
+	 */
 	get queueName() {
 		return this._queueName;
 	}
 
+	/**
+	 * returns the instance of IDBStore
+	 *
+	 * @readonly
+	 *
+	 * @memberOf RequestQueue
+	 * @private
+	 */
 	get idbQDb() {
 		return this._idbQDb;
 	}

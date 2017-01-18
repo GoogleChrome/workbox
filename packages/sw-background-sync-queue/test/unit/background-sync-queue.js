@@ -12,16 +12,57 @@
  */
 
 /* eslint-env mocha, browser */
+/* global chai, goog */
 
 'use strict';
 
-describe('background sync queue', () => {
+describe('background sync queue test', () => {
+  function onRes() {}
+  function onRetryFail() {}
+
+  const QUEUE_NAME = 'QUEUE_NAME';
+  const MAX_AGE = 6;
+  const CALLBACKS = {
+    onResponse: onRes,
+    onRetryFail: onRetryFail,
+  };
+
+  const backgroundSyncQueue
+    = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
+      maxRetentionTime: MAX_AGE,
+      queueName: QUEUE_NAME,
+      callbacks: CALLBACKS,
+    });
+
   it('check defaults', () => {
+    const defaultsBackgroundSyncQueue
+      = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({});
+    chai.assert.isObject(defaultsBackgroundSyncQueue._queue);
+    chai.assert.isObject(defaultsBackgroundSyncQueue._requestManager);
+    chai.assert.equal(defaultsBackgroundSyncQueue._queue._queueName,
+      goog.backgroundSyncQueue.test.constants.defaultQueueName + '_0');
+    chai.assert.equal(defaultsBackgroundSyncQueue._queue._config.maxAge,
+      goog.backgroundSyncQueue.test.constants.maxAge);
+    chai.assert.equal(
+      JSON.stringify(
+        defaultsBackgroundSyncQueue._requestManager._globalCallbacks),
+      JSON.stringify({}));
   });
 
   it('check parameterised constructor', () =>{
+    chai.assert.isObject(backgroundSyncQueue._queue);
+    chai.assert.isObject(backgroundSyncQueue._requestManager);
+    chai.assert.equal(backgroundSyncQueue._queue._queueName, QUEUE_NAME);
+    chai.assert.equal(backgroundSyncQueue._queue._config.maxAge, MAX_AGE);
+    chai.assert.equal(backgroundSyncQueue._requestManager._globalCallbacks,
+      CALLBACKS);
   });
 
   it('check push proxy', () => {
+    const currentLen = backgroundSyncQueue._queue.queue.length;
+    backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum.com')}).then( (e) => {
+      chai.assert.equal(backgroundSyncQueue._queue.queue.length,
+        currentLen + 1);
+    });
   });
 });

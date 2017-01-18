@@ -1,6 +1,12 @@
 import {getDbName} from './background-sync-idb-helper';
 import IDBHelper from '../../../../lib/idb-helper';
 
+/**
+ * Puts the fetched response in the IDB
+ *
+ * @param {Object} config
+ * @private
+ */
 async function putResponse({hash, idbObject, response, idbQDb}) {
 	const _idbQHelper = idbQDb;
 	idbObject.response = {
@@ -11,9 +17,18 @@ async function putResponse({hash, idbObject, response, idbQDb}) {
 	_idbQHelper.put(hash, idbObject);
 }
 
-async function getResponse(hash) {
+/**
+ * This function returns the fetched response for the given id of the request
+ *
+ * @alias goog.backgroundSyncQueue.getResponse
+ *
+ * @param {String} id The ID of the request given back by the broaadcast
+ * channel
+ * @return {Object} response Fetched response of the request.
+ */
+async function getResponse({id}) {
 	const _idbQHelper = new IDBHelper(getDbName(), 1, 'QueueStore');
-	const object = _idbQHelper.get(hash);
+	const object = _idbQHelper.get(id);
 	if (object && object.response) {
 		return object.response;
 	} else {

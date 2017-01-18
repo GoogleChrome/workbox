@@ -11,6 +11,7 @@ import {allQueuesPlaceholder} from './constants';
  * @return {Object} indexable object for iDB
  *
  * @memberOf RequestManager
+ * @private
  */
 async function getQueueableRequest({request, config}) {
 	let requestObject={
@@ -33,6 +34,13 @@ async function getQueueableRequest({request, config}) {
 	return requestObject;
 }
 
+/**
+ * takes an object and return a Request object to be executed by
+ * the browser
+ * @param {Object} idbRequestObject
+ * @return {Request}
+ * @private
+ */
 async function getFetchableRequest({idbRequestObject}) {
 	let reqObject = {
 		mode: idbRequestObject.mode,
@@ -51,6 +59,7 @@ async function getFetchableRequest({idbRequestObject}) {
  * whose maxAge has expired
  *
  * @memberOf Queue
+ * @private
  */
 async function cleanupQueue() {
 	let db = new IDBHelper(getDbName(), 1, 'QueueStore');
@@ -60,11 +69,11 @@ async function cleanupQueue() {
 		return null;
 	}
 
-	queueObj.forEach(async (queueName)=>{
+	await Promise.all(queueObj.map(async (queueName)=>{
 		const requestQueues = await db.get(queueName);
 		let itemsToKeep = [];
 		let deletionPromises = [];
-		requestQueues.forEach( async (hash) => {
+		await Promise.all(requestQueues.map( async (hash) => {
 			const requestData = await db.get(hash);
 			if (requestData && requestData.metadata
 				&& requestData.metadata.creationTimestamp + requestData.config.maxAge
@@ -75,10 +84,10 @@ async function cleanupQueue() {
 				// Keep elements whose definition exists in idb.
 				itemsToKeep.push(hash);
 			}
-		});
+		}));
 		await Promise.all(deletionPromises);
 		db.put(queueName, itemsToKeep);
-	});
+	}));
 }
 
 export {

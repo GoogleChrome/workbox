@@ -35,13 +35,19 @@
     <script src="/node_modules/mocha/mocha.js"></script>
 
     <!-- sw-testing-helpers -->
+    <script src="/packages/sw-background-sync-queue/build/test/idb-helper.js"></script>
     <script src="/node_modules/sw-testing-helpers/build/browser/mocha-utils.js"></script>
     <script src="/node_modules/sw-testing-helpers/build/browser/sw-utils.js"></script>
     <script src="/node_modules/mockdate/src/mockdate.js"></script>
     <script src="/node_modules/sinon/pkg/sinon.js"></script>
     <script src="/packages/sw-background-sync-queue/build/test/constants.js"></script>
     <script src="/packages/sw-background-sync-queue/build/test/request-queue.js"></script>
+    <script src="/packages/sw-background-sync-queue/build/test/request-manager.js"></script>
     <script src="/packages/sw-background-sync-queue/build/test/background-sync-queue.js"></script>
+    <script src="/packages/sw-background-sync-queue/build/test/background-sync-idb-helper.js"></script>
+    <script src="/packages/sw-background-sync-queue/build/test/queue-utils.js"></script>
+    <script src="/packages/sw-background-sync-queue/build/test/broadcast-manager.js"></script>
+    <script src="/packages/sw-background-sync-queue/build/test/sw-background-queue.js"></script>
     <!--
       Timeout is extended to ensure tests for max-cache-age
       have enough time to complete
@@ -53,6 +59,11 @@
 
     <!-- In browser test scripts should be added to the page here-->
     <script src="request-queue.js"></script>
+    <script src="background-sync-queue.js"></script>
+    <script src="background-sync-idb-helper.js"></script>
+    <script src="request-manager.js"></script>
+    <script src="broadcast-manager.js"></script>
+    <script src="queue-utils.js"></script>
 
     <script>
       (function() {

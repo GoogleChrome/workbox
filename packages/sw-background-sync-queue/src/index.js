@@ -16,28 +16,29 @@
  *
  * @module sw-background-sync-queue
  */
-
-import {initiazileBroadcastManager} from './lib/broadcast-manager';
 import {getResponse} from './lib/response-manager';
 import {setDbName} from './lib/background-sync-idb-helper';
 import BackgroundSyncQueue from './lib/background-sync-queue';
 import {cleanupQueue} from './lib/queue-utils';
 import assert from '../../../lib/assert';
+
 /**
- * Initialize the library by initializing broadcast manager,
- * indexedDB, and request manager
- * @param {Object=} broadcastChannel
- * @param {Object=} dbName
+ * In order to use this library call `goog.backgroundSyncQueue.initialize()`.
+ * It will take care of setting up IndexedDB for storing requests and broadcast
+ * channel for communication of request creations. Also this attaches a handler
+ * to `sync` event and replays the queued requeusts.
+ *
+ * @alias goog.backgroundSyncQueue.initialize
+ *
+ * @param {Object} [input] The input object to this function
+ * @param {string} [input.dbName] The name of the db to store requests and
+ * responses
  */
-async function initialize({broadcastChannel, dbName} = {}) {
-	if(broadcastChannel) {
-		assert.isType({broadcastChannel}, 'string');
-	}
+async function initialize({dbName} = {}) {
 	if(dbName) {
 		assert.isType({dbName}, 'string');
 		setDbName(dbName);
 	}
-	initiazileBroadcastManager(broadcastChannel);
 	await cleanupQueue();
 }
 

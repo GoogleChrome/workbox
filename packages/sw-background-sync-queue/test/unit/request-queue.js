@@ -16,7 +16,7 @@
 
 'use strict';
 
-describe('queue', () => {
+describe('request-queue tests', () => {
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
   let queue =
@@ -24,6 +24,7 @@ describe('queue', () => {
       config: {maxAge: MAX_AGE},
       queueName: QUEUE_NAME,
     });
+
   it('queue object should exist', () => {
     chai.assert.isObject(queue);
     chai.assert.isArray(queue._queue);
