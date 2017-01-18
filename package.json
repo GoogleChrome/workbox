@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/GoogleChrome/sw-helpers#readme",
   "dependencies": {
-    "idb": "^2.0.0"
+    "idb": "^2.0.0",
+    "update-notifier": "^1.0.3"
   },
   "devDependencies": {
     "babel": "^6.5.2",
