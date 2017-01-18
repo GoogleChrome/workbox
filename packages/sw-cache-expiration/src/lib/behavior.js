@@ -144,7 +144,7 @@ class Behavior {
   }
 
   /**
-   * This checks whether a `Response` is fresh, based on the `Response`'s
+   * Checks whether a `Response` is fresh, based on the `Response`'s
    * `Date:` header and the configured `maxAgeSeconds`.
    *
    * If `maxAgeSeconds` or the `Date:` header is not set then it will
