@@ -178,57 +178,61 @@ describe('Test Example Projects', function() {
       });
     })
     .then(() => {
-      const browser = seleniumAssistant.getLocalBrowser('chrome', 'stable');
-      return browser.getSeleniumDriver();
-    })
-    .then((browserDriver) => {
-      globalDriverBrowser = browserDriver;
-      return browserDriver.get(`${baseTestUrl}/index.html?sw=${swName}`);
-    })
-    .then(() => {
-      return globalDriverBrowser.wait(() => {
-        return globalDriverBrowser.executeScript(() => {
-          return typeof window.__testresult !== 'undefined';
-        });
-      });
-    })
-    .then(() => {
-      return globalDriverBrowser.executeScript(() => {
-        return window.__testresult;
-      });
-    })
-    .then((testResult) => {
-      if (!testResult.entries) {
-        throw new Error('Bad response: ' + JSON.stringify(testResult));
+      if (process.platform === 'win32') {
+        return Promise.resolve();
       }
 
-      const entries = testResult.entries;
-      entries.length.should.equal(fileManifestOutput.length);
-
-      const pathnames = entries.map((entry) => {
-        return url.parse(entry).pathname;
-      });
-
-      fileManifestOutput.forEach((details) => {
-        try {
-          fs.statSync(path.join(exampleProject, details.url));
-        } catch (err) {
-          throw new Error(`The path '${details.url}' from the manifest doesn't seem valid.`);
+      const browser = seleniumAssistant.getLocalBrowser('chrome', 'stable');
+      return browser.getSeleniumDriver()
+      .then((browserDriver) => {
+        globalDriverBrowser = browserDriver;
+        return browserDriver.get(`${baseTestUrl}/index.html?sw=${swName}`);
+      })
+      .then(() => {
+        return globalDriverBrowser.wait(() => {
+          return globalDriverBrowser.executeScript(() => {
+            return typeof window.__testresult !== 'undefined';
+          });
+        });
+      })
+      .then(() => {
+        return globalDriverBrowser.executeScript(() => {
+          return window.__testresult;
+        });
+      })
+      .then((testResult) => {
+        if (!testResult.entries) {
+          throw new Error('Bad response: ' + JSON.stringify(testResult));
         }
 
-        const expectedFileIndex = pathnames.indexOf(details.url);
-        if (expectedFileIndex === -1) {
-          console.log(pathnames);
-          throw new Error(`Unexpected file in manifest: '${details.url}'`);
-        }
+        const entries = testResult.entries;
+        entries.length.should.equal(fileManifestOutput.length);
 
-        pathnames.splice(expectedFileIndex, 1);
+        const pathnames = entries.map((entry) => {
+          return url.parse(entry).pathname;
+        });
 
-        (typeof details.revision).should.equal('string');
-        details.revision.length.should.be.gt(0);
+        fileManifestOutput.forEach((details) => {
+          try {
+            fs.statSync(path.join(exampleProject, details.url));
+          } catch (err) {
+            throw new Error(`The path '${details.url}' from the manifest doesn't seem valid.`);
+          }
+
+          const expectedFileIndex = pathnames.indexOf(details.url);
+          if (expectedFileIndex === -1) {
+            console.log(pathnames);
+            throw new Error(`Unexpected file in manifest: '${details.url}'`);
+          }
+
+          pathnames.splice(expectedFileIndex, 1);
+
+          (typeof details.revision).should.equal('string');
+          details.revision.length.should.be.gt(0);
+        });
+
+        pathnames.length.should.equal(0);
       });
-
-      pathnames.length.should.equal(0);
     });
   });
 });
