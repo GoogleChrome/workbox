@@ -25,7 +25,9 @@ env:
 install:
   - npm install -g gulp-cli
   - npm install
-  - cd "packages/${PROJECT}/" && npm install && cd ~
+  - cd "packages/${PROJECT}/"
+  - npm install
+  - cd ../../
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
