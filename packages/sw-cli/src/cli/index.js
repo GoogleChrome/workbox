@@ -24,6 +24,7 @@ const glob = require('glob');
 const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const template = require('lodash.template');
+const updateNotifier = require('update-notifier');
 
 const errors = require('../lib/errors');
 const logHelper = require('../lib/log-helper');
@@ -46,6 +47,8 @@ class SWCli {
    * handling the request has finished.
    */
   argv(argv) {
+    updateNotifier({pkg}).notify();
+
     const cliArgs = minimist(argv);
     if (cliArgs._.length > 0) {
       // We have a command
