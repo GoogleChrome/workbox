@@ -1,11 +1,15 @@
 only_commits:
   files:
     - packages/sw-cli/
+    - appveyor.yml
 
 install:
   - ps: Install-Product node Stable
   - npm install
   - npm install -g gulp
+  - cd packages/sw-cli/
+  - npm install
+  - cd ..
 
 test_script:
   - node --version

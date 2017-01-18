@@ -24,6 +24,7 @@ const glob = require('glob');
 const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const template = require('lodash.template');
+const updateNotifier = require('update-notifier');
 
 const errors = require('../lib/errors');
 const logHelper = require('../lib/log-helper');
@@ -46,6 +47,9 @@ class SWCli {
    * handling the request has finished.
    */
   argv(argv) {
+    // Update user new version is available.
+    updateNotifier({pkg}).notify();
+
     const cliArgs = minimist(argv);
     if (cliArgs._.length > 0) {
       // We have a command
@@ -174,15 +178,31 @@ class SWCli {
 
       const excludeFiles = [
         fileManifestName,
-        relativePath, serviceWorkerName,
+        serviceWorkerName,
+        relativePath,
       ];
-
-      return this._buildFileManifestFromGlobs(
-        path.join(rootDirectory, fileManifestName),
-        rootDirectory,
-        globs,
-        excludeFiles
-      );
+      let swlibPath;
+      return this._copySWLibFile(rootDirectory)
+      .then((libPath) => {
+        swlibPath = libPath;
+        excludeFiles.push(path.basename(swlibPath));
+      })
+      .then(() => {
+        return this._buildFileManifestFromGlobs(
+          path.join(rootDirectory, fileManifestName),
+          rootDirectory,
+          globs,
+          excludeFiles
+        );
+      })
+      .then(() => {
+        return this._buildServiceWorker(
+          path.join(rootDirectory, serviceWorkerName),
+          path.join(rootDirectory, fileManifestName),
+          swlibPath,
+          rootDirectory
+        );
+      });
     });
   }
 
@@ -424,7 +444,6 @@ class SWCli {
     }, []);
 
     const manifestEntries = this._filterFiles(globbedFiles, excludeFiles);
-
     return this._writeFilemanifest(manifestFilePath, manifestEntries);
   }
 
@@ -549,6 +568,72 @@ class SWCli {
       logHelper.error(errors['unable-to-get-file-hash'], err);
       throw err;
     }
+  }
+
+  _buildServiceWorker(swPath, filemanifestPath, swlibPath, rootDirectory) {
+    try {
+      mkdirp.sync(path.dirname(swPath));
+    } catch (err) {
+      logHelper.error(errors['unable-to-make-sw-directory'], err);
+      return Promise.reject(err);
+    }
+
+    const templatePath = path.join(
+      __dirname, '..', 'lib', 'templates', 'sw.js.tmpl');
+    return new Promise((resolve, reject) => {
+      fs.readFile(templatePath, 'utf8', (err, data) => {
+        if (err) {
+          logHelper.error(errors['read-sw-template-failure'], err);
+          return reject(err);
+        }
+        resolve(data);
+      });
+    })
+    .then((templateString) => {
+      const relFileManifest = path.relative(rootDirectory, filemanifestPath);
+      const relSwlibPath = path.relative(rootDirectory, swlibPath);
+
+      try {
+        return template(templateString)({
+          manifestPath: relFileManifest,
+          swlibPath: relSwlibPath,
+        });
+      } catch (err) {
+        logHelper.error(errors['populating-sw-tmpl-failed'], err);
+        throw err;
+      }
+    })
+    .then((populatedTemplate) => {
+      return new Promise((resolve, reject) => {
+        fs.writeFile(swPath, populatedTemplate, (err) => {
+          if (err) {
+            logHelper.error(errors['sw-write-failure'], err);
+            return reject(err);
+          }
+
+          resolve();
+        });
+      });
+    });
+  }
+
+  _copySWLibFile(rootDirectory) {
+    const swlibPath = path.join(rootDirectory, 'sw-lib.min.js');
+
+    return new Promise((resolve, reject) => {
+      const swlibModulePath = path.join(__dirname, '..', '..', 'node_modules',
+        'sw-lib', 'build', 'sw-lib.min.js');
+
+      const stream = fs.createReadStream(swlibModulePath)
+        .pipe(fs.createWriteStream(swlibPath));
+      stream.on('error', function(err) {
+        logHelper.error(errors['unable-to-copy-sw-lib'], err);
+        reject(err);
+      });
+      stream.on('finish', function() {
+        resolve(swlibPath);
+      });
+    });
   }
 }
 

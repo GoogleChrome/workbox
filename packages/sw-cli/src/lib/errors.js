@@ -27,4 +27,11 @@ module.exports = {
   'populating-manifest-tmpl-failed': 'An error occured when populating the ' +
     'file manifest template.',
   'manifest-file-write-failure': 'Unable to write the file manifest.',
+  'unable-to-make-sw-directory': 'Unable to make the directories to output ' +
+    'the service worker path.',
+  'read-sw-template-failure': 'Unable to read the service worker template ' +
+    'file.',
+  'sw-write-failure': 'Unable to write the service worker file.',
+  'unable-to-copy-sw-lib': 'SW-Lib is needed by the service worker and could ' +
+    'not be copied over to your new site.',
 };
