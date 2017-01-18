@@ -121,18 +121,18 @@ class Behavior {
    * `goog.runtimeCaching` handlers when a `Response` is about to be returned
    * from a [Cache](https://developer.mozilla.org/en-US/docs/Web/API/Cache) to
    * the handler. It allows the `Response` to be inspected for freshness and
-   * prevents it from being used if the `Response`'s `Date` header value is
+   * prevents it from being used if the `Response`'s `Date:` header value is
    * older than the configured `maxAgeSeconds`.
    *
    * Developers who are not using `goog.runtimeCaching` would normally not call
-   * this method directly; instead, use [`isResponseFresh`](#isResponseFresh)
-   * to perform the same freshness check.
+   * this method directly; instead, [`isResponseFresh`](#isResponseFresh) can be
+   * used to perform the same freshness check.
    *
    * @private
    * @param {Object} input The input object to this function.
    * @param {Response} input.cachedResponse The `Response` object that's been
    *        read from a cache and whose freshness should be checked.
-   * @return {Response|null} Either the `cachedResponse`, if it's fresh, or
+   * @returns {Response|null} Either the `cachedResponse`, if it's fresh, or
    *          `null` if the `Response` is older than `maxAgeSeconds`.
    */
   cacheWillMatch({cachedResponse} = {}) {
@@ -144,16 +144,16 @@ class Behavior {
   }
 
   /**
-   * This checks whether a `Response` is fresh, based on the `Response`'s
-   * `Date` header and the configured `maxAgeSeconds`.
+   * Checks whether a `Response` is fresh, based on the `Response`'s
+   * `Date:` header and the configured `maxAgeSeconds`.
    *
-   * If `maxAgeSeconds` or the `Date` header is not set then it will
+   * If `maxAgeSeconds` or the `Date:` header is not set then it will
    * default to returning `true`.
    *
    * @param {Object} input The input object to this function.
    * @param {Response} input.cachedResponse The `Response` object that's been
    *        read from a cache and whose freshness should be checked.
-   * @return {boolean} Either the `true`, if it's fresh, or `false` if the
+   * @returns {boolean} Either the `true`, if it's fresh, or `false` if the
    *          `Response` is older than `maxAgeSeconds`.
    */
   isResponseFresh({cachedResponse} = {}) {
@@ -166,7 +166,7 @@ class Behavior {
       if (dateHeader) {
         const now = Date.now();
         const parsedDate = new Date(dateHeader);
-        // If the Date header was invalid for some reason, parsedDate.getTime()
+        // If the Date: header was invalid for some reason, parsedDate.getTime()
         // will return NaN, and the comparison will always be false. That means
         // that an invalid date will be treated as if the response is fresh.
         if ((parsedDate.getTime() + (this.maxAgeSeconds * 1000)) < now) {
