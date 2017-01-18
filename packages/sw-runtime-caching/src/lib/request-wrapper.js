@@ -32,6 +32,9 @@ import ErrorFactory from './error-factory';
  *   - `cacheDidUpdate({cacheName, oldResponse, newResponse})`: Called whenever
  *   an entry is written to the cache, giving the callback a chance to notify
  *   clients about the update or implement cache expiration.
+ *   - `cacheWillMatch({cachedResponse})`: Called whenever a response is read
+ *   from the cache and is about to be used, giving the callback a chance to
+ *   perform validity/freshness checks.
  *   - `fetchDidFail({request})`: Called whenever a network request fails.
  *
  * @memberof module:sw-runtime-caching
@@ -117,7 +120,16 @@ class RequestWrapper {
     assert.atLeastOne({request});
 
     const cache = await this.getCache();
-    return await cache.match(request, this.matchOptions);
+    const response = await cache.match(request, this.matchOptions);
+
+    // Give the cacheWillMatch callbacks a chance to modify the cached response.
+    // TODO: Right now, we run all the callbacks sequentially, and return the
+    // final result. Instead, it might make sense to enforce a limit of a single
+    // cacheWillMatch callback, and return an error if there are multiple ones.
+    const callbacks = this.behaviorCallbacks.cacheWillMatch || [];
+    return callbacks.reduce((cachedResponse, callback) => {
+      return callback({cachedResponse});
+    }, response);
   }
 
   /**
