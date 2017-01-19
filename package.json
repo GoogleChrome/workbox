@@ -62,7 +62,7 @@
     "rollup-plugin-commonjs": "^7.0.0",
     "rollup-plugin-node-resolve": "^2.0.0",
     "run-sequence": "^1.2.2",
-    "selenium-assistant": "^5.0.2",
+    "selenium-assistant": "^5.0.4",
     "serve-index": "^1.8.0",
     "serve-static": "^1.11.1",
     "sinon": "^1.17.6",
