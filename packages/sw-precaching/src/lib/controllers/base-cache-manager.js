@@ -42,7 +42,7 @@ class BaseCacheManager {
   /**
    * This method returns an array of URL's that will be cached by this
    * cache manager.
-   * @return {Array<URL>} An array of URLs that will be cached.
+   * @return {Array<String>} An array of URLs that will be cached.
    */
   getCachedUrls() {
     const urls = [];
