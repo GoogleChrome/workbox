@@ -1,6 +1,6 @@
 importScripts('/packages/sw-precaching/build/sw-precaching.min.js');
-importScripts('/packages/sw-routing/build/sw-routing.min.js');
-importScripts('/packages/sw-runtime-caching/build/sw-runtime-caching.min.js');
+importScripts('/packages/sw-precaching/node_modules/sw-routing/build/sw-routing.min.js');
+importScripts('/packages/sw-precaching/node_modules/sw-runtime-caching/build/sw-runtime-caching.min.js');
 
 /* global goog */
 
