@@ -32,6 +32,28 @@ class BaseCacheManager {
   }
 
   /**
+   *This method gives access to the cache used by thie caching manager.
+   * @return {String} The cache name used for this manager.
+   */
+  getCacheName() {
+    return this._cacheName;
+  }
+
+  /**
+   * This method returns an array of URL's that will be cached by this
+   * cache manager.
+   * @return {Array<URL>} An array of URLs that will be cached.
+   */
+  getCachedUrls() {
+    const urls = [];
+    this._entriesToCache.forEach((entryValue, entryUrl) => {
+      // Force a consistent string style for the entries.
+      urls.push(new URL(entryUrl, location).href);
+    });
+    return urls;
+  }
+
+  /**
    * This method will add an entry to the install list.
    *
    * This method will filter out duplicates and also checks for the scenario

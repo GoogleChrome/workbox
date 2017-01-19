@@ -22,7 +22,7 @@ require('operadriver');
 require('geckodriver');
 
 const RETRIES = 3;
-const TIMEOUT = 10 * 1000;
+const TIMEOUT = 30 * 1000;
 
 describe(`sw-precaching Browser Tests`, function() {
   this.retries(RETRIES);

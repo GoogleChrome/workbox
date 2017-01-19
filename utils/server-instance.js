@@ -94,8 +94,9 @@ class ServerInstance {
 
   stop() {
     return new Promise((resolve) => {
-      this._server.close(resolve);
+      this._server.close();
       this._server = null;
+      resolve();
     });
   }
 }
