@@ -95,6 +95,12 @@ class RequestWrapper {
         throw ErrorFactory.createError('multiple-cache-will-update-behaviors');
       }
     }
+
+    if (this.behaviorCallbacks.cacheWillMatch) {
+      if (this.behaviorCallbacks.cacheWillMatch.length !== 1) {
+        throw ErrorFactory.createError('multiple-cache-will-match-behaviors');
+      }
+    }
   }
 
   /**
@@ -120,16 +126,14 @@ class RequestWrapper {
     assert.atLeastOne({request});
 
     const cache = await this.getCache();
-    const response = await cache.match(request, this.matchOptions);
+    let cachedResponse = await cache.match(request, this.matchOptions);
 
-    // Give the cacheWillMatch callbacks a chance to modify the cached response.
-    // TODO: Right now, we run all the callbacks sequentially, and return the
-    // final result. Instead, it might make sense to enforce a limit of a single
-    // cacheWillMatch callback, and return an error if there are multiple ones.
-    const callbacks = this.behaviorCallbacks.cacheWillMatch || [];
-    return callbacks.reduce((cachedResponse, callback) => {
-      return callback({cachedResponse});
-    }, response);
+    if (this.behaviorCallbacks.cacheWillMatch) {
+      cachedResponse = this.behaviorCallbacks.cacheWillMatch[0](
+        {cachedResponse});
+    }
+
+    return cachedResponse;
   }
 
   /**
