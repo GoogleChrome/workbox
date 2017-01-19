@@ -18,7 +18,7 @@ import ErrorFactory from '../../../../lib/error-factory';
 const errors = {
   'express-route-requires-absolute-path': `When using ExpressRoute, you must
     provide a path that starts with a '/' character. You can only match
-    same-origin requests. For more flexibility, use RegExpRoute.`
+    same-origin requests. For more flexibility, use RegExpRoute.`,
 };
 
 export default new ErrorFactory(errors);
