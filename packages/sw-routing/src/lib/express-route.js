@@ -13,8 +13,8 @@
  limitations under the License.
 */
 
+import ErrorFactory from './error-factory';
 import Route from './route';
-import assert from '../../../../lib/assert';
 import pathToRegExp from 'path-to-regexp';
 
 /**
@@ -63,7 +63,9 @@ class ExpressRoute extends Route {
    *        HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({path, handler, method}) {
-    assert.isType({path}, 'string');
+    if (path.substring(0, 1) !== '/') {
+      throw ErrorFactory.createError('express-route-requires-absolute-path');
+    }
 
     let keys = [];
     // keys is populated as a side effect of pathToRegExp. This isn't the nicest
@@ -71,8 +73,12 @@ class ExpressRoute extends Route {
     // https://github.com/pillarjs/path-to-regexp#usage
     const regExp = pathToRegExp(path, keys);
     const match = ({url}) => {
-      const regexpMatches = url.pathname.match(regExp);
+      // Return null immediately if we have a cross-origin request.
+      if (url.origin !== location.origin) {
+        return null;
+      }
 
+      const regexpMatches = url.pathname.match(regExp);
       // Return null immediately if this route doesn't match.
       if (!regexpMatches) {
         return null;
