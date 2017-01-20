@@ -47,7 +47,7 @@ describe('Routing Example', function() {
   });
 
   it('should be able to install a service worker and serve page offline', function() {
-    this.timeout(30 * 1000);
+    this.timeout(10 * 1000);
     this.retries(3);
 
     const relativePath = path.relative('.', tmpDirectory);

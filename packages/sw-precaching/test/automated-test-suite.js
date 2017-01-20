@@ -18,7 +18,6 @@ const swTestingHelpers = require('sw-testing-helpers');
 const testServer = require('../../../utils/test-server.js');
 
 require('chromedriver');
-require('operadriver');
 require('geckodriver');
 
 const RETRIES = 3;
@@ -81,12 +80,6 @@ describe(`sw-precaching Browser Tests`, function() {
     switch(browser.getId()) {
       case 'chrome':
       case 'firefox':
-      case 'opera':
-        if (browser.getId() === 'opera' &&
-          browser.getVersionNumber() <= 43) {
-          console.log(`Skipping Opera <= 43 due to driver issues.`);
-          return;
-        }
         setupTestSuite(browser);
         break;
       default:
