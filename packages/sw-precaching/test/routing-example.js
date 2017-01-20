@@ -72,7 +72,11 @@ describe('Routing Example', function() {
         return window.__testResult;
       });
     })
-    .then(() => {
+    .then((testResult) => {
+      if (testResult.error) {
+        throw new Error('Unable to load page: ' + testResult.error);
+      }
+
       fse.removeSync(path.join(tmpDirectory, 'example.html'));
     })
     .then(() => {
