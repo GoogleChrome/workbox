@@ -65,7 +65,7 @@ This library takes a Response object and determines whether it&#x27;s cacheable,
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cli%22)][travis-url]
 
-A CLI tool to generate a service worker and file manifest making use of the sw-lib module.
+A CLI tool to generate a service worker and a file manifest making use of the sw-lib module.
 
 **Install**: `npm install --save-dev sw-cli`
 
