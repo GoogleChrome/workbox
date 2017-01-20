@@ -1,6 +1,6 @@
 # sw-cli
 
-A CLI tool to generate a service worker and file manifest making use of the sw-lib module.
+A CLI tool to generate a service worker and a file manifest making use of the sw-lib module.
 
 ## Installation
 
