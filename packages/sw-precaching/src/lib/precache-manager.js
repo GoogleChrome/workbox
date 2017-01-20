@@ -149,8 +149,8 @@ class PrecacheManager {
   }
 
   /**
-   * Get the name of the cache used for revisioned assets.
-   * @return {RevisionedCacheManager} The name of the revisioned asset cache.
+   * Returns the revisioned cache manager.
+   * @return {RevisionedCacheManager} The revisioned cache manager.
    *
    * @example
    * const revisionedMngr = precacheMAnager.getRevisionedCacheManager();
@@ -160,9 +160,8 @@ class PrecacheManager {
   }
 
   /**
-   * Get the name of the cache used for unrevisioned assets.
-   * @return {UnrevisionedCacheManager} The name of the unrevisioned asset
-   * cache.
+   * Returns the unrevisioned cache manager.
+   * @return {UnrevisionedCacheManager} The unrevisioned cache manager.
    *
    * @example
    * const unrevisionedMngr = precacheManager.getUnrevisionedCacheManager();
