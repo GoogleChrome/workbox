@@ -35,6 +35,7 @@ class PrecacheManager {
    */
   constructor() {
     this._eventsRegistered = false;
+
     this._revisionedManager = new RevisionedCacheManager();
     this._unrevisionedManager = new UnrevisionedCacheManager();
     this._registerEvents();
@@ -145,6 +146,28 @@ class PrecacheManager {
   cacheUnrevisioned({unrevisionedFiles} = {}) {
     assert.isInstance({unrevisionedFiles}, Array);
     this._unrevisionedManager.cache(unrevisionedFiles);
+  }
+
+  /**
+   * Returns the revisioned cache manager.
+   * @return {RevisionedCacheManager} The revisioned cache manager.
+   *
+   * @example
+   * const revisionedMngr = precacheMAnager.getRevisionedCacheManager();
+   */
+  getRevisionedCacheManager() {
+    return this._revisionedManager;
+  }
+
+  /**
+   * Returns the unrevisioned cache manager.
+   * @return {UnrevisionedCacheManager} The unrevisioned cache manager.
+   *
+   * @example
+   * const unrevisionedMngr = precacheManager.getUnrevisionedCacheManager();
+   */
+  getUnrevisionedCacheManager() {
+    return this._unrevisionedManager;
   }
 
   /**
