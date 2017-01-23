@@ -24,7 +24,30 @@ import {getDbName} from './background-sync-idb-helper';
  * });
  * // Case 2: When you want the higher level framework to take care of failed
  * requests
- * // TODO: add example here
+ * let bgQueue = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
+ *		{
+ *			onResponse: async(hash, res) => {
+ *				self.registration.showNotification('Background sync demo', {
+ *  				body: 'Product has been purchased.',
+ *	 	 			icon: 'https://shop.polymer-project.org/images/shop-icon-384.png',
+ *				});
+ *			},
+ *			onRetryFailure: (hash) => {},
+ *		},
+ * });
+ *
+ * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+ * 	behaviors: [bgQueue],
+ * });
+
+ * const route = new goog.routing.ExpressRoute({
+ * 	path: '/*',
+ * 	origin: 'https://jsonplaceholder.typicode.com',
+ * 	handler: new goog.runtimeCaching.NetworkOnly({requestWrapper}),
+ * });
+
+ * const router = new goog.routing.Router();
+ * router.registerRoute({route});
  *
  * @alias goog.backgroundSyncQueue.BackgroundSyncQueue
  * @class BackgroundSyncQueue
@@ -85,7 +108,7 @@ class BackgroundSyncQueue {
 	}
 
 	/**
-	 * This function is a call wrapper over pushIntoQueue used by higher
+	 * This function is a call wrapper over `pushIntoQueue` used by higher
 	 * level framework. If you are writting the fetch handler for background
 	 * sync manually, please ignore this.
 	 *
