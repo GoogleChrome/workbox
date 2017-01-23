@@ -2,7 +2,7 @@
   "name": "sw-cli",
   "private": true,
   "version": "0.0.5",
-  "description": "A CLI tool to generate a service worker and file manifest making use of the sw-lib module.",
+  "description": "A CLI tool to generate a service worker and a file manifest making use of the sw-lib module.",
   "keywords": [
     "sw-fw",
     "service worker",
