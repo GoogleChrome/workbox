@@ -14,9 +14,8 @@ A service worker implementation of the behavior defined in a page&#x27;s App Cac
 
 **Install**: `npm install --save-dev sw-appcache-behavior`
 
-**Learn More**: [About](packages/sw-appcache-behavior) •
-                [Demo](packages/sw-appcache-behavior#demo) •
-                [API](packages/sw-appcache-behavior#api)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-appcache-behavior.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-appcache-behavior/demo)
 
 ### sw-background-sync-queue
 
@@ -26,9 +25,8 @@ A service worker implementation of the a queue which is triggered by the backgro
 
 **Install**: `npm install --save-dev sw-background-sync-queue`
 
-**Learn More**: [About](packages/sw-background-sync-queue) •
-                [Demo](packages/sw-background-sync-queue#demo) •
-                [API](packages/sw-background-sync-queue#api)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-background-sync-queue.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-background-sync-queue/demo)
 
 ### sw-broadcast-cache-update
 
@@ -38,9 +36,8 @@ A helper library that uses the Broadcast Channel API to announce when two Respon
 
 **Install**: `npm install --save-dev sw-broadcast-cache-update`
 
-**Learn More**: [About](packages/sw-broadcast-cache-update) •
-                [Demo](packages/sw-broadcast-cache-update#demo) •
-                [API](packages/sw-broadcast-cache-update#api)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-broadcast-cache-update.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-broadcast-cache-update/demo)
 
 ### sw-cache-expiration
 
@@ -50,33 +47,30 @@ This library is still a work in progress and is not functional.
 
 **Install**: `npm install --save-dev sw-cache-expiration`
 
-**Learn More**: [About](packages/sw-cache-expiration) •
-                [Demo](packages/sw-cache-expiration#demo) •
-                [API](packages/sw-cache-expiration#api)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-cache-expiration.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cache-expiration/demo)
 
 ### sw-cacheable-response-behavior
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cacheable-response-behavior%22)][travis-url]
 
-This library takes a Response object and  determines whether it&#x27;s cacheable, based on a specific configuration.
+This library takes a Response object and determines whether it&#x27;s cacheable, based on a specific configuration.
 
 **Install**: `npm install --save-dev sw-cacheable-response-behavior`
 
-**Learn More**: [About](packages/sw-cacheable-response-behavior) •
-                [Demo](packages/sw-cacheable-response-behavior#demo) •
-                [API](packages/sw-cacheable-response-behavior#api)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-cacheable-response-behavior.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cacheable-response-behavior/demo)
 
-### sw-lib
+### sw-cli
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-lib%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cli%22)][travis-url]
 
-A CLI tool to generate a service worker and file manifest making use of the sw-lib module.
+A CLI tool to generate a service worker and a file manifest making use of the sw-lib module.
 
-**Install**: `npm install --save-dev sw-lib`
+**Install**: `npm install --save-dev sw-cli`
 
-**Learn More**: [About](packages/sw-lib) •
-                [Demo](packages/sw-lib#demo) •
-                [API](packages/sw-lib#api)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-cli.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cli/demo)
 
 ### sw-lib
 
@@ -86,9 +80,8 @@ A service worker library to make managing fetch requests and caching as easy as 
 
 **Install**: `npm install --save-dev sw-lib`
 
-**Learn More**: [About](packages/sw-lib) •
-                [Demo](packages/sw-lib#demo) •
-                [API](packages/sw-lib#api)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-lib.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-lib/demo)
 
 ### sw-offline-google-analytics
 
@@ -98,9 +91,8 @@ A service worker helper library to retry offline Google Analytics requests when 
 
 **Install**: `npm install --save-dev sw-offline-google-analytics`
 
-**Learn More**: [About](packages/sw-offline-google-analytics) •
-                [Demo](packages/sw-offline-google-analytics#demo) •
-                [API](packages/sw-offline-google-analytics#api)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-offline-google-analytics.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-offline-google-analytics/demo)
 
 ### sw-precaching
 
@@ -110,9 +102,8 @@ This library is still a work in progress and is not functional.
 
 **Install**: `npm install --save-dev sw-precaching`
 
-**Learn More**: [About](packages/sw-precaching) •
-                [Demo](packages/sw-precaching#demo) •
-                [API](packages/sw-precaching#api)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-precaching.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-precaching/demo)
 
 ### sw-routing
 
@@ -122,9 +113,8 @@ A service worker helper library to route request URLs to handlers.
 
 **Install**: `npm install --save-dev sw-routing`
 
-**Learn More**: [About](packages/sw-routing) •
-                [Demo](packages/sw-routing#demo) •
-                [API](packages/sw-routing#api)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-routing.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-routing/demo)
 
 ### sw-runtime-caching
 
@@ -134,15 +124,14 @@ A service worker helper library that implements various runtime caching strategi
 
 **Install**: `npm install --save-dev sw-runtime-caching`
 
-**Learn More**: [About](packages/sw-runtime-caching) •
-                [Demo](packages/sw-runtime-caching#demo) •
-                [API](packages/sw-runtime-caching#api)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-runtime-caching.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-runtime-caching/demo)
 
 
 ## External Contributions
 
-Please read the [guide to contributing](CONTRIBUTING.md) prior to filing any
-pull requests.
+Please read the [guide to contributing](https://googlechrome.github.io/sw-helpers/contributing.html)
+prior to filing any pull requests.
 
 ## License
 

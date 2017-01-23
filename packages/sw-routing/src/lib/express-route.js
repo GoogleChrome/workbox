@@ -13,20 +13,43 @@
  limitations under the License.
 */
 
+import ErrorFactory from './error-factory';
 import Route from './route';
-import assert from '../../../../lib/assert';
 import pathToRegExp from 'path-to-regexp';
 
 /**
- * ExpressRoute is a helper class to make defining Express-style
+ * `ExpressRoute` is a helper class to make defining Express-style
  * [Routes]{@link Route} easy.
  *
  * Under the hood, it uses the [`path-to-regexp`](https://www.npmjs.com/package/path-to-regexp)
  * library to transform the `path` parameter into a regular expression, which is
  * then matched against the URL's path.
  *
+ * Please note that `ExpressRoute` can only match requests for URLs that are on
+ * the same-origin as the current page. If you need to match cross-origin
+ * requests, you can use either a generic [`Route`]{@link Route} or a
+ * [`RegExpRoute`]{@link RegExpRoute}.
+ *
  * @memberof module:sw-routing
  * @extends Route
+ *
+ * @example
+ * // Any same-origin requests that start with /path/to and end with one
+ * // additional path segment will match this route, with the last path
+ * // segment passed along to the handler via params.file.
+ * const route = new goog.routing.ExpressRoute({
+ *   path: '/path/to/:file',
+ *   handler: {
+ *     handle: ({event, params}) => {
+ *       // params.file will be set based on the request URL that matched.
+ *       // Do something that returns a Promise.<Response>, like:
+ *       return caches.match(event.request);
+ *     },
+ *   },
+ * });
+ *
+ * const router = new goog.routing.Router();
+ * router.registerRoute({route});
  */
 class ExpressRoute extends Route {
   /**
@@ -34,12 +57,15 @@ class ExpressRoute extends Route {
    *        If the path contains [named parameters](https://github.com/pillarjs/path-to-regexp#named-parameters),
    *        then an Object mapping parameter names to the corresponding value
    *        will be passed to the handler via `params`.
-   * @param {function} handler The handler to manage the response.
+   * @param {Object} handler - An Object with a `handle` method. That method
+   *        will be used to respond to matching requests.
    * @param {string} [method] Only match requests that use this
    *        HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({path, handler, method}) {
-    assert.isType({path}, 'string');
+    if (path.substring(0, 1) !== '/') {
+      throw ErrorFactory.createError('express-route-requires-absolute-path');
+    }
 
     let keys = [];
     // keys is populated as a side effect of pathToRegExp. This isn't the nicest
@@ -47,8 +73,12 @@ class ExpressRoute extends Route {
     // https://github.com/pillarjs/path-to-regexp#usage
     const regExp = pathToRegExp(path, keys);
     const match = ({url}) => {
-      const regexpMatches = url.pathname.match(regExp);
+      // Return null immediately if we have a cross-origin request.
+      if (url.origin !== location.origin) {
+        return null;
+      }
 
+      const regexpMatches = url.pathname.match(regExp);
       // Return null immediately if this route doesn't match.
       if (!regexpMatches) {
         return null;

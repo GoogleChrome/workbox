@@ -23,7 +23,7 @@ import {getDbName} from './background-sync-idb-helper';
  *	 	}
  * });
  * // Case 2: When you want the higher level framework to take care of failed
- * requests
+ * // requests
  * let bgQueue = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
  *		{
  *			onResponse: async(hash, res) => {
@@ -39,13 +39,13 @@ import {getDbName} from './background-sync-idb-helper';
  * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
  * 	behaviors: [bgQueue],
  * });
-
+ *
  * const route = new goog.routing.ExpressRoute({
  * 	path: '/*',
  * 	origin: 'https://jsonplaceholder.typicode.com',
  * 	handler: new goog.runtimeCaching.NetworkOnly({requestWrapper}),
  * });
-
+ *
  * const router = new goog.routing.Router();
  * router.registerRoute({route});
  *

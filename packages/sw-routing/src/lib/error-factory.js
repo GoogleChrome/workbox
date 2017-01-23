@@ -13,25 +13,12 @@
  limitations under the License.
 */
 
-/**
- * The default HTTP method, 'GET', used when there's no specific method
- * configured for a route.
- *
- * @type {string}
- * @memberof module:sw-routing
- */
-export const defaultMethod = 'GET';
+import ErrorFactory from '../../../../lib/error-factory';
 
-/**
- * The list of valid HTTP methods associated with requests that could be routed.
- *
- * @type {Array.<string>}
- * @memberof module:sw-routing
- */
-export const validMethods = [
-  'DELETE',
-  'GET',
-  'HEAD',
-  'POST',
-  'PUT',
-];
+const errors = {
+  'express-route-requires-absolute-path': `When using ExpressRoute, you must
+    provide a path that starts with a '/' character. You can only match
+    same-origin requests. For more flexibility, use RegExpRoute.`,
+};
+
+export default new ErrorFactory(errors);

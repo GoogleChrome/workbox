@@ -19,29 +19,35 @@ import ErrorFactory from './error-factory';
 
 /**
  * This class is used by the various subclasses of `Handler` to configure the
- * cache name and any desired request/cache behaviors.
+ * cache name and any desired behaviors, which is to say classes that implement
+ * request lifecycle callbacks.
  *
- * It automatically triggers any registered behaviors at the appropriate time.
+ * It automatically triggers any registered callbacks at the appropriate time.
  * The current set of behavior callbacks, along with the parameters they're
  * given and when they're called, is:
  *
+ *   - `cacheWillUpdate({request, response})`: Called prior to writing an entry
+ *   to the cache, allowing the callback to decide whether or not the cache
+ *   entry should be written.
  *   - `cacheDidUpdate({cacheName, oldResponse, newResponse})`: Called whenever
- *   a new entry is written to the cache.
+ *   an entry is written to the cache, giving the callback a chance to notify
+ *   clients about the update or implement cache expiration.
  *   - `fetchDidFail({request})`: Called whenever a network request fails.
- *   - `requestWillFetch({request})`: Called prior to making a network request.
  *
  * @memberof module:sw-runtime-caching
  */
 class RequestWrapper {
   /**
-   * @param {string} [cacheName] The name of the cache to use for Handlers that
-   *        involve caching. If none is provided, a default name that uses the
-   *        current service worker scope will be used.
-   * @param {Array.<Object>} [behaviors] Any behaviors that should be invoked.
-   * @param {Object} [fetchOptions] Values passed along to the
+   * @param {Object} input An object wrapper for the underlying parameters.
+   * @param {string} [input.cacheName] The name of the cache to use for Handlers
+   *        that involve caching. If none is provided, a default name that
+   *        includes the current service worker scope will be used.
+   * @param {Array.<Object>} [input.behaviors] Any behaviors that should be
+   *        invoked.
+   * @param {Object} [input.fetchOptions] Values passed along to the
    *        [`init`](https://developer.mozilla.org/en-US/docs/Web/API/GlobalFetch/fetch#Parameters)
    *        of all `fetch()` requests made by this wrapper.
-   * @param {Object} [matchOptions] Values passed along to the
+   * @param {Object} [input.matchOptions] Values passed along to the
    *        [`options`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match#Parameters)
    *        of all cache `match()` requests made by this wrapper.
    */
@@ -89,7 +95,8 @@ class RequestWrapper {
   }
 
   /**
-   * @return {Cache} The cache for this RequestWrapper.
+   * @return {Cache} An open `Cache` instance based on the configured
+   * `cacheName`.
    */
   async getCache() {
     if (!this._cache) {
@@ -136,7 +143,7 @@ class RequestWrapper {
   }
 
   /**
-   * Combines both fetching and caching, using the previously configured options
+   * Combines both fetching and caching using the previously configured options
    * and calling the appropriate behaviors.
    *
    * By default, responses with a status of [2xx](https://fetch.spec.whatwg.org/#ok-status)

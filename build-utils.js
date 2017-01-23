@@ -34,6 +34,19 @@ const globPromise = promisify('glob');
 
 const LICENSE_HEADER = fs.readFileSync('LICENSE-HEADER', 'utf8');
 
+const PLUGINS = [
+  rollupBabel({
+    plugins: ['transform-async-to-generator', 'external-helpers'],
+      exclude: 'node_modules/**',
+    }),
+    resolve({
+      jsnext: true,
+      main: true,
+      browser: true,
+    }),
+    commonjs(),
+];
+
 /**
  * Wrapper on top of childProcess.spawn() that returns a promise which rejects
  * when the child process has a non-zero exit code and resolves otherwise.
@@ -140,24 +153,11 @@ function buildJSBundle(options) {
  * @returns {Array.<Object>}
  */
 function generateBuildConfigs(formatToPath, projectDir, moduleName) {
-  const plugins = [
-    rollupBabel({
-      plugins: ['transform-async-to-generator', 'external-helpers'],
-      exclude: 'node_modules/**',
-    }),
-    resolve({
-      jsnext: true,
-      main: true,
-      browser: true,
-    }),
-    commonjs(),
-  ];
-
   // This is shared throughout the full permutation of build configs.
   const baseConfig = {
     rollupConfig: {
       entry: path.join(projectDir, 'src', 'index.js'),
-      plugins,
+      plugins: PLUGINS,
       moduleName,
     },
     projectDir,

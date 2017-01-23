@@ -24,6 +24,7 @@ const glob = require('glob');
 const crypto = require('crypto');
 const mkdirp = require('mkdirp');
 const template = require('lodash.template');
+const updateNotifier = require('update-notifier');
 
 const errors = require('../lib/errors');
 const logHelper = require('../lib/log-helper');
@@ -46,6 +47,8 @@ class SWCli {
    * handling the request has finished.
    */
   argv(argv) {
+    updateNotifier({pkg}).notify();
+
     const cliArgs = minimist(argv);
     if (cliArgs._.length > 0) {
       // We have a command
@@ -172,10 +175,16 @@ class SWCli {
           `.{${fileExtentionsToCache.join(',')}}`,
       ];
 
+      const excludeFiles = [
+        fileManifestName,
+        relativePath, serviceWorkerName,
+      ];
+
       return this._buildFileManifestFromGlobs(
         path.join(rootDirectory, fileManifestName),
         rootDirectory,
-        globs
+        globs,
+        excludeFiles
       );
     });
   }
@@ -409,14 +418,15 @@ class SWCli {
     });
   }
 
-  _buildFileManifestFromGlobs(manifestFilePath, rootDirectory, globs) {
+  _buildFileManifestFromGlobs(manifestFilePath, rootDirectory,
+      globs, excludeFiles) {
     const globbedFiles = globs.reduce((accumulated, globPattern) => {
       const fileDetails = this._getFileManifestDetails(
         rootDirectory, globPattern);
       return accumulated.concat(fileDetails);
     }, []);
 
-    const manifestEntries = this._filterFiles(globbedFiles);
+    const manifestEntries = this._filterFiles(globbedFiles, excludeFiles);
 
     return this._writeFilemanifest(manifestFilePath, manifestEntries);
   }
@@ -464,30 +474,29 @@ class SWCli {
     });
   }
 
-  _filterFiles(files) {
-    // Filter oversize files.
+  _filterFiles(files, excludeFiles) {
     files = files.filter((fileDetails) => {
+      // Filter oversize files.
       if (fileDetails.size > constants.maximumFileSize) {
         logHelper.warn(`Skipping file '${fileDetails.file}' due to size. ` +
           `[Max size supported is ${constants.maximumFileSize}]`);
         return false;
       }
 
+      // Filter out excluded files (i.e. manifest and service worker)
+      if (excludeFiles.indexOf(fileDetails.file) !== -1) {
+        return false;
+      }
+
       return true;
     });
 
-    // TODO Filter manifest file itself
-
-    // TODO Filter service worker file itself
-
     // TODO: Strip prefix
-
-    // TODO: Swap path.sep with '/'
 
     // Convert to manifest format
     return files.map((fileDetails) => {
       return {
-        url: fileDetails.file,
+        url: '/' + fileDetails.file.replace(path.sep, '/'),
         revision: fileDetails.hash,
       };
     });
@@ -510,7 +519,7 @@ class SWCli {
 
       const fileHash = this._getFileHash(file);
       return {
-        file: `/${path.relative(rootDirectory, file)}`,
+        file: `${path.relative(rootDirectory, file)}`,
         hash: fileHash,
         size: fileSize,
       };

@@ -18,7 +18,18 @@ import assert from '../../../../lib/assert';
 
 /**
  * @memberof module:sw-runtime-caching
- * @extends module:sw-runtime-caching.Handler
+ * @extends Handler
+ *
+ * @example
+ * // Set up a route to match any requests made for URLs that end in .txt.
+ * // The requests are handled with a stale-while-revalidate strategy.
+ * const route = new goog.routing.RegExpRoute({
+ *   regExp: /\.txt$/,
+ *   handler: new goog.runtimeCaching.StaleWhileRevalidate(),
+ * });
+ *
+ * const router = new goog.routing.Router();
+ * router.registerRoute({route});
  */
 class StaleWhileRevalidate extends Handler {
   /**
