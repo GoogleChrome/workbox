@@ -76,12 +76,27 @@ class BackgroundSyncQueue {
 	 * @param {Object} input
 	 * @param {Request} input.request The request which is to be queued
 	 *
-	 * @returns {Promise} Promise which resolves when the request is pushed in
+	 * @return {Promise} Promise which resolves when the request is pushed in
 	 * the queue
 	 */
 	pushIntoQueue({request}) {
 		assert.isInstance({request}, Request);
 		return this._queue.push({request});
+	}
+
+	/**
+	 * This function is a call wrapper over pushIntoQueue used by higher
+	 * level framework. If you are writting the fetch handler for background
+	 * sync manually, please ignore this.
+	 *
+	 * @param {Object} input
+	 * @param {Request} input.request The request which is to be queued
+	 *
+	 * @return {Promise} Promise which resolves when the request is pushed in
+	 * the queue
+	 */
+	fetchDidFail({request}) {
+		return this.pushIntoQueue({request});
 	}
 }
 
