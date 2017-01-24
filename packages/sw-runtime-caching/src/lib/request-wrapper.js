@@ -32,6 +32,9 @@ import ErrorFactory from './error-factory';
  *   - `cacheDidUpdate({cacheName, oldResponse, newResponse})`: Called whenever
  *   an entry is written to the cache, giving the callback a chance to notify
  *   clients about the update or implement cache expiration.
+ *   - `cacheWillMatch({cachedResponse})`: Called whenever a response is read
+ *   from the cache and is about to be used, giving the callback a chance to
+ *   perform validity/freshness checks.
  *   - `fetchDidFail({request})`: Called whenever a network request fails.
  *
  * @memberof module:sw-runtime-caching
@@ -92,6 +95,12 @@ class RequestWrapper {
         throw ErrorFactory.createError('multiple-cache-will-update-behaviors');
       }
     }
+
+    if (this.behaviorCallbacks.cacheWillMatch) {
+      if (this.behaviorCallbacks.cacheWillMatch.length !== 1) {
+        throw ErrorFactory.createError('multiple-cache-will-match-behaviors');
+      }
+    }
   }
 
   /**
@@ -117,7 +126,14 @@ class RequestWrapper {
     assert.atLeastOne({request});
 
     const cache = await this.getCache();
-    return await cache.match(request, this.matchOptions);
+    let cachedResponse = await cache.match(request, this.matchOptions);
+
+    if (this.behaviorCallbacks.cacheWillMatch) {
+      cachedResponse = this.behaviorCallbacks.cacheWillMatch[0](
+        {cachedResponse});
+    }
+
+    return cachedResponse;
   }
 
   /**
