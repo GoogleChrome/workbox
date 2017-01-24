@@ -13,8 +13,8 @@ class BaseCacheManager {
    */
   constructor(cacheName) {
     this._entriesToCache = new Map();
-    this._cacheName = cacheName;
-    this._requestWrapper = new RequestWrapper({cacheName: this._cacheName});
+    this._requestWrapper = new RequestWrapper({cacheName});
+    this._cacheName = this._requestWrapper.cacheName;
   }
 
   /**
