@@ -17,6 +17,10 @@
   "bin": {
     "sw-cli": "src/bin/index.js"
   },
+  "files": [
+    "src",
+    "build"
+  ],
   "engines": {
     "node": ">=4.0.0"
   },

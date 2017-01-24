@@ -9,6 +9,10 @@
     "queue",
     "sw-fw"
   ],
+  "files": [
+    "src",
+    "build"
+  ],
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",

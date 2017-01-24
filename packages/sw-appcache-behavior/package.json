@@ -10,6 +10,10 @@
     "manifest",
     "app cache"
   ],
+  "files": [
+    "src",
+    "build"
+  ],
   "author": {
     "name": "Jeff Posnick",
     "email": "jeffy@google.com",

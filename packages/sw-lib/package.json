@@ -9,6 +9,10 @@
     "fetch requests",
     "offline"
   ],
+  "files": [
+    "src",
+    "build"
+  ],
   "main": "build/sw-lib.min.js",
   "module": "build/sw-lib.min.mjs",
   "jsnext:main": "build/sw-lib.min.mjs",
