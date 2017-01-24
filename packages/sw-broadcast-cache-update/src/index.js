@@ -22,7 +22,7 @@
  * {@link  module:sw-runtime-caching.RequestWrapper|RequestWrapper},
  * as shown in the first example below.
  *
- * You can listen for updates from you web app by adding an event listener on
+ * You can listen for updates from your web app by adding an event listener on
  * a browser channel with the same channel name as the Behavior,
  * which 'cache-updates' in the second example below.
  *
