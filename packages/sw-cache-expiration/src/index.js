@@ -14,7 +14,7 @@
 */
 
 /**
- * The cache expiration behavior allows you define an expiration and / or
+ * The cache expiration behavior allows you define an expiration and/or
  * limit on the responses cached.
  *
  * This can be used to ensure that responses aren't used when they are stale
