@@ -170,10 +170,7 @@ class SWCli {
       const relativePath = path.relative(process.cwd(), rootDirectory);
 
       const globs = [
-        // Glob patterns only work with forward slash
-        // https://github.com/isaacs/node-glob#windows
-        path.join(relativePath, '**', '*').replace(path.sep, '/') +
-          `.{${fileExtentionsToCache.join(',')}}`,
+        this._generateGlobPatten(relativePath, fileExtentionsToCache),
       ];
 
       const excludeFiles = [
@@ -188,6 +185,19 @@ class SWCli {
         excludeFiles
       );
     });
+  }
+
+  _generateGlobPatten(relativePath, fileExtentionsToCache) {
+    // Glob patterns only work with forward slash
+    // https://github.com/isaacs/node-glob#windows
+    const globPath = path.join(relativePath, '**', '*').replace(path.sep, '/');
+    if (fileExtentionsToCache.length > 1) {
+      // Return pattern '**/*.{txt,md}'
+      return globPath + `.{${fileExtentionsToCache.join(',')}}`;
+    } else {
+      // Return pattern '**/*.txt'
+      return globPath + `.${fileExtentionsToCache[0]}`;
+    }
   }
 
   /**
