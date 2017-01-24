@@ -39,9 +39,10 @@ const DEBUG = false;
  */
 class SWCli {
   /**
-   * @private
    * This is a helper method that allows the test framework to call argv with
    * arguments without worrying about running as an actual CLI.
+   *
+   * @private
    * @param {Object} argv The value passed in via process.argv.
    * @return {Promise} Promise is returned so testing framework knows when
    * handling the request has finished.

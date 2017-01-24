@@ -23,31 +23,16 @@ import {
 } from './constants';
 
 /**
+ * The cache expiration behavior allows you define an expiration and / or
+ * limit on the responses cached.
+ *
+ * @example
+ * const expirationBehavior = new goog.cacheExpiration.Behavior({
+ *   maxEntries: 2,
+ *   maxAgeSeconds: 10,
+ * });
+ *
  * @memberof module:sw-cache-expiration
- *
- * @example
- * // Used as an automatically invoked as "behavior" by a RequestWrapper:
- *
- * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
- *   cacheName: 'runtime-cache',
- *   behaviors: [
- *     new goog.cacheExpiration.Behavior({maxEntries: 10})
- *   ]
- * });
- *
- * // Set up a route to match any requests made against the example.com domain.
- * // The requests will be handled with a stale-while-revalidate policy, and the
- * // cache size will be capped at 10 entries.
- * const route = new goog.routing.RegExpRoute({
- *   match: ({url}) => url.domain === 'example.com',
- *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
- * });
- *
- * @example
- * // Explicitly invoked usage independent of the goog.routing framework, via
- * // the expireOldEntries() method:
- *
- * // TODO: Write sample code.
  */
 class Behavior {
   /**
@@ -55,7 +40,7 @@ class Behavior {
    * [`Cache`](https://developer.mozilla.org/en-US/docs/Web/API/Cache) once
    * certain criteria—maximum number of entries, age of entry, or both—is met.
    *
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {Number} [input.maxEntries] The maximum size of the cache. Entries
    *        will be expired using a LRU policy once the cache reaches this size.
    * @param {Number} [input.maxAgeSeconds] The maximum age for fresh entries.
@@ -81,7 +66,7 @@ class Behavior {
    * Returns a promise for the IndexedDB database used to keep track of state.
    *
    * @private
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @return {DB} An open DB instance.
    */
@@ -103,7 +88,7 @@ class Behavior {
    * Returns a promise for an open Cache instance named `cacheName`.
    *
    * @private
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @return {Cache} An open Cache instance.
    */
@@ -129,7 +114,7 @@ class Behavior {
    * to perform the same freshness check.
    *
    * @private
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {Response} input.cachedResponse The `Response` object that's been
    *        read from a cache and whose freshness should be checked.
    * @return {Response|null} Either the `cachedResponse`, if it's fresh, or
@@ -150,11 +135,16 @@ class Behavior {
    * If `maxAgeSeconds` or the `Date` header is not set then it will
    * default to returning `true`.
    *
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {Response} input.cachedResponse The `Response` object that's been
    *        read from a cache and whose freshness should be checked.
    * @return {boolean} Either the `true`, if it's fresh, or `false` if the
    *          `Response` is older than `maxAgeSeconds`.
+   *
+   * @example
+   * expirationBehavior.isResponseFresh({
+   *   cachedResponse: responseFromCache
+   * });
    */
   isResponseFresh({cachedResponse} = {}) {
     // Only bother checking for freshness if we have a valid response and if
@@ -188,7 +178,7 @@ class Behavior {
    * [`expireEntries`](#expireEntries) provides equivalent behavior.
    *
    * @private
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {string} input.cacheName Name of the cache the responses belong to.
    * @param {Response} input.newResponse The new value in the cache.
    */
@@ -205,10 +195,16 @@ class Behavior {
   /**
    * Updates the timestamp stored in IndexedDB for `url` to be equal to `now`.
    *
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
-   * @param {string} input.url
+   * @param {string} input.url The URL for the entry to update.
    * @param {Number} [input.now] A timestamp. Defaults to the current time.
+   *
+   * @example
+   * expirationBehavior.updateTimestamp({
+   *   cacheName: 'example-cache-name',
+   *   url: '/example-url'
+   * });
    */
   async updateTimestamp({cacheName, url, now}) {
     assert.isType({url}, 'string');
@@ -231,10 +227,15 @@ class Behavior {
    * Expires entries, both based on the the maximum age and the maximum number
    * of entries, depending on how this instance is configured.
    *
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @param {Number} [input.now] A timestamp. Defaults to the current time.
    * @return {Array<string>} A list of the URLs that were expired.
+   *
+   * @example
+   * expirationBehavior.expireEntries({
+   *   cacheName: 'example-cache-name'
+   * });
    */
   async expireEntries({cacheName, now} = {}) {
     if (typeof now === 'undefined') {
@@ -263,7 +264,7 @@ class Behavior {
    * Expires entries based on the the maximum age.
    *
    * @private
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @param {Number} [input.now] A timestamp.
    * @return {Array<string>} A list of the URLs that were expired.
@@ -298,7 +299,7 @@ class Behavior {
    * Expires entries base on the the maximum cache size.
    *
    * @private
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @return {Array<string>} A list of the URLs that were expired.
    */
@@ -333,7 +334,7 @@ class Behavior {
    * Storage API and from IndexedDB.
    *
    * @private
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @param {Array<string>} urls The URLs to delete.
    */

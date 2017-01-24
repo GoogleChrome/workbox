@@ -14,7 +14,35 @@
 */
 
 /**
- * sw-cache-expiration Module
+ * The cache expiration behavior allows you define an expiration and/or
+ * limit on the responses cached.
+ *
+ * This can be used to ensure that responses aren't used when they are stale
+ * and that the cache size doesn't grow endlessly.
+ *
+ * @example <caption>Used as an automatically invoked "behavior".</caption>
+ *
+ * // Add cache expiration behavior to `RequestWrapper`.
+ * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+ *   cacheName: 'runtime-cache',
+ *   behaviors: [
+ *     // The cache size will be capped at 10 entries.
+ *     new goog.cacheExpiration.Behavior({maxEntries: 10})
+ *   ]
+ * });
+ *
+ * // Add `RequestWrapper` to a runtime cache handler.
+ * const route = new goog.routing.RegExpRoute({
+ *   match: ({url}) => url.domain === 'example.com',
+ *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
+ * });
+ *
+ * @example <caption>To use the cache expiration as it's own module, you can
+ * call the <code>expireEntries()</code> method to clean up the cache.</caption>
+ * expirationBehavior.expireEntries({
+ *   cacheName: 'example-cache-name'
+ * });
+ *
  * @module sw-cache-expiration
  */
 
