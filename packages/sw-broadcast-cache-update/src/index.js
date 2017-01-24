@@ -14,7 +14,44 @@
 */
 
 /**
- * sw-broadcast-cache-update Module
+ * A helper library that uses the Broadcast Channel API to announce when
+ * two Response objects differ.
+ *
+ * The main use of this module will be instantiating a new `Behavior` and
+ * passing it to a
+ * {@link  module:sw-runtime-caching.RequestWrapper|RequestWrapper},
+ * as shown in the first example below.
+ *
+ * You can listen for updates from your web app by adding an event listener on
+ * a browser channel with the same channel name as the Behavior,
+ * which 'cache-updates' in the second example below.
+ *
+ * @example <caption>Using the broadcastCacheUpdate.Behavior class in a
+ * service worker.</caption>
+ *
+ * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+ *   cacheName: 'text-files',
+ *   behaviors: [
+ *     new goog.broadcastCacheUpdate.Behavior({channelName: 'cache-updates'}),
+ *   ],
+ * });
+ *
+ * const route = new goog.routing.RegExpRoute({
+ *   regExp: /\.txt$/,
+ *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper}),
+ * });
+ *
+ * const router = new goog.routing.Router();
+ * router.registerRoute({route});
+ *
+ * @example <caption>Listening for the broadcast message in the
+ * window.</caption>
+ *
+ * const updateChannel = new BroadcastChannel('cache-updates');
+ * updateChannel.addEventListener('message', event => {
+ *   console.log(`Cache updated: ${event.data.payload.updatedUrl}`);
+ * });
+ *
  * @module sw-broadcast-cache-update
  */
 

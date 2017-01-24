@@ -17,18 +17,17 @@ import assert from '../../../../lib/assert';
 import {cacheUpdatedMessageType} from './constants';
 
 /**
- * Uses the {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel API}
- * to notify interested subscribers about a change to a cached resource.
- *
  * You would not normally call this method directly; it's called automatically
  * by an instance of the {@link Behavior} class. It's exposed here for the
  * benefit of developers who would rather not use the full `Behavior`
  * implementation.
  *
- * The message that's posted takes the following format, inspired by the
+ * Calling this will dispatch a message on the provided {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel}
+ * to notifiy interested subscribers about a change to a cached resource.
+ *
+ * The message that's posted has a formation inspired by the
  * [Flux standard action](https://github.com/acdlite/flux-standard-action#introduction)
- * format. (Usage of [Flux](https://facebook.github.io/flux/) itself is not at
- * all required.)
+ * format like so:
  *
  * ```
  * {
@@ -41,8 +40,18 @@ import {cacheUpdatedMessageType} from './constants';
  * }
  * ```
  *
+ * (Usage of [Flux](https://facebook.github.io/flux/) itself is not at
+ * all required.)
+ *
+ * @example
+ * goog.broadcastCacheUpdate.broadcastUpdate({
+ *   channel: new BroadcastChannel('Channel Name'),
+ *   cacheName: 'example-cache-name',
+ *   url: '/',
+ *   source: 'custom-library'
+ * });
+ *
  * @memberof module:sw-broadcast-cache-update
- * @type {function}
  *
  * @param {Object} input
  * @param {BroadcastChannel} input.channel The `BroadcastChannel` to use.
