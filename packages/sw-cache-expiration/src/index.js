@@ -20,8 +20,7 @@
  * This can be used to ensure that responses aren't used when they are stale
  * and that the cache size doesn't grow endlessly.
  *
- * @example <caption>Used as an automatically invoked as "behavior" by a
- * <code>RequestWrapper</code>.</caption>
+ * @example <caption>Used as an automatically invoked "behavior".</caption>
  *
  * // Add cache expiration behavior to `RequestWrapper`.
  * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
