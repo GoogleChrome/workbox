@@ -16,8 +16,13 @@
 /**
  * The value `'CACHE_UPDATED'`, used as the `type` field of the update message.
  *
- * @memberof module:sw-broadcast-cache-update
  * @type {string}
+ *
+ * @example
+ * // Prints 'CACHE_UPDATED'
+ * console.log(goog.broadcastCacheUpdate.cacheUpdatedMessageType);
+ *
+ * @memberof module:sw-broadcast-cache-update
  */
 const cacheUpdatedMessageType = 'CACHE_UPDATED';
 
@@ -27,6 +32,8 @@ const cacheUpdatedMessageType = 'CACHE_UPDATED';
  *
  * @private
  * @type {Array<string>}
+ *
+ * @memberof module:sw-broadcast-cache-update
  */
 const defaultHeadersToCheck = [
   'content-length',
@@ -40,6 +47,8 @@ const defaultHeadersToCheck = [
  *
  * @private
  * @type {string}
+ *
+ * @memberof module:sw-broadcast-cache-update
  */
 const defaultSource = 'sw-broadcast-cache-update';
 

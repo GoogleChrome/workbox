@@ -19,8 +19,18 @@ import assert from '../../../../lib/assert';
  * Given two `Response`s, compares several header values to see if they are
  * the same or not.
  *
+ * @example
+ * const responseIsSame = responsesAreSame({
+ *   first: firstResponse,
+ *   second: secondResponse,
+ *   headersToCheck: [
+ *     'content-length',
+ *     'etag',
+ *     'last-modified',
+ *   ]
+ * });
+ *
  * @memberof module:sw-broadcast-cache-update
- * @type {function}
  *
  * @param {Object} input
  * @param {Response} input.first One of the `Response`s.

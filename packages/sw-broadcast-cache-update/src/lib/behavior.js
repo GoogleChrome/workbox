@@ -19,30 +19,31 @@ import responsesAreSame from './responses-are-same';
 import {defaultHeadersToCheck, defaultSource} from './constants';
 
 /**
- * @memberof module:sw-broadcast-cache-update
+ * Can be used to compare two [Responses](https://developer.mozilla.org/en-US/docs/Web/API/Response)
+ * and uses the {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel API}
+ * to notify interested parties when those Responses differ.
  *
- * @example
- * // Used as an automatically invoked as "behavior" by a RequestWrapper:
+ * For efficiency's sake, the underlying response bodies are not compared;
+ * only specific response headers are checked.
  *
+ * @example <caption>Added as a "behavior" to a RequestWrapper to
+ * automatically dispatch messages</caption>
+ *
+ * // Messages will be dispatched by RequestWrapper whenever the cache
+ * // is updated.
  * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
  *   cacheName: 'runtime-cache',
  *   behaviors: [
  *     new goog.broadcastCacheUpdate.Behavior({channelName: 'cache-updates'})
  *   ]
  * });
- *
- * // Set up a route to match any requests made against the example.com domain.
- * // The requests will be handled with a stale-while-revalidate policy, and the
- * // cache update notification behavior, as configured in requestWrapper, will
- * // be automatically applied.
  * const route = new goog.routing.RegExpRoute({
  *   match: ({url}) => url.domain === 'example.com',
  *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
  * });
  *
- * @example
- * // Explicitly invoked usage independent of the goog.routing framework, via
- * // the notifyIfUpdated() method:
+ * @example <caption>Trigger a message by manually calling
+ * the `notifyIfUpdated()` method.</caption>
  *
  * const cacheUpdateBehavior = new goog.broadcastCacheUpdates.Behavior({
  *   channelName: 'cache-updates'
@@ -64,27 +65,22 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  *     cacheName
  *   });
  * }
+ *
+ * @memberof module:sw-broadcast-cache-update
  */
 class Behavior {
   /**
-   * Creates a new `Behavior` instance, which is used to compare two
-   * [Responses](https://developer.mozilla.org/en-US/docs/Web/API/Response)
-   * and use the {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel API}
-   * to notify interested parties when those Responses differ.
+   * To instantiate this Class you must provide a channel name which
+   * will be used to when creating a broadcast channel to dispatch messages on.
    *
-   * For efficiency's sake, the underlying response bodies are not compared;
-   * only specific response headers are checked.
-   *
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {string} input.channelName The name that will be used when creating
-   *        the [`BroadcastChannel`](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel/BroadcastChannel).
+   *        the `BroadcastChannel`.
    * @param {Array<string>} input.headersToCheck A list of headers that will be
-   *        used to determine whether the `Response`s differ. If not provided,
-   *        the values `['content-length', 'etag', 'last-modified']` are used.
-   * @param {string} input.source An attribution value that will be used in the
-   *        broadcast message to indicate where the update originated. If not
-   *        provided, a
-   *        {@link constants#defaultSource|default value} will be used.
+   *        used to determine whether the `Response`s differ. Defaults to
+   *        `['content-length', 'etag', 'last-modified']`.
+   * @param {string} input.source An attribution value that indicates where
+   *        the update originated. Defaults to 'sw-broadcast-cache-update'.
    */
   constructor({channelName, headersToCheck, source}) {
     assert.isType({channelName}, 'string');
