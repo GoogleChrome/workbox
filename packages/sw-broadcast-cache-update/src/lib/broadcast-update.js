@@ -23,7 +23,7 @@ import {cacheUpdatedMessageType} from './constants';
  * implementation.
  *
  * Calling this will dispatch a message on the provided {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel}
- * to notifiy interested subscribed about a change to a cached resource.
+ * to notifiy interested subscribers about a change to a cached resource.
  *
  * The message that's posted has a formation inspired by the
  * [Flux standard action](https://github.com/acdlite/flux-standard-action#introduction)
