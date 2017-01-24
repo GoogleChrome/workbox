@@ -59,11 +59,11 @@ class BackgroundSyncQueue {
 	 *
 	 * @param {Object} [input]
 	 * @param {Number} [input.maxRetentionTime = 5 days] Time for which a queued
-	 * request will live in the queue(irespective of failed/success of replay)
+	 * request will live in the queue(irespective of failed/success of replay).
 	 * @param {Object} [input.callbacks] Callbacks for successfull/ failed
-	 * replay of a request
+	 * replay of a request.
 	 * @param {string} [input.queueName] Queue name inside db in which
-	 * requests will be queued
+	 * requests will be queued.
 	 * @param {BroadcastChannel=} [input.broadcastChannel] BroadcastChannel
 	 * which will be used to publish messages when the request will be queued.
 	 */
@@ -100,7 +100,7 @@ class BackgroundSyncQueue {
 	 * @param {Request} input.request The request which is to be queued
 	 *
 	 * @return {Promise} Promise which resolves when the request is pushed in
-	 * the queue
+	 * the queue.
 	 */
 	pushIntoQueue({request}) {
 		assert.isInstance({request}, Request);
@@ -108,15 +108,16 @@ class BackgroundSyncQueue {
 	}
 
 	/**
-	 * This function is a call wrapper over `pushIntoQueue` used by higher
-	 * level framework. If you are writting the fetch handler for background
-	 * sync manually, please ignore this.
+	 * Wraps `pushIntoQueue` in a callback used by higher level framework.
+	 * This function pushes a given request into the IndexedDb Queue.
+	 * NOTE: If you are writting the fetch handler for background sync manually,
+	 * please ignore this.
 	 *
 	 * @param {Object} input
 	 * @param {Request} input.request The request which is to be queued
 	 *
 	 * @return {Promise} Promise which resolves when the request is pushed in
-	 * the queue
+	 * the queue.
 	 */
 	fetchDidFail({request}) {
 		return this.pushIntoQueue({request});
