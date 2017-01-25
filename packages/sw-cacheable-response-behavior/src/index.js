@@ -14,7 +14,30 @@
 */
 
 /**
- * sw-cacheable-response-behavior Module
+ * Given a Response object this behaviour determines whether
+ * it's cacheable, based on a specific configuration.
+ *
+ * @example <caption>Used as an automatically invoked
+ * "behavior".</caption>
+ *
+ * // The responses will be cached if the response code is 0, 200, or 404, and
+ * // will not be cached otherwise.
+ * const cacheableBehavior = new goog.cacheableResponse.Behavior({
+ *   statuses: [0, 200, 404]
+ * });
+ *
+ * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+ *   cacheName: 'runtime-cache',
+ *   behaviors: [
+ *     cacheableBehavior
+ *   ]
+ * });
+ *
+ * const route = new goog.routing.RegExpRoute({
+ *   match: ({url}) => url.domain === 'example.com',
+ *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
+ * });
+ *
  * @module sw-cacheable-response-behavior
  */
 

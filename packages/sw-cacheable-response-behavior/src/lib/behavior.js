@@ -16,34 +16,22 @@
 import assert from '../../../../lib/assert';
 
 /**
+ * Use this behavior to cache responses with certain HTTP status codes or
+ * header values.
+ *
+ * Defining both status codes and headers will cache requests with a matching
+ * status code and a matching header.
+ *
+ * @example
+ * new goog.cacheableResponse.Behavior({
+ *   statuses: [0, 200, 404],
+ *   headers: {
+ *     'Example-Header-1': 'Header-Value-1'
+ *     'Example-Header-1': 'Header-Value-2'
+ *   }
+ * })
+ *
  * @memberof module:sw-cacheable-response-behavior
- *
- * @example
- * // Used as an automatically invoked as "behavior" by a RequestWrapper:
- *
- * const cacheName = 'runtime-cache';
- * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
- *   cacheName,
- *   behaviors: [
- *     new goog.cacheableResponse.Behavior({
- *       statuses: [0, 200, 404]
- *     })
- *   ]
- * });
- *
- * // Set up a route to match any requests made against the example.com domain.
- * // The responses will be cached if the response code is 0, 200, or 404, and
- * // will not be cached otherwise.
- * const route = new goog.routing.RegExpRoute({
- *   match: ({url}) => url.domain === 'example.com',
- *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
- * });
- *
- * @example
- * // Explicitly invoked usage independent of the goog.routing framework, via
- * // the isResponseCacheable() method:
- *
- * // TODO: Write sample code.
  */
 class Behavior {
   /**
@@ -53,7 +41,7 @@ class Behavior {
    * If multiple criteria are present (e.g. both `statuses` and `headers`), then
    * the `Response` needs to meet all of the criteria to be cacheable.
    *
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {Array<Number>} [input.statuses] The status codes that are
    *        checked when determining whether a `Response` is cacheable.
    * @param {Object<String,String>} [input.headers] The header values that are
@@ -81,7 +69,7 @@ class Behavior {
    * when used outside of `goog.runtimeCaching`.
    *
    * @private
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {Response} input.newResponse The response that might be cached.
    * @return {boolean} `true` if the `Response` is cacheable, based on the
    *          configuration of this object, and `false` otherwise.
@@ -95,7 +83,7 @@ class Behavior {
    * configuration of this object.
    *
    * @private
-   * @param {Object} input The input object to this function.
+   * @param {Object} input
    * @param {Response} input.newResponse The response that might be cached.
    * @return {boolean} `true` if the `Response` is cacheable, based on the
    *          configuration of this object, and `false` otherwise.
