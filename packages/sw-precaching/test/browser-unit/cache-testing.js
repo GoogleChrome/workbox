@@ -365,4 +365,52 @@ describe('sw-precaching Test Revisioned Caching', function() {
       return Promise.all(promises);
     });
   });
+
+  it('should manage revisioned requests wtih cookies', function() {
+    return window.goog.swUtils.activateSW('data/response-types/cookie-revisioned-sw.js')
+    .then((iframe) => {
+      const promises = goog.__TEST_DATA['cookie'].map((cookieRequest) => {
+        return iframe.contentWindow.fetch(cookieRequest)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Response NOT ok.');
+          }
+          return response.json();
+        })
+        .then((response) => {
+          // The /__test/cookie/ endpoint simply returns a request body
+          // of all the cookies as JSOn so we should be able to see the
+          // swtesting cookie.
+          if(!response.swtesting) {
+            throw new Error('sw-testing cookie not found.');
+          }
+        });
+      });
+      return Promise.all(promises);
+    });
+  });
+
+  it('should manage unrevisioned requests wtih cookies', function() {
+    return window.goog.swUtils.activateSW('data/response-types/cookie-unrevisioned-sw.js')
+    .then((iframe) => {
+      const promises = goog.__TEST_DATA['cookie'].map((cookieRequest) => {
+        return iframe.contentWindow.fetch(cookieRequest)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Response NOT ok.');
+          }
+          return response.json();
+        })
+        .then((response) => {
+          // The /__test/cookie/ endpoint simply returns a request body
+          // of all the cookies as JSOn so we should be able to see the
+          // swtesting cookie.
+          if(!response.swtesting) {
+            throw new Error('sw-testing cookie not found.');
+          }
+        });
+      });
+      return Promise.all(promises);
+    });
+  });
 });
