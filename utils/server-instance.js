@@ -15,7 +15,7 @@
 
 const path = require('path');
 const express = require('express');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 const serveIndex = require('serve-index');
 const serveStatic = require('serve-static');
 
