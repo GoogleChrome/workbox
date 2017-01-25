@@ -35,6 +35,10 @@
     "lodash.template": "^4.4.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
+    "sw-lib": "0.0.7",
     "update-notifier": "^1.0.3"
+  },
+  "devDependencies": {
+    "fs-extra": "^2.0.0"
   }
 }

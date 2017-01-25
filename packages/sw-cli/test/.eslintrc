@@ -4,6 +4,7 @@
   },
   "rules": {
     "no-console": 0,
-    "max-len": 0
+    "max-len": 0,
+    "no-invalid-this": 0,
   }
 }

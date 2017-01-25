@@ -175,15 +175,30 @@ class SWCli {
 
       const excludeFiles = [
         fileManifestName,
-        relativePath, serviceWorkerName,
+        serviceWorkerName,
+        relativePath,
       ];
+      let swlibPath;
+      return this._copySWLibFile(rootDirectory)
+      .then((libPath) => {
+        swlibPath = libPath;
+        excludeFiles.push(path.basename(swlibPath));
+      })
+      .then(() => {
+        const manifestEntries = this._getFileManifestEntries(
+          globs, rootDirectory, excludeFiles);
 
-      return this._buildFileManifestFromGlobs(
-        path.join(rootDirectory, fileManifestName),
-        rootDirectory,
-        globs,
-        excludeFiles
-      );
+        return this._buildServiceWorker(
+          path.join(rootDirectory, serviceWorkerName),
+          manifestEntries,
+          swlibPath,
+          rootDirectory
+        );
+
+        // If SW inlines the manifest entires, the file manifest is not needed
+        // return this._writeFilemanifest(
+        //  path.join(rootDirectory, fileManifestName), manifestEntries);
+      });
     });
   }
 
@@ -429,17 +444,14 @@ class SWCli {
     });
   }
 
-  _buildFileManifestFromGlobs(manifestFilePath, rootDirectory,
-      globs, excludeFiles) {
+  _getFileManifestEntries(globs, rootDirectory, excludeFiles) {
     const globbedFiles = globs.reduce((accumulated, globPattern) => {
       const fileDetails = this._getFileManifestDetails(
         rootDirectory, globPattern);
       return accumulated.concat(fileDetails);
     }, []);
 
-    const manifestEntries = this._filterFiles(globbedFiles, excludeFiles);
-
-    return this._writeFilemanifest(manifestFilePath, manifestEntries);
+    return this._filterFiles(globbedFiles, excludeFiles);
   }
 
   _writeFilemanifest(manifestFilePath, manifestEntries) {
@@ -563,6 +575,75 @@ class SWCli {
       logHelper.error(errors['unable-to-get-file-hash'], err);
       throw err;
     }
+  }
+
+  _buildServiceWorker(swPath, manifestEntries, swlibPath, rootDirectory) {
+    try {
+      mkdirp.sync(path.dirname(swPath));
+    } catch (err) {
+      logHelper.error(errors['unable-to-make-sw-directory'], err);
+      return Promise.reject(err);
+    }
+
+    const templatePath = path.join(
+      __dirname, '..', 'lib', 'templates', 'sw.js.tmpl');
+    return new Promise((resolve, reject) => {
+      fs.readFile(templatePath, 'utf8', (err, data) => {
+        if (err) {
+          logHelper.error(errors['read-sw-template-failure'], err);
+          return reject(err);
+        }
+        resolve(data);
+      });
+    })
+    .then((templateString) => {
+      const relSwlibPath = path.relative(rootDirectory, swlibPath);
+
+      try {
+        return template(templateString)({
+          manifestEntries: manifestEntries,
+          swlibPath: relSwlibPath,
+        });
+      } catch (err) {
+        logHelper.error(errors['populating-sw-tmpl-failed'], err);
+        throw err;
+      }
+    })
+    .then((populatedTemplate) => {
+      return new Promise((resolve, reject) => {
+        fs.writeFile(swPath, populatedTemplate, (err) => {
+          if (err) {
+            logHelper.error(errors['sw-write-failure'], err);
+            return reject(err);
+          }
+
+          resolve();
+        });
+      });
+    });
+  }
+
+  _copySWLibFile(rootDirectory) {
+    const swlibModulePath = path.join(__dirname, '..', '..', 'node_modules',
+      'sw-lib');
+    const swlibPkg = require(path.join(swlibModulePath, 'package.json'));
+
+    const swlibOutputPath = path.join(rootDirectory,
+      `sw-lib.v${swlibPkg.version}.min.js`);
+    return new Promise((resolve, reject) => {
+      const swlibBuiltPath = path.join(swlibModulePath, 'build',
+        'sw-lib.min.js');
+
+      const stream = fs.createReadStream(swlibBuiltPath)
+        .pipe(fs.createWriteStream(swlibOutputPath));
+      stream.on('error', function(err) {
+        logHelper.error(errors['unable-to-copy-sw-lib'], err);
+        reject(err);
+      });
+      stream.on('finish', function() {
+        resolve(swlibOutputPath);
+      });
+    });
   }
 }
 
