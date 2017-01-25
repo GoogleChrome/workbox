@@ -13,7 +13,12 @@ class BaseCacheManager {
    */
   constructor(cacheName) {
     this._entriesToCache = new Map();
-    this._requestWrapper = new RequestWrapper({cacheName});
+    this._requestWrapper = new RequestWrapper({
+      cacheName,
+      fetchOptions: {
+        credentials: 'same-origin',
+      },
+    });
     this._cacheName = this._requestWrapper.cacheName;
   }
 
