@@ -5,6 +5,10 @@ const errors = require('../src/lib/errors.js');
 describe('Copy SW Lib', function() {
   const INJECTED_ERROR = new Error('Injected Error');
 
+  afterEach(function() {
+    cliHelper.endLogCapture();
+  });
+
   const checkErrors = (caughtError, errorCode, checkInjectedError) => {
     if (!caughtError) {
       throw new Error('Expected test to throw an error.');

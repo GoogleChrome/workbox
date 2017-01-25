@@ -49,7 +49,7 @@ describe('Test Example Projects', function() {
     });
   });
 
-  it('should be able to generate manifest for example-1', function() {
+  it('should be able to generate a service for example-1', function() {
     this.timeout(60 * 1000);
 
     fse.copySync(
@@ -104,19 +104,33 @@ describe('Test Example Projects', function() {
     const cli = new SWCli();
     return cli.handleCommand('generate-sw')
     .then(() => {
-      const injectedSelf = {};
-      const manifestContent =
-        fs.readFileSync(path.join(exampleProject, manifestName));
-      // To ensure the manifest is valid JavaScript we can run it
+      const injectedSelf = {
+        goog: {
+          swlib: {
+            cacheRevisionedAssets: (fileManifest) => {
+              fileManifestOutput = fileManifest;
+            },
+          },
+        },
+      };
+      const swContent =
+        fs.readFileSync(path.join(exampleProject, swName));
+      // To smoke test the service worker is valid JavaScript we can run it
       // in Node's JavaScript parsed. `runInNewContext` comes without
       // any of the usual APIs (i.e. no require API, no console API, nothing)
       // so we inject a `self` API to emulate the service worker environment.
-      vm.runInNewContext(manifestContent, {
+      vm.runInNewContext(swContent, {
         self: injectedSelf,
+        importScripts: () => {
+          // NOOP
+        },
       });
 
       // Check the manifest is defined by the manifest JS.
-      expect(injectedSelf['__file_manifest']).to.exist;
+      expect(fileManifestOutput).to.exist;
+
+      const swlibPkg = require(
+        path.join(__dirname, '..', 'node_modules', 'sw-lib', 'package.json'));
 
       // Check the files that we expect to be defined are.
       let expectedFiles = glob.sync(
@@ -124,14 +138,13 @@ describe('Test Example Projects', function() {
         ignore: [
           `${exampleProject}/${manifestName}`,
           `${exampleProject}/${swName}`,
-          `${exampleProject}/sw-lib.min.js`,
+          `${exampleProject}/sw-lib.v${swlibPkg.version}.min.js`,
         ],
       });
       expectedFiles = expectedFiles.map((file) => {
         return `/${path.relative(exampleProject, file).replace(path.sep, '/')}`;
       });
 
-      fileManifestOutput = injectedSelf['__file_manifest'];
       if (fileManifestOutput.length !== expectedFiles.length) {
         console.error('File Manifest: ', fileManifestOutput);
         console.error('Globbed Files: ', expectedFiles);
@@ -161,19 +174,32 @@ describe('Test Example Projects', function() {
       expectedFiles.length.should.equal(0);
     })
     .then(() => {
-      // Rerun and ensure that the manifest is excluded from the output.
+      // Rerun and ensure the sw and sw-lib files are excluded from the output.
       return cli.handleCommand('generate-sw');
     })
     .then(() => {
-      const injectedSelf = {};
-      const manifestContent =
-        fs.readFileSync(path.join(exampleProject, manifestName));
-      vm.runInNewContext(manifestContent, {
+      const injectedSelf = {
+        goog: {
+          swlib: {
+            cacheRevisionedAssets: (fileManifest) => {
+              fileManifestOutput = fileManifest;
+            },
+          },
+        },
+      };
+      const swContent =
+        fs.readFileSync(path.join(exampleProject, swName));
+      // To smoke test the service worker is valid JavaScript we can run it
+      // in Node's JavaScript parsed. `runInNewContext` comes without
+      // any of the usual APIs (i.e. no require API, no console API, nothing)
+      // so we inject a `self` API to emulate the service worker environment.
+      vm.runInNewContext(swContent, {
         self: injectedSelf,
+        importScripts: () => {
+          // NOOP
+        },
       });
-
-      const fileManifest = injectedSelf['__file_manifest'];
-      fileManifest.forEach((manifestEntry) => {
+      fileManifestOutput.forEach((manifestEntry) => {
         if (manifestEntry.url === `/${manifestName}`) {
           throw new Error('The manifest itself was not excluded from the generated file manifest.');
         }
