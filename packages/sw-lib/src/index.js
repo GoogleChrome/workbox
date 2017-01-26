@@ -35,7 +35,7 @@ if (!assert.isSWEnv()) {
  *
  * console.log(self.goog.swlib);
  *
- * @example <caption>Cache some assets and register routes.</caption>
+ * @example <caption>Caching assets and registering routes.</caption>
  *
  * goog.swlib.cacheRevisionedAssets([
  *   {

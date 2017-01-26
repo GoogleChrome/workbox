@@ -65,9 +65,9 @@ class Router {
    *    origin.
    * 1. A regex that will be tested against request URL's.
    * 1. A [Route]{@link module:sw-lib.SWLib#Route} instance.
-   * @param {function|Handler} handler The handler argument is ignored if
-   * you pass in a Route object, otherwise it's required. The handler
-   * will be called when the route is caught by the capture criteria.
+   * @param {function|Handler} handler Called when the route is caught by the
+   * capture criteria. The handler argument is ignored if
+   * you pass in a Route object, otherwise it's required.
    * If required, provide a function or a runtime caching strategy.
    */
   registerRoute(capture, handler) {
