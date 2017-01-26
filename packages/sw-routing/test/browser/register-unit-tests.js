@@ -1,11 +1,11 @@
-describe('Service Worker Unit Tests', function() {
+describe('Service Worker Unit Test Registration', function() {
   beforeEach(() => window.goog.swUtils.cleanState());
 
   const swUnitTests = [
-    'sw-unit/namespace.js',
-    'sw-unit/route.js',
-    'sw-unit/express-route.js',
-    'sw-unit/regexp-route.js',
+    'unit/namespace.js',
+    'unit/route.js',
+    'unit/express-route.js',
+    'unit/regexp-route.js',
   ];
 
   swUnitTests.forEach((swUnitTestPath) => {
