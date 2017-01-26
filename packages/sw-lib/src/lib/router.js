@@ -15,18 +15,18 @@
 
 /* eslint-env browser, serviceworker */
 
-import {Router, ExpressRoute, RegExpRoute, Route}
+import {Router as SWRoutingRouter, ExpressRoute, RegExpRoute, Route}
   from '../../../sw-routing/src/index.js';
 import ErrorFactory from './error-factory.js';
 
 /**
- * A simple class that pulls together a few different pieces from the
- * Router Module to surface them in a friendly API.
+ * Adds a friendly API on top of the router from the
+ * {@link module:sw-routing|sw-routing module}.
  *
  * @example <caption>How to define a simple route with caching
  * strategy.</caption>
  *
- * self.goog.swlib.router.registerRoute('/about', ....);
+ * goog.swlib.router.registerRoute('/about', goog.swlib.cacheFirst());
  *
  * @example <caption>How to define a simple route with custom caching
  * strategy.</caption>
@@ -38,46 +38,23 @@ import ErrorFactory from './error-factory.js';
  *   // The FetchEvent to handle
  *   console.log(args.event);
  *
- *   // The parameters from the matching route.
+ *   // The parameters from the matching route (Commonly
+ *   // used with Regex / Express routes).
  *   console.log(args.params);
  *
  *   // Return a promise that resolves with a Response.
  *   return fetch(args.url);
  * }));
  *
- * @example <caption>How to define a route using a Route instance.</caption>
- *
- * const routeInstance = new goog.swlib.Route({
- *   match: (url) => {
- *     // Return true or false
- *     return true;
- *   },
- *   handler: {
- *     handle: (args) => {
- *       // The requested URL
- *       console.log(args.url);
- *
- *       // The FetchEvent to handle
- *       console.log(args.event);
- *
- *       // The parameters from the matching route.
- *       console.log(args.params);
- *
- *       // Return a promise that resolves with a Response.
- *       return fetch(args.url);
- *     },
- *   },
- * });
- * self.goog.swlib.router.registerRoute(routeInstance);
- *
  * @memberof module:sw-lib
  */
-class RouterWrapper {
+class Router {
   /**
-   * Constructs a new RouterWrapper.
+   * An instance of this call can be accessed via `goog.swlib.router`. You
+   * should not instantiate this class yourself.
    */
   constructor() {
-    this._router = new Router();
+    this._router = new SWRoutingRouter();
   }
 
   /**
@@ -87,10 +64,11 @@ class RouterWrapper {
    *    The only gotcha with this is that it will only capture URL's on your
    *    origin.
    * 1. A regex that will be tested against request URL's.
-   * 1. A [Route]{@link module:sw-routing.Route} instance.
-   * @param {function|Handler} handler The handler is ignored if you pass in
-   * a Route object, otherwise it's required. The handler will be called when
-   * the route is caught by the capture criteria.
+   * 1. A [Route]{@link module:sw-lib.SWLib#Route} instance.
+   * @param {function|Handler} handler Called when the route is caught by the
+   * capture criteria. The handler argument is ignored if
+   * you pass in a Route object, otherwise it's required.
+   * If required, provide a function or a runtime caching strategy.
    */
   registerRoute(capture, handler) {
     if (typeof handler === 'function') {
@@ -119,4 +97,4 @@ class RouterWrapper {
   }
 }
 
-export default RouterWrapper;
+export default Router;

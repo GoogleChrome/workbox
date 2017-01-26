@@ -15,9 +15,10 @@
 
 /* eslint-env browser, serviceworker */
 
-import RouterWrapper from './router-wrapper.js';
+import Router from './router.js';
 import ErrorFactory from './error-factory.js';
 import {PrecacheManager} from '../../../sw-precaching/src/index.js';
+import {Route} from '../../../sw-routing/src/index.js';
 import {Behavior as CacheExpirationBehavior} from
   '../../../sw-cache-expiration/src/index.js';
 import {Behavior as BroadcastCacheUpdateBehavior} from
@@ -29,19 +30,19 @@ import {
   from '../../../sw-runtime-caching/src/index.js';
 
 /**
- * This is a high level library to help with using service worker
- * precaching and run time caching.
+ * A high level library to make it as easy as possible to precache assets
+ * efficiently and define run time caching strategies.
  *
  * @memberof module:sw-lib
  */
 class SWLib {
+
   /**
-   * Initialises an instance of SWLib. An instance of this class is
-   * accessible when the module is imported into a service worker as
-   * `self.goog.swlib`.
+   * You should never need to instantiate this class. The library instantiates
+   * an instance which can be accessed by `self.goog.swlib`.
    */
   constructor() {
-    this._router = new RouterWrapper();
+    this._router = new Router();
     this._precacheManager = new PrecacheManager();
   }
 
@@ -50,12 +51,27 @@ class SWLib {
    * during the install (i.e. old files are cleared from the cache, new files
    * are added to the cache and unchanged files are left as is).
    *
-   * @example
-   * self.goog.swlib.cacheRevisionedAssets([
+   * The input needs to be an array of URL strings which having revisioning
+   * details in them otherwise the entry should be an object with `url` and
+   * `revision` parameters.
+   *
+   * @example <caption>Cache revisioned assets.</caption>
+   * // Cache a set of revisioned URLs
+   * goog.swlib.cacheRevisionedAssets([
    *     '/styles/main.1234.css',
+   *     '/images/logo.abcd.jpg'
+   * ]);
+   *
+   * // ...cacheRevisionedAssets() can also take objects to cache
+   * // non-revisioned URLs.
+   * goog.swlib.cacheRevisionedAssets([
    *     {
    *       url: '/index.html',
    *       revision: '1234'
+   *     },
+   *     {
+   *       url: '/about.html',
+   *       revision: 'abcd'
    *     }
    * ]);
    *
@@ -78,10 +94,21 @@ class SWLib {
    * should be cached with this method. All assets are cached on install
    * regardless of whether an older version of the request is in the cache.
    *
-   * @example
-   * self.goog.swlib.warmRuntimeCache([
+   * The input can be a string or a [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request).
+   *
+   * @example <caption>Unrevisioned assets can be cached too.</caption>
+   * // For unrevisioned assets that should always be downloaded
+   * // with every service worker update, use this method.
+   * goog.swlib.warmRuntimeCache([
    *     '/scripts/main.js',
-   *     new Request('/images/logo.png')
+   *     '/images/default-avater.png'
+   * ]);
+   *
+   * // warmRuntimeCache can also accept Requests, in case you need greater
+   * // control over the request.
+   * goog.swlib.warmRuntimeCache([
+   *     new Request('/images/logo.png'),
+   *     new Request('/api/data.json')
    * ]);
    *
    * @param {Array<String|Request>} unrevisionedFiles A set of urls to cache
@@ -99,67 +126,192 @@ class SWLib {
   }
 
   /**
-   * A getter for the Router Wrapper.
-   * @return {RouterWrapper} Returns the Router Wrapper
+   * The router for this library is exposed via the `router` parameter.
+   * This is an instance of the {@link  module:sw-lib.Router|Router}.
+   *
+   * @example
+   * self.goog.swlib.router.registerRoute('/', swlib.goog.cacheFirst());
+   *
+   * @type {Router}
    */
   get router() {
     return this._router;
   }
 
   /**
-   * A cache first run-time caching strategy.
-   * @param {Object} options Options object that can be used to define
-   * arguments on the caching strategy.
-   * @return {CacheFirst} The caching handler instance.
+   * If you need fine grained control of route matching and handling,
+   * use the {@link module:sw-routing.Route|Route Class} to define
+   * the desired behavior and register it to the router.
+   *
+   * This is an export of the
+   * {@link module:sw-routing.Route|sw-runtime Route Class}.
+   *
+   * @example <caption>How to define a route using a Route instance.</caption>
+   *
+   * const routeInstance = new goog.swlib.Route({
+   *   match: (url) => {
+   *     // Return true or false
+   *     return true;
+   *   },
+   *   handler: {
+   *     handle: (args) => {
+   *       // The requested URL
+   *       console.log(args.url);
+   *
+   *       // The FetchEvent to handle
+   *       console.log(args.event);
+   *
+   *       // The parameters from the matching route.
+   *       console.log(args.params);
+   *
+   *       // Return a promise that resolves with a Response.
+   *       return fetch(args.url);
+   *     },
+   *   },
+   * });
+   * self.goog.swlib.router.registerRoute(routeInstance);
+   * @type {Route}
+   */
+  get Route() {
+    return Route;
+  }
+
+  /**
+   * RuntimeStrategyOptions is just a JavaScript object, but the structure
+   * explains the options for runtime strategies used in sw-lib.
+   *
+   * See the example of how this can be used with the `cacheFirst()` caching
+   * strategy.
+   *
+   * @example
+   * const cacheFirstStrategy = goog.swlib.cacheFirst({
+   *   cacheName: 'example-cache',
+   *   cacheExpiration: {
+   *     maxEntries: 10,
+   *     maxAgeSeconds: 7 * 24 * 60 * 60
+   *   },
+   *   broadcastCacheUpdate: {
+   *     channelName: 'example-channel-name'
+   *   },
+   *   behaviors: [
+   *     // Additional Behaviors
+   *   ]
+   * });
+   *
+   * @typedef {Object} RuntimeStrategyOptions
+   * @property {String} cacheName Name of cache to use
+   * for caching (both lookup and updating).
+   * @property {Object} cacheExpiration Defining this
+   * object will add a cache expiration behaviors to this strategy.
+   * @property {Number} cacheExpiration.maxEntries
+   * The maximum number of entries to store in a cache.
+   * @property {Number} cacheExpiration.maxAgeSeconds
+   * The maximum lifetime of a request to stay in the cache before it's removed.
+   * @property {Object} broadcastCacheUpdate Defining
+   * this object will add a broadcast cache update behavior.
+   * @property {String} broadcastCacheUpdate.channelName
+   * The name of the broadcast channel to dispatch messages on.
+   * @property {Array<behaviors>} behaviors For
+   * any additional behaviors you wish to add, simply include them in this
+   * array.
+   * @memberof module:sw-lib.SWLib
+   */
+
+  /**
+   * A [cache first](https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network)
+   * run-time caching strategy.
+   *
+   *  @example
+   * const cacheFirstStrategy = goog.swlib.cacheFirst();
+   *
+   * goog.swlib.router.addRoute('/styles/*', cacheFirstStrategy);
+   *
+   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
+   * any additional caching or broadcast behaviors pass in option values.
+   * @return {module:sw-runtime-caching.CacheFirst} A CacheFirst handler.
    */
   cacheFirst(options) {
     return this._getCachingMechanism(CacheFirst, options);
   }
 
   /**
-   * A cache only run-time caching strategy.
-   * @param {Object} options Options object that can be used to define
-   * arguments on the caching strategy.
-   * @return {CacheFirst} The caching handler instance.
+   * A [cache only](https://jakearchibald.com/2014/offline-cookbook/#cache-only)
+   * run-time caching strategy.
+   *
+   * @example
+   * const cacheOnlyStrategy = goog.swlib.cacheOnly();
+   *
+   * goog.swlib.router.addRoute('/styles/*', cacheOnlyStrategy);
+   *
+   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
+   * any additional caching or broadcast behaviors pass in option values.
+   * @return {module:sw-runtime-caching.CacheOnly} The caching handler instance.
    */
   cacheOnly(options) {
     return this._getCachingMechanism(CacheOnly, options);
   }
 
   /**
-   * A network first run-time caching strategy.
-   * @param {Object} options Options object that can be used to define
-   * arguments on the caching strategy.
-   * @return {CacheFirst} The caching handler instance.
+   * A [network first](https://jakearchibald.com/2014/offline-cookbook/#network-falling-back-to-cache)
+   * run-time caching strategy.
+   *
+   * @example
+   * const networkFirstStrategy = goog.swlib.networkFirst();
+   *
+   * goog.swlib.router.addRoute('/blog/', networkFirstStrategy);
+   *
+   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
+   * any additional caching or broadcast behaviors pass in option values.
+   * @return {module:sw-runtime-caching.NetworkFirst} The caching handler
+   * instance.
    */
   networkFirst(options) {
     return this._getCachingMechanism(NetworkFirst, options);
   }
 
   /**
-   * A network only run-time caching strategy.
-   * @param {Object} options Options object that can be used to define
-   * arguments on the caching strategy.
-   * @return {CacheFirst} The caching handler instance.
+   * A [network only](https://jakearchibald.com/2014/offline-cookbook/#network-only)
+   * run-time caching strategy.
+   *
+   * @example
+   * const networkOnlyStrategy = goog.swlib.networkOnly();
+   *
+   * goog.swlib.router.addRoute('/admin/', networkOnlyStrategy);
+   *
+   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
+   * any additional caching or broadcast behaviors pass in option values.
+   * @return {module:sw-runtime-caching.NetworkOnly} The caching handler
+   * instance.
    */
   networkOnly(options) {
     return this._getCachingMechanism(NetworkOnly, options);
   }
 
   /**
-   * A stale while revalidate run-time caching strategy.
-   * @param {Object} options Options object that can be used to define
-   * arguments on the caching strategy.
-   * @return {CacheFirst} The caching handler instance.
+   * A [stale while revalidate](https://jakearchibald.com/2014/offline-cookbook/#stale-while-revalidate)
+   * run-time caching strategy.
+   *
+   * @example
+   * const staleWhileRevalidateStrategy = goog.swlib.staleWhileRevalidate();
+   *
+   * goog.swlib.router.addRoute('/styles/*', staleWhileRevalidateStrategy);
+   *
+   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
+   * any additional caching or broadcast behaviors pass in option values.
+   * @return {module:sw-runtime-caching.StaleWhileRevalidate} The caching
+   * handler instance.
    */
   staleWhileRevalidate(options) {
     return this._getCachingMechanism(StaleWhileRevalidate, options);
   }
 
   /**
+   * This method will add behaviors based on options passed in by the
+   * developer.
+   *
    * @private
    * @param {Class} HandlerClass The class to be configured and instantiated.
-   * @param {Object} options Options to configure the handler.
+   * @param {Object} [options] Options to configure the handler.
    * @return {Handler} A handler instance configured with the appropriate
    * behaviours
    */
