@@ -20,7 +20,7 @@ import assert from '../../../../lib/assert';
  * An implementation of a [network-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only)
  * request strategy.
  *
- * The advantage to using this vs. directly calling `fetch()` is that it will
+ * The advantage to using this versus directly calling `fetch()` is that it will
  * trigger the behaviors defined in the underlying `RequestWrapper`.
  *
  *

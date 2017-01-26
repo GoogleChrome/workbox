@@ -105,7 +105,7 @@ class RequestWrapper {
   }
 
   /**
-   * This method will open a cache and maintain a reference to that cache
+   * Opens a cache and maintains a reference to that cache
    * for future use.
    *
    * @example

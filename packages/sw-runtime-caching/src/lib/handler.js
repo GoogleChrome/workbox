@@ -50,7 +50,7 @@ class Handler {
    *        {@link module:sw-routing.Route|Route} class, then the return value
    *        from the `match` function in the Route constructor
    *        will be passed in as the `params` value.
-   * @return {Promise.<Response>} A promise solving with a response.
+   * @return {Promise.<Response>} A promise resolving with a response.
    */
   handle({event, params} = {}) {
     throw Error('This abstract method must be implemented in a subclass.');

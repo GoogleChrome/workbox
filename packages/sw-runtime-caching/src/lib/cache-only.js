@@ -20,7 +20,7 @@ import assert from '../../../../lib/assert';
  * An implementation of a [cache-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only)
  * request strategy.
  *
- * The advantage to using this vs. directly calling `caches.match()` is that
+ * The advantage to using this versus directly calling `caches.match()` is that
  * it will use the cache configuration and trigger the behaviors defined in
  * the underlying `RequestWrapper`.
  *
