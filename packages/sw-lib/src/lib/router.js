@@ -15,18 +15,17 @@
 
 /* eslint-env browser, serviceworker */
 
-import {Router, ExpressRoute, RegExpRoute, Route}
+import {Router as SWRoutingRouter, ExpressRoute, RegExpRoute, Route}
   from '../../../sw-routing/src/index.js';
 import ErrorFactory from './error-factory.js';
 
 /**
- * A simple class that pulls together a few different pieces from the
- * Router Module to surface them in a friendly API.
+ * Adds a friendly API on top of the sw-routing module.
  *
  * @example <caption>How to define a simple route with caching
  * strategy.</caption>
  *
- * self.goog.swlib.router.registerRoute('/about', ....);
+ * goog.swlib.router.registerRoute('/about', goog.swlib.cacheFirst());
  *
  * @example <caption>How to define a simple route with custom caching
  * strategy.</caption>
@@ -38,46 +37,22 @@ import ErrorFactory from './error-factory.js';
  *   // The FetchEvent to handle
  *   console.log(args.event);
  *
- *   // The parameters from the matching route.
+ *   // The parameters from the matching route (Commonly
+ *   // used with Regex / Express routes).
  *   console.log(args.params);
  *
  *   // Return a promise that resolves with a Response.
  *   return fetch(args.url);
  * }));
  *
- * @example <caption>How to define a route using a Route instance.</caption>
- *
- * const routeInstance = new goog.swlib.Route({
- *   match: (url) => {
- *     // Return true or false
- *     return true;
- *   },
- *   handler: {
- *     handle: (args) => {
- *       // The requested URL
- *       console.log(args.url);
- *
- *       // The FetchEvent to handle
- *       console.log(args.event);
- *
- *       // The parameters from the matching route.
- *       console.log(args.params);
- *
- *       // Return a promise that resolves with a Response.
- *       return fetch(args.url);
- *     },
- *   },
- * });
- * self.goog.swlib.router.registerRoute(routeInstance);
- *
  * @memberof module:sw-lib
  */
-class RouterWrapper {
+class Router {
   /**
    * Constructs a new RouterWrapper.
    */
   constructor() {
-    this._router = new Router();
+    this._router = new SWRoutingRouter();
   }
 
   /**
@@ -119,4 +94,4 @@ class RouterWrapper {
   }
 }
 
-export default RouterWrapper;
+export default Router;
