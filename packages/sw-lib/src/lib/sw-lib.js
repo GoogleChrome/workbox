@@ -130,7 +130,7 @@ class SWLib {
    * This is an instance of the {@link  module:sw-lib.Router|Router}.
    *
    * @example
-   * self.goog.swlib.router.registerRoute('/', ....);
+   * self.goog.swlib.router.registerRoute('/', swlib.goog.cacheFirst());
    *
    * @type {Router}
    */
@@ -228,7 +228,7 @@ class SWLib {
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast behaviors pass in option values.
-   * @return {CacheFirst} A CacheFirst handler.
+   * @return {module:sw-runtime-caching.CacheFirst} A CacheFirst handler.
    */
   cacheFirst(options) {
     return this._getCachingMechanism(CacheFirst, options);
@@ -243,9 +243,9 @@ class SWLib {
    *
    * goog.swlib.router.addRoute('/styles/*', cacheOnlyStrategy);
    *
-   * @param {RuntimeStrategyOptions} [options] To define any additional caching
-   * or broadcast behaviors pass in option values.
-   * @return {CacheOnly} The caching handler instance.
+   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
+   * any additional caching or broadcast behaviors pass in option values.
+   * @return {module:sw-runtime-caching.CacheOnly} The caching handler instance.
    */
   cacheOnly(options) {
     return this._getCachingMechanism(CacheOnly, options);
@@ -260,9 +260,10 @@ class SWLib {
    *
    * goog.swlib.router.addRoute('/blog/', networkFirstStrategy);
    *
-   * @param {RuntimeStrategyOptions} [options] To define any additional caching
-   * or broadcast behaviors pass in option values.
-   * @return {NetworkFirst} The caching handler instance.
+   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
+   * any additional caching or broadcast behaviors pass in option values.
+   * @return {module:sw-runtime-caching.NetworkFirst} The caching handler
+   * instance.
    */
   networkFirst(options) {
     return this._getCachingMechanism(NetworkFirst, options);
@@ -277,9 +278,10 @@ class SWLib {
    *
    * goog.swlib.router.addRoute('/admin/', networkOnlyStrategy);
    *
-   * @param {RuntimeStrategyOptions} [options] To define any additional caching
-   * or broadcast behaviors pass in option values.
-   * @return {NetworkOnly} The caching handler instance.
+   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
+   * any additional caching or broadcast behaviors pass in option values.
+   * @return {module:sw-runtime-caching.NetworkOnly} The caching handler
+   * instance.
    */
   networkOnly(options) {
     return this._getCachingMechanism(NetworkOnly, options);
@@ -294,9 +296,10 @@ class SWLib {
    *
    * goog.swlib.router.addRoute('/styles/*', staleWhileRevalidateStrategy);
    *
-   * @param {RuntimeStrategyOptions} [options] To define any additional caching
-   * or broadcast behaviors pass in option values.
-   * @return {StaleWhileRevalidate} The caching handler instance.
+   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
+   * any additional caching or broadcast behaviors pass in option values.
+   * @return {module:sw-runtime-caching.StaleWhileRevalidate} The caching
+   * handler instance.
    */
   staleWhileRevalidate(options) {
     return this._getCachingMechanism(StaleWhileRevalidate, options);

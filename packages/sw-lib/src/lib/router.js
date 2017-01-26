@@ -20,7 +20,8 @@ import {Router as SWRoutingRouter, ExpressRoute, RegExpRoute, Route}
 import ErrorFactory from './error-factory.js';
 
 /**
- * Adds a friendly API on top of the sw-routing module.
+ * Adds a friendly API on top of the router from the
+ * {@link module:sw-routing|sw-routing module}.
  *
  * @example <caption>How to define a simple route with caching
  * strategy.</caption>
@@ -49,7 +50,8 @@ import ErrorFactory from './error-factory.js';
  */
 class Router {
   /**
-   * Constructs a new RouterWrapper.
+   * An instance of this call can be accessed via `goog.swlib.router`. You
+   * should not instantiate this class yourself.
    */
   constructor() {
     this._router = new SWRoutingRouter();
@@ -62,10 +64,11 @@ class Router {
    *    The only gotcha with this is that it will only capture URL's on your
    *    origin.
    * 1. A regex that will be tested against request URL's.
-   * 1. A [Route]{@link module:sw-routing.Route} instance.
-   * @param {function|Handler} handler The handler is ignored if you pass in
-   * a Route object, otherwise it's required. The handler will be called when
-   * the route is caught by the capture criteria.
+   * 1. A [Route]{@link module:sw-lib.SWLib#Route} instance.
+   * @param {function|Handler} handler The handler argument is ignored if
+   * you pass in a Route object, otherwise it's required. The handler
+   * will be called when the route is caught by the capture criteria.
+   * If required, provide a function or a runtime caching strategy.
    */
   registerRoute(capture, handler) {
     if (typeof handler === 'function') {
