@@ -20,7 +20,7 @@ import assert from '../../../../lib/assert';
  * An implementation of a [stale-while-revalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
  * request strategy.
  *
- * In addition to updating the appropriate caches, if will also trigger any
+ * In addition to updating the appropriate caches, it will also trigger any
  * appropriate behaviors defined in the underlying `RequestWrapper`.
  *
  * @example
