@@ -23,7 +23,7 @@ import assert from '../../../../lib/assert';
  * The important thing to note with this caching strategy is that once a
  * response is cached, it will not be updated. This is useful for assets
  * that are revisioned as it caches the asset long term and doesn't waste
- * the users data.
+ * the user's data.
  *
  * @example
  * // Set up a route to match any requests made for URLs that end in .txt.
