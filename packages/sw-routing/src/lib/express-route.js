@@ -60,8 +60,8 @@ class ExpressRoute extends Route {
    *        If the path contains [named parameters](https://github.com/pillarjs/path-to-regexp#named-parameters),
    *        then an Object mapping parameter names to the corresponding value
    *        will be passed to the handler via `params`.
-   * @param {Object} input.handler - An Object with a `handle` method. That
-   *        method will be used to respond to matching requests.
+   * @param {Object} input.handler - An Object with a `handle` method that
+   *        will be used to respond to matching requests.
    * @param {string} [input.method] Only match requests that use this
    *        HTTP method. Defaults to `'GET'` if not specified.
    */
