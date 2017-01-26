@@ -20,10 +20,7 @@ export const dbVersion = '1';
 export const dbStorename = 'asset-revisions';
 
 let tmpRevisionedCacheName = `sw-precaching-revisioned-${version}`;
-let tmpUnrevisionedCacheName = `sw-precaching-unrevisioned-${version}`;
 if (self && self.registration) {
   tmpRevisionedCacheName += `-${self.registration.scope}`;
-  tmpUnrevisionedCacheName += `-${self.registration.scope}`;
 }
 export const defaultRevisionedCacheName = tmpRevisionedCacheName;
-export const defaultUnrevisionedCacheName = tmpUnrevisionedCacheName;

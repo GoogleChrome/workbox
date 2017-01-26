@@ -1,5 +1,5 @@
 import ErrorFactory from '../error-factory';
-
+import {RequestWrapper} from '../../../../sw-runtime-caching/src/index';
 /**
  * This class handles the shared logic for caching revisioned and unrevisioned
  * assets.
@@ -13,7 +13,13 @@ class BaseCacheManager {
    */
   constructor(cacheName) {
     this._entriesToCache = new Map();
-    this._cacheName = cacheName;
+    this._requestWrapper = new RequestWrapper({
+      cacheName,
+      fetchOptions: {
+        credentials: 'same-origin',
+      },
+    });
+    this._cacheName = this._requestWrapper.cacheName;
   }
 
   /**
@@ -118,9 +124,8 @@ class BaseCacheManager {
       return;
     }
 
-    let response = await fetch(precacheEntry.getNetworkRequest(), {
-      credentials: 'same-origin',
-      redirect: 'follow',
+    let response = await this._requestWrapper.fetch({
+      request: precacheEntry.getNetworkRequest(),
     });
     if (response.ok) {
       const openCache = await this._getCache();

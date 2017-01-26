@@ -22,7 +22,11 @@
  * @type {string}
  * @memberof module:sw-runtime-caching
  */
-export const defaultCacheName = `sw-runtime-caching-${self.registration.scope}`;
+let cacheName = `sw-runtime-caching`;
+ if (self && self.registration) {
+   cacheName += `-${self.registration.scope}`;
+ }
+export const defaultCacheName = cacheName;
 
 /**
  * A list of the callback method names that the RequestWrapper might trigger.

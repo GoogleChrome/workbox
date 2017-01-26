@@ -3,7 +3,6 @@ import BaseCacheManager from './base-cache-manager';
 import RequestCacheEntry from '../models/precache-entries/request-entry';
 import StringPrecacheEntry from
   '../models/precache-entries/string-precache-entry';
-import {defaultUnrevisionedCacheName} from '../constants';
 
 /**
  * This class extends a lot of the internal methods from BaseCacheManager
@@ -18,7 +17,7 @@ class UnrevisionedCacheManager extends BaseCacheManager {
    * Constructor for UnreivisionedCacheManager
    */
   constructor() {
-    super(defaultUnrevisionedCacheName);
+    super();
   }
 
   /**

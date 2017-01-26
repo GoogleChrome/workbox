@@ -15,6 +15,7 @@
 
 const path = require('path');
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const serveIndex = require('serve-index');
 const serveStatic = require('serve-static');
 
@@ -23,6 +24,7 @@ class ServerInstance {
     this._server = null;
 
     this._app = express();
+    this._app.use(cookieParser());
 
     // Test iframe is used by sw-testing-helpers to scope service workers
     this._app.get('/test/iframe/:random', function(req, res) {
@@ -58,6 +60,10 @@ class ServerInstance {
         `/__echo/filename/${statusCode}`
       );
     });
+
+    this._app.get('/__test/cookie/', function(req, res) {
+      res.send(JSON.stringify(req.cookies));
+    });
   }
 
   start(rootDirectory, port) {
@@ -71,6 +77,7 @@ class ServerInstance {
 
     this._app.use('/', express.static(rootDirectory, {
       setHeaders: (res) => {
+        res.append('Set-Cookie', `swtesting=${Date.now()}; Path=/;`);
         res.setHeader('Service-Worker-Allowed', '/');
       },
     }));
