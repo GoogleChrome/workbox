@@ -23,8 +23,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   afterEach(function() {
-    // return window.goog.swUtils.cleanState()
-    // .then(deleteIndexedDB);
+    return window.goog.swUtils.cleanState()
+    .then(deleteIndexedDB);
   });
 
   const testCacheEntries = (fileSet) => {
