@@ -12,7 +12,10 @@
  */
 
 /**
- * sw-background-sync-queue Module
+ * # sw-background-sync-queue
+ *
+ * A service worker implementation of the a queue which is triggered by
+ * the background sync event.
  *
  * @module sw-background-sync-queue
  */

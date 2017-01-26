@@ -26,6 +26,8 @@ if (!assert.isSWEnv()) {
 }
 
 /**
+ * # sw-lib
+ *
  * A high-level library that makes it easier to configure routes with
  * caching strategies as well as manage precaching
  * of assets during the install step of a service worker.

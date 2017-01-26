@@ -34,14 +34,13 @@ import {defaultMethod, validMethods} from './constants';
  * Promise for a [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response).
  *
  * Instead of implementing your own `handler`, you can use one of the
- * pre-defined runtime caching strategies from the `sw-runtime-caching` module.
+ * pre-defined runtime caching strategies from the
+ * {@link module:sw-runtime-caching|sw-runtime-caching} module.
  *
  * While you can use `Route` directly, the [`RegExpRoute`]{@link RegExpRoute}
  * and [`ExpressRoute`]{@link ExpressRoute} subclasses provide a convenient
  * wrapper with a nicer interface for using regular expressions or Express-style
  * routes as the `match` criteria.
- *
- * @memberof module:sw-routing
  *
  * @example
  * // Any navigation requests for URLs that start with /path/to/ will match.
@@ -60,20 +59,24 @@ import {defaultMethod, validMethods} from './constants';
  *
  * const router = new goog.routing.Router();
  * router.registerRoute({route});
+ *
+ * @memberof module:sw-routing
  */
 class Route {
   /**
-   * @param {function} match The function that determines whether the
+   * Constructor for Route class.
+   * @param {Object} input
+   * @param {function} input.match The function that determines whether the
    *        route matches. The function is passed an object with two properties:
    *        `url`, which is a [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL),
    *        and `event`, which is a [FetchEvent](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent).
    *        `match` should return a truthy value when the route applies, and
    *        that value is passed on to the handle function.
-   * @param {Object} handler An Object with a `handle` method. That function
-   *        is passed an object with the same `url` and `event` properties as
-   *        `match` received, along with an additional property, `params`,
-   *        set to the truthy value that `match` returned.
-   * @param {string} [method] Only match requests that use this
+   * @param {Object} input.handler An Object with a `handle` method. That
+   *        function is passed an object with the same `url` and `event`
+   *        properties as `match` received, along with an additional property,
+   *        `params`, set to the truthy value that `match` returned.
+   * @param {string} [input.method] Only match requests that use this
    *        HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({match, handler, method} = {}) {

@@ -14,7 +14,10 @@
 */
 
 /**
- * sw-routing Module
+ * # sw-routing
+ *
+ * A service worker helper library to route request URLs to handlers.
+ *
  * @module sw-routing
  */
 

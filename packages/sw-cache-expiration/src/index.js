@@ -14,6 +14,8 @@
 */
 
 /**
+ * # sw-cache-expiration
+ *
  * The cache expiration behavior allows you define an expiration and/or
  * limit on the responses cached.
  *
