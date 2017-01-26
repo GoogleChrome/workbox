@@ -116,14 +116,19 @@ class RevisionedCacheManager extends BaseCacheManager {
    * cached, false otherwise.
    */
   async _isAlreadyCached(precacheEntry) {
+    console.log('-------------------_isAlreadyCached ', precacheEntry.entryID);
+    console.log('cacheName: ', this._cacheName);
+
     const revisionDetails = await
       this._revisionDetailsModel.get(precacheEntry.entryID);
     if (revisionDetails !== precacheEntry.revision) {
+      console.log('isAlreadyCached Exit 1', precacheEntry.entryID);
       return false;
     }
 
     const openCache = await this._getCache();
     const cachedResponse = await openCache.match(precacheEntry.request);
+    console.log('isAlreadyCached Exit 2: ', precacheEntry.entryID, cachedResponse);
     return cachedResponse ? true : false;
   }
 

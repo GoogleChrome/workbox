@@ -167,14 +167,19 @@ class RequestWrapper {
    * configuring one or more behaviors that implement the `cacheWillUpdate`
    * lifecycle callback.
    *
+   * If the entry isn't cached an error will be thrown.
+   *
    * @param {Object} input
    * @param {Request} input.request The request to fetch.
    * @param {boolean} [input.waitOnCache] `true` means the method should wait
    *        for the cache.put() to complete before returning. The default value
    *        of `false` means return without waiting.
+   * @param {Request} [input.cacheKey] Supply a cacheKey if you wish to cache
+   *        the response against an alternative request to the `request`
+   *        argument.
    * @return {Promise.<Response>} The network response.
    */
-  async fetchAndCache({request, waitOnCache}) {
+  async fetchAndCache({request, waitOnCache, cacheKey}) {
     assert.atLeastOne({request});
 
     let cachingComplete;
@@ -187,31 +192,34 @@ class RequestWrapper {
         {request, response});
     }
 
-    if (cacheable) {
-      const newResponse = response.clone();
-
-      // cacheDelay is a promise that may or may not be used to delay the
-      // completion of this method, depending on the value of `waitOnCache`.
-      cachingComplete = this.getCache().then(async (cache) => {
-        let oldResponse;
-
-        // Only bother getting the old response if the new response isn't opaque
-        // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
-        // need it.
-        if (response.type !== 'opaque' &&
-          this.behaviorCallbacks.cacheDidUpdate) {
-          oldResponse = await this.match({request});
-        }
-
-        // Regardless of whether or not we'll end up invoking
-        // cacheDidUpdateCallbacks, wait until the cache is updated.
-        await cache.put(request, newResponse);
-
-        for (let callback of (this.behaviorCallbacks.cacheDidUpdate || [])) {
-          callback({cacheName: this.cacheName, oldResponse, newResponse});
-        }
-      });
+    if (!cacheable) {
+      throw ErrorFactory.createError('invalid-reponse-for-caching');
     }
+
+    const newResponse = response.clone();
+
+    // cacheDelay is a promise that may or may not be used to delay the
+    // completion of this method, depending on the value of `waitOnCache`.
+    cachingComplete = this.getCache().then(async (cache) => {
+      let oldResponse;
+
+      // Only bother getting the old response if the new response isn't opaque
+      // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
+      // need it.
+      if (response.type !== 'opaque' &&
+        this.behaviorCallbacks.cacheDidUpdate) {
+        oldResponse = await this.match({request});
+      }
+
+      // Regardless of whether or not we'll end up invoking
+      // cacheDidUpdateCallbacks, wait until the cache is updated.
+      const cacheRequest = cacheKey || request;
+      await cache.put(cacheRequest, newResponse);
+
+      for (let callback of (this.behaviorCallbacks.cacheDidUpdate || [])) {
+        callback({cacheName: this.cacheName, oldResponse, newResponse});
+      }
+    });
 
     // Only conditionally await the caching completion, giving developers the
     // option of returning early for, e.g., read-through-caching scenarios.

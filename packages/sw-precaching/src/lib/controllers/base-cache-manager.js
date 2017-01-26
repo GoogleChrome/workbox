@@ -124,18 +124,18 @@ class BaseCacheManager {
       return;
     }
 
-    let response = await this._requestWrapper.fetch({
-      request: precacheEntry.getNetworkRequest(),
-    });
-    if (response.ok) {
-      const openCache = await this._getCache();
-      await openCache.put(precacheEntry.request, response);
+    try {
+      await this._requestWrapper.fetchAndCache({
+        request: precacheEntry.getNetworkRequest(),
+        waitOnCache: true,
+        cacheKey: precacheEntry.request,
+      });
 
       return this._onEntryCached(precacheEntry);
-    } else {
+    } catch (err) {
       throw ErrorFactory.createError('request-not-cached', {
         message: `Failed to get a cacheable response for ` +
-          `'${precacheEntry.request.url}'`,
+          `'${precacheEntry.request.url}': ${err.message}`,
       });
     }
   }
