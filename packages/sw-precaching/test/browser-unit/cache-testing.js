@@ -137,7 +137,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
     .then((step1Responses) => {
       return window.goog.swUtils.activateSW(sw2)
       .then((iframe) => {
-        return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-2']);
+        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-1']['step-2']);
       })
       .then((step2Responses) => {
         compareRevisionedCachedAssets({

@@ -171,10 +171,14 @@ class RequestWrapper {
    * @param {Request} input.request The request to fetch.
    * @param {boolean} [input.waitOnCache] `true` means the method should wait
    *        for the cache.put() to complete before returning. The default value
-   *        of `false` means return without waiting.
+   *        of `false` means return without waiting. It this value is true
+   *        and the response can't be cached, an error will be thrown.
+   * @param {Request} [input.cacheKey] Supply a cacheKey if you wish to cache
+   *        the response against an alternative request to the `request`
+   *        argument.
    * @return {Promise.<Response>} The network response.
    */
-  async fetchAndCache({request, waitOnCache}) {
+  async fetchAndCache({request, waitOnCache, cacheKey}) {
     assert.atLeastOne({request});
 
     let cachingComplete;
@@ -205,12 +209,15 @@ class RequestWrapper {
 
         // Regardless of whether or not we'll end up invoking
         // cacheDidUpdateCallbacks, wait until the cache is updated.
-        await cache.put(request, newResponse);
+        const cacheRequest = cacheKey || request;
+        await cache.put(cacheRequest, newResponse);
 
         for (let callback of (this.behaviorCallbacks.cacheDidUpdate || [])) {
           callback({cacheName: this.cacheName, oldResponse, newResponse});
         }
       });
+    } else if (!cacheable && waitOnCache) {
+      throw ErrorFactory.createError('invalid-reponse-for-caching');
     }
 
     // Only conditionally await the caching completion, giving developers the
