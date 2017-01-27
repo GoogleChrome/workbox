@@ -17,8 +17,8 @@ import Handler from './handler';
 import assert from '../../../../lib/assert';
 
 /**
- * @memberof module:sw-runtime-caching
- * @extends Handler
+ * An implementation of a [network first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache)
+ * request strategy.
  *
  * @example
  * // Set up a route to match any requests made for URLs that end in .txt.
@@ -30,14 +30,16 @@ import assert from '../../../../lib/assert';
  *
  * const router = new goog.routing.Router();
  * router.registerRoute({route});
+ *
+ * @memberof module:sw-runtime-caching
+ * @extends Handler
  */
 class NetworkFirst extends Handler {
   /**
-   * An implementation of a [network first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache)
-   * request strategy.
+   * The handle method will be called by the
+   * {@link module:sw-routing.Route|Route} class when a route matches a request.
    *
-   * @alias NetworkFirst.handle
-   * @param {Object} input An object wrapper for the underlying parameters.
+   * @param {Object} input
    * @param {FetchEvent} input.event The event that triggered the service
    *        worker's fetch handler.
    * @return {Promise.<Response>} The response from the network, or if that's

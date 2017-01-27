@@ -16,13 +16,14 @@
 import RequestWrapper from './request-wrapper';
 
 /**
- * This a base class meant to be extended by other classes that implement
- * specific request strategies.
+ * This a base class which each caching strategy extends.
  *
  * @memberof module:sw-runtime-caching
  */
 class Handler {
   /**
+   * Constructor for a new Handler instance.
+   *
    * @param {Object} input
    * @param {RequestWrapper} [input.requestWrapper] An optional `RequestWrapper`
    *        that is used to configure the cache name and request behaviors. If
@@ -45,11 +46,11 @@ class Handler {
    * @param {FetchEvent} input.event The event that triggered the service
    *        worker's fetch handler.
    * @param {Object} [input.params] Additional parameters that might be passed
-   *        in to the method. If used in conjunction with the `Route` class,
-   *        then the return value from the `match` function in `Route` will
-   *        be passed in via this parameter.
-   * @return {Promise.<Response>} A response, obtained from whichever strategy
-   *         is implemented.
+   *        in to the method. If used in conjunction with the
+   *        {@link module:sw-routing.Route|Route} class, then the return value
+   *        from the `match` function in the Route constructor
+   *        will be passed in as the `params` value.
+   * @return {Promise.<Response>} A promise resolving with a response.
    */
   handle({event, params} = {}) {
     throw Error('This abstract method must be implemented in a subclass.');

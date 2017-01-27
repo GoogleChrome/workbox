@@ -17,8 +17,12 @@ import Handler from './handler';
 import assert from '../../../../lib/assert';
 
 /**
- * @memberof module:sw-runtime-caching
- * @extends Handler
+ * An implementation of a [cache-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only)
+ * request strategy.
+ *
+ * The advantage to using this versus directly calling `caches.match()` is that
+ * it will use the cache configuration and trigger the behaviors defined in
+ * the underlying `RequestWrapper`.
  *
  * @example
  * // Set up a route to match any requests made for URLs that end in .txt.
@@ -30,18 +34,16 @@ import assert from '../../../../lib/assert';
  *
  * const router = new goog.routing.Router();
  * router.registerRoute({route});
+ *
+ * @memberof module:sw-runtime-caching
+ * @extends Handler
  */
 class CacheOnly extends Handler {
   /**
-   * An implementation of a [cache-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only)
-   * request strategy.
+   * The handle method will be called by the
+   * {@link module:sw-routing.Route|Route} class when a route matches a request.
    *
-   * The advantage to using this vs. directly calling `caches.match()` is that
-   * it will use the cache configuration and trigger the behaviors defined in
-   * the underlying `RequestWrapper`.
-   *
-   * @alias CacheOnly.handle
-   * @param {Object} input An object wrapper for the underlying parameters.
+   * @param {Object} input
    * @param {FetchEvent} input.event The event that triggered the service
    *        worker's fetch handler.
    * @return {Promise.<Response>} The response from the cache.

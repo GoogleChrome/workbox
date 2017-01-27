@@ -41,7 +41,8 @@ import ErrorFactory from './error-factory';
  */
 class RequestWrapper {
   /**
-   * @param {Object} input An object wrapper for the underlying parameters.
+   * Constructor for RequestWrapper.
+   * @param {Object} input
    * @param {string} [input.cacheName] The name of the cache to use for Handlers
    *        that involve caching. If none is provided, a default name that
    *        includes the current service worker scope will be used.
@@ -104,7 +105,16 @@ class RequestWrapper {
   }
 
   /**
-   * @return {Cache} An open `Cache` instance based on the configured
+   * Opens a cache and maintains a reference to that cache
+   * for future use.
+   *
+   * @example
+   * requestWrapper.getCache()
+   * .then((openCache) => {
+   *    ...
+   * });
+   *
+   * @return {Promise<Cache>} An open `Cache` instance based on the configured
    * `cacheName`.
    */
   async getCache() {
@@ -117,6 +127,16 @@ class RequestWrapper {
   /**
    * Wraps `cache.match()`, using the previously configured cache name and match
    * options.
+   *
+   * @example
+   * requestWrapper.match({event.request})
+   * .then((response) => {
+   *   if (!response) {
+   *     // No response in cache.
+   *     return;
+   *   }
+   *   ...
+   * });
    *
    * @param {Object} input
    * @param {Request|string} input.request The key for the cache lookup.
@@ -140,6 +160,17 @@ class RequestWrapper {
    * Wraps `fetch()`, and calls any `fetchDidFail` callbacks from the
    * registered behaviors if the request fails.
    *
+   * @example
+   * requestWrapper.fetch({
+   *   request: event.request
+   * })
+   * .then((response) => {
+   *  ...
+   * })
+   * .catch((err) => {
+   *   ...
+   * });
+   *
    * @param {Object} input
    * @param {Request|string} input.request The request or URL to be fetched.
    * @return {Promise.<Response>} The network response.
@@ -147,15 +178,17 @@ class RequestWrapper {
   async fetch({request}) {
     assert.atLeastOne({request});
 
-    return await fetch(request, this.fetchOptions).catch((error) => {
+    try {
+      return await fetch(request, this.fetchOptions);
+    } catch (err) {
       if (this.behaviorCallbacks.fetchDidFail) {
         for (let callback of this.behaviorCallbacks.fetchDidFail) {
           callback({request});
         }
       }
 
-      throw error;
-    });
+      throw err;
+    }
   }
 
   /**
@@ -166,6 +199,17 @@ class RequestWrapper {
    * will be considered valid and cacheable, but this could be overridden by
    * configuring one or more behaviors that implement the `cacheWillUpdate`
    * lifecycle callback.
+   *
+   * @example
+   * requestWrapper.fetchAndCache({
+   *   request: event.request
+   * })
+   * .then((response) => {
+   *  ...
+   * })
+   * .catch((err) => {
+   *   ...
+   * });
    *
    * @param {Object} input
    * @param {Request} input.request The request to fetch.
@@ -184,7 +228,8 @@ class RequestWrapper {
     let cachingComplete;
     const response = await this.fetch({request});
 
-    // .ok is true if the response status is 2xx. That's the default condition.
+    // response.ok is true if the response status is 2xx.
+    // That's the default condition.
     let cacheable = response.ok;
     if (this.behaviorCallbacks.cacheWillUpdate) {
       cacheable = this.behaviorCallbacks.cacheWillUpdate[0](
@@ -217,6 +262,8 @@ class RequestWrapper {
         }
       });
     } else if (!cacheable && waitOnCache) {
+      // If the developer request to wait on the cache but the response
+      // isn't cacheable, throw an error.
       throw ErrorFactory.createError('invalid-reponse-for-caching');
     }
 

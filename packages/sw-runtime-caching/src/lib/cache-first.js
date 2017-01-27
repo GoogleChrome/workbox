@@ -17,8 +17,13 @@ import Handler from './handler';
 import assert from '../../../../lib/assert';
 
 /**
- * @memberof module:sw-runtime-caching
- * @extends Handler
+ * An implementation of a [cache-first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network)
+ * request strategy.
+ *
+ * The important thing to note with this caching strategy is that once a
+ * response is cached, it will not be updated. This is useful for assets
+ * that are revisioned as it caches the asset long term and doesn't waste
+ * the user's data.
  *
  * @example
  * // Set up a route to match any requests made for URLs that end in .txt.
@@ -30,13 +35,15 @@ import assert from '../../../../lib/assert';
  *
  * const router = new goog.routing.Router();
  * router.registerRoute({route});
+ *
+ * @memberof module:sw-runtime-caching
+ * @extends Handler
  */
 class CacheFirst extends Handler {
   /**
-   * An implementation of a [cache-first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network)
-   * request strategy.
+   * The handle method will be called by the
+   * {@link module:sw-routing.Route|Route} class when a route matches a request.
    *
-   * @alias CacheFirst.handle
    * @param {Object} input
    * @param {FetchEvent} input.event The event that triggered the service
    *        worker's fetch handler.

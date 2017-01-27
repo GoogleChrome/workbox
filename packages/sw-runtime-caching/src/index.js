@@ -14,7 +14,14 @@
 */
 
 /**
- * sw-runtime-caching Module
+ * # sw-runtime-caching
+ *
+ * A service worker helper library that implements various runtime caching
+ * strategies.
+ *
+ * You can learn more about each caching strategy on
+ * {@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/|Jake Archibald's blog post}
+ * which covers various ways of handling fetch events with a service worker.
  *
  * @module sw-runtime-caching
  */

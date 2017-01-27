@@ -14,7 +14,10 @@
 */
 
 /**
- * The default cache name, used by RequestWrapper when there's no name provided.
+ * The default cache name, used by
+ * {@link module:sw-runtime-caching.RequestWrapper|RequestWrapper} when there's
+ * no name provided.
+ *
  * It combines a constant prefix with the `registration.scope` value associated
  * with the current service worker, ensuring that multiple service workers used
  * on the same origin will have different default caches.
