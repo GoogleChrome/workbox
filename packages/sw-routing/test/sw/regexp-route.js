@@ -11,7 +11,7 @@ mocha.setup({
   reporter: null,
 });
 
-describe('Test of the RegExpRoute class', () => {
+describe('Test of the RegExpRoute class', function() {
   const path = '/test/path';
   const regExp = new RegExp(path);
   const handler = {
@@ -19,24 +19,24 @@ describe('Test of the RegExpRoute class', () => {
   };
   const invalidHandler = {};
 
-  it(`should throw when RegExpRoute() is called without any parameters`, () => {
+  it(`should throw when RegExpRoute() is called without any parameters`, function() {
     expect(() => new goog.routing.RegExpRoute()).to.throw();
   });
 
-  it(`should throw when RegExpRoute() is called without a valid handler`, () => {
+  it(`should throw when RegExpRoute() is called without a valid handler`, function() {
     expect(() => new goog.routing.RegExpRoute({path})).to.throw();
     expect(() => new goog.routing.RegExpRoute({path, handler: invalidHandler})).to.throw();
   });
 
-  it(`should throw when RegExpRoute() is called without a valid regExp`, () => {
+  it(`should throw when RegExpRoute() is called without a valid regExp`, function() {
     expect(() => new goog.routing.RegExpRoute({handler})).to.throw();
   });
 
-  it(`should not throw when RegExpRoute() is called with valid handler and regExp parameters`, () => {
+  it(`should not throw when RegExpRoute() is called with valid handler and regExp parameters`, function() {
     expect(() => new goog.routing.RegExpRoute({handler, regExp})).not.to.throw();
   });
 
-  it(`should properly match URLs`, () => {
+  it(`should properly match URLs`, function() {
     const matchingUrl = new URL(path, location);
     const nonMatchingUrl = new URL('/does/not/match', location);
 
@@ -45,7 +45,7 @@ describe('Test of the RegExpRoute class', () => {
     expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
   });
 
-  it(`should properly match URLs with capture groups`, () => {
+  it(`should properly match URLs with capture groups`, function() {
     const value1 = 'value1';
     const value2 = 'value2';
 
