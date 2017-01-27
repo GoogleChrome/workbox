@@ -46,12 +46,15 @@ import assert from '../../../../lib/assert';
  */
 class RegExpRoute extends Route {
   /**
-   * @param {RegExp} regExp The regular expression to match against URLs.
+   * Constructor for RegExpRoute.
+   *
+   * @param {Object} input
+   * @param {RegExp} input.regExp The regular expression to match against URLs.
    *        If the `RegExp` contains [capture groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references),
    *        then the array of captured values will be passed to the handler via
    *        `params`.
-   * @param {function} handler The handler to manage the response.
-   * @param {string} [method] Only match requests that use this
+   * @param {function} input.handler The handler to manage the response.
+   * @param {string} [input.method] Only match requests that use this
    *        HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({regExp, handler, method}) {

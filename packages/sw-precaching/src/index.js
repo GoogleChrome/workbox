@@ -14,6 +14,8 @@
 */
 
 /**
+ * # sw-precaching
+ *
  * The precaching module provides helpers that make it easy to cache files
  * during the install step of your service worker.
  *

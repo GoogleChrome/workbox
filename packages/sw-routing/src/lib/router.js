@@ -52,9 +52,13 @@ class Router {
    * An optional default handler will have its handle method called when a
    * request doesn't have a matching route.
    *
+   * @example
+   * router.setDefaultHandler({
+   *   handler: new goog.runtimeCaching.NetworkFirst()
+   * });
+   *
    * @param {Object} input
    * @param {Object} input.handler An Object with a `handle` method.
-   * @return {void}
    */
   setDefaultHandler({handler} = {}) {
     assert.hasMethod({handler}, 'handle');
@@ -66,9 +70,15 @@ class Router {
    * If a Route throws an error while handling a request, this catch handler
    * will be called to return an error case.
    *
+   * @example
+   * router.setCatchHandler({
+   *   handler: ({event, params}) => {
+   *     return caches.match('/error-page.html');
+   *   }
+   * });
+   *
    * @param {Object} input
    * @param {Object} input.handler An Object with a `handle` method.
-   * @return {void}
    */
   setCatchHandler({handler} = {}) {
     assert.hasMethod({handler}, 'handle');
@@ -80,9 +90,17 @@ class Router {
    * Register routes will take an array of Routes to register with the
    * router.
    *
+   * @example
+   * router.registerRoutes({
+   *   routes: [
+   *     new RegExpRoute({ ... }),
+   *     new ExpressRoute({ ... }),
+   *     new Route({ ... }),
+   *   ]
+   * });
+   *
    * @param {Object} input
-   * @param {Array.<Route>} input.routes
-   * @return {void}
+   * @param {Array.<Route>} input.routes An array of routes to register.
    */
   registerRoutes({routes} = {}) {
     assert.isInstance({routes}, Array);
@@ -136,9 +154,13 @@ class Router {
   /**
    * Registers a single route with the router.
    *
+   * @example
+   * router.registerRoutes({
+   *   route: new Route({ ... })
+   * });
+   *
    * @param {Object} input
    * @param {Route} input.route The route to register.
-   * @return {void}
    */
   registerRoute({route} = {}) {
     assert.isInstance({route}, Route);

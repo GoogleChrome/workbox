@@ -14,6 +14,8 @@
 */
 
 /**
+ * # sw-broadcast-cache-update
+ *
  * A helper library that uses the Broadcast Channel API to announce when
  * two Response objects differ.
  *

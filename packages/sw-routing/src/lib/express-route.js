@@ -30,9 +30,6 @@ import pathToRegExp from 'path-to-regexp';
  * requests, you can use either a generic [`Route`]{@link Route} or a
  * [`RegExpRoute`]{@link RegExpRoute}.
  *
- * @memberof module:sw-routing
- * @extends Route
- *
  * @example
  * // Any same-origin requests that start with /path/to and end with one
  * // additional path segment will match this route, with the last path
@@ -50,16 +47,22 @@ import pathToRegExp from 'path-to-regexp';
  *
  * const router = new goog.routing.Router();
  * router.registerRoute({route});
+ *
+ * @memberof module:sw-routing
+ * @extends Route
  */
 class ExpressRoute extends Route {
   /**
-   * @param {string} path The path to use for routing.
+   * Constructor for ExpressRoute.
+   *
+   * @param {Object} input
+   * @param {string} input.path The path to use for routing.
    *        If the path contains [named parameters](https://github.com/pillarjs/path-to-regexp#named-parameters),
    *        then an Object mapping parameter names to the corresponding value
    *        will be passed to the handler via `params`.
-   * @param {Object} handler - An Object with a `handle` method. That method
+   * @param {Object} input.handler - An Object with a `handle` method that
    *        will be used to respond to matching requests.
-   * @param {string} [method] Only match requests that use this
+   * @param {string} [input.method] Only match requests that use this
    *        HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({path, handler, method}) {

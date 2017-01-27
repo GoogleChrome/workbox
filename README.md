@@ -21,7 +21,7 @@ A service worker implementation of the behavior defined in a page&#x27;s App Cac
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-background-sync-queue%22)][travis-url]
 
-A service worker implementation of the a queue which is triggered by the background sync event.
+Queues failed requests and uses the Background Sync API to replay those requests at a later time when the network state has changed.
 
 **Install**: `npm install --save-dev sw-background-sync-queue`
 
