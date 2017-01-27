@@ -12,7 +12,8 @@ goog.swlib.cacheRevisionedAssets(testSet['set-5']);
 
 goog.swlib.cacheRevisionedAssets(testSet['set-6']);
 
-// This allows tests to query the response from the SW.
+// sw-lib should define a route just for the revisioned assets so this
+// fetch should never be called.
 self.addEventListener('fetch', (event) => {
-  event.respondWith(caches.match(event.request));
+  event.respondWith(null);
 });
