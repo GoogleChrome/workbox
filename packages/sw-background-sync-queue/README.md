@@ -1,6 +1,6 @@
 # sw-background-sync-queue
 
-A service worker implementation of the a queue which is triggered by the background sync event.
+Queues failed requests and uses the Background Sync API to replay those requests at a later time when the network state has changed.
 
 ## Installation
 
