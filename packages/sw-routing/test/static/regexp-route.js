@@ -15,9 +15,13 @@ routes.push(new goog.routing.RegExpRoute({
 }));
 
 routes.push(new goog.routing.RegExpRoute({
-  regExp: new RegExp('echo/(\\w+)$'),
+  regExp: new RegExp('/echo3/1st/(\\w+)/2nd/(\\w+)/3rd/(\\w+)'),
   handler: {
-    handle: ({params}) => Promise.resolve(new Response(params[0])),
+    handle: ({params}) => Promise.resolve(
+      new Response(JSON.stringify(params), {
+        headers: {'content-type': 'application/json'}
+      })
+    ),
   },
 }));
 

@@ -8,6 +8,7 @@
     "mocha": true
   },
   "globals": {
-    "goog": true
+    "goog": true,
+    "expect": true
   }
 }

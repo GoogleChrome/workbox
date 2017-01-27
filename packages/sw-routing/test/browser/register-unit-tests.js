@@ -1,15 +1,15 @@
 describe('Service Worker Unit Test Registration', function() {
-  beforeEach(() => window.goog.swUtils.cleanState());
-
+  const pathPrefix = '../sw/';
   const swUnitTests = [
-    'unit/namespace.js',
-    'unit/route.js',
-    'unit/express-route.js',
-    'unit/regexp-route.js',
-  ];
+    'namespace.js',
+    'route.js',
+    'express-route.js',
+    'regexp-route.js',
+  ].map(script => `${pathPrefix}${script}`);
 
-  swUnitTests.forEach((swUnitTestPath) => {
-    it(`should register ${swUnitTestPath}`,
-      () => window.goog.mochaUtils.registerServiceWorkerMochaTests(swUnitTestPath));
+  swUnitTests.forEach(function(swUnitTestPath) {
+    it(`should register ${swUnitTestPath}`, function() {
+      return goog.mochaUtils.registerServiceWorkerMochaTests(swUnitTestPath);
+    });
   });
 });

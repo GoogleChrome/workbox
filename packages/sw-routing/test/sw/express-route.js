@@ -11,31 +11,31 @@ mocha.setup({
   reporter: null,
 });
 
-describe('Test of the ExpressRoute class', () => {
+describe('Test of the ExpressRoute class', function() {
   const path = '/test/path';
   const handler = {
     handle: () => {},
   };
   const invalidHandler = {};
 
-  it(`should throw when ExpressRoute() is called without any parameters`, () => {
+  it(`should throw when ExpressRoute() is called without any parameters`, function() {
     expect(() => new goog.routing.ExpressRoute()).to.throw();
   });
 
-  it(`should throw when ExpressRoute() is called without a valid handler`, () => {
+  it(`should throw when ExpressRoute() is called without a valid handler`, function() {
     expect(() => new goog.routing.ExpressRoute({path})).to.throw();
     expect(() => new goog.routing.ExpressRoute({path, handler: invalidHandler})).to.throw();
   });
 
-  it(`should throw when ExpressRoute() is called without a valid path`, () => {
+  it(`should throw when ExpressRoute() is called without a valid path`, function() {
     expect(() => new goog.routing.ExpressRoute({handler})).to.throw();
   });
 
-  it(`should not throw when ExpressRoute() is called with valid handler and path parameters`, () => {
+  it(`should not throw when ExpressRoute() is called with valid handler and path parameters`, function() {
     expect(() => new goog.routing.ExpressRoute({handler, path})).not.to.throw();
   });
 
-  it(`should properly match URLs`, () => {
+  it(`should properly match URLs`, function() {
     const matchingUrl = new URL(path, location);
     const nonMatchingUrl = new URL('/does/not/match', location);
 
@@ -44,7 +44,7 @@ describe('Test of the ExpressRoute class', () => {
     expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
   });
 
-  it(`should properly match URLs with named parameters`, () => {
+  it(`should properly match URLs with named parameters`, function() {
     const value1 = 'value1';
     const value2 = 'value2';
 
