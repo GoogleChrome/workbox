@@ -19,7 +19,7 @@ routes.push(new goog.routing.RegExpRoute({
   handler: {
     handle: ({params}) => Promise.resolve(
       new Response(JSON.stringify(params), {
-        headers: {'content-type': 'application/json'}
+        headers: {'content-type': 'application/json'},
       })
     ),
   },
