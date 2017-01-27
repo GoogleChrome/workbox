@@ -28,9 +28,8 @@ const requestWrapper = new goog.runtimeCaching.RequestWrapper({
   behaviors: [bgQueue],
 });
 
-const route = new goog.routing.ExpressRoute({
-  path: '/*',
-  origin: 'https://jsonplaceholder.typicode.com',
+const route = new goog.routing.RegExpRoute({
+  regExp: new RegExp('^https://jsonplaceholder.typicode.com'),
   handler: new goog.runtimeCaching.NetworkOnly({requestWrapper}),
 });
 
