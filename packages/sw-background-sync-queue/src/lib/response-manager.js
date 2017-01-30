@@ -28,7 +28,7 @@ async function putResponse({hash, idbObject, response, idbQDb}) {
  */
 async function getResponse({id}) {
 	const _idbQHelper = new IDBHelper(getDbName(), 1, 'QueueStore');
-	const object = _idbQHelper.get(id);
+	const object = await _idbQHelper.get(id);
 	if (object && object.response) {
 		return object.response;
 	} else {
