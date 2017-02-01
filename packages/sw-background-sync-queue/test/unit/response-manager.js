@@ -37,6 +37,7 @@ describe('response-manager test', () => {
           idbQDb: idbHelper,
       }).then(()=>{
         idbHelper.get('somehash').then((cachedResponse) => {
+            // Response is stored as BLOB, using FileReader to convert back
             const reader = new window.FileReader();
             reader.readAsText(cachedResponse.response.body);
             reader.onloadend = function() {
