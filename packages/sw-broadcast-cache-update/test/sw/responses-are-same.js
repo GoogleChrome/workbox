@@ -17,7 +17,14 @@ describe('Test of the responsesAreSame function', function() {
   const headersToCheck = [firstHeaderName, secondHeaderName];
 
   it(`should throw when responsesAreSame() is called without any parameters`, function() {
-    expect(() => goog.broadcastCacheUpdate.responsesAreSame()).to.throw();
+    let thrownError = null;
+    try {
+      goog.broadcastCacheUpdate.responsesAreSame();
+    } catch(err) {
+      thrownError = err;
+    }
+    expect(thrownError).to.exist;
+    expect(thrownError.name).to.equal('responses-are-same-parameters-required');
   });
 
   it(`should return true when all the headers match`, function() {
@@ -29,7 +36,7 @@ describe('Test of the responsesAreSame function', function() {
       first, second, headersToCheck})).to.be.true;
   });
 
-  it(`should return true when one header matches and the other is missing`, function() {
+  it(`should return true when only a subset of headers exist, but the existing ones match`, function() {
     const first = new Response('', {headers: {
       [firstHeaderName]: 'same'}});
     const second = new Response('', {headers: {

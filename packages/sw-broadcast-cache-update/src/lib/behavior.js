@@ -13,6 +13,7 @@
  limitations under the License.
 */
 
+import ErrorFactory from './error-factory';
 import assert from '../../../../lib/assert';
 import broadcastUpdate from './broadcast-update';
 import responsesAreSame from './responses-are-same';
@@ -81,8 +82,10 @@ class Behavior {
    * @param {string} input.source An attribution value that indicates where
    *        the update originated. Defaults to 'sw-broadcast-cache-update'.
    */
-  constructor({channelName, headersToCheck, source}) {
-    assert.isType({channelName}, 'string');
+  constructor({channelName, headersToCheck, source}={}) {
+    if (typeof channelName !== 'string' || channelName.length === 0) {
+      throw ErrorFactory.createError('channel-name-required');
+    }
 
     this.channelName = channelName;
     this.headersToCheck = headersToCheck || defaultHeadersToCheck;

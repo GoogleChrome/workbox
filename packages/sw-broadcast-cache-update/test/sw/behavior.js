@@ -17,7 +17,14 @@ describe('Test of the Behavior class', function() {
   const source = 'test-source';
 
   it(`should throw when Behavior() is called without any parameters`, function() {
-    expect(() => new goog.broadcastCacheUpdate.Behavior()).to.throw();
+    let thrownError = null;
+    try {
+      new goog.broadcastCacheUpdate.Behavior();
+    } catch(err) {
+      thrownError = err;
+    }
+    expect(thrownError).to.exist;
+    expect(thrownError.name).to.equal('channel-name-required');
   });
 
   it(`should use the channelName from the constructor`, function() {
@@ -49,6 +56,9 @@ describe('Test of the Behavior class', function() {
     const behavior = new goog.broadcastCacheUpdate.Behavior({channelName});
     const broadcastChannel = behavior.channel;
     expect(broadcastChannel).to.be.instanceof(BroadcastChannel);
+    // behavior.channel is a getter that create a BroadcastChannel the first
+    // time it's called, and this test confirms that it returns the same
+    // BroadcastChannel object when called twice.
     expect(broadcastChannel).to.eql(behavior.channel);
     expect(broadcastChannel.name).to.equal(channelName);
   });

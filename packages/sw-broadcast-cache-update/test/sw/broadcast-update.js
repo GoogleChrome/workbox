@@ -24,7 +24,6 @@ describe('Test of the broadcastUpdate function', function() {
 
   it(`should trigger the appropriate message event on a BroadcastChannel with the same channel name`, function(done) {
     const secondChannel = new BroadcastChannel(channelName);
-    goog.broadcastCacheUpdate.broadcastUpdate({channel, cacheName, source, url});
     secondChannel.addEventListener('message', (event) => {
       expect(event.data).to.eql({
         type: goog.broadcastCacheUpdate.cacheUpdatedMessageType,
@@ -36,5 +35,6 @@ describe('Test of the broadcastUpdate function', function() {
       });
       done();
     });
+    goog.broadcastCacheUpdate.broadcastUpdate({channel, cacheName, source, url});
   });
 });
