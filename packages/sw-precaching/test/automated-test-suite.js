@@ -60,7 +60,7 @@ describe(`sw-precaching Browser Tests`, function() {
         return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
           assistantDriver.getPrettyName(),
           globalDriverBrowser,
-          `${baseTestUrl}/test/browser-unit/`
+          `${baseTestUrl}/test/browser/`
         );
       })
       .then((testResults) => {

@@ -89,14 +89,8 @@ self.goog.__TEST_DATA = {
       '/__echo/date/6.1234.txt',
     ],
   ],
-  '404': [
-    '/__test/404/',
-  ],
   'opaque': [
     `${secondaryServer}/__echo/date/hello.txt`,
-  ],
-  'cookie': [
-    `/__test/cookie/`,
   ],
   'redirect': [
     '/__test/redirect/301/',

@@ -53,39 +53,50 @@ class PrecacheManager {
     this._eventsRegistered = true;
 
     self.addEventListener('install', (event) => {
-      const promiseChain = Promise.all([
-        this._revisionedManager._performInstallStep(),
-        this._unrevisionedManager._performInstallStep(),
-      ])
-      .then(() => {
-        // Closed indexedDB now that we are done with the install step
-        this._close();
-      })
-      .catch((err) => {
-        this._close();
-
-        throw err;
-      });
-
-      event.waitUntil(promiseChain);
+      event.waitUntil(this._performInstallStep());
     });
 
     self.addEventListener('activate', (event) => {
-      const promiseChain = Promise.all([
-        this._revisionedManager._cleanUpOldEntries(),
-        this._unrevisionedManager._cleanUpOldEntries(),
-      ])
-      .then(() => {
-        // Closed indexedDB now that we are done with the install step
-        this._close();
-      })
-      .catch((err) => {
-        this._close();
+      event.waitUntil(this._performActivateStep());
+    });
+  }
 
-        throw err;
-      });
+  /**
+   * @private
+   * @return {Promise} Resolves once the install work has been complete.
+   */
+  _performInstallStep() {
+    return Promise.all([
+      this._revisionedManager._performInstallStep(),
+      this._unrevisionedManager._performInstallStep(),
+    ])
+    .then(() => {
+      // Closed indexedDB now that we are done with the install step
+      this._close();
+    })
+    .catch((err) => {
+      this._close();
 
-      event.waitUntil(promiseChain);
+      throw err;
+    });
+  }
+
+  /**
+   * @return {Promise} Resolves once activate work has been completed.
+   */
+  _performActivateStep() {
+    return Promise.all([
+      this._revisionedManager._cleanUpOldEntries(),
+      this._unrevisionedManager._cleanUpOldEntries(),
+    ])
+    .then(() => {
+      // Closed indexedDB now that we are done with the install step
+      this._close();
+    })
+    .catch((err) => {
+      this._close();
+
+      throw err;
     });
   }
 

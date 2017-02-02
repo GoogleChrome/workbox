@@ -5,14 +5,15 @@ describe('Service Worker Unit Tests', function() {
   });
 
   const swUnitTests = [
-    'sw-unit/basic.js',
-    'sw-unit/revisioned-caching.js',
-    'sw-unit/unrevisioned-caching.js',
+    'basic.js',
+    'revisioned-caching.js',
+    'unrevisioned-caching.js',
+    'cookies.js',
   ];
 
   swUnitTests.forEach((swUnitTestPath) => {
     it(`should register '${swUnitTestPath}' sw tests`, function() {
-      return window.goog.mochaUtils.registerServiceWorkerMochaTests(swUnitTestPath);
+      return window.goog.mochaUtils.registerServiceWorkerMochaTests(`../sw/${swUnitTestPath}`);
     });
   });
 });

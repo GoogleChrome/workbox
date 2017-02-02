@@ -119,6 +119,7 @@ describe('Test PrecacheManager.cacheRevisioned()', function() {
       }
       // TODO: Changed assertion library to support throwing custom errors.
       // caughtError.name.should.equal('invalid-revisioned-entry');
+      console.log('<------------------------------- ', caughtError);
     });
   });
 

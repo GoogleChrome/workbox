@@ -1,6 +1,8 @@
 /* global goog, expect */
 
 describe('sw-precaching Test Revisioned Caching', function() {
+  const STATIC_ASSETS_PATH = '../static';
+
   const deleteIndexedDB = () => {
     return new Promise((resolve, reject) => {
       // TODO: Move to constants
@@ -128,8 +130,9 @@ describe('sw-precaching Test Revisioned Caching', function() {
   };
 
   it('should cache and fetch revisioned urls', function() {
-    const sw1 = 'data/basic-cache/basic-revisioned-cache-sw.js';
-    const sw2 = 'data/basic-cache/basic-revisioned-cache-sw-2.js';
+    const sw1 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw.js`;
+    const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw-2.js`;
+
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
       return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
@@ -152,8 +155,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should cache and fetch unrevisioned urls', function() {
-    const sw1 = 'data/basic-cache/basic-unrevisioned-cache-sw.js';
-    const sw2 = 'data/basic-cache/basic-unrevisioned-cache-sw-2.js';
+    const sw1 = `${STATIC_ASSETS_PATH}/basic-cache/basic-unrevisioned-cache-sw.js`;
+    const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-unrevisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
       return testFileSet(iframe, sw1, goog.__TEST_DATA['set-2']['step-1']);
@@ -167,8 +170,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should manage revisioned cache deletion', function() {
-    const sw1 = 'data/basic-cache/basic-revisioned-cache-sw.js';
-    const sw2 = 'data/basic-cache/basic-revisioned-cache-sw-2.js';
+    const sw1 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw.js`;
+    const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
       return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
@@ -185,8 +188,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should manage unrevisioned cache deletion', function() {
-    const sw1 = 'data/basic-cache/basic-unrevisioned-cache-sw.js';
-    const sw2 = 'data/basic-cache/basic-unrevisioned-cache-sw-2.js';
+    const sw1 = `${STATIC_ASSETS_PATH}/basic-cache/basic-unrevisioned-cache-sw.js`;
+    const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-unrevisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
       return testFileSet(iframe, sw1, goog.__TEST_DATA['set-2']['step-1']);
@@ -203,8 +206,8 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should manage revisioned indexedDB deletion', function() {
-    const sw1 = 'data/basic-cache/basic-revisioned-cache-sw.js';
-    const sw2 = 'data/basic-cache/basic-revisioned-cache-sw-2.js';
+    const sw1 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw.js`;
+    const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
       return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
@@ -227,7 +230,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
     allEntries = [...new Set(allEntries)];
 
-    const swPath = 'data/duplicate-entries/duplicate-entries-revisioned-sw.js';
+    const swPath = `${STATIC_ASSETS_PATH}/duplicate-entries/duplicate-entries-revisioned-sw.js`;
     return window.goog.swUtils.activateSW(swPath)
     .then((iframe) => {
       return iframe.contentWindow.fetch('/__api/get-requests-made/')
@@ -255,7 +258,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
     });
     allEntries = [...new Set(allEntries)];
 
-    const swPath = 'data/duplicate-entries/duplicate-entries-unrevisioned-sw.js';
+    const swPath = `${STATIC_ASSETS_PATH}/duplicate-entries/duplicate-entries-unrevisioned-sw.js`;
     return window.goog.swUtils.activateSW(swPath)
     .then((iframe) => {
       return iframe.contentWindow.fetch('/__api/get-requests-made/')
@@ -277,7 +280,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should fail to install revisioned with 404 cache request', function() {
-    return window.goog.swUtils.activateSW('data/response-types/404-revisioned-sw.js')
+    return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/404-revisioned-sw.js`)
     .then(() => {
       throw new Error('Expected SW to fail installation due to caching 404 entry.');
     }, (err) => {
@@ -287,7 +290,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should fail to install unrevisioned with 404 cache request', function() {
-    return window.goog.swUtils.activateSW('data/response-types/404-unrevisioned-sw.js')
+    return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/404-unrevisioned-sw.js`)
     .then(() => {
       throw new Error('Expected SW to fail installation due to caching 404 entry.');
     }, (err) => {
@@ -297,9 +300,9 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should fail to cache revisioned opaque responses by default', function() {
-    return window.goog.swUtils.activateSW('data/response-types/opaque-revisioned-sw.js')
+    return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/opaque-revisioned-sw.js`)
     .then(() => {
-      throw new Error('Expected SW to fail installation due to caching 404 entry.');
+      throw new Error('Expected SW to fail installation due to caching opaque entry.');
     }, (err) => {
       // NOOP - The error is not to do with the error throw in SW, so nothing
       // to check.
@@ -307,7 +310,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should not cache unrevisioned opaque responses by default', function() {
-    return window.goog.swUtils.activateSW('data/response-types/opaque-unrevisioned-sw.js')
+    return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/opaque-unrevisioned-sw.js`)
     .then(() => {
       throw new Error('Expected SW to fail installation due to caching opaque entry.');
     }, (err) => {
@@ -317,7 +320,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should manage redirected revisioned requests', function() {
-    return window.goog.swUtils.activateSW('data/response-types/redirect-revisioned-sw.js')
+    return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/redirect-revisioned-sw.js`)
     .then((iframe) => {
       const promises = goog.__TEST_DATA['redirect'].map((redirectPath) => {
         const sections = redirectPath.split('/').filter((section) => {
@@ -342,7 +345,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
   });
 
   it('should manage redirected unrevisioned requests', function() {
-    return window.goog.swUtils.activateSW('data/response-types/redirect-unrevisioned-sw.js')
+    return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/redirect-unrevisioned-sw.js`)
     .then((iframe) => {
       const promises = goog.__TEST_DATA['redirect'].map((redirectPath) => {
         const sections = redirectPath.split('/').filter((section) => {
@@ -359,54 +362,6 @@ describe('sw-precaching Test Revisioned Caching', function() {
         .then((responseText) => {
           if(responseText !== expectedResponse) {
             throw new Error('Unexpected response: ' + redirectPath);
-          }
-        });
-      });
-      return Promise.all(promises);
-    });
-  });
-
-  it('should manage revisioned requests wtih cookies', function() {
-    return window.goog.swUtils.activateSW('data/response-types/cookie-revisioned-sw.js')
-    .then((iframe) => {
-      const promises = goog.__TEST_DATA['cookie'].map((cookieRequest) => {
-        return iframe.contentWindow.fetch(cookieRequest)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Response NOT ok.');
-          }
-          return response.json();
-        })
-        .then((response) => {
-          // The /__test/cookie/ endpoint simply returns a request body
-          // of all the cookies as JSOn so we should be able to see the
-          // swtesting cookie.
-          if(!response.swtesting) {
-            throw new Error('sw-testing cookie not found.');
-          }
-        });
-      });
-      return Promise.all(promises);
-    });
-  });
-
-  it('should manage unrevisioned requests wtih cookies', function() {
-    return window.goog.swUtils.activateSW('data/response-types/cookie-unrevisioned-sw.js')
-    .then((iframe) => {
-      const promises = goog.__TEST_DATA['cookie'].map((cookieRequest) => {
-        return iframe.contentWindow.fetch(cookieRequest)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Response NOT ok.');
-          }
-          return response.json();
-        })
-        .then((response) => {
-          // The /__test/cookie/ endpoint simply returns a request body
-          // of all the cookies as JSOn so we should be able to see the
-          // swtesting cookie.
-          if(!response.swtesting) {
-            throw new Error('sw-testing cookie not found.');
           }
         });
       });
