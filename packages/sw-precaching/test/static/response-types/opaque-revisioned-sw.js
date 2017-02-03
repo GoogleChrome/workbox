@@ -5,5 +5,5 @@ importScripts('/packages/sw-precaching/test/static/skip-and-claim.js');
 
 const precacheManager = new goog.precaching.PrecacheManager();
 precacheManager.cacheRevisioned({
-  revisionedFiles: goog.__TEST_DATA['opaque',
+  revisionedFiles: goog.__TEST_DATA['opaque'],
 });

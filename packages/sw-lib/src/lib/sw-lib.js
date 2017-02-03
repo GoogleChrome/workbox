@@ -44,6 +44,7 @@ class SWLib {
   constructor() {
     this._router = new Router();
     this._precacheManager = new PrecacheManager();
+    this._registerDefaultRoutes();
   }
 
   /**
@@ -350,6 +351,25 @@ class SWLib {
     return new HandlerClass({
       requestWrapper: new RequestWrapper(wrapperOptions),
     });
+  }
+
+  /**
+   * This method will register any default routes the library will need.
+   */
+  _registerDefaultRoutes() {
+    const revisionedManager = this._precacheManager.getRevisionedCacheManager();
+    const cacheFirstHandler = this.cacheFirst({
+      cacheName: revisionedManager.getCacheName(),
+    });
+
+    const route = new this.Route({
+      match: ({url, event}) => {
+        const cachedUrls = revisionedManager.getCachedUrls();
+        return cachedUrls.indexOf(url.href) !== -1;
+      },
+      handler: cacheFirstHandler,
+    });
+    this.router.registerRoute(route);
   }
 }
 

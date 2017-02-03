@@ -30,6 +30,8 @@ class BaseCacheManager {
    * parsed into a BaseCacheEntry by the inheriting CacheManager.
    */
   cache(rawEntries) {
+    this._cachedUrls = null;
+
     rawEntries.forEach((rawEntry) => {
       this._addEntryToInstallList(
         this._parseEntry(rawEntry)
@@ -51,8 +53,12 @@ class BaseCacheManager {
    * @return {Array<String>} An array of URLs that will be cached.
    */
   getCachedUrls() {
-    return Array.from(this._entriesToCache.keys())
-      .map((url) => new URL(url, location).href);
+    if (!this._cachedUrls) {
+      this._cachedUrls = Array.from(this._entriesToCache.keys())
+        .map((url) => new URL(url, location).href);
+    }
+
+    return this._cachedUrls;
   }
 
   /**
