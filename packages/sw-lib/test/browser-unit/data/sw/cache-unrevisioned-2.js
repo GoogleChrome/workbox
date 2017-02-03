@@ -1,8 +1,8 @@
 /* global goog */
 
 importScripts('/packages/sw-lib/build/sw-lib.min.js');
-importScripts('/packages/sw-precaching/test/browser-unit/data/skip-and-claim.js');
-importScripts('/packages/sw-precaching/test/browser-unit/data/test-data.js');
+importScripts('/packages/sw-precaching/test/static/skip-and-claim.js');
+importScripts('/packages/sw-precaching/test/static/test-data.js');
 importScripts('/packages/sw-lib/test/browser-unit/data/test-data.js');
 
 const testSet = self.goog.__TEST_DATA['sw-lib']['unrevisioned'];
