@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
+import ErrorFactory from './error-factory';
 
 /**
  * Given two `Response`s, compares several header values to see if they are
@@ -40,10 +40,12 @@ import assert from '../../../../lib/assert';
  * @return {boolean} Whether or not the `Response` objects are assumed to be
  *         the same.
  */
-function responsesAreSame({first, second, headersToCheck}) {
-  assert.isInstance({first}, Response);
-  assert.isInstance({second}, Response);
-  assert.isInstance({headersToCheck}, Array);
+function responsesAreSame({first, second, headersToCheck}={}) {
+  if (!(first instanceof Response &&
+        second instanceof Response &&
+        headersToCheck instanceof Array)) {
+    throw ErrorFactory.createError('responses-are-same-parameters-required');
+  }
 
   return headersToCheck.every((header) => {
     return (first.headers.has(header) === second.headers.has(header)) &&
