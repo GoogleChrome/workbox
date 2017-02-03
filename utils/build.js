@@ -83,7 +83,7 @@ function taskPromiseWrapper(projects, task, args) {
   let rejected = [];
   return projects.reduce((promiseChain, project) => {
     return promiseChain.then(() => {
-      return task(path.join(__dirname, path.dirname(project)), args)
+      return task(path.join(__dirname, '..', path.dirname(project)), args)
       .catch((error) => {
         rejected.push(error);
       });
