@@ -23,8 +23,30 @@ import {getDbName} from './background-sync-idb-helper';
  *	 	}
  * });
  * // Case 2: When you want the higher level framework to take care of failed
- * requests
- * // TODO: add example here
+ * // requests
+ * let bgQueue = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
+ *		{
+ *			onResponse: async(hash, res) => {
+ *				self.registration.showNotification('Background sync demo', {
+ *  				body: 'Product has been purchased.',
+ *	 	 			icon: 'https://shop.polymer-project.org/images/shop-icon-384.png',
+ *				});
+ *			},
+ *			onRetryFailure: (hash) => {},
+ *		},
+ * });
+ *
+ * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+ * 	behaviors: [bgQueue],
+ * });
+ *
+ * const route = new goog.routing.RegExpRoute({
+ * 	regExp: new RegExp('^https://jsonplaceholder.typicode.com'),
+ * 	handler: new goog.runtimeCaching.NetworkOnly({requestWrapper}),
+ * });
+ *
+ * const router = new goog.routing.Router();
+ * router.registerRoute({route});
  *
  * @alias goog.backgroundSyncQueue.BackgroundSyncQueue
  * @class BackgroundSyncQueue
@@ -36,11 +58,11 @@ class BackgroundSyncQueue {
 	 *
 	 * @param {Object} [input]
 	 * @param {Number} [input.maxRetentionTime = 5 days] Time for which a queued
-	 * request will live in the queue(irespective of failed/success of replay)
+	 * request will live in the queue(irespective of failed/success of replay).
 	 * @param {Object} [input.callbacks] Callbacks for successfull/ failed
-	 * replay of a request
+	 * replay of a request.
 	 * @param {string} [input.queueName] Queue name inside db in which
-	 * requests will be queued
+	 * requests will be queued.
 	 * @param {BroadcastChannel=} [input.broadcastChannel] BroadcastChannel
 	 * which will be used to publish messages when the request will be queued.
 	 */
@@ -76,12 +98,28 @@ class BackgroundSyncQueue {
 	 * @param {Object} input
 	 * @param {Request} input.request The request which is to be queued
 	 *
-	 * @returns {Promise} Promise which resolves when the request is pushed in
-	 * the queue
+	 * @return {Promise} Promise which resolves when the request is pushed in
+	 * the queue.
 	 */
 	pushIntoQueue({request}) {
 		assert.isInstance({request}, Request);
 		return this._queue.push({request});
+	}
+
+	/**
+	 * Wraps `pushIntoQueue` in a callback used by higher level framework.
+	 * This function pushes a given request into the IndexedDb Queue.
+	 * NOTE: If you are writting the fetch handler for background sync manually,
+	 * please ignore this.
+	 *
+	 * @param {Object} input
+	 * @param {Request} input.request The request which is to be queued
+	 *
+	 * @return {Promise} Promise which resolves when the request is pushed in
+	 * the queue.
+	 */
+	fetchDidFail({request}) {
+		return this.pushIntoQueue({request});
 	}
 }
 

@@ -16,7 +16,7 @@ const path = require('path');
 const gulp = require('gulp');
 const promisify = require('promisify-node');
 
-const {taskHarness} = require('../build-utils');
+const {taskHarness} = require('../utils/build');
 
 const fsePromise = promisify('fs-extra');
 

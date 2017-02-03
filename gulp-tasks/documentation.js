@@ -16,7 +16,7 @@
 const gulp = require('gulp');
 const rename = require('gulp-rename');
 const handlebars = require('gulp-compile-handlebars');
-const {globPromise, taskHarness} = require('../build-utils');
+const {globPromise, taskHarness} = require('../utils/build');
 
 /**
  * Documents a given project.

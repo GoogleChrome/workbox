@@ -1,5 +1,13 @@
 /* global goog*/
-importScripts('../build/background-sync-queue.js');
+importScripts(
+	'../build/background-sync-queue.js',
+	'../../sw-routing/build/sw-routing.js',
+	'../../sw-runtime-caching/build/sw-runtime-caching.js'
+);
+
+// Have the service worker take control as soon as possible.
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', () => self.clients.claim());
 
 // initialize bdQ
 goog.backgroundSyncQueue.initialize();
@@ -16,20 +24,16 @@ let bgQueue = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
 	},
 });
 
-
-self.addEventListener('fetch', function(e) {
-	if (e.request.url.startsWith('https://jsonplaceholder.typicode.com')) {
-		const clone = e.request.clone();
-		e.respondWith(fetch(e.request).catch((err)=>{
-			bgQueue.pushIntoQueue({
-				request: clone,
-			});
-			throw err;
-		}));
-	}
+const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+  behaviors: [bgQueue],
 });
 
+const route = new goog.routing.RegExpRoute({
+  regExp: new RegExp('^https://jsonplaceholder.typicode.com'),
+  handler: new goog.runtimeCaching.NetworkOnly({requestWrapper}),
+});
 
-// Have the service worker take control as soon as possible.
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', () => self.clients.claim());
+const router = new goog.routing.Router();
+router.registerRoute({route});
+
+

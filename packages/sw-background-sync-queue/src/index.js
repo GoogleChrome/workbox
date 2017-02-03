@@ -12,7 +12,10 @@
  */
 
 /**
- * sw-background-sync-queue Module
+ * # sw-background-sync-queue
+ *
+ * Queues failed requests and uses the Background Sync API to replay those
+ * requests at a later time when the network state has changed.
  *
  * @module sw-background-sync-queue
  */

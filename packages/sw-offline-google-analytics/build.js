@@ -17,7 +17,7 @@ const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
 const pkg = require('./package.json');
-const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
+const {buildJSBundle, generateBuildConfigs} = require('../../utils/build');
 
 const plugins = [
   resolve({

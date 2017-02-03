@@ -14,6 +14,8 @@
 */
 
 /**
+ * # sw-cacheable-response-behavior
+ *
  * Given a Response object this behaviour determines whether
  * it's cacheable, based on a specific configuration.
  *

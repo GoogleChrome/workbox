@@ -16,7 +16,7 @@ const path = require('path');
 const pkg = require('./package.json');
 const resolve = require('rollup-plugin-node-resolve');
 const rollupBabel = require('rollup-plugin-babel');
-const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
+const {buildJSBundle, generateBuildConfigs} = require('../../utils/build');
 
 const mainModuleBuilds = generateBuildConfigs({
   es: pkg['jsnext:main'],

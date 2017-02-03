@@ -14,7 +14,7 @@
 */
 
 const pkg = require('./package.json');
-const {buildJSBundle, generateBuildConfigs} = require('../../build-utils');
+const {buildJSBundle, generateBuildConfigs} = require('../../utils/build');
 
 const buildConfigs = generateBuildConfigs({
   es: pkg['jsnext:main'],

@@ -15,7 +15,7 @@
 const gulp = require('gulp');
 const eslint = require('gulp-eslint');
 
-const {taskHarness} = require('../build-utils');
+const {taskHarness} = require('../utils/build');
 
 /**
  * Lints a given project.

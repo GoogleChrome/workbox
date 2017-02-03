@@ -17,6 +17,7 @@
  * The default HTTP method, 'GET', used when there's no specific method
  * configured for a route.
  *
+ * @private
  * @type {string}
  * @memberof module:sw-routing
  */
@@ -25,6 +26,7 @@ export const defaultMethod = 'GET';
 /**
  * The list of valid HTTP methods associated with requests that could be routed.
  *
+ * @private
  * @type {Array.<string>}
  * @memberof module:sw-routing
  */

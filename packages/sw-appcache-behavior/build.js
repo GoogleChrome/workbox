@@ -16,7 +16,7 @@
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const path = require('path');
-const {buildJSBundle} = require('../../build-utils');
+const {buildJSBundle} = require('../../utils/build');
 
 module.exports = () => {
   return Promise.all([

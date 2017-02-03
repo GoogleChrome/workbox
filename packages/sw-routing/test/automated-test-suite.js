@@ -49,7 +49,7 @@ describe(`sw-routing Browser Tests`, function() {
         .then(() => swTestingHelpers.mochaUtils.startWebDriverMochaTests(
           assistantDriver.getPrettyName(),
           globalDriverBrowser,
-          `${baseTestUrl}/test/browser-unit/`
+          `${baseTestUrl}/test/browser/`
         )).then((testResults) => {
           console.log(swTestingHelpers.mochaUtils.prettyPrintResults(testResults));
           if (testResults.failed.length > 0) {

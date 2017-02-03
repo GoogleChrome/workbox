@@ -61,7 +61,7 @@ class ServerInstance {
       );
     });
 
-    this._app.get('/__test/cookie/', function(req, res) {
+    this._app.get('/__test/cookie/:id', function(req, res) {
       res.send(JSON.stringify(req.cookies));
     });
   }

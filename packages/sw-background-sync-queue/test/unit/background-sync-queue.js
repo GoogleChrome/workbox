@@ -65,4 +65,12 @@ describe('background sync queue test', () => {
         currentLen + 1);
     });
   });
+
+  it('check fetchDid fail proxy', () => {
+    const currentLen = backgroundSyncQueue._queue.queue.length;
+    backgroundSyncQueue.fetchDidFail({request: new Request('http://lipsum.com')}).then( (e) => {
+      chai.assert.equal(backgroundSyncQueue._queue.queue.length,
+        currentLen + 1);
+    });
+  });
 });
