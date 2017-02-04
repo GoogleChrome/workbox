@@ -34,7 +34,7 @@ describe(`${packageName} Browser Tests`, function() {
 
   // Set up the web server before running any tests in this suite.
   before(() => testServer.start('.').then((portNumber) => {
-    testHarnessUrl = `http://localhost:${portNumber}/packages/${packageName}/test/browser/testHarness`;
+    testHarnessUrl = `http://localhost:${portNumber}/packages/${packageName}/test/browser/harness`;
   }));
 
   // Kill the web server once all tests are complete.

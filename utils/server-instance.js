@@ -71,10 +71,10 @@ class ServerInstance {
     // Harness to kick off all the in-browser tests for a given package.
     // It will pick up a list of all the top-level .js files and automatically
     // inject them into the HTML as <script> tags.
-    this._app.get('/packages/:pkg/test/browser/testHarness', function(req, res) {
+    this._app.get('/packages/:pkg/test/browser/harness', function(req, res) {
       const pkg = req.params.pkg;
       const pattern = `packages/${pkg}/test/browser/*.js`;
-      const scripts = glob.sync(pattern).map(script => `/${script}`);
+      const scripts = glob.sync(pattern).map((script) => `/${script}`);
 
       if (scripts.length === 0) {
         throw Error(`No test scripts match the pattern '${pattern}'.`);
