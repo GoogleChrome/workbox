@@ -4,18 +4,21 @@
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
+ */
 
-const path = require('path');
-const express = require('express');
 const cookieParser = require('cookie-parser');
+const express = require('express');
+const fs = require('fs');
+const glob = require('glob');
+const handlebars = require('handlebars');
+const path = require('path');
 const serveIndex = require('serve-index');
 const serveStatic = require('serve-static');
 
@@ -63,6 +66,26 @@ class ServerInstance {
 
     this._app.get('/__test/cookie/:id', function(req, res) {
       res.send(JSON.stringify(req.cookies));
+    });
+
+    // Harness to kick off all the in-browser tests for a given package.
+    // It will pick up a list of all the top-level .js files and automatically
+    // inject them into the HTML as <script> tags.
+    this._app.get('/packages/:pkg/test/browser/testHarness', function(req, res) {
+      const pkg = req.params.pkg;
+      const pattern = `packages/${pkg}/test/browser/*.js`;
+      const scripts = glob.sync(pattern).map(script => `/${script}`);
+
+      if (scripts.length === 0) {
+        throw Error(`No test scripts match the pattern '${pattern}'.`);
+      }
+
+      const source = fs.readFileSync(path.join(
+        __dirname, '..', 'templates', 'test-harness.hbs'), 'utf-8');
+      const template = handlebars.compile(source);
+      const html = template({scripts, pkg});
+
+      res.send(html);
     });
   }
 

@@ -50,6 +50,7 @@
     "gulp-rollup": "^2.5.1",
     "gulp-sourcemaps": "^2.4.0",
     "gulp-spawn-mocha": "^3.1.0",
+    "handlebars": "^4.0.6",
     "jsdoc-strip-async-await": "^0.1.0",
     "lerna": "2.0.0-beta.30",
     "minimist": "^1.2.0",
