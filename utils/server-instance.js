@@ -71,7 +71,7 @@ class ServerInstance {
     // Harness to kick off all the in-browser tests for a given package.
     // It will pick up a list of all the top-level .js files and automatically
     // inject them into the HTML as <script> tags.
-    this._app.get('/packages/:pkg/test/browser/harness', function(req, res) {
+    this._app.get('/__test/mocha/:pkg', function(req, res) {
       const pkg = req.params.pkg;
       const pattern = `packages/${pkg}/test/browser/*.js`;
       const scripts = glob.sync(pattern).map((script) => `/${script}`);
@@ -86,6 +86,18 @@ class ServerInstance {
       const html = template({scripts, pkg});
 
       res.send(html);
+    });
+
+    // Redirect /packages/:pkg/test/browser/ to the /__test/mocha/:pkg templated
+    // page, but only if there's no /packages/:pkg/test/browser/index.html
+    this._app.get('/packages/:pkg/test/browser/', function(req, res, next) {
+      const index = path.join(__dirname, '..', 'packages', req.params.pkg,
+        'test', 'browser', 'index.html');
+      if (fs.existsSync(index)) {
+        next();
+      } else {
+        res.redirect(301, `/__test/mocha/${req.params.pkg}`);
+      }
     });
   }
 

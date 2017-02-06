@@ -10,12 +10,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<!-- This file is served via /packages/<pkg>/test/browser/testHarness
+<!-- This file is served via /__test/mocha/<pkg>
      See utils/service-instance.js for the serving logic. -->
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Test Harness: {{pkg}}</title>
+    <title>Mocha Test Harness: {{pkg}}</title>
+    <base href="/packages/{{pkg}}/test/browser/">
     <link href="/node_modules/mocha/mocha.css" rel="stylesheet">
 
     <!--
