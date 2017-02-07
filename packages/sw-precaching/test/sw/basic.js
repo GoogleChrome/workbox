@@ -18,13 +18,16 @@ describe('Test Library Surface', function() {
     expect(goog.precaching).to.exist;
   });
 
-  it('should have PrecacheManager via goog.precaching', function() {
-    expect(goog.precaching.PrecacheManager).to.exist;
+  it('should have RevisionedCacheManager via goog.precaching', function() {
+    expect(goog.precaching.RevisionedCacheManager).to.exist;
+  });
+
+  it('should have UnrevisionedCacheManager via goog.precaching', function() {
+    expect(goog.precaching.UnrevisionedCacheManager).to.exist;
   });
 
   it('should be able to get the revisioned cache manager via goog.precaching', function() {
-    const precacheManager = new goog.precaching.PrecacheManager();
-    const revisionedManager = precacheManager.getRevisionedCacheManager();
+    const revisionedManager = new goog.precaching.RevisionedCacheManager();
     expect(revisionedManager).to.exist;
 
     const cacheName = revisionedManager.getCacheName();
@@ -39,7 +42,7 @@ describe('Test Library Surface', function() {
 
     const URL_1 = '/';
     const URL_2 = '/__echo/date/example.1234.txt';
-    precacheManager.cacheRevisioned({
+    revisionedManager.addToCacheList({
       revisionedFiles: [{
         url: URL_1,
         revision: '1234',
@@ -62,8 +65,7 @@ describe('Test Library Surface', function() {
   });
 
   it('should be able to get the unrevisioned cache manager via goog.precaching', function() {
-    const precacheManager = new goog.precaching.PrecacheManager();
-    const unrevisionedManager = precacheManager.getUnrevisionedCacheManager();
+    const unrevisionedManager = new goog.precaching.UnrevisionedCacheManager();
     expect(unrevisionedManager).to.exist;
 
     const cacheName = unrevisionedManager.getCacheName();
@@ -78,7 +80,7 @@ describe('Test Library Surface', function() {
 
     const URL_1 = '/';
     const URL_2 = '/__echo/date/example.1234.txt';
-    precacheManager.cacheUnrevisioned({
+    unrevisionedManager.addToCacheList({
       unrevisionedFiles: [
         new Request(URL_1),
         URL_2,

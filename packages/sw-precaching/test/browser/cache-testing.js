@@ -239,7 +239,7 @@ describe('sw-precaching Test Revisioned Caching', function() {
       })
       .then((requestsMade) => {
         if (allEntries.length !== requestsMade.length) {
-          throw new Error('Duplicate requests have been made: ' + JSON.stringify(requestsMade));
+          throw new Error('Requests made does not equal the list of de-duped cache entries. Requests Made are: ' + JSON.stringify(requestsMade));
         }
       })
       .then(() => {

@@ -14,7 +14,7 @@ mocha.setup({
   reporter: null,
 });
 
-describe('Test PrecacheManager.cacheRevisioned()', function() {
+describe('sw/revisioned-caching()', function() {
   let cacheManager;
 
   const VALID_PATH_REL = '/__echo/date/example.txt';
@@ -22,7 +22,7 @@ describe('Test PrecacheManager.cacheRevisioned()', function() {
   const VALID_REVISION = '1234';
 
   beforeEach(function() {
-    cacheManager = new goog.precaching.PrecacheManager();
+    cacheManager = new goog.precaching.RevisionedCacheManager();
   });
 
   afterEach(function() {
@@ -46,7 +46,7 @@ describe('Test PrecacheManager.cacheRevisioned()', function() {
   badRevisionFileInputs.forEach((badInput) => {
     it(`should handle bad cacheRevisioned({revisionedFiles='${badInput}'}) input`, function() {
       expect(() => {
-        cacheManager.cacheRevisioned({
+        cacheManager.addToCacheList({
           revisionedFiles: badInput,
         });
       }).to.throw('instance of \'Array\'');
@@ -54,24 +54,24 @@ describe('Test PrecacheManager.cacheRevisioned()', function() {
 
     it(`should handle bad cacheRevisioned('${badInput}') input`, function() {
       expect(() => {
-        cacheManager.cacheRevisioned(badInput);
+        cacheManager.addToCacheList(badInput);
       }).to.throw('instance of \'Array\'');
     });
   });
 
   it(`should handle bad cacheRevisioned('[]') input`, function() {
     expect(() => {
-      cacheManager.cacheRevisioned([]);
+      cacheManager.addToCacheList([]);
     }).to.throw('instance of \'Array\'');
   });
 
   it(`should handle cacheRevisioned(null / undefined) inputs`, function() {
     expect(() => {
-      cacheManager.cacheRevisioned({revisionedFiles: null});
+      cacheManager.addToCacheList({revisionedFiles: null});
     }).to.throw('instance of \'Array\'');
 
     expect(() => {
-      cacheManager.cacheRevisioned(null);
+      cacheManager.addToCacheList(null);
     }).to.throw('null');
   });
 
@@ -109,7 +109,7 @@ describe('Test PrecacheManager.cacheRevisioned()', function() {
     it(`should throw an errror for bad url / revision value '${JSON.stringify(badFileManifest)}'`, function() {
       let caughtError;
       try {
-        cacheManager.cacheRevisioned({revisionedFiles: badFileManifest});
+        cacheManager.addToCacheList({revisionedFiles: badFileManifest});
       } catch (err) {
         caughtError = err;
       }
@@ -119,7 +119,6 @@ describe('Test PrecacheManager.cacheRevisioned()', function() {
       }
       // TODO: Changed assertion library to support throwing custom errors.
       // caughtError.name.should.equal('invalid-revisioned-entry');
-      console.log('<------------------------------- ', caughtError);
     });
   });
 
@@ -136,7 +135,7 @@ describe('Test PrecacheManager.cacheRevisioned()', function() {
     it(`should be able to handle bad cacheBust value '${JSON.stringify(badCacheBust)}'`, function() {
       let caughtError;
       try {
-        cacheManager.cacheRevisioned({revisionedFiles: [
+        cacheManager.addToCacheList({revisionedFiles: [
           {url: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: badCacheBust},
         ]});
       } catch (err) {
@@ -164,7 +163,7 @@ describe('Test PrecacheManager.cacheRevisioned()', function() {
   ];
   goodManifestInputs.forEach((goodInput) => {
     it(`should be able to handle good cache input '${JSON.stringify(goodInput)}'`, function() {
-      cacheManager.cacheRevisioned({revisionedFiles: [goodInput]});
+      cacheManager.addToCacheList({revisionedFiles: [goodInput]});
     });
   });
 
@@ -172,10 +171,10 @@ describe('Test PrecacheManager.cacheRevisioned()', function() {
     const TEST_PATH = '/__echo/date/hello.txt';
     let thrownError = null;
     try {
-      cacheManager.cacheRevisioned({revisionedFiles: [
+      cacheManager.addToCacheList({revisionedFiles: [
         {url: TEST_PATH, revision: '1234'},
       ]});
-      cacheManager.cacheRevisioned({revisionedFiles: [
+      cacheManager.addToCacheList({revisionedFiles: [
         {url: TEST_PATH, revision: '5678'},
       ]});
     } catch (err) {

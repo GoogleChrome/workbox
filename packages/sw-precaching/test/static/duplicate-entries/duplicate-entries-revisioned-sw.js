@@ -11,11 +11,19 @@ sinon.stub(self, 'fetch', (requestUrl) => {
   return Promise.resolve(new Response());
 });
 
-const precacheManager = new goog.precaching.PrecacheManager();
+const precacheManager = new goog.precaching.RevisionedCacheManager();
 goog.__TEST_DATA['duplicate-entries'].forEach((entries) => {
-  precacheManager.cacheRevisioned({
+  precacheManager.addToCacheList({
     revisionedFiles: entries,
   });
+});
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(precacheManager.install());
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(precacheManager.cleanup());
 });
 
 self.addEventListener('fetch', (event) => {

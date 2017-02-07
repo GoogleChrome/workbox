@@ -26,8 +26,8 @@
  * @example
  * importScripts('/<Path to Module>/build/sw-precaching.min.js');
  *
- * const precacheManager = new goog.precaching.PrecacheManager();
- * precacheManager.cacheRevisioned({
+ * const revCacheManager = new goog.precaching.RevisionedCacheManager();
+ * revCacheManager.addToCacheList({
  *   revisionedFiles: [
  *     '/styles/main.1234.css',
  *     {
@@ -37,17 +37,37 @@
  *   ],
  * });
  *
- * precacheManager.cacheUnrevisioned({
+ * const unrevCacheManager = new goog.precaching.UnrevisionedCacheManager();
+ * unrevCacheManager.addToCacheList({
  *   unrevisionedFiles: [
  *     '/',
  *     '/images/logo.png'
  *   ]
  * });
  *
+ * self.addEventListener('install', (event) => {
+ *   const promiseChain = Promise.all([
+ *     revCacheManager.install(),
+ *     unrevCacheManager.install(),
+ *   ]);
+ *   event.waitUntil(promiseChain);
+ * });
+ *
+ * self.addEventListener('activate', (event) => {
+ *   const promiseChain = Promise.all([
+ *     revCacheManager.cleanup(),
+ *     unrevCacheManager.cleanup()
+ *   ]);
+ *   event.waitUntil(promiseChain);
+ * });
+ *
  * @module sw-precaching
  */
 import ErrorFactory from './lib/error-factory';
-import PrecacheManager from './lib/precache-manager';
+import RevisionedCacheManager from
+  './lib/controllers/revisioned-cache-manager.js';
+import UnrevisionedCacheManager from
+  './lib/controllers/unrevisioned-cache-manager.js';
 
 import assert from '../../../lib/assert.js';
 
@@ -57,5 +77,6 @@ if (!assert.isSWEnv()) {
 }
 
 export {
-  PrecacheManager,
+  RevisionedCacheManager,
+  UnrevisionedCacheManager,
 };
