@@ -4,14 +4,14 @@
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
+ */
 
 const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
@@ -30,11 +30,11 @@ describe(`${packageName} Browser Tests`, function() {
   this.timeout(TIMEOUT);
 
   let globalDriverBrowser;
-  let baseTestUrl;
+  let testHarnessUrl;
 
   // Set up the web server before running any tests in this suite.
   before(() => testServer.start('.').then((portNumber) => {
-    baseTestUrl = `http://localhost:${portNumber}/packages/${packageName}`;
+    testHarnessUrl = `http://localhost:${portNumber}/__test/mocha/${packageName}`;
   }));
 
   // Kill the web server once all tests are complete.
@@ -50,7 +50,7 @@ describe(`${packageName} Browser Tests`, function() {
         .then(() => swTestingHelpers.mochaUtils.startWebDriverMochaTests(
           assistantDriver.getPrettyName(),
           globalDriverBrowser,
-          `${baseTestUrl}/test/browser/`
+          testHarnessUrl
         )).then((testResults) => {
           console.log(swTestingHelpers.mochaUtils.prettyPrintResults(testResults));
           if (testResults.failed.length > 0) {
@@ -67,7 +67,7 @@ describe(`${packageName} Browser Tests`, function() {
           console.log(`Skipping Opera <= 43 due to driver issues.`);
           return;
         }
-        // fall through
+      // fall through
       case 'chrome':
       case 'firefox':
         setupTestSuite(browser);

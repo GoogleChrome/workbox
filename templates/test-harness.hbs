@@ -10,11 +10,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+<!-- This file is served via /__test/mocha/<pkg>
+     See utils/service-instance.js for the serving logic. -->
 <html>
   <head>
     <meta charset="utf-8">
-    <title>SW Helpers Tests</title>
-    <link href="/node_modules/mocha/mocha.css" rel="stylesheet" />
+    <title>Mocha Test Harness: {{pkg}}</title>
+    <base href="/packages/{{pkg}}/test/browser/">
+    <link href="/node_modules/mocha/mocha.css" rel="stylesheet">
 
     <!--
       iframes are used to manage service worker scoping.
@@ -49,9 +52,10 @@
       const expect = chai.expect;
     </script>
 
-    <!-- In browser test scripts should be added to the page here -->
-    <script src="register-unit-tests.js"></script>
-    <script src="end-to-end.js"></script>
+    <!-- Package-specific tests matching packages/<pkg>/test/browser/*.js -->
+    {{#each scripts}}
+      <script src="{{this}}"></script>
+    {{/each}}
 
     <script>
       (function() {
