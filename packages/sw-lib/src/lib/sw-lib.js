@@ -357,7 +357,7 @@ class SWLib {
   }
 
   /**
-   * This method will register any default routes the library will need.
+   * This method will register listeners for the install and activate events.
    * @private
    */
   _registerInstallActivateEvents() {
