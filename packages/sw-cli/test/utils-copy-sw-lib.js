@@ -102,9 +102,14 @@ describe('Copy SW Lib', function() {
 
     return copySWLib('fake-path/')
     .then((swLibPath) => {
+      let pathSep = path.sep;
+      if (path.sep === '\\') {
+        pathSep = '\\\\';
+      }
       const regexPattern = new RegExp(
-        `fake-path${path.sep}sw-lib\.v\\d+\.\\d+\.\\d+\.min\.js`);
+        `fake-path${pathSep}sw-lib\.v\\d+\.\\d+\.\\d+\.min\.js`);
       if (!swLibPath.match(regexPattern)) {
+        console.log('Regular expression: ' + regexPattern);
         throw new Error('Unexpected result from copying swlib: ' + swLibPath);
       }
     });
