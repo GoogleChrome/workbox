@@ -2,6 +2,8 @@ const proxyquire = require('proxyquire');
 const cliHelper = require('./helpers/cli-test-helper.js');
 const errors = require('../src/lib/errors.js');
 
+require('chai').should();
+
 describe('Copy SW Lib', function() {
   const INJECTED_ERROR = new Error('Injected Error');
 
@@ -47,7 +49,7 @@ describe('Copy SW Lib', function() {
       },
       pipe: (stream) => stream,
     };
-    const SWCli = proxyquire('../src/cli/index', {
+    const copySWLib = proxyquire('../src/lib/utils/copy-sw-lib', {
       mkdirp: {
         sync: () => {
           return;
@@ -64,10 +66,44 @@ describe('Copy SW Lib', function() {
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return cli._copySWLibFile('fake-path/')
+    return copySWLib('fake-path/')
     .catch((caughtError) => {
       checkErrors(caughtError, 'unable-to-copy-sw-lib');
+    });
+  });
+
+  it('should resolve with file name on file stream end', function() {
+    this.timeout(5 * 1000);
+
+    const fakeStream = {
+      on: (eventName, cb) => {
+        if (eventName === 'finish') {
+          setTimeout(() => cb(), 500);
+        }
+      },
+      pipe: (stream) => stream,
+    };
+    const copySWLib = proxyquire('../src/lib/utils/copy-sw-lib', {
+      mkdirp: {
+        sync: () => {
+          return;
+        },
+      },
+      fs: {
+        createReadStream: () => {
+          return fakeStream;
+        },
+        createWriteStream: () => {
+          return fakeStream;
+        },
+      },
+    });
+
+    return copySWLib('fake-path/')
+    .then((swLibPath) => {
+      if (!swLibPath.match(/fake-path\/sw-lib\.v\d+\.\d+\.\d+\.min\.js/g)) {
+        throw new Error('Unexpected result from copying swlib: ' + swLibPath);
+      }
     });
   });
 });
