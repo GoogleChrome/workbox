@@ -1,4 +1,5 @@
 const proxyquire = require('proxyquire');
+const path = require('path');
 const cliHelper = require('./helpers/cli-test-helper.js');
 const errors = require('../src/lib/errors.js');
 
@@ -101,7 +102,9 @@ describe('Copy SW Lib', function() {
 
     return copySWLib('fake-path/')
     .then((swLibPath) => {
-      if (!swLibPath.match(/fake-path\/sw-lib\.v\d+\.\d+\.\d+\.min\.js/g)) {
+      const regexPattern = new RegExp(
+        `fake-path${path.sep}sw-lib\.v\\d+\.\\d+\.\\d+\.min\.js`);
+      if (!swLibPath.match(regexPattern)) {
         throw new Error('Unexpected result from copying swlib: ' + swLibPath);
       }
     });
