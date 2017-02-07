@@ -14,7 +14,7 @@ mocha.setup({
   reporter: null,
 });
 
-describe('Test PrecacheManager.cacheUnrevisioned()', function() {
+describe('sw/unrevisioned-caching.js', function() {
   let cacheManager;
 
   const VALID_PATH_REL = '/__echo/date/example.txt';
@@ -22,11 +22,10 @@ describe('Test PrecacheManager.cacheUnrevisioned()', function() {
   const VALID_REVISION = '1234';
 
   beforeEach(function() {
-    cacheManager = new goog.precaching.PrecacheManager();
+    cacheManager = new goog.precaching.UnrevisionedCacheManager();
   });
 
   afterEach(function() {
-    cacheManager._close();
     cacheManager = null;
   });
 
@@ -46,7 +45,7 @@ describe('Test PrecacheManager.cacheUnrevisioned()', function() {
   badRevisionFileInputs.forEach((badInput) => {
     it(`should handle bad cacheUnrevisioned({revisionedFiles='${badInput}'}) input`, function() {
       expect(() => {
-        cacheManager.cacheUnrevisioned({
+        cacheManager.addToCacheList({
           unrevisionedFiles: badInput,
         });
       }).to.throw('instance of \'Array\'');
@@ -54,24 +53,24 @@ describe('Test PrecacheManager.cacheUnrevisioned()', function() {
 
     it(`should handle bad cacheUnrevisioned('${badInput}') input`, function() {
       expect(() => {
-        cacheManager.cacheUnrevisioned(badInput);
+        cacheManager.addToCacheList(badInput);
       }).to.throw('instance of \'Array\'');
     });
   });
 
   it(`should handle bad cacheUnrevisioned('[]') input`, function() {
     expect(() => {
-      cacheManager.cacheUnrevisioned([]);
+      cacheManager.addToCacheList([]);
     }).to.throw('instance of \'Array\'');
   });
 
   it(`should handle cacheUnrevisioned(null / undefined) inputs`, function() {
     expect(() => {
-      cacheManager.cacheUnrevisioned({unrevisionedFiles: null});
+      cacheManager.addToCacheList({unrevisionedFiles: null});
     }).to.throw('instance of \'Array\'');
 
     expect(() => {
-      cacheManager.cacheUnrevisioned(null);
+      cacheManager.addToCacheList(null);
     }).to.throw('null');
   });
 
@@ -109,7 +108,7 @@ describe('Test PrecacheManager.cacheUnrevisioned()', function() {
     it(`should throw an errror for bad url / revision value '${JSON.stringify(badFileManifest)}'`, function() {
       let caughtError;
       try {
-        cacheManager.cacheUnrevisioned({unrevisionedFiles: badFileManifest});
+        cacheManager.addToCacheList({unrevisionedFiles: badFileManifest});
       } catch (err) {
         caughtError = err;
       }
@@ -137,7 +136,7 @@ describe('Test PrecacheManager.cacheUnrevisioned()', function() {
     it(`should be able to handle bad cacheBust value '${JSON.stringify(badCacheBust)}'`, function() {
       let caughtError;
       try {
-        cacheManager.cacheUnrevisioned({unrevisionedFiles: [
+        cacheManager.addToCacheList({unrevisionedFiles: [
           {url: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: badCacheBust},
         ]});
       } catch (err) {
@@ -160,7 +159,7 @@ describe('Test PrecacheManager.cacheUnrevisioned()', function() {
   ];
   goodManifestInputs.forEach((goodInput) => {
     it(`should be able to handle good cache input '${JSON.stringify(goodInput)}'`, function() {
-      cacheManager.cacheUnrevisioned({unrevisionedFiles: [goodInput]});
+      cacheManager.addToCacheList({unrevisionedFiles: [goodInput]});
     });
   });
 });

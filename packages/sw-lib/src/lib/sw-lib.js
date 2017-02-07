@@ -17,7 +17,9 @@
 
 import Router from './router.js';
 import ErrorFactory from './error-factory.js';
-import {PrecacheManager} from '../../../sw-precaching/src/index.js';
+import {
+  RevisionedCacheManager, UnrevisionedCacheManager,
+} from '../../../sw-precaching/src/index.js';
 import {Route} from '../../../sw-routing/src/index.js';
 import {Behavior as CacheExpirationBehavior} from
   '../../../sw-cache-expiration/src/index.js';
@@ -26,8 +28,7 @@ import {Behavior as BroadcastCacheUpdateBehavior} from
 import {
   CacheFirst, CacheOnly, NetworkFirst,
   NetworkOnly, StaleWhileRevalidate, RequestWrapper,
-}
-  from '../../../sw-runtime-caching/src/index.js';
+} from '../../../sw-runtime-caching/src/index.js';
 
 /**
  * A high level library to make it as easy as possible to precache assets
@@ -43,7 +44,9 @@ class SWLib {
    */
   constructor() {
     this._router = new Router();
-    this._precacheManager = new PrecacheManager();
+    this._revisionedCacheManager = new RevisionedCacheManager();
+    this._unrevisionedCacheManager = new UnrevisionedCacheManager();
+    this._registerInstallActivateEvents();
     this._registerDefaultRoutes();
   }
 
@@ -85,7 +88,7 @@ class SWLib {
       throw ErrorFactory.createError('bad-revisioned-cache-list');
     }
 
-    this._precacheManager.cacheRevisioned({
+    this._revisionedCacheManager.addToCacheList({
       revisionedFiles,
     });
   }
@@ -121,7 +124,7 @@ class SWLib {
       throw ErrorFactory.createError('bad-revisioned-cache-list');
     }
 
-    this._precacheManager.cacheUnrevisioned({
+    this._unrevisionedCacheManager.addToCacheList({
       unrevisionedFiles,
     });
   }
@@ -354,17 +357,37 @@ class SWLib {
   }
 
   /**
+   * This method will register listeners for the install and activate events.
+   * @private
+   */
+  _registerInstallActivateEvents() {
+    self.addEventListener('install', (event) => {
+      event.waitUntil(Promise.all([
+        this._revisionedCacheManager.install(),
+        this._unrevisionedCacheManager.install(),
+      ]));
+    });
+
+    self.addEventListener('activate', (event) => {
+      event.waitUntil(Promise.all([
+        this._revisionedCacheManager.cleanup(),
+        this._unrevisionedCacheManager.cleanup(),
+      ]));
+    });
+  }
+
+  /**
    * This method will register any default routes the library will need.
+   * @private
    */
   _registerDefaultRoutes() {
-    const revisionedManager = this._precacheManager.getRevisionedCacheManager();
     const cacheFirstHandler = this.cacheFirst({
-      cacheName: revisionedManager.getCacheName(),
+      cacheName: this._revisionedCacheManager.getCacheName(),
     });
 
     const route = new this.Route({
       match: ({url, event}) => {
-        const cachedUrls = revisionedManager.getCachedUrls();
+        const cachedUrls = this._revisionedCacheManager.getCachedUrls();
         return cachedUrls.indexOf(url.href) !== -1;
       },
       handler: cacheFirstHandler,

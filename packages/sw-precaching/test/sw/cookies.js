@@ -14,21 +14,28 @@ mocha.setup({
 
 describe('Test Cookies with Precache', function() {
   it('should cache asset with appropriate cookies with revisions asset', function() {
-    const precacheManager = new goog.precaching.PrecacheManager();
-    precacheManager.cacheRevisioned({
+    const revManager = new goog.precaching.RevisionedCacheManager();
+    const unrevManager = new goog.precaching.UnrevisionedCacheManager();
+    revManager.addToCacheList({
       revisionedFiles: [
         `/__test/cookie/1/`,
       ],
     });
-    precacheManager.cacheUnrevisioned({
+    unrevManager.addToCacheList({
       unrevisionedFiles: [
         `/__test/cookie/2/`,
       ],
     });
 
-    return precacheManager._performInstallStep()
+    return Promise.all([
+      revManager.install(),
+      unrevManager.install(),
+    ])
     .then(() => {
-      precacheManager._performActivateStep();
+      return Promise.all([
+        revManager.cleanup(),
+        unrevManager.cleanup(),
+      ]);
     })
     .then(() => {
       return Promise.all([

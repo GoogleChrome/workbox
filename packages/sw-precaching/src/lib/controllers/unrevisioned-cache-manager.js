@@ -3,6 +3,7 @@ import BaseCacheManager from './base-cache-manager';
 import RequestCacheEntry from '../models/precache-entries/request-entry';
 import StringPrecacheEntry from
   '../models/precache-entries/string-precache-entry';
+import assert from '../../../../../lib/assert';
 
 /**
  * This class extends a lot of the internal methods from BaseCacheManager
@@ -15,9 +16,12 @@ import StringPrecacheEntry from
 class UnrevisionedCacheManager extends BaseCacheManager {
   /**
    * Constructor for UnreivisionedCacheManager
+   * @param {Object} input
+   * @param {String} [input.cacheName] Define the cache used to stash these
+   * entries.
    */
-  constructor() {
-    super();
+   constructor({cacheName} = {}) {
+     super(cacheName);
   }
 
   /**
@@ -27,20 +31,22 @@ class UnrevisionedCacheManager extends BaseCacheManager {
    *
    * @example
    *
-   * revisionedManager.cache([
-   *   '/styles/hello.css',
-   *   new Request('/images/logo.png', {
-   *     // Custom Request Options.
-   *   })
-   * ]);
+   * unrevisionedManager.addToCacheList({
+   *   unrevisionedFiles: [
+   *     '/styles/hello.css',
+   *     new Request('/images/logo.png', {
+   *       // Custom Request Options.
+   *     })
+   *   ]
+   * ]});
    *
    * @param {Array<String|Request>} rawEntries A raw entry that can be
    * parsed into a BaseCacheEntry.
    */
-  cache(rawEntries) {
-    // This method is here to provide useful docs.
-    super.cache(rawEntries);
-  }
+   addToCacheList({unrevisionedFiles} = {}) {
+     assert.isInstance({unrevisionedFiles}, Array);
+     super._addEntries(unrevisionedFiles);
+   }
 
   /**
    * This method ensures that the file entry in the maniest is valid and

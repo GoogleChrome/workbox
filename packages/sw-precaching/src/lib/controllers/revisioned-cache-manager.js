@@ -6,6 +6,7 @@ import StringPrecacheEntry from
   '../models/precache-entries/string-precache-entry';
 import ObjectPrecacheEntry from
   '../models/precache-entries/object-precache-entry';
+import assert from '../../../../../lib/assert';
 
 /**
  * This class extends a lot of the internal methods from BaseCacheManager
@@ -18,9 +19,13 @@ import ObjectPrecacheEntry from
 class RevisionedCacheManager extends BaseCacheManager {
   /**
    * Constructor for RevisionedCacheManager
+   * @param {Object} input
+   * @param {String} [input.cacheName] Define the cache used to stash these
+   * entries.
    */
-  constructor() {
-    super(defaultRevisionedCacheName);
+  constructor({cacheName} = {}) {
+    cacheName = cacheName || defaultRevisionedCacheName;
+    super(cacheName);
 
     this._revisionDetailsModel = new RevisionDetailsModel();
   }
@@ -32,20 +37,22 @@ class RevisionedCacheManager extends BaseCacheManager {
    *
    * @example
    *
-   * revisionedManager.cache([
-   *   '/styles/hello.1234.css',
-   *   {
-   *     url: '/images/logo.png',
-   *     revision: '1234'
-   *   }
-   * ]);
+   * revisionedManager.addToCacheList({
+   *   revisionedFiles: [
+   *     '/styles/hello.1234.css',
+   *     {
+   *       url: '/images/logo.png',
+   *       revision: '1234'
+   *     }
+   *   ]
+   * });
    *
    * @param {Array<String|Object>} rawEntries A raw entry that can be
    * parsed into a BaseCacheEntry.
    */
-  cache(rawEntries) {
-    // This method is here to provide useful docs.
-    super.cache(rawEntries);
+  addToCacheList({revisionedFiles} = {}) {
+    assert.isInstance({revisionedFiles}, Array);
+    super._addEntries(revisionedFiles);
   }
 
   /**
@@ -144,6 +151,22 @@ class RevisionedCacheManager extends BaseCacheManager {
    */
   _close() {
     this._revisionDetailsModel._close();
+  }
+
+  /**
+   * Compare the URL's and determines which assets are no longer required
+   * in the cache.
+   *
+   * This should be called in the service worker activate event.
+   *
+   * @return {Promise} Promise that resolves once the cache entries have been
+   * cleaned.
+   */
+  cleanup() {
+    return super.cleanup()
+    .then(() => {
+      return this._close();
+    });
   }
 }
 

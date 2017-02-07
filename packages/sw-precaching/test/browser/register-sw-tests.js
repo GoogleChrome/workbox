@@ -4,6 +4,10 @@ describe('Service Worker Unit Tests', function() {
     return window.goog.swUtils.cleanState();
   });
 
+  afterEach(function() {
+    return window.goog.swUtils.cleanState();
+  });
+
   const swUnitTests = [
     'basic.js',
     'revisioned-caching.js',

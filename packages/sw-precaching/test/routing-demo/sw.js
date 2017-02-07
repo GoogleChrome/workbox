@@ -4,14 +4,13 @@ importScripts('/packages/sw-precaching/node_modules/sw-runtime-caching/build/sw-
 
 /* global goog */
 
-const cacheManager = new goog.precaching.PrecacheManager();
-cacheManager.cacheRevisioned({revisionedFiles: [
+const revcacheManager = new goog.precaching.RevisionedCacheManager();
+revcacheManager.addToCacheList({revisionedFiles: [
   {url: 'example.html', revision: '1234'},
 ]});
 
-const revisionedCacheManager = cacheManager.getRevisionedCacheManager();
-const cacheName = revisionedCacheManager.getCacheName();
-const cachedURLs = revisionedCacheManager.getCachedUrls();
+const cacheName = revcacheManager.getCacheName();
+const cachedURLs = revcacheManager.getCachedUrls();
 
 const route = new goog.routing.Route({
   match: ({url, event}) => {
@@ -26,3 +25,11 @@ const route = new goog.routing.Route({
 
 const router = new goog.routing.Router();
 router.registerRoute({route});
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(revcacheManager.install());
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(revcacheManager.cleanup());
+});

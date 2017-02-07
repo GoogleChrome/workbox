@@ -26,11 +26,13 @@ class BaseCacheManager {
    * Adds entries to the install list.
    * This will manage duplicate entries and perform the caching during
    * the install step.
+   *
+   * @private
    * @param {Array<String|Request|Object>} rawEntries A raw entry that can be
    * parsed into a BaseCacheEntry by the inheriting CacheManager.
    */
-  cache(rawEntries) {
-    this._cachedUrls = null;
+  _addEntries(rawEntries) {
+    this._parsedCacheUrls = null;
 
     rawEntries.forEach((rawEntry) => {
       this._addEntryToInstallList(
@@ -53,12 +55,12 @@ class BaseCacheManager {
    * @return {Array<String>} An array of URLs that will be cached.
    */
   getCachedUrls() {
-    if (!this._cachedUrls) {
-      this._cachedUrls = Array.from(this._entriesToCache.keys())
+    if (!this._parsedCacheUrls) {
+      this._parsedCacheUrls = Array.from(this._entriesToCache.keys())
         .map((url) => new URL(url, location).href);
     }
 
-    return this._cachedUrls;
+    return this._parsedCacheUrls;
   }
 
   /**
@@ -95,11 +97,10 @@ class BaseCacheManager {
    * Manages the service worker install event and caches the revisioned
    * assets.
    *
-   * @private
    * @return {Promise} The promise resolves when all the desired assets are
    * cached.
    */
-  async _performInstallStep() {
+  async install() {
     if (this._entriesToCache.size === 0) {
       return;
     }
@@ -152,11 +153,10 @@ class BaseCacheManager {
    *
    * This should be called in the service worker activate event.
    *
-   * @private
    * @return {Promise} Promise that resolves once the cache entries have been
    * cleaned.
    */
-  async _cleanUpOldEntries() {
+  async cleanup() {
     if (!await caches.has(this._cacheName)) {
       // Cache doesn't exist, so nothing to delete
       return;
