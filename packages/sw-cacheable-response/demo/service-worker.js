@@ -8,7 +8,7 @@ importScripts(
   // This provides the goog.runtimeCaching.* interfaces.
   '../../sw-runtime-caching/build/sw-runtime-caching.js',
   // This provides the goog.cacheExpiration.* interfaces.
-  '../../sw-cacheable-response-behavior/build/sw-cacheable-response-behavior.js'
+  '../../sw-cacheable-response/build/sw-cacheable-response.js'
 );
 
 // Have the service worker take control as soon as possible.
@@ -19,8 +19,8 @@ self.addEventListener('activate', () => self.clients.claim());
 // that have a status code of 200 or 404.
 const httpbinRequestWrapper = new goog.runtimeCaching.RequestWrapper({
   cacheName: 'httpbin',
-  behaviors: [
-    new goog.cacheableResponse.Behavior({
+  plugins: [
+    new goog.cacheableResponse.Plugin({
       statuses: [200, 404],
     }),
   ],
