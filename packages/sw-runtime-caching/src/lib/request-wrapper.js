@@ -178,6 +178,12 @@ class RequestWrapper {
   async fetch({request}) {
     assert.atLeastOne({request});
 
+    if (this.behaviorCallbacks.requestWillFetch) {
+      for (let callback of this.behaviorCallbacks.requestWillFetch) {
+        request = callback({request});
+      }
+    }
+
     try {
       return await fetch(request, this.fetchOptions);
     } catch (err) {

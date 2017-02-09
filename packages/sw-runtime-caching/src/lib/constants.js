@@ -43,4 +43,5 @@ export const behaviorCallbacks = [
   'cacheWillMatch',
   'cacheWillUpdate',
   'fetchDidFail',
+  'requestWillFetch',
 ];
