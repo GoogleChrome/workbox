@@ -74,8 +74,8 @@ describe('Test caching strategies.', function() {
       });
       expect(handler.handle).to.exist;
       expect(handler.requestWrapper).to.exist;
-      expect(handler.requestWrapper.behaviorCallbacks.cacheDidUpdate).to.exist;
-      handler.requestWrapper.behaviorCallbacks.cacheDidUpdate.length.should.equal(1);
+      expect(handler.requestWrapper.pluginCallbacks.cacheDidUpdate).to.exist;
+      handler.requestWrapper.pluginCallbacks.cacheDidUpdate.length.should.equal(1);
     });
 
     it(`should return a Handler when '${strategy}' is instantiated with broadcastCacheUpdate options`, function() {
@@ -88,8 +88,8 @@ describe('Test caching strategies.', function() {
       });
       expect(handler.handle).to.exist;
       expect(handler.requestWrapper).to.exist;
-      expect(handler.requestWrapper.behaviorCallbacks.cacheDidUpdate).to.exist;
-      handler.requestWrapper.behaviorCallbacks.cacheDidUpdate.length.should.equal(1);
+      expect(handler.requestWrapper.pluginCallbacks.cacheDidUpdate).to.exist;
+      handler.requestWrapper.pluginCallbacks.cacheDidUpdate.length.should.equal(1);
     });
   });
 });
