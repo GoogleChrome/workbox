@@ -43,6 +43,6 @@
  * @module sw-cacheable-response
  */
 
-import Plugin from './lib/behavior';
+import Plugin from './lib/plugin';
 
 export {Plugin};
