@@ -20,14 +20,11 @@ const fs = require('fs');
 const path = require('path');
 const inquirer = require('inquirer');
 const minimist = require('minimist');
-const glob = require('glob');
-const crypto = require('crypto');
-const mkdirp = require('mkdirp');
-const template = require('lodash.template');
 const updateNotifier = require('update-notifier');
 
-const errors = require('../lib/errors');
+const swcliModule = require('../index');
 const logHelper = require('../lib/log-helper');
+const errors = require('../lib/errors');
 const pkg = require('../../package.json');
 const constants = require('../lib/constants.js');
 
@@ -84,7 +81,7 @@ class SWCli {
   /**
    * If there is no command given to the CLI then the flags will be passed
    * to this function in case a relevant action can be taken.
-   * @param {object} flags The available flags from the command line.
+   * @param {object} flags The available flags = require(the command line.
    * @return {Promise} returns a promise once handled.
    */
   handleFlag(flags) {
@@ -119,9 +116,10 @@ class SWCli {
   handleCommand(command, args, flags) {
     switch (command) {
       case 'generate-sw':
-        return this.generateSW();
+        return this._generateSW();
       case 'build-file-manifest':
-        return this.buildFileManifest();
+        logHelper.error(`TODO: Implement.`);
+        return Promise.reject();
       default:
         logHelper.error(`Invlaid command given '${command}'`);
         return Promise.reject();
@@ -133,7 +131,7 @@ class SWCli {
    * @return {Promise} The promise returned here will be used to exit the
    * node process cleanly or not.
    */
-  generateSW() {
+  _generateSW() {
     let rootDirectory;
     let fileExtentionsToCache;
     let fileManifestName;
@@ -169,55 +167,24 @@ class SWCli {
 
       const relativePath = path.relative(process.cwd(), rootDirectory);
 
-      const globs = [
-        this._generateGlobPatten(relativePath, fileExtentionsToCache),
-      ];
-
       const excludeFiles = [
         fileManifestName,
         serviceWorkerName,
         relativePath,
       ];
-      let swlibPath;
-      return this._copySWLibFile(rootDirectory)
-      .then((libPath) => {
-        swlibPath = libPath;
-        excludeFiles.push(path.basename(swlibPath));
-      })
-      .then(() => {
-        const manifestEntries = this._getFileManifestEntries(
-          globs, rootDirectory, excludeFiles);
-
-        return this._buildServiceWorker(
-          path.join(rootDirectory, serviceWorkerName),
-          manifestEntries,
-          swlibPath,
-          rootDirectory
-        );
-
-        // If SW inlines the manifest entires, the file manifest is not needed
-        // return this._writeFilemanifest(
-        //  path.join(rootDirectory, fileManifestName), manifestEntries);
+      return swcliModule.generateSW({
+        rootDirectory,
+        relativePath,
+        fileExtentionsToCache,
+        serviceWorkerName,
+        excludeFiles,
       });
     });
   }
 
-  _generateGlobPatten(relativePath, fileExtentionsToCache) {
-    // Glob patterns only work with forward slash
-    // https://github.com/isaacs/node-glob#windows
-    const globPath = path.join(relativePath, '**', '*').replace(path.sep, '/');
-    if (fileExtentionsToCache.length > 1) {
-      // Return pattern '**/*.{txt,md}'
-      return globPath + `.{${fileExtentionsToCache.join(',')}}`;
-    } else {
-      // Return pattern '**/*.txt'
-      return globPath + `.${fileExtentionsToCache[0]}`;
-    }
-  }
-
   /**
    * This method requests the root directory of the web app.
-   * The user can opt to type in the directory OR select from a list of
+   * The user can opt to type in the directory OR select = require(a list of
    * directories in the current path.
    * @return {Promise<string>} Promise the resolves with the name of the root
    * directory if given.
@@ -441,208 +408,6 @@ class SWCli {
         err
       );
       throw err;
-    });
-  }
-
-  _getFileManifestEntries(globs, rootDirectory, excludeFiles) {
-    const globbedFiles = globs.reduce((accumulated, globPattern) => {
-      const fileDetails = this._getFileManifestDetails(
-        rootDirectory, globPattern);
-      return accumulated.concat(fileDetails);
-    }, []);
-
-    return this._filterFiles(globbedFiles, excludeFiles);
-  }
-
-  _writeFilemanifest(manifestFilePath, manifestEntries) {
-    try {
-      mkdirp.sync(path.dirname(manifestFilePath));
-    } catch (err) {
-      logHelper.error(errors['unable-to-make-manifest-directory'], err);
-      return Promise.reject(err);
-    }
-
-    const templatePath = path.join(
-      __dirname, '..', 'lib', 'templates', 'file-manifest.js.tmpl');
-    return new Promise((resolve, reject) => {
-      fs.readFile(templatePath, 'utf8', (err, data) => {
-        if (err) {
-          logHelper.error(errors['read-manifest-template-failure'], err);
-          return reject(err);
-        }
-        resolve(data);
-      });
-    })
-    .then((templateString) => {
-      try {
-        return template(templateString)({
-          manifestEntries: manifestEntries,
-        });
-      } catch (err) {
-        logHelper.error(errors['populating-manifest-tmpl-failed'], err);
-        throw err;
-      }
-    })
-    .then((populatedTemplate) => {
-      return new Promise((resolve, reject) => {
-        fs.writeFile(manifestFilePath, populatedTemplate, (err) => {
-          if (err) {
-            logHelper.error(errors['manifest-file-write-failure'], err);
-            return reject(err);
-          }
-
-          resolve();
-        });
-      });
-    });
-  }
-
-  _filterFiles(files, excludeFiles) {
-    files = files.filter((fileDetails) => {
-      // Filter oversize files.
-      if (fileDetails.size > constants.maximumFileSize) {
-        logHelper.warn(`Skipping file '${fileDetails.file}' due to size. ` +
-          `[Max size supported is ${constants.maximumFileSize}]`);
-        return false;
-      }
-
-      // Filter out excluded files (i.e. manifest and service worker)
-      if (excludeFiles.indexOf(fileDetails.file) !== -1) {
-        return false;
-      }
-
-      return true;
-    });
-
-    // TODO: Strip prefix
-
-    // Convert to manifest format
-    return files.map((fileDetails) => {
-      return {
-        url: '/' + fileDetails.file.replace(path.sep, '/'),
-        revision: fileDetails.hash,
-      };
-    });
-  }
-
-  _getFileManifestDetails(rootDirectory, globPattern) {
-    let globbedFiles;
-    try {
-      globbedFiles = glob.sync(globPattern);
-    } catch (err) {
-      logHelper.error(errors['unable-to-glob-files'], err);
-      throw err;
-    }
-
-    const fileDetails = globbedFiles.map((file) => {
-      const fileSize = this._getFileSize(file);
-      if (fileSize === null) {
-        return null;
-      }
-
-      const fileHash = this._getFileHash(file);
-      return {
-        file: `${path.relative(rootDirectory, file)}`,
-        hash: fileHash,
-        size: fileSize,
-      };
-    });
-
-    // If !== null, means it's a valid file.
-    return fileDetails.filter((details) => details !== null);
-  }
-
-  _getFileSize(file) {
-    try {
-      const stat = fs.statSync(file);
-      if (!stat.isFile()) {
-        return null;
-      }
-      return stat.size;
-    } catch (err) {
-      logHelper.error(errors['unable-to-get-file-size'], err);
-      throw err;
-    }
-  }
-
-  _getFileHash(file) {
-    try {
-      const buffer = fs.readFileSync(file);
-      const md5 = crypto.createHash('md5');
-      md5.update(buffer);
-      return md5.digest('hex');
-    } catch (err) {
-      logHelper.error(errors['unable-to-get-file-hash'], err);
-      throw err;
-    }
-  }
-
-  _buildServiceWorker(swPath, manifestEntries, swlibPath, rootDirectory) {
-    try {
-      mkdirp.sync(path.dirname(swPath));
-    } catch (err) {
-      logHelper.error(errors['unable-to-make-sw-directory'], err);
-      return Promise.reject(err);
-    }
-
-    const templatePath = path.join(
-      __dirname, '..', 'lib', 'templates', 'sw.js.tmpl');
-    return new Promise((resolve, reject) => {
-      fs.readFile(templatePath, 'utf8', (err, data) => {
-        if (err) {
-          logHelper.error(errors['read-sw-template-failure'], err);
-          return reject(err);
-        }
-        resolve(data);
-      });
-    })
-    .then((templateString) => {
-      const relSwlibPath = path.relative(rootDirectory, swlibPath);
-
-      try {
-        return template(templateString)({
-          manifestEntries: manifestEntries,
-          swlibPath: relSwlibPath,
-        });
-      } catch (err) {
-        logHelper.error(errors['populating-sw-tmpl-failed'], err);
-        throw err;
-      }
-    })
-    .then((populatedTemplate) => {
-      return new Promise((resolve, reject) => {
-        fs.writeFile(swPath, populatedTemplate, (err) => {
-          if (err) {
-            logHelper.error(errors['sw-write-failure'], err);
-            return reject(err);
-          }
-
-          resolve();
-        });
-      });
-    });
-  }
-
-  _copySWLibFile(rootDirectory) {
-    const swlibModulePath = path.join(__dirname, '..', '..', 'node_modules',
-      'sw-lib');
-    const swlibPkg = require(path.join(swlibModulePath, 'package.json'));
-
-    const swlibOutputPath = path.join(rootDirectory,
-      `sw-lib.v${swlibPkg.version}.min.js`);
-    return new Promise((resolve, reject) => {
-      const swlibBuiltPath = path.join(swlibModulePath, 'build',
-        'sw-lib.min.js');
-
-      const stream = fs.createReadStream(swlibBuiltPath)
-        .pipe(fs.createWriteStream(swlibOutputPath));
-      stream.on('error', function(err) {
-        logHelper.error(errors['unable-to-copy-sw-lib'], err);
-        reject(err);
-      });
-      stream.on('finish', function() {
-        resolve(swlibOutputPath);
-      });
     });
   }
 }

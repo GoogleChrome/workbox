@@ -2,7 +2,9 @@ const proxyquire = require('proxyquire');
 const cliHelper = require('./helpers/cli-test-helper.js');
 const errors = require('../src/lib/errors.js');
 
-describe('Build Service Worker', function() {
+require('chai').should();
+
+describe('lib/write-sw.js', function() {
   const INJECTED_ERROR = new Error('Injected Error');
   const globalStubs = [];
 
@@ -41,7 +43,7 @@ describe('Build Service Worker', function() {
   };
 
   it('should handle failing mkdirp.sync', function() {
-    const SWCli = proxyquire('../src/cli/index', {
+    const writeSw = proxyquire('../src/lib/write-sw', {
       mkdirp: {
         sync: () => {
           throw INJECTED_ERROR;
@@ -50,11 +52,15 @@ describe('Build Service Worker', function() {
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return cli._buildServiceWorker(
+    return writeSw(
       'fake-path/sw.js',
-      'fake-path/manifest.js',
-      'fake-path/sw-lib.min.js',
+      [
+        {
+          url: '/',
+          revision: '1234',
+        },
+      ],
+      'fake-path/sw-lib.min.v0.0.0.js',
       'fake-path/')
     .catch((caughtError) => {
       checkErrors(caughtError, 'unable-to-make-sw-directory');
@@ -62,7 +68,7 @@ describe('Build Service Worker', function() {
   });
 
   it('should handle fs.readFile error when checking template', function() {
-    const SWCli = proxyquire('../src/cli/index', {
+    const writeSw = proxyquire('../src/lib/write-sw', {
       mkdirp: {
         sync: () => {
           return;
@@ -76,10 +82,14 @@ describe('Build Service Worker', function() {
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return cli._buildServiceWorker(
+    return writeSw(
       'fake-path/sw.js',
-      'fake-path/manifest.js',
+      [
+        {
+          url: '/',
+          revision: '1234',
+        },
+      ],
       'fake-path/sw-lib.min.js',
       'fake-path/')
     .catch((caughtError) => {
@@ -88,7 +98,7 @@ describe('Build Service Worker', function() {
   });
 
   it('should handle error when populating template', function() {
-    const SWCli = proxyquire('../src/cli/index', {
+    const writeSw = proxyquire('../src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -105,10 +115,14 @@ describe('Build Service Worker', function() {
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return cli._buildServiceWorker(
+    return writeSw(
       'fake-path/sw.js',
-      'fake-path/manifest.js',
+      [
+        {
+          url: '/',
+          revision: '1234',
+        },
+      ],
       'fake-path/sw-lib.min.js',
       'fake-path/')
     .catch((caughtError) => {
@@ -117,7 +131,7 @@ describe('Build Service Worker', function() {
   });
 
   it('should handle error writing file', function() {
-    const SWCli = proxyquire('../src/cli/index', {
+    const writeSw = proxyquire('../src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -139,10 +153,14 @@ describe('Build Service Worker', function() {
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return cli._buildServiceWorker(
+    return writeSw(
       'fake-path/sw.js',
-      'fake-path/manifest.js',
+      [
+        {
+          url: '/',
+          revision: '1234',
+        },
+      ],
       'fake-path/sw-lib.min.js',
       'fake-path/')
     .catch((caughtError) => {

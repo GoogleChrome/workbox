@@ -34,4 +34,6 @@ module.exports = {
   'sw-write-failure': 'Unable to write the service worker file.',
   'unable-to-copy-sw-lib': 'SW-Lib is needed by the service worker and could ' +
     'not be copied over to your new site.',
+  'no-file-extensions-to-cache': 'You must provide at least one file ' +
+    'extension to cache assets.',
 };
