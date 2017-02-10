@@ -37,7 +37,7 @@ import {getDbName} from './background-sync-idb-helper';
  * });
  *
  * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
- * 	behaviors: [bgQueue],
+ * 	plugins: [bgQueue],
  * });
  *
  * const route = new goog.routing.RegExpRoute({

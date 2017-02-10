@@ -23,20 +23,20 @@ import {
 } from './constants';
 
 /**
- * The cache expiration behavior allows you define an expiration and / or
+ * The cache expiration plugin allows you define an expiration and / or
  * limit on the responses cached.
  *
  * @example
- * const expirationBehavior = new goog.cacheExpiration.Behavior({
+ * const expirationPlugin = new goog.cacheExpiration.Plugin({
  *   maxEntries: 2,
  *   maxAgeSeconds: 10,
  * });
  *
  * @memberof module:sw-cache-expiration
  */
-class Behavior {
+class Plugin {
   /**
-   * Creates a new `Behavior` instance, which is used to remove entries from a
+   * Creates a new `Plugin` instance, which is used to remove entries from a
    * [`Cache`](https://developer.mozilla.org/en-US/docs/Web/API/Cache) once
    * certain criteria—maximum number of entries, age of entry, or both—is met.
    *
@@ -142,7 +142,7 @@ class Behavior {
    *          `Response` is older than `maxAgeSeconds`.
    *
    * @example
-   * expirationBehavior.isResponseFresh({
+   * expirationPlugin.isResponseFresh({
    *   cachedResponse: responseFromCache
    * });
    */
@@ -175,7 +175,7 @@ class Behavior {
    *
    * Developers would normally not call this method directly; instead,
    * [`updateTimestamp`](#updateTimestamp) combined with
-   * [`expireEntries`](#expireEntries) provides equivalent behavior.
+   * [`expireEntries`](#expireEntries) provides equivalent plugin.
    *
    * @private
    * @param {Object} input
@@ -201,7 +201,7 @@ class Behavior {
    * @param {Number} [input.now] A timestamp. Defaults to the current time.
    *
    * @example
-   * expirationBehavior.updateTimestamp({
+   * expirationPlugin.updateTimestamp({
    *   cacheName: 'example-cache-name',
    *   url: '/example-url'
    * });
@@ -233,7 +233,7 @@ class Behavior {
    * @return {Array<string>} A list of the URLs that were expired.
    *
    * @example
-   * expirationBehavior.expireEntries({
+   * expirationPlugin.expireEntries({
    *   cacheName: 'example-cache-name'
    * });
    */
@@ -356,4 +356,4 @@ class Behavior {
   }
 }
 
-export default Behavior;
+export default Plugin;

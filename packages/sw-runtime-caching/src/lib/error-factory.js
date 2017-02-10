@@ -16,10 +16,10 @@
 import ErrorFactory from '../../../../lib/error-factory';
 
 const errors = {
-  'multiple-cache-will-update-behaviors': 'You cannot register more than one ' +
-    'behavior that implements cacheWillUpdate.',
-  'multiple-cache-will-match-behaviors': 'You cannot register more than one ' +
-    'behavior that implements cacheWillMatch.',
+  'multiple-cache-will-update-plugins': 'You cannot register more than one ' +
+    'plugin that implements cacheWillUpdate.',
+  'multiple-cache-will-match-plugins': 'You cannot register more than one ' +
+    'plugin that implements cacheWillMatch.',
   'invalid-reponse-for-caching': 'The fetched response could not be cached ' +
     'due to an invalid response code, by default only 20X responses can ' +
     'be cached.',
