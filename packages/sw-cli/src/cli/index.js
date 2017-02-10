@@ -118,7 +118,8 @@ class SWCli {
       case 'generate-sw':
         return this._generateSW();
       case 'build-file-manifest':
-        return this.buildFileManifest();
+        logHelper.error(`TODO: Implement.`);
+        return Promise.reject();
       default:
         logHelper.error(`Invlaid command given '${command}'`);
         return Promise.reject();
