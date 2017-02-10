@@ -180,7 +180,13 @@ class RequestWrapper {
 
     if (this.behaviorCallbacks.requestWillFetch) {
       for (let callback of this.behaviorCallbacks.requestWillFetch) {
-        request = callback({request});
+        const returnedRequest = callback({request});
+        if (returnedRequest && returnedRequest.then) {
+          // Support async functions
+          request = await returnedRequest;
+        } else {
+          request = returnedRequest;
+        }
       }
     }
 
