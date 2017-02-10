@@ -21,7 +21,7 @@ import assert from '../../../../lib/assert';
  * request strategy.
  *
  * In addition to updating the appropriate caches, it will also trigger any
- * appropriate behaviors defined in the underlying `RequestWrapper`.
+ * appropriate plugins defined in the underlying `RequestWrapper`.
  *
  * @example
  * // Set up a route to match any requests made for URLs that end in .txt.

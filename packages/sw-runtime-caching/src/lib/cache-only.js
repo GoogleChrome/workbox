@@ -21,7 +21,7 @@ import assert from '../../../../lib/assert';
  * request strategy.
  *
  * The advantage to using this versus directly calling `caches.match()` is that
- * it will use the cache configuration and trigger the behaviors defined in
+ * it will use the cache configuration and trigger the plugins defined in
  * the underlying `RequestWrapper`.
  *
  * @example

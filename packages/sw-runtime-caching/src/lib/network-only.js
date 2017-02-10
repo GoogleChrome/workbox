@@ -21,7 +21,7 @@ import assert from '../../../../lib/assert';
  * request strategy.
  *
  * The advantage to using this versus directly calling `fetch()` is that it will
- * trigger the behaviors defined in the underlying `RequestWrapper`.
+ * trigger the plugins defined in the underlying `RequestWrapper`.
  *
  *
  * @example

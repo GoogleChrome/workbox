@@ -14,16 +14,16 @@
 */
 
 import assert from '../../../../lib/assert';
-import {behaviorCallbacks, defaultCacheName} from './constants';
+import {pluginCallbacks, defaultCacheName} from './constants';
 import ErrorFactory from './error-factory';
 
 /**
  * This class is used by the various subclasses of `Handler` to configure the
- * cache name and any desired behaviors, which is to say classes that implement
+ * cache name and any desired plugins, which is to say classes that implement
  * request lifecycle callbacks.
  *
  * It automatically triggers any registered callbacks at the appropriate time.
- * The current set of behavior callbacks, along with the parameters they're
+ * The current set of plugin callbacks, along with the parameters they're
  * given and when they're called, is:
  *
  *   - `cacheWillUpdate({request, response})`: Called prior to writing an entry
@@ -46,7 +46,7 @@ class RequestWrapper {
    * @param {string} [input.cacheName] The name of the cache to use for Handlers
    *        that involve caching. If none is provided, a default name that
    *        includes the current service worker scope will be used.
-   * @param {Array.<Object>} [input.behaviors] Any behaviors that should be
+   * @param {Array.<Object>} [input.plugins] Any plugins that should be
    *        invoked.
    * @param {Object} [input.fetchOptions] Values passed along to the
    *        [`init`](https://developer.mozilla.org/en-US/docs/Web/API/GlobalFetch/fetch#Parameters)
@@ -55,7 +55,7 @@ class RequestWrapper {
    *        [`options`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match#Parameters)
    *        of all cache `match()` requests made by this wrapper.
    */
-  constructor({cacheName, behaviors, fetchOptions, matchOptions} = {}) {
+  constructor({cacheName, plugins, fetchOptions, matchOptions} = {}) {
     if (cacheName) {
       assert.isType({cacheName}, 'string');
       this.cacheName = cacheName;
@@ -73,33 +73,33 @@ class RequestWrapper {
       this.matchOptions = matchOptions;
     }
 
-    this.behaviorCallbacks = {};
+    this.pluginCallbacks = {};
 
-    if (behaviors) {
-      assert.isInstance({behaviors}, Array);
+    if (plugins) {
+      assert.isInstance({plugins}, Array);
 
-      behaviors.forEach((behavior) => {
-        for (let callbackName of behaviorCallbacks) {
-          if (typeof behavior[callbackName] === 'function') {
-            if (!this.behaviorCallbacks[callbackName]) {
-              this.behaviorCallbacks[callbackName] = [];
+      plugins.forEach((plugin) => {
+        for (let callbackName of pluginCallbacks) {
+          if (typeof plugin[callbackName] === 'function') {
+            if (!this.pluginCallbacks[callbackName]) {
+              this.pluginCallbacks[callbackName] = [];
             }
-            this.behaviorCallbacks[callbackName].push(
-              behavior[callbackName].bind(behavior));
+            this.pluginCallbacks[callbackName].push(
+              plugin[callbackName].bind(plugin));
           }
         }
       });
     }
 
-    if (this.behaviorCallbacks.cacheWillUpdate) {
-      if (this.behaviorCallbacks.cacheWillUpdate.length !== 1) {
-        throw ErrorFactory.createError('multiple-cache-will-update-behaviors');
+    if (this.pluginCallbacks.cacheWillUpdate) {
+      if (this.pluginCallbacks.cacheWillUpdate.length !== 1) {
+        throw ErrorFactory.createError('multiple-cache-will-update-plugins');
       }
     }
 
-    if (this.behaviorCallbacks.cacheWillMatch) {
-      if (this.behaviorCallbacks.cacheWillMatch.length !== 1) {
-        throw ErrorFactory.createError('multiple-cache-will-match-behaviors');
+    if (this.pluginCallbacks.cacheWillMatch) {
+      if (this.pluginCallbacks.cacheWillMatch.length !== 1) {
+        throw ErrorFactory.createError('multiple-cache-will-match-plugins');
       }
     }
   }
@@ -148,8 +148,8 @@ class RequestWrapper {
     const cache = await this.getCache();
     let cachedResponse = await cache.match(request, this.matchOptions);
 
-    if (this.behaviorCallbacks.cacheWillMatch) {
-      cachedResponse = this.behaviorCallbacks.cacheWillMatch[0](
+    if (this.pluginCallbacks.cacheWillMatch) {
+      cachedResponse = this.pluginCallbacks.cacheWillMatch[0](
         {cachedResponse});
     }
 
@@ -158,7 +158,7 @@ class RequestWrapper {
 
   /**
    * Wraps `fetch()`, and calls any `fetchDidFail` callbacks from the
-   * registered behaviors if the request fails.
+   * registered plugins if the request fails.
    *
    * @example
    * requestWrapper.fetch({
@@ -181,8 +181,8 @@ class RequestWrapper {
     try {
       return await fetch(request, this.fetchOptions);
     } catch (err) {
-      if (this.behaviorCallbacks.fetchDidFail) {
-        for (let callback of this.behaviorCallbacks.fetchDidFail) {
+      if (this.pluginCallbacks.fetchDidFail) {
+        for (let callback of this.pluginCallbacks.fetchDidFail) {
           callback({request});
         }
       }
@@ -193,11 +193,11 @@ class RequestWrapper {
 
   /**
    * Combines both fetching and caching using the previously configured options
-   * and calling the appropriate behaviors.
+   * and calling the appropriate plugins.
    *
    * By default, responses with a status of [2xx](https://fetch.spec.whatwg.org/#ok-status)
    * will be considered valid and cacheable, but this could be overridden by
-   * configuring one or more behaviors that implement the `cacheWillUpdate`
+   * configuring one or more plugins that implement the `cacheWillUpdate`
    * lifecycle callback.
    *
    * @example
@@ -231,8 +231,8 @@ class RequestWrapper {
     // response.ok is true if the response status is 2xx.
     // That's the default condition.
     let cacheable = response.ok;
-    if (this.behaviorCallbacks.cacheWillUpdate) {
-      cacheable = this.behaviorCallbacks.cacheWillUpdate[0](
+    if (this.pluginCallbacks.cacheWillUpdate) {
+      cacheable = this.pluginCallbacks.cacheWillUpdate[0](
         {request, response});
     }
 
@@ -248,7 +248,7 @@ class RequestWrapper {
         // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
         // need it.
         if (response.type !== 'opaque' &&
-          this.behaviorCallbacks.cacheDidUpdate) {
+          this.pluginCallbacks.cacheDidUpdate) {
           oldResponse = await this.match({request});
         }
 
@@ -257,7 +257,7 @@ class RequestWrapper {
         const cacheRequest = cacheKey || request;
         await cache.put(cacheRequest, newResponse);
 
-        for (let callback of (this.behaviorCallbacks.cacheDidUpdate || [])) {
+        for (let callback of (this.pluginCallbacks.cacheDidUpdate || [])) {
           callback({cacheName: this.cacheName, oldResponse, newResponse});
         }
       });
