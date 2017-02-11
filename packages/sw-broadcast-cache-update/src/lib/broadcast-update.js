@@ -18,8 +18,8 @@ import {cacheUpdatedMessageType} from './constants';
 
 /**
  * You would not normally call this method directly; it's called automatically
- * by an instance of the {@link Behavior} class. It's exposed here for the
- * benefit of developers who would rather not use the full `Behavior`
+ * by an instance of the {@link Plugin} class. It's exposed here for the
+ * benefit of developers who would rather not use the full `Plugin`
  * implementation.
  *
  * Calling this will dispatch a message on the provided {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel}

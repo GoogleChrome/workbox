@@ -16,14 +16,14 @@
 import assert from '../../../../lib/assert';
 
 /**
- * Use this behavior to cache responses with certain HTTP status codes or
+ * Use this plugin to cache responses with certain HTTP status codes or
  * header values.
  *
  * Defining both status codes and headers will cache requests with a matching
  * status code and a matching header.
  *
  * @example
- * new goog.cacheableResponse.Behavior({
+ * new goog.cacheableResponse.Plugin({
  *   statuses: [0, 200, 404],
  *   headers: {
  *     'Example-Header-1': 'Header-Value-1'
@@ -31,11 +31,11 @@ import assert from '../../../../lib/assert';
  *   }
  * })
  *
- * @memberof module:sw-cacheable-response-behavior
+ * @memberof module:sw-cacheable-response
  */
-class Behavior {
+class Plugin {
   /**
-   * Creates a new `Behavior` instance, which stores configuration and logic
+   * Creates a new `Plugin` instance, which stores configuration and logic
    * to determine whether a `Response` object is cacheable or not.
    *
    * If multiple criteria are present (e.g. both `statuses` and `headers`), then
@@ -106,4 +106,4 @@ class Behavior {
   }
 }
 
-export default Behavior;
+export default Plugin;

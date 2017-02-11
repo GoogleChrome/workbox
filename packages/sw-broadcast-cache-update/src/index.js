@@ -19,22 +19,22 @@
  * A helper library that uses the Broadcast Channel API to announce when
  * two Response objects differ.
  *
- * The main use of this module will be instantiating a new `Behavior` and
+ * The main use of this module will be instantiating a new `Plugin` and
  * passing it to a
  * {@link  module:sw-runtime-caching.RequestWrapper|RequestWrapper},
  * as shown in the first example below.
  *
  * You can listen for updates from your web app by adding an event listener on
- * a browser channel with the same channel name as the Behavior,
+ * a browser channel with the same channel name as the Plugin,
  * which 'cache-updates' in the second example below.
  *
- * @example <caption>Using the broadcastCacheUpdate.Behavior class in a
+ * @example <caption>Using the broadcastCacheUpdate.Plugin class in a
  * service worker.</caption>
  *
  * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
  *   cacheName: 'text-files',
- *   behaviors: [
- *     new goog.broadcastCacheUpdate.Behavior({channelName: 'cache-updates'}),
+ *   plugins: [
+ *     new goog.broadcastCacheUpdate.Plugin({channelName: 'cache-updates'}),
  *   ],
  * });
  *
@@ -57,13 +57,13 @@
  * @module sw-broadcast-cache-update
  */
 
-import Behavior from './lib/behavior';
+import Plugin from './lib/plugin';
 import broadcastUpdate from './lib/broadcast-update';
 import {cacheUpdatedMessageType} from './lib/constants';
 import responsesAreSame from './lib/responses-are-same';
 
 export {
-  Behavior,
+  Plugin,
   broadcastUpdate,
   cacheUpdatedMessageType,
   responsesAreSame,

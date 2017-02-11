@@ -65,7 +65,7 @@ describe('Test Example Projects', function() {
     const manifestName = `${Date.now()}-manifest.js`;
     const swName = `${Date.now()}-sw.js`;
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire('../build/cli/index', {
       inquirer: {
         prompt: (questions) => {
           switch (questions[0].name) {

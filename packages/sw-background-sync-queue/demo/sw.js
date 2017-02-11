@@ -25,7 +25,7 @@ let bgQueue = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
 });
 
 const requestWrapper = new goog.runtimeCaching.RequestWrapper({
-  behaviors: [bgQueue],
+  plugins: [bgQueue],
 });
 
 const route = new goog.routing.RegExpRoute({

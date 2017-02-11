@@ -8,6 +8,7 @@ require('chai').should();
 
 describe('Ask for File Extensions to Cache', function() {
   const globalStubs = [];
+  const CLI_PATH = '../build/cli/index.js';
 
   afterEach(function() {
     cliHelper.endLogCapture();
@@ -64,7 +65,7 @@ describe('Ask for File Extensions to Cache', function() {
       },
     };
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       fs: fakeFS,
     });
 
@@ -99,7 +100,7 @@ describe('Ask for File Extensions to Cache', function() {
       },
     };
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       fs: fakeFS,
     });
 
@@ -122,7 +123,7 @@ describe('Ask for File Extensions to Cache', function() {
       },
     };
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       fs: fakeFS,
     });
 
@@ -150,7 +151,7 @@ describe('Ask for File Extensions to Cache', function() {
       },
     };
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       'fs': fakeFS,
     });
 
@@ -192,7 +193,7 @@ describe('Ask for File Extensions to Cache', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       'fs': fakeFS,
       'inquirer': inquirer,
     });
@@ -230,7 +231,7 @@ describe('Ask for File Extensions to Cache', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       'fs': fakeFS,
       'inquirer': inquirer,
     });
@@ -275,7 +276,7 @@ describe('Ask for File Extensions to Cache', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       'fs': fakeFS,
       'inquirer': inquirer,
     });
