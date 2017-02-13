@@ -48,20 +48,21 @@ const generateSW = function(args) {
   const excludeFiles = args.excludeFiles;
   const swName = args.serviceWorkerName;
 
-  if (typeof rootDirectory !== 'string') {
-    throw new Error('The ');
+  if (typeof rootDirectory !== 'string' || rootDirectory.length === 0) {
+    return Promise.reject(
+      new Error(errors['invalid-generate-sw-root-directory']));
   }
 
   let swlibPath;
-  const globs = [
-    generateGlobPattern(rootDirectory, fileExtentionsToCache),
-  ];
   return copySWLib(rootDirectory)
   .then((libPath) => {
     swlibPath = libPath;
     excludeFiles.push(path.basename(swlibPath));
   })
   .then(() => {
+    const globs = [
+      generateGlobPattern(rootDirectory, fileExtentionsToCache),
+    ];
     const manifestEntries = _getFileManifestEntries(
       globs, rootDirectory, excludeFiles);
 
