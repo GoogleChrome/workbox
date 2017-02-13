@@ -36,6 +36,9 @@ describe('Test generateSW()', function() {
     return badInput.reduce((promiseChain, input) => {
       return promiseChain.then(() => {
         return generateSW(input)
+        .then(() => {
+          throw new Error('Expected to throw error.');
+        })
         .catch((err) => {
           if (err.message !== errors['invalid-generate-sw-input']) {
             throw new Error('Unexpected error: ' + err.message);
@@ -60,6 +63,9 @@ describe('Test generateSW()', function() {
         let args = Object.assign({}, EXAMPLE_INPUT);
         args.rootDirectory = input;
         return generateSW(args)
+        .then(() => {
+          throw new Error('Expected to throw error.');
+        })
         .catch((err) => {
           if (err.message !== errors['invalid-generate-sw-root-directory']) {
             throw new Error('Unexpected error: ' + err.message);
@@ -89,6 +95,9 @@ describe('Test generateSW()', function() {
         let args = Object.assign({}, EXAMPLE_INPUT);
         args.fileExtentionsToCache = input;
         return generateSW(args)
+        .then(() => {
+          throw new Error('Expected to throw error.');
+        })
         .catch((err) => {
           if (err.message !== errors['no-file-extensions-to-cache']) {
             throw new Error('Unexpected error: ' + err.message);
@@ -104,6 +113,9 @@ describe('Test generateSW()', function() {
     let args = Object.assign({}, EXAMPLE_INPUT);
     args.fileExtentionsToCache = ['.example'];
     return generateSW(args)
+    .then(() => {
+      throw new Error('Expected to throw error.');
+    })
     .catch((err) => {
       if (err.message !== errors['no-file-extensions-to-cache']) {
         throw new Error('Unexpected error: ' + err.message);
@@ -112,6 +124,31 @@ describe('Test generateSW()', function() {
   });
 
   // swName - non string, undefined, null, boolean, array, object
+  it('should be able to handle bad swName input', function() {
+    const badInput = [
+      undefined,
+      null,
+      '',
+      [],
+      true,
+      false,
+    ];
+    return badInput.reduce((promiseChain, input) => {
+      return promiseChain.then(() => {
+        let args = Object.assign({}, EXAMPLE_INPUT);
+        args.swName = input;
+        return generateSW(args)
+        .then(() => {
+          throw new Error('Expected to throw error.');
+        })
+        .catch((err) => {
+          if (err.message !== errors['invalid-sw-name']) {
+            throw new Error('Unexpected error: ' + err.message);
+          }
+        });
+      });
+    }, Promise.resolve());
+  });
   // swName - empty string
 
   // excludeFiles - non array, undefined, null, boolea, string, object
