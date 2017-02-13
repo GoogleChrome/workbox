@@ -43,4 +43,5 @@ export const pluginCallbacks = [
   'cacheWillMatch',
   'cacheWillUpdate',
   'fetchDidFail',
+  'requestWillFetch',
 ];

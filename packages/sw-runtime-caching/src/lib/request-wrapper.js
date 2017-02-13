@@ -157,7 +157,8 @@ class RequestWrapper {
   }
 
   /**
-   * Wraps `fetch()`, and calls any `fetchDidFail` callbacks from the
+   * Wraps `fetch()`, calls all `requestWillFetch` before making the network
+   * request, and calls any `fetchDidFail` callbacks from the
    * registered plugins if the request fails.
    *
    * @example
@@ -177,6 +178,16 @@ class RequestWrapper {
    */
   async fetch({request}) {
     assert.atLeastOne({request});
+
+    if (this.pluginCallbacks.requestWillFetch) {
+      for (let callback of this.pluginCallbacks.requestWillFetch) {
+        const returnedPromise = callback({request});
+        assert.isInstance({returnedPromise}, Promise);
+        const returnedRequest = await returnedPromise;
+        assert.isInstance({returnedRequest}, Request);
+        request = returnedRequest;
+      }
+    }
 
     try {
       return await fetch(request, this.fetchOptions);
