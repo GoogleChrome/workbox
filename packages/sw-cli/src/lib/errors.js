@@ -41,4 +41,5 @@ module.exports = {
     'object',
   'invalid-generate-sw-root-directory': 'The supplied rootDirectory must be ' +
     'a path as a string.',
+  'invalid-exclude-files': 'The excluded files should be an array of strings.',
 };

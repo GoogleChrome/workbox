@@ -27,6 +27,7 @@ const logHelper = require('../lib/log-helper');
 const errors = require('../lib/errors');
 const pkg = require('../../package.json');
 const constants = require('../lib/constants.js');
+const generateGlobPattern = require('../lib/utils/generate-glob-pattern');
 
 const DEBUG = false;
 
@@ -167,16 +168,13 @@ class SWCli {
 
       const relativePath = path.relative(process.cwd(), rootDirPath);
 
-      const excludeFiles = [
-        fileManifestName,
-        serviceWorkerName,
-        relativePath,
-      ];
+      const globPatterns = generateGlobPattern(fileExtentionsToCache);
+      globPatterns.push(`!${fileManifestName}`);
+      globPatterns.push(`!${serviceWorkerName}`);
       return swcliModule.generateSW({
         rootDirectory: relativePath,
-        fileExtentionsToCache,
+        globPatterns,
         serviceWorkerName,
-        excludeFiles,
       });
     });
   }

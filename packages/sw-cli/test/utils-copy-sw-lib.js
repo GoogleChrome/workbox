@@ -12,33 +12,6 @@ describe('Copy SW Lib', function() {
     cliHelper.endLogCapture();
   });
 
-  const checkErrors = (caughtError, errorCode, checkInjectedError) => {
-    if (!caughtError) {
-      throw new Error('Expected test to throw an error.');
-    }
-
-    const captured = cliHelper.endLogCapture();
-    captured.consoleLogs.length.should.equal(0);
-    captured.consoleWarns.length.should.equal(0);
-    captured.consoleErrors.length.should.not.equal(0);
-
-    let foundErrorMsg = false;
-    let foundInjectedErrorMsg = false;
-    captured.consoleErrors.forEach((errLog) => {
-      if (errLog.indexOf(errors[errorCode]) !== -1) {
-        foundErrorMsg = true;
-      }
-      if (errLog.indexOf(INJECTED_ERROR.message) !== -1) {
-        foundInjectedErrorMsg = true;
-      }
-    });
-    foundErrorMsg.should.equal(true);
-    if (typeof checkInjectedError === 'undefined' ||
-      checkInjectedError === true) {
-      foundInjectedErrorMsg.should.equal(true);
-    }
-  };
-
   it('should handle file stream error', function() {
     this.timeout(5 * 1000);
 
@@ -68,8 +41,13 @@ describe('Copy SW Lib', function() {
 
     cliHelper.startLogCapture();
     return copySWLib('fake-path/')
+    .then(() => {
+      throw new Error('Expected an error to be throw');
+    })
     .catch((caughtError) => {
-      checkErrors(caughtError, 'unable-to-copy-sw-lib');
+      if (caughtError.message.indexOf(errors['unable-to-copy-sw-lib']) !== 0) {
+        throw new Error('Unexpected error: ' + caughtError.message);
+      }
     });
   });
 

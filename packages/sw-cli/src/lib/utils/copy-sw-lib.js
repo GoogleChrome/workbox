@@ -17,7 +17,7 @@ module.exports = (rootDirectory) => {
     const stream = fs.createReadStream(swlibBuiltPath)
       .pipe(fs.createWriteStream(swlibOutputPath));
     stream.on('error', function(err) {
-      reject(new Error(errors['unable-to-copy-sw-lib']));
+      reject(new Error(errors['unable-to-copy-sw-lib'] + ` '${err.message}'`));
     });
     stream.on('finish', function() {
       resolve(swlibOutputPath);

@@ -1,9 +1,7 @@
 const path = require('path');
 
-const getFileDetails = require('./utils/get-file-details');
-const filterFiles = require('./utils/filter-files');
 const copySWLib = require('./utils/copy-sw-lib');
-const generateGlobPattern = require('./utils/generate-glob-pattern');
+const getFileManifestEntries = require('./utils/get-file-manifest-entries');
 const writeServiceWorker = require('./write-sw');
 const errors = require('./errors');
 
@@ -13,9 +11,8 @@ const errors = require('./errors');
  *
  * swCLI.generateSW({
  *   rootDirectory: './build/',
- *   fileExtentionsToCache: ['html', 'js', 'css'],
- *   serviceWorkerName: 'sw.js',
- *   excludeFiles: [],
+ *   globPatterns: ['**\/*.{html,js,css}'],
+ *   serviceWorkerName: 'sw.js'
  * })
  * .then(() => {
  *   console.log('Service worker generated.');
@@ -27,32 +24,36 @@ const errors = require('./errors');
  * @param {String} input.rootDirectory The root of the files you wish to
  * be cached. This will also be the directory the service worker and library
  * files are written to.
- * @param {Array<String>} input.fileExtentionsToCache Files with extension
- * types defined in this array will be globbed and added to your precache list.
+ * @param {Array<String>} input.globPatterns Patterns to glob for when
+ * generating the build manifest.
  * @param {String} input.swName The name you wish to give to your service
  * worker file.
- * @param {Array<String>} input.excludeFiles Files that should be excluded
- * from precaching can be listed here.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
  * @memberof module:sw-cli
  */
-const generateSW = function(args) {
-  if (!args || typeof args !== 'object' || args instanceof Array) {
+const generateSW = function(input) {
+  if (!input || typeof input !== 'object' || input instanceof Array) {
     return Promise.reject(new Error(errors['invalid-generate-sw-input']));
   }
 
-  const rootDirectory = args.rootDirectory;
-  const fileExtentionsToCache = args.fileExtentionsToCache;
-  const excludeFiles = args.excludeFiles;
-  const swName = args.serviceWorkerName;
+  const rootDirectory = input.rootDirectory;
+  const globPatterns = input.globPatterns;
+  const globIgnores = input.globIgnores;
+  const serviceWorkerName = input.serviceWorkerName;
 
   if (typeof rootDirectory !== 'string' || rootDirectory.length === 0) {
     return Promise.reject(
       new Error(errors['invalid-generate-sw-root-directory']));
   }
 
+  if (typeof serviceWorkerName !== 'string' || serviceWorkerName.length === 0) {
+    return Promise.reject(
+      new Error(errors['invalid-sw-name']));
+  }
+
+  let excludeFiles = [];
   let swlibPath;
   return copySWLib(rootDirectory)
   .then((libPath) => {
@@ -60,28 +61,16 @@ const generateSW = function(args) {
     excludeFiles.push(path.basename(swlibPath));
   })
   .then(() => {
-    const globs = [
-      generateGlobPattern(rootDirectory, fileExtentionsToCache),
-    ];
-    const manifestEntries = _getFileManifestEntries(
-      globs, rootDirectory, excludeFiles);
+    const manifestEntries = getFileManifestEntries(
+      globPatterns, globIgnores, rootDirectory, excludeFiles);
 
     return writeServiceWorker(
-      path.join(rootDirectory, swName),
+      path.join(rootDirectory, serviceWorkerName),
       manifestEntries,
       swlibPath,
       rootDirectory
     );
   });
-};
-
-const _getFileManifestEntries = function(globs, rootDirectory, excludeFiles) {
-  const fileDetails = globs.reduce((accumulated, globPattern) => {
-    const globbedFileDetails = getFileDetails(rootDirectory, globPattern);
-    return accumulated.concat(globbedFileDetails);
-  }, []);
-
-  return filterFiles(fileDetails, excludeFiles);
 };
 
 module.exports = generateSW;
