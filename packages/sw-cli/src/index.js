@@ -24,9 +24,9 @@ const generateSW = require('./lib/generate-sw');
  *
  * swCLI.generateSW({
  *   rootDirectory: './build/',
- *   fileExtentionsToCache: ['html', 'js', 'css'],
- *   serviceWorkerName: 'sw.js',
- *   excludeFiles: [],
+ *   globPatterns: ['**\/*.{html,js,css}'],
+ *   globIgnores: ['admin.html']
+ *   serviceWorkerName: 'sw.js'
  * })
  * .then(() => {
  *   console.log('Service worker generated.');

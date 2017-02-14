@@ -12,6 +12,7 @@ const errors = require('./errors');
  * swCLI.generateSW({
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
+ *   globIgnores: ['admin.html']
  *   serviceWorkerName: 'sw.js'
  * })
  * .then(() => {
@@ -26,8 +27,10 @@ const errors = require('./errors');
  * files are written to.
  * @param {Array<String>} input.globPatterns Patterns to glob for when
  * generating the build manifest.
- * @param {String} input.swName The name you wish to give to your service
- * worker file.
+ * @param {String|Array<String>} input.globIgnores Add glob patterns that
+ * should exclude files from the build manifest.
+ * @param {String} input.serviceWorkerName The name you wish to give to your
+ * service worker file.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
