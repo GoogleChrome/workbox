@@ -128,7 +128,7 @@ class SWCli {
   }
 
   /**
-   * This method will generate a working Service Worker with a file manifest.
+   * This method will generate a working service worker with a file manifest.
    * @return {Promise} The promise returned here will be used to exit the
    * node process cleanly or not.
    */
