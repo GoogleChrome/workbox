@@ -19,7 +19,7 @@ const errors = require('./errors');
  *   console.log('Service worker generated.');
  * });
  *
- * This method will generate a working Service Worker with an inlined
+ * This method will generate a working service worker with an inlined
  * file manifest.
  * @param {Object} input
  * @param {String} input.rootDirectory The root of the files you wish to
@@ -27,8 +27,8 @@ const errors = require('./errors');
  * files are written to.
  * @param {Array<String>} input.globPatterns Patterns to glob for when
  * generating the build manifest.
- * @param {String|Array<String>} input.globIgnores Add glob patterns that
- * should exclude files from the build manifest.
+ * @param {String|Array<String>} input.globIgnores Patterns to exclude when
+ * generating the build manifest.
  * @param {String} input.serviceWorkerName The name you wish to give to your
  * service worker file.
  * @return {Promise} Resolves once the service worker has been generated
