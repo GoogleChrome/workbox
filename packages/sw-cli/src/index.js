@@ -14,8 +14,8 @@ const generateSW = require('./lib/generate-sw');
  *
  *     sw-cli generate-sw
  *
- * For some web apps this command will be all that's needed, but you may
- * want to generate the service worker as part of your build process, which
+ * For some web apps this command will be all you need, though you may
+ * want to generate the service worker as part of your build process.
  * you can do by calling the `generateSW()` method after all your assets
  * have been built.
  *
