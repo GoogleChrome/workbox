@@ -21,6 +21,7 @@ import {
   urlPropertyName,
   timestampPropertyName,
 } from './constants';
+import ErrorFactory from './error-factory';
 
 /**
  * The cache expiration plugin allows you define an expiration and / or
@@ -46,12 +47,16 @@ class Plugin {
    * @param {Number} [input.maxAgeSeconds] The maximum age for fresh entries.
    */
   constructor({maxEntries, maxAgeSeconds} = {}) {
-    assert.atLeastOne({maxEntries, maxAgeSeconds});
-    if (maxEntries !== undefined) {
-      assert.isType({maxEntries}, 'number');
+    if (!(maxEntries || maxAgeSeconds)) {
+      throw ErrorFactory.createError('max-entries-or-age-required');
     }
-    if (maxAgeSeconds !== undefined) {
-      assert.isType({maxAgeSeconds}, 'number');
+
+    if (maxEntries && typeof maxEntries !== 'number') {
+      throw ErrorFactory.createError('max-entries-must-be-number');
+    }
+
+    if (maxAgeSeconds && typeof maxAgeSeconds !== 'number') {
+      throw ErrorFactory.createError('max-age-seconds-must-be-number');
     }
 
     this.maxEntries = maxEntries;
