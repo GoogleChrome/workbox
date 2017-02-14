@@ -7,7 +7,7 @@ const generateGlobPattern = require('./utils/generate-glob-pattern');
 const writeServiceWorker = require('./write-sw');
 
 /**
- * This method will generate a working Service Worker with an inlined
+ * Generate a working service worker with an inlined
  * file manifest.
  * @return {Promise} The promise returned here will be used to exit the
  * node process cleanly or not.
