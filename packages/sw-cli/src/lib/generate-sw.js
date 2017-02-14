@@ -56,16 +56,15 @@ const generateSW = function(input) {
       new Error(errors['invalid-sw-name']));
   }
 
-  let excludeFiles = [];
   let swlibPath;
   return copySWLib(rootDirectory)
   .then((libPath) => {
     swlibPath = libPath;
-    excludeFiles.push(path.basename(swlibPath));
+    globIgnores.push(swlibPath);
   })
   .then(() => {
     const manifestEntries = getFileManifestEntries(
-      globPatterns, globIgnores, rootDirectory, excludeFiles);
+      globPatterns, globIgnores, rootDirectory);
 
     return writeServiceWorker(
       path.join(rootDirectory, serviceWorkerName),

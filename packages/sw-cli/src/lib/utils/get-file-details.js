@@ -12,7 +12,7 @@ module.exports = (rootDirectory, globPattern, globIgnores) => {
       ignore: globIgnores,
     });
   } catch (err) {
-    throw new Error(errors['unable-to-glob-files']  + ` '${err.message}'`);
+    throw new Error(errors['unable-to-glob-files'] + ` '${err.message}'`);
   }
 
   const fileDetails = globbedFiles.map((file) => {

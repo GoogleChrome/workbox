@@ -159,21 +159,18 @@ class SWCli {
     .then((sConfig) => {
       saveConfig = sConfig;
 
-      logHelper.warn('Root Directory PAth: ' + rootDirPath);
-      logHelper.warn('File Extensions to Cache: ' + fileExtentionsToCache);
-      logHelper.warn('File Manifest: ' + fileManifestName);
-      logHelper.warn('Service Worker: ' + serviceWorkerName);
-      logHelper.warn('Save to Config File: ' + saveConfig);
-      logHelper.warn('');
+      const globPattern = generateGlobPattern(
+        rootDirPath, fileExtentionsToCache);
 
-      const relativePath = path.relative(process.cwd(), rootDirPath);
-
-      const globPatterns = generateGlobPattern(fileExtentionsToCache);
-      globPatterns.push(`!${fileManifestName}`);
-      globPatterns.push(`!${serviceWorkerName}`);
       return swcliModule.generateSW({
-        rootDirectory: relativePath,
-        globPatterns,
+        rootDirectory: rootDirPath,
+        globPatterns: [
+          globPattern,
+        ],
+        globIgnores: [
+          path.join(rootDirPath, fileManifestName),
+          path.join(rootDirPath, serviceWorkerName),
+        ],
         serviceWorkerName,
       });
     });

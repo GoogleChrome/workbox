@@ -15,6 +15,8 @@ describe('Test Example Projects', function() {
   let tmpDirectory;
   let globalDriverBrowser;
   let baseTestUrl;
+  // NOTE: No JPG
+  const FILE_EXTENSIONS = ['html', 'css', 'js', 'png'];
 
   // Kill the web server once all tests are complete.
   after(function() {
@@ -49,60 +51,9 @@ describe('Test Example Projects', function() {
     });
   });
 
-  it('should be able to generate a service for example-1', function() {
-    this.timeout(60 * 1000);
-
-    fse.copySync(
-      path.join(__dirname, 'example-projects', 'example-1'),
-      tmpDirectory);
-
-    const exampleProject = tmpDirectory;
-    const relativeProjPath = path.relative(process.cwd(), exampleProject);
-
-    // NOTE: No JPG
-    const fileExntensions = ['html', 'css', 'js', 'png'];
-
-    const manifestName = `${Date.now()}-manifest.js`;
-    const swName = `${Date.now()}-sw.js`;
-
-    const SWCli = proxyquire('../build/cli/index', {
-      inquirer: {
-        prompt: (questions) => {
-          switch (questions[0].name) {
-            case 'rootDir':
-              return Promise.resolve({
-                rootDir: relativeProjPath,
-              });
-            case 'cacheExtensions':
-              return Promise.resolve({
-                cacheExtensions: fileExntensions,
-              });
-            case 'fileManifestName':
-              return Promise.resolve({
-                fileManifestName: manifestName,
-              });
-            case 'serviceWorkerName':
-              return Promise.resolve({
-                serviceWorkerName: swName,
-              });
-            case 'saveConfig':
-              return Promise.resolve({
-                saveConfig: false,
-              });
-            default:
-              console.error('');
-              console.error(`Unknown question: ${questions[0].name}`);
-              console.error('');
-              return Promise.reject();
-          }
-        },
-      },
-    });
-
+  const performTest = (generateSWCb, {exampleProject, swName, manifestName}) => {
     let fileManifestOutput;
-
-    const cli = new SWCli();
-    return cli.handleCommand('generate-sw')
+    return generateSWCb()
     .then(() => {
       const injectedSelf = {
         goog: {
@@ -134,7 +85,7 @@ describe('Test Example Projects', function() {
 
       // Check the files that we expect to be defined are.
       let expectedFiles = glob.sync(
-        `${exampleProject}/**/*.{${fileExntensions.join(',')}}`, {
+        `${exampleProject}/**/*.{${FILE_EXTENSIONS.join(',')}}`, {
         ignore: [
           `${exampleProject}/${manifestName}`,
           `${exampleProject}/${swName}`,
@@ -175,7 +126,7 @@ describe('Test Example Projects', function() {
     })
     .then(() => {
       // Rerun and ensure the sw and sw-lib files are excluded from the output.
-      return cli.handleCommand('generate-sw');
+      return generateSWCb();
     })
     .then(() => {
       const injectedSelf = {
@@ -279,6 +230,62 @@ describe('Test Example Projects', function() {
 
         pathnames.length.should.equal(0);
       });
+    });
+  };
+
+  it('should be able to generate a service for example-1 with CLI', function() {
+    this.timeout(60 * 1000);
+
+    fse.copySync(
+      path.join(__dirname, 'example-projects', 'example-1'),
+      tmpDirectory);
+
+    const relativeProjPath = path.relative(process.cwd(), tmpDirectory);
+
+    const manifestName = `${Date.now()}-manifest.js`;
+    const swName = `${Date.now()}-sw.js`;
+
+    const SWCli = proxyquire('../build/cli/index', {
+      inquirer: {
+        prompt: (questions) => {
+          switch (questions[0].name) {
+            case 'rootDir':
+              return Promise.resolve({
+                rootDir: relativeProjPath,
+              });
+            case 'cacheExtensions':
+              return Promise.resolve({
+                cacheExtensions: FILE_EXTENSIONS,
+              });
+            case 'fileManifestName':
+              return Promise.resolve({
+                fileManifestName: manifestName,
+              });
+            case 'serviceWorkerName':
+              return Promise.resolve({
+                serviceWorkerName: swName,
+              });
+            case 'saveConfig':
+              return Promise.resolve({
+                saveConfig: false,
+              });
+            default:
+              console.error('');
+              console.error(`Unknown question: ${questions[0].name}`);
+              console.error('');
+              return Promise.reject();
+          }
+        },
+      },
+    });
+
+    const cli = new SWCli();
+    return performTest(() => {
+      return cli.handleCommand('generate-sw');
+    }, {
+      exampleProject: tmpDirectory,
+      swName,
+      manifestName,
     });
   });
 });
