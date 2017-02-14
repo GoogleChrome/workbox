@@ -132,7 +132,7 @@ class SWCli {
    * node process cleanly or not.
    */
   _generateSW() {
-    let rootDirectory;
+    let rootDirPath;
     let fileExtentionsToCache;
     let fileManifestName;
     let serviceWorkerName;
@@ -140,8 +140,8 @@ class SWCli {
 
     return this._getRootOfWebApp()
     .then((rDirectory) => {
-      rootDirectory = rDirectory;
-      return this._getFileExtensionsToCache(rootDirectory);
+      rootDirPath = rDirectory;
+      return this._getFileExtensionsToCache(rootDirPath);
     })
     .then((extensionsToCache) => {
       fileExtentionsToCache = extensionsToCache;
@@ -158,14 +158,14 @@ class SWCli {
     .then((sConfig) => {
       saveConfig = sConfig;
 
-      logHelper.warn('Root Directory: ' + rootDirectory);
+      logHelper.warn('Root Directory PAth: ' + rootDirPath);
       logHelper.warn('File Extensions to Cache: ' + fileExtentionsToCache);
       logHelper.warn('File Manifest: ' + fileManifestName);
       logHelper.warn('Service Worker: ' + serviceWorkerName);
       logHelper.warn('Save to Config File: ' + saveConfig);
       logHelper.warn('');
 
-      const relativePath = path.relative(process.cwd(), rootDirectory);
+      const relativePath = path.relative(process.cwd(), rootDirPath);
 
       const excludeFiles = [
         fileManifestName,
@@ -173,8 +173,7 @@ class SWCli {
         relativePath,
       ];
       return swcliModule.generateSW({
-        rootDirectory,
-        relativePath,
+        rootDirectory: relativePath,
         fileExtentionsToCache,
         serviceWorkerName,
         excludeFiles,

@@ -36,4 +36,6 @@ module.exports = {
     'not be copied over to your new site.',
   'no-file-extensions-to-cache': 'You must provide at least one file ' +
     'extension to cache assets.',
+  'invalid-generate-sw-input': 'The input to generateSW() must be an ' +
+    'object',
 };
