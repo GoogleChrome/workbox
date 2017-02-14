@@ -137,7 +137,6 @@ class SWCli {
     let fileExtentionsToCache;
     let fileManifestName;
     let serviceWorkerName;
-    let saveConfig;
 
     return this._getRootOfWebApp()
     .then((rDirectory) => {
@@ -157,8 +156,6 @@ class SWCli {
       return this._saveConfigFile();
     })
     .then((sConfig) => {
-      saveConfig = sConfig;
-
       const globPattern = generateGlobPattern(
         rootDirPath, fileExtentionsToCache);
 
