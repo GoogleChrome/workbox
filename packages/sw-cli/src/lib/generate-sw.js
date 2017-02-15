@@ -1,7 +1,7 @@
 const path = require('path');
 
 const copySWLib = require('./utils/copy-sw-lib');
-const getFileManifestEntries = require('./utils/get-file-manifest-entries');
+const getFileManifestEntries = require('./get-file-manifest-entries');
 const writeServiceWorker = require('./write-sw');
 const errors = require('./errors');
 
@@ -48,7 +48,7 @@ const generateSW = function(input) {
 
   if (typeof rootDirectory !== 'string' || rootDirectory.length === 0) {
     return Promise.reject(
-      new Error(errors['invalid-generate-sw-root-directory']));
+      new Error(errors['invalid-root-directory']));
   }
 
   if (typeof serviceWorkerName !== 'string' || serviceWorkerName.length === 0) {
@@ -64,8 +64,7 @@ const generateSW = function(input) {
   })
   .then(() => {
     const manifestEntries = getFileManifestEntries(
-      globPatterns, globIgnores, rootDirectory);
-
+      {globPatterns, globIgnores, rootDirectory});
     return writeServiceWorker(
       path.join(rootDirectory, serviceWorkerName),
       manifestEntries,

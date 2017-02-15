@@ -39,7 +39,9 @@ module.exports = {
     'start of the extension name, i.e. [\'html\']',
   'invalid-generate-sw-input': 'The input to generateSW() must be an ' +
     'object',
-  'invalid-generate-sw-root-directory': 'The supplied rootDirectory must be ' +
+  'invalid-root-directory': 'The supplied rootDirectory must be ' +
     'a path as a string.',
   'invalid-exclude-files': 'The excluded files should be an array of strings.',
+  'invalid-get-manifest-entries-input': 'The input to ' +
+    'getFileManifestEntries() must be an object.',
 };
