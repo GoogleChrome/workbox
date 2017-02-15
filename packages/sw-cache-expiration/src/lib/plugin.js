@@ -331,12 +331,17 @@ class Plugin {
 
     const urls = [];
     const db = await this.getDB({cacheName});
-    const tx = db.transaction(cacheName, 'readonly');
-    const store = tx.objectStore(cacheName);
-    const timestampIndex = store.index(timestampPropertyName);
+    let tx = db.transaction(cacheName, 'readonly');
+    let store = tx.objectStore(cacheName);
+    let timestampIndex = store.index(timestampPropertyName);
     const initialCount = await timestampIndex.count();
 
     if (initialCount > this.maxEntries) {
+      // We need to create a new transaction to make Firefox happy.
+      tx = db.transaction(cacheName, 'readonly');
+      store = tx.objectStore(cacheName);
+      timestampIndex = store.index(timestampPropertyName);
+
       timestampIndex.iterateCursor((cursor) => {
         if (!cursor) {
           return;

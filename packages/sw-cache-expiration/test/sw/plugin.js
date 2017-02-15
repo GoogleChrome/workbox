@@ -2,7 +2,7 @@ importScripts(
   '/node_modules/mocha/mocha.js',
   '/node_modules/chai/chai.js',
   '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/packages/sw-cache-expiration/build/sw-cache-expiration.min.js'
+  '/packages/sw-cache-expiration/build/sw-cache-expiration.js'
 );
 
 const expect = self.chai.expect;
@@ -174,7 +174,7 @@ describe('Test of the Plugin class', function() {
       .then((oldEntries) => expect(oldEntries).to.eql([firstStaleUrl, secondStaleUrl]));
   });
 
-  it(`should only find extra entries when findExtraEntries() is called`, function() {
+  it(`should find only extra entries when findExtraEntries() is called`, function() {
     const cacheName = getUniqueCacheName();
     const plugin = new Plugin({maxEntries});
     const urls = [];
