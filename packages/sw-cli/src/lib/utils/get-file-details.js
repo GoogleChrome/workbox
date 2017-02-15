@@ -3,16 +3,16 @@ const path = require('path');
 
 const getFileSize = require('./get-file-size');
 const getFileHash = require('./get-file-hash');
-const logHelper = require('../log-helper');
 const errors = require('../errors');
 
-module.exports = (rootDirectory, globPattern) => {
+module.exports = (rootDirectory, globPattern, globIgnores) => {
   let globbedFiles;
   try {
-    globbedFiles = glob.sync(globPattern);
+    globbedFiles = glob.sync(globPattern, {
+      ignore: globIgnores,
+    });
   } catch (err) {
-    logHelper.error(errors['unable-to-glob-files'], err);
-    throw err;
+    throw new Error(errors['unable-to-glob-files'] + ` '${err.message}'`);
   }
 
   const fileDetails = globbedFiles.map((file) => {

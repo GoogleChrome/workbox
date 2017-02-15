@@ -1,11 +1,23 @@
 const path = require('path');
 
-const logHelper = require('../log-helper');
 const errors = require('../errors');
 
 module.exports = (relativePath, fileExtentionsToCache) => {
-  if (!fileExtentionsToCache || fileExtentionsToCache.length === 0) {
-    logHelper.error(errors['no-file-extensions-to-cache']);
+  if (!fileExtentionsToCache || !(fileExtentionsToCache instanceof Array) ||
+    fileExtentionsToCache.length === 0) {
+      throw new Error(errors['no-file-extensions-to-cache']);
+  }
+
+  for (let i = 0; i < fileExtentionsToCache.length; i++) {
+    const fileExtension = fileExtentionsToCache[i];
+    if (!fileExtension || typeof fileExtension !== 'string' ||
+      fileExtension.length === 0) {
+        throw new Error(errors['no-file-extensions-to-cache']);
+    }
+
+    if (fileExtension.substring(0, 1) === '.') {
+      throw new Error(errors['no-file-extensions-to-cache']);
+    }
   }
 
   // Glob patterns only work with forward slash

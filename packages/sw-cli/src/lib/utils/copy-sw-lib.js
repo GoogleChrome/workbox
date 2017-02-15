@@ -1,7 +1,6 @@
 const path = require('path');
 const fs = require('fs');
 
-const logHelper = require('../log-helper');
 const errors = require('../errors');
 
 module.exports = (rootDirectory) => {
@@ -18,8 +17,7 @@ module.exports = (rootDirectory) => {
     const stream = fs.createReadStream(swlibBuiltPath)
       .pipe(fs.createWriteStream(swlibOutputPath));
     stream.on('error', function(err) {
-      logHelper.error(errors['unable-to-copy-sw-lib'], err);
-      reject(err);
+      reject(new Error(errors['unable-to-copy-sw-lib'] + ` '${err.message}'`));
     });
     stream.on('finish', function() {
       resolve(swlibOutputPath);

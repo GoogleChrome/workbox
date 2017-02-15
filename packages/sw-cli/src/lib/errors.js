@@ -34,6 +34,12 @@ module.exports = {
   'sw-write-failure': 'Unable to write the service worker file.',
   'unable-to-copy-sw-lib': 'SW-Lib is needed by the service worker and could ' +
     'not be copied over to your new site.',
-  'no-file-extensions-to-cache': 'You must provide at least one file ' +
-    'extension to cache assets.',
+  'no-file-extensions-to-cache': 'The file extensions to cache must be ' +
+    'an array with at least one file extension without the dot at the ' +
+    'start of the extension name, i.e. [\'html\']',
+  'invalid-generate-sw-input': 'The input to generateSW() must be an ' +
+    'object',
+  'invalid-generate-sw-root-directory': 'The supplied rootDirectory must be ' +
+    'a path as a string.',
+  'invalid-exclude-files': 'The excluded files should be an array of strings.',
 };

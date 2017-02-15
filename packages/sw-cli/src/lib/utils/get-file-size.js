@@ -1,6 +1,5 @@
 const fs = require('fs');
 
-const logHelper = require('../log-helper');
 const errors = require('../errors');
 
 module.exports = (file) => {
@@ -11,7 +10,6 @@ module.exports = (file) => {
     }
     return stat.size;
   } catch (err) {
-    logHelper.error(errors['unable-to-get-file-size'], err);
-    throw err;
+    throw new Error(errors['unable-to-get-file-size'] + ` '${err.message}'`);
   }
 };

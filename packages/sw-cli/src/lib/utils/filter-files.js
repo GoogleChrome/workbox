@@ -3,17 +3,12 @@ const path = require('path');
 const logHelper = require('../log-helper');
 const constants = require('../constants');
 
-module.exports = (fileDetails, excludeFiles) => {
+module.exports = (fileDetails) => {
   const filteredFileDetails = fileDetails.filter((fileDetails) => {
     // Filter oversize files.
     if (fileDetails.size > constants.maximumFileSize) {
       logHelper.warn(`Skipping file '${fileDetails.file}' due to size. ` +
         `[Max size supported is ${constants.maximumFileSize}]`);
-      return false;
-    }
-
-    // Filter out excluded files (i.e. manifest and service worker)
-    if (excludeFiles.indexOf(fileDetails.file) !== -1) {
       return false;
     }
 

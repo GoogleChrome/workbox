@@ -1,7 +1,6 @@
 const fs = require('fs');
 const crypto = require('crypto');
 
-const logHelper = require('../log-helper');
 const errors = require('../errors');
 
 module.exports = (file) => {
@@ -11,7 +10,6 @@ module.exports = (file) => {
     md5.update(buffer);
     return md5.digest('hex');
   } catch (err) {
-    logHelper.error(errors['unable-to-get-file-hash'], err);
-    throw err;
+    throw new Error(errors['unable-to-get-file-hash'] + ` '${err.message}'`);
   }
 };

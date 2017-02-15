@@ -27,6 +27,7 @@ const logHelper = require('../lib/log-helper');
 const errors = require('../lib/errors');
 const pkg = require('../../package.json');
 const constants = require('../lib/constants.js');
+const generateGlobPattern = require('../lib/utils/generate-glob-pattern');
 
 const DEBUG = false;
 
@@ -127,21 +128,20 @@ class SWCli {
   }
 
   /**
-   * This method will generate a working Service Worker with a file manifest.
+   * This method will generate a working service worker with a file manifest.
    * @return {Promise} The promise returned here will be used to exit the
    * node process cleanly or not.
    */
   _generateSW() {
-    let rootDirectory;
+    let rootDirPath;
     let fileExtentionsToCache;
     let fileManifestName;
     let serviceWorkerName;
-    let saveConfig;
 
     return this._getRootOfWebApp()
     .then((rDirectory) => {
-      rootDirectory = rDirectory;
-      return this._getFileExtensionsToCache(rootDirectory);
+      rootDirPath = rDirectory;
+      return this._getFileExtensionsToCache(rootDirPath);
     })
     .then((extensionsToCache) => {
       fileExtentionsToCache = extensionsToCache;
@@ -156,28 +156,19 @@ class SWCli {
       return this._saveConfigFile();
     })
     .then((sConfig) => {
-      saveConfig = sConfig;
+      const globPattern = generateGlobPattern(
+        rootDirPath, fileExtentionsToCache);
 
-      logHelper.warn('Root Directory: ' + rootDirectory);
-      logHelper.warn('File Extensions to Cache: ' + fileExtentionsToCache);
-      logHelper.warn('File Manifest: ' + fileManifestName);
-      logHelper.warn('Service Worker: ' + serviceWorkerName);
-      logHelper.warn('Save to Config File: ' + saveConfig);
-      logHelper.warn('');
-
-      const relativePath = path.relative(process.cwd(), rootDirectory);
-
-      const excludeFiles = [
-        fileManifestName,
-        serviceWorkerName,
-        relativePath,
-      ];
       return swcliModule.generateSW({
-        rootDirectory,
-        relativePath,
-        fileExtentionsToCache,
+        rootDirectory: rootDirPath,
+        globPatterns: [
+          globPattern,
+        ],
+        globIgnores: [
+          path.join(rootDirPath, fileManifestName),
+          path.join(rootDirPath, serviceWorkerName),
+        ],
         serviceWorkerName,
-        excludeFiles,
       });
     });
   }
