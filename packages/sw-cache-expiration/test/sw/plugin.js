@@ -23,7 +23,8 @@ describe('Test of the Plugin class', function() {
   const maxAgeSeconds = 3;
   const maxEntries = 3;
   const now = 1487106334920;
-  const propertyName = goog.cacheExpiration.timestampPropertyName;
+  const timestampPropertyName = goog.cacheExpiration.timestampPropertyName;
+  const urlPropertyName = goog.cacheExpiration.urlPropertyName;
 
   const Plugin = goog.cacheExpiration.Plugin;
 
@@ -149,7 +150,7 @@ describe('Test of the Plugin class', function() {
         const tx = db.transaction(cacheName, 'readonly');
         const store = tx.objectStore(cacheName);
         return store.get(url);
-      }).then((entry) => expect(entry[propertyName]).to.equal(now));
+      }).then((entry) => expect(entry[timestampPropertyName]).to.equal(now));
   });
 
   it(`should only find expired entries when findOldEntries() is called`, function() {
@@ -186,6 +187,40 @@ describe('Test of the Plugin class', function() {
 
     return Promise.all(updatePromises)
       .then(() => plugin.findExtraEntries({cacheName}))
-      .then((extraEntries) => expect(extraEntries).to.eql(urls.slice(0, extraEntryCount)));
+      .then((extraEntries) => expect(extraEntries).to.eql(urls.slice(0, extraEntryCount)))
+      // Test again with the urls[0] value updated, so that it's no longer the oldest.
+      .then(() => plugin.updateTimestamp({cacheName, url: urls[0], now: now + maxEntries}))
+      .then(() => plugin.findExtraEntries({cacheName}))
+      .then((extraEntries) => expect(extraEntries).to.eql(urls.slice(1, extraEntryCount + 1)));
+  });
+
+  it(`should delete expired entries when deleteFromCacheAndIDB() is called`, function() {
+    const cacheName = getUniqueCacheName();
+    const plugin = new Plugin({maxEntries});
+    const urls = [];
+    const extraEntryCount = 2;
+    for (let i = 0; i < maxEntries + extraEntryCount; i++) {
+      urls.push(getUniqueUrl());
+    }
+    const updatePromises = urls.map((url, i) => plugin.updateTimestamp({
+      cacheName, url, now: now + i}));
+
+    return Promise.all(updatePromises)
+      .then(() => caches.open(cacheName))
+      .then((cache) => {
+        return Promise.all(urls.map((url) => cache.put(url, new Response())))
+          .then(() => plugin.findExtraEntries({cacheName}))
+          .then((urls) => plugin.deleteFromCacheAndIDB({cacheName, urls}))
+          .then(() => cache.keys())
+          .then((responses) => responses.map((response) => response.url))
+          .then((cachedURLs) => expect(cachedURLs).to.eql(urls.slice(extraEntryCount)))
+          .then(() => plugin.getDB({cacheName}))
+          .then((db) => {
+            const tx = db.transaction(cacheName, 'readonly');
+            const store = tx.objectStore(cacheName);
+            return store.getAll();
+          }).then((idbEntries) => idbEntries.map((entry) => entry[urlPropertyName]))
+          .then((idbEntryUrls) => expect(idbEntryUrls).to.eql(urls.slice(extraEntryCount)));
+      });
   });
 });

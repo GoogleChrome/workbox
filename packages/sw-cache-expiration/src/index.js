@@ -48,10 +48,11 @@
  * @module sw-cache-expiration
  */
 
-import {timestampPropertyName} from './lib/constants';
+import {timestampPropertyName, urlPropertyName} from './lib/constants';
 import Plugin from './lib/plugin';
 
 export {
   timestampPropertyName,
+  urlPropertyName,
   Plugin,
 };
