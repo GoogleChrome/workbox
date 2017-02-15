@@ -71,7 +71,7 @@ describe('Test generateSW()', function() {
           throw new Error('Expected to throw error.');
         })
         .catch((err) => {
-          if (err.message !== errors['invalid-generate-sw-root-directory']) {
+          if (err.message !== errors['invalid-root-directory']) {
             throw new Error('Unexpected error: ' + err.message);
           }
         });
