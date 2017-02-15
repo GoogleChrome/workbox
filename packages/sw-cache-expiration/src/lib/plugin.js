@@ -21,6 +21,7 @@ import {
   urlPropertyName,
   timestampPropertyName,
 } from './constants';
+import ErrorFactory from './error-factory';
 
 /**
  * The cache expiration plugin allows you define an expiration and / or
@@ -46,12 +47,16 @@ class Plugin {
    * @param {Number} [input.maxAgeSeconds] The maximum age for fresh entries.
    */
   constructor({maxEntries, maxAgeSeconds} = {}) {
-    assert.atLeastOne({maxEntries, maxAgeSeconds});
-    if (maxEntries !== undefined) {
-      assert.isType({maxEntries}, 'number');
+    if (!(maxEntries || maxAgeSeconds)) {
+      throw ErrorFactory.createError('max-entries-or-age-required');
     }
-    if (maxAgeSeconds !== undefined) {
-      assert.isType({maxAgeSeconds}, 'number');
+
+    if (maxEntries && typeof maxEntries !== 'number') {
+      throw ErrorFactory.createError('max-entries-must-be-number');
+    }
+
+    if (maxAgeSeconds && typeof maxAgeSeconds !== 'number') {
+      throw ErrorFactory.createError('max-age-seconds-must-be-number');
     }
 
     this.maxEntries = maxEntries;
@@ -70,18 +75,21 @@ class Plugin {
    * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @return {DB} An open DB instance.
    */
-  async getDB({cacheName}) {
-    if (!this._dbs.has(cacheName)) {
-      const openDb = await idb.open(idbName, idbVersion, (upgradeDB) => {
+  async getDB({cacheName} = {}) {
+    assert.isType({cacheName}, 'string');
+
+    const idbId = `${idbName}-${cacheName}`;
+    if (!this._dbs.has(idbId)) {
+      const openDb = await idb.open(idbId, idbVersion, (upgradeDB) => {
         const objectStore = upgradeDB.createObjectStore(cacheName,
           {keyPath: urlPropertyName});
         objectStore.createIndex(timestampPropertyName, timestampPropertyName,
           {unique: false});
       });
-      this._dbs.set(cacheName, openDb);
+      this._dbs.set(idbId, openDb);
     }
 
-    return this._dbs.get(cacheName);
+    return this._dbs.get(idbId);
   }
 
   /**
@@ -92,7 +100,9 @@ class Plugin {
    * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @return {Cache} An open Cache instance.
    */
-  async getCache({cacheName}) {
+  async getCache({cacheName} = {}) {
+    assert.isType({cacheName}, 'string');
+
     if (!this._caches.has(cacheName)) {
       const openCache = await caches.open(cacheName);
       this._caches.set(cacheName, openCache);
@@ -117,11 +127,12 @@ class Plugin {
    * @param {Object} input
    * @param {Response} input.cachedResponse The `Response` object that's been
    *        read from a cache and whose freshness should be checked.
+   * @param {Number} [input.now] A timestamp. Defaults to the current time.
    * @return {Response|null} Either the `cachedResponse`, if it's fresh, or
    *          `null` if the `Response` is older than `maxAgeSeconds`.
    */
-  cacheWillMatch({cachedResponse} = {}) {
-    if (this.isResponseFresh({cachedResponse})) {
+  cacheWillMatch({cachedResponse, now} = {}) {
+    if (this.isResponseFresh({cachedResponse, now})) {
       return cachedResponse;
     }
 
@@ -138,6 +149,7 @@ class Plugin {
    * @param {Object} input
    * @param {Response} input.cachedResponse The `Response` object that's been
    *        read from a cache and whose freshness should be checked.
+   * @param {Number} [input.now] A timestamp. Defaults to the current time.
    * @return {boolean} Either the `true`, if it's fresh, or `false` if the
    *          `Response` is older than `maxAgeSeconds`.
    *
@@ -146,7 +158,7 @@ class Plugin {
    *   cachedResponse: responseFromCache
    * });
    */
-  isResponseFresh({cachedResponse} = {}) {
+  isResponseFresh({cachedResponse, now} = {}) {
     // Only bother checking for freshness if we have a valid response and if
     // maxAgeSeconds is set. Otherwise, skip the check and always return true.
     if (cachedResponse && this.maxAgeSeconds) {
@@ -154,7 +166,10 @@ class Plugin {
 
       const dateHeader = cachedResponse.headers.get('date');
       if (dateHeader) {
-        const now = Date.now();
+        if (typeof now === 'undefined') {
+          now = Date.now();
+        }
+
         const parsedDate = new Date(dateHeader);
         // If the Date header was invalid for some reason, parsedDate.getTime()
         // will return NaN, and the comparison will always be false. That means
@@ -181,12 +196,16 @@ class Plugin {
    * @param {Object} input
    * @param {string} input.cacheName Name of the cache the responses belong to.
    * @param {Response} input.newResponse The new value in the cache.
+   * @param {Number} [input.now] A timestamp. Defaults to the current time.
    */
-  cacheDidUpdate({cacheName, newResponse} = {}) {
+  cacheDidUpdate({cacheName, newResponse, now} = {}) {
     assert.isType({cacheName}, 'string');
     assert.isInstance({newResponse}, Response);
 
-    const now = Date.now();
+    if (typeof now === 'undefined') {
+      now = Date.now();
+    }
+
     this.updateTimestamp({cacheName, now, url: newResponse.url}).then(() => {
       this.expireEntries({cacheName, now});
     });
@@ -206,8 +225,9 @@ class Plugin {
    *   url: '/example-url'
    * });
    */
-  async updateTimestamp({cacheName, url, now}) {
+  async updateTimestamp({cacheName, url, now} = {}) {
     assert.isType({url}, 'string');
+    assert.isType({cacheName}, 'string');
 
     if (typeof now === 'undefined') {
       now = Date.now();
@@ -238,6 +258,8 @@ class Plugin {
    * });
    */
   async expireEntries({cacheName, now} = {}) {
+    assert.isType({cacheName}, 'string');
+
     if (typeof now === 'undefined') {
       now = Date.now();
     }
@@ -270,6 +292,7 @@ class Plugin {
    * @return {Array<string>} A list of the URLs that were expired.
    */
   async findOldEntries({cacheName, now} = {}) {
+    assert.isType({cacheName}, 'string');
     assert.isType({now}, 'number');
 
     const expireOlderThan = now - (this.maxAgeSeconds * 1000);
@@ -296,22 +319,33 @@ class Plugin {
   }
 
   /**
-   * Expires entries base on the the maximum cache size.
+   * Finds the URLs that should be expired as per the current state of IndexedDB
+   * and the `maxEntries` configuration. A least-recently used policy is
+   * enforced, so if `maxEntries` is `N`, and there are `N + M` URLs listed in
+   * IndexedDB, then this function will return the least-recently used `M` URLs.
    *
    * @private
    * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
-   * @return {Array<string>} A list of the URLs that were expired.
+   * @return {Array<string>} A list of the URLs that are candidates for
+   *   expiration.
    */
-  async findExtraEntries({cacheName}) {
+  async findExtraEntries({cacheName} = {}) {
+    assert.isType({cacheName}, 'string');
+
     const urls = [];
     const db = await this.getDB({cacheName});
-    const tx = db.transaction(cacheName, 'readonly');
-    const store = tx.objectStore(cacheName);
-    const timestampIndex = store.index(timestampPropertyName);
+    let tx = db.transaction(cacheName, 'readonly');
+    let store = tx.objectStore(cacheName);
+    let timestampIndex = store.index(timestampPropertyName);
     const initialCount = await timestampIndex.count();
 
     if (initialCount > this.maxEntries) {
+      // We need to create a new transaction to make Firefox happy.
+      tx = db.transaction(cacheName, 'readonly');
+      store = tx.objectStore(cacheName);
+      timestampIndex = store.index(timestampPropertyName);
+
       timestampIndex.iterateCursor((cursor) => {
         if (!cursor) {
           return;
@@ -339,6 +373,7 @@ class Plugin {
    * @param {Array<string>} urls The URLs to delete.
    */
   async deleteFromCacheAndIDB({cacheName, urls} = {}) {
+    assert.isType({cacheName}, 'string');
     assert.isInstance({urls}, Array);
 
     if (urls.length > 0) {
