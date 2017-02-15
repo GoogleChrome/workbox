@@ -119,7 +119,7 @@ describe('Test of the Plugin class', function() {
   it(`should return false when isResponseFresh() is called and the Date: header in the cachedResponse is not recent`, function() {
     const plugin = new Plugin({maxAgeSeconds});
     // This will construct a date that is 1 second past the expiration.
-    const date = new Date(now - ((1 + maxAgeSeconds) * 1000)).toUTCString();
+    const date = new Date(now - ((maxAgeSeconds + 1) * 1000)).toUTCString();
     const cachedResponse = new Response('', {headers: {date}});
     expect(plugin.isResponseFresh({cachedResponse, now})).to.be.false;
   });

@@ -319,12 +319,16 @@ class Plugin {
   }
 
   /**
-   * Expires entries base on the the maximum cache size.
+   * Finds the URLs that should be expired as per the current state of IndexedDB
+   * and the `maxEntries` configuration. A least-recently used policy is
+   * enforced, so if `maxEntries` is `N`, and there are `N + M` URLs listed in
+   * IndexedDB, then this function will return the least-recently used `M` URLs.
    *
    * @private
    * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
-   * @return {Array<string>} A list of the URLs that were expired.
+   * @return {Array<string>} A list of the URLs that are candidates for
+   *   expiration.
    */
   async findExtraEntries({cacheName} = {}) {
     assert.isType({cacheName}, 'string');
