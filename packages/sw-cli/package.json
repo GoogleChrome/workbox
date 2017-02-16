@@ -11,11 +11,9 @@
     "offline",
     "cli"
   ],
-  "main": "build/sw-cli.min.js",
-  "module": "build/sw-cli.min.mjs",
-  "jsnext:main": "build/sw-cli.min.mjs",
+  "main": "build/index.js",
   "bin": {
-    "sw-cli": "src/bin/index.js"
+    "sw-cli": "build/cli/bin.js"
   },
   "files": [
     "src",

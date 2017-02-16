@@ -27,13 +27,13 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  * For efficiency's sake, the underlying response bodies are not compared;
  * only specific response headers are checked.
  *
- * @example <caption>Added as a "behavior" to a `RequestWrapper` to
+ * @example <caption>Added as a "plugin" to a `RequestWrapper` to
  * automatically dispatch messages on a cache update</caption>
  *
  * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
  *   cacheName: 'runtime-cache',
- *   behaviors: [
- *     new goog.broadcastCacheUpdate.Behavior({channelName: 'cache-updates'})
+ *   plugins: [
+ *     new goog.broadcastCacheUpdate.Plugin({channelName: 'cache-updates'})
  *   ]
  * });
  * const route = new goog.routing.RegExpRoute({
@@ -44,7 +44,7 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  * @example <caption>Trigger a message by manually calling
  * the `notifyIfUpdated()` method.</caption>
  *
- * const cacheUpdateBehavior = new goog.broadcastCacheUpdates.Behavior({
+ * const cacheUpdatePlugin = new goog.broadcastCacheUpdates.Plugin({
  *   channelName: 'cache-updates'
  * });
  *
@@ -58,7 +58,7 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  *
  * // Only check for an update if there was a previously cached response.
  * if (oldResponse) {
- *   cacheUpdateBehavior.notifyIfUpdated({
+ *   cacheUpdatePlugin.notifyIfUpdated({
  *     first: oldResponse,
  *     second: newResponse,
  *     cacheName
@@ -67,7 +67,7 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  *
  * @memberof module:sw-broadcast-cache-update
  */
-class Behavior {
+class Plugin {
   /**
    * Dispatches cache update messages when a cached response has been updated.
    * Messages will be dispatched on a broadcast channel with the name provided
@@ -157,4 +157,4 @@ class Behavior {
   }
 }
 
-export default Behavior;
+export default Plugin;

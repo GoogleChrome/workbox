@@ -17,17 +17,18 @@
 
 import Router from './router.js';
 import ErrorFactory from './error-factory.js';
-import {PrecacheManager} from '../../../sw-precaching/src/index.js';
+import {
+  RevisionedCacheManager, UnrevisionedCacheManager,
+} from '../../../sw-precaching/src/index.js';
 import {Route} from '../../../sw-routing/src/index.js';
-import {Behavior as CacheExpirationBehavior} from
+import {Plugin as CacheExpirationPlugin} from
   '../../../sw-cache-expiration/src/index.js';
-import {Behavior as BroadcastCacheUpdateBehavior} from
+import {Plugin as BroadcastCacheUpdatePlugin} from
   '../../../sw-broadcast-cache-update/src/index.js';
 import {
   CacheFirst, CacheOnly, NetworkFirst,
   NetworkOnly, StaleWhileRevalidate, RequestWrapper,
-}
-  from '../../../sw-runtime-caching/src/index.js';
+} from '../../../sw-runtime-caching/src/index.js';
 
 /**
  * A high level library to make it as easy as possible to precache assets
@@ -43,7 +44,9 @@ class SWLib {
    */
   constructor() {
     this._router = new Router();
-    this._precacheManager = new PrecacheManager();
+    this._revisionedCacheManager = new RevisionedCacheManager();
+    this._unrevisionedCacheManager = new UnrevisionedCacheManager();
+    this._registerInstallActivateEvents();
     this._registerDefaultRoutes();
   }
 
@@ -85,7 +88,7 @@ class SWLib {
       throw ErrorFactory.createError('bad-revisioned-cache-list');
     }
 
-    this._precacheManager.cacheRevisioned({
+    this._revisionedCacheManager.addToCacheList({
       revisionedFiles,
     });
   }
@@ -121,7 +124,7 @@ class SWLib {
       throw ErrorFactory.createError('bad-revisioned-cache-list');
     }
 
-    this._precacheManager.cacheUnrevisioned({
+    this._unrevisionedCacheManager.addToCacheList({
       unrevisionedFiles,
     });
   }
@@ -142,7 +145,7 @@ class SWLib {
   /**
    * If you need fine grained control of route matching and handling,
    * use the {@link module:sw-routing.Route|Route Class} to define
-   * the desired behavior and register it to the router.
+   * the desired plugin and register it to the router.
    *
    * This is an export of the
    * {@link module:sw-routing.Route|sw-runtime Route Class}.
@@ -194,8 +197,8 @@ class SWLib {
    *   broadcastCacheUpdate: {
    *     channelName: 'example-channel-name'
    *   },
-   *   behaviors: [
-   *     // Additional Behaviors
+   *   plugins: [
+   *     // Additional Plugins
    *   ]
    * });
    *
@@ -203,17 +206,17 @@ class SWLib {
    * @property {String} cacheName Name of cache to use
    * for caching (both lookup and updating).
    * @property {Object} cacheExpiration Defining this
-   * object will add a cache expiration behaviors to this strategy.
+   * object will add a cache expiration plugins to this strategy.
    * @property {Number} cacheExpiration.maxEntries
    * The maximum number of entries to store in a cache.
    * @property {Number} cacheExpiration.maxAgeSeconds
    * The maximum lifetime of a request to stay in the cache before it's removed.
    * @property {Object} broadcastCacheUpdate Defining
-   * this object will add a broadcast cache update behavior.
+   * this object will add a broadcast cache update plugin.
    * @property {String} broadcastCacheUpdate.channelName
    * The name of the broadcast channel to dispatch messages on.
-   * @property {Array<behaviors>} behaviors For
-   * any additional behaviors you wish to add, simply include them in this
+   * @property {Array<plugins>} plugins For
+   * any additional plugins you wish to add, simply include them in this
    * array.
    * @memberof module:sw-lib.SWLib
    */
@@ -228,7 +231,7 @@ class SWLib {
    * goog.swlib.router.addRoute('/styles/*', cacheFirstStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast behaviors pass in option values.
+   * any additional caching or broadcast plugins pass in option values.
    * @return {module:sw-runtime-caching.CacheFirst} A CacheFirst handler.
    */
   cacheFirst(options) {
@@ -245,7 +248,7 @@ class SWLib {
    * goog.swlib.router.addRoute('/styles/*', cacheOnlyStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast behaviors pass in option values.
+   * any additional caching or broadcast plugins pass in option values.
    * @return {module:sw-runtime-caching.CacheOnly} The caching handler instance.
    */
   cacheOnly(options) {
@@ -262,7 +265,7 @@ class SWLib {
    * goog.swlib.router.addRoute('/blog/', networkFirstStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast behaviors pass in option values.
+   * any additional caching or broadcast plugins pass in option values.
    * @return {module:sw-runtime-caching.NetworkFirst} The caching handler
    * instance.
    */
@@ -280,7 +283,7 @@ class SWLib {
    * goog.swlib.router.addRoute('/admin/', networkOnlyStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast behaviors pass in option values.
+   * any additional caching or broadcast plugins pass in option values.
    * @return {module:sw-runtime-caching.NetworkOnly} The caching handler
    * instance.
    */
@@ -298,7 +301,7 @@ class SWLib {
    * goog.swlib.router.addRoute('/styles/*', staleWhileRevalidateStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast behaviors pass in option values.
+   * any additional caching or broadcast plugins pass in option values.
    * @return {module:sw-runtime-caching.StaleWhileRevalidate} The caching
    * handler instance.
    */
@@ -307,7 +310,7 @@ class SWLib {
   }
 
   /**
-   * This method will add behaviors based on options passed in by the
+   * This method will add plugins based on options passed in by the
    * developer.
    *
    * @private
@@ -317,34 +320,34 @@ class SWLib {
    * behaviours
    */
   _getCachingMechanism(HandlerClass, options = {}) {
-    const behaviorParamsToClass = {
-      'cacheExpiration': CacheExpirationBehavior,
-      'broadcastCacheUpdate': BroadcastCacheUpdateBehavior,
+    const pluginParamsToClass = {
+      'cacheExpiration': CacheExpirationPlugin,
+      'broadcastCacheUpdate': BroadcastCacheUpdatePlugin,
     };
 
     const wrapperOptions = {
-      behaviors: [],
+      plugins: [],
     };
 
     if (options['cacheName']) {
       wrapperOptions['cacheName'] = options['cacheName'];
     }
 
-    // Iterate over known behaviors and add them to Request Wrapper options.
-    const behaviorKeys = Object.keys(behaviorParamsToClass);
-    behaviorKeys.forEach((behaviorKey) => {
-      if (options[behaviorKey]) {
-        const BehaviorClass = behaviorParamsToClass[behaviorKey];
-        const behaviorParams = options[behaviorKey];
+    // Iterate over known plugins and add them to Request Wrapper options.
+    const pluginKeys = Object.keys(pluginParamsToClass);
+    pluginKeys.forEach((pluginKey) => {
+      if (options[pluginKey]) {
+        const PluginClass = pluginParamsToClass[pluginKey];
+        const pluginParams = options[pluginKey];
 
-        wrapperOptions.behaviors.push(new BehaviorClass(behaviorParams));
+        wrapperOptions.plugins.push(new PluginClass(pluginParams));
       }
     });
 
-    // Add custom behaviors.
-    if (options.behaviors) {
-      options.behaviors.forEach((behavior) => {
-        wrapperOptions.behaviors.push(behavior);
+    // Add custom plugins.
+    if (options.plugins) {
+      options.plugins.forEach((plugin) => {
+        wrapperOptions.plugins.push(plugin);
       });
     }
 
@@ -354,17 +357,37 @@ class SWLib {
   }
 
   /**
+   * This method will register listeners for the install and activate events.
+   * @private
+   */
+  _registerInstallActivateEvents() {
+    self.addEventListener('install', (event) => {
+      event.waitUntil(Promise.all([
+        this._revisionedCacheManager.install(),
+        this._unrevisionedCacheManager.install(),
+      ]));
+    });
+
+    self.addEventListener('activate', (event) => {
+      event.waitUntil(Promise.all([
+        this._revisionedCacheManager.cleanup(),
+        this._unrevisionedCacheManager.cleanup(),
+      ]));
+    });
+  }
+
+  /**
    * This method will register any default routes the library will need.
+   * @private
    */
   _registerDefaultRoutes() {
-    const revisionedManager = this._precacheManager.getRevisionedCacheManager();
     const cacheFirstHandler = this.cacheFirst({
-      cacheName: revisionedManager.getCacheName(),
+      cacheName: this._revisionedCacheManager.getCacheName(),
     });
 
     const route = new this.Route({
       match: ({url, event}) => {
-        const cachedUrls = revisionedManager.getCachedUrls();
+        const cachedUrls = this._revisionedCacheManager.getCachedUrls();
         return cachedUrls.indexOf(url.href) !== -1;
       },
       handler: cacheFirstHandler,

@@ -7,6 +7,7 @@ require('chai').should();
 
 describe('Ask to Save to Config File', function() {
   const globalStubs = [];
+  const CLI_PATH = '../build/cli/index.js';
 
   afterEach(function() {
     cliHelper.endLogCapture();
@@ -59,7 +60,7 @@ describe('Ask to Save to Config File', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       'inquirer': inquirer,
     });
 
@@ -78,7 +79,7 @@ describe('Ask to Save to Config File', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       'inquirer': inquirer,
     });
 

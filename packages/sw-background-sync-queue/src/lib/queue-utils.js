@@ -60,6 +60,7 @@ async function getFetchableRequest({idbRequestObject}) {
  *
  * @memberOf Queue
  * @private
+ * @return {Promise}
  */
 async function cleanupQueue() {
 	let db = new IDBHelper(getDbName(), 1, 'QueueStore');

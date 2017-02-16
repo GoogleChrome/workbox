@@ -14,7 +14,6 @@
 */
 
 /* eslint-env browser */
-/* eslint-disable no-console */
 
 import ErrorFactory from './lib/error-factory';
 import SWLib from './lib/sw-lib';

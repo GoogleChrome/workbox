@@ -12,7 +12,7 @@ mocha.setup({
 });
 
 const exportedSymbols = [
-  'Behavior',
+  'Plugin',
   'broadcastUpdate',
   'cacheUpdatedMessageType',
   'responsesAreSame',
