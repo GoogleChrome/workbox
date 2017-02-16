@@ -1,6 +1,7 @@
 // This will be the logic that powers both module and CLI
 const generateSW = require('./lib/generate-sw');
 const getFileManifestEntries = require('./lib/get-file-manifest-entries');
+const generateFileManifest = require('./lib/generate-file-manifest');
 
 /**
  * # sw-cli
@@ -33,6 +34,19 @@ const getFileManifestEntries = require('./lib/get-file-manifest-entries');
  *   console.log('Service worker generated.');
  * });
  *
+ * @example <caption>Generate a build manifest file.</caption>
+ * const swCLI = require('sw-cli');
+ *
+ * swCLI.generateFileManifest({
+ *   dest: './build/scripts/manifest.js',
+ *   rootDirectory: './build/',
+ *   globPatterns: ['**\/*.{html,js,css}'],
+ *   globIgnores: ['admin.html']
+ * })
+ * .then(() => {
+ *   console.log('Build file has been created.');
+ * });
+ *
  * @example <caption>Get a list of files with revision details.</caption>
  * const swCLI = require('sw-cli');
  *
@@ -50,5 +64,6 @@ const getFileManifestEntries = require('./lib/get-file-manifest-entries');
 
 module.exports = {
   generateSW,
+  generateFileManifest,
   getFileManifestEntries,
 };

@@ -5,56 +5,93 @@ const errors = require('../src/lib/errors.js');
 
 require('chai').should();
 
-describe('src/lib/utils/filter-files.js', function() {
+describe('src/lib/utils/write-file-manifest.js', function() {
   const INJECTED_ERROR = new Error('Injected Error');
 
   afterEach(function() {
     cliHelper.endLogCapture();
   });
 
-  const checkErrors = (caughtError, errorCode, checkInjectedError) => {
-    if (!caughtError) {
-      throw new Error('Expected test to throw an error.');
-    }
+  it('should handle bad manifest path', function() {
+    const badInputs = [
+      true,
+      false,
+      '',
+      [],
+      {},
+      null,
+      undefined,
+    ];
+    const writeFileManifest = require('../src/lib/utils/write-file-manifest');
+    badInputs.reduce((promiseChain, badInput) => {
+      return promiseChain.then(() => {
+        return writeFileManifest(badInput, [])
+        .then(() => {
+          throw new Error('Expected error to be thrown.');
+        })
+        .catch((err) => {
+          if (err.message !== errors['invalid-manifest-path']) {
+            throw new Error('Unexpected error thrown: ' + err.message);
+          }
+        });
+      });
+    }, Promise.resolve());
+  });
 
-    const captured = cliHelper.endLogCapture();
-    captured.consoleLogs.length.should.equal(0);
-    captured.consoleWarns.length.should.equal(0);
-    captured.consoleErrors.length.should.not.equal(0);
-
-    let foundErrorMsg = false;
-    let foundInjectedErrorMsg = false;
-    captured.consoleErrors.forEach((errLog) => {
-      if (errLog.indexOf(errors[errorCode]) !== -1) {
-        foundErrorMsg = true;
-      }
-      if (errLog.indexOf(INJECTED_ERROR.message) !== -1) {
-        foundInjectedErrorMsg = true;
-      }
-    });
-    foundErrorMsg.should.equal(true);
-    if (typeof checkInjectedError === 'undefined' ||
-      checkInjectedError === true) {
-      foundInjectedErrorMsg.should.equal(true);
-    }
-  };
+  it('should handle bad manifest entries', function() {
+    const badInputs = [
+      true,
+      false,
+      '',
+      {},
+      null,
+      undefined,
+      [true],
+      [false],
+      [null],
+      [undefined],
+      [{
+        nope: 'this is useless',
+      }],
+      [{}],
+    ];
+    const writeFileManifest = require('../src/lib/utils/write-file-manifest');
+    return badInputs.reduce((promiseChain, badInput) => {
+      return promiseChain.then(() => {
+        return writeFileManifest('manifest.js', badInput)
+        .then(() => {
+          throw new Error('Expected error to be thrown.');
+        })
+        .catch((err) => {
+          if (err.message !== errors['invalid-manifest-entries']) {
+            throw new Error('Unexpected error thrown: ' + err.message);
+          }
+        });
+      });
+    }, Promise.resolve());
+  });
 
   it('should handle failing mkdirp.sync', function() {
-    const writeFileManifest = proxyquire('../src/lib/write-file-manifest', {
+    const writeFileManifest = proxyquire('../src/lib/utils/write-file-manifest', {
       mkdirp: (dirname, cb) => {
         cb(INJECTED_ERROR);
       },
     });
 
     cliHelper.startLogCapture();
-    return writeFileManifest('fake-path/manifest-name.js')
+    return writeFileManifest('fake-path/manifest-name.js', [])
+    .then(() => {
+      throw new Error('Expected an error.');
+    })
     .catch((caughtError) => {
-      checkErrors(caughtError, 'unable-to-make-manifest-directory');
+      if (caughtError.message.indexOf(errors['unable-to-make-manifest-directory']) !== 0) {
+        throw new Error('Unexpected Error: ' + caughtError.message);
+      }
     });
   });
 
   it('should handle fs.readFile error when checking template', function() {
-    const writeFileManifest = proxyquire('../src/lib/write-file-manifest', {
+    const writeFileManifest = proxyquire('../src/lib/utils/write-file-manifest', {
       mkdirp: (dirname, cb) => {
         cb();
       },
@@ -66,14 +103,19 @@ describe('src/lib/utils/filter-files.js', function() {
     });
 
     cliHelper.startLogCapture();
-    return writeFileManifest('fake-path/manifest-name.js')
+    return writeFileManifest('fake-path/manifest-name.js', [])
+    .then(() => {
+      throw new Error('Expected an error.');
+    })
     .catch((caughtError) => {
-      checkErrors(caughtError, 'read-manifest-template-failure');
+      if (caughtError.message.indexOf(errors['read-manifest-template-failure']) !== 0) {
+        throw new Error('Unexpected Error: ' + caughtError.message);
+      }
     });
   });
 
   it('should handle error when populating template', function() {
-    const writeFileManifest = proxyquire('../src/lib/write-file-manifest', {
+    const writeFileManifest = proxyquire('../src/lib/utils/write-file-manifest', {
       'mkdirp': (dirname, cb) => {
         cb();
       },
@@ -88,14 +130,19 @@ describe('src/lib/utils/filter-files.js', function() {
     });
 
     cliHelper.startLogCapture();
-    return writeFileManifest('fake-path/manifest-name.js')
+    return writeFileManifest('fake-path/manifest-name.js', [])
+    .then(() => {
+      throw new Error('Expected an error.');
+    })
     .catch((caughtError) => {
-      checkErrors(caughtError, 'populating-manifest-tmpl-failed');
+      if (caughtError.message.indexOf(errors['populating-manifest-tmpl-failed']) !== 0) {
+        throw new Error('Unexpected Error: ' + caughtError.message);
+      }
     });
   });
 
   it('should handle error writing file', function() {
-    const writeFileManifest = proxyquire('../src/lib/write-file-manifest', {
+    const writeFileManifest = proxyquire('../src/lib/utils/write-file-manifest', {
       'mkdirp': (dirname, cb) => {
         cb();
       },
@@ -115,9 +162,14 @@ describe('src/lib/utils/filter-files.js', function() {
     });
 
     cliHelper.startLogCapture();
-    return writeFileManifest('fake-path/manifest-name.js')
+    return writeFileManifest('fake-path/manifest-name.js', [])
+    .then(() => {
+      throw new Error('Expected an error.');
+    })
     .catch((caughtError) => {
-      checkErrors(caughtError, 'manifest-file-write-failure');
+      if (caughtError.message.indexOf(errors['manifest-file-write-failure']) !== 0) {
+        throw new Error('Unexpected Error: ' + caughtError.message);
+      }
     });
   });
 });

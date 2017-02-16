@@ -44,4 +44,10 @@ module.exports = {
   'invalid-exclude-files': 'The excluded files should be an array of strings.',
   'invalid-get-manifest-entries-input': 'The input to ' +
     'getFileManifestEntries() must be an object.',
+  'invalid-manifest-path': 'The supplied manifest path is not a string with ' +
+    'at least one character.',
+  'invalid-manifest-entries': 'The manifest entries must be an array of ' +
+    'strings or JavaScript objects containing a url parameter.',
+  'invalid-generate-file-manifest-arg': 'The input to generateFileManifest() ' +
+    'must be an Object.',
 };
