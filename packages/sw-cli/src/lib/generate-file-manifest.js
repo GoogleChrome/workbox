@@ -19,8 +19,8 @@ const errors = require('./errors');
  * This method will generate a file manifest that can be used in a service
  * worker for caching assets offline..
  * @param {Object} input
- * @param {String} input.manifestFilePath The name you wish to give to your
- * manifest file.
+ * @param {String} input.dest The name and path you wish to write your
+ * manifest file to.
  * @param {String} input.rootDirectory The root of the files you wish to
  * be cached. This will also be the directory the service worker and library
  * files are written to.
@@ -39,7 +39,7 @@ const generateFileManifest = (input) => {
       new Error(errors['invalid-generate-file-manifest-arg']));
   }
 
-  const manifestFilePath = input.manifestFilePath;
+  const dest = input.dest;
   const rootDirectory = input.rootDirectory;
   const globPatterns = input.globPatterns;
   const globIgnores = input.globIgnores;
@@ -47,7 +47,7 @@ const generateFileManifest = (input) => {
   const fileEntries = getFileManifestEntries({
     rootDirectory, globPatterns, globIgnores,
   });
-  return writeFileManifest(manifestFilePath, fileEntries);
+  return writeFileManifest(dest, fileEntries);
 };
 
 module.exports = generateFileManifest;
