@@ -7,7 +7,7 @@ describe('Test generateFileManifest', function() {
   const EXAMPLE_INPUT = {
     globPatterns: ['./**/*.{html,css}'],
     globIgnores: [],
-    manifestFilePath: './manifest.js',
+    dest: './manifest.js',
     rootDirectory: '.',
   };
 
@@ -79,7 +79,7 @@ describe('Test generateFileManifest', function() {
             throw new Error('Unexpected file entries - should have duplicates removed.');
           }
 
-          if (manifestFilePath !== EXAMPLE_INPUT.manifestFilePath) {
+          if (manifestFilePath !== EXAMPLE_INPUT.dest) {
             throw new Error('Unexpected manifest File Path');
           }
 
