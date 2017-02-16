@@ -7,7 +7,7 @@ const errors = require('./errors');
  * const swCLI = require('sw-cli');
  *
  * swCLI.generateFileManifest({
- *   manifestFilePath: './build/manifest.js'
+ *   dest: './build/manifest.js'
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html']
