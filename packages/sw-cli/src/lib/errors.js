@@ -34,4 +34,20 @@ module.exports = {
   'sw-write-failure': 'Unable to write the service worker file.',
   'unable-to-copy-sw-lib': 'SW-Lib is needed by the service worker and could ' +
     'not be copied over to your new site.',
+  'no-file-extensions-to-cache': 'The file extensions to cache must be ' +
+    'an array with at least one file extension without the dot at the ' +
+    'start of the extension name, i.e. [\'html\']',
+  'invalid-generate-sw-input': 'The input to generateSW() must be an ' +
+    'object',
+  'invalid-root-directory': 'The supplied rootDirectory must be ' +
+    'a path as a string.',
+  'invalid-exclude-files': 'The excluded files should be an array of strings.',
+  'invalid-get-manifest-entries-input': 'The input to ' +
+    'getFileManifestEntries() must be an object.',
+  'invalid-manifest-path': 'The supplied manifest path is not a string with ' +
+    'at least one character.',
+  'invalid-manifest-entries': 'The manifest entries must be an array of ' +
+    'strings or JavaScript objects containing a url parameter.',
+  'invalid-generate-file-manifest-arg': 'The input to generateFileManifest() ' +
+    'must be an Object.',
 };

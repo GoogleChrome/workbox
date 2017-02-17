@@ -4,8 +4,11 @@ const path = require('path');
 const cliHelper = require('./helpers/cli-test-helper.js');
 const errors = require('../src/lib/errors.js');
 
+require('chai').should();
+
 describe('Ask for Root Directory', function() {
   const globalStubs = [];
+  const CLI_PATH = '../build/cli/index.js';
 
   afterEach(function() {
     cliHelper.endLogCapture();
@@ -55,7 +58,7 @@ describe('Ask for Root Directory', function() {
       },
     };
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       fs: fakeFS,
     });
 
@@ -74,7 +77,7 @@ describe('Ask for Root Directory', function() {
       },
     };
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       fs: fakeFS,
     });
 
@@ -104,7 +107,7 @@ describe('Ask for Root Directory', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       'fs': fakeFS,
       'inquirer': inquirer,
     });
@@ -149,7 +152,7 @@ describe('Ask for Root Directory', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire('../src/cli/index', {
+    const SWCli = proxyquire(CLI_PATH, {
       'fs': fakeFS,
       'inquirer': inquirer,
     });

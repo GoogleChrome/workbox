@@ -13,12 +13,23 @@
  limitations under the License.
 */
 
-const pkg = require('./package.json');
-const {buildJSBundle, generateBuildConfigs} = require('../../utils/build');
+const fsE = require('fs-extra');
+const path = require('path');
 
-const buildConfigs = generateBuildConfigs({
-  es: pkg['jsnext:main'],
-  umd: pkg.main,
-}, __dirname, 'goog.swcli');
+const copyPath = (from, to) => {
+  return new Promise((resolve, reject) => {
+    fsE.copy(from, to, (err) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve();
+    });
+  });
+};
 
-module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));
+module.exports = () => {
+  return copyPath(
+    path.join(__dirname, 'src/'),
+    path.join(__dirname, 'build/')
+  );
+};

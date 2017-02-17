@@ -19,7 +19,7 @@
 const fs = require('fs');
 const path = require('path');
 const pkg = require('../package.json');
-const CLI = require('../src/cli/index.js');
+const CLI = require('../build/cli/index.js');
 const cliHelper = require('./helpers/cli-test-helper.js');
 
 require('chai').should();

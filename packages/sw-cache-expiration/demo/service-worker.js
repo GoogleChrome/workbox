@@ -19,8 +19,8 @@ self.addEventListener('activate', () => self.clients.claim());
 // expiration when it modifies that cache.
 const textFilesRequestWrapper = new goog.runtimeCaching.RequestWrapper({
   cacheName: 'text-files',
-  behaviors: [
-    new goog.cacheExpiration.Behavior({
+  plugins: [
+    new goog.cacheExpiration.Plugin({
       maxEntries: 2,
       maxAgeSeconds: 10,
     }),
@@ -29,7 +29,7 @@ const textFilesRequestWrapper = new goog.runtimeCaching.RequestWrapper({
 
 // Create a route to match all requests for URLs that end in .txt.
 // Anything that matches those requests will be handled using a
-// stale-while-revalidate policy, with caching behavior determined by the
+// stale-while-revalidate policy, with caching plugin determined by the
 // textFilesRequestWrapper we just created.
 const textFilesRoute = new goog.routing.RegExpRoute({
   regExp: /\.txt$/,

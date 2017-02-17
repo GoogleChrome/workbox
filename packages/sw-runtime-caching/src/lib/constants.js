@@ -38,9 +38,10 @@ export const defaultCacheName = cacheName;
  * @type {Array.<string>}
  * @memberof module:sw-runtime-caching
  */
-export const behaviorCallbacks = [
+export const pluginCallbacks = [
   'cacheDidUpdate',
   'cacheWillMatch',
   'cacheWillUpdate',
   'fetchDidFail',
+  'requestWillFetch',
 ];

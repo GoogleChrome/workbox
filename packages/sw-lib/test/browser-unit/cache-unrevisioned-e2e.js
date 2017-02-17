@@ -1,6 +1,6 @@
 /* global goog, expect */
 
-describe('sw-lib Test Unrevisioned Caching', function() {
+describe('cache-unrevisioned-e2e.js', function() {
   const deleteIndexedDB = () => {
     return new Promise((resolve, reject) => {
       // TODO: Move to constants
