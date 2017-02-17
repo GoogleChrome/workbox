@@ -10,6 +10,9 @@
     "offline",
     "file manifest"
   ],
+  "scripts": {
+    "prepublish": "gulp build --project sw-build"
+  },
   "main": "build/index.js",
   "files": [
     "src",
