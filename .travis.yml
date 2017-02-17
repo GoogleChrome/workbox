@@ -26,6 +26,7 @@ env:
 install:
   - npm install -g gulp-cli lerna
   - npm install
+  - lerna bootstrap --scope "${PROJECT}" --include-filtered-dependencies
   - cd "packages/${PROJECT}/"
   - npm install
   - cd ../../
