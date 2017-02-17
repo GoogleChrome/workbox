@@ -26,7 +26,7 @@ env:
 install:
   - npm install -g gulp-cli lerna
   - npm install
-  - if [${PROJECT} = "sw-cli"]; then gulp build --project sw-build; fi;
+  - if [${PROJECT} == "sw-cli"]; then gulp build --project sw-build; fi;
   - lerna bootstrap
   - cd "packages/${PROJECT}/"
   - npm install
