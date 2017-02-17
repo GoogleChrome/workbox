@@ -4,9 +4,9 @@ const errors = require('./errors');
 
 /**
  * @example <caption>Generate a service worker for a project.</caption>
- * const swCLI = require('sw-build');
+ * const swBuild = require('sw-build');
  *
- * swCLI.generateFileManifest({
+ * swBuild.generateFileManifest({
  *   dest: './build/manifest.js'
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],

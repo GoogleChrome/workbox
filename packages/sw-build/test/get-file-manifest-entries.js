@@ -1,6 +1,6 @@
 const proxyquire = require('proxyquire');
 
-const swCLI = require('../src/index.js');
+const swBuild = require('../src/index.js');
 const errors = require('../src/lib/errors');
 
 describe('Test getFileManifestEntries', function() {
@@ -21,7 +21,7 @@ describe('Test getFileManifestEntries', function() {
     ];
     badInputs.forEach((badInput) => {
       try {
-        swCLI.getFileManifestEntries(badInput);
+        swBuild.getFileManifestEntries(badInput);
         throw new Error('Expected error to be thrown.');
       } catch (err) {
         if (err.message !== errors['invalid-get-manifest-entries-input']) {
@@ -44,7 +44,7 @@ describe('Test getFileManifestEntries', function() {
       return promiseChain.then(() => {
         let args = Object.assign({}, EXAMPLE_INPUT);
         args.rootDirectory = input;
-        return swCLI.getFileManifestEntries(args)
+        return swBuild.getFileManifestEntries(args)
         .then(() => {
           throw new Error('Expected to throw error.');
         })

@@ -1,6 +1,6 @@
 const proxyquire = require('proxyquire');
 
-const swCLI = require('../src/index.js');
+const swBuild = require('../src/index.js');
 const errors = require('../src/lib/errors');
 
 describe('Test generateFileManifest', function() {
@@ -22,7 +22,7 @@ describe('Test generateFileManifest', function() {
     ];
     return badInputs.reduce((promiseChain, badInput) => {
       return promiseChain.then(() => {
-        return swCLI.generateFileManifest(badInput)
+        return swBuild.generateFileManifest(badInput)
         .then(() => {
           throw new Error('Expected to throw error.');
         })

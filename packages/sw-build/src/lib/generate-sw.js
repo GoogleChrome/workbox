@@ -7,9 +7,9 @@ const errors = require('./errors');
 
 /**
  * @example <caption>Generate a service worker for a project.</caption>
- * const swCLI = require('sw-build');
+ * const swBuild = require('sw-build');
  *
- * swCLI.generateSW({
+ * swBuild.generateSW({
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html']

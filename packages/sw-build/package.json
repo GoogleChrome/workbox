@@ -1,7 +1,7 @@
 {
   "name": "sw-build",
   "version": "0.0.8",
-  "description": "A CLI tool to generate a service worker and a file manifest making use of the sw-lib module.",
+  "description": "This module can be used to generate file manifest or service worke, that can be used with sw-lib.",
   "keywords": [
     "sw-fw",
     "service worker",
