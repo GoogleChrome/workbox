@@ -45,7 +45,7 @@
     })
     .catch((err) => {
       window.__testResult = {
-        error: err.message + ' ' + err.stack
+        error: JSON.stringify(err.stack)
       };
     });
   </script>
