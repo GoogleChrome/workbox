@@ -24,8 +24,9 @@ env:
   - PROJECT="sw-runtime-caching"
 
 install:
-  - npm install -g gulp-cli
+  - npm install -g gulp-cli lerna
   - npm install
+  - lerna bootstrap
   - cd "packages/${PROJECT}/"
   - npm install
   - cd ../../
