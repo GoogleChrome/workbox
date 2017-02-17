@@ -1,14 +1,9 @@
-const cliHelper = require('./helpers/cli-test-helper');
 const constants = require('../src/lib/constants');
 const filterFiles = require('../src/lib/utils/filter-files');
 
 require('chai').should();
 
 describe('src/lib/utils/filter-files.js', function() {
-  afterEach(function() {
-    cliHelper.endLogCapture();
-  });
-
   it('should filter out files above maximum size', function() {
     const goodFiles = [
       {
@@ -31,13 +26,7 @@ describe('src/lib/utils/filter-files.js', function() {
 
     const allFiles = goodFiles.concat(badFile);
 
-    cliHelper.startLogCapture();
     const manifestEntries = filterFiles(allFiles, []);
-
-    const captured = cliHelper.endLogCapture();
-    captured.consoleLogs.length.should.equal(0);
-    captured.consoleWarns.length.should.not.equal(0);
-    captured.consoleErrors.length.should.equal(0);
 
     manifestEntries.length.should.equal(goodFiles.length);
 

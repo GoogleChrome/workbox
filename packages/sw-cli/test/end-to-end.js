@@ -80,16 +80,13 @@ describe('Test Example Projects', function() {
       // Check the manifest is defined by the manifest JS.
       expect(fileManifestOutput).to.exist;
 
-      const swlibPkg = require(
-        path.join(__dirname, '..', 'node_modules', 'sw-lib', 'package.json'));
-
       // Check the files that we expect to be defined are.
       let expectedFiles = glob.sync(
         `${exampleProject}/**/*.{${FILE_EXTENSIONS.join(',')}}`, {
         ignore: [
           `${exampleProject}/${manifestName}`,
           `${exampleProject}/${swName}`,
-          `${exampleProject}/sw-lib.v${swlibPkg.version}.min.js`,
+          `${exampleProject}/sw-lib.*.min.js`,
         ],
       });
       expectedFiles = expectedFiles.map((file) => {
@@ -245,7 +242,7 @@ describe('Test Example Projects', function() {
     const manifestName = `${Date.now()}-manifest.js`;
     const swName = `${Date.now()}-sw.js`;
 
-    const SWCli = proxyquire('../build/cli/index', {
+    const SWCli = proxyquire('../build/index', {
       inquirer: {
         prompt: (questions) => {
           switch (questions[0].name) {

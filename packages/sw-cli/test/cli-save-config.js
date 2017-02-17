@@ -7,7 +7,7 @@ require('chai').should();
 
 describe('Ask to Save to Config File', function() {
   const globalStubs = [];
-  const CLI_PATH = '../build/cli/index.js';
+  const CLI_PATH = '../build/index.js';
 
   afterEach(function() {
     cliHelper.endLogCapture();

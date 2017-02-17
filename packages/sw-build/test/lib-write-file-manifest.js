@@ -1,16 +1,11 @@
 const proxyquire = require('proxyquire');
 
-const cliHelper = require('./helpers/cli-test-helper');
 const errors = require('../src/lib/errors.js');
 
 require('chai').should();
 
 describe('src/lib/utils/write-file-manifest.js', function() {
   const INJECTED_ERROR = new Error('Injected Error');
-
-  afterEach(function() {
-    cliHelper.endLogCapture();
-  });
 
   it('should handle bad manifest path', function() {
     const badInputs = [
@@ -78,7 +73,6 @@ describe('src/lib/utils/write-file-manifest.js', function() {
       },
     });
 
-    cliHelper.startLogCapture();
     return writeFileManifest('fake-path/manifest-name.js', [])
     .then(() => {
       throw new Error('Expected an error.');
@@ -102,7 +96,6 @@ describe('src/lib/utils/write-file-manifest.js', function() {
       },
     });
 
-    cliHelper.startLogCapture();
     return writeFileManifest('fake-path/manifest-name.js', [])
     .then(() => {
       throw new Error('Expected an error.');
@@ -129,7 +122,6 @@ describe('src/lib/utils/write-file-manifest.js', function() {
       },
     });
 
-    cliHelper.startLogCapture();
     return writeFileManifest('fake-path/manifest-name.js', [])
     .then(() => {
       throw new Error('Expected an error.');
@@ -161,7 +153,6 @@ describe('src/lib/utils/write-file-manifest.js', function() {
       },
     });
 
-    cliHelper.startLogCapture();
     return writeFileManifest('fake-path/manifest-name.js', [])
     .then(() => {
       throw new Error('Expected an error.');

@@ -4,14 +4,14 @@ const fs = require('fs');
 const template = require('lodash.template');
 
 const errors = require('./errors');
-const logHelper = require('./log-helper');
 
 module.exports = (swPath, manifestEntries, swlibPath, rootDirectory) => {
   try {
     mkdirp.sync(path.dirname(swPath));
   } catch (err) {
-    logHelper.error(errors['unable-to-make-sw-directory'], err);
-    return Promise.reject(err);
+    return Promise.reject(
+      new Error(`${errors['unable-to-make-sw-directory']}. '${err.message}'`)
+    );
   }
 
   const templatePath = path.join(
@@ -19,8 +19,9 @@ module.exports = (swPath, manifestEntries, swlibPath, rootDirectory) => {
   return new Promise((resolve, reject) => {
     fs.readFile(templatePath, 'utf8', (err, data) => {
       if (err) {
-        logHelper.error(errors['read-sw-template-failure'], err);
-        return reject(err);
+        return reject(
+          new Error(`${errors['read-sw-template-failure']}. '${err.message}'`)
+        );
       }
       resolve(data);
     });
@@ -34,16 +35,17 @@ module.exports = (swPath, manifestEntries, swlibPath, rootDirectory) => {
         swlibPath: relSwlibPath,
       });
     } catch (err) {
-      logHelper.error(errors['populating-sw-tmpl-failed'], err);
-      throw err;
+      throw new Error(
+        `${errors['populating-sw-tmpl-failed']}. '${err.message}'`);
     }
   })
   .then((populatedTemplate) => {
     return new Promise((resolve, reject) => {
       fs.writeFile(swPath, populatedTemplate, (err) => {
         if (err) {
-          logHelper.error(errors['sw-write-failure'], err);
-          return reject(err);
+          return reject(
+            new Error(`${errors['sw-write-failure']}. '${err.message}'`)
+          );
         }
 
         resolve();

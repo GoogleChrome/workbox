@@ -17,5 +17,5 @@
 **/
 'use strict';
 
-const CLI = require('../cli/index.js');
+const CLI = require('./index.js');
 new CLI().argv(process.argv.slice(2));

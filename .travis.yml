@@ -15,6 +15,7 @@ env:
   - PROJECT="sw-background-sync-queue"
   - PROJECT="sw-broadcast-cache-update"
   - PROJECT="sw-cache-expiration"
+  - PROJECT="sw-build"
   - PROJECT="sw-cli"
   - PROJECT="sw-lib"
   - PROJECT="sw-offline-google-analytics"

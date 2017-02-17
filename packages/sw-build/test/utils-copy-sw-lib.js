@@ -1,16 +1,11 @@
 const proxyquire = require('proxyquire');
 const path = require('path');
-const cliHelper = require('./helpers/cli-test-helper.js');
 const errors = require('../src/lib/errors.js');
 
 require('chai').should();
 
 describe('Copy SW Lib', function() {
   const INJECTED_ERROR = new Error('Injected Error');
-
-  afterEach(function() {
-    cliHelper.endLogCapture();
-  });
 
   it('should handle file stream error', function() {
     this.timeout(5 * 1000);
@@ -39,7 +34,6 @@ describe('Copy SW Lib', function() {
       },
     });
 
-    cliHelper.startLogCapture();
     return copySWLib('fake-path/')
     .then(() => {
       throw new Error('Expected an error to be throw');
