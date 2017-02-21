@@ -11,7 +11,7 @@ const testServer = require('../../../utils/test-server.js');
 
 require('chai').should();
 
-describe('Test Example Projects', function() {
+describe('End-to-End Tests', function() {
   let tmpDirectory;
   let globalDriverBrowser;
   let baseTestUrl;
@@ -51,7 +51,7 @@ describe('Test Example Projects', function() {
     });
   });
 
-  const performTest = (generateSWCb, {exampleProject, swName, manifestName}) => {
+  const performTest = (generateSWCb, {exampleProject, swName}) => {
     let fileManifestOutput;
     return generateSWCb()
     .then(() => {
@@ -84,7 +84,6 @@ describe('Test Example Projects', function() {
       let expectedFiles = glob.sync(
         `${exampleProject}/**/*.{${FILE_EXTENSIONS.join(',')}}`, {
         ignore: [
-          `${exampleProject}/${manifestName}`,
           `${exampleProject}/${swName}`,
           `${exampleProject}/sw-lib.*.min.js`,
         ],
@@ -146,11 +145,6 @@ describe('Test Example Projects', function() {
         importScripts: () => {
           // NOOP
         },
-      });
-      fileManifestOutput.forEach((manifestEntry) => {
-        if (manifestEntry.url === `/${manifestName}`) {
-          throw new Error('The manifest itself was not excluded from the generated file manifest.');
-        }
       });
     })
     .then(() => {
@@ -239,11 +233,22 @@ describe('Test Example Projects', function() {
 
     const relativeProjPath = path.relative(process.cwd(), tmpDirectory);
 
-    const manifestName = `${Date.now()}-manifest.js`;
     const swName = `${Date.now()}-sw.js`;
 
     const SWCli = proxyquire('../build/index', {
-      inquirer: {
+      './lib/questions/ask-root-of-web-app': () => {
+        return Promise.resolve(relativeProjPath);
+      },
+      './lib/questions/ask-sw-name': () => {
+        return Promise.resolve(swName);
+      },
+      './lib/questions/ask-save-config': () => {
+        return Promise.resolve(false);
+      },
+      './lib/questions/ask-extensions-to-cache': () => {
+        return Promise.resolve(FILE_EXTENSIONS);
+      },
+      /** inquirer: {
         prompt: (questions) => {
           switch (questions[0].name) {
             case 'rootDir':
@@ -253,10 +258,6 @@ describe('Test Example Projects', function() {
             case 'cacheExtensions':
               return Promise.resolve({
                 cacheExtensions: FILE_EXTENSIONS,
-              });
-            case 'fileManifestName':
-              return Promise.resolve({
-                fileManifestName: manifestName,
               });
             case 'serviceWorkerName':
               return Promise.resolve({
@@ -273,7 +274,7 @@ describe('Test Example Projects', function() {
               return Promise.reject();
           }
         },
-      },
+      },**/
     });
 
     const cli = new SWCli();
@@ -282,7 +283,6 @@ describe('Test Example Projects', function() {
     }, {
       exampleProject: tmpDirectory,
       swName,
-      manifestName,
     });
   });
 });

@@ -8,7 +8,7 @@ require('chai').should();
 
 describe('Ask for File Extensions to Cache', function() {
   const globalStubs = [];
-  const CLI_PATH = '../build/index.js';
+  const Q_PATH = '../src/lib/questions/ask-extensions-to-cache.js';
 
   afterEach(function() {
     cliHelper.endLogCapture();
@@ -24,8 +24,8 @@ describe('Ask for File Extensions to Cache', function() {
     'injected-dir-1',
   ];
 
-  const checkError = (cli, expectedErrorCode, checkInjectedError) => {
-    return cli._getFileExtensionsToCache(INITIAL_ROOT_DIR)
+  const checkError = (askForExtensionsToCache, expectedErrorCode, checkInjectedError) => {
+    return askForExtensionsToCache(INITIAL_ROOT_DIR)
     .then(() => {
       throw new Error('Expected error to be thrown.');
     }, (err) => {
@@ -65,13 +65,12 @@ describe('Ask for File Extensions to Cache', function() {
       },
     };
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForExtensionsToCache = proxyquire(Q_PATH, {
       fs: fakeFS,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli, 'unable-to-get-file-extensions');
+    return checkError(askForExtensionsToCache, 'unable-to-get-file-extensions');
   });
 
   it('should handle an error from \'fs.readdir()\' during scan', function() {
@@ -100,13 +99,12 @@ describe('Ask for File Extensions to Cache', function() {
       },
     };
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForExtensionsToCache = proxyquire(Q_PATH, {
       fs: fakeFS,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli, 'unable-to-get-file-extensions');
+    return checkError(askForExtensionsToCache, 'unable-to-get-file-extensions');
   });
 
   it('should handle an error from \'fs.statSync()\'', function() {
@@ -123,13 +121,12 @@ describe('Ask for File Extensions to Cache', function() {
       },
     };
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForExtensionsToCache = proxyquire(Q_PATH, {
       fs: fakeFS,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli, 'unable-to-get-file-extensions');
+    return checkError(askForExtensionsToCache, 'unable-to-get-file-extensions');
   });
 
   it('should handle no file extensions being available', function() {
@@ -151,13 +148,12 @@ describe('Ask for File Extensions to Cache', function() {
       },
     };
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForExtensionsToCache = proxyquire(Q_PATH, {
       'fs': fakeFS,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli, 'no-file-extensions-found', false);
+    return checkError(askForExtensionsToCache, 'no-file-extensions-found', false);
   });
 
   it('should handle an error from \'inquirer\'', function() {
@@ -193,14 +189,13 @@ describe('Ask for File Extensions to Cache', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForExtensionsToCache = proxyquire(Q_PATH, {
       'fs': fakeFS,
       'inquirer': inquirer,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli, 'unable-to-get-file-extensions');
+    return checkError(askForExtensionsToCache, 'unable-to-get-file-extensions');
   });
 
   it('should hanlde no files extensions from \'inquirer\'', function() {
@@ -231,14 +226,13 @@ describe('Ask for File Extensions to Cache', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForExtensionsToCache = proxyquire(Q_PATH, {
       'fs': fakeFS,
       'inquirer': inquirer,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli, 'no-file-extensions-selected', false);
+    return checkError(askForExtensionsToCache, 'no-file-extensions-selected', false);
   });
 
   it('should return files extensions from \'inquirer\'', function() {
@@ -276,14 +270,13 @@ describe('Ask for File Extensions to Cache', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForExtensionsToCache = proxyquire(Q_PATH, {
       'fs': fakeFS,
       'inquirer': inquirer,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return cli._getFileExtensionsToCache(INITIAL_ROOT_DIR)
+    return askForExtensionsToCache(INITIAL_ROOT_DIR)
     .then((fileExtensions) => {
       const captured = cliHelper.endLogCapture();
       captured.consoleLogs.length.should.equal(0);

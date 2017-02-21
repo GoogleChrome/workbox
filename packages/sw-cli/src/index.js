@@ -18,18 +18,19 @@
 
 const fs = require('fs');
 const path = require('path');
-const inquirer = require('inquirer');
 const minimist = require('minimist');
 const updateNotifier = require('update-notifier');
 const swBuild = require('sw-build');
 
 const logHelper = require('./lib/log-helper');
-const errors = require('./lib/errors');
 const pkg = require('../package.json');
-const constants = require('./lib/constants.js');
 const generateGlobPattern = require('./lib/generate-glob-pattern');
 
-const DEBUG = false;
+const askForRootOfWebApp = require('./lib/questions/ask-root-of-web-app');
+const askForServiceWorkerName = require('./lib/questions/ask-sw-name');
+const askSaveConfigFile = require('./lib/questions/ask-save-config');
+const askForExtensionsToCache =
+  require('./lib/questions/ask-extensions-to-cache');
 
 /**
  * This class is a wrapper to make test easier. This is used by
@@ -135,25 +136,20 @@ class SWCli {
   _generateSW() {
     let rootDirPath;
     let fileExtentionsToCache;
-    let fileManifestName;
     let serviceWorkerName;
 
-    return this._getRootOfWebApp()
+    return askForRootOfWebApp()
     .then((rDirectory) => {
       rootDirPath = rDirectory;
-      return this._getFileExtensionsToCache(rootDirPath);
+      return askForExtensionsToCache(rootDirPath);
     })
     .then((extensionsToCache) => {
       fileExtentionsToCache = extensionsToCache;
-      return this._getFileManifestName();
-    })
-    .then((manifestName) => {
-      fileManifestName = manifestName;
-      return this._getServiceWorkerName();
+      return askForServiceWorkerName();
     })
     .then((swName) => {
       serviceWorkerName = swName;
-      return this._saveConfigFile();
+      return askSaveConfigFile();
     })
     .then((sConfig) => {
       const globPattern = generateGlobPattern(
@@ -165,268 +161,10 @@ class SWCli {
           globPattern,
         ],
         globIgnores: [
-          path.join(rootDirPath, fileManifestName),
           path.join(rootDirPath, serviceWorkerName),
         ],
         serviceWorkerName,
       });
-    });
-  }
-
-  /**
-   * This method requests the root directory of the web app.
-   * The user can opt to type in the directory OR select = require(a list of
-   * directories in the current path.
-   * @return {Promise<string>} Promise the resolves with the name of the root
-   * directory if given.
-   */
-  _getRootOfWebApp() {
-    const manualEntryChoice = 'Manually Enter Path';
-    const currentDirectory = process.cwd();
-
-    return new Promise((resolve, reject) => {
-      fs.readdir(currentDirectory, (err, directoryContents) => {
-        if (err) {
-          return reject(err);
-        }
-
-        resolve(directoryContents);
-      });
-    })
-    .then((directoryContents) => {
-      return directoryContents.filter((directoryContent) => {
-        return fs.statSync(directoryContent).isDirectory();
-      });
-    })
-    .then((subdirectories) => {
-      return subdirectories.filter((subdirectory) => {
-        return !constants.blacklistDirectoryNames.includes(subdirectory);
-      });
-    })
-    .then((subdirectories) => {
-      const choices = subdirectories.concat([
-        new inquirer.Separator(),
-        manualEntryChoice,
-      ]);
-      return inquirer.prompt([
-        {
-          name: 'rootDir',
-          message: 'What is the root of your web app?',
-          type: 'list',
-          choices: choices,
-        },
-        {
-          name: 'rootDir',
-          message: 'Please manually enter the root of your web app?',
-          when: (answers) => {
-            return answers.rootDir === manualEntryChoice;
-          },
-        },
-      ]);
-    })
-    .then((answers) => {
-      return path.join(currentDirectory, answers.rootDir);
-    })
-    .catch((err) => {
-      logHelper.error(
-        errors['unable-to-get-rootdir'],
-        err
-      );
-      throw err;
-    });
-  }
-
-  /**
-   * @private
-   * @param {String} rootDirectory
-   * @return {Promise<Array<String>>}
-   */
-  _getFileExtensionsToCache(rootDirectory) {
-    return this._getFileContents(rootDirectory)
-    .then((files) => {
-      return this._getFileExtensions(files);
-    })
-    .then((fileExtensions) => {
-      if (fileExtensions.length === 0) {
-        throw new Error(errors['no-file-extensions-found']);
-      }
-
-      return inquirer.prompt([
-        {
-          name: 'cacheExtensions',
-          message: 'Which file types would you like to cache?',
-          type: 'checkbox',
-          choices: fileExtensions,
-          default: fileExtensions,
-        },
-      ]);
-    })
-    .then((results) => {
-      if (results.cacheExtensions.length === 0) {
-        throw new Error(errors['no-file-extensions-selected']);
-      }
-
-      return results.cacheExtensions;
-    })
-    .catch((err) => {
-      logHelper.error(
-        errors['unable-to-get-file-extensions'],
-        err
-      );
-      throw err;
-    });
-  }
-
-  /**
-   * @private
-   * @param {String} directory
-   * @return {Promise<String>} Files in the directory
-   */
-  _getFileContents(directory) {
-    return new Promise((resolve, reject) => {
-      fs.readdir(directory, (err, directoryContents) => {
-        if (err) {
-          return reject(err);
-        }
-
-        resolve(directoryContents);
-      });
-    })
-    .then((directoryContents) => {
-      const promises = directoryContents.map((directoryContent) => {
-        const fullPath = path.join(directory, directoryContent);
-        if (fs.statSync(fullPath).isDirectory()) {
-          if (!constants.blacklistDirectoryNames.includes(directoryContent)) {
-            return this._getFileContents(fullPath);
-          } else {
-            return [];
-          }
-        } else {
-          return fullPath;
-        }
-      });
-
-      return Promise.all(promises);
-    })
-    .then((fileResults) => {
-      return fileResults.reduce((collapsedFiles, fileResult) => {
-        return collapsedFiles.concat(fileResult);
-      }, []);
-    });
-  }
-
-  /**
-   * @private
-   * @param {Array<String>} files In directory which should indicate the
-   * available extensions to offer the user.
-   * @return {Promise<Array<String>>}
-   */
-  _getFileExtensions(files) {
-    const fileExtensions = new Set();
-    files.forEach((file) => {
-      const extension = path.extname(file);
-      if (extension && extension.length > 0) {
-        fileExtensions.add(extension);
-      } else if (DEBUG) {
-        logHelper.warn(
-          errors['no-extension'],
-          file
-        );
-      }
-    });
-
-    // Strip the '.' character if it's the first character.
-    return [...fileExtensions].map(
-      (fileExtension) => fileExtension.replace(/^\./, ''));
-  }
-
-  /**
-   * @private
-   * @return {Promise<String>}
-   */
-  _getFileManifestName() {
-    return inquirer.prompt([
-      {
-        name: 'fileManifestName',
-        message: 'What should we name the file manifest?',
-        type: 'input',
-        default: 'precache-manifest.js',
-      },
-    ])
-    .then((results) => {
-      const manifestName = results.fileManifestName.trim();
-      if (manifestName.length === 0) {
-        logHelper.error(
-          errors['invalid-file-manifest-name']
-        );
-        throw new Error(errors['invalid-file-manifest-name']);
-      }
-
-      return manifestName;
-    })
-    .catch((err) => {
-      logHelper.error(
-        errors['unable-to-get-file-manifest-name'],
-        err
-      );
-      throw err;
-    });
-  }
-
-  /**
-   * @private
-   * @return {Promise<String>}
-   */
-  _getServiceWorkerName() {
-    return inquirer.prompt([
-      {
-        name: 'serviceWorkerName',
-        message: 'What should we name your service worker file?',
-        type: 'input',
-        default: 'sw.js',
-      },
-    ])
-    .then((results) => {
-      const serviceWorkerName = results.serviceWorkerName.trim();
-      if (serviceWorkerName.length === 0) {
-        logHelper.error(
-          errors['invalid-sw-name']
-        );
-        throw new Error(errors['invalid-sw-name']);
-      }
-
-      return serviceWorkerName;
-    })
-    .catch((err) => {
-      logHelper.error(
-        errors['unable-to-get-sw-name'],
-        err
-      );
-      throw err;
-    });
-  }
-
-  /**
-   * @private
-   * @return {Promise<boolean>}
-   */
-  _saveConfigFile() {
-    return inquirer.prompt([
-      {
-        name: 'saveConfig',
-        message: 'Last Question - Would you like to save these settings to ' +
-          'a config file?',
-        type: 'confirm',
-        default: true,
-      },
-    ])
-    .then((results) => results.saveConfig)
-    .catch((err) => {
-      logHelper.error(
-        errors['unable-to-get-save-config'],
-        err
-      );
-      throw err;
     });
   }
 }

@@ -7,7 +7,7 @@ require('chai').should();
 
 describe('Ask for Service Worker Name', function() {
   const globalStubs = [];
-  const CLI_PATH = '../build/index.js';
+  const Q_PATH = '../src/lib/questions/ask-sw-name.js';
 
   afterEach(function() {
     cliHelper.endLogCapture();
@@ -18,8 +18,8 @@ describe('Ask for Service Worker Name', function() {
 
   const INJECTED_ERROR = new Error('Injected Error');
 
-  const checkError = (cli, expectedErrorCode, checkInjectedError) => {
-    return cli._getServiceWorkerName()
+  const checkError = (askForServiceWorkerName, expectedErrorCode, checkInjectedError) => {
+    return askForServiceWorkerName()
     .then(() => {
       throw new Error('Expected error to be thrown.');
     }, (err) => {
@@ -60,13 +60,12 @@ describe('Ask for Service Worker Name', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForServiceWorkerName = proxyquire(Q_PATH, {
       'inquirer': inquirer,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli, 'unable-to-get-sw-name');
+    return checkError(askForServiceWorkerName, 'unable-to-get-sw-name');
   });
 
   it('should handle empty filename', function() {
@@ -79,13 +78,12 @@ describe('Ask for Service Worker Name', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForServiceWorkerName = proxyquire(Q_PATH, {
       'inquirer': inquirer,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli, 'invalid-sw-name', false);
+    return checkError(askForServiceWorkerName, 'invalid-sw-name', false);
   });
 
   it('should trim filename', function() {
@@ -99,12 +97,11 @@ describe('Ask for Service Worker Name', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForServiceWorkerName = proxyquire(Q_PATH, {
       'inquirer': inquirer,
     });
 
-    const cli = new SWCli();
-    return cli._getServiceWorkerName()
+    return askForServiceWorkerName()
     .then((filename) => {
       filename.should.equal(EXAMPLE_FILENAME);
     });
@@ -121,12 +118,11 @@ describe('Ask for Service Worker Name', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForServiceWorkerName = proxyquire(Q_PATH, {
       'inquirer': inquirer,
     });
 
-    const cli = new SWCli();
-    return cli._getServiceWorkerName()
+    return askForServiceWorkerName()
     .then((filename) => {
       filename.should.equal(EXAMPLE_FILENAME);
     });

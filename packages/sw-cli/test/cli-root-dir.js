@@ -8,7 +8,7 @@ require('chai').should();
 
 describe('Ask for Root Directory', function() {
   const globalStubs = [];
-  const CLI_PATH = '../build/index.js';
+  const Q_PATH = '../src/lib/questions/ask-root-of-web-app.js';
 
   afterEach(function() {
     cliHelper.endLogCapture();
@@ -23,8 +23,8 @@ describe('Ask for Root Directory', function() {
     'injected-dir-1',
   ];
 
-  const checkError = (cli) => {
-    return cli._getRootOfWebApp()
+  const checkError = (askForRootOfWebApp) => {
+    return askForRootOfWebApp()
     .then(() => {
       throw new Error('Expected error to be thrown.');
     }, (err) => {
@@ -58,13 +58,12 @@ describe('Ask for Root Directory', function() {
       },
     };
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForRootOfWebApp = proxyquire(Q_PATH, {
       fs: fakeFS,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli);
+    return checkError(askForRootOfWebApp);
   });
 
   it('should handle an error from \'fs.statSync()\'', function() {
@@ -77,13 +76,12 @@ describe('Ask for Root Directory', function() {
       },
     };
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForRootOfWebApp = proxyquire(Q_PATH, {
       fs: fakeFS,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli);
+    return checkError(askForRootOfWebApp);
   });
 
   it('should handle an error from \'inquirer\'', function() {
@@ -107,14 +105,13 @@ describe('Ask for Root Directory', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForRootOfWebApp = proxyquire(Q_PATH, {
       'fs': fakeFS,
       'inquirer': inquirer,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli);
+    return checkError(askForRootOfWebApp);
   });
 
   it('should return absolute path from \'inquirer\'', function() {
@@ -152,14 +149,13 @@ describe('Ask for Root Directory', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askForRootOfWebApp = proxyquire(Q_PATH, {
       'fs': fakeFS,
       'inquirer': inquirer,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return cli._getRootOfWebApp()
+    return askForRootOfWebApp()
     .then((rootDir) => {
       const captured = cliHelper.endLogCapture();
       captured.consoleLogs.length.should.equal(0);
