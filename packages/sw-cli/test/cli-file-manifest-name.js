@@ -1,9 +1,11 @@
+/**
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 const cliHelper = require('./helpers/cli-test-helper.js');
 const errors = require('../src/lib/errors.js');
 
 require('chai').should();
+
 
 describe('Ask for File Manifest Name', function() {
   const globalStubs = [];
@@ -132,3 +134,4 @@ describe('Ask for File Manifest Name', function() {
     });
   });
 });
+**/

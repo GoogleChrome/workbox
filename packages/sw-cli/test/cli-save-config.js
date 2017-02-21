@@ -7,7 +7,7 @@ require('chai').should();
 
 describe('Ask to Save to Config File', function() {
   const globalStubs = [];
-  const CLI_PATH = '../build/index.js';
+  const Q_PATH = '../src/lib/questions/ask-save-config.js';
 
   afterEach(function() {
     cliHelper.endLogCapture();
@@ -18,8 +18,8 @@ describe('Ask to Save to Config File', function() {
 
   const INJECTED_ERROR = new Error('Injected Error');
 
-  const checkError = (cli, expectedErrorCode, checkInjectedError) => {
-    return cli._saveConfigFile()
+  const checkError = (askSaveConfigFile, expectedErrorCode, checkInjectedError) => {
+    return askSaveConfigFile()
     .then(() => {
       throw new Error('Expected error to be thrown.');
     }, (err) => {
@@ -60,13 +60,12 @@ describe('Ask to Save to Config File', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askSaveConfigFile = proxyquire(Q_PATH, {
       'inquirer': inquirer,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli, 'unable-to-get-save-config');
+    return checkError(askSaveConfigFile, 'unable-to-get-save-config');
   });
 
   it('should return correct value', function() {
@@ -79,13 +78,12 @@ describe('Ask to Save to Config File', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askSaveConfigFile = proxyquire(Q_PATH, {
       'inquirer': inquirer,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return cli._saveConfigFile()
+    return askSaveConfigFile()
     .then((save) => {
       (save).should.equal(true);
     });
