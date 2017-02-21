@@ -13,12 +13,12 @@
  limitations under the License.
 */
 
-const fsE = require('fs-extra');
+const fsExtra = require('fs-extra');
 const path = require('path');
 
 const copyPath = (from, to) => {
   return new Promise((resolve, reject) => {
-    fsE.copy(from, to, (err) => {
+    fsExtra.copy(from, to, (err) => {
       if (err) {
         return reject(err);
       }

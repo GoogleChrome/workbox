@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const fse = require('fs-extra');
+const fsExtra = require('fs-extra');
 const seleniumAssistant = require('selenium-assistant');
 
 const testServer = require('../../../utils/test-server.js');
@@ -30,7 +30,7 @@ describe('Routing Example', function() {
       path.join(__dirname, 'tmp-')
     );
 
-    fse.copySync(
+    fsExtra.copySync(
       path.join(__dirname, 'routing-demo'),
       tmpDirectory);
 
@@ -41,7 +41,7 @@ describe('Routing Example', function() {
   });
 
   after(function() {
-    fse.removeSync(tmpDirectory);
+    fsExtra.removeSync(tmpDirectory);
 
     return testServer.stop();
   });
@@ -77,7 +77,7 @@ describe('Routing Example', function() {
         throw new Error('Unable to load page: ' + testResult.error);
       }
 
-      fse.removeSync(path.join(tmpDirectory, 'example.html'));
+      fsExtra.removeSync(path.join(tmpDirectory, 'example.html'));
     })
     .then(() => {
       return globalDriver.get(baseTestUrl + `/${relativePath}/example.html`);
