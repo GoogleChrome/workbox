@@ -5,80 +5,45 @@ const vm = require('vm');
 const glob = require('glob');
 const fsExtra = require('fs-extra');
 const expect = require('chai').expect;
-const url = require('url');
-const seleniumAssistant = require('selenium-assistant');
-const testServer = require('../../../utils/test-server.js');
 
 require('chai').should();
 
 describe('Generate Manifest End-to-End Tests', function() {
   let tmpDirectory;
-  let globalDriverBrowser;
-  let baseTestUrl;
   // NOTE: No JPG
   const FILE_EXTENSIONS = ['html', 'css', 'js', 'png'];
-
-  // Kill the web server once all tests are complete.
-  after(function() {
-    return testServer.stop();
-  });
 
   beforeEach(() => {
     tmpDirectory = fs.mkdtempSync(
       path.join(__dirname, 'tmp-')
     );
-    return testServer.start(tmpDirectory)
-    .then((portNumber) => {
-      baseTestUrl = `http://localhost:${portNumber}`;
-    });
   });
 
   afterEach(function() {
     this.timeout(10 * 1000);
 
     fsExtra.removeSync(tmpDirectory);
-
-    return seleniumAssistant.stopSaucelabsConnect()
-    .then(() => {
-      if (!globalDriverBrowser) {
-        return;
-      }
-
-      return seleniumAssistant.killWebDriver(globalDriverBrowser)
-      .then(() => {
-        globalDriverBrowser = null;
-      });
-    });
   });
 
   const performTest = (generateManifestCb, {exampleProject, manifestName}) => {
     let fileManifestOutput;
     return generateManifestCb()
     .then(() => {
-      const injectedSelf = {
-        goog: {
-          swlib: {
-            cacheRevisionedAssets: (fileManifest) => {
-              fileManifestOutput = fileManifest;
-            },
-          },
-        },
-      };
+      const injectedSelf = {};
       const manifestContent =
         fs.readFileSync(path.join(exampleProject, manifestName));
-      // To smoke test the service worker is valid JavaScript we can run it
-      // in Node's JavaScript parsed. `runInNewContext` comes without
+      // To smoke test the manifest generation we can run it
+      // in Node's JavaScript parser. `runInNewContext` comes without
       // any of the usual APIs (i.e. no require API, no console API, nothing)
-      // so we inject a `self` API to emulate the service worker environment.
+      // so we inject a `self` object to emulate the service worker environment.
       vm.runInNewContext(manifestContent, {
         self: injectedSelf,
-        importScripts: () => {
-          // NOOP
-        },
       });
 
       // Check the manifest is defined by the manifest JS.
-      expect(fileManifestOutput).to.exist;
+      expect(injectedSelf.__file_manifest).to.exist;
+
+      fileManifestOutput = injectedSelf.__file_manifest;
 
       // Check the files that we expect to be defined are.
       let expectedFiles = glob.sync(
@@ -125,106 +90,24 @@ describe('Generate Manifest End-to-End Tests', function() {
       return generateManifestCb();
     })
     .then(() => {
-      const injectedSelf = {
-        goog: {
-          swlib: {
-            cacheRevisionedAssets: (fileManifest) => {
-              fileManifestOutput = fileManifest;
-            },
-          },
-        },
-      };
+      // Run a second time and ensure the file manifest itself is excluded.
+      const injectedSelf = {};
       const manifestContent =
         fs.readFileSync(path.join(exampleProject, manifestName));
-      // To smoke test the service worker is valid JavaScript we can run it
-      // in Node's JavaScript parsed. `runInNewContext` comes without
-      // any of the usual APIs (i.e. no require API, no console API, nothing)
-      // so we inject a `self` API to emulate the service worker environment.
+        // To smoke test the manifest generation we can run it
+        // in Node's JavaScript parser. `runInNewContext` comes without
+        // any of the usual APIs (i.e. no require API, no console API, nothing)
+        // so we inject a `self` object to emulate the service worker environment.
       vm.runInNewContext(manifestContent, {
         self: injectedSelf,
-        importScripts: () => {
-          // NOOP
-        },
       });
-    })
-    .then(() => {
-      if (process.platform === 'win32') {
-        if (!process.env['SAUCELABS_USERNAME'] ||
-          !process.env['SAUCELABS_ACCESS_KEY']) {
-          console.warn('Skipping SauceLabs tests due to no credentials in environment');
-          return;
-        }
 
-        const SAUCELABS_USERNAME = process.env['SAUCELABS_USERNAME'];
-        const SAUCELABS_ACCESS_KEY = process.env['SAUCELABS_ACCESS_KEY'];
-        seleniumAssistant.setSaucelabsDetails(SAUCELABS_USERNAME, SAUCELABS_ACCESS_KEY);
-        return seleniumAssistant.startSaucelabsConnect()
-        .then(() => {
-          return seleniumAssistant.getSauceLabsBrowser('chrome', 'latest');
-        });
-      } else {
-        return seleniumAssistant.getLocalBrowser('chrome', 'stable');
-      }
-    })
-    .then((assistantBrowser) => {
-      if (!assistantBrowser) {
-        return;
-      }
-
-      return assistantBrowser.getSeleniumDriver()
-      .then((browserDriver) => {
-        globalDriverBrowser = browserDriver;
-        return browserDriver.get(`${baseTestUrl}/index.html?sw=${manifestName}`);
-      })
-      .then(() => {
-        return globalDriverBrowser.wait(() => {
-          return globalDriverBrowser.executeScript(() => {
-            return typeof window.__testresult !== 'undefined';
-          });
-        });
-      })
-      .then(() => {
-        return globalDriverBrowser.executeScript(() => {
-          return window.__testresult;
-        });
-      })
-      .then((testResult) => {
-        if (!testResult.entries) {
-          throw new Error('Bad response: ' + JSON.stringify(testResult));
-        }
-
-        const entries = testResult.entries;
-        entries.length.should.equal(fileManifestOutput.length);
-
-        const pathnames = entries.map((entry) => {
-          return url.parse(entry).pathname;
-        });
-
-        fileManifestOutput.forEach((details) => {
-          try {
-            fs.statSync(path.join(exampleProject, details.url));
-          } catch (err) {
-            throw new Error(`The path '${details.url}' from the manifest doesn't seem valid.`);
-          }
-
-          const expectedFileIndex = pathnames.indexOf(details.url);
-          if (expectedFileIndex === -1) {
-            console.log(pathnames);
-            throw new Error(`Unexpected file in manifest: '${details.url}'`);
-          }
-
-          pathnames.splice(expectedFileIndex, 1);
-
-          (typeof details.revision).should.equal('string');
-          details.revision.length.should.be.gt(0);
-        });
-
-        pathnames.length.should.equal(0);
-      });
+      const secondFileManifest = injectedSelf.__file_manifest;
+      secondFileManifest.length.should.equal(fileManifestOutput.length);
     });
   };
 
-  it('should be able to generate a service for example-1 with CLI', function() {
+  it('should be able to generate a file manifest for example-1 with CLI', function() {
     this.timeout(60 * 1000);
 
     fsExtra.copySync(
