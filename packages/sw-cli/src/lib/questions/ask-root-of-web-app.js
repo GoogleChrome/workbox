@@ -11,7 +11,7 @@ const errors = require('../errors');
  * This method requests the root directory of the web app.
  * The user can opt to type in the directory OR select = require(a list of
  * directories in the current path.
- * @return {Promise<string>} Promise the resolves with the name of the root
+ * @return {Promise<string>} Promise that resolves with the name of the root
  * directory if given.
  */
 module.exports = () => {
