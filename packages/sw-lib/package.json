@@ -13,6 +13,9 @@
     "src",
     "build"
   ],
+  "scripts": {
+    "prepublish": "gulp build --project sw-lib"
+  },
   "main": "build/sw-lib.min.js",
   "module": "build/sw-lib.min.mjs",
   "jsnext:main": "build/sw-lib.min.mjs",

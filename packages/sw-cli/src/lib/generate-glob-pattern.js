@@ -1,6 +1,6 @@
 const path = require('path');
 
-const errors = require('../errors');
+const errors = require('./errors');
 
 module.exports = (relativePath, fileExtentionsToCache) => {
   if (!fileExtentionsToCache || !(fileExtentionsToCache instanceof Array) ||

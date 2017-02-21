@@ -15,6 +15,7 @@ env:
   - PROJECT="sw-background-sync-queue"
   - PROJECT="sw-broadcast-cache-update"
   - PROJECT="sw-cache-expiration"
+  - PROJECT="sw-build"
   - PROJECT="sw-cli"
   - PROJECT="sw-lib"
   - PROJECT="sw-offline-google-analytics"
@@ -23,11 +24,9 @@ env:
   - PROJECT="sw-runtime-caching"
 
 install:
-  - npm install -g gulp-cli
+  - npm install -g gulp-cli lerna
   - npm install
-  - cd "packages/${PROJECT}/"
-  - npm install
-  - cd ../../
+  - lerna bootstrap --scope "${PROJECT}" --include-filtered-dependencies
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
@@ -36,6 +35,5 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script:
-  - gulp lint --project "${PROJECT}"
   # Building is handled in gulp test.
   - gulp test --project "${PROJECT}"

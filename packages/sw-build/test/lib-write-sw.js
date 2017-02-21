@@ -1,5 +1,4 @@
 const proxyquire = require('proxyquire');
-const cliHelper = require('./helpers/cli-test-helper.js');
 const errors = require('../src/lib/errors.js');
 
 require('chai').should();
@@ -9,38 +8,10 @@ describe('lib/write-sw.js', function() {
   const globalStubs = [];
 
   afterEach(function() {
-    cliHelper.endLogCapture();
     globalStubs.forEach((stub) => {
       stub.restore();
     });
   });
-
-  const checkErrors = (caughtError, errorCode, checkInjectedError) => {
-    if (!caughtError) {
-      throw new Error('Expected test to throw an error.');
-    }
-
-    const captured = cliHelper.endLogCapture();
-    captured.consoleLogs.length.should.equal(0);
-    captured.consoleWarns.length.should.equal(0);
-    captured.consoleErrors.length.should.not.equal(0);
-
-    let foundErrorMsg = false;
-    let foundInjectedErrorMsg = false;
-    captured.consoleErrors.forEach((errLog) => {
-      if (errLog.indexOf(errors[errorCode]) !== -1) {
-        foundErrorMsg = true;
-      }
-      if (errLog.indexOf(INJECTED_ERROR.message) !== -1) {
-        foundInjectedErrorMsg = true;
-      }
-    });
-    foundErrorMsg.should.equal(true);
-    if (typeof checkInjectedError === 'undefined' ||
-      checkInjectedError === true) {
-      foundInjectedErrorMsg.should.equal(true);
-    }
-  };
 
   it('should handle failing mkdirp.sync', function() {
     const writeSw = proxyquire('../src/lib/write-sw', {
@@ -51,7 +22,6 @@ describe('lib/write-sw.js', function() {
       },
     });
 
-    cliHelper.startLogCapture();
     return writeSw(
       'fake-path/sw.js',
       [
@@ -62,8 +32,13 @@ describe('lib/write-sw.js', function() {
       ],
       'fake-path/sw-lib.min.v0.0.0.js',
       'fake-path/')
+    .then(() => {
+      throw new Error('Expected error to be thrown');
+    })
     .catch((caughtError) => {
-      checkErrors(caughtError, 'unable-to-make-sw-directory');
+      if (caughtError.message.indexOf(errors['unable-to-make-sw-directory']) !== 0) {
+        throw new Error('Unexpected error thrown: ' + caughtError.message);
+      }
     });
   });
 
@@ -81,7 +56,6 @@ describe('lib/write-sw.js', function() {
       },
     });
 
-    cliHelper.startLogCapture();
     return writeSw(
       'fake-path/sw.js',
       [
@@ -92,8 +66,13 @@ describe('lib/write-sw.js', function() {
       ],
       'fake-path/sw-lib.min.js',
       'fake-path/')
+    .then(() => {
+      throw new Error('Expected error to be thrown');
+    })
     .catch((caughtError) => {
-      checkErrors(caughtError, 'read-sw-template-failure');
+      if (caughtError.message.indexOf(errors['read-sw-template-failure']) !== 0) {
+        throw new Error('Unexpected error thrown: ' + caughtError.message);
+      }
     });
   });
 
@@ -114,7 +93,6 @@ describe('lib/write-sw.js', function() {
       },
     });
 
-    cliHelper.startLogCapture();
     return writeSw(
       'fake-path/sw.js',
       [
@@ -125,8 +103,13 @@ describe('lib/write-sw.js', function() {
       ],
       'fake-path/sw-lib.min.js',
       'fake-path/')
+    .then(() => {
+      throw new Error('Expected error to be thrown');
+    })
     .catch((caughtError) => {
-      checkErrors(caughtError, 'populating-sw-tmpl-failed');
+      if (caughtError.message.indexOf(errors['populating-sw-tmpl-failed']) !== 0) {
+        throw new Error('Unexpected error thrown: ' + caughtError.message);
+      }
     });
   });
 
@@ -152,7 +135,6 @@ describe('lib/write-sw.js', function() {
       },
     });
 
-    cliHelper.startLogCapture();
     return writeSw(
       'fake-path/sw.js',
       [
@@ -163,8 +145,13 @@ describe('lib/write-sw.js', function() {
       ],
       'fake-path/sw-lib.min.js',
       'fake-path/')
+    .then(() => {
+      throw new Error('Expected error to be thrown');
+    })
     .catch((caughtError) => {
-      checkErrors(caughtError, 'sw-write-failure');
+      if (caughtError.message.indexOf(errors['sw-write-failure']) !== 0) {
+        throw new Error('Unexpected error thrown: ' + caughtError.message);
+      }
     });
   });
 });

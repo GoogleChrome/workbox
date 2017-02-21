@@ -4,9 +4,9 @@ const errors = require('./errors');
 
 /**
  * @example <caption>Generate a service worker for a project.</caption>
- * const swCLI = require('sw-cli');
+ * const swBuild = require('sw-build');
  *
- * swCLI.generateFileManifest({
+ * swBuild.generateFileManifest({
  *   dest: './build/manifest.js'
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
@@ -31,7 +31,7 @@ const errors = require('./errors');
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
- * @memberof module:sw-cli
+ * @memberof module:sw-build
  */
 const generateFileManifest = (input) => {
   if (!input || typeof input !== 'object' || input instanceof Array) {

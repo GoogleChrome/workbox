@@ -1,15 +1,10 @@
 const proxyquire = require('proxyquire');
-const cliHelper = require('./helpers/cli-test-helper.js');
 const errors = require('../src/lib/errors.js');
 
 require('chai').should();
 
 describe('src/lib/utils/get-file-details.js', function() {
   const INJECTED_ERROR = new Error('Injected Error');
-
-  afterEach(function() {
-    cliHelper.endLogCapture();
-  });
 
   it('should handle glob sync error', function() {
     const getFileDetails = proxyquire('../src/lib/utils/get-file-details', {
@@ -20,7 +15,6 @@ describe('src/lib/utils/get-file-details.js', function() {
       },
     });
 
-    cliHelper.startLogCapture();
     let caughtError;
     try {
       getFileDetails('.', 'fake/glob/pattern/**/*');

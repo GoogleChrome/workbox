@@ -7,7 +7,9 @@ only_commits:
 install:
   - ps: Install-Product node Stable
   - npm install
-  - npm install -g gulp
+  - npm install -g gulp lerna
+  - gulp build --project sw-build
+  - lerna bootstrap
   - cd packages/sw-cli/
   - npm install
   - cd ..

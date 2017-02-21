@@ -7,9 +7,9 @@ const errors = require('./errors');
 
 /**
  * @example <caption>Generate a service worker for a project.</caption>
- * const swCLI = require('sw-cli');
+ * const swBuild = require('sw-build');
  *
- * swCLI.generateSW({
+ * swBuild.generateSW({
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html']
@@ -34,7 +34,7 @@ const errors = require('./errors');
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
- * @memberof module:sw-cli
+ * @memberof module:sw-build
  */
 const generateSW = function(input) {
   if (!input || typeof input !== 'object' || input instanceof Array) {

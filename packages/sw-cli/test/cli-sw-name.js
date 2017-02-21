@@ -7,7 +7,7 @@ require('chai').should();
 
 describe('Ask for Service Worker Name', function() {
   const globalStubs = [];
-  const CLI_PATH = '../build/cli/index.js';
+  const CLI_PATH = '../build/index.js';
 
   afterEach(function() {
     cliHelper.endLogCapture();
