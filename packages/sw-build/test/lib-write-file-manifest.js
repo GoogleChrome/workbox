@@ -9,6 +9,7 @@ describe('src/lib/utils/write-file-manifest.js', function() {
   const FAKE_PATH = 'fake-path/manifest-name.js';
 
   it('should handle a bad manifest format', function() {
+    const writeFileManifest = require('../src/lib/utils/write-file-manifest');
     return writeFileManifest(FAKE_PATH, [], 'invalid-format')
       .then(() => {
         throw new Error('Expected error to be thrown.');
