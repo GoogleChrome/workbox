@@ -47,4 +47,6 @@ module.exports = {
     'strings or JavaScript objects containing a url parameter.',
   'invalid-generate-file-manifest-arg': 'The input to generateFileManifest() ' +
     'must be an Object.',
+  'invalid-manifest-format': `The value of the 'format' option passed to
+    generateFileManifest() must be either 'iife' (the default) or 'es'.`,
 };

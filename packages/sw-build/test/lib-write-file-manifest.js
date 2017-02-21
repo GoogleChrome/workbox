@@ -6,6 +6,19 @@ require('chai').should();
 
 describe('src/lib/utils/write-file-manifest.js', function() {
   const INJECTED_ERROR = new Error('Injected Error');
+  const FAKE_PATH = 'fake-path/manifest-name.js';
+
+  it('should handle a bad manifest format', function() {
+    return writeFileManifest(FAKE_PATH, [], 'invalid-format')
+      .then(() => {
+        throw new Error('Expected error to be thrown.');
+      })
+      .catch((err) => {
+        if (err.message !== errors['invalid-manifest-format']) {
+          throw new Error('Unexpected error thrown: ' + err.message);
+        }
+      });
+  });
 
   it('should handle bad manifest path', function() {
     const badInputs = [
@@ -73,7 +86,7 @@ describe('src/lib/utils/write-file-manifest.js', function() {
       },
     });
 
-    return writeFileManifest('fake-path/manifest-name.js', [])
+    return writeFileManifest(FAKE_PATH, [])
     .then(() => {
       throw new Error('Expected an error.');
     })
@@ -96,7 +109,7 @@ describe('src/lib/utils/write-file-manifest.js', function() {
       },
     });
 
-    return writeFileManifest('fake-path/manifest-name.js', [])
+    return writeFileManifest(FAKE_PATH, [])
     .then(() => {
       throw new Error('Expected an error.');
     })
@@ -122,7 +135,7 @@ describe('src/lib/utils/write-file-manifest.js', function() {
       },
     });
 
-    return writeFileManifest('fake-path/manifest-name.js', [])
+    return writeFileManifest(FAKE_PATH, [])
     .then(() => {
       throw new Error('Expected an error.');
     })
@@ -153,7 +166,7 @@ describe('src/lib/utils/write-file-manifest.js', function() {
       },
     });
 
-    return writeFileManifest('fake-path/manifest-name.js', [])
+    return writeFileManifest(FAKE_PATH, [])
     .then(() => {
       throw new Error('Expected an error.');
     })

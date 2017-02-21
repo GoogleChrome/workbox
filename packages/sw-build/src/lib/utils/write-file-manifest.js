@@ -5,7 +5,13 @@ const template = require('lodash.template');
 
 const errors = require('../errors');
 
-const writeFileManifest = (manifestFilePath, manifestEntries) => {
+const defaultFormat = 'iife';
+const formatsToTemplates = {
+  iife: 'file-manifest.js.tmpl',
+  es: 'file-manifest-es2015.tmpl',
+};
+
+const writeFileManifest = (manifestFilePath, manifestEntries, format) => {
   if (!manifestFilePath || typeof manifestFilePath !== 'string' ||
     manifestFilePath.length === 0) {
     return Promise.reject(new Error(errors['invalid-manifest-path']));
@@ -13,6 +19,11 @@ const writeFileManifest = (manifestFilePath, manifestEntries) => {
 
   if (!manifestEntries || !(manifestEntries instanceof Array)) {
     return Promise.reject(new Error(errors['invalid-manifest-entries']));
+  }
+
+  format = format || defaultFormat;
+  if (!(format in formatsToTemplates)) {
+    return Promise.reject(new Error(errors['invalid-manifest-format']));
   }
 
   for (let i = 0; i < manifestEntries.length; i++) {
@@ -33,7 +44,7 @@ const writeFileManifest = (manifestFilePath, manifestEntries) => {
   }
 
   const templatePath = path.join(__dirname, '..', 'templates',
-    'file-manifest.js.tmpl');
+    formatsToTemplates[format]);
 
   return new Promise((resolve, reject) => {
     mkdirp(path.dirname(manifestFilePath), (err) => {
