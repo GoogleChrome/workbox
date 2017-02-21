@@ -11,7 +11,7 @@ const testServer = require('../../../utils/test-server.js');
 
 require('chai').should();
 
-describe('End-to-End Tests', function() {
+describe('Generate SW End-to-End Tests', function() {
   let tmpDirectory;
   let globalDriverBrowser;
   let baseTestUrl;
@@ -248,33 +248,6 @@ describe('End-to-End Tests', function() {
       './lib/questions/ask-extensions-to-cache': () => {
         return Promise.resolve(FILE_EXTENSIONS);
       },
-      /** inquirer: {
-        prompt: (questions) => {
-          switch (questions[0].name) {
-            case 'rootDir':
-              return Promise.resolve({
-                rootDir: relativeProjPath,
-              });
-            case 'cacheExtensions':
-              return Promise.resolve({
-                cacheExtensions: FILE_EXTENSIONS,
-              });
-            case 'serviceWorkerName':
-              return Promise.resolve({
-                serviceWorkerName: swName,
-              });
-            case 'saveConfig':
-              return Promise.resolve({
-                saveConfig: false,
-              });
-            default:
-              console.error('');
-              console.error(`Unknown question: ${questions[0].name}`);
-              console.error('');
-              return Promise.reject();
-          }
-        },
-      },**/
     });
 
     const cli = new SWCli();

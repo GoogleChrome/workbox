@@ -1,4 +1,3 @@
-/**
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 const cliHelper = require('./helpers/cli-test-helper.js');
@@ -9,7 +8,7 @@ require('chai').should();
 
 describe('Ask for File Manifest Name', function() {
   const globalStubs = [];
-  const CLI_PATH = '../build/index.js';
+  const Q_PATH = '../src/lib/questions/ask-manifest-name.js';
 
   afterEach(function() {
     cliHelper.endLogCapture();
@@ -20,8 +19,8 @@ describe('Ask for File Manifest Name', function() {
 
   const INJECTED_ERROR = new Error('Injected Error');
 
-  const checkError = (cli, expectedErrorCode, checkInjectedError) => {
-    return cli._getFileManifestName()
+  const checkError = (askManifestFileName, expectedErrorCode, checkInjectedError) => {
+    return askManifestFileName()
     .then(() => {
       throw new Error('Expected error to be thrown.');
     }, (err) => {
@@ -62,13 +61,12 @@ describe('Ask for File Manifest Name', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askManifestFileName = proxyquire(Q_PATH, {
       'inquirer': inquirer,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli, 'unable-to-get-file-manifest-name');
+    return checkError(askManifestFileName, 'unable-to-get-file-manifest-name');
   });
 
   it('should handle empty filename', function() {
@@ -81,13 +79,12 @@ describe('Ask for File Manifest Name', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askManifestFileName = proxyquire(Q_PATH, {
       'inquirer': inquirer,
     });
 
     cliHelper.startLogCapture();
-    const cli = new SWCli();
-    return checkError(cli, 'invalid-file-manifest-name', false);
+    return checkError(askManifestFileName, 'invalid-file-manifest-name', false);
   });
 
   it('should trim filename', function() {
@@ -101,12 +98,11 @@ describe('Ask for File Manifest Name', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askManifestFileName = proxyquire(Q_PATH, {
       'inquirer': inquirer,
     });
 
-    const cli = new SWCli();
-    return cli._getFileManifestName()
+    return askManifestFileName()
     .then((filename) => {
       filename.should.equal(EXAMPLE_FILENAME);
     });
@@ -123,15 +119,13 @@ describe('Ask for File Manifest Name', function() {
 
     globalStubs.push(stub);
 
-    const SWCli = proxyquire(CLI_PATH, {
+    const askManifestFileName = proxyquire(Q_PATH, {
       'inquirer': inquirer,
     });
 
-    const cli = new SWCli();
-    return cli._getFileManifestName()
+    return askManifestFileName()
     .then((filename) => {
       filename.should.equal(EXAMPLE_FILENAME);
     });
   });
 });
-**/
