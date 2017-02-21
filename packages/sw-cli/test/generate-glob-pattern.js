@@ -1,9 +1,9 @@
-const generateGlobPattern = require('../src/lib/utils/generate-glob-pattern');
+const generateGlobPattern = require('../src/lib/generate-glob-pattern');
 const errors = require('../src/lib/errors');
 
 require('chai').should();
 
-describe('src/lib/utils/generate-glob-pattern.js', function() {
+describe('src/lib/generate-glob-pattern.js', function() {
   it('should handle a single file extension', function() {
     const globPattern = generateGlobPattern('.', ['txt']);
     globPattern.should.equal('**/*.txt');

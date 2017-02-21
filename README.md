@@ -1,5 +1,6 @@
 <!-- To make changes, edit templates/README.hbs, not README.md! -->
-[![Build Status][travis-image]][travis-url]
+[![Travis Build Status][travis-image]][travis-url]
+[![AppVeyor Build status][appveyor-image]][appveyor-url]
 [![Dependency Status][dependency-image]][dependency-url]
 [![Dev Dependency Status][dev-dependency-image]][dev-dependency-url]
 
@@ -50,16 +51,16 @@ This library is still a work in progress and is not functional.
 **Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-cache-expiration.html) •
                 [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cache-expiration/demo)
 
-### sw-cacheable-response-behavior
+### sw-cacheable-response
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cacheable-response-behavior%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cacheable-response%22)][travis-url]
 
 This library takes a Response object and determines whether it&#x27;s cacheable, based on a specific configuration.
 
-**Install**: `npm install --save-dev sw-cacheable-response-behavior`
+**Install**: `npm install --save-dev sw-cacheable-response`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-cacheable-response-behavior.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cacheable-response-behavior/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-cacheable-response.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cacheable-response/demo)
 
 ### sw-cli
 
@@ -153,6 +154,8 @@ limitations under the License.
 [npm-image]: https://badge.fury.io/js/sw-helpers.svg
 [travis-url]: https://travis-ci.org/GoogleChrome/sw-helpers
 [travis-image]: https://travis-ci.org/GoogleChrome/sw-helpers.svg?branch=master
+[appveyor-image]: https://ci.appveyor.com/api/projects/status/4ct8ph4d34c5ifnw?svg=true
+[appvayor-url]: https://ci.appveyor.com/project/gauntface/sw-helpers
 [dependency-url]: https://david-dm.org/GoogleChrome/sw-helpers/
 [dependency-image]: https://david-dm.org/GoogleChrome/sw-helpers/status.svg
 [dev-dependency-url]: https://david-dm.org/GoogleChrome/sw-helpers?type=dev

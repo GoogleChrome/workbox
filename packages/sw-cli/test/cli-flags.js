@@ -19,8 +19,8 @@
 const fs = require('fs');
 const path = require('path');
 const pkg = require('../package.json');
-const CLI = require('../build/cli/index.js');
-const cliHelper = require('./helpers/cli-test-helper.js');
+const CLI = require('../build/index');
+const cliHelper = require('./helpers/cli-test-helper');
 
 require('chai').should();
 
@@ -53,7 +53,7 @@ describe('Test CLI Flags', function() {
     '-h',
     '--help',
   ];
-  const helpText = fs.readFileSync(path.join(__dirname, '..', 'src', 'cli', 'cli-help.txt'), 'utf8');
+  const helpText = fs.readFileSync(path.join(__dirname, '..', 'src', 'cli-help.txt'), 'utf8');
   helpFlags.forEach((helpFlag) => {
     it(`should handle version flags: ${helpFlag}`, function() {
       cliHelper.startLogCapture();

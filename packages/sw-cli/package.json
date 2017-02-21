@@ -1,7 +1,7 @@
 {
   "name": "sw-cli",
-  "private": true,
   "version": "0.0.8",
+  "private": true,
   "description": "A CLI tool to generate a service worker and a file manifest making use of the sw-lib module.",
   "keywords": [
     "sw-fw",
@@ -11,9 +11,8 @@
     "offline",
     "cli"
   ],
-  "main": "build/index.js",
   "bin": {
-    "sw-cli": "build/cli/bin.js"
+    "sw-cli": "build/bin.js"
   },
   "files": [
     "src",
@@ -33,7 +32,7 @@
     "lodash.template": "^4.4.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "sw-lib": "^0.0.8",
+    "sw-build": "0.0.8",
     "update-notifier": "^1.0.3"
   },
   "devDependencies": {

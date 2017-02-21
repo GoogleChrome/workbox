@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const vm = require('vm');
 const glob = require('glob');
-const fse = require('fs-extra');
+const fsExtra = require('fs-extra');
 const expect = require('chai').expect;
 const url = require('url');
 const seleniumAssistant = require('selenium-assistant');
@@ -36,7 +36,7 @@ describe('Test Example Projects', function() {
   afterEach(function() {
     this.timeout(10 * 1000);
 
-    fse.removeSync(tmpDirectory);
+    fsExtra.removeSync(tmpDirectory);
 
     return seleniumAssistant.stopSaucelabsConnect()
     .then(() => {
@@ -80,16 +80,13 @@ describe('Test Example Projects', function() {
       // Check the manifest is defined by the manifest JS.
       expect(fileManifestOutput).to.exist;
 
-      const swlibPkg = require(
-        path.join(__dirname, '..', 'node_modules', 'sw-lib', 'package.json'));
-
       // Check the files that we expect to be defined are.
       let expectedFiles = glob.sync(
         `${exampleProject}/**/*.{${FILE_EXTENSIONS.join(',')}}`, {
         ignore: [
           `${exampleProject}/${manifestName}`,
           `${exampleProject}/${swName}`,
-          `${exampleProject}/sw-lib.v${swlibPkg.version}.min.js`,
+          `${exampleProject}/sw-lib.*.min.js`,
         ],
       });
       expectedFiles = expectedFiles.map((file) => {
@@ -236,7 +233,7 @@ describe('Test Example Projects', function() {
   it('should be able to generate a service for example-1 with CLI', function() {
     this.timeout(60 * 1000);
 
-    fse.copySync(
+    fsExtra.copySync(
       path.join(__dirname, 'example-projects', 'example-1'),
       tmpDirectory);
 
@@ -245,7 +242,7 @@ describe('Test Example Projects', function() {
     const manifestName = `${Date.now()}-manifest.js`;
     const swName = `${Date.now()}-sw.js`;
 
-    const SWCli = proxyquire('../build/cli/index', {
+    const SWCli = proxyquire('../build/index', {
       inquirer: {
         prompt: (questions) => {
           switch (questions[0].name) {
