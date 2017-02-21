@@ -16,7 +16,7 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  * If you'd rather receive the data as a JavaScript Array, use
  * `getFileManifestEntries()` instead.
  *
- * If you only need precaching for of your static assets in your service
+ * If you only need precaching of your static assets in your service
  * worker and nothing else, you can generate complete service worker
  * with `generateSW()`.
  *
