@@ -32,7 +32,7 @@ const sourcemaps = require('gulp-sourcemaps');
 
 const globPromise = promisify('glob');
 
-const LICENSE_HEADER = fs.readFileSync('LICENSE-HEADER', 'utf8');
+const LICENSE_HEADER = fs.readFileSync('templates/LICENSE-HEADER.txt', 'utf8');
 
 const PLUGINS = [
   rollupBabel({
