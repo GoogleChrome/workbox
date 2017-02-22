@@ -30,10 +30,8 @@ const errors = require('./errors');
  * generating the build manifest.
  * @param {String|Array<String>} input.globIgnores Patterns to exclude when
  * generating the build manifest.
- * @param {String} [input.format] Either [`'iife'`](https://en.wikipedia.org/wiki/Immediately-invoked_function_expression)
- * (the default) or `'es'`. If you plan on reading in the manifest from your
- * service worker via [`importScripts()`](), then use `'iife'`. If you plan on
- * reading in the manifest as an imported ES2015 module, use `'es'`.
+ * @param {String} [input.format] Default format is [`'iife'`](https://en.wikipedia.org/wiki/Immediately-invoked_function_expression), but also
+ * accepts `'es'`, which outputs an ES2015 module.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
