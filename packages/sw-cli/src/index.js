@@ -169,10 +169,9 @@ class SWCli {
   }
 
   /**
-   * This method will generate a file manifest with revisioning details
+   * Generates a file manifest with revisioning details
    * that can be used in your service worker for precaching assets.
-   * @return {Promise} The promise returned here will be used to exit the
-   * node process cleanly or not.
+   * @return {Promise} Resolves when the node process exits.
    */
   _generateBuildManifest() {
     let rootDirPath;
