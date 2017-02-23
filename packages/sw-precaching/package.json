@@ -1,6 +1,6 @@
 {
   "name": "sw-precaching",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "This library is still a work in progress and is not functional.",
   "keywords": [
     "service worker",
@@ -23,7 +23,7 @@
   "module": "build/sw-precaching.min.mjs",
   "jsnext:main": "build/sw-precaching.min.mjs",
   "devDependencies": {
-    "sw-routing": "^0.0.8",
-    "sw-runtime-caching": "^0.0.8"
+    "sw-routing": "^0.0.9",
+    "sw-runtime-caching": "^0.0.9"
   }
 }

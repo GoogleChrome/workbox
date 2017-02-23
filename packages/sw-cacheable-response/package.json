@@ -1,6 +1,6 @@
 {
   "name": "sw-cacheable-response",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "This library takes a Response object and determines whether it's cacheable, based on a specific configuration.",
   "keywords": [
     "service worker",
