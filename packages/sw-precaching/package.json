@@ -1,6 +1,6 @@
 {
   "name": "sw-precaching",
-  "version": "0.0.11",
+  "version": "0.0.13",
   "description": "This library is still a work in progress and is not functional.",
   "keywords": [
     "service worker",
@@ -14,6 +14,9 @@
     "src",
     "build"
   ],
+  "scripts": {
+    "prepublish": "gulp build --project sw-precaching"
+  },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
@@ -23,7 +26,7 @@
   "module": "build/sw-precaching.min.mjs",
   "jsnext:main": "build/sw-precaching.min.mjs",
   "devDependencies": {
-    "sw-routing": "^0.0.11",
-    "sw-runtime-caching": "^0.0.10"
+    "sw-routing": "^0.0.13",
+    "sw-runtime-caching": "^0.0.13"
   }
 }

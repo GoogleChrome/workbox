@@ -1,6 +1,6 @@
 {
   "name": "sw-appcache-behavior",
-  "version": "0.0.10",
+  "version": "0.0.13",
   "description": "A service worker implementation of the behavior defined in a page's App Cache manifest.",
   "keywords": [
     "appcache",
@@ -14,6 +14,9 @@
     "src",
     "build"
   ],
+  "scripts": {
+    "prepublish": "gulp build --project sw-appcache-behavior"
+  },
   "author": {
     "name": "Jeff Posnick",
     "email": "jeffy@google.com",

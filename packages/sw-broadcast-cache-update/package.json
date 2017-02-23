@@ -1,6 +1,6 @@
 {
   "name": "sw-broadcast-cache-update",
-  "version": "0.0.10",
+  "version": "0.0.13",
   "description": "A helper library that uses the Broadcast Channel API to announce when two Response objects differ.",
   "keywords": [
     "service worker",
@@ -13,6 +13,9 @@
     "src",
     "build"
   ],
+  "scripts": {
+    "prepublish": "gulp build --project sw-broadcast-cache-update"
+  },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",

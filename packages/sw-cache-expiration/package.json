@@ -1,6 +1,6 @@
 {
   "name": "sw-cache-expiration",
-  "version": "0.0.10",
+  "version": "0.0.13",
   "description": "This library is still a work in progress and is not functional.",
   "keywords": [
     "service worker",
@@ -13,6 +13,9 @@
     "src",
     "build"
   ],
+  "scripts": {
+    "prepublish": "gulp build --project sw-cache-expiration"
+  },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
