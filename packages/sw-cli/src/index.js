@@ -24,11 +24,12 @@ const swBuild = require('sw-build');
 
 const logHelper = require('./lib/log-helper');
 const pkg = require('../package.json');
-const generateGlobPattern = require('./lib/generate-glob-pattern');
+const generateGlobPattern = require('./lib/utils/generate-glob-pattern');
 
 const askForRootOfWebApp = require('./lib/questions/ask-root-of-web-app');
 const askForServiceWorkerName = require('./lib/questions/ask-sw-name');
 const askSaveConfigFile = require('./lib/questions/ask-save-config');
+const askManifestFileName = require('./lib/questions/ask-manifest-name');
 const askForExtensionsToCache =
   require('./lib/questions/ask-extensions-to-cache');
 
@@ -119,9 +120,8 @@ class SWCli {
     switch (command) {
       case 'generate-sw':
         return this._generateSW();
-      case 'build-file-manifest':
-        logHelper.error(`TODO: Implement.`);
-        return Promise.reject();
+      case 'generate-manifest':
+        return this._generateBuildManifest();
       default:
         logHelper.error(`Invlaid command given '${command}'`);
         return Promise.reject();
@@ -164,6 +164,42 @@ class SWCli {
           path.join(rootDirPath, serviceWorkerName),
         ],
         serviceWorkerName,
+      });
+    });
+  }
+
+  /**
+   * Generates a file manifest with revisioning details
+   * that can be used in your service worker for precaching assets.
+   * @return {Promise} Resolves when the node process exits.
+   */
+  _generateBuildManifest() {
+    let rootDirPath;
+    let fileManifestName;
+    let fileExtentionsToCache;
+
+    return askForRootOfWebApp()
+    .then((rDirectory) => {
+      rootDirPath = rDirectory;
+      return askForExtensionsToCache(rootDirPath);
+    })
+    .then((extensionsToCache) => {
+      fileExtentionsToCache = extensionsToCache;
+      return askManifestFileName();
+    })
+    .then((manifestName) => {
+      fileManifestName = manifestName;
+    })
+    .then(() => {
+      const globPattern = generateGlobPattern(
+        rootDirPath, fileExtentionsToCache);
+      return swBuild.generateFileManifest({
+        rootDirectory: rootDirPath,
+        globPatterns: [globPattern],
+        globIgnores: [
+          path.join(rootDirPath, fileManifestName),
+        ],
+        dest: path.join(rootDirPath, fileManifestName),
       });
     });
   }
