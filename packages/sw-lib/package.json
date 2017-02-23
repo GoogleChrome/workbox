@@ -1,6 +1,6 @@
 {
   "name": "sw-lib",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A service worker library to make managing fetch requests and caching as easy as possible.",
   "keywords": [
     "sw-fw",
