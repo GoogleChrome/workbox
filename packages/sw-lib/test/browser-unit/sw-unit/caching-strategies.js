@@ -91,5 +91,21 @@ describe('Test caching strategies.', function() {
       expect(handler.requestWrapper.pluginCallbacks.cacheDidUpdate).to.exist;
       handler.requestWrapper.pluginCallbacks.cacheDidUpdate.length.should.equal(1);
     });
+
+    it(`should return a Handler when '${strategy}' is instantiated with cacheableResponse options`, function() {
+      const CACHEABLE_RESPONSE_OPTIONS = {
+        statuses: [0, 200, 404],
+        headers: {
+          'Example-Header-1': 'Header-Value-1',
+          'Example-Header-2': 'Header-Value-2',
+        },
+      };
+      const handler = goog.swlib[strategy]({
+        cacheableResponse: CACHEABLE_RESPONSE_OPTIONS,
+      });
+      expect(handler.handle).to.exist;
+      expect(handler.requestWrapper).to.exist;
+      expect(handler.requestWrapper.pluginCallbacks.cacheWillUpdate).to.exist;
+    });
   });
 });

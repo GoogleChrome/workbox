@@ -23,8 +23,8 @@ describe('cache-revisioned-e2e.js', function() {
   });
 
   afterEach(function() {
-    /** return window.goog.swUtils.cleanState()
-    .then(deleteIndexedDB);**/
+    return window.goog.swUtils.cleanState()
+    .then(deleteIndexedDB);
   });
 
   const testCacheEntries = (fileSet) => {
