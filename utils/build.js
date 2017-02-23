@@ -129,7 +129,13 @@ function buildJSBundle(options) {
       .pipe(sourcemaps.init())
       .pipe(rollup(options.rollupConfig))
       .pipe(gulpif(options.minify, babel({
-        presets: ['babili', {comments: false}],
+        presets: [
+          ['babili', {
+            comments: false,
+            keepFnName: true,
+            keepClassName: true,
+          }],
+        ],
       })))
       .pipe(header(LICENSE_HEADER))
       .pipe(rename(outputName))
