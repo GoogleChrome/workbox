@@ -16,6 +16,32 @@
 describe('Test Behaviors of Loading the Script', function() {
   this.timeout(5 * 60 * 1000);
 
+  const deleteIndexedDB = () => {
+    return new Promise((resolve, reject) => {
+      // TODO: Move to constants
+      const req = indexedDB.deleteDatabase('sw-precaching');
+      req.onsuccess = function() {
+        resolve();
+      };
+      req.onerror = function() {
+        reject();
+      };
+      req.onblocked = function() {
+        console.error('Database deletion is blocked.');
+      };
+    });
+  };
+
+  beforeEach(function() {
+    return window.goog.swUtils.cleanState()
+    .then(deleteIndexedDB);
+  });
+
+  afterEach(function() {
+    return window.goog.swUtils.cleanState()
+    .then(deleteIndexedDB);
+  });
+
   it('should print an error when added to the window.', function() {
     this.timeout(2000);
 
