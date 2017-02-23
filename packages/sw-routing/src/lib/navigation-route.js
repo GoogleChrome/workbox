@@ -61,9 +61,9 @@ class NavigationRoute extends Route {
    * @param {function} input.handler The handler to manage the response.
    */
   constructor({whitelist, blacklist, handler} = {}) {
-    assert.isInstance({whitelist}, Array);
+    assert.isArrayOfClass({whitelist}, RegExp);
     if (blacklist) {
-      assert.isInstance({blacklist}, Array);
+      assert.isArrayOfClass({blacklist}, RegExp);
     } else {
       blacklist = [];
     }
