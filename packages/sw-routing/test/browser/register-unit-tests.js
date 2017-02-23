@@ -5,6 +5,7 @@ describe('Service Worker Unit Test Registration', function() {
     'route.js',
     'express-route.js',
     'regexp-route.js',
+    'navigation-route.js',
   ].map((script) => `${pathPrefix}${script}`);
 
   swUnitTests.forEach(function(swUnitTestPath) {

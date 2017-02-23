@@ -13,6 +13,7 @@ mocha.setup({
 
 const exportedClasses = [
   'ExpressRoute',
+  'NavigationRoute',
   'RegExpRoute',
   'Route',
   'Router',

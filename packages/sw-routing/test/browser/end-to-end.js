@@ -38,6 +38,21 @@ describe('End to End Test of ExpressRoute', function() {
   });
 });
 
+describe('End to End Test of NavigationRoute', function() {
+  it(`should work properly when there's a navigation matching the whitelist`, function(callback) {
+    goog.swUtils.activateSW('../static/navigation-route.js')
+      .then((iframe) => {
+        iframe.addEventListener('load', () => {
+          expect(iframe.contentWindow.document.body.innerText).to.equal('navigation response');
+          callback();
+        });
+        // Modifying the .src of an iframe will trigger a navigation. You can't
+        // trigger a navigation via fetch().
+        iframe.src = iframe.src + '/navigation';
+      });
+  });
+});
+
 describe('End to End Test of Route', function() {
   it('should work properly when there are multiple routes, matching different HTTP methods', function() {
     return goog.swUtils.activateSW('../static/route.js')
