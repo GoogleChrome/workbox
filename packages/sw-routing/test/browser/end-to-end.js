@@ -46,6 +46,8 @@ describe('End to End Test of NavigationRoute', function() {
           expect(iframe.contentWindow.document.body.innerText).to.equal('navigation response');
           callback();
         });
+        // Modifying the .src of an iframe will trigger a navigation. You can't
+        // trigger a navigation via fetch().
         iframe.src = iframe.src + '/navigation';
       });
   });

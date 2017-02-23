@@ -30,7 +30,6 @@ describe('Test of the NavigationRoute class', function() {
     } catch(err) {
       thrownError = err;
     }
-
     expect(thrownError).to.exist;
     expect(thrownError.name).to.equal('assert.isInstance');
   });
@@ -42,7 +41,6 @@ describe('Test of the NavigationRoute class', function() {
     } catch(err) {
       thrownError = err;
     }
-
     expect(thrownError).to.exist;
     expect(thrownError.name).to.equal('assert.isInstance');
   });
@@ -54,7 +52,6 @@ describe('Test of the NavigationRoute class', function() {
     } catch(err) {
       thrownError = err;
     }
-
     expect(thrownError).to.exist;
     expect(thrownError.name).to.equal('assert.isType');
 
@@ -63,7 +60,6 @@ describe('Test of the NavigationRoute class', function() {
     } catch(err) {
       thrownError = err;
     }
-
     expect(thrownError).to.exist;
     expect(thrownError.name).to.equal('assert.hasMethod');
   });
@@ -75,7 +71,6 @@ describe('Test of the NavigationRoute class', function() {
     } catch(err) {
       thrownError = err;
     }
-
     expect(thrownError).to.exist;
     expect(thrownError.name).to.equal('assert.isInstance');
   });
