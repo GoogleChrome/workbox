@@ -81,6 +81,7 @@ class Route {
    */
   constructor({match, handler, method} = {}) {
     assert.isType({match}, 'function');
+    assert.isType({handler}, 'object');
     assert.hasMethod({handler}, 'handle');
 
     this.match = match;
