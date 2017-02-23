@@ -30,7 +30,7 @@ goog.swlib.router.registerRoute(new RegExp('^https://cdn.mysite.com/styles/'), c
 
 This same approach can be used with all of th caching strategies supported by
 sw-lib including `cacheFirst()`, `cacheOnly()`, `networkFirst()`,
-`networkOnly()` and `StaleWhileRevalidate()`.
+`networkOnly()` and `staleWhileRevalidate()`.
 
 ## Lower Level Modules
 
