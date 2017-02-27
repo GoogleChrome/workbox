@@ -11,13 +11,16 @@ the asset returns a non-200 response, these modules will throw an error. The
 reason for this default behavior is to ensure that only good and local
 responses are cached.
 
-Depending on how you are using these libraries will depend on how you can add
-support for external resources.
+Below are examples of how to cache third party content in sw-lib and
+the lower level modules.
 
 ## sw-lib
 
 In sw-lib, you can set up some additional options with a route that will allow
-support for additional status codes and / or based on specific headers.
+custom status codes and / or responses with specific headers.
+
+In sw-lib you can add options to caching strategies which support caching
+responses with specific status codes, headers, or both.
 
 ```javascript
 const cdnCacheStrategy = goog.swlib.staleWhileRevalidate({
@@ -28,15 +31,14 @@ const cdnCacheStrategy = goog.swlib.staleWhileRevalidate({
 goog.swlib.router.registerRoute(new RegExp('^https://cdn.mysite.com/styles/'), cdnCacheStrategy);
 ```
 
-This same approach can be used with all of th caching strategies supported by
+Use this approach with any of the caching strategies supported by
 sw-lib including `cacheFirst()`, `cacheOnly()`, `networkFirst()`,
 `networkOnly()` and `staleWhileRevalidate()`.
 
 ## Lower Level Modules
 
-To cache a response with a status code other than 2XX status code when using
-the lower level modules use the `sw-cacheable-response` plugin with a
-`RequestWrapper`.
+When using the lower level modules, use the `sw-cacheable-response` plugin
+with a `RequestWrapper` to cache responses with a non 2XX status code.
 
 ```javascript
 // The responses will be cached if the response code is 0, 200, or 404, and
@@ -61,16 +63,17 @@ const route = new goog.routing.RegExpRoute({
 # Fine Grained Request Caching
 
 If you need more than the ability to define static status and header values
-you can create your own "plugin" which needs to implement the `cacheWillUpdate`
-method. Wherever this plugin is used, it will be passed a
-[Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) object
-and returning a boolean of true will result in the caching of the response,
-other you prevent caching by returning false.
+you can create your own "plugin" which needs to implement the
+`cacheWillUpdate` callback. Wherever this plugin is used, the `cacheWillUpdate`
+callback will be executed with a
+[Response](https://developer.mozilla.org/en-US/docs/Web/API/Response) object as
+an argument. Your callback should return a boolean where returning true results
+in the response being cached.
 
 In sw-lib, this can be achieved like so:
 
 ```javascript
-const myCacheablePlugin = {
+const myCustomPlugin = {
   cacheWillUpdate: ({response}) => {
     // Or implement whatever other logic you want, e.g. check for 'x-no-sw: true'
     return response.headers.get('cache-control') !== 'no-cache';
@@ -78,17 +81,17 @@ const myCacheablePlugin = {
 };
 const customCacheCriteria = goog.swlib.staleWhileRevalidate({
   plugins: [
-    myCacheablePlugin
+    myCustomPlugin
   ],
 });
 goog.swlib.router.registerRoute('/some/url/', customCacheCriteria);
 ```
 
-With the lower level modules you can use a custom plugin by passing it into
+With the lower level modules use a custom plugin by passing it into
 a request wrapper.
 
 ```javascript
-const myCacheablePlugin = {
+const myCustomPlugin = {
   cacheWillUpdate: ({response}) => {
     // Or implement whatever other logic you want, e.g. check for 'x-no-sw: true'
     return response.headers.get('cache-control') !== 'no-cache';
@@ -97,7 +100,7 @@ const myCacheablePlugin = {
 
 const requestWrapper = new goog.runtimeCaching.RequestWrapper({
   cacheName: 'my-cache',
-  plugins: [myCacheablePlugin],
+  plugins: [myCustomPlugin],
 });
 
 const route = new goog.routing.RegExpRoute({
