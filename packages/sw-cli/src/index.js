@@ -149,7 +149,11 @@ class SWCli {
       if (!config.rootDirectory) {
         return askForRootOfWebApp()
         .then((rDirectory) => {
-          config.rootDirectory = rDirectory;
+          // This will give a pretty relative path:
+          // '' => './'
+          // 'build' => './build/'
+          config.rootDirectory =
+            path.join('.', path.relative(process.cwd(), rDirectory), path.sep);
         });
       }
     })
