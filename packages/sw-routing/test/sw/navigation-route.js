@@ -31,7 +31,7 @@ describe('Test of the NavigationRoute class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isInstance');
+    expect(thrownError.name).to.equal('isArrayOfClass');
   });
 
   it(`should throw when NavigationRoute() is called without a valid whitelist`, function() {
@@ -42,7 +42,7 @@ describe('Test of the NavigationRoute class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isInstance');
+    expect(thrownError.name).to.equal('isArrayOfClass');
   });
 
   it(`should throw when NavigationRoute() is called without a valid handler`, function() {
@@ -72,7 +72,7 @@ describe('Test of the NavigationRoute class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isInstance');
+    expect(thrownError.name).to.equal('isArrayOfClass');
   });
 
   it(`should not throw when NavigationRoute() is called with valid whitelist and handler parameters`, function() {
