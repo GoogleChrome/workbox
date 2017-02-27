@@ -50,7 +50,7 @@ class Plugin {
   constructor({statuses, headers} = {}) {
     assert.atLeastOne({statuses, headers});
     if (statuses !== undefined) {
-      assert.isInstance({statuses}, Array);
+      assert.isArrayOfType({statuses}, 'number');
     }
     if (headers !== undefined) {
       assert.isType({headers}, 'object');

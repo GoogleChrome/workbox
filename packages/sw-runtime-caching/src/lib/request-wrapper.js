@@ -76,7 +76,7 @@ class RequestWrapper {
     this.pluginCallbacks = {};
 
     if (plugins) {
-      assert.isInstance({plugins}, Array);
+      assert.isArrayOfType({plugins}, 'object');
 
       plugins.forEach((plugin) => {
         for (let callbackName of pluginCallbacks) {
