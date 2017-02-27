@@ -27,6 +27,7 @@ describe('Generate SW End-to-End Tests', function() {
     tmpDirectory = fs.mkdtempSync(
       path.join(__dirname, 'tmp-')
     );
+
     return testServer.start(tmpDirectory)
     .then((portNumber) => {
       baseTestUrl = `http://localhost:${portNumber}`;
@@ -171,10 +172,16 @@ describe('Generate SW End-to-End Tests', function() {
         return;
       }
 
-      return assistantBrowser.getSeleniumDriver()
-      .then((browserDriver) => {
-        globalDriverBrowser = browserDriver;
-        return browserDriver.get(`${baseTestUrl}/index.html?sw=${swName}`);
+      let getBrowserPromise = Promise.resolve();
+      if (!globalDriverBrowser) {
+        getBrowserPromise = assistantBrowser.getSeleniumDriver()
+        .then((browserDriver) => {
+          globalDriverBrowser = browserDriver;
+        });
+      }
+
+      return getBrowserPromise.then(() => {
+        return globalDriverBrowser.get(`${baseTestUrl}/index.html?sw=${swName}`);
       })
       .then(() => {
         return globalDriverBrowser.wait(() => {
@@ -225,27 +232,40 @@ describe('Generate SW End-to-End Tests', function() {
   };
 
   it('should be able to generate a service for example-1 with CLI', function() {
-    this.timeout(60 * 1000);
+    this.timeout(120 * 1000);
+
+    process.chdir(tmpDirectory);
 
     fsExtra.copySync(
       path.join(__dirname, 'example-projects', 'example-1'),
       tmpDirectory);
 
-    const relativeProjPath = path.relative(process.cwd(), tmpDirectory);
-
     const swName = `${Date.now()}-sw.js`;
 
+    let enforceNoQuestions = false;
     const SWCli = proxyquire('../build/index', {
       './lib/questions/ask-root-of-web-app': () => {
-        return Promise.resolve(relativeProjPath);
+        if (enforceNoQuestions) {
+          return Promise.reject('Injected Error - No Questions Expected');
+        }
+        return Promise.resolve(tmpDirectory);
       },
       './lib/questions/ask-sw-name': () => {
+        if (enforceNoQuestions) {
+          return Promise.reject('Injected Error - No Questions Expected');
+        }
         return Promise.resolve(swName);
       },
       './lib/questions/ask-save-config': () => {
-        return Promise.resolve(false);
+        if (enforceNoQuestions) {
+          return Promise.reject('Injected Error - No Questions Expected');
+        }
+        return Promise.resolve(true);
       },
       './lib/questions/ask-extensions-to-cache': () => {
+        if (enforceNoQuestions) {
+          return Promise.reject('Injected Error - No Questions Expected');
+        }
         return Promise.resolve(FILE_EXTENSIONS);
       },
     });
@@ -256,6 +276,16 @@ describe('Generate SW End-to-End Tests', function() {
     }, {
       exampleProject: tmpDirectory,
       swName,
+    })
+    .then(() => {
+      // Should be able to handle command with no questions
+      enforceNoQuestions = true;
+      return performTest(() => {
+        return cli.handleCommand('generate-sw');
+      }, {
+        exampleProject: tmpDirectory,
+        swName,
+      });
     });
   });
 });

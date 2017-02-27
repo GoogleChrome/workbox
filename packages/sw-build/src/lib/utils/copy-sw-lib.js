@@ -10,17 +10,26 @@ module.exports = (rootDirectory) => {
 
   const swlibOutputPath = path.join(rootDirectory,
     `sw-lib.v${swlibPkg.version}.min.js`);
-  return new Promise((resolve, reject) => {
-    const swlibBuiltPath = path.join(swlibModulePath, 'build',
-      'sw-lib.min.js');
-
-    const stream = fs.createReadStream(swlibBuiltPath)
-      .pipe(fs.createWriteStream(swlibOutputPath));
-    stream.on('error', function(err) {
-      reject(new Error(errors['unable-to-copy-sw-lib'] + ` '${err.message}'`));
+  /** return new Promise((resolve) => {
+    fs.unlink(swlibOutputPath, (err) => {
+      resolve();
     });
-    stream.on('finish', function() {
-      resolve(swlibOutputPath);
+  })**/
+  return Promise.resolve()
+  .then(() => {
+    return new Promise((resolve, reject) => {
+      const swlibBuiltPath = path.join(swlibModulePath, 'build',
+        'sw-lib.min.js');
+
+      const stream = fs.createReadStream(swlibBuiltPath)
+        .pipe(fs.createWriteStream(swlibOutputPath));
+      stream.on('error', function(err) {
+        reject(new Error(errors['unable-to-copy-sw-lib'] +
+          ` '${err.message}'`));
+      });
+      stream.on('finish', function() {
+        resolve(swlibOutputPath);
+      });
     });
   });
 };
