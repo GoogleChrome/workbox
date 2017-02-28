@@ -39,6 +39,12 @@ const getFileManifestEntries = (input) => {
       new Error(errors['invalid-root-directory']));
   }
 
+  if (!globPatterns || !Array.isArray(globPatterns)) {
+    /* eslint-disable no-console */
+    return Promise.reject(
+      new Error(errors['invalid-glob-patterns']));
+  }
+
   const fileSet = new Set();
 
   const fileDetails = globPatterns.reduce((accumulated, globPattern) => {
