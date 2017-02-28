@@ -34,8 +34,6 @@ if (!assert.isSWEnv()) {
  * @example <caption>Adding the Library to your project.</caption>
  * importScripts('/<Path to Module>/build/sw-lib.min.js');
  *
- * console.log(self.goog.swlib);
- *
  * @example <caption>Caching assets and registering routes.</caption>
  *
  * goog.swlib.cacheRevisionedAssets([
