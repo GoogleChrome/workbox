@@ -103,7 +103,7 @@ class Router {
    * @param {Array.<Route>} input.routes An array of routes to register.
    */
   registerRoutes({routes} = {}) {
-    assert.isInstance({routes}, Array);
+    assert.isArrayOfClass({routes}, Route);
 
     self.addEventListener('fetch', (event) => {
       const url = new URL(event.request.url);

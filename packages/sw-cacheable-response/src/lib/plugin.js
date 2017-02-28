@@ -27,7 +27,7 @@ import assert from '../../../../lib/assert';
  *   statuses: [0, 200, 404],
  *   headers: {
  *     'Example-Header-1': 'Header-Value-1'
- *     'Example-Header-1': 'Header-Value-2'
+ *     'Example-Header-2': 'Header-Value-2'
  *   }
  * })
  *
@@ -50,7 +50,7 @@ class Plugin {
   constructor({statuses, headers} = {}) {
     assert.atLeastOne({statuses, headers});
     if (statuses !== undefined) {
-      assert.isInstance({statuses}, Array);
+      assert.isArrayOfType({statuses}, 'number');
     }
     if (headers !== undefined) {
       assert.isType({headers}, 'object');

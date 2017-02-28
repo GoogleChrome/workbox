@@ -155,7 +155,7 @@ limitations under the License.
 [travis-url]: https://travis-ci.org/GoogleChrome/sw-helpers
 [travis-image]: https://travis-ci.org/GoogleChrome/sw-helpers.svg?branch=master
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/4ct8ph4d34c5ifnw?svg=true
-[appvayor-url]: https://ci.appveyor.com/project/gauntface/sw-helpers
+[appveyor-url]: https://ci.appveyor.com/project/gauntface/sw-helpers
 [dependency-url]: https://david-dm.org/GoogleChrome/sw-helpers/
 [dependency-image]: https://david-dm.org/GoogleChrome/sw-helpers/status.svg
 [dev-dependency-url]: https://david-dm.org/GoogleChrome/sw-helpers?type=dev

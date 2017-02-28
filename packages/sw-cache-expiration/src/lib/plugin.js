@@ -374,7 +374,7 @@ class Plugin {
    */
   async deleteFromCacheAndIDB({cacheName, urls} = {}) {
     assert.isType({cacheName}, 'string');
-    assert.isInstance({urls}, Array);
+    assert.isArrayOfType({urls}, 'string');
 
     if (urls.length > 0) {
       const cache = await this.getCache({cacheName});

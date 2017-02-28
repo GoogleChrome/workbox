@@ -25,6 +25,8 @@ import {Plugin as CacheExpirationPlugin} from
   '../../../sw-cache-expiration/src/index.js';
 import {Plugin as BroadcastCacheUpdatePlugin} from
   '../../../sw-broadcast-cache-update/src/index.js';
+import {Plugin as CacheableResponsePlugin} from
+  '../../../sw-cacheable-response/src/index.js';
 import {
   CacheFirst, CacheOnly, NetworkFirst,
   NetworkOnly, StaleWhileRevalidate, RequestWrapper,
@@ -197,6 +199,13 @@ class SWLib {
    *   broadcastCacheUpdate: {
    *     channelName: 'example-channel-name'
    *   },
+   *   cacheableResponse: {
+   *     statuses: [0, 200, 404],
+   *     headers: {
+   *       'Example-Header-1': 'Header-Value-1'
+   *       'Example-Header-2': 'Header-Value-2'
+   *     }
+   *   }
    *   plugins: [
    *     // Additional Plugins
    *   ]
@@ -323,6 +332,7 @@ class SWLib {
     const pluginParamsToClass = {
       'cacheExpiration': CacheExpirationPlugin,
       'broadcastCacheUpdate': BroadcastCacheUpdatePlugin,
+      'cacheableResponse': CacheableResponsePlugin,
     };
 
     const wrapperOptions = {
