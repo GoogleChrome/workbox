@@ -137,8 +137,8 @@ describe('cache-unrevisioned-e2e.js', function() {
       .concat(unrevisionedData['set-5'])
       .concat(unrevisionedData['set-6']);
 
-    const sw1 = 'data/sw/cache-unrevisioned-1.js';
-    const sw2 = 'data/sw/cache-unrevisioned-2.js';
+    const sw1 = '../static/sw/cache-unrevisioned-1.js';
+    const sw2 = '../static/sw/cache-unrevisioned-2.js';
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
       return testFileSet(iframe, sw1, allAssets1);
