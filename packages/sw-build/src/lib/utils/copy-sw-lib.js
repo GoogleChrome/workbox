@@ -10,12 +10,11 @@ module.exports = (rootDirectory) => {
 
   const swlibOutputPath = path.join(rootDirectory,
     `sw-lib.v${swlibPkg.version}.min.js`);
-  /** return new Promise((resolve) => {
+  return new Promise((resolve) => {
     fs.unlink(swlibOutputPath, (err) => {
       resolve();
     });
-  })**/
-  return Promise.resolve()
+  })
   .then(() => {
     return new Promise((resolve, reject) => {
       const swlibBuiltPath = path.join(swlibModulePath, 'build',
