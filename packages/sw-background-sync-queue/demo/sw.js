@@ -6,8 +6,12 @@ importScripts(
 );
 
 // Have the service worker take control as soon as possible.
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', () => self.clients.claim());
+self.addEventListener('install', (event) => {
+	event.waitUntil(self.skipWaiting());
+});
+self.addEventListener('activate', (event) => {
+	event.waitUntil(self.clients.claim());
+});
 
 // initialize bdQ
 goog.backgroundSyncQueue.initialize();
@@ -35,5 +39,3 @@ const route = new goog.routing.RegExpRoute({
 
 const router = new goog.routing.Router();
 router.registerRoute({route});
-
-
