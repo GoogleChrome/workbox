@@ -83,7 +83,7 @@ swBuild.generateFileManifest(swBuildConfig)
 
 ```
 
-## Option 2: Gulp Tasks
+## Option 2: [gulp](http://gulpjs.com/) Tasks
 
 The same basic code can be split up into two separate `gulp` tasks, if you
 already are using that for your build process.
