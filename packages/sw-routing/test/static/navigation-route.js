@@ -2,8 +2,8 @@
 
 importScripts('/packages/sw-routing/build/sw-routing.js');
 
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', () => self.clients.claim());
+self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
 
 const route = new goog.routing.NavigationRoute({
   whitelist: [new RegExp('navigation$')],
