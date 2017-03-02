@@ -237,7 +237,7 @@ describe('Generate SW End-to-End Tests', function() {
     process.chdir(tmpDirectory);
 
     fsExtra.copySync(
-      path.join(__dirname, 'example-projects', 'example-1'),
+      path.join(__dirname, 'static', 'example-project-1'),
       tmpDirectory);
 
     const swName = `${Date.now()}-sw.js`;
