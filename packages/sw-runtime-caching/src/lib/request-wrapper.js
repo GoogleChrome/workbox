@@ -194,9 +194,7 @@ class RequestWrapper {
     } catch (err) {
       if (this.pluginCallbacks.fetchDidFail) {
         for (let callback of this.pluginCallbacks.fetchDidFail) {
-          // New clone for every plugin, so taht one plugin's read/clone
-          // does not break other plugin
-          callback({request: clonedRequest.clone()});
+          callback({request: clonedRequest});
         }
       }
 
