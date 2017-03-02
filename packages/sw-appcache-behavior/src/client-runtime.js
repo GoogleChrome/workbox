@@ -15,6 +15,33 @@
 
 /* eslint-env browser */
 
+/**
+ * # sw-appcache-behavior
+ *
+ * A service worker implementation of the behavior defined in a page's App
+ * Cache manifest.
+ *
+ * In your web page you need to add the client-runtime.js file:
+ *
+ * ```
+ * <script src="../build/client-runtime.js"
+ *    data-service-worker="service-worker.js"></script>
+ * ```
+ *
+ * Then in your servier worker you must import the appcache-behavior-import.js
+ * file:
+ *
+ * ```
+ * importScripts('../build/appcache-behavior-import.js');
+ *
+ * self.addEventListener('fetch', (event) => {
+ *   event.respondWith(goog.appCacheBehavior.fetch(event));
+ * });
+ * ```
+ *
+ * @module sw-appcache-behavior
+ */
+
 import constants from './lib/constants.js';
 import idb from 'idb';
 import md5 from 'blueimp-md5';
