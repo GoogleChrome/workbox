@@ -31,7 +31,7 @@ describe('Routing Example', function() {
     );
 
     fsExtra.copySync(
-      path.join(__dirname, 'routing-demo'),
+      path.join(__dirname, 'static', 'routing-demo'),
       tmpDirectory);
 
     return testServer.start('.')
