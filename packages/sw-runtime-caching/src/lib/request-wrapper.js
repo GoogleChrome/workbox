@@ -178,7 +178,7 @@ class RequestWrapper {
    */
   async fetch({request}) {
     assert.atLeastOne({request});
-
+    const clonedRequest = request.clone();
     if (this.pluginCallbacks.requestWillFetch) {
       for (let callback of this.pluginCallbacks.requestWillFetch) {
         const returnedPromise = callback({request});
@@ -194,7 +194,9 @@ class RequestWrapper {
     } catch (err) {
       if (this.pluginCallbacks.fetchDidFail) {
         for (let callback of this.pluginCallbacks.fetchDidFail) {
-          callback({request});
+          // New clone for every plugin, so taht one plugin's read/clone
+          // does not break other plugin
+          callback({request: clonedRequest.clone()});
         }
       }
 
