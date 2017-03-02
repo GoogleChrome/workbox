@@ -1,5 +1,5 @@
 const proxyquire = require('proxyquire');
-const cliHelper = require('./helpers/cli-test-helper.js');
+const cliHelper = require('./utils/cli-test-helper.js');
 const errors = require('../src/lib/errors');
 
 describe('Test Get Config', function() {
