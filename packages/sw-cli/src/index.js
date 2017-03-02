@@ -25,6 +25,8 @@ const swBuild = require('sw-build');
 const logHelper = require('./lib/log-helper');
 const pkg = require('../package.json');
 const generateGlobPattern = require('./lib/utils/generate-glob-pattern');
+const saveConfigFile = require('./lib/utils/save-config');
+const getConfigFile = require('./lib/utils/get-config');
 
 const askForRootOfWebApp = require('./lib/questions/ask-root-of-web-app');
 const askForServiceWorkerName = require('./lib/questions/ask-sw-name');
@@ -134,37 +136,62 @@ class SWCli {
    * node process cleanly or not.
    */
   _generateSW() {
-    let rootDirPath;
-    let fileExtentionsToCache;
-    let serviceWorkerName;
+    let config = {};
 
-    return askForRootOfWebApp()
-    .then((rDirectory) => {
-      rootDirPath = rDirectory;
-      return askForExtensionsToCache(rootDirPath);
+    return getConfigFile()
+    .then((savedConfig) => {
+      if (savedConfig) {
+        config = savedConfig;
+        config.wasSaved = true;
+      }
     })
-    .then((extensionsToCache) => {
-      fileExtentionsToCache = extensionsToCache;
-      return askForServiceWorkerName();
+    .then(() => {
+      if (!config.rootDirectory) {
+        return askForRootOfWebApp()
+        .then((rDirectory) => {
+          // This will give a pretty relative path:
+          // '' => './'
+          // 'build' => './build/'
+          config.rootDirectory =
+            path.join('.', path.relative(process.cwd(), rDirectory), path.sep);
+        });
+      }
     })
-    .then((swName) => {
-      serviceWorkerName = swName;
-      return askSaveConfigFile();
+    .then(() => {
+      if (!config.globPatterns) {
+        return askForExtensionsToCache(config.rootDirectory)
+        .then((extensionsToCache) => {
+          config.globPatterns = [
+            generateGlobPattern(config.rootDirectory, extensionsToCache),
+          ];
+        });
+      }
     })
-    .then((sConfig) => {
-      const globPattern = generateGlobPattern(
-        rootDirPath, fileExtentionsToCache);
-
-      return swBuild.generateSW({
-        rootDirectory: rootDirPath,
-        globPatterns: [
-          globPattern,
-        ],
-        globIgnores: [
-          path.join(rootDirPath, serviceWorkerName),
-        ],
-        serviceWorkerName,
-      });
+    .then(() => {
+      if (!config.serviceWorkerName) {
+        return askForServiceWorkerName()
+        .then((swName) => {
+          config.serviceWorkerName = swName;
+          config.globIgnores = [
+            path.join(config.rootDirectory, swName),
+          ];
+        });
+      }
+    })
+    .then(() => {
+      if (!config.wasSaved) {
+        return askSaveConfigFile();
+      }
+      // False since it's already saved.
+      return false;
+    })
+    .then((saveConfig) => {
+      if (saveConfig) {
+        return saveConfigFile(config);
+      }
+    })
+    .then(() => {
+      return swBuild.generateSW(config);
     });
   }
 
