@@ -62,6 +62,7 @@ class RegExpRoute extends Route {
 
     const match = ({url}) => {
       const regexpMatches = url.href.match(regExp);
+
       // Return null immediately if this route doesn't match.
       if (!regexpMatches) {
         return null;
