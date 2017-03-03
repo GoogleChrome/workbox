@@ -18,8 +18,7 @@ module.exports = (rootDirectory) => {
   })
   .then(() => {
     return new Promise((resolve, reject) => {
-      const swlibBuiltPath = path.join(swlibModuleBuildPath, 'build',
-        'sw-lib.min.js');
+      const swlibBuiltPath = path.join(swlibModuleBuildPath, 'sw-lib.min.js');
 
       const stream = fs.createReadStream(swlibBuiltPath)
         .pipe(fs.createWriteStream(swlibOutputPath));
