@@ -92,7 +92,7 @@ A service worker helper library to retry offline Google Analytics requests when 
 
 **Install**: `npm install --save-dev sw-offline-google-analytics`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-offline-google-analytics.html) •
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/v0.0.8/sw-offline-google-analytics_src_index.js.html) •
                 [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-offline-google-analytics/demo)
 
 ### sw-precaching
