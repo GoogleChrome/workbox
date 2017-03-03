@@ -40,7 +40,6 @@ const getFileManifestEntries = (input) => {
   }
 
   if (!globPatterns || !Array.isArray(globPatterns)) {
-    /* eslint-disable no-console */
     return Promise.reject(
       new Error(errors['invalid-glob-patterns']));
   }
