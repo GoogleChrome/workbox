@@ -16,6 +16,7 @@ describe('Test of the Route class', function() {
   const handler = {
     handle: () => {},
   };
+  const functionHandler = () => {};
   const method = 'GET';
 
   const invalidHandler = {};
@@ -34,8 +35,12 @@ describe('Test of the Route class', function() {
     expect(() => new goog.routing.Route({handler})).to.throw();
   });
 
-  it(`should not throw when Route() is called with valid handler and match parameters`, function() {
+  it(`should not throw when Route() is called with valid handler.handle and match parameters`, function() {
     expect(() => new goog.routing.Route({handler, match})).not.to.throw();
+  });
+
+  it(`should not throw when Route() is called with a valid function handler and match parameters`, function() {
+    expect(() => new goog.routing.Route({handler: functionHandler, match})).not.to.throw();
   });
 
   it(`should throw when Route() is called with an invalid method`, function() {

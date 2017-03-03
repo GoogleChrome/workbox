@@ -16,11 +16,9 @@ self.addEventListener('activate', (event) => {
 
 const route = new goog.routing.ExpressRoute({
   path: '/packages/:project/demo/:file',
-  handler: {
-    handle: ({event, params}) => {
-      console.log('The matching params are', params);
-      return fetch(event.request);
-    },
+  handler: ({event, params}) => {
+    console.log('The matching params are', params);
+    return fetch(event.request);
   },
 });
 
