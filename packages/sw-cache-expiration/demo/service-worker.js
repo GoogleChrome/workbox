@@ -12,8 +12,12 @@ importScripts(
 );
 
 // Have the service worker take control as soon as possible.
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', () => self.clients.claim());
+self.addEventListener('install', (event) => {
+  event.waitUntil(self.skipWaiting());
+});
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
 
 // Configure a RequestWrapper to use a specific cache and impose a cache
 // expiration when it modifies that cache.

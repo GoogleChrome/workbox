@@ -2,12 +2,13 @@ only_commits:
   files:
     - packages/sw-cli/
     - appveyor.yml
+    - .travis.yml
     - package.json
 
 install:
   - ps: Install-Product node Stable
   - npm install
-  - npm install -g gulp lerna
+  - npm install -g gulp lerna@2.0.0-beta.38
   - gulp build --project sw-build
   - lerna bootstrap
   - cd packages/sw-cli/
