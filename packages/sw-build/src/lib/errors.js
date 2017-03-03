@@ -49,4 +49,6 @@ module.exports = {
     'must be an Object.',
   'invalid-manifest-format': `The value of the 'format' option passed to
     generateFileManifest() must be either 'iife' (the default) or 'es'.`,
+  'invalid-glob-patterns': `The 'globPatterns' value must be an array of ` +
+    `strings.`,
 };
