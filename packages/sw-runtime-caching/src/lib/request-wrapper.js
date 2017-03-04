@@ -178,7 +178,8 @@ class RequestWrapper {
    */
   async fetch({request}) {
     assert.atLeastOne({request});
-
+    const clonedRequest = this.pluginCallbacks.fetchDidFail ?
+      request.clone() : null;
     if (this.pluginCallbacks.requestWillFetch) {
       for (let callback of this.pluginCallbacks.requestWillFetch) {
         const returnedPromise = callback({request});
@@ -194,7 +195,7 @@ class RequestWrapper {
     } catch (err) {
       if (this.pluginCallbacks.fetchDidFail) {
         for (let callback of this.pluginCallbacks.fetchDidFail) {
-          callback({request});
+          callback({request: clonedRequest.clone()});
         }
       }
 
