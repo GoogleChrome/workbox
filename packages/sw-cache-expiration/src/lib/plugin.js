@@ -196,9 +196,10 @@ class Plugin {
    * @param {Object} input
    * @param {string} input.cacheName Name of the cache the responses belong to.
    * @param {Response} input.newResponse The new value in the cache.
+   * @param {string} input.url The URL for the cache entry.
    * @param {Number} [input.now] A timestamp. Defaults to the current time.
    */
-  cacheDidUpdate({cacheName, newResponse, now} = {}) {
+  cacheDidUpdate({cacheName, newResponse, url, now} = {}) {
     assert.isType({cacheName}, 'string');
     assert.isInstance({newResponse}, Response);
 
@@ -206,7 +207,7 @@ class Plugin {
       now = Date.now();
     }
 
-    this.updateTimestamp({cacheName, now, url: newResponse.url}).then(() => {
+    this.updateTimestamp({cacheName, url, now}).then(() => {
       this.expireEntries({cacheName, now});
     });
   }
