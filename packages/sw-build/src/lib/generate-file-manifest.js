@@ -43,15 +43,8 @@ const generateFileManifest = (input) => {
       new Error(errors['invalid-generate-file-manifest-arg']));
   }
 
-  const dest = input.dest;
-  const rootDirectory = input.rootDirectory;
-  const globPatterns = input.globPatterns;
-  const globIgnores = input.globIgnores;
-
-  const fileEntries = getFileManifestEntries({
-    rootDirectory, globPatterns, globIgnores,
-  });
-  return writeFileManifest(dest, fileEntries, input.format);
+  const fileEntries = getFileManifestEntries(input);
+  return writeFileManifest(input.dest, fileEntries, input.format);
 };
 
 module.exports = generateFileManifest;
