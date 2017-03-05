@@ -1,3 +1,4 @@
+const getCompositeDetails = require('./utils/get-composite-details');
 const getFileDetails = require('./utils/get-file-details');
 const filterFiles = require('./utils/filter-files');
 const errors = require('./errors');
@@ -33,6 +34,7 @@ const getFileManifestEntries = (input) => {
   const globPatterns = input.globPatterns;
   const globIgnores = input.globIgnores;
   const rootDirectory = input.rootDirectory;
+  const serverRenderedUrls = input.serverRenderedUrls;
 
   if (typeof rootDirectory !== 'string' || rootDirectory.length === 0) {
     return Promise.reject(
@@ -59,6 +61,34 @@ const getFileManifestEntries = (input) => {
     });
     return accumulated;
   }, []);
+
+  // serverRenderedUrls is optional.
+  if (serverRenderedUrls) {
+    if (typeof serverRenderedUrls !== 'object') {
+      return Promise.reject(new Error(errors['invalid-server-rendered-urls']));
+    }
+
+    for (let url of Object.keys(serverRenderedUrls)) {
+      if (fileSet.has(url)) {
+        return Promise.reject(
+          new Error(errors['server-rendered-url-matches-glob']));
+      }
+
+      const dependencyGlobs = serverRenderedUrls[url];
+      if (!Array.isArray(dependencyGlobs)) {
+        return Promise.reject(
+          new Error(errors['invalid-server-rendered-urls']));
+      }
+
+      const dependencyDetails = dependencyGlobs.reduce((previous, pattern) => {
+        const globbedFileDetails = getFileDetails(
+          rootDirectory, pattern, globIgnores);
+        return previous.concat(globbedFileDetails);
+      }, []);
+
+      fileDetails.push(getCompositeDetails(url, dependencyDetails));
+    }
+  }
 
   return filterFiles(fileDetails);
 };

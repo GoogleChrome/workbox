@@ -27,7 +27,10 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  *   dest: './build/scripts/manifest.js',
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
- *   globIgnores: ['admin.html']
+ *   globIgnores: ['admin.html'],
+ *   serverRenderedUrls: {
+ *     '/shell': ['shell.hbs', 'main.css', 'shell.css']
+ *   },
  * })
  * .then(() => {
  *   console.log('Build file has been created.');
@@ -39,7 +42,10 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  * swBuild.getFileManifestEntries({
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
- *   globIgnores: ['admin.html']
+ *   globIgnores: ['admin.html'],
+ *   serverRenderedUrls: {
+ *     '/shell': ['shell.hbs', 'main.css', 'shell.css']
+ *   },
  * })
  * .then((fileDetails) => {
  *   // An array of file details include a `url` and `revision` parameter.
@@ -52,6 +58,9 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
+ *   serverRenderedUrls: {
+ *     '/shell': ['shell.hbs', 'main.css', 'shell.css']
+ *   },
  *   serviceWorkerName: 'sw.js'
  * })
  * .then(() => {

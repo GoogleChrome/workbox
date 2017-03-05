@@ -44,6 +44,7 @@ const generateSW = function(input) {
   const rootDirectory = input.rootDirectory;
   const globPatterns = input.globPatterns;
   const globIgnores = input.globIgnores;
+  const serverRenderedUrls = input.serverRenderedUrls;
   const serviceWorkerName = input.serviceWorkerName;
 
   if (typeof rootDirectory !== 'string' || rootDirectory.length === 0) {
@@ -64,7 +65,7 @@ const generateSW = function(input) {
   })
   .then(() => {
     const manifestEntries = getFileManifestEntries(
-      {globPatterns, globIgnores, rootDirectory});
+      {globPatterns, globIgnores, rootDirectory, serverRenderedUrls});
     return writeServiceWorker(
       path.join(rootDirectory, serviceWorkerName),
       manifestEntries,
