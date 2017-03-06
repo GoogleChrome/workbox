@@ -118,9 +118,9 @@ class SWCli {
    */
   handleCommand(command, args, flags) {
     switch (command) {
-      case 'generate-sw':
+      case 'generate:sw':
         return this._generateSW();
-      case 'generate-manifest':
+      case 'generate:manifest':
         return this._generateBuildManifest();
       default:
         logHelper.error(`Invlaid command given '${command}'`);
@@ -155,15 +155,17 @@ class SWCli {
       const globPattern = generateGlobPattern(
         rootDirPath, fileExtentionsToCache);
 
+      const swDest = path.join(rootDirPath, serviceWorkerName);
+
       return swBuild.generateSW({
         rootDirectory: rootDirPath,
         globPatterns: [
           globPattern,
         ],
         globIgnores: [
-          path.join(rootDirPath, serviceWorkerName),
+          swDest,
         ],
-        serviceWorkerName,
+        dest: swDest,
       });
     });
   }

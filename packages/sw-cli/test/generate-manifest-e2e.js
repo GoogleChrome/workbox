@@ -132,7 +132,7 @@ describe('Generate Manifest End-to-End Tests', function() {
 
     const cli = new SWCli();
     return performTest(() => {
-      return cli.handleCommand('generate-manifest');
+      return cli.handleCommand('generate:manifest');
     }, {
       exampleProject: tmpDirectory,
       manifestName,

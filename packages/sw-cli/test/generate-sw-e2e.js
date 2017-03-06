@@ -252,7 +252,7 @@ describe('Generate SW End-to-End Tests', function() {
 
     const cli = new SWCli();
     return performTest(() => {
-      return cli.handleCommand('generate-sw');
+      return cli.handleCommand('generate:sw');
     }, {
       exampleProject: tmpDirectory,
       swName,
