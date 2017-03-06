@@ -281,7 +281,7 @@ describe('Generate SW End-to-End Tests', function() {
       // Should be able to handle command with no questions
       enforceNoQuestions = true;
       return performTest(() => {
-        return cli.handleCommand('generate-sw');
+        return cli.handleCommand('generate:sw');
       }, {
         exampleProject: tmpDirectory,
         swName,

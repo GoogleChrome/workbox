@@ -168,7 +168,7 @@ class SWCli {
       }
     })
     .then(() => {
-      if (!config.serviceWorkerName) {
+      if (!config.dest) {
         return askForServiceWorkerName()
         .then((swName) => {
           const swDest = path.join(config.rootDirectory, swName);
