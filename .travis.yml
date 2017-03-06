@@ -39,3 +39,4 @@ before_script:
 script:
   # Building is handled in gulp test.
   - gulp test --project "${PROJECT}"
+  - if [[ "$TRAVIS_BRANCH" = "master" && "$TRAVIS_PULL_REQUEST" = "false" ]]; then npm install -g npm-publish-scripts && npm-publish-scripts publish-docs --non-interactive; fi
