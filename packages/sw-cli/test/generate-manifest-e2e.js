@@ -111,7 +111,7 @@ describe('Generate Manifest End-to-End Tests', function() {
     this.timeout(60 * 1000);
 
     fsExtra.copySync(
-      path.join(__dirname, 'example-projects', 'example-1'),
+      path.join(__dirname, 'static', 'example-project-1'),
       tmpDirectory);
 
     const relativeProjPath = path.relative(process.cwd(), tmpDirectory);

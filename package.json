@@ -53,7 +53,7 @@
     "gulp-spawn-mocha": "^3.1.0",
     "handlebars": "^4.0.6",
     "jsdoc-strip-async-await": "^0.1.0",
-    "lerna": "2.0.0-beta.37",
+    "lerna": "2.0.0-beta.38",
     "minimist": "^1.2.0",
     "mockdate": "^2.0.1",
     "operadriver": "^1.0.0",

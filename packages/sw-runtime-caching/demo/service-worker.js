@@ -8,8 +8,12 @@ importScripts(
 );
 
 // Have the service worker take control as soon as possible.
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', () => self.clients.claim());
+self.addEventListener('install', (event) => {
+  event.waitUntil(self.skipWaiting());
+});
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
 
 const requestWrapper = new goog.runtimeCaching.RequestWrapper({
   cacheName: 'text-files',
