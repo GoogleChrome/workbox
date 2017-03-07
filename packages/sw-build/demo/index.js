@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 const swBuild = require('sw-build');
 
 swBuild.generateFileManifest({

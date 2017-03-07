@@ -1,3 +1,5 @@
+/* global goog */
+
 importScripts('./sw-lib.v0.0.13.min.js');
 importScripts('./manifest.123456.js');
 
@@ -8,7 +10,10 @@ goog.swlib.router.registerRoute('/example/', goog.swlib.staleWhileRevalidate());
 
 // A regular expression to catch a range of strings.
 // These only need to match part of the URL.
-goog.swlib.router.registerRoute(/\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/, goog.swlib.cacheFirst());
+goog.swlib.router.registerRoute(
+  /\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
+  goog.swlib.cacheFirst()
+);
 
 // Use express style routes to capture URLs
 goog.swlib.router.registerRoute('/styles/:filename', goog.swlib.cacheFirst());
