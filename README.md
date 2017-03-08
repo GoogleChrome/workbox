@@ -6,6 +6,56 @@
 
 # SW Helpers
 
+## Contents
+
+- [Ways to Use the Libraries](#ways-to-use-the-libraries)
+- [Setting Up](#setting-up)
+- [Using](#using)
+- [The Libraries](#the-libraries)
+  - [sw-appcache-behavior](#sw-appcache-behavior)
+  - [sw-broadcast-cache-update](#sw-broadcast-cache-update)
+  - [sw-build](#sw-build)
+  - [sw-cache-expiration](#sw-cache-expiration)
+  - [sw-cli](#sw-cli)
+  - [sw-lib](#sw-lib)
+  - [sw-offline-google-analytics](#sw-offline-google-analytics)
+  - [sw-precaching](#sw-precaching)
+  - [sw-routing](#sw-routing)
+  - [sw-runtime-caching](#sw-runtime-caching)
+- [External Contributions](#external-contributions)
+- [License](#license)
+
+The sw-helpers library is ...
+
+## Ways to Use the Libraries
+
+Despite the number of modules in this package, there are a number of approaches to using these tools which many be used separately or together in any number of combinations.
+
+* **Basic caching strategies**: Use [sw-lib](.) to quickly implement one of the
+  [standard caching strategies](.).
+* **Build process**: Incorporate sw-helpers into your build process using
+  [sw-build](.).
+* **Command line**: Use a command line interface to generate a basic service
+  worker and play around with the features of the library.
+* **Go beyond the basics**: Implement more advanced capabilities and more
+  sophisticated use cases using any of the other libraries, which are described
+  below.
+
+## Setting Up
+
+Each module is installed separately using the command line [as listed below](#the-libraries). To use a particular module:
+
+1. Install the module. For example:
+   `npm install --save-dev sw-lib`
+2. Copy the module and map files to your serving directory. To work properly these must be in the same directory as your service worker. For example:
+   `cp node_modules/sw-lib/build/* app/`
+3. Import the modules to your service worker file. For example:
+   `importScripts('sw-lib.min.js');`
+
+# Using
+
+As listed under [The Libraries](#the-libraries), each module has an _About_ page with basic usage instructions and a _Demo_ directory with an example. The main page of the documentation is [here](https://googlechrome.github.io/sw-helpers/#main).
+
 ## The Libraries
 ### sw-appcache-behavior
 
