@@ -27,6 +27,7 @@ syntax, and is structured like:
 ```js
 // Contents of src/sw.js:
 
+// manifest.js will be created by sw-build; see the next section for details.
 import manifest from '/tmp/manifest.js';
 import swLib from 'sw-lib';
 // imports for any other libraries, e.g. idb-keyval, Firebase Messaging, etc.
@@ -39,9 +40,10 @@ swLib.cacheRevisionedAssets(manifest);
 
 ## Your Build Process
 
-Here are two alternatives that lead to an equivalent, ready-to-deploy service
-worker file. You can choose between them based on whether you'd prefer using
-`npm scripts` or `gulp` as your task runner.
+There are many different ways of running build tasks, and they can't be listed
+exhaustively. Here are recipes that cover two possible approaches, producing the
+same ready-to-use service worker as output. You can choose between them based on
+whether you'd prefer using `npm scripts` or `gulp` as your task runner.
 
 **Note:** Regardless of which task runner you're using, make sure that the
 generation of the service worker file happens *last* in the chain of your build
@@ -52,7 +54,8 @@ tasks. This ensures that the service worker looks at the final contents of your
 
 The following is a basic `node` script that can be run as part of a larger build
 process, e.g. in `package.json` at the end of an
-[`npm scripts`](https://docs.npmjs.com/misc/scripts) `"build"` chain.
+[`npm scripts`](https://docs.npmjs.com/misc/scripts) `"build"` chain, like:
+`"scripts": {"build": "node build.js && node build-sw.js"}`
 
 ```js
 // Contents of build-sw.js:
@@ -95,8 +98,8 @@ swBuild.generateFileManifest({
 
 ### `gulp Tasks`
 
-The same basic code can be split up into two separate `gulp` tasks, if you
-already are using that for your build process.
+The same basic approach can be run via two `gulp` tasks, if you prefer using
+`gulp` to run build tasks:
 
 ```js
 const gulp = require('gulp');
