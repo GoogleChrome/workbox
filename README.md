@@ -46,10 +46,13 @@ Despite the number of modules in this package, there are a number of approaches 
 Each module is installed separately using the command line [as listed below](#the-libraries). To use a particular module:
 
 1. Install the module. For example:
+
    `npm install --save-dev sw-lib`
 2. Copy the module and map files to your serving directory. To work properly these must be in the same directory as your service worker. For example:
+
    `cp node_modules/sw-lib/build/* app/`
 3. Import the modules to your service worker file. For example:
+
    `importScripts('sw-lib.min.js');`
 
 # Using
