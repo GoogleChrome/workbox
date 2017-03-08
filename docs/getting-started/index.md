@@ -25,7 +25,8 @@ npm install -g sw-cli
 ## Generating a Service Worker
 
 To generate a service worker for your project just run
-the CLI with the 'generate:sw' command.
+the CLI with the 'generate:sw' command in the root of
+your poject.
 
 ```
 sw-cli generate:sw
