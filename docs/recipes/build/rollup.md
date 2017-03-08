@@ -1,13 +1,26 @@
-# [Rollup](https://github.com/rollup/rollup) Bundling
+# Rollup-based Bundling
+
+These recipes cover the following `sw-lib` use case:
+- You want to write and maintain your own `sw.js` file that uses precaching via
+`sw-lib.cacheRevisionedAssets()` alongside other service worker logic.
+- You'd like to use [ES2015 import syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
+to include `sw-lib` and other modules into your service worker.
+- You are comfortable using [`Rollup`](https://github.com/rollup/rollup) to
+handle transforming the `sw.js` file you maintain into a production-ready,
+self contained service worker file, containing the `sw-lib` library code along
+with your custom logic.
+- You are comfortable using either [`gulp`](http://gulpjs.com/) or
+[`npm scripts`](https://docs.npmjs.com/misc/scripts) as a task runner for your
+build process.
 
 ## Dependencies
 
-- A working installation of `node` (4.0+) & `npm`.
+- Working installations of `node` (4.0+) & `npm`.
 - `npm install --save-dev sw-build sw-lib rollup rollup-plugin-node-resolve`
 
 ## Service Worker Code
 
-This approach assumes that your `src/sw.js` file is using [ES2015 module
+This approach assumes that you have a `src/sw.js` that uses [ES2015 module
 import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
 syntax, and is structured like:
 
@@ -16,23 +29,30 @@ syntax, and is structured like:
 
 import manifest from '/tmp/manifest.js';
 import swLib from 'sw-lib';
-// import other libraries, e.g. idb-keyval, Firebase Messaging, etc.
+// imports for any other libraries, e.g. idb-keyval, Firebase Messaging, etc.
 
+// This will precache the files in your manifest, and keep them up to date.
 swLib.cacheRevisionedAssets(manifest);
 
-// Additional runtime service worker logic goes here.
+// Any additional runtime service worker logic can go here.
 ```
 
-## Option 1: Vanilla node Build Script
+## Your Build Process
 
-The following is a basic `node` build script that can be run as part of a larger
-build process, e.g. in `package.json` at the end of an
-[`npm scripts`](https://docs.npmjs.com/misc/scripts) `"build"` chain as
-`&& node build-sw.js`.
+Here are two alternatives that lead to an equivalent, ready-to-deploy service
+worker file. You can choose between them based on whether you'd prefer using
+`npm scripts` or `gulp` as your task runner.
 
-**Note:** Make sure that this code runs last in the build chain, so that it
-picks up all the ready-to-deploy files that have been copied to your `build/`
-directory.
+**Note:** Regardless of which task runner you're using, make sure that the
+generation of the service worker file happens *last* in the chain of your build
+tasks. This ensures that the service worker looks at the final contents of your
+`build/` directory when determining which files to precache and keep up to date.
+
+### `npm scripts`
+
+The following is a basic `node` script that can be run as part of a larger build
+process, e.g. in `package.json` at the end of an
+[`npm scripts`](https://docs.npmjs.com/misc/scripts) `"build"` chain.
 
 ```js
 // Contents of build-sw.js:
@@ -45,52 +65,38 @@ const swBuild = require('sw-build');
 const SRC_DIR = 'src';
 const BUILD_DIR = 'build';
 
-const swBuildConfig = {
-  // The dest: option should match the path for manifest.js you provide in your
-  // unbundled service worker file.
-  dest: '/tmp/manifest.js',
-  // Configure patterns to match the files your want the SW to manage.
-  // See https://github.com/isaacs/node-glob##glob-primer
-  globPatterns: [
-    `./${BUILD_DIR}/{css,images,js}/**/*`,
-    `./${BUILD_DIR}/index.html`,
-  ],
-  rootDirectory: BUILD_DIR,
-  format: 'es',
-};
-
-const rollupConfig = {
-  // This should point to your unbundled service worker code.
-  entry: `${SRC_DIR}/sw.js`,
-  plugins: [resolve({
-    jsnext: true,
-    main: true,
-    browser: true,
-  })],
-};
-
-const bundleConfig = {
-  format: 'iife',
-  dest: `${BUILD_DIR}/sw.js`,
-};
-
-// manifest generation ->
-//   rollup configuration ->
-//   write bundle to disk
-swBuild.generateFileManifest(swBuildConfig)
-  .then(() => rollup(rollupConfig))
-  .then((bundle) => bundle.write(bundleConfig));
-
+// The promise chain can be summarized as:
+//   manifest generation -> rollup configuration -> write bundle to disk
+swBuild.generateFileManifest({
+ // The dest: option should match the path for manifest.js you provide in your
+ // unbundled service worker file.
+ dest: '/tmp/manifest.js',
+ // Configure patterns to match the files your want the SW to manage.
+ // See https://github.com/isaacs/node-glob##glob-primer
+ globPatterns: [
+   `./${BUILD_DIR}/{css,images,js}/**/*`,
+   `./${BUILD_DIR}/index.html`,
+ ],
+ rootDirectory: BUILD_DIR,
+ format: 'es',
+}).then(() => rollup({
+ // This should point to your unbundled service worker code.
+ entry: `${SRC_DIR}/sw.js`,
+ plugins: [resolve({
+   jsnext: true,
+   main: true,
+   browser: true,
+ })],
+})).then((bundle) => bundle.write({
+ format: 'iife',
+ dest: `${BUILD_DIR}/sw.js`,
+}));
 ```
 
-## Option 2: [gulp](http://gulpjs.com/) Tasks
+### `gulp Tasks`
 
 The same basic code can be split up into two separate `gulp` tasks, if you
 already are using that for your build process.
-
-**Note:** As with before, make sure that you run the `write-sw` task at the very
-end of your `gulp` task chain, to ensure that it picks up the final,
-ready-to-deploy files in your `build/` directory.
 
 ```js
 const gulp = require('gulp');
@@ -102,6 +108,7 @@ const swBuild = require('sw-build');
 const SRC_DIR = 'src';
 const BUILD_DIR = 'build';
 
+// This task should be invoked as a dependency of bundle-sw.
 gulp.task('write-manifest', () => {
   return swBuild.generateFileManifest({
     // The dest: option should match the path for manifest.js you provide in your
@@ -118,7 +125,9 @@ gulp.task('write-manifest', () => {
   });
 });
 
-gulp.task('write-sw', ['write-manifest'], () => {
+// ['write-manifest'] defines that task as a dependency, so running the
+// bundle-sw task will always invoke write-manifest first.
+gulp.task('bundle-sw', ['write-manifest'], () => {
   return rollup({
     // This should point to your unbundled service worker code.
     entry: `${SRC_DIR}/sw.js`,
