@@ -24,7 +24,9 @@ env:
   - PROJECT="sw-runtime-caching"
 
 install:
-  - npm install -g gulp-cli lerna
+  # Install specific version of lerna - otherwise a lerna.json mismatch will
+  # fail future builds.
+  - npm install -g gulp-cli lerna@2.0.0-beta.38
   - npm install
   - lerna bootstrap --scope "${PROJECT}" --include-filtered-dependencies
 

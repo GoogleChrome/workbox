@@ -11,8 +11,7 @@ module.exports = {
   'invalid-file-manifest-name': 'The File Manifest Name must have at lease ' +
     'one character.',
   'unable-to-get-file-manifest-name': 'Unable to get a file manifest name.',
-  'invalid-sw-name': 'The service worker file name must have at least one' +
-    'character.',
+  'invalid-dest': `The 'dest' value must be a valid path.`,
   'unable-to-get-sw-name': 'Unable to get a service worker file name.',
   'unable-to-get-save-config': 'An error occured when asking to save details' +
     'in a config file.',
@@ -49,4 +48,6 @@ module.exports = {
     'must be an Object.',
   'invalid-manifest-format': `The value of the 'format' option passed to
     generateFileManifest() must be either 'iife' (the default) or 'es'.`,
+  'invalid-glob-patterns': `The 'globPatterns' value must be an array of ` +
+    `strings.`,
 };

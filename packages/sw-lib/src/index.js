@@ -34,8 +34,6 @@ if (!assert.isSWEnv()) {
  * @example <caption>Adding the Library to your project.</caption>
  * importScripts('/<Path to Module>/build/sw-lib.min.js');
  *
- * console.log(self.goog.swlib);
- *
  * @example <caption>Caching assets and registering routes.</caption>
  *
  * goog.swlib.cacheRevisionedAssets([
@@ -56,6 +54,27 @@ if (!assert.isSWEnv()) {
  *   /\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/, goog.swlib.cacheFirst());
  * goog.swlib.router.registerRoute(
  *   '/styles/:filename', goog.swlib.cacheFirst());
+ *
+ * @example <caption>Using plugins with caching strategies.</caption>
+ *
+ * goog.swlib.router.registerRoute(/\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
+ *   goog.swlib.cacheFirst({
+ *     cacheName: 'example-cache',
+ *     cacheExpiration: {
+ *       maxEntries: 10,
+ *       maxAgeSeconds: 7 * 24 * 60 * 60
+ *     },
+ *     cacheableResponse: {
+ *       statuses: [0, 200]
+ *     },
+ *     broadcastCacheUpdate: {
+ *       channelName: 'example-channel-name'
+ *     },
+ *     plugins: [
+ *       // Additional Plugins
+ *     ]
+ *   })
+ * );
  *
  * @module sw-lib
  */

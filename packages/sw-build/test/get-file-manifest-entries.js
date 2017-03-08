@@ -57,6 +57,31 @@ describe('Test getFileManifestEntries', function() {
     }, Promise.resolve());
   });
 
+  it('should detect bad globPatterns', function() {
+    const badInput = [
+      undefined,
+      null,
+      '',
+      true,
+      false,
+    ];
+    return badInput.reduce((promiseChain, input) => {
+      return promiseChain.then(() => {
+        let args = Object.assign({}, EXAMPLE_INPUT);
+        args.globPatterns = input;
+        return swBuild.getFileManifestEntries(args)
+        .then(() => {
+          throw new Error('Expected to throw error.');
+        })
+        .catch((err) => {
+          if (err.message !== errors['invalid-glob-patterns']) {
+            throw new Error('Unexpected error: ' + err.message);
+          }
+        });
+      });
+    }, Promise.resolve());
+  });
+
   it('should return file entries through each phase', function() {
     const testInput = {
       globPatterns: [

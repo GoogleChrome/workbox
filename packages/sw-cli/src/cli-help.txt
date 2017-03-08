@@ -5,8 +5,8 @@ Usage:
 
 Commands:
 
-    generate-sw
-    build-file-manifest
+    generate:sw
+    generate:manifest
 
 Options
 
