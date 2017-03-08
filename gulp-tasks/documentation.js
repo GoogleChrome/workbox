@@ -14,6 +14,8 @@
 */
 
 const gulp = require('gulp');
+const fs = require('fs');
+const path = require('path');
 const rename = require('gulp-rename');
 const handlebars = require('gulp-compile-handlebars');
 const {globPromise, taskHarness} = require('../utils/build');
@@ -26,14 +28,23 @@ const {globPromise, taskHarness} = require('../utils/build');
 const documentPackage = (projectPath) => {
   const projectMetadata = require(`${projectPath}/package.json`);
   return new Promise((resolve) => {
+    const handleBarsData = {
+      name: projectMetadata.name,
+      description: projectMetadata.description,
+      background: projectMetadata.background,
+    };
+
+    try {
+      const demoStats = fs.statSync(path.join(projectPath, 'demo'));
+      handleBarsData.hasDemo = demoStats.isDirectory();
+    } catch(err) {
+      handleBarsData.hasDemo = false;
+    }
+
     // First, use metadata require(package.json to write out an initial
     // README.md.
     gulp.src('templates/Project-README.hbs')
-      .pipe(handlebars({
-        name: projectMetadata.name,
-        description: projectMetadata.description,
-        background: projectMetadata.background,
-      }))
+      .pipe(handlebars(handleBarsData))
       .pipe(rename('README.md'))
       .pipe(gulp.dest(projectPath))
       .on('end', resolve);
@@ -53,7 +64,25 @@ gulp.task('documentation:repo', () => {
   return new Promise((resolve) => {
     // First, generate a repo README.md based on metadata from each project.
     return globPromise('packages/*/package.json')
-      .then((pkgs) => pkgs.map((pkg) => require(`../${pkg}`)))
+      .then((pkgs) => {
+        return pkgs.map((pkg) => {
+          const projectMetadata = require(`../${pkg}`);
+          projectMetadata.path = path.join(pkg, '..');
+          return projectMetadata;
+        });
+      })
+      .then((projects) => {
+        return projects.map((project) => {
+          try {
+            const demoStats = fs.statSync(path.join(project.path, 'demo'));
+            project.hasDemo = demoStats.isDirectory();
+          } catch(err) {
+            project.hasDemo = false;
+          }
+
+          return project;
+        });
+      })
       .then((projects) => {
         gulp.src('templates/README.hbs')
           .pipe(handlebars({projects: projects}))
