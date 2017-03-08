@@ -10,7 +10,6 @@
 
 - [Ways to Use the Libraries](#ways-to-use-the-libraries)
 - [Setting Up](#setting-up)
-- [Using](#using)
 - [The Libraries](#the-libraries)
   - [sw-appcache-behavior](#sw-appcache-behavior)
   - [sw-broadcast-cache-update](#sw-broadcast-cache-update)
@@ -55,11 +54,10 @@ Each module is installed separately using the command line [as listed below](#th
 
    `importScripts('sw-lib.min.js');`
 
-# Using
-
-As listed under [The Libraries](#the-libraries), each module has an _About_ page with basic usage instructions and a _Demo_ directory with an example. The main page of the documentation is [here](https://googlechrome.github.io/sw-helpers/#main).
-
 ## The Libraries
+
+All of the modules are described below. Each has an _About_ page with basic usage instructions and a _Demo_ directory with an example. The main page of the documentation is [here](https://googlechrome.github.io/sw-helpers/#main).
+
 ### sw-appcache-behavior
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-appcache-behavior%22)][travis-url]
