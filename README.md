@@ -40,6 +40,17 @@ A helper library that uses the Broadcast Channel API to announce when two Respon
 **Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-broadcast-cache-update.html) •
                 [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-broadcast-cache-update/demo)
 
+### sw-build
+
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-build%22)][travis-url]
+
+This module can be used to generate a file manifest or service worker, that can be used with sw-lib.
+
+**Install**: `npm install --save-dev sw-build`
+
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-build.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-build/demo)
+
 ### sw-cache-expiration
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cache-expiration%22)][travis-url]
