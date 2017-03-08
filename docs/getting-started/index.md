@@ -9,16 +9,14 @@ navigation_weight: 1
 If you are completely new to service workers and sw-helpers,
 the easiest place to start with `sw-cli`.
 
-This is a command line tool that can build you a service
+This is a command line tool that can build a service
 worker that will precache the assets for your site so that
 it can work offline.
 
 ## Install
 
-The command line tool uses Node to run, so make sure you
-have [Node installed before proceeding](https://nodejs.org/en/).
-
-Once you have Node, you can get `sw-cli` from NPM by running:
+1. [Install Node.js](https://nodejs.org/en/).
+2. Install `sw-cli` using NPM.
 
 ```
 npm install -g sw-cli
@@ -34,8 +32,8 @@ sw-cli generate:sw
 ```
 
 This will ask a range of questions about your web app like
-which directory contains the assets for site, which assets
-you'd like cache etc.
+which directory contains the assets for your site, which assets
+you'd like cache etc..
 
 ![Screenshot of the sw-cli command.](./images/sw-cli-questions.png)
 
@@ -90,7 +88,7 @@ self.goog.swlib.cacheRevisionedAssets(fileManifest);
 
 The service worker imports the `sw-lib` file which is
 a library that manages the precaching and returning
-of assets when the browser requests thems.
+of assets when the browser requests them.
 
 The `fileManifest` is an array of all the assets in your
 web app. Each file entry consists of a URL and a revision.
@@ -107,7 +105,7 @@ you can carry on using the CLI as is.
 
 Otherwise maybe you'll want to explore one of the following.
 
-### Generating SW in Build Process
+### Generating SW in a Build Process
 
 If you have a build process, you might want to use the
 `sw-build` module instead of using `sw-cli`.
