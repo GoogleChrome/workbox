@@ -1,7 +1,8 @@
 describe('Service Worker Unit Test Registration', function() {
   const pathPrefix = '../sw/';
   const swUnitTests = [
-    'plugin.js',
+    'broadcast-cache-update.js',
+    'broadcast-cache-update-plugin.js',
     'broadcast-update.js',
     'namespace.js',
     'responses-are-same.js',

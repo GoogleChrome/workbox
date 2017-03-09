@@ -18,12 +18,12 @@ import {cacheUpdatedMessageType} from './constants';
 
 /**
  * You would not normally call this method directly; it's called automatically
- * by an instance of the {@link Plugin} class. It's exposed here for the
- * benefit of developers who would rather not use the full `Plugin`
- * implementation.
+ * by an instance of the {@link BroadcastCacheUpdate} class. It's exposed here
+ * for the benefit of developers who would rather not use the full
+ * `BroadcastCacheUpdate` implementation.
  *
  * Calling this will dispatch a message on the provided {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel}
- * to notifiy interested subscribers about a change to a cached resource.
+ * to notify interested subscribers about a change to a cached resource.
  *
  * The message that's posted has a formation inspired by the
  * [Flux standard action](https://github.com/acdlite/flux-standard-action#introduction)

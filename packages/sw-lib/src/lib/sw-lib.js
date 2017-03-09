@@ -23,7 +23,7 @@ import {
 import {Route} from '../../../sw-routing/src/index.js';
 import {Plugin as CacheExpirationPlugin} from
   '../../../sw-cache-expiration/src/index.js';
-import {Plugin as BroadcastCacheUpdatePlugin} from
+import {BroadcastCacheUpdatePlugin} from
   '../../../sw-broadcast-cache-update/src/index.js';
 import {Plugin as CacheableResponsePlugin} from
   '../../../sw-cacheable-response/src/index.js';

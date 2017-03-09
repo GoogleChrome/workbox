@@ -11,15 +11,15 @@ mocha.setup({
   reporter: null,
 });
 
-describe('Test of the Plugin class', function() {
+describe('Test of the BroadcastCacheUpdate class', function() {
   const channelName = 'test-channel';
   const headersToCheck = ['one', 'two'];
   const source = 'test-source';
 
-  it(`should throw when Plugin() is called without any parameters`, function() {
+  it(`should throw when BroadcastCacheUpdate() is called without any parameters`, function() {
     let thrownError = null;
     try {
-      new goog.broadcastCacheUpdate.Plugin();
+      new goog.broadcastCacheUpdate.BroadcastCacheUpdate();
     } catch(err) {
       thrownError = err;
     }
@@ -28,38 +28,38 @@ describe('Test of the Plugin class', function() {
   });
 
   it(`should use the channelName from the constructor`, function() {
-    const plugin = new goog.broadcastCacheUpdate.Plugin({channelName});
-    expect(plugin.channelName).to.equal(channelName);
+    const bcu = new goog.broadcastCacheUpdate.BroadcastCacheUpdate({channelName});
+    expect(bcu.channelName).to.equal(channelName);
   });
 
   it(`should use the headersToCheck from the constructor`, function() {
-    const plugin = new goog.broadcastCacheUpdate.Plugin({channelName, headersToCheck});
-    expect(plugin.headersToCheck).to.equal(headersToCheck);
+    const bcu = new goog.broadcastCacheUpdate.BroadcastCacheUpdate({channelName, headersToCheck});
+    expect(bcu.headersToCheck).to.equal(headersToCheck);
   });
 
   it(`should use a default value for headersToCheck when one isn't provided`, function() {
-    const plugin = new goog.broadcastCacheUpdate.Plugin({channelName});
-    expect(plugin.headersToCheck).to.not.be.empty;
+    const bcu = new goog.broadcastCacheUpdate.BroadcastCacheUpdate({channelName});
+    expect(bcu.headersToCheck).to.not.be.empty;
   });
 
   it(`should use the source from the constructor`, function() {
-    const plugin = new goog.broadcastCacheUpdate.Plugin({channelName, source});
-    expect(plugin.source).to.equal(source);
+    const bcu = new goog.broadcastCacheUpdate.BroadcastCacheUpdate({channelName, source});
+    expect(bcu.source).to.equal(source);
   });
 
   it(`should use a default value for source when one isn't provided`, function() {
-    const plugin = new goog.broadcastCacheUpdate.Plugin({channelName});
-    expect(plugin.source).to.not.be.empty;
+    const bcu = new goog.broadcastCacheUpdate.BroadcastCacheUpdate({channelName});
+    expect(bcu.source).to.not.be.empty;
   });
 
   it(`should create and reuse a BroadcastChannel based on channelName`, function() {
-    const plugin = new goog.broadcastCacheUpdate.Plugin({channelName});
-    const broadcastChannel = plugin.channel;
+    const bcu = new goog.broadcastCacheUpdate.BroadcastCacheUpdate({channelName});
+    const broadcastChannel = bcu.channel;
     expect(broadcastChannel).to.be.instanceof(BroadcastChannel);
-    // plugin.channel is a getter that create a BroadcastChannel the first
+    // bcu.channel is a getter that create a BroadcastChannel the first
     // time it's called, and this test confirms that it returns the same
     // BroadcastChannel object when called twice.
-    expect(broadcastChannel).to.eql(plugin.channel);
+    expect(broadcastChannel).to.eql(bcu.channel);
     expect(broadcastChannel.name).to.equal(channelName);
   });
 });
