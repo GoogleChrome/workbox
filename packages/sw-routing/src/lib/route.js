@@ -70,11 +70,11 @@ class Route {
    *        and `event`, which is a [FetchEvent](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent).
    *        `match` should return a truthy value when the route applies, and
    *        that value is passed on to the handle function.
-   * @param {Object|function} input.handler An Object with a `handle` method, or
-   *        a function. As parameters, the handler is passed object with the
-   *        same `url` and `event` properties as `match` received, along with an
-   *        additional property, `params`, set to the truthy value `match`
-   *        returned.
+   * @param {function|Object} input.handler A function, or an Object with a
+   *        `handle` method. As parameters, the handler is passed object with
+   *        the same `url` and `event` properties as `match` received, along
+   *        with an additional property, `params`, set to the truthy value
+   *        `match` returned.
    * @param {string} [input.method] Only match requests that use this
    *        HTTP method. Defaults to `'GET'` if not specified.
    */
