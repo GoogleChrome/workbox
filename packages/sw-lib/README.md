@@ -6,9 +6,6 @@ A service worker library to make managing fetch requests and caching as easy as 
 
 `npm install --save-dev sw-lib`
 
-## Demo
-
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-lib/demo).
 
 ## Reference Docs
 

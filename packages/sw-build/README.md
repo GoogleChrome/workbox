@@ -6,9 +6,6 @@ This module can be used to generate a file manifest or service worker, that can 
 
 `npm install --save-dev sw-build`
 
-## Demo
-
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-build/demo).
 
 ## Reference Docs
 
