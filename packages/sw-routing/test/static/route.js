@@ -18,9 +18,12 @@ routes.push(new goog.routing.Route({
   method: 'PUT',
 }));
 
+// Explicitly test the `handler: Object.handle` syntax here.
 routes.push(new goog.routing.Route({
   match: ({url}) => url.pathname.endsWith('echobody'),
-  handler: ({event}) => event.request.text().then((body) => new Response(body)),
+  handler: {
+    handle: ({event}) => event.request.text().then((txt) => new Response(txt)),
+  },
   method: 'POST',
 }));
 
