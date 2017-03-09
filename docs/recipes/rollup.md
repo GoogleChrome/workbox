@@ -1,3 +1,9 @@
+---
+layout: index
+title: Rollup Bundling
+navigation_weight: 1
+---
+
 # Rollup-based Bundling
 
 These recipes cover the following `sw-lib` use case:

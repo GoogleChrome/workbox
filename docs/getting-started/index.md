@@ -114,7 +114,7 @@ If you have a build process, you might want to use the
 It allows you to generate the service worker  
 programmatically.
 
-[Learn More About sw-build Here](.)
+[Learn More About sw-build Here](../reference-docs/stable/latest/module-sw-build.html#main)
 
 ### Precaching in Your Own Service Worker
 
@@ -127,10 +127,10 @@ For this you have a few options.
 Both `sw-cli` and `sw-build` can be used to produce a
 list of assets in your web app with the revision
 information which can be used for precaching. We have
-[recipes on how to do this](.).
+[recipes on how to do this](../recipes#main).
 
 You can then use `sw-lib` to perform the precaching and
 you can define custom routes and add anything else you
 desire to your service worker.
 
-[Learn More About sw-lib Here](.)
+[Learn More About sw-lib Here](../reference-docs/stable/latest/module-sw-lib.html#main)
