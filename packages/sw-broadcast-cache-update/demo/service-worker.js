@@ -2,9 +2,9 @@
 /* global goog */
 
 importScripts(
-  '../build/routing.min.js',
-  '../../sw-runtime-caching/build/runtime-caching.min.js',
-  '../../sw-broadcast-cache-update/build/broadcast-cache-update.min.js'
+  '../build/routing.js',
+  '../../sw-runtime-caching/build/runtime-caching.js',
+  '../../sw-broadcast-cache-update/build/broadcast-cache-update.js'
 );
 
 // Have the service worker take control as soon as possible.

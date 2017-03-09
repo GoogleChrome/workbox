@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>Service Worker SW-Lib Demo</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Slabo+27px" rel="stylesheet">
+  </head>
+  <body>
+    <p>
+      This is a basic demo of the <code>sw-lib</code> library.
+    </p>
+
+    <script>
+      // Register our service worker.
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js');
+      }
+    </script>
+  </body>
+</html>
