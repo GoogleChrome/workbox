@@ -17,6 +17,6 @@ importScripts('<%= swlibPath %>');
  * manifest which accounts for changes to local files and update the revision
  * accordingly.
  */
-const fileManifest = <%= JSON.stringify(manifestEntries) %>;
+const fileManifest = <%= JSON.stringify(manifestEntries, null, 2) %>;
 
 self.goog.swlib.cacheRevisionedAssets(fileManifest);
