@@ -15,7 +15,7 @@
 
 import constants from './lib/constants.js';
 import enqueueRequest from './lib/enqueue-request.js';
-import log from '../../../lib/log.js';
+import logHelper from '../../../lib/log-helper.js';
 import replayQueuedRequests from './lib/replay-queued-requests.js';
 
 /**
@@ -109,7 +109,7 @@ const initialize = (config) => {
             previousHitFailed = false;
             return response;
           }, (error) => {
-            log('Enqueuing failed request...');
+            logHelper.log('Enqueuing failed request...');
             previousHitFailed = true;
             return enqueueRequest(clonedRequest).then(() => Response.error());
           })
@@ -122,7 +122,7 @@ const initialize = (config) => {
             return fetch(request).then((response) => {
               return cache.put(request, response.clone()).then(() => response);
             }).catch((error) => {
-              log(error);
+              logHelper.error(error);
               return cache.match(request);
             });
           })
