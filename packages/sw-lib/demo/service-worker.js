@@ -1,6 +1,6 @@
 /* global goog */
 
-importScripts('../build/sw-lib.min.js');
+importScripts('../build/sw-lib.js');
 importScripts('./manifest.123456.js');
 
 goog.swlib.cacheRevisionedAssets(self.__file_manifest);

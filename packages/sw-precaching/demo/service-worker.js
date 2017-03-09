@@ -1,6 +1,6 @@
 /* global goog */
 
-importScripts('../build/sw-precaching.min.js');
+importScripts('../build/sw-precaching.js');
 importScripts('./manifest.123456.js');
 
 const revCacheManager = new goog.precaching.RevisionedCacheManager();
