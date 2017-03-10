@@ -17,7 +17,7 @@ import ErrorFactory from '../../../../lib/error-factory';
 
 const errors = {
   'channel-name-required': `The channelName parameter is required when
-    constructing a new Plugin`,
+    constructing a new BroadcastCacheUpdate instance.`,
   'responses-are-same-parameters-required': `The first, second, and
     headersToCheck parameters must be valid when calling responsesAreSame()`,
 };
