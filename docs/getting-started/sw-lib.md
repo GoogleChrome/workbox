@@ -6,10 +6,10 @@ navigation_weight: 2
 
 # Using sw-lib
 
-The `sw-lib` module is a high-level library that lets you
-easily configure a service worker for precaching assets
-during install as well as a configuring a number of
-runtime caching strategies.
+The `sw-lib` module is a high-level library that lets you easily configure a
+service worker for precaching assets during install, as well as configure
+runtime caching and routing strategies. Use is easy, requiring only importing
+into your service worker script, and minimal, straight-forward configuration.
 
 
 ## Install
@@ -42,13 +42,15 @@ importScripts('/third-party/sw-lib/sw-lib.min.js');
 
 ## Precaching
 
-Precaching allows a [progressive web app](https://developers.google.com/web/progressive-web-apps/)
-to store assets needed for the app to work offline. The
-`sw-lib` module implements precaching with the
-`goog.swlib.cacheRevisionedAssets(revisionedFiles)` method.
-The `revisionedFiles` argument should list all files that
-your web app needs to work offline. There are two ways to
-do this, shown in the example below.
+Precaching allows a [progressive web app](link) to store an
+[app shell](https://developers.google.com/web/fundamentals/architecture/app-shell).
+An app shell is the minimal HTML, CSS and JavaScript required to power the user
+interface and when cached offline can ensure instant, reliably good performance
+to users on repeat visits. The sw-lib module implements the precaching needed
+for an app shell with the
+[goog.swlib.cacheRevisionedAssets(revisionedFiles)](https://googlechrome.github.io/sw-helpers/reference-docs/stable/v0.0.8/module-sw-lib.SWLib.html#cacheRevisionedAssets)
+method. The revisioned files parameter should list all files that your web app
+needs at startup. There are two ways to do this, shown in the example below.
 
 > Note: We recommend that you not create revision numbers
 > by hand. Do this automatically using `sw-build` or a
@@ -84,11 +86,11 @@ goog.swlib.cacheRevisionedAssets([
 ## Runtime caching
 
 Implementing runtime caching requires matching URLs to
-caching strategies. Specify URLs using strings, express
+caching strategies. Specify URLs using express
 style routes, or regex expressions. For the caching
 strategy use a built-in handler or define your own.
 
-To connect a URL to a caching strategy, call
+To register a caching strategy for a URL, call
 `goog.swlib.router.registerRoute(capture, handler)`. This
 method takes two parameters:
 
@@ -106,9 +108,8 @@ goog.swlib.router.registerRoute('/schedule', staleWhileRevalidate);
 
 ### A single endpoint
 
-The most straight-forward way to specify an endpoint is to
-use a literal string. This is most useful for endpoints
-that don't require parameters.
+The most straight-forward use of an express route resembles a string literal.
+This is most useful for endpoints that don't require parameters.
 
 For example, consider a web app for a conference. The
 schedule is likely to have a simple URL that doesn't
@@ -141,12 +142,6 @@ Using regular expressions, we could do this like do:
 
 ```
 goog.swlib.router.registerRoute(/https:\/\/www\.reddit\.com\/r\/\w{1,255}\.json/, staleWhileRevalidate);
-```
-
-Using express-style routes:
-
-```
-goog.swlib.router.registerRoute('https://www.reddit.com/r/:subreddit', staleWhileRevalidate);
 ```
 
 ## Implementing caching strategies
