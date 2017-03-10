@@ -71,7 +71,7 @@ class Route {
    *        `match` should return a truthy value when the route applies, and
    *        that value is passed on to the handle function.
    * @param {function|Object} input.handler A function, or an Object with a
-   *        `handle` method. As parameters, the handler is passed object with
+   *        `handle` method. As parameters, the handler is passed an object with
    *        the same `url` and `event` properties as `match` received, along
    *        with an additional property, `params`, set to the truthy value
    *        `match` returned.
