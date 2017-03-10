@@ -12,7 +12,7 @@ describe('Test generateSW()', function() {
     globIgnores: [
       '!node_modules/',
     ],
-    serviceWorkerName: 'sw.js',
+    dest: 'sw.js',
   };
 
   let generateSW;
@@ -79,8 +79,8 @@ describe('Test generateSW()', function() {
     }, Promise.resolve());
   });
 
-  // swName - non string, undefined, null, boolean, array, object
-  it('should be able to handle bad swName input', function() {
+  // dest - non string, undefined, null, boolean, array, object
+  it('should be able to handle bad dest input', function() {
     const badInput = [
       undefined,
       null,
@@ -92,13 +92,13 @@ describe('Test generateSW()', function() {
     return badInput.reduce((promiseChain, input) => {
       return promiseChain.then(() => {
         let args = Object.assign({}, EXAMPLE_INPUT);
-        args.serviceWorkerName = input;
+        args.dest = input;
         return generateSW(args)
         .then(() => {
           throw new Error('Expected to throw error.');
         })
         .catch((err) => {
-          if (err.message !== errors['invalid-sw-name']) {
+          if (err.message !== errors['invalid-dest']) {
             throw new Error('Unexpected error: ' + err.message);
           }
         });
@@ -121,7 +121,7 @@ describe('Test generateSW()', function() {
         return Promise.reject(new Error('Inject Error - copy-sw-lib'));
       },
       './write-sw': (swPath, manifestEntries, swlibPath, rootDirectory) => {
-        if (swPath !== EXAMPLE_INPUT.serviceWorkerName) {
+        if (swPath !== EXAMPLE_INPUT.dest) {
           throw new Error(`Service worker path is an unexpected value: ${swPath}`);
         }
         if (swlibPath !== 'sw-lib.v0.0.0.js') {
@@ -147,7 +147,7 @@ describe('Test generateSW()', function() {
         return Promise.reject(new Error('Inject Error - copy-sw-lib'));
       },
       './write-sw': (swPath, manifestEntries, swlibPath, rootDirectory) => {
-        if (swPath !== path.join(EXAMPLE_INPUT.rootDirectory, EXAMPLE_INPUT.serviceWorkerName)) {
+        if (swPath !== EXAMPLE_INPUT.dest) {
           throw new Error(`Service worker path is an unexpected value: ${swPath}`);
         }
         if (swlibPath !== path.join(EXAMPLE_INPUT.rootDirectory, 'sw-lib.v0.0.0.js')) {

@@ -120,9 +120,9 @@ class SWCli {
    */
   handleCommand(command, args, flags) {
     switch (command) {
-      case 'generate-sw':
+      case 'generate:sw':
         return this._generateSW();
-      case 'generate-manifest':
+      case 'generate:manifest':
         return this._generateBuildManifest();
       default:
         logHelper.error(`Invlaid command given '${command}'`);
@@ -168,12 +168,13 @@ class SWCli {
       }
     })
     .then(() => {
-      if (!config.serviceWorkerName) {
+      if (!config.dest) {
         return askForServiceWorkerName()
         .then((swName) => {
-          config.serviceWorkerName = swName;
+          const swDest = path.join(config.rootDirectory, swName);
+          config.dest = swDest;
           config.globIgnores = [
-            path.join(config.rootDirectory, swName),
+            swDest,
           ];
         });
       }

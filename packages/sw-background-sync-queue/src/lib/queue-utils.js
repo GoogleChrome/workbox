@@ -26,6 +26,7 @@ async function getQueueableRequest({request, config}) {
 		mode: request.mode,
 		method: request.method,
 		redirect: request.redirect,
+		credentials: request.credentials,
 	};
 	const requestBody = await request.text();
 	if (requestBody.length > 0) {
@@ -47,6 +48,7 @@ async function getFetchableRequest({idbRequestObject}) {
 		method: idbRequestObject.method,
 		redirect: idbRequestObject.redirect,
 		headers: new Headers(JSON.parse(idbRequestObject.headers)),
+		credentials: idbRequestObject.credentials,
 	};
 	if(idbRequestObject.body) {
 		reqObject.body = idbRequestObject.body;

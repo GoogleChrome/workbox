@@ -24,8 +24,8 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  * const swBuild = require('sw-build');
  *
  * swBuild.generateFileManifest({
- *   dest: './build/scripts/manifest.js',
  *   rootDirectory: './build/',
+ *   dest: './build/scripts/manifest.js',
  *   globPatterns: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html']
  * })
@@ -50,9 +50,9 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  *
  * swBuild.generateSW({
  *   rootDirectory: './build/',
+ *   dest: './build/sw.js',
  *   globPatterns: ['**\/*.{html,js,css}'],
- *   globIgnores: ['admin.html'],
- *   serviceWorkerName: 'sw.js'
+ *   globIgnores: ['admin.html']
  * })
  * .then(() => {
  *   console.log('Service worker generated.');
