@@ -49,11 +49,9 @@ import {defaultMethod, validMethods} from './constants';
  *     return event.request.mode === 'navigation' &&
  *            url.pathname.startsWith('/path/to/');
  *   },
- *   handler: {
- *     handle: ({event}) => {
- *       // Do something that returns a Promise.<Response>, like:
- *       return caches.match(event.request);
- *     },
+ *   handler: ({event}) => {
+ *     // Do something that returns a Promise.<Response>, like:
+ *     return caches.match(event.request);
  *   },
  * });
  *
@@ -72,20 +70,27 @@ class Route {
    *        and `event`, which is a [FetchEvent](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent).
    *        `match` should return a truthy value when the route applies, and
    *        that value is passed on to the handle function.
-   * @param {Object} input.handler An Object with a `handle` method. That
-   *        function is passed an object with the same `url` and `event`
-   *        properties as `match` received, along with an additional property,
-   *        `params`, set to the truthy value that `match` returned.
+   * @param {function|Object} input.handler A function, or an Object with a
+   *        `handle` method. As parameters, the handler is passed object with
+   *        the same `url` and `event` properties as `match` received, along
+   *        with an additional property, `params`, set to the truthy value
+   *        `match` returned.
    * @param {string} [input.method] Only match requests that use this
    *        HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({match, handler, method} = {}) {
     assert.isType({match}, 'function');
-    assert.isType({handler}, 'object');
-    assert.hasMethod({handler}, 'handle');
+    if (typeof handler === 'object') {
+      assert.hasMethod({handler}, 'handle');
+    } else {
+      assert.isType({handler}, 'function');
+    }
+
 
     this.match = match;
-    this.handler = handler;
+    // Normalize things so that even if the handler is a function, this.handler
+    // gets set to an object with a handle method.
+    this.handler = typeof handler === 'function' ? {handle: handler} : handler;
     if (method) {
       assert.isOneOf({method}, validMethods);
       this.method = method;
