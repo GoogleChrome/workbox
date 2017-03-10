@@ -27,9 +27,8 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  * For efficiency's sake, the underlying response bodies are not compared;
  * only specific response headers are checked.
  *
- * This class is meant to be agnostic about the service worker environment it's
- * used in. You can include it in your own service worker code without using
- * the rest of the larger framework.
+ * This class can be used inside any service worker, without having to use any
+ * of the other modules in this repo.
  *
  * If you'd like to use this functionality but are already using `sw-lib` or
  * `sw-runtime-caching`, then please see the corresponding plugin,
@@ -47,7 +46,7 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  *   caches.open(cacheName).then((cache) => cache.match(url)),
  *   fetch(url),
  * ]).then(([first, second]) => {
- *   if (cacheResponse) {
+ *   if (first) {
  *     bcu.notifyIfUpdated({cacheName, first, second});
  *   }
  * });
