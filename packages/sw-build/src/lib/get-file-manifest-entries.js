@@ -23,7 +23,7 @@ const getStringDetails = require('./utils/get-string-hash');
  * @param {Array<String>} [input.globIgnores] Patterns used to exclude files
  * from the file entries.
  * @param {String} input.rootDirectory The directory run the glob patterns over.
- * @param {Object<String,Array<String>|<String>>} [input.templatedUrls]
+ * @param {Object<String,Array|String>} [input.templatedUrls]
  * If a URL is rendered/templated on the server, its contents may not depend on
  * a single file. This maps URLs to a list of file names, or to a string
  * value, that uniquely determines each URL's contents.

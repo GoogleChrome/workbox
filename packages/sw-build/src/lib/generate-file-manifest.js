@@ -30,7 +30,7 @@ const errors = require('./errors');
  * generating the build manifest.
  * @param {String|Array<String>} [input.globIgnores] Patterns to exclude when
  * generating the build manifest.
- * @param {Object<String,Array<String>|<String>>} [input.templatedUrls]
+ * @param {Object<String,Array|String>} [input.templatedUrls]
  * If a URL is rendered/templated on the server, its contents may not depend on
  * a single file. This maps URLs to a list of file names, or to a string
  * value, that uniquely determines each URL's contents.
