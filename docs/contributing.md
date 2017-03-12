@@ -1,7 +1,7 @@
 ---
 layout: index
 title: Contributing
-navigation_weight: 2
+navigation_weight: 4
 ---
 # Contributing
 
