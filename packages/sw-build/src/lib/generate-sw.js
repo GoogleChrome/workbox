@@ -12,7 +12,10 @@ const errors = require('./errors');
  * swBuild.generateSW({
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
- *   globIgnores: ['admin.html']
+ *   globIgnores: ['admin.html'],
+ *   templatedUrls: {
+ *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
+ *   },
  *   serviceWorkerName: 'sw.js'
  * })
  * .then(() => {
@@ -27,8 +30,12 @@ const errors = require('./errors');
  * files are written to.
  * @param {Array<String>} input.globPatterns Patterns to glob for when
  * generating the build manifest.
- * @param {String|Array<String>} input.globIgnores Patterns to exclude when
+ * @param {String|Array<String>} [input.globIgnores] Patterns to exclude when
  * generating the build manifest.
+ * @param {Object<String,Array<String>|<String>>} [input.templatedUrls]
+ * If a URL is rendered/templated on the server, its contents may not depend on
+ * a single file. This maps URLs to a list of file names, or to a string
+ * value, that uniquely determines each URL's contents.
  * @param {String} input.serviceWorkerName The name you wish to give to your
  * service worker file.
  * @return {Promise} Resolves once the service worker has been generated
@@ -44,7 +51,7 @@ const generateSW = function(input) {
   const rootDirectory = input.rootDirectory;
   const globPatterns = input.globPatterns;
   const globIgnores = input.globIgnores;
-  const serverRenderedUrls = input.serverRenderedUrls;
+  const templatedUrls = input.templatedUrls;
   const serviceWorkerName = input.serviceWorkerName;
 
   if (typeof rootDirectory !== 'string' || rootDirectory.length === 0) {
@@ -65,7 +72,7 @@ const generateSW = function(input) {
   })
   .then(() => {
     const manifestEntries = getFileManifestEntries(
-      {globPatterns, globIgnores, rootDirectory, serverRenderedUrls});
+      {globPatterns, globIgnores, rootDirectory, templatedUrls});
     return writeServiceWorker(
       path.join(rootDirectory, serviceWorkerName),
       manifestEntries,

@@ -51,8 +51,9 @@ module.exports = {
     generateFileManifest() must be either 'iife' (the default) or 'es'.`,
   'invalid-glob-patterns': `The 'globPatterns' value must be an array of ` +
     `strings.`,
-  'invalid-server-rendered-urls': `The 'serverRenderedUrls' value should be` +
-    `an object that maps URLs to an array of glob patterns.`,
-  'server-rendered-url-matches-glob': `One of the 'serverRenderedUrls' URLs` +
+  'invalid-templated-urls': `The 'templatedUrls' value should be ` +
+    `an object that maps URLs to either a string, or to an array of glob ` +
+    `patterns.`,
+  'templated-url-matches-glob': `One of the 'templatedUrls' URL s` +
     `is already being tracked via globPatterns: `,
 };

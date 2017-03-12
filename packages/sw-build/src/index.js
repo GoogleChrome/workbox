@@ -28,7 +28,7 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
- *   serverRenderedUrls: {
+ *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css']
  *   },
  * })
@@ -43,7 +43,7 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
- *   serverRenderedUrls: {
+ *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css']
  *   },
  * })
@@ -58,7 +58,7 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  *   rootDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
- *   serverRenderedUrls: {
+ *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css']
  *   },
  *   serviceWorkerName: 'sw.js'
