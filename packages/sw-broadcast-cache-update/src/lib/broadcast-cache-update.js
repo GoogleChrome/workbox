@@ -27,47 +27,33 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  * For efficiency's sake, the underlying response bodies are not compared;
  * only specific response headers are checked.
  *
- * @example <caption>Added as a "plugin" to a `RequestWrapper` to
- * automatically dispatch messages on a cache update</caption>
+ * This class can be used inside any service worker, without having to use any
+ * of the other modules in this repo.
  *
- * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
- *   cacheName: 'runtime-cache',
- *   plugins: [
- *     new goog.broadcastCacheUpdate.Plugin({channelName: 'cache-updates'})
- *   ]
+ * If you'd like to use this functionality but are already using `sw-lib` or
+ * `sw-runtime-caching`, then please see the corresponding plugin,
+ * `BroadcastCacheUpdatePlugin`, for a easy integration.
+ *
+ * @example <caption>Using BroadcastCacheUpdate when you're handling your
+ * own fetch and request logic.</caption>
+ *
+ * const url = '/path/to/file';
+ * const cacheName = 'my-runtime-cache';
+ * const bcu = new goog.broadcastCacheUpdate.BroadcastCacheUpdate(
+ *   {channelName: 'cache-updates'});
+ *
+ * Promise.all([
+ *   caches.open(cacheName).then((cache) => cache.match(url)),
+ *   fetch(url),
+ * ]).then(([first, second]) => {
+ *   if (first) {
+ *     bcu.notifyIfUpdated({cacheName, first, second});
+ *   }
  * });
- * const route = new goog.routing.RegExpRoute({
- *   match: ({url}) => url.domain === 'example.com',
- *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
- * });
- *
- * @example <caption>Trigger a message by manually calling
- * the `notifyIfUpdated()` method.</caption>
- *
- * const cacheUpdatePlugin = new goog.broadcastCacheUpdates.Plugin({
- *   channelName: 'cache-updates'
- * });
- *
- * const url = 'https://example.com';
- * const cacheName = 'runtime-cache';
- *
- * const cache = await caches.open(cacheName);
- * const oldResponse = await cache.match(url);
- * const newResponse = await fetch(url);
- * await cache.put(url, newResponse);
- *
- * // Only check for an update if there was a previously cached response.
- * if (oldResponse) {
- *   cacheUpdatePlugin.notifyIfUpdated({
- *     first: oldResponse,
- *     second: newResponse,
- *     cacheName
- *   });
- * }
  *
  * @memberof module:sw-broadcast-cache-update
  */
-class Plugin {
+class BroadcastCacheUpdate {
   /**
    * Dispatches cache update messages when a cached response has been updated.
    * Messages will be dispatched on a broadcast channel with the name provided
@@ -106,33 +92,6 @@ class Plugin {
   }
 
   /**
-   * A "lifecycle" callback that will be triggered automatically by the
-   * goog.runtimeCaching handlers when an entry is added to a cache.
-   *
-   * Developers would normally not call this method directly; instead,
-   * [`notifyIfUpdated`](#notifyIfUpdated) provides equivalent functionality
-   * with a slightly more efficient interface.
-   *
-   * @private
-   * @param {Object} input The input object to this function.
-   * @param {string} input.cacheName Name of the cache the responses belong to.
-   * @param {Response} [input.oldResponse] The previous cached value, if any.
-   * @param {Response} input.newResponse The new value in the cache.
-   */
-  cacheDidUpdate({cacheName, oldResponse, newResponse}) {
-    assert.isType({cacheName}, 'string');
-    assert.isInstance({newResponse}, Response);
-
-    if (oldResponse) {
-      this.notifyIfUpdated({
-        cacheName,
-        first: oldResponse,
-        second: newResponse}
-      );
-    }
-  }
-
-  /**
    * An explicit method to call from your own code to trigger the comparison of
    * two [Responses](https://developer.mozilla.org/en-US/docs/Web/API/Response)
    * and fire off a notification via the
@@ -157,4 +116,4 @@ class Plugin {
   }
 }
 
-export default Plugin;
+export default BroadcastCacheUpdate;

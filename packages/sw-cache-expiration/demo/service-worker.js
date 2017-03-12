@@ -4,11 +4,11 @@
 // Import the helper libraries into our service worker's global scope.
 importScripts(
   // This provides the goog.routing.* interfaces.
-  '../../sw-routing/build/sw-routing.min.js',
+  '../../sw-routing/build/sw-routing.js',
   // This provides the goog.runtimeCaching.* interfaces.
-  '../../sw-runtime-caching/build/sw-runtime-caching.min.js',
+  '../../sw-runtime-caching/build/sw-runtime-caching.js',
   // This provides the goog.cacheExpiration.* interfaces.
-  '../../sw-cache-expiration/build/sw-cache-expiration.min.js'
+  '../../sw-cache-expiration/build/sw-cache-expiration.js'
 );
 
 // Have the service worker take control as soon as possible.

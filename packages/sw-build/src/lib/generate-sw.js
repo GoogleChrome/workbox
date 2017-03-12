@@ -1,5 +1,3 @@
-const path = require('path');
-
 const copySWLib = require('./utils/copy-sw-lib');
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const writeServiceWorker = require('./write-sw');
@@ -11,12 +9,12 @@ const errors = require('./errors');
  *
  * swBuild.generateSW({
  *   rootDirectory: './build/',
+ *   dest: './build/sw.js',
  *   globPatterns: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
  *   },
- *   serviceWorkerName: 'sw.js'
  * })
  * .then(() => {
  *   console.log('Service worker generated.');
@@ -32,12 +30,12 @@ const errors = require('./errors');
  * generating the build manifest.
  * @param {String|Array<String>} [input.globIgnores] Patterns to exclude when
  * generating the build manifest.
+ * @param {String} input.dest The name you wish to give to your
+ * service worker file.
  * @param {Object<String,Array<String>|<String>>} [input.templatedUrls]
  * If a URL is rendered/templated on the server, its contents may not depend on
  * a single file. This maps URLs to a list of file names, or to a string
  * value, that uniquely determines each URL's contents.
- * @param {String} input.serviceWorkerName The name you wish to give to your
- * service worker file.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
@@ -51,17 +49,17 @@ const generateSW = function(input) {
   const rootDirectory = input.rootDirectory;
   const globPatterns = input.globPatterns;
   const globIgnores = input.globIgnores;
+  const dest = input.dest;
   const templatedUrls = input.templatedUrls;
-  const serviceWorkerName = input.serviceWorkerName;
 
   if (typeof rootDirectory !== 'string' || rootDirectory.length === 0) {
     return Promise.reject(
       new Error(errors['invalid-root-directory']));
   }
 
-  if (typeof serviceWorkerName !== 'string' || serviceWorkerName.length === 0) {
+  if (typeof dest !== 'string' || dest.length === 0) {
     return Promise.reject(
-      new Error(errors['invalid-sw-name']));
+      new Error(errors['invalid-dest']));
   }
 
   let swlibPath;
@@ -74,7 +72,7 @@ const generateSW = function(input) {
     const manifestEntries = getFileManifestEntries(
       {globPatterns, globIgnores, rootDirectory, templatedUrls});
     return writeServiceWorker(
-      path.join(rootDirectory, serviceWorkerName),
+      dest,
       manifestEntries,
       swlibPath,
       rootDirectory

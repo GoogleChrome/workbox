@@ -2,8 +2,8 @@
 /* global goog */
 
 importScripts(
-  '../../sw-routing/build/sw-routing.min.js',
-  '../../sw-runtime-caching/build/sw-runtime-caching.min.js'
+  '../../sw-routing/build/sw-routing.js',
+  '../../sw-runtime-caching/build/sw-runtime-caching.js'
 );
 
 // Have the service worker take control as soon as possible.
@@ -16,11 +16,9 @@ self.addEventListener('activate', (event) => {
 
 const route = new goog.routing.ExpressRoute({
   path: '/packages/:project/demo/:file',
-  handler: {
-    handle: ({event, params}) => {
-      console.log('The matching params are', params);
-      return fetch(event.request);
-    },
+  handler: ({event, params}) => {
+    console.log('The matching params are', params);
+    return fetch(event.request);
   },
 });
 

@@ -2,5 +2,7 @@ node_modules
 build
 temp
 npm-debug.log
+lerna-debug.log
 packages/**/LICENSE
 .DS_Store
+!docs/recipes/build

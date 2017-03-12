@@ -29,9 +29,9 @@ import ErrorFactory from './error-factory';
  *   - `cacheWillUpdate({request, response})`: Called prior to writing an entry
  *   to the cache, allowing the callback to decide whether or not the cache
  *   entry should be written.
- *   - `cacheDidUpdate({cacheName, oldResponse, newResponse})`: Called whenever
- *   an entry is written to the cache, giving the callback a chance to notify
- *   clients about the update or implement cache expiration.
+ *   - `cacheDidUpdate({cacheName, oldResponse, newResponse, url})`: Called
+ *   whenever an entry is written to the cache, giving the callback a chance to
+ *   notify clients about the update or implement cache expiration.
  *   - `cacheWillMatch({cachedResponse})`: Called whenever a response is read
  *   from the cache and is about to be used, giving the callback a chance to
  *   perform validity/freshness checks.
@@ -270,7 +270,12 @@ class RequestWrapper {
         await cache.put(cacheRequest, newResponse);
 
         for (let callback of (this.pluginCallbacks.cacheDidUpdate || [])) {
-          callback({cacheName: this.cacheName, oldResponse, newResponse});
+          callback({
+            cacheName: this.cacheName,
+            oldResponse,
+            newResponse,
+            url: request.url,
+          });
         }
       });
     } else if (!cacheable && waitOnCache) {

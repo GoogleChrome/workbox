@@ -6,9 +6,6 @@ A CLI tool to generate a service worker and a file manifest making use of the sw
 
 `npm install --save-dev sw-cli`
 
-## Demo
-
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cli/demo).
 
 ## Reference Docs
 

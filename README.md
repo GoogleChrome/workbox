@@ -40,6 +40,16 @@ A helper library that uses the Broadcast Channel API to announce when two Respon
 **Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-broadcast-cache-update.html) •
                 [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-broadcast-cache-update/demo)
 
+### sw-build
+
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-build%22)][travis-url]
+
+This module can be used to generate a file manifest or service worker, that can be used with sw-lib.
+
+**Install**: `npm install --save-dev sw-build`
+
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-build.html)
+
 ### sw-cache-expiration
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cache-expiration%22)][travis-url]
@@ -70,8 +80,7 @@ A CLI tool to generate a service worker and a file manifest making use of the sw
 
 **Install**: `npm install --save-dev sw-cli`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-cli.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cli/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-cli.html)
 
 ### sw-lib
 
@@ -81,8 +90,7 @@ A service worker library to make managing fetch requests and caching as easy as 
 
 **Install**: `npm install --save-dev sw-lib`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-lib.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-lib/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-lib.html)
 
 ### sw-offline-google-analytics
 
@@ -103,8 +111,7 @@ This library is still a work in progress and is not functional.
 
 **Install**: `npm install --save-dev sw-precaching`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-precaching.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-precaching/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-precaching.html)
 
 ### sw-routing
 
