@@ -56,7 +56,7 @@ generation of the service worker file happens *last* in the chain of your build
 tasks. This ensures that the service worker looks at the final contents of your
 `build/` directory when determining which files to precache and keep up to date.
 
-### `npm scripts`
+### npm scripts
 
 The following is a basic `node` script that can be run as part of a larger build
 process, e.g. in `package.json` at the end of an
@@ -102,7 +102,7 @@ swBuild.generateFileManifest({
 }));
 ```
 
-### `gulp Tasks`
+### gulp Tasks
 
 The same basic approach can be run via two `gulp` tasks, if you prefer using
 `gulp` to run build tasks:

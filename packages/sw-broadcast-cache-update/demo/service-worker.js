@@ -2,23 +2,20 @@
 /* global goog */
 
 importScripts(
-  '../build/routing.js',
+  '../../sw-routing/build/routing.js',
   '../../sw-runtime-caching/build/runtime-caching.js',
   '../../sw-broadcast-cache-update/build/broadcast-cache-update.js'
 );
 
 // Have the service worker take control as soon as possible.
-self.addEventListener('install', (event) => {
-  event.waitUntil(self.skipWaiting());
-});
-self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
-});
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', () => self.clients.claim());
 
 const requestWrapper = new goog.runtimeCaching.RequestWrapper({
   cacheName: 'text-files',
   plugins: [
-    new goog.broadcastCacheUpdate.Plugin({channelName: 'cache-updates'}),
+    new goog.broadcastCacheUpdate.BroadcastCacheUpdatePlugin(
+      {channelName: 'cache-updates'}),
   ],
 });
 
