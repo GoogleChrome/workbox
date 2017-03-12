@@ -2,7 +2,7 @@ const errors = require('./errors');
 const filterFiles = require('./utils/filter-files');
 const getCompositeDetails = require('./utils/get-composite-details');
 const getFileDetails = require('./utils/get-file-details');
-const getStringDetails = require('./utils/get-string-hash');
+const getStringDetails = require('./utils/get-string-details');
 
 /**
  * @typedef {Object} ManifestEntry
