@@ -135,4 +135,16 @@ describe('Test swlib.router', function() {
       self.dispatchEvent(fetchEvent);
     });
   });
+
+  it(`should throw when registerNavigationRoute() isn't passed a URL`, function() {
+    let thrownError = null;
+    try {
+      goog.swlib.router.registerNavigationRoute();
+    } catch (err) {
+      thrownError = err;
+    }
+
+    expect(thrownError).to.exist;
+    expect(thrownError.name).to.equal('navigation-route-url-string');
+  });
 });
