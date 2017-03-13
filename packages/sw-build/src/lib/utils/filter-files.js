@@ -19,8 +19,12 @@ module.exports = (fileDetails) => {
 
   // Convert to manifest format
   return filteredFileDetails.map((fileDetails) => {
+    let url = fileDetails.file.replace(path.sep, '/');
+    if (!url.startsWith('/')) {
+      url = '/' + url;
+    }
     return {
-      url: '/' + fileDetails.file.replace(path.sep, '/'),
+      url: url,
       revision: fileDetails.hash,
     };
   });

@@ -28,8 +28,12 @@ const errors = require('./errors');
  * files are written to.
  * @param {Array<String>} input.globPatterns Patterns to glob for when
  * generating the build manifest.
- * @param {String|Array<String>} input.globIgnores Patterns to exclude when
+ * @param {String|Array<String>} [input.globIgnores] Patterns to exclude when
  * generating the build manifest.
+ * @param {Object<String,Array|String>} [input.templatedUrls]
+ * If a URL is rendered/templated on the server, its contents may not depend on
+ * a single file. This maps URLs to a list of file names, or to a string
+ * value, that uniquely determines each URL's contents.
  * @param {String} [input.format] Default format is [`'iife'`](https://en.wikipedia.org/wiki/Immediately-invoked_function_expression), but also
  * accepts `'es'`, which outputs an ES2015 module.
  * @return {Promise} Resolves once the service worker has been generated
@@ -43,15 +47,8 @@ const generateFileManifest = (input) => {
       new Error(errors['invalid-generate-file-manifest-arg']));
   }
 
-  const dest = input.dest;
-  const rootDirectory = input.rootDirectory;
-  const globPatterns = input.globPatterns;
-  const globIgnores = input.globIgnores;
-
-  const fileEntries = getFileManifestEntries({
-    rootDirectory, globPatterns, globIgnores,
-  });
-  return writeFileManifest(dest, fileEntries, input.format);
+  const fileEntries = getFileManifestEntries(input);
+  return writeFileManifest(input.dest, fileEntries, input.format);
 };
 
 module.exports = generateFileManifest;

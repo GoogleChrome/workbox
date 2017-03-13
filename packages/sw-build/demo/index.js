@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 
-const swBuild = require('sw-build');
+const swBuild = require('../build/index');
 
 swBuild.generateFileManifest({
   dest: './build/manifest.js',
   rootDirectory: './build/',
-  globPatterns: ['**\/*.{html,js,css}'],
+  globPatterns: ['**/*.{html,js,css}'],
   globIgnores: ['admin.html'],
 })
 .then(() => {

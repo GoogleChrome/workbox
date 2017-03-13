@@ -6,24 +6,24 @@ module.exports = {
     'web app directory.',
   'no-file-extensions-found': 'No files could be found that are suitable for ' +
     'caching.',
-  'no-file-extensions-selected': 'No file extensions were selected so nothing '+
-    'would be cached.',
+  'no-file-extensions-selected': 'No file extensions were selected so nothing' +
+    ' would be cached.',
   'invalid-file-manifest-name': 'The File Manifest Name must have at lease ' +
     'one character.',
   'unable-to-get-file-manifest-name': 'Unable to get a file manifest name.',
   'invalid-dest': `The 'dest' value must be a valid path.`,
   'unable-to-get-sw-name': 'Unable to get a service worker file name.',
-  'unable-to-get-save-config': 'An error occured when asking to save details' +
+  'unable-to-get-save-config': 'An error occurred when asking to save details' +
     'in a config file.',
-  'unable-to-get-file-hash': 'An error occured when attempting to create a ' +
+  'unable-to-get-file-hash': 'An error occurred when attempting to create a ' +
     'file hash.',
-  'unable-to-get-file-size': 'An error occured when attempting to get a ' +
+  'unable-to-get-file-size': 'An error occurred when attempting to get a ' +
     'file size.',
-  'unable-to-glob-files': 'An error occured when globbing for files.',
+  'unable-to-glob-files': 'An error occurred when globbing for files.',
   'unable-to-make-manifest-directory': 'Unable to make output directory for ' +
     'file manifest.',
   'read-manifest-template-failure': 'Unable to read template for file manifest',
-  'populating-manifest-tmpl-failed': 'An error occured when populating the ' +
+  'populating-manifest-tmpl-failed': 'An error occurred when populating the ' +
     'file manifest template.',
   'manifest-file-write-failure': 'Unable to write the file manifest.',
   'unable-to-make-sw-directory': 'Unable to make the directories to output ' +
@@ -50,4 +50,9 @@ module.exports = {
     generateFileManifest() must be either 'iife' (the default) or 'es'.`,
   'invalid-glob-patterns': `The 'globPatterns' value must be an array of ` +
     `strings.`,
+  'invalid-templated-urls': `The 'templatedUrls' value should be ` +
+    `an object that maps URLs to either a string, or to an array of glob ` +
+    `patterns.`,
+  'templated-url-matches-glob': `One of the 'templatedUrls' URL s` +
+    `is already being tracked via globPatterns: `,
 };
