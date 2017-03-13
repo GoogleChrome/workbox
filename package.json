@@ -5,6 +5,7 @@
   },
   "scripts": {
     "serve": "npm-publish-scripts serve",
+    "docs": "npm-publish-scripts publish-docs --non-interactive",
     "publish-release": "gulp build && gulp test && lerna publish"
   },
   "version": "0.0.0",
