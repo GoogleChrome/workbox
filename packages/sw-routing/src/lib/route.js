@@ -43,10 +43,10 @@ import {defaultMethod, validMethods} from './constants';
  * routes as the `match` criteria.
  *
  * @example
- * // Any navigation requests for URLs that start with /path/to/ will match.
+ * // Any navigate requests for URLs that start with /path/to/ will match.
  * const route = new goog.routing.Route({
  *   match: ({url, event}) => {
- *     return event.request.mode === 'navigation' &&
+ *     return event.request.mode === 'navigate' &&
  *            url.pathname.startsWith('/path/to/');
  *   },
  *   handler: ({event}) => {
