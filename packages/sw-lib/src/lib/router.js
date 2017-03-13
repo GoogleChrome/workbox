@@ -20,7 +20,7 @@ import {
   ExpressRoute,
   RegExpRoute,
   Route,
-  NavigationRoute
+  NavigationRoute,
 } from '../../../sw-routing/src/index.js';
 import ErrorFactory from './error-factory.js';
 
