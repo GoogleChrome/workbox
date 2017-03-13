@@ -42,9 +42,9 @@ importScripts('/third-party/sw-lib/sw-lib.min.js');
 
 ## Precaching
 
-Precaching allows a [progressive web app](link) to store an
-[app shell](https://developers.google.com/web/fundamentals/architecture/app-shell).
-An app shell is the minimal HTML, CSS and JavaScript required to power the user
+Precaching allows a [Progressive Web App](https://developers.google.com/web/progressive-web-apps/) to store an
+[AppShell](https://developers.google.com/web/fundamentals/architecture/app-shell).
+An AppShell is the minimal HTML, CSS and JavaScript required to power the user
 interface and when cached offline can ensure instant, reliably good performance
 to users on repeat visits. The sw-lib module implements the precaching needed
 for an app shell with the
