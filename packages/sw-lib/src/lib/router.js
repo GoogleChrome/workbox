@@ -48,14 +48,7 @@ import ErrorFactory from './error-factory.js';
  *
  * @memberof module:sw-lib
  */
-class Router {
-  /**
-   * An instance of this call can be accessed via `goog.swlib.router`. You
-   * should not instantiate this class yourself.
-   */
-  constructor() {
-    this._router = new SWRoutingRouter();
-  }
+class Router extends SWRoutingRouter {
 
   /**
    * @param {String|Regex|Route} capture The capture for a route can be one
@@ -82,15 +75,15 @@ class Router {
         throw ErrorFactory.createError('empty-express-string');
       }
 
-      this._router.registerRoute({
+      super.registerRoute({
         route: new ExpressRoute({path: capture, handler}),
       });
     } else if (capture instanceof RegExp) {
-      this._router.registerRoute({
+      super.registerRoute({
         route: new RegExpRoute({regExp: capture, handler}),
       });
     } else if (capture instanceof Route) {
-      this._router.registerRoute({route: capture});
+      super.registerRoute({route: capture});
     } else {
       throw ErrorFactory.createError('unsupported-route-type');
     }
