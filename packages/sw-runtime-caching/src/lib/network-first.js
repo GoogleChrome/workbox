@@ -36,6 +36,31 @@ import assert from '../../../../lib/assert';
  */
 class NetworkFirst extends Handler {
   /**
+   * Constructor for a new Handler instance.
+   *
+   * @param {Object} input
+   * @param {number} [input.networkTimeoutSeconds] If set, and a network
+   *        response isn't returned timeout is reached, then the cached response
+   *        will be returned instead. If there is no previously cached response,
+   *        then an `null` response will be returned. This option is meant to
+   *        combat "[lie-fi](https://developers.google.com/web/fundamentals/performance/poor-connectivity/#lie-fi)"
+   *        scenarios.
+   * @param {RequestWrapper} [input.requestWrapper] An optional `RequestWrapper`
+   *        that is used to configure the cache name and request plugins. If
+   *        not provided, a new `RequestWrapper` using the
+   *        [default cache name](#defaultCacheName) will be used.
+   */
+  constructor(input = {}) {
+    super(input);
+
+    const {networkTimeoutSeconds} = input;
+    if (networkTimeoutSeconds) {
+      assert.isType({networkTimeoutSeconds}, 'number');
+      this.networkTimeoutSeconds = networkTimeoutSeconds;
+    }
+  }
+
+  /**
    * The handle method will be called by the
    * {@link module:sw-routing.Route|Route} class when a route matches a request.
    *
@@ -48,19 +73,31 @@ class NetworkFirst extends Handler {
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);
 
-    let response;
-    try {
-      response = await this.requestWrapper.fetchAndCache({
-        request: event.request,
-      });
-      if (response) {
-        return response;
-      }
-    } catch (error) {
-      // no-op
+    const promises = [];
+    let timeoutId;
+
+    if (this.networkTimeoutSeconds) {
+      promises.push(new Promise((resolve) => {
+        timeoutId = setTimeout(() => {
+          resolve(this.requestWrapper.match({request: event.request}));
+        }, this.networkTimeoutSeconds * 1000);
+      }));
     }
 
-    return await this.requestWrapper.match({request: event.request});
+    promises.push(this.requestWrapper.fetchAndCache({request: event.request})
+      .then((response) => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+
+        return response ?
+          response :
+          Promise.reject('No response received; falling back to cache.');
+      })
+      .catch(() => this.requestWrapper.match({request: event.request}))
+    );
+
+    return Promise.race(promises);
   }
 }
 
