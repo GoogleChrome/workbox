@@ -118,7 +118,7 @@ class Router extends SWRoutingRouter {
       throw ErrorFactory.createError('navigation-route-url-string');
     }
 
-    this._router.registerRoute({route: new NavigationRoute({
+    super.registerRoute({route: new NavigationRoute({
       handler: () => caches.match(url),
       whitelist: options.whitelist || [/./],
       blacklist: options.blacklist || [],
