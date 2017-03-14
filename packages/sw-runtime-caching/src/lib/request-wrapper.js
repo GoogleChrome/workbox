@@ -14,6 +14,7 @@
 */
 
 import assert from '../../../../lib/assert';
+import logHelper from '../../../../lib/log-helper.js';
 import {pluginCallbacks, defaultCacheName} from './constants';
 import ErrorFactory from './error-factory';
 
@@ -278,10 +279,17 @@ class RequestWrapper {
           });
         }
       });
-    } else if (!cacheable && waitOnCache) {
-      // If the developer request to wait on the cache but the response
-      // isn't cacheable, throw an error.
-      throw ErrorFactory.createError('invalid-reponse-for-caching');
+    } else if (!cacheable) {
+      logHelper.debug(`[RequestWrapper] The response for ${request.url}, with 
+        a status of ${response.status}, wasn't cached. By default, only
+        responses with a status of 200 are cached. You can configure the
+        cacheableResponse plugin to change this default.`.replace(/\s+/g, ' '));
+
+      if (waitOnCache) {
+        // If the developer request to wait on the cache but the response
+        // isn't cacheable, throw an error.
+        throw ErrorFactory.createError('invalid-reponse-for-caching');
+      }
     }
 
     // Only conditionally await the caching completion, giving developers the
