@@ -17,10 +17,6 @@ const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
 const testServer = require('../../../utils/test-server.js');
 
-require('chromedriver');
-require('operadriver');
-require('geckodriver');
-
 const RETRIES = 3;
 const TIMEOUT = 10 * 1000;
 
@@ -61,12 +57,6 @@ describe(`sw-routing Browser Tests`, function() {
 
   seleniumAssistant.getLocalBrowsers().forEach((browser) => {
     switch(browser.getId()) {
-      case 'opera':
-        if (browser.getVersionNumber() <= 43) {
-          console.log(`Skipping Opera <= 43 due to driver issues.`);
-          return;
-        }
-        // fall through
       case 'chrome':
       case 'firefox':
         setupTestSuite(browser);

@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "npm-publish-scripts serve",
     "publish-gh-pages": "npm-publish-scripts publish-docs",
-    "publish-release": "gulp build && gulp test && lerna publish"
+    "publish-release": "lerna bootstrap --concurrency 1 && gulp test && lerna publish --concurrency 1"
   },
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the sw-helpers monorepo. Not meant to be published to npm.",
@@ -60,7 +60,6 @@
     "minimist": "^1.2.0",
     "mockdate": "^2.0.1",
     "npm-publish-scripts": "^4.1.5",
-    "operadriver": "^1.0.0",
     "parse-appcache-manifest": "^0.2.0",
     "path-to-regexp": "^1.6.0",
     "promisify-node": "^0.4.0",

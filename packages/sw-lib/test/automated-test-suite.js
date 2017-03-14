@@ -17,10 +17,6 @@ const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
 const testServer = require('../../../utils/test-server.js');
 
-require('chromedriver');
-require('operadriver');
-require('geckodriver');
-
 const RETRIES = 3;
 const TIMEOUT = 10 * 1000;
 
