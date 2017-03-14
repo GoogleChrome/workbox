@@ -1,6 +1,6 @@
 {
   "name": "sw-build",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "This module can be used to generate a file manifest or service worker, that can be used with sw-lib.",
   "keywords": [
     "sw-fw",
@@ -27,7 +27,7 @@
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-build",
   "dependencies": {
-    "sw-lib": "^0.0.16"
+    "sw-lib": "^0.0.17"
   },
   "devDependencies": {
     "fs-extra": "^2.0.0"
