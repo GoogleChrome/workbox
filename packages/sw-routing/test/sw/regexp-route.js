@@ -15,9 +15,7 @@ describe('Test of the RegExpRoute class', function() {
   const path = '/test/path';
   const regExp = new RegExp(path);
   const handler = {
-    handle: () => {
-      console.log('Hello?');
-    },
+    handle: () => {},
   };
   const invalidHandler = {};
 
