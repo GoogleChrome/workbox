@@ -26,11 +26,6 @@ const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
 const testServer = new swTestingHelpers.TestServer();
 
-// Ensure the selenium drivers are added Node scripts path.
-require('geckodriver');
-require('chromedriver');
-require('operadriver');
-
 const TIMEOUT = 10 * 1000;
 const RETRIES = 3;
 
@@ -89,18 +84,11 @@ const configureTestSuite = function(browser) {
 };
 
 (function(browser) {
-  // Blacklist browsers here if needed.
-  if (browser.getId() === 'opera' && browser.getVersionNumber() === 41) {
-    console.warn('Skipping Opera version 41 due to operadriver error.');
-    return;
-  }
-
   switch (browser.getId()) {
     case 'chrome':
+    case 'firefox':
       configureTestSuite(browser);
       break;
-    case 'firefox':
-    case 'opera':
     default:
       console.warn(`Skipping ${browser.getPrettyName()}.`);
       break;
