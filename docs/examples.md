@@ -5,7 +5,10 @@ navigation_weight: 4
 ---
 # Examples
 
-Below is a list of projects using sw-helper modules in their build process /
+Below is a list of projects using the `sw-helper` modules in their build process /
 service worker.
 
-- [iFixit PWA (Please see the 'ifixit-pwa' branch)](https://github.com/GoogleChrome/application-shell/tree/ifixit-pwa)
+- iFixit PWA
+[[source](https://github.com/GoogleChrome/application-shell/tree/ifixit-pwa/ifixit-pwa)]
+[[demo](https://ifixit-pwa.appspot.com/)]
+
