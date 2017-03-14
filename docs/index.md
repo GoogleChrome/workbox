@@ -30,8 +30,6 @@ navigation_weight: 0
 - [External Contributions](#external-contributions)
 - [License](#license)
 
-The sw-helpers library is ...
-
 ## Ways to Use the Libraries
 
 Despite the number of modules in this package, there are a number of approaches to using these tools which many be used separately or together in any number of combinations.
