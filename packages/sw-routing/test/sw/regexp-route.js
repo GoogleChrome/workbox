@@ -15,7 +15,9 @@ describe('Test of the RegExpRoute class', function() {
   const path = '/test/path';
   const regExp = new RegExp(path);
   const handler = {
-    handle: () => {},
+    handle: () => {
+      console.log('Hello?');
+    },
   };
   const invalidHandler = {};
 
@@ -43,6 +45,18 @@ describe('Test of the RegExpRoute class', function() {
     const route = new goog.routing.RegExpRoute({handler, regExp});
     expect(route.match({url: matchingUrl})).to.be.ok;
     expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
+  });
+
+  it(`should properly match third party URLs`, function() {
+    const matchingUrl = new URL('https://fonts.googleapis.com/icon?family=Material+Icons');
+    const matchingUrl2 = new URL('https://code.getmdl.io/1.2.1/material.indigo-pink.min.css');
+
+    const route = new goog.routing.RegExpRoute({
+      handler,
+      regExp: /.*\.(?:googleapis|getmdl)\.(?:com|io)\/.*/,
+    });
+    expect(route.match({url: matchingUrl})).to.be.ok;
+    expect(route.match({url: matchingUrl2})).to.be.ok;
   });
 
   it(`should properly match URLs with capture groups`, function() {

@@ -15,6 +15,7 @@
 
 import Route from './route';
 import assert from '../../../../lib/assert';
+import logHelper from '../../../../lib/log-helper.js';
 
 /**
  * The Router takes one or more [Routes]{@link Route} and registers a [`fetch`
@@ -108,6 +109,8 @@ class Router {
     self.addEventListener('fetch', (event) => {
       const url = new URL(event.request.url);
       if (!url.protocol.startsWith('http')) {
+        logHelper.debug(`[router.js] URL does not start with HTTP`,
+          event.request.url);
         return;
       }
 
@@ -119,6 +122,8 @@ class Router {
 
         const matchResult = route.match({url, event});
         if (matchResult) {
+          logHelper.debug(`[router.js] Found matching result: `,
+            event.request.url);
           let params = matchResult;
 
           if (Array.isArray(params) && params.length === 0) {
@@ -146,7 +151,12 @@ class Router {
       }
 
       if (responsePromise) {
-        event.respondWith(responsePromise);
+        event.respondWith(responsePromise
+        .then((response) => {
+          logHelper.debug(`[router.js] Returning response for ` +
+            `'${event.request.url}': `, response);
+          return response;
+        }));
       }
     });
   }
