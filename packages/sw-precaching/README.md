@@ -6,6 +6,9 @@ This library is still a work in progress and is not functional.
 
 `npm install --save-dev sw-precaching`
 
+## Demo
+
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-precaching/demo).
 
 ## Reference Docs
 
