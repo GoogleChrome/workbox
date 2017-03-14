@@ -4,7 +4,7 @@
 [![Dependency Status][dependency-image]][dependency-url]
 [![Dev Dependency Status][dev-dependency-image]][dev-dependency-url]
 
-# SW Helpers
+# SW-Helpers
 
 ## Contents
 
