@@ -49,6 +49,7 @@
     "gulp-eslint": "^3.0.1",
     "gulp-header": "^1.8.8",
     "gulp-if": "^2.0.2",
+    "gulp-insert": "^0.5.0",
     "gulp-rename": "^1.2.2",
     "gulp-rollup": "^2.5.1",
     "gulp-sourcemaps": "^2.4.0",

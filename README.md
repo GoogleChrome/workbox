@@ -24,16 +24,14 @@
 - [External Contributions](#external-contributions)
 - [License](#license)
 
-The sw-helpers library is ...
-
 ## Ways to Use the Libraries
 
 Despite the number of modules in this package, there are a number of approaches to using these tools which many be used separately or together in any number of combinations.
 
-* **Precaching, runtime caching and routing**: Use [sw-lib](.) to quickly
-  implement a [caching strategies](.) or a route.
+* **Precaching, runtime caching and routing**: Use [sw-lib](#sw-lib) to quickly
+  implement a [caching strategies](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/) or a route.
 * **Build process**: Generate a service worker or manifest in your build process
-  using [sw-build](.).
+  using [sw-build](#sw-build).
 * **Command line**: Generate a service worker or manifest from the command line.
 * **Go beyond the basics**: Implement more advanced capabilities and more
   sophisticated use cases using any of the other libraries, which are [described
@@ -98,7 +96,8 @@ This module can be used to generate a file manifest or service worker, that can 
 
 **Install**: `npm install --save-dev sw-build`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-build.html)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-build.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-build/demo)
 
 ### sw-cache-expiration
 
@@ -140,7 +139,8 @@ A service worker library to make managing fetch requests and caching as easy as 
 
 **Install**: `npm install --save-dev sw-lib`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-lib.html)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-lib.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-lib/demo)
 
 ### sw-offline-google-analytics
 
@@ -161,7 +161,8 @@ This library is still a work in progress and is not functional.
 
 **Install**: `npm install --save-dev sw-precaching`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-precaching.html)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-precaching.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-precaching/demo)
 
 ### sw-routing
 

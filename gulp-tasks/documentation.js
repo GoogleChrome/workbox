@@ -17,8 +17,17 @@ const gulp = require('gulp');
 const fs = require('fs');
 const path = require('path');
 const rename = require('gulp-rename');
+const insert = require('gulp-insert');
 const handlebars = require('gulp-compile-handlebars');
 const {globPromise, taskHarness} = require('../utils/build');
+
+const FRONT_MATTER = `---
+layout: index
+title: SW-Helpers
+navigation_weight: 0
+---
+
+`;
 
 /**
  * Documents a given project.
@@ -90,6 +99,15 @@ gulp.task('documentation:repo', () => {
           .pipe(gulp.dest('.'))
           .on('end', resolve);
       });
+  })
+  .then(() => {
+    return new Promise((resolve) => {
+      gulp.src('./README.md')
+        .pipe(rename({basename: 'index'}))
+        .pipe(insert.prepend(FRONT_MATTER))
+        .pipe(gulp.dest('./docs/'))
+        .on('end', resolve);
+    });
   });
 });
 
