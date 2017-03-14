@@ -1,6 +1,6 @@
 {
   "name": "sw-offline-google-analytics",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "A service worker helper library to retry offline Google Analytics requests when a connection is available.",
   "keywords": [
     "service worker",
