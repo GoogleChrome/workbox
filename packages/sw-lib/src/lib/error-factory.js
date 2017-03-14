@@ -24,6 +24,8 @@ const errors = {
   'bad-revisioned-cache-list': `The 'cacheRevisionedAssets()' method expects` +
     `an array of revisioned urls like so: ['/example/hello.1234.txt', ` +
     `{path: 'hello.txt', revision: '1234'}]`,
+  'navigation-route-url-string': `The registerNavigationRoute() method ` +
+    `expects a URL string as its first parameter.`,
 };
 
 export default new ErrorFactory(errors);

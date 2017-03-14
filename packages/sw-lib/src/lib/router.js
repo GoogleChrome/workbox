@@ -15,8 +15,13 @@
 
 /* eslint-env browser, serviceworker */
 
-import {Router as SWRoutingRouter, ExpressRoute, RegExpRoute, Route}
-  from '../../../sw-routing/src/index.js';
+import {
+  Router as SWRoutingRouter,
+  ExpressRoute,
+  RegExpRoute,
+  Route,
+  NavigationRoute,
+} from '../../../sw-routing/src/index.js';
 import ErrorFactory from './error-factory.js';
 
 /**
@@ -87,6 +92,37 @@ class Router extends SWRoutingRouter {
     } else {
       throw ErrorFactory.createError('unsupported-route-type');
     }
+  }
+
+  /**
+   * A shortcut used to register a {@link module:sw-routing.NavigationRoute}
+   * instance that will respond to navigation requests using a cache entry for
+   * `url`.
+   *
+   * This is useful when following the [App Shell pattern](https://developers.google.com/web/fundamentals/architecture/app-shell#example-html-for-appshell),
+   * in which the previously cached shell is returned for all navigations.
+   *
+   * The `url` value should correspond to an entry that's already in the cache,
+   * perhaps a URL that is managed by
+   * {@link module:sw-lib.SWLib#cacheRevisionedAssets}. Using a URL that isn't
+   * already cached will lead to failed navigations.
+   *
+   * @param {String} url The URL of the already cached HTML resource.
+   * @param {Object} [options]
+   * @param {Array<RegExp>} [options.blacklist] Defaults to an empty blacklist.
+   * @param {Array<RegExp>} [options.whitelist] Defaults to `[/./]`, which will
+   *        match all request URLs.
+   */
+  registerNavigationRoute(url, options = {}) {
+    if (typeof url !== 'string') {
+      throw ErrorFactory.createError('navigation-route-url-string');
+    }
+
+    super.registerRoute({route: new NavigationRoute({
+      handler: () => caches.match(url),
+      whitelist: options.whitelist || [/./],
+      blacklist: options.blacklist || [],
+    })});
   }
 }
 
