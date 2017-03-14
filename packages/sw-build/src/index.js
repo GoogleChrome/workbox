@@ -51,7 +51,7 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  *   // An array of file details include a `url` and `revision` parameter.
  * });
  *
- * * @example <caption>Generate a service worker for a project.</caption>
+ * @example <caption>Generate a service worker for a project.</caption>
  * const swBuild = require('sw-build');
  *
  * swBuild.generateSW({
