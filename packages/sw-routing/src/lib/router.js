@@ -109,12 +109,17 @@ class Router {
     self.addEventListener('fetch', (event) => {
       const url = new URL(event.request.url);
       if (!url.protocol.startsWith('http')) {
-        logHelper.debug(`[router.js] URL does not start with HTTP`,
-          event.request.url);
+        logHelper.log({
+          that: this,
+          message: 'URL does not start with HTTP and so not parsing ' +
+            'through the router.',
+          request: event.request,
+        });
         return;
       }
 
       let responsePromise;
+      let matchingRoute;
       for (let route of (routes || [])) {
         if (route.method !== event.request.method) {
           continue;
@@ -122,8 +127,15 @@ class Router {
 
         const matchResult = route.match({url, event});
         if (matchResult) {
-          logHelper.debug(`[router.js] Found matching result: `,
-            event.request.url);
+          matchingRoute = route;
+
+          logHelper.log({
+            that: this,
+            message: 'The router is founda matching route.',
+            route: matchingRoute,
+            request: event.request,
+          });
+
           let params = matchResult;
 
           if (Array.isArray(params) && params.length === 0) {
@@ -135,6 +147,7 @@ class Router {
             params = undefined;
           }
 
+          matchingRoute = route;
           responsePromise = route.handler.handle({url, event, params});
           break;
         }
@@ -153,8 +166,14 @@ class Router {
       if (responsePromise) {
         event.respondWith(responsePromise
         .then((response) => {
-          logHelper.debug(`[router.js] Returning response for ` +
-            `'${event.request.url}': `, response);
+          logHelper.debug({
+            that: this,
+            message: 'The router is managing a route with a response.',
+            route: matchingRoute,
+            request: event.request,
+            response: response,
+          });
+
           return response;
         }));
       }
