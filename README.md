@@ -34,8 +34,7 @@ Despite the number of modules in this package, there are a number of approaches 
   using [sw-build](#sw-build).
 * **Command line**: Generate a service worker or manifest from the command line.
 * **Go beyond the basics**: Implement more advanced capabilities and more
-  sophisticated use cases using any of the other libraries, which are [described
-  below](#the-libraries).
+  sophisticated use cases using any of the other libraries, which are [described below](#the-libraries).
 
 ## Setting Up
 
@@ -194,7 +193,7 @@ prior to filing any pull requests.
 
 ## License
 
-Copyright 2016 Google, Inc.
+Copyright 2016-2017 Google, Inc.
 
 Licensed under the [Apache License, Version 2.0](LICENSE) (the "License");
 you may not use this file except in compliance with the License. You may
