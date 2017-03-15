@@ -7,11 +7,10 @@ navigation_weight: 0
 # Getting Started
 
 If you are completely new to service workers and sw-helpers,
-the easiest place to start with `sw-cli`.
+the easiest place to start is `sw-cli`.
 
-This is a command line tool that can build a service
-worker that will precache the assets for your site so that
-it can work offline.
+This is a command line tool that will build a service
+worker to precache assets for your site and make it work offline.
 
 ## Install
 
@@ -24,17 +23,15 @@ npm install -g sw-cli
 
 ## Generating a Service Worker
 
-To generate a service worker for your project just run
-the CLI with the 'generate:sw' command in the root of
-your poject.
+To generate a service worker, run `sw-cli` with the 'generate:sw' command in the root of
+your project.
 
 ```
 sw-cli generate:sw
 ```
 
-This will ask a range of questions about your web app like
-which directory contains the assets for your site, which assets
-you'd like cache etc..
+This will ask a range of questions about your web app, such as which directory 
+contains the assets for your site, and which assets you'd like to cache.
 
 ![Screenshot of the sw-cli command.](./images/sw-cli-questions.png)
 
@@ -61,7 +58,7 @@ from the cache.
 
 ## What is in sw.js?
 
-For those who are curious, let's look at whats in the
+For those who are curious, let's look at what's in the
 generated service worker.
 
 ```
@@ -102,16 +99,16 @@ all the assets during the service worker install event.
 ## What Next?
 
 If you only need precaching and serving of assets then
-you can carry on using the CLI as is.
+you can carry on using `sw-cli` as is.
 
 Otherwise maybe you'll want to explore one of the following.
 
 ### Generating SW in a Build Process
 
 If you have a build process, you might want to use the
-`sw-build` module instead of using `sw-cli`.
+`sw-build` module instead of `sw-cli`.
 
-It allows you to generate the service worker  
+The `sw-build` module allows you to generate the service worker  
 programmatically.
 
 [Learn More About sw-build Here](../reference-docs/stable/latest/module-sw-build.html#main)
@@ -125,7 +122,7 @@ own service worker.
 For this you have a few options.
 
 Both `sw-cli` and `sw-build` can be used to produce a
-list of assets in your web app with the revision
+list of assets in your web app with revision
 information which can be used for precaching. We have
 [recipes on how to do this](../recipes#main).
 
