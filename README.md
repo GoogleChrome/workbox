@@ -26,10 +26,10 @@
 
 ## Ways to Use the Libraries
 
-Despite the number of modules in this package, there are a number of approaches to using these tools which many be used separately or together in any number of combinations.
+There are a number of modules in this package, and they can be used separately or together in many different combinations.
 
 * **Precaching, runtime caching and routing**: Use [sw-lib](#sw-lib) to quickly
-  implement a [caching strategies](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/) or a route.
+  implement a [caching strategy](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/) or a route.
 * **Build process**: Generate a service worker or manifest in your build process
   using [sw-build](#sw-build).
 * **Command line**: Generate a service worker or manifest from the command line.
@@ -44,7 +44,7 @@ Each module is installed separately using the command line [as listed below](#th
 1. Install the module. For example:
 
    `npm install --save-dev sw-lib`
-2. Copy the module's JavaScript and map files to your serving directory. To work properly these must be in the same directory as your service worker. For example:
+2. Copy the module's JavaScript and map files to your serving directory. To work properly these files must be in the same directory as your service worker. For example:
 
    `cp node_modules/sw-lib/build/* app/`
 3. Import the modules to your service worker file. For example:
@@ -59,7 +59,7 @@ All of the modules are described below. Each has an _About_ page with basic usag
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-appcache-behavior%22)][travis-url]
 
-A service worker implementation of the behavior defined in a page&#x27;s App Cache manifest.
+A service worker implementation of the behavior defined in a page's App Cache manifest.
 
 **Install**: `npm install --save-dev sw-appcache-behavior`
 
@@ -92,7 +92,7 @@ A helper library that uses the Broadcast Channel API to announce when two Respon
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-build%22)][travis-url]
 
-This module can be used to generate a file manifest or service worker, that can be used with sw-lib.
+This module can be used to generate a file manifest or service worker that can be used with sw-lib.
 
 **Install**: `npm install --save-dev sw-build`
 
@@ -114,7 +114,7 @@ This library is still a work in progress and is not functional.
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cacheable-response%22)][travis-url]
 
-This library takes a Response object and determines whether it&#x27;s cacheable, based on a specific configuration.
+This library takes a Response object and determines whether it's cacheable, based on a specific configuration.
 
 **Install**: `npm install --save-dev sw-cacheable-response`
 
@@ -194,7 +194,7 @@ prior to filing any pull requests.
 
 ## License
 
-Copyright 2016 Google, Inc.
+Copyright 2017 Google, Inc.
 
 Licensed under the [Apache License, Version 2.0](LICENSE) (the "License");
 you may not use this file except in compliance with the License. You may
