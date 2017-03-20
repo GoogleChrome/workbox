@@ -109,11 +109,13 @@ class Router {
     self.addEventListener('fetch', (event) => {
       const url = new URL(event.request.url);
       if (!url.protocol.startsWith('http')) {
-        logHelper.log({
+        logHelper.info({
           that: this,
           message: 'URL does not start with HTTP and so not parsing ' +
             'through the router.',
-          request: event.request,
+          data: {
+            request: event.request,
+          },
         });
         return;
       }
@@ -129,11 +131,13 @@ class Router {
         if (matchResult) {
           matchingRoute = route;
 
-          logHelper.log({
+          logHelper.info({
             that: this,
             message: 'The router is founda matching route.',
-            route: matchingRoute,
-            request: event.request,
+            data: {
+              route: matchingRoute,
+              request: event.request,
+            },
           });
 
           let params = matchResult;
@@ -169,9 +173,11 @@ class Router {
           logHelper.debug({
             that: this,
             message: 'The router is managing a route with a response.',
-            route: matchingRoute,
-            request: event.request,
-            response: response,
+            data: {
+              route: matchingRoute,
+              request: event.request,
+              response: response,
+            },
           });
 
           return response;
