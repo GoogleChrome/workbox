@@ -30,14 +30,14 @@
 
     const messageAndError = () => {
       _printVariants({
-        message: `Just a message example`,
+        message: `Message + Error example`,
         error: new Error(),
       });
     };
 
     const messageAndData = () => {
       _printVariants({
-        message: `Just a message example`,
+        message: `Messsage + Data example`,
         data: {
           example: 'Example data',
           boolean: true,
@@ -49,7 +49,7 @@
 
     const messageAndErrorAndData = () => {
       _printVariants({
-        message: `Just a message example`,
+        message: `Message + Data + Error example`,
         error: new Error(),
         data: {
           example: 'Example data',
