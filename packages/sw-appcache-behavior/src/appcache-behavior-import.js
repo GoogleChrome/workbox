@@ -84,7 +84,7 @@ function longestMatchingPrefix(urlPrefixes, fullUrl) {
  * @return {Promise.<Response>}
  */
 function fetchWithFallback(request, fallbackUrl, cacheName) {
-  logHelper.log('Trying fetch for', request.url);
+  logHelper.info('Trying fetch for', request.url);
   return fetch(request).then((response) => {
     // Succesful but error-like responses are treated as failures.
     // Ditto for redirects to other origins.
@@ -129,19 +129,19 @@ function getParsedManifestVersion(manifestUrl, manifestHash) {
   return idbHelpers[constants.STORES.MANIFEST_URL_TO_CONTENTS].get(manifestUrl)
     .then((versions) => {
       versions = versions || [];
-      logHelper.log('versions is', versions);
+      logHelper.info('versions is', versions);
       return versions.reduce((result, current) => {
-        logHelper.log('current is', current);
+        logHelper.info('current is', current);
         // If we already have a result, just keep returning it.
         if (result) {
-          logHelper.log('result is', result);
+          logHelper.info('result is', result);
           return result;
         }
 
         // Otherwise, check to see if the hashes match. If so, use the parsed
         // manifest for the current entry as the result.
         if (current.hash === manifestHash) {
-          logHelper.log('manifestHash match', current);
+          logHelper.info('manifestHash match', current);
           return current.parsed;
         }
 
@@ -180,14 +180,14 @@ function saveClientIdAndHash(clientId, hash) {
  * @return {Promise.<Response>}
  */
 function appCacheLogic(event, manifest, hash, clientUrl) {
-  logHelper.log('manifest is', manifest, 'version is', hash);
+  logHelper.info('manifest is', manifest, 'version is', hash);
   const requestUrl = event.request.url;
 
   // Is our request URL listed in the CACHES section?
   // Or is our request URL the client URL, since any page that
   // registers a manifest is treated as if it were in the CACHE?
   if (manifest.cache.includes(requestUrl) || requestUrl === clientUrl) {
-    logHelper.log('CACHE includes URL; using cache.match()');
+    logHelper.info('CACHE includes URL; using cache.match()');
     // If so, return the cached response.
     return caches.open(hash).then((cache) => cache.match(requestUrl));
   }
@@ -199,7 +199,7 @@ function appCacheLogic(event, manifest, hash, clientUrl) {
   const fallbackKey = longestMatchingPrefix(Object.keys(manifest.fallback),
     requestUrl);
   if (fallbackKey) {
-    logHelper.log('fallbackKey in parsedManifest matches', fallbackKey);
+    logHelper.info('fallbackKey in parsedManifest matches', fallbackKey);
     return fetchWithFallback(event.request, manifest.fallback[fallbackKey],
       hash);
   }
@@ -207,12 +207,12 @@ function appCacheLogic(event, manifest, hash, clientUrl) {
   // If CACHE and FALLBACK don't apply, try NETWORK.
   if (manifest.network.includes(requestUrl) ||
       manifest.network.includes('*')) {
-    logHelper.log('Match or * in NETWORK; using fetch()');
+    logHelper.info('Match or * in NETWORK; using fetch()');
     return fetch(event.request);
   }
 
   // If nothing matches, then return an error response.
-  logHelper.log('Nothing matches; using Response.error()');
+  logHelper.info('Nothing matches; using Response.error()');
   return Response.error();
 }
 
@@ -273,7 +273,7 @@ function noManifestBehavior(event) {
   // See https://www.w3.org/TR/2011/WD-html5-20110525/offline.html#concept-appcache-matches-fallback
   return idbHelpers[constants.STORES.MANIFEST_URL_TO_CONTENTS].getAllValues()
     .then((manifests) => {
-      logHelper.log('All manifests:', manifests);
+      logHelper.info('All manifests:', manifests);
       // Use .map() to create an array of the longest matching prefix
       // for each manifest. If no prefixes match for a given manifest,
       // the value will be ''.
@@ -284,7 +284,7 @@ function noManifestBehavior(event) {
         return longestMatchingPrefix(
           Object.keys(parsedManifest.fallback), event.request.url);
       });
-      logHelper.log('longestForEach:', longestForEach);
+      logHelper.info('longestForEach:', longestForEach);
 
       // Next, find which of the longest matching prefixes from each
       // manifest is the longest overall. Return both the index of the
@@ -296,18 +296,18 @@ function noManifestBehavior(event) {
 
         return soFar;
       }, {prefix: '', index: 0});
-      logHelper.log('longest:', longest);
+      logHelper.info('longest:', longest);
 
       // Now that we know the longest overall prefix, we'll use that
       // to lookup the fallback URL value in the winning manifest.
       const fallbackKey = longest.prefix;
-      logHelper.log('fallbackKey:', fallbackKey);
+      logHelper.info('fallbackKey:', fallbackKey);
       if (fallbackKey) {
         const winningManifest = manifests[longest.index];
-        logHelper.log('winningManifest:', winningManifest);
+        logHelper.info('winningManifest:', winningManifest);
         const winningManifestVersion =
           winningManifest[winningManifest.length - 1];
-        logHelper.log('winningManifestVersion:', winningManifestVersion);
+        logHelper.info('winningManifestVersion:', winningManifestVersion);
         const hash = winningManifestVersion.hash;
         const parsedManifest = winningManifestVersion.parsed;
         return fetchWithFallback(event.request,
@@ -315,7 +315,7 @@ function noManifestBehavior(event) {
       }
 
       // If nothing matches, then just fetch().
-      logHelper.log('Nothing at all matches. Using fetch()');
+      logHelper.info('Nothing at all matches. Using fetch()');
       return fetch(event.request);
     });
 }
@@ -330,34 +330,34 @@ function noManifestBehavior(event) {
  */
 function appCacheBehaviorForEvent(event) {
   const requestUrl = new URL(event.request.url);
-  logHelper.log('Starting appCacheBehaviorForUrl for ' + requestUrl);
+  logHelper.info('Starting appCacheBehaviorForUrl for ' + requestUrl);
 
   // If this is a request that, as per the AppCache spec, should be handled
   // via a direct fetch(), then do that and bail early.
   if (event.request.headers.get('X-Use-Fetch') === 'true') {
-    logHelper.log('Using fetch() because X-Use-Fetch: true');
+    logHelper.info('Using fetch() because X-Use-Fetch: true');
     return fetch(event.request);
   }
 
   // Appcache rules only apply to GETs & same-scheme requests.
   if (event.request.method !== 'GET' ||
       requestUrl.protocol !== location.protocol) {
-    logHelper.log(
+    logHelper.info(
       'Using fetch() because AppCache does not apply to this request.');
     return fetch(event.request);
   }
 
   return getClientUrlForEvent(event).then((clientUrl) => {
-    logHelper.log('clientUrl is', clientUrl);
+    logHelper.info('clientUrl is', clientUrl);
     return idbHelpers[constants.STORES.PATH_TO_MANIFEST].get(clientUrl)
       .then((manifestUrl) => {
-        logHelper.log('manifestUrl is', manifestUrl);
+        logHelper.info('manifestUrl is', manifestUrl);
 
         if (manifestUrl) {
           return manifestBehavior(event, manifestUrl, clientUrl);
         }
 
-        logHelper.log('No matching manifest for client found.');
+        logHelper.info('No matching manifest for client found.');
         return noManifestBehavior(event);
       });
   });
@@ -434,7 +434,7 @@ function cleanupOldCaches() {
       });
     });
   }).then((idsToDelete) => {
-    logHelper.log('deleting cache ids', idsToDelete);
+    logHelper.info('deleting cache ids', idsToDelete);
     return Promise.all(idsToDelete.map((cacheId) => caches.delete(cacheId)));
   });
 
@@ -509,7 +509,7 @@ function cleanupOldCaches() {
  * @return {Promise.<Response>}
  */
 function fetchBehavior(event) {
-  logHelper.log('client id is', event.clientId);
+  logHelper.info('client id is', event.clientId);
   return appCacheBehaviorForEvent(event).then((response) => {
     // If this is a navigation, clean up unused caches that correspond to old
     // AppCache manifest versions which are no longer associated with an

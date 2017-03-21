@@ -109,7 +109,7 @@ const initialize = (config) => {
             previousHitFailed = false;
             return response;
           }, (error) => {
-            logHelper.log('Enqueuing failed request...');
+            logHelper.info('Enqueuing failed request...');
             previousHitFailed = true;
             return enqueueRequest(clonedRequest).then(() => Response.error());
           })
