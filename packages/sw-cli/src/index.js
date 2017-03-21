@@ -80,7 +80,7 @@ class SWCli {
   printHelpText() {
     const helpText = fs.readFileSync(
       path.join(__dirname, 'cli-help.txt'), 'utf8');
-    logHelper.info(helpText);
+    logHelper.log(helpText);
   }
 
   /**
@@ -97,7 +97,7 @@ class SWCli {
     }
 
     if (flags.v || flags.version) {
-      logHelper.info(pkg.version);
+      logHelper.log(pkg.version);
       handled = true;
     }
 

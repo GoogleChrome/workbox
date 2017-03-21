@@ -109,7 +109,7 @@ class Router {
     self.addEventListener('fetch', (event) => {
       const url = new URL(event.request.url);
       if (!url.protocol.startsWith('http')) {
-        logHelper.info({
+        logHelper.log({
           that: this,
           message: 'URL does not start with HTTP and so not parsing ' +
             'through the router.',
@@ -131,7 +131,7 @@ class Router {
         if (matchResult) {
           matchingRoute = route;
 
-          logHelper.info({
+          logHelper.log({
             that: this,
             message: 'The router is founda matching route.',
             data: {
