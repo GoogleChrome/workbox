@@ -57,7 +57,7 @@ class LogHelper {
    * Print an info message to the console (Colored dim).
    * @param {string} msg Message to print to the console
    */
-  info(msg) {
+  log(msg) {
     console.log(chalk.dim(msg));
   }
 }
