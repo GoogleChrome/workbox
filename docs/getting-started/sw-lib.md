@@ -14,31 +14,31 @@ into your service worker script, and minimal, straight-forward configuration.
 
 ## Install
 
-Install the module with NPM.
+1. Install the module with NPM.
 
-```
-npm install --save-dev sw-lib
-```
+   ```
+   npm install --save-dev sw-lib
+   ```
 
-You'll need to copy the following files from
+2. Copy the following files from
 `./node_modules/sw-lib` into your project.
 
-* sw-lib.js
-* sw-lib.js.map
-* sw-lib.min.js
-* sw-lib.min.js.map
+   * sw-lib.js
+   * sw-lib.js.map
+   * sw-lib.min.js
+   * sw-lib.min.js.map
 
-You can do this with a simple command like:
+   You can do this with a simple command like:
 
-```
-cp node_modules/sw-lib/build/* app/third-party/sw-lib/
-```
+   ```
+   cp node_modules/sw-lib/build/* app/third-party/sw-lib/
+   ```
 
-To then use `sw-lib` in your service work import the library in your service worker file.
+3. To then use `sw-lib` in your service work import the library in your service worker file.
 
-```
-importScripts('/third-party/sw-lib/sw-lib.min.js');
-```
+   ```
+   importScripts('/third-party/sw-lib/sw-lib.min.js');
+   ```
 
 ## Precaching
 

@@ -23,6 +23,7 @@
   "homepage": "https://github.com/GoogleChrome/sw-helpers#readme",
   "dependencies": {
     "idb": "^2.0.0",
+    "mkdirp": "^0.5.1",
     "update-notifier": "^1.0.3"
   },
   "devDependencies": {
