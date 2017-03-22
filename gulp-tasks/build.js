@@ -16,8 +16,6 @@ const path = require('path');
 const gulp = require('gulp');
 const promisify = require('promisify-node');
 
-const resolve = require('rollup-plugin-node-resolve');
-const commonjs = require('rollup-plugin-commonjs');
 const {taskHarness, buildJSBundle} = require('../utils/build');
 
 const fsePromise = promisify('fs-extra');
