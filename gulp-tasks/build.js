@@ -46,25 +46,16 @@ const buildPackage = (projectPath) => {
 };
 
 gulp.task('build:shared', () => {
-  return Promise.all([
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, '..', 'lib', 'log-helper.js'),
-        format: 'umd',
-        moduleName: 'goog.logHelper',
-        plugins: [
-          resolve({
-            jsnext: true,
-            main: true,
-            browser: true,
-          }),
-          commonjs(),
-        ],
-      },
-      buildPath: 'build/log-helper.js',
-      projectDir: path.join(__dirname, '..'),
-    }),
-  ]);
+  return buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, '..', 'lib', 'log-helper.js'),
+      format: 'umd',
+      moduleName: 'goog.logHelper',
+      plugins: [],
+    },
+    buildPath: 'build/log-helper.js',
+    projectDir: path.join(__dirname, '..'),
+  });
 });
 
 gulp.task('build', () => {
