@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Log Helper Test</title>
+    <script src="/build/log-helper.js"></script>
+    <script>
+    const logHelper = goog.logHelper;
+
+    goog.logLevel = goog.LOG_LEVEL.verbose;
+
+    const _printVariants = (input) => {
+      console.clear();
+
+      logHelper.log(input);
+      logHelper.debug(input);
+      logHelper.warn(input);
+      logHelper.error(input);
+    }
+
+    const justStrings = () => {
+      _printVariants(`Just a string example`);
+    };
+
+    const justMessage = () => {
+      _printVariants({
+        message: `Just a message example`
+      });
+    };
+
+    const messageAndError = () => {
+      _printVariants({
+        message: `Message + Error example`,
+        error: new Error('Example Error'),
+      });
+    };
+
+    const messageAndData = () => {
+      _printVariants({
+        message: `Messsage + Data example`,
+        data: {
+          example: 'Example data',
+          boolean: true,
+          number: 123456,
+          array: ['Hello', false, 1234, {example: 'object'}],
+        },
+      });
+    };
+
+    const messageAndErrorAndData = () => {
+      _printVariants({
+        message: `Message + Data + Error example`,
+        error: new Error('Example Error'),
+        data: {
+          example: 'Example data',
+          boolean: true,
+          number: 123456,
+          array: ['Hello', false, 1234, {example: 'object'}],
+        },
+      });
+    };
+    </script>
+  </head>
+  <body>
+    <p>Please open the console and press a button to perform a test.</p>
+
+    <button onClick="justStrings()">Just Strings</button>
+    <button onClick="justMessage()">Just Message</button>
+    <button onClick="messageAndError()">Message + Error</button>
+    <button onClick="messageAndData()">Message + Data</button>
+    <button onClick="messageAndErrorAndData()">Message + Error + Data</button>
+  </body>
+</html>

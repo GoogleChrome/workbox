@@ -16,7 +16,7 @@ const path = require('path');
 const gulp = require('gulp');
 const promisify = require('promisify-node');
 
-const {taskHarness} = require('../utils/build');
+const {taskHarness, buildJSBundle} = require('../utils/build');
 
 const fsePromise = promisify('fs-extra');
 
@@ -42,6 +42,19 @@ const buildPackage = (projectPath) => {
         path.join(projectPath, 'LICENSE'));
     });
 };
+
+gulp.task('build:shared', () => {
+  return buildJSBundle({
+    rollupConfig: {
+      entry: path.join(__dirname, '..', 'lib', 'log-helper.js'),
+      format: 'umd',
+      moduleName: 'goog.logHelper',
+      plugins: [],
+    },
+    buildPath: 'build/log-helper.js',
+    projectDir: path.join(__dirname, '..'),
+  });
+});
 
 gulp.task('build', () => {
   return taskHarness(buildPackage, global.projectOrStar);

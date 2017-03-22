@@ -22,7 +22,7 @@ const minimist = require('minimist');
 const updateNotifier = require('update-notifier');
 const swBuild = require('sw-build');
 
-const logHelper = require('./lib/log-helper');
+const cliLogHelper = require('./lib/log-helper');
 const pkg = require('../package.json');
 const generateGlobPattern = require('./lib/utils/generate-glob-pattern');
 const saveConfigFile = require('./lib/utils/save-config');
@@ -80,7 +80,7 @@ class SWCli {
   printHelpText() {
     const helpText = fs.readFileSync(
       path.join(__dirname, 'cli-help.txt'), 'utf8');
-    logHelper.info(helpText);
+    cliLogHelper.log(helpText);
   }
 
   /**
@@ -97,7 +97,7 @@ class SWCli {
     }
 
     if (flags.v || flags.version) {
-      logHelper.info(pkg.version);
+      cliLogHelper.log(pkg.version);
       handled = true;
     }
 
@@ -125,7 +125,7 @@ class SWCli {
       case 'generate:manifest':
         return this._generateBuildManifest();
       default:
-        logHelper.error(`Invlaid command given '${command}'`);
+        cliLogHelper.error(`Invlaid command given '${command}'`);
         return Promise.reject();
     }
   }
