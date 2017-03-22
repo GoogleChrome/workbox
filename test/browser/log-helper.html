@@ -13,9 +13,9 @@
       console.clear();
 
       logHelper.log(input);
-      logHelper.debug(input);
-      logHelper.warn(input);
-      logHelper.error(input);
+      //logHelper.debug(input);
+      //logHelper.warn(input);
+      //logHelper.error(input);
     }
 
     const justStrings = () => {
@@ -31,7 +31,7 @@
     const messageAndError = () => {
       _printVariants({
         message: `Message + Error example`,
-        error: new Error(),
+        error: new Error('Example Error'),
       });
     };
 
@@ -50,7 +50,7 @@
     const messageAndErrorAndData = () => {
       _printVariants({
         message: `Message + Data + Error example`,
-        error: new Error(),
+        error: new Error('Example Error'),
         data: {
           example: 'Example data',
           boolean: true,
