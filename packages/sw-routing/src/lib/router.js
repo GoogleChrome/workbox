@@ -133,7 +133,7 @@ class Router {
 
           logHelper.log({
             that: this,
-            message: 'The router is founda matching route.',
+            message: 'The router found a matching route.',
             data: {
               route: matchingRoute,
               request: event.request,
