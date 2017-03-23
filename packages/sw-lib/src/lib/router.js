@@ -54,6 +54,15 @@ import ErrorFactory from './error-factory.js';
  * @memberof module:sw-lib
  */
 class Router extends SWRoutingRouter {
+  /**
+   * Constructs a light wrapper on top of the underlying `Router`.
+   * @param {String} revisionedCacheName The cache name used for entries cached
+   *        via cacheRevisionedAssets().
+   */
+  constructor(revisionedCacheName) {
+    super();
+    this._revisionedCacheName = revisionedCacheName;
+  }
 
   /**
    * @param {String|Regex|Route} capture The capture for a route can be one
@@ -112,14 +121,23 @@ class Router extends SWRoutingRouter {
    * @param {Array<RegExp>} [options.blacklist] Defaults to an empty blacklist.
    * @param {Array<RegExp>} [options.whitelist] Defaults to `[/./]`, which will
    *        match all request URLs.
+   * @param {String} [options.cacheName] The name of the cache which contains
+   *        the cached response for `url`. Defaults to the name of the cache
+   *        used by cacheRevisionedAssets().
    */
   registerNavigationRoute(url, options = {}) {
     if (typeof url !== 'string') {
       throw ErrorFactory.createError('navigation-route-url-string');
     }
 
+    // Allow folks to explicitly pass in a null/undefined cacheName option if
+    // they want that behavior.
+    const cacheName = 'cacheName' in options ?
+      options.cacheName :
+      this._revisionedCacheName;
+
     super.registerRoute({route: new NavigationRoute({
-      handler: () => caches.match(url),
+      handler: () => caches.match(url, {cacheName}),
       whitelist: options.whitelist || [/./],
       blacklist: options.blacklist || [],
     })});
