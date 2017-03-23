@@ -54,14 +54,13 @@ import ErrorFactory from './error-factory.js';
  * @memberof module:sw-lib
  */
 class Router extends SWRoutingRouter {
-
   /**
    * @param {String|Regex|Route} capture The capture for a route can be one
    * of three types.
-   * 1. It can be an Express style route, like: '/example/:anything/route/'
-   *    The only gotcha with this is that it will only capture URL's on your
-   *    origin.
-   * 1. A regex that will be tested against request URL's.
+   * 1. It can be an Express style route, like '/wildcard/prefix/(.*)' for
+   *    same-origin or 'https://cross-origin.example.com/path/to/file' for
+   *    cross-origin routes.
+   * 1. A regex that will be tested against request URLs.
    * 1. A [Route]{@link module:sw-lib.SWLib#Route} instance.
    * @param {function|Handler} handler Called when the route is caught by the
    * capture criteria. The handler argument is ignored if
