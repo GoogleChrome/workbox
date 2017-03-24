@@ -53,6 +53,8 @@ class Router {
    * Start with an empty array of routes, and set up the fetch handler.
    */
   constructor() {
+    // _routes will contain a mapping of HTTP method name ('GET', etc.) to an
+    // array of all the corresponding Route instances that are registered.
     this._routes = new Map();
 
     self.addEventListener('fetch', (event) => {
