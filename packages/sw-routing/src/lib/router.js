@@ -53,7 +53,7 @@ class Router {
    * Start with an empty array of routes, and set up the fetch handler.
    */
   constructor() {
-    this._routes = [];
+    this._routes = new Map();
 
     self.addEventListener('fetch', (event) => {
       const url = new URL(event.request.url);
@@ -71,11 +71,7 @@ class Router {
 
       let responsePromise;
       let matchingRoute;
-      for (let route of this._routes) {
-        if (route.method !== event.request.method) {
-          continue;
-        }
-
+      for (let route of (this._routes.get(event.request.method) || [])) {
         const matchResult = route.match({url, event});
         if (matchResult) {
           matchingRoute = route;
@@ -100,7 +96,6 @@ class Router {
             params = undefined;
           }
 
-          matchingRoute = route;
           responsePromise = route.handler.handle({url, event, params});
           break;
         }
@@ -191,8 +186,15 @@ class Router {
    */
   registerRoutes({routes} = {}) {
     assert.isArrayOfClass({routes}, Route);
-    // Give precedence to the newly registered routes by listing them first.
-    this._routes = routes.concat(this._routes);
+
+    for (let route of routes) {
+      if (!this._routes.has(route.method)) {
+        this._routes.set(route.method, []);
+      }
+
+      // Give precedence to the most recent route by listing it first.
+      this._routes.get(route.method).unshift(route);
+    }
   }
 
   /**
