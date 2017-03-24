@@ -27,9 +27,9 @@ import pathToRegExp from 'path-to-regexp';
  *
  * Please note that `ExpressRoute` can match either same-origin or cross-origin
  * requests. To match only same-origin requests, use a `path` value that begins
- * with `'/'`, e.g. `'/path/to/(.*)'`. To match cross-origin requests, use
+ * with `'/'`, e.g. `'/path/to/:file'`. To match cross-origin requests, use
  * a `path` value that includes the origin, e.g.
- * `'https://example.com/path/to/(.*)'`.
+ * `'https://example.com/path/to/:file'`.
  *
  * @example
  * // Any same-origin requests that start with /path/to and end with one
@@ -49,7 +49,7 @@ import pathToRegExp from 'path-to-regexp';
  * @example
  * // Any cross-origin requests for https://example.com will match this route.
  * const route = new goog.routing.ExpressRoute({
- *   path: 'https://example.com/(.*)',
+ *   path: 'https://example.com/path/to/:file',
  *   handler: ({event}) => return caches.match(event.request),
  * });
  *
@@ -74,7 +74,7 @@ class ExpressRoute extends Route {
    *        HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({path, handler, method}) {
-    if (!(path.startsWith('/') || path.startsWith('https://'))) {
+    if (!(path.startsWith('/') || path.startsWith('http'))) {
       throw ErrorFactory.createError('express-route-invalid-path');
     }
 
@@ -91,7 +91,7 @@ class ExpressRoute extends Route {
       }
 
       // We need to match on either just the pathname or the full URL, depending
-      // on whether the path parameter starts with '/' or 'https:'.
+      // on whether the path parameter starts with '/' or 'http'.
       const pathNameOrHref = path.startsWith('/') ? url.pathname : url.href;
       const regexpMatches = pathNameOrHref.match(regExp);
       // Return null immediately if this route doesn't match.
