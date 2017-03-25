@@ -15,6 +15,7 @@
 
 import Route from './route';
 import assert from '../../../../lib/assert';
+import logHelper from '../../../../lib/log-helper.js';
 
 /**
  * RegExpRoute is a helper class to make defining regular expression based
@@ -89,6 +90,13 @@ class RegExpRoute extends Route {
       // /styles.+/ will only match same-origin requests.
       // See https://github.com/GoogleChrome/sw-helpers/issues/281#issuecomment-285130355
       if ((url.origin !== location.origin) && (result.index !== 0)) {
+        logHelper.debug({
+          that: this,
+          message: `Skipping route, because the RegExp match didn't occur ` +
+            `at the start of the URL.`,
+          data: {url: url.href, regExp},
+        });
+
         return null;
       }
 
