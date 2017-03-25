@@ -50,6 +50,89 @@ import logHelper from '../../../../lib/log-helper.js';
  */
 class Router {
   /**
+   * Start with an empty array of routes, and set up the fetch handler.
+   */
+  constructor() {
+    // _routes will contain a mapping of HTTP method name ('GET', etc.) to an
+    // array of all the corresponding Route instances that are registered.
+    this._routes = new Map();
+
+    self.addEventListener('fetch', (event) => {
+      const url = new URL(event.request.url);
+      if (!url.protocol.startsWith('http')) {
+        logHelper.log({
+          that: this,
+          message: 'URL does not start with HTTP and so not passing ' +
+            'through the router.',
+          data: {
+            request: event.request,
+          },
+        });
+        return;
+      }
+
+      let responsePromise;
+      let matchingRoute;
+      for (let route of (this._routes.get(event.request.method) || [])) {
+        const matchResult = route.match({url, event});
+        if (matchResult) {
+          matchingRoute = route;
+
+          logHelper.log({
+            that: this,
+            message: 'The router is founda matching route.',
+            data: {
+              route: matchingRoute,
+              request: event.request,
+            },
+          });
+
+          let params = matchResult;
+
+          if (Array.isArray(params) && params.length === 0) {
+            // Instead of passing an empty array in as params, use undefined.
+            params = undefined;
+          } else if (params.constructor === Object &&
+                     Object.keys(params).length === 0) {
+            // Instead of passing an empty object in as params, use undefined.
+            params = undefined;
+          }
+
+          responsePromise = route.handler.handle({url, event, params});
+          break;
+        }
+      }
+
+      if (!responsePromise && this.defaultHandler) {
+        responsePromise = this.defaultHandler.handle({url, event});
+      }
+
+      if (responsePromise && this.catchHandler) {
+        responsePromise = responsePromise.catch((error) => {
+          return this.catchHandler.handle({url, event, error});
+        });
+      }
+
+      if (responsePromise) {
+        event.respondWith(responsePromise
+          .then((response) => {
+            logHelper.debug({
+              that: this,
+              message: 'The router is managing a route with a response.',
+              data: {
+                route: matchingRoute,
+                request: event.request,
+                response: response,
+              },
+            });
+
+            return response;
+          }));
+      }
+    });
+  }
+
+  /**
    * An optional default handler will have its handle method called when a
    * request doesn't have a matching route.
    *
@@ -106,84 +189,14 @@ class Router {
   registerRoutes({routes} = {}) {
     assert.isArrayOfClass({routes}, Route);
 
-    self.addEventListener('fetch', (event) => {
-      const url = new URL(event.request.url);
-      if (!url.protocol.startsWith('http')) {
-        logHelper.log({
-          that: this,
-          message: 'URL does not start with HTTP and so not parsing ' +
-            'through the router.',
-          data: {
-            request: event.request,
-          },
-        });
-        return;
+    for (let route of routes) {
+      if (!this._routes.has(route.method)) {
+        this._routes.set(route.method, []);
       }
 
-      let responsePromise;
-      let matchingRoute;
-      for (let route of (routes || [])) {
-        if (route.method !== event.request.method) {
-          continue;
-        }
-
-        const matchResult = route.match({url, event});
-        if (matchResult) {
-          matchingRoute = route;
-
-          logHelper.log({
-            that: this,
-            message: 'The router is founda matching route.',
-            data: {
-              route: matchingRoute,
-              request: event.request,
-            },
-          });
-
-          let params = matchResult;
-
-          if (Array.isArray(params) && params.length === 0) {
-            // Instead of passing an empty array in as params, use undefined.
-            params = undefined;
-          } else if (params.constructor === Object &&
-                     Object.keys(params).length === 0) {
-            // Instead of passing an empty object in as params, use undefined.
-            params = undefined;
-          }
-
-          matchingRoute = route;
-          responsePromise = route.handler.handle({url, event, params});
-          break;
-        }
-      }
-
-      if (!responsePromise && this.defaultHandler) {
-        responsePromise = this.defaultHandler.handle({url, event});
-      }
-
-      if (responsePromise && this.catchHandler) {
-        responsePromise = responsePromise.catch((error) => {
-          return this.catchHandler.handle({url, event, error});
-        });
-      }
-
-      if (responsePromise) {
-        event.respondWith(responsePromise
-        .then((response) => {
-          logHelper.debug({
-            that: this,
-            message: 'The router is managing a route with a response.',
-            data: {
-              route: matchingRoute,
-              request: event.request,
-              response: response,
-            },
-          });
-
-          return response;
-        }));
-      }
-    });
+      // Give precedence to the most recent route by listing it first.
+      this._routes.get(route.method).unshift(route);
+    }
   }
 
   /**
