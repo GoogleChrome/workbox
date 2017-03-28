@@ -45,8 +45,8 @@ class SWLib {
    * an instance which can be accessed by `self.goog.swlib`.
    */
   constructor() {
-    this._router = new Router();
     this._revisionedCacheManager = new RevisionedCacheManager();
+    this._router = new Router(this._revisionedCacheManager.getCacheName());
     this._unrevisionedCacheManager = new UnrevisionedCacheManager();
     this._registerInstallActivateEvents();
     this._registerDefaultRoutes();

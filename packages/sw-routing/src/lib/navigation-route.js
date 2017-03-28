@@ -11,10 +11,11 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
+ */
 
 import Route from './route';
 import assert from '../../../../lib/assert';
+import logHelper from '../../../../lib/log-helper';
 
 /**
  * NavigationRoute is a helper class to create a [`Route`]{@link Route}
@@ -69,9 +70,31 @@ class NavigationRoute extends Route {
     }
 
     const match = ({event, url}) => {
-      return event.request.mode === 'navigate' &&
-        whitelist.some((regExp) => regExp.test(url.pathname)) &&
-        !blacklist.some((regExp) => regExp.test(url.pathname));
+      let matched = false;
+      let message;
+
+      if (event.request.mode === 'navigate') {
+        if (whitelist.some((regExp) => regExp.test(url.pathname))) {
+          if (blacklist.some((regExp) => regExp.test(url.pathname))) {
+            message = `The navigation route is not being used, since the ` +
+              `request URL matches both the whitelist and blacklist.`;
+          } else {
+            message = `The navigation route is being used.`;
+            matched = true;
+          }
+        } else {
+          message = `The navigation route is not being used, since the ` +
+            `URL being navigated to doesn't match the whitelist.`;
+        }
+
+        logHelper.debug({
+          that: this,
+          message,
+          data: {'request-url': url.href, whitelist, blacklist, handler},
+        });
+      }
+
+      return matched;
     };
 
     super({match, handler, method: 'GET'});

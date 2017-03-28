@@ -3,11 +3,12 @@
 importScripts('/packages/sw-lib/build/sw-lib.min.js');
 
 const SHELL_URL = '/shell';
+const CACHE_NAME = 'navigation-route-e2e';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open('navigation-route-e2e')
+    caches.open(CACHE_NAME)
       .then((cache) => cache.put(SHELL_URL, new Response('navigation')))
   );
 });
@@ -16,4 +17,5 @@ self.addEventListener('activate', () => self.clients.claim());
 
 goog.swlib.router.registerNavigationRoute(SHELL_URL, {
   blacklist: [/blacklisted/],
+  cacheName: CACHE_NAME,
 });
