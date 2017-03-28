@@ -76,9 +76,8 @@ class NavigationRoute extends Route {
       if (event.request.mode === 'navigate') {
         if (whitelist.some((regExp) => regExp.test(url.pathname))) {
           if (blacklist.some((regExp) => regExp.test(url.pathname))) {
-            message = `The navigation route is not being used, since while ` +
-              `URL being navigated to matches the whitelist, it also matches ` +
-              `the blacklist.`;
+            message = `The navigation route is not being used, since the ` +
+              `request URL matches both the whitelist and blacklist.`;
           } else {
             message = `The navigation route is being used.`;
             matched = true;
