@@ -36,6 +36,8 @@ if (!assert.isSWEnv()) {
  *
  * @example <caption>Caching assets and registering routes.</caption>
  *
+ * // DO NOT CREATE THIS MANIFEST OR EDIT IT MANUALLY!!
+ * // Use sw-build or sw-cli to generate the manifest for you.
  * goog.swlib.cacheRevisionedAssets([
  *   {
  *     url: '/',

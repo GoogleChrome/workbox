@@ -70,6 +70,7 @@ class SWLib {
    *
    * // ...cacheRevisionedAssets() can also take objects to cache
    * // non-revisioned URLs.
+   * // Please use sw-build or sw-cli to generate the manifest for you.
    * goog.swlib.cacheRevisionedAssets([
    *     {
    *       url: '/index.html',
