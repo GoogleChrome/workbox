@@ -41,11 +41,11 @@ if (!assert.isSWEnv()) {
  * goog.swlib.cacheRevisionedAssets([
  *   {
  *     url: '/',
- *     revision: '1234'
+ *     revision: '613e6c7332dd83e848a8b00c403827ed'
  *   },
  *   {
  *     url: '/styles/main.css',
- *     revision: 'abcd'
+ *     revision: '59a325f32baad11bd47a8c515ec44ae5'
  *   }
  * ]);
  *

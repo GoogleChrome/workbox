@@ -64,8 +64,8 @@ class SWLib {
    * @example <caption>Cache revisioned assets.</caption>
    * // Cache a set of revisioned URLs
    * goog.swlib.cacheRevisionedAssets([
-   *     '/styles/main.1234.css',
-   *     '/images/logo.abcd.jpg'
+   *     '/styles/main.613e6c7332dd83e848a8b00c403827ed.css',
+   *     '/images/logo.59a325f32baad11bd47a8c515ec44ae5.jpg'
    * ]);
    *
    * // ...cacheRevisionedAssets() can also take objects to cache
@@ -74,11 +74,11 @@ class SWLib {
    * goog.swlib.cacheRevisionedAssets([
    *     {
    *       url: '/index.html',
-   *       revision: '1234'
+   *       revision: '613e6c7332dd83e848a8b00c403827ed'
    *     },
    *     {
    *       url: '/about.html',
-   *       revision: 'abcd'
+   *       revision: '59a325f32baad11bd47a8c515ec44ae5'
    *     }
    * ]);
    *
