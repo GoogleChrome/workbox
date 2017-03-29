@@ -37,6 +37,7 @@
     "chromedriver": "^2.26.1",
     "clear-require": "^2.0.0",
     "cookie-parser": "^1.4.3",
+    "depcheck": "^0.6.7",
     "error-stack-parser": "^2.0.0",
     "eslint-config-google": "^0.7.0",
     "express": "^4.14.0",
