@@ -19,9 +19,9 @@ const testServer = require('../../../utils/test-server.js');
 
 const RETRIES = 3;
 const TIMEOUT = 10 * 1000;
-const packageName = 'sw-cacheable-response';
+const PACKAGE_NAME = 'sw-cacheable-response';
 
-describe(`${packageName} Browser Tests`, function() {
+describe(`${PACKAGE_NAME} Browser Tests`, function() {
   this.retries(RETRIES);
   this.timeout(TIMEOUT);
 
@@ -30,7 +30,8 @@ describe(`${packageName} Browser Tests`, function() {
 
   // Set up the web server before running any tests in this suite.
   before(() => testServer.start('.').then((portNumber) => {
-    testHarnessUrl = `http://localhost:${portNumber}/__test/mocha/${packageName}`;
+    testHarnessUrl = `http://localhost:${portNumber}/__test/mocha/` +
+      PACKAGE_NAME;
   }));
 
   // Kill the web server once all tests are complete.

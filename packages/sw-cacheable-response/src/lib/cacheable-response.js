@@ -14,6 +14,7 @@
 */
 
 import assert from '../../../../lib/assert';
+import logHelper from '../../../../lib/log-helper.js';
 
 /**
  * Use this plugin to cache responses with certain HTTP status codes or
@@ -81,6 +82,22 @@ class CacheableResponse {
     if (this.headers && cacheable) {
       cacheable = Object.keys(this.headers).some((headerName) => {
         return response.headers.get(headerName) === this.headers[headerName];
+      });
+    }
+
+    if (!cacheable) {
+      const data = {response};
+      if (this.statuses) {
+        data['valid-status-codes'] = JSON.stringify(this.statuses);
+      }
+      if (this.headers) {
+        data['valid-headers'] = JSON.stringify(this.headers);
+      }
+
+      logHelper.debug({
+        message: `The response does not meet the criteria for being added ` +
+          `to the cache.`,
+        data,
       });
     }
 
