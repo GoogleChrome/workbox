@@ -22,7 +22,8 @@ import logHelper from '../../../../lib/log-helper.js';
  * [Routes]{@link Route} easy.
  *
  * For same-origin requests, the route will be used if the regular expression
- * matches **any portion** (not necessarily the entirety) of the full request URL.
+ * matches **any portion** (not necessarily the entirety) of the full request
+ * URL.
  *
  * For cross-origin requests, the route will only be used if the regular
  * expression matches **from the start** of the full request URL.
