@@ -15,14 +15,32 @@
 
 import Route from './route';
 import assert from '../../../../lib/assert';
+import logHelper from '../../../../lib/log-helper.js';
 
 /**
  * RegExpRoute is a helper class to make defining regular expression based
  * [Routes]{@link Route} easy.
  *
- * `RegExpRoute` performs its matches against the full request URL, including
- * the origin. This means that, unlike [`ExpressRoute`]{@link ExpressRoute},
- * it's able to match cross-origin requests.
+ * For same-origin requests, the route will be used if the regular expression
+ * matches **any portion** (not necessarily the entirety) of the full request
+ * URL.
+ *
+ * For cross-origin requests, the route will only be used if the regular
+ * expression matches **from the start** of the full request URL.
+ *
+ * For example, assuming that your origin is 'https://example.com', and you use
+ * the following regular expressions when constructing your `RegExpRoute`:
+ *
+ * - `/css$/` **will** match 'https://example.com/path/to/styles.css', but
+ * **will not** match 'https://cross-origin.com/path/to/styles.css'
+ *
+ * - `/^https:\/\/cross-origin\.com/` **will not** match
+ * 'https://example.com/path/to/styles.css', but **will** match
+ * 'https://cross-origin.com/path/to/styles.css'
+ *
+ * - `/./` **will** match both 'https://example.com/path/to/styles.css' and
+ * 'https://cross-origin.com/path/to/styles.css', because the `.` wildcard
+ * matches the first character in both URLs.
  *
  * @memberof module:sw-routing
  * @extends Route
@@ -61,10 +79,25 @@ class RegExpRoute extends Route {
     assert.isInstance({regExp}, RegExp);
 
     const match = ({url}) => {
-      const regexpMatches = url.href.match(regExp);
+      const result = regExp.exec(url.href);
 
       // Return null immediately if this route doesn't match.
-      if (!regexpMatches) {
+      if (!result) {
+        return null;
+      }
+
+      // If this is a cross-origin request, then confirm that the match included
+      // the start of the URL. This means that regular expressions like
+      // /styles.+/ will only match same-origin requests.
+      // See https://github.com/GoogleChrome/sw-helpers/issues/281#issuecomment-285130355
+      if ((url.origin !== location.origin) && (result.index !== 0)) {
+        logHelper.debug({
+          that: this,
+          message: `Skipping route, because the RegExp match didn't occur ` +
+            `at the start of the URL.`,
+          data: {url: url.href, regExp},
+        });
+
         return null;
       }
 
@@ -72,7 +105,7 @@ class RegExpRoute extends Route {
       // this will return [], which is truthy and therefore sufficient to
       // indicate a match.
       // If there are capture groups, then it will return their values.
-      return regexpMatches.slice(1);
+      return result.slice(1);
     };
 
     super({match, handler, method});

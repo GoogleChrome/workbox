@@ -12,6 +12,7 @@ mocha.setup({
 });
 
 describe('Test of the RegExpRoute class', function() {
+  const crossOrigin = 'https://cross-origin.example.com';
   const path = '/test/path';
   const regExp = new RegExp(path);
   const handler = {
@@ -39,13 +40,17 @@ describe('Test of the RegExpRoute class', function() {
   it(`should properly match URLs`, function() {
     const matchingUrl = new URL(path, location);
     const nonMatchingUrl = new URL('/does/not/match', location);
+    const crossOriginUrl = new URL(path, crossOrigin);
 
     const route = new goog.routing.RegExpRoute({handler, regExp});
     expect(route.match({url: matchingUrl})).to.be.ok;
     expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
+    // This route will not match because while the RegExp matches, the match
+    // doesn't occur at the start of the cross-origin URL.
+    expect(route.match({url: crossOriginUrl})).not.to.be.ok;
   });
 
-  it(`should properly match third party URLs`, function() {
+  it(`should properly match cross-origin URLs with wildcards`, function() {
     const matchingUrl = new URL('https://fonts.googleapis.com/icon?family=Material+Icons');
     const matchingUrl2 = new URL('https://code.getmdl.io/1.2.1/material.indigo-pink.min.css');
 
@@ -55,6 +60,16 @@ describe('Test of the RegExpRoute class', function() {
     });
     expect(route.match({url: matchingUrl})).to.be.ok;
     expect(route.match({url: matchingUrl2})).to.be.ok;
+  });
+
+  it(`should properly match cross-origin URLs without wildcards`, function() {
+    const matchingUrl = new URL(path, crossOrigin);
+    const nonMatchingUrl = new URL('/does/not/match', crossOrigin);
+    const crossOriginRegExp = new RegExp(crossOrigin + path);
+
+    const route = new goog.routing.RegExpRoute({handler, regExp: crossOriginRegExp});
+    expect(route.match({url: matchingUrl})).to.be.ok;
+    expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
   });
 
   it(`should properly match URLs with capture groups`, function() {

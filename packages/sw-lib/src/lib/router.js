@@ -65,12 +65,14 @@ class Router extends SWRoutingRouter {
   }
 
   /**
-   * @param {String|Regex|Route} capture The capture for a route can be one
+   * @param {String|RegExp|Route} capture The capture for a route can be one
    * of three types.
-   * 1. It can be an Express style route, like: '/example/:anything/route/'
-   *    The only gotcha with this is that it will only capture URL's on your
-   *    origin.
-   * 1. A regex that will be tested against request URL's.
+   * 1. It can be an Express style route, like '/path/to/:anything' for
+   *    same-origin or 'https://cross-origin.com/path/to/:anything' for
+   *    cross-origin routes.
+   * 1. A regular expression that will be tested against request URLs. For
+   *    cross-origin routes, you must use a RegExp that matches the start of the
+   *    full URL, like `new RegExp('https://cross-origin\.com/')`.
    * 1. A [Route]{@link module:sw-lib.SWLib#Route} instance.
    * @param {function|Handler} handler Called when the route is caught by the
    * capture criteria. The handler argument is ignored if
