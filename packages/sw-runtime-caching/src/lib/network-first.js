@@ -84,18 +84,20 @@ class NetworkFirst extends Handler {
       }));
     }
 
-    promises.push(this.requestWrapper.fetchAndCache({request: event.request})
-      .then((response) => {
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
+    const networkPromise = this.requestWrapper.fetchAndCache({
+      request: event.request,
+      waitOnCache: this.waitOnCache,
+    }).then((response) => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
 
-        return response ?
-          response :
-          Promise.reject('No response received; falling back to cache.');
-      })
-      .catch(() => this.requestWrapper.match({request: event.request}))
-    );
+      return response ?
+        response :
+        Promise.reject('No response received; falling back to cache.');
+    }).catch(() => this.requestWrapper.match({request: event.request}));
+
+    promises.push(networkPromise);
 
     return Promise.race(promises);
   }
