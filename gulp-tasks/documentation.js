@@ -52,6 +52,8 @@ const documentPackage = (projectPath) => {
       handleBarsData.hasDemo = false;
     }
 
+    handleBarsData.hasRefDocs = (projectMetadata.name !== 'sw-cli');
+
     // First, use metadata require(package.json to write out an initial
     // README.md.
     gulp.src('templates/Project-README.hbs')
@@ -91,6 +93,8 @@ gulp.task('documentation:repo', () => {
           } catch(err) {
             project.hasDemo = false;
           }
+
+          project.hasRefDocs = (project.name !== 'sw-cli');
 
           return project;
         });

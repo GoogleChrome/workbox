@@ -61,7 +61,7 @@
     "lerna": "2.0.0-beta.38",
     "minimist": "^1.2.0",
     "mockdate": "^2.0.1",
-    "npm-publish-scripts": "^4.1.5",
+    "npm-publish-scripts": "^4.1.16",
     "parse-appcache-manifest": "^0.2.0",
     "path-to-regexp": "^1.6.0",
     "promisify-node": "^0.4.0",
