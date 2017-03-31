@@ -43,6 +43,10 @@
  * @module sw-cacheable-response
  */
 
-import Plugin from './lib/plugin';
+import CacheableResponse from './lib/cacheable-response';
+import CacheableResponsePlugin from './lib/cacheable-response-plugin';
 
-export {Plugin};
+export {
+  CacheableResponse,
+  CacheableResponsePlugin,
+};
