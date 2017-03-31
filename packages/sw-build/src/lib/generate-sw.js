@@ -1,3 +1,4 @@
+const path = require('path');
 const copySWLib = require('./utils/copy-sw-lib');
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const writeServiceWorker = require('./write-sw');
@@ -73,7 +74,7 @@ const generateSW = function(input) {
   return copySWLib(rootDirectory)
   .then((libPath) => {
     swlibPath = libPath;
-    globIgnores.push(swlibPath);
+    globIgnores.push(path.relative(rootDirectory, swlibPath));
   })
   .then(() => {
     return getFileManifestEntries(
