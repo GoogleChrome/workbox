@@ -106,6 +106,79 @@ describe('Test generateSW()', function() {
     }, Promise.resolve());
   });
 
+  it('should be able to handle a bad globPatterns input', function() {
+    const badInput = [
+      {},
+      true,
+      false,
+    ];
+    return badInput.reduce((promiseChain, input) => {
+      return promiseChain.then(() => {
+        let args = Object.assign({}, EXAMPLE_INPUT);
+        args.globPatterns = input;
+        return generateSW(args)
+        .then(() => {
+          console.log('Input did not cause error: ', input);
+          throw new Error('Expected to throw error.');
+        })
+        .catch((err) => {
+          if (err.message !== errors['invalid-glob-patterns']) {
+            throw new Error('Unexpected error: ' + err.message);
+          }
+        });
+      });
+    }, Promise.resolve());
+  });
+
+  it('should be able to handle a bad templatedUrls input', function() {
+    this.timeout(4000);
+
+    const badInput = [
+      [],
+      true,
+      1234,
+    ];
+    return badInput.reduce((promiseChain, input) => {
+      return promiseChain.then(() => {
+        let args = Object.assign({}, EXAMPLE_INPUT);
+        args.templatedUrls = input;
+        return generateSW(args)
+        .then(() => {
+          throw new Error('Expected to throw error.');
+        })
+        .catch((err) => {
+          if (err.message !== errors['invalid-templated-urls']) {
+            throw new Error('Unexpected error: ' + err.message);
+          }
+        });
+      });
+    }, Promise.resolve());
+  });
+
+  it('should be able to handle a bad globIgnores input', function() {
+    const badInput = [
+      {},
+      true,
+      [123],
+    ];
+    return badInput.reduce((promiseChain, input) => {
+      return promiseChain.then(() => {
+        let args = Object.assign({}, EXAMPLE_INPUT);
+        args.globIgnores = input;
+        return generateSW(args)
+        .then(() => {
+          console.log('Input did not cause error: ', input);
+          throw new Error('Expected to throw error.');
+        })
+        .catch((err) => {
+          if (err.message !== errors['invalid-glob-ignores']) {
+            throw new Error('Unexpected error: ' + err.message);
+          }
+        });
+      });
+    }, Promise.resolve());
+  });
+
   // Success.........................................................
 
   // rootDirectory - dot

@@ -42,25 +42,32 @@ const errors = require('./errors');
  * @memberof module:sw-build
  */
 const generateSW = function(input) {
-  if (!input || typeof input !== 'object' || input instanceof Array) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
     return Promise.reject(new Error(errors['invalid-generate-sw-input']));
   }
 
-  const rootDirectory = input.rootDirectory;
-  const staticFileGlobs = input.staticFileGlobs;
-  const globIgnores = input.globIgnores;
-  const dest = input.dest;
-  const templatedUrls = input.templatedUrls;
+  // Type check input so that defaults can be used if appropriate.
+  if (input.globIgnores && !(Array.isArray(input.globIgnores))) {
+    return Promise.reject(
+      new Error(errors['invalid-glob-ignores']));
+  }
 
-  if (typeof rootDirectory !== 'string' || rootDirectory.length === 0) {
+  if (typeof input.rootDirectory !== 'string' ||
+    input.rootDirectory.length === 0) {
     return Promise.reject(
       new Error(errors['invalid-root-directory']));
   }
 
-  if (typeof dest !== 'string' || dest.length === 0) {
+  if (typeof input.dest !== 'string' || input.dest.length === 0) {
     return Promise.reject(
       new Error(errors['invalid-dest']));
   }
+
+  const rootDirectory = input.rootDirectory;
+  const staticFileGlobs = input.staticFileGlobs;
+  const globIgnores = input.globIgnores ? input.globIgnores : [];
+  const dest = input.dest;
+  const templatedUrls = input.templatedUrls;
 
   let swlibPath;
   return copySWLib(rootDirectory)
@@ -69,8 +76,10 @@ const generateSW = function(input) {
     globIgnores.push(swlibPath);
   })
   .then(() => {
-    const manifestEntries = getFileManifestEntries(
+    return getFileManifestEntries(
       {staticFileGlobs, globIgnores, rootDirectory, templatedUrls});
+  })
+  .then((manifestEntries) => {
     return writeServiceWorker(
       dest,
       manifestEntries,

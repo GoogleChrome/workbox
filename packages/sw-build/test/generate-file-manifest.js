@@ -60,9 +60,9 @@ describe('Test generateFileManifest', function() {
             throw new Error('Invalid glob pattern.');
           }
 
-          return FILE_ENTRIES;
+          return Promise.resolve(FILE_ENTRIES);
         },
-        './utils/write-file-manifest': (manifestFilePath, entries) =>{
+        './utils/write-file-manifest': (manifestFilePath, entries) => {
           entries.forEach((entry) => {
             let matchingOracle = null;
             FILE_ENTRIES.forEach((oracleEntry) => {

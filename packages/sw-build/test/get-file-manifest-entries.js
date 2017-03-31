@@ -140,17 +140,20 @@ describe('Test getFileManifestEntries', function() {
         },
       }
     );
-    const output = getFileManifestEntries(testInput);
-    output.forEach((entry) => {
-      let matchingOracle = null;
-      FILE_ENTRIES.forEach((oracleEntry) => {
-        if (entry.file === oracleEntry.file) {
-          matchingOracle = oracleEntry;
+
+    return getFileManifestEntries(testInput)
+    .then((output) => {
+      output.forEach((entry) => {
+        let matchingOracle = null;
+        FILE_ENTRIES.forEach((oracleEntry) => {
+          if (entry.file === oracleEntry.file) {
+            matchingOracle = oracleEntry;
+          }
+        });
+        if (!matchingOracle || entry.hash !== matchingOracle.hash || entry.size !== matchingOracle.size) {
+          throw new Error('Could not find matching file entry.');
         }
       });
-      if (!matchingOracle || entry.hash !== matchingOracle.hash || entry.size !== matchingOracle.size) {
-        throw new Error('Could not find matching file entry.');
-      }
     });
   });
 });

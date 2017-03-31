@@ -32,12 +32,12 @@ const getStringDetails = require('./utils/get-string-details');
  * @memberof module:sw-build
  */
 const getFileManifestEntries = (input) => {
-  if (!input || typeof input !== 'object' || input instanceof Array) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
     throw new Error(errors['invalid-get-manifest-entries-input']);
   }
 
   const staticFileGlobs = input.staticFileGlobs;
-  const globIgnores = input.globIgnores;
+  const globIgnores = input.globIgnores ? input.globIgnores : [];
   const rootDirectory = input.rootDirectory;
   const templatedUrls = input.templatedUrls;
 
@@ -49,6 +49,22 @@ const getFileManifestEntries = (input) => {
   if (!staticFileGlobs || !Array.isArray(staticFileGlobs)) {
     return Promise.reject(
       new Error(errors['invalid-static-file-globs']));
+  }
+
+  if (!globIgnores || !Array.isArray(globIgnores)) {
+    return Promise.reject(
+      new Error(errors['invalid-glob-ignores']));
+  }
+
+  let validIgnores = true;
+  globIgnores.forEach((pattern) => {
+    if (typeof pattern !== 'string') {
+      validIgnores = false;
+    }
+  });
+  if (!validIgnores) {
+    return Promise.reject(
+      new Error(errors['invalid-glob-ignores']));
   }
 
   const fileSet = new Set();
@@ -69,7 +85,7 @@ const getFileManifestEntries = (input) => {
 
   // templatedUrls is optional.
   if (templatedUrls) {
-    if (typeof templatedUrls !== 'object') {
+    if (typeof templatedUrls !== 'object' || Array.isArray(templatedUrls)) {
       return Promise.reject(new Error(errors['invalid-templated-urls']));
     }
 
@@ -96,7 +112,7 @@ const getFileManifestEntries = (input) => {
     }
   }
 
-  return filterFiles(fileDetails);
+  return Promise.resolve(filterFiles(fileDetails));
 };
 
 module.exports = getFileManifestEntries;

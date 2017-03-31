@@ -14,6 +14,7 @@
 */
 
 import assert from '../../../../lib/assert';
+import logHelper from '../../../../lib/log-helper.js';
 
 /**
  * Use this plugin to cache responses with certain HTTP status codes or
@@ -23,7 +24,7 @@ import assert from '../../../../lib/assert';
  * status code and a matching header.
  *
  * @example
- * new goog.cacheableResponse.Plugin({
+ * new goog.cacheableResponse.CacheableResponse({
  *   statuses: [0, 200, 404],
  *   headers: {
  *     'Example-Header-1': 'Header-Value-1'
@@ -33,7 +34,7 @@ import assert from '../../../../lib/assert';
  *
  * @memberof module:sw-cacheable-response
  */
-class Plugin {
+class CacheableResponse {
   /**
    * Creates a new `Plugin` instance, which stores configuration and logic
    * to determine whether a `Response` object is cacheable or not.
@@ -61,30 +62,12 @@ class Plugin {
   }
 
   /**
-   * A "lifecycle" callback that will be triggered automatically by the
-   * `goog.runtimeCaching` handlers prior to an entry being added to a cache.
-   *
-   * Developers would normally not call this method directly; instead,
-   * [`isResponseCacheable`](#isResponseCacheable) provides equivalent behavior
-   * when used outside of `goog.runtimeCaching`.
-   *
-   * @private
-   * @param {Object} input
-   * @param {Response} input.newResponse The response that might be cached.
-   * @return {boolean} `true` if the `Response` is cacheable, based on the
-   *          configuration of this object, and `false` otherwise.
-   */
-  cacheWillUpdate({response} = {}) {
-    return this.isResponseCacheable({response});
-  }
-
-  /**
    * Checks a response to see whether it's cacheable or not, based on the
    * configuration of this object.
    *
    * @private
    * @param {Object} input
-   * @param {Response} input.newResponse The response that might be cached.
+   * @param {Response} input.response The response that might be cached.
    * @return {boolean} `true` if the `Response` is cacheable, based on the
    *          configuration of this object, and `false` otherwise.
    */
@@ -102,8 +85,24 @@ class Plugin {
       });
     }
 
+    if (!cacheable) {
+      const data = {response};
+      if (this.statuses) {
+        data['valid-status-codes'] = JSON.stringify(this.statuses);
+      }
+      if (this.headers) {
+        data['valid-headers'] = JSON.stringify(this.headers);
+      }
+
+      logHelper.debug({
+        message: `The response does not meet the criteria for being added ` +
+          `to the cache.`,
+        data,
+      });
+    }
+
     return cacheable;
   }
 }
 
-export default Plugin;
+export default CacheableResponse;
