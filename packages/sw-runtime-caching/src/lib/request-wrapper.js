@@ -13,10 +13,10 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
-import logHelper from '../../../../lib/log-helper.js';
-import {pluginCallbacks, defaultCacheName} from './constants';
+import {CacheableResponse} from '../../../sw-cacheable-response/src/index';
 import ErrorFactory from './error-factory';
+import assert from '../../../../lib/assert';
+import {pluginCallbacks, defaultCacheName} from './constants';
 
 /**
  * This class is used by the various subclasses of `Handler` to configure the
@@ -96,6 +96,16 @@ class RequestWrapper {
       if (this.pluginCallbacks.cacheWillUpdate.length !== 1) {
         throw ErrorFactory.createError('multiple-cache-will-update-plugins');
       }
+      this.cacheableResponseCheck = this.pluginCallbacks.cacheWillUpdate[0];
+    } else {
+      // If the was no plugin implementing cacheWillUpdate passed in, then
+      // construct a new one which just checks to make sure the response's
+      // status is 200. This matches the default behavior of cache.add().
+      // The default check might be overridden later on if someone calls the
+      // cacheableResponseCheck setter.
+      const cacheableResponse = new CacheableResponse({statuses: [200]});
+      this._defaultCacheableResponseCheck =
+        cacheableResponse.isResponseCacheable.bind(cacheableResponse);
     }
 
     if (this.pluginCallbacks.cacheWillMatch) {
@@ -103,6 +113,29 @@ class RequestWrapper {
         throw ErrorFactory.createError('multiple-cache-will-match-plugins');
       }
     }
+  }
+
+  /**
+   * Provides a method of setting the cacheableResponseCheck after the
+   * `RequestWrapper` has already been constructed, but only if it wasn't set
+   * inside the constructor.
+   *
+   * @param {function} callback The function used to determine whether a
+   *        response is cacheable.
+   */
+  set cacheableResponseCheck(callback) {
+    if (!this._cacheableResponseCheck) {
+      this._cacheableResponseCheck = callback;
+    }
+  }
+
+  /**
+   * @private
+   * @return {function} The function used to determine whether a response is
+   *         cacheable.
+   */
+  get cacheableResponseCheck() {
+    return this._cacheableResponseCheck || this._defaultCacheableResponseCheck;
   }
 
   /**
@@ -241,13 +274,7 @@ class RequestWrapper {
     let cachingComplete;
     const response = await this.fetch({request});
 
-    // response.ok is true if the response status is 2xx.
-    // That's the default condition.
-    let cacheable = response.ok;
-    if (this.pluginCallbacks.cacheWillUpdate) {
-      cacheable = this.pluginCallbacks.cacheWillUpdate[0](
-        {request, response});
-    }
+    const cacheable = this.cacheableResponseCheck({request, response});
 
     if (cacheable) {
       const newResponse = response.clone();
@@ -279,17 +306,10 @@ class RequestWrapper {
           });
         }
       });
-    } else if (!cacheable) {
-      logHelper.debug(`[RequestWrapper] The response for ${request.url}, with 
-        a status of ${response.status}, wasn't cached. By default, only
-        responses with a status of 200 are cached. You can configure the
-        cacheableResponse plugin to change this default.`.replace(/\s+/g, ' '));
-
-      if (waitOnCache) {
-        // If the developer request to wait on the cache but the response
-        // isn't cacheable, throw an error.
-        throw ErrorFactory.createError('invalid-reponse-for-caching');
-      }
+    } else if (!cacheable && waitOnCache) {
+      // If the developer request to wait on the cache but the response
+      // isn't cacheable, throw an error.
+      throw ErrorFactory.createError('invalid-response-for-caching');
     }
 
     // Only conditionally await the caching completion, giving developers the

@@ -13,6 +13,7 @@
  limitations under the License.
 */
 
+import {CacheableResponse} from '../../../sw-cacheable-response/src/index';
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
@@ -22,6 +23,11 @@ import assert from '../../../../lib/assert';
  *
  * In addition to updating the appropriate caches, it will also trigger any
  * appropriate plugins defined in the underlying `RequestWrapper`.
+ *
+ * By default, [opaque responses](http://stackoverflow.com/questions/39109789/what-limitations-apply-to-opaque-responses)
+ * will be cached in addition to responses with a 200 response status. You can
+ * override this default by passing in a `RequestWrapper` that includes an
+ * appropriately-configured `CacheableResponsePlugin`.
  *
  * @example
  * // Set up a route to match any requests made for URLs that end in .txt.
@@ -38,6 +44,23 @@ import assert from '../../../../lib/assert';
  * @extends Handler
  */
 class StaleWhileRevalidate extends Handler {
+  /**
+   * Constructor for a new StaleWhileRevalidate instance.
+   *
+   * @param {Object} input
+   * @param {RequestWrapper} [input.requestWrapper] An optional `RequestWrapper`
+   *        that is used to configure the cache name and request plugins. If
+   *        not provided, a new `RequestWrapper` using the
+   *        [default cache name](#defaultCacheName) will be used.
+   */
+  constructor(input = {}) {
+    super(input);
+
+    const cacheableResponse = new CacheableResponse({statuses: [0, 200]});
+    this.requestWrapper.cacheableResponseCheck =
+      cacheableResponse.isResponseCacheable.bind(cacheableResponse);
+  }
+
   /**
    * The handle method will be called by the
    * {@link module:sw-routing.Route|Route} class when a route matches a request.

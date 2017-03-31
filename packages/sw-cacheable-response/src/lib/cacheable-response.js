@@ -65,14 +65,19 @@ class CacheableResponse {
    * Checks a response to see whether it's cacheable or not, based on the
    * configuration of this object.
    *
-   * @private
    * @param {Object} input
    * @param {Response} input.response The response that might be cached.
+   * @param {Request} [input.request] Optionally, the request that led to the
+   *        response.
    * @return {boolean} `true` if the `Response` is cacheable, based on the
    *          configuration of this object, and `false` otherwise.
    */
-  isResponseCacheable({response} = {}) {
+  isResponseCacheable({request, response} = {}) {
     assert.isInstance({response}, Response);
+    if (request) {
+      assert.isInstance({request}, Request);
+    }
+
     let cacheable = true;
 
     if (this.statuses) {
@@ -92,6 +97,9 @@ class CacheableResponse {
       }
       if (this.headers) {
         data['valid-headers'] = JSON.stringify(this.headers);
+      }
+      if (request) {
+        data['request'] = request;
       }
 
       logHelper.debug({

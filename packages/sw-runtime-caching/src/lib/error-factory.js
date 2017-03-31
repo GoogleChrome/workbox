@@ -20,7 +20,7 @@ const errors = {
     'plugin that implements cacheWillUpdate.',
   'multiple-cache-will-match-plugins': 'You cannot register more than one ' +
     'plugin that implements cacheWillMatch.',
-  'invalid-reponse-for-caching': 'The fetched response could not be cached ' +
+  'invalid-response-for-caching': 'The fetched response could not be cached ' +
     'due to an invalid response code, by default only 20X responses can ' +
     'be cached.',
 };
