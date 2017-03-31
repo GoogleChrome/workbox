@@ -48,11 +48,11 @@ module.exports = {
     'must be an Object.',
   'invalid-manifest-format': `The value of the 'format' option passed to
     generateFileManifest() must be either 'iife' (the default) or 'es'.`,
-  'invalid-glob-patterns': `The 'globPatterns' value must be an array of ` +
-    `strings.`,
+  'invalid-static-file-globs': `The 'staticFileGlobs' value must be an array ` +
+    `of strings.`,
   'invalid-templated-urls': `The 'templatedUrls' value should be ` +
     `an object that maps URLs to either a string, or to an array of glob ` +
     `patterns.`,
   'templated-url-matches-glob': `One of the 'templatedUrls' URL s` +
-    `is already being tracked via globPatterns: `,
+    `is already being tracked via staticFileGlobs: `,
 };

@@ -158,10 +158,10 @@ class SWCli {
       }
     })
     .then(() => {
-      if (!config.globPatterns) {
+      if (!config.staticFileGlobs) {
         return askForExtensionsToCache(config.rootDirectory)
         .then((extensionsToCache) => {
-          config.globPatterns = [
+          config.staticFileGlobs = [
             generateGlobPattern(config.rootDirectory, extensionsToCache),
           ];
         });
@@ -223,7 +223,7 @@ class SWCli {
         rootDirPath, fileExtentionsToCache);
       return swBuild.generateFileManifest({
         rootDirectory: rootDirPath,
-        globPatterns: [globPattern],
+        staticFileGlobs: [globPattern],
         globIgnores: [
           path.join(rootDirPath, fileManifestName),
         ],

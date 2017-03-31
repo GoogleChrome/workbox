@@ -10,7 +10,7 @@ const errors = require('./errors');
  * swBuild.generateSW({
  *   rootDirectory: './build/',
  *   dest: './build/sw.js',
- *   globPatterns: ['**\/*.{html,js,css}'],
+ *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
@@ -26,7 +26,7 @@ const errors = require('./errors');
  * @param {String} input.rootDirectory The root of the files you wish to
  * be cached. This will also be the directory the service worker and library
  * files are written to.
- * @param {Array<String>} input.globPatterns Patterns to glob for when
+ * @param {Array<String>} input.staticFileGlobs Patterns to glob for when
  * generating the build manifest.
  * @param {String|Array<String>} [input.globIgnores] Patterns to exclude when
  * generating the build manifest.
@@ -47,7 +47,7 @@ const generateSW = function(input) {
   }
 
   const rootDirectory = input.rootDirectory;
-  const globPatterns = input.globPatterns;
+  const staticFileGlobs = input.staticFileGlobs;
   const globIgnores = input.globIgnores;
   const dest = input.dest;
   const templatedUrls = input.templatedUrls;
@@ -70,7 +70,7 @@ const generateSW = function(input) {
   })
   .then(() => {
     const manifestEntries = getFileManifestEntries(
-      {globPatterns, globIgnores, rootDirectory, templatedUrls});
+      {staticFileGlobs, globIgnores, rootDirectory, templatedUrls});
     return writeServiceWorker(
       dest,
       manifestEntries,
