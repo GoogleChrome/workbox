@@ -113,7 +113,6 @@ gulp.task('documentation:repo', () => {
       gulp.src('./README.md')
         .pipe(rename({basename: 'index'}))
         .pipe(insert.prepend(FRONT_MATTER))
-        .pipe(insert.prepend(AUTO_GENERATED))
         .pipe(gulp.dest('./docs/'))
         .on('end', resolve);
     });
