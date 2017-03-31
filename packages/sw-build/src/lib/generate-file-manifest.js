@@ -47,8 +47,10 @@ const generateFileManifest = (input) => {
       new Error(errors['invalid-generate-file-manifest-arg']));
   }
 
-  const fileEntries = getFileManifestEntries(input);
-  return writeFileManifest(input.dest, fileEntries, input.format);
+  return getFileManifestEntries(input)
+  .then((fileEntries) => {
+    return writeFileManifest(input.dest, fileEntries, input.format);
+  });
 };
 
 module.exports = generateFileManifest;

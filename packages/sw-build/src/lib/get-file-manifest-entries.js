@@ -69,7 +69,7 @@ const getFileManifestEntries = (input) => {
 
   // templatedUrls is optional.
   if (templatedUrls) {
-    if (typeof templatedUrls !== 'object') {
+    if (typeof templatedUrls !== 'object' || templatedUrls instanceof Array) {
       return Promise.reject(new Error(errors['invalid-templated-urls']));
     }
 
@@ -96,7 +96,7 @@ const getFileManifestEntries = (input) => {
     }
   }
 
-  return filterFiles(fileDetails);
+  return Promise.resolve(filterFiles(fileDetails));
 };
 
 module.exports = getFileManifestEntries;
