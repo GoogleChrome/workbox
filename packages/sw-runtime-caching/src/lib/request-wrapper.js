@@ -98,7 +98,7 @@ class RequestWrapper {
       }
       this.cacheableResponseCheck = this.pluginCallbacks.cacheWillUpdate[0];
     } else {
-      // If the was no plugin implementing cacheWillUpdate passed in, then
+      // If there was no plugin implementing cacheWillUpdate passed in, then
       // construct a new one which just checks to make sure the response's
       // status is 200. This matches the default behavior of cache.add().
       // The default check might be overridden later on if someone calls the
@@ -307,7 +307,7 @@ class RequestWrapper {
         }
       });
     } else if (!cacheable && waitOnCache) {
-      // If the developer request to wait on the cache but the response
+      // If the developer requested to wait on the cache but the response
       // isn't cacheable, throw an error.
       throw ErrorFactory.createError('invalid-response-for-caching');
     }
