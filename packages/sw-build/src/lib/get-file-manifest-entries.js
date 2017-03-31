@@ -18,7 +18,7 @@ const getStringDetails = require('./utils/get-string-details');
  * precache assets in a service worker.
  *
  * @param {Object} input
- * @param {Array<String>} input.globPatterns Patterns used to select files to
+ * @param {Array<String>} input.staticFileGlobs Patterns used to select files to
  * include in the file entries.
  * @param {Array<String>} [input.globIgnores] Patterns used to exclude files
  * from the file entries.
@@ -36,7 +36,7 @@ const getFileManifestEntries = (input) => {
     throw new Error(errors['invalid-get-manifest-entries-input']);
   }
 
-  const globPatterns = input.globPatterns;
+  const staticFileGlobs = input.staticFileGlobs;
   const globIgnores = input.globIgnores ? input.globIgnores : [];
   const rootDirectory = input.rootDirectory;
   const templatedUrls = input.templatedUrls;
@@ -46,9 +46,9 @@ const getFileManifestEntries = (input) => {
       new Error(errors['invalid-root-directory']));
   }
 
-  if (!globPatterns || !Array.isArray(globPatterns)) {
+  if (!staticFileGlobs || !Array.isArray(staticFileGlobs)) {
     return Promise.reject(
-      new Error(errors['invalid-glob-patterns']));
+      new Error(errors['invalid-static-file-globs']));
   }
 
   if (!globIgnores || !Array.isArray(globIgnores)) {
@@ -69,7 +69,7 @@ const getFileManifestEntries = (input) => {
 
   const fileSet = new Set();
 
-  const fileDetails = globPatterns.reduce((accumulated, globPattern) => {
+  const fileDetails = staticFileGlobs.reduce((accumulated, globPattern) => {
     const globbedFileDetails = getFileDetails(
       rootDirectory, globPattern, globIgnores);
     globbedFileDetails.forEach((fileDetails) => {

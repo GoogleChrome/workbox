@@ -6,7 +6,7 @@ const errors = require('../src/lib/errors');
 describe('Test generateSW()', function() {
   const EXAMPLE_INPUT = {
     rootDirectory: './valid-root',
-    globPatterns: [
+    staticFileGlobs: [
       '**/*.{css,js,html}',
     ],
     globIgnores: [
