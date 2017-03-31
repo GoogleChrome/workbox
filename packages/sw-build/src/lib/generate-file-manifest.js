@@ -42,7 +42,7 @@ const errors = require('./errors');
  * @memberof module:sw-build
  */
 const generateFileManifest = (input) => {
-  if (!input || typeof input !== 'object' || input instanceof Array) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
     return Promise.reject(
       new Error(errors['invalid-generate-file-manifest-arg']));
   }

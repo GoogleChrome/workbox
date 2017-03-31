@@ -157,10 +157,8 @@ describe('Test generateSW()', function() {
 
   it('should be able to handle a bad globIgnores input', function() {
     const badInput = [
-      null,
       {},
       true,
-      false,
       [123],
     ];
     return badInput.reduce((promiseChain, input) => {

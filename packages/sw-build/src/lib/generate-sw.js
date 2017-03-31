@@ -42,13 +42,12 @@ const errors = require('./errors');
  * @memberof module:sw-build
  */
 const generateSW = function(input) {
-  if (!input || typeof input !== 'object' || input instanceof Array) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
     return Promise.reject(new Error(errors['invalid-generate-sw-input']));
   }
 
   // Type check input so that defaults can be used if appropriate.
-  if (typeof input.globIgnores !== 'undefined'
-    && !(input.globIgnores instanceof Array)) {
+  if (input.globIgnores && !(Array.isArray(input.globIgnores))) {
     return Promise.reject(
       new Error(errors['invalid-glob-ignores']));
   }
