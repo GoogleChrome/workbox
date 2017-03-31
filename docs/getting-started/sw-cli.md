@@ -3,7 +3,7 @@ layout: index
 title: Using sw-cli
 navigation_weight: 0
 ---
- 
+
 # Getting Started
 
 If you are completely new to service workers and sw-helpers,
@@ -30,7 +30,7 @@ your project.
 sw-cli generate:sw
 ```
 
-This will ask a range of questions about your web app, such as which directory 
+This will ask a range of questions about your web app, such as which directory
 contains the assets for your site, and which assets you'd like to cache.
 
 ![Screenshot of the sw-cli command.](./images/sw-cli-questions.png)
