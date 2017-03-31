@@ -55,4 +55,6 @@ module.exports = {
     `patterns.`,
   'templated-url-matches-glob': `One of the 'templatedUrls' URL s` +
     `is already being tracked via globPatterns: `,
+  'invalid-glob-ignores': `The 'globIgnore' parameter must be an ` +
+    `array string glob patterns.`,
 };
