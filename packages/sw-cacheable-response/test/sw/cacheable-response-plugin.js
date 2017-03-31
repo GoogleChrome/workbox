@@ -12,17 +12,19 @@ mocha.setup({
 });
 
 describe('Test of the CacheableResponsePlugin class', function() {
-  const headers = {
+  const VALID_HEADERS = {
     'x-test': 'true',
   };
 
   it(`should extend the CacheableResponse class`, function() {
-    const plugin = new goog.cacheableResponse.CacheableResponsePlugin({headers});
+    const plugin = new goog.cacheableResponse.CacheableResponsePlugin(
+      {headers: VALID_HEADERS});
     expect(plugin).to.be.instanceOf(goog.cacheableResponse.CacheableResponse);
   });
 
   it(`should expose a the cacheWillUpdate() method`, function() {
-    const plugin = new goog.cacheableResponse.CacheableResponsePlugin({headers});
+    const plugin = new goog.cacheableResponse.CacheableResponsePlugin(
+      {headers: VALID_HEADERS});
     expect(plugin).to.respondTo('cacheWillUpdate');
   });
 });

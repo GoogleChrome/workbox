@@ -12,10 +12,10 @@ mocha.setup({
 });
 
 describe('Test of the CacheableResponse class', function() {
-  const validStatus = 418;
-  const invalidStatus = 500;
-  const statuses = [validStatus];
-  const headers = {
+  const VALID_STATUS = 418;
+  const INVALID_STATUS = 500;
+  const VALID_STATUSES = [VALID_STATUS];
+  const VALID_HEADERS = {
     'x-test': 'true',
   };
 
@@ -55,7 +55,8 @@ describe('Test of the CacheableResponse class', function() {
   it(`should throw when isResponseCacheable() is called with an invalid 'response' parameter`, function() {
     let thrownError = null;
     try {
-      const cacheableResponse = new goog.cacheableResponse.CacheableResponse({statuses});
+      const cacheableResponse = new goog.cacheableResponse.CacheableResponse(
+        {statuses: VALID_STATUSES});
       cacheableResponse.isResponseCacheable({response: null});
     } catch(err) {
       thrownError = err;
@@ -65,44 +66,51 @@ describe('Test of the CacheableResponse class', function() {
   });
 
   it(`should return true when one of the 'statuses' parameter values match`, function() {
-    const cacheableResponse = new goog.cacheableResponse.CacheableResponse({statuses});
-    const response = new Response('', {status: validStatus});
+    const cacheableResponse = new goog.cacheableResponse.CacheableResponse(
+      {statuses: VALID_STATUSES});
+    const response = new Response('', {status: VALID_STATUS});
     expect(cacheableResponse.isResponseCacheable({response})).to.be.true;
   });
 
   it(`should return false when none of the 'statuses' parameter values match`, function() {
-    const cacheableResponse = new goog.cacheableResponse.CacheableResponse({statuses});
-    const response = new Response('', {status: invalidStatus});
+    const cacheableResponse = new goog.cacheableResponse.CacheableResponse(
+      {statuses: VALID_STATUSES});
+    const response = new Response('', {status: INVALID_STATUS});
     expect(cacheableResponse.isResponseCacheable({response})).to.be.false;
   });
 
   it(`should return true when one of the 'headers' parameter values match`, function() {
-    const cacheableResponse = new goog.cacheableResponse.CacheableResponse({headers});
-    const response = new Response('', {headers});
+    const cacheableResponse = new goog.cacheableResponse.CacheableResponse(
+      {headers: VALID_HEADERS});
+    const response = new Response('', {headers: VALID_HEADERS});
     expect(cacheableResponse.isResponseCacheable({response})).to.be.true;
   });
 
   it(`should return false when none of the 'headers' parameter values match`, function() {
-    const cacheableResponse = new goog.cacheableResponse.CacheableResponse({headers});
+    const cacheableResponse = new goog.cacheableResponse.CacheableResponse(
+      {headers: VALID_HEADERS});
     const response = new Response('');
     expect(cacheableResponse.isResponseCacheable({response})).to.be.false;
   });
 
   it(`should return false when one of the 'statuses' parameter values match, but none of the 'headers' parameter values match`, function() {
-    const cacheableResponse = new goog.cacheableResponse.CacheableResponse({statuses, headers});
-    const response = new Response('', {status: validStatus});
+    const cacheableResponse = new goog.cacheableResponse.CacheableResponse(
+      {statuses: VALID_STATUSES, headers: VALID_HEADERS});
+    const response = new Response('', {status: VALID_STATUS});
     expect(cacheableResponse.isResponseCacheable({response})).to.be.false;
   });
 
   it(`should return false when one of the 'headers' parameter values match, but none of the 'statuses' parameter values match`, function() {
-    const cacheableResponse = new goog.cacheableResponse.CacheableResponse({statuses, headers});
-    const response = new Response('', {headers, status: invalidStatus});
+    const cacheableResponse = new goog.cacheableResponse.CacheableResponse(
+      {statuses: VALID_STATUSES, headers: VALID_HEADERS});
+    const response = new Response('', {headers: VALID_HEADERS, status: INVALID_STATUS});
     expect(cacheableResponse.isResponseCacheable({response})).to.be.false;
   });
 
   it(`should return true when both the 'headers' and 'statuses' parameter values match`, function() {
-    const cacheableResponse = new goog.cacheableResponse.CacheableResponse({statuses, headers});
-    const response = new Response('', {headers, status: validStatus});
+    const cacheableResponse = new goog.cacheableResponse.CacheableResponse(
+      {VALID_STATUSES, headers: VALID_HEADERS});
+    const response = new Response('', {headers: VALID_HEADERS, status: VALID_STATUS});
     expect(cacheableResponse.isResponseCacheable({response})).to.be.true;
   });
 });
