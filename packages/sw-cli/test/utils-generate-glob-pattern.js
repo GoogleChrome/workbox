@@ -5,12 +5,12 @@ require('chai').should();
 
 describe('src/lib/utils/generate-glob-pattern.js', function() {
   it('should handle a single file extension', function() {
-    const globPattern = generateGlobPattern('.', ['txt']);
+    const globPattern = generateGlobPattern(['txt']);
     globPattern.should.equal('**/*.txt');
   });
 
   it('should handle a multiple file extensions', function() {
-    const globPattern = generateGlobPattern('.', ['txt', 'js']);
+    const globPattern = generateGlobPattern(['txt', 'js']);
     globPattern.should.equal('**/*.{txt,js}');
   });
 
@@ -31,7 +31,7 @@ describe('src/lib/utils/generate-glob-pattern.js', function() {
     return badInput.reduce((promiseChain, input) => {
       return promiseChain.then(() => {
         try {
-          generateGlobPattern('.', input);
+          generateGlobPattern(input);
           throw new Error('Expected to throw error.');
         } catch(err) {
           if (err.message !== errors['no-file-extensions-to-cache']) {
@@ -46,7 +46,7 @@ describe('src/lib/utils/generate-glob-pattern.js', function() {
   //                         first character
   it('should be able to handle a bad file extension', function() {
     try {
-      generateGlobPattern('.', ['.example']);
+      generateGlobPattern(['.example']);
       throw new Error('Expected to throw error.');
     } catch(err) {
       if (err.message !== errors['no-file-extensions-to-cache']) {

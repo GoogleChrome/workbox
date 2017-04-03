@@ -18,12 +18,10 @@
 
 const fs = require('fs');
 const path = require('path');
-const minimist = require('minimist');
 const updateNotifier = require('update-notifier');
 const swBuild = require('sw-build');
 
 const cliLogHelper = require('./lib/log-helper');
-const pkg = require('../package.json');
 const generateGlobPattern = require('./lib/utils/generate-glob-pattern');
 const saveConfigFile = require('./lib/utils/save-config');
 const getConfigFile = require('./lib/utils/get-config');
@@ -45,17 +43,20 @@ class SWCli {
    * arguments without worrying about running as an actual CLI.
    *
    * @private
-   * @param {Object} argv The value passed in via process.argv.
+   * @param {Object} meowOutput The value passed in via process.argv.
    * @return {Promise} Promise is returned so testing framework knows when
    * handling the request has finished.
    */
-  argv(argv) {
-    updateNotifier({pkg}).notify();
+  argv(meowOutput) {
+    updateNotifier({pkg: meowOutput.pkg}).notify();
 
-    const cliArgs = minimist(argv);
-    if (cliArgs._.length > 0) {
+    if (meowOutput.input.length > 0) {
       // We have a command
-      return this.handleCommand(cliArgs._[0], cliArgs._.splice(1), cliArgs)
+      return this.handleCommand(
+        meowOutput.input[0],
+        meowOutput.input.splice(1),
+        meowOutput.flags
+      )
       .then(() => {
         process.exit(0);
       })
@@ -63,51 +64,17 @@ class SWCli {
         process.exit(1);
       });
     } else {
-      // we have a flag only request
-      return this.handleFlag(cliArgs)
-      .then(() => {
-        process.exit(0);
-      })
-      .catch(() => {
-        process.exit(1);
-      });
+      meowOutput.showHelp(1);
     }
   }
 
   /**
    * Prints the help text to the terminal.
+   * @return {string} The log output
    */
-  printHelpText() {
-    const helpText = fs.readFileSync(
+  getHelpText() {
+    return fs.readFileSync(
       path.join(__dirname, 'cli-help.txt'), 'utf8');
-    cliLogHelper.log(helpText);
-  }
-
-  /**
-   * If there is no command given to the CLI then the flags will be passed
-   * to this function in case a relevant action can be taken.
-   * @param {object} flags The available flags = require(the command line.
-   * @return {Promise} returns a promise once handled.
-   */
-  handleFlag(flags) {
-    let handled = false;
-    if (flags.h || flags.help) {
-      this.printHelpText();
-      handled = true;
-    }
-
-    if (flags.v || flags.version) {
-      cliLogHelper.log(pkg.version);
-      handled = true;
-    }
-
-    if (handled) {
-      return Promise.resolve();
-    }
-
-    // This is a fallback
-    this.printHelpText();
-    return Promise.reject();
   }
 
   /**
@@ -162,7 +129,7 @@ class SWCli {
         return askForExtensionsToCache(config.rootDirectory)
         .then((extensionsToCache) => {
           config.staticFileGlobs = [
-            generateGlobPattern(config.rootDirectory, extensionsToCache),
+            generateGlobPattern(extensionsToCache),
           ];
         });
       }
@@ -171,10 +138,9 @@ class SWCli {
       if (!config.dest) {
         return askForServiceWorkerName()
         .then((swName) => {
-          const swDest = path.join(config.rootDirectory, swName);
-          config.dest = swDest;
+          config.dest = path.join(config.rootDirectory, swName);
           config.globIgnores = [
-            swDest,
+            swName,
           ];
         });
       }
@@ -219,13 +185,12 @@ class SWCli {
       fileManifestName = manifestName;
     })
     .then(() => {
-      const globPattern = generateGlobPattern(
-        rootDirPath, fileExtentionsToCache);
+      const globPattern = generateGlobPattern(fileExtentionsToCache);
       return swBuild.generateFileManifest({
         rootDirectory: rootDirPath,
         staticFileGlobs: [globPattern],
         globIgnores: [
-          path.join(rootDirPath, fileManifestName),
+          fileManifestName,
         ],
         dest: path.join(rootDirPath, fileManifestName),
       });
