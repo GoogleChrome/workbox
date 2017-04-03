@@ -38,7 +38,7 @@ gulp.task('download-browsers', function() {
   });
 });
 
-gulp.task('mocha', () => {
+gulp.task('mocha', ['build', 'download-browsers'], () => {
   const mochaOptions = {};
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
@@ -57,6 +57,6 @@ gulp.task('mocha', () => {
     });
 });
 
-gulp.task('test', ['download-browsers', 'build', 'lint'], (callback) => {
+gulp.task('test', ['lint'], (callback) => {
   runSequence('mocha', callback);
 });
