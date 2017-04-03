@@ -125,8 +125,6 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
         // NOOP
       },
     });
-
-    console.log(swContent.toString());
   })
   .then(() => {
     if (process.platform === 'win32') {
@@ -177,7 +175,7 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
     })
     .then((testResult) => {
       if (!testResult.entries) {
-        throw new Error('Bad response: ' + JSON.stringify(testResult));
+        throw new Error('Bad test results from mocha: ' + JSON.stringify(testResult));
       }
 
       const entries = testResult.entries;

@@ -40,6 +40,7 @@ describe('Generate SW End-to-End Tests', function() {
 
   it('should be able to generate a service for example-1 with CLI', function() {
     this.timeout(120 * 1000);
+    this.retries(3);
 
     process.chdir(tmpDirectory);
 
