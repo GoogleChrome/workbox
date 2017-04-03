@@ -57,4 +57,6 @@ module.exports = {
     `is already being tracked via staticFileGlobs: `,
   'invalid-glob-ignores': `The 'globIgnore' parameter must be an ` +
     `array string glob patterns.`,
+  'invalid-inject-manifest-arg': `The input to 'injectManifest()' must be ` +
+    `be an object.`,
 };
