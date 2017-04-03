@@ -2,7 +2,7 @@ const path = require('path');
 
 const errors = require('../errors');
 
-module.exports = (relativePath, fileExtentionsToCache) => {
+module.exports = (fileExtentionsToCache) => {
   if (!fileExtentionsToCache || !(fileExtentionsToCache instanceof Array) ||
     fileExtentionsToCache.length === 0) {
       throw new Error(errors['no-file-extensions-to-cache']);
@@ -22,7 +22,7 @@ module.exports = (relativePath, fileExtentionsToCache) => {
 
   // Glob patterns only work with forward slash
   // https://github.com/isaacs/node-glob#windows
-  const globPath = path.join(relativePath, '**', '*').replace(path.sep, '/');
+  const globPath = path.join('**', '*').replace(path.sep, '/');
   if (fileExtentionsToCache.length > 1) {
     // Return pattern '**/*.{txt,md}'
     return globPath + `.{${fileExtentionsToCache.join(',')}}`;

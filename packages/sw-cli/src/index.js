@@ -129,7 +129,7 @@ class SWCli {
         return askForExtensionsToCache(config.rootDirectory)
         .then((extensionsToCache) => {
           config.staticFileGlobs = [
-            generateGlobPattern(config.rootDirectory, extensionsToCache),
+            generateGlobPattern(extensionsToCache),
           ];
         });
       }
@@ -138,10 +138,9 @@ class SWCli {
       if (!config.dest) {
         return askForServiceWorkerName()
         .then((swName) => {
-          const swDest = path.join(config.rootDirectory, swName);
-          config.dest = swDest;
+          config.dest = path.join(config.rootDirectory, swName);
           config.globIgnores = [
-            swDest,
+            swName,
           ];
         });
       }
@@ -186,13 +185,12 @@ class SWCli {
       fileManifestName = manifestName;
     })
     .then(() => {
-      const globPattern = generateGlobPattern(
-        rootDirPath, fileExtentionsToCache);
+      const globPattern = generateGlobPattern(fileExtentionsToCache);
       return swBuild.generateFileManifest({
         rootDirectory: rootDirPath,
         staticFileGlobs: [globPattern],
         globIgnores: [
-          path.join(rootDirPath, fileManifestName),
+          fileManifestName,
         ],
         dest: path.join(rootDirPath, fileManifestName),
       });
