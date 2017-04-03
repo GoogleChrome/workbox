@@ -16,6 +16,7 @@ const seleniumAssistant = require('selenium-assistant');
 const gulp = require('gulp');
 const mocha = require('gulp-spawn-mocha');
 const glob = require('glob');
+const runSequence = require('run-sequence');
 
 gulp.task('download-browsers', function() {
   if (process.platform === 'win32') {
@@ -37,7 +38,7 @@ gulp.task('download-browsers', function() {
   });
 });
 
-gulp.task('test', ['download-browsers', 'build', 'lint'], () => {
+gulp.task('mocha', () => {
   const mochaOptions = {};
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
@@ -54,4 +55,8 @@ gulp.task('test', ['download-browsers', 'build', 'lint'], () => {
       console.error(error);
       process.exit(1);
     });
+});
+
+gulp.task('test', ['download-browsers', 'build', 'lint'], (callback) => {
+  runSequence('mocha', callback);
 });
