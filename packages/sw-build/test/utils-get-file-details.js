@@ -1,4 +1,6 @@
 const proxyquire = require('proxyquire');
+const path = require('path');
+
 const errors = require('../src/lib/errors.js');
 
 require('chai').should();
@@ -46,13 +48,13 @@ describe('src/lib/utils/get-file-details.js', function() {
         },
       },
       './get-file-size': (value) => {
-        if (value === EXAMPLE_DIRECTORY) {
+        if (path.normalize(value) === path.normalize(EXAMPLE_DIRECTORY)) {
           return null;
         }
         return INJECTED_SIZE;
       },
       './get-file-hash': (value) => {
-        if (value === EXAMPLE_DIRECTORY) {
+        if (path.normalize(value) === path.normalize(EXAMPLE_DIRECTORY)) {
           // This should never be called with a directory.
           throw INJECTED_ERROR;
         }
@@ -101,13 +103,13 @@ describe('src/lib/utils/get-file-details.js', function() {
         },
       },
       './get-file-size': (value) => {
-        if (value === EXAMPLE_DIRECTORY) {
+        if (path.normalize(value) === path.normalize(EXAMPLE_DIRECTORY)) {
           return null;
         }
         return INJECTED_SIZE;
       },
       './get-file-hash': (value) => {
-        if (value === EXAMPLE_DIRECTORY) {
+        if (path.normalize(value) === path.normalize(EXAMPLE_DIRECTORY)) {
           // This should never be called with a directory.
           throw INJECTED_ERROR;
         }
