@@ -26,7 +26,7 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  * swBuild.generateFileManifest({
  *   rootDirectory: './build/',
  *   dest: './build/scripts/manifest.js',
- *   globPatterns: ['**\/*.{html,js,css}'],
+ *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
@@ -41,7 +41,7 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  *
  * swBuild.getFileManifestEntries({
  *   rootDirectory: './build/',
- *   globPatterns: ['**\/*.{html,js,css}'],
+ *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
@@ -57,7 +57,7 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  * swBuild.generateSW({
  *   rootDirectory: './build/',
  *   dest: './build/sw.js',
- *   globPatterns: ['**\/*.{html,js,css}'],
+ *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],

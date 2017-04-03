@@ -6,7 +6,7 @@ const errors = require('../src/lib/errors');
 describe('Test generateSW()', function() {
   const EXAMPLE_INPUT = {
     rootDirectory: './valid-root',
-    globPatterns: [
+    staticFileGlobs: [
       '**/*.{css,js,html}',
     ],
     globIgnores: [
@@ -106,7 +106,7 @@ describe('Test generateSW()', function() {
     }, Promise.resolve());
   });
 
-  it('should be able to handle a bad globPatterns input', function() {
+  it('should be able to handle a bad staticFileGlobs input', function() {
     const badInput = [
       {},
       true,
@@ -115,14 +115,14 @@ describe('Test generateSW()', function() {
     return badInput.reduce((promiseChain, input) => {
       return promiseChain.then(() => {
         let args = Object.assign({}, EXAMPLE_INPUT);
-        args.globPatterns = input;
+        args.staticFileGlobs = input;
         return generateSW(args)
         .then(() => {
           console.log('Input did not cause error: ', input);
           throw new Error('Expected to throw error.');
         })
         .catch((err) => {
-          if (err.message !== errors['invalid-glob-patterns']) {
+          if (err.message !== errors['invalid-static-file-globs']) {
             throw new Error('Unexpected error: ' + err.message);
           }
         });

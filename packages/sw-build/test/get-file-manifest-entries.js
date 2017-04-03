@@ -5,7 +5,7 @@ const errors = require('../src/lib/errors');
 
 describe('Test getFileManifestEntries', function() {
   const EXAMPLE_INPUT = {
-    globPatterns: ['./**/*.{html,css}'],
+    staticFileGlobs: ['./**/*.{html,css}'],
     globIgnores: [],
     rootDirectory: '.',
   };
@@ -57,7 +57,7 @@ describe('Test getFileManifestEntries', function() {
     }, Promise.resolve());
   });
 
-  it('should detect bad globPatterns', function() {
+  it('should detect bad staticFileGlobs', function() {
     const badInput = [
       undefined,
       null,
@@ -68,13 +68,13 @@ describe('Test getFileManifestEntries', function() {
     return badInput.reduce((promiseChain, input) => {
       return promiseChain.then(() => {
         let args = Object.assign({}, EXAMPLE_INPUT);
-        args.globPatterns = input;
+        args.staticFileGlobs = input;
         return swBuild.getFileManifestEntries(args)
         .then(() => {
           throw new Error('Expected to throw error.');
         })
         .catch((err) => {
-          if (err.message !== errors['invalid-glob-patterns']) {
+          if (err.message !== errors['invalid-static-file-globs']) {
             throw new Error('Unexpected error: ' + err.message);
           }
         });
@@ -84,7 +84,7 @@ describe('Test getFileManifestEntries', function() {
 
   it('should return file entries through each phase', function() {
     const testInput = {
-      globPatterns: [
+      staticFileGlobs: [
         './glob-1',
         './glob-2',
       ],
@@ -114,7 +114,7 @@ describe('Test getFileManifestEntries', function() {
             throw new Error('Invalid rootDirectory value.');
           }
 
-          if (testInput.globPatterns.indexOf(globPattern) === -1) {
+          if (testInput.staticFileGlobs.indexOf(globPattern) === -1) {
             throw new Error('Invalid glob pattern.');
           }
 
