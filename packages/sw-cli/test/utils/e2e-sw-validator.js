@@ -125,6 +125,8 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
         // NOOP
       },
     });
+
+    console.log(swContent.toString());
   })
   .then(() => {
     if (process.platform === 'win32') {
