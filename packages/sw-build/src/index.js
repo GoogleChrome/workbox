@@ -27,7 +27,7 @@ const generateFileManifest = require('./lib/generate-file-manifest');
  *   rootDirectory: './build/',
  *   dest: './build/scripts/manifest.js',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
- *   globIgnores: ['admin.html'],
+ *   globIgnores: ['service-worker.js','admin.html'],
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
  *   },
