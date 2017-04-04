@@ -62,7 +62,7 @@ const injectManifest = (input) => {
     if (!injectionResults) {
       throw new Error(errors['injection-point-not-found']);
     }
-    /* eslint-disable no-console */
+
     if (injectionResults.length > 1) {
       throw new Error(errors['multiple-injection-points-found']);
     }
