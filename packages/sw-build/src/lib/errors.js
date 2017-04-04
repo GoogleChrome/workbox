@@ -62,4 +62,7 @@ module.exports = {
   'injection-point-not-found': `Unable to find a place to inject the ` +
     `manifest. Please ensure that you have 'swlib.cacheRevisionedAssets([])' ` +
     `somewhere in your service worker file.`,
+  'multiple-injection-points-found': `There can only be one injection point ` +
+    `in your service worker file. Please snure you only have one instance of ` +
+    `'swlib.cacheRevisionedAssets([])' if your service worker file.`,
 };

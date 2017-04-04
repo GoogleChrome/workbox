@@ -21,8 +21,10 @@ const errors = require('./errors');
  *   console.log('Build Manifest generated.');
  * });
  *
- * This method will generate a file manifest that can be used in a service
- * worker for caching assets offline.
+ * This method will read in an existing service worker file and replace an empty
+ * array in a call like so: `.cacheRevisionedAssets([])`, to an array of files
+ * with up to date array revision details. This allows the service worker
+ * to efficiently cache assets that will be available offline.
  * @param {Object} input
  * @param {String} input.dest The name and path you wish to write your
  * manifest file to.
@@ -56,9 +58,13 @@ const injectManifest = (input) => {
   .then((manifestEntries) => {
     let swFileContents = fs.readFileSync(
       path.join(input.rootDirectory, input.swFile), 'utf8');
-    const injectionResult = injectionPointRegex.exec(swFileContents);
-    if (!injectionResult) {
+    const injectionResults = swFileContents.match(injectionPointRegex);
+    if (!injectionResults) {
       throw new Error(errors['injection-point-not-found']);
+    }
+    /* eslint-disable no-console */
+    if (injectionResults.length > 1) {
+      throw new Error(errors['multiple-injection-points-found']);
     }
 
     const entriesString = JSON.stringify(manifestEntries, null, 2);

@@ -23,6 +23,7 @@ describe('Test Injection Manifest', function() {
     'ok-2.js',
     'ok-3.js',
     'ok-4.js',
+    'ok-5.js',
   ];
   const expectedString = `swlib.cacheRevisionedAssets([
   {
@@ -54,26 +55,39 @@ describe('Test Injection Manifest', function() {
     });
   });
 
-  const INVALID_INJECTION_DOCS = [
-    'bad-1.js',
-  ];
-  INVALID_INJECTION_DOCS.forEach((docName) => {
-    it(`should throw due to no injection point in ${docName}`, function() {
-      return swBuild.injectManifest({
-        dest: tmpDirectory,
-        rootDirectory: path.join(__dirname, 'static', 'injection-samples'),
-        staticFileGlobs: ['**\/*.{html,css}'],
-        swFile: docName,
-      })
-      .then(() => {
-        throw new Error('Expected promise to reject.');
-      })
-      .catch((err) => {
-        if (err.message !== errors['injection-point-not-found']) {
-          console.log(err);
-          throw new Error('Unexpected error thrown.');
-        }
-      });
+  it(`should throw due to no injection point in bad-no-injection.js`, function() {
+    return swBuild.injectManifest({
+      dest: tmpDirectory,
+      rootDirectory: path.join(__dirname, 'static', 'injection-samples'),
+      staticFileGlobs: ['**\/*.{html,css}'],
+      swFile: 'bad-no-injection.js',
+    })
+    .then(() => {
+      throw new Error('Expected promise to reject.');
+    })
+    .catch((err) => {
+      if (err.message !== errors['injection-point-not-found']) {
+        console.log(err);
+        throw new Error('Unexpected error thrown.');
+      }
+    });
+  });
+
+  it(`should throw due to no injection point in bad-multiple-injection.js`, function() {
+    return swBuild.injectManifest({
+      dest: tmpDirectory,
+      rootDirectory: path.join(__dirname, 'static', 'injection-samples'),
+      staticFileGlobs: ['**\/*.{html,css}'],
+      swFile: 'bad-multiple-injection.js',
+    })
+    .then(() => {
+      throw new Error('Expected promise to reject.');
+    })
+    .catch((err) => {
+      if (err.message !== errors['multiple-injection-points-found']) {
+        console.log(err);
+        throw new Error('Unexpected error thrown.');
+      }
     });
   });
 });
