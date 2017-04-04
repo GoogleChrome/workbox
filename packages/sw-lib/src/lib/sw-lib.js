@@ -145,7 +145,7 @@ class SWLib {
    * strategy.
    *
    * @example
-   * const cacheFirstStrategy = goog.swlib.cacheFirst({
+   * const cacheFirstStrategy = goog.swlib.strategies.cacheFirst({
    *   cacheName: 'example-cache',
    *   cacheExpiration: {
    *     maxEntries: 10,

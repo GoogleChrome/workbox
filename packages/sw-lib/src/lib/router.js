@@ -31,7 +31,8 @@ import ErrorFactory from './error-factory.js';
  * @example <caption>How to define a simple route with caching
  * strategy.</caption>
  *
- * goog.swlib.router.registerRoute('/about', goog.swlib.cacheFirst());
+ * goog.swlib.router.registerRoute('/about',
+ *  goog.swlib.strategies.cacheFirst());
  *
  * @example <caption>How to define a simple route with custom caching
  * strategy.</caption>
