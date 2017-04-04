@@ -2,22 +2,9 @@ importScripts(
   '/node_modules/mocha/mocha.js',
   '/node_modules/chai/chai.js',
   '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/packages/sw-runtime-caching/build/sw-runtime-caching.js'
+  '/packages/sw-runtime-caching/build/sw-runtime-caching.js',
+  './helpers.js'
 );
-
-const expect = self.chai.expect;
-mocha.setup({
-  ui: 'bdd',
-  reporter: null,
-});
-
-function expectSameResponseBodies(first, second) {
-  const firstClone = first.clone();
-  const secondClone = second.clone();
-
-  return Promise.all([firstClone.text(), secondClone.text()])
-    .then(([firstBody, secondBody]) => expect(firstBody).to.eql(secondBody));
-}
 
 describe('Test of the CacheOnly handler', function() {
   const cacheName = location.href;
