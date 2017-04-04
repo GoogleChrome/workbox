@@ -54,6 +54,11 @@ const documentPackage = (projectPath) => {
 
     handleBarsData.hasRefDocs = (projectMetadata.name !== 'sw-cli');
 
+    // sw-cli needs a custom install command
+    if (projectMetadata.name === 'sw-cli') {
+      handleBarsData.installCmd = `npm install -g sw-cli`;
+    }
+
     // First, use metadata require(package.json to write out an initial
     // README.md.
     gulp.src('templates/Project-README.hbs')
@@ -95,6 +100,11 @@ gulp.task('documentation:repo', () => {
           }
 
           project.hasRefDocs = (project.name !== 'sw-cli');
+
+          // sw-cli needs a custom install command
+          if (project.name === 'sw-cli') {
+            project.installCmd = `npm install -g sw-cli`;
+          }
 
           return project;
         });

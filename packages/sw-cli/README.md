@@ -4,7 +4,7 @@ A CLI tool to generate a service worker and a file manifest making use of the sw
 
 ## Installation
 
-`npm install --save-dev sw-cli`
+`npm install -g sw-cli`
 
 
 ## Reference Docs
