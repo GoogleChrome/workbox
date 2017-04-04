@@ -4,6 +4,8 @@ describe('Service Worker Unit Test Registration', function() {
     'cache-first.js',
     'cache-only.js',
     'network-first.js',
+    'network-only.js',
+    'stale-while-revalidate.js',
   ].map((script) => `${pathPrefix}${script}`);
 
   swUnitTests.forEach(function(swUnitTestPath) {

@@ -1,10 +1,4 @@
-importScripts(
-  '/node_modules/mocha/mocha.js',
-  '/node_modules/chai/chai.js',
-  '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/packages/sw-runtime-caching/build/sw-runtime-caching.js',
-  './helpers.js'
-);
+importScripts('setup.js');
 
 describe('Test of the CacheFirst handler', function() {
   const cacheName = location.href;
