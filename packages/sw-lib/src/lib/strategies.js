@@ -25,7 +25,7 @@ class Strategies {
    * run-time caching strategy.
    *
    *  @example
-   * const cacheFirstStrategy = goog.swlib.cacheFirst();
+   * const cacheFirstStrategy = goog.swlib.strategies.cacheFirst();
    *
    * goog.swlib.router.addRoute('/styles/*', cacheFirstStrategy);
    *
@@ -42,7 +42,7 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const cacheOnlyStrategy = goog.swlib.cacheOnly();
+   * const cacheOnlyStrategy = goog.swlib.strategies.cacheOnly();
    *
    * goog.swlib.router.addRoute('/styles/*', cacheOnlyStrategy);
    *
@@ -60,7 +60,7 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const networkFirstStrategy = goog.swlib.networkFirst();
+   * const networkFirstStrategy = goog.swlib.strategies.networkFirst();
    *
    * goog.swlib.router.addRoute('/blog/', networkFirstStrategy);
    *
@@ -78,7 +78,7 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const networkOnlyStrategy = goog.swlib.networkOnly();
+   * const networkOnlyStrategy = goog.swlib.strategies.networkOnly();
    *
    * goog.swlib.router.addRoute('/admin/', networkOnlyStrategy);
    *
@@ -96,7 +96,8 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const staleWhileRevalidateStrategy = goog.swlib.staleWhileRevalidate();
+   * const staleWhileRevalidateStrategy =
+   *  goog.swlib.strategies.staleWhileRevalidate();
    *
    * goog.swlib.router.addRoute('/styles/*', staleWhileRevalidateStrategy);
    *
