@@ -1,7 +1,9 @@
-const proxyquire = require('proxyquire');
+const path = require('path');
 
 const swBuild = require('../src/index.js');
 const errors = require('../src/lib/errors');
+
+require('chai').should();
 
 describe('Test getFileManifestEntries', function() {
   const EXAMPLE_INPUT = {
@@ -82,78 +84,35 @@ describe('Test getFileManifestEntries', function() {
     }, Promise.resolve());
   });
 
-  it('should return file entries through each phase', function() {
+  it('should return file entries from example project', function() {
     const testInput = {
       staticFileGlobs: [
-        './glob-1',
-        './glob-2',
+        '**/*.{html,js,css}',
       ],
-      globIgnores: [
-        './glob-ignore-1',
-        './glob-ignore-2',
-      ],
-      rootDirectory: '.',
+      rootDirectory: path.join(__dirname, '..', '..',
+        'sw-cli', 'test', 'static', 'example-project-1'),
     };
-    const FILE_ENTRIES = [{
-      file: './glob-entry-1',
-      hash: '1234',
-      size: 1,
-    }, {
-      file: './glob-entry-2',
-      hash: '4321',
-      size: 2,
-    }];
-    const getFileManifestEntries = proxyquire(
-      '../src/lib/get-file-manifest-entries.js', {
-        './utils/get-file-details': (rootDirectory, globPattern, globIgnores) => {
-          if (globIgnores !== testInput.globIgnores) {
-            throw new Error('Invalid glob ignores value.');
-          }
 
-          if (rootDirectory !== testInput.rootDirectory) {
-            throw new Error('Invalid rootDirectory value.');
-          }
-
-          if (testInput.staticFileGlobs.indexOf(globPattern) === -1) {
-            throw new Error('Invalid glob pattern.');
-          }
-
-          return FILE_ENTRIES;
-        },
-        './utils/filter-files': (entries) =>{
-          entries.forEach((entry) => {
-            let matchingOracle = null;
-            FILE_ENTRIES.forEach((oracleEntry) => {
-              if (entry.file === oracleEntry.file) {
-                matchingOracle = oracleEntry;
-              }
-            });
-            if (!matchingOracle || entry.hash !== matchingOracle.hash || entry.size !== matchingOracle.size) {
-              throw new Error('Could not find matching file entry.');
-            }
-          });
-
-          if (entries.length !== FILE_ENTRIES.length) {
-            throw new Error('Unexpected file entries - should have duplicates removed.');
-          }
-          return entries;
-        },
-      }
-    );
-
-    return getFileManifestEntries(testInput)
+    return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
-      output.forEach((entry) => {
-        let matchingOracle = null;
-        FILE_ENTRIES.forEach((oracleEntry) => {
-          if (entry.file === oracleEntry.file) {
-            matchingOracle = oracleEntry;
-          }
-        });
-        if (!matchingOracle || entry.hash !== matchingOracle.hash || entry.size !== matchingOracle.size) {
-          throw new Error('Could not find matching file entry.');
-        }
-      });
+      output.should.deep.equal([
+        {
+          url: '/index.html',
+          revision: '218c18c2a07f6fbe326de4c9b0676164',
+        }, {
+          url: '/page-1.html',
+          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        }, {
+          url: '/page-2.html',
+          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        }, {
+          url: '/styles/stylesheet-1.css',
+          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        }, {
+          url: '/styles/stylesheet-2.css',
+          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        },
+      ]);
     });
   });
 });
