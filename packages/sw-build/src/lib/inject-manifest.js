@@ -57,11 +57,13 @@ const injectManifest = (input) => {
     let swFileContents = fs.readFileSync(
       path.join(input.rootDirectory, input.swFile), 'utf8');
     const injectionResult = injectionPointRegex.exec(swFileContents);
-    if (injectionResult) {
-      const entriesString = JSON.stringify(manifestEntries, null, 2);
-      swFileContents = swFileContents
-        .replace(injectionPointRegex, `$1${entriesString}$2`);
+    if (!injectionResult) {
+      throw new Error(errors['injection-point-not-found']);
     }
+
+    const entriesString = JSON.stringify(manifestEntries, null, 2);
+    swFileContents = swFileContents
+      .replace(injectionPointRegex, `$1${entriesString}$2`);
 
     return new Promise((resolve, reject) => {
       mkdirp(input.dest, (err) => {
