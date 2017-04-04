@@ -97,15 +97,6 @@ class RequestWrapper {
         throw ErrorFactory.createError('multiple-cache-will-update-plugins');
       }
       this.cacheableResponseCheck = this.pluginCallbacks.cacheWillUpdate[0];
-    } else {
-      // If there was no plugin implementing cacheWillUpdate passed in, then
-      // construct a new one which just checks to make sure the response's
-      // status is 200. This matches the default behavior of cache.add().
-      // The default check might be overridden later on if someone calls the
-      // cacheableResponseCheck setter.
-      const cacheableResponse = new CacheableResponse({statuses: [200]});
-      this._defaultCacheableResponseCheck =
-        cacheableResponse.isResponseCacheable.bind(cacheableResponse);
     }
 
     if (this.pluginCallbacks.cacheWillMatch) {
@@ -116,26 +107,21 @@ class RequestWrapper {
   }
 
   /**
-   * Provides a method of setting the cacheableResponseCheck after the
-   * `RequestWrapper` has already been constructed, but only if it wasn't set
-   * inside the constructor.
-   *
-   * @param {function} callback The function used to determine whether a
-   *        response is cacheable.
-   */
-  set cacheableResponseCheck(callback) {
-    if (!this._cacheableResponseCheck) {
-      this._cacheableResponseCheck = callback;
-    }
-  }
-
-  /**
    * @private
-   * @return {function} The function used to determine whether a response is
-   *         cacheable.
+   * @return {function} The default function used to determine whether a
+   *         response is cacheable.
    */
-  get cacheableResponseCheck() {
-    return this._cacheableResponseCheck || this._defaultCacheableResponseCheck;
+  get defaultCacheableResponseCheck() {
+    // Lazy-construct the CacheableResponse instance.
+    if (!this._defaultCacheableResponseCheck) {
+      const cacheableResponse = new CacheableResponse({statuses: [200]});
+      // When isResponseCacheable() is invoked as a callback, it makes use of
+      // state information provided to the CacheableResponse constructor. We use
+      // bind() here so that `this` is set to the CacheableResponse instance.
+      this._defaultCacheableResponseCheck =
+        cacheableResponse.isResponseCacheable.bind(cacheableResponse);
+    }
+    return this._defaultCacheableResponseCheck;
   }
 
   /**
@@ -266,15 +252,34 @@ class RequestWrapper {
    * @param {Request} [input.cacheKey] Supply a cacheKey if you wish to cache
    *        the response against an alternative request to the `request`
    *        argument.
+   * @param {function} [input.defaultCacheableResponseCheck] Allows the caller
+   *        to override the default check for cacheability, for situations in
+   *        which the cacheability check wasn't explicitly configured when
+   *        constructing the `RequestWrapper`.
    * @return {Promise.<Response>} The network response.
    */
-  async fetchAndCache({request, waitOnCache, cacheKey}) {
+  async fetchAndCache({request, waitOnCache, cacheKey,
+                        defaultCacheableResponseCheck}) {
     assert.atLeastOne({request});
 
     let cachingComplete;
     const response = await this.fetch({request});
 
-    const cacheable = this.cacheableResponseCheck({request, response});
+    // We need flexibility in determining whether a given response should
+    // be added to the cache. There are several possible ways that this logic
+    // might be specified, and they're given the following precedence:
+    // 1. Passing in a `CacheableResponsePlugin` to the `RequestWrapper`
+    //    constructor, which is this.cacheableResponseCheck.
+    // 2. Passing in a parameter to fetchAndCache() (done by certain runtime
+    //    handlers, like StaleWhileRevalidate, which is
+    //    defaultCacheableResponseCheck.
+    // 3. The default check that applies to anything using `RequestWrapper`,
+    //    which is this.defaultCacheableResponseCheck.
+    const cacheableResponseCheck = this.cacheableResponseCheck ||
+      defaultCacheableResponseCheck ||
+      this.defaultCacheableResponseCheck;
+
+    const cacheable = cacheableResponseCheck({request, response});
 
     if (cacheable) {
       const newResponse = response.clone();

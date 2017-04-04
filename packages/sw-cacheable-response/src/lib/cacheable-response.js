@@ -74,9 +74,6 @@ class CacheableResponse {
    */
   isResponseCacheable({request, response} = {}) {
     assert.isInstance({response}, Response);
-    if (request) {
-      assert.isInstance({request}, Request);
-    }
 
     let cacheable = true;
 

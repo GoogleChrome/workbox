@@ -60,7 +60,10 @@ class NetworkFirst extends Handler {
     super(input);
 
     const cacheableResponse = new CacheableResponse({statuses: [0, 200]});
-    this.requestWrapper.cacheableResponseCheck =
+    // When isResponseCacheable() is invoked as a callback, it makes use of
+    // state information provided to the CacheableResponse constructor. We use
+    // bind() here so that `this` is set to the CacheableResponse instance.
+    this._cacheableResponseCheck =
       cacheableResponse.isResponseCacheable.bind(cacheableResponse);
 
     const {networkTimeoutSeconds} = input;
@@ -94,18 +97,18 @@ class NetworkFirst extends Handler {
       }));
     }
 
-    promises.push(this.requestWrapper.fetchAndCache({request: event.request})
-      .then((response) => {
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
+    promises.push(this.requestWrapper.fetchAndCache({
+      request: event.request,
+      defaultCacheableResponseCheck: this._cacheableResponseCheck,
+    }).then((response) => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
 
-        return response ?
-          response :
-          Promise.reject('No response received; falling back to cache.');
-      })
-      .catch(() => this.requestWrapper.match({request: event.request}))
-    );
+      return response ?
+        response :
+        Promise.reject('No response received; falling back to cache.');
+    }).catch(() => this.requestWrapper.match({request: event.request})));
 
     return Promise.race(promises);
   }
