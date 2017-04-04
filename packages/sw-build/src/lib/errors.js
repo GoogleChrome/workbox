@@ -63,6 +63,6 @@ module.exports = {
     `manifest. Please ensure that you have 'swlib.cacheRevisionedAssets([])' ` +
     `somewhere in your service worker file.`,
   'multiple-injection-points-found': `There can only be one injection point ` +
-    `in your service worker file. Please snure you only have one instance of ` +
-    `'swlib.cacheRevisionedAssets([])' in your service worker file.`,
+    `in your service worker file. Please ensure you only have one instance ` +
+    `of  'swlib.cacheRevisionedAssets([])' in your service worker file.`,
 };
