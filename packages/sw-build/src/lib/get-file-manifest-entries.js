@@ -112,7 +112,7 @@ const getFileManifestEntries = (input) => {
     }
   }
 
-  return Promise.resolve(filterFiles(fileDetails));
+  return Promise.resolve(filterFiles(fileDetails, input));
 };
 
 module.exports = getFileManifestEntries;

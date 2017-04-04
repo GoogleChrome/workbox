@@ -57,4 +57,8 @@ module.exports = {
     `is already being tracked via staticFileGlobs: `,
   'invalid-glob-ignores': `The 'globIgnore' parameter must be an ` +
     `array string glob patterns.`,
+  'modify-url-prefix-bad-url': `modifyUrlPrefix helper was given a bad URL ` +
+    `for input. This is likely an error with sw-build.`,
+  'modify-url-prefix-bad-prefixes': `The 'modifyUrlPrefix' parameter must be ` +
+    `an object with string key value pairs.`,
 };
