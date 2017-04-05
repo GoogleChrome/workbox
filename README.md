@@ -23,17 +23,6 @@
   - [sw-precaching](#sw-precaching)
   - [sw-routing](#sw-routing)
   - [sw-runtime-caching](#sw-runtime-caching)
-
-  - [sw-appcache-behavior](#sw-appcache-behavior)
-  - [sw-broadcast-cache-update](#sw-broadcast-cache-update)
-  - [sw-build](#sw-build)
-  - [sw-cache-expiration](#sw-cache-expiration)
-  - [sw-cli](#sw-cli)
-  - [sw-lib](#sw-lib)
-  - [sw-offline-google-analytics](#sw-offline-google-analytics)
-  - [sw-precaching](#sw-precaching)
-  - [sw-routing](#sw-routing)
-  - [sw-runtime-caching](#sw-runtime-caching)
 - [External Contributions](#external-contributions)
 - [License](#license)
 
