@@ -43,11 +43,21 @@ describe('Test of the StaleWhileRevalidate handler', function() {
 
   it(`should return the cached response and update the cache when the network request succeeds`, function() {
     const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
-    let handleResponse;
-    return STALE_WHILE_REVALIDATE.handle({event})
-      .then((response) => handleResponse = response)
-      .then(() => expectSameResponseBodies(initialCachedResponse, handleResponse))
-      .then(() => cache.match(COUNTER_URL))
-      .then((currentCachedResponse) => expectDifferentResponseBodies(currentCachedResponse, initialCachedResponse));
+
+    return REQUEST_WRAPPER.getCache().then((wrapperCache) => {
+      const cachePutPromise = new Promise((resolve) => {
+        const cachePutStub = sinon.stub(wrapperCache, 'put', (request, response) => {
+          resolve(response);
+        });
+        globalStubs.push(cachePutStub);
+      });
+
+      return STALE_WHILE_REVALIDATE.handle({event})
+        .then((handleResponse) => expectSameResponseBodies(initialCachedResponse, handleResponse))
+        // Wait until the cache.put() was called, and resolve with the response
+        // it was called with.
+        .then(() => cachePutPromise)
+        .then((newCachedResponse) => expectDifferentResponseBodies(newCachedResponse, initialCachedResponse));
+    });
   });
 });
