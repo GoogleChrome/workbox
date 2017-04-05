@@ -108,7 +108,7 @@ gulp.task('documentation:repo', () => {
   .then(() => {
     return new Promise((resolve) => {
       gulp.src('./README.md')
-        .pipe(rename({basename: 'index'}))
+        .pipe(rename({basename: 'modules_overview'}))
         .pipe(insert.prepend(FRONT_MATTER))
         .pipe(gulp.dest('./docs/'))
         .on('end', resolve);
