@@ -13,7 +13,10 @@
  limitations under the License.
 */
 
-const seleniumAssistant = require('selenium-assistant');
+const TestRunner = require('../../../utils/test-runner');
+new TestRunner(['sw-lib', 'sw-precaching']).start();
+
+/** const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
 const testServer = require('../../../utils/test-server.js');
 
@@ -85,8 +88,9 @@ describe('sw-lib Tests', function() {
         setupTestSuite(browser);
         break;
       default:
-        console.log(`Skipping tests for ${browser.getId()}`);
+        console.warn(`Skipping ${browser.getPrettyName()}.`);
         break;
     }
   });
 });
+**/

@@ -73,19 +73,41 @@ class ServerInstance {
     // Harness to kick off all the in-browser tests for a given package.
     // It will pick up a list of all the top-level .js files and automatically
     // inject them into the HTML as <script> tags.
-    this._app.get('/__test/mocha/:pkg', function(req, res) {
+    this._app.get('/__test/mocha/browser/:pkg', function(req, res) {
+      /* eslint-disable no-console */
       const pkg = req.params.pkg;
       const pattern = `packages/${pkg}/test/browser/*.js`;
-      const scripts = glob.sync(pattern).map((script) => `/${script}`);
-
+      const scripts = glob.sync(pattern).map((script) => {
+        // Converts packages/<pkg name>/test/sw/<filename>.js
+        // to      /packages/<pkg name>/test/sw/<filename>.js
+        return `/${script}`;
+      });
       if (scripts.length === 0) {
         throw Error(`No test scripts match the pattern '${pattern}'.`);
       }
 
       const source = fs.readFileSync(path.join(
-        __dirname, '..', 'templates', 'test-harness.hbs'), 'utf-8');
+        __dirname, '..', 'templates', 'test-browser.hbs'), 'utf-8');
       const template = handlebars.compile(source);
       const html = template({scripts, pkg});
+
+      res.send(html);
+    });
+
+    this._app.get('/__test/mocha/sw/:pkg', function(req, res) {
+      /* eslint-disable no-console */
+      const pkg = req.params.pkg;
+      const pattern = `packages/${pkg}/test/sw/*.js`;
+      const scriptPaths = glob.sync(pattern).map((script) => {
+        // Converts packages/<pkg name>/test/sw/<filename>.js
+        // to      /packages/<pkg name>/test/sw/<filename>.js
+        return `/${script}`;
+      });
+
+      const source = fs.readFileSync(path.join(
+        __dirname, '..', 'templates', 'test-sw.hbs'), 'utf-8');
+      const template = handlebars.compile(source);
+      const html = template({scripts: scriptPaths, pkg});
 
       res.send(html);
     });

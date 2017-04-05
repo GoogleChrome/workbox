@@ -1,15 +1,16 @@
-const fs = require('fs');
+/** const fs = require('fs');
 const path = require('path');
 const fsExtra = require('fs-extra');
 const seleniumAssistant = require('selenium-assistant');
 
 const testServer = require('../../../utils/test-server.js');
+**/
 
 /**
  * This test is largely a smoke test to ensure the routes from PrecacheManager
  * is possible.
  */
-describe('Routing Example', function() {
+/** describe('Routing Example', function() {
   let tmpDirectory;
   let baseTestUrl;
   let globalDriver;
@@ -90,4 +91,4 @@ describe('Routing Example', function() {
       });
     });
   });
-});
+});**/

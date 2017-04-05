@@ -38,17 +38,20 @@ gulp.task('download-browsers', function() {
   });
 });
 
-gulp.task('mocha', ['build', 'download-browsers'], () => {
+// TODO Add in ['build']
+gulp.task('mocha', () => {
   const mochaOptions = {};
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
   }
+
   const testGlob = `packages/${global.projectOrStar}/test/*.js`;
   const testFiles = glob.sync(testGlob);
   if (testFiles.length === 0) {
     // Mocha fails when no tests are found so return early.
     return;
   }
+
   return gulp.src(testGlob, {read: false})
     .pipe(mocha(mochaOptions))
     .once('error', (error) => {
@@ -57,6 +60,6 @@ gulp.task('mocha', ['build', 'download-browsers'], () => {
     });
 });
 
-gulp.task('test', ['lint'], (callback) => {
+gulp.task('test', ['lint', 'download-browsers'], (callback) => {
   runSequence('mocha', callback);
 });

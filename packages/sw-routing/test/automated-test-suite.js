@@ -62,7 +62,8 @@ describe(`sw-routing Browser Tests`, function() {
         setupTestSuite(browser);
         break;
       default:
-        console.log(`Skipping tests for ${browser.getId()}.`);
+        console.warn(`Skipping ${browser.getPrettyName()}.`);
+        break;
     }
   });
 });
