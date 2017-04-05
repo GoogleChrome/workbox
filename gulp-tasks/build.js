@@ -23,7 +23,7 @@ const fsePromise = promisify('fs-extra');
 
 const printHeading = (heading) => {
   /* eslint-disable no-console */
-  process.stdout.write(chalk.inverse(`⚒️  ${heading}  `));
+  process.stdout.write(chalk.inverse(`  ⚒️  ${heading}  `));
   /* eslint-enable no-console */
 };
 

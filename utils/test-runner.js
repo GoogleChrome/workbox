@@ -53,6 +53,10 @@ class TestRunner {
   }
 
   _configureBrowserTests(getBaseTestUrl) {
+    if (!this._testsRequireBrowser()) {
+      return;
+    }
+
     const availableBrowsers = seleniumAssistant.getLocalBrowsers();
     availableBrowsers.forEach((browser) => {
       switch(browser.getId()) {
@@ -79,18 +83,6 @@ class TestRunner {
         return seleniumAssistant.killWebDriver(webdriverInstance);
       });
 
-      let hasBrowserTests = false;
-      for (let i = 0; i < that._packagePathsToTest.length; i++) {
-        const packagePath = that._packagePathsToTest[i];
-        hasBrowserTests = that._hasBrowserTests(packagePath) ||
-          that._hasServiceWorkerTests(packagePath);
-        break;
-      }
-
-      if (!hasBrowserTests) {
-        return;
-      }
-
       it('should be able to get a valid webdriver instance', function() {
         // Starting a web driver can be slow...
         this.timeout(10 * 1000);
@@ -106,7 +98,6 @@ class TestRunner {
         return webdriverInstance;
       };
 
-      // NOTE: `packagePath` is the absolute path /<path>/packages/<pkg name>
       that._packagePathsToTest.forEach((packagePath) => {
         if (that._hasBrowserTests(packagePath)) {
           that._runBrowserTests(getWebdriver, packagePath, getBaseTestUrl);
@@ -135,6 +126,25 @@ class TestRunner {
     }
   }
 
+  _testsRequireBrowser() {
+    let hasBrowserTests = false;
+    for (let i = 0; i < this._packagePathsToTest.length && !hasBrowserTests; i++) {
+      const packagePath = this._packagePathsToTest[i];
+      hasBrowserTests = this._hasBrowserTests(packagePath) ||
+        this._hasServiceWorkerTests(packagePath);
+    }
+    return hasBrowserTests;
+  }
+
+  _testsRequireNode() {
+    let hasNodeTests = false;
+    for (let i = 0; i < this._packagePathsToTest.length && !hasNodeTests; i++) {
+      const packagePath = this._packagePathsToTest[i];
+      hasNodeTests = this._hasNodeTests(packagePath);
+    }
+    return hasNodeTests;
+  }
+
   _hasServiceWorkerTests(packagePath) {
     return glob.sync(`${packagePath}/test/sw/*.js`).length > 0;
   }
@@ -143,25 +153,8 @@ class TestRunner {
     return glob.sync(`${packagePath}/test/browser/*.js`).length > 0;
   }
 
-  _runServiceWorkerTests(webdriverCb, packagePath, getBaseTestUrl) {
-    const that = this;
-    it(`should pass '${path.basename(packagePath)}' sw tests`, function() {
-      this.timeout(10 * 1000);
-      this.retries(2);
-
-      const webdriver = webdriverCb();
-      if (!webdriver) {
-        console.warn('Skipping selenium test due to no webdriver.');
-        return;
-      }
-
-      return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
-        path.basename(packagePath),
-        webdriver,
-        `${getBaseTestUrl()}/__test/mocha/sw/${path.basename(packagePath)}`
-      )
-      .then(that._handleMochaResults);
-    });
+  _hasNodeTests(packagePath) {
+    return glob.sync(`${packagePath}/test/node/*.js`).length > 0;
   }
 
   _runBrowserTests(webdriverCb, packagePath, getBaseTestUrl) {
@@ -185,29 +178,50 @@ class TestRunner {
     });
   }
 
+  _runServiceWorkerTests(webdriverCb, packagePath, getBaseTestUrl) {
+    const that = this;
+    it(`should pass '${path.basename(packagePath)}' sw tests`, function() {
+      this.timeout(10 * 1000);
+      this.retries(2);
+
+      const webdriver = webdriverCb();
+      if (!webdriver) {
+        console.warn('Skipping selenium test due to no webdriver.');
+        return;
+      }
+
+      return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
+        path.basename(packagePath),
+        webdriver,
+        `${getBaseTestUrl()}/__test/mocha/sw/${path.basename(packagePath)}`
+      )
+      .then(that._handleMochaResults);
+    });
+  }
+
   _configureNodeTests(getBaseTestUrl) {
+    if (!this._testsRequireNode()) {
+      return;
+    }
+
     const that = this;
     describe(``, function() {
       before(function() {
         that.printHeading(`Starting Node tests`);
       });
 
-      // NOTE: `packagePath` is the absolute path /<path>/packages/<pkg name>
       that._packagePathsToTest.forEach((packagePath) => {
-        that._runNodeTests(packagePath, getBaseTestUrl);
+        if (that._hasNodeTests(packagePath)) {
+          that._runNodeTests(packagePath, getBaseTestUrl);
+        } else if (process.env.TRAVIS) {
+          console.log('No node tests.');
+        }
       });
     });
   }
 
   _runNodeTests(packagePath, getBaseTestUrl) {
     const nodeTests = glob.sync(`${packagePath}/test/node/*.js`);
-    if (nodeTests.length === 0) {
-      if (process.env.TRAVIS) {
-        console.log('No node tests.');
-      }
-      return;
-    }
-
     global.getBaseTestUrl = getBaseTestUrl;
     nodeTests.forEach((nodeTextFile) => {
       require(nodeTextFile);
