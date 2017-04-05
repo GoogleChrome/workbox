@@ -4,7 +4,11 @@
 
 ## Installation
 
+{{#if installCmd}}
+`{{installCmd}}`
+{{else}}
 `npm install --save-dev {{name}}`
+{{/if}}
 
 {{#if hasDemo}}
 ## Demo

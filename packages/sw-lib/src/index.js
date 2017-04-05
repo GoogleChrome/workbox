@@ -53,14 +53,15 @@ if (!assert.isSWEnv()) {
  * goog.swlib.router.registerRoute(
  *   '/example/', goog.swlib.staleWhileRevalidate());
  * goog.swlib.router.registerRoute(
- *   /\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/, goog.swlib.cacheFirst());
+ *   /\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
+ *   goog.swlib.strategies.cacheFirst());
  * goog.swlib.router.registerRoute(
- *   '/styles/:filename', goog.swlib.cacheFirst());
+ *   '/styles/:filename', goog.swlib.strategies.cacheFirst());
  *
  * @example <caption>Using plugins with caching strategies.</caption>
  *
  * goog.swlib.router.registerRoute(/\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
- *   goog.swlib.cacheFirst({
+ *   goog.swlib.strategies.cacheFirst({
  *     cacheName: 'example-cache',
  *     cacheExpiration: {
  *       maxEntries: 10,

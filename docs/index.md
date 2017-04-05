@@ -133,7 +133,7 @@ This library takes a Response object and determines whether it&#x27;s cacheable,
 
 A CLI tool to generate a service worker and a file manifest making use of the sw-lib module.
 
-**Install**: `npm install --save-dev sw-cli`
+**Install**: `npm install --global sw-cli`
 
 
 
