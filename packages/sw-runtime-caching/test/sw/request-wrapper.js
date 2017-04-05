@@ -145,4 +145,42 @@ describe('Test of the RequestWrapper class', function() {
         done();
       });
   });
+
+  it(`should cache the response when fetchAndCache() is called and cacheWillUpdate returns true`, function() {
+    const cacheWillUpdate = {cacheWillUpdate: () => true};
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+      plugins: [cacheWillUpdate],
+    });
+
+    return requestWrapper.getCache().then((cache) => {
+      const cachePutStub = sinon.stub(cache, 'put');
+      globalStubs.push(cachePutStub);
+
+      return requestWrapper.fetchAndCache({request: CACHED_URL, waitOnCache: true})
+        .then(() => expect(cachePutStub.firstCall.args[0]).to.eql(CACHED_URL))
+        .then(() => expect(cachePutStub.firstCall.args[1]).to.be.instanceOf(Response));
+    });
+  });
+
+  it(`should reject without caching the response when fetchAndCache() is called and cacheWillUpdate returns false`, function(done) {
+    const cacheWillUpdate = {cacheWillUpdate: () => false};
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+      plugins: [cacheWillUpdate],
+    });
+
+    requestWrapper.getCache().then((cache) => {
+      const cachePutStub = sinon.stub(cache, 'put');
+      globalStubs.push(cachePutStub);
+
+      // This promise should reject, so call done() passing in an error string
+      // if it resolves, and done() without an error if it rejects.
+      requestWrapper.fetchAndCache({request: CACHED_URL, waitOnCache: true})
+        .then(() => done(new Error('The promise should have rejected.')))
+        .catch((error) => {
+          expect(cachePutStub.firstCall).to.be.null;
+          expect(error.name).to.eql('invalid-reponse-for-caching');
+          done();
+        });
+    });
+  });
 });
