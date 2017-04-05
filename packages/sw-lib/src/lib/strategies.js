@@ -2,7 +2,7 @@ import {
   CacheFirst, CacheOnly, NetworkFirst,
   NetworkOnly, StaleWhileRevalidate,
 } from '../../../sw-runtime-caching/src/index.js';
-import {Plugin as CacheExpirationPlugin} from
+import {CacheExpirationPlugin} from
   '../../../sw-cache-expiration/src/index.js';
 import {BroadcastCacheUpdatePlugin} from
   '../../../sw-broadcast-cache-update/src/index.js';
