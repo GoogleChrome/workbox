@@ -9,14 +9,18 @@ const testServer = require('./test-server.js');
 /* eslint-env mocha */
 
 class TestRunner {
-  constructor(packageNames) {
-    this._packagePathsToTest = packageNames.map((packageName) => {
-      return path.join(__dirname, '..', 'packages', packageName);
-    });
+  constructor() {
+    this._packagePathsToTest = [];
+  }
+
+  addPackage(packageName) {
+    this._packagePathsToTest.push(
+      path.join(__dirname, '..', 'packages', packageName)
+    );
   }
 
   printHeading(heading) {
-    console.log(chalk.inverse(`☢️  ${heading}  `));
+    console.log(chalk.inverse(`\n  ☢️  ${heading}  \n`));
   }
 
   start() {
@@ -43,7 +47,6 @@ class TestRunner {
   }
 
   _configureBrowserTests() {
-    console.log('Start Browser Tests: ', this._packagePathsToTest);
     const availableBrowsers = seleniumAssistant.getLocalBrowsers();
     availableBrowsers.forEach((browser) => {
       switch(browser.getId()) {
@@ -86,18 +89,18 @@ class TestRunner {
       // NOTE: `packagePath` is the absolute path /<path>/packages/<pkg name>
       that._packagePathsToTest.forEach((packagePath) => {
         const pkgName = path.basename(packagePath);
-        it(`should pass '${pkgName}' sw tests`, function() {
-          this.timeout(10 * 1000);
-          this.retries(2);
-
-          return that._runServiceWorkerTests(webdriverInstance, packagePath);
-        });
-
         it(`should pass '${pkgName}' browser tests`, function() {
           this.timeout(10 * 1000);
           this.retries(2);
 
           return that._runBrowserTests(webdriverInstance, packagePath);
+        });
+
+        it(`should pass '${pkgName}' sw tests`, function() {
+          this.timeout(10 * 1000);
+          this.retries(2);
+
+          return that._runServiceWorkerTests(webdriverInstance, packagePath);
         });
       });
     });
@@ -134,4 +137,4 @@ class TestRunner {
   }
 }
 
-module.exports = TestRunner;
+module.exports = new TestRunner();

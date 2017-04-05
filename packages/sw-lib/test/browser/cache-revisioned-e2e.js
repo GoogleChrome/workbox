@@ -17,6 +17,23 @@ describe('cache-revisioned-e2e.js', function() {
     });
   };
 
+  before(function() {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.addEventListener('load', resolve);
+      script.src = '/packages/sw-precaching/test/static/test-data.js';
+      document.body.appendChild(script);
+    })
+    .then(() => {
+      return new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.addEventListener('load', resolve);
+        script.src = '/packages/sw-lib/test/static/test-data.js';
+        document.body.appendChild(script);
+      });
+    });
+  });
+
   beforeEach(function() {
     return window.goog.swUtils.cleanState()
     .then(deleteIndexedDB);
@@ -137,8 +154,8 @@ describe('cache-revisioned-e2e.js', function() {
       .concat(testSet['set-5'])
       .concat(testSet['set-6']);
 
-    const sw1 = '../static/sw/cache-revisioned-1.js';
-    const sw2 = '../static/sw/cache-revisioned-2.js';
+    const sw1 = '/packages/sw-lib/test/static/sw/cache-revisioned-1.js';
+    const sw2 = '/packages/sw-lib/test/static/sw/cache-revisioned-2.js';
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
       return testFileSet(iframe, sw1, allAssets1);

@@ -13,8 +13,8 @@
  limitations under the License.
 */
 
-const TestRunner = require('../../../utils/test-runner');
-new TestRunner(['sw-lib', 'sw-precaching']).start();
+const testRunner = require('../../../utils/test-runner');
+testRunner.addPackage('sw-lib');
 
 /** const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');

@@ -14,8 +14,8 @@
 */
 const seleniumAssistant = require('selenium-assistant');
 const gulp = require('gulp');
-const mocha = require('gulp-spawn-mocha');
 const glob = require('glob');
+const mocha = require('gulp-spawn-mocha');
 const runSequence = require('run-sequence');
 
 gulp.task('download-browsers', function() {
@@ -41,6 +41,7 @@ gulp.task('download-browsers', function() {
 // TODO Add in ['build']
 gulp.task('mocha', () => {
   const mochaOptions = {};
+
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
   }
