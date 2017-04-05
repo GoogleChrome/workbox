@@ -10,6 +10,7 @@ const expect = self.chai.expect;
 mocha.setup({
   ui: 'bdd',
   reporter: null,
+  globals: ['fetch'],
 });
 
 /* eslint-disable no-unused-vars */
