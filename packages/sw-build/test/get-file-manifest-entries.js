@@ -115,4 +115,40 @@ describe('Test getFileManifestEntries', function() {
       ]);
     });
   });
+
+  it('should return file entries from example project with prefix', function() {
+    const testInput = {
+      staticFileGlobs: [
+        '**/*.{html,js,css}',
+      ],
+      rootDirectory: path.join(__dirname, '..', '..',
+        'sw-cli', 'test', 'static', 'example-project-1'),
+      modifyUrlPrefix: {
+        '/styles': '/static/styles',
+        '/page': '/pages/page',
+      },
+    };
+
+    return swBuild.getFileManifestEntries(testInput)
+    .then((output) => {
+      output.should.deep.equal([
+        {
+          url: '/index.html',
+          revision: '218c18c2a07f6fbe326de4c9b0676164',
+        }, {
+          url: '/pages/page-1.html',
+          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        }, {
+          url: '/pages/page-2.html',
+          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        }, {
+          url: '/static/styles/stylesheet-1.css',
+          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        }, {
+          url: '/static/styles/stylesheet-2.css',
+          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        },
+      ]);
+    });
+  });
 });
