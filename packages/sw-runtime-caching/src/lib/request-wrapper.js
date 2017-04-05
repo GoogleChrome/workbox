@@ -178,7 +178,12 @@ class RequestWrapper {
    * @return {Promise.<Response>} The network response.
    */
   async fetch({request}) {
-    assert.atLeastOne({request});
+    if (typeof request === 'string') {
+      request = new Request(request);
+    } else {
+      assert.isInstance({request}, Request);
+    }
+
     const clonedRequest = this.pluginCallbacks.fetchDidFail ?
       request.clone() : null;
     if (this.pluginCallbacks.requestWillFetch) {
