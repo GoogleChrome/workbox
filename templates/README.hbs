@@ -62,7 +62,11 @@ All of the modules are described below. Each has an _About_ page with basic usag
 
 {{description}}
 
+{{#if installCmd}}
+**Install**: `{{installCmd}}`
+{{else}}
 **Install**: `npm install --save-dev {{name}}`
+{{/if}}
 
 {{#if hasRefDocs}}**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-{{name}}.html){{/if}}{{#if hasDemo}} •
                 [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/{{name}}/demo){{/if}}
