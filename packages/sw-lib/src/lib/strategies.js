@@ -21,7 +21,7 @@ import {RequestWrapper} from '../../../sw-runtime-caching/src/index.js';
  */
 class Strategies {
   /**
-   * A [cache first](https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network)
+   * A [cache first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network)
    * run-time caching strategy.
    *
    *  @example
@@ -38,7 +38,7 @@ class Strategies {
   }
 
   /**
-   * A [cache only](https://jakearchibald.com/2014/offline-cookbook/#cache-only)
+   * A [cache only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only)
    * run-time caching strategy.
    *
    * @example
@@ -56,7 +56,7 @@ class Strategies {
   }
 
   /**
-   * A [network first](https://jakearchibald.com/2014/offline-cookbook/#network-falling-back-to-cache)
+   * A [network first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache)
    * run-time caching strategy.
    *
    * @example
@@ -74,7 +74,7 @@ class Strategies {
   }
 
   /**
-   * A [network only](https://jakearchibald.com/2014/offline-cookbook/#network-only)
+   * A [network only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only)
    * run-time caching strategy.
    *
    * @example
@@ -92,7 +92,7 @@ class Strategies {
   }
 
   /**
-   * A [stale while revalidate](https://jakearchibald.com/2014/offline-cookbook/#stale-while-revalidate)
+   * A [stale while revalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
    * run-time caching strategy.
    *
    * @example
