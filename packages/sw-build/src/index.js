@@ -2,6 +2,7 @@
 const generateSW = require('./lib/generate-sw');
 const getFileManifestEntries = require('./lib/get-file-manifest-entries');
 const generateFileManifest = require('./lib/generate-file-manifest');
+const injectManifest = require('./lib/inject-manifest');
 
 /**
  * # sw-build
@@ -74,4 +75,5 @@ module.exports = {
   generateSW,
   generateFileManifest,
   getFileManifestEntries,
+  injectManifest,
 };
