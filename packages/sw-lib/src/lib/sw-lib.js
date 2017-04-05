@@ -16,21 +16,12 @@
 /* eslint-env browser, serviceworker */
 
 import Router from './router.js';
+import Strategies from './strategies';
 import ErrorFactory from './error-factory.js';
 import {
   RevisionedCacheManager, UnrevisionedCacheManager,
 } from '../../../sw-precaching/src/index.js';
 import {Route} from '../../../sw-routing/src/index.js';
-import {Plugin as CacheExpirationPlugin} from
-  '../../../sw-cache-expiration/src/index.js';
-import {BroadcastCacheUpdatePlugin} from
-  '../../../sw-broadcast-cache-update/src/index.js';
-import {CacheableResponsePlugin} from
-  '../../../sw-cacheable-response/src/index.js';
-import {
-  CacheFirst, CacheOnly, NetworkFirst,
-  NetworkOnly, StaleWhileRevalidate, RequestWrapper,
-} from '../../../sw-runtime-caching/src/index.js';
 
 /**
  * A high level library to make it as easy as possible to precache assets
@@ -48,6 +39,7 @@ class SWLib {
     this._revisionedCacheManager = new RevisionedCacheManager();
     this._router = new Router(this._revisionedCacheManager.getCacheName());
     this._unrevisionedCacheManager = new UnrevisionedCacheManager();
+    this._strategies = new Strategies();
     this._registerInstallActivateEvents();
     this._registerDefaultRoutes();
   }
@@ -146,44 +138,6 @@ class SWLib {
   }
 
   /**
-   * If you need fine grained control of route matching and handling,
-   * use the {@link module:sw-routing.Route|Route Class} to define
-   * the desired plugin and register it to the router.
-   *
-   * This is an export of the
-   * {@link module:sw-routing.Route|sw-runtime Route Class}.
-   *
-   * @example <caption>How to define a route using a Route instance.</caption>
-   *
-   * const routeInstance = new goog.swlib.Route({
-   *   match: (url) => {
-   *     // Return true or false
-   *     return true;
-   *   },
-   *   handler: {
-   *     handle: (args) => {
-   *       // The requested URL
-   *       console.log(args.url);
-   *
-   *       // The FetchEvent to handle
-   *       console.log(args.event);
-   *
-   *       // The parameters from the matching route.
-   *       console.log(args.params);
-   *
-   *       // Return a promise that resolves with a Response.
-   *       return fetch(args.url);
-   *     },
-   *   },
-   * });
-   * self.goog.swlib.router.registerRoute(routeInstance);
-   * @type {Route}
-   */
-  get Route() {
-    return Route;
-  }
-
-  /**
    * RuntimeStrategyOptions is just a JavaScript object, but the structure
    * explains the options for runtime strategies used in sw-lib.
    *
@@ -191,7 +145,7 @@ class SWLib {
    * strategy.
    *
    * @example
-   * const cacheFirstStrategy = goog.swlib.cacheFirst({
+   * const cacheFirstStrategy = goog.swlib.strategies.cacheFirst({
    *   cacheName: 'example-cache',
    *   cacheExpiration: {
    *     maxEntries: 10,
@@ -232,139 +186,18 @@ class SWLib {
    */
 
   /**
-   * A [cache first](https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network)
-   * run-time caching strategy.
-   *
-   *  @example
-   * const cacheFirstStrategy = goog.swlib.cacheFirst();
-   *
-   * goog.swlib.router.addRoute('/styles/*', cacheFirstStrategy);
-   *
-   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast plugins pass in option values.
-   * @return {module:sw-runtime-caching.CacheFirst} A CacheFirst handler.
-   */
-  cacheFirst(options) {
-    return this._getCachingMechanism(CacheFirst, options);
-  }
-
-  /**
-   * A [cache only](https://jakearchibald.com/2014/offline-cookbook/#cache-only)
-   * run-time caching strategy.
+   * The supported caching strategies shipped with sw-lib are provided via the
+   * `strategies` object.
+   * {@link module:sw-lib.Strategies|See Strategies for a complete list}.
+   * @type {module.sw-lib.Strategies} Object containing the available
+   * caching strategies in sw-lib.
    *
    * @example
-   * const cacheOnlyStrategy = goog.swlib.cacheOnly();
-   *
-   * goog.swlib.router.addRoute('/styles/*', cacheOnlyStrategy);
-   *
-   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast plugins pass in option values.
-   * @return {module:sw-runtime-caching.CacheOnly} The caching handler instance.
+   * goog.swlib.router.addRoute('/styles/*',
+   *  goog.swlib.strategies.cacheFirest());
    */
-  cacheOnly(options) {
-    return this._getCachingMechanism(CacheOnly, options);
-  }
-
-  /**
-   * A [network first](https://jakearchibald.com/2014/offline-cookbook/#network-falling-back-to-cache)
-   * run-time caching strategy.
-   *
-   * @example
-   * const networkFirstStrategy = goog.swlib.networkFirst();
-   *
-   * goog.swlib.router.addRoute('/blog/', networkFirstStrategy);
-   *
-   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast plugins pass in option values.
-   * @return {module:sw-runtime-caching.NetworkFirst} The caching handler
-   * instance.
-   */
-  networkFirst(options) {
-    return this._getCachingMechanism(NetworkFirst, options);
-  }
-
-  /**
-   * A [network only](https://jakearchibald.com/2014/offline-cookbook/#network-only)
-   * run-time caching strategy.
-   *
-   * @example
-   * const networkOnlyStrategy = goog.swlib.networkOnly();
-   *
-   * goog.swlib.router.addRoute('/admin/', networkOnlyStrategy);
-   *
-   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast plugins pass in option values.
-   * @return {module:sw-runtime-caching.NetworkOnly} The caching handler
-   * instance.
-   */
-  networkOnly(options) {
-    return this._getCachingMechanism(NetworkOnly, options);
-  }
-
-  /**
-   * A [stale while revalidate](https://jakearchibald.com/2014/offline-cookbook/#stale-while-revalidate)
-   * run-time caching strategy.
-   *
-   * @example
-   * const staleWhileRevalidateStrategy = goog.swlib.staleWhileRevalidate();
-   *
-   * goog.swlib.router.addRoute('/styles/*', staleWhileRevalidateStrategy);
-   *
-   * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast plugins pass in option values.
-   * @return {module:sw-runtime-caching.StaleWhileRevalidate} The caching
-   * handler instance.
-   */
-  staleWhileRevalidate(options) {
-    return this._getCachingMechanism(StaleWhileRevalidate, options);
-  }
-
-  /**
-   * This method will add plugins based on options passed in by the
-   * developer.
-   *
-   * @private
-   * @param {Class} HandlerClass The class to be configured and instantiated.
-   * @param {Object} [options] Options to configure the handler.
-   * @return {Handler} A handler instance configured with the appropriate
-   * behaviours
-   */
-  _getCachingMechanism(HandlerClass, options = {}) {
-    const pluginParamsToClass = {
-      'cacheExpiration': CacheExpirationPlugin,
-      'broadcastCacheUpdate': BroadcastCacheUpdatePlugin,
-      'cacheableResponse': CacheableResponsePlugin,
-    };
-
-    const wrapperOptions = {
-      plugins: [],
-    };
-
-    if (options['cacheName']) {
-      wrapperOptions['cacheName'] = options['cacheName'];
-    }
-
-    // Iterate over known plugins and add them to Request Wrapper options.
-    const pluginKeys = Object.keys(pluginParamsToClass);
-    pluginKeys.forEach((pluginKey) => {
-      if (options[pluginKey]) {
-        const PluginClass = pluginParamsToClass[pluginKey];
-        const pluginParams = options[pluginKey];
-
-        wrapperOptions.plugins.push(new PluginClass(pluginParams));
-      }
-    });
-
-    // Add custom plugins.
-    if (options.plugins) {
-      options.plugins.forEach((plugin) => {
-        wrapperOptions.plugins.push(plugin);
-      });
-    }
-
-    return new HandlerClass({
-      requestWrapper: new RequestWrapper(wrapperOptions),
-    });
+  get strategies() {
+    return this._strategies;
   }
 
   /**
@@ -392,11 +225,11 @@ class SWLib {
    * @private
    */
   _registerDefaultRoutes() {
-    const cacheFirstHandler = this.cacheFirst({
+    const cacheFirstHandler = this.strategies.cacheFirst({
       cacheName: this._revisionedCacheManager.getCacheName(),
     });
 
-    const route = new this.Route({
+    const route = new Route({
       match: ({url, event}) => {
         const cachedUrls = this._revisionedCacheManager.getCachedUrls();
         return cachedUrls.indexOf(url.href) !== -1;
