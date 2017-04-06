@@ -10,7 +10,8 @@ const packageNames = testFiles.map((testFile) => {
 }).filter((pkgName) => {
   switch(pkgName) {
     // There is a failing test on sw-bg-sync-queue
-    case 'sw-background-sync-queue':
+    // case 'sw-background-sync-queue':
+    case 'disable-packages-here':
       console.warn('sw-background-sync-queue NEEDS a fix in Node.');
       return false;
     default:
