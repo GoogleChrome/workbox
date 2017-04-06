@@ -31,6 +31,17 @@ describe('queue-utils test', () => {
 		maxAge: maxAgeTimeStamp,
 	};
 
+	beforeEach(function() {
+		const idbHelper = new goog.backgroundSyncQueue.test.IDBHelper(
+			'bgQueueSyncDB', 1, 'QueueStore');
+		return idbHelper.getAllKeys()
+		.then((keys) => {
+			keys.forEach((key) => {
+				idbHelper.delete(key);
+			});
+		});
+	});
+
   it('test queueableRequest', () => {
 		const request = new Request('http://localhost:3001/__echo/date-with-cors/random');
 		return queueUtils.getQueueableRequest({
@@ -91,6 +102,7 @@ describe('queue-utils test', () => {
 		await queueUtils.cleanupQueue();
 		console.log(allKeys);
 		console.log(await idbHelper.getAllKeys());
+		console.log((await idbHelper.getAllKeys()).length);
 		chai.assert.equal(allKeys.length,
 			(await idbHelper.getAllKeys()).length + 2);
 	});
