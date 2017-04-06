@@ -1,4 +1,4 @@
-<!-- To make changes, edit templates/README.hbs, not README.md! -->
+<!-- To make changes, edit templates/README.hbs, not this file. -->
 [![Travis Build Status][travis-image]][travis-url]
 [![AppVeyor Build status][appveyor-image]][appveyor-url]
 [![Dependency Status][dependency-image]][dependency-url]
@@ -11,16 +11,9 @@
 - [Ways to Use the Libraries](#ways-to-use-the-libraries)
 - [Setting Up](#setting-up)
 - [The Libraries](#the-libraries)
-  - [sw-appcache-behavior](#sw-appcache-behavior)
-  - [sw-broadcast-cache-update](#sw-broadcast-cache-update)
-  - [sw-build](#sw-build)
-  - [sw-cache-expiration](#sw-cache-expiration)
-  - [sw-cli](#sw-cli)
-  - [sw-lib](#sw-lib)
-  - [sw-offline-google-analytics](#sw-offline-google-analytics)
-  - [sw-precaching](#sw-precaching)
-  - [sw-routing](#sw-routing)
-  - [sw-runtime-caching](#sw-runtime-caching)
+{{#each projects}}
+  - [{{name}}](#{{name}})
+{{/each}}
 - [External Contributions](#external-contributions)
 - [License](#license)
 
@@ -29,7 +22,7 @@
 Despite the number of modules in this package, there are a number of approaches to using these tools which many be used separately or together in any number of combinations.
 
 * **Precaching, runtime caching and routing**: Use [sw-lib](#sw-lib) to quickly
-  implement a [caching strategies](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/) or a route.
+  implement [caching strategies](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/) or a route.
 * **Build process**: Generate a service worker or manifest in your build process
   using [sw-build](#sw-build).
 * **Command line**: Generate a service worker or manifest from the command line.
@@ -44,7 +37,7 @@ Each module is installed separately using the command line [as listed below](#th
 1. Install the module. For example:
 
    `npm install --save-dev sw-lib`
-2. Copy the module's JavaScript and map files to your serving directory. To work properly these must be in the same directory as your service worker. For example:
+2. Copy the module's JavaScript and map files to your serving directory. 
 
    `cp node_modules/sw-lib/build/* app/`
 3. Import the modules to your service worker file. For example:
