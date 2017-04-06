@@ -100,9 +100,6 @@ describe('queue-utils test', () => {
 		const allKeys = (await idbHelper.getAllKeys());
 		await delay(100);
 		await queueUtils.cleanupQueue();
-		console.log(allKeys);
-		console.log(await idbHelper.getAllKeys());
-		console.log((await idbHelper.getAllKeys()).length);
 		chai.assert.equal(allKeys.length,
 			(await idbHelper.getAllKeys()).length + 2);
 	});
