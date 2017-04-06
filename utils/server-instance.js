@@ -27,6 +27,7 @@ const serveStatic = require('serve-static');
 class ServerInstance {
   constructor() {
     this._server = null;
+    this._sockets = [];
 
     this._app = express();
     this._app.use(cookieParser());
@@ -180,11 +181,19 @@ class ServerInstance {
         }
         resolve(this._server.address().port);
       });
+
+      this._server.on('connection', (socket) => {
+        this._sockets.push(socket);
+      });
     });
   }
 
   stop() {
     return new Promise((resolve) => {
+      this._sockets.forEach((socket) => {
+        socket.destroy();
+      });
+
       this._server.close(resolve);
       this._server = null;
     });

@@ -73,7 +73,7 @@ class TestRunner {
     describe(``, function() {
       let webdriverInstance;
       before(function() {
-        that.printHeading(`Starting browser tests in ` + browser.getPrettyName());
+        that.printHeading(`Starting browser tests in ${browser.getPrettyName()}`);
       });
 
       after(function() {
@@ -110,6 +110,12 @@ class TestRunner {
         } else if (process.env.TRAVIS) {
           console.log('No service worker tests.');
         }
+
+        if (that._hasIntegrationTests(packagePath)) {
+          that._runIntegrationTests(getWebdriver, packagePath, getBaseTestUrl);
+        } else if (process.env.TRAVIS) {
+          console.log('No integration tests.');
+        }
       });
     });
   }
@@ -131,7 +137,8 @@ class TestRunner {
     for (let i = 0; i < this._packagePathsToTest.length && !hasBrowserTests; i++) {
       const packagePath = this._packagePathsToTest[i];
       hasBrowserTests = this._hasBrowserTests(packagePath) ||
-        this._hasServiceWorkerTests(packagePath);
+        this._hasServiceWorkerTests(packagePath) ||
+        this._hasIntegrationTests(packagePath);
     }
     return hasBrowserTests;
   }
@@ -151,6 +158,10 @@ class TestRunner {
 
   _hasBrowserTests(packagePath) {
     return glob.sync(`${packagePath}/test/browser/*.js`).length > 0;
+  }
+
+  _hasIntegrationTests(packagePath) {
+    return glob.sync(`${packagePath}/test/integration/*.js`).length > 0;
   }
 
   _hasNodeTests(packagePath) {
@@ -196,6 +207,20 @@ class TestRunner {
         `${getBaseTestUrl()}/__test/mocha/sw/${path.basename(packagePath)}`
       )
       .then(that._handleMochaResults);
+    });
+  }
+
+  _runIntegrationTests(webdriverCb, packagePath, getBaseTestUrl) {
+    /** it(`should pass '${path.basename(packagePath)}' integration tests`, function() {
+      this.timeout(60 * 1000);
+      this.retries(2);
+    });**/
+
+    const integrationTests = glob.sync(`${packagePath}/test/integration/*.js`);
+    global.getBaseTestUrl = getBaseTestUrl;
+    integrationTests.forEach((testFile) => {
+      const testCb = require(testFile);
+      testCb(webdriverCb);
     });
   }
 
