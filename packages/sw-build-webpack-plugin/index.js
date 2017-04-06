@@ -1,12 +1,6 @@
 const swBuild = require('sw-build');
 const path = require('path');
 const SERVICE_WORKER_NAME = 'sw.js';
-const GLOB_PATTERNS = '**\/*.{html,js,css}';
-
-const defaults = {
-	globPatterns: [GLOB_PATTERNS],
-	globIgnores: [],
-};
 
 /**
  * Use the instance of this in the plugins array of the webpack config.
@@ -16,7 +10,13 @@ const defaults = {
  * .
  * plugins: [
  * 	new SwBuildWebpackPlugin({
- * 		// all options of `swBuild`
+ * 		rootDirectory: './build/',
+ * 		dest: './build/sw.js',
+ * 		globPatterns: ['**\/*.{html,js,css}'],
+ * 		globIgnores: ['admin.html'],
+ * 		templatedUrls: {
+ * 			'/shell': ['shell.hbs', 'main.css', 'shell.css'],
+ * 		},
  * 	});
  * ]
  *
@@ -30,7 +30,7 @@ class SwBuildWebpackPlugin {
 	 * @memberOf SwBuildWebpackPlugin
 	 */
 	constructor(config) {
-		this._config = Object.assign({}, defaults, config);
+		this._config = config;
 	}
 	/**
 	 *
@@ -52,12 +52,8 @@ class SwBuildWebpackPlugin {
 					path.join(this._config.rootDirectory, SERVICE_WORKER_NAME);
 			}
 			swBuild.generateSW(this._config)
-				.then(() => {
-					callback();
-				})
-				.catch((e) => {
-					callback(e);
-				});
+				.then(() => callback())
+				.catch((e) => callback(e));
 		});
 	}
 }
