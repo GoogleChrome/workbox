@@ -1,35 +1,35 @@
 const path = require('path');
 const chalk = require('chalk');
+const glob = require('glob');
 const seleniumAssistant = require('selenium-assistant');
 const swTestingHelpers = require('sw-testing-helpers');
 
-const testServer = require('./test-server.js');
+const testServerGen = require('./test-server-generator.js');
 
 /* eslint-disable no-console, require-jsdoc, no-invalid-this, max-len */
 /* eslint-env mocha */
 
 class TestRunner {
-  constructor() {
-    this._packagePathsToTest = [];
-  }
-
-  addPackage(packageName) {
-    this._packagePathsToTest.push(
-      path.join(__dirname, '..', 'packages', packageName)
-    );
+  constructor(packageNames) {
+    this._packagePathsToTest = packageNames.map((packageName) => {
+      return path.join(__dirname, '..', 'packages', packageName);
+    });
   }
 
   printHeading(heading) {
-    console.log(chalk.inverse(`\n  ☢️  ${heading}  \n`));
+    console.log(chalk.inverse(`\n  ☢️  ${heading}  `));
   }
 
   start() {
     const that = this;
 
     describe('Test Runner Environment', function() {
+      let testServer;
+
       before(function() {
         that.printHeading(`Starting test server`);
 
+        testServer = testServerGen();
         return testServer.start('.')
         .then((portNumber) => {
           that._baseTestUrl = `http://localhost:${portNumber}`;
@@ -42,41 +42,34 @@ class TestRunner {
         return testServer.stop();
       });
 
-      that._configureBrowserTests();
+      const getBaseTestUrl = () => {
+        return that._baseTestUrl;
+      };
+
+      that._configureBrowserTests(getBaseTestUrl);
+
+      that._configureNodeTests(getBaseTestUrl);
     });
   }
 
-  _configureBrowserTests() {
+  _configureBrowserTests(getBaseTestUrl) {
     const availableBrowsers = seleniumAssistant.getLocalBrowsers();
     availableBrowsers.forEach((browser) => {
       switch(browser.getId()) {
         case 'chrome':
         case 'firefox':
-          if(browser.getReleaseName() !== 'stable') {
-            return;
-          }
-
-          this._startBrowserTests(browser);
+          this._addBrowserTests(browser, getBaseTestUrl);
           break;
       }
     });
   }
 
-  _startBrowserTests(browser) {
+  _addBrowserTests(browser, getBaseTestUrl) {
     const that = this;
-    describe(`Test Runner Browser Tests - ${browser.getPrettyName()}`, function() {
+    describe(``, function() {
       let webdriverInstance;
-
       before(function() {
-        // Starting a web driver can be slow...
-        this.timeout(10 * 1000);
-
-        that.printHeading(`Start tests in ` + browser.getPrettyName());
-
-        return browser.getSeleniumDriver()
-        .then((driver) => {
-          webdriverInstance = driver;
-        });
+        that.printHeading(`Starting browser tests in ` + browser.getPrettyName());
       });
 
       after(function() {
@@ -86,22 +79,46 @@ class TestRunner {
         return seleniumAssistant.killWebDriver(webdriverInstance);
       });
 
+      let hasBrowserTests = false;
+      for (let i = 0; i < that._packagePathsToTest.length; i++) {
+        const packagePath = that._packagePathsToTest[i];
+        hasBrowserTests = that._hasBrowserTests(packagePath) ||
+          that._hasServiceWorkerTests(packagePath);
+        break;
+      }
+
+      if (!hasBrowserTests) {
+        return;
+      }
+
+      it('should be able to get a valid webdriver instance', function() {
+        // Starting a web driver can be slow...
+        this.timeout(10 * 1000);
+        this.retries(2);
+
+        return browser.getSeleniumDriver()
+        .then((driver) => {
+          webdriverInstance = driver;
+        });
+      });
+
+      const getWebdriver = () => {
+        return webdriverInstance;
+      };
+
       // NOTE: `packagePath` is the absolute path /<path>/packages/<pkg name>
       that._packagePathsToTest.forEach((packagePath) => {
-        const pkgName = path.basename(packagePath);
-        it(`should pass '${pkgName}' browser tests`, function() {
-          this.timeout(10 * 1000);
-          this.retries(2);
+        if (that._hasBrowserTests(packagePath)) {
+          that._runBrowserTests(getWebdriver, packagePath, getBaseTestUrl);
+        } else if (process.env.TRAVIS) {
+          console.log('No browser tests.');
+        }
 
-          return that._runBrowserTests(webdriverInstance, packagePath);
-        });
-
-        it(`should pass '${pkgName}' sw tests`, function() {
-          this.timeout(10 * 1000);
-          this.retries(2);
-
-          return that._runServiceWorkerTests(webdriverInstance, packagePath);
-        });
+        if (that._hasServiceWorkerTests(packagePath)) {
+          that._runServiceWorkerTests(getWebdriver, packagePath, getBaseTestUrl);
+        } else if (process.env.TRAVIS) {
+          console.log('No service worker tests.');
+        }
       });
     });
   }
@@ -118,23 +135,84 @@ class TestRunner {
     }
   }
 
-  _runServiceWorkerTests(webdriver, packagePath) {
-    return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
-      path.basename(packagePath),
-      webdriver,
-      `${this._baseTestUrl}/__test/mocha/sw/${path.basename(packagePath)}`
-    )
-    .then(this._handleMochaResults);
+  _hasServiceWorkerTests(packagePath) {
+    return glob.sync(`${packagePath}/test/sw/*.js`).length > 0;
   }
 
-  _runBrowserTests(webdriver, packagePath) {
-    return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
-      path.basename(packagePath),
-      webdriver,
-      `${this._baseTestUrl}/__test/mocha/browser/${path.basename(packagePath)}`
-    )
-    .then(this._handleMochaResults);
+  _hasBrowserTests(packagePath) {
+    return glob.sync(`${packagePath}/test/browser/*.js`).length > 0;
+  }
+
+  _runServiceWorkerTests(webdriverCb, packagePath, getBaseTestUrl) {
+    const that = this;
+    it(`should pass '${path.basename(packagePath)}' sw tests`, function() {
+      this.timeout(10 * 1000);
+      this.retries(2);
+
+      const webdriver = webdriverCb();
+      if (!webdriver) {
+        console.warn('Skipping selenium test due to no webdriver.');
+        return;
+      }
+
+      return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
+        path.basename(packagePath),
+        webdriver,
+        `${getBaseTestUrl()}/__test/mocha/sw/${path.basename(packagePath)}`
+      )
+      .then(that._handleMochaResults);
+    });
+  }
+
+  _runBrowserTests(webdriverCb, packagePath, getBaseTestUrl) {
+    const that = this;
+    it(`should pass '${path.basename(packagePath)}' browser tests`, function() {
+      this.timeout(10 * 1000);
+      this.retries(2);
+
+      const webdriver = webdriverCb();
+      if (!webdriver) {
+        console.warn('Skipping selenium test due to no webdriver.');
+        return;
+      }
+
+      return swTestingHelpers.mochaUtils.startWebDriverMochaTests(
+        path.basename(packagePath),
+        webdriver,
+        `${getBaseTestUrl()}/__test/mocha/browser/${path.basename(packagePath)}`
+      )
+      .then(that._handleMochaResults);
+    });
+  }
+
+  _configureNodeTests(getBaseTestUrl) {
+    const that = this;
+    describe(``, function() {
+      before(function() {
+        that.printHeading(`Starting Node tests`);
+      });
+
+      // NOTE: `packagePath` is the absolute path /<path>/packages/<pkg name>
+      that._packagePathsToTest.forEach((packagePath) => {
+        that._runNodeTests(packagePath, getBaseTestUrl);
+      });
+    });
+  }
+
+  _runNodeTests(packagePath, getBaseTestUrl) {
+    const nodeTests = glob.sync(`${packagePath}/test/node/*.js`);
+    if (nodeTests.length === 0) {
+      if (process.env.TRAVIS) {
+        console.log('No node tests.');
+      }
+      return;
+    }
+
+    global.getBaseTestUrl = getBaseTestUrl;
+    nodeTests.forEach((nodeTextFile) => {
+      require(nodeTextFile);
+    });
   }
 }
 
-module.exports = new TestRunner();
+module.exports = TestRunner;

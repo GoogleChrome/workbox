@@ -16,10 +16,10 @@
 /* eslint-disable no-console, valid-jsdoc */
 
 const gulp = require('gulp');
-const testServer = require('../utils/test-server.js');
+const testServerGen = require('../utils/test-server-generator.js');
 
 gulp.task('serve', (unusedCallback) => {
-  return testServer.start('.', global.port)
+  return testServerGen().start('.', global.port)
   .then((port) => {
     console.log(`Primary Server               http://localhost:${port}/`);
     console.log(`Secondary Server             http://localhost:${port + 1}/`);

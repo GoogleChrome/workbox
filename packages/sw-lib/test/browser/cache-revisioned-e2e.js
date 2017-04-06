@@ -17,23 +17,6 @@ describe('cache-revisioned-e2e.js', function() {
     });
   };
 
-  before(function() {
-    return new Promise((resolve) => {
-      const script = document.createElement('script');
-      script.addEventListener('load', resolve);
-      script.src = '/packages/sw-precaching/test/static/test-data.js';
-      document.body.appendChild(script);
-    })
-    .then(() => {
-      return new Promise((resolve) => {
-        const script = document.createElement('script');
-        script.addEventListener('load', resolve);
-        script.src = '/packages/sw-lib/test/static/test-data.js';
-        document.body.appendChild(script);
-      });
-    });
-  });
-
   beforeEach(function() {
     return window.goog.swUtils.cleanState()
     .then(deleteIndexedDB);
