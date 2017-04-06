@@ -172,7 +172,6 @@ class TestRunner {
     const that = this;
     it(`should pass '${path.basename(packagePath)}' browser tests`, function() {
       this.timeout(10 * 1000);
-      this.retries(2);
 
       const webdriver = webdriverCb();
       if (!webdriver) {
@@ -193,7 +192,6 @@ class TestRunner {
     const that = this;
     it(`should pass '${path.basename(packagePath)}' sw tests`, function() {
       this.timeout(10 * 1000);
-      this.retries(2);
 
       const webdriver = webdriverCb();
       if (!webdriver) {
@@ -211,11 +209,6 @@ class TestRunner {
   }
 
   _runIntegrationTests(webdriverCb, packagePath, getBaseTestUrl) {
-    /** it(`should pass '${path.basename(packagePath)}' integration tests`, function() {
-      this.timeout(60 * 1000);
-      this.retries(2);
-    });**/
-
     const integrationTests = glob.sync(`${packagePath}/test/integration/*.js`);
     global.getBaseTestUrl = getBaseTestUrl;
     integrationTests.forEach((testFile) => {
