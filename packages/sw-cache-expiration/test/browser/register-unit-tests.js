@@ -1,7 +1,9 @@
 describe('Service Worker Unit Test Registration', function() {
   const pathPrefix = '../sw/';
   const swUnitTests = [
-    'plugin.js',
+    'namespace.js',
+    'cache-expiration.js',
+    'cache-expiration-plugin.js',
   ].map((script) => `${pathPrefix}${script}`);
 
   swUnitTests.forEach(function(swUnitTestPath) {
