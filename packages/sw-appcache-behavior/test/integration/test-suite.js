@@ -16,30 +16,18 @@
 
 'use strict';
 
-/* eslint-env node, mocha, browser, serviceworker */
-/* eslint-disable max-len, no-unused-expressions */
-
-// These tests make use of selenium-webdriver. You can find the relevant
-// documentation here: http://selenium.googlecode.com/git/docs/api/javascript/index.html
-
 const chai = require('chai');
 const parseManifest = require('parse-appcache-manifest');
 const path = require('path');
 const promisify = require('promisify-node');
-const seleniumAssistant = require('selenium-assistant');
 const fs = require('fs');
-const testServer = require('../../../utils/test-server');
 
-// Ensure the selenium drivers are added Node scripts path.
-require('geckodriver');
-require('chromedriver');
+const testServerGen = require('../../../../utils/test-server-generator');
 
 const fsePromise = promisify('fs-extra');
 
 const expect = chai.expect;
-const TIMEOUT = 10 * 1000;
-const RETRIES = 3;
-let tempDirectory = path.join(__dirname, 'end-to-end-caching', 'temp');
+let tempDirectory = path.join(__dirname, '..', 'end-to-end-caching', 'temp');
 
 // Helper method to generate the text of an App Cache manifest with a
 // specific version.
@@ -69,18 +57,20 @@ const generateInitialManifests = () => {
   return Promise.all(fileCreationPromisees);
 };
 
-const configureTestSuite = function(browser) {
-  let globalDriverReference = null;
-  let baseTestUrl;
+module.exports = (webdriverCb) => {
+  describe(`sw-appcache-behavior Integration Test`, function() {
+    this.timeout(10 * 1000);
+    this.retries(3);
 
-  describe(`sw-appcache-behavior Test Suite with (${browser.getPrettyName()} - ${browser.getVersionNumber()})`, function() {
-    this.timeout(TIMEOUT);
-    this.retries(RETRIES);
+    let testServer;
+    let baseTestUrl;
+    let webdriverInstance;
 
     // Set up the web server before running any tests in this suite.
     before(function() {
-      const buildFile = path.join(__dirname, '..', 'build',
+      const buildFile = path.join(__dirname, '..', '..', 'build',
         'client-runtime.js');
+
       try {
         fs.accessSync(buildFile, fs.F_OK);
       } catch (err) {
@@ -88,43 +78,37 @@ const configureTestSuite = function(browser) {
           'build this project before running any tests.');
       }
 
+      webdriverInstance = webdriverCb();
+      if (!webdriverInstance) {
+        throw new Error('Unable to get web driver instance.');
+      }
+
+      webdriverInstance.manage().timeouts().setScriptTimeout(10 * 1000);
 
       return generateInitialManifests()
       .then(() => {
-        return testServer.start('.');
+        testServer = testServerGen();
+        return testServer.start('.', 5050);
       })
       .then((portNumber) => {
         baseTestUrl = `http://localhost:${portNumber}/packages/sw-appcache-behavior/test/`;
-        console.log('Test Server: ' + baseTestUrl);
-        console.log('');
       });
     });
 
     // Kill the web server once all tests are complete.
     after(function() {
-      return seleniumAssistant.killWebDriver(globalDriverReference)
-      .then(() => {
-        return testServer.stop();
-      })
+      return testServer.stop()
       .then(() => {
         return fsePromise.remove(tempDirectory);
       });
     });
 
-    it('should be able to get a global driver.', function() {
-      return browser.getSeleniumDriver()
-      .then((driver) => {
-        globalDriverReference = driver;
-        globalDriverReference.manage().timeouts().setScriptTimeout(TIMEOUT);
-      });
-    });
-
     it('should register a service worker to control the client', function() {
       const url = `${baseTestUrl}end-to-end-caching/step1.html`;
-      return globalDriverReference.get(url)
+      return webdriverInstance.get(url)
       .then(() => {
-        return globalDriverReference.wait(() => {
-          return globalDriverReference.executeScript(() => {
+        return webdriverInstance.wait(() => {
+          return webdriverInstance.executeScript(() => {
             if (navigator.serviceWorker.controller) {
               return true;
             }
@@ -134,7 +118,7 @@ const configureTestSuite = function(browser) {
         });
       })
       .then(() => {
-        return globalDriverReference.executeScript(() => {
+        return webdriverInstance.executeScript(() => {
           return navigator.serviceWorker.controller;
         });
       })
@@ -145,7 +129,7 @@ const configureTestSuite = function(browser) {
     });
 
     it('should create one cache', function() {
-      return globalDriverReference.executeAsyncScript((callback) => {
+      return webdriverInstance.executeAsyncScript((callback) => {
         window.caches.keys().then(callback);
       })
       .then((caches) => {
@@ -154,11 +138,11 @@ const configureTestSuite = function(browser) {
     });
 
     it('should cache items in the CACHE section of the manifest', function() {
-      const manifestContent = fs.readFileSync(path.join(__dirname, 'end-to-end-caching', 'temp', 'manifest1.appcache')).toString();
+      const manifestContent = fs.readFileSync(path.join(__dirname, '..', 'end-to-end-caching', 'temp', 'manifest1.appcache')).toString();
       const parsedManifest = parseManifest(manifestContent);
       expect(parsedManifest.cache).to.have.length.above(0);
 
-      return globalDriverReference.executeAsyncScript((entries, callback) => {
+      return webdriverInstance.executeAsyncScript((entries, callback) => {
         Promise.all(
           entries.map((entry) => {
             // The App Cache manifest URL is the base for any relative URLs.
@@ -177,7 +161,7 @@ const configureTestSuite = function(browser) {
     });
 
     it('should cache a master entry for initial navigation', function() {
-      return globalDriverReference.executeAsyncScript((callback) => {
+      return webdriverInstance.executeAsyncScript((callback) => {
         window.caches.match(window.location).then(callback);
       })
       .then((match) => {
@@ -192,9 +176,9 @@ const configureTestSuite = function(browser) {
 
     it('should cache another master entry for subsequent navigation', function() {
       const url = `${baseTestUrl}end-to-end-caching/step2.html`;
-      return globalDriverReference.get(url)
+      return webdriverInstance.get(url)
       .then(() => {
-        return globalDriverReference.executeAsyncScript((callback) => {
+        return webdriverInstance.executeAsyncScript((callback) => {
           window.setTimeout(() => {
             window.caches.match(window.location).then(callback);
           }, 100); // Timeouts... ugh.
@@ -207,9 +191,9 @@ const configureTestSuite = function(browser) {
 
     it('should not cache a master entry when there is no manifest', function() {
       const url = `${baseTestUrl}end-to-end-caching/step3.html`;
-      return globalDriverReference.get(url)
+      return webdriverInstance.get(url)
       .then(() => {
-        return globalDriverReference.executeAsyncScript((callback) => {
+        return webdriverInstance.executeAsyncScript((callback) => {
           window.setTimeout(() => {
             window.caches.match(window.location).then(callback);
           }, 100); // Timeouts... ugh.
@@ -221,7 +205,7 @@ const configureTestSuite = function(browser) {
     });
 
     it('should use a different cache when an existing manifest is updated', function() {
-      return globalDriverReference.executeAsyncScript((callback) => {
+      return webdriverInstance.executeAsyncScript((callback) => {
         window.caches.keys().then(callback);
       })
       .then((previousCaches) => {
@@ -230,9 +214,9 @@ const configureTestSuite = function(browser) {
         // update flow.
         const outputPath = path.join(tempDirectory, 'manifest1.appcache');
         return fsePromise.outputFile(outputPath, generateManifestText(2))
-          .then(() => globalDriverReference.get(url))
+          .then(() => webdriverInstance.get(url))
           .then(() => {
-            return globalDriverReference.executeAsyncScript((callback) => {
+            return webdriverInstance.executeAsyncScript((callback) => {
               window.setTimeout(() => {
                 // This will resolve with an array of arrays, with each item
                 // in the inner array corresponding to a cache entry.
@@ -251,12 +235,12 @@ const configureTestSuite = function(browser) {
     });
 
     it('should use a different cache when the manifest is different', function() {
-      return globalDriverReference.executeAsyncScript((callback) => {
+      return webdriverInstance.executeAsyncScript((callback) => {
         window.caches.keys().then(callback);
       }).then((previousCaches) => {
         const url = `${baseTestUrl}end-to-end-caching/step4.html`;
-        return globalDriverReference.get(url).then(() => {
-          return globalDriverReference.executeAsyncScript((callback) => {
+        return webdriverInstance.get(url).then(() => {
+          return webdriverInstance.executeAsyncScript((callback) => {
             window.setTimeout(() => window.caches.keys().then(callback), 100);
           }).then((currentCaches) => {
             // This is a roundabout way of checking to make sure there's one
@@ -271,15 +255,3 @@ const configureTestSuite = function(browser) {
     });
   });
 };
-
-seleniumAssistant.getLocalBrowsers().forEach(function(browser) {
-  switch (browser.getId()) {
-    case 'chrome':
-    case 'firefox':
-      configureTestSuite(browser);
-      break;
-    default:
-      console.warn(`Skipping ${browser.getPrettyName()}.`);
-      break;
-  }
-});

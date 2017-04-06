@@ -73,7 +73,7 @@ class TestRunner {
     describe(``, function() {
       let webdriverInstance;
       before(function() {
-        that.printHeading(`Starting browser tests in ${browser.getPrettyName()}`);
+        that.printHeading(`Starting browser tests in ${browser.getPrettyName()} - ${browser.getVersionNumber()}`);
       });
 
       after(function() {
