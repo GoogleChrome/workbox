@@ -68,6 +68,13 @@ module.exports = (webdriverCb) => {
 
     // Set up the web server before running any tests in this suite.
     before(function() {
+      webdriverInstance = webdriverCb();
+      if (!webdriverInstance) {
+        throw new Error('Unable to get web driver instance.');
+      }
+
+      webdriverInstance.manage().timeouts().setScriptTimeout(10 * 1000);
+
       const buildFile = path.join(__dirname, '..', '..', 'build',
         'client-runtime.js');
 
@@ -77,13 +84,6 @@ module.exports = (webdriverCb) => {
         throw new Error('Unable to find required build files. Please ' +
           'build this project before running any tests.');
       }
-
-      webdriverInstance = webdriverCb();
-      if (!webdriverInstance) {
-        throw new Error('Unable to get web driver instance.');
-      }
-
-      webdriverInstance.manage().timeouts().setScriptTimeout(10 * 1000);
 
       return generateInitialManifests()
       .then(() => {
@@ -97,10 +97,14 @@ module.exports = (webdriverCb) => {
 
     // Kill the web server once all tests are complete.
     after(function() {
-      return testServer.stop()
-      .then(() => {
-        return fsePromise.remove(tempDirectory);
-      });
+      const promises = [
+         fsePromise.remove(tempDirectory),
+      ];
+      if (testServer) {
+        promises.push(testServer.stop());
+      }
+
+      return Promise.all(promises);
     });
 
     it('should register a service worker to control the client', function() {
