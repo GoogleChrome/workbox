@@ -59,7 +59,6 @@ describe('Test of the NetworkFirst handler', function() {
       return new Promise((resolve) => {
         setTimeout(() => resolve(new Response('')), (networkTimeoutSeconds * 1000) + 5);
       });
-
     }));
 
     const requestWrapper = new goog.runtimeCaching.RequestWrapper(

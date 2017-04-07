@@ -106,7 +106,7 @@ describe('Test of the RequestWrapper class', function() {
   });
 
   it(`should correctly respect matchOptions when performing a match()`, async function() {
-    const cachedUrlWithSearchParams  = `${CACHED_URL}?k=v`;
+    const cachedUrlWithSearchParams = `${CACHED_URL}?k=v`;
 
     const requestWrapperWithoutMatchOptions = new goog.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
