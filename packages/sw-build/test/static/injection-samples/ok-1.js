@@ -1,3 +1,3 @@
 /* global goog */
 
-goog.swlib.cacheRevisionedAssets([]);
+goog.swlib.precache([]);

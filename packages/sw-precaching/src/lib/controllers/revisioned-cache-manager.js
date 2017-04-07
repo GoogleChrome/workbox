@@ -7,6 +7,7 @@ import StringPrecacheEntry from
 import ObjectPrecacheEntry from
   '../models/precache-entries/object-precache-entry';
 import assert from '../../../../../lib/assert';
+import logHelper from '../../../../../lib/log-helper';
 
 /**
  * This class extends a lot of the internal methods from BaseCacheManager
@@ -42,7 +43,7 @@ class RevisionedCacheManager extends BaseCacheManager {
    *     '/styles/hello.1234.css',
    *     {
    *       url: '/images/logo.png',
-   *       revision: '1234'
+   *       revision: 'abcd1234'
    *     }
    *   ]
    * });
@@ -53,6 +54,21 @@ class RevisionedCacheManager extends BaseCacheManager {
   addToCacheList({revisionedFiles} = {}) {
     assert.isInstance({revisionedFiles}, Array);
     super._addEntries(revisionedFiles);
+
+    const urlsWithoutRevisionFields = revisionedFiles
+      .filter((entry) => typeof entry === 'string');
+    if (urlsWithoutRevisionFields.length > 0) {
+      logHelper.debug({
+        that: this,
+        message: `Some precache entries don't include a separate revision
+          field. Please ensure that their URLs contain versioning
+          information, like a hash or version number. Otherwise, you cannot
+          safely serve those entries using a cache-first strategy. If the URLs
+          already contain versioning information, this message can be ignored.`,
+        data: {'URLs without revision fields':
+          JSON.stringify(urlsWithoutRevisionFields)},
+      });
+    }
   }
 
   /**

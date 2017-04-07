@@ -22,7 +22,7 @@ const errors = require('./errors');
  * });
  *
  * This method will read in an existing service worker file and replace an empty
- * array in a call like so: `.cacheRevisionedAssets([])`, to an array of files
+ * array in a call like so: `.precache([])`, to an array of files
  * with up to date array revision details. This allows the service worker
  * to efficiently cache assets that will be available offline.
  * @param {Object} input
@@ -52,7 +52,7 @@ const injectManifest = (input) => {
       new Error(errors['invalid-inject-manifest-arg']));
   }
 
-  const injectionPointRegex = /(\.cacheRevisionedAssets\()\s*\[\s*\]\s*(\))/g;
+  const injectionPointRegex = /(\.precache\()\s*\[\s*\]\s*(\))/g;
 
   return getFileManifestEntries(input)
   .then((manifestEntries) => {

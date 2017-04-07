@@ -3,10 +3,10 @@
 
 importScripts('./sample-import.js');
 
-const cacheRevisionedAssets = (input) => {
+const precache = (input) => {
   console.log('This is valid, but dangerous', input);
 };
 
-cacheRevisionedAssets([]);
+precache([]);
 
-swlib.cacheRevisionedAssets([]);
+swlib.precache([]);
