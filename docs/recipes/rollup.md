@@ -82,7 +82,7 @@ swBuild.generateFileManifest({
  dest: '/tmp/manifest.js',
  // Configure patterns to match the files your want the SW to manage.
  // See https://github.com/isaacs/node-glob##glob-primer
- globPatterns: [
+ staticFileGlobs: [
    `./${BUILD_DIR}/{css,images,js}/**/*`,
    `./${BUILD_DIR}/index.html`,
  ],
@@ -125,7 +125,7 @@ gulp.task('write-manifest', () => {
     dest: `/tmp/manifest.js`,
     // Configure patterns to match the files your want the SW to manage.
     // See https://github.com/isaacs/node-glob##glob-primer
-    globPatterns: [
+    staticFileGlobs: [
       `./${BUILD_DIR}/{css,images,js}/**/*`,
       `./${BUILD_DIR}/index.html`,
     ],

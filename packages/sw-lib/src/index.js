@@ -36,14 +36,16 @@ if (!assert.isSWEnv()) {
  *
  * @example <caption>Caching assets and registering routes.</caption>
  *
+ * // DO NOT CREATE THIS MANIFEST OR EDIT IT MANUALLY!!
+ * // Use sw-build or sw-cli to generate the manifest for you.
  * goog.swlib.cacheRevisionedAssets([
  *   {
  *     url: '/',
- *     revision: '1234'
+ *     revision: '613e6c7332dd83e848a8b00c403827ed'
  *   },
  *   {
  *     url: '/styles/main.css',
- *     revision: 'abcd'
+ *     revision: '59a325f32baad11bd47a8c515ec44ae5'
  *   }
  * ]);
  *
@@ -51,14 +53,15 @@ if (!assert.isSWEnv()) {
  * goog.swlib.router.registerRoute(
  *   '/example/', goog.swlib.staleWhileRevalidate());
  * goog.swlib.router.registerRoute(
- *   /\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/, goog.swlib.cacheFirst());
+ *   /\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
+ *   goog.swlib.strategies.cacheFirst());
  * goog.swlib.router.registerRoute(
- *   '/styles/:filename', goog.swlib.cacheFirst());
+ *   '/styles/:filename', goog.swlib.strategies.cacheFirst());
  *
  * @example <caption>Using plugins with caching strategies.</caption>
  *
  * goog.swlib.router.registerRoute(/\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
- *   goog.swlib.cacheFirst({
+ *   goog.swlib.strategies.cacheFirst({
  *     cacheName: 'example-cache',
  *     cacheExpiration: {
  *       maxEntries: 10,

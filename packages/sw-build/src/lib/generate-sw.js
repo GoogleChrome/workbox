@@ -1,3 +1,4 @@
+const path = require('path');
 const copySWLib = require('./utils/copy-sw-lib');
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const writeServiceWorker = require('./write-sw');
@@ -10,7 +11,7 @@ const errors = require('./errors');
  * swBuild.generateSW({
  *   rootDirectory: './build/',
  *   dest: './build/sw.js',
- *   globPatterns: ['**\/*.{html,js,css}'],
+ *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
@@ -26,7 +27,7 @@ const errors = require('./errors');
  * @param {String} input.rootDirectory The root of the files you wish to
  * be cached. This will also be the directory the service worker and library
  * files are written to.
- * @param {Array<String>} input.globPatterns Patterns to glob for when
+ * @param {Array<String>} input.staticFileGlobs Patterns to glob for when
  * generating the build manifest.
  * @param {String|Array<String>} [input.globIgnores] Patterns to exclude when
  * generating the build manifest.
@@ -42,35 +43,44 @@ const errors = require('./errors');
  * @memberof module:sw-build
  */
 const generateSW = function(input) {
-  if (!input || typeof input !== 'object' || input instanceof Array) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
     return Promise.reject(new Error(errors['invalid-generate-sw-input']));
   }
 
-  const rootDirectory = input.rootDirectory;
-  const globPatterns = input.globPatterns;
-  const globIgnores = input.globIgnores;
-  const dest = input.dest;
-  const templatedUrls = input.templatedUrls;
+  // Type check input so that defaults can be used if appropriate.
+  if (input.globIgnores && !(Array.isArray(input.globIgnores))) {
+    return Promise.reject(
+      new Error(errors['invalid-glob-ignores']));
+  }
 
-  if (typeof rootDirectory !== 'string' || rootDirectory.length === 0) {
+  if (typeof input.rootDirectory !== 'string' ||
+    input.rootDirectory.length === 0) {
     return Promise.reject(
       new Error(errors['invalid-root-directory']));
   }
 
-  if (typeof dest !== 'string' || dest.length === 0) {
+  if (typeof input.dest !== 'string' || input.dest.length === 0) {
     return Promise.reject(
       new Error(errors['invalid-dest']));
   }
+
+  const rootDirectory = input.rootDirectory;
+  const staticFileGlobs = input.staticFileGlobs;
+  const globIgnores = input.globIgnores ? input.globIgnores : [];
+  const dest = input.dest;
+  const templatedUrls = input.templatedUrls;
 
   let swlibPath;
   return copySWLib(rootDirectory)
   .then((libPath) => {
     swlibPath = libPath;
-    globIgnores.push(swlibPath);
+    globIgnores.push(path.relative(rootDirectory, swlibPath));
   })
   .then(() => {
-    const manifestEntries = getFileManifestEntries(
-      {globPatterns, globIgnores, rootDirectory, templatedUrls});
+    return getFileManifestEntries(
+      {staticFileGlobs, globIgnores, rootDirectory, templatedUrls});
+  })
+  .then((manifestEntries) => {
     return writeServiceWorker(
       dest,
       manifestEntries,

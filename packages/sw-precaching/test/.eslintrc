@@ -3,6 +3,7 @@
     "no-console": 0,
     "max-len": 0,
     "no-invalid-this": 0,
+    "valid-jsdoc": 0,
   },
   "env": {
     "mocha": true

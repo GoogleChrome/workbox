@@ -10,7 +10,7 @@ const errors = require('./errors');
  * swBuild.generateFileManifest({
  *   dest: './build/manifest.js'
  *   rootDirectory: './build/',
- *   globPatterns: ['**\/*.{html,js,css}'],
+ *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   format: 'iife', // alternatively, use 'es'
  * })
@@ -26,7 +26,7 @@ const errors = require('./errors');
  * @param {String} input.rootDirectory The root of the files you wish to
  * be cached. This will also be the directory the service worker and library
  * files are written to.
- * @param {Array<String>} input.globPatterns Patterns to glob for when
+ * @param {Array<String>} input.staticFileGlobs Patterns to glob for when
  * generating the build manifest.
  * @param {String|Array<String>} [input.globIgnores] Patterns to exclude when
  * generating the build manifest.
@@ -42,13 +42,15 @@ const errors = require('./errors');
  * @memberof module:sw-build
  */
 const generateFileManifest = (input) => {
-  if (!input || typeof input !== 'object' || input instanceof Array) {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
     return Promise.reject(
       new Error(errors['invalid-generate-file-manifest-arg']));
   }
 
-  const fileEntries = getFileManifestEntries(input);
-  return writeFileManifest(input.dest, fileEntries, input.format);
+  return getFileManifestEntries(input)
+  .then((fileEntries) => {
+    return writeFileManifest(input.dest, fileEntries, input.format);
+  });
 };
 
 module.exports = generateFileManifest;

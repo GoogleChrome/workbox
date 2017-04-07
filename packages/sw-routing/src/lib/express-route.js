@@ -25,10 +25,11 @@ import pathToRegExp from 'path-to-regexp';
  * library to transform the `path` parameter into a regular expression, which is
  * then matched against the URL's path.
  *
- * Please note that `ExpressRoute` can only match requests for URLs that are on
- * the same-origin as the current page. If you need to match cross-origin
- * requests, you can use either a generic [`Route`]{@link Route} or a
- * [`RegExpRoute`]{@link RegExpRoute}.
+ * Please note that `ExpressRoute` can match either same-origin or cross-origin
+ * requests. To match only same-origin requests, use a `path` value that begins
+ * with `'/'`, e.g. `'/path/to/:file'`. To match cross-origin requests, use
+ * a `path` value that includes the origin, e.g.
+ * `'https://example.com/path/to/:file'`.
  *
  * @example
  * // Any same-origin requests that start with /path/to and end with one
@@ -36,13 +37,20 @@ import pathToRegExp from 'path-to-regexp';
  * // segment passed along to the handler via params.file.
  * const route = new goog.routing.ExpressRoute({
  *   path: '/path/to/:file',
- *   handler: {
- *     handle: ({event, params}) => {
- *       // params.file will be set based on the request URL that matched.
- *       // Do something that returns a Promise.<Response>, like:
- *       return caches.match(event.request);
- *     },
+ *   handler: ({event, params}) => {
+ *     // params.file will be set based on the request URL that matched.
+ *     return caches.match(params.file);
  *   },
+ * });
+ *
+ * const router = new goog.routing.Router();
+ * router.registerRoute({route});
+ *
+ * @example
+ * // Any cross-origin requests for https://example.com will match this route.
+ * const route = new goog.routing.ExpressRoute({
+ *   path: 'https://example.com/path/to/:file',
+ *   handler: ({event}) => return caches.match(event.request),
  * });
  *
  * const router = new goog.routing.Router();
@@ -66,8 +74,8 @@ class ExpressRoute extends Route {
    *        HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({path, handler, method}) {
-    if (path.substring(0, 1) !== '/') {
-      throw ErrorFactory.createError('express-route-requires-absolute-path');
+    if (!(path.startsWith('/') || path.startsWith('http'))) {
+      throw ErrorFactory.createError('express-route-invalid-path');
     }
 
     let keys = [];
@@ -76,12 +84,16 @@ class ExpressRoute extends Route {
     // https://github.com/pillarjs/path-to-regexp#usage
     const regExp = pathToRegExp(path, keys);
     const match = ({url}) => {
-      // Return null immediately if we have a cross-origin request.
-      if (url.origin !== location.origin) {
+      // A path starting with '/' is a signal that we only want to match
+      // same-origin. Bail out early if needed.
+      if (path.startsWith('/') && url.origin !== location.origin) {
         return null;
       }
 
-      const regexpMatches = url.pathname.match(regExp);
+      // We need to match on either just the pathname or the full URL, depending
+      // on whether the path parameter starts with '/' or 'http'.
+      const pathNameOrHref = path.startsWith('/') ? url.pathname : url.href;
+      const regexpMatches = pathNameOrHref.match(regExp);
       // Return null immediately if this route doesn't match.
       if (!regexpMatches) {
         return null;

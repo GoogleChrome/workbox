@@ -13,7 +13,11 @@
  limitations under the License.
 */
 
-export const idbName = `sw-cache-expiration-${self.registration.scope}`;
+let tmpIdbName = `sw-cache-expiration`;
+if (self && self.registration) {
+  tmpIdbName += `-${self.registration.scope}`;
+}
+export const idbName = tmpIdbName;
 export const idbVersion = 1;
 export const urlPropertyName = 'url';
 export const timestampPropertyName = 'timestamp';
