@@ -27,6 +27,7 @@ const serveStatic = require('serve-static');
 class ServerInstance {
   constructor() {
     this._server = null;
+    this._sockets = [];
 
     this._app = express();
     this._app.use(cookieParser());
@@ -73,19 +74,66 @@ class ServerInstance {
     // Harness to kick off all the in-browser tests for a given package.
     // It will pick up a list of all the top-level .js files and automatically
     // inject them into the HTML as <script> tags.
-    this._app.get('/__test/mocha/:pkg', function(req, res) {
+    this._app.get('/__test/mocha/browser/:pkg', function(req, res) {
       const pkg = req.params.pkg;
       const pattern = `packages/${pkg}/test/browser/*.js`;
-      const scripts = glob.sync(pattern).map((script) => `/${script}`);
-
+      const repoRoot = path.join(__dirname, '..');
+      const scripts = glob.sync(pattern, {
+        cwd: repoRoot,
+        root: repoRoot,
+      }).map((script) => {
+        // Converts packages/<pkg name>/test/sw/<filename>.js
+        // to      /packages/<pkg name>/test/sw/<filename>.js
+        return `/${script}`;
+      });
       if (scripts.length === 0) {
-        throw Error(`No test scripts match the pattern '${pattern}'.`);
+        const errMsg = `No test scripts match the pattern '${pattern}'.`;
+        /* eslint-disable no-console */
+        console.log(errMsg);
+        /* eslint-enable no-console */
+        res.status(500).send(errMsg);
+        return;
+      }
+
+      let config = {};
+      try {
+        // Read JSON file to avoid the require cache
+        config =
+          JSON.parse(
+            fs.readFileSync(
+              path.join(__dirname, '..', 'packages', pkg, 'test', 'config.json')
+            , 'utf-8')
+          );
+      } catch (err) {
+        // NOOP
       }
 
       const source = fs.readFileSync(path.join(
-        __dirname, '..', 'templates', 'test-harness.hbs'), 'utf-8');
+        __dirname, '..', 'templates', 'test-browser.hbs'), 'utf-8');
       const template = handlebars.compile(source);
-      const html = template({scripts, pkg});
+      const html = template({
+        scripts,
+        config,
+        pkg,
+      });
+
+      res.send(html);
+    });
+
+    this._app.get('/__test/mocha/sw/:pkg', function(req, res) {
+      /* eslint-disable no-console */
+      const pkg = req.params.pkg;
+      const pattern = `packages/${pkg}/test/sw/*.js`;
+      const scriptPaths = glob.sync(pattern).map((script) => {
+        // Converts packages/<pkg name>/test/sw/<filename>.js
+        // to      /packages/<pkg name>/test/sw/<filename>.js
+        return `/${script}`;
+      });
+
+      const source = fs.readFileSync(path.join(
+        __dirname, '..', 'templates', 'test-sw.hbs'), 'utf-8');
+      const template = handlebars.compile(source);
+      const html = template({scripts: scriptPaths, pkg});
 
       res.send(html);
     });
@@ -133,11 +181,19 @@ class ServerInstance {
         }
         resolve(this._server.address().port);
       });
+
+      this._server.on('connection', (socket) => {
+        this._sockets.push(socket);
+      });
     });
   }
 
   stop() {
     return new Promise((resolve) => {
+      this._sockets.forEach((socket) => {
+        socket.destroy();
+      });
+
       this._server.close(resolve);
       this._server = null;
     });

@@ -1,7 +1,7 @@
 /* global goog, expect */
 
 describe('sw-precaching Test Revisioned Caching', function() {
-  const STATIC_ASSETS_PATH = '../static';
+  const STATIC_ASSETS_PATH = '/packages/sw-precaching/test/static';
 
   const deleteIndexedDB = () => {
     return new Promise((resolve, reject) => {
