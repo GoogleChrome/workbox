@@ -66,24 +66,4 @@ describe('Test Behaviors of Loading the Script', function() {
       document.head.appendChild(scriptElement);
     });
   });
-
-  it('should perform basic.js sw tests', function() {
-    const serviceWorkerPath = '../sw/basic.js';
-    return window.goog.mochaUtils.registerServiceWorkerMochaTests(serviceWorkerPath);
-  });
-
-  it('should perform router.js sw tests', function() {
-    const serviceWorkerPath = '../sw/router.js';
-    return window.goog.mochaUtils.registerServiceWorkerMochaTests(serviceWorkerPath);
-  });
-
-  it('should perform cache-revisioned-assets.js sw tests', function() {
-    const serviceWorkerPath = '../sw/cache-revisioned-assets.js';
-    return window.goog.mochaUtils.registerServiceWorkerMochaTests(serviceWorkerPath);
-  });
-
-  it('should perform caching-strategies.js sw tests', function() {
-    const serviceWorkerPath = '../sw/caching-strategies.js';
-    return window.goog.mochaUtils.registerServiceWorkerMochaTests(serviceWorkerPath);
-  });
 });
