@@ -13,6 +13,7 @@
  limitations under the License.
 */
 
+import ErrorFactory from './error-factory';
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
@@ -94,7 +95,7 @@ class NetworkFirst extends Handler {
 
       return response ?
         response :
-        Promise.reject('No response received; falling back to cache.');
+        Promise.reject(ErrorFactory.createError('no-response-received'));
     }).catch(() => this.requestWrapper.match({request: event.request}));
 
     promises.push(networkPromise);

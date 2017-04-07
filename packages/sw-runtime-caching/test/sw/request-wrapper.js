@@ -8,10 +8,8 @@ describe('Test of the RequestWrapper class', function() {
 
   let globalStubs = [];
 
-  before(() => {
-    return caches.delete(CACHE_NAME)
-      .then(() => caches.open(CACHE_NAME))
-      .then((cache) => cache.put(CACHED_URL, new Response('')));
+  beforeEach(async function() {
+    await caches.delete(CACHE_NAME);
   });
 
   afterEach(function() {
@@ -87,35 +85,70 @@ describe('Test of the RequestWrapper class', function() {
     expect(thrownError.name).to.equal('multiple-cache-will-match-plugins');
   });
 
-  it(`should return an valid Cache instance when getCache() is called`, function() {
+  it(`should return an valid Cache instance when getCache() is called`, async function() {
     const requestWrapper = new goog.runtimeCaching.RequestWrapper();
-    requestWrapper.getCache().then((cache) => expect(cache).to.be.instanceOf(Cache));
+    const cache = await requestWrapper.getCache();
+
+    expect(cache).to.be.instanceOf(Cache);
   });
 
-  it(`should find an entry in the correct cache when match() is called`, function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper({cacheName: CACHE_NAME});
-    return requestWrapper.match({request: CACHED_URL})
-      .then((response) => expect(response).to.be.instanceOf(Response));
+  it(`should find an entry in the correct cache when match() is called`, async function() {
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+      {cacheName: CACHE_NAME});
+
+    const cachedResponse = new Response('response body');
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(CACHED_URL, cachedResponse.clone());
+
+    const matchResponse = await requestWrapper.match({request: CACHED_URL});
+
+    await expectSameResponseBodies(cachedResponse, matchResponse);
   });
 
-  it(`should fulfill the match() promise with the value returned by a cacheWillMatch callback`, function() {
+  it(`should correctly respect matchOptions when performing a match()`, async function() {
+    const cachedUrlWithSearchParams  = `${CACHED_URL}?k=v`;
+
+    const requestWrapperWithoutMatchOptions = new goog.runtimeCaching.RequestWrapper(
+      {cacheName: CACHE_NAME});
+    const requestWrapperWithMatchOptions = new goog.runtimeCaching.RequestWrapper(
+      {cacheName: CACHE_NAME, matchOptions: {ignoreSearch: true}});
+
+    const cachedResponse = new Response('response body');
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(cachedUrlWithSearchParams, cachedResponse.clone());
+
+    const cacheMissResponse = await requestWrapperWithoutMatchOptions.match(
+      {request: CACHED_URL});
+
+    expect(cacheMissResponse).not.to.exist;
+
+    const matchResponse = await requestWrapperWithMatchOptions.match(
+      {request: CACHED_URL});
+
+    await expectSameResponseBodies(cachedResponse, matchResponse);
+  });
+
+  it(`should fulfill the match() promise with the value returned by a cacheWillMatch callback`, async function() {
     const testResponse = new Response('test');
     const cacheWillMatchPlugin = {cacheWillMatch: () => testResponse};
     const requestWrapper = new goog.runtimeCaching.RequestWrapper({
       cacheName: CACHE_NAME,
       plugins: [cacheWillMatchPlugin],
     });
-    return requestWrapper.match({request: CACHED_URL})
-      .then((response) => expect(response).to.eql(testResponse));
+
+    const matchResponse = await requestWrapper.match({request: CACHED_URL});
+
+    expect(matchResponse).to.eql(testResponse);
   });
 
-  it(`should return a response from the network when fetch() is called`, function() {
+  it(`should return a response from the network when fetch() is called`, async function() {
     const requestWrapper = new goog.runtimeCaching.RequestWrapper();
-    return requestWrapper.fetch({request: CACHED_URL})
-      .then((response) => expect(response).to.be.instanceOf(Response));
+    const fetchResponse = await requestWrapper.fetch({request: CACHED_URL});
+
+    expect(fetchResponse).to.be.instanceOf(Response);
   });
 
-  it(`should allow a requestWillFetch to modify the request when fetch() is called`, function() {
+  it(`should allow a requestWillFetch to modify the request when fetch() is called`, async function() {
     const fetchStub = sinon.stub(self, 'fetch');
     globalStubs.push(fetchStub);
 
@@ -124,12 +157,14 @@ describe('Test of the RequestWrapper class', function() {
     const requestWrapper = new goog.runtimeCaching.RequestWrapper({
       plugins: [requestWillFetch],
     });
-    return requestWrapper.fetch({request: CACHED_URL})
-      .then(() => expect(fetchStub.getCall(0).args[0]).to.eql(testRequest));
+    await requestWrapper.fetch({request: CACHED_URL});
+
+    expect(fetchStub.getCall(0).args[0]).to.eql(testRequest);
   });
 
   it(`should call fetchDidFail when fetch() is called and the network request fails`, function(done) {
-    globalStubs.push(sinon.stub(self, 'fetch').throws('NetworkError'));
+    const errorName = 'NetworkError';
+    globalStubs.push(sinon.stub(self, 'fetch').throws(errorName));
 
     const fetchDidFailSpy = sinon.spy();
     const fetchDidFail = {fetchDidFail: fetchDidFailSpy};
@@ -140,26 +175,28 @@ describe('Test of the RequestWrapper class', function() {
     // if it resolves, and done() without an error if it rejects.
     requestWrapper.fetch({request: CACHED_URL})
       .then(() => done(new Error('The promise should have rejected.')))
-      .catch(() => {
+      .catch((error) => {
         expect(fetchDidFailSpy.firstCall.args[0].request).to.be.instanceOf(Request);
+        expect(error.name).to.eql(errorName);
         done();
       });
   });
 
-  it(`should cache the response when fetchAndCache() is called and cacheWillUpdate returns true`, function() {
+  it(`should cache the response when fetchAndCache() is called and cacheWillUpdate returns true`, async function() {
     const cacheWillUpdate = {cacheWillUpdate: () => true};
     const requestWrapper = new goog.runtimeCaching.RequestWrapper({
       plugins: [cacheWillUpdate],
     });
 
-    return requestWrapper.getCache().then((cache) => {
-      const cachePutStub = sinon.stub(cache, 'put');
-      globalStubs.push(cachePutStub);
+    const cache = await requestWrapper.getCache();
 
-      return requestWrapper.fetchAndCache({request: CACHED_URL, waitOnCache: true})
-        .then(() => expect(cachePutStub.firstCall.args[0]).to.eql(CACHED_URL))
-        .then(() => expect(cachePutStub.firstCall.args[1]).to.be.instanceOf(Response));
-    });
+    const cachePutStub = sinon.stub(cache, 'put');
+    globalStubs.push(cachePutStub);
+
+    await requestWrapper.fetchAndCache({request: CACHED_URL, waitOnCache: true});
+
+    expect(cachePutStub.firstCall.args[0]).to.eql(CACHED_URL);
+    expect(cachePutStub.firstCall.args[1]).to.be.instanceOf(Response);
   });
 
   it(`should reject without caching the response when fetchAndCache() is called and cacheWillUpdate returns false`, function(done) {

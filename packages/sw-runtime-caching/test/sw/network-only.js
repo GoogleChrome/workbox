@@ -2,17 +2,12 @@ importScripts('setup.js');
 
 describe('Test of the NetworkOnly handler', function() {
   const CACHE_NAME = location.href;
-  const REQUEST_WRAPPER = new goog.runtimeCaching.RequestWrapper({cacheName: CACHE_NAME});
-  const NETWORK_ONLY = new goog.runtimeCaching.NetworkOnly({requestWrapper: REQUEST_WRAPPER, waitOnCache: true});
   const COUNTER_URL = new URL('/__echo/counter', location).href;
 
   let globalStubs = [];
-  let cache;
 
-  before(() => {
-    return caches.delete(CACHE_NAME)
-      .then(() => caches.open(CACHE_NAME))
-      .then((openedCache) => cache = openedCache);
+  beforeEach(async function() {
+    await caches.delete(CACHE_NAME);
   });
 
   afterEach(function() {
@@ -20,24 +15,44 @@ describe('Test of the NetworkOnly handler', function() {
     globalStubs = [];
   });
 
-  it(`should return a response without adding anything to the cache when the network request is successful`, function() {
+  it(`should return a response without adding anything to the cache when the network request is successful`, async function() {
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+      {cacheName: CACHE_NAME});
+    const networkOnly = new goog.runtimeCaching.NetworkOnly(
+      {requestWrapper, waitOnCache: true});
+
     const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
-    return NETWORK_ONLY.handle({event})
-      .then((response) => expect(response).to.be.truthy)
-      .then(() => cache.keys())
-      .then((keys) => expect(keys).to.be.empty);
+    const handleResponse = await networkOnly.handle({event});
+    expect(handleResponse).to.be.instanceOf(Response);
+
+    const cache = await caches.open(CACHE_NAME);
+    const keys = await cache.keys();
+    expect(keys).to.be.empty;
   });
 
   it(`should reject when the network request fails`, function(done) {
+    const message = 'expected error';
+
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+      {cacheName: CACHE_NAME});
+    const networkOnly = new goog.runtimeCaching.NetworkOnly(
+      {requestWrapper, waitOnCache: true});
+
     globalStubs.push(sinon.stub(self, 'fetch', () => {
-      return Promise.reject(new Error());
+      throw new Error(message);
     }));
 
     const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
     // This promise should reject, so call done() passing in an error string
     // if it resolves, and done() without an error if it rejects.
-    NETWORK_ONLY.handle({event})
+    networkOnly.handle({event})
       .then(() => done(new Error('The promise should have rejected.')))
-      .catch(() => done());
+      .catch((error) => {
+        if (error.message === message) {
+          done();
+        } else {
+          done(error);
+        }
+      });
   });
 });

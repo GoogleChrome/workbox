@@ -2,22 +2,12 @@ importScripts('setup.js');
 
 describe('Test of the NetworkFirst handler', function() {
   const CACHE_NAME = location.href;
-  const REQUEST_WRAPPER = new goog.runtimeCaching.RequestWrapper({cacheName: CACHE_NAME});
-  const NETWORK_FIRST = new goog.runtimeCaching.NetworkFirst({requestWrapper: REQUEST_WRAPPER, waitOnCache: true});
   const COUNTER_URL = new URL('/__echo/counter', location).href;
 
   let globalStubs = [];
-  let cache;
-  let initialCachedResponse;
 
-  before(() => {
-    const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
-    return caches.delete(CACHE_NAME)
-      .then(() => caches.open(CACHE_NAME))
-      .then((openedCache) => cache = openedCache)
-      .then(() => NETWORK_FIRST.handle({event}))
-      .then(() => cache.match(COUNTER_URL))
-      .then((cachedResponse) => initialCachedResponse = cachedResponse);
+  beforeEach(async function() {
+    await caches.delete(CACHE_NAME);
   });
 
   afterEach(function() {
@@ -25,36 +15,66 @@ describe('Test of the NetworkFirst handler', function() {
     globalStubs = [];
   });
 
-  it(`should add the initial response to the cache`, function() {
-    expect(initialCachedResponse).to.exist;
-  });
-
-  it(`should return the cached response and not update the cache when the network request fails`, function() {
-    globalStubs.push(sinon.stub(self, 'fetch').throws('NetworkError'));
+  it(`should add the network response to the cache`, async function() {
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+      {cacheName: CACHE_NAME});
+    const networkFirst = new goog.runtimeCaching.NetworkFirst(
+      {requestWrapper, waitOnCache: true});
 
     const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
-    let handleResponse;
-    return NETWORK_FIRST.handle({event})
-      .then((response) => handleResponse = response)
-      .then(() => expectSameResponseBodies(initialCachedResponse, handleResponse))
-      .then(() => cache.match(COUNTER_URL))
-      .then((currentCachedResponse) => expectSameResponseBodies(currentCachedResponse, initialCachedResponse));
+    const handleResponse = await networkFirst.handle({event});
+
+    const cache = await caches.open(CACHE_NAME);
+    const cachedResponse = await cache.match(COUNTER_URL);
+
+    await expectSameResponseBodies(cachedResponse, handleResponse);
   });
 
-  it(`should return the cached response if the network request times out`, function() {
+  it(`should return the cached response and not update the cache when the network request fails`, async function() {
+    globalStubs.push(sinon.stub(self, 'fetch').throws('NetworkError'));
+
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+      {cacheName: CACHE_NAME});
+    const networkFirst = new goog.runtimeCaching.NetworkFirst(
+      {requestWrapper, waitOnCache: true});
+
+    const initialCachedResponse = new Response('response body');
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(COUNTER_URL, initialCachedResponse.clone());
+
+    const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
+    const handleResponse = await networkFirst.handle({event});
+
+    await expectSameResponseBodies(initialCachedResponse, handleResponse);
+
+    const currentCachedResponse = await cache.match(COUNTER_URL);
+
+    await expectSameResponseBodies(initialCachedResponse, currentCachedResponse);
+  });
+
+  it(`should return the cached response if the network request times out`, async function() {
     const networkTimeoutSeconds = 0.1;
 
     globalStubs.push(sinon.stub(self, 'fetch', () => {
       return new Promise((resolve) => {
-        setTimeout(() => resolve(new Response('')), (networkTimeoutSeconds * 1000) + 100);
+        setTimeout(() => resolve(new Response('')), (networkTimeoutSeconds * 1000) + 5);
       });
+
     }));
 
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+      {cacheName: CACHE_NAME});
     const networkFirstWithTimeout = new goog.runtimeCaching.NetworkFirst(
-      {requestWrapper: REQUEST_WRAPPER, waitOnCache: true, networkTimeoutSeconds});
+      {requestWrapper, waitOnCache: true, networkTimeoutSeconds});
+
+    const initialCachedResponse = new Response('response body');
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(COUNTER_URL, initialCachedResponse.clone());
+
     const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
-    return networkFirstWithTimeout.handle({event})
-      .then((handleResponse) => expectSameResponseBodies(initialCachedResponse, handleResponse));
+    const handleResponse = await networkFirstWithTimeout.handle({event});
+
+    await expectSameResponseBodies(initialCachedResponse, handleResponse);
   });
 
   it(`should throw when NetworkFirst() is called with an invalid networkTimeoutSeconds parameter`, function() {
@@ -68,13 +88,23 @@ describe('Test of the NetworkFirst handler', function() {
     expect(thrownError.name).to.equal('isType');
   });
 
-  it(`should return the network response and update the cache when the network request succeeds`, function() {
+  it(`should return the network response and update the cache when the network request succeeds`, async function() {
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+      {cacheName: CACHE_NAME});
+    const networkFirst = new goog.runtimeCaching.NetworkFirst(
+      {requestWrapper, waitOnCache: true});
+
+    const initialCachedResponse = new Response('response body');
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(COUNTER_URL, initialCachedResponse.clone());
+
     const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
-    let handleResponse;
-    return NETWORK_FIRST.handle({event})
-      .then((response) => handleResponse = response)
-      .then(() => expectDifferentResponseBodies(initialCachedResponse, handleResponse))
-      .then(() => cache.match(COUNTER_URL))
-      .then((currentCachedResponse) => expectSameResponseBodies(currentCachedResponse, handleResponse));
+    const handleResponse = await networkFirst.handle({event});
+
+    await expectDifferentResponseBodies(initialCachedResponse, handleResponse);
+
+    const currentCachedResponse = await cache.match(COUNTER_URL);
+
+    await expectSameResponseBodies(handleResponse, currentCachedResponse);
   });
 });
