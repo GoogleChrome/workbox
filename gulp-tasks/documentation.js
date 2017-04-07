@@ -23,8 +23,8 @@ const {globPromise, taskHarness} = require('../utils/build');
 
 const FRONT_MATTER = `---
 layout: index
-title: SW-Helpers
-navigation_weight: 0
+title: Modules Overview
+navigation_weight: 1
 ---
 
 `;

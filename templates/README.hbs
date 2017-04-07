@@ -8,7 +8,7 @@
 
 ## Contents
 
-- [Ways to Use the Libraries](#ways-to-use-the-libraries)
+- [What Does Workbox Do](#what-does-workbox-do)
 - [Setting Up](#setting-up)
 - [The Libraries](#the-libraries)
 {{#each projects}}
@@ -17,9 +17,9 @@
 - [External Contributions](#external-contributions)
 - [License](#license)
 
-## Ways to Use the Libraries
+## What Does Workbox Do?
 
-Despite the number of modules in this package, there are a number of approaches to using these tools which many be used separately or together in any number of combinations.
+Despite the number of modules in Workbox, there are a number of approaches to using these tools which many be used separately or together in any number of combinations.
 
 * **Precaching, runtime caching and routing**: Use [sw-lib](#sw-lib) to quickly
   implement [caching strategies](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/) or a route.
@@ -36,13 +36,13 @@ Each module is installed separately using the command line [as listed below](#th
 
 1. Install the module. For example:
 
-   `npm install --save-dev sw-lib`
+   `npm install --save-dev sw-build`
 2. Copy the module's JavaScript and map files to your serving directory. 
 
-   `cp node_modules/sw-lib/build/* app/`
+   `cp node_modules/sw-build/build/* app/`
 3. Import the modules to your service worker file. For example:
 
-   `importScripts('sw-lib.min.js');`
+   `importScripts('sw-build.min.js');`
 
 ## The Libraries
 
