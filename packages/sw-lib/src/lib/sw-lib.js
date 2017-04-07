@@ -203,8 +203,8 @@ class SWLib {
         logHelper.debug({
           that: this,
           message: `The precached URLs will automatically be served using a
-          cache-first strategy.`,
-          data: {'Precached URLs': JSON.stringify(cachedUrls)}
+            cache-first strategy.`,
+          data: {'Precached URLs': JSON.stringify(cachedUrls)},
         });
       }
 
