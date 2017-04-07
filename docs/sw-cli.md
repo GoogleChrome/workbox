@@ -1,7 +1,7 @@
 ---
 layout: index
-title: Using sw-cli
-navigation_weight: 0
+title: sw-cli
+navigation_weight: 1
 ---
 
 # Getting Started

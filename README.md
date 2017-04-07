@@ -27,20 +27,7 @@
 - [External Contributions](#external-contributions)
 - [License](#license)
 
-## What Does Workbox Do?
-
-Despite the number of modules in Workbox, there are a number of approaches to using these tools which many be used separately or together in any number of combinations.
-
-* **Precaching, runtime caching and routing**: Use [sw-lib](#sw-lib) to quickly
-  implement [caching strategies](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/) or a route.
-* **Build process**: Generate a service worker or manifest in your build process
-  using [sw-build](#sw-build).
-* **Command line**: Generate a service worker or manifest from the command line.
-* **Go beyond the basics**: Implement more advanced capabilities and more
-  sophisticated use cases using any of the other libraries, which are [described
-  below](#the-libraries).
-
-## Setting Up
+## Installing a module
 
 Each module is installed separately using the command line [as listed below](#the-libraries). To use a particular module:
 
@@ -54,7 +41,7 @@ Each module is installed separately using the command line [as listed below](#th
 
    `importScripts('sw-build.min.js');`
 
-## The Libraries
+## The Modules
 
 All of the modules are described below. Each has an _About_ page with basic usage instructions and a _Demo_ directory with an example. The main page of the documentation is [here](https://googlechrome.github.io/sw-helpers/#main).
 

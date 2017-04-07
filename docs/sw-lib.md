@@ -1,7 +1,7 @@
 ---
 layout: index
-title: Using sw-lib
-navigation_weight: 2
+title: sw-lib
+navigation_weight: 3
 ---
 
 # Using sw-lib

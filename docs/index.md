@@ -38,10 +38,35 @@ Each module is installed separately using the command line as listed on the [mod
 
    `importScripts('sw-build.min.js');`
 
+## sw-cli
+
+If you are completely new to service workers and Workbox,
+the easiest place to start is `sw-cli`.
+
+This is a command line tool that will build a service
+worker to precache assets for your site and make it work offline.
+
+[Learn More about sw-cli](../reference-docs/stable/latest/module-sw-cli.html#main)
+
 ## sw-build
 
-## sw-cli
+If you want to build and configure service workers in a node script then use
+`sw-build`.
+
+[Learn More about sw-build](../reference-docs/stable/latest/module-sw-build.html#main)
 
 ## sw-lib
 
+If you'd like to use the Workbox libraries, and you already have your own 
+service worker, then `sw-lib` is a better option.
+
+[Learn More about sw-lib](../reference-docs/stable/latest/module-sw-lib.html#main)
+
 ## Advanced Usage
+
+If you've been using Workbox for a while, or you're ambitious, you can delve
+into its more advanced features. Browse the
+[recipes section](recipes), try the
+[examples](examples),
+or look up something in the
+[mobules reference](reference-docs/stable/latest/).
