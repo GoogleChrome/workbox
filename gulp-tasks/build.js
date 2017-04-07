@@ -14,11 +14,22 @@
 */
 const path = require('path');
 const gulp = require('gulp');
+const chalk = require('chalk');
 const promisify = require('promisify-node');
 
 const {taskHarness, buildJSBundle} = require('../utils/build');
 
 const fsePromise = promisify('fs-extra');
+
+const printHeading = (heading) => {
+  /* eslint-disable no-console */
+  process.stdout.write(chalk.inverse(`  ⚒️  ${heading}  `));
+  /* eslint-enable no-console */
+};
+
+const printBuildTime = (buildTime) => {
+  process.stdout.write(chalk.inverse(`${buildTime}  \n`));
+};
 
 /**
  * Buids a given project.
@@ -26,6 +37,8 @@ const fsePromise = promisify('fs-extra');
  * @return {Promise} Resolves if building succeeds, rejects if it fails.
  */
 const buildPackage = (projectPath) => {
+  printHeading(`Building ${path.basename(projectPath)}`);
+  const startTime = Date.now();
   const buildDir = `${projectPath}/build`;
 
   // Copy over package.json and README.md so that build/ contains what we
@@ -40,6 +53,9 @@ const buildPackage = (projectPath) => {
       return fsePromise.copy(
         path.join(__dirname, '..', 'LICENSE'),
         path.join(projectPath, 'LICENSE'));
+    })
+    .then(() => {
+      printBuildTime(((Date.now() - startTime) / 1000) + 's');
     });
 };
 
@@ -57,7 +73,14 @@ gulp.task('build:shared', () => {
 });
 
 gulp.task('build', () => {
-  return taskHarness(buildPackage, global.projectOrStar);
+  // Start a new line before the build package logs start.
+  console.log();
+
+  return taskHarness(buildPackage, global.projectOrStar)
+  .then(() => {
+    // End new line before the rest of logs start
+    console.log();
+  });
 });
 
 gulp.task('build:watch', ['build'], (unusedCallback) => {

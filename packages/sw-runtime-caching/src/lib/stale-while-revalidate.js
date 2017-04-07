@@ -53,6 +53,7 @@ class StaleWhileRevalidate extends Handler {
 
     const fetchAndCacheResponse = this.requestWrapper.fetchAndCache({
       request: event.request,
+      waitOnCache: this.waitOnCache,
     }).catch(() => Response.error());
     const cachedResponse = await this.requestWrapper.match({
       request: event.request,
