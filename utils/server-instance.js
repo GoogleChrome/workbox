@@ -32,6 +32,8 @@ class ServerInstance {
     this._app = express();
     this._app.use(cookieParser());
 
+    this._counter = 1;
+
     // Test iframe is used by sw-testing-helpers to scope service workers
     this._app.get('/test/iframe/:random', function(req, res) {
       res.sendFile(path.join(__dirname, 'test-iframe.html'));
@@ -40,6 +42,11 @@ class ServerInstance {
     this._app.get('/__echo/filename/:file', function(req, res) {
       res.setHeader('Cache-Control', 'max-age=' + (24 * 60 * 60));
       res.send(req.params.file);
+    });
+
+    this._app.get('/__echo/counter', (req, res) => {
+      res.setHeader('Cache-Control', 'no-cache');
+      res.type('text').send(JSON.stringify(this._counter++));
     });
 
     this._app.get('/__echo/date/:file', function(req, res) {
