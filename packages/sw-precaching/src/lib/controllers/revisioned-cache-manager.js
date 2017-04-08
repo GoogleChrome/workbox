@@ -65,13 +65,11 @@ class RevisionedCacheManager extends BaseCacheManager {
           like a hash or a version number, your users won't receive updates.`,
         data: {
           'URLs without revision fields':
-            JSON.stringify(urlsWithoutRevisionFields)},
+            JSON.stringify(urlsWithoutRevisionFields),
           'Examples of safe, versioned URLs':
             `'/path/file.abcd1234.css' or '/v1.0.0/file.js'`,
           'Examples of dangerous, unversioned URLs':
             `'index.html' or '/path/file.css' or '/latest/file.js'`,
-          'Learn More': 'https://googlechrome.github.io/sw-helpers/' +
-            'reference-docs/stable/latest/module-sw-lib.SWLib.html#precache',
         },
       });
     }
