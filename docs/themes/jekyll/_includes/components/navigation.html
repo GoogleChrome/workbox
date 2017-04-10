@@ -1,0 +1,79 @@
+{% include variables.html %}
+
+{% if include.depth == nil %}
+  {% assign currentPathDepth = 0 %}
+{% else %}
+  {% assign currentPathDepth = include.depth %}
+{% endif %}
+
+{% if include.context == nil %}
+  {% assign currentContext = "/" %}
+{% else %}
+  {% assign currentContext = include.context %}
+{% endif %}
+
+{% comment %}
+First we need to get the list of directories for the current depth
+{% endcomment %}
+
+{% assign directoriesAtDepth = "" | split: "," %}
+{% for singlePage in site.pages %}
+  {% if singlePage.navigation_weight == nil %}
+    {% continue %}
+  {% endif %}
+
+  {% assign pageDepth = singlePage.path | split: "/" | size | minus: 1 %}
+  {% if singlePage.name == "index.md" or singlePage.name == "index.html" %}
+    {% if pageDepth > 0 %}
+    {% assign pageDepth = pageDepth | minus: 1 %}
+    {% endif %}
+  {% endif %}
+
+  {% if singlePage.url != currentContext %}
+    {% assign contextCheckParts = singlePage.url | split: currentContext %}
+    {% if contextCheckParts[0] != "" %}
+      {% continue %}
+    {% endif %}
+  {% endif %}
+
+  {% if pageDepth == currentPathDepth %}
+    {% assign directoriesAtDepth = directoriesAtDepth | push: singlePage %}
+  {% endif %}
+{% endfor %}
+
+{% assign weightedPages = "" | split: "," %}
+{% assign unweightedPages = "" | split: "," %}
+{% for singlePage in directoriesAtDepth %}
+  {% if singlePage.navigation_weight != nil %}
+    {% assign weightedPages = weightedPages | push: singlePage %}
+  {% else %}
+    {% assign unweightedPages = unweightedPages | push: singlePage %}
+  {% endif %}
+{% endfor %}
+
+{% assign weightedPages = weightedPages | sort: "navigation_weight" %}
+{% assign unweightedPages = unweightedPages | sort: "path" %}
+{% for singlePage in unweightedPages %}
+  {% assign weightedPages = weightedPages | push: singlePage %}
+{% endfor %}
+
+<ul>
+{% for singlePage in weightedPages %}
+  <li class="{% if page.url contains singlePage.url %}current-section{% endif %} {% if page.url == singlePage.url %}current-page{% endif %}"><a href="{{ project_root_url }}{{singlePage.url}}#main">{{ singlePage.title }}</a></li>
+
+  {% if singlePage.url != currentContext %}
+    {% if page.url != singlePage.url %}
+      {% assign contextCheckParts = page.url | split: singlePage.url %}
+      {% if contextCheckParts[0] != "" %}
+        {% continue %}
+      {% endif %}
+    {% endif %}
+
+
+    {% assign newDepth = currentPathDepth | plus: 1 %}
+    {% include components/navigation.html context=singlePage.url depth=newDepth %}
+    {% assign currentPathDepth = currentPathDepth | minus: 1 %}
+  {% endif %}
+{% endfor %}
+</ul>
+{% comment %}<li class="{% if page.url contains entry.url %}active{% endif %}">{% endcomment %}

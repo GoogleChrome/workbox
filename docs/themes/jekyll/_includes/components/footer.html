@@ -1,0 +1,27 @@
+<footer>
+  <div class="footer__right-section">
+    <a class="google-dev-logo" href="https://developers.google.com/web/">
+      {% include svgs/google-developers-logo.svg %}
+    </a>
+  </div>
+
+  <div class="footer__left-section">
+    <a href="https://twitter.com/chromiumdev" class="svg-btn footer__twitter-btn" role="button" title="Twitter">
+      {% include svgs/twitter.svg %}
+    </a>
+
+    <a href="{{ site.github.repository_url }}" class="svg-btn footer__github-btn" role="button" title="GitHub">
+      {% include svgs/github.svg %}
+    </a>
+  </div>
+
+  {% comment %}
+  {% if site.github.issues_url %}
+  <ul class="footer-links">
+    <li>
+      <a href="{{ site.github.issues_url }}">Help</a>
+    </li>
+  </ul>
+  {% endif %}
+  {% endcomment %}
+</footer>

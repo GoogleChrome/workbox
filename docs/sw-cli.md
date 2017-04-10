@@ -15,7 +15,7 @@ worker to precache assets for your site and make it work offline.
 ## Install
 
 1. [Install Node.js](https://nodejs.org/en/).
-2. Install `sw-cli` using NPM.
+2. Install the module with NPM.
 
 ```
 npm install -g sw-cli

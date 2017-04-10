@@ -1,0 +1,43 @@
+{% include variables.html %}
+
+{% if site.data.releases and site.data.releases.stable and site.data.releases.stable.latest %}
+
+{% assign desiredPath = site.data.releases.stable.latest | append: '/index.html' %}
+{% assign desiredPage = nil %}
+
+{% for singlePage in site.pages %}
+  {% assign comparingPath = '/' | append: singlePage.path %}
+  {% if comparingPath == desiredPath %}
+    {% assign desiredPage = singlePage %}
+  {% endif %}
+{% endfor %}
+
+{% if desiredPage and desiredPage.jsdocNav %}
+<ul>
+  <li class="heading {% if page.url contains singlePage.url %}current-section{% endif %} {% if page.url == singlePage.url %}current-page{% endif %}">Reference Docs</li>
+
+  {% for navGroupHash in desiredPage.jsdocNav %}
+    {% for navGroup in navGroupHash %}
+      <li class="subheading">{{ navGroup[0] }}</li>
+      {% for navGroupItem in navGroup[1] %}
+        {% comment %}
+          This is disgusting :(
+
+          Basically take the anchor the JSDoc spits out
+          <a href="Page.html">Page</a>
+          Split it at href=
+          ['<a ', 'Page.html>Page</a>']
+          Then join the two together with a href with the relative path.
+        {% endcomment %}
+
+        {% assign anchorHrefSplit = navGroupItem | split: 'href="' %}
+        {% assign correctedHref = 'href="' | append: project_root_url | append: site.data.releases.stable.latest | append: '/' %}
+        {% assign alteredAnchor = anchorHrefSplit | join: correctedHref %}
+        <li>{{ alteredAnchor }}</li>
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
+
+</ul>
+{% endif %}
+{% endif %}

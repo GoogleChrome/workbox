@@ -1,0 +1,114 @@
+---
+layout: jsdoc
+title: "Source: sw-precaching/src/index.js"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-appcache-behavior.html#main">sw-appcache-behavior</a>
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+/**
+ * # sw-precaching
+ *
+ * The precaching module provides helpers that make it easy to cache files
+ * during the install step of your service worker.
+ *
+ * The revisioned caching will cache bust requests where appropriate and
+ * only cache assets that have a changed revision asset compared to
+ * the currently cached value.
+ *
+ * @example
+ * importScripts('/&lt;Path to Module>/build/sw-precaching.min.js');
+ *
+ * const revCacheManager = new goog.precaching.RevisionedCacheManager();
+ * revCacheManager.addToCacheList({
+ *   revisionedFiles: [
+ *     '/styles/main.1234.css',
+ *     {
+ *       url: '/',
+ *       revision: '1234'
+ *     }
+ *   ],
+ * });
+ *
+ * const unrevCacheManager = new goog.precaching.UnrevisionedCacheManager();
+ * unrevCacheManager.addToCacheList({
+ *   unrevisionedFiles: [
+ *     '/',
+ *     '/images/logo.png'
+ *   ]
+ * });
+ *
+ * self.addEventListener('install', (event) => {
+ *   const promiseChain = Promise.all([
+ *     revCacheManager.install(),
+ *     unrevCacheManager.install(),
+ *   ]);
+ *   event.waitUntil(promiseChain);
+ * });
+ *
+ * self.addEventListener('activate', (event) => {
+ *   const promiseChain = Promise.all([
+ *     revCacheManager.cleanup(),
+ *     unrevCacheManager.cleanup()
+ *   ]);
+ *   event.waitUntil(promiseChain);
+ * });
+ *
+ * @module sw-precaching
+ */
+import ErrorFactory from './lib/error-factory';
+import RevisionedCacheManager from
+  './lib/controllers/revisioned-cache-manager.js';
+import UnrevisionedCacheManager from
+  './lib/controllers/unrevisioned-cache-manager.js';
+
+import assert from '../../../lib/assert.js';
+
+if (!assert.isSWEnv()) {
+  // We are not running in a service worker, print error message
+  throw ErrorFactory.createError('not-in-sw');
+}
+
+export {
+  RevisionedCacheManager,
+  UnrevisionedCacheManager,
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
