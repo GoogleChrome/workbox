@@ -19,7 +19,6 @@ Section will include
 [sw-cli](reference-docs/stable/latest/module-sw-cli.html#main)
 to add a service worker to an existing project in under two minutes.
 
-
 *Build script integration*: Generate a service worker in your build process
 using [sw-build](reference-docs/stable/latest/module-sw-build.html#main).
 
