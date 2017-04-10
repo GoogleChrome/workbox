@@ -37,6 +37,9 @@ const errors = require('./errors');
  * If a URL is rendered/templated on the server, its contents may not depend on
  * a single file. This maps URLs to a list of file names, or to a string
  * value, that uniquely determines each URL's contents.
+ * @param {String} [input.cacheId] An optional ID to be prepended to caches
+ * used by sw-build. This is primarily useful for local development where
+ * multiple sites may be served from `http://localhost`.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
@@ -85,7 +88,8 @@ const generateSW = function(input) {
       dest,
       manifestEntries,
       swlibPath,
-      rootDirectory
+      rootDirectory,
+      input
     );
   });
 };

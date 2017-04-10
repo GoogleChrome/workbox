@@ -35,7 +35,7 @@ class SWLib {
    * You should never need to instantiate this class. The library instantiates
    * an instance which can be accessed by `self.goog.swlib`.
    */
-  constructor() {
+  constructor({cacheId}) {
     this._revisionedCacheManager = new RevisionedCacheManager();
     this._router = new Router(this._revisionedCacheManager.getCacheName());
     this._strategies = new Strategies();
