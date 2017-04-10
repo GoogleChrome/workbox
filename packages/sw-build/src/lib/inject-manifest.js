@@ -41,6 +41,9 @@ const errors = require('./errors');
  * value, that uniquely determines each URL's contents.
  * @param {String} input.swFile File name for service worker file to read in
  * and alter.
+ * @param {Object} [input.modifyUrlPrefix] An object consisting of key, value
+ * string pairs where the key is the prefix to replace in a url and the
+ * value is the replacement string.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
