@@ -14,7 +14,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Workbox</title>
+  <title>Welcome to Workbox</title>
   <meta name="description" content="(Currently Work in Progress) Service Worker helper libraries. ">
 
   <!-- The docs server over HTTPS, but site.github.url points to HTTP resouce causing mixed content -->
@@ -578,7 +578,7 @@
 
 <ul>
 
-  <li class="current-section current-page"><a href="/#main">Workbox</a></li>
+  <li class="current-section current-page"><a href="/#main">Welcome to Workbox</a></li>
 
   
 
@@ -745,7 +745,9 @@
   </nav>
   <div class="nav-backdrop js-nav-backdrop"></div>
   <main id="main">
-    <p>Workbox is …</p>
+    <h1 id="welcome-to-workbox">Welcome to Workbox</h1>
+
+<p>Workbox is …</p>
 
 <p>Section will include</p>
 
@@ -754,75 +756,23 @@
   <li>TBD</li>
 </ul>
 
-<h2 id="what-does-workbox-do">What Does Workbox Do?</h2>
+<h2 id="what-does-workbox-do">What does workbox do?</h2>
 
-<p>Despite the number of modules in Workbox, there are a number of approaches to using these tools which many be used separately or together in any number of combinations.</p>
+<p><em>A service worker in two minutes</em>: Use
+<a href="reference-docs/stable/latest/module-sw-cli.html#main">sw-cli</a>
+to add a service worker to an existing project in under two minutes.</p>
 
-<ul>
-  <li><strong>Precaching, runtime caching and routing</strong>: Use <a href="#sw-lib">sw-lib</a> to quickly
-implement <a href="https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/">caching strategies</a> or a route.</li>
-  <li><strong>Build process</strong>: Generate a service worker or manifest in your build process
-using <a href="#sw-build">sw-build</a>.</li>
-  <li><strong>Command line</strong>: Generate a service worker or manifest from the command line.</li>
-  <li><strong>Go beyond the basics</strong>: Implement more advanced capabilities and more
-sophisticated use cases using any of the other libraries, which are <a href="#the-libraries">described
-below</a>.</li>
-</ul>
+<p><em>Build script integration</em>: Generate a service worker in your build process
+using <a href="reference-docs/stable/latest/module-sw-build.html#main">sw-build</a>.</p>
 
-<h2 id="setting-up">Setting Up</h2>
+<p><em>Go beyond the basics</em>: If you’d like to use the Workbox libraries, and you
+already have your own service worker, then
+<a href="reference-docs/stable/latest/module-sw-lib.html#main">sw-lib</a> is a better option.</p>
 
-<p>Each module is installed separately using the command line as listed on the <a href="modules-overview">modules</a>. To use a particular module:</p>
-
-<ol>
-  <li>
-    <p>Install the module. For example:</p>
-
-    <p><code class="highlighter-rouge">npm install --save-dev sw-build</code></p>
-  </li>
-  <li>
-    <p>Copy the module’s JavaScript and map files to your serving directory.</p>
-
-    <p><code class="highlighter-rouge">cp node_modules/sw-build/build/* app/</code></p>
-  </li>
-  <li>
-    <p>Import the modules to your service worker file. For example:</p>
-
-    <p><code class="highlighter-rouge">importScripts('sw-build.min.js');</code></p>
-  </li>
-</ol>
-
-<h2 id="sw-cli">sw-cli</h2>
-
-<p>If you are completely new to service workers and Workbox,
-the easiest place to start is <code class="highlighter-rouge">sw-cli</code>.</p>
-
-<p>This is a command line tool that will build a service
-worker to precache assets for your site and make it work offline.</p>
-
-<p><a href="../reference-docs/stable/latest/module-sw-cli.html#main">Learn More about sw-cli</a></p>
-
-<h2 id="sw-build">sw-build</h2>
-
-<p>If you want to build and configure service workers in a node script then use
-<code class="highlighter-rouge">sw-build</code>.</p>
-
-<p><a href="../reference-docs/stable/latest/module-sw-build.html#main">Learn More about sw-build</a></p>
-
-<h2 id="sw-lib">sw-lib</h2>
-
-<p>If you’d like to use the Workbox libraries, and you already have your own 
-service worker, then <code class="highlighter-rouge">sw-lib</code> is a better option.</p>
-
-<p><a href="../reference-docs/stable/latest/module-sw-lib.html#main">Learn More about sw-lib</a></p>
-
-<h2 id="advanced-usage">Advanced Usage</h2>
-
-<p>If you’ve been using Workbox for a while, or you’re ambitious, you can delve
-into its more advanced features. Browse the
-<a href="recipes">recipes section</a>, try the
-<a href="examples">examples</a>,
-or look up something in the
-<a href="reference-docs/stable/latest/">mobules reference</a>.</p>
+<p><em>And much more</em>: If you’ve been using Workbox for a while, or you’re
+ambitious, you can delve into its more advanced features. Browse the
+<a href="recipes">recipes section</a>, try the <a href="examples">examples</a>, or look up
+something in the <a href="reference-docs/stable/latest/">mobules reference</a>.</p>
 
   </main>
 </section>

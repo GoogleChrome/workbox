@@ -4,7 +4,7 @@ title: sw-cli
 navigation_weight: 1
 ---
 
-# Getting Started
+# sw-cli
 
 If you are completely new to service workers and sw-helpers,
 the easiest place to start is `sw-cli`.

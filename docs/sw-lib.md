@@ -4,7 +4,7 @@ title: sw-lib
 navigation_weight: 3
 ---
 
-# Using sw-lib
+# sw-lib
 
 The `sw-lib` module is a high-level library that lets you easily configure a
 service worker for precaching assets during install, as well as configure

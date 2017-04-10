@@ -4,7 +4,7 @@ title: sw-build
 navigation_weight: 2
 ---
 
-# Getting Started
+# sw-build
 
 If you want to build and configure service workers in a node script then use
 `sw-build`.
