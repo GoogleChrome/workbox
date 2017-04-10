@@ -64,9 +64,9 @@ module.exports = {
   'invalid-inject-manifest-arg': `The input to 'injectManifest()' must be ` +
     `be an object.`,
   'injection-point-not-found': `Unable to find a place to inject the ` +
-    `manifest. Please ensure that you have 'swlib.cacheRevisionedAssets([])' ` +
+    `manifest. Please ensure that you have 'swlib.precache([])' ` +
     `somewhere in your service worker file.`,
   'multiple-injection-points-found': `There can only be one injection point ` +
     `in your service worker file. Please ensure you only have one instance ` +
-    `of  'swlib.cacheRevisionedAssets([])' in your service worker file.`,
+    `of  'swlib.precache([])' in your service worker file.`,
 };

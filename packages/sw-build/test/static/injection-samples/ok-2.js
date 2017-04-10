@@ -1,3 +1,3 @@
 /* global swlib */
 
-swlib.cacheRevisionedAssets([]);
+swlib.precache([]);

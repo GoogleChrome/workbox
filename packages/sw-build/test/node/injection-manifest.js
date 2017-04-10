@@ -25,7 +25,7 @@ describe('Test Injection Manifest', function() {
     'ok-4.js',
     'ok-5.js',
   ];
-  const expectedString = `swlib.cacheRevisionedAssets([
+  const expectedString = `swlib.precache([
   {
     "url": "/index.css",
     "revision": "d41d8cd98f00b204e9800998ecf8427e"

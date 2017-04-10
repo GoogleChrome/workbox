@@ -3,7 +3,7 @@
 importScripts('../build/sw-lib.js');
 importScripts('./manifest.123456.js');
 
-goog.swlib.cacheRevisionedAssets(self.__file_manifest);
+goog.swlib.precache(self.__file_manifest);
 
 // Specific URL defined with a string.
 goog.swlib.router.registerRoute('/example/', goog.swlib.staleWhileRevalidate());
