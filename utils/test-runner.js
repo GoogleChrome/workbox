@@ -230,7 +230,9 @@ class TestRunner {
 
       that._packagePathsToTest.forEach((packagePath) => {
         if (that._hasNodeTests(packagePath)) {
-          that._runNodeTests(packagePath, getBaseTestUrl);
+          describe(`Node Tests for ${path.basename(packagePath)}`, function() {
+            that._runNodeTests(packagePath, getBaseTestUrl);
+          });
         } else if (process.env.TRAVIS) {
           console.log('No node tests.');
         }

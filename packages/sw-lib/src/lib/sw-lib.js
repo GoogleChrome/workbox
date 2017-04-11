@@ -67,7 +67,8 @@ class SWLib {
    *
    * @example <caption>Cache revisioned assets.</caption>
    * // Cache a set of revisioned URLs
-   * goog.swlib.precache([
+   * const swlib = new goog.SWLib();
+   * swlib.precache([
    *     '/styles/main.613e6c7332dd83e848a8b00c403827ed.css',
    *     '/images/logo.59a325f32baad11bd47a8c515ec44ae5.jpg'
    * ]);
@@ -75,7 +76,7 @@ class SWLib {
    * // ...precache() can also take objects to cache
    * // non-revisioned URLs.
    * // Please use sw-build or sw-cli to generate the manifest for you.
-   * goog.swlib.precache([
+   * swlib.precache([
    *     {
    *       url: '/index.html',
    *       revision: '613e6c7332dd83e848a8b00c403827ed'
@@ -105,7 +106,8 @@ class SWLib {
    * This is an instance of the {@link  module:sw-lib.Router|Router}.
    *
    * @example
-   * self.goog.swlib.router.registerRoute('/', swlib.goog.cacheFirst());
+   * const swlib = new goog.SWLib();
+   * swlib.router.registerRoute('/', swlib.goog.cacheFirst());
    *
    * @type {Router}
    */
@@ -121,7 +123,8 @@ class SWLib {
    * strategy.
    *
    * @example
-   * const cacheFirstStrategy = goog.swlib.strategies.cacheFirst({
+   * const swlib = new goog.SWLib();
+   * const cacheFirstStrategy = swlib.strategies.cacheFirst({
    *   cacheName: 'example-cache',
    *   cacheExpiration: {
    *     maxEntries: 10,
@@ -169,8 +172,9 @@ class SWLib {
    * caching strategies in sw-lib.
    *
    * @example
-   * goog.swlib.router.addRoute('/styles/*',
-   *  goog.swlib.strategies.cacheFirst());
+   * const swlib = new goog.SWLib();
+   * swlib.router.addRoute('/styles/*',
+   *  swlib.strategies.cacheFirst());
    */
   get strategies() {
     return this._strategies;
@@ -184,7 +188,7 @@ class SWLib {
    *
    * You can override the default cache name when constructing a strategy if
    * you'd prefer, via
-   * `goog.swlib.strategies.cacheFirst({cacheName: 'my-cache-name'});`
+   * `swlib.strategies.cacheFirst({cacheName: 'my-cache-name'});`
    *
    * If you would like to explicitly add to, remove, or check the contents of
    * the default cache, you can use the [Cache Storage API](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage)
@@ -193,7 +197,7 @@ class SWLib {
    * managed via `precache()`.
    *
    * @example
-   * const cache = await caches.open(goog.swlib.runtimeCacheName);
+   * const cache = await caches.open(swlib.runtimeCacheName);
    * await cache.add('https://third-party.com/path/to/file');
    * const contentsOfRuntimeCache = await cache.keys();
    */

@@ -5,7 +5,9 @@ const template = require('lodash.template');
 
 const errors = require('./errors');
 
-module.exports = (swPath, manifestEntries, swlibPath, rootDirectory, options) => {
+module.exports =
+  (swPath, manifestEntries, swlibPath, rootDirectory, options) => {
+  options = options || {};
   try {
     mkdirp.sync(path.dirname(swPath));
   } catch (err) {

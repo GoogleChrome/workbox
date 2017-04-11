@@ -14,7 +14,7 @@ mocha.setup({
 });
 
 describe('Test swlib.router', function() {
-  it('should be accessible goog.swlib.router', function() {
+  it('should be accessible swlib.router', function() {
     const swlib = new goog.SWLib();
     expect(swlib.router).to.exist;
   });

@@ -52,7 +52,7 @@ if (!assert.isSWEnv()) {
  *
  * // Register runtime routes like so.
  * swlib.router.registerRoute(
- *   '/example/', goog.swlib.staleWhileRevalidate());
+ *   '/example/', swlib.staleWhileRevalidate());
  * swlib.router.registerRoute(
  *   /\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
  *   swlib.strategies.cacheFirst());
