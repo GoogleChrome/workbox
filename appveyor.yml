@@ -1,6 +1,8 @@
 only_commits:
   files:
     - packages/sw-cli/
+    - packages/sw-build/
+    - test/
     - appveyor.yml
     - .travis.yml
     - package.json
