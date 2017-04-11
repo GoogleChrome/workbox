@@ -6,6 +6,7 @@ const defaultQueueName = 'DEFAULT_QUEUE';
 const tagNamePrefix = 'SW_BACKGROUND_QUEUE_TAG_';
 const broadcastMeta = 'SW_BACKGROUND_SYNC_QUEUE';
 const allQueuesPlaceholder = 'QUEUES';
+const replayAllQueuesTag = 'SW_BACKGROUND_QUEUE_TAG_REPLAY';
 export {
 	maxAge,
 	defaultDBName,
@@ -15,4 +16,5 @@ export {
 	tagNamePrefix,
 	broadcastMeta,
 	allQueuesPlaceholder,
+	replayAllQueuesTag,
 };

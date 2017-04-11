@@ -15,7 +15,7 @@
 const seleniumAssistant = require('selenium-assistant');
 const gulp = require('gulp');
 const mocha = require('gulp-spawn-mocha');
-const glob = require('glob');
+const runSequence = require('run-sequence');
 
 gulp.task('download-browsers', function() {
   if (process.platform === 'win32') {
@@ -37,21 +37,25 @@ gulp.task('download-browsers', function() {
   });
 });
 
-gulp.task('test', ['download-browsers', 'build', 'lint'], () => {
-  const mochaOptions = {};
+gulp.task('mocha', ['build'], () => {
+  const mochaOptions = {
+    env: {
+      projectOrStar: global.projectOrStar,
+    },
+  };
+
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
   }
-  const testGlob = `packages/${global.projectOrStar}/test/*.js`;
-  const testFiles = glob.sync(testGlob);
-  if (testFiles.length === 0) {
-    // Mocha fails when no tests are found so return early.
-    return;
-  }
-  return gulp.src(testGlob, {read: false})
+
+  return gulp.src('test/bootstrap.js', {read: false})
     .pipe(mocha(mochaOptions))
     .once('error', (error) => {
       console.error(error);
       process.exit(1);
     });
+});
+
+gulp.task('test', ['lint', 'download-browsers'], (callback) => {
+  runSequence('mocha', callback);
 });

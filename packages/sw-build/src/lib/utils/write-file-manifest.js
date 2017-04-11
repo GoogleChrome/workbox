@@ -17,7 +17,7 @@ const writeFileManifest = (manifestFilePath, manifestEntries, format) => {
     return Promise.reject(new Error(errors['invalid-manifest-path']));
   }
 
-  if (!manifestEntries || !(manifestEntries instanceof Array)) {
+  if (!manifestEntries || !(Array.isArray(manifestEntries))) {
     return Promise.reject(new Error(errors['invalid-manifest-entries']));
   }
 

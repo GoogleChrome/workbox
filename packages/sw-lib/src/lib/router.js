@@ -31,7 +31,8 @@ import ErrorFactory from './error-factory.js';
  * @example <caption>How to define a simple route with caching
  * strategy.</caption>
  *
- * goog.swlib.router.registerRoute('/about', goog.swlib.cacheFirst());
+ * goog.swlib.router.registerRoute('/about',
+ *  goog.swlib.strategies.cacheFirst());
  *
  * @example <caption>How to define a simple route with custom caching
  * strategy.</caption>
@@ -57,7 +58,7 @@ class Router extends SWRoutingRouter {
   /**
    * Constructs a light wrapper on top of the underlying `Router`.
    * @param {String} revisionedCacheName The cache name used for entries cached
-   *        via cacheRevisionedAssets().
+   *        via precache().
    */
   constructor(revisionedCacheName) {
     super();
@@ -65,12 +66,14 @@ class Router extends SWRoutingRouter {
   }
 
   /**
-   * @param {String|Regex|Route} capture The capture for a route can be one
+   * @param {String|RegExp|Route} capture The capture for a route can be one
    * of three types.
-   * 1. It can be an Express style route, like: '/example/:anything/route/'
-   *    The only gotcha with this is that it will only capture URL's on your
-   *    origin.
-   * 1. A regex that will be tested against request URL's.
+   * 1. It can be an Express style route, like '/path/to/:anything' for
+   *    same-origin or 'https://cross-origin.com/path/to/:anything' for
+   *    cross-origin routes.
+   * 1. A regular expression that will be tested against request URLs. For
+   *    cross-origin routes, you must use a RegExp that matches the start of the
+   *    full URL, like `new RegExp('https://cross-origin\.com/')`.
    * 1. A [Route]{@link module:sw-lib.SWLib#Route} instance.
    * @param {function|Handler} handler Called when the route is caught by the
    * capture criteria. The handler argument is ignored if
@@ -113,7 +116,7 @@ class Router extends SWRoutingRouter {
    *
    * The `url` value should correspond to an entry that's already in the cache,
    * perhaps a URL that is managed by
-   * {@link module:sw-lib.SWLib#cacheRevisionedAssets}. Using a URL that isn't
+   * {@link module:sw-lib.SWLib#precache}. Using a URL that isn't
    * already cached will lead to failed navigations.
    *
    * @param {String} url The URL of the already cached HTML resource.
@@ -123,7 +126,7 @@ class Router extends SWRoutingRouter {
    *        match all request URLs.
    * @param {String} [options.cacheName] The name of the cache which contains
    *        the cached response for `url`. Defaults to the name of the cache
-   *        used by cacheRevisionedAssets().
+   *        used by precache().
    */
   registerNavigationRoute(url, options = {}) {
     if (typeof url !== 'string') {

@@ -111,31 +111,6 @@ describe('Test swlib.router', function() {
     });
   });
 
-  it('should be able to register a valid Route instance route', function() {
-    const exampleRoute = `/1234567890/test/`;
-
-    return new Promise((resolve, reject) => {
-      const routeInstance = new goog.swlib.Route({
-        match: (url) => true,
-        handler: {
-          handle: (args) => {
-            (args.event instanceof FetchEvent).should.equal(true);
-            args.url.toString().should.equal(new URL(exampleRoute, location).toString());
-
-            resolve();
-          },
-        },
-      });
-
-      goog.swlib.router.registerRoute(routeInstance);
-      const fetchEvent = new FetchEvent('fetch', {
-        request: new Request(self.location.origin + exampleRoute),
-      });
-
-      self.dispatchEvent(fetchEvent);
-    });
-  });
-
   it(`should throw when registerNavigationRoute() isn't passed a URL`, function() {
     let thrownError = null;
     try {

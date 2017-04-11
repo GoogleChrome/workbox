@@ -1,0 +1,8 @@
+{
+  "browser": {
+    "scripts": [
+      "/packages/sw-precaching/test/static/test-data.js",
+      "/packages/sw-lib/test/static/test-data.js"
+    ]
+  }
+}

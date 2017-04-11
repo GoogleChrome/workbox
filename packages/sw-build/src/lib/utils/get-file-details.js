@@ -9,6 +9,7 @@ module.exports = (rootDirectory, globPattern, globIgnores) => {
   let globbedFiles;
   try {
     globbedFiles = glob.sync(globPattern, {
+      cwd: rootDirectory,
       ignore: globIgnores,
     });
   } catch (err) {
@@ -16,14 +17,15 @@ module.exports = (rootDirectory, globPattern, globIgnores) => {
   }
 
   const fileDetails = globbedFiles.map((file) => {
-    const fileSize = getFileSize(file);
+    const fullPath = path.join(rootDirectory, file);
+    const fileSize = getFileSize(fullPath);
     if (fileSize === null) {
       return null;
     }
 
-    const fileHash = getFileHash(file);
+    const fileHash = getFileHash(fullPath);
     return {
-      file: `${path.relative(rootDirectory, file)}`,
+      file: `${path.relative(rootDirectory, fullPath)}`,
       hash: fileHash,
       size: fileSize,
     };

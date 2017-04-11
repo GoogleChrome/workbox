@@ -13,10 +13,10 @@ mocha.setup({
 
 describe('Test of the ExpressRoute class', function() {
   const path = '/test/path';
-  const handler = {
-    handle: () => {},
-  };
+  const handler = () => {};
   const invalidHandler = {};
+  const invalidPath = 'invalid';
+  const crossOrigin = 'https://cross-origin.example.com';
 
   it(`should throw when ExpressRoute() is called without any parameters`, function() {
     expect(() => new goog.routing.ExpressRoute()).to.throw();
@@ -28,7 +28,16 @@ describe('Test of the ExpressRoute class', function() {
   });
 
   it(`should throw when ExpressRoute() is called without a valid path`, function() {
-    expect(() => new goog.routing.ExpressRoute({handler})).to.throw();
+    let thrownError = null;
+
+    try {
+      new goog.routing.ExpressRoute({handler, path: invalidPath});
+    } catch(err) {
+      thrownError = err;
+    }
+
+    expect(thrownError).to.exist;
+    expect(thrownError.name).to.equal('express-route-invalid-path');
   });
 
   it(`should not throw when ExpressRoute() is called with valid handler and path parameters`, function() {
@@ -62,5 +71,37 @@ describe('Test of the ExpressRoute class', function() {
     expect(match.param2).to.equal(value2);
 
     expect(route.match({url: namedParameterNonMatchingUrl})).not.to.be.ok;
+  });
+
+  it(`should not match cross-origin requests when using a path starting with '/'`, function() {
+    const crossOriginUrl = new URL(path, crossOrigin);
+    const route = new goog.routing.ExpressRoute({handler, path});
+
+    expect(route.match({url: crossOriginUrl})).not.to.be.ok;
+  });
+
+  it(`should match cross-origin requests when using a path starting with 'https://'`, function() {
+    const crossOriginUrl = new URL(path, crossOrigin);
+    const route = new goog.routing.ExpressRoute({handler, path: crossOriginUrl.href});
+
+    expect(route.match({url: crossOriginUrl})).to.be.ok;
+  });
+
+  it(`should only match same-origin requests when using the wildcard path '/(.*)'`, function() {
+    const crossOriginUrl = new URL(path, crossOrigin);
+    const sameOriginUrl = new URL(path, location);
+    const route = new goog.routing.ExpressRoute({handler, path: '/(.*)'});
+
+    expect(route.match({url: sameOriginUrl})).to.be.ok;
+    expect(route.match({url: crossOriginUrl})).not.to.be.ok;
+  });
+
+  it(`should only match cross-origin requests when using a path starting with 'https://' and the wildcard path '/(.*)'`, function() {
+    const crossOriginUrl = new URL(path, crossOrigin);
+    const sameOriginUrl = new URL(path, location);
+    const route = new goog.routing.ExpressRoute({handler, path: `${crossOrigin}/(.*)`});
+
+    expect(route.match({url: sameOriginUrl})).not.to.be.ok;
+    expect(route.match({url: crossOriginUrl})).to.be.ok;
   });
 });

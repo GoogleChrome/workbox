@@ -1,6 +1,6 @@
 {
   "name": "sw-build",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "This module can be used to generate a file manifest or service worker, that can be used with sw-lib.",
   "keywords": [
     "sw-fw",
@@ -31,7 +31,7 @@
     "glob": "^7.1.1",
     "lodash.template": "^4.4.0",
     "mkdirp": "^0.5.1",
-    "sw-lib": "^0.0.17"
+    "sw-lib": "^0.0.18"
   },
   "devDependencies": {
     "fs-extra": "^2.0.0"
