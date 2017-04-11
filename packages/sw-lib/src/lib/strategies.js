@@ -21,6 +21,15 @@ import {RequestWrapper} from '../../../sw-runtime-caching/src/index.js';
  */
 class Strategies {
   /**
+   * This constructor will configure shared options across each strategy.
+   * @param  {String} [input.cacheId]  The cacheId to be applied to the run
+   * time strategies cache names.
+   */
+  constructor({cacheId} = {}) {
+    this._cacheId = cacheId;
+  }
+
+  /**
    * A [cache first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network)
    * run-time caching strategy.
    *
@@ -129,6 +138,7 @@ class Strategies {
 
     const wrapperOptions = {
       plugins: [],
+      cacheId: this._cacheId,
     };
 
     if (options['cacheName']) {

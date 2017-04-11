@@ -85,6 +85,34 @@ describe('Test of the RequestWrapper class', function() {
     expect(thrownError.name).to.equal('multiple-cache-will-match-plugins');
   });
 
+  it(`it should throw when RequestWrapper() is called with invalid cacheId`, function() {
+    let thrownError = null;
+    try {
+      new goog.runtimeCaching.RequestWrapper({cacheId: {}});
+    } catch(err) {
+      thrownError = err;
+    }
+    expect(thrownError).to.exist;
+    expect(thrownError.name).to.equal('bad-cache-id');
+  });
+
+  it(`it should include cacheId in the cacheName`, function() {
+    const CACHE_ID = 'CacheIdTest';
+    const runtimeCaching = new goog.runtimeCaching.RequestWrapper({cacheId: CACHE_ID});
+    runtimeCaching.cacheName.indexOf(CACHE_ID).should.not.equal(-1);
+  });
+
+  it(`it should include cacheId in the cacheName`, function() {
+    const CACHE_ID = 'CacheIdTest';
+    const CACHE_NAME = 'CacheNameTest';
+    const runtimeCaching = new goog.runtimeCaching.RequestWrapper({
+      cacheId: CACHE_ID,
+      cacheName: CACHE_NAME,
+    });
+    runtimeCaching.cacheName.indexOf(CACHE_ID).should.not.equal(-1);
+    runtimeCaching.cacheName.indexOf(CACHE_NAME).should.not.equal(-1);
+  });
+
   it(`should return an valid Cache instance when getCache() is called`, async function() {
     const requestWrapper = new goog.runtimeCaching.RequestWrapper();
     const cache = await requestWrapper.getCache();

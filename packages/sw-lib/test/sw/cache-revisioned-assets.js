@@ -14,8 +14,9 @@ mocha.setup({
 });
 
 describe('Test swlib.precache', function() {
-  it('should be accessible goog.swlib.precache', function() {
-    expect(goog.swlib.precache).to.exist;
+  it('should be accessible swlib.precache', function() {
+    const swlib = new goog.SWLib();
+    expect(swlib.precache).to.exist;
   });
 
   const badInput = [
@@ -47,8 +48,9 @@ describe('Test swlib.precache', function() {
   badInput.forEach((badInput) => {
     it(`should throw on adding invalid route: '${JSON.stringify(badInput)}'`, function() {
       let thrownError = null;
+      const swlib = new goog.SWLib();
       try {
-        goog.swlib.precache(badInput.capture);
+        swlib.precache(badInput.capture);
       } catch(err) {
         thrownError = err;
       }
@@ -81,7 +83,8 @@ describe('Test swlib.precache', function() {
       },
     ];
 
-    goog.swlib.precache(validAssets1);
-    goog.swlib.precache(validAssets2);
+    const swlib = new goog.SWLib();
+    swlib.precache(validAssets1);
+    swlib.precache(validAssets2);
   });
 });

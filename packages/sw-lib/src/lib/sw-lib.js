@@ -20,8 +20,8 @@ import Strategies from './strategies';
 import ErrorFactory from './error-factory.js';
 import {RevisionedCacheManager} from '../../../sw-precaching/src/index.js';
 import {Route} from '../../../sw-routing/src/index.js';
-import {defaultCacheName} from '../../../sw-runtime-caching/src/index.js';
 import logHelper from '../../../../lib/log-helper';
+import {getDefaultCacheName} from '../../../sw-runtime-caching/src/index.js';
 
 /**
  * A high level library to make it as easy as possible to precache assets
@@ -32,13 +32,22 @@ import logHelper from '../../../../lib/log-helper';
 class SWLib {
 
   /**
-   * You should never need to instantiate this class. The library instantiates
-   * an instance which can be accessed by `self.goog.swlib`.
+   * You should instantiate this class with `new self.goog.SWLib()`.
    */
-  constructor({cacheId}) {
-    this._revisionedCacheManager = new RevisionedCacheManager();
+  constructor({cacheId} = {}) {
+    /* eslint-disable no-console */
+    if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
+      throw ErrorFactory.createError('bad-cache-id');
+    }
+
+    this._runtimeCacheName = getDefaultCacheName({cacheId});
+    this._revisionedCacheManager = new RevisionedCacheManager({
+      cacheId,
+    });
     this._router = new Router(this._revisionedCacheManager.getCacheName());
-    this._strategies = new Strategies();
+    this._strategies = new Strategies({
+      cacheId,
+    });
     this._registerInstallActivateEvents();
     this._registerDefaultRoutes();
   }
@@ -184,12 +193,12 @@ class SWLib {
    * managed via `precache()`.
    *
    * @example
-   * const cache = await caches.open(goog.swlib.defaultRuntimeCacheName);
+   * const cache = await caches.open(goog.swlib.runtimeCacheName);
    * await cache.add('https://third-party.com/path/to/file');
    * const contentsOfRuntimeCache = await cache.keys();
    */
-  get defaultRuntimeCacheName() {
-    return defaultCacheName;
+  get runtimeCacheName() {
+    return this._runtimeCacheName;
   }
 
   /**

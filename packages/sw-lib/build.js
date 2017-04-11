@@ -19,6 +19,6 @@ const {buildJSBundle, generateBuildConfigs} = require('../../utils/build');
 const buildConfigs = generateBuildConfigs({
   es: pkg['jsnext:main'],
   umd: pkg.main,
-}, __dirname, 'goog.swlib');
+}, __dirname, 'goog.SWLib');
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

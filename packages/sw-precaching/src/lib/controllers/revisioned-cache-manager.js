@@ -23,10 +23,13 @@ class RevisionedCacheManager extends BaseCacheManager {
    * @param {Object} input
    * @param {String} [input.cacheName] Define the cache used to stash these
    * entries.
+   * @param {String} [input.cacheId] The cacheId can be used to ensure that
+   * multiple projects sharing `http://localhost` have unique cache names.
    */
-  constructor({cacheName} = {}) {
+  constructor({cacheName, cacheId} = {}) {
     cacheName = cacheName || defaultRevisionedCacheName;
-    super(cacheName);
+
+    super({cacheName, cacheId});
 
     this._revisionDetailsModel = new RevisionDetailsModel();
   }

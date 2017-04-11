@@ -26,6 +26,8 @@ const errors = {
     `{path: 'hello.txt', revision: '1234'}]`,
   'navigation-route-url-string': `The registerNavigationRoute() method ` +
     `expects a URL string as its first parameter.`,
+  'bad-cache-id': `The 'cacheId' parameter must be a string with at least ` +
+    `one character`,
 };
 
 export default new ErrorFactory(errors);
