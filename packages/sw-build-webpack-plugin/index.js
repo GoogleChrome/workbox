@@ -1,4 +1,4 @@
-const swBuild = require('sw-build');
+const swBuild = require('../sw-build/src/');
 const path = require('path');
 const SERVICE_WORKER_NAME = 'sw.js';
 
@@ -39,13 +39,6 @@ class SwBuildWebpackPlugin {
 		// output path directory of webpack
 		if (!config.rootDirectory) {
 			config.rootDirectory = compilation.mainTemplate.getPublicPath({});
-		}
-
-		// If no dest is given, fallback to default service worker name in
-		// output path directory
-		if (!config.dest) {
-			config.dest =
-				path.join(config.rootDirectory, SERVICE_WORKER_NAME);
 		}
 
 		return config;

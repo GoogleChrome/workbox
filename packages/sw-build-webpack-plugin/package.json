@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "This is a webpack plugin for sw-build",
   "keywords": [
-		"webpack",
+    "webpack",
     "sw-fw",
     "service worker",
     "caching",
@@ -11,8 +11,7 @@
     "offline",
     "file manifest"
   ],
-  "scripts": {
-  },
+  "scripts": {},
   "main": "build/index.js",
   "files": [
     "src",
@@ -26,7 +25,10 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-build",
-  "dependencies": {
+  "dev-dependencies": {
     "sw-build": "^0.0.17"
+  },
+  "devDependencies": {
+    "webpack": "^2.3.3"
   }
 }

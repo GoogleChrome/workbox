@@ -2,7 +2,7 @@ const glob = require('glob');
 const path = require('path');
 const TestRunner = require('../utils/test-runner');
 
-const testGlob = `packages/${process.env.projectOrStar}/test/`;
+const testGlob = `packages/sw-build-webpack-plugin/test/`;
 const testFiles = glob.sync(testGlob);
 const packageNames = testFiles.map((testFile) => {
   const packageName = testFile.split(path.sep)[1];

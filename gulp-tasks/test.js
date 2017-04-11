@@ -37,7 +37,7 @@ gulp.task('download-browsers', function() {
   });
 });
 
-gulp.task('mocha', ['build'], () => {
+gulp.task('mocha', [], () => {
   const mochaOptions = {
     env: {
       projectOrStar: global.projectOrStar,
@@ -56,6 +56,6 @@ gulp.task('mocha', ['build'], () => {
     });
 });
 
-gulp.task('test', ['lint', 'download-browsers'], (callback) => {
+gulp.task('test', [], (callback) => {
   runSequence('mocha', callback);
 });

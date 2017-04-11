@@ -3,8 +3,7 @@ const sinon = require('sinon');
 const path = require('path');
 const cliHelper = require('../utils/cli-test-helper.js');
 const errors = require('../../src/lib/errors.js');
-
-require('chai').should();
+const assert = require('chai').assert;
 
 describe('Ask for File Extensions to Cache', function() {
   const globalStubs = [];
