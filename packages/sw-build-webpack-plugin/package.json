@@ -12,7 +12,7 @@
     "file manifest"
   ],
   "scripts": {},
-  "main": "build/index.js",
+  "main": "index.js",
   "files": [
     "src",
     "build"
@@ -24,11 +24,5 @@
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-build",
-  "dev-dependencies": {
-    "sw-build": "^0.0.17"
-  },
-  "devDependencies": {
-    "webpack": "^2.3.3"
-  }
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-build-webpack-plugin",
 }
