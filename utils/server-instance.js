@@ -145,15 +145,16 @@ class ServerInstance {
       res.send(html);
     });
 
-    // Redirect /packages/:pkg/test/browser/ to the /__test/mocha/:pkg templated
-    // page, but only if there's no /packages/:pkg/test/browser/index.html
+    // Redirect /packages/:pkg/test/browser/ to the /__test/mocha/browser/:pkg
+    // templated page, but only if there's no
+    // /packages/:pkg/test/browser/index.html
     this._app.get('/packages/:pkg/test/browser/', function(req, res, next) {
       const index = path.join(__dirname, '..', 'packages', req.params.pkg,
         'test', 'browser', 'index.html');
       if (fs.existsSync(index)) {
         next();
       } else {
-        res.redirect(301, `/__test/mocha/${req.params.pkg}`);
+        res.redirect(301, `/__test/mocha/browser/${req.params.pkg}`);
       }
     });
   }
