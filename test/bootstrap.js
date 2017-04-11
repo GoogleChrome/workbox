@@ -15,9 +15,5 @@ const packageNames = testFiles.map((testFile) => {
   return packageName;
 });
 
-console.log('process.env.projectOrStar: ', JSON.stringify(process.env.projectOrStar));
-console.log('TestFiles: ', JSON.stringify(testFiles));
-console.log('packageNames: ', JSON.stringify(packageNames));
-
 const testRunner = new TestRunner(packageNames);
 testRunner.start();
