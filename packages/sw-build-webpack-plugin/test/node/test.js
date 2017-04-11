@@ -8,13 +8,18 @@ const SwWebpackPlugin = proxyquire('../../', {
 	'../sw-build/src/': {},
 });
 
+// Stubby object for webpack
+const webpackCompilation = {
+	compiler: {
+		plugin: sinon.spy(),
+	},
+	mainTemplate: {
+		getPublicPath: function() {},
+	},
+};
+
 describe('Tests for webpack plugin', function() {
 	it('should mutate config accordin to webpack defaults', () => {
-		const webpackCompilation = {
-			mainTemplate: {
-				getPublicPath: function() {},
-			},
-		};
 		sinon.stub(webpackCompilation.mainTemplate, 'getPublicPath', ()=>{
 			return OUTPUT_DIR;
 		});
@@ -29,7 +34,8 @@ describe('Tests for webpack plugin', function() {
 			CUSTOM_ROOT_DIRECTORY);
 	});
 
-	it('should call appropriate function based on cofig', () => {
-
+	it('should call appropriate function based on config', () => {
+		let swWebpackPlugin = new SwWebpackPlugin({});
+		console.log(webpackCompilation.compiler.plugin.callCount);
 	});
 });
