@@ -1,6 +1,5 @@
 const swBuild = require('../sw-build/src/');
 const path = require('path');
-const SERVICE_WORKER_NAME = 'sw.js';
 
 /**
  * Use the instance of this in the plugins array of the webpack config.
