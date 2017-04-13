@@ -1,0 +1,28 @@
+{
+  "name": "sw-build-webpack-plugin",
+  "version": "0.0.1",
+  "description": "This is a webpack plugin for sw-build",
+  "keywords": [
+    "webpack",
+    "sw-fw",
+    "service worker",
+    "caching",
+    "fetch requests",
+    "offline",
+    "file manifest"
+  ],
+  "scripts": {},
+  "main": "index.js",
+  "files": [
+    "src",
+    "build"
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-build-webpack-plugin"
+}
