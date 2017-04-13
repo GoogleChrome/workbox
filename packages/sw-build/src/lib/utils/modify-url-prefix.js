@@ -33,8 +33,10 @@ module.exports = (urlString, modifyUrlPrefix) => {
 
   // Escape the user input so it's safe to use in a regex.
   const safeModifyUrlPrefixes = Object.keys(modifyUrlPrefix).map(escapeRegExp);
+
   // Join all the `modifyUrlPrefix` keys so a single regex can be used.
   const prefixMatchesStrings = safeModifyUrlPrefixes.join('|');
+
   // Add `^` to the front the prefix matches so it only matches the start of
   // a string.
   const modifyRegex = new RegExp(`^(${prefixMatchesStrings})`);
