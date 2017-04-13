@@ -6,11 +6,11 @@ navigation_weight: 2
 
 # sw-build
 
-If you want to build and configure service workers in a node script then use
-`sw-build`.
+Get a precaching service worker in about ten minutes with the `sw-build` module.
+Simply install the module, then cut and paste one of the provided code samples
+into your build script.
 
 ## Install
-
 
 1. [Install Node.js](https://nodejs.org/en/).
 1. Install the module with NPM.
@@ -33,26 +33,35 @@ Add the following to your `gulpfile.js`:
 
     const swBuild = require('sw-build');
 
-    swBuild.generateFileManifest({
+    swBuild.generateSW({
       rootDirectory: './build/',
-      dest: './build/scripts/manifest.js',
+      dest: './build/sw.js',
       globPatterns: ['**\/*.{html,js,css}'],
-      globIgnores: ['service-worker.js','admin.html'],
+      globIgnores: ['admin.html'],
       templatedUrls: {
         '/shell': ['shell.hbs', 'main.css', 'shell.css'],
       },
     })
     .then(() => {
-      console.log('Build file has been created.');
+      console.log('Service worker generated.');
+    })
+    catch((err) => {
+      console.log('[ERROR] This happened: ' + err);
     });
 
-### item
+### Item
+
+Add the following to
+
 
 ```
 // code
 ```
 
-### item
+### Item
+
+Add the following to
+
 
 ```
 // code
