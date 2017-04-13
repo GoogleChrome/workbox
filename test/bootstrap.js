@@ -1,11 +1,17 @@
 const glob = require('glob');
-const path = require('path');
 const TestRunner = require('../utils/test-runner');
 
 const testGlob = `packages/${process.env.projectOrStar}/test/`;
 const testFiles = glob.sync(testGlob);
 const packageNames = testFiles.map((testFile) => {
-  const packageName = testFile.split(path.sep)[1];
+  // Glob will return '/' as the path seperator regardless of
+  // platform (i.e. it doesn't use '\' on windows).
+  const packageName = testFile.split('/')[1];
+
+  if (packageName === null) {
+    throw new Error('Unable to get package name for: ', testFile);
+  }
+
   return packageName;
 });
 

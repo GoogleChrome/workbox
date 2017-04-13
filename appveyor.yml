@@ -1,6 +1,8 @@
 only_commits:
   files:
     - packages/sw-cli/
+    - packages/sw-build/
+    - test/
     - appveyor.yml
     - .travis.yml
     - package.json
@@ -9,7 +11,7 @@ install:
   - ps: Install-Product node Stable
   - npm install
   - npm install -g gulp lerna@2.0.0-beta.38
-  - lerna bootstrap --scope "sw-cli" --include-filtered-dependencies
+  - lerna bootstrap --scope "sw-cli" --include-filtered-dependencies --concurrency 1
   - cd packages/sw-cli/
   - npm install
   - cd ..

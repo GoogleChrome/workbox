@@ -70,8 +70,8 @@ class BaseCacheManager {
    * where two entries have the same URL but different revisions. For example
    * caching:
    * [
-   *   {url: '/hello.txt', revision: '1'},
-   *   {url: '/hello.txt', revision: '2'},
+   *   {url: '/hello.txt', revision: 'abcd1234'},
+   *   {url: '/hello.txt', revision: 'efgh5678'},
    * ]
    * This will throw an error as the library can't determine the correct
    * revision and this may cause issues in future when updating the service

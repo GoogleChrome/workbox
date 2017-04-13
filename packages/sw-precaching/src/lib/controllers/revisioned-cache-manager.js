@@ -7,6 +7,7 @@ import StringPrecacheEntry from
 import ObjectPrecacheEntry from
   '../models/precache-entries/object-precache-entry';
 import assert from '../../../../../lib/assert';
+import logHelper from '../../../../../lib/log-helper';
 
 /**
  * This class extends a lot of the internal methods from BaseCacheManager
@@ -42,7 +43,7 @@ class RevisionedCacheManager extends BaseCacheManager {
    *     '/styles/hello.1234.css',
    *     {
    *       url: '/images/logo.png',
-   *       revision: '1234'
+   *       revision: 'abcd1234'
    *     }
    *   ]
    * });
@@ -53,6 +54,25 @@ class RevisionedCacheManager extends BaseCacheManager {
   addToCacheList({revisionedFiles} = {}) {
     assert.isInstance({revisionedFiles}, Array);
     super._addEntries(revisionedFiles);
+
+    const urlsWithoutRevisionFields = revisionedFiles
+      .filter((entry) => typeof entry === 'string');
+    if (urlsWithoutRevisionFields.length > 0) {
+      logHelper.debug({
+        that: this,
+        message: `Some precache entries are URLs without separate revision
+          fields. If the URLs themselves do not contain revisioning info,
+          like a hash or a version number, your users won't receive updates.`,
+        data: {
+          'URLs without revision fields':
+            JSON.stringify(urlsWithoutRevisionFields),
+          'Examples of safe, versioned URLs':
+            `'/path/file.abcd1234.css' or '/v1.0.0/file.js'`,
+          'Examples of dangerous, unversioned URLs':
+            `'index.html' or '/path/file.css' or '/latest/file.js'`,
+        },
+      });
+    }
   }
 
   /**

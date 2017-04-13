@@ -2,6 +2,6 @@
 
 // Multiple entries.
 
-goog.swlib.cacheRevisionedAssets([]);
+goog.swlib.precache([]);
 
-goog.swlib.cacheRevisionedAssets([]);
+goog.swlib.precache([]);

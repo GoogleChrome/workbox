@@ -18,10 +18,10 @@
 import Router from './router.js';
 import Strategies from './strategies';
 import ErrorFactory from './error-factory.js';
-import {
-  RevisionedCacheManager, UnrevisionedCacheManager,
-} from '../../../sw-precaching/src/index.js';
+import {RevisionedCacheManager} from '../../../sw-precaching/src/index.js';
 import {Route} from '../../../sw-routing/src/index.js';
+import {defaultCacheName} from '../../../sw-runtime-caching/src/index.js';
+import logHelper from '../../../../lib/log-helper';
 
 /**
  * A high level library to make it as easy as possible to precache assets
@@ -38,7 +38,6 @@ class SWLib {
   constructor() {
     this._revisionedCacheManager = new RevisionedCacheManager();
     this._router = new Router(this._revisionedCacheManager.getCacheName());
-    this._unrevisionedCacheManager = new UnrevisionedCacheManager();
     this._strategies = new Strategies();
     this._registerInstallActivateEvents();
     this._registerDefaultRoutes();
@@ -53,17 +52,21 @@ class SWLib {
    * details in them otherwise the entry should be an object with `url` and
    * `revision` parameters.
    *
+   * In addition to maintaining the cache, this method will also set up the
+   * necessary routes to serve the precached assets using a cache-first
+   * strategy.
+   *
    * @example <caption>Cache revisioned assets.</caption>
    * // Cache a set of revisioned URLs
-   * goog.swlib.cacheRevisionedAssets([
+   * goog.swlib.precache([
    *     '/styles/main.613e6c7332dd83e848a8b00c403827ed.css',
    *     '/images/logo.59a325f32baad11bd47a8c515ec44ae5.jpg'
    * ]);
    *
-   * // ...cacheRevisionedAssets() can also take objects to cache
+   * // ...precache() can also take objects to cache
    * // non-revisioned URLs.
    * // Please use sw-build or sw-cli to generate the manifest for you.
-   * goog.swlib.cacheRevisionedAssets([
+   * goog.swlib.precache([
    *     {
    *       url: '/index.html',
    *       revision: '613e6c7332dd83e848a8b00c403827ed'
@@ -77,7 +80,7 @@ class SWLib {
    * @param {Array<String|Object>} revisionedFiles A set of urls to cache
    * when the service worker is installed.
    */
-  cacheRevisionedAssets(revisionedFiles) {
+  precache(revisionedFiles) {
     // Add a more helpful error message than assertion error.
     if (!Array.isArray(revisionedFiles)) {
       throw ErrorFactory.createError('bad-revisioned-cache-list');
@@ -85,42 +88,6 @@ class SWLib {
 
     this._revisionedCacheManager.addToCacheList({
       revisionedFiles,
-    });
-  }
-
-  /**
-   * Any assets you wish to cache ahead of time which can't be revisioned
-   * should be cached with this method. All assets are cached on install
-   * regardless of whether an older version of the request is in the cache.
-   *
-   * The input can be a string or a [Request](https://developer.mozilla.org/en-US/docs/Web/API/Request).
-   *
-   * @example <caption>Unrevisioned assets can be cached too.</caption>
-   * // For unrevisioned assets that should always be downloaded
-   * // with every service worker update, use this method.
-   * goog.swlib.warmRuntimeCache([
-   *     '/scripts/main.js',
-   *     '/images/default-avater.png'
-   * ]);
-   *
-   * // warmRuntimeCache can also accept Requests, in case you need greater
-   * // control over the request.
-   * goog.swlib.warmRuntimeCache([
-   *     new Request('/images/logo.png'),
-   *     new Request('/api/data.json')
-   * ]);
-   *
-   * @param {Array<String|Request>} unrevisionedFiles A set of urls to cache
-   * when the service worker is installed.
-   */
-  warmRuntimeCache(unrevisionedFiles) {
-    // Add a more helpful error message than assertion error.
-    if (!Array.isArray(unrevisionedFiles)) {
-      throw ErrorFactory.createError('bad-revisioned-cache-list');
-    }
-
-    this._unrevisionedCacheManager.addToCacheList({
-      unrevisionedFiles,
     });
   }
 
@@ -194,10 +161,35 @@ class SWLib {
    *
    * @example
    * goog.swlib.router.addRoute('/styles/*',
-   *  goog.swlib.strategies.cacheFirest());
+   *  goog.swlib.strategies.cacheFirst());
    */
   get strategies() {
     return this._strategies;
+  }
+
+  /**
+   * The name of the cache used by default by the runtime caching strategies.
+   *
+   * Entries that are managed via `precache()` are stored in a separate cache
+   * with a different name.
+   *
+   * You can override the default cache name when constructing a strategy if
+   * you'd prefer, via
+   * `goog.swlib.strategies.cacheFirst({cacheName: 'my-cache-name'});`
+   *
+   * If you would like to explicitly add to, remove, or check the contents of
+   * the default cache, you can use the [Cache Storage API](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage)
+   * to pass in the default cache name to `caches.open()`. This can be useful if
+   * you want to "prime" your cache with remote resources that can't be properly
+   * managed via `precache()`.
+   *
+   * @example
+   * const cache = await caches.open(goog.swlib.defaultRuntimeCacheName);
+   * await cache.add('https://third-party.com/path/to/file');
+   * const contentsOfRuntimeCache = await cache.keys();
+   */
+  get defaultRuntimeCacheName() {
+    return defaultCacheName;
   }
 
   /**
@@ -206,17 +198,21 @@ class SWLib {
    */
   _registerInstallActivateEvents() {
     self.addEventListener('install', (event) => {
-      event.waitUntil(Promise.all([
-        this._revisionedCacheManager.install(),
-        this._unrevisionedCacheManager.install(),
-      ]));
+      const cachedUrls = this._revisionedCacheManager.getCachedUrls();
+      if (cachedUrls.length > 0) {
+        logHelper.debug({
+          that: this,
+          message: `The precached URLs will automatically be served using a
+            cache-first strategy.`,
+          data: {'Precached URLs': JSON.stringify(cachedUrls)},
+        });
+      }
+
+      event.waitUntil(this._revisionedCacheManager.install());
     });
 
     self.addEventListener('activate', (event) => {
-      event.waitUntil(Promise.all([
-        this._revisionedCacheManager.cleanup(),
-        this._unrevisionedCacheManager.cleanup(),
-      ]));
+      event.waitUntil(this._revisionedCacheManager.cleanup());
     });
   }
 
@@ -230,7 +226,7 @@ class SWLib {
     });
 
     const route = new Route({
-      match: ({url, event}) => {
+      match: ({url}) => {
         const cachedUrls = this._revisionedCacheManager.getCachedUrls();
         return cachedUrls.indexOf(url.href) !== -1;
       },

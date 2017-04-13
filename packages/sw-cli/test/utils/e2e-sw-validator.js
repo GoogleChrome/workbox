@@ -37,7 +37,7 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
     const injectedSelf = {
       goog: {
         swlib: {
-          cacheRevisionedAssets: (fileManifest) => {
+          precache: (fileManifest) => {
             fileManifestOutput = fileManifest;
           },
         },
@@ -107,7 +107,7 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
     const injectedSelf = {
       goog: {
         swlib: {
-          cacheRevisionedAssets: (fileManifest) => {
+          precache: (fileManifest) => {
             fileManifestOutput = fileManifest;
           },
         },
