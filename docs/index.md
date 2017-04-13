@@ -6,27 +6,27 @@ navigation_weight: 0
 
 # Welcome to Workbox
 
-Workbox is …
+Workbox is a suite of helper libraries for service workers and progressive web
+apps. You can implement workbox features in a manner of minutes. While it's full
+set of features can be used in all types and scales of web apps.
 
-Section will include
+## A service worker in two minutes
 
-* A brief def of service worker and PWAs with a links to robust documentation.
-* TBD
-
-## What does workbox do?
-
-*A service worker in two minutes*: Use
-[sw-cli](reference-docs/stable/latest/module-sw-cli.html#main)
+Use [sw-cli](reference-docs/stable/latest/module-sw-cli.html#main)
 to add a service worker to an existing project in under two minutes.
 
-*Build script integration*: Generate a service worker in your build process
+## A build script in ten minutes
+
+Generate a service worker in your build process
 using [sw-build](reference-docs/stable/latest/module-sw-build.html#main).
 
-*Go beyond the basics*: If you'd like to use the Workbox libraries, and you
+## Much more
+
+Go beyond the basics. If you'd like to use the Workbox libraries, and you
 already have your own service worker, then
 [sw-lib](reference-docs/stable/latest/module-sw-lib.html#main) is a better option.
 
-*And much more*: If you've been using Workbox for a while, or you're
+If you've been using Workbox for a while, or you're
 ambitious, you can delve into its more advanced features. Browse the
 [recipes section](recipes), try the [examples](examples), or look up
 something in the [mobules reference](reference-docs/stable/latest/).
