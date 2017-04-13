@@ -6,10 +6,11 @@ navigation_weight: 3
 
 # sw-lib
 
-The `sw-lib` module is a high-level library that lets you easily configure a
-service worker for precaching assets during install, as well as configure
-runtime caching and routing strategies. Use is easy, requiring only importing
-into your service worker script, and minimal, straight-forward configuration.
+Use `sw-lib` to start your journey toward more complicated Workbox use cases.
+This module is a high-level library that lets you easily configure a service
+worker for precaching assets during install, as well as configure runtime
+caching and routing strategies. Use is easy, requiring only importing into your
+service worker script, and minimal, straight-forward configuration.
 
 
 ## Install
