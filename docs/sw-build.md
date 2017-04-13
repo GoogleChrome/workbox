@@ -27,8 +27,9 @@ If you want to build and configure service workers in a node script then use
 
 ## Generating a Service Worker
 
-In your build script, such as a `gulpfile.js` for example, add code similar to
-the following:
+### gulp
+
+Add the following to your `gulpfile.js`:
 
     const swBuild = require('sw-build');
 
@@ -44,3 +45,15 @@ the following:
     .then(() => {
       console.log('Build file has been created.');
     });
+
+### item
+
+```
+// code
+```
+
+### item
+
+```
+// code
+```
