@@ -21,13 +21,23 @@ import {RequestWrapper} from '../../../sw-runtime-caching/src/index.js';
  */
 class Strategies {
   /**
+   * This constructor will configure shared options across each strategy.
+   * @param  {String} [input.cacheId]  The cacheId to be applied to the run
+   * time strategies cache names.
+   */
+  constructor({cacheId} = {}) {
+    this._cacheId = cacheId;
+  }
+
+  /**
    * A [cache first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network)
    * run-time caching strategy.
    *
-   *  @example
-   * const cacheFirstStrategy = goog.swlib.strategies.cacheFirst();
+   * @example
+   * const = new goog.SWLib();
+   * const cacheFirstStrategy = swlib.strategies.cacheFirst();
    *
-   * goog.swlib.router.addRoute('/styles/*', cacheFirstStrategy);
+   * swlib.router.addRoute('/styles/*', cacheFirstStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -42,9 +52,10 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const cacheOnlyStrategy = goog.swlib.strategies.cacheOnly();
+   * const swlib = new goog.SWLib();
+   * const cacheOnlyStrategy = swlib.strategies.cacheOnly();
    *
-   * goog.swlib.router.addRoute('/styles/*', cacheOnlyStrategy);
+   * swlib.router.addRoute('/styles/*', cacheOnlyStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -60,9 +71,10 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const networkFirstStrategy = goog.swlib.strategies.networkFirst();
+   * const swlib = new goog.SWLib();
+   * const networkFirstStrategy = swlib.strategies.networkFirst();
    *
-   * goog.swlib.router.addRoute('/blog/', networkFirstStrategy);
+   * swlib.router.addRoute('/blog/', networkFirstStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -78,9 +90,10 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const networkOnlyStrategy = goog.swlib.strategies.networkOnly();
+   * const swlib = new goog.SWLib();
+   * const networkOnlyStrategy = swlib.strategies.networkOnly();
    *
-   * goog.swlib.router.addRoute('/admin/', networkOnlyStrategy);
+   * swlib.router.addRoute('/admin/', networkOnlyStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -96,10 +109,11 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
+   * const swlib = new goog.SWLib();
    * const staleWhileRevalidateStrategy =
-   *  goog.swlib.strategies.staleWhileRevalidate();
+   *  swlib.strategies.staleWhileRevalidate();
    *
-   * goog.swlib.router.addRoute('/styles/*', staleWhileRevalidateStrategy);
+   * swlib.router.addRoute('/styles/*', staleWhileRevalidateStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -129,6 +143,7 @@ class Strategies {
 
     const wrapperOptions = {
       plugins: [],
+      cacheId: this._cacheId,
     };
 
     if (options['cacheName']) {

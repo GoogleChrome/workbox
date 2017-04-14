@@ -33,7 +33,7 @@ import Handler from './lib/handler';
 import NetworkFirst from './lib/network-first';
 import NetworkOnly from './lib/network-only';
 import StaleWhileRevalidate from './lib/stale-while-revalidate';
-import {defaultCacheName} from './lib/constants';
+import {getDefaultCacheName} from './lib/constants';
 
 export {
   CacheFirst,
@@ -43,5 +43,5 @@ export {
   NetworkOnly,
   RequestWrapper,
   StaleWhileRevalidate,
-  defaultCacheName,
+  getDefaultCacheName,
 };

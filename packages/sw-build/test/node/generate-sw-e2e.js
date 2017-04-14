@@ -13,12 +13,7 @@ describe('Generate SW End-to-End Tests', function() {
   // NOTE: No JPG
   const FILE_EXTENSIONS = ['html', 'css', 'js', 'png'];
 
-  // Kill the web server once all tests are complete.
-  after(function() {
-    return testServer.stop();
-  });
-
-  beforeEach(() => {
+  before(function() {
     tmpDirectory = fs.mkdtempSync(
       path.join(__dirname, 'tmp-')
     );
@@ -30,10 +25,13 @@ describe('Generate SW End-to-End Tests', function() {
     });
   });
 
-  afterEach(function() {
+  // Kill the web server once all tests are complete.
+  after(function() {
     this.timeout(10 * 1000);
 
     fsExtra.removeSync(tmpDirectory);
+
+    return testServer.stop();
   });
 
   it('should be able to generate a service for example-1 with sw-build', function() {

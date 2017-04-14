@@ -6,6 +6,8 @@ const glob = require('glob');
 const path = require('path');
 const seleniumAssistant = require('selenium-assistant');
 
+/* eslint-disable require-jsdoc */
+
 let globalDriverBrowser;
 
 const performCleanup = (err) => {
@@ -34,13 +36,14 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
   let fileManifestOutput;
   return generateSWCb()
   .then(() => {
+    class SWLib {
+      precache(fileManifest) {
+        fileManifestOutput = fileManifest;
+      }
+    }
     const injectedSelf = {
       goog: {
-        swlib: {
-          precache: (fileManifest) => {
-            fileManifestOutput = fileManifest;
-          },
-        },
+        SWLib,
       },
     };
     const swContent =
@@ -104,13 +107,15 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
     return generateSWCb();
   })
   .then(() => {
+    class SWLib {
+      precache(fileManifest) {
+        fileManifestOutput = fileManifest;
+      }
+    }
+
     const injectedSelf = {
       goog: {
-        swlib: {
-          precache: (fileManifest) => {
-            fileManifestOutput = fileManifest;
-          },
-        },
+        SWLib,
       },
     };
     const swContent =

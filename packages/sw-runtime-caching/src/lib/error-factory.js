@@ -24,6 +24,8 @@ const errors = {
     'due to an invalid response code, by default only 20X responses can ' +
     'be cached.',
   'no-response-received': 'No response received; falling back to cache.',
+  'bad-cache-id': `The 'cacheId' parameter must be a string with at least ` +
+    `one character.`,
 };
 
 export default new ErrorFactory(errors);

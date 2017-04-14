@@ -1,3 +1,4 @@
 /* global goog */
 
-goog.swlib.precache([]);
+const swlib = new goog.SWLib();
+swlib.precache([]);

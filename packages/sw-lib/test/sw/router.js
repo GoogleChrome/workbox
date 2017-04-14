@@ -14,8 +14,9 @@ mocha.setup({
 });
 
 describe('Test swlib.router', function() {
-  it('should be accessible goog.swlib.router', function() {
-    expect(goog.swlib.router).to.exist;
+  it('should be accessible swlib.router', function() {
+    const swlib = new goog.SWLib();
+    expect(swlib.router).to.exist;
   });
 
   const badInput = [
@@ -51,8 +52,9 @@ describe('Test swlib.router', function() {
   badInput.forEach((badInput) => {
     it(`should throw on adding invalid route: ${JSON.stringify(badInput)}`, function() {
       let thrownError = null;
+      const swlib = new goog.SWLib();
       try {
-        goog.swlib.router.registerRoute(badInput.capture, () => {});
+        swlib.router.registerRoute(badInput.capture, () => {});
       } catch (err) {
         thrownError = err;
       }
@@ -70,9 +72,10 @@ describe('Test swlib.router', function() {
     const fakeID = '1234567890';
     const expressRoute = `/:date/:id/test/`;
     const exampleRoute = `/${date}/${fakeID}/test/`;
+    const swlib = new goog.SWLib();
 
     return new Promise((resolve, reject) => {
-      goog.swlib.router.registerRoute(expressRoute, (args) => {
+      swlib.router.registerRoute(expressRoute, (args) => {
         (args.event instanceof FetchEvent).should.equal(true);
         args.url.toString().should.equal(new URL(exampleRoute, location).toString());
         Object.keys(args.params).length.should.equal(2);
@@ -93,9 +96,10 @@ describe('Test swlib.router', function() {
     const capturingGroup = 'test';
     const regexRoute = /\/1234567890\/(\w+)\//;
     const exampleRoute = `/1234567890/${capturingGroup}/`;
+    const swlib = new goog.SWLib();
 
     return new Promise((resolve, reject) => {
-      goog.swlib.router.registerRoute(regexRoute, (args) => {
+      swlib.router.registerRoute(regexRoute, (args) => {
         (args.event instanceof FetchEvent).should.equal(true);
         args.url.toString().should.equal(new URL(exampleRoute, location).toString());
         args.params.length.should.equal(1);
@@ -113,8 +117,9 @@ describe('Test swlib.router', function() {
 
   it(`should throw when registerNavigationRoute() isn't passed a URL`, function() {
     let thrownError = null;
+    const swlib = new goog.SWLib();
     try {
-      goog.swlib.router.registerNavigationRoute();
+      swlib.router.registerNavigationRoute();
     } catch (err) {
       thrownError = err;
     }

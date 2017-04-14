@@ -33,7 +33,7 @@ class Handler {
    * @param {RequestWrapper} [input.requestWrapper] An optional `RequestWrapper`
    *        that is used to configure the cache name and request plugins. If
    *        not provided, a new `RequestWrapper` using the
-   *        [default cache name](#defaultCacheName) will be used.
+   *        [default cache name](#getDefaultCacheName) will be used.
    */
   constructor({requestWrapper, waitOnCache} = {}) {
     if (requestWrapper) {

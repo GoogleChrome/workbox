@@ -27,6 +27,8 @@ const errors = {
   'request-not-cached': `A request failed the criteria to be cached. By ` +
     `default, only responses with 'response.ok = true' are cached.`,
   'should-override': 'Method should be overridden by the extending class.',
+  'bad-cache-id': `The 'cacheId' parameter must be a string with at least ` +
+    `one character.`,
 };
 
 export default new ErrorFactory(errors);

@@ -15,7 +15,8 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', () => self.clients.claim());
 
-goog.swlib.router.registerNavigationRoute(SHELL_URL, {
+const swlib = new goog.SWLib();
+swlib.router.registerNavigationRoute(SHELL_URL, {
   blacklist: [/blacklisted/],
   cacheName: CACHE_NAME,
 });

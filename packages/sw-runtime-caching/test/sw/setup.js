@@ -7,6 +7,7 @@ importScripts(
 );
 
 const expect = self.chai.expect;
+self.chai.should();
 mocha.setup({
   ui: 'bdd',
   reporter: null,

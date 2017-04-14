@@ -15,7 +15,7 @@
 
 import assert from '../../../../lib/assert';
 import logHelper from '../../../../lib/log-helper.js';
-import {pluginCallbacks, defaultCacheName} from './constants';
+import {pluginCallbacks, getDefaultCacheName} from './constants';
 import ErrorFactory from './error-factory';
 
 /**
@@ -56,12 +56,19 @@ class RequestWrapper {
    *        [`options`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match#Parameters)
    *        of all cache `match()` requests made by this wrapper.
    */
-  constructor({cacheName, plugins, fetchOptions, matchOptions} = {}) {
+  constructor({cacheName, cacheId, plugins, fetchOptions, matchOptions} = {}) {
+    if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
+      throw ErrorFactory.createError('bad-cache-id');
+    }
+
     if (cacheName) {
       assert.isType({cacheName}, 'string');
       this.cacheName = cacheName;
+      if (cacheId) {
+        this.cacheName = `${cacheId}-${this.cacheName}`;
+      }
     } else {
-      this.cacheName = defaultCacheName;
+      this.cacheName = getDefaultCacheName({cacheId});
     }
 
     if (fetchOptions) {
@@ -285,7 +292,7 @@ class RequestWrapper {
         }
       });
     } else if (!cacheable) {
-      logHelper.debug(`[RequestWrapper] The response for ${request.url}, with 
+      logHelper.debug(`[RequestWrapper] The response for ${request.url}, with
         a status of ${response.status}, wasn't cached. By default, only
         responses with a status of 200 are cached. You can configure the
         cacheableResponse plugin to change this default.`.replace(/\s+/g, ' '));
