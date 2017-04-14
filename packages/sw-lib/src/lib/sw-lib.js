@@ -35,7 +35,6 @@ class SWLib {
    * You should instantiate this class with `new self.goog.SWLib()`.
    */
   constructor({cacheId} = {}) {
-    /* eslint-disable no-console */
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
     }

@@ -22,8 +22,18 @@
  * with the current service worker, ensuring that multiple service workers used
  * on the same origin will have different default caches.
  *
- * @type {string}
+ * Calling this method without any parameters, this will return
+ * `sw-runtime-caching-<service worker scope>`.
+ *
+ * If you pass in a cacheId, it will prepend this, returning:
+ * `<cacheid>-sw-runtime-caching-<service worker scope>`.
+ *
  * @memberof module:sw-runtime-caching
+ * @param {Object} input
+ * @param {string} input.cacheId This will be prepended to the default cache
+ * name.
+ * @return {string} returns the default cache name used provided these
+ * parameters.
  */
 export const getDefaultCacheName = ({cacheId} = {}) => {
   let cacheName = `sw-runtime-caching`;
