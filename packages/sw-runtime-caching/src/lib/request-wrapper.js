@@ -81,7 +81,7 @@ class RequestWrapper {
       this.matchOptions = matchOptions;
     }
 
-    this.pluginCallbacks = {};
+    this.plugins = new Map();
 
     if (plugins) {
       assert.isArrayOfType({plugins}, 'object');
@@ -89,26 +89,19 @@ class RequestWrapper {
       plugins.forEach((plugin) => {
         for (let callbackName of pluginCallbacks) {
           if (typeof plugin[callbackName] === 'function') {
-            if (!this.pluginCallbacks[callbackName]) {
-              this.pluginCallbacks[callbackName] = [];
+            if (!this.plugins.has(callbackName)) {
+              this.plugins.set(callbackName, []);
+            } else if (callbackName === 'cacheWillUpdate') {
+              throw ErrorFactory.createError(
+                'multiple-cache-will-update-plugins');
+            } else if (callbackName === 'cacheWillMatch') {
+              throw ErrorFactory.createError(
+                'multiple-cache-will-match-plugins');
             }
-            this.pluginCallbacks[callbackName].push(
-              plugin[callbackName].bind(plugin));
+            this.plugins.get(callbackName).push(plugin);
           }
         }
       });
-    }
-
-    if (this.pluginCallbacks.cacheWillUpdate) {
-      if (this.pluginCallbacks.cacheWillUpdate.length !== 1) {
-        throw ErrorFactory.createError('multiple-cache-will-update-plugins');
-      }
-    }
-
-    if (this.pluginCallbacks.cacheWillMatch) {
-      if (this.pluginCallbacks.cacheWillMatch.length !== 1) {
-        throw ErrorFactory.createError('multiple-cache-will-match-plugins');
-      }
     }
   }
 
@@ -156,9 +149,9 @@ class RequestWrapper {
     const cache = await this.getCache();
     let cachedResponse = await cache.match(request, this.matchOptions);
 
-    if (this.pluginCallbacks.cacheWillMatch) {
-      cachedResponse = this.pluginCallbacks.cacheWillMatch[0](
-        {cachedResponse});
+    if (this.plugins.has('cacheWillMatch')) {
+      const plugin = this.plugins.get('cacheWillMatch')[0];
+      cachedResponse = plugin.cacheWillMatch({cachedResponse});
     }
 
     return cachedResponse;
@@ -191,11 +184,15 @@ class RequestWrapper {
       assert.isInstance({request}, Request);
     }
 
-    const clonedRequest = this.pluginCallbacks.fetchDidFail ?
+    // If there is a fetchDidFail plugin, we need to save a clone of the
+    // original request before it's either modified by a requestWillFetch
+    // plugin or before the original request's body is consumed via fetch().
+    const clonedRequest = this.plugins.has('fetchDidFail') ?
       request.clone() : null;
-    if (this.pluginCallbacks.requestWillFetch) {
-      for (let callback of this.pluginCallbacks.requestWillFetch) {
-        const returnedPromise = callback({request});
+
+    if (this.plugins.has('requestWillFetch')) {
+      for (let plugin of this.plugins.get('requestWillFetch')) {
+        const returnedPromise = plugin.requestWillFetch({request});
         assert.isInstance({returnedPromise}, Promise);
         const returnedRequest = await returnedPromise;
         assert.isInstance({returnedRequest}, Request);
@@ -206,9 +203,9 @@ class RequestWrapper {
     try {
       return await fetch(request, this.fetchOptions);
     } catch (err) {
-      if (this.pluginCallbacks.fetchDidFail) {
-        for (let callback of this.pluginCallbacks.fetchDidFail) {
-          callback({request: clonedRequest.clone()});
+      if (this.plugins.has('fetchDidFail')) {
+        for (let plugin of this.plugins.get('fetchDidFail')) {
+          plugin.fetchDidFail({request: clonedRequest.clone()});
         }
       }
 
@@ -256,9 +253,9 @@ class RequestWrapper {
     // response.ok is true if the response status is 2xx.
     // That's the default condition.
     let cacheable = response.ok;
-    if (this.pluginCallbacks.cacheWillUpdate) {
-      cacheable = this.pluginCallbacks.cacheWillUpdate[0](
-        {request, response});
+    if (this.plugins.has('cacheWillUpdate')) {
+      const plugin = this.plugins.get('cacheWillUpdate')[0];
+      cacheable = plugin.cacheWillUpdate({request, response});
     }
 
     if (cacheable) {
@@ -273,7 +270,7 @@ class RequestWrapper {
         // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
         // need it.
         if (response.type !== 'opaque' &&
-          this.pluginCallbacks.cacheDidUpdate) {
+          this.plugins.has('cacheDidUpdate')) {
           oldResponse = await this.match({request});
         }
 
@@ -282,13 +279,15 @@ class RequestWrapper {
         const cacheRequest = cacheKey || request;
         await cache.put(cacheRequest, newResponse);
 
-        for (let callback of (this.pluginCallbacks.cacheDidUpdate || [])) {
-          callback({
-            cacheName: this.cacheName,
-            oldResponse,
-            newResponse,
-            url: request.url,
-          });
+        if (this.plugins.has('cacheDidUpdate')) {
+          for (let plugin of this.plugins.get('cacheDidUpdate')) {
+            plugin.cacheDidUpdate({
+              cacheName: this.cacheName,
+              oldResponse,
+              newResponse,
+              url: request.url,
+            });
+          }
         }
       });
     } else if (!cacheable) {
