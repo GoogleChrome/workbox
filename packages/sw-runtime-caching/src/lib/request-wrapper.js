@@ -84,21 +84,17 @@ class RequestWrapper {
           if (typeof plugin[callbackName] === 'function') {
             if (!this.plugins.has(callbackName)) {
               this.plugins.set(callbackName, []);
+            } else if (callbackName === 'cacheWillUpdate') {
+              throw ErrorFactory.createError(
+                'multiple-cache-will-update-plugins');
+            } else if (callbackName === 'cacheWillMatch') {
+              throw ErrorFactory.createError(
+                'multiple-cache-will-match-plugins');
             }
             this.plugins.get(callbackName).push(plugin);
           }
         }
       });
-    }
-
-    if (this.plugins.has('cacheWillUpdate') &&
-        this.plugins.get('cacheWillUpdate').length !== 1) {
-      throw ErrorFactory.createError('multiple-cache-will-update-plugins');
-    }
-
-    if (this.plugins.has('cacheWillMatch') &&
-      this.plugins.get('cacheWillMatch').length !== 1) {
-      throw ErrorFactory.createError('multiple-cache-will-match-plugins');
     }
   }
 
@@ -181,8 +177,12 @@ class RequestWrapper {
       assert.isInstance({request}, Request);
     }
 
+    // If there is a fetchDidFail plugin, we need to save a clone of the
+    // original request before it's either modified by a requestWillFetch
+    // plugin or before the original request's body is consumed via fetch().
     const clonedRequest = this.plugins.has('fetchDidFail') ?
       request.clone() : null;
+
     if (this.plugins.has('requestWillFetch')) {
       for (let plugin of this.plugins.get('requestWillFetch')) {
         const returnedPromise = plugin.requestWillFetch({request});
