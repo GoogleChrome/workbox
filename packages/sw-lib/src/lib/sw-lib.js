@@ -40,8 +40,6 @@ class SWLib {
     }
     if (clientsClaim && (typeof clientsClaim !== 'boolean')) {
       throw ErrorFactory.createError('bad-clients-claim');
-    } else {
-      clientsClaim = false;
     }
 
     this._runtimeCacheName = getDefaultCacheName({cacheId});
@@ -230,7 +228,6 @@ class SWLib {
     });
 
     self.addEventListener('activate', (event) => {
-      console.log('HEYA <---------------------------------------------', clientsClaim);
       event.waitUntil(
         this._revisionedCacheManager.cleanup()
         .then(() => {

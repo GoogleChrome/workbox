@@ -15,6 +15,15 @@ mocha.setup({
 });
 
 describe('Clients Claim parameter', function() {
+  let stubs = [];
+
+  after(function() {
+    stubs.forEach((stub) => {
+      stub.restore();
+    });
+    stubs = [];
+  });
+
   it('should fail on bad clientsClaim parameter', function() {
     const EXPECTED_ERROR_NAME = 'bad-clients-claim';
     const badInputs = [
@@ -40,54 +49,53 @@ describe('Clients Claim parameter', function() {
   });
 
   it('should not claim when passed in false (clientsClaim)', function() {
-    const claimSpy = sinon.spy(self.clients, 'claim');
+    let called = false;
+    const claimStub = sinon.stub(self.clients, 'claim', () => {
+      called = true;
+      return Promise.resolve();
+    });
+    stubs.push(claimStub);
     new goog.SWLib({
       clientsClaim: false,
     });
-
     return new Promise((resolve, reject) => {
       const activateEvent = new self.InstallEvent('activate');
-      sinon.stub(activateEvent, 'waitUntil', (promiseChain) => {
+      const waitUntilStub = sinon.stub(activateEvent, 'waitUntil', (promiseChain) => {
         promiseChain.then(() => {
-          claimSpy.restore();
-        })
-        .catch(() => {
-          claimSpy.restore();
-        })
-        .then(() => {
-          if (claimSpy.called === false) {
+          if (called === false) {
             resolve();
           } else {
             reject('Client.claim() was called.');
           }
         });
       });
+      stubs.push(waitUntilStub);
       self.dispatchEvent(activateEvent);
     });
   });
 
   it('should claim when passed in true (clientsClaim)', function() {
-    const claimSpy = sinon.spy(self.clients, 'claim');
+    let called = false;
+    const claimStub = sinon.stub(self.clients, 'claim', () => {
+      called = true;
+      return Promise.resolve();
+    });
+    stubs.push(claimStub);
     new goog.SWLib({
       clientsClaim: true,
     });
     return new Promise((resolve, reject) => {
       const activateEvent = new self.InstallEvent('activate');
-      sinon.stub(activateEvent, 'waitUntil', (promiseChain) => {
+      const waitUntilStub = sinon.stub(activateEvent, 'waitUntil', (promiseChain) => {
         promiseChain.then(() => {
-          claimSpy.restore();
-        })
-        .catch(() => {
-          claimSpy.restore();
-        })
-        .then(() => {
-          if (claimSpy.called === true) {
+          if (called === true) {
             resolve();
           } else {
             reject('Client.claim() was NOT called.');
           }
         });
       });
+      stubs.push(waitUntilStub);
       self.dispatchEvent(activateEvent);
     });
   });
