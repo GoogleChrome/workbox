@@ -4,4 +4,6 @@ module.exports = {
     'start of the extension name, i.e. [\'html\']',
   'config-write-failure': 'Unable to write the config file.',
   'config-not-json': 'The config file could not be parsed as JSON.',
+  'no-file-extensions-found': 'No files could be found that are suitable for ' +
+    'caching.',
 };
