@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const inquirer = require('inquirer');
 
+const logHelper = require('../log-helper');
 const errors = require('../errors');
 const constants = require('../constants');
 
@@ -94,5 +95,12 @@ module.exports = (rootDirectory) => {
     }
 
     return results.cacheExtensions;
+  })
+  .catch((err) => {
+    logHelper.error(
+      errors['unable-to-get-file-extensions'],
+      err
+    );
+    throw err;
   });
 };

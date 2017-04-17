@@ -159,12 +159,6 @@ class SWCli {
     })
     .then(() => {
       return swBuild.generateSW(config);
-    })
-    .catch((err) => {
-      cliLogHelper.error(
-        err.stack
-      );
-      throw err;
     });
   }
 
