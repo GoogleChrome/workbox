@@ -33,6 +33,12 @@ class SWLib {
 
   /**
    * You should instantiate this class with `new self.goog.SWLib()`.
+   * @param {Object} input
+   * @param {string} cacheId Defining a cacheId is useful to ensure uniqueness
+   * across cache names. Useful if you have multiple sites served over
+   * localhost.
+   * @param {boolean} clientsClaim To claim currently open clients set
+   * this value to true. (Default false).
    */
   constructor({cacheId, clientsClaim} = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
