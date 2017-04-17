@@ -30,12 +30,16 @@ module.exports =
   })
   .then((templateString) => {
     const relSwlibPath = path.relative(rootDirectory, swlibPath);
+    const swlibOptions = {};
+    if (options.cacheId) {
+      swlibOptions.cacheId = options.cacheId;
+    }
 
     try {
       return template(templateString)({
         manifestEntries: manifestEntries,
         swlibPath: relSwlibPath,
-        cacheId: options.cacheId,
+        swlibOptions,
       });
     } catch (err) {
       throw new Error(

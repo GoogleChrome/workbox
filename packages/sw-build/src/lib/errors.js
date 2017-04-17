@@ -69,4 +69,6 @@ module.exports = {
   'multiple-injection-points-found': `There can only be one injection point ` +
     `in your service worker file. Please ensure you only have one instance ` +
     `of  'swlib.precache([])' in your service worker file.`,
+  'populating-sw-tmpl-failed': `Unable to generate service worker from ` +
+    `template.`,
 };

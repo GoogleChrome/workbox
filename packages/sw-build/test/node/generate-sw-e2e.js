@@ -45,19 +45,24 @@ describe('Generate SW End-to-End Tests', function() {
       tmpDirectory);
 
     const swName = `${Date.now()}-sw.js`;
-
+    const modifyUrlPrefix = {
+      '/': '/example-prefix/',
+    };
     const swBuild = require('../../build/index.js');
     return validator.performTest(() => {
       return swBuild.generateSW({
         rootDirectory: tmpDirectory,
         dest: swName,
         staticFileGlobs: [`**\/*.{${FILE_EXTENSIONS.join(',')}}`],
+        cacheId: 'example-cache-id',
+        modifyUrlPrefix,
       });
     }, {
       exampleProject: tmpDirectory,
       swName,
       fileExtensions: FILE_EXTENSIONS,
       baseTestUrl,
+      modifyUrlPrefix,
     });
   });
 });

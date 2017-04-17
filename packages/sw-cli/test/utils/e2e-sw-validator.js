@@ -32,7 +32,7 @@ const performCleanup = (err) => {
   });
 };
 
-const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, baseTestUrl}) => {
+const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, baseTestUrl, modifyUrlPrefix}) => {
   let fileManifestOutput;
   return generateSWCb()
   .then(() => {
@@ -83,7 +83,14 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
 
     fileManifestOutput.forEach((details) => {
       try {
-        fs.statSync(path.join(exampleProject, details.url));
+        let filePath = path.join(exampleProject, details.url);
+        if (modifyUrlPrefix) {
+          Object.keys(modifyUrlPrefix).forEach((key) => {
+            const value = modifyUrlPrefix[key];
+            filePath = filePath.replace(value, key);
+          });
+        }
+        fs.statSync(filePath);
       } catch (err) {
         throw new Error(`The path '${details.url}' from the manifest doesn't seem valid.`);
       }

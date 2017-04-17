@@ -37,6 +37,9 @@ const errors = require('./errors');
  * If a URL is rendered/templated on the server, its contents may not depend on
  * a single file. This maps URLs to a list of file names, or to a string
  * value, that uniquely determines each URL's contents.
+ * @param {String} [input.modifyUrlPrefix] An optional object of key value pairs
+ * where the key will be replaced at the start of a url with the corresponding
+ * value.
  * @param {String} [input.cacheId] An optional ID to be prepended to caches
  * used by sw-build. This is primarily useful for local development where
  * multiple sites may be served from `http://localhost`.
@@ -80,8 +83,12 @@ const generateSW = function(input) {
     globIgnores.push(path.relative(rootDirectory, swlibPath));
   })
   .then(() => {
-    return getFileManifestEntries(
-      {staticFileGlobs, globIgnores, rootDirectory, templatedUrls});
+    return getFileManifestEntries({
+      staticFileGlobs,
+      globIgnores,
+      rootDirectory,
+      templatedUrls,
+    });
   })
   .then((manifestEntries) => {
     return writeServiceWorker(
