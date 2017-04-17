@@ -157,6 +157,16 @@ class ServerInstance {
         res.redirect(301, `/__test/mocha/browser/${req.params.pkg}`);
       }
     });
+
+    this._app.get('/packages/:pkg/test/sw/', function(req, res, next) {
+      const index = path.join(__dirname, '..', 'packages', req.params.pkg,
+        'test', 'browser', 'index.html');
+      if (fs.existsSync(index)) {
+        next();
+      } else {
+        res.redirect(301, `/__test/mocha/sw/${req.params.pkg}`);
+      }
+    });
   }
 
   start(rootDirectory, port) {

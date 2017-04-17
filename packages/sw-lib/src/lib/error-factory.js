@@ -28,6 +28,7 @@ const errors = {
     `expects a URL string as its first parameter.`,
   'bad-cache-id': `The 'cacheId' parameter must be a string with at least ` +
     `one character`,
+  'bad-clients-claim': `The 'clientsClaim' parameter must be a boolean.`,
 };
 
 export default new ErrorFactory(errors);

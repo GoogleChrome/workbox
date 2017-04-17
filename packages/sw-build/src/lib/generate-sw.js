@@ -43,6 +43,9 @@ const errors = require('./errors');
  * @param {String} [input.cacheId] An optional ID to be prepended to caches
  * used by sw-build. This is primarily useful for local development where
  * multiple sites may be served from `http://localhost`.
+ * @param {Boolean} [input.clientsClaim] An optional boolean that indicates if
+ * the page should skip waiting and claim current pages on a new service worker
+ * install (Defaults to true).
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
