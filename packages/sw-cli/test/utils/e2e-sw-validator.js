@@ -47,6 +47,7 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
         SWLib,
       },
     };
+    console.log('Adding: ', exampleProject, swName);
     const swContent =
       fs.readFileSync(path.join(exampleProject, swName));
     // To smoke test the service worker is valid JavaScript we can run it
