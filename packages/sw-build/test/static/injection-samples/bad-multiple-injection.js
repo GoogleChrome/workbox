@@ -2,6 +2,7 @@
 
 // Multiple entries.
 
-goog.swlib.precache([]);
+const swlib = new goog.SWLib();
+swlib.precache([]);
 
-goog.swlib.precache([]);
+swlib.precache([]);

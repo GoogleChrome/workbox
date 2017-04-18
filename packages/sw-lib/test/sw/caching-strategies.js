@@ -23,7 +23,8 @@ describe('Test caching strategies.', function() {
   ];
   strategies.forEach((strategy) => {
     it(`should have '${strategy}' available`, function() {
-      expect(goog.swlib.strategies[strategy]).to.exist;
+      const swlib = new goog.SWLib();
+      expect(swlib.strategies[strategy]).to.exist;
     });
 
     const badArguments = [
@@ -36,27 +37,31 @@ describe('Test caching strategies.', function() {
 
     badArguments.forEach((badArgument) => {
       it(`should throw an error for '${strategy}' when argument is '${JSON.stringify(badArgument)}'`, function() {
+        const swlib = new goog.SWLib();
         expect(() => {
-          goog.swlib[strategy]({});
+          swlib[strategy]({});
         }).to.throw;
       });
     });
 
     it(`should return a Handler when '${strategy}' is instantiated without arguments`, function() {
-      const handler = goog.swlib.strategies[strategy]();
+      const swlib = new goog.SWLib();
+      const handler = swlib.strategies[strategy]();
       expect(handler.handle).to.exist;
       expect(handler.requestWrapper).to.exist;
     });
 
     it(`should return a Handler when '${strategy}' is instantiated with empty object`, function() {
-      const handler = goog.swlib.strategies[strategy]({});
+      const swlib = new goog.SWLib();
+      const handler = swlib.strategies[strategy]({});
       expect(handler.handle).to.exist;
       expect(handler.requestWrapper).to.exist;
     });
 
     it(`should return a Handler when '${strategy}' is instantiated with cacheName`, function() {
       const CACHE_NAME = 'hello-world-' + Date.now();
-      const handler = goog.swlib.strategies[strategy]({
+      const swlib = new goog.SWLib();
+      const handler = swlib.strategies[strategy]({
         cacheName: CACHE_NAME,
       });
       expect(handler.handle).to.exist;
@@ -69,13 +74,14 @@ describe('Test caching strategies.', function() {
         maxEntries: 10,
         maxAgeSeconds: 60 * 60,
       };
-      const handler = goog.swlib.strategies[strategy]({
+      const swlib = new goog.SWLib();
+      const handler = swlib.strategies[strategy]({
         cacheExpiration: CACHE_EXPIRATION,
       });
       expect(handler.handle).to.exist;
       expect(handler.requestWrapper).to.exist;
-      expect(handler.requestWrapper.pluginCallbacks.cacheDidUpdate).to.exist;
-      handler.requestWrapper.pluginCallbacks.cacheDidUpdate.length.should.equal(1);
+      expect(handler.requestWrapper.plugins.has('cacheDidUpdate')).to.be.true;
+      handler.requestWrapper.plugins.get('cacheDidUpdate').length.should.equal(1);
     });
 
     it(`should return a Handler when '${strategy}' is instantiated with broadcastCacheUpdate options`, function() {
@@ -83,13 +89,14 @@ describe('Test caching strategies.', function() {
       const BROADCAST_CACHE_UPDATE = {
         channelName: CHANNEL_NAME,
       };
-      const handler = goog.swlib.strategies[strategy]({
+      const swlib = new goog.SWLib();
+      const handler = swlib.strategies[strategy]({
         broadcastCacheUpdate: BROADCAST_CACHE_UPDATE,
       });
       expect(handler.handle).to.exist;
       expect(handler.requestWrapper).to.exist;
-      expect(handler.requestWrapper.pluginCallbacks.cacheDidUpdate).to.exist;
-      handler.requestWrapper.pluginCallbacks.cacheDidUpdate.length.should.equal(1);
+      expect(handler.requestWrapper.plugins.has('cacheDidUpdate')).to.be.true;
+      handler.requestWrapper.plugins.get('cacheDidUpdate').length.should.equal(1);
     });
 
     it(`should return a Handler when '${strategy}' is instantiated with cacheableResponse options`, function() {
@@ -100,12 +107,13 @@ describe('Test caching strategies.', function() {
           'Example-Header-2': 'Header-Value-2',
         },
       };
-      const handler = goog.swlib.strategies[strategy]({
+      const swlib = new goog.SWLib();
+      const handler = swlib.strategies[strategy]({
         cacheableResponse: CACHEABLE_RESPONSE_OPTIONS,
       });
       expect(handler.handle).to.exist;
       expect(handler.requestWrapper).to.exist;
-      expect(handler.requestWrapper.pluginCallbacks.cacheWillUpdate).to.exist;
+      expect(handler.requestWrapper.plugins.has('cacheWillUpdate')).to.be.true;
     });
   });
 });

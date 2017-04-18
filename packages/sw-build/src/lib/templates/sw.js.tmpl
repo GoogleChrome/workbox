@@ -19,4 +19,5 @@ importScripts('<%= swlibPath %>');
  */
 const fileManifest = <%= JSON.stringify(manifestEntries, null, 2) %>;
 
-self.goog.swlib.precache(fileManifest);
+const swlib = new self.goog.SWLib(<%= JSON.stringify(swlibOptions, null, 2) %>);
+swlib.precache(fileManifest);

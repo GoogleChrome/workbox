@@ -6,6 +6,8 @@ const glob = require('glob');
 const path = require('path');
 const seleniumAssistant = require('selenium-assistant');
 
+/* eslint-disable require-jsdoc */
+
 let globalDriverBrowser;
 
 const performCleanup = (err) => {
@@ -30,17 +32,18 @@ const performCleanup = (err) => {
   });
 };
 
-const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, baseTestUrl}) => {
+const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, baseTestUrl, modifyUrlPrefix}) => {
   let fileManifestOutput;
   return generateSWCb()
   .then(() => {
+    class SWLib {
+      precache(fileManifest) {
+        fileManifestOutput = fileManifest;
+      }
+    }
     const injectedSelf = {
       goog: {
-        swlib: {
-          precache: (fileManifest) => {
-            fileManifestOutput = fileManifest;
-          },
-        },
+        SWLib,
       },
     };
     const swContent =
@@ -80,7 +83,14 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
 
     fileManifestOutput.forEach((details) => {
       try {
-        fs.statSync(path.join(exampleProject, details.url));
+        let filePath = path.join(exampleProject, details.url);
+        if (modifyUrlPrefix) {
+          Object.keys(modifyUrlPrefix).forEach((key) => {
+            const value = modifyUrlPrefix[key];
+            filePath = filePath.replace(value, key);
+          });
+        }
+        fs.statSync(filePath);
       } catch (err) {
         throw new Error(`The path '${details.url}' from the manifest doesn't seem valid.`);
       }
@@ -104,13 +114,15 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
     return generateSWCb();
   })
   .then(() => {
+    class SWLib {
+      precache(fileManifest) {
+        fileManifestOutput = fileManifest;
+      }
+    }
+
     const injectedSelf = {
       goog: {
-        swlib: {
-          precache: (fileManifest) => {
-            fileManifestOutput = fileManifest;
-          },
-        },
+        SWLib,
       },
     };
     const swContent =

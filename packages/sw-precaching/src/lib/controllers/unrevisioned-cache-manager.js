@@ -20,8 +20,8 @@ class UnrevisionedCacheManager extends BaseCacheManager {
    * @param {String} [input.cacheName] Define the cache used to stash these
    * entries.
    */
-   constructor({cacheName} = {}) {
-     super(cacheName);
+   constructor({cacheName, cacheId} = {}) {
+     super({cacheName, cacheId});
   }
 
   /**

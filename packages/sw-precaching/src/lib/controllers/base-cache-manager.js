@@ -11,15 +11,19 @@ class BaseCacheManager {
    * Constructor for BaseCacheManager
    * @param {String} cacheName This is the cache name to store requested assets.
    */
-  constructor(cacheName) {
+  constructor({cacheName, cacheId}) {
+    if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
+      throw ErrorFactory.createError('bad-cache-id');
+    }
+
     this._entriesToCache = new Map();
     this._requestWrapper = new RequestWrapper({
       cacheName,
+      cacheId,
       fetchOptions: {
         credentials: 'same-origin',
       },
     });
-    this._cacheName = this._requestWrapper.cacheName;
   }
 
   /**
@@ -46,7 +50,7 @@ class BaseCacheManager {
    * @return {String} The cache name used for this manager.
    */
   getCacheName() {
-    return this._cacheName;
+    return this._requestWrapper.cacheName;
   }
 
   /**
@@ -157,7 +161,7 @@ class BaseCacheManager {
    * cleaned.
    */
   async cleanup() {
-    if (!await caches.has(this._cacheName)) {
+    if (!await caches.has(this.getCacheName())) {
       // Cache doesn't exist, so nothing to delete
       return;
     }
@@ -192,7 +196,7 @@ class BaseCacheManager {
    */
   async _getCache() {
     if (!this._cache) {
-      this._cache = await caches.open(this._cacheName);
+      this._cache = await caches.open(this.getCacheName());
     }
 
     return this._cache;

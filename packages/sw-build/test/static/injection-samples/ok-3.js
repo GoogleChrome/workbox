@@ -9,4 +9,5 @@ const precache = (input) => {
 
 precache([]);
 
-goog.swlib.precache(    [    ]    );
+const swlib = new goog.SWLib();
+swlib.precache(    [    ]    );

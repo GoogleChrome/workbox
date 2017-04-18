@@ -14,9 +14,11 @@ mocha.setup({
 });
 
 describe('Test Library Surface', function() {
-  it('should be accessible via goog.swlib', function() {
-    expect(goog.swlib).to.exist;
+  it('should be accessible via goog.SWLib', function() {
+    expect(goog.SWLib).to.exist;
   });
 
-  // TODO Test options
+  it('should be able to construct goog.SWLib without error', function() {
+    new goog.SWLib();
+  });
 });
