@@ -32,7 +32,8 @@ const performCleanup = (err) => {
   });
 };
 
-const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, baseTestUrl, modifyUrlPrefix}) => {
+const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, baseTestUrl, modifyUrlPrefix, globIgnores}) => {
+  console.log('PERFORM TEST ============> ', swName);
   let fileManifestOutput;
   return generateSWCb()
   .then(() => {
@@ -63,12 +64,16 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
     expect(fileManifestOutput).to.exist;
 
     // Check the files that we expect to be defined are.
+    const ignoreGlobs = [
+      `${exampleProject}/${swName}`,
+      `${exampleProject}/sw-lib.*.min.js`,
+    ].concat(globIgnores.map((ignoreGlob) => {
+      return `${exampleProject}/${ignoreGlob}`;
+    }));
+    console.log(ignoreGlobs);
     let expectedFiles = glob.sync(
       `${exampleProject}/**/*.{${fileExtensions.join(',')}}`, {
-      ignore: [
-        `${exampleProject}/${swName}`,
-        `${exampleProject}/sw-lib.*.min.js`,
-      ],
+      ignore: ignoreGlobs,
     });
     expectedFiles = expectedFiles.map((file) => {
       return `/${path.relative(exampleProject, file).replace(path.sep, '/')}`;

@@ -80,7 +80,13 @@ describe('Generate SW End-to-End Tests', function() {
 
     const cli = new SWCli();
     return validator.performTest(() => {
-      return cli.handleCommand('generate:sw');
+      return cli.handleCommand('generate:sw')
+      .then(() => {
+        console.log('Finished?');
+      })
+      .catch(() => {
+        console.log('Error?');
+      });
     }, {
       exampleProject: tmpDirectory,
       swName,

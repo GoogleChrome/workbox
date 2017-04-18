@@ -10,8 +10,8 @@ describe('Generate SW End-to-End Tests', function() {
   let tmpDirectory;
   let testServer;
   let baseTestUrl;
-  // NOTE: No JPG
-  const FILE_EXTENSIONS = ['html', 'css', 'js', 'png'];
+  // NOTE: No JPG and txt are only in an ignored path
+  const FILE_EXTENSIONS = ['html', 'css', 'js', 'png', 'txt'];
 
   before(function() {
     tmpDirectory = fs.mkdtempSync(
@@ -54,6 +54,7 @@ describe('Generate SW End-to-End Tests', function() {
         rootDirectory: tmpDirectory,
         dest: swName,
         staticFileGlobs: [`**\/*.{${FILE_EXTENSIONS.join(',')}}`],
+        globIgnores: ['ignore-this-directory/**/*'],
         cacheId: 'example-cache-id',
         modifyUrlPrefix,
       });
@@ -61,6 +62,7 @@ describe('Generate SW End-to-End Tests', function() {
       exampleProject: tmpDirectory,
       swName,
       fileExtensions: FILE_EXTENSIONS,
+      globIgnores: ['ignore-this-directory/**/*'],
       baseTestUrl,
       modifyUrlPrefix,
     });

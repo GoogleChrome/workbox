@@ -27,8 +27,8 @@ const getStringDetails = require('./utils/get-string-details');
  * If a URL is rendered/templated on the server, its contents may not depend on
  * a single file. This maps URLs to a list of file names, or to a string
  * value, that uniquely determines each URL's contents.
- * @return {Array<ManifestEntry>} An array of ManifestEntries will include
- * a url and revision details for each file found.
+ * @return {Promise<Array<ManifestEntry>>} An array of ManifestEntries will
+ * include a url and revision details for each file found.
  * @memberof module:sw-build
  */
 const getFileManifestEntries = (input) => {
