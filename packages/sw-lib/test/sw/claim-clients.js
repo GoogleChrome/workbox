@@ -17,7 +17,7 @@ mocha.setup({
 describe('Clients Claim parameter', function() {
   let stubs = [];
 
-  after(function() {
+  afterEach(function() {
     stubs.forEach((stub) => {
       stub.restore();
     });
