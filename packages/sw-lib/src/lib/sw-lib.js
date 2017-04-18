@@ -33,10 +33,19 @@ class SWLib {
 
   /**
    * You should instantiate this class with `new self.goog.SWLib()`.
+   * @param {Object} input
+   * @param {string} cacheId Defining a cacheId is useful to ensure uniqueness
+   * across cache names. Useful if you have multiple sites served over
+   * localhost.
+   * @param {boolean} clientsClaim To claim currently open clients set
+   * this value to true. (Default false).
    */
-  constructor({cacheId} = {}) {
+  constructor({cacheId, clientsClaim} = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
+    }
+    if (clientsClaim && (typeof clientsClaim !== 'boolean')) {
+      throw ErrorFactory.createError('bad-clients-claim');
     }
 
     this._runtimeCacheName = getDefaultCacheName({cacheId});
@@ -47,7 +56,7 @@ class SWLib {
     this._strategies = new Strategies({
       cacheId,
     });
-    this._registerInstallActivateEvents();
+    this._registerInstallActivateEvents(clientsClaim);
     this._registerDefaultRoutes();
   }
 
@@ -207,8 +216,9 @@ class SWLib {
   /**
    * This method will register listeners for the install and activate events.
    * @private
+   * @param {boolean} clientsClaim Whether to claim clients in activate or not.
    */
-  _registerInstallActivateEvents() {
+  _registerInstallActivateEvents(clientsClaim) {
     self.addEventListener('install', (event) => {
       const cachedUrls = this._revisionedCacheManager.getCachedUrls();
       if (cachedUrls.length > 0) {
@@ -224,7 +234,14 @@ class SWLib {
     });
 
     self.addEventListener('activate', (event) => {
-      event.waitUntil(this._revisionedCacheManager.cleanup());
+      event.waitUntil(
+        this._revisionedCacheManager.cleanup()
+        .then(() => {
+          if (clientsClaim) {
+            return self.clients.claim();
+          }
+        })
+      );
     });
   }
 
