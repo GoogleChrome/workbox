@@ -33,7 +33,7 @@ const performCleanup = (err) => {
 };
 
 const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, baseTestUrl, modifyUrlPrefix, globIgnores}) => {
-  console.log('PERFORM TEST ============> ', swName);
+  globIgnores = globIgnores || [];
   let fileManifestOutput;
   return generateSWCb()
   .then(() => {
@@ -70,7 +70,6 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
     ].concat(globIgnores.map((ignoreGlob) => {
       return `${exampleProject}/${ignoreGlob}`;
     }));
-    console.log(ignoreGlobs);
     let expectedFiles = glob.sync(
       `${exampleProject}/**/*.{${fileExtensions.join(',')}}`, {
       ignore: ignoreGlobs,
@@ -223,6 +222,10 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
 
       pathnames.length.should.equal(0);
     });
+  })
+  .catch((err) => {
+    console.error(err);
+    throw err;
   })
   .then(performCleanup, performCleanup);
 };
