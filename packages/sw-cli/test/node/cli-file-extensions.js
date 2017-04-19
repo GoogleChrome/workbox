@@ -39,7 +39,9 @@ describe('Ask for File Extensions to Cache', function() {
       captured.consoleLogs.length.should.equal(0);
       captured.consoleWarns.length.should.equal(0);
       captured.consoleErrors.length.should.not.equal(0);
-
+      console.log('expectedErrorCode: ', expectedErrorCode);
+      console.log('errors[expectedErrorCode]: ', errors[expectedErrorCode]);
+      console.log('<------------', captured);
       let foundErrorMsg = false;
       let foundInjectedErrorMsg = false;
       captured.consoleErrors.forEach((errLog) => {
@@ -198,7 +200,7 @@ describe('Ask for File Extensions to Cache', function() {
     return checkError(askForExtensionsToCache, 'unable-to-get-file-extensions');
   });
 
-  it('should hanlde no files extensions from \'inquirer\'', function() {
+  it('should handle no files extensions from \'inquirer\'', function() {
     const FILE_ONLY_INPUT = [
       'hello.txt',
       'hello.md',

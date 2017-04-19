@@ -30,9 +30,13 @@ module.exports =
   })
   .then((templateString) => {
     const relSwlibPath = path.relative(rootDirectory, swlibPath);
+
     const swlibOptions = {};
     if (options.cacheId) {
       swlibOptions.cacheId = options.cacheId;
+    }
+    if (options.clientsClaim) {
+      swlibOptions.clientsClaim = true;
     }
 
     try {
