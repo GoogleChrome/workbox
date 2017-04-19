@@ -7,7 +7,8 @@ describe(`End to End Test of Cache Expiration`, function() {
   beforeEach(() => goog.swUtils.cleanState());
 
   it(`should work properly when there are many simultaneous requests`, async function() {
-    const iframe = await goog.swUtils.controlledBySW('../static/cache-expiration.js');
+    const iframe = await goog.swUtils.controlledBySW(
+      '/packages/sw-cache-expiration/test/static/cache-expiration.js');
 
     const fetchPromises = [];
     for (let i = 0; i < NUMBER_OF_REQUESTS; i++) {
@@ -23,7 +24,8 @@ describe(`End to End Test of Cache Expiration`, function() {
   });
 
   it(`should work properly when there are many sequential requests`, async function() {
-    const iframe = await goog.swUtils.controlledBySW('../static/cache-expiration.js');
+    const iframe = await goog.swUtils.controlledBySW(
+      '/packages/sw-cache-expiration/test/static/cache-expiration.js');
 
     for (let i = 0; i < NUMBER_OF_REQUESTS; i++) {
       const url = `${BASE_URL}?param=${i}`;
