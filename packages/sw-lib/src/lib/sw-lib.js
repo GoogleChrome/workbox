@@ -39,18 +39,13 @@ class SWLib {
    * localhost.
    * @param {boolean} clientsClaim To claim currently open clients set
    * this value to true. (Default false).
-   * @param {boolean} skipWaiting To force the current service worker to
-   * activate. (Default false).
    */
-  constructor({cacheId, clientsClaim, skipWaiting} = {}) {
+  constructor({cacheId, clientsClaim} = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
     }
     if (clientsClaim && (typeof clientsClaim !== 'boolean')) {
       throw ErrorFactory.createError('bad-clients-claim');
-    }
-    if (skipWaiting && (typeof skipWaiting !== 'boolean')) {
-      throw ErrorFactory.createError('bad-skip-waiting');
     }
 
     this._runtimeCacheName = getDefaultCacheName({cacheId});
@@ -61,7 +56,7 @@ class SWLib {
     this._strategies = new Strategies({
       cacheId,
     });
-    this._registerInstallActivateEvents(skipWaiting, clientsClaim);
+    this._registerInstallActivateEvents(clientsClaim);
     this._registerDefaultRoutes();
   }
 
@@ -221,10 +216,9 @@ class SWLib {
   /**
    * This method will register listeners for the install and activate events.
    * @private
-   * @param {boolean} skipWaiting Whether to skip waiting in install or not.
    * @param {boolean} clientsClaim Whether to claim clients in activate or not.
    */
-  _registerInstallActivateEvents(skipWaiting, clientsClaim) {
+  _registerInstallActivateEvents(clientsClaim) {
     self.addEventListener('install', (event) => {
       const cachedUrls = this._revisionedCacheManager.getCachedUrls();
       if (cachedUrls.length > 0) {
@@ -236,14 +230,7 @@ class SWLib {
         });
       }
 
-      event.waitUntil(
-        this._revisionedCacheManager.install()
-        .then(() => {
-          if (skipWaiting) {
-            return self.skipWaiting();
-          }
-        })
-      );
+      event.waitUntil(this._revisionedCacheManager.install());
     });
 
     self.addEventListener('activate', (event) => {
