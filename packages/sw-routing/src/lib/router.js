@@ -52,11 +52,24 @@ class Router {
   /**
    * Start with an empty array of routes, and set up the fetch handler.
    */
-  constructor() {
+  constructor({handleFetch} = {}) {
+    if (typeof handleFetch === 'undefined') {
+      handleFetch = true;
+    }
+
     // _routes will contain a mapping of HTTP method name ('GET', etc.) to an
     // array of all the corresponding Route instances that are registered.
     this._routes = new Map();
 
+    if (handleFetch) {
+      this._addFetchListener();
+    }
+  }
+
+  /**
+   * This method will actually add the fetch event listener.
+   */
+  _addFetchListener() {
     self.addEventListener('fetch', (event) => {
       const url = new URL(event.request.url);
       if (!url.protocol.startsWith('http')) {

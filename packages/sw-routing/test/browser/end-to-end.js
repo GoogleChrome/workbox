@@ -109,5 +109,19 @@ describe('End to End Tests', function() {
             .then((text) => expect(text).to.equal('defaultHandler response')),
         ]));
     });
+
+    it('should always go to network with handleFetch set to false - includes routes, defaultHandler, and catchHandler', function() {
+      return goog.swUtils.activateSW('../static/router-handle-fetch-false.js')
+        .then((iframe) => Promise.all([
+          iframe.contentWindow.fetch('/static')
+            .then((response) => expect(response.ok).to.equal(false)),
+
+          iframe.contentWindow.fetch('/throw-error')
+            .then((response) => expect(response.ok).to.equal(false)),
+
+          iframe.contentWindow.fetch('/will-not-match')
+            .then((response) => expect(response.ok).to.equal(false)),
+        ]));
+    });
   });
 });
