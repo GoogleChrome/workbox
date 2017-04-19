@@ -38,9 +38,6 @@ module.exports =
     if (options.clientsClaim) {
       swlibOptions.clientsClaim = true;
     }
-    if (options.skipWaiting) {
-      swlibOptions.skipWaiting = true;
-    }
 
     try {
       return template(templateString)({
