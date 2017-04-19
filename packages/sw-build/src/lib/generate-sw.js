@@ -45,6 +45,8 @@ const errors = require('./errors');
  * multiple sites may be served from `http://localhost`.
  * @param {Boolean} [input.clientsClaim] An optional boolean that indicates if
  * the new service worker should claim current pages (Defaults to false).
+ * @param {Boolean} [input.skipWaiting] An optional boolean that indicates if
+ * the new service worker should activate immediately (Defaults to false).
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *

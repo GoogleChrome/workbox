@@ -29,6 +29,7 @@ const errors = {
   'bad-cache-id': `The 'cacheId' parameter must be a string with at least ` +
     `one character`,
   'bad-clients-claim': `The 'clientsClaim' parameter must be a boolean.`,
+  'bad-skip-waiting': `The 'skipWaiting' parameter must be a boolean`,
 };
 
 export default new ErrorFactory(errors);
