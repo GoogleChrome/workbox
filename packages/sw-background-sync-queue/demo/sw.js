@@ -28,12 +28,17 @@ let bgQueue = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
 	},
 });
 
+const replayBroadcastChannel = new BroadcastChannel('replay_channel');
+replayBroadcastChannel.onmessage = function() {
+	bgQueue.replayRequests();
+};
+
 const requestWrapper = new goog.runtimeCaching.RequestWrapper({
   plugins: [bgQueue],
 });
 
 const route = new goog.routing.RegExpRoute({
-  regExp: new RegExp('^https://jsonplaceholder.typicode.com'),
+  regExp: new RegExp('^https://jsonplaceholder.typicode.com/(\\w+)'),
   handler: new goog.runtimeCaching.NetworkOnly({requestWrapper}),
 });
 
