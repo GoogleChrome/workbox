@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import {CacheableResponse} from '../../../sw-cacheable-response/src/index';
+import {CacheableResponsePlugin} from '../../../sw-cacheable-response/src/index';
 import ErrorFactory from './error-factory';
 import Handler from './handler';
 import assert from '../../../../lib/assert';
@@ -60,7 +60,7 @@ class NetworkFirst extends Handler {
   constructor(input = {}) {
     super(input);
 
-    this._cacheable = new CacheableResponse({statuses: [0, 200]});
+    this._cacheablePlugin = new CacheableResponsePlugin({statuses: [0, 200]});
 
     const {networkTimeoutSeconds} = input;
     if (networkTimeoutSeconds) {
@@ -96,7 +96,7 @@ class NetworkFirst extends Handler {
     const networkPromise = this.requestWrapper.fetchAndCache({
       request: event.request,
       waitOnCache: this.waitOnCache,
-      defaultCacheableResponseCheck: this._cacheable.isResponseCacheable,
+      handlerDefaultCacheableResponsePlugin: this._cacheablePlugin,
     }).then((response) => {
       if (timeoutId) {
         clearTimeout(timeoutId);

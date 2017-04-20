@@ -243,7 +243,7 @@ describe('Test of the RequestWrapper class', function() {
         .then(() => done(new Error('The promise should have rejected.')))
         .catch((error) => {
           expect(cachePutStub.firstCall).to.be.null;
-          expect(error.name).to.eql('invalid-reponse-for-caching');
+          expect(error.name).to.eql('invalid-response-for-caching');
           done();
         });
     });

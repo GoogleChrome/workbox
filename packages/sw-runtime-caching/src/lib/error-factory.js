@@ -21,8 +21,7 @@ const errors = {
   'multiple-cache-will-match-plugins': 'You cannot register more than one ' +
     'plugin that implements cacheWillMatch.',
   'invalid-response-for-caching': 'The fetched response could not be cached ' +
-    'due to an invalid response code, by default only 20X responses can ' +
-    'be cached.',
+    'due to an invalid response code.',
   'no-response-received': 'No response received; falling back to cache.',
   'bad-cache-id': `The 'cacheId' parameter must be a string with at least ` +
     `one character.`,

@@ -15,10 +15,9 @@
 
 import ErrorFactory from './error-factory';
 import assert from '../../../../lib/assert';
-import logHelper from '../../../../lib/log-helper.js';
 import {CacheableResponsePlugin} from
   '../../../sw-cacheable-response/src/index';
-import {pluginCallbacks, defaultCacheName} from './constants';
+import {pluginCallbacks, getDefaultCacheName} from './constants';
 
 /**
  * This class is used by the various subclasses of `Handler` to configure the
@@ -118,7 +117,7 @@ class RequestWrapper {
    * @return {function} The default plugin used to determine whether a
    *         response is cacheable.
    */
-  get classDefaultCacheableResponsePlugin() {
+  get globalDefaultCacheableResponsePlugin() {
     // Lazy-construct the CacheableResponsePlugin instance.
     if (!this._defaultCacheableResponsePlugin) {
       this._defaultCacheableResponsePlugin =
@@ -264,14 +263,14 @@ class RequestWrapper {
    * @param {Request} [input.cacheKey] Supply a cacheKey if you wish to cache
    *        the response against an alternative request to the `request`
    *        argument.
-   * @param {function} [input.methodDefaultCacheableResponsePlugin] Allows the
+   * @param {function} [input.handlerDefaultCacheableResponsePlugin] Allows the
    *        caller to override the default check for cacheability, for
    *        situations in which the cacheability check wasn't explicitly
    *        configured when constructing the `RequestWrapper`.
    * @return {Promise.<Response>} The network response.
    */
   async fetchAndCache({request, waitOnCache, cacheKey,
-                        methodDefaultCacheableResponsePlugin}) {
+                        handlerDefaultCacheableResponsePlugin}) {
     assert.atLeastOne({request});
 
     let cachingComplete;
@@ -284,14 +283,14 @@ class RequestWrapper {
     //    constructor, which sets this._userSpecifiedCachableResponsePlugin.
     // 2. Passing in a parameter to the fetchAndCache() method (done by certain
     //    runtime handlers, like `StaleWhileRevalidate`), which sets
-    //    methodDefaultCacheableResponsePlugin.
+    //    handlerDefaultCacheableResponsePlugin.
     // 3. The default that applies to anything using the `RequestWrapper` class
     //    that doesn't specify the custom behavior, which is accessed via
-    //    the this.classDefaultCacheableResponsePlugin getter.
+    //    the this.globalDefaultCacheableResponsePlugin getter.
     const effectiveCacheableResponsePlugin =
       this._userSpecifiedCachableResponsePlugin ||
-      methodDefaultCacheableResponsePlugin ||
-      this.classDefaultCacheableResponsePlugin;
+      handlerDefaultCacheableResponsePlugin ||
+      this.globalDefaultCacheableResponsePlugin;
 
     // Whichever plugin we've decided is appropriate, we now call its
     // cacheWillUpdate() method to determine cacheability of the response.

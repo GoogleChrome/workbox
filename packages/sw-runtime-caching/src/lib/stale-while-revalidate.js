@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import {CacheableResponse} from '../../../sw-cacheable-response/src/index';
+import {CacheableResponsePlugin} from '../../../sw-cacheable-response/src/index';
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
@@ -56,7 +56,7 @@ class StaleWhileRevalidate extends Handler {
   constructor(input = {}) {
     super(input);
 
-    this._cacheable = new CacheableResponse({statuses: [0, 200]});
+    this._cacheablePlugin = new CacheableResponsePlugin({statuses: [0, 200]});
   }
 
   /**
@@ -75,7 +75,7 @@ class StaleWhileRevalidate extends Handler {
     const fetchAndCacheResponse = this.requestWrapper.fetchAndCache({
       request: event.request,
       waitOnCache: this.waitOnCache,
-      defaultCacheableResponseCheck: this._cacheable.isResponseCacheable,
+      handlerDefaultCacheableResponsePlugin: this._cacheablePlugin,
     }).catch(() => Response.error());
 
     const cachedResponse = await this.requestWrapper.match({

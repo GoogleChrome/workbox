@@ -100,8 +100,8 @@ class CacheableResponse {
       }
 
       logHelper.debug({
-        message: `The response does not meet the criteria for being added ` +
-          `to the cache.`,
+        message: `The response does not meet the criteria for being added to the
+          cache.`,
         data,
       });
     }
