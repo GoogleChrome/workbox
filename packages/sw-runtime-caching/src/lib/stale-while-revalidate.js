@@ -24,10 +24,12 @@ import assert from '../../../../lib/assert';
  * In addition to updating the appropriate caches, it will also trigger any
  * appropriate plugins defined in the underlying `RequestWrapper`.
  *
- * By default, [opaque responses](http://stackoverflow.com/q/39109789)
- * will be cached in addition to responses with a 200 response status. You can
- * override this default by passing in a `RequestWrapper` that includes an
- * appropriately-configured `CacheableResponsePlugin`.
+ * By default, `StaleWhileRevalidate` will cache [opaque responses](http://stackoverflow.com/q/39109789)
+ * (responses from cross-origin servers which don't support
+ * [CORS](https://enable-cors.org/)) in addition to responses with a 200
+ * response status. You can override this default by passing in a
+ * `RequestWrapper` that includes an appropriately-configured
+ * `CacheableResponsePlugin`.
  *
  * @example
  * // Set up a route to match any requests made for URLs that end in .txt.
