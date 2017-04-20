@@ -61,9 +61,11 @@ class Router extends SWRoutingRouter {
    * Constructs a light wrapper on top of the underlying `Router`.
    * @param {String} revisionedCacheName The cache name used for entries cached
    *        via precache().
+   * @param {boolean} handleFetch Determines if the router should handle fetch
+   * events.
    */
-  constructor(revisionedCacheName) {
-    super();
+  constructor(revisionedCacheName, handleFetch) {
+    super({handleFetch});
     this._revisionedCacheName = revisionedCacheName;
   }
 

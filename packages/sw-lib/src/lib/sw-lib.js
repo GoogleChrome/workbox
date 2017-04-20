@@ -40,7 +40,7 @@ class SWLib {
    * @param {boolean} clientsClaim To claim currently open clients set
    * this value to true. (Default false).
    */
-  constructor({cacheId, clientsClaim} = {}) {
+  constructor({cacheId, clientsClaim, handleFetch} = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
     }
@@ -52,10 +52,14 @@ class SWLib {
     this._revisionedCacheManager = new RevisionedCacheManager({
       cacheId,
     });
-    this._router = new Router(this._revisionedCacheManager.getCacheName());
     this._strategies = new Strategies({
       cacheId,
     });
+
+    this._router = new Router(
+      this._revisionedCacheManager.getCacheName(),
+      handleFetch
+    );
     this._registerInstallActivateEvents(clientsClaim);
     this._registerDefaultRoutes();
   }
