@@ -66,6 +66,13 @@ class CacheExpiration {
     // These are used to keep track of open IndexDB and Caches for a given name.
     this._dbs = new Map();
     this._caches = new Map();
+
+    // This is used to ensure there's one asynchronous expiration operation
+    // running at a time.
+    this._expirationMutex = false;
+    // If another expiration request comes in, the timestamp is saved here and
+    // re-run after.
+    this._timestampForNextRun = null;
   }
 
   /**
@@ -193,10 +200,16 @@ class CacheExpiration {
    * Expires entries, both based on the the maximum age and the maximum number
    * of entries, depending on how this instance is configured.
    *
+   * A mutex is used to ensure that there is only one copy of this asynchronous
+   * method running at a time. If another request to this method is made while
+   * it's already running, then the `now` timestamp associated with that request
+   * is saved and used to recursively trigger the method after the asynchronous
+   * operations are complete.
+   *
    * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @param {Number} [input.now] A timestamp. Defaults to the current time.
-   * @return {Array<string>} A list of the URLs that were expired.
+   * @return {Promise} Resolves when the cache expiration has been performed.
    *
    * @example
    * cacheExpiration.expireEntries({
@@ -204,6 +217,17 @@ class CacheExpiration {
    * });
    */
   async expireEntries({cacheName, now} = {}) {
+    // Since there's a single shared IDB instance that's queried to find entries
+    // to expire, this method doesn't need to run multiple times simultaneously.
+    // Use this._expirationMutex as a concurrency lock, and save the last value
+    // that it's been called with in this._timestampForNextRun as a signal
+    // to run it again once complete.
+    if (this._expirationMutex) {
+      this._timestampForNextRun = now;
+      return;
+    }
+    this._expirationMutex = true;
+
     assert.isType({cacheName}, 'string');
 
     if (typeof now === 'undefined') {
@@ -233,7 +257,15 @@ class CacheExpiration {
       });
     }
 
-    return urls;
+    this._expirationMutex = false;
+    // If this method has been called while it was already running, then call
+    // it again now that the asynchronous operations are complete, using the
+    // most recent timestamp that was passed in.
+    if (this._timestampForNextRun) {
+      const savedTimestamp = this._timestampForNextRun;
+      this._timestampForNextRun = null;
+      return this.expireEntries({cacheName, now: savedTimestamp});
+    }
   }
 
   /**
@@ -334,13 +366,13 @@ class CacheExpiration {
       const cache = await this.getCache({cacheName});
       const db = await this.getDB({cacheName});
 
-      await urls.forEach(async (url) => {
+      for (let url of urls) {
         await cache.delete(url);
         const tx = db.transaction(cacheName, 'readwrite');
         const store = tx.objectStore(cacheName);
-        await store.delete(url);
+        store.delete(url);
         await tx.complete;
-      });
+      }
     }
   }
 }

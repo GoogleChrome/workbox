@@ -71,7 +71,7 @@ class CacheExpirationPlugin extends CacheExpiration {
    * @param {string} input.url The URL for the cache entry.
    * @param {Number} [input.now] A timestamp. Defaults to the current time.
    */
-  cacheDidUpdate({cacheName, newResponse, url, now} = {}) {
+  async cacheDidUpdate({cacheName, newResponse, url, now} = {}) {
     assert.isType({cacheName}, 'string');
     assert.isInstance({newResponse}, Response);
 
@@ -79,9 +79,8 @@ class CacheExpirationPlugin extends CacheExpiration {
       now = Date.now();
     }
 
-    this.updateTimestamp({cacheName, url, now}).then(() => {
-      this.expireEntries({cacheName, now});
-    });
+    await this.updateTimestamp({cacheName, url, now});
+    await this.expireEntries({cacheName, now});
   }
 }
 
