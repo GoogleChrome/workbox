@@ -7,7 +7,6 @@ importScripts('/packages/sw-lib/build/sw-lib.min.js');
 
 /* global goog, sinon */
 
-const expect = self.chai.expect;
 self.chai.should();
 mocha.setup({
   ui: 'bdd',
