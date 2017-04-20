@@ -21,11 +21,14 @@ const errors = {
     'string, a Regex to capture request URLs or a Route instance.',
   'empty-express-string': 'The Express style route string must have some ' +
     'characters, an empty string is invalid.',
-  'bad-revisioned-cache-list': `The 'cacheRevisionedAssets()' method expects` +
+  'bad-revisioned-cache-list': `The 'precache()' method expects` +
     `an array of revisioned urls like so: ['/example/hello.1234.txt', ` +
     `{path: 'hello.txt', revision: '1234'}]`,
   'navigation-route-url-string': `The registerNavigationRoute() method ` +
     `expects a URL string as its first parameter.`,
+  'bad-cache-id': `The 'cacheId' parameter must be a string with at least ` +
+    `one character`,
+  'bad-clients-claim': `The 'clientsClaim' parameter must be a boolean.`,
 };
 
 export default new ErrorFactory(errors);

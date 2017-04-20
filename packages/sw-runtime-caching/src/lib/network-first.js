@@ -14,6 +14,7 @@
 */
 
 import {CacheableResponse} from '../../../sw-cacheable-response/src/index';
+import ErrorFactory from './error-factory';
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
@@ -54,17 +55,12 @@ class NetworkFirst extends Handler {
    * @param {RequestWrapper} [input.requestWrapper] An optional `RequestWrapper`
    *        that is used to configure the cache name and request plugins. If
    *        not provided, a new `RequestWrapper` using the
-   *        [default cache name](#defaultCacheName) will be used.
+   *        [default cache name](#getDefaultCacheName) will be used.
    */
   constructor(input = {}) {
     super(input);
 
-    const cacheableResponse = new CacheableResponse({statuses: [0, 200]});
-    // When isResponseCacheable() is invoked as a callback, it makes use of
-    // state information provided to the CacheableResponse constructor. We use
-    // bind() here so that `this` is set to the CacheableResponse instance.
-    this._cacheableResponseCheck =
-      cacheableResponse.isResponseCacheable.bind(cacheableResponse);
+    this._cacheable = new CacheableResponse({statuses: [0, 200]});
 
     const {networkTimeoutSeconds} = input;
     if (networkTimeoutSeconds) {
@@ -97,9 +93,10 @@ class NetworkFirst extends Handler {
       }));
     }
 
-    promises.push(this.requestWrapper.fetchAndCache({
+    const networkPromise = this.requestWrapper.fetchAndCache({
       request: event.request,
-      defaultCacheableResponseCheck: this._cacheableResponseCheck,
+      waitOnCache: this.waitOnCache,
+      defaultCacheableResponseCheck: this._cacheable.isResponseCacheable,
     }).then((response) => {
       if (timeoutId) {
         clearTimeout(timeoutId);
@@ -107,8 +104,10 @@ class NetworkFirst extends Handler {
 
       return response ?
         response :
-        Promise.reject('No response received; falling back to cache.');
-    }).catch(() => this.requestWrapper.match({request: event.request})));
+        Promise.reject(ErrorFactory.createError('no-response-received'));
+    }).catch(() => this.requestWrapper.match({request: event.request}));
+
+    promises.push(networkPromise);
 
     return Promise.race(promises);
   }

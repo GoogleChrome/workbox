@@ -137,8 +137,8 @@ describe('cache-revisioned-e2e.js', function() {
       .concat(testSet['set-5'])
       .concat(testSet['set-6']);
 
-    const sw1 = '../static/sw/cache-revisioned-1.js';
-    const sw2 = '../static/sw/cache-revisioned-2.js';
+    const sw1 = '/packages/sw-lib/test/static/sw/cache-revisioned-1.js';
+    const sw2 = '/packages/sw-lib/test/static/sw/cache-revisioned-2.js';
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
       return testFileSet(iframe, sw1, allAssets1);

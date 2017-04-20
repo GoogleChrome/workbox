@@ -56,12 +56,7 @@ class StaleWhileRevalidate extends Handler {
   constructor(input = {}) {
     super(input);
 
-    const cacheableResponse = new CacheableResponse({statuses: [0, 200]});
-    // When isResponseCacheable() is invoked as a callback, it makes use of
-    // state information provided to the CacheableResponse constructor. We use
-    // bind() here so that `this` is set to the CacheableResponse instance.
-    this._cacheableResponseCheck =
-      cacheableResponse.isResponseCacheable.bind(cacheableResponse);
+    this._cacheable = new CacheableResponse({statuses: [0, 200]});
   }
 
   /**
@@ -79,7 +74,8 @@ class StaleWhileRevalidate extends Handler {
 
     const fetchAndCacheResponse = this.requestWrapper.fetchAndCache({
       request: event.request,
-      defaultCacheableResponseCheck: this._cacheableResponseCheck,
+      waitOnCache: this.waitOnCache,
+      defaultCacheableResponseCheck: this._cacheable.isResponseCacheable,
     }).catch(() => Response.error());
 
     const cachedResponse = await this.requestWrapper.match({

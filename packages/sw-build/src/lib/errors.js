@@ -1,13 +1,7 @@
 module.exports = {
   'unable-to-get-rootdir': 'Unable to get the root directory of your web app.',
-  'unable-to-get-file-extensions': 'Unable to get file extensions to ' +
-    'determine files to cache.',
   'no-extension': 'Unable to detect a usable extension for a file in your ' +
     'web app directory.',
-  'no-file-extensions-found': 'No files could be found that are suitable for ' +
-    'caching.',
-  'no-file-extensions-selected': 'No file extensions were selected so nothing' +
-    ' would be cached.',
   'invalid-file-manifest-name': 'The File Manifest Name must have at lease ' +
     'one character.',
   'unable-to-get-file-manifest-name': 'Unable to get a file manifest name.',
@@ -48,13 +42,27 @@ module.exports = {
     'must be an Object.',
   'invalid-manifest-format': `The value of the 'format' option passed to
     generateFileManifest() must be either 'iife' (the default) or 'es'.`,
-  'invalid-glob-patterns': `The 'globPatterns' value must be an array of ` +
-    `strings.`,
+  'invalid-static-file-globs': `The 'staticFileGlobs' value must be an array ` +
+    `of strings.`,
   'invalid-templated-urls': `The 'templatedUrls' value should be ` +
     `an object that maps URLs to either a string, or to an array of glob ` +
     `patterns.`,
   'templated-url-matches-glob': `One of the 'templatedUrls' URL s` +
-    `is already being tracked via globPatterns: `,
+    `is already being tracked via staticFileGlobs: `,
   'invalid-glob-ignores': `The 'globIgnore' parameter must be an ` +
     `array string glob patterns.`,
+  'modify-url-prefix-bad-url': `modifyUrlPrefix helper was given a bad URL ` +
+    `for input. This is likely an error with sw-build.`,
+  'modify-url-prefix-bad-prefixes': `The 'modifyUrlPrefix' parameter must be ` +
+    `an object with string key value pairs.`,
+  'invalid-inject-manifest-arg': `The input to 'injectManifest()' must be ` +
+    `be an object.`,
+  'injection-point-not-found': `Unable to find a place to inject the ` +
+    `manifest. Please ensure that you have 'swlib.precache([])' ` +
+    `somewhere in your service worker file.`,
+  'multiple-injection-points-found': `There can only be one injection point ` +
+    `in your service worker file. Please ensure you only have one instance ` +
+    `of  'swlib.precache([])' in your service worker file.`,
+  'populating-sw-tmpl-failed': `Unable to generate service worker from ` +
+    `template.`,
 };

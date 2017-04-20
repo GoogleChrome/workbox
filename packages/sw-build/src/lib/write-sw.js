@@ -5,7 +5,9 @@ const template = require('lodash.template');
 
 const errors = require('./errors');
 
-module.exports = (swPath, manifestEntries, swlibPath, rootDirectory) => {
+module.exports =
+  (swPath, manifestEntries, swlibPath, rootDirectory, options) => {
+  options = options || {};
   try {
     mkdirp.sync(path.dirname(swPath));
   } catch (err) {
@@ -29,10 +31,19 @@ module.exports = (swPath, manifestEntries, swlibPath, rootDirectory) => {
   .then((templateString) => {
     const relSwlibPath = path.relative(rootDirectory, swlibPath);
 
+    const swlibOptions = {};
+    if (options.cacheId) {
+      swlibOptions.cacheId = options.cacheId;
+    }
+    if (options.clientsClaim) {
+      swlibOptions.clientsClaim = true;
+    }
+
     try {
       return template(templateString)({
         manifestEntries: manifestEntries,
         swlibPath: relSwlibPath,
+        swlibOptions,
       });
     } catch (err) {
       throw new Error(

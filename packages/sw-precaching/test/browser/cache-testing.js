@@ -1,7 +1,7 @@
 /* global goog, expect */
 
 describe('sw-precaching Test Revisioned Caching', function() {
-  const STATIC_ASSETS_PATH = '../static';
+  const STATIC_ASSETS_PATH = '/packages/sw-precaching/test/static';
 
   const deleteIndexedDB = () => {
     return new Promise((resolve, reject) => {
@@ -276,46 +276,6 @@ describe('sw-precaching Test Revisioned Caching', function() {
     })
     .then((iframe) => {
       return testFileSet(iframe, swPath, allEntries);
-    });
-  });
-
-  it('should fail to install revisioned with 404 cache request', function() {
-    return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/404-revisioned-sw.js`)
-    .then(() => {
-      throw new Error('Expected SW to fail installation due to caching 404 entry.');
-    }, (err) => {
-      // NOOP - The error is not to do with the error throw in SW, so nothing
-      // to check.
-    });
-  });
-
-  it('should fail to install unrevisioned with 404 cache request', function() {
-    return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/404-unrevisioned-sw.js`)
-    .then(() => {
-      throw new Error('Expected SW to fail installation due to caching 404 entry.');
-    }, (err) => {
-      // NOOP - The error is not to do with the error throw in SW, so nothing
-      // to check.
-    });
-  });
-
-  it('should fail to cache revisioned opaque responses by default', function() {
-    return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/opaque-revisioned-sw.js`)
-    .then(() => {
-      throw new Error('Expected SW to fail installation due to caching opaque entry.');
-    }, (err) => {
-      // NOOP - The error is not to do with the error throw in SW, so nothing
-      // to check.
-    });
-  });
-
-  it('should not cache unrevisioned opaque responses by default', function() {
-    return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/opaque-unrevisioned-sw.js`)
-    .then(() => {
-      throw new Error('Expected SW to fail installation due to caching opaque entry.');
-    }, (err) => {
-      // NOOP - The error is not to do with the error throw in SW, so nothing
-      // to check.
     });
   });
 

@@ -1,3 +1,4 @@
+const path = require('path');
 const copySWLib = require('./utils/copy-sw-lib');
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const writeServiceWorker = require('./write-sw');
@@ -10,7 +11,7 @@ const errors = require('./errors');
  * swBuild.generateSW({
  *   rootDirectory: './build/',
  *   dest: './build/sw.js',
- *   globPatterns: ['**\/*.{html,js,css}'],
+ *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
@@ -26,7 +27,7 @@ const errors = require('./errors');
  * @param {String} input.rootDirectory The root of the files you wish to
  * be cached. This will also be the directory the service worker and library
  * files are written to.
- * @param {Array<String>} input.globPatterns Patterns to glob for when
+ * @param {Array<String>} input.staticFileGlobs Patterns to glob for when
  * generating the build manifest.
  * @param {String|Array<String>} [input.globIgnores] Patterns to exclude when
  * generating the build manifest.
@@ -36,6 +37,14 @@ const errors = require('./errors');
  * If a URL is rendered/templated on the server, its contents may not depend on
  * a single file. This maps URLs to a list of file names, or to a string
  * value, that uniquely determines each URL's contents.
+ * @param {String} [input.modifyUrlPrefix] An optional object of key value pairs
+ * where the key will be replaced at the start of a url with the corresponding
+ * value.
+ * @param {String} [input.cacheId] An optional ID to be prepended to caches
+ * used by sw-build. This is primarily useful for local development where
+ * multiple sites may be served from `http://localhost`.
+ * @param {Boolean} [input.clientsClaim] An optional boolean that indicates if
+ * the new service worker should claim current pages (Defaults to false).
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
@@ -64,7 +73,7 @@ const generateSW = function(input) {
   }
 
   const rootDirectory = input.rootDirectory;
-  const globPatterns = input.globPatterns;
+  const staticFileGlobs = input.staticFileGlobs;
   const globIgnores = input.globIgnores ? input.globIgnores : [];
   const dest = input.dest;
   const templatedUrls = input.templatedUrls;
@@ -73,18 +82,23 @@ const generateSW = function(input) {
   return copySWLib(rootDirectory)
   .then((libPath) => {
     swlibPath = libPath;
-    globIgnores.push(swlibPath);
+    globIgnores.push(path.relative(rootDirectory, swlibPath));
   })
   .then(() => {
-    return getFileManifestEntries(
-      {globPatterns, globIgnores, rootDirectory, templatedUrls});
+    return getFileManifestEntries({
+      staticFileGlobs,
+      globIgnores,
+      rootDirectory,
+      templatedUrls,
+    });
   })
   .then((manifestEntries) => {
     return writeServiceWorker(
       dest,
       manifestEntries,
       swlibPath,
-      rootDirectory
+      rootDirectory,
+      input
     );
   });
 };

@@ -59,6 +59,7 @@ class CacheFirst extends Handler {
 
     return cachedResponse || await this.requestWrapper.fetchAndCache({
       request: event.request,
+      waitOnCache: this.waitOnCache,
     });
   }
 }

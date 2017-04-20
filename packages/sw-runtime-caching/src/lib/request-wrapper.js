@@ -13,9 +13,11 @@
  limitations under the License.
 */
 
-import {CacheableResponse} from '../../../sw-cacheable-response/src/index';
 import ErrorFactory from './error-factory';
 import assert from '../../../../lib/assert';
+import logHelper from '../../../../lib/log-helper.js';
+import {CacheableResponsePlugin} from
+  '../../../sw-cacheable-response/src/index';
 import {pluginCallbacks, defaultCacheName} from './constants';
 
 /**
@@ -56,12 +58,19 @@ class RequestWrapper {
    *        [`options`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match#Parameters)
    *        of all cache `match()` requests made by this wrapper.
    */
-  constructor({cacheName, plugins, fetchOptions, matchOptions} = {}) {
+  constructor({cacheName, cacheId, plugins, fetchOptions, matchOptions} = {}) {
+    if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
+      throw ErrorFactory.createError('bad-cache-id');
+    }
+
     if (cacheName) {
       assert.isType({cacheName}, 'string');
       this.cacheName = cacheName;
+      if (cacheId) {
+        this.cacheName = `${cacheId}-${this.cacheName}`;
+      }
     } else {
-      this.cacheName = defaultCacheName;
+      this.cacheName = getDefaultCacheName({cacheId});
     }
 
     if (fetchOptions) {
@@ -74,7 +83,7 @@ class RequestWrapper {
       this.matchOptions = matchOptions;
     }
 
-    this.pluginCallbacks = {};
+    this.plugins = new Map();
 
     if (plugins) {
       assert.isArrayOfType({plugins}, 'object');
@@ -82,46 +91,40 @@ class RequestWrapper {
       plugins.forEach((plugin) => {
         for (let callbackName of pluginCallbacks) {
           if (typeof plugin[callbackName] === 'function') {
-            if (!this.pluginCallbacks[callbackName]) {
-              this.pluginCallbacks[callbackName] = [];
+            if (!this.plugins.has(callbackName)) {
+              this.plugins.set(callbackName, []);
+            } else if (callbackName === 'cacheWillUpdate') {
+              throw ErrorFactory.createError(
+                'multiple-cache-will-update-plugins');
+            } else if (callbackName === 'cacheWillMatch') {
+              throw ErrorFactory.createError(
+                'multiple-cache-will-match-plugins');
             }
-            this.pluginCallbacks[callbackName].push(
-              plugin[callbackName].bind(plugin));
+            this.plugins.get(callbackName).push(plugin);
           }
         }
       });
     }
 
-    if (this.pluginCallbacks.cacheWillUpdate) {
-      if (this.pluginCallbacks.cacheWillUpdate.length !== 1) {
-        throw ErrorFactory.createError('multiple-cache-will-update-plugins');
-      }
-      this.cacheableResponseCheck = this.pluginCallbacks.cacheWillUpdate[0];
-    }
-
-    if (this.pluginCallbacks.cacheWillMatch) {
-      if (this.pluginCallbacks.cacheWillMatch.length !== 1) {
-        throw ErrorFactory.createError('multiple-cache-will-match-plugins');
-      }
+    if (this.plugins.has('cacheWillUpdate')) {
+      this._userSpecifiedCachableResponsePlugin =
+        this.plugins.get('cacheWillUpdate')[0];
     }
   }
 
+
   /**
    * @private
-   * @return {function} The default function used to determine whether a
+   * @return {function} The default plugin used to determine whether a
    *         response is cacheable.
    */
-  get defaultCacheableResponseCheck() {
-    // Lazy-construct the CacheableResponse instance.
-    if (!this._defaultCacheableResponseCheck) {
-      const cacheableResponse = new CacheableResponse({statuses: [200]});
-      // When isResponseCacheable() is invoked as a callback, it makes use of
-      // state information provided to the CacheableResponse constructor. We use
-      // bind() here so that `this` is set to the CacheableResponse instance.
-      this._defaultCacheableResponseCheck =
-        cacheableResponse.isResponseCacheable.bind(cacheableResponse);
+  get classDefaultCacheableResponsePlugin() {
+    // Lazy-construct the CacheableResponsePlugin instance.
+    if (!this._defaultCacheableResponsePlugin) {
+      this._defaultCacheableResponsePlugin =
+        new CacheableResponsePlugin({statuses: [200]});
     }
-    return this._defaultCacheableResponseCheck;
+    return this._defaultCacheableResponsePlugin;
   }
 
   /**
@@ -168,9 +171,9 @@ class RequestWrapper {
     const cache = await this.getCache();
     let cachedResponse = await cache.match(request, this.matchOptions);
 
-    if (this.pluginCallbacks.cacheWillMatch) {
-      cachedResponse = this.pluginCallbacks.cacheWillMatch[0](
-        {cachedResponse});
+    if (this.plugins.has('cacheWillMatch')) {
+      const plugin = this.plugins.get('cacheWillMatch')[0];
+      cachedResponse = plugin.cacheWillMatch({cachedResponse});
     }
 
     return cachedResponse;
@@ -197,12 +200,21 @@ class RequestWrapper {
    * @return {Promise.<Response>} The network response.
    */
   async fetch({request}) {
-    assert.atLeastOne({request});
-    const clonedRequest = this.pluginCallbacks.fetchDidFail ?
+    if (typeof request === 'string') {
+      request = new Request(request);
+    } else {
+      assert.isInstance({request}, Request);
+    }
+
+    // If there is a fetchDidFail plugin, we need to save a clone of the
+    // original request before it's either modified by a requestWillFetch
+    // plugin or before the original request's body is consumed via fetch().
+    const clonedRequest = this.plugins.has('fetchDidFail') ?
       request.clone() : null;
-    if (this.pluginCallbacks.requestWillFetch) {
-      for (let callback of this.pluginCallbacks.requestWillFetch) {
-        const returnedPromise = callback({request});
+
+    if (this.plugins.has('requestWillFetch')) {
+      for (let plugin of this.plugins.get('requestWillFetch')) {
+        const returnedPromise = plugin.requestWillFetch({request});
         assert.isInstance({returnedPromise}, Promise);
         const returnedRequest = await returnedPromise;
         assert.isInstance({returnedRequest}, Request);
@@ -213,9 +225,9 @@ class RequestWrapper {
     try {
       return await fetch(request, this.fetchOptions);
     } catch (err) {
-      if (this.pluginCallbacks.fetchDidFail) {
-        for (let callback of this.pluginCallbacks.fetchDidFail) {
-          callback({request: clonedRequest.clone()});
+      if (this.plugins.has('fetchDidFail')) {
+        for (let plugin of this.plugins.get('fetchDidFail')) {
+          plugin.fetchDidFail({request: clonedRequest.clone()});
         }
       }
 
@@ -252,14 +264,14 @@ class RequestWrapper {
    * @param {Request} [input.cacheKey] Supply a cacheKey if you wish to cache
    *        the response against an alternative request to the `request`
    *        argument.
-   * @param {function} [input.defaultCacheableResponseCheck] Allows the caller
-   *        to override the default check for cacheability, for situations in
-   *        which the cacheability check wasn't explicitly configured when
-   *        constructing the `RequestWrapper`.
+   * @param {function} [input.methodDefaultCacheableResponsePlugin] Allows the
+   *        caller to override the default check for cacheability, for
+   *        situations in which the cacheability check wasn't explicitly
+   *        configured when constructing the `RequestWrapper`.
    * @return {Promise.<Response>} The network response.
    */
   async fetchAndCache({request, waitOnCache, cacheKey,
-                        defaultCacheableResponseCheck}) {
+                        methodDefaultCacheableResponsePlugin}) {
     assert.atLeastOne({request});
 
     let cachingComplete;
@@ -269,46 +281,53 @@ class RequestWrapper {
     // be added to the cache. There are several possible ways that this logic
     // might be specified, and they're given the following precedence:
     // 1. Passing in a `CacheableResponsePlugin` to the `RequestWrapper`
-    //    constructor, which is this.cacheableResponseCheck.
-    // 2. Passing in a parameter to fetchAndCache() (done by certain runtime
-    //    handlers, like StaleWhileRevalidate, which is
-    //    defaultCacheableResponseCheck.
-    // 3. The default check that applies to anything using `RequestWrapper`,
-    //    which is this.defaultCacheableResponseCheck.
-    const cacheableResponseCheck = this.cacheableResponseCheck ||
-      defaultCacheableResponseCheck ||
-      this.defaultCacheableResponseCheck;
+    //    constructor, which sets this._userSpecifiedCachableResponsePlugin.
+    // 2. Passing in a parameter to the fetchAndCache() method (done by certain
+    //    runtime handlers, like `StaleWhileRevalidate`), which sets
+    //    methodDefaultCacheableResponsePlugin.
+    // 3. The default that applies to anything using the `RequestWrapper` class
+    //    that doesn't specify the custom behavior, which is accessed via
+    //    the this.classDefaultCacheableResponsePlugin getter.
+    const effectiveCacheableResponsePlugin =
+      this._userSpecifiedCachableResponsePlugin ||
+      methodDefaultCacheableResponsePlugin ||
+      this.classDefaultCacheableResponsePlugin;
 
-    const cacheable = cacheableResponseCheck({request, response});
+    // Whichever plugin we've decided is appropriate, we now call its
+    // cacheWillUpdate() method to determine cacheability of the response.
+    const cacheable = effectiveCacheableResponsePlugin.cacheWillUpdate(
+      {request, response});
 
     if (cacheable) {
       const newResponse = response.clone();
 
-      // cacheDelay is a promise that may or may not be used to delay the
+      // cachingComplete is a promise that may or may not be used to delay the
       // completion of this method, depending on the value of `waitOnCache`.
       cachingComplete = this.getCache().then(async (cache) => {
         let oldResponse;
 
         // Only bother getting the old response if the new response isn't opaque
-        // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
+        // and there's at least one cacheDidUpdate plugin. Otherwise, we don't
         // need it.
         if (response.type !== 'opaque' &&
-          this.pluginCallbacks.cacheDidUpdate) {
+          this.plugins.has('cacheDidUpdate')) {
           oldResponse = await this.match({request});
         }
 
         // Regardless of whether or not we'll end up invoking
-        // cacheDidUpdateCallbacks, wait until the cache is updated.
+        // cacheDidUpdate, wait until the cache is updated.
         const cacheRequest = cacheKey || request;
         await cache.put(cacheRequest, newResponse);
 
-        for (let callback of (this.pluginCallbacks.cacheDidUpdate || [])) {
-          callback({
-            cacheName: this.cacheName,
-            oldResponse,
-            newResponse,
-            url: request.url,
-          });
+        if (this.plugins.has('cacheDidUpdate')) {
+          for (let plugin of this.plugins.get('cacheDidUpdate')) {
+            await plugin.cacheDidUpdate({
+              cacheName: this.cacheName,
+              oldResponse,
+              newResponse,
+              url: request.url,
+            });
+          }
         }
       });
     } else if (!cacheable && waitOnCache) {

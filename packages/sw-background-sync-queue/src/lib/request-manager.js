@@ -1,6 +1,6 @@
 import {putResponse} from './response-manager';
 import {getFetchableRequest} from './queue-utils';
-import {tagNamePrefix} from './constants';
+import {tagNamePrefix, replayAllQueuesTag} from './constants';
 
 /**
  * Class to handle all the request related
@@ -34,7 +34,8 @@ class RequestManager {
 	 */
 	attachSyncHandler() {
 		self.addEventListener('sync', (event) => {
-			if(event.tag === tagNamePrefix + this._queue.queueName) {
+			if(event.tag === tagNamePrefix + this._queue.queueName
+				|| event.tag === replayAllQueuesTag) {
 				event.waitUntil(this.replayRequests());
 			}
 		});

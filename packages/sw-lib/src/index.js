@@ -38,7 +38,8 @@ if (!assert.isSWEnv()) {
  *
  * // DO NOT CREATE THIS MANIFEST OR EDIT IT MANUALLY!!
  * // Use sw-build or sw-cli to generate the manifest for you.
- * goog.swlib.cacheRevisionedAssets([
+ * const swlib = new goog.SWLib();
+ * swlib.precache([
  *   {
  *     url: '/',
  *     revision: '613e6c7332dd83e848a8b00c403827ed'
@@ -50,17 +51,18 @@ if (!assert.isSWEnv()) {
  * ]);
  *
  * // Register runtime routes like so.
- * goog.swlib.router.registerRoute(
- *   '/example/', goog.swlib.staleWhileRevalidate());
- * goog.swlib.router.registerRoute(
- *   /\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/, goog.swlib.cacheFirst());
- * goog.swlib.router.registerRoute(
- *   '/styles/:filename', goog.swlib.cacheFirst());
+ * swlib.router.registerRoute(
+ *   '/example/', swlib.staleWhileRevalidate());
+ * swlib.router.registerRoute(
+ *   /\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
+ *   swlib.strategies.cacheFirst());
+ * swlib.router.registerRoute(
+ *   '/styles/:filename', swlib.strategies.cacheFirst());
  *
  * @example <caption>Using plugins with caching strategies.</caption>
- *
- * goog.swlib.router.registerRoute(/\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
- *   goog.swlib.cacheFirst({
+ * const swlib = new goog.SWLib();
+ * swlib.router.registerRoute(/\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
+ *   swlib.strategies.cacheFirst({
  *     cacheName: 'example-cache',
  *     cacheExpiration: {
  *       maxEntries: 10,
@@ -80,5 +82,4 @@ if (!assert.isSWEnv()) {
  *
  * @module sw-lib
  */
-const swLibInstance = new SWLib();
-export default swLibInstance;
+export default SWLib;

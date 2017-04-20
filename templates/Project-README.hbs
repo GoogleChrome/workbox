@@ -1,10 +1,15 @@
+<!-- To make changes, edit templates/Project-README.hbs, not this file. -->
 # {{name}}
 
 {{description}}
 
 ## Installation
 
+{{#if installCmd}}
+`{{installCmd}}`
+{{else}}
 `npm install --save-dev {{name}}`
+{{/if}}
 
 {{#if hasDemo}}
 ## Demo

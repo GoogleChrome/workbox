@@ -93,7 +93,6 @@ module.exports = (rootDirectory) => {
     if (results.cacheExtensions.length === 0) {
       throw new Error(errors['no-file-extensions-selected']);
     }
-
     return results.cacheExtensions;
   })
   .catch((err) => {

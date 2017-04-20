@@ -31,12 +31,15 @@ import ErrorFactory from './error-factory.js';
  * @example <caption>How to define a simple route with caching
  * strategy.</caption>
  *
- * goog.swlib.router.registerRoute('/about', goog.swlib.cacheFirst());
+ * const swlib = new goog.SWLib();
+ * swlib.router.registerRoute('/about',
+ *  swlib.strategies.cacheFirst());
  *
  * @example <caption>How to define a simple route with custom caching
  * strategy.</caption>
  *
- * self.goog.swlib.router.registerRoute('/about', (args) => {
+ * const swlib = new goog.SWLib();
+ * swlib.router.registerRoute('/about', (args) => {
  *   // The requested URL
  *   console.log(args.url);
  *
@@ -57,7 +60,7 @@ class Router extends SWRoutingRouter {
   /**
    * Constructs a light wrapper on top of the underlying `Router`.
    * @param {String} revisionedCacheName The cache name used for entries cached
-   *        via cacheRevisionedAssets().
+   *        via precache().
    */
   constructor(revisionedCacheName) {
     super();
@@ -115,7 +118,7 @@ class Router extends SWRoutingRouter {
    *
    * The `url` value should correspond to an entry that's already in the cache,
    * perhaps a URL that is managed by
-   * {@link module:sw-lib.SWLib#cacheRevisionedAssets}. Using a URL that isn't
+   * {@link module:sw-lib.SWLib#precache}. Using a URL that isn't
    * already cached will lead to failed navigations.
    *
    * @param {String} url The URL of the already cached HTML resource.
@@ -125,7 +128,7 @@ class Router extends SWRoutingRouter {
    *        match all request URLs.
    * @param {String} [options.cacheName] The name of the cache which contains
    *        the cached response for `url`. Defaults to the name of the cache
-   *        used by cacheRevisionedAssets().
+   *        used by precache().
    */
   registerNavigationRoute(url, options = {}) {
     if (typeof url !== 'string') {

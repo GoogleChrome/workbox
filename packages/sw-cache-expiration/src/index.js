@@ -49,10 +49,12 @@
  */
 
 import {timestampPropertyName, urlPropertyName} from './lib/constants';
-import Plugin from './lib/plugin';
+import CacheExpiration from './lib/cache-expiration';
+import CacheExpirationPlugin from './lib/cache-expiration-plugin';
 
 export {
   timestampPropertyName,
   urlPropertyName,
-  Plugin,
+  CacheExpiration,
+  CacheExpirationPlugin,
 };

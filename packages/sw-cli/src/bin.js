@@ -17,5 +17,9 @@
 **/
 'use strict';
 
+const meow = require('meow');
 const CLI = require('./index.js');
-new CLI().argv(process.argv.slice(2));
+
+const cliInstance = new CLI();
+const meowOutput = meow(cliInstance.getHelpText());
+cliInstance.argv(meowOutput);
