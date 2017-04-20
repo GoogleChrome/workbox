@@ -13,7 +13,8 @@
  limitations under the License.
 */
 
-import {CacheableResponsePlugin} from '../../../sw-cacheable-response/src/index';
+import {CacheableResponsePlugin} from
+  '../../../sw-cacheable-response/src/index';
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
