@@ -39,13 +39,25 @@ class SWLib {
    * localhost.
    * @param {boolean} clientsClaim To claim currently open clients set
    * this value to true. (Default false).
+   * @param  {String} [input.directoryIndex]  The directoryIndex will
+   * check cache entries for a URLs ending with '/' to see if there is a hit
+   * when appending the directoryIndex (i.e. '/index.html').
    */
-  constructor({cacheId, clientsClaim, handleFetch} = {}) {
+  constructor({cacheId, clientsClaim, handleFetch,
+    directoryIndex = 'index.html'} = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
     }
     if (clientsClaim && (typeof clientsClaim !== 'boolean')) {
       throw ErrorFactory.createError('bad-clients-claim');
+    }
+    if (typeof directoryIndex !== 'undefined') {
+      if (directoryIndex === false || directoryIndex === null) {
+        directoryIndex = false;
+      } else if (typeof directoryIndex !== 'string' ||
+        directoryIndex.length === 0) {
+        throw ErrorFactory.createError('bad-directory-index');
+      }
     }
 
     this._runtimeCacheName = getDefaultCacheName({cacheId});
@@ -61,7 +73,7 @@ class SWLib {
       handleFetch
     );
     this._registerInstallActivateEvents(clientsClaim);
-    this._registerDefaultRoutes();
+    this._registerDefaultRoutes(directoryIndex);
   }
 
   /**
@@ -185,7 +197,7 @@ class SWLib {
    *
    * @example
    * const swlib = new goog.SWLib();
-   * swlib.router.addRoute('/styles/*',
+   * swlib.router.registerRoute('/styles/*',
    *  swlib.strategies.cacheFirst());
    */
   get strategies() {
@@ -252,20 +264,63 @@ class SWLib {
   /**
    * This method will register any default routes the library will need.
    * @private
+   * @param {string} directoryIndex The directory index is appended to URLs
+   * ending with '/'.
    */
-  _registerDefaultRoutes() {
+  _registerDefaultRoutes(directoryIndex) {
+    const plugins = [];
+    // Add custom directory index plugin.
+    if (directoryIndex) {
+      plugins.push(this._getDirectoryIndexPlugin(directoryIndex));
+    }
+
     const cacheFirstHandler = this.strategies.cacheFirst({
       cacheName: this._revisionedCacheManager.getCacheName(),
+      plugins,
     });
 
     const route = new Route({
       match: ({url}) => {
         const cachedUrls = this._revisionedCacheManager.getCachedUrls();
-        return cachedUrls.indexOf(url.href) !== -1;
+        if (cachedUrls.indexOf(url.href) !== -1) {
+          return true;
+        }
+
+        if (directoryIndex && url.pathname.endsWith('/')) {
+          url.pathname += directoryIndex;
+          return cachedUrls.indexOf(url.href) !== -1;
+        }
+
+        return false;
       },
       handler: cacheFirstHandler,
     });
     this.router.registerRoute(route);
+  }
+
+  /**
+   * @param {string} directoryIndex The directory index is appended to URLs
+   * ending with '/'.
+   * @return {Promise<Object>} Returns a plugin that attempts to match the
+   * URL with /index.html
+   */
+  _getDirectoryIndexPlugin(directoryIndex) {
+    const directoryIndexFunc = async (
+      {request, cache, cachedResponse, matchOptions}) => {
+      // If we already have a cache hit, then just return that.
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      // Otherwise, try again with the indexHtmlString value.
+      if (request.url.endsWith('/')) {
+        let url = new URL(request.url);
+        url.pathname += directoryIndex;
+        return cache.match(url.toString(), matchOptions);
+      }
+    };
+
+    return {cacheWillMatch: directoryIndexFunc};
   }
 }
 
