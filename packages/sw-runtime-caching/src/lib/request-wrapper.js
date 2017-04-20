@@ -117,7 +117,7 @@ class RequestWrapper {
    * @return {function} The default plugin used to determine whether a
    *         response is cacheable.
    */
-  get globalDefaultCacheableResponsePlugin() {
+  getDefaultCacheableResponsePlugin() {
     // Lazy-construct the CacheableResponsePlugin instance.
     if (!this._defaultCacheableResponsePlugin) {
       this._defaultCacheableResponsePlugin =
@@ -286,11 +286,11 @@ class RequestWrapper {
     //    handlerDefaultCacheableResponsePlugin.
     // 3. The default that applies to anything using the `RequestWrapper` class
     //    that doesn't specify the custom behavior, which is accessed via
-    //    the this.globalDefaultCacheableResponsePlugin getter.
+    //    the this.getDefaultCacheableResponsePlugin().
     const effectiveCacheableResponsePlugin =
       this._userSpecifiedCachableResponsePlugin ||
       handlerDefaultCacheableResponsePlugin ||
-      this.globalDefaultCacheableResponsePlugin;
+      this.getDefaultCacheableResponsePlugin();
 
     // Whichever plugin we've decided is appropriate, we now call its
     // cacheWillUpdate() method to determine cacheability of the response.
