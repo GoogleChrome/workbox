@@ -50,9 +50,13 @@ class SWLib {
     if (clientsClaim && (typeof clientsClaim !== 'boolean')) {
       throw ErrorFactory.createError('bad-clients-claim');
     }
-    if (directoryIndex &&
-      (typeof directoryIndex !== 'string' || directoryIndex.length === 0)) {
-      throw ErrorFactory.createError('bad-directory-index');
+    if (typeof directoryIndex !== 'undefined') {
+      if (directoryIndex === false || directoryIndex === null) {
+        directoryIndex = false;
+      } else if (typeof directoryIndex !== 'string' ||
+        directoryIndex.length === 0) {
+        throw ErrorFactory.createError('bad-directory-index');
+      }
     }
 
     if (typeof directoryIndex === 'undefined') {
