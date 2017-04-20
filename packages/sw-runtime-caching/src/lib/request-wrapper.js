@@ -261,13 +261,13 @@ class RequestWrapper {
     if (cacheable) {
       const newResponse = response.clone();
 
-      // cacheDelay is a promise that may or may not be used to delay the
+      // cachingComplete is a promise that may or may not be used to delay the
       // completion of this method, depending on the value of `waitOnCache`.
       cachingComplete = this.getCache().then(async (cache) => {
         let oldResponse;
 
         // Only bother getting the old response if the new response isn't opaque
-        // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
+        // and there's at least one cacheDidUpdate plugin. Otherwise, we don't
         // need it.
         if (response.type !== 'opaque' &&
           this.plugins.has('cacheDidUpdate')) {
@@ -275,13 +275,13 @@ class RequestWrapper {
         }
 
         // Regardless of whether or not we'll end up invoking
-        // cacheDidUpdateCallbacks, wait until the cache is updated.
+        // cacheDidUpdate, wait until the cache is updated.
         const cacheRequest = cacheKey || request;
         await cache.put(cacheRequest, newResponse);
 
         if (this.plugins.has('cacheDidUpdate')) {
           for (let plugin of this.plugins.get('cacheDidUpdate')) {
-            plugin.cacheDidUpdate({
+            await plugin.cacheDidUpdate({
               cacheName: this.cacheName,
               oldResponse,
               newResponse,
