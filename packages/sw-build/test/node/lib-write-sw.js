@@ -277,4 +277,132 @@ swlib.precache(fileManifest);
         cacheId: 'cache-id-example',
       });
   });
+
+  it('should be able to generate sw for template with clientsClaim', function() {
+    const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
+
+/**
+ * DO NOT EDIT THE FILE MANIFEST ENTRY
+ *
+ * The method precache() does the following:
+ * 1. Cache URLs in the manifest to a local cache.
+ * 2. When a network request is made for any of these URLs the response
+ *    will ALWAYS comes from the cache, NEVER the network.
+ * 3. When the service worker changes ONLY assets with a revision change are
+ *    updated, old cache entries are left as is.
+ *
+ * By changing the file manifest manually, your users may end up not receiving
+ * new versions of files because the revision hasn't changed.
+ *
+ * Please use sw-build or some other tool / approach to generate the file
+ * manifest which accounts for changes to local files and update the revision
+ * accordingly.
+ */
+const fileManifest = [
+  {
+    "url": "/",
+    "revision": "1234"
+  }
+];
+
+const swlib = new self.goog.SWLib({
+  "clientsClaim": true
+});
+swlib.precache(fileManifest);
+`;
+    const writeSw = proxyquire('../../src/lib/write-sw', {
+      'mkdirp': {
+        sync: () => {
+          return;
+        },
+      },
+      'fs': {
+        writeFile: (filepath, stringToWrite, cb) => {
+          if (stringToWrite === EXPECTED_RESULT) {
+            cb();
+          } else {
+            stringToWrite.should.equal(EXPECTED_RESULT);
+            cb(new Error('Unexpected result from fs.'));
+          }
+        },
+      },
+    });
+
+    return writeSw(
+      'fake-path/sw.js',
+      [
+        {
+          url: '/',
+          revision: '1234',
+        },
+      ],
+      'fake-path/sw-lib.min.js',
+      'fake-path/', {
+        clientsClaim: true,
+      });
+  });
+
+  it('should be able to generate sw for template with skipWaiting', function() {
+    const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
+
+/**
+ * DO NOT EDIT THE FILE MANIFEST ENTRY
+ *
+ * The method precache() does the following:
+ * 1. Cache URLs in the manifest to a local cache.
+ * 2. When a network request is made for any of these URLs the response
+ *    will ALWAYS comes from the cache, NEVER the network.
+ * 3. When the service worker changes ONLY assets with a revision change are
+ *    updated, old cache entries are left as is.
+ *
+ * By changing the file manifest manually, your users may end up not receiving
+ * new versions of files because the revision hasn't changed.
+ *
+ * Please use sw-build or some other tool / approach to generate the file
+ * manifest which accounts for changes to local files and update the revision
+ * accordingly.
+ */
+const fileManifest = [
+  {
+    "url": "/",
+    "revision": "1234"
+  }
+];
+
+const swlib = new self.goog.SWLib({
+  "skipWaiting": true
+});
+swlib.precache(fileManifest);
+`;
+    const writeSw = proxyquire('../../src/lib/write-sw', {
+      'mkdirp': {
+        sync: () => {
+          return;
+        },
+      },
+      'fs': {
+        writeFile: (filepath, stringToWrite, cb) => {
+          if (stringToWrite === EXPECTED_RESULT) {
+            cb();
+          } else {
+            stringToWrite.should.equal(EXPECTED_RESULT);
+            cb(new Error('Unexpected result from fs.'));
+          }
+        },
+      },
+    });
+
+    return writeSw(
+      'fake-path/sw.js',
+      [
+        {
+          url: '/',
+          revision: '1234',
+        },
+      ],
+      'fake-path/sw-lib.min.js',
+      'fake-path/', {
+        skipWaiting: true,
+      });
+  });
 });
