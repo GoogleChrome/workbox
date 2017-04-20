@@ -43,7 +43,7 @@ class SWLib {
    * check cache entries for a URLs ending with '/' to see if there is a hit
    * when appending the directoryIndex (i.e. '/index.html').
    */
-  constructor({cacheId, clientsClaim, directoryIndex} = {}) {
+  constructor({cacheId, clientsClaim, directoryIndex = 'index.html'} = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
     }
@@ -57,10 +57,6 @@ class SWLib {
         directoryIndex.length === 0) {
         throw ErrorFactory.createError('bad-directory-index');
       }
-    }
-
-    if (typeof directoryIndex === 'undefined') {
-      directoryIndex = 'index.html';
     }
 
     this._runtimeCacheName = getDefaultCacheName({cacheId});
