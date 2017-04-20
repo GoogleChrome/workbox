@@ -23,5 +23,8 @@
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cache-expiration",
   "main": "build/sw-cache-expiration.min.js",
   "module": "build/sw-cache-expiration.min.mjs",
-  "jsnext:main": "build/sw-cache-expiration.min.mjs"
+  "jsnext:main": "build/sw-cache-expiration.min.mjs",
+  "devDependencies": {
+    "sw-runtime-caching": "^0.0.18"
+  }
 }
