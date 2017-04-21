@@ -405,7 +405,7 @@ swlib.precache(fileManifest);
         skipWaiting: true,
       });
   });
-  
+
   it('should be able to generate sw for template with clientsClaim', function() {
     const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
 
