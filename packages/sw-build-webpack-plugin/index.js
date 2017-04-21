@@ -1,4 +1,4 @@
-const swBuild = require('../sw-build/src/');
+const swBuild = require('sw-build');
 const path = require('path');
 
 /**
@@ -37,7 +37,7 @@ class SwBuildWebpackPlugin {
 		// If no root directory is given, fallback to
 		// output path directory of webpack
 		if (!config.rootDirectory) {
-			config.rootDirectory = compilation.mainTemplate.getPublicPath({});
+			config.rootDirectory = compilation.options.output.path;
 		}
 
 		return config;
