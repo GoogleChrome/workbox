@@ -23,11 +23,11 @@ import assert from '../../../../lib/assert';
  * An implementation of a [network first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache)
  * request strategy.
  *
- * By default, `NetworkFirst` will cache [opaque responses](http://stackoverflow.com/q/39109789)
+ * By default, `NetworkFirst` will cache responses with a 200 status code as
+ * well as [opaque responses](http://stackoverflow.com/q/39109789)
  * (responses from cross-origin servers which don't support
- * [CORS](https://enable-cors.org/)) in addition to responses with a 200
- * response status. You can override this default by passing in a
- * `RequestWrapper` that includes an appropriately-configured
+ * [CORS](https://enable-cors.org/)). You can override this default by passing
+ * in a `RequestWrapper` that includes an appropriately-configured
  * `CacheableResponsePlugin`.
  *
  * @example
@@ -99,7 +99,7 @@ class NetworkFirst extends Handler {
     const networkPromise = this.requestWrapper.fetchAndCache({
       request: event.request,
       waitOnCache: this.waitOnCache,
-      handlerDefaultCacheableResponsePlugin: this._cacheablePlugin,
+      cacheResponsePlugin: this._cacheablePlugin,
     }).then((response) => {
       if (timeoutId) {
         clearTimeout(timeoutId);

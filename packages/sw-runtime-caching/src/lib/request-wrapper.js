@@ -263,14 +263,13 @@ class RequestWrapper {
    * @param {Request} [input.cacheKey] Supply a cacheKey if you wish to cache
    *        the response against an alternative request to the `request`
    *        argument.
-   * @param {function} [input.handlerDefaultCacheableResponsePlugin] Allows the
+   * @param {function} [input.cacheResponsePlugin] Allows the
    *        caller to override the default check for cacheability, for
    *        situations in which the cacheability check wasn't explicitly
    *        configured when constructing the `RequestWrapper`.
    * @return {Promise.<Response>} The network response.
    */
-  async fetchAndCache({request, waitOnCache, cacheKey,
-                        handlerDefaultCacheableResponsePlugin}) {
+  async fetchAndCache({request, waitOnCache, cacheKey, cacheResponsePlugin}) {
     assert.atLeastOne({request});
 
     let cachingComplete;
@@ -283,13 +282,13 @@ class RequestWrapper {
     //    constructor, which sets this._userSpecifiedCachableResponsePlugin.
     // 2. Passing in a parameter to the fetchAndCache() method (done by certain
     //    runtime handlers, like `StaleWhileRevalidate`), which sets
-    //    handlerDefaultCacheableResponsePlugin.
+    //    cacheResponsePlugin.
     // 3. The default that applies to anything using the `RequestWrapper` class
     //    that doesn't specify the custom behavior, which is accessed via
     //    the this.getDefaultCacheableResponsePlugin().
     const effectiveCacheableResponsePlugin =
       this._userSpecifiedCachableResponsePlugin ||
-      handlerDefaultCacheableResponsePlugin ||
+      cacheResponsePlugin ||
       this.getDefaultCacheableResponsePlugin();
 
     // Whichever plugin we've decided is appropriate, we now call its
