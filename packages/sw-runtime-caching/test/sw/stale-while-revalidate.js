@@ -3,6 +3,7 @@ importScripts('setup.js');
 describe('Test of the StaleWhileRevalidate handler', function() {
   const CACHE_NAME = location.href;
   const COUNTER_URL = new URL('/__echo/counter', location).href;
+  const CROSS_ORIGIN_COUNTER_URL = generateCrossOriginUrl(COUNTER_URL);
 
   let globalStubs = [];
 
@@ -78,5 +79,30 @@ describe('Test of the StaleWhileRevalidate handler', function() {
     const secondCachedResponse = await cachePutPromise;
 
     await expectDifferentResponseBodies(firstCachedResponse, secondCachedResponse);
+  });
+
+  it(`should update the cache with an the opaque cross-origin network response`, async function() {
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+      {cacheName: CACHE_NAME});
+    const staleWhileRevalidate = new goog.runtimeCaching.StaleWhileRevalidate(
+      {requestWrapper, waitOnCache: true});
+
+    const wrapperCache = await requestWrapper.getCache();
+    const cachePutPromise = new Promise((resolve) => {
+      const cachePutStub = sinon.stub(wrapperCache, 'put', (request, response) => {
+        resolve(response);
+      });
+      globalStubs.push(cachePutStub);
+    });
+
+    const event = new FetchEvent('fetch',
+      {request: new Request(CROSS_ORIGIN_COUNTER_URL, {mode: 'no-cors'})});
+    const handleResponse = await staleWhileRevalidate.handle({event});
+
+    expect(handleResponse.type).to.eql('opaque');
+
+    const cachedResponse = await cachePutPromise;
+
+    expect(cachedResponse.type).to.eql('opaque');
   });
 });

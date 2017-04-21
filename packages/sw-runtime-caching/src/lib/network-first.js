@@ -13,6 +13,8 @@
  limitations under the License.
 */
 
+import {CacheableResponsePlugin} from
+  '../../../sw-cacheable-response/src/index';
 import ErrorFactory from './error-factory';
 import Handler from './handler';
 import assert from '../../../../lib/assert';
@@ -20,6 +22,13 @@ import assert from '../../../../lib/assert';
 /**
  * An implementation of a [network first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache)
  * request strategy.
+ *
+ * By default, `NetworkFirst` will cache responses with a 200 status code as
+ * well as [opaque responses](http://stackoverflow.com/q/39109789)
+ * (responses from cross-origin servers which don't support
+ * [CORS](https://enable-cors.org/)). You can override this default by passing
+ * in a `RequestWrapper` that includes an appropriately-configured
+ * `CacheableResponsePlugin`.
  *
  * @example
  * // Set up a route to match any requests made for URLs that end in .txt.
@@ -37,7 +46,7 @@ import assert from '../../../../lib/assert';
  */
 class NetworkFirst extends Handler {
   /**
-   * Constructor for a new Handler instance.
+   * Constructor for a new NetworkFirst instance.
    *
    * @param {Object} input
    * @param {number} [input.networkTimeoutSeconds] If set, and a network
@@ -53,6 +62,8 @@ class NetworkFirst extends Handler {
    */
   constructor(input = {}) {
     super(input);
+
+    this._cacheablePlugin = new CacheableResponsePlugin({statuses: [0, 200]});
 
     const {networkTimeoutSeconds} = input;
     if (networkTimeoutSeconds) {
@@ -88,6 +99,7 @@ class NetworkFirst extends Handler {
     const networkPromise = this.requestWrapper.fetchAndCache({
       request: event.request,
       waitOnCache: this.waitOnCache,
+      cacheResponsePlugin: this._cacheablePlugin,
     }).then((response) => {
       if (timeoutId) {
         clearTimeout(timeoutId);
