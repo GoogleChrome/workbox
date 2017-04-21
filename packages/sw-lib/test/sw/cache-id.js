@@ -43,8 +43,6 @@ describe('Cache ID', function() {
       cacheId: CACHE_ID,
     });
 
-    console.log(swlib.runtimeCacheName);
-
     swlib._revisionedCacheManager.getCacheName().indexOf(CACHE_ID).should.not.equal(-1);
     swlib.runtimeCacheName.indexOf(CACHE_ID).should.not.equal(-1);
   });

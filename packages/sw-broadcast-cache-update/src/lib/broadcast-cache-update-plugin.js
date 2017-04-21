@@ -58,8 +58,9 @@ class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
    * @param {string} input.cacheName Name of the cache the responses belong to.
    * @param {Response} [input.oldResponse] The previous cached value, if any.
    * @param {Response} input.newResponse The new value in the cache.
+   * @param {string} input.url The cache key URL.
    */
-  cacheDidUpdate({cacheName, oldResponse, newResponse}) {
+  cacheDidUpdate({cacheName, oldResponse, newResponse, url}) {
     assert.isType({cacheName}, 'string');
     assert.isInstance({newResponse}, Response);
 
@@ -68,6 +69,7 @@ class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
         cacheName,
         first: oldResponse,
         second: newResponse,
+        url,
       });
     }
   }

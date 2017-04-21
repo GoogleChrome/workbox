@@ -45,6 +45,13 @@ describe('Test of the responsesAreSame function', function() {
       first, second, headersToCheck})).to.be.true;
   });
 
+  it(`should return true when no headers exist`, function() {
+    const first = new Response('');
+    const second = new Response('');
+    expect(goog.broadcastCacheUpdate.responsesAreSame({
+      first, second, headersToCheck})).to.be.true;
+  });
+
   it(`should return false when one header matches and the other doesn't`, function() {
     const first = new Response('', {
       headers: {[firstHeaderName]: 'same', [secondHeaderName]: 'same'}});
