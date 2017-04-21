@@ -47,12 +47,13 @@ class CacheableResponsePlugin extends CacheableResponse {
    *
    * @private
    * @param {Object} input
+   * @param {Request} input.request The request that led to the response.
    * @param {Response} input.response The response that might be cached.
    * @return {boolean} `true` if the `Response` is cacheable, based on the
    *          configuration of this object, and `false` otherwise.
    */
-  cacheWillUpdate({response} = {}) {
-    return this.isResponseCacheable({response});
+  cacheWillUpdate({request, response} = {}) {
+    return this.isResponseCacheable({request, response});
   }
 }
 

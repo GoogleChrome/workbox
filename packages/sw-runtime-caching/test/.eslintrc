@@ -13,6 +13,7 @@
     "expect": true,
     "expectSameResponseBodies": true,
     "expectDifferentResponseBodies": true,
+    "generateCrossOriginUrl": true,
     "sinon": true
   }
 }
