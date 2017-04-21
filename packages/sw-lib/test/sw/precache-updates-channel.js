@@ -6,6 +6,8 @@ importScripts(
   '/packages/sw-lib/build/sw-lib.js'
 );
 
+/* global goog */
+
 const expect = self.chai.expect;
 mocha.setup({
   ui: 'bdd',

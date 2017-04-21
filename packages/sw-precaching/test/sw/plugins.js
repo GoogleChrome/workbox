@@ -3,6 +3,8 @@ importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/packages/sw-precaching/build/sw-precaching.js');
 
+/* global goog */
+
 const expect = self.chai.expect;
 mocha.setup({
   ui: 'bdd',
