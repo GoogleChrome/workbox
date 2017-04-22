@@ -44,15 +44,15 @@ class SWLib {
    * @param  {String} [input.directoryIndex]  The directoryIndex will
    * check cache entries for a URLs ending with '/' to see if there is a hit
    * when appending the directoryIndex (i.e. '/index.html').
-   * @param {string} [input.precacheUpdatesChannel] This value will be used as
+   * @param {string} [input.precacheChannelName] This value will be used as
    * the `channelName` to construct a {@link BroadcastCacheUpdate} plugin. The
    * plugin sends a message whenever a precached URL is updated. To disable this
-   * plugin, set `precacheUpdatesChannel` to an empty string.
+   * plugin, set `precacheChannelName` to an empty string.
    * (Defaults to `'precache-updates'`)
    */
   constructor({cacheId, clientsClaim, handleFetch,
                directoryIndex = 'index.html',
-               precacheUpdatesChannel = 'precache-updates'} = {}) {
+               precacheChannelName = 'precache-updates'} = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
     }
@@ -69,9 +69,9 @@ class SWLib {
     }
 
     const plugins = [];
-    if (precacheUpdatesChannel) {
+    if (precacheChannelName) {
       plugins.push(new BroadcastCacheUpdatePlugin({
-        channelName: precacheUpdatesChannel,
+        channelName: precacheChannelName,
         source: registration && registration.scope ?
           registration.scope :
           location,
