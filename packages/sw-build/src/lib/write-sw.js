@@ -41,6 +41,9 @@ module.exports =
     if (options.clientsClaim) {
       swlibOptions.clientsClaim = true;
     }
+    if (options.directoryIndex) {
+      swlibOptions.directoryIndex = options.directoryIndex;
+    }
 
     try {
       return template(templateString)({
