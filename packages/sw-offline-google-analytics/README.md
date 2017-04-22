@@ -14,4 +14,4 @@ Browse sample source code in the [demo directory](https://github.com/GoogleChrom
 
 ## Reference Docs
 
-You can find [documentation for this module here](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-offline-google-analytics.html#main).
+You can find [documentation for this module here](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/sw-offline-google-analytics_src_index.js.html).
