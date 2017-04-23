@@ -304,18 +304,18 @@ class RequestWrapper {
       // completion of this method, depending on the value of `waitOnCache`.
       cachingComplete = this.getCache().then(async (cache) => {
         let oldResponse;
+        const cacheRequest = cacheKey || request;
 
         // Only bother getting the old response if the new response isn't opaque
         // and there's at least one cacheDidUpdate plugin. Otherwise, we don't
         // need it.
         if (response.type !== 'opaque' &&
           this.plugins.has('cacheDidUpdate')) {
-          oldResponse = await this.match({request});
+          oldResponse = await this.match({request: cacheRequest});
         }
 
         // Regardless of whether or not we'll end up invoking
         // cacheDidUpdate, wait until the cache is updated.
-        const cacheRequest = cacheKey || request;
         await cache.put(cacheRequest, newResponse);
 
         if (this.plugins.has('cacheDidUpdate')) {
@@ -324,7 +324,8 @@ class RequestWrapper {
               cacheName: this.cacheName,
               oldResponse,
               newResponse,
-              url: request.url,
+              // cacheRequest may be a Request with a url property, or a string.
+              url: ('url' in cacheRequest) ? cacheRequest.url : cacheRequest,
             });
           }
         }

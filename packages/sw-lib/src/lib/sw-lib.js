@@ -22,6 +22,8 @@ import {RevisionedCacheManager} from '../../../sw-precaching/src/index.js';
 import {Route} from '../../../sw-routing/src/index.js';
 import logHelper from '../../../../lib/log-helper';
 import {getDefaultCacheName} from '../../../sw-runtime-caching/src/index.js';
+import {BroadcastCacheUpdatePlugin} from
+  '../../../sw-broadcast-cache-update/src/index.js';
 
 /**
  * A high level library to make it as easy as possible to precache assets
@@ -34,17 +36,23 @@ class SWLib {
   /**
    * You should instantiate this class with `new self.goog.SWLib()`.
    * @param {Object} input
-   * @param {string} cacheId Defining a cacheId is useful to ensure uniqueness
-   * across cache names. Useful if you have multiple sites served over
-   * localhost.
-   * @param {boolean} clientsClaim To claim currently open clients set
-   * this value to true. (Default false).
+   * @param {string} [input.cacheId] Defining a cacheId is useful to ensure
+   * uniqueness across cache names. Useful if you have multiple sites served
+   * over localhost.
+   * @param {boolean} [input.clientsClaim] To claim currently open clients set
+   * this value to true. (Defaults to false).
    * @param  {String} [input.directoryIndex]  The directoryIndex will
    * check cache entries for a URLs ending with '/' to see if there is a hit
    * when appending the directoryIndex (i.e. '/index.html').
+   * @param {string} [input.precacheChannelName] This value will be used as
+   * the `channelName` to construct a {@link BroadcastCacheUpdate} plugin. The
+   * plugin sends a message whenever a precached URL is updated. To disable this
+   * plugin, set `precacheChannelName` to an empty string.
+   * (Defaults to `'precache-updates'`)
    */
   constructor({cacheId, clientsClaim, handleFetch,
-    directoryIndex = 'index.html'} = {}) {
+               directoryIndex = 'index.html',
+               precacheChannelName = 'precache-updates'} = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
     }
@@ -60,9 +68,20 @@ class SWLib {
       }
     }
 
+    const plugins = [];
+    if (precacheChannelName) {
+      plugins.push(new BroadcastCacheUpdatePlugin({
+        channelName: precacheChannelName,
+        source: registration && registration.scope ?
+          registration.scope :
+          location,
+      }));
+    }
+
     this._runtimeCacheName = getDefaultCacheName({cacheId});
     this._revisionedCacheManager = new RevisionedCacheManager({
       cacheId,
+      plugins,
     });
     this._strategies = new Strategies({
       cacheId,
