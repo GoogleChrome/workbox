@@ -104,13 +104,14 @@ class BroadcastCacheUpdate {
    * @param {Response} input.second Another of the respones to compare.
    *        This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
    * @param {string} input.cacheName Name of the cache the responses belong to.
+   * @param {string} input.url The cache key URL.
    */
-  notifyIfUpdated({first, second, cacheName}) {
+  notifyIfUpdated({first, second, cacheName, url}) {
     assert.isType({cacheName}, 'string');
 
     if (
       !responsesAreSame({first, second, headersToCheck: this.headersToCheck})) {
-      broadcastUpdate({cacheName, url: second.url,
+      broadcastUpdate({cacheName, url,
         channel: this.channel, source: this.source});
     }
   }

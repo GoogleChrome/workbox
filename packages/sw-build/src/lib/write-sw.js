@@ -35,8 +35,14 @@ module.exports =
     if (options.cacheId) {
       swlibOptions.cacheId = options.cacheId;
     }
+    if (options.skipWaiting) {
+      swlibOptions.skipWaiting = true;
+    }
     if (options.clientsClaim) {
       swlibOptions.clientsClaim = true;
+    }
+    if (options.directoryIndex) {
+      swlibOptions.directoryIndex = options.directoryIndex;
     }
 
     try {

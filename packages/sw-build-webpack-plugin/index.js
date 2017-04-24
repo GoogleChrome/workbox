@@ -1,5 +1,4 @@
-const swBuild = require('../sw-build/src/');
-const path = require('path');
+const swBuild = require('sw-build');
 
 /**
  * Use the instance of this in the plugins array of the webpack config.
@@ -31,20 +30,26 @@ class SwBuildWebpackPlugin {
 	constructor(config) {
 		this._config = config || {};
 	}
+
+  /**
+   * @private
+   * @param {Object} compilation The [compilation](https://github.com/webpack/docs/wiki/how-to-write-a-plugin#accessing-the-compilation),
+   * passed from Webpack to this plugin.
+   * @return {Object} The configuration for a given compilation.
+   */
 	getConfig(compilation) {
 		let config = this._config;
 
 		// If no root directory is given, fallback to
 		// output path directory of webpack
 		if (!config.rootDirectory) {
-			config.rootDirectory = compilation.mainTemplate.getPublicPath({});
+			config.rootDirectory = compilation.options.output.path;
 		}
 
 		return config;
 	}
 
 	/**
-	 *
 	 * @param {Object} [compiler] default compiler object passed from webpack
 	 *
 	 * @memberOf SwBuildWebpackPlugin
@@ -52,7 +57,6 @@ class SwBuildWebpackPlugin {
 	apply(compiler) {
 		compiler.plugin('after-emit', (compilation, callback) => {
 			const config = this.getConfig(compilation);
-
 			if (config.swFile) {
 				swBuild.injectManifest(config)
 					.then(() => callback())

@@ -9,9 +9,16 @@ import {RequestWrapper} from '../../../../sw-runtime-caching/src/index';
 class BaseCacheManager {
   /**
    * Constructor for BaseCacheManager
-   * @param {String} cacheName This is the cache name to store requested assets.
+   *
+   * @param {Object} input
+   * @param {String} [input.cacheName] This is the cache name to store requested
+   * assets.
+   * @param {String} [input.cacheId] The cacheId can be used to ensure that
+   * multiple projects sharing `http://localhost` have unique cache names.
+   * @param {Array<Object>} [input.plugins] Any plugins that should be
+   * invoked by the underlying `RequestWrapper`.
    */
-  constructor({cacheName, cacheId}) {
+  constructor({cacheName, cacheId, plugins} = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
     }
@@ -20,6 +27,7 @@ class BaseCacheManager {
     this._requestWrapper = new RequestWrapper({
       cacheName,
       cacheId,
+      plugins,
       fetchOptions: {
         credentials: 'same-origin',
       },

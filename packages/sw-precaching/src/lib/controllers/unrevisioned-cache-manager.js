@@ -17,11 +17,15 @@ class UnrevisionedCacheManager extends BaseCacheManager {
   /**
    * Constructor for UnreivisionedCacheManager
    * @param {Object} input
-   * @param {String} [input.cacheName] Define the cache used to stash these
-   * entries.
+   * @param {String} [input.cacheName] This is the cache name to store requested
+   * assets.
+   * @param {String} [input.cacheId] The cacheId can be used to ensure that
+   * multiple projects sharing `http://localhost` have unique cache names.
+   * @param {Array<Object>} [input.plugins] Any plugins that should be
+   * invoked by the underlying `RequestWrapper`.
    */
-   constructor({cacheName, cacheId} = {}) {
-     super({cacheName, cacheId});
+   constructor(input = {}) {
+     super(input);
   }
 
   /**

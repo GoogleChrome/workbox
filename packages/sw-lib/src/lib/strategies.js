@@ -37,7 +37,7 @@ class Strategies {
    * const = new goog.SWLib();
    * const cacheFirstStrategy = swlib.strategies.cacheFirst();
    *
-   * swlib.router.addRoute('/styles/*', cacheFirstStrategy);
+   * swlib.router.registerRoute('/styles/*', cacheFirstStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -55,7 +55,7 @@ class Strategies {
    * const swlib = new goog.SWLib();
    * const cacheOnlyStrategy = swlib.strategies.cacheOnly();
    *
-   * swlib.router.addRoute('/styles/*', cacheOnlyStrategy);
+   * swlib.router.registerRoute('/styles/*', cacheOnlyStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -74,7 +74,7 @@ class Strategies {
    * const swlib = new goog.SWLib();
    * const networkFirstStrategy = swlib.strategies.networkFirst();
    *
-   * swlib.router.addRoute('/blog/', networkFirstStrategy);
+   * swlib.router.registerRoute('/blog/', networkFirstStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -93,7 +93,7 @@ class Strategies {
    * const swlib = new goog.SWLib();
    * const networkOnlyStrategy = swlib.strategies.networkOnly();
    *
-   * swlib.router.addRoute('/admin/', networkOnlyStrategy);
+   * swlib.router.registerRoute('/admin/', networkOnlyStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -113,7 +113,7 @@ class Strategies {
    * const staleWhileRevalidateStrategy =
    *  swlib.strategies.staleWhileRevalidate();
    *
-   * swlib.router.addRoute('/styles/*', staleWhileRevalidateStrategy);
+   * swlib.router.registerRoute('/styles/*', staleWhileRevalidateStrategy);
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
