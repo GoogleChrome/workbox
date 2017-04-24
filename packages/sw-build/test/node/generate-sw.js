@@ -12,7 +12,7 @@ describe('Test generateSW()', function() {
     globIgnores: [
       '!node_modules/',
     ],
-    dest: 'sw.js',
+    dest: 'build/sw.js',
   };
 
   let generateSW;
@@ -187,9 +187,9 @@ describe('Test generateSW()', function() {
     args.globDirectory = '.';
 
     generateSW = proxyquire('../../src/lib/generate-sw', {
-      './utils/copy-sw-lib': (globDirectory) => {
-        if (globDirectory === '.') {
-          return Promise.resolve(path.join(globDirectory, 'sw-lib.v0.0.0.js'));
+      './utils/copy-sw-lib': (copySWLibPath) => {
+        if (copySWLibPath === path.dirname(EXAMPLE_INPUT.dest)) {
+          return Promise.resolve(path.join(copySWLibPath, 'sw-lib.v0.0.0.js'));
         }
         return Promise.reject(new Error('Inject Error - copy-sw-lib'));
       },
@@ -236,10 +236,4 @@ describe('Test generateSW()', function() {
     let args = Object.assign({}, EXAMPLE_INPUT);
     return generateSW(args);
   });
-
-  // fileExtensionsToCache - single item array
-  // fileExtensionsToCache - multiple item with multiple dots
-
-  // swName - multiple dots in name
-  // swName - nested path
 });

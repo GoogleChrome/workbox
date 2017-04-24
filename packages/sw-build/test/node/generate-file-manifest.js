@@ -5,10 +5,10 @@ const errors = require('../../src/lib/errors');
 
 describe('Test generateFileManifest', function() {
   const EXAMPLE_INPUT = {
-    globDirectory: '.',
+    globDirectory: 'src/',
     staticFileGlobs: ['./**/*.{html,css}'],
     globIgnores: [],
-    dest: './manifest.js',
+    dest: './build/manifest.js',
   };
 
   it('should be able to handle bad input', function() {

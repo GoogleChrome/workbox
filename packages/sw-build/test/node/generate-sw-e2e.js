@@ -44,7 +44,7 @@ describe('Generate SW End-to-End Tests', function() {
       path.join(__dirname, '..', '..', '..', 'sw-cli', 'test', 'static', 'example-project-1'),
       tmpDirectory);
 
-    const swName = `${Date.now()}-sw.js`;
+    const dest = `build/${Date.now()}-sw.js`;
     const modifyUrlPrefix = {
       '/': '/example-prefix/',
     };
@@ -52,14 +52,14 @@ describe('Generate SW End-to-End Tests', function() {
     return validator.performTest(() => {
       return swBuild.generateSW({
         globDirectory: tmpDirectory,
-        dest: swName,
+        dest,
         staticFileGlobs: [`**\/*.{${FILE_EXTENSIONS.join(',')}}`],
         cacheId: 'example-cache-id',
         modifyUrlPrefix,
       });
     }, {
       exampleProject: tmpDirectory,
-      swName,
+      dest,
       fileExtensions: FILE_EXTENSIONS,
       baseTestUrl,
       modifyUrlPrefix,
