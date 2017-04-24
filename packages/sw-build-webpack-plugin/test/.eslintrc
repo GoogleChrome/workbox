@@ -1,0 +1,14 @@
+{
+  "rules": {
+    "max-len": 0,
+    "require-jsdoc": 0
+  },
+  "env": {
+    "mocha": true
+  },
+  "globals": {
+    "goog": true,
+    "expect": true,
+    "sinon": true
+  }
+}
