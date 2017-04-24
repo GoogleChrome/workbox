@@ -26,6 +26,12 @@ sinon.stub(webpackCompilation.compiler, 'plugin', (event, callback)=> {
 	webpackEventCallback = callback;
 });
 
+webpackCompilation.options={
+	output: {
+		path: OUTPUT_DIR,
+	},
+};
+
 describe('Tests for webpack plugin', function() {
 	beforeEach(()=>{
 		// Build a proxy sw-build
@@ -49,14 +55,11 @@ describe('Tests for webpack plugin', function() {
 
 		// do a proxy require
 		SwWebpackPlugin = proxyquire('../../', {
-			'../sw-build/src/': proxySwBuild,
+			'sw-build': proxySwBuild,
 		});
 	});
 
 	it('should mutate config accordin to webpack defaults', () => {
-		sinon.stub(webpackCompilation.mainTemplate, 'getPublicPath', ()=>{
-			return OUTPUT_DIR;
-		});
 		let swWebpackPlugin = new SwWebpackPlugin({});
 		assert.equal(swWebpackPlugin.getConfig(webpackCompilation).rootDirectory,
 			OUTPUT_DIR);

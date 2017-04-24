@@ -121,6 +121,17 @@ class BackgroundSyncQueue {
 	fetchDidFail({request}) {
 		return this.pushIntoQueue({request});
 	}
+
+	/**
+	 * Replays all the requests in the queue, this can be used for custom timing
+	 * of replaying requests may be in an environment where sync event is not
+	 * supported
+	 *
+	 * @memberOf BackgroundSyncQueue
+	 */
+	replayRequests() {
+		return this._requestManager.replayRequests();
+	}
 }
 
 export default BackgroundSyncQueue;

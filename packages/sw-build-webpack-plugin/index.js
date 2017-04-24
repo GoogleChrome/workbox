@@ -43,7 +43,7 @@ class SwBuildWebpackPlugin {
 		// If no root directory is given, fallback to
 		// output path directory of webpack
 		if (!config.rootDirectory) {
-			config.rootDirectory = compilation.mainTemplate.getPublicPath({});
+			config.rootDirectory = compilation.options.output.path;
 		}
 
 		return config;
@@ -57,7 +57,6 @@ class SwBuildWebpackPlugin {
 	apply(compiler) {
 		compiler.plugin('after-emit', (compilation, callback) => {
 			const config = this.getConfig(compilation);
-
 			if (config.swFile) {
 				swBuild.injectManifest(config)
 					.then(() => callback())
