@@ -51,7 +51,7 @@ describe('Generate SW End-to-End Tests', function() {
     const swBuild = require('../../build/index.js');
     return validator.performTest(() => {
       return swBuild.generateSW({
-        rootDirectory: tmpDirectory,
+        globDirectory: tmpDirectory,
         dest: swName,
         staticFileGlobs: [`**\/*.{${FILE_EXTENSIONS.join(',')}}`],
         cacheId: 'example-cache-id',

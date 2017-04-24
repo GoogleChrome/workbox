@@ -9,7 +9,7 @@ describe('Test getFileManifestEntries', function() {
   const EXAMPLE_INPUT = {
     staticFileGlobs: ['./**/*.{html,css}'],
     globIgnores: [],
-    rootDirectory: '.',
+    globDirectory: '.',
   };
 
   it('should be able to handle bad input', function() {
@@ -33,7 +33,7 @@ describe('Test getFileManifestEntries', function() {
     });
   });
 
-  it('should detect bad rootDirectory', function() {
+  it('should detect bad globDirectory', function() {
     const badInput = [
       undefined,
       null,
@@ -45,13 +45,13 @@ describe('Test getFileManifestEntries', function() {
     return badInput.reduce((promiseChain, input) => {
       return promiseChain.then(() => {
         let args = Object.assign({}, EXAMPLE_INPUT);
-        args.rootDirectory = input;
+        args.globDirectory = input;
         return swBuild.getFileManifestEntries(args)
         .then(() => {
           throw new Error('Expected to throw error.');
         })
         .catch((err) => {
-          if (err.message !== errors['invalid-root-directory']) {
+          if (err.message !== errors['invalid-glob-directory']) {
             throw new Error('Unexpected error: ' + err.message);
           }
         });
@@ -89,7 +89,7 @@ describe('Test getFileManifestEntries', function() {
       staticFileGlobs: [
         '**/*.{html,js,css}',
       ],
-      rootDirectory: path.join(__dirname, '..', '..', '..',
+      globDirectory: path.join(__dirname, '..', '..', '..',
         'sw-cli', 'test', 'static', 'example-project-1'),
     };
 
@@ -121,7 +121,7 @@ describe('Test getFileManifestEntries', function() {
       staticFileGlobs: [
         '**/*.{html,js,css}',
       ],
-      rootDirectory: path.join(__dirname, '..', '..', '..',
+      globDirectory: path.join(__dirname, '..', '..', '..',
         'sw-cli', 'test', 'static', 'example-project-1'),
       modifyUrlPrefix: {
         '/styles': '/static/styles',

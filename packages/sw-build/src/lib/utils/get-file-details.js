@@ -5,11 +5,11 @@ const getFileSize = require('./get-file-size');
 const getFileHash = require('./get-file-hash');
 const errors = require('../errors');
 
-module.exports = (rootDirectory, globPattern, globIgnores) => {
+module.exports = (globDirectory, globPattern, globIgnores) => {
   let globbedFiles;
   try {
     globbedFiles = glob.sync(globPattern, {
-      cwd: rootDirectory,
+      cwd: globDirectory,
       ignore: globIgnores,
     });
   } catch (err) {
@@ -17,7 +17,7 @@ module.exports = (rootDirectory, globPattern, globIgnores) => {
   }
 
   const fileDetails = globbedFiles.map((file) => {
-    const fullPath = path.join(rootDirectory, file);
+    const fullPath = path.join(globDirectory, file);
     const fileSize = getFileSize(fullPath);
     if (fileSize === null) {
       return null;
@@ -25,7 +25,7 @@ module.exports = (rootDirectory, globPattern, globIgnores) => {
 
     const fileHash = getFileHash(fullPath);
     return {
-      file: `${path.relative(rootDirectory, fullPath)}`,
+      file: `${path.relative(globDirectory, fullPath)}`,
       hash: fileHash,
       size: fileSize,
     };

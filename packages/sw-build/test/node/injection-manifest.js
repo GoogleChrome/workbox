@@ -39,7 +39,7 @@ describe('Test Injection Manifest', function() {
     it(`should be able to read and inject in doc ${docName}`, function() {
       return swBuild.injectManifest({
         dest: tmpDirectory,
-        rootDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
+        globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
         staticFileGlobs: ['**\/*.{html,css}'],
         swFile: docName,
       })
@@ -58,7 +58,7 @@ describe('Test Injection Manifest', function() {
   it(`should throw due to no injection point in bad-no-injection.js`, function() {
     return swBuild.injectManifest({
       dest: tmpDirectory,
-      rootDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
+      globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
       staticFileGlobs: ['**\/*.{html,css}'],
       swFile: 'bad-no-injection.js',
     })
@@ -76,7 +76,7 @@ describe('Test Injection Manifest', function() {
   it(`should throw due to no injection point in bad-multiple-injection.js`, function() {
     return swBuild.injectManifest({
       dest: tmpDirectory,
-      rootDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
+      globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
       staticFileGlobs: ['**\/*.{html,css}'],
       swFile: 'bad-multiple-injection.js',
     })
