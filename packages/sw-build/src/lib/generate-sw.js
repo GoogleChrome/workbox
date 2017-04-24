@@ -86,8 +86,10 @@ const generateSW = function(input) {
   let destDirectory = path.dirname(dest);
   return copySWLib(destDirectory)
   .then((libPath) => {
-    swlibPath = libPath;
-    globIgnores.push(path.relative(destDirectory, swlibPath));
+    // If sw file is in build/sw.js, the swlib file will be build/swlib.***.js
+    // So the sw.js file should import swlib.***.js (i.e. not include build/).
+    swlibPath = path.relative(destDirectory, libPath);
+    globIgnores.push(swlibPath);
   })
   .then(() => {
     return getFileManifestEntries({

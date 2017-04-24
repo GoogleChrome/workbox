@@ -98,7 +98,7 @@ describe('Test getFileManifestEntries', function() {
       output.should.deep.equal([
         {
           url: '/index.html',
-          revision: '218c18c2a07f6fbe326de4c9b0676164',
+          revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
         }, {
           url: '/page-1.html',
           revision: '544658ab25ee8762dc241e8b1c5ed96d',
@@ -134,7 +134,7 @@ describe('Test getFileManifestEntries', function() {
       output.should.deep.equal([
         {
           url: '/index.html',
-          revision: '218c18c2a07f6fbe326de4c9b0676164',
+          revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
         }, {
           url: '/pages/page-1.html',
           revision: '544658ab25ee8762dc241e8b1c5ed96d',

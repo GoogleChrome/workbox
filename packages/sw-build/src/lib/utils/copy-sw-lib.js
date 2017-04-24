@@ -1,15 +1,16 @@
 const path = require('path');
 const fs = require('fs');
+const mkdirp = require('mkdirp');
 
 const errors = require('../errors');
 
-module.exports = (rootDirectory) => {
+module.exports = (outputDirectory) => {
   const swlibModuleBuildPath = path.dirname(require.resolve('sw-lib'));
   const swlibPkg = require(
     path.join(swlibModuleBuildPath, '..', 'package.json')
   );
 
-  const swlibOutputPath = path.join(rootDirectory,
+  const swlibOutputPath = path.join(outputDirectory,
     `sw-lib.v${swlibPkg.version}.min.js`);
   return new Promise((resolve) => {
     fs.unlink(swlibOutputPath, (err) => {
@@ -19,6 +20,8 @@ module.exports = (rootDirectory) => {
   .then(() => {
     return new Promise((resolve, reject) => {
       const swlibBuiltPath = path.join(swlibModuleBuildPath, 'sw-lib.min.js');
+
+      mkdirp.sync(outputDirectory);
 
       const stream = fs.createReadStream(swlibBuiltPath)
         .pipe(fs.createWriteStream(swlibOutputPath));

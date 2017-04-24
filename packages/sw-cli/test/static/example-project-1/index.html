@@ -33,7 +33,7 @@
     if (split[1].indexOf('/') === split[1].length - 1) {
       split[1] = split[1].substring(0, split[1].length - 1);
     }
-    searchParams[split[0]] = split[1];
+    searchParams[split[0]] = decodeURIComponent(split[1]);
   });
   navigator.serviceWorker.register(searchParams.sw)
   .then((registration) => {

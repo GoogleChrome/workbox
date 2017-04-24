@@ -223,7 +223,7 @@ describe('Test generateSW()', function() {
         if (swPath !== EXAMPLE_INPUT.dest) {
           throw new Error(`Service worker path is an unexpected value: ${swPath}`);
         }
-        if (swlibPath !== path.join(path.dirname(EXAMPLE_INPUT.dest), 'sw-lib.v0.0.0.js')) {
+        if (swlibPath !== 'sw-lib.v0.0.0.js') {
           throw new Error(`SW-Lib path is an unexpected value: ${swlibPath}`);
         }
         if (globDirectory !== EXAMPLE_INPUT.globDirectory) {
