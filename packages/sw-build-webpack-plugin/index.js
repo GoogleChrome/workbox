@@ -1,4 +1,4 @@
-const swBuild = require('../sw-build/src/index');
+const swBuild = require('sw-build');
 
 /**
  * Use the instance of this in the plugins array of the webpack config.
