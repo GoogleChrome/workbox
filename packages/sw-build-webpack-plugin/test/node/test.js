@@ -42,13 +42,13 @@ describe('Tests for webpack plugin', function() {
 
 		// Generate stub methods
 		sinon.stub(proxySwBuild, 'generateSW', function() {
-			return new Promise((resolve, reject) => {
+			return new Promise((resolve) => {
 				resolve();
 			});
 		});
 
 		sinon.stub(proxySwBuild, 'injectManifest', function() {
-			return new Promise((resolve, reject) => {
+			return new Promise((resolve) => {
 				resolve();
 			});
 		});
@@ -57,7 +57,7 @@ describe('Tests for webpack plugin', function() {
 		SwWebpackPlugin = proxyquire('../../', {
 			'sw-build': proxySwBuild,
 		});
-	})
+	});
 
 	it('should mutate config accordin to webpack defaults', () => {
 		let swWebpackPlugin = new SwWebpackPlugin({});

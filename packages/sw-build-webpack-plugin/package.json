@@ -20,6 +20,9 @@
   "engines": {
     "node": ">=4.0.0"
   },
+  "dependencies": {
+    "sw-build": "0.0.18"
+  },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",

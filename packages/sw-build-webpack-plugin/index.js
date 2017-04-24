@@ -1,5 +1,4 @@
 const swBuild = require('sw-build');
-const path = require('path');
 
 /**
  * Use the instance of this in the plugins array of the webpack config.
@@ -31,6 +30,13 @@ class SwBuildWebpackPlugin {
 	constructor(config) {
 		this._config = config || {};
 	}
+
+  /**
+   * @private
+   * @param {Object} compilation The [compilation](https://github.com/webpack/docs/wiki/how-to-write-a-plugin#accessing-the-compilation),
+   * passed from Webpack to this plugin.
+   * @return {Object} The configuration for a given compilation.
+   */
 	getConfig(compilation) {
 		let config = this._config;
 
@@ -44,7 +50,6 @@ class SwBuildWebpackPlugin {
 	}
 
 	/**
-	 *
 	 * @param {Object} [compiler] default compiler object passed from webpack
 	 *
 	 * @memberOf SwBuildWebpackPlugin
