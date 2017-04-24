@@ -13,6 +13,8 @@
  limitations under the License.
 */
 
+import {CacheableResponsePlugin} from
+  '../../../sw-cacheable-response/src/index';
 import Handler from './handler';
 import assert from '../../../../lib/assert';
 
@@ -22,6 +24,13 @@ import assert from '../../../../lib/assert';
  *
  * In addition to updating the appropriate caches, it will also trigger any
  * appropriate plugins defined in the underlying `RequestWrapper`.
+ *
+ * By default, `StaleWhileRevalidate` will cache responses with a 200 status
+ * code as well as [opaque responses](http://stackoverflow.com/q/39109789)
+ * (responses from cross-origin servers which don't support
+ * [CORS](https://enable-cors.org/)). You can override this default by passing
+ * in a `RequestWrapper` that includes an appropriately-configured
+ * `CacheableResponsePlugin`.
  *
  * @example
  * // Set up a route to match any requests made for URLs that end in .txt.
@@ -39,6 +48,21 @@ import assert from '../../../../lib/assert';
  */
 class StaleWhileRevalidate extends Handler {
   /**
+   * Constructor for a new StaleWhileRevalidate instance.
+   *
+   * @param {Object} input
+   * @param {RequestWrapper} [input.requestWrapper] An optional `RequestWrapper`
+   *        that is used to configure the cache name and request plugins. If
+   *        not provided, a new `RequestWrapper` using the
+   *        [default cache name](#defaultCacheName) will be used.
+   */
+  constructor(input = {}) {
+    super(input);
+
+    this._cacheablePlugin = new CacheableResponsePlugin({statuses: [0, 200]});
+  }
+
+  /**
    * The handle method will be called by the
    * {@link module:sw-routing.Route|Route} class when a route matches a request.
    *
@@ -54,7 +78,9 @@ class StaleWhileRevalidate extends Handler {
     const fetchAndCacheResponse = this.requestWrapper.fetchAndCache({
       request: event.request,
       waitOnCache: this.waitOnCache,
+      cacheResponsePlugin: this._cacheablePlugin,
     }).catch(() => Response.error());
+
     const cachedResponse = await this.requestWrapper.match({
       request: event.request,
     });

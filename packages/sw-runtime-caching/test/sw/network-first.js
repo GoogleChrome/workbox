@@ -3,6 +3,7 @@ importScripts('setup.js');
 describe('Test of the NetworkFirst handler', function() {
   const CACHE_NAME = location.href;
   const COUNTER_URL = new URL('/__echo/counter', location).href;
+  const CROSS_ORIGIN_COUNTER_URL = generateCrossOriginUrl(COUNTER_URL);
 
   let globalStubs = [];
 
@@ -105,5 +106,24 @@ describe('Test of the NetworkFirst handler', function() {
     const currentCachedResponse = await cache.match(COUNTER_URL);
 
     await expectSameResponseBodies(handleResponse, currentCachedResponse);
+  });
+
+  it(`should update the cache with an the opaque cross-origin network response`, async function() {
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+      {cacheName: CACHE_NAME});
+    const networkFirst = new goog.runtimeCaching.NetworkFirst(
+      {requestWrapper, waitOnCache: true});
+
+    const cache = await caches.open(CACHE_NAME);
+
+    const event = new FetchEvent('fetch',
+      {request: new Request(CROSS_ORIGIN_COUNTER_URL, {mode: 'no-cors'})});
+    const handleResponse = await networkFirst.handle({event});
+
+    expect(handleResponse.type).to.eql('opaque');
+
+    const cachedResponse = await cache.match(CROSS_ORIGIN_COUNTER_URL);
+
+    expect(cachedResponse.type).to.eql('opaque');
   });
 });

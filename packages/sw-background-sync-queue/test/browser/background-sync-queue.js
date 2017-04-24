@@ -17,7 +17,7 @@
 'use strict';
 
 describe('background sync queue test', () => {
-	let responseAchieved = 0;
+  let responseAchieved = 0;
   function onRes() {
 		responseAchieved = responseAchieved + 1;
 	}

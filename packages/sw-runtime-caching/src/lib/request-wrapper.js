@@ -13,10 +13,11 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
-import logHelper from '../../../../lib/log-helper.js';
-import {pluginCallbacks, getDefaultCacheName} from './constants';
 import ErrorFactory from './error-factory';
+import assert from '../../../../lib/assert';
+import {CacheableResponsePlugin} from
+  '../../../sw-cacheable-response/src/index';
+import {pluginCallbacks, getDefaultCacheName} from './constants';
 
 /**
  * This class is used by the various subclasses of `Handler` to configure the
@@ -103,6 +104,26 @@ class RequestWrapper {
         }
       });
     }
+
+    if (this.plugins.has('cacheWillUpdate')) {
+      this._userSpecifiedCachableResponsePlugin =
+        this.plugins.get('cacheWillUpdate')[0];
+    }
+  }
+
+
+  /**
+   * @private
+   * @return {function} The default plugin used to determine whether a
+   *         response is cacheable.
+   */
+  getDefaultCacheableResponsePlugin() {
+    // Lazy-construct the CacheableResponsePlugin instance.
+    if (!this._defaultCacheableResponsePlugin) {
+      this._defaultCacheableResponsePlugin =
+        new CacheableResponsePlugin({statuses: [200]});
+    }
+    return this._defaultCacheableResponsePlugin;
   }
 
   /**
@@ -151,7 +172,8 @@ class RequestWrapper {
 
     if (this.plugins.has('cacheWillMatch')) {
       const plugin = this.plugins.get('cacheWillMatch')[0];
-      cachedResponse = plugin.cacheWillMatch({cachedResponse});
+      cachedResponse = plugin.cacheWillMatch({request, cache, cachedResponse,
+        matchOptions: this.matchOptions});
     }
 
     return cachedResponse;
@@ -242,65 +264,76 @@ class RequestWrapper {
    * @param {Request} [input.cacheKey] Supply a cacheKey if you wish to cache
    *        the response against an alternative request to the `request`
    *        argument.
+   * @param {function} [input.cacheResponsePlugin] Allows the
+   *        caller to override the default check for cacheability, for
+   *        situations in which the cacheability check wasn't explicitly
+   *        configured when constructing the `RequestWrapper`.
    * @return {Promise.<Response>} The network response.
    */
-  async fetchAndCache({request, waitOnCache, cacheKey}) {
+  async fetchAndCache({request, waitOnCache, cacheKey, cacheResponsePlugin}) {
     assert.atLeastOne({request});
 
     let cachingComplete;
     const response = await this.fetch({request});
 
-    // response.ok is true if the response status is 2xx.
-    // That's the default condition.
-    let cacheable = response.ok;
-    if (this.plugins.has('cacheWillUpdate')) {
-      const plugin = this.plugins.get('cacheWillUpdate')[0];
-      cacheable = plugin.cacheWillUpdate({request, response});
-    }
+    // We need flexibility in determining whether a given response should
+    // be added to the cache. There are several possible ways that this logic
+    // might be specified, and they're given the following precedence:
+    // 1. Passing in a `CacheableResponsePlugin` to the `RequestWrapper`
+    //    constructor, which sets this._userSpecifiedCachableResponsePlugin.
+    // 2. Passing in a parameter to the fetchAndCache() method (done by certain
+    //    runtime handlers, like `StaleWhileRevalidate`), which sets
+    //    cacheResponsePlugin.
+    // 3. The default that applies to anything using the `RequestWrapper` class
+    //    that doesn't specify the custom behavior, which is accessed via
+    //    the this.getDefaultCacheableResponsePlugin().
+    const effectiveCacheableResponsePlugin =
+      this._userSpecifiedCachableResponsePlugin ||
+      cacheResponsePlugin ||
+      this.getDefaultCacheableResponsePlugin();
+
+    // Whichever plugin we've decided is appropriate, we now call its
+    // cacheWillUpdate() method to determine cacheability of the response.
+    const cacheable = effectiveCacheableResponsePlugin.cacheWillUpdate(
+      {request, response});
 
     if (cacheable) {
       const newResponse = response.clone();
 
-      // cacheDelay is a promise that may or may not be used to delay the
+      // cachingComplete is a promise that may or may not be used to delay the
       // completion of this method, depending on the value of `waitOnCache`.
       cachingComplete = this.getCache().then(async (cache) => {
         let oldResponse;
+        const cacheRequest = cacheKey || request;
 
         // Only bother getting the old response if the new response isn't opaque
-        // and there's at least one cacheDidUpdateCallbacks. Otherwise, we don't
+        // and there's at least one cacheDidUpdate plugin. Otherwise, we don't
         // need it.
         if (response.type !== 'opaque' &&
           this.plugins.has('cacheDidUpdate')) {
-          oldResponse = await this.match({request});
+          oldResponse = await this.match({request: cacheRequest});
         }
 
         // Regardless of whether or not we'll end up invoking
-        // cacheDidUpdateCallbacks, wait until the cache is updated.
-        const cacheRequest = cacheKey || request;
+        // cacheDidUpdate, wait until the cache is updated.
         await cache.put(cacheRequest, newResponse);
 
         if (this.plugins.has('cacheDidUpdate')) {
           for (let plugin of this.plugins.get('cacheDidUpdate')) {
-            plugin.cacheDidUpdate({
+            await plugin.cacheDidUpdate({
               cacheName: this.cacheName,
               oldResponse,
               newResponse,
-              url: request.url,
+              // cacheRequest may be a Request with a url property, or a string.
+              url: ('url' in cacheRequest) ? cacheRequest.url : cacheRequest,
             });
           }
         }
       });
-    } else if (!cacheable) {
-      logHelper.debug(`[RequestWrapper] The response for ${request.url}, with
-        a status of ${response.status}, wasn't cached. By default, only
-        responses with a status of 200 are cached. You can configure the
-        cacheableResponse plugin to change this default.`.replace(/\s+/g, ' '));
-
-      if (waitOnCache) {
-        // If the developer request to wait on the cache but the response
-        // isn't cacheable, throw an error.
-        throw ErrorFactory.createError('invalid-reponse-for-caching');
-      }
+    } else if (!cacheable && waitOnCache) {
+      // If the developer requested to wait on the cache but the response
+      // isn't cacheable, throw an error.
+      throw ErrorFactory.createError('invalid-response-for-caching');
     }
 
     // Only conditionally await the caching completion, giving developers the
