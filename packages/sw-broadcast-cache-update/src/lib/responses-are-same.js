@@ -14,6 +14,7 @@
 */
 
 import ErrorFactory from './error-factory';
+import logHelper from '../../../../lib/log-helper.js';
 
 /**
  * Given two `Response`s, compares several header values to see if they are
@@ -42,9 +43,28 @@ import ErrorFactory from './error-factory';
  */
 function responsesAreSame({first, second, headersToCheck}={}) {
   if (!(first instanceof Response &&
-        second instanceof Response &&
-        headersToCheck instanceof Array)) {
+    second instanceof Response &&
+    headersToCheck instanceof Array)) {
     throw ErrorFactory.createError('responses-are-same-parameters-required');
+  }
+
+  const atLeastOneHeaderAvailable = headersToCheck.some((header) => {
+    return first.headers.has(header) && second.headers.has(header);
+  });
+  if (!atLeastOneHeaderAvailable) {
+    logHelper.log({
+      message: `Unable to determine whether the response has been updated
+        because none of the headers that would be checked are present.`,
+      data: {
+        'First Response': first,
+        'Second Response': second,
+        'Headers To Check': JSON.stringify(headersToCheck),
+      },
+    });
+
+    // Just return true, indicating the that responses are the same, since we
+    // can't determine otherwise.
+    return true;
   }
 
   return headersToCheck.every((header) => {

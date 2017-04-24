@@ -100,19 +100,19 @@ class TestRunner {
 
       that._packagePathsToTest.forEach((packagePath) => {
         if (that._hasBrowserTests(packagePath)) {
-          that._runBrowserTests(getWebdriver, packagePath, getBaseTestUrl);
+          that._runBrowserTests(getWebdriver, packagePath, getBaseTestUrl, browser.getPrettyName());
         } else if (process.env.TRAVIS) {
           console.log('No browser tests.');
         }
 
         if (that._hasServiceWorkerTests(packagePath)) {
-          that._runServiceWorkerTests(getWebdriver, packagePath, getBaseTestUrl);
+          that._runServiceWorkerTests(getWebdriver, packagePath, getBaseTestUrl, browser.getPrettyName());
         } else if (process.env.TRAVIS) {
           console.log('No service worker tests.');
         }
 
         if (that._hasIntegrationTests(packagePath)) {
-          that._runIntegrationTests(getWebdriver, packagePath, getBaseTestUrl);
+          that._runIntegrationTests(getWebdriver, packagePath, getBaseTestUrl, browser.getPrettyName());
         } else if (process.env.TRAVIS) {
           console.log('No integration tests.');
         }
@@ -168,9 +168,9 @@ class TestRunner {
     return glob.sync(`${packagePath}/test/node/*.js`).length > 0;
   }
 
-  _runBrowserTests(webdriverCb, packagePath, getBaseTestUrl) {
+  _runBrowserTests(webdriverCb, packagePath, getBaseTestUrl, browserName) {
     const that = this;
-    it(`should pass '${path.basename(packagePath)}' browser tests`, function() {
+    it(`should pass '${path.basename(packagePath)}' browser tests in ${browserName}`, function() {
       this.timeout(10 * 1000);
 
       const webdriver = webdriverCb();
@@ -188,9 +188,9 @@ class TestRunner {
     });
   }
 
-  _runServiceWorkerTests(webdriverCb, packagePath, getBaseTestUrl) {
+  _runServiceWorkerTests(webdriverCb, packagePath, getBaseTestUrl, browserName) {
     const that = this;
-    it(`should pass '${path.basename(packagePath)}' sw tests`, function() {
+    it(`should pass '${path.basename(packagePath)}' sw tests in ${browserName}`, function() {
       this.timeout(10 * 1000);
 
       const webdriver = webdriverCb();
@@ -208,7 +208,7 @@ class TestRunner {
     });
   }
 
-  _runIntegrationTests(webdriverCb, packagePath, getBaseTestUrl) {
+  _runIntegrationTests(webdriverCb, packagePath, getBaseTestUrl, browserName) {
     const integrationTests = glob.sync(`${packagePath}/test/integration/*.js`);
     global.getBaseTestUrl = getBaseTestUrl;
     integrationTests.forEach((testFile) => {
