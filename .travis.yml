@@ -13,8 +13,9 @@ node_js:
 env:
   - PROJECT="sw-background-sync-queue"
   - PROJECT="sw-broadcast-cache-update"
-  - PROJECT="sw-cache-expiration"
   - PROJECT="sw-build"
+  - PROJECT="sw-build-webpack-plugin"
+  - PROJECT="sw-cache-expiration"
   - PROJECT="sw-cli"
   - PROJECT="sw-lib"
   - PROJECT="sw-offline-google-analytics"
