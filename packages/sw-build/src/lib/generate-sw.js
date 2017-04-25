@@ -43,6 +43,9 @@ const errors = require('./errors');
  * @param {String} [input.cacheId] An optional ID to be prepended to caches
  * used by sw-build. This is primarily useful for local development where
  * multiple sites may be served from `http://localhost`.
+ * @param {Boolean} [input.handleFetch] Stops the generated service worker
+ * from handling fetch events, i.e. everything goes to the network.
+ * (Defaults to true.)
  * @param {Boolean} [input.skipWaiting] An optional boolean that indicates if
  * the new service worker should activate immediately (Defaults to false).
  * @param {Boolean} [input.clientsClaim] An optional boolean that indicates if

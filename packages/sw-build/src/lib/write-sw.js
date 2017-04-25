@@ -38,6 +38,9 @@ module.exports =
     if (options.skipWaiting) {
       swlibOptions.skipWaiting = true;
     }
+    if (options.handleFetch === false) {
+      swlibOptions.handleFetch = false;
+    }
     if (options.clientsClaim) {
       swlibOptions.clientsClaim = true;
     }
