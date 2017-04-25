@@ -23,17 +23,17 @@ Each module is installed separately using the command line [as listed below](#th
 
 1. Install the module. For example:
 
-   `npm install --save-dev sw-build`
+   `npm install --save-dev sw-lib`
 2. Copy the module's JavaScript and map files to your serving directory. 
 
-   `cp node_modules/sw-build/build/* app/`
+   `cp node_modules/sw-lib/build/* app/`
 3. Import the modules to your service worker file. For example:
 
-   `importScripts('sw-build.min.js');`
+   `importScripts('sw-lib.min.js');`
 
-## The Modules
+## The Libraries
 
-All of the modules are described below. Each has an _About_ page with basic usage instructions and a _Demo_ directory with an example. The main page of the documentation is [here](https://googlechrome.github.io/sw-helpers/#main).
+All of the libraries are described below. Each has an _About_ page with basic usage instructions and a _Demo_ directory with an example. The main page of the documentation is [here](https://googlechrome.github.io/sw-helpers/#main).
 
 {{#each projects}}
 ### {{name}}
