@@ -211,8 +211,6 @@ class SWLib {
    * The supported caching strategies shipped with sw-lib are provided via the
    * `strategies` object.
    * {@link module:sw-lib.Strategies|See Strategies for a complete list}.
-   * @type {module.sw-lib.Strategies} Object containing the available
-   * caching strategies in sw-lib.
    *
    * @example
    * const swlib = new goog.SWLib();
@@ -318,6 +316,7 @@ class SWLib {
   }
 
   /**
+   * @private
    * @param {string} directoryIndex The directory index is appended to URLs
    * ending with '/'.
    * @return {Promise<Object>} Returns a plugin that attempts to match the
