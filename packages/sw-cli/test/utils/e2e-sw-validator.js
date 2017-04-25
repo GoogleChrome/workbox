@@ -32,7 +32,8 @@ const performCleanup = (err) => {
   });
 };
 
-const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, baseTestUrl, modifyUrlPrefix}) => {
+const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, baseTestUrl, modifyUrlPrefix, globIgnores}) => {
+  globIgnores = globIgnores || [];
   let fileManifestOutput;
   return generateSWCb()
   .then(() => {
@@ -46,6 +47,7 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
         SWLib,
       },
     };
+    console.log('Adding: ', exampleProject, swName);
     const swContent =
       fs.readFileSync(path.join(exampleProject, swName));
     // To smoke test the service worker is valid JavaScript we can run it
@@ -63,12 +65,15 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
     expect(fileManifestOutput).to.exist;
 
     // Check the files that we expect to be defined are.
+    const ignoreGlobs = [
+      `${exampleProject}/${swName}`,
+      `${exampleProject}/sw-lib.*.min.js`,
+    ].concat(globIgnores.map((ignoreGlob) => {
+      return `${exampleProject}/${ignoreGlob}`;
+    }));
     let expectedFiles = glob.sync(
       `${exampleProject}/**/*.{${fileExtensions.join(',')}}`, {
-      ignore: [
-        `${exampleProject}/${swName}`,
-        `${exampleProject}/sw-lib.*.min.js`,
-      ],
+      ignore: ignoreGlobs,
     });
     expectedFiles = expectedFiles.map((file) => {
       return `/${path.relative(exampleProject, file).replace(path.sep, '/')}`;
@@ -218,6 +223,10 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
 
       pathnames.length.should.equal(0);
     });
+  })
+  .catch((err) => {
+    console.error(err);
+    throw err;
   })
   .then(performCleanup, performCleanup);
 };
