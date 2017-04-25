@@ -49,7 +49,7 @@ Add the following to your `gulpfile.js`:
       console.log('[ERROR] This happened: ' + err);
     });
 
-### Item
+### npm
 
 Add the following to
 
@@ -58,7 +58,7 @@ Add the following to
 // code
 ```
 
-### Item
+### webpack
 
 Add the following to
 
