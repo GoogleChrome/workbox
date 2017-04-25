@@ -35,13 +35,11 @@ module.exports =
     if (options.cacheId) {
       swlibOptions.cacheId = options.cacheId;
     }
-<<<<<<< HEAD
     if (options.skipWaiting) {
       swlibOptions.skipWaiting = true;
-=======
+    }
     if (options.handleFetch === false) {
       swlibOptions.handleFetch = false;
->>>>>>> 14491d6... Adds handleFetch to sw-build
     }
     if (options.clientsClaim) {
       swlibOptions.clientsClaim = true;
