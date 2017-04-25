@@ -20,7 +20,7 @@ async function putResponse({hash, idbObject, response, idbQDb}) {
 /**
  * This function returns the fetched response for the given id of the request
  *
- * @alias goog.backgroundSyncQueue.getResponse
+ * @memberof module:sw-background-sync-queue
  *
  * @param {String} id The ID of the request given back by the broaadcast
  * channel

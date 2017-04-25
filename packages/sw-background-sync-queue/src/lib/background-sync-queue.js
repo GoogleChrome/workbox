@@ -48,9 +48,7 @@ import {getDbName} from './background-sync-idb-helper';
  * const router = new goog.routing.Router();
  * router.registerRoute({route});
  *
- * @alias goog.backgroundSyncQueue.BackgroundSyncQueue
- * @class BackgroundSyncQueue
- *
+ * @memberof module:sw-background-sync-queue
  */
 class BackgroundSyncQueue {
 	/**
@@ -125,9 +123,8 @@ class BackgroundSyncQueue {
 	/**
 	 * Replays all the requests in the queue, this can be used for custom timing
 	 * of replaying requests may be in an environment where sync event is not
-	 * supported
-	 *
-	 * @memberOf BackgroundSyncQueue
+	 * supported.
+	 * @return {Promise} A listener for when the requests have been replayed.
 	 */
 	replayRequests() {
 		return this._requestManager.replayRequests();

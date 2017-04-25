@@ -1,6 +1,6 @@
 {
   "name": "sw-cache-expiration",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "This library is still a work in progress and is not functional.",
   "keywords": [
     "service worker",
@@ -25,6 +25,6 @@
   "module": "build/sw-cache-expiration.min.mjs",
   "jsnext:main": "build/sw-cache-expiration.min.mjs",
   "devDependencies": {
-    "sw-runtime-caching": "^0.0.18"
+    "sw-runtime-caching": "^0.0.19"
   }
 }
