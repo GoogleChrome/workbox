@@ -39,9 +39,7 @@ describe('Ask for File Extensions to Cache', function() {
       captured.consoleLogs.length.should.equal(0);
       captured.consoleWarns.length.should.equal(0);
       captured.consoleErrors.length.should.not.equal(0);
-      console.log('expectedErrorCode: ', expectedErrorCode);
-      console.log('errors[expectedErrorCode]: ', errors[expectedErrorCode]);
-      console.log('<------------', captured);
+
       let foundErrorMsg = false;
       let foundInjectedErrorMsg = false;
       captured.consoleErrors.forEach((errLog) => {
