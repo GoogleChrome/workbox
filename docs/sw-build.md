@@ -31,7 +31,7 @@ into your build script.
 
 Add the following to your `gulpfile.js`:
 
-    gulp.task('build', (callback) => {
+    gulp.task('build', () => {
       const swBuild = require('sw-build');
 
       return swBuild.generateSW({
