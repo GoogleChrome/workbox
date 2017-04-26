@@ -14,8 +14,8 @@ const errors = require('./errors');
  *   globDirectory: './build/',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
- *   swPath: './src/sw.js',
- *   dest: './build/sw.js',
+ *   swSrc: './src/sw.js',
+ *   swDest: './build/sw.js',
  * })
  * .then(() => {
  *   console.log('Build Manifest generated.');
@@ -26,7 +26,7 @@ const errors = require('./errors');
  * with up to date array revision details. This allows the service worker
  * to efficiently cache assets that will be available offline.
  * @param {Object} input
- * @param {String} input.dest The name and path you wish to write your
+ * @param {String} input.swDest The name and path you wish to write your
  * manifest file to.
  * @param {String} input.globDirectory The root of the files you wish to
  * be cached. This will also be the directory the service worker and library
@@ -39,7 +39,7 @@ const errors = require('./errors');
  * If a URL is rendered/templated on the server, its contents may not depend on
  * a single file. This maps URLs to a list of file names, or to a string
  * value, that uniquely determines each URL's contents.
- * @param {String} input.swPath File name for service worker file to read in
+ * @param {String} input.swSrc File name for service worker file to read in
  * and alter.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
@@ -56,7 +56,7 @@ const injectManifest = (input) => {
 
   return getFileManifestEntries(input)
   .then((manifestEntries) => {
-    let swFileContents = fs.readFileSync(input.swPath, 'utf8');
+    let swFileContents = fs.readFileSync(input.swSrc, 'utf8');
     const injectionResults = swFileContents.match(injectionPointRegex);
     if (!injectionResults) {
       throw new Error(errors['injection-point-not-found']);
@@ -71,7 +71,7 @@ const injectManifest = (input) => {
       .replace(injectionPointRegex, `$1${entriesString}$2`);
 
     return new Promise((resolve, reject) => {
-      mkdirp(path.dirname(input.dest), (err) => {
+      mkdirp(path.dirname(input.swDest), (err) => {
         if (err) {
           return reject(
             new Error(
@@ -84,7 +84,7 @@ const injectManifest = (input) => {
       });
     })
     .then(() => {
-      fs.writeFileSync(input.dest, swFileContents);
+      fs.writeFileSync(input.swDest, swFileContents);
     });
   });
 };

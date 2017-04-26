@@ -41,8 +41,8 @@ describe('Test Injection Manifest', function() {
       return swBuild.injectManifest({
         globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
         staticFileGlobs: ['**\/*.{html,css}'],
-        swPath: path.join(__dirname, '..', 'static', 'injection-samples', docName),
-        dest,
+        swSrc: path.join(__dirname, '..', 'static', 'injection-samples', docName),
+        swDest: dest,
       })
       .then(() => {
         const fileOutput = fs.readFileSync(dest).toString();
@@ -59,8 +59,8 @@ describe('Test Injection Manifest', function() {
     return swBuild.injectManifest({
       globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
       staticFileGlobs: ['**\/*.{html,css}'],
-      swPath: path.join(__dirname, '..', 'static', 'injection-samples', 'bad-no-injection.js'),
-      dest: path.join(tmpDirectory, 'different-output-name.js'),
+      swSrc: path.join(__dirname, '..', 'static', 'injection-samples', 'bad-no-injection.js'),
+      swDest: path.join(tmpDirectory, 'different-output-name.js'),
     })
     .then(() => {
       throw new Error('Expected promise to reject.');
@@ -77,8 +77,8 @@ describe('Test Injection Manifest', function() {
     return swBuild.injectManifest({
       globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
       staticFileGlobs: ['**\/*.{html,css}'],
-      swPath: path.join(__dirname, '..', 'static', 'injection-samples', 'bad-multiple-injection.js'),
-      dest: path.join(tmpDirectory, 'different-output-name.js'),
+      swSrc: path.join(__dirname, '..', 'static', 'injection-samples', 'bad-multiple-injection.js'),
+      swDest: path.join(tmpDirectory, 'different-output-name.js'),
     })
     .then(() => {
       throw new Error('Expected promise to reject.');

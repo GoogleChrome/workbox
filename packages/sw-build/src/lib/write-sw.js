@@ -6,10 +6,10 @@ const template = require('lodash.template');
 const errors = require('./errors');
 
 module.exports =
-  (swPath, manifestEntries, swlibPath, rootDirectory, options) => {
+  (swSrc, manifestEntries, swlibPath, rootDirectory, options) => {
   options = options || {};
   try {
-    mkdirp.sync(path.dirname(swPath));
+    mkdirp.sync(path.dirname(swSrc));
   } catch (err) {
     return Promise.reject(
       new Error(`${errors['unable-to-make-sw-directory']}. '${err.message}'`)
@@ -61,7 +61,7 @@ module.exports =
   })
   .then((populatedTemplate) => {
     return new Promise((resolve, reject) => {
-      fs.writeFile(swPath, populatedTemplate, (err) => {
+      fs.writeFile(swSrc, populatedTemplate, (err) => {
         if (err) {
           return reject(
             new Error(`${errors['sw-write-failure']}. '${err.message}'`)
