@@ -34,7 +34,7 @@ Add the following to your `gulpfile.js`:
     gulp.task('build', (callback) => {
       const swBuild = require('sw-build');
 
-      swBuild.generateSW({
+      return swBuild.generateSW({
         rootDirectory: './build/',
         dest: './build/sw.js',
         globPatterns: ['**\/*.{html,js,css}'],
