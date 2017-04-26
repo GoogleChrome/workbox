@@ -31,23 +31,25 @@ into your build script.
 
 Add the following to your `gulpfile.js`:
 
-    const swBuild = require('sw-build');
+    gulp.task('build', (callback) => {
+      const swBuild = require('sw-build');
 
-    swBuild.generateSW({
-      rootDirectory: './build/',
-      dest: './build/sw.js',
-      globPatterns: ['**\/*.{html,js,css}'],
-      globIgnores: ['admin.html'],
-      templatedUrls: {
-        '/shell': ['shell.hbs', 'main.css', 'shell.css'],
-      },
+      swBuild.generateSW({
+        rootDirectory: './build/',
+        dest: './build/sw.js',
+        globPatterns: ['**\/*.{html,js,css}'],
+        globIgnores: ['admin.html'],
+        templatedUrls: {
+          '/shell': ['shell.hbs', 'main.css', 'shell.css'],
+        },
+      })
+      .then(() => {
+        console.log('Service worker generated.');
+      })
+      catch((err) => {
+        console.log('[ERROR] This happened: ' + err);
+      });
     })
-    .then(() => {
-      console.log('Service worker generated.');
-    })
-    catch((err) => {
-      console.log('[ERROR] This happened: ' + err);
-    });
 
 ### npm
 
