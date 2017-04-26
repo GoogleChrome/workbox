@@ -79,10 +79,9 @@ class Router extends SWRoutingRouter {
    *    cross-origin routes, you must use a RegExp that matches the start of the
    *    full URL, like `new RegExp('https://cross-origin\.com/')`.
    * 1. A [Route]{@link module:sw-lib.SWLib#Route} instance.
-   * @param {function|Handler} handler Called when the route is caught by the
-   * capture criteria. The handler argument is ignored if
+   * @param {module:sw-routing.RouteHandler} handler The handler to use to
+   * provide a response if the route matches. The handler argument is ignored if
    * you pass in a Route object, otherwise it's required.
-   * If required, provide a function or a runtime caching strategy.
    */
   registerRoute(capture, handler) {
     if (typeof handler === 'function') {
