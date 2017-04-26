@@ -25,11 +25,13 @@ class RevisionedCacheManager extends BaseCacheManager {
    * entries.
    * @param {String} [input.cacheId] The cacheId can be used to ensure that
    * multiple projects sharing `http://localhost` have unique cache names.
+   * @param {Array<Object>} [input.plugins] Any plugins that should be
+   * invoked by the underlying `RequestWrapper`.
    */
-  constructor({cacheName, cacheId} = {}) {
-    cacheName = cacheName || defaultRevisionedCacheName;
+  constructor(input = {}) {
+    input.cacheName = input.cacheName || defaultRevisionedCacheName;
 
-    super({cacheName, cacheId});
+    super(input);
 
     this._revisionDetailsModel = new RevisionDetailsModel();
   }

@@ -4,6 +4,7 @@ const url = require('url');
 const vm = require('vm');
 const glob = require('glob');
 const path = require('path');
+const querystring = require('querystring');
 const seleniumAssistant = require('selenium-assistant');
 
 /* eslint-disable require-jsdoc */
@@ -32,7 +33,7 @@ const performCleanup = (err) => {
   });
 };
 
-const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, baseTestUrl, modifyUrlPrefix}) => {
+const performTest = (generateSWCb, {exampleProject, dest, fileExtensions, baseTestUrl, modifyUrlPrefix}) => {
   let fileManifestOutput;
   return generateSWCb()
   .then(() => {
@@ -46,8 +47,7 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
         SWLib,
       },
     };
-    const swContent =
-      fs.readFileSync(path.join(exampleProject, swName));
+    const swContent = fs.readFileSync(dest);
     // To smoke test the service worker is valid JavaScript we can run it
     // in Node's JavaScript parsed. `runInNewContext` comes without
     // any of the usual APIs (i.e. no require API, no console API, nothing)
@@ -66,7 +66,7 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
     let expectedFiles = glob.sync(
       `${exampleProject}/**/*.{${fileExtensions.join(',')}}`, {
       ignore: [
-        `${exampleProject}/${swName}`,
+        path.join(exampleProject, dest),
         `${exampleProject}/sw-lib.*.min.js`,
       ],
     });
@@ -125,8 +125,7 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
         SWLib,
       },
     };
-    const swContent =
-      fs.readFileSync(path.join(exampleProject, swName));
+    const swContent = fs.readFileSync(dest);
     // To smoke test the service worker is valid JavaScript we can run it
     // in Node's JavaScript parsed. `runInNewContext` comes without
     // any of the usual APIs (i.e. no require API, no console API, nothing)
@@ -171,7 +170,9 @@ const performTest = (generateSWCb, {exampleProject, swName, fileExtensions, base
     }
 
     return getBrowserPromise.then(() => {
-      return globalDriverBrowser.get(`${baseTestUrl}/index.html?sw=${swName}`);
+      const urlFriendlyDest = querystring.escape(dest);
+      console.log(`URL: ${baseTestUrl}/index.html?sw=${urlFriendlyDest}`);
+      return globalDriverBrowser.get(`${baseTestUrl}/index.html?sw=${urlFriendlyDest}`);
     })
     .then(() => {
       return globalDriverBrowser.wait(() => {

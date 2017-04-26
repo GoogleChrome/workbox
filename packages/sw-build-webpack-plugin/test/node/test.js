@@ -26,8 +26,13 @@ sinon.stub(webpackCompilation.compiler, 'plugin', (event, callback)=> {
 	webpackEventCallback = callback;
 });
 
-describe('Tests for webpack plugin', function() {
+webpackCompilation.options={
+	output: {
+		path: OUTPUT_DIR,
+	},
+};
 
+describe('Tests for webpack plugin', function() {
 	beforeEach(()=>{
 		// Build a proxy sw-build
 		proxySwBuild = {
@@ -37,27 +42,24 @@ describe('Tests for webpack plugin', function() {
 
 		// Generate stub methods
 		sinon.stub(proxySwBuild, 'generateSW', function() {
-			return new Promise((resolve, reject) => {
+			return new Promise((resolve) => {
 				resolve();
 			});
 		});
 
 		sinon.stub(proxySwBuild, 'injectManifest', function() {
-			return new Promise((resolve, reject) => {
+			return new Promise((resolve) => {
 				resolve();
 			});
 		});
 
 		// do a proxy require
 		SwWebpackPlugin = proxyquire('../../', {
-			'../sw-build/src/': proxySwBuild,
+			'sw-build': proxySwBuild,
 		});
-	})
+	});
 
 	it('should mutate config accordin to webpack defaults', () => {
-		sinon.stub(webpackCompilation.mainTemplate, 'getPublicPath', ()=>{
-			return OUTPUT_DIR;
-		});
 		let swWebpackPlugin = new SwWebpackPlugin({});
 		assert.equal(swWebpackPlugin.getConfig(webpackCompilation).rootDirectory,
 			OUTPUT_DIR);
@@ -69,7 +71,7 @@ describe('Tests for webpack plugin', function() {
 			CUSTOM_ROOT_DIRECTORY);
 	});
 
-	it('should call generateSw when swFile is not given', () => {
+	it('should call generateSw when swPath is not given', () => {
 		let swWebpackPlugin = new SwWebpackPlugin({});
 		swWebpackPlugin.apply(webpackCompilation.compiler);
 		// Plugin is being called once
@@ -84,9 +86,9 @@ describe('Tests for webpack plugin', function() {
 		assert.isTrue(proxySwBuild.injectManifest.notCalled);
 	});
 
-	it('should call injectManifest when swFile is given', () => {
+	it('should call injectManifest when swPath is given', () => {
 		let swWebpackPlugin = new SwWebpackPlugin({
-			swFile: './sw.js',
+			swPath: './sw.js',
 		});
 		swWebpackPlugin.apply(webpackCompilation.compiler);
 		// Plugin is being called once

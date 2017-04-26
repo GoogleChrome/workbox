@@ -44,22 +44,22 @@ describe('Generate SW End-to-End Tests', function() {
       path.join(__dirname, '..', '..', '..', 'sw-cli', 'test', 'static', 'example-project-1'),
       tmpDirectory);
 
-    const swName = `${Date.now()}-sw.js`;
+    const dest = `build/${Date.now()}-sw.js`;
     const modifyUrlPrefix = {
       '/': '/example-prefix/',
     };
     const swBuild = require('../../build/index.js');
     return validator.performTest(() => {
       return swBuild.generateSW({
-        rootDirectory: tmpDirectory,
-        dest: swName,
+        globDirectory: tmpDirectory,
+        dest,
         staticFileGlobs: [`**\/*.{${FILE_EXTENSIONS.join(',')}}`],
         cacheId: 'example-cache-id',
         modifyUrlPrefix,
       });
     }, {
       exampleProject: tmpDirectory,
-      swName,
+      dest,
       fileExtensions: FILE_EXTENSIONS,
       baseTestUrl,
       modifyUrlPrefix,

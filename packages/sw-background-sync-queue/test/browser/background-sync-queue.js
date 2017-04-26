@@ -17,7 +17,10 @@
 'use strict';
 
 describe('background sync queue test', () => {
-  function onRes() {}
+  let responseAchieved = 0;
+  function onRes() {
+		responseAchieved = responseAchieved + 1;
+	}
   function onRetryFail() {}
 
   const QUEUE_NAME = 'QUEUE_NAME';
@@ -72,5 +75,12 @@ describe('background sync queue test', () => {
       chai.assert.equal(backgroundSyncQueue._queue.queue.length,
         currentLen + 1);
     });
+  });
+
+	it('check replay', async function() {
+		await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/1')});
+		await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/2')});
+		await backgroundSyncQueue.replayRequests();
+		chai.assert.equal(responseAchieved, 2);
   });
 });

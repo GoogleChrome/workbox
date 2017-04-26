@@ -31,7 +31,7 @@ import assert from '../../../lib/assert';
  * channel for communication of request creations. Also this attaches a handler
  * to `sync` event and replays the queued requeusts.
  *
- * @alias goog.backgroundSyncQueue.initialize
+ * @memberof module:sw-background-sync-queue
  *
  * @param {Object} [input] The input object to this function
  * @param {string} [input.dbName] The name of the db to store requests and

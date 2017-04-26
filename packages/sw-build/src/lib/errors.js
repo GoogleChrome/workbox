@@ -29,7 +29,7 @@ module.exports = {
     'not be copied over to your new site.',
   'invalid-generate-sw-input': 'The input to generateSW() must be an ' +
     'object',
-  'invalid-root-directory': 'The supplied rootDirectory must be ' +
+  'invalid-glob-directory': 'The supplied globDirectory must be ' +
     'a path as a string.',
   'invalid-exclude-files': 'The excluded files should be an array of strings.',
   'invalid-get-manifest-entries-input': 'The input to ' +

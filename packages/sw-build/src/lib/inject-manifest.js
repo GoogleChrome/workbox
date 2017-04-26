@@ -1,6 +1,6 @@
 const fs = require('fs');
-const path = require('path');
 const mkdirp = require('mkdirp');
+const path = require('path');
 
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const errors = require('./errors');
@@ -11,11 +11,11 @@ const errors = require('./errors');
  * const swBuild = require('sw-build');
  *
  * swBuild.injectManifest({
- *   dest: './build/'
- *   rootDirectory: './build/',
+ *   globDirectory: './build/',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
- *   swFile: 'sw.js'
+ *   swPath: './src/sw.js',
+ *   dest: './build/sw.js',
  * })
  * .then(() => {
  *   console.log('Build Manifest generated.');
@@ -28,7 +28,7 @@ const errors = require('./errors');
  * @param {Object} input
  * @param {String} input.dest The name and path you wish to write your
  * manifest file to.
- * @param {String} input.rootDirectory The root of the files you wish to
+ * @param {String} input.globDirectory The root of the files you wish to
  * be cached. This will also be the directory the service worker and library
  * files are written to.
  * @param {Array<String>} input.staticFileGlobs Patterns to glob for when
@@ -39,7 +39,7 @@ const errors = require('./errors');
  * If a URL is rendered/templated on the server, its contents may not depend on
  * a single file. This maps URLs to a list of file names, or to a string
  * value, that uniquely determines each URL's contents.
- * @param {String} input.swFile File name for service worker file to read in
+ * @param {String} input.swPath File name for service worker file to read in
  * and alter.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
@@ -56,8 +56,7 @@ const injectManifest = (input) => {
 
   return getFileManifestEntries(input)
   .then((manifestEntries) => {
-    let swFileContents = fs.readFileSync(
-      path.join(input.rootDirectory, input.swFile), 'utf8');
+    let swFileContents = fs.readFileSync(input.swPath, 'utf8');
     const injectionResults = swFileContents.match(injectionPointRegex);
     if (!injectionResults) {
       throw new Error(errors['injection-point-not-found']);
@@ -72,7 +71,7 @@ const injectManifest = (input) => {
       .replace(injectionPointRegex, `$1${entriesString}$2`);
 
     return new Promise((resolve, reject) => {
-      mkdirp(input.dest, (err) => {
+      mkdirp(path.dirname(input.dest), (err) => {
         if (err) {
           return reject(
             new Error(
@@ -85,7 +84,7 @@ const injectManifest = (input) => {
       });
     })
     .then(() => {
-      fs.writeFileSync(path.join(input.dest, input.swFile), swFileContents);
+      fs.writeFileSync(input.dest, swFileContents);
     });
   });
 };

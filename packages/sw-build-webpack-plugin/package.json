@@ -1,6 +1,6 @@
 {
   "name": "sw-build-webpack-plugin",
-  "version": "0.0.1",
+  "version": "0.0.19",
   "description": "This is a webpack plugin for sw-build",
   "keywords": [
     "webpack",
@@ -19,6 +19,9 @@
   ],
   "engines": {
     "node": ">=4.0.0"
+  },
+  "dependencies": {
+    "sw-build": "^0.0.19"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",

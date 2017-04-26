@@ -9,7 +9,7 @@ const errors = require('./errors');
  *
  * swBuild.generateFileManifest({
  *   dest: './build/manifest.js'
- *   rootDirectory: './build/',
+ *   globDirectory: './build/',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   format: 'iife', // alternatively, use 'es'
@@ -23,7 +23,7 @@ const errors = require('./errors');
  * @param {Object} input
  * @param {String} input.dest The name and path you wish to write your
  * manifest file to.
- * @param {String} input.rootDirectory The root of the files you wish to
+ * @param {String} input.globDirectory The root of the files you wish to
  * be cached. This will also be the directory the service worker and library
  * files are written to.
  * @param {Array<String>} input.staticFileGlobs Patterns to glob for when
