@@ -1,7 +1,7 @@
 ---
 layout: index
 title: Recipes
-navigation_weight: 2
+navigation_weight: 4
 ---
 
 # Recipes
