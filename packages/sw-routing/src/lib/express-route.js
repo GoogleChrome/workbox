@@ -66,7 +66,7 @@ class ExpressRoute extends Route {
    * @param {Object} input
    * @param {String} input.path The path to use for routing.
    * If the path contains [named parameters](https://github.com/pillarjs/path-to-regexp#named-parameters),
-   * then an Object mapping parameter names to the corresponding value
+   * then an Object that maps parameter names to their corresponding value
    * will be passed to the handler via `params`.
    * @param {module:sw-routing.RouteHandler} input.handler The handler to use to
    * provide a response if the route matches.

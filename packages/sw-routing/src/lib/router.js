@@ -151,7 +151,7 @@ class Router {
    * explicitly match the incoming request.
    *
    * If the default is not provided, unmatched requests will go against the
-   * network, as if there were no service worker present.
+   * network as if there were no service worker present.
    *
    * @example
    * router.setDefaultHandler({
