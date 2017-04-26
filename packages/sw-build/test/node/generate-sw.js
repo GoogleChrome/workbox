@@ -5,22 +5,22 @@ const errors = require('../../src/lib/errors');
 
 describe('Test generateSW()', function() {
   const EXAMPLE_INPUT = {
-    rootDirectory: './valid-root',
+    globDirectory: './valid-root',
     staticFileGlobs: [
       '**/*.{css,js,html}',
     ],
     globIgnores: [
       '!node_modules/',
     ],
-    dest: 'sw.js',
+    dest: 'build/sw.js',
   };
 
   let generateSW;
   beforeEach(function() {
     generateSW = proxyquire('../../src/lib/generate-sw', {
-      './utils/copy-sw-lib': (rootDirectory) => {
-        if (rootDirectory === EXAMPLE_INPUT.rootDirectory) {
-          return Promise.resolve(path.join(rootDirectory, 'sw-lib.v0.0.0.js'));
+      './utils/copy-sw-lib': (swlibPath) => {
+        if (swlibPath === path.dirname(EXAMPLE_INPUT.dest)) {
+          return Promise.resolve(path.join(swlibPath, 'sw-lib.v0.0.0.js'));
         }
         return Promise.reject(new Error('Inject Error - copy-sw-lib'));
       },
@@ -52,8 +52,8 @@ describe('Test generateSW()', function() {
     }, Promise.resolve());
   });
 
-  // rootDirectory - non string - undefined, null, array, boolean,  object
-  it('should be able to handle a bad rootDirectory iput', function() {
+  // globDirectory - non string - undefined, null, array, boolean,  object
+  it('should be able to handle a bad globDirectory iput', function() {
     const badInput = [
       undefined,
       null,
@@ -65,13 +65,13 @@ describe('Test generateSW()', function() {
     return badInput.reduce((promiseChain, input) => {
       return promiseChain.then(() => {
         let args = Object.assign({}, EXAMPLE_INPUT);
-        args.rootDirectory = input;
+        args.globDirectory = input;
         return generateSW(args)
         .then(() => {
           throw new Error('Expected to throw error.');
         })
         .catch((err) => {
-          if (err.message !== errors['invalid-root-directory']) {
+          if (err.message !== errors['invalid-glob-directory']) {
             throw new Error('Unexpected error: ' + err.message);
           }
         });
@@ -181,27 +181,27 @@ describe('Test generateSW()', function() {
 
   // Success.........................................................
 
-  // rootDirectory - dot
+  // globDirectory - dot
   it('should be able to write service worker to current directory', function() {
     let args = Object.assign({}, EXAMPLE_INPUT);
-    args.rootDirectory = '.';
+    args.globDirectory = '.';
 
     generateSW = proxyquire('../../src/lib/generate-sw', {
-      './utils/copy-sw-lib': (rootDirectory) => {
-        if (rootDirectory === '.') {
-          return Promise.resolve(path.join(rootDirectory, 'sw-lib.v0.0.0.js'));
+      './utils/copy-sw-lib': (copySWLibPath) => {
+        if (copySWLibPath === path.dirname(EXAMPLE_INPUT.dest)) {
+          return Promise.resolve(path.join(copySWLibPath, 'sw-lib.v0.0.0.js'));
         }
         return Promise.reject(new Error('Inject Error - copy-sw-lib'));
       },
-      './write-sw': (swPath, manifestEntries, swlibPath, rootDirectory) => {
+      './write-sw': (swPath, manifestEntries, swlibPath, globDirectory) => {
         if (swPath !== EXAMPLE_INPUT.dest) {
           throw new Error(`Service worker path is an unexpected value: ${swPath}`);
         }
         if (swlibPath !== 'sw-lib.v0.0.0.js') {
           throw new Error(`SW-Lib path is an unexpected value: ${swlibPath}`);
         }
-        if (rootDirectory !== '.') {
-          throw new Error(`rootDirectory is an unexpected value: ${rootDirectory}`);
+        if (globDirectory !== '.') {
+          throw new Error(`globDirectory is an unexpected value: ${globDirectory}`);
         }
         return Promise.resolve();
       },
@@ -210,24 +210,24 @@ describe('Test generateSW()', function() {
     return generateSW(args);
   });
 
-  // rootDirectory - valid nested folder
+  // globDirectory - valid nested folder
   it('should be able to write service worker to the a directory', function() {
     generateSW = proxyquire('../../src/lib/generate-sw', {
-      './utils/copy-sw-lib': (rootDirectory) => {
-        if (rootDirectory === EXAMPLE_INPUT.rootDirectory) {
-          return Promise.resolve(path.join(rootDirectory, 'sw-lib.v0.0.0.js'));
+      './utils/copy-sw-lib': (swlibPath) => {
+        if (swlibPath === path.dirname(EXAMPLE_INPUT.dest)) {
+          return Promise.resolve(path.join(swlibPath, 'sw-lib.v0.0.0.js'));
         }
         return Promise.reject(new Error('Inject Error - copy-sw-lib'));
       },
-      './write-sw': (swPath, manifestEntries, swlibPath, rootDirectory) => {
+      './write-sw': (swPath, manifestEntries, swlibPath, globDirectory) => {
         if (swPath !== EXAMPLE_INPUT.dest) {
           throw new Error(`Service worker path is an unexpected value: ${swPath}`);
         }
-        if (swlibPath !== path.join(EXAMPLE_INPUT.rootDirectory, 'sw-lib.v0.0.0.js')) {
+        if (swlibPath !== 'sw-lib.v0.0.0.js') {
           throw new Error(`SW-Lib path is an unexpected value: ${swlibPath}`);
         }
-        if (rootDirectory !== EXAMPLE_INPUT.rootDirectory) {
-          throw new Error(`rootDirectory is an unexpected value: ${rootDirectory}`);
+        if (globDirectory !== EXAMPLE_INPUT.globDirectory) {
+          throw new Error(`globDirectory is an unexpected value: ${globDirectory}`);
         }
         return Promise.resolve();
       },
@@ -236,10 +236,4 @@ describe('Test generateSW()', function() {
     let args = Object.assign({}, EXAMPLE_INPUT);
     return generateSW(args);
   });
-
-  // fileExtensionsToCache - single item array
-  // fileExtensionsToCache - multiple item with multiple dots
-
-  // swName - multiple dots in name
-  // swName - nested path
 });

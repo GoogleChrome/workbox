@@ -113,20 +113,20 @@ class SWCli {
       }
     })
     .then(() => {
-      if (!config.rootDirectory) {
+      if (!config.globDirectory) {
         return askForRootOfWebApp()
         .then((rDirectory) => {
           // This will give a pretty relative path:
           // '' => './'
           // 'build' => './build/'
-          config.rootDirectory =
+          config.globDirectory =
             path.join('.', path.relative(process.cwd(), rDirectory), path.sep);
         });
       }
     })
     .then(() => {
       if (!config.staticFileGlobs) {
-        return askForExtensionsToCache(config.rootDirectory)
+        return askForExtensionsToCache(config.globDirectory)
         .then((extensionsToCache) => {
           config.staticFileGlobs = [
             generateGlobPattern(extensionsToCache),
@@ -138,7 +138,7 @@ class SWCli {
       if (!config.dest) {
         return askForServiceWorkerName()
         .then((swName) => {
-          config.dest = path.join(config.rootDirectory, swName);
+          config.dest = path.join(config.globDirectory, swName);
           config.globIgnores = [
             swName,
           ];
@@ -187,7 +187,7 @@ class SWCli {
     .then(() => {
       const globPattern = generateGlobPattern(fileExtentionsToCache);
       return swBuild.generateFileManifest({
-        rootDirectory: rootDirPath,
+        globDirectory: rootDirPath,
         staticFileGlobs: [globPattern],
         globIgnores: [
           fileManifestName,

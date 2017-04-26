@@ -25,10 +25,10 @@ const injectManifest = require('./lib/inject-manifest');
  * const swBuild = require('sw-build');
  *
  * swBuild.generateFileManifest({
- *   rootDirectory: './build/',
- *   dest: './build/scripts/manifest.js',
+ *   globDirectory: './build/',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['service-worker.js','admin.html'],
+ *   dest: './build/scripts/manifest.js',
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
  *   },
@@ -41,7 +41,7 @@ const injectManifest = require('./lib/inject-manifest');
  * const swBuild = require('sw-build');
  *
  * swBuild.getFileManifestEntries({
- *   rootDirectory: './build/',
+ *   globDirectory: './build/',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['service-worker.js','admin.html'],
  *   templatedUrls: {
@@ -56,10 +56,10 @@ const injectManifest = require('./lib/inject-manifest');
  * const swBuild = require('sw-build');
  *
  * swBuild.generateSW({
- *   rootDirectory: './build/',
- *   dest: './build/sw.js',
+ *   globDirectory: './build/',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['service-worker.js','admin.html'],
+ *   dest: './build/sw.js',
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
  *   },

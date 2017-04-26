@@ -35,17 +35,17 @@ describe('Test Injection Manifest', function() {
     "revision": "d41d8cd98f00b204e9800998ecf8427e"
   }
 ])`;
-  VALID_INJECTION_DOCS.forEach((docName) => {
+  VALID_INJECTION_DOCS.forEach((docName, index) => {
     it(`should be able to read and inject in doc ${docName}`, function() {
+      const dest = path.join(tmpDirectory, `different-output-name-${index}.js`);
       return swBuild.injectManifest({
-        dest: tmpDirectory,
-        rootDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
+        globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
         staticFileGlobs: ['**\/*.{html,css}'],
-        swFile: docName,
+        swPath: path.join(__dirname, '..', 'static', 'injection-samples', docName),
+        dest,
       })
       .then(() => {
-        const fileOutput =
-          fs.readFileSync(path.join(tmpDirectory, docName)).toString();
+        const fileOutput = fs.readFileSync(dest).toString();
         if (fileOutput.indexOf(expectedString) === -1) {
           console.log('DocName: ' + docName);
           console.log('fileOutput: ' + fileOutput);
@@ -57,10 +57,10 @@ describe('Test Injection Manifest', function() {
 
   it(`should throw due to no injection point in bad-no-injection.js`, function() {
     return swBuild.injectManifest({
-      dest: tmpDirectory,
-      rootDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
+      globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
       staticFileGlobs: ['**\/*.{html,css}'],
-      swFile: 'bad-no-injection.js',
+      swPath: path.join(__dirname, '..', 'static', 'injection-samples', 'bad-no-injection.js'),
+      dest: path.join(tmpDirectory, 'different-output-name.js'),
     })
     .then(() => {
       throw new Error('Expected promise to reject.');
@@ -75,10 +75,10 @@ describe('Test Injection Manifest', function() {
 
   it(`should throw due to no injection point in bad-multiple-injection.js`, function() {
     return swBuild.injectManifest({
-      dest: tmpDirectory,
-      rootDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
+      globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
       staticFileGlobs: ['**\/*.{html,css}'],
-      swFile: 'bad-multiple-injection.js',
+      swPath: path.join(__dirname, '..', 'static', 'injection-samples', 'bad-multiple-injection.js'),
+      dest: path.join(tmpDirectory, 'different-output-name.js'),
     })
     .then(() => {
       throw new Error('Expected promise to reject.');

@@ -9,7 +9,7 @@ const errors = require('./errors');
  * const swBuild = require('sw-build');
  *
  * swBuild.generateSW({
- *   rootDirectory: './build/',
+ *   globDirectory: './build/',
  *   dest: './build/sw.js',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
@@ -24,7 +24,7 @@ const errors = require('./errors');
  * This method will generate a working service worker with an inlined
  * file manifest.
  * @param {Object} input
- * @param {String} input.rootDirectory The root of the files you wish to
+ * @param {String} input.globDirectory The root of the files you wish to
  * be cached. This will also be the directory the service worker and library
  * files are written to.
  * @param {Array<String>} input.staticFileGlobs Patterns to glob for when
@@ -68,10 +68,10 @@ const generateSW = function(input) {
       new Error(errors['invalid-glob-ignores']));
   }
 
-  if (typeof input.rootDirectory !== 'string' ||
-    input.rootDirectory.length === 0) {
+  if (typeof input.globDirectory !== 'string' ||
+    input.globDirectory.length === 0) {
     return Promise.reject(
-      new Error(errors['invalid-root-directory']));
+      new Error(errors['invalid-glob-directory']));
   }
 
   if (typeof input.dest !== 'string' || input.dest.length === 0) {
@@ -79,23 +79,26 @@ const generateSW = function(input) {
       new Error(errors['invalid-dest']));
   }
 
-  const rootDirectory = input.rootDirectory;
+  const globDirectory = input.globDirectory;
   const staticFileGlobs = input.staticFileGlobs;
   const globIgnores = input.globIgnores ? input.globIgnores : [];
   const dest = input.dest;
   const templatedUrls = input.templatedUrls;
 
   let swlibPath;
-  return copySWLib(rootDirectory)
+  let destDirectory = path.dirname(dest);
+  return copySWLib(destDirectory)
   .then((libPath) => {
-    swlibPath = libPath;
-    globIgnores.push(path.relative(rootDirectory, swlibPath));
+    // If sw file is in build/sw.js, the swlib file will be build/swlib.***.js
+    // So the sw.js file should import swlib.***.js (i.e. not include build/).
+    swlibPath = path.relative(destDirectory, libPath);
+    globIgnores.push(swlibPath);
   })
   .then(() => {
     return getFileManifestEntries({
       staticFileGlobs,
       globIgnores,
-      rootDirectory,
+      globDirectory,
       templatedUrls,
     });
   })
@@ -104,7 +107,7 @@ const generateSW = function(input) {
       dest,
       manifestEntries,
       swlibPath,
-      rootDirectory,
+      globDirectory,
       input
     );
   });

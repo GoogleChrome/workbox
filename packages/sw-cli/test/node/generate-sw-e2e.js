@@ -48,7 +48,7 @@ describe('Generate SW End-to-End Tests', function() {
       path.join(__dirname, '..', 'static', 'example-project-1'),
       tmpDirectory);
 
-    const swName = `${Date.now()}-sw.js`;
+    const dest = `build/${Date.now()}-sw.js`;
 
     let enforceNoQuestions = false;
     const SWCli = proxyquire('../../build/index', {
@@ -62,7 +62,7 @@ describe('Generate SW End-to-End Tests', function() {
         if (enforceNoQuestions) {
           return Promise.reject('Injected Error - No Questions Expected');
         }
-        return Promise.resolve(swName);
+        return Promise.resolve(dest);
       },
       './lib/questions/ask-save-config': () => {
         if (enforceNoQuestions) {
@@ -83,7 +83,7 @@ describe('Generate SW End-to-End Tests', function() {
       return cli.handleCommand('generate:sw');
     }, {
       exampleProject: tmpDirectory,
-      swName,
+      dest,
       fileExtensions: FILE_EXTENSIONS,
       baseTestUrl,
     })
@@ -94,7 +94,7 @@ describe('Generate SW End-to-End Tests', function() {
         return cli.handleCommand('generate:sw');
       }, {
         exampleProject: tmpDirectory,
-        swName,
+        dest,
         fileExtensions: FILE_EXTENSIONS,
         baseTestUrl,
       });

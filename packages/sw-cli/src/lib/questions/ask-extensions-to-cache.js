@@ -66,11 +66,11 @@ const getFileExtensions = (files) => {
 
 /**
  * @private
- * @param {String} rootDirectory
+ * @param {String} globDirectory
  * @return {Promise<Array<String>>}
  */
-module.exports = (rootDirectory) => {
-  return getFileContents(rootDirectory)
+module.exports = (globDirectory) => {
+  return getFileContents(globDirectory)
   .then((files) => {
     return getFileExtensions(files);
   })

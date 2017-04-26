@@ -22,7 +22,7 @@ const getStringDetails = require('./utils/get-string-details');
  * include in the file entries.
  * @param {Array<String>} [input.globIgnores] Patterns used to exclude files
  * from the file entries.
- * @param {String} input.rootDirectory The directory run the glob patterns over.
+ * @param {String} input.globDirectory The directory run the glob patterns over.
  * @param {Object<String,Array|String>} [input.templatedUrls]
  * If a URL is rendered/templated on the server, its contents may not depend on
  * a single file. This maps URLs to a list of file names, or to a string
@@ -38,12 +38,12 @@ const getFileManifestEntries = (input) => {
 
   const staticFileGlobs = input.staticFileGlobs;
   const globIgnores = input.globIgnores ? input.globIgnores : [];
-  const rootDirectory = input.rootDirectory;
+  const globDirectory = input.globDirectory;
   const templatedUrls = input.templatedUrls;
 
-  if (typeof rootDirectory !== 'string' || rootDirectory.length === 0) {
+  if (typeof globDirectory !== 'string' || globDirectory.length === 0) {
     return Promise.reject(
-      new Error(errors['invalid-root-directory']));
+      new Error(errors['invalid-glob-directory']));
   }
 
   if (!staticFileGlobs || !Array.isArray(staticFileGlobs)) {
@@ -71,7 +71,7 @@ const getFileManifestEntries = (input) => {
 
   const fileDetails = staticFileGlobs.reduce((accumulated, globPattern) => {
     const globbedFileDetails = getFileDetails(
-      rootDirectory, globPattern, globIgnores);
+      globDirectory, globPattern, globIgnores);
     globbedFileDetails.forEach((fileDetails) => {
       if (fileSet.has(fileDetails.file)) {
         return;
@@ -99,7 +99,7 @@ const getFileManifestEntries = (input) => {
       if (Array.isArray(dependencies)) {
         const dependencyDetails = dependencies.reduce((previous, pattern) => {
           const globbedFileDetails = getFileDetails(
-            rootDirectory, pattern, globIgnores);
+            globDirectory, pattern, globIgnores);
           return previous.concat(globbedFileDetails);
         }, []);
         fileDetails.push(getCompositeDetails(url, dependencyDetails));
