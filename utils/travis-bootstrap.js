@@ -17,6 +17,7 @@
   const match = /\.(\d+)$/.exec(process.env.TRAVIS_JOB_NUMBER);
   // Bail early if we're not in the Travis environment.
   if (match === null) {
+    console.log(`Can't detect Travis job number; exiting.`);
     return;
   }
 
@@ -24,6 +25,7 @@
   const promisify = require('promisify-node');
 
   if (match[1] === '1') {
+    console.log(`This is the first job in the build; bootstrapping...`);
     // If this is the first build job, then install gulp and bootstrap lerna.
     const {processPromiseWrapper} = require('./build');
     await processPromiseWrapper('npm', ['install', '-g', 'gulp-cli']);
@@ -32,10 +34,13 @@
     const fsExtraPromise = promisify('fs-extra');
     // Touch the COMPLETION_FILE to signify that we're done.
     await fsExtraPromise.ensureFile(COMPLETION_FILE);
+    console.log(`..bootstrapping complete.`);
   } else {
+    console.log(`This is not the first job; waiting on bootstrapping...`);
     // If we're not the first build job, then wait until the COMPLETION_FILE is
     // created, and then exit without installing anything.
     const waitOnPromise = promisify('wait-on');
     await waitOnPromise({resources: [COMPLETION_FILE]});
+    console.log(`...bootstrapping was completed by another job.`);
   }
 })();
