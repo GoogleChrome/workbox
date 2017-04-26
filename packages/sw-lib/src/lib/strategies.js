@@ -22,7 +22,7 @@ import {RequestWrapper} from '../../../sw-runtime-caching/src/index.js';
 class Strategies {
   /**
    * This constructor will configure shared options across each strategy.
-   * @param  {String} [input.cacheId]  The cacheId to be applied to the run
+   * @param {String} [input.cacheId] The cacheId to be applied to the run
    * time strategies cache names.
    */
   constructor({cacheId} = {}) {

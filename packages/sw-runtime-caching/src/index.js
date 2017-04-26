@@ -23,6 +23,13 @@
  * {@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/|Jake Archibald's blog post}
  * which covers various ways of handling fetch events with a service worker.
  *
+ * These strategies can be used as
+ * {@link module:sw-routing.RouteHandler|RouteHandlers}
+ * that are automatically invoked by the lower-level
+ * {@link module:sw-routing.Router|sw-routing Router}
+ * or the higher-level {@link module:sw-lib.Router|SWLib Router}
+ * interfaces.
+ *
  * @module sw-runtime-caching
  */
 

@@ -21,6 +21,37 @@
  * @module sw-routing
  */
 
+/**
+ * A handler that can be automatically invoked by a route, and knows how to
+ * respond to a request. It can either be a standalone function or a subclass of
+ * {@link module:sw-runtime-caching.Handler|Handler}.
+ *
+ * @callback RouteHandler
+ * @param {Object} input
+ * @param {URL} input.url The request's URL.
+ * @param {FetchEvent} input.event The event that triggered the `fetch` handler.
+ * @param {Array<Object>} input.params Any additional parameters that the
+ * {@link module:sw-routing.Route|Route} provides, such as named parameters in
+ * an {@link module:sw-routing.ExpressRoute|ExpressRoute}.
+ * @return {Promise<Response>} The response that will fulfill the request.
+ * @memberof module:sw-routing
+ */
+
+/**
+ * A function that can be automatically invoked by a route to determine whether
+ * or not an incoming network request should trigger the route's handler.
+ *
+ * @callback Matcher
+ * @param {Object} input
+ * @param {URL} input.url The request's URL.
+ * @param {FetchEvent} input.event The event that triggered the `fetch` handler.
+ * @return {Array<Object>|null} To signify a match, return a (possibly empty)
+ * array of values which will be passed in a params to the
+ * {@link module:sw-routing.RouteHandler|RouteHandler}.
+ * Otherwise, return null if the route shouldn't match.
+ * @memberof module:sw-routing
+ */
+
 import ExpressRoute from './lib/express-route';
 import NavigationRoute from './lib/navigation-route';
 import RegExpRoute from './lib/regexp-route';
