@@ -33,19 +33,19 @@ navigation_weight: 6
 - [External Contributions](#external-contributions)
 - [License](#license)
 
-## Installing a module
+## Installing a library
 
-Each module is installed separately using the command line [as listed below](#the-libraries). To use a particular module:
+Each library is installed separately using the command line [as listed below](#the-libraries). To use a particular library:
 
-1. Install the module. For example:
+1. Install the library. For example:
 
-   `npm install --save-dev sw-build`
-2. Copy the module's JavaScript and map files to your serving directory. 
+   `npm install --save-dev sw-lib`
+2. Copy the library's JavaScript and map files to your serving directory. 
 
-   `cp node_modules/sw-build/build/* app/`
-3. Import the modules to your service worker file. For example:
+   `cp node_modules/sw-lib/build/* app/`
+3. Import the library to your service worker file. For example:
 
-   `importScripts('sw-build.min.js');`
+   `importScripts('sw-lib.min.js');`
 
 ## The Modules
 
