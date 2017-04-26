@@ -59,7 +59,8 @@ class NavigationRoute extends Route {
    * the route will handle the request (assuming the blacklist doesn't match).
    * @param {Array<RegExp>} [input.blacklist] If any of these patterns match,
    * the route will not handle the request (even if a whitelist entry matches).
-   * @param {function} input.handler The handler to manage the response.
+   * @param {module:sw-routing.RouteHandler} input.handler The handler to use to
+   * provide a response if the route matches.
    */
   constructor({whitelist, blacklist, handler} = {}) {
     assert.isArrayOfClass({whitelist}, RegExp);

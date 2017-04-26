@@ -146,7 +146,7 @@ class SWLib {
 
   /**
    * The router for this library is exposed via the `router` parameter.
-   * This is an instance of the {@link  module:sw-lib.Router|Router}.
+   * This is an instance of the {@link module:sw-lib.Router|Router}.
    *
    * @example
    * const swlib = new goog.SWLib();

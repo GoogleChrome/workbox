@@ -46,6 +46,7 @@ gulp.task('lint:repo', () => {
   return gulp.src([
     `!./packages/**/*`,
     `!./build/**`,
+    `!./docs/**`,
     // Gulp -tasks
     `./**/*.js`,
     // Root level JS Files
