@@ -10,25 +10,12 @@ cache:
 node_js:
   - 'stable'
 
-env:
-  - PROJECT="sw-background-sync-queue"
-  - PROJECT="sw-broadcast-cache-update"
-  - PROJECT="sw-build"
-  - PROJECT="sw-build-webpack-plugin"
-  - PROJECT="sw-cache-expiration"
-  - PROJECT="sw-cli"
-  - PROJECT="sw-lib"
-  - PROJECT="sw-offline-google-analytics"
-  - PROJECT="sw-precaching"
-  - PROJECT="sw-routing"
-  - PROJECT="sw-runtime-caching"
-
 install:
   # Install specific version of lerna - otherwise a lerna.json mismatch will
   # fail future builds.
-  - npm install -g gulp-cli lerna@2.0.0-beta.38
+  - npm install -g gulp-cli
   - npm install
-  - lerna bootstrap --scope "${PROJECT}" --include-filtered-dependencies
+  - npm run lerna-bootstrap
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
@@ -38,4 +25,4 @@ before_script:
 
 script:
   # Building is handled in gulp test.
-  - gulp test --project "${PROJECT}"
+  - gulp test
