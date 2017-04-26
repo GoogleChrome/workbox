@@ -6,8 +6,8 @@
   "scripts": {
     "serve": "npm-publish-scripts serve",
     "publish-gh-pages": "npm-publish-scripts publish-docs",
-    "publish-release": "lerna bootstrap --concurrency 1 && gulp test && lerna publish --concurrency 1",
-    "post-install": "lerna bootstrap --concurrency 1"
+    "publish-release": "npm run lerna-bootstrap && gulp test && lerna publish --concurrency 1",
+    "lerna-bootstrap": "lerna bootstrap --concurrency 1"
   },
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the sw-helpers monorepo. Not meant to be published to npm.",
@@ -76,6 +76,7 @@
     "serve-static": "^1.11.1",
     "sinon": "^1.17.6",
     "sw-testing-helpers": "^1.0.2",
-    "tmp": "0.0.31"
+    "tmp": "0.0.31",
+    "wait-on": "^2.0.2"
   }
 }
