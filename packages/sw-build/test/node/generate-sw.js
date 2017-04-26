@@ -226,7 +226,6 @@ describe('Test generateSW()', function() {
         }
         return Promise.reject(new Error('Inject Error - copy-sw-lib'));
       },
-<<<<<<< HEAD
       './get-file-manifest-entries': () => {
         return Promise.resolve([{
           file: 'dummy.js',
@@ -234,10 +233,7 @@ describe('Test generateSW()', function() {
           size: 10,
         }]);
       },
-      './write-sw': (swPath, manifestEntries, swlibPath, rootDirectory) => {
-=======
       './write-sw': (swPath, manifestEntries, swlibPath, globDirectory) => {
->>>>>>> origin/master
         if (swPath !== EXAMPLE_INPUT.dest) {
           throw new Error(`Service worker path is an unexpected value: ${swPath}`);
         }
