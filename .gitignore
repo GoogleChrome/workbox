@@ -6,3 +6,4 @@ lerna-debug.log
 packages/**/LICENSE
 .DS_Store
 !docs/recipes/build
+travis-bootstrapped
