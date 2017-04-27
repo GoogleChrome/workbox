@@ -65,4 +65,6 @@ module.exports = {
     `of  'swlib.precache([])' in your service worker file.`,
   'populating-sw-tmpl-failed': `Unable to generate service worker from ` +
     `template.`,
+  'useless-glob-pattern': `One of the glob patterns doesn't match any files. ` +
+    `Please remove of fix the following: `,
 };

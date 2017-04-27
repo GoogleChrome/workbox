@@ -56,6 +56,12 @@ const getFileManifestEntries = (input) => {
       new Error(errors['invalid-glob-ignores']));
   }
 
+  // templatedUrls is optional.
+  if (templatedUrls && (
+      typeof templatedUrls !== 'object' || Array.isArray(templatedUrls))) {
+      return Promise.reject(new Error(errors['invalid-templated-urls']));
+  }
+
   let validIgnores = true;
   globIgnores.forEach((pattern) => {
     if (typeof pattern !== 'string') {
@@ -85,10 +91,6 @@ const getFileManifestEntries = (input) => {
 
   // templatedUrls is optional.
   if (templatedUrls) {
-    if (typeof templatedUrls !== 'object' || Array.isArray(templatedUrls)) {
-      return Promise.reject(new Error(errors['invalid-templated-urls']));
-    }
-
     for (let url of Object.keys(templatedUrls)) {
       if (fileSet.has(url)) {
         return Promise.reject(

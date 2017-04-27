@@ -16,6 +16,11 @@ module.exports = (globDirectory, globPattern, globIgnores) => {
     throw new Error(errors['unable-to-glob-files'] + ` '${err.message}'`);
   }
 
+  if (globbedFiles.length === 0) {
+    throw new Error(errors['useless-glob-pattern'] +
+      JSON.stringify({globDirectory, globPattern, globIgnores}, null, 2));
+  }
+
   const fileDetails = globbedFiles.map((file) => {
     const fullPath = path.join(globDirectory, file);
     const fileSize = getFileSize(fullPath);

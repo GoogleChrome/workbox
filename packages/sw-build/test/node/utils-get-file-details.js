@@ -29,6 +29,25 @@ describe('src/lib/utils/get-file-details.js', function() {
     }
   });
 
+  it(`should throw the correct error when the patters don't match anything`, function() {
+    const getFileDetails = proxyquire('../../src/lib/utils/get-file-details', {
+      glob: {
+        sync: () => [],
+      },
+    });
+
+    let caughtError;
+    try {
+      getFileDetails('.', 'fake/glob/pattern/**/*');
+    } catch (err) {
+      caughtError = err;
+    }
+
+    if (caughtError.message.indexOf(errors['useless-glob-pattern']) !== 0) {
+      throw new Error('Unexpected error: ' + caughtError.message);
+    }
+  });
+
   it('should return array of file details, minus null values', function() {
     const EXAMPLE_DIRECTORY = './EXAMPLE_DIRECTORY';
     const INJECTED_SIZE = 1234;
