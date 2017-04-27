@@ -18,7 +18,7 @@ module.exports = (globDirectory, globPattern, globIgnores) => {
 
   if (globbedFiles.length === 0) {
     throw new Error(errors['useless-glob-pattern'] +
-      JSON.stringify({rootDirectory, globPattern, globIgnores}, null, 2));
+      JSON.stringify({globDirectory, globPattern, globIgnores}, null, 2));
   }
 
   const fileDetails = globbedFiles.map((file) => {
