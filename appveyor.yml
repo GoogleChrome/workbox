@@ -10,8 +10,8 @@ only_commits:
 install:
   - ps: Install-Product node Stable
   - npm install
-  - npm install -g gulp lerna@2.0.0-rc.3
-  - lerna bootstrap --scope "sw-cli" --include-filtered-dependencies --concurrency 1
+  - npm install -g gulp
+  - npm run lerna-bootstrap-scoped -- "sw-cli"
   - cd packages/sw-cli/
   - npm install
   - cd ..

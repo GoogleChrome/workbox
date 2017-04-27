@@ -24,11 +24,9 @@ env:
   - PROJECT="sw-runtime-caching"
 
 install:
-  # Install specific version of lerna - otherwise a lerna.json mismatch will
-  # fail future builds.
-  - npm install -g gulp-cli lerna@2.0.0-rc.3
+  - npm install -g gulp-cli
   - npm install
-  - lerna bootstrap --scope "${PROJECT}" --include-filtered-dependencies
+  - npm run lerna-bootstrap-scoped -- "${PROJECT}"
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
