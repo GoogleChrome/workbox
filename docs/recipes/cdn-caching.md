@@ -1,6 +1,6 @@
 ---
 layout: index
-title: Advanced
+title: Caching CDN Requests or Non-200 Responses
 navigation_weight: 3
 ---
 

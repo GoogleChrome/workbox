@@ -1,21 +1,18 @@
 ---
 layout: index
-title: Using sw-cli
-navigation_weight: 0
+title: sw-cli
+navigation_weight: 1
 ---
 
-# Getting Started
+# sw-cli
 
-If you are completely new to service workers and sw-helpers,
-the easiest place to start is `sw-cli`.
-
-This is a command line tool that will build a service
-worker to precache assets for your site and make it work offline.
+Get a precaching service worker in about two minutes with the `sw-cli` module.
+Simply install the module then run it from a command line.
 
 ## Install
 
 1. [Install Node.js](https://nodejs.org/en/).
-2. Install `sw-cli` using NPM.
+2. Install the module with NPM.
 
 ```
 npm install -g sw-cli

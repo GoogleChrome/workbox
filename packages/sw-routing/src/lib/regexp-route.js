@@ -68,12 +68,13 @@ class RegExpRoute extends Route {
    *
    * @param {Object} input
    * @param {RegExp} input.regExp The regular expression to match against URLs.
-   *        If the `RegExp` contains [capture groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references),
-   *        then the array of captured values will be passed to the handler via
-   *        `params`.
-   * @param {function} input.handler The handler to manage the response.
+   * If the `RegExp` contains [capture groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references),
+   * then the array of captured values will be passed to the handler via
+   * `params`.
+   * @param {module:sw-routing.RouteHandler} input.handler The handler to use to
+   * provide a response if the route matches.
    * @param {string} [input.method] Only match requests that use this
-   *        HTTP method. Defaults to `'GET'` if not specified.
+   * HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({regExp, handler, method}) {
     assert.isInstance({regExp}, RegExp);

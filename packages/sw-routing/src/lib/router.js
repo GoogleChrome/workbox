@@ -16,6 +16,7 @@
 import Route from './route';
 import assert from '../../../../lib/assert';
 import logHelper from '../../../../lib/log-helper.js';
+import normalizeHandler from './normalize-handler';
 
 /**
  * The Router takes one or more [Routes]{@link Route} and registers a [`fetch`
@@ -146,8 +147,11 @@ class Router {
   }
 
   /**
-   * An optional default handler will have its handle method called when a
-   * request doesn't have a matching route.
+   * An optional {RouteHandler} that's called by default when no routes
+   * explicitly match the incoming request.
+   *
+   * If the default is not provided, unmatched requests will go against the
+   * network as if there were no service worker present.
    *
    * @example
    * router.setDefaultHandler({
@@ -155,32 +159,31 @@ class Router {
    * });
    *
    * @param {Object} input
-   * @param {Object} input.handler An Object with a `handle` method.
+   * @param {module:sw-routing.RouteHandler} input.handler The handler to use to
+   * provide a response.
    */
   setDefaultHandler({handler} = {}) {
-    assert.hasMethod({handler}, 'handle');
-
-    this.defaultHandler = handler;
+    this.defaultHandler = normalizeHandler(handler);
   }
 
   /**
-   * If a Route throws an error while handling a request, this catch handler
-   * will be called to return an error case.
+   * If a Route throws an error while handling a request, this {RouteHandler}
+   * will be called and given a chance to provide a response.
    *
    * @example
-   * router.setCatchHandler({
-   *   handler: ({event, params}) => {
+   * router.setCatchHandler(({event}) => {
+   *   if (event.request.mode === 'navigate') {
    *     return caches.match('/error-page.html');
    *   }
+   *   return Response.error();
    * });
    *
    * @param {Object} input
-   * @param {Object} input.handler An Object with a `handle` method.
+   * @param {module:sw-routing.RouteHandler} input.handler The handler to use to
+   * provide a response.
    */
   setCatchHandler({handler} = {}) {
-    assert.hasMethod({handler}, 'handle');
-
-    this.catchHandler = handler;
+    this.catchHandler = normalizeHandler(handler);
   }
 
   /**
@@ -197,7 +200,8 @@ class Router {
    * });
    *
    * @param {Object} input
-   * @param {Array.<Route>} input.routes An array of routes to register.
+   * @param {Array<Route>} input.routes An array of routes to
+   * register.
    */
   registerRoutes({routes} = {}) {
     assert.isArrayOfClass({routes}, Route);
@@ -216,12 +220,12 @@ class Router {
    * Registers a single route with the router.
    *
    * @example
-   * router.registerRoutes({
+   * router.registerRoute({
    *   route: new Route({ ... })
    * });
    *
    * @param {Object} input
-   * @param {Route} input.route The route to register.
+   * @param {module:sw-routing.Route} input.route The route to register.
    */
   registerRoute({route} = {}) {
     assert.isInstance({route}, Route);

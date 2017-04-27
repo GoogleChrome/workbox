@@ -9,12 +9,12 @@
 
 ## Contents
 
-- [Ways to Use the Libraries](#ways-to-use-the-libraries)
+- [What Does Workbox Do](#what-does-workbox-do)
 - [Setting Up](#setting-up)
 - [The Libraries](#the-libraries)
-  - [sw-appcache-behavior](#sw-appcache-behavior)
   - [sw-background-sync-queue](#sw-background-sync-queue)
   - [sw-broadcast-cache-update](#sw-broadcast-cache-update)
+  - [sw-build-webpack-plugin](#sw-build-webpack-plugin)
   - [sw-build](#sw-build)
   - [sw-cache-expiration](#sw-cache-expiration)
   - [sw-cacheable-response](#sw-cacheable-response)
@@ -27,47 +27,23 @@
 - [External Contributions](#external-contributions)
 - [License](#license)
 
-## Ways to Use the Libraries
+## Installing a library
 
-Despite the number of modules in this package, there are a number of approaches to using these tools which many be used separately or together in any number of combinations.
+Each library is installed separately using the command line [as listed below](#the-libraries). To use a particular library:
 
-* **Precaching, runtime caching and routing**: Use [sw-lib](#sw-lib) to quickly
-  implement [caching strategies](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/) or a route.
-* **Build process**: Generate a service worker or manifest in your build process
-  using [sw-build](#sw-build).
-* **Command line**: Generate a service worker or manifest from the command line.
-* **Go beyond the basics**: Implement more advanced capabilities and more
-  sophisticated use cases using any of the other libraries, which are [described
-  below](#the-libraries).
-
-## Setting Up
-
-Each module is installed separately using the command line [as listed below](#the-libraries). To use a particular module:
-
-1. Install the module. For example:
+1. Install the library. For example:
 
    `npm install --save-dev sw-lib`
-2. Copy the module's JavaScript and map files to your serving directory. 
+2. Copy the library's JavaScript and map files to your serving directory. 
 
    `cp node_modules/sw-lib/build/* app/`
-3. Import the modules to your service worker file. For example:
+3. Import the library to your service worker file. For example:
 
    `importScripts('sw-lib.min.js');`
 
 ## The Libraries
 
-All of the modules are described below. Each has an _About_ page with basic usage instructions and a _Demo_ directory with an example. The main page of the documentation is [here](https://googlechrome.github.io/sw-helpers/#main).
-
-### sw-appcache-behavior
-
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-appcache-behavior%22)][travis-url]
-
-A service worker implementation of the behavior defined in a page&#x27;s App Cache manifest.
-
-**Install**: `npm install --save-dev sw-appcache-behavior`
-
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-appcache-behavior.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-appcache-behavior/demo)
+All of the libraries are described below. Each has an _About_ page with basic usage instructions and a _Demo_ directory with an example. The main page of the documentation is [here](https://googlechrome.github.io/sw-helpers/#main).
 
 ### sw-background-sync-queue
 
@@ -90,6 +66,16 @@ A helper library that uses the Broadcast Channel API to announce when two Respon
 
 **Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-broadcast-cache-update.html) •
                 [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-broadcast-cache-update/demo)
+
+### sw-build-webpack-plugin
+
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-build-webpack-plugin%22)][travis-url]
+
+This is a webpack plugin for sw-build
+
+**Install**: `npm install --save-dev sw-build-webpack-plugin`
+
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-build-webpack-plugin.html)
 
 ### sw-build
 
