@@ -57,7 +57,7 @@ class SwBuildWebpackPlugin {
 	apply(compiler) {
 		compiler.plugin('after-emit', (compilation, callback) => {
 			const config = this.getConfig(compilation);
-			if (config.swPath) {
+			if (config.swSrc) {
 				swBuild.injectManifest(config)
 					.then(() => callback())
 					.catch((e) => callback(e));

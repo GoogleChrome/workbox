@@ -71,7 +71,7 @@ describe('Tests for webpack plugin', function() {
 			CUSTOM_ROOT_DIRECTORY);
 	});
 
-	it('should call generateSw when swPath is not given', () => {
+	it('should call generateSw when swSrc is not given', () => {
 		let swWebpackPlugin = new SwWebpackPlugin({});
 		swWebpackPlugin.apply(webpackCompilation.compiler);
 		// Plugin is being called once
@@ -86,9 +86,9 @@ describe('Tests for webpack plugin', function() {
 		assert.isTrue(proxySwBuild.injectManifest.notCalled);
 	});
 
-	it('should call injectManifest when swPath is given', () => {
+	it('should call injectManifest when swSrc is given', () => {
 		let swWebpackPlugin = new SwWebpackPlugin({
-			swPath: './sw.js',
+			swSrc: './sw.js',
 		});
 		swWebpackPlugin.apply(webpackCompilation.compiler);
 		// Plugin is being called once
