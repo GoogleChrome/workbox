@@ -5,6 +5,7 @@ docs/Gemfile*
 docs/_*
 docs/reference-docs
 docs/themes
+gh-pages
 lerna-debug.log
 node_modules
 npm-debug.log
