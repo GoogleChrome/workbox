@@ -24,6 +24,7 @@ import assert from '../../../../lib/assert';
  *
  * In addition to updating the appropriate caches, it will also trigger any
  * appropriate plugins defined in the underlying `RequestWrapper`.
+ * XXXXXXXX
  *
  * By default, `StaleWhileRevalidate` will cache responses with a 200 status
  * code as well as [opaque responses](http://stackoverflow.com/q/39109789)
