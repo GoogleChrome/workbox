@@ -24,7 +24,10 @@ import assert from '../../../../lib/assert';
  *
  * In addition to updating the appropriate caches, it will also trigger any
  * appropriate plugins defined in the underlying `RequestWrapper`.
- * XXXXXXXX
+ * 
+ * This class always returns the cache and returns it first regardless of how
+ * quickly a network response returns. This make it suitable for scenarios where
+ * a fastest strategy would otherwise be used.
  *
  * By default, `StaleWhileRevalidate` will cache responses with a 200 status
  * code as well as [opaque responses](http://stackoverflow.com/q/39109789)
