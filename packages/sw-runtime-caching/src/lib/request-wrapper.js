@@ -18,6 +18,7 @@ import assert from '../../../../lib/assert';
 import {CacheableResponsePlugin} from
   '../../../sw-cacheable-response/src/index';
 import {pluginCallbacks, getDefaultCacheName} from './constants';
+import cleanResponseCopy from './clean-response-copy';
 
 /**
  * This class is used by the various subclasses of `Handler` to configure the
@@ -268,9 +269,14 @@ class RequestWrapper {
    *        caller to override the default check for cacheability, for
    *        situations in which the cacheability check wasn't explicitly
    *        configured when constructing the `RequestWrapper`.
+   * @param {boolean} [input.cleanRedirects] If true, a "clean" copy of any
+   * redirected responses will be added to the cache, since redirected responses
+   * [can't be used](https://bugs.chromium.org/p/chromium/issues/detail?id=669363&desc=2#c1)
+   * to satisfy navigation requests. Defaults to false.
    * @return {Promise.<Response>} The network response.
    */
-  async fetchAndCache({request, waitOnCache, cacheKey, cacheResponsePlugin}) {
+  async fetchAndCache(
+    {request, waitOnCache, cacheKey, cacheResponsePlugin, cleanRedirects}) {
     assert.atLeastOne({request});
 
     let cachingComplete;
@@ -298,7 +304,11 @@ class RequestWrapper {
       {request, response});
 
     if (cacheable) {
-      const newResponse = response.clone();
+      // If cleanRedirects is set and this is a redirected response, then
+      // get a "clean" copy to add to the cache.
+      const newResponse = cleanRedirects && response.redirected ?
+        await cleanResponseCopy({response}) :
+        response.clone();
 
       // cachingComplete is a promise that may or may not be used to delay the
       // completion of this method, depending on the value of `waitOnCache`.

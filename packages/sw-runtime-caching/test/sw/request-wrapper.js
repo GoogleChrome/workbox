@@ -5,6 +5,7 @@ describe('Test of the RequestWrapper class', function() {
   const CACHE_WILL_UPDATE_PLUGIN = {cacheWillUpdate: () => {}};
   const CACHE_WILL_MATCH_PLUGIN = {cacheWillMatch: () => {}};
   const CACHED_URL = '/cached';
+  const REDIRECTED_URL = '/__test/redirect/301/';
 
   let globalStubs = [];
 
@@ -247,5 +248,46 @@ describe('Test of the RequestWrapper class', function() {
           done();
         });
     });
+  });
+
+  it(`should cache a non-redirected response when fetchAndCache() is called with cleanRedirects set to true`, async function() {
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper();
+
+    const cache = await requestWrapper.getCache();
+
+    const cachePutStub = sinon.stub(cache, 'put');
+    globalStubs.push(cachePutStub);
+
+    await requestWrapper.fetchAndCache({
+      request: REDIRECTED_URL,
+      waitOnCache: true,
+      cleanRedirects: true,
+    });
+
+    const [url, response] = cachePutStub.firstCall.args;
+
+    expect(url).to.eql(REDIRECTED_URL);
+    expect(response).to.be.instanceOf(Response);
+    expect(response.redirected).to.be.false;
+  });
+
+  it(`should cache a redirected response when fetchAndCache() is called and cleanRedirects isn't set`, async function() {
+    const requestWrapper = new goog.runtimeCaching.RequestWrapper();
+
+    const cache = await requestWrapper.getCache();
+
+    const cachePutStub = sinon.stub(cache, 'put');
+    globalStubs.push(cachePutStub);
+
+    await requestWrapper.fetchAndCache({
+      request: REDIRECTED_URL,
+      waitOnCache: true,
+    });
+
+    const [url, response] = cachePutStub.firstCall.args;
+
+    expect(url).to.eql(REDIRECTED_URL);
+    expect(response).to.be.instanceOf(Response);
+    expect(response.redirected).to.be.true;
   });
 });

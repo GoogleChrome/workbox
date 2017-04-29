@@ -148,6 +148,7 @@ class BaseCacheManager {
         request: precacheEntry.getNetworkRequest(),
         waitOnCache: true,
         cacheKey: precacheEntry.request,
+        cleanRedirects: true,
       });
 
       return this._onEntryCached(precacheEntry);
