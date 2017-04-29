@@ -307,7 +307,7 @@ class RequestWrapper {
       // If cleanRedirects is set and this is a redirected response, then
       // get a "clean" copy to add to the cache.
       const newResponse = cleanRedirects && response.redirected ?
-        await cleanResponseCopy(response) :
+        await cleanResponseCopy({response}) :
         response.clone();
 
       // cachingComplete is a promise that may or may not be used to delay the

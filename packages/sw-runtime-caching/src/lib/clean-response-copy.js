@@ -21,14 +21,15 @@ import assert from '../../../../lib/assert';
  * See https://bugs.chromium.org/p/chromium/issues/detail?id=669363&desc=2#c1
  *
  * @private
- * @param {Response} originalResponse The original response. The body will not
+ * @param {Object} input
+ * @param {Response} input.response The original response. The body will not
  * be consumed.
  * @return {Promise<Response>} A clone of the response, with `redirected` false.
  */
-export default (originalResponse) => {
-  assert.isType(originalResponse, Response);
+export default ({response}) => {
+  assert.isInstance({response}, Response);
 
-  const clonedResponse = originalResponse.clone();
+  const clonedResponse = response.clone();
 
   // Not all browsers support the Response.body stream, so fall back to reading
   // the entire body into memory as a blob.
