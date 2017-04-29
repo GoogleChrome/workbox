@@ -15,19 +15,19 @@ offline analytics, background syncing, and more.
 
 ## A service worker in two minutes
 
-Use [sw-cli](reference-docs/stable/latest/module-sw-cli.html#main)
+Use [sw-cli](sw-cli)
 to add a service worker to an existing project in under two minutes.
 
 ## A build script in ten minutes
 
 Generate a service worker in your build process
-using [sw-build](reference-docs/stable/latest/module-sw-build.html#main).
+using [sw-build](sw-build).
 
 ## Much more
 
 Go beyond the basics. If you'd like to use the Workbox libraries, and you
 already have your own service worker, then checkout
-[sw-lib](reference-docs/stable/latest/module-sw-lib.html#main) which lets
+[sw-lib](sw-lib) which lets
 you add to what you've already got.
 
 If you've been using Workbox for a while, or you're
