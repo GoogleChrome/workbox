@@ -25,7 +25,8 @@ import assert from '../../../../lib/assert';
  * Resources are requested from both the cache and the network in parallel, then
  * responds with the cached version. The cache is replaced with whatever returns
  * from the network. In addition to updating the appropriate caches, it will
- * also trigger any appropriate plugins defined in the underlying `RequestWrapper`.
+ * also trigger any appropriate plugins defined in the underlying
+ * `RequestWrapper`.
  *
  * This strategy is the closest equivalent to the sw-toolbox
  * [fastest](https://googlechrome.github.io/sw-toolbox/api.html#toolboxfastest)
