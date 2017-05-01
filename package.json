@@ -7,7 +7,6 @@
     "local-docs": "npm-publish-scripts serve",
     "publish-docs": "npm-publish-scripts publish-docs",
     "publish-release": "npm run lerna-bootstrap && gulp test && lerna publish --concurrency 1",
-    "postinstall": "npm run lerna-bootstrap",
     "lerna-bootstrap": "lerna bootstrap --concurrency 1",
     "lerna-bootstrap-scoped": "lerna bootstrap --include-filtered-dependencies --concurrency 1 --scope"
   },
