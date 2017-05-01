@@ -53,7 +53,7 @@ const errors = require('./errors');
  * @param {string} [input.directoryIndex] An optional string that will
  * append this string to urls ending with '/' (Defaults to 'index.html').
  * @param {string} [input.navigateFallback] An optional string that will
- * attempt to serve this URL from cache.
+ * attempt to serve the response for the URL defined as this option from cache.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
