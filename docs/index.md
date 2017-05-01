@@ -16,8 +16,7 @@ offline analytics, background syncing, and more.
 ## A service worker in two minutes
 
 Use [sw-cli](sw-cli) to add a service worker to an existing project in under two
-minutes. Save your cli responses to a configuration file so that updates are
-even faster.
+minutes. 
 
 ## A build script in ten minutes
 
