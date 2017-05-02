@@ -54,6 +54,8 @@ const errors = require('./errors');
  * append this string to urls ending with '/' (Defaults to 'index.html').
  * @param {string} [input.navigateFallback] An optional string that will
  * attempt to serve the response for the URL defined as this option from cache.
+ * @param {Array<Regexp>} [input.navigateFallbackWhitelist] An optional Array
+ * of regexs to restrict which URL's use the navigateFallback cached response.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
