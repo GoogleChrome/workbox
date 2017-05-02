@@ -67,4 +67,6 @@ module.exports = {
     `template.`,
   'useless-glob-pattern': `One of the glob patterns doesn't match any files. ` +
     `Please remove of fix the following: `,
+  'bad-template-urls-asset': `There was an issue reading one of the provided ` +
+    `templatedUrls.`,
 };
