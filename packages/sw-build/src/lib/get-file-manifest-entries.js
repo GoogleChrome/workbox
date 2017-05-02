@@ -42,7 +42,8 @@ const getFileManifestEntries = (input) => {
   const staticFileGlobs = input.staticFileGlobs;
   const globIgnores = input.globIgnores ? input.globIgnores : [];
   const globDirectory = input.globDirectory;
-  const templatedUrls = input.templatedUrls;
+  // dynamicUrlToDependencies is for sw-precaching parity / migration.
+  const templatedUrls = input.templatedUrls || input.dynamicUrlToDependencies;
 
   if (typeof globDirectory !== 'string' || globDirectory.length === 0) {
     return Promise.reject(
@@ -103,9 +104,17 @@ const getFileManifestEntries = (input) => {
       const dependencies = templatedUrls[url];
       if (Array.isArray(dependencies)) {
         const dependencyDetails = dependencies.reduce((previous, pattern) => {
-          const globbedFileDetails = getFileDetails(
-            globDirectory, pattern, globIgnores);
-          return previous.concat(globbedFileDetails);
+          try {
+            const globbedFileDetails = getFileDetails(
+              globDirectory, pattern, globIgnores);
+            return previous.concat(globbedFileDetails);
+          } catch (err) {
+            const debugObj = {};
+            debugObj[url] = dependencies;
+            throw new Error(`${errors['bad-template-urls-asset']} ` +
+              `'${pattern}' in templateUrl '${JSON.stringify(debugObj)}' ` +
+              `could not be found.`);
+          }
         }, []);
         fileDetails.push(getCompositeDetails(url, dependencyDetails));
       } else if (typeof dependencies === 'string') {

@@ -181,4 +181,122 @@ describe('Test getFileManifestEntries', function() {
       ]);
     });
   });
+
+  it('should handle an invalid templatedUrl', function() {
+    const testInput = {
+      staticFileGlobs: [
+        '**/*.{html,js,css}',
+      ],
+      globDirectory: path.join(__dirname, '..', '..', '..',
+        'sw-cli', 'test', 'static', 'example-project-1'),
+      templatedUrls: {
+        '/template/url1': ['/doesnt-exist/page-1.html', 'index.html'],
+        '/template/url2': ['page-2.html', 'index.html'],
+      },
+    };
+
+    try {
+      swBuild.getFileManifestEntries(testInput);
+      throw new Error('Should have thrown an error due to back input.');
+    } catch (err) {
+      // This error is made up of several pieces that are useful to the
+      // developer. These checks ensure the relevant message is should with
+      // relevant details called out.
+      err.message.indexOf(errors['bad-template-urls-asset']).should.not.equal(-1);
+      err.message.indexOf('/template/url1').should.not.equal(-1);
+      err.message.indexOf('/doesnt-exist/page-1.html').should.not.equal(-1);
+    }
+  });
+
+  it('should return file entries from example project with templatedUrls', function() {
+    const testInput = {
+      staticFileGlobs: [
+        '**/*.{html,js,css}',
+      ],
+      globDirectory: path.join(__dirname, '..', '..', '..',
+        'sw-cli', 'test', 'static', 'example-project-1'),
+      templatedUrls: {
+        '/template/url1': ['page-1.html', 'index.html'],
+        '/template/url2': ['page-2.html', 'index.html'],
+        '/template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
+      },
+    };
+
+    return swBuild.getFileManifestEntries(testInput)
+    .then((output) => {
+      output.should.deep.equal([
+        {
+          url: '/index.html',
+          revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
+        }, {
+          url: '/page-1.html',
+          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        }, {
+          url: '/page-2.html',
+          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        }, {
+          url: '/styles/stylesheet-1.css',
+          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        }, {
+          url: '/styles/stylesheet-2.css',
+          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        }, {
+          url: '/template/url1',
+          revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
+        }, {
+          url: '/template/url2',
+          revision: 'bd9ef0ab8b57d5d716e6916610d34936',
+        }, {
+          url: '/template/url3',
+          revision: '538954a0f0fca1d067ff03dca8dce79e',
+        },
+      ]);
+    });
+  });
+
+  it('should return file entries from example project with dynamicUrlToDependencies', function() {
+    const testInput = {
+      staticFileGlobs: [
+        '**/*.{html,js,css}',
+      ],
+      globDirectory: path.join(__dirname, '..', '..', '..',
+        'sw-cli', 'test', 'static', 'example-project-1'),
+      dynamicUrlToDependencies: {
+        '/template/url1': ['page-1.html', 'index.html'],
+        '/template/url2': ['page-2.html', 'index.html'],
+        '/template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
+      },
+    };
+
+    return swBuild.getFileManifestEntries(testInput)
+    .then((output) => {
+      output.should.deep.equal([
+        {
+          url: '/index.html',
+          revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
+        }, {
+          url: '/page-1.html',
+          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        }, {
+          url: '/page-2.html',
+          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        }, {
+          url: '/styles/stylesheet-1.css',
+          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        }, {
+          url: '/styles/stylesheet-2.css',
+          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        }, {
+          url: '/template/url1',
+          revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
+        }, {
+          url: '/template/url2',
+          revision: 'bd9ef0ab8b57d5d716e6916610d34936',
+        }, {
+          url: '/template/url3',
+          revision: '538954a0f0fca1d067ff03dca8dce79e',
+        },
+      ]);
+    });
+  });
 });
