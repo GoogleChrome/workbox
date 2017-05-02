@@ -11,6 +11,63 @@ const seleniumAssistant = require('selenium-assistant');
 
 let globalDriverBrowser;
 
+const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, dest, modifyUrlPrefix) => {
+  // Check the manifest is defined by the manifest JS.
+  expect(fileManifestOutput).to.exist;
+
+  // Check the files that we expect to be defined are.
+  let expectedFiles = glob.sync(
+    `${exampleProject}/**/*.{${fileExtensions.join(',')}}`, {
+    ignore: [
+      path.join(exampleProject, dest),
+      path.join(exampleProject, path.dirname(dest), 'sw-lib.*.min.js'),
+    ],
+  });
+
+  expectedFiles = expectedFiles.map((file) => {
+    return `/${path.relative(exampleProject, file).replace(path.sep, '/')}`;
+  });
+
+  if (fileManifestOutput.length !== expectedFiles.length) {
+    console.error('File Manifest: ', fileManifestOutput);
+    console.error('Globbed Files: ', expectedFiles);
+
+    throw new Error('File manifest and glob lengths are different.');
+  }
+
+  fileManifestOutput.forEach((fileManifestEntryDetails) => {
+    let correctedURL = fileManifestEntryDetails.url;
+    try {
+      let filePath = path.join(exampleProject, fileManifestEntryDetails.url);
+      if (modifyUrlPrefix && Object.keys(modifyUrlPrefix).length > 0) {
+        Object.keys(modifyUrlPrefix).forEach((key) => {
+          const value = modifyUrlPrefix[key];
+          filePath = filePath.replace(value, key);
+          correctedURL = correctedURL.replace(value, key);
+        });
+      }
+      fs.statSync(filePath);
+    } catch (err) {
+      console.error(err);
+      throw new Error(`The path '${fileManifestEntryDetails.url}' from the manifest doesn't seem valid.`);
+    }
+
+    const expectedFileIndex = expectedFiles.indexOf(correctedURL);
+    if (expectedFileIndex === -1) {
+      console.log('MANIFEST FILES: ', fileManifestOutput);
+      console.log('EXPECTED FILES: ', expectedFiles);
+      throw new Error(`Unexpected file in manifest (1): '${fileManifestEntryDetails.url}'`);
+    }
+
+    expectedFiles.splice(expectedFileIndex, 1);
+
+    (typeof fileManifestEntryDetails.revision).should.equal('string');
+    fileManifestEntryDetails.revision.length.should.be.gt(0);
+  });
+
+  expectedFiles.length.should.equal(0);
+};
+
 const performCleanup = (err) => {
   return seleniumAssistant.stopSaucelabsConnect()
   .then(() => {
@@ -59,55 +116,7 @@ const performTest = (generateSWCb, {exampleProject, dest, fileExtensions, baseTe
       },
     });
 
-    // Check the manifest is defined by the manifest JS.
-    expect(fileManifestOutput).to.exist;
-
-    // Check the files that we expect to be defined are.
-    let expectedFiles = glob.sync(
-      `${exampleProject}/**/*.{${fileExtensions.join(',')}}`, {
-      ignore: [
-        path.join(exampleProject, dest),
-        `${exampleProject}/sw-lib.*.min.js`,
-      ],
-    });
-    expectedFiles = expectedFiles.map((file) => {
-      return `/${path.relative(exampleProject, file).replace(path.sep, '/')}`;
-    });
-
-    if (fileManifestOutput.length !== expectedFiles.length) {
-      console.error('File Manifest: ', fileManifestOutput);
-      console.error('Globbed Files: ', expectedFiles);
-
-      throw new Error('File manifest and glob produced different values.');
-    }
-
-    fileManifestOutput.forEach((details) => {
-      try {
-        let filePath = path.join(exampleProject, details.url);
-        if (modifyUrlPrefix) {
-          Object.keys(modifyUrlPrefix).forEach((key) => {
-            const value = modifyUrlPrefix[key];
-            filePath = filePath.replace(value, key);
-          });
-        }
-        fs.statSync(filePath);
-      } catch (err) {
-        throw new Error(`The path '${details.url}' from the manifest doesn't seem valid.`);
-      }
-
-      const expectedFileIndex = expectedFiles.indexOf(details.url);
-      if (expectedFileIndex === -1) {
-        console.log(expectedFiles);
-        throw new Error(`Unexpected file in manifest: '${details.url}'`);
-      }
-
-      expectedFiles.splice(expectedFileIndex, 1);
-
-      (typeof details.revision).should.equal('string');
-      details.revision.length.should.be.gt(0);
-    });
-
-    expectedFiles.length.should.equal(0);
+    validateFiles(fileManifestOutput, exampleProject, fileExtensions, dest, modifyUrlPrefix);
   })
   .then(() => {
     // Rerun and ensure the sw and sw-lib files are excluded from the output.
@@ -136,6 +145,8 @@ const performTest = (generateSWCb, {exampleProject, dest, fileExtensions, baseTe
         // NOOP
       },
     });
+
+    validateFiles(fileManifestOutput, exampleProject, fileExtensions, dest, modifyUrlPrefix);
   })
   .then(() => {
     if (process.platform === 'win32') {
@@ -207,8 +218,9 @@ const performTest = (generateSWCb, {exampleProject, dest, fileExtensions, baseTe
 
         const expectedFileIndex = pathnames.indexOf(details.url);
         if (expectedFileIndex === -1) {
-          console.log(pathnames);
-          throw new Error(`Unexpected file in manifest: '${details.url}'`);
+          console.log(entries);
+          console.log('Problem file: ', details.url);
+          throw new Error(`Unexpected file in manifest (2): '${details.url}'`);
         }
 
         pathnames.splice(expectedFileIndex, 1);

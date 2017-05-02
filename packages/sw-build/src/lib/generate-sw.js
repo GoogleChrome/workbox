@@ -80,10 +80,8 @@ const generateSW = function(input) {
   }
 
   const globDirectory = input.globDirectory;
-  const staticFileGlobs = input.staticFileGlobs;
-  const globIgnores = input.globIgnores ? input.globIgnores : [];
+  input.globIgnores = input.globIgnores || [];
   const dest = input.dest;
-  const templatedUrls = input.templatedUrls;
 
   let swlibPath;
   let destDirectory = path.dirname(dest);
@@ -92,15 +90,11 @@ const generateSW = function(input) {
     // If sw file is in build/sw.js, the swlib file will be build/swlib.***.js
     // So the sw.js file should import swlib.***.js (i.e. not include build/).
     swlibPath = path.relative(destDirectory, libPath);
-    globIgnores.push(swlibPath);
+    input.globIgnores.push(libPath);
+    input.globIgnores.push(dest);
   })
   .then(() => {
-    return getFileManifestEntries({
-      staticFileGlobs,
-      globIgnores,
-      globDirectory,
-      templatedUrls,
-    });
+    return getFileManifestEntries(input);
   })
   .then((manifestEntries) => {
     return writeServiceWorker(

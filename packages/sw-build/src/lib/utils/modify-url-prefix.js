@@ -25,6 +25,10 @@ module.exports = (urlString, modifyUrlPrefix) => {
     throw new Error(errors['modify-url-prefix-bad-prefixes']);
   }
 
+  if (Object.keys(modifyUrlPrefix).length === 0) {
+    return urlString;
+  }
+
   Object.keys(modifyUrlPrefix).forEach((key) => {
     if (typeof modifyUrlPrefix[key] !== 'string') {
       throw new Error(errors['modify-url-prefix-bad-prefixes']);
