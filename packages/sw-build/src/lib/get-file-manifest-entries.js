@@ -30,7 +30,7 @@ const getStringDetails = require('./utils/get-string-details');
  * @param {number} [input.maximumFileSizeToCacheInBytes] An optional number to
  * define the maximum file size to consider whether the file should be
  * precached. (Defaults to 2MB).
- * @param {Regex} [input.dontCacheBustUrlsMatching] An optional regex that will
+ * @param {Regexp} [input.dontCacheBustUrlsMatching] An optional regex that will
  * return a URL string and exclude the revision details for urls matching this
  * regex. Useful if you have assets with file revisions in the URL.
  * @return {Array<ManifestEntry>} An array of ManifestEntries will include
