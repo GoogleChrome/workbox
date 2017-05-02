@@ -63,16 +63,16 @@ describe('background sync queue test', () => {
 
   it('check push proxy', () => {
     const currentLen = backgroundSyncQueue._queue.queue.length;
-    backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum.com')}).then( (e) => {
-      chai.assert.equal(backgroundSyncQueue._queue.queue.length,
+    return backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum.com')}).then( (e) => {
+      return chai.assert.equal(backgroundSyncQueue._queue.queue.length,
         currentLen + 1);
     });
   });
 
   it('check fetchDid fail proxy', () => {
     const currentLen = backgroundSyncQueue._queue.queue.length;
-    backgroundSyncQueue.fetchDidFail({request: new Request('http://lipsum.com')}).then( (e) => {
-      chai.assert.equal(backgroundSyncQueue._queue.queue.length,
+    return backgroundSyncQueue.fetchDidFail({request: new Request('http://lipsum.com')}).then( (e) => {
+      return chai.assert.equal(backgroundSyncQueue._queue.queue.length,
         currentLen + 1);
     });
   });
