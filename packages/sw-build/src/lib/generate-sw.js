@@ -55,6 +55,8 @@ const errors = require('./errors');
  * @param {number} [input.maximumFileSizeToCacheInBytes] An optional number to
  * define the maximum file size to consider whether the file should be
  * precached. (Defaults to 2MB).
+ * @param {string} [input.navigateFallback] An optional string that will
+ * attempt to serve the response for the URL defined as this option from cache.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *

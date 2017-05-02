@@ -25,7 +25,7 @@ responses with specific status codes, headers, or both.
 ```javascript
 const cdnCacheStrategy = goog.swlib.staleWhileRevalidate({
   cacheableResponse: {
-    statuses: [0],
+    statuses: [0, 200],
   },
 });
 goog.swlib.router.registerRoute(new RegExp('^https://cdn.mysite.com/styles/'), cdnCacheStrategy);
