@@ -52,8 +52,9 @@ module.exports =
       return template(templateString)({
         manifestEntries: manifestEntries,
         swlibPath: relSwlibPath,
+        navigateFallback: options.navigateFallback,
         swlibOptions,
-      });
+      }).trim() + '\n';
     } catch (err) {
       throw new Error(
         `${errors['populating-sw-tmpl-failed']}. '${err.message}'`);
