@@ -61,18 +61,18 @@ describe('background sync queue test', () => {
       CALLBACKS);
   });
 
-  it('check push proxy', () => {
+  it('check push proxy', async () => {
     const currentLen = backgroundSyncQueue._queue.queue.length;
-    return backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum.com')}).then( (e) => {
-      return chai.assert.equal(backgroundSyncQueue._queue.queue.length,
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum.com')}).then( (e) => {
+      chai.assert.equal(backgroundSyncQueue._queue.queue.length,
         currentLen + 1);
     });
   });
 
-  it('check fetchDid fail proxy', () => {
+  it('check fetchDid fail proxy', async () => {
     const currentLen = backgroundSyncQueue._queue.queue.length;
-    return backgroundSyncQueue.fetchDidFail({request: new Request('http://lipsum.com')}).then( (e) => {
-      return chai.assert.equal(backgroundSyncQueue._queue.queue.length,
+    await backgroundSyncQueue.fetchDidFail({request: new Request('http://lipsum.com')}).then( (e) => {
+      chai.assert.equal(backgroundSyncQueue._queue.queue.length,
         currentLen + 1);
     });
   });
