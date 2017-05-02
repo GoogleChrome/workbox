@@ -17,9 +17,9 @@
 'use strict';
 
 describe('enqueue-request', () => {
-  const enqueueRequest = goog.offlineGoogleAnalytics.test.enqueueRequest;
-  const constants = goog.offlineGoogleAnalytics.test.constants;
-  const IDBHelper = goog.offlineGoogleAnalytics.test.IDBHelper;
+  const enqueueRequest = goog.offlineGoogleAnalytics.test.EnqueueRequest;
+  const constants = goog.offlineGoogleAnalytics.test.Constants;
+  const IDBHelper = goog.offlineGoogleAnalytics.test.IdbHelper;
 
   const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
     constants.IDB.STORE);

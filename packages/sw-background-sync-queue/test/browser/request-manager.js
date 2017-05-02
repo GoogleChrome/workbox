@@ -23,7 +23,7 @@ describe('request-manager test', () => {
 			responseAchieved ++;
 		},
 	};
-	const swBackgroundQueue = goog.backgroundSyncQueue.test.swBackgroundQueue;
+	const swBackgroundQueue = goog.backgroundSyncQueue;
 
 	let queue;
 	let reqManager;

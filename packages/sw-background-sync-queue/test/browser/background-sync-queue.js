@@ -43,9 +43,9 @@ describe('background sync queue test', () => {
     chai.assert.isObject(defaultsBackgroundSyncQueue._queue);
     chai.assert.isObject(defaultsBackgroundSyncQueue._requestManager);
     chai.assert.equal(defaultsBackgroundSyncQueue._queue._queueName,
-      goog.backgroundSyncQueue.test.constants.defaultQueueName + '_0');
+      goog.backgroundSyncQueue.test.Constants.defaultQueueName + '_0');
     chai.assert.equal(defaultsBackgroundSyncQueue._queue._config.maxAge,
-      goog.backgroundSyncQueue.test.constants.maxAge);
+      goog.backgroundSyncQueue.test.Constants.maxAge);
     chai.assert.equal(
       JSON.stringify(
         defaultsBackgroundSyncQueue._requestManager._globalCallbacks),

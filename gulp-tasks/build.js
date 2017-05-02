@@ -23,7 +23,7 @@ const fsePromise = promisify('fs-extra');
 
 const printHeading = (heading) => {
   /* eslint-disable no-console */
-  process.stdout.write(chalk.inverse(`  ⚒️  ${heading}  `));
+  process.stdout.write(chalk.inverse(`  ⚒  ${heading}  `));
   /* eslint-enable no-console */
 };
 
@@ -32,7 +32,7 @@ const printBuildTime = (buildTime) => {
 };
 
 /**
- * Buids a given project.
+ * Builds a given project.
  * @param {String} projectPath The path to a project directory.
  * @return {Promise} Resolves if building succeeds, rejects if it fails.
  */

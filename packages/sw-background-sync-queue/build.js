@@ -11,153 +11,43 @@
  limitations under the License.
 */
 
-const commonjs = require('rollup-plugin-commonjs');
+const fsExtra = require('fs-extra');
+const glob = require('glob');
 const path = require('path');
 const pkg = require('./package.json');
-const resolve = require('rollup-plugin-node-resolve');
-const rollupBabel = require('rollup-plugin-babel');
+const upperCamelCase = require('uppercamelcase');
 const {buildJSBundle, generateBuildConfigs} = require('../../utils/build');
 
-const mainModuleBuilds = generateBuildConfigs({
-  es: pkg['jsnext:main'],
-  umd: pkg.main,
-}, __dirname, 'goog.backgroundSyncQueue').map(buildJSBundle);
-const plugin = [
-  resolve({
-    jsnext: true,
-    main: true,
-    browser: true,
-  }),
-  rollupBabel({
-    plugins: ['transform-async-to-generator', 'external-helpers'],
-    exclude: 'node_modules/**',
-  }),
-  commonjs(),
-];
+const productionBuildConfigs = generateBuildConfigs({
+  formatToPath: {
+    es: pkg['jsnext:main'],
+    iife: pkg.main,
+  },
+  baseDir: __dirname,
+  moduleName: 'goog.backgroundSyncQueue',
+});
 
-module.exports = () => {
-  return Promise.all([
+// We don't want the test/ build output to be published.
+fsExtra.ensureFileSync(path.join(__dirname, 'build', 'test', '.npmignore'));
 
-    ...mainModuleBuilds,
-    buildJSBundle({
-      rollupConfig: {
-        entry: path.join(__dirname, 'src', 'index.js'),
-        format: 'umd',
-        moduleName: 'goog.backgroundSyncQueue',
-        plugins: plugin,
-      },
-      buildPath: 'build/background-sync-queue.js',
-      projectDir: __dirname,
-    })]).then(function() {
-      return buildJSBundle({
-        rollupConfig: {
-          entry: path.join(__dirname, 'src', 'index.js'),
-          format: 'umd',
-          moduleName: 'goog.backgroundSyncQueue.test.swBackgroundQueue',
-          plugins: plugin,
-        },
-        buildPath: 'build/test/sw-background-queue.js',
-        projectDir: __dirname,
-      });
-  }).then(function() {
-      return buildJSBundle({
-        rollupConfig: {
-          entry: path.join(__dirname, 'src', 'lib', 'request-queue.js'),
-          format: 'umd',
-          moduleName: 'goog.backgroundSyncQueue.test.RequestQueue',
-          plugins: plugin,
-        },
-        buildPath: 'build/test/request-queue.js',
-        projectDir: __dirname,
-      });
-  }).then(function() {
-      return buildJSBundle({
-        rollupConfig: {
-          entry: path.join(__dirname, 'src', 'lib', 'background-sync-queue.js'),
-          format: 'umd',
-          moduleName: 'goog.backgroundSyncQueue.test.BackgroundSyncQueue',
-          plugins: plugin,
-        },
-        buildPath: 'build/test/background-sync-queue.js',
-        projectDir: __dirname,
-      });
-  }).then(function() {
-      return buildJSBundle({
-        rollupConfig: {
-          entry: path.join(__dirname, 'src', 'lib', 'constants.js'),
-          format: 'umd',
-          moduleName: 'goog.backgroundSyncQueue.test.constants',
-          plugins: plugin,
-        },
-        buildPath: 'build/test/constants.js',
-        projectDir: __dirname,
-      });
-  }).then(function() {
-    return buildJSBundle({
-        rollupConfig: {
-          entry: path.join(__dirname, 'src', 'lib',
-            'background-sync-idb-helper.js'),
-          format: 'umd',
-          moduleName: 'goog.backgroundSyncQueue.test.backgroundSyncIdbHelper',
-          plugins: plugin,
-        },
-        buildPath: 'build/test/background-sync-idb-helper.js',
-        projectDir: __dirname,
-      });
-  }).then(function() {
-      return buildJSBundle({
-        rollupConfig: {
-          entry: path.join(__dirname, 'src', 'lib', 'request-manager.js'),
-          format: 'umd',
-          moduleName: 'goog.backgroundSyncQueue.test.RequestManager',
-          plugins: plugin,
-        },
-        buildPath: 'build/test/request-manager.js',
-        projectDir: __dirname,
-      });
-  }).then(function() {
-      return buildJSBundle({
-        rollupConfig: {
-          entry: path.join(__dirname, 'src', 'lib', 'queue-utils.js'),
-          format: 'umd',
-          moduleName: 'goog.backgroundSyncQueue.test.queueUtils',
-          plugins: plugin,
-        },
-        buildPath: 'build/test/queue-utils.js',
-        projectDir: __dirname,
-      });
-  }).then(function() {
-      return buildJSBundle({
-        rollupConfig: {
-          entry: path.join(__dirname, 'src', 'lib', 'broadcast-manager.js'),
-          format: 'umd',
-          moduleName: 'goog.backgroundSyncQueue.test.broadcastManager',
-          plugins: plugin,
-        },
-        buildPath: 'build/test/broadcast-manager.js',
-        projectDir: __dirname,
-      });
-  }).then(function() {
-      return buildJSBundle({
-        rollupConfig: {
-          entry: path.join(__dirname, 'src', 'lib', 'response-manager.js'),
-          format: 'umd',
-          moduleName: 'goog.backgroundSyncQueue.test.responseManager',
-          plugins: plugin,
-        },
-        buildPath: 'build/test/response-manager.js',
-        projectDir: __dirname,
-      });
-  }).then(function() {
-      return buildJSBundle({
-        rollupConfig: {
-          entry: path.join(__dirname, '../../', 'lib', 'idb-helper.js'),
-          format: 'umd',
-          moduleName: 'goog.backgroundSyncQueue.test.IDBHelper',
-          plugins: plugin,
-        },
-        buildPath: 'build/test/idb-helper.js',
-        projectDir: __dirname,
-      });
-  });
-};
+const libFiles = glob.sync(`${__dirname}/src/lib/*.js`);
+libFiles.push(path.join('lib', 'idb-helper.js'));
+
+const testBuildConfigs = libFiles.reduce((configs, libFile) => {
+  const className = upperCamelCase(path.basename(libFile, '.js'));
+  const moduleName = `goog.backgroundSyncQueue.test.${className}`;
+
+  return configs.concat(generateBuildConfigs({
+    formatToPath: {
+      iife: path.join('build', 'test', path.basename(libFile)),
+    },
+    baseDir: __dirname,
+    minify: false,
+    entry: libFile,
+    moduleName,
+  }));
+}, []);
+
+module.exports = () => Promise.all(
+  [...productionBuildConfigs, ...testBuildConfigs].map(buildJSBundle)
+);

@@ -25,14 +25,14 @@ function delay(timeout) {
 }
 
 describe('queue-utils test', () => {
-	const queueUtils = goog.backgroundSyncQueue.test.queueUtils;
+	const queueUtils = goog.backgroundSyncQueue.test.QueueUtils;
 	const maxAgeTimeStamp = 1000*60*60*24;
 	const config = {
 		maxAge: maxAgeTimeStamp,
 	};
 
 	beforeEach(function() {
-		const idbHelper = new goog.backgroundSyncQueue.test.IDBHelper(
+		const idbHelper = new goog.backgroundSyncQueue.test.IdbHelper(
 			'bgQueueSyncDB', 1, 'QueueStore');
 		return idbHelper.getAllKeys()
 		.then((keys) => {
@@ -79,7 +79,7 @@ describe('queue-utils test', () => {
 	});
 
 	it('test queue cleanup', async () => {
-		const idbHelper = new goog.backgroundSyncQueue.test.IDBHelper(
+		const idbHelper = new goog.backgroundSyncQueue.test.IdbHelper(
 			'bgQueueSyncDB', 1, 'QueueStore');
 		await queueUtils.cleanupQueue();
 		/* code for clearing everything from IDB */
