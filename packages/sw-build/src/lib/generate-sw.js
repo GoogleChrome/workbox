@@ -52,6 +52,9 @@ const errors = require('./errors');
  * the new service worker should claim current pages (Defaults to false).
  * @param {string} [input.directoryIndex] An optional string that will
  * append this string to urls ending with '/' (Defaults to 'index.html').
+ * @param {number} [input.maximumFileSizeToCacheInBytes] An optional number to
+ * define the maximum file size to consider whether the file should be
+ * precached. (Defaults to 2MB).
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
