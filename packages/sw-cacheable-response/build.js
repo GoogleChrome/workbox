@@ -17,8 +17,12 @@ const pkg = require('./package.json');
 const {buildJSBundle, generateBuildConfigs} = require('../../utils/build');
 
 const buildConfigs = generateBuildConfigs({
-  es: pkg['jsnext:main'],
-  umd: pkg.main,
-}, __dirname, 'goog.cacheableResponse');
+  formatToPath: {
+    es: pkg['jsnext:main'],
+    iife: pkg.main,
+  },
+  baseDir: __dirname,
+  moduleName: 'goog.cacheableResponse',
+});
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

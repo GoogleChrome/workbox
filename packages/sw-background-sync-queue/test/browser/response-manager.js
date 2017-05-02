@@ -22,9 +22,9 @@ describe('response-manager test', () => {
   let resManager;
 
   before(() => {
-    idbHelper = new goog.backgroundSyncQueue.test.IDBHelper(
+    idbHelper = new goog.backgroundSyncQueue.test.IdbHelper(
       'bgQueueSyncDB', 1, 'QueueStore');
-    resManager = goog.backgroundSyncQueue.test.responseManager;
+    resManager = goog.backgroundSyncQueue.test.ResponseManager;
   });
 
   it('check get', () => {

@@ -15,37 +15,18 @@
 
 /* eslint-disable no-console, valid-jsdoc */
 
-const babel = require('gulp-babel');
 const childProcess = require('child_process');
 const commonjs = require('rollup-plugin-commonjs');
 const fs = require('fs');
-const gulp = require('gulp');
-const gulpif = require('gulp-if');
-const header = require('gulp-header');
 const path = require('path');
 const promisify = require('promisify-node');
-const rename = require('gulp-rename');
 const resolve = require('rollup-plugin-node-resolve');
-const rollup = require('gulp-rollup');
+const rollup = require('rollup').rollup;
 const rollupBabel = require('rollup-plugin-babel');
-const sourcemaps = require('gulp-sourcemaps');
 
 const globPromise = promisify('glob');
 
 const LICENSE_HEADER = fs.readFileSync('templates/LICENSE-HEADER.txt', 'utf8');
-
-const PLUGINS = [
-  rollupBabel({
-    plugins: ['transform-async-to-generator', 'external-helpers'],
-      exclude: 'node_modules/**',
-    }),
-    resolve({
-      jsnext: true,
-      main: true,
-      browser: true,
-    }),
-    commonjs(),
-];
 
 /**
  * Wrapper on top of childProcess.spawn() that returns a promise which rejects
@@ -108,42 +89,16 @@ function taskHarness(task, projectOrStar, ...args) {
 }
 
 /**
- * This method will bundle JS with Rollup and then run through Babel for
- * async and await transpilation and minification with babili. This will
- * also add a license header and create sourcemaps.
+ * This method will bundle JS with Rollup and write it out to disk.
  *
- * @param  {Object} options Options object with 'projectDir' and 'rollupConfig'
+ * @param {Object} options
+ * @param {Object} options.rollupConfig The configuration for rollup().
+ * @param {Object} options.writeConfig The configuration for bundle.write().
  * @return {Promise}
  */
 function buildJSBundle(options) {
-  return new Promise((resolve, reject) => {
-    const outputName = options.buildPath.replace(/^build\//, '');
-    const sources = [
-      `${options.projectDir}/src/**/*.js`,
-      '{lib,packages}/**/*.js',
-      // Explicitly avoid matching node_modules/.bin/*.js
-      'node_modules/*/**/*.js',
-    ];
-
-    gulp.src(sources)
-      .pipe(sourcemaps.init())
-      .pipe(rollup(options.rollupConfig))
-      .pipe(gulpif(options.minify, babel({
-        presets: [
-          ['babili', {
-            comments: false,
-            keepFnName: true,
-            keepClassName: true,
-          }],
-        ],
-      })))
-      .pipe(header(LICENSE_HEADER))
-      .pipe(rename(outputName))
-      .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest(`${options.projectDir}/build`))
-      .on('error', reject)
-      .on('end', resolve);
-  });
+  return rollup(options.rollupConfig)
+    .then((bundle) => bundle.write(options.writeConfig));
 }
 
 /**
@@ -152,48 +107,70 @@ function buildJSBundle(options) {
  * One build config is generated for each format given in formatToPath.
  * Both minified and unminified build configs are generated.
  *
- * @param {Object.<String,String>} formatToPath A mapping of each format
- *        ('umd', 'es', etc.) to the path to use for the output.
- * @param {String} projectDir The path of the project directory.
- * @param {String} moduleName The name of the module, used in the UMD output.
+ * @param {Object} input
+ * @param {Object.<String,String>} input.formatToPath A mapping of each format
+ * ('iife', 'es', etc.) to the path to use for the output.
+ * @param {String} input.baseDir The path of the project directory.
+ * @param {String} input.moduleName The name of the module, for the iife output.
+ * @param {boolean} [input.minify] Whether or not we should also build
+ * minified output. Defaults to true.
+ * @param {String} [input.entry] Used to override the default entry value of
+ * `${baseDir}/src/index.js`.
  * @returns {Array.<Object>}
  */
-function generateBuildConfigs(formatToPath, projectDir, moduleName) {
-  // This is shared throughout the full permutation of build configs.
-  const baseConfig = {
-    rollupConfig: {
-      entry: path.join(projectDir, 'src', 'index.js'),
-      plugins: PLUGINS,
-      moduleName,
-    },
-    projectDir,
-  };
+function generateBuildConfigs({formatToPath, baseDir, moduleName, minify=true,
+                                entry}) {
+  const buildConfigs = [];
 
-  // Use Object.assign() throughout to create copies of the config objects.
-  return [true, false].map((minify) => {
-    return Object.assign({}, baseConfig, {minify});
-  }).map((partialConfig) => {
-    return Object.keys(formatToPath).map((format) => {
-      const fullConfig = Object.assign({}, partialConfig, {
-        buildPath: formatToPath[format],
-      });
-      fullConfig.rollupConfig = Object.assign({}, partialConfig.rollupConfig, {
+  const babelPluginMinify = rollupBabel({
+    presets: [['babili', {
+      comments: false,
+    }]],
+  });
+
+  const plugins = [
+    resolve({
+      jsnext: true,
+      main: true,
+      browser: true,
+    }),
+    commonjs(),
+  ];
+
+  for (let format of Object.keys(formatToPath)) {
+    buildConfigs.push({
+      rollupConfig: {
+        entry: entry || path.join(baseDir, 'src', 'index.js'),
+        plugins,
+      },
+      writeConfig: {
+        banner: LICENSE_HEADER,
+        sourceMap: true,
+        dest: path.join(baseDir,
+          formatToPath[format].replace('.min.', '.')),
+        moduleName,
         format,
-      });
-
-      // Remove the '.min.' from the file name if the output isn't minified.
-      if (!fullConfig.minify) {
-        fullConfig.buildPath = fullConfig.buildPath.replace('.min.', '.');
-      }
-
-      return fullConfig;
+      },
     });
-  }).reduce((previous, current) => {
-    // Flatten the two-dimensional array. E.g.:
-    // Input is [[umd-minified, umd-unminified], [es-minified, es-unminified]]
-    // Output is [umd-minified, umd-unminified, es-minified, es-unminified]
-    return previous.concat(current);
-  }, []);
+
+    if (minify) {
+      buildConfigs.push({
+        rollupConfig: {
+          entry: entry || path.join(baseDir, 'src', 'index.js'),
+          plugins: plugins.concat(babelPluginMinify),
+        },
+        writeConfig: {
+          banner: LICENSE_HEADER,
+          sourceMap: true,
+          dest: path.join(baseDir, formatToPath[format]),
+          moduleName,
+          format,
+        },
+      });
+    }
+  }
+
+  return buildConfigs;
 }
 
 module.exports = {

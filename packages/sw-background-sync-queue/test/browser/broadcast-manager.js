@@ -17,8 +17,7 @@
 'use strict';
 
 describe('broadcast manager test', () => {
-	const broadcastManager
-    = goog.backgroundSyncQueue.test.broadcastManager;
+	const broadcastManager = goog.backgroundSyncQueue.test.BroadcastManager;
 
   it('check broadcast', function(done) {
 		this.timeout(100);

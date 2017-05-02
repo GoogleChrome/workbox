@@ -39,7 +39,7 @@ describe('request-queue tests', () => {
   it('config is correct', () => {
     chai.assert.equal(queue._config.maxAge, MAX_AGE);
     chai.assert.notEqual(
-      queue._config.maxAge, goog.backgroundSyncQueue.test.constants.maxAge);
+      queue._config.maxAge, goog.backgroundSyncQueue.test.Constants.maxAge);
   });
 
   it('pushRequest is working', () => {
@@ -55,8 +55,8 @@ describe('request-queue tests', () => {
     let tempQueue2 = new goog.backgroundSyncQueue.test.RequestQueue({});
     chai.assert.equal(tempQueue._config, undefined);
     chai.assert.equal(tempQueue._queueName,
-      goog.backgroundSyncQueue.test.constants.defaultQueueName + '_0');
+      goog.backgroundSyncQueue.test.Constants.defaultQueueName + '_0');
     chai.assert.equal(tempQueue2._queueName,
-      goog.backgroundSyncQueue.test.constants.defaultQueueName + '_1');
+      goog.backgroundSyncQueue.test.Constants.defaultQueueName + '_1');
   });
 });
