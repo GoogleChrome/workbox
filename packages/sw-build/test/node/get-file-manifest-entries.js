@@ -299,4 +299,26 @@ describe('Test getFileManifestEntries', function() {
       ]);
     });
   });
+
+  it('should return file entries from example project without cache busting', function() {
+    const testInput = {
+      staticFileGlobs: [
+        '**/*.{html,js,css}',
+      ],
+      globDirectory: path.join(__dirname, '..', '..', '..',
+        'sw-cli', 'test', 'static', 'example-project-1'),
+      dontCacheBustUrlsMatching: /./,
+    };
+
+    return swBuild.getFileManifestEntries(testInput)
+    .then((output) => {
+      output.should.deep.equal([
+        '/index.html',
+        '/page-1.html',
+        '/page-2.html',
+        '/styles/stylesheet-1.css',
+        '/styles/stylesheet-2.css',
+      ]);
+    });
+  });
 });
