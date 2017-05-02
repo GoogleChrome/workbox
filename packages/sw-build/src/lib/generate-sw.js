@@ -52,6 +52,9 @@ const errors = require('./errors');
  * the new service worker should claim current pages (Defaults to false).
  * @param {string} [input.directoryIndex] An optional string that will
  * append this string to urls ending with '/' (Defaults to 'index.html').
+ * @param {number} [input.maximumFileSizeToCacheInBytes] An optional number to
+ * define the maximum file size to consider whether the file should be
+ * precached. (Defaults to 2MB).
  * @param {string} [input.navigateFallback] An optional string that will
  * attempt to serve the response for the URL defined as this option from cache.
  * @return {Promise} Resolves once the service worker has been generated
@@ -82,10 +85,8 @@ const generateSW = function(input) {
   }
 
   const globDirectory = input.globDirectory;
-  const staticFileGlobs = input.staticFileGlobs;
-  const globIgnores = input.globIgnores ? input.globIgnores : [];
+  input.globIgnores = input.globIgnores || [];
   const dest = input.dest;
-  const templatedUrls = input.templatedUrls;
 
   let swlibPath;
   let destDirectory = path.dirname(dest);
@@ -94,15 +95,11 @@ const generateSW = function(input) {
     // If sw file is in build/sw.js, the swlib file will be build/swlib.***.js
     // So the sw.js file should import swlib.***.js (i.e. not include build/).
     swlibPath = path.relative(destDirectory, libPath);
-    globIgnores.push(swlibPath);
+    input.globIgnores.push(libPath);
+    input.globIgnores.push(dest);
   })
   .then(() => {
-    return getFileManifestEntries({
-      staticFileGlobs,
-      globIgnores,
-      globDirectory,
-      templatedUrls,
-    });
+    return getFileManifestEntries(input);
   })
   .then((manifestEntries) => {
     return writeServiceWorker(

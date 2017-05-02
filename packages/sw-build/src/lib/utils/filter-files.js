@@ -5,11 +5,14 @@ const constants = require('../constants');
 const modifyUrlPrefixes = require('./modify-url-prefix');
 
 module.exports = (fileDetails, options) => {
+  const maximumFileSize = options.maximumFileSizeToCacheInBytes ||
+    constants.maximumFileSize;
   const filteredFileDetails = fileDetails.filter((fileDetails) => {
     // Filter oversize files.
-    if (fileDetails.size > constants.maximumFileSize) {
+    if (fileDetails.size > maximumFileSize) {
       logHelper.warn(`Skipping file '${fileDetails.file}' due to size. ` +
-        `[Max size supported is ${constants.maximumFileSize}]`);
+        `[Max size supported is ${maximumFileSize}, this file is ` +
+        `${fileDetails.size}]`);
       return false;
     }
 

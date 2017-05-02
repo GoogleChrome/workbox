@@ -151,4 +151,34 @@ describe('Test getFileManifestEntries', function() {
       ]);
     });
   });
+
+  it('should return file entries matching custom max file size', function() {
+    const testInput = {
+      staticFileGlobs: [
+        '**/*.{html,js,css,jpg,png}',
+      ],
+      globDirectory: path.join(__dirname, '..', '..', '..',
+        'sw-cli', 'test', 'static', 'example-project-1'),
+      maximumFileSizeToCacheInBytes: 2000,
+    };
+
+    return swBuild.getFileManifestEntries(testInput)
+    .then((output) => {
+      output.should.deep.equal([
+        {
+          url: '/page-1.html',
+          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        }, {
+          url: '/page-2.html',
+          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        }, {
+          url: '/styles/stylesheet-1.css',
+          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        }, {
+          url: '/styles/stylesheet-2.css',
+          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        },
+      ]);
+    });
+  });
 });

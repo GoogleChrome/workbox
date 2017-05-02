@@ -36,7 +36,6 @@ describe('Generate SW End-to-End Tests', function() {
 
   it('should be able to generate a service for example-1 with sw-build', function() {
     this.timeout(120 * 1000);
-    this.retries(2);
 
     process.chdir(tmpDirectory);
 
@@ -45,9 +44,7 @@ describe('Generate SW End-to-End Tests', function() {
       tmpDirectory);
 
     const dest = `build/${Date.now()}-sw.js`;
-    const modifyUrlPrefix = {
-      '/': '/example-prefix/',
-    };
+    const modifyUrlPrefix = {};
     const swBuild = require('../../build/index.js');
     return validator.performTest(() => {
       return swBuild.generateSW({
