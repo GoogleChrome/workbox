@@ -179,7 +179,7 @@ class SWLib {
    *   cacheableResponse: {
    *     statuses: [0, 200, 404],
    *     headers: {
-   *       'Example-Header-1': 'Header-Value-1'
+   *       'Example-Header-1': 'Header-Value-1',
    *       'Example-Header-2': 'Header-Value-2'
    *     }
    *   }
@@ -204,6 +204,12 @@ class SWLib {
    * @property {Array<plugins>} plugins For
    * any additional plugins you wish to add, simply include them in this
    * array.
+   * @property {Object} cacheableResponse Specifies types of responses to cache
+   * by status codes, headers, or both.
+   * @property {Array<Number>} cacheableResponse.statuses An array of status
+   * codes to cache.
+   * @property {Array<Object>} cacheableResponse.headers An array of
+   * header-value paris for HTTP headers to cache. See the example, above.
    * @memberof module:sw-lib.SWLib
    */
 
