@@ -58,7 +58,10 @@ class RequestWrapper {
    *        [`options`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match#Parameters)
    *        of all cache `match()` requests made by this wrapper.
    */
-  constructor({cacheName, cacheId, plugins, fetchOptions, matchOptions} = {}) {
+  constructor({
+    cacheName, cacheId, plugins,
+    fetchOptions, matchOptions, directoryIndex,
+  } = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
     }
@@ -81,6 +84,12 @@ class RequestWrapper {
     if (matchOptions) {
       assert.isType({matchOptions}, 'object');
       this.matchOptions = matchOptions;
+    }
+
+    if (typeof directoryIndex !== 'undefined') {
+      this.directoryIndex = directoryIndex;
+    } else {
+      this.directoryIndex = `index.html`;
     }
 
     this.plugins = new Map();
@@ -223,17 +232,64 @@ class RequestWrapper {
       }
     }
 
+    let indexedUrl;
     try {
       return await fetch(request, this.fetchOptions);
     } catch (err) {
-      if (this.plugins.has('fetchDidFail')) {
-        for (let plugin of this.plugins.get('fetchDidFail')) {
-          plugin.fetchDidFail({request: clonedRequest.clone()});
-        }
+      let checkDirectoryIndex = false;
+
+      if (this.directoryIndex) {
+        // Manipulate the request with index.html
+        indexedUrl = this._addDirectoryIndex(
+          request.url, this.directoryIndex);
+        // If the indexedUrl is not null, then we need to try a second URL
+        // with the directoryIndex appended.
+        checkDirectoryIndex = indexedUrl !== null;
       }
 
+      if (!checkDirectoryIndex) {
+        this._onFetchFailed(clonedRequest);
+        throw err;
+      }
+    }
+
+    // If there is a directoryIndex, the above try catch won't throw.
+    try {
+      const newRequest = new Request(indexedUrl);
+      return await fetch(newRequest, this.fetchOptions);
+    } catch (err) {
+      this._onFetchFailed(clonedRequest);
       throw err;
     }
+  }
+
+  /**
+   * This method is called when the fetch request failed to get a valid
+   * response.
+   * @param  {Request} clonedRequest A Request object before any changes
+   * made by plugins.
+   */
+  _onFetchFailed(clonedRequest) {
+    if (this.plugins.has('fetchDidFail')) {
+      for (let plugin of this.plugins.get('fetchDidFail')) {
+        plugin.fetchDidFail({request: clonedRequest.clone()});
+      }
+    }
+  }
+
+  /**
+   * Appends the index string to the URL.
+   * @param {string} originalUrl The original URL.
+   * @param {string} index       The index to append to the URL.
+   * @return {string} The URL with the index appended.
+   */
+  _addDirectoryIndex(originalUrl, index) {
+    let url = new URL(originalUrl);
+    if (url.pathname.slice(-1) === '/') {
+      url.pathname += index;
+      return url.toString();
+    }
+    return null;
   }
 
   /**
