@@ -31,6 +31,11 @@ module.exports = (fileDetails, options) => {
       url = modifyUrlPrefixes(url, options.modifyUrlPrefix);
     }
 
+    if (options.dontCacheBustUrlsMatching &&
+      url.match(options.dontCacheBustUrlsMatching)) {
+      return url;
+    }
+
     return {
       url: url,
       revision: fileDetails.hash,

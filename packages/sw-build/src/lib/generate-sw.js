@@ -55,6 +55,9 @@ const errors = require('./errors');
  * @param {number} [input.maximumFileSizeToCacheInBytes] An optional number to
  * define the maximum file size to consider whether the file should be
  * precached. (Defaults to 2MB).
+ * @param {RegExp} [input.dontCacheBustUrlsMatching] An optional regex that will
+ * return a URL string and exclude the revision details for urls matching this
+ * regex. Useful if you have assets with file revisions in the URL.
  * @param {string} [input.navigateFallback] An optional string that will
  * attempt to serve the response for the URL defined as this option from cache.
  * @param {Array<Regexp>} [input.navigateFallbackWhitelist] An optional Array
