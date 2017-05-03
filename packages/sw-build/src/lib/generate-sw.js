@@ -91,9 +91,6 @@ const generateSW = function(input) {
       new Error(errors['invalid-runtime-caching']));
   }
 
-  /* eslint-disable no-console */
-  console.log('input.runtimeCaching: ', input.runtimeCaching);
-
   const globDirectory = input.globDirectory;
   input.globIgnores = input.globIgnores || [];
   const dest = input.dest;
