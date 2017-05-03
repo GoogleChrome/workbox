@@ -42,9 +42,9 @@ service worker script, and minimal, straight-forward configuration.
    ```
 
    **Note:** If you use a minifier on your service worker script, be aware that
-   **Workbox requires one that is ES6-aware. At the time of Workbox's first
-   **release (May 2017)
-   [Babili](https://github.com/babel/babili) is the only one that does so.
+   Workbox requires one that is ES2015-aware. At the time of Workbox's first
+   release (May 2017)
+   [Babili](https://github.com/babel/babili) is the only one that is.
 
 ## Precaching
 
