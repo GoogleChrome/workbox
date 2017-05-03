@@ -1,6 +1,6 @@
 {
   "name": "sw-routing",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "A service worker helper library to route request URLs to handlers.",
   "keywords": [
     "service worker",
