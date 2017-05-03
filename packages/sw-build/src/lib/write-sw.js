@@ -53,6 +53,7 @@ module.exports =
         manifestEntries: manifestEntries,
         swlibPath: relSwlibPath,
         navigateFallback: options.navigateFallback,
+        navigateFallbackWhitelist: options.navigateFallbackWhitelist,
         swlibOptions,
       }).trim() + '\n';
     } catch (err) {

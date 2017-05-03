@@ -21,4 +21,6 @@ const fileManifest = <%= JSON.stringify(manifestEntries, null, 2) %>;
 
 const swlib = new self.goog.SWLib(<% if(swlibOptions && Object.keys(swlibOptions).length > 0) { %><%= JSON.stringify(swlibOptions, null, 2) %><% } %>);
 swlib.precache(fileManifest);
-<% if(navigateFallback) { %>swlib.router.registerNavigationRoute("<%= navigateFallback %>");<% } %>
+<% if(navigateFallback) { %>swlib.router.registerNavigationRoute("<%= navigateFallback %>"<% if(navigateFallbackWhitelist) { %>, {
+  whitelist: [<%= navigateFallbackWhitelist %>],
+}<% } %>);<% } %>
