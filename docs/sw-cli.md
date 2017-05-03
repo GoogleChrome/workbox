@@ -36,6 +36,15 @@ After the command has run you'll have two new files, a
 `sw-lib.vX.X.X.min.js` and `sw.js` file (unless you changed
 the file name).
 
+## Creating a Config File
+
+One of the questions asked by `sw-cli generate:sw` is whether you'd like to save
+your responses to a configuration file. Answering `Y` will save your responses
+to `sw-cli-config.json`. Subsequent runs of the cli will regenerate the service
+worker based on the config file, which makes building faster. 
+
+## Using the Generated Service Worker
+
 To use the service worker, you'll need to register your
 newly generated service worker file in your web page,
 which you can do like so:
