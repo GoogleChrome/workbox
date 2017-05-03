@@ -49,7 +49,7 @@ An AppShell is the minimal HTML, CSS and JavaScript required to power the user
 interface and when cached offline can ensure instant, reliably good performance
 to users on repeat visits. The sw-lib module implements the precaching needed
 for an app shell with the
-[goog.swlib.cacheRevisionedAssets(revisionedFiles)](https://googlechrome.github.io/sw-helpers/reference-docs/stable/v0.0.8/module-sw-lib.SWLib.html#cacheRevisionedAssets)
+[goog.swlib.cacheRevisionedAssets(revisionedFiles)](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-lib.SWLib.html#cacheRevisionedAssets)
 method. The revisioned files parameter should list all files that your web app
 needs at startup. There are two ways to do this, shown in the example below.
 
