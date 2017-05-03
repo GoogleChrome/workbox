@@ -62,6 +62,8 @@ const errors = require('./errors');
  * attempt to serve the response for the URL defined as this option from cache.
  * @param {Array<Regexp>} [input.navigateFallbackWhitelist] An optional Array
  * of regexs to restrict which URL's use the navigateFallback cached response.
+ * @param {Array<Object>} [input.runtimeCaching] An optional Array
+ * of objects to define run time caching strategies.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
@@ -87,6 +89,11 @@ const generateSW = function(input) {
   if (typeof input.dest !== 'string' || input.dest.length === 0) {
     return Promise.reject(
       new Error(errors['invalid-dest']));
+  }
+
+  if (input.runtimeCaching && !(Array.isArray(input.runtimeCaching))) {
+    return Promise.reject(
+      new Error(errors['invalid-runtime-caching']));
   }
 
   const globDirectory = input.globDirectory;

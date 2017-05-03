@@ -69,4 +69,6 @@ module.exports = {
     `Please remove of fix the following: `,
   'bad-template-urls-asset': `There was an issue reading one of the provided ` +
     `templatedUrls.`,
+  'invalid-runtime-caching': `The 'runtimeCaching' parameter must an an ` +
+    `array of objects with at least a 'urlPattern' and 'handler'.`,
 };

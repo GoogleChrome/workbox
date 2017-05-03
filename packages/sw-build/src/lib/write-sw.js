@@ -47,6 +47,28 @@ module.exports =
     if (options.directoryIndex) {
       swlibOptions.directoryIndex = options.directoryIndex;
     }
+    let runtimeCaching = [];
+    if (options.runtimeCaching) {
+      options.runtimeCaching.forEach((cachingEntry) => {
+        if (typeof cachingEntry.handler === 'string') {
+          let handlerName = cachingEntry.handler === 'fastest' ?
+            'staleWhileRevalidate' : cachingEntry.handler;
+          let optionsString = cachingEntry.options ?
+            JSON.stringify(cachingEntry.options, null, 2) : '';
+          let stratString = `swlib.strategies.${handlerName}(${optionsString})`;
+          runtimeCaching.push(
+            `swlib.router.registerRoute(${cachingEntry.urlPattern}, ` +
+            `${stratString});`
+          );
+        } else if (typeof cachingEntry.handler === 'function') {
+          let handlerString = cachingEntry.handler.toString();
+          runtimeCaching.push(
+            `swlib.router.registerRoute(${cachingEntry.urlPattern}, ` +
+            `${handlerString});`
+          );
+        }
+      });
+    }
 
     try {
       return template(templateString)({
@@ -55,6 +77,7 @@ module.exports =
         navigateFallback: options.navigateFallback,
         navigateFallbackWhitelist: options.navigateFallbackWhitelist,
         swlibOptions,
+        runtimeCaching,
       }).trim() + '\n';
     } catch (err) {
       throw new Error(
