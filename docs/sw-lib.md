@@ -7,7 +7,7 @@ navigation_weight: 3
 # sw-lib
 
 Use `sw-lib` to start your journey toward more complicated Workbox use cases.
-This module is a high-level library that lets you easily configure a service
+This library is a high-level library that lets you easily configure a service
 worker for precaching assets during install, as well as configure runtime
 caching and routing strategies. Use is easy, requiring only importing into your
 service worker script, and minimal, straight-forward configuration.
@@ -15,7 +15,7 @@ service worker script, and minimal, straight-forward configuration.
 
 ## Install
 1. [Install Node.js](https://nodejs.org/en/).
-1. Install the module with NPM.
+1. Install the library with NPM.
 
    ```
    npm install --save-dev sw-lib
@@ -44,7 +44,7 @@ service worker script, and minimal, straight-forward configuration.
    **Note:** If you use a minifier on your service worker script, be aware that
    Workbox requires one that is ES2015-aware. At the time of Workbox's first
    release (May 2017)
-   [Babili](https://github.com/babel/babili) is the only one that is.
+   [Babili](https://github.com/babel/babili) is the only one that isf.
 
 ## Precaching
 
@@ -52,7 +52,7 @@ Precaching allows a [Progressive Web App](https://developers.google.com/web/prog
 [AppShell](https://developers.google.com/web/fundamentals/architecture/app-shell).
 An AppShell is the minimal HTML, CSS and JavaScript required to power the user
 interface and when cached offline can ensure instant, reliably good performance
-to users on repeat visits. The sw-lib module implements the precaching needed
+to users on repeat visits. The sw-lib library implements the precaching needed
 for an app shell with the
 [goog.swlib.cacheRevisionedAssets(revisionedFiles)](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-lib.SWLib.html#cacheRevisionedAssets)
 method. The revisioned files parameter should list all files that your web app

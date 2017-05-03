@@ -6,13 +6,13 @@ navigation_weight: 1
 
 # sw-cli
 
-Get a precaching service worker in about two minutes with the `sw-cli` module.
-Simply install the module then run it from a command line.
+Get a precaching service worker in about two minutes with the `sw-cli` library.
+Simply install the library then run it from a command line.
 
 ## Install
 
 1. [Install Node.js](https://nodejs.org/en/).
-2. Install the module with NPM.
+2. Install the library with NPM.
 
 ```
 npm install -g sw-cli
@@ -112,9 +112,9 @@ Otherwise maybe you'll want to explore one of the following.
 ### Generating SW in a Build Process
 
 If you have a build process, you might want to use the
-`sw-build` module instead of `sw-cli`.
+`sw-build` library instead of `sw-cli`.
 
-The `sw-build` module allows you to generate the service worker  
+The `sw-build` library allows you to generate the service worker  
 programmatically.
 
 [Learn More About sw-build Here](../reference-docs/stable/latest/module-sw-build.html#main)

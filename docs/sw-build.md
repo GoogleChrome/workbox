@@ -6,14 +6,14 @@ navigation_weight: 2
 
 # sw-build
 
-Get a precaching service worker in about ten minutes with the `sw-build` module.
-Simply install the module, then cut and paste one of the provided code samples
+Get a precaching service worker in about ten minutes with the `sw-build` library.
+Simply install the library, then cut and paste one of the provided code samples
 into your build script.
 
 ## Install
 
 1. [Install Node.js](https://nodejs.org/en/).
-1. Install the module with NPM.
+1. Install the library with NPM.
 
    ```
    npm install --save-dev sw-build
