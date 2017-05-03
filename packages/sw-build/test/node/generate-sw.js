@@ -250,4 +250,27 @@ describe('Test generateSW()', function() {
     let args = Object.assign({}, EXAMPLE_INPUT);
     return generateSW(args);
   });
+
+  it('should be able to handle bad runtimeCaching input', function() {
+    const badInput = [
+      {},
+      true,
+      123,
+    ];
+    return badInput.reduce((promiseChain, input) => {
+      return promiseChain.then(() => {
+        let args = Object.assign({}, EXAMPLE_INPUT);
+        args.runtimeCaching = input;
+        return generateSW(args)
+        .then(() => {
+          throw new Error('Expected to throw error.');
+        })
+        .catch((err) => {
+          if (err.message !== errors['invalid-runtime-caching']) {
+            throw new Error('Unexpected error: ' + err.message);
+          }
+        });
+      });
+    }, Promise.resolve());
+  });
 });

@@ -55,6 +55,7 @@ module.exports =
         navigateFallback: options.navigateFallback,
         navigateFallbackWhitelist: options.navigateFallbackWhitelist,
         swlibOptions,
+        runtimeCaching: options.runtimeCaching,
       }).trim() + '\n';
     } catch (err) {
       throw new Error(
