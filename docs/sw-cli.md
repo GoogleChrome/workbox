@@ -43,12 +43,6 @@ your responses to a configuration file. Answering `Y` will save your responses
 to `sw-cli-config.json`. Subsequent runs of the cli will regenerate the service
 worker based on the config file, which makes building faster. 
 
-If you don't need anything more complicated (in other words if you don't need
-the broader capabilities of [sw-build](sw-build)) you could use a gulp script to
-pass `sw-cli generate:sw` to the command line using a module such as
-[gulp-shell](https://www.npmjs.com/package/gulp-shell) or
-[gulp-exec](https://www.npmjs.com/package/gulp-exec).
-
 ## Using the Generated Service Worker
 
 To use the service worker, you'll need to register your
