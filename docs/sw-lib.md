@@ -41,6 +41,11 @@ service worker script, and minimal, straight-forward configuration.
    importScripts('/third-party/sw-lib/sw-lib.min.js');
    ```
 
+   **Note:** If you use a minifier on your service worker script, be aware that
+   Workbox requires one that is ES2015-aware. At the time of Workbox's first
+   release (May 2017)
+   [Babili](https://github.com/babel/babili) is the only one that is.
+
 ## Precaching
 
 Precaching allows a [Progressive Web App](https://developers.google.com/web/progressive-web-apps/) to store an
