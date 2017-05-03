@@ -600,36 +600,36 @@ swlib.router.registerNavigationRoute("/shell");
   it('should be able to generate sw for template with navigateFallback and whitelist', function() {
       const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
 
-  /**
-   * DO NOT EDIT THE FILE MANIFEST ENTRY
-   *
-   * The method precache() does the following:
-   * 1. Cache URLs in the manifest to a local cache.
-   * 2. When a network request is made for any of these URLs the response
-   *    will ALWAYS comes from the cache, NEVER the network.
-   * 3. When the service worker changes ONLY assets with a revision change are
-   *    updated, old cache entries are left as is.
-   *
-   * By changing the file manifest manually, your users may end up not receiving
-   * new versions of files because the revision hasn't changed.
-   *
-   * Please use sw-build or some other tool / approach to generate the file
-   * manifest which accounts for changes to local files and update the revision
-   * accordingly.
-   */
-  const fileManifest = [
-    {
-      "url": "/",
-      "revision": "1234"
-    }
-  ];
+/**
+ * DO NOT EDIT THE FILE MANIFEST ENTRY
+ *
+ * The method precache() does the following:
+ * 1. Cache URLs in the manifest to a local cache.
+ * 2. When a network request is made for any of these URLs the response
+ *    will ALWAYS comes from the cache, NEVER the network.
+ * 3. When the service worker changes ONLY assets with a revision change are
+ *    updated, old cache entries are left as is.
+ *
+ * By changing the file manifest manually, your users may end up not receiving
+ * new versions of files because the revision hasn't changed.
+ *
+ * Please use sw-build or some other tool / approach to generate the file
+ * manifest which accounts for changes to local files and update the revision
+ * accordingly.
+ */
+const fileManifest = [
+  {
+    "url": "/",
+    "revision": "1234"
+  }
+];
 
-  const swlib = new self.goog.SWLib();
-  swlib.precache(fileManifest);
-  swlib.router.registerNavigationRoute("/shell", {
-    whitelist: [/^\\/guide\\//,/^\\/lolz\\//],
-  });
-  `;
+const swlib = new self.goog.SWLib();
+swlib.precache(fileManifest);
+swlib.router.registerNavigationRoute("/shell", {
+  whitelist: [/^\\/guide\\//,/^\\/lolz\\//],
+});
+`;
       const writeSw = proxyquire('../../src/lib/write-sw', {
         'mkdirp': {
           sync: () => {
@@ -638,6 +638,7 @@ swlib.router.registerNavigationRoute("/shell");
         },
         'fs': {
           writeFile: (filepath, stringToWrite, cb) => {
+            console.log(stringToWrite);
             if (stringToWrite === EXPECTED_RESULT) {
               cb();
             } else {
@@ -731,7 +732,6 @@ swlib.router.registerRoute(/\\/articles\\//, swlib.strategies.staleWhileRevalida
       },
       'fs': {
         writeFile: (filepath, stringToWrite, cb) => {
-          console.log(stringToWrite);
           if (stringToWrite === EXPECTED_RESULT) {
             cb();
           } else {
