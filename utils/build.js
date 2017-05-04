@@ -129,8 +129,11 @@ function generateBuildConfigs({formatToPath, baseDir, moduleName, minify=true,
     }]],
   });
 
+  // This will replace the usage of the (somewhat large) error-stack-parser
+  // module with a no-op module that has the same interface. It sacrifices some
+  // debugging info in exchange for a smaller minimized bundle.
   const replacePlugin = replace({
-    '/lib/assert': '/lib/assert-min',
+    'error-stack-parser': './error-stack-parser-no-op',
   });
 
   const basePlugins = [
