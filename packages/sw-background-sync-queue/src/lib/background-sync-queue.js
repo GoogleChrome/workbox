@@ -1,10 +1,10 @@
 import RequestManager from './request-manager';
 import RequestQueue from './request-queue';
-import {maxAge} from './constants';
+import {maxAge, defaultDBName} from './constants';
 import assert from '../../../../lib/assert';
 import IDBHelper from '../../../../lib/idb-helper';
-import {getDbName} from './background-sync-idb-helper';
-
+import {cleanupQueue} from './queue-utils';
+import {getResponse} from './response-manager';
 /**
  * Use the instance of this class to push the failed requests into the queue.
  *
@@ -65,7 +65,7 @@ class BackgroundSyncQueue {
 	 * which will be used to publish messages when the request will be queued.
 	 */
 	constructor({maxRetentionTime = maxAge, callbacks, queueName,
-		broadcastChannel} = {}) {
+		broadcastChannel, dbName = defaultDBName} = {}) {
 			if(queueName) {
 				assert.isType({queueName}, 'string');
 			}
@@ -78,16 +78,30 @@ class BackgroundSyncQueue {
 				assert.isInstance({broadcastChannel}, BroadcastChannel);
 			}
 
+			assert.isType({dbName}, 'string');
+
+			this._dbName = dbName;
 			this._queue = new RequestQueue({
 				config: {
 					maxAge: maxRetentionTime,
 				},
 				queueName,
-				idbQDb: new IDBHelper(getDbName(), 1, 'QueueStore'),
+				idbQDb: new IDBHelper(this._dbName, 1, 'QueueStore'),
 				broadcastChannel,
 			});
 			this._requestManager = new RequestManager({callbacks,
 				queue: this._queue});
+	}
+
+	/**
+	 * clean up the queue, deleting all the tasks whose maxAge has expired
+	 *
+	 * @memberOf Queue
+	 * @private
+	 * @return {Promise}
+	 */
+	cleanupQueue() {
+		return cleanupQueue(this._dbName);
 	}
 
 	/**
@@ -128,6 +142,19 @@ class BackgroundSyncQueue {
 	 */
 	replayRequests() {
 		return this._requestManager.replayRequests();
+	}
+
+  /**
+	 * sets the dbName, which is used to store the queue and requests
+	 * defaults to bgQueueSyncDB
+	 * @param {String} dbName
+	 * @private
+	 */
+	getResponse(id) {
+		getResponse({
+			id,
+			dbName: this._dbName,
+		});
 	}
 }
 

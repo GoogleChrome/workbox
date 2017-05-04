@@ -1,4 +1,3 @@
-import {getDbName} from './background-sync-idb-helper';
 import IDBHelper from '../../../../lib/idb-helper';
 
 /**
@@ -26,8 +25,8 @@ async function putResponse({hash, idbObject, response, idbQDb}) {
  * channel
  * @return {Object} response Fetched response of the request.
  */
-async function getResponse({id}) {
-	const _idbQHelper = new IDBHelper(getDbName(), 1, 'QueueStore');
+async function getResponse({id, dbName}) {
+	const _idbQHelper = new IDBHelper(dbName, 1, 'QueueStore');
 	const object = await _idbQHelper.get(id);
 	if (object && object.response) {
 		return object.response;

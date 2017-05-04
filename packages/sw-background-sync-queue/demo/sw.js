@@ -13,10 +13,8 @@ self.addEventListener('activate', (event) => {
 	event.waitUntil(self.clients.claim());
 });
 
-// initialize bdQ
-goog.backgroundSyncQueue.initialize();
 
-let bgQueue = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
+let bgQueue = new goog.BackgroundSyncQueue({callbacks:
 	{
 		onResponse: async(hash, res) => {
 			self.registration.showNotification('Background sync demo', {
