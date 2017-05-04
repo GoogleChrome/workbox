@@ -15,14 +15,15 @@
 
 /* eslint-disable no-console, valid-jsdoc */
 
+const babel = require('rollup-plugin-babel');
 const childProcess = require('child_process');
 const commonjs = require('rollup-plugin-commonjs');
 const fs = require('fs');
 const path = require('path');
 const promisify = require('promisify-node');
+const replace = require('rollup-plugin-replace');
 const resolve = require('rollup-plugin-node-resolve');
 const rollup = require('rollup').rollup;
-const rollupBabel = require('rollup-plugin-babel');
 
 const globPromise = promisify('glob');
 
@@ -122,13 +123,20 @@ function generateBuildConfigs({formatToPath, baseDir, moduleName, minify=true,
                                 entry}) {
   const buildConfigs = [];
 
-  const babelPluginMinify = rollupBabel({
+  const babelPlugin = babel({
     presets: [['babili', {
       comments: false,
     }]],
   });
 
-  const plugins = [
+  // This will replace the usage of the (somewhat large) error-stack-parser
+  // module with a no-op module that has the same interface. It sacrifices some
+  // debugging info in exchange for a smaller minimized bundle.
+  const replacePlugin = replace({
+    'error-stack-parser': './error-stack-parser-no-op',
+  });
+
+  const basePlugins = [
     resolve({
       jsnext: true,
       main: true,
@@ -141,7 +149,7 @@ function generateBuildConfigs({formatToPath, baseDir, moduleName, minify=true,
     buildConfigs.push({
       rollupConfig: {
         entry: entry || path.join(baseDir, 'src', 'index.js'),
-        plugins,
+        plugins: basePlugins,
       },
       writeConfig: {
         banner: LICENSE_HEADER,
@@ -157,7 +165,7 @@ function generateBuildConfigs({formatToPath, baseDir, moduleName, minify=true,
       buildConfigs.push({
         rollupConfig: {
           entry: entry || path.join(baseDir, 'src', 'index.js'),
-          plugins: plugins.concat(babelPluginMinify),
+          plugins: [replacePlugin, ...basePlugins, babelPlugin],
         },
         writeConfig: {
           banner: LICENSE_HEADER,
