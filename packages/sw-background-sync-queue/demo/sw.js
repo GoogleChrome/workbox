@@ -24,6 +24,7 @@ let bgQueue = new goog.BackgroundSyncQueue({callbacks:
 		},
 		onRetryFailure: (hash) => {},
 	},
+	dbName: 'queues',
 });
 
 const replayBroadcastChannel = new BroadcastChannel('replay_channel');

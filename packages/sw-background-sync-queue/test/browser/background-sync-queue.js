@@ -98,15 +98,22 @@ describe('background sync queue test', () => {
 		const backgroundSyncQueue2
     = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
       maxRetentionTime: 10000,
+      dbName: 'Queue2',
     });
 
+		await backgroundSyncQueue.cleanupQueue();
+		await backgroundSyncQueue2.cleanupQueue();
 		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum1.com')});
 		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum2.com')});
 		await backgroundSyncQueue2.pushIntoQueue({request: new Request('http://lipsum.com')});
-		const allKeys = (await idbHelper.getAllKeys());
+		const queue1Keys = (await backgroundSyncQueue._queue._idbQDb.getAllKeys());
+		const queue2Keys = (await backgroundSyncQueue2._queue._idbQDb.getAllKeys());
 		await delay(100);
-		await queueUtils.cleanupQueue();
-		chai.assert.equal(allKeys.length,
-			(await idbHelper.getAllKeys()).length + 2);
+		await backgroundSyncQueue.cleanupQueue();
+		await backgroundSyncQueue2.cleanupQueue();
+		chai.assert.equal(queue1Keys.length,
+			(await backgroundSyncQueue._queue._idbQDb.getAllKeys()).length + 2);
+		chai.assert.equal(queue2Keys.length,
+			(await backgroundSyncQueue2._queue._idbQDb.getAllKeys()).length);
 	});
 });
