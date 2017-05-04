@@ -150,8 +150,8 @@ class BackgroundSyncQueue {
 	 * @param {String} dbName
 	 * @private
 	 */
-	getResponse(id) {
-		getResponse({
+	getResponse({id}) {
+		return getResponse({
 			id,
 			dbName: this._dbName,
 		});

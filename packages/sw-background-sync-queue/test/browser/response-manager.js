@@ -28,8 +28,9 @@ describe('response-manager test', () => {
   });
 
   it('check get', () => {
+		const queue = new goog.backgroundSyncQueue.test.BackgroundSyncQueue();
     return idbHelper.put('key', {response: response}).then(()=>{
-        return resManager.getResponse({id: 'key'}).then((data)=>{
+        return queue.getResponse({id: 'key'}).then((data)=>{
             chai.assert.equal(data, response);
         });
     });

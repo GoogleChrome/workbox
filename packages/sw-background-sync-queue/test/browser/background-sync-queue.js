@@ -16,6 +16,14 @@
 
 'use strict';
 
+function delay(timeout) {
+	return new Promise((resolve, reject) => {
+		setTimeout(function() {
+			resolve();
+		}, timeout);
+	});
+}
+
 describe('background sync queue test', () => {
   let responseAchieved = 0;
   function onRes() {
@@ -79,4 +87,26 @@ describe('background sync queue test', () => {
 		await backgroundSyncQueue.replayRequests();
 		chai.assert.equal(responseAchieved, 2);
   });
+
+	it('test queue cleanup', async () => {
+		/* code for clearing everything from IDB */
+		const backgroundSyncQueue
+    = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
+      maxRetentionTime: 1,
+    });
+
+		const backgroundSyncQueue2
+    = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
+      maxRetentionTime: 10000,
+    });
+
+		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum1.com')});
+		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum2.com')});
+		await backgroundSyncQueue2.pushIntoQueue({request: new Request('http://lipsum.com')});
+		const allKeys = (await idbHelper.getAllKeys());
+		await delay(100);
+		await queueUtils.cleanupQueue();
+		chai.assert.equal(allKeys.length,
+			(await idbHelper.getAllKeys()).length + 2);
+	});
 });
