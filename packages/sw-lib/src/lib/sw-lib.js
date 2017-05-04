@@ -338,7 +338,7 @@ class SWLib {
 
   /**
    * @private
-   * @param  {Array<RegExp>} ignoreUrlParametersMatching An of regex's to
+   * @param  {Array<RegExp>} ignoreUrlParametersMatching An array of regex's to
    * define which search parameters should be removed before looking for cache
    * match.
    * @param {string} directoryIndex The directory index is appended to URLs
@@ -375,7 +375,7 @@ class SWLib {
 
   /**
    * @param {string} originalUrl The original url to remove the search params.
-   * @param  {Array<RegExp>} ignoreUrlParametersMatching An of regex's to
+   * @param  {Array<RegExp>} ignoreUrlParametersMatching An array of regex's to
    * define which search parameters should be removed before looking for cache
    * match.
    * @return {string} An object that can be used as a plugin within a
