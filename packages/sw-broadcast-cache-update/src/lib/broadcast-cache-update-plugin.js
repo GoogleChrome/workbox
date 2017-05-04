@@ -55,7 +55,7 @@ class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
    *
    * @private
    * @param {Object} input The input object to this function.
-   * @param {string} input.cacheName Name of the cache the responses belong to.
+   * @param {string} input.cacheName Name of the cache the responses belongs to.
    * @param {Response} [input.oldResponse] The previous cached value, if any.
    * @param {Response} input.newResponse The new value in the cache.
    * @param {string} input.url The cache key URL.
