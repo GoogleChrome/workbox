@@ -32,19 +32,19 @@ const printBuildTime = (buildTime) => {
 /**
  * Builds a given project.
  * @param {String} projectPath The path to a project directory.
+ * @return {Promise} Resolves if building succeeds, rejects if it fails.
  */
-const buildPackage = async (projectPath) => {
+const buildPackage = (projectPath) => {
   printHeading(`Building ${path.basename(projectPath)}`);
   const startTime = Date.now();
   const buildDir = `${projectPath}/build`;
+  const projectBuildProcess = require(`${projectPath}/build.js`);
 
-  await fse.emptyDir(buildDir);
-  const build = require(`${projectPath}/build.js`);
-  await build();
-  await fse.copy(path.join(__dirname, '..', 'LICENSE'),
-    path.join(projectPath, 'LICENSE'));
-
-  printBuildTime(((Date.now() - startTime) / 1000) + 's');
+  return fse.emptyDir(buildDir)
+    .then(() => projectBuildProcess())
+    .then(() => fse.copy(path.join(__dirname, '..', 'LICENSE'),
+      path.join(projectPath, 'LICENSE')))
+    .then(() => printBuildTime(`${(Date.now() - startTime) / 1000}s`));
 };
 
 gulp.task('build:shared', () => {
