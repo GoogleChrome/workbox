@@ -33,5 +33,8 @@
     "meow": "^3.7.0",
     "sw-build": "^0.0.20",
     "update-notifier": "^1.0.3"
+  },
+  "devDependencies": {
+    "fs-extra": "^3.0.1"
   }
 }
