@@ -15,7 +15,6 @@
   },
   "main": "build/index.js",
   "files": [
-    "src",
     "build"
   ],
   "engines": {
@@ -32,8 +31,5 @@
     "lodash.template": "^4.4.0",
     "mkdirp": "^0.5.1",
     "sw-lib": "^0.0.20"
-  },
-  "devDependencies": {
-    "fs-extra": "^2.0.0"
   }
 }

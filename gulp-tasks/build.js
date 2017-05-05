@@ -12,51 +12,39 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-const path = require('path');
-const gulp = require('gulp');
-const chalk = require('chalk');
-const promisify = require('promisify-node');
 
+/* eslint-disable no-console */
+
+const chalk = require('chalk');
+const fse = require('fs-extra');
+const gulp = require('gulp');
+const path = require('path');
 const {taskHarness, buildJSBundle} = require('../utils/build');
 
-const fsePromise = promisify('fs-extra');
-
 const printHeading = (heading) => {
-  /* eslint-disable no-console */
-  process.stdout.write(chalk.inverse(`  ⚒  ${heading}  `));
-  /* eslint-enable no-console */
+  process.stdout.write(chalk.inverse(`  ⚒ ${heading}`));
 };
 
 const printBuildTime = (buildTime) => {
-  process.stdout.write(chalk.inverse(`${buildTime}  \n`));
+  process.stdout.write(chalk.inverse(` (${buildTime})\n`));
 };
 
 /**
  * Builds a given project.
  * @param {String} projectPath The path to a project directory.
- * @return {Promise} Resolves if building succeeds, rejects if it fails.
  */
-const buildPackage = (projectPath) => {
+const buildPackage = async (projectPath) => {
   printHeading(`Building ${path.basename(projectPath)}`);
   const startTime = Date.now();
   const buildDir = `${projectPath}/build`;
 
-  // Copy over package.json and README.md so that build/ contains what we
-  // need to publish to npm.
-  return fsePromise.emptyDir(buildDir)
-    .then(() => {
-      // Let each project define its own build process.
-      const build = require(`${projectPath}/build.js`);
-      return build();
-    })
-    .then(() => {
-      return fsePromise.copy(
-        path.join(__dirname, '..', 'LICENSE'),
-        path.join(projectPath, 'LICENSE'));
-    })
-    .then(() => {
-      printBuildTime(((Date.now() - startTime) / 1000) + 's');
-    });
+  await fse.emptyDir(buildDir);
+  const build = require(`${projectPath}/build.js`);
+  await build();
+  await fse.copy(path.join(__dirname, '..', 'LICENSE'),
+    path.join(projectPath, 'LICENSE'));
+
+  printBuildTime(((Date.now() - startTime) / 1000) + 's');
 };
 
 gulp.task('build:shared', () => {
@@ -73,14 +61,7 @@ gulp.task('build:shared', () => {
 });
 
 gulp.task('build', () => {
-  // Start a new line before the build package logs start.
-  console.log();
-
-  return taskHarness(buildPackage, global.projectOrStar)
-  .then(() => {
-    // End new line before the rest of logs start
-    console.log();
-  });
+  return taskHarness(buildPackage, global.projectOrStar);
 });
 
 gulp.task('build:watch', ['build'], (unusedCallback) => {

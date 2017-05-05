@@ -11,10 +11,11 @@
     "offline",
     "file manifest"
   ],
-  "scripts": {},
-  "main": "index.js",
+  "scripts": {
+    "prepublish": "gulp build --project sw-build-webpack-plugin"
+  },
+  "main": "build/index.js",
   "files": [
-    "src",
     "build"
   ],
   "engines": {

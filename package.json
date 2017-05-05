@@ -38,7 +38,7 @@
     "error-stack-parser": "^2.0.0",
     "eslint-config-google": "^0.7.0",
     "express": "^4.14.0",
-    "fs-extra": "^2.0.0",
+    "fs-extra": "^3.0.1",
     "geckodriver": "1.6.0",
     "glob": "^7.1.0",
     "gulp": "^3.9.1",
