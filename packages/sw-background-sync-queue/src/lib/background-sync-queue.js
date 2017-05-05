@@ -147,8 +147,8 @@ class BackgroundSyncQueue {
   /**
 	 * sets the dbName, which is used to store the queue and requests
 	 * defaults to bgQueueSyncDB
+	 * @param {String} id
 	 * @param {String} dbName
-	 * @private
 	 */
 	getResponse({id}) {
 		return getResponse({

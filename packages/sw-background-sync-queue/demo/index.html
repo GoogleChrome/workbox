@@ -123,7 +123,7 @@
         const toastContainer = document.querySelector('.toast-container');
 
         function purchase(){
-            fetch('http://localhost:3000/packages/sw-build/')
+            fetch('http://localhost:3000/__echo/counter')
             .then(()=>{
                 createToast('Product purchased');
             })

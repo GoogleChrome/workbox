@@ -37,7 +37,7 @@ const requestWrapper = new goog.runtimeCaching.RequestWrapper({
 });
 
 const route = new goog.routing.RegExpRoute({
-  regExp: new RegExp('^http://localhost:3000/packages/sw-build/'),
+  regExp: new RegExp('^http://localhost:3000/__echo/counter'),
   handler: new goog.runtimeCaching.NetworkOnly({requestWrapper}),
 });
 
