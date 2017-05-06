@@ -20,7 +20,7 @@ const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, dest,
     `${exampleProject}/**/*.{${fileExtensions.join(',')}}`, {
     ignore: [
       path.join(exampleProject, dest),
-      path.join(exampleProject, path.dirname(dest), 'sw-lib.*.min.js'),
+      path.join(exampleProject, path.dirname(dest), 'sw-lib.prod.*.js'),
     ],
   });
 

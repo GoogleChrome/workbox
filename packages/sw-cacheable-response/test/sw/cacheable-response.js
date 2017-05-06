@@ -2,7 +2,7 @@ importScripts(
   '/node_modules/mocha/mocha.js',
   '/node_modules/chai/chai.js',
   '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/packages/sw-cacheable-response/build/sw-cacheable-response.js'
+  '/__test/bundle/sw-cacheable-response'
 );
 
 const expect = self.chai.expect;

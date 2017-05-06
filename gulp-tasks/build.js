@@ -59,6 +59,32 @@ const buildPackage = (projectPath) => {
     });
 };
 
+/**
+ * Updates the fields in package.json that contain version string to match
+ * the latest version from lerna.json.
+ *
+ * @param {String} projectPath The path to a project directory.
+ * @return {Promise} Resolves if updating succeeds, and rejects if it fails.
+ */
+const updateVersionedBundles = (projectPath) => {
+  const packageJsonPath = `${projectPath}/package.json`;
+
+  return fsePromise.readJson('lerna.json').then((lernaJson) => {
+    const lernaVersion = `v${lernaJson.version}`;
+    return fsePromise.readJson(packageJsonPath).then((projectPkg) => {
+      const regexp = /v\d+\.\d+\.\d+/;
+      for (let field of ['main', 'module']) {
+        if (field in projectPkg) {
+          projectPkg[field] = projectPkg[field].replace(regexp, lernaVersion);
+        }
+      }
+      return projectPkg;
+    });
+  }).then((projectPkg) => {
+    return fsePromise.writeJson(packageJsonPath, projectPkg, {spaces: 2});
+  });
+};
+
 gulp.task('build:shared', () => {
   return buildJSBundle({
     rollupConfig: {
@@ -86,4 +112,8 @@ gulp.task('build', () => {
 gulp.task('build:watch', ['build'], (unusedCallback) => {
   gulp.watch(`packages/${global.projectOrStar}/src/**/*`, ['build']);
   gulp.watch(`lib/**/*`, ['build']);
+});
+
+gulp.task('update-versioned-bundles', () => {
+  return taskHarness(updateVersionedBundles, global.projectOrStar);
 });

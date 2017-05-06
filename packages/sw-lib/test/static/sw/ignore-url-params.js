@@ -1,6 +1,6 @@
 /* global goog */
 
-importScripts('/packages/sw-lib/build/sw-lib.min.js');
+importScripts('/__test/bundle/sw-lib');
 importScripts('/packages/sw-precaching/test/static/skip-and-claim.js');
 
 const swlib = new goog.SWLib();

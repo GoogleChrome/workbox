@@ -2,7 +2,7 @@ importScripts(
   '/node_modules/mocha/mocha.js',
   '/node_modules/chai/chai.js',
   '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/packages/sw-routing/build/sw-routing.js'
+  '/__test/bundle/sw-routing'
 );
 
 const expect = self.chai.expect;
