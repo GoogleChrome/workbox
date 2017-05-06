@@ -7,12 +7,12 @@ navigation_weight: 3
 # Caching CDN Requests or Non-200 Responses
 
 If an attempt is made to cache an asset that is on a different origin or
-the asset returns a non-200 response, these modules will throw an error. The
+the asset returns a non-200 response, these libraries will throw an error. The
 reason for this default behavior is to ensure that only good and local
 responses are cached.
 
 Below are examples of how to cache third party content in sw-lib and
-the lower level modules.
+the lower level libraries.
 
 ## sw-lib
 
@@ -37,7 +37,7 @@ sw-lib including `cacheFirst()`, `cacheOnly()`, `networkFirst()`,
 
 ## Lower Level Modules
 
-When using the lower level modules, use the `sw-cacheable-response` plugin
+When using the lower level libraries, use the `sw-cacheable-response` plugin
 with a `RequestWrapper` to cache responses with a non 2XX status code.
 
 ```javascript
@@ -87,7 +87,7 @@ const customCacheCriteria = goog.swlib.staleWhileRevalidate({
 goog.swlib.router.registerRoute('/some/url/', customCacheCriteria);
 ```
 
-With the lower level modules use a custom plugin by passing it into
+With the lower level libraries use a custom plugin by passing it into
 a request wrapper.
 
 ```javascript

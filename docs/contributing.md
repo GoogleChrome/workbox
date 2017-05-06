@@ -26,7 +26,7 @@ accept your pull requests.
 ## Building Projects
 
 There are a couple of commands that will help you make working with these
-modules a little easier:
+libraries a little easier:
 
 ### Installing Dependencies
 
@@ -35,7 +35,7 @@ You need to install dependencies for the top level project and the gulp CLI:
     npm install
     npm install -g gulp-cli
 
-Some modules *may* have dependencies of their own which you'd install like so:
+Some libraries *may* have dependencies of their own which you'd install like so:
 
     cd packages/<Project Name>/
     npm install

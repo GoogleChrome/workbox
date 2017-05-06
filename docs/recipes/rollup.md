@@ -10,7 +10,7 @@ These recipes cover the following `sw-lib` use case:
 - You want to write and maintain your own `sw.js` file that uses precaching via
 `sw-lib.cacheRevisionedAssets()` alongside other service worker logic.
 - You'd like to use [ES2015 import syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
-to include `sw-lib` and other modules into your service worker.
+to include `sw-lib` and other libraries into your service worker.
 - You are comfortable using [`Rollup`](https://github.com/rollup/rollup) to
 handle transforming the `sw.js` file you maintain into a production-ready,
 self contained service worker file, containing the `sw-lib` library code along

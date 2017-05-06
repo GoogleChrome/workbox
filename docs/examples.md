@@ -5,7 +5,7 @@ navigation_weight: 5
 ---
 # Examples
 
-Below is a list of projects using the `sw-helper` modules in their build process /
+Below is a list of projects using the `sw-helper` libraries in their build process /
 service worker.
 
 - iFixit PWA (Gulp build process)
