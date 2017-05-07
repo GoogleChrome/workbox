@@ -8,7 +8,7 @@ navigation_weight: 1
 
 These recipes cover the following `sw-lib` use case:
 - You want to write and maintain your own `sw.js` file that uses precaching via
-`sw-lib.cacheRevisionedAssets()` alongside other service worker logic.
+`sw-lib.precache()` alongside other service worker logic.
 - You'd like to use [ES2015 import syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
 to include `sw-lib` and other modules into your service worker.
 - You are comfortable using [`Rollup`](https://github.com/rollup/rollup) to
@@ -39,7 +39,7 @@ import swLib from 'sw-lib';
 // imports for any other libraries, e.g. idb-keyval, Firebase Messaging, etc.
 
 // This will precache the files in your manifest, and keep them up to date.
-swLib.cacheRevisionedAssets(manifest);
+swLib.precache(manifest);
 
 // Any additional runtime service worker logic can go here.
 ```
