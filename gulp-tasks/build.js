@@ -22,11 +22,11 @@ const path = require('path');
 const {taskHarness, buildJSBundle} = require('../utils/build');
 
 const printHeading = (heading) => {
-  process.stdout.write(chalk.inverse(`  ⚒ ${heading}`));
+  process.stdout.write(chalk.inverse(`  ⚒  ${heading}  `));
 };
 
 const printBuildTime = (buildTime) => {
-  process.stdout.write(chalk.inverse(` (${buildTime})\n`));
+  process.stdout.write(chalk.inverse(`(${buildTime})\n`));
 };
 
 /**
