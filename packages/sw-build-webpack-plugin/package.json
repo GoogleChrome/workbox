@@ -11,10 +11,11 @@
     "offline",
     "file manifest"
   ],
-  "scripts": {},
-  "main": "index.js",
+  "scripts": {
+    "prepublish": "gulp build --project sw-build-webpack-plugin"
+  },
+  "main": "build/index.js",
   "files": [
-    "src",
     "build"
   ],
   "engines": {
@@ -22,6 +23,9 @@
   },
   "dependencies": {
     "sw-build": "^0.0.20"
+  },
+  "devDependencies": {
+    "fs-extra": "^3.0.1"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",

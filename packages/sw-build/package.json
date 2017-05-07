@@ -15,7 +15,6 @@
   },
   "main": "build/index.js",
   "files": [
-    "src",
     "build"
   ],
   "engines": {
@@ -34,6 +33,6 @@
     "sw-lib": "^0.0.20"
   },
   "devDependencies": {
-    "fs-extra": "^2.0.0"
+    "fs-extra": "^3.0.1"
   }
 }
