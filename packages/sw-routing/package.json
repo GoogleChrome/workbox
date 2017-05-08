@@ -14,8 +14,7 @@
     "build"
   ],
   "scripts": {
-    "prepublish": "gulp build --project sw-routing",
-    "prepublishOnly": "gulp update-versioned-bundles --project sw-routing"
+    "prepublish": "gulp build --project sw-routing"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",

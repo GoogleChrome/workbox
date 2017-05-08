@@ -15,8 +15,7 @@
     "build"
   ],
   "scripts": {
-    "prepublish": "gulp build --project sw-precaching",
-    "prepublishOnly": "gulp update-versioned-bundles --project sw-precaching"
+    "prepublish": "gulp build --project sw-precaching"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",

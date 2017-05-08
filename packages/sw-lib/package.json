@@ -13,8 +13,7 @@
     "build"
   ],
   "scripts": {
-    "prepublish": "gulp build --project sw-lib",
-    "prepublishOnly": "gulp update-versioned-bundles --project sw-lib"
+    "prepublish": "gulp build --project sw-lib"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",

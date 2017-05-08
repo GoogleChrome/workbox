@@ -13,8 +13,7 @@
     "build"
   ],
   "scripts": {
-    "prepublish": "gulp build --project sw-cache-expiration",
-    "prepublishOnly": "gulp update-versioned-bundles --project sw-cache-expiration"
+    "prepublish": "gulp build --project sw-cache-expiration"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",

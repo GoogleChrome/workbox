@@ -55,11 +55,11 @@ const buildPackage = (projectPath) => {
  * @return {Promise} Resolves if updating succeeds, and rejects if it fails.
  */
 const updateVersionedBundles = (projectPath) => {
-  const packageJsonPath = `${projectPath}/package.json`;
+  const packageJsonPath = path.join(projectPath, 'package.json');
 
-  return fsePromise.readJson('lerna.json').then((lernaJson) => {
+  return fse.readJson('lerna.json').then((lernaJson) => {
     const lernaVersion = `v${lernaJson.version}`;
-    return fsePromise.readJson(packageJsonPath).then((projectPkg) => {
+    return fse.readJson(packageJsonPath).then((projectPkg) => {
       const regexp = /v\d+\.\d+\.\d+/;
       for (let field of ['main', 'module']) {
         if (field in projectPkg) {
@@ -69,9 +69,13 @@ const updateVersionedBundles = (projectPath) => {
       return projectPkg;
     });
   }).then((projectPkg) => {
-    return fsePromise.writeJson(packageJsonPath, projectPkg, {spaces: 2});
+    return fse.writeJson(packageJsonPath, projectPkg, {spaces: 2});
   });
 };
+
+gulp.task('update-versioned-bundles', () => {
+  return taskHarness(updateVersionedBundles, global.projectOrStar);
+});
 
 gulp.task('build:shared', () => {
   return buildJSBundle({
@@ -86,15 +90,11 @@ gulp.task('build:shared', () => {
   });
 });
 
-gulp.task('build', () => {
+gulp.task('build', ['update-versioned-bundles'], () => {
   return taskHarness(buildPackage, global.projectOrStar);
 });
 
 gulp.task('build:watch', ['build'], (unusedCallback) => {
   gulp.watch(`packages/${global.projectOrStar}/src/**/*`, ['build']);
   gulp.watch(`lib/**/*`, ['build']);
-});
-
-gulp.task('update-versioned-bundles', () => {
-  return taskHarness(updateVersionedBundles, global.projectOrStar);
 });

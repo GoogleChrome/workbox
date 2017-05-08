@@ -14,8 +14,7 @@
     "url": "https://jeffy.info"
   },
   "scripts": {
-    "prepublish": "gulp build --project sw-offline-google-analytics",
-    "prepublishOnly": "gulp update-versioned-bundles --project sw-offline-google-analytics"
+    "prepublish": "gulp build --project sw-offline-google-analytics"
   },
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
