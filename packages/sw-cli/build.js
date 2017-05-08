@@ -13,23 +13,9 @@
  limitations under the License.
 */
 
-const fsExtra = require('fs-extra');
+const fse = require('fs-extra');
 const path = require('path');
 
-const copyPath = (from, to) => {
-  return new Promise((resolve, reject) => {
-    fsExtra.copy(from, to, (err) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve();
-    });
-  });
-};
-
 module.exports = () => {
-  return copyPath(
-    path.join(__dirname, 'src/'),
-    path.join(__dirname, 'build/')
-  );
+  return fse.copy(path.join(__dirname, 'src'), path.join(__dirname, 'build'));
 };

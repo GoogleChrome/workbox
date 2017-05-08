@@ -87,7 +87,7 @@ const fileManifest = [
   ....
 ];
 
-self.goog.swlib.cacheRevisionedAssets(fileManifest);
+self.goog.swlib.precache(fileManifest);
 ```
 
 The service worker imports the `sw-lib` file which is
@@ -99,7 +99,7 @@ web app. Each file entry consists of a URL and a revision.
 This is used to download the files whenever they change.
 
 The service worker then calls
-`goog.swlib.cacheRevisionedAssets()` which will download
+`goog.swlib.precache()` which will download
 all the assets during the service worker install event.
 
 ## What Next?

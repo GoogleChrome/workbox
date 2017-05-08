@@ -15,7 +15,6 @@
   },
   "main": "build/index.js",
   "files": [
-    "src",
     "build"
   ],
   "engines": {

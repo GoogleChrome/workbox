@@ -14,7 +14,6 @@
     "sw-cli": "build/bin.js"
   },
   "files": [
-    "src",
     "build"
   ],
   "engines": {
@@ -36,6 +35,6 @@
     "update-notifier": "^1.0.3"
   },
   "devDependencies": {
-    "fs-extra": "^2.0.0"
+    "fs-extra": "^3.0.1"
   }
 }
