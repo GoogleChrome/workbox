@@ -14,7 +14,7 @@ self.addEventListener('activate', (event) => {
 });
 
 
-let bgQueue = new goog.BackgroundSyncQueue({callbacks:
+let bgQueue = new goog.backgroundSync.QueuePlugin({callbacks:
 	{
 		onResponse: async(hash, res) => {
 			self.registration.showNotification('Background sync demo', {

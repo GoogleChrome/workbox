@@ -56,6 +56,6 @@ gulp.task('mocha', ['build'], () => {
     });
 });
 
-gulp.task('test', ['lint', 'download-browsers'], (callback) => {
+gulp.task('test', [], (callback) => {
   runSequence('mocha', callback);
 });

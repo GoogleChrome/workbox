@@ -75,12 +75,6 @@ describe('background sync queue test', () => {
     chai.assert.equal(backgroundSyncQueue._queue.queue.length, currentLen + 1);
   });
 
-  it('check fetchDid fail proxy', async () => {
-    const currentLen = backgroundSyncQueue._queue.queue.length;
-    await backgroundSyncQueue.fetchDidFail({request: new Request('http://lipsum.com')});
-    chai.assert.equal(backgroundSyncQueue._queue.queue.length, currentLen + 1);
-  });
-
 	it('check replay', async function() {
 		await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/1')});
 		await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/2')});

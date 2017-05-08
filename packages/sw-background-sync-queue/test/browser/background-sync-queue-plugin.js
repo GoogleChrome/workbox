@@ -11,18 +11,19 @@
  limitations under the License.
  */
 
-/**
- * # sw-background-sync-queue
- *
- * Queues failed requests and uses the Background Sync API to replay those
- * requests at a later time when the network state has changed.
- *
- * @module sw-background-sync-queue
- */
-import Queue from './lib/background-sync-queue';
-import QueuePlugin from './lib/background-sync-queue-plugin';
+/* eslint-env mocha, browser */
+/* global chai, goog */
 
-export {
-	Queue,
-	QueuePlugin,
-};
+'use strict';
+
+describe('background-sync-queue-plugin test', () => {
+	console.log(goog.backgroundSyncQueue.test);
+	const backgroundSyncQueue
+    = new goog.backgroundSyncQueue.test.BackgroundSyncQueuePlugin({});
+
+	it('check fetchDid fail proxy', async () => {
+    const currentLen = backgroundSyncQueue._queue.queue.length;
+    await backgroundSyncQueue.fetchDidFail({request: new Request('http://lipsum.com')});
+    chai.assert.equal(backgroundSyncQueue._queue.queue.length, currentLen + 1);
+  });
+});
