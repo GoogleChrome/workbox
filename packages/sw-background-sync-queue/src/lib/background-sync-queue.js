@@ -91,6 +91,8 @@ class BackgroundSyncQueue {
 			});
 			this._requestManager = new RequestManager({callbacks,
 				queue: this._queue});
+
+			this.cleanupQueue();
 	}
 
 	/**
