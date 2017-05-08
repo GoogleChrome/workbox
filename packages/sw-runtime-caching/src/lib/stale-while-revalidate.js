@@ -19,7 +19,7 @@ import Handler from './handler';
 import assert from '../../../../lib/assert';
 
 /**
- * An implementation of a [stale-while-revalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
+ * An implementation of a[stale-while-revalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
  * request strategy.
  *
  * Resources are requested from both the cache and the network in parallel, then
