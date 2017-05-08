@@ -6,17 +6,25 @@ const swBuild = require('sw-build');
  * const SwBuildWebpackPlugin = require('sw-build-webpack-plugin');
  * .
  * .
- * plugins: [
- * 	new SwBuildWebpackPlugin({
- * 		rootDirectory: './build/',
- * 		dest: './build/sw.js',
- * 		globPatterns: ['**\/*.{html,js,css}'],
- * 		globIgnores: ['admin.html'],
- * 		templatedUrls: {
- * 			'/shell': ['shell.hbs', 'main.css', 'shell.css'],
- * 		},
- * 	});
- * ]
+ * module.exports = {
+ *   entry: {
+ *     app: './step1/app.js'
+ *   },
+ *   output: {
+ *     path: __dirname + '/step1/public/js',
+ *     publicPath: '/public/js/',
+ *     filename: '[name].js',
+ *   },
+ *   plugins: [
+ *   	new SwBuildWebpackPlugin({
+ *   		globDirectory: './build/',
+ *      staticFileGlobs: ['**\/*.{html,js,css}'],
+ *      globIgnores: ['admin.html'],
+ *      swSrc: './src/sw.js',
+ *      swDest: './build/sw.js',
+ *   	});
+ *   ]
+ * }
  *
  * @class SwBuildWebpackPlugin
  */
