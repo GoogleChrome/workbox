@@ -78,7 +78,6 @@ class ServerInstance {
       res.send(JSON.stringify(req.cookies));
     });
 
-    // Used by the following two routes.
     function respondWithScriptMatchingPattern(pattern, res) {
       const repoRoot = path.join(__dirname, '..');
       const devScript = glob.sync(pattern, {
@@ -105,18 +104,6 @@ class ServerInstance {
     this._app.get('/__test/bundle/:pkg', function(req, res) {
       const pkg = req.params.pkg;
       const pattern = `packages/${pkg}/build/importScripts/*dev*.js`;
-      respondWithScriptMatchingPattern(pattern, res);
-    });
-
-    // Used to return the latest iife bundle for a given package, without
-    // having to specify the version string, for packages that are installed
-    // via lerna.
-    // This is used within unit tests.
-    this._app.get('/__test/lernaBundle/:parentPkg/:pkg', function(req, res) {
-      const parentPkg = req.params.parentPkg;
-      const pkg = req.params.pkg;
-      const pattern = `packages/${parentPkg}/node_modules/${pkg}` +
-        `/build/importScripts/*dev*.js`;
       respondWithScriptMatchingPattern(pattern, res);
     });
 

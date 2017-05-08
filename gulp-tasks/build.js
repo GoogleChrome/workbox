@@ -57,19 +57,15 @@ const buildPackage = (projectPath) => {
 const updateVersionedBundles = (projectPath) => {
   const packageJsonPath = path.join(projectPath, 'package.json');
 
-  return fse.readJson('lerna.json').then((lernaJson) => {
-    const lernaVersion = `v${lernaJson.version}`;
-    return fse.readJson(packageJsonPath).then((projectPkg) => {
-      const regexp = /v\d+\.\d+\.\d+/;
-      for (let field of ['main', 'module']) {
-        if (field in projectPkg) {
-          projectPkg[field] = projectPkg[field].replace(regexp, lernaVersion);
-        }
+  return fse.readJson(packageJsonPath).then((pkg) => {
+    const regexp = /v\d+\.\d+\.\d+/;
+    for (let field of ['main', 'module']) {
+      if (field in pkg) {
+        pkg[field] = pkg[field].replace(regexp, `v${pkg.version}`);
       }
-      return projectPkg;
-    });
-  }).then((projectPkg) => {
-    return fse.writeJson(packageJsonPath, projectPkg, {spaces: 2});
+    }
+
+    return fse.writeJson(packageJsonPath, pkg, {spaces: 2});
   });
 };
 

@@ -1,4 +1,4 @@
-importScripts('/__test/lernaBundle/sw-cache-expiration/sw-runtime-caching');
+importScripts('/__test/bundle/sw-runtime-caching');
 importScripts('/__test/bundle/sw-cache-expiration');
 
 self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
