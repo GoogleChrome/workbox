@@ -46,7 +46,7 @@ Add the following to your `gulpfile.js`:
       .then(() => {
         console.log('Service worker generated.');
       })
-      catch((err) => {
+      .catch((err) => {
         console.log('[ERROR] This happened: ' + err);
       });
     })
