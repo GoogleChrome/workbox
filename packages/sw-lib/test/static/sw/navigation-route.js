@@ -1,6 +1,6 @@
 /* global goog */
 
-importScripts('/packages/sw-lib/build/sw-lib.min.js');
+importScripts('/__test/bundle/sw-lib');
 
 const SHELL_URL = '/shell';
 const CACHE_NAME = 'navigation-route-e2e';

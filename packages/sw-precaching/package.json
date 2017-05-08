@@ -22,11 +22,10 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-precaching",
-  "main": "build/sw-precaching.min.js",
-  "module": "build/sw-precaching.min.mjs",
-  "jsnext:main": "build/sw-precaching.min.mjs",
   "devDependencies": {
     "sw-routing": "^0.0.20",
     "sw-runtime-caching": "^0.0.20"
-  }
+  },
+  "main": "build/importScripts/sw-precaching.prod.v0.0.20.js",
+  "module": "build/modules/sw-precaching.prod.v0.0.20.mjs"
 }

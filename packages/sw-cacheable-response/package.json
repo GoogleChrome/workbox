@@ -10,7 +10,6 @@
     "sw-fw"
   ],
   "files": [
-    "src",
     "build"
   ],
   "scripts": {
@@ -21,7 +20,6 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cacheable-response",
-  "main": "build/sw-cacheable-response.min.js",
-  "module": "build/sw-cacheable-response.min.mjs",
-  "jsnext:main": "build/sw-cacheable-response.min.mjs"
+  "main": "build/importScripts/sw-cacheable-response.prod.v0.0.20.js",
+  "module": "build/modules/sw-cacheable-response.prod.v0.0.20.mjs"
 }

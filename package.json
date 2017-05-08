@@ -65,7 +65,7 @@
     "selenium-assistant": "^5.0.5",
     "serve-index": "^1.8.0",
     "serve-static": "^1.11.1",
-    "sinon": "^2.1.0",
+    "sinon": "^2.2.0",
     "sw-testing-helpers": "^1.0.2",
     "tmp": "0.0.31",
     "uppercamelcase": "^3.0.0"

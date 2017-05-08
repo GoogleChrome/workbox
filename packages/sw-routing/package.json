@@ -21,7 +21,6 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-routing",
-  "main": "build/sw-routing.min.js",
-  "module": "build/sw-routing.min.mjs",
-  "jsnext:main": "build/sw-routing.min.mjs"
+  "main": "build/importScripts/sw-routing.prod.v0.0.20.js",
+  "module": "build/modules/sw-routing.prod.v0.0.20.mjs"
 }

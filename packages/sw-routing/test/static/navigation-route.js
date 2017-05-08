@@ -1,6 +1,6 @@
 /* global goog */
 
-importScripts('/packages/sw-routing/build/sw-routing.js');
+importScripts('/__test/bundle/sw-routing');
 
 self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));

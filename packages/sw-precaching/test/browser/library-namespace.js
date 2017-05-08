@@ -32,7 +32,7 @@ describe('Test Behaviors of Loading the Script', function() {
       };
 
       const scriptElement = document.createElement('script');
-      scriptElement.src = '/packages/sw-precaching/build/sw-precaching.min.js';
+      scriptElement.src = '/__test/bundle/sw-precaching';
       scriptElement.addEventListener('error', (event) => {
         reject();
       });

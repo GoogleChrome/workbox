@@ -2,7 +2,7 @@ importScripts(
   '/node_modules/mocha/mocha.js',
   '/node_modules/chai/chai.js',
   '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/packages/sw-broadcast-cache-update/build/sw-broadcast-cache-update.js'
+  '/__test/bundle/sw-broadcast-cache-update'
 );
 
 const expect = self.chai.expect;

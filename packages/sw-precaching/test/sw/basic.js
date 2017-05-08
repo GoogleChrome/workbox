@@ -1,8 +1,7 @@
 importScripts('/node_modules/mocha/mocha.js');
 importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
-
-importScripts('/packages/sw-precaching/build/sw-precaching.min.js');
+importScripts('/__test/bundle/sw-precaching');
 
 /* global goog */
 

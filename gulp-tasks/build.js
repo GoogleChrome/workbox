@@ -47,6 +47,32 @@ const buildPackage = (projectPath) => {
     .then(() => printBuildTime(`${(Date.now() - startTime) / 1000}s`));
 };
 
+/**
+ * Updates the fields in package.json that contain version string to match
+ * the latest version from lerna.json.
+ *
+ * @param {String} projectPath The path to a project directory.
+ * @return {Promise} Resolves if updating succeeds, and rejects if it fails.
+ */
+const updateVersionedBundles = (projectPath) => {
+  const packageJsonPath = path.join(projectPath, 'package.json');
+
+  return fse.readJson(packageJsonPath).then((pkg) => {
+    const regexp = /v\d+\.\d+\.\d+/;
+    for (let field of ['main', 'module']) {
+      if (field in pkg) {
+        pkg[field] = pkg[field].replace(regexp, `v${pkg.version}`);
+      }
+    }
+
+    return fse.writeJson(packageJsonPath, pkg, {spaces: 2});
+  });
+};
+
+gulp.task('update-versioned-bundles', () => {
+  return taskHarness(updateVersionedBundles, global.projectOrStar);
+});
+
 gulp.task('build:shared', () => {
   return buildJSBundle({
     rollupConfig: {
@@ -60,7 +86,7 @@ gulp.task('build:shared', () => {
   });
 });
 
-gulp.task('build', () => {
+gulp.task('build', ['update-versioned-bundles'], () => {
   return taskHarness(buildPackage, global.projectOrStar);
 });
 

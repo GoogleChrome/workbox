@@ -1,9 +1,9 @@
 importScripts(
   '/node_modules/mocha/mocha.js',
   '/node_modules/chai/chai.js',
-  '/node_modules/sinon/pkg/sinon.js',
+  '/node_modules/sinon/pkg/sinon-no-sourcemaps.js',
   '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/packages/sw-runtime-caching/build/sw-runtime-caching.js'
+  '/__test/bundle/sw-runtime-caching'
 );
 
 const expect = self.chai.expect;

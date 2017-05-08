@@ -1,5 +1,5 @@
-importScripts('/packages/sw-cache-expiration/node_modules/sw-runtime-caching/build/sw-runtime-caching.js');
-importScripts('/packages/sw-cache-expiration/build/sw-cache-expiration.js');
+importScripts('/__test/bundle/sw-runtime-caching');
+importScripts('/__test/bundle/sw-cache-expiration');
 
 self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));

@@ -1,7 +1,7 @@
 /* global goog, sinon */
 importScripts('/packages/sw-precaching/test/static/test-data.js');
-importScripts('/node_modules/sinon/pkg/sinon.js');
-importScripts('/packages/sw-precaching/build/sw-precaching.min.js');
+importScripts('/node_modules/sinon/pkg/sinon-no-sourcemaps.js');
+importScripts('/__test/bundle/sw-precaching');
 importScripts('/packages/sw-precaching/test/static/skip-and-claim.js');
 
 let requestsMade = [];
