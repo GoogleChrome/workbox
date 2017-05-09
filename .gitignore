@@ -2,11 +2,9 @@
 .DS_Store
 build
 docs/Gemfile*
-docs/_*
-docs/reference-docs
-docs/themes
 lerna-debug.log
 node_modules
 npm-debug.log
 packages/**/LICENSE
 temp
+/_site/

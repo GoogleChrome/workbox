@@ -1,0 +1,119 @@
+---
+layout: jsdoc
+title: "Source: sw-background-sync-queue/src/lib/request-manager.js"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response-behavior.html#main">sw-cacheable-response-behavior</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import {putResponse} from './response-manager';
+import {getFetchableRequest} from './queue-utils';
+import {tagNamePrefix} from './constants';
+import RequestQueue from './request-queue';
+import assert from '../../../../lib/assert';
+
+/**
+ * Class to handle all the request related
+ * transformations, replaying, event handling
+ * broadcasting back to controlled pages etc.
+ * @class
+ */
+class RequestManager {
+	/**
+	 * Initializes the request manager
+	 * stores the callbacks object, maintains config and
+	 * attaches event handler
+	 * @param {any} {callbacks, queue}
+	 *
+	 * @memberOf RequestManager
+	 */
+	constructor({callbacks, queue}) {
+		assert.isInstance({queue}, RequestQueue);
+
+		this._globalCallbacks = callbacks || {};
+		this._queue = queue;
+		this.attachSyncHandler();
+	}
+
+	/**
+	 * attaches sync handler to replay requests when
+	 * sync event is fired
+	 *
+	 * @memberOf RequestManager
+	 */
+	attachSyncHandler() {
+		self.addEventListener('sync', (event) => {
+			if(event.tag === tagNamePrefix + this._queue.queueName) {
+				event.waitUntil(this.replayRequests());
+			}
+		});
+	}
+
+	/**
+	 * function to start playing requests
+	 * in sequence
+	 * @return {void}
+	 *
+	 * @memberOf RequestManager
+	 */
+	replayRequests() {
+		return this._queue.queue.reduce((promise, hash) => {
+			return promise
+				.then(async (item) => {
+					const reqData = await this._queue.getRequestFromQueue({hash});
+					if(reqData.response) {
+						// check if request is not played already
+						return;
+					}
+
+					const request = await getFetchableRequest({
+						idbRequestObject: reqData.request,
+					});
+
+					return fetch(request)
+						.then((response)=>{
+							if(!response.ok) {
+								return Promise.resolve();
+							} else {
+								// not blocking on putResponse.
+								putResponse({
+									hash,
+									idbObject: reqData,
+									response: response.clone(),
+									idbQDb: this._queue.idbQDb,
+								});
+								this._globalCallbacks.onResponse
+									&amp;&amp; this._globalCallbacks.onResponse(hash, response);
+							}
+						})
+						.catch((err)=>{
+							this._globalCallbacks.onRetryFailure
+								&amp;&amp; this._globalCallbacks.onRetryFailure(hash, err);
+						});
+				});
+		}, Promise.resolve());
+	}
+}
+
+export default RequestManager;
+</code></pre>
+        </article>
+    </section>
+
+
+
+

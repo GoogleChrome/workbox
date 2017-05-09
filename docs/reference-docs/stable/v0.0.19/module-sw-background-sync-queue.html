@@ -1,0 +1,514 @@
+---
+layout: jsdoc
+title: "Module: sw-background-sync-queue"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+
+
+    
+        
+            
+        
+    
+
+    
+        
+            <div class="description"><h1 id="sw-background-sync-queue">sw-background-sync-queue</h1>
+<p>Queues failed requests and uses the Background Sync API to replay those
+requests at a later time when the network state has changed.</p></div>
+        
+
+        
+            
+
+<div class="collapsing-entry method-type-module ">
+
+
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+    
+
+    
+
+    
+        <h2 class="subsection-title">Classes</h2>
+
+        <div class="subsection-classes">
+        <dl>
+            <dt><a href="module-sw-background-sync-queue.BackgroundSyncQueue.html#main">BackgroundSyncQueue</a></dt>
+            <dd></dd>
+        </dl>
+        </div>
+    
+
+     
+
+    
+
+    
+
+    
+        <h2 class="subsection-title">Instance Methods</h2>
+
+        <div class="subsection-methods">
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id=".getResponse"><span class="type-attribs">(static) </span><span class="this">this.</span>getResponse<span class="signature">(<span class="signature-args">id</span>)</span><span class="type-signature"> <span class="return-arrow">&rarr;</span> Object</span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>This function returns the fetched response for the given id of the request</p>
+  </div>
+
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">id</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The ID of the request given back by the broaadcast
+channel</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+  <tr>
+  <th>Returns</th>
+  <td>
+  
+          
+
+
+
+<span class="param-type">Object</span>
+
+
+
+
+
+<div class="param-desc">
+    <p>response Fetched response of the request.</p>
+</div>
+
+
+      
+  </td>
+  </tr>
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id=".initialize"><span class="type-attribs">(static) </span><span class="this">this.</span>initialize<span class="signature">(<span class="signature-args">input</span>)</span><span class="type-signature"></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>In order to use this library call <code>goog.backgroundSyncQueue.initialize()</code>.
+It will take care of setting up IndexedDB for storing requests and broadcast
+channel for communication of request creations. Also this attaches a handler
+to <code>sync</code> event and replays the queued requeusts.</p>
+  </div>
+
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">input</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+
+            
+                
+                
+
+                
+
+                
+                
+                  <span class="param-attributes">(Optional)</span>
+                  
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The input object to this function</p>
+                
+                  <h6>Properties</h6>
+                  
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">dbName</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+
+            
+                
+                
+
+                
+
+                
+                
+                  <span class="param-attributes">(Optional)</span>
+                  
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The name of the db to store requests and
+responses</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+        </div>

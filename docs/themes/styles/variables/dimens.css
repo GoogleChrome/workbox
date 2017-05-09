@@ -1,0 +1,21 @@
+:root {
+  --vertical-spacing: 8px;
+  --horizontal-spacing: 10px;
+
+  --base-font-size-mobile: 20px;
+  --base-font-size-desktop: 22px;
+  --h1-font-size-mobile: 24px;
+  --h1-font-size-desktop: 28px;
+  --h1-letter-spacing: 0.7px;
+  --h2-font-size-mobile: 20px;
+  --h2-font-size-desktop: 24px;
+  --h2-letter-spacing: 0.7px;
+
+  --navigation-font-size-mobile: 16px;
+  --navigation-font-size-desktop: 16px;
+  --nav-drawer-drop-down-text-size-mobile: 14px;
+  --callout-h1-font-size-mobile: 34px;
+  --callout-h1-font-size-desktop: 42px;
+
+  --main-content-max-width: 1140px;
+}

@@ -1,10 +1,9 @@
 ---
-layout: index
-title: Rollup Bundling
-navigation_weight: 1
+layout: page
+title: Recipes > Rollup Bundling
 ---
 
-# Rollup-based Bundling
+# Rollup Bundling
 
 These recipes cover the following `sw-lib` use case:
 - You want to write and maintain your own `sw.js` file that uses precaching via

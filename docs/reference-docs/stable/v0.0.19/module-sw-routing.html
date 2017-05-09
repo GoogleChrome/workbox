@@ -1,0 +1,672 @@
+---
+layout: jsdoc
+title: "Module: sw-routing"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+
+
+    
+        
+            
+        
+    
+
+    
+        
+            <div class="description"><h1 id="sw-routing">sw-routing</h1>
+<p>A service worker helper library to route request URLs to handlers.</p></div>
+        
+
+        
+            
+
+<div class="collapsing-entry method-type-module ">
+
+
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+    
+
+    
+
+    
+        <h2 class="subsection-title">Classes</h2>
+
+        <div class="subsection-classes">
+        <dl>
+            <dt><a href="module-sw-routing.ExpressRoute.html#main">ExpressRoute</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-sw-routing.NavigationRoute.html#main">NavigationRoute</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-sw-routing.RegExpRoute.html#main">RegExpRoute</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-sw-routing.Route.html#main">Route</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-sw-routing.Router.html#main">Router</a></dt>
+            <dd></dd>
+        </dl>
+        </div>
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+        <h2 class="subsection-title">Type Definitions</h2>
+
+        <div class="subsection-definitions">
+        
+                
+
+<div class="collapsing-entry method-type-typedef ">
+
+
+    <h4 class="js-collapse-title" id=".Matcher"><span class="this">this.</span>Matcher<span class="signature">(<span class="signature-args">input</span>)</span><span class="type-signature"> <span class="return-arrow">&rarr;</span> Array.&lt;Object>|null</span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>A function that can be automatically invoked by a route to determine whether
+or not an incoming network request should trigger the route's handler.</p>
+  </div>
+
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">input</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                
+                
+                  <h6>Properties</h6>
+                  
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">url</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">URL</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The request's URL.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">event</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">FetchEvent</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The event that triggered the <code>fetch</code> handler.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+  <tr>
+  <th>Returns</th>
+  <td>
+  
+          
+
+
+
+<span class="param-type">Array.&lt;Object></span>
+|
+
+<span class="param-type">null</span>
+
+
+
+
+
+<div class="param-desc">
+    <p>To signify a match, return a (possibly empty)
+array of values which will be passed in a params to the
+<a href="module-sw-routing.html#.RouteHandler">RouteHandler</a>.
+Otherwise, return null if the route shouldn't match.</p>
+</div>
+
+
+      
+  </td>
+  </tr>
+
+
+</table>
+
+</div>
+
+</div>
+
+            
+                
+
+<div class="collapsing-entry method-type-typedef ">
+
+
+    <h4 class="js-collapse-title" id=".RouteHandler"><span class="this">this.</span>RouteHandler<span class="signature">(<span class="signature-args">input</span>)</span><span class="type-signature"> <span class="return-arrow">&rarr;</span> Promise.&lt;Response></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>A handler that can be automatically invoked by a route, and knows how to
+respond to a request. It can either be a standalone function or a subclass of
+<a href="module-sw-runtime-caching.Handler.html#main">Handler</a>.</p>
+  </div>
+
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">input</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                
+                
+                  <h6>Properties</h6>
+                  
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">url</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">URL</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The request's URL.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">event</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">FetchEvent</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The event that triggered the <code>fetch</code> handler.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">params</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Object></span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>Any additional parameters that the
+<a href="module-sw-routing.Route.html#main">Route</a> provides, such as named parameters in
+an <a href="module-sw-routing.ExpressRoute.html#main">ExpressRoute</a>.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+  <tr>
+  <th>Returns</th>
+  <td>
+  
+          
+
+
+
+<span class="param-type">Promise.&lt;Response></span>
+
+
+
+
+
+<div class="param-desc">
+    <p>The response that will fulfill the request.</p>
+</div>
+
+
+      
+  </td>
+  </tr>
+
+
+</table>
+
+</div>
+
+</div>
+
+            
+        </div>

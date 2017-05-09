@@ -1,0 +1,18 @@
+.page-header {
+  background-color: var(--workbox-orange);
+}
+
+.page-header h1 {
+  max-width: var(--main-content-max-width);
+  font-size: var(--base-font-size-mobile);
+  font-weight: normal;
+  color: var(--page-header-color);
+  padding: calc(var(--vertical-spacing) * 2) calc(var(--horizontal-spacing) * 4);
+  margin: 0 auto;
+}
+
+@media (min-width: 700px) {
+  .page-header h1 {
+    font-size: var(--base-font-size-desktop);
+  }
+}

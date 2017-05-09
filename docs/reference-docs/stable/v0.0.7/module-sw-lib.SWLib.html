@@ -1,0 +1,1864 @@
+---
+layout: jsdoc
+title: "Class: SWLib"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response-behavior.html#main">sw-cacheable-response-behavior</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+
+
+    
+        <h2>SWLib</h2>
+        
+            <p>A high level library to make it as easy as possible to precache assets
+efficiently and define run time caching strategies.</p>
+        
+    
+
+    
+      
+
+      
+        <h2 class="subsection-title">Constructor</h2>
+
+        <div class="subsection-constructor">
+        
+
+<div class="collapsing-entry method-type-class start-open">
+
+
+    <h4 class="js-collapse-title" id="SWLib">new SWLib<span class="signature">(<span class="signature-args"></span>)</span><span class="type-signature"></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>You should never need to instantiate this class. The library instantiates
+an instance which can be accessed by <code>self.goog.swlib</code>.</p>
+  </div>
+
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        </div>
+      
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h2 class="subsection-title">Member Variables</h2>
+
+        <div class="subsection-members">
+        
+            
+<div class="collapsing-entry member-type-member">
+<h4 class="js-collapse-title" id="Route"><span class="this">this.</span>Route <span class="return-arrow">&rarr;</span> <span class="type-signature">Route</span></h4>
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+<div class="description">
+    <p>If you need fine grained control of route matching and handling,
+use the <a href="module-sw-routing.Route.html#main">Route Class</a> to define
+the desired behavior and register it to the router.</p>
+<p>This is an export of the
+<a href="module-sw-routing.Route.html#main">sw-runtime Route Class</a>.</p>
+</div>
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">How to define a route using a Route instance.</p>
+    
+    <pre class="prettyprint"><code>const routeInstance = new goog.swlib.Route({
+  match: (url) => {
+    // Return true or false
+    return true;
+  },
+  handler: {
+    handle: (args) => {
+      // The requested URL
+      console.log(args.url);
+
+      // The FetchEvent to handle
+      console.log(args.event);
+
+      // The parameters from the matching route.
+      console.log(args.params);
+
+      // Return a promise that resolves with a Response.
+      return fetch(args.url);
+    },
+  },
+});
+self.goog.swlib.router.registerRoute(routeInstance);</code></pre>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+</div>
+</div>
+
+        
+            
+<div class="collapsing-entry member-type-member">
+<h4 class="js-collapse-title" id="router"><span class="this">this.</span>router <span class="return-arrow">&rarr;</span> <span class="type-signature">Router</span></h4>
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+<div class="description">
+    <p>The router for this library is exposed via the <code>router</code> parameter.
+This is an instance of the <a href="module-sw-lib.Router.html#main">Router</a>.</p>
+</div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>self.goog.swlib.router.registerRoute('/', swlib.goog.cacheFirst());</code></pre>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+</div>
+</div>
+
+        
+        </div>
+    
+
+    
+        <h2 class="subsection-title">Instance Methods</h2>
+
+        <div class="subsection-methods">
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id="cacheFirst"><span class="this">this.</span>cacheFirst<span class="signature">(<span class="signature-args">options</span>)</span><span class="type-signature"> <span class="return-arrow">&rarr;</span> <a href="module-sw-runtime-caching.CacheFirst.html#main">CacheFirst</a></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>A <a href="https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network">cache first</a>
+run-time caching strategy.</p>
+  </div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const cacheFirstStrategy = goog.swlib.cacheFirst();
+
+goog.swlib.router.addRoute('/styles/*', cacheFirstStrategy);</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">options</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-sw-lib.SWLib.html#.RuntimeStrategyOptions">RuntimeStrategyOptions</a></span>
+
+
+
+            
+
+            
+                
+                
+
+                
+
+                
+                
+                  <span class="param-attributes">(Optional)</span>
+                  
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>To define
+any additional caching or broadcast behaviors pass in option values.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+  <tr>
+  <th>Returns</th>
+  <td>
+  
+          
+
+
+
+<span class="param-type"><a href="module-sw-runtime-caching.CacheFirst.html#main">CacheFirst</a></span>
+
+
+
+
+
+<div class="param-desc">
+    <p>A CacheFirst handler.</p>
+</div>
+
+
+      
+  </td>
+  </tr>
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id="cacheOnly"><span class="this">this.</span>cacheOnly<span class="signature">(<span class="signature-args">options</span>)</span><span class="type-signature"> <span class="return-arrow">&rarr;</span> <a href="module-sw-runtime-caching.CacheOnly.html#main">CacheOnly</a></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>A <a href="https://jakearchibald.com/2014/offline-cookbook/#cache-only">cache only</a>
+run-time caching strategy.</p>
+  </div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const cacheOnlyStrategy = goog.swlib.cacheOnly();
+
+goog.swlib.router.addRoute('/styles/*', cacheOnlyStrategy);</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">options</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-sw-lib.SWLib.html#.RuntimeStrategyOptions">RuntimeStrategyOptions</a></span>
+
+
+
+            
+
+            
+                
+                
+
+                
+
+                
+                
+                  <span class="param-attributes">(Optional)</span>
+                  
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>To define
+any additional caching or broadcast behaviors pass in option values.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+  <tr>
+  <th>Returns</th>
+  <td>
+  
+          
+
+
+
+<span class="param-type"><a href="module-sw-runtime-caching.CacheOnly.html#main">CacheOnly</a></span>
+
+
+
+
+
+<div class="param-desc">
+    <p>The caching handler instance.</p>
+</div>
+
+
+      
+  </td>
+  </tr>
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id="cacheRevisionedAssets"><span class="this">this.</span>cacheRevisionedAssets<span class="signature">(<span class="signature-args">revisionedFiles</span>)</span><span class="type-signature"></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>Revisioned assets can be cached intelligently
+during the install (i.e. old files are cleared from the cache, new files
+are added to the cache and unchanged files are left as is).</p>
+<p>The input needs to be an array of URL strings which having revisioning
+details in them otherwise the entry should be an object with <code>url</code> and
+<code>revision</code> parameters.</p>
+  </div>
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Cache revisioned assets.</p>
+    
+    <pre class="prettyprint"><code>// Cache a set of revisioned URLs
+goog.swlib.cacheRevisionedAssets([
+    '/styles/main.1234.css',
+    '/images/logo.abcd.jpg'
+]);
+
+// ...cacheRevisionedAssets() can also take objects to cache
+// non-revisioned URLs.
+goog.swlib.cacheRevisionedAssets([
+    {
+      url: '/index.html',
+      revision: '1234'
+    },
+    {
+      url: '/about.html',
+      revision: 'abcd'
+    }
+]);</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">revisionedFiles</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;(String|Object)></span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>A set of urls to cache
+when the service worker is installed.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id="networkFirst"><span class="this">this.</span>networkFirst<span class="signature">(<span class="signature-args">options</span>)</span><span class="type-signature"> <span class="return-arrow">&rarr;</span> <a href="module-sw-runtime-caching.NetworkFirst.html#main">NetworkFirst</a></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>A <a href="https://jakearchibald.com/2014/offline-cookbook/#network-falling-back-to-cache">network first</a>
+run-time caching strategy.</p>
+  </div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const networkFirstStrategy = goog.swlib.networkFirst();
+
+goog.swlib.router.addRoute('/blog/', networkFirstStrategy);</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">options</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-sw-lib.SWLib.html#.RuntimeStrategyOptions">RuntimeStrategyOptions</a></span>
+
+
+
+            
+
+            
+                
+                
+
+                
+
+                
+                
+                  <span class="param-attributes">(Optional)</span>
+                  
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>To define
+any additional caching or broadcast behaviors pass in option values.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+  <tr>
+  <th>Returns</th>
+  <td>
+  
+          
+
+
+
+<span class="param-type"><a href="module-sw-runtime-caching.NetworkFirst.html#main">NetworkFirst</a></span>
+
+
+
+
+
+<div class="param-desc">
+    <p>The caching handler
+instance.</p>
+</div>
+
+
+      
+  </td>
+  </tr>
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id="networkOnly"><span class="this">this.</span>networkOnly<span class="signature">(<span class="signature-args">options</span>)</span><span class="type-signature"> <span class="return-arrow">&rarr;</span> <a href="module-sw-runtime-caching.NetworkOnly.html#main">NetworkOnly</a></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>A <a href="https://jakearchibald.com/2014/offline-cookbook/#network-only">network only</a>
+run-time caching strategy.</p>
+  </div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const networkOnlyStrategy = goog.swlib.networkOnly();
+
+goog.swlib.router.addRoute('/admin/', networkOnlyStrategy);</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">options</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-sw-lib.SWLib.html#.RuntimeStrategyOptions">RuntimeStrategyOptions</a></span>
+
+
+
+            
+
+            
+                
+                
+
+                
+
+                
+                
+                  <span class="param-attributes">(Optional)</span>
+                  
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>To define
+any additional caching or broadcast behaviors pass in option values.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+  <tr>
+  <th>Returns</th>
+  <td>
+  
+          
+
+
+
+<span class="param-type"><a href="module-sw-runtime-caching.NetworkOnly.html#main">NetworkOnly</a></span>
+
+
+
+
+
+<div class="param-desc">
+    <p>The caching handler
+instance.</p>
+</div>
+
+
+      
+  </td>
+  </tr>
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id="staleWhileRevalidate"><span class="this">this.</span>staleWhileRevalidate<span class="signature">(<span class="signature-args">options</span>)</span><span class="type-signature"> <span class="return-arrow">&rarr;</span> <a href="module-sw-runtime-caching.StaleWhileRevalidate.html#main">StaleWhileRevalidate</a></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>A <a href="https://jakearchibald.com/2014/offline-cookbook/#stale-while-revalidate">stale while revalidate</a>
+run-time caching strategy.</p>
+  </div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const staleWhileRevalidateStrategy = goog.swlib.staleWhileRevalidate();
+
+goog.swlib.router.addRoute('/styles/*', staleWhileRevalidateStrategy);</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">options</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-sw-lib.SWLib.html#.RuntimeStrategyOptions">RuntimeStrategyOptions</a></span>
+
+
+
+            
+
+            
+                
+                
+
+                
+
+                
+                
+                  <span class="param-attributes">(Optional)</span>
+                  
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>To define
+any additional caching or broadcast behaviors pass in option values.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+  <tr>
+  <th>Returns</th>
+  <td>
+  
+          
+
+
+
+<span class="param-type"><a href="module-sw-runtime-caching.StaleWhileRevalidate.html#main">StaleWhileRevalidate</a></span>
+
+
+
+
+
+<div class="param-desc">
+    <p>The caching
+handler instance.</p>
+</div>
+
+
+      
+  </td>
+  </tr>
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id="warmRuntimeCache"><span class="this">this.</span>warmRuntimeCache<span class="signature">(<span class="signature-args">unrevisionedFiles</span>)</span><span class="type-signature"></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>Any assets you wish to cache ahead of time which can't be revisioned
+should be cached with this method. All assets are cached on install
+regardless of whether an older version of the request is in the cache.</p>
+<p>The input can be a string or a <a href="https://developer.mozilla.org/en-US/docs/Web/API/Request">Request</a>.</p>
+  </div>
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Unrevisioned assets can be cached too.</p>
+    
+    <pre class="prettyprint"><code>// For unrevisioned assets that should always be downloaded
+// with every service worker update, use this method.
+goog.swlib.warmRuntimeCache([
+    '/scripts/main.js',
+    '/images/default-avater.png'
+]);
+
+// warmRuntimeCache can also accept Requests, in case you need greater
+// control over the request.
+goog.swlib.warmRuntimeCache([
+    new Request('/images/logo.png'),
+    new Request('/api/data.json')
+]);</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">unrevisionedFiles</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;(String|Request)></span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>A set of urls to cache
+when the service worker is installed.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+        </div>
+    
+
+    
+        <h2 class="subsection-title">Type Definitions</h2>
+
+        <div class="subsection-definitions">
+        
+                
+<div class="collapsing-entry member-type-typedef">
+<h4 class="js-collapse-title" id=".RuntimeStrategyOptions">RuntimeStrategyOptions</h4>
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+<div class="description">
+    <p>RuntimeStrategyOptions is just a JavaScript object, but the structure
+explains the options for runtime strategies used in sw-lib.</p>
+<p>See the example of how this can be used with the <code>cacheFirst()</code> caching
+strategy.</p>
+</div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const cacheFirstStrategy = goog.swlib.cacheFirst({
+  cacheName: 'example-cache',
+  cacheExpiration: {
+    maxEntries: 10,
+    maxAgeSeconds: 7 * 24 * 60 * 60
+  },
+  broadcastCacheUpdate: {
+    channelName: 'example-channel-name'
+  },
+  behaviors: [
+    // Additional Behaviors
+  ]
+});</code></pre>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+        
+
+
+<p><strong>Properties</strong></p>
+
+
+<table class="method-info-table">
+  
+  <tr>
+    <td>
+    <table class="props">
+    
+    <tr>
+      
+          <td class="name"><code>cacheName</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">String</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>Name of cache to use
+for caching (both lookup and updating).</p>
+        
+      </td>
+    </tr>
+    
+    <tr>
+      
+          <td class="name"><code>cacheExpiration</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Object</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>Defining this
+object will add a cache expiration behaviors to this strategy.</p>
+        
+          
+
+
+<p><strong>Sub-properties</strong></p>
+
+
+<table class="method-info-table">
+  
+  <tr>
+    <td>
+    <table class="props">
+    
+    <tr>
+      
+          <td class="name"><code>maxEntries</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Number</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>The maximum number of entries to store in a cache.</p>
+        
+      </td>
+    </tr>
+    
+    <tr>
+      
+          <td class="name"><code>maxAgeSeconds</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Number</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>The maximum lifetime of a request to stay in the cache before it's removed.</p>
+        
+      </td>
+    </tr>
+    
+    </table>
+    </td>
+  </tr>
+  
+</table>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      
+          <td class="name"><code>broadcastCacheUpdate</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Object</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>Defining
+this object will add a broadcast cache update behavior.</p>
+        
+          
+
+
+<p><strong>Sub-properties</strong></p>
+
+
+<table class="method-info-table">
+  
+  <tr>
+    <td>
+    <table class="props">
+    
+    <tr>
+      
+          <td class="name"><code>channelName</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">String</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>The name of the broadcast channel to dispatch messages on.</p>
+        
+      </td>
+    </tr>
+    
+    </table>
+    </td>
+  </tr>
+  
+</table>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      
+          <td class="name"><code>behaviors</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Array.&lt;behaviors></span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>For
+any additional behaviors you wish to add, simply include them in this
+array.</p>
+        
+      </td>
+    </tr>
+    
+    </table>
+    </td>
+  </tr>
+  
+</table>
+
+
+    
+</dl>
+
+
+
+</div>
+</div>
+
+            
+        </div>

@@ -4,8 +4,6 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "local-docs": "npm-publish-scripts serve",
-    "publish-docs": "npm-publish-scripts publish-docs",
     "local-lerna": "lerna"
   },
   "version": "0.0.0",
@@ -38,6 +36,7 @@
     "express": "^4.14.0",
     "fs-extra": "^3.0.1",
     "geckodriver": "1.6.0",
+    "gh-pages": "^1.0.0",
     "glob": "^7.1.0",
     "gulp": "^3.9.1",
     "gulp-compile-handlebars": "^0.6.1",
@@ -50,7 +49,6 @@
     "lerna": "2.0.0-rc.4",
     "minimist": "^1.2.0",
     "mockdate": "^2.0.1",
-    "npm-publish-scripts": "^4.1.16",
     "path-to-regexp": "^1.6.0",
     "promisify-node": "^0.4.0",
     "proxyquire": "^1.7.10",

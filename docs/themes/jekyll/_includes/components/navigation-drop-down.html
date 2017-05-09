@@ -1,0 +1,8 @@
+<li class="drop-down-container js-drop-down-wrapper">
+  <span class="navigation-drop-down-btn js-drop-down-btn">{{include.entry.title}}</span>
+  <ul class="drop-down-list js-drop-down-list">
+  {% for dropdownEntry in include.entry.dropdown %}
+    {% include/components/navigation-entry.html entry=dropdownEntry %}
+  {% endfor %}
+  </ul>
+</li>

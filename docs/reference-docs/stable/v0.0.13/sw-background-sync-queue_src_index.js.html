@@ -1,0 +1,84 @@
+---
+layout: jsdoc
+title: "Source: sw-background-sync-queue/src/index.js"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-appcache-behavior.html#main">sw-appcache-behavior</a>
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
+/**
+ * # sw-background-sync-queue
+ *
+ * Queues failed requests and uses the Background Sync API to replay those
+ * requests at a later time when the network state has changed.
+ *
+ * @module sw-background-sync-queue
+ */
+import {getResponse} from './lib/response-manager';
+import {setDbName} from './lib/background-sync-idb-helper';
+import BackgroundSyncQueue from './lib/background-sync-queue';
+import {cleanupQueue} from './lib/queue-utils';
+import assert from '../../../lib/assert';
+
+/**
+ * In order to use this library call `goog.backgroundSyncQueue.initialize()`.
+ * It will take care of setting up IndexedDB for storing requests and broadcast
+ * channel for communication of request creations. Also this attaches a handler
+ * to `sync` event and replays the queued requeusts.
+ *
+ * @alias goog.backgroundSyncQueue.initialize
+ *
+ * @param {Object} [input] The input object to this function
+ * @param {string} [input.dbName] The name of the db to store requests and
+ * responses
+ */
+async function initialize({dbName} = {}) {
+	if(dbName) {
+		assert.isType({dbName}, 'string');
+		setDbName(dbName);
+	}
+	await cleanupQueue();
+}
+
+export {
+	initialize,
+	getResponse,
+	BackgroundSyncQueue,
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+

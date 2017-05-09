@@ -1,0 +1,117 @@
+---
+layout: jsdoc
+title: "Source: sw-background-sync-queue/src/lib/queue-utils.js"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response-behavior.html#main">sw-cacheable-response-behavior</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import IDBHelper from '../../../../lib/idb-helper';
+import {getDbName} from './background-sync-idb-helper';
+import {allQueuesPlaceholder} from './constants';
+/**
+ * takes a request and gives back JSON object that is storable in IDB
+ *
+ * @param {Request} request request object to transform
+ * into iDB storable object
+ * @param {Object} config config object to be
+ * stored along in the iDB
+ * @return {Object} indexable object for iDB
+ *
+ * @memberOf RequestManager
+ */
+async function getQueueableRequest({request, config}) {
+	let requestObject={
+		config,
+		metadata: {
+			creationTimestamp: Date.now(),
+		},
+	};
+	requestObject.request = {
+		url: request.url,
+		headers: JSON.stringify([...request.headers]),
+		mode: request.mode,
+		method: request.method,
+		redirect: request.redirect,
+	};
+	const requestBody = await request.text();
+	if (requestBody.length > 0) {
+		requestObject.request.body = requestBody;
+	}
+	return requestObject;
+}
+
+async function getFetchableRequest({idbRequestObject}) {
+	let reqObject = {
+		mode: idbRequestObject.mode,
+		method: idbRequestObject.method,
+		redirect: idbRequestObject.redirect,
+		headers: new Headers(JSON.parse(idbRequestObject.headers)),
+	};
+	if(idbRequestObject.body) {
+		reqObject.body = idbRequestObject.body;
+	}
+	return new Request(idbRequestObject.url, reqObject);
+}
+
+/**
+ * clean up the queue, deleting all the tasks who are either damaged or
+ * whose maxAge has expired
+ *
+ * @memberOf Queue
+ */
+async function cleanupQueue() {
+	let db = new IDBHelper(getDbName(), 1, 'QueueStore');
+	let queueObj = await db.get(allQueuesPlaceholder);
+
+	if(!queueObj) {
+		return null;
+	}
+
+	queueObj.forEach(async (queueName)=>{
+		const requestQueues = await db.get(queueName);
+		let itemsToKeep = [];
+		let deletionPromises = [];
+		requestQueues.forEach( async (hash) => {
+			const requestData = await db.get(hash);
+			if (requestData &amp;&amp; requestData.metadata
+				&amp;&amp; requestData.metadata.creationTimestamp + requestData.config.maxAge
+					&lt;= Date.now()) {
+				// Delete items that are too old.
+				deletionPromises.push(db.delete(hash));
+			} else {
+				// Keep elements whose definition exists in idb.
+				itemsToKeep.push(hash);
+			}
+		});
+		await Promise.all(deletionPromises);
+		db.put(queueName, itemsToKeep);
+	});
+}
+
+export {
+	getQueueableRequest,
+	getFetchableRequest,
+	cleanupQueue,
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+

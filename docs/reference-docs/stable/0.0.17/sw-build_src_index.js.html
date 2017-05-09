@@ -1,0 +1,109 @@
+---
+layout: jsdoc
+title: "Source: sw-build/src/index.js"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-appcache-behavior.html#main">sw-appcache-behavior</a>
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// This will be the logic that powers both module and CLI
+const generateSW = require('./lib/generate-sw');
+const getFileManifestEntries = require('./lib/get-file-manifest-entries');
+const generateFileManifest = require('./lib/generate-file-manifest');
+
+/**
+ * # sw-build
+ *
+ * To get a list of url's and a corresponding revision details, call either
+ * `generateFileManifest` or `getFileManifestEntries()`.
+ *
+ * `generateFileManifest()` will run globs over a directory of static assets
+ * and write a JavaScript file containing URL's and revision details for those
+ * files.
+ *
+ * If you'd rather receive the data as a JavaScript Array, use
+ * `getFileManifestEntries()` instead.
+ *
+ * If you only need precaching of your static assets in your service
+ * worker and nothing else, you can generate complete service worker
+ * with `generateSW()`.
+ *
+ * @example &lt;caption>Generate a build manifest file.&lt;/caption>
+ * const swBuild = require('sw-build');
+ *
+ * swBuild.generateFileManifest({
+ *   rootDirectory: './build/',
+ *   dest: './build/scripts/manifest.js',
+ *   globPatterns: ['**\/*.{html,js,css}'],
+ *   globIgnores: ['admin.html'],
+ *   templatedUrls: {
+ *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
+ *   },
+ * })
+ * .then(() => {
+ *   console.log('Build file has been created.');
+ * });
+ *
+ * @example &lt;caption>Get a list of files with revision details.&lt;/caption>
+ * const swBuild = require('sw-build');
+ *
+ * swBuild.getFileManifestEntries({
+ *   rootDirectory: './build/',
+ *   globPatterns: ['**\/*.{html,js,css}'],
+ *   globIgnores: ['admin.html'],
+ *   templatedUrls: {
+ *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
+ *   },
+ * })
+ * .then((fileDetails) => {
+ *   // An array of file details include a `url` and `revision` parameter.
+ * });
+ *
+ * @example &lt;caption>Generate a service worker for a project.&lt;/caption>
+ * const swBuild = require('sw-build');
+ *
+ * swBuild.generateSW({
+ *   rootDirectory: './build/',
+ *   dest: './build/sw.js',
+ *   globPatterns: ['**\/*.{html,js,css}'],
+ *   globIgnores: ['admin.html'],
+ *   templatedUrls: {
+ *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
+ *   },
+ * })
+ * .then(() => {
+ *   console.log('Service worker generated.');
+ * });
+ *
+ * @module sw-build
+ */
+
+module.exports = {
+  generateSW,
+  generateFileManifest,
+  getFileManifestEntries,
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+

@@ -1,0 +1,11 @@
+{% include variables.html %}
+{% capture redirectURL %}{{ project_root_url }}/{{page.relPath}}{% endcapture %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="refresh" content="0; url={{redirectURL}}" />
+  </head>
+  <body>
+    <p>Redirecting to: <a href="{{ redirectURL }}"></a></p>
+  </body>
+</html>

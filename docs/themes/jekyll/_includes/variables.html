@@ -1,0 +1,25 @@
+{% if site.data.customize.project_title %}
+  {% assign project_title = site.data.customize.project_title %}
+{% elsif site.github.project_title %}
+  {% assign project_title = site.github.project_title %}
+{% endif %}
+
+{% if jekyll.environment == 'development' %}
+  {% assign project_root_url = '' %}
+{% else %}
+  {% assign project_root_url = site.github.url | replace: 'http://', '//'%}
+{% endif %}
+
+{% if site.data.customize.project_owner %}
+  {% assign project_owner = site.data.customize.project_owner %}
+  {% assign project_owner_url = site.data.customize.project_owner_url %}
+{% elsif site.github.owner_name %}
+  {% assign project_owner = site.github.owner_name %}
+  {% assign project_owner_url = site.github.owner_url %}
+{% endif %}
+
+{% if site.data.customize.project_tagline %}
+  {% assign project_tagline = site.data.customize.project_tagline %}
+{% elsif site.github.project_tagline %}
+  {% assign project_tagline = site.github.project_tagline %}
+{% endif %}

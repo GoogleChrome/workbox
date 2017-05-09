@@ -1,0 +1,1191 @@
+---
+layout: jsdoc
+title: "Class: SWLib"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+
+
+    
+        <h2>SWLib</h2>
+        
+            <p>A high level library to make it as easy as possible to precache assets
+efficiently and define run time caching strategies.</p>
+        
+    
+
+    
+      
+
+      
+        <h2 class="subsection-title">Constructor</h2>
+
+        <div class="subsection-constructor">
+        
+
+<div class="collapsing-entry method-type-class start-open">
+
+
+    <h4 class="js-collapse-title" id="SWLib">new SWLib<span class="signature">(<span class="signature-args">input</span>)</span><span class="type-signature"></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>You should instantiate this class with <code>new self.goog.SWLib()</code>.</p>
+  </div>
+
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">input</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                
+                
+                  <h6>Properties</h6>
+                  
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">cacheId</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+
+            
+                
+                
+
+                
+
+                
+                
+                  <span class="param-attributes">(Optional)</span>
+                  
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>Defining a cacheId is useful to ensure
+uniqueness across cache names. Useful if you have multiple sites served
+over localhost.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">clientsClaim</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+
+            
+                
+                
+
+                
+
+                
+                
+                  <span class="param-attributes">(Optional)</span>
+                  
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>To claim currently open clients set
+this value to true. (Defaults to false).</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">directoryIndex</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+
+            
+                
+                
+
+                
+
+                
+                
+                  <span class="param-attributes">(Optional)</span>
+                  
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The directoryIndex will
+check cache entries for a URLs ending with '/' to see if there is a hit
+when appending the directoryIndex (i.e. '/index.html').</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">precacheChannelName</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+
+            
+                
+                
+
+                
+
+                
+                
+                  <span class="param-attributes">(Optional)</span>
+                  
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>This value will be used as
+the <code>channelName</code> to construct a BroadcastCacheUpdate plugin. The
+plugin sends a message whenever a precached URL is updated. To disable this
+plugin, set <code>precacheChannelName</code> to an empty string.
+(Defaults to <code>'precache-updates'</code>)</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        </div>
+      
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h2 class="subsection-title">Member Variables</h2>
+
+        <div class="subsection-members">
+        
+            
+<div class="collapsing-entry member-type-member">
+<h4 class="js-collapse-title" id="router"><span class="this">this.</span>router <span class="return-arrow">&rarr;</span> <span class="type-signature">Router</span></h4>
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+<div class="description">
+    <p>The router for this library is exposed via the <code>router</code> parameter.
+This is an instance of the <a href="module-sw-lib.Router.html#main">Router</a>.</p>
+</div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const swlib = new goog.SWLib();
+swlib.router.registerRoute('/', swlib.goog.cacheFirst());</code></pre>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+</div>
+</div>
+
+        
+            
+<div class="collapsing-entry member-type-member">
+<h4 class="js-collapse-title" id="runtimeCacheName"><span class="this">this.</span>runtimeCacheName</h4>
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+<div class="description">
+    <p>The name of the cache used by default by the runtime caching strategies.</p>
+<p>Entries that are managed via <code>precache()</code> are stored in a separate cache
+with a different name.</p>
+<p>You can override the default cache name when constructing a strategy if
+you'd prefer, via
+<code>swlib.strategies.cacheFirst({cacheName: 'my-cache-name'});</code></p>
+<p>If you would like to explicitly add to, remove, or check the contents of
+the default cache, you can use the <a href="https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage">Cache Storage API</a>
+to pass in the default cache name to <code>caches.open()</code>. This can be useful if
+you want to &quot;prime&quot; your cache with remote resources that can't be properly
+managed via <code>precache()</code>.</p>
+</div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const cache = await caches.open(swlib.runtimeCacheName);
+await cache.add('https://third-party.com/path/to/file');
+const contentsOfRuntimeCache = await cache.keys();</code></pre>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+</div>
+</div>
+
+        
+            
+<div class="collapsing-entry member-type-member">
+<h4 class="js-collapse-title" id="strategies"><span class="this">this.</span>strategies</h4>
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+<div class="description">
+    <p>The supported caching strategies shipped with sw-lib are provided via the
+<code>strategies</code> object.
+<a href="module-sw-lib.Strategies.html#main">See Strategies for a complete list</a>.</p>
+</div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const swlib = new goog.SWLib();
+swlib.router.registerRoute('/styles/*',
+ swlib.strategies.cacheFirst());</code></pre>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+</div>
+</div>
+
+        
+        </div>
+    
+
+    
+        <h2 class="subsection-title">Instance Methods</h2>
+
+        <div class="subsection-methods">
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id="precache"><span class="this">this.</span>precache<span class="signature">(<span class="signature-args">revisionedFiles</span>)</span><span class="type-signature"></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>Revisioned assets can be cached intelligently
+during the install (i.e. old files are cleared from the cache, new files
+are added to the cache and unchanged files are left as is).</p>
+<p>The input needs to be an array of URL strings which having revisioning
+details in them otherwise the entry should be an object with <code>url</code> and
+<code>revision</code> parameters.</p>
+<p>In addition to maintaining the cache, this method will also set up the
+necessary routes to serve the precached assets using a cache-first
+strategy.</p>
+  </div>
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Cache revisioned assets.</p>
+    
+    <pre class="prettyprint"><code>// Cache a set of revisioned URLs
+const swlib = new goog.SWLib();
+swlib.precache([
+    '/styles/main.613e6c7332dd83e848a8b00c403827ed.css',
+    '/images/logo.59a325f32baad11bd47a8c515ec44ae5.jpg'
+]);
+
+// ...precache() can also take objects to cache
+// non-revisioned URLs.
+// Please use sw-build or sw-cli to generate the manifest for you.
+swlib.precache([
+    {
+      url: '/index.html',
+      revision: '613e6c7332dd83e848a8b00c403827ed'
+    },
+    {
+      url: '/about.html',
+      revision: '59a325f32baad11bd47a8c515ec44ae5'
+    }
+]);</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">revisionedFiles</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;(String|Object)></span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>A set of urls to cache
+when the service worker is installed.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+        </div>
+    
+
+    
+        <h2 class="subsection-title">Type Definitions</h2>
+
+        <div class="subsection-definitions">
+        
+                
+<div class="collapsing-entry member-type-typedef">
+<h4 class="js-collapse-title" id=".RuntimeStrategyOptions">RuntimeStrategyOptions</h4>
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+<div class="description">
+    <p>RuntimeStrategyOptions is just a JavaScript object, but the structure
+explains the options for runtime strategies used in sw-lib.</p>
+<p>See the example of how this can be used with the <code>cacheFirst()</code> caching
+strategy.</p>
+</div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const swlib = new goog.SWLib();
+const cacheFirstStrategy = swlib.strategies.cacheFirst({
+  cacheName: 'example-cache',
+  cacheExpiration: {
+    maxEntries: 10,
+    maxAgeSeconds: 7 * 24 * 60 * 60
+  },
+  broadcastCacheUpdate: {
+    channelName: 'example-channel-name'
+  },
+  cacheableResponse: {
+    statuses: [0, 200, 404],
+    headers: {
+      'Example-Header-1': 'Header-Value-1',
+      'Example-Header-2': 'Header-Value-2'
+    }
+  }
+  plugins: [
+    // Additional Plugins
+  ]
+});</code></pre>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+        
+
+
+<p><strong>Properties</strong></p>
+
+
+<table class="method-info-table">
+  
+  <tr>
+    <td>
+    <table class="props">
+    
+    <tr>
+      
+          <td class="name"><code>cacheName</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">String</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>Name of cache to use
+for caching (both lookup and updating).</p>
+        
+      </td>
+    </tr>
+    
+    <tr>
+      
+          <td class="name"><code>cacheExpiration</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Object</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>Defining this
+object will add a cache expiration plugins to this strategy.</p>
+        
+          
+
+
+<p><strong>Sub-properties</strong></p>
+
+
+<table class="method-info-table">
+  
+  <tr>
+    <td>
+    <table class="props">
+    
+    <tr>
+      
+          <td class="name"><code>maxEntries</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Number</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>The maximum number of entries to store in a cache.</p>
+        
+      </td>
+    </tr>
+    
+    <tr>
+      
+          <td class="name"><code>maxAgeSeconds</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Number</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>The maximum lifetime of a request to stay in the cache before it's removed.</p>
+        
+      </td>
+    </tr>
+    
+    </table>
+    </td>
+  </tr>
+  
+</table>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      
+          <td class="name"><code>broadcastCacheUpdate</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Object</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>Defining
+this object will add a broadcast cache update plugin.</p>
+        
+          
+
+
+<p><strong>Sub-properties</strong></p>
+
+
+<table class="method-info-table">
+  
+  <tr>
+    <td>
+    <table class="props">
+    
+    <tr>
+      
+          <td class="name"><code>channelName</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">String</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>The name of the broadcast channel to dispatch messages on.</p>
+        
+      </td>
+    </tr>
+    
+    </table>
+    </td>
+  </tr>
+  
+</table>
+
+        
+      </td>
+    </tr>
+    
+    <tr>
+      
+          <td class="name"><code>plugins</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Array.&lt;plugins></span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>For
+any additional plugins you wish to add, simply include them in this
+array.</p>
+        
+      </td>
+    </tr>
+    
+    <tr>
+      
+          <td class="name"><code>cacheableResponse</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Object</span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>Specifies types of responses to cache
+by status codes, headers, or both.</p>
+        
+          
+
+
+<p><strong>Sub-properties</strong></p>
+
+
+<table class="method-info-table">
+  
+  <tr>
+    <td>
+    <table class="props">
+    
+    <tr>
+      
+          <td class="name"><code>statuses</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Array.&lt;Number></span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>An array of status
+codes to cache.</p>
+        
+      </td>
+    </tr>
+    
+    <tr>
+      
+          <td class="name"><code>headers</code></td>
+      
+      <td class="type">
+      
+          
+<span class="param-type">Array.&lt;Object></span>
+
+
+
+      
+      </td>
+    </tr>
+    
+    
+    <tr>
+      <td></td>
+      <td class="description last">
+        <p>An array of
+header-value paris for HTTP headers to cache. See the example, above.</p>
+        
+      </td>
+    </tr>
+    
+    </table>
+    </td>
+  </tr>
+  
+</table>
+
+        
+      </td>
+    </tr>
+    
+    </table>
+    </td>
+  </tr>
+  
+</table>
+
+
+    
+</dl>
+
+
+
+</div>
+</div>
+
+            
+        </div>

@@ -1,0 +1,583 @@
+---
+layout: jsdoc
+title: "Class: BroadcastCacheUpdate"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-appcache-behavior.html#main">sw-appcache-behavior</a>
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+
+
+    
+        <h2>BroadcastCacheUpdate</h2>
+        
+            <p>Can be used to compare two <a href="https://developer.mozilla.org/en-US/docs/Web/API/Response">Responses</a>
+and uses the <a href="https://developers.google.com/web/updates/2016/09/broadcastchannel">Broadcast Channel API</a>
+to notify interested parties when those responses differ.</p>
+<p>For efficiency's sake, the underlying response bodies are not compared;
+only specific response headers are checked.</p>
+<p>This class can be used inside any service worker, without having to use any
+of the other modules in this repo.</p>
+<p>If you'd like to use this functionality but are already using <code>sw-lib</code> or
+<code>sw-runtime-caching</code>, then please see the corresponding plugin,
+<code>BroadcastCacheUpdatePlugin</code>, for a easy integration.</p>
+        
+    
+
+    
+      
+          <h3>Example</h3>
+          
+        <p class="code-caption">Using BroadcastCacheUpdate when you're handling your
+own fetch and request logic.</p>
+    
+    <pre class="prettyprint"><code>const url = '/path/to/file';
+const cacheName = 'my-runtime-cache';
+const bcu = new goog.broadcastCacheUpdate.BroadcastCacheUpdate(
+  {channelName: 'cache-updates'});
+
+Promise.all([
+  caches.open(cacheName).then((cache) => cache.match(url)),
+  fetch(url),
+]).then(([first, second]) => {
+  if (first) {
+    bcu.notifyIfUpdated({cacheName, first, second});
+  }
+});</code></pre>
+
+      
+
+      
+        <h2 class="subsection-title">Constructor</h2>
+
+        <div class="subsection-constructor">
+        
+
+<div class="collapsing-entry method-type-class start-open">
+
+
+    <h4 class="js-collapse-title" id="BroadcastCacheUpdate">new BroadcastCacheUpdate<span class="signature">(<span class="signature-args">input</span>)</span><span class="type-signature"></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>Dispatches cache update messages when a cached response has been updated.
+Messages will be dispatched on a broadcast channel with the name provided
+as channelName parameter in the constructor.</p>
+  </div>
+
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">input</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                
+                
+                  <h6>Properties</h6>
+                  
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">channelName</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The name that will be used when creating
+       the <code>BroadcastChannel</code>.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">headersToCheck</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>A list of headers that will be
+       used to determine whether the responses differ. Defaults to
+       <code>['content-length', 'etag', 'last-modified']</code>.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">source</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>An attribution value that indicates where
+       the update originated. Defaults to 'sw-broadcast-cache-update'.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        </div>
+      
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h2 class="subsection-title">Instance Methods</h2>
+
+        <div class="subsection-methods">
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id="notifyIfUpdated"><span class="this">this.</span>notifyIfUpdated<span class="signature">(<span class="signature-args">input</span>)</span><span class="type-signature"></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>An explicit method to call from your own code to trigger the comparison of
+two <a href="https://developer.mozilla.org/en-US/docs/Web/API/Response">Responses</a>
+and fire off a notification via the
+<a href="https://developers.google.com/web/updates/2016/09/broadcastchannel">Broadcast Channel API</a>
+if they differ.</p>
+  </div>
+
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">input</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The input object to this function.</p>
+                
+                  <h6>Properties</h6>
+                  
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">first</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Response</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>One of the responses to compare.
+       This should not be an <a href="http://stackoverflow.com/questions/39109789">opaque response</a>.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">second</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Response</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>Another of the respones to compare.
+       This should not be an <a href="http://stackoverflow.com/questions/39109789">opaque response</a>.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">cacheName</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>Name of the cache the responses belong to.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+        </div>

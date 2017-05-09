@@ -1,0 +1,36 @@
+{% include variables.html %}
+
+<section class="navigation-container">
+
+  <!-- Hamburger Menu -->
+  <button class="svg-btn navigation-open-btn js-menu-btn">
+    <svg height="30" viewBox="0 0 24 24" width="30" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 0h24v24H0z" fill="none"/>
+        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+    </svg>
+  </button>
+
+  <nav class="navigation-links js-nav-drawer">
+      <!-- Logo Header at Top of Nav Drawer -->
+      <section class="nav-drawer-header">
+        <img class="nav-drawer-header__logo" src="{{ project_root_url }}{{ site.theme_location }}/themes/images/workbox-logo-grey-small.min.svg" alt="Small Workbox Logo" />
+
+        <button class="svg-btn navigation-close-btn js-menu-close-btn">
+          <svg height="30" viewBox="0 0 24 24" width="30" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            <path d="M0 0h24v24H0z" fill="none"/>
+          </svg>
+        </button>
+      </section>
+
+      <!-- Actual Links -->
+      <ul>
+        {% for topLevelEntry in site.data.navigation %}
+          {% include/components/navigation-entry.html entry=topLevelEntry %}
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <div class="nav-backdrop js-nav-backdrop"></div>
+
+</section>

@@ -1,0 +1,25 @@
+{% include variables.html %}
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{% if page.title %}{{ page.title | escape }}{% else %}{{ project_title | escape }}{% endif %}</title>
+  <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.github.project_tagline }}{% endif %}">
+
+  <!-- The docs server over HTTPS, but site.github.url points to HTTP resouce causing mixed content -->
+  <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: project_root_url }}">
+  <link rel="alternate" type="application/rss+xml" title="{{ project_title }}" href="{{ "/feed.xml" | prepend: project_root_url }}">
+
+  <link rel="shortcut icon" href="{{ project_root_url }}{{ site.theme_location }}/themes/images/favicon.ico">
+
+  <!-- Stylesheet -->
+  <link href="https://fonts.googleapis.com/css?family=Cutive+Mono|Open+Sans:300,300i,400,600,700" rel="stylesheet">
+  <link href="{{ project_root_url }}{{ site.theme_location }}/themes/styles/main.css" rel="stylesheet" type="text/css">
+
+  {% if page.layout == 'jsdoc' %}
+  <link href="{{ project_root_url }}{{ site.theme_location }}/themes/styles/jsdoc/details.css" rel="stylesheet" type="text/css">
+  <link href="{{ project_root_url }}{{ site.theme_location }}/themes/styles/jsdoc/method.css" rel="stylesheet" type="text/css">
+  {% endif %}
+</head>
