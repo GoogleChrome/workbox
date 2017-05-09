@@ -1,0 +1,118 @@
+@import "./variables/colors.css";
+@import "./variables/dimens.css";
+@import "./variables/z-index.css";
+@import "./components/navigation.css";
+@import "./components/primary-header.css";
+@import "./components/page-header.css";
+@import "./components/callout.css";
+@import "./components/footer.css";
+
+html {
+  min-height: 100%;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: var(--base-font-size-mobile);
+  font-weight: 300;
+}
+
+main {
+  max-width: var(--main-content-max-width);
+  color: var(--dark-grey);
+  padding: calc(var(--vertical-spacing) * 5) calc(var(--horizontal-spacing) * 4);
+  margin: 0 auto;
+}
+
+main *:first-child {
+  margin-top: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--dark-grey);
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--h1-font-size-mobile);
+  letter-spacing: var(--h1-letter-spacing);
+  margin-bottom: calc(var(--vertical-spacing) * 3);
+  font-weight: 700;
+}
+
+h2 {
+  font-size: var(--h2-font-size-mobile);
+  letter-spacing: var(--h2-letter-spacing);
+  font-weight: 600;
+}
+
+p {
+  margin: 0 0 calc(var(--vertical-spacing) * 4) 0;
+}
+
+a {
+  color: var(--link-color);
+}
+
+main a {
+  text-decoration: none;
+  border-bottom: solid;
+  border-width: 1px;
+  border-color: var(--link-color);
+}
+
+hr {
+  display: block;
+  width: 100%;
+  height: 1px;
+  border: 0;
+  background-color: var(--hr-color);
+  margin: calc(var(--vertical-spacing) * 9) 0;
+  padding: 0;
+}
+
+code, pre {
+  font-family: 'Cutive Mono', monospace;
+}
+
+code, pre {
+  background-color: var(--code-bg-color);
+}
+
+a code {
+  background: none;
+}
+
+pre {
+  width: 100%;
+  overflow-x: auto;
+  padding: calc(var(--vertical-spacing) * 2) calc(var(--horizontal-spacing) * 2);
+  box-sizing: border-box;
+}
+
+.svg-btn {
+  background: none;
+  border: none;
+  padding: calc(var(--vertical-spacing) * 2.5);
+}
+
+@media (min-width: 700px) {
+  body {
+    font-size: var(--base-font-size-desktop);
+  }
+
+  h1 {
+    font-size: var(--h1-font-size-desktop);
+  }
+
+  h2 {
+    font-size: var(--h2-font-size-desktop);
+  }
+}

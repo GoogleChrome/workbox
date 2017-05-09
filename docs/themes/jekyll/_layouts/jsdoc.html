@@ -1,0 +1,22 @@
+---
+layout: default
+---
+{% include variables.html %}
+
+{% comment %}
+{% include components/top-bar.html %}
+{% include components/page-header.html title=project_title subtitle=project_tagline %}
+
+<section class="nav-content">
+  <nav class="js-nav-drawer">
+    {% include components/navigation.html context="/" %}
+    {% include components/navigation-reference-docs.html %}
+  </nav>
+  <div class="nav-backdrop js-nav-backdrop"></div>
+  <main class="is-jsdoc-page">
+    {{ content }}
+  </main>
+</section>
+
+{% include components/footer.html %}
+{% endcomment %}

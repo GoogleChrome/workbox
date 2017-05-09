@@ -1,0 +1,91 @@
+---
+layout: jsdoc
+title: "Source: sw-broadcast-cache-update/src/lib/constants.js"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-appcache-behavior.html#main">sw-appcache-behavior</a>
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+/**
+ * The value `'CACHE_UPDATED'`, used as the `type` field of the update message.
+ *
+ * @type {string}
+ *
+ * @example
+ * // Prints 'CACHE_UPDATED'
+ * console.log(goog.broadcastCacheUpdate.cacheUpdatedMessageType);
+ *
+ * @memberof module:sw-broadcast-cache-update
+ */
+const cacheUpdatedMessageType = 'CACHE_UPDATED';
+
+/**
+ * The default headers to compare when determining whether two `Response`
+ * objects are different.
+ *
+ * @private
+ * @type {Array&lt;string>}
+ *
+ * @memberof module:sw-broadcast-cache-update
+ */
+const defaultHeadersToCheck = [
+  'content-length',
+  'etag',
+  'last-modified',
+];
+
+/**
+ * The value `'sw-broadcast-cache-update'`, used as the `meta` field of the
+ * update message.
+ *
+ * @private
+ * @type {string}
+ *
+ * @memberof module:sw-broadcast-cache-update
+ */
+const defaultSource = 'sw-broadcast-cache-update';
+
+export {
+  cacheUpdatedMessageType,
+  defaultHeadersToCheck,
+  defaultSource,
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+

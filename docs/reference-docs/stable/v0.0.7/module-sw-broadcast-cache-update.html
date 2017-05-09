@@ -1,0 +1,838 @@
+---
+layout: jsdoc
+title: "Module: sw-broadcast-cache-update"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response-behavior.html#main">sw-cacheable-response-behavior</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+
+
+    
+        
+            
+        
+    
+
+    
+        
+            <div class="description"><p>A helper library that uses the Broadcast Channel API to announce when
+two Response objects differ.</p>
+<p>The main use of this module will be instantiating a new <code>Behavior</code> and
+passing it to a
+<a href="module-sw-runtime-caching.RequestWrapper.html#main">RequestWrapper</a>,
+as shown in the first example below.</p>
+<p>You can listen for updates from your web app by adding an event listener on
+a browser channel with the same channel name as the Behavior,
+which 'cache-updates' in the second example below.</p></div>
+        
+
+        
+            
+
+<div class="collapsing-entry method-type-module ">
+
+
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+    <h5>Examples</h5>
+    
+        <p class="code-caption">Using the broadcastCacheUpdate.Behavior class in a
+service worker.</p>
+    
+    <pre class="prettyprint"><code>const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+  cacheName: 'text-files',
+  behaviors: [
+    new goog.broadcastCacheUpdate.Behavior({channelName: 'cache-updates'}),
+  ],
+});
+
+const route = new goog.routing.RegExpRoute({
+  regExp: /\.txt$/,
+  handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper}),
+});
+
+const router = new goog.routing.Router();
+router.registerRoute({route});</code></pre>
+
+        <p class="code-caption">Listening for the broadcast message in the
+window.</p>
+    
+    <pre class="prettyprint"><code>const updateChannel = new BroadcastChannel('cache-updates');
+updateChannel.addEventListener('message', event => {
+  console.log(`Cache updated: ${event.data.payload.updatedUrl}`);
+});</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+    
+
+    
+
+    
+        <h2 class="subsection-title">Classes</h2>
+
+        <div class="subsection-classes">
+        <dl>
+            <dt><a href="module-sw-broadcast-cache-update.Behavior.html#main">Behavior</a></dt>
+            <dd></dd>
+        </dl>
+        </div>
+    
+
+     
+
+    
+
+    
+        <h2 class="subsection-title">Member Variables</h2>
+
+        <div class="subsection-members">
+        
+            
+<div class="collapsing-entry member-type-member">
+<h4 class="js-collapse-title" id=".cacheUpdatedMessageType"><span class="type-attribs">(static, constant) </span>cacheUpdatedMessageType <span class="return-arrow">&rarr;</span> <span class="type-signature">string</span></h4>
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+<div class="description">
+    <p>The value <code>'CACHE_UPDATED'</code>, used as the <code>type</code> field of the update message.</p>
+</div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// Prints 'CACHE_UPDATED'
+console.log(goog.broadcastCacheUpdate.cacheUpdatedMessageType);</code></pre>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+</div>
+</div>
+
+        
+        </div>
+    
+
+    
+        <h2 class="subsection-title">Instance Methods</h2>
+
+        <div class="subsection-methods">
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id=".broadcastUpdate"><span class="type-attribs">(static) </span><span class="this">this.</span>broadcastUpdate<span class="signature">(<span class="signature-args">input</span>)</span><span class="type-signature"></span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>You would not normally call this method directly; it's called automatically
+by an instance of the Behavior class. It's exposed here for the
+benefit of developers who would rather not use the full <code>Behavior</code>
+implementation.</p>
+<p>Calling this will dispatch a message on the provided <a href="https://developers.google.com/web/updates/2016/09/broadcastchannel">Broadcast Channel</a>
+to notifiy interested subscribers about a change to a cached resource.</p>
+<p>The message that's posted has a formation inspired by the
+<a href="https://github.com/acdlite/flux-standard-action#introduction">Flux standard action</a>
+format like so:</p>
+<pre class="prettyprint source"><code>{
+  type: 'CACHE_UPDATED',
+  meta: 'sw-broadcast-cache-update',
+  payload: {
+    cacheName: 'the-cache-name',
+    updatedUrl: 'https://example.com/'
+  }
+}</code></pre><p>(Usage of <a href="https://facebook.github.io/flux/">Flux</a> itself is not at
+all required.)</p>
+  </div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>goog.broadcastCacheUpdate.broadcastUpdate({
+  channel: new BroadcastChannel('Channel Name'),
+  cacheName: 'example-cache-name',
+  url: '/',
+  source: 'custom-library'
+});</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">input</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                
+                
+                  <h6>Properties</h6>
+                  
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">channel</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">BroadcastChannel</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The <code>BroadcastChannel</code> to use.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">cacheName</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The name of the cache in which the updated
+       <code>Response</code> was stored.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">url</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>The URL associated with the updated <code>Response</code>.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">source</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>A string identifying this library as the source
+       of the update message.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+            
+
+<div class="collapsing-entry method-type-function ">
+
+
+    <h4 class="js-collapse-title" id=".responsesAreSame"><span class="type-attribs">(static) </span><span class="this">this.</span>responsesAreSame<span class="signature">(<span class="signature-args">input</span>)</span><span class="type-signature"> <span class="return-arrow">&rarr;</span> boolean</span></h4>
+
+
+<div class="collapse-details js-collapse-details">
+
+
+  
+
+  <div class="description">
+    <p>Given two <code>Response</code>s, compares several header values to see if they are
+the same or not.</p>
+  </div>
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const responseIsSame = responsesAreSame({
+  first: firstResponse,
+  second: secondResponse,
+  headersToCheck: [
+    'content-length',
+    'etag',
+    'last-modified',
+  ]
+});</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+  <tr>
+    <th>Parameters</th>
+    <td>
+      
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">input</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                
+                
+                  <h6>Properties</h6>
+                  
+
+<table class="params">
+    
+
+        <tr>
+            
+              <td class="name">first</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Response</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>One of the <code>Response</code>s.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">second</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Response</span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>Another of the <code>Response</code>s.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+
+        <tr>
+            
+              <td class="name">headersToCheck</td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+
+            
+
+            
+            </td>
+
+            
+              <td></td>
+            
+
+            <tr>
+              <td></td>
+              <td class="description last">
+                <p>A list of headers that will be
+       used to determine whether the <code>Response</code>s differ.</p>
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+                
+              </td>
+            </tr>
+        </tr>
+
+    
+</table>
+
+    </td>
+  </tr>
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+  <tr>
+  <th>Returns</th>
+  <td>
+  
+          
+
+
+
+<span class="param-type">boolean</span>
+
+
+
+
+
+<div class="param-desc">
+    <p>Whether or not the <code>Response</code> objects are assumed to be
+        the same.</p>
+</div>
+
+
+      
+  </td>
+  </tr>
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+        </div>

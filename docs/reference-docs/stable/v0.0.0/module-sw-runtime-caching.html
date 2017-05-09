@@ -1,0 +1,243 @@
+---
+layout: jsdoc
+title: "Module: sw-runtime-caching"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+
+
+    
+        
+            
+        
+    
+
+    
+        
+            <div class="description"><h1 id="sw-runtime-caching">sw-runtime-caching</h1>
+<p>A service worker helper library that implements various runtime caching
+strategies.</p>
+<p>You can learn more about each caching strategy on
+<a href="https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/">Jake Archibald's blog post</a>
+which covers various ways of handling fetch events with a service worker.</p>
+<p>These strategies can be used as
+<a href="module-sw-routing.html#.RouteHandler">RouteHandlers</a>
+that are automatically invoked by the lower-level
+<a href="module-sw-routing.Router.html#main">sw-routing Router</a>
+or the higher-level <a href="module-sw-lib.Router.html#main">SWLib Router</a>
+interfaces.</p></div>
+        
+
+        
+            
+
+<div class="collapsing-entry method-type-module ">
+
+
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+    
+
+    
+
+    
+        <h2 class="subsection-title">Classes</h2>
+
+        <div class="subsection-classes">
+        <dl>
+            <dt><a href="module-sw-runtime-caching.CacheFirst.html#main">CacheFirst</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-sw-runtime-caching.CacheOnly.html#main">CacheOnly</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-sw-runtime-caching.Handler.html#main">Handler</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-sw-runtime-caching.NetworkFirst.html#main">NetworkFirst</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-sw-runtime-caching.NetworkOnly.html#main">NetworkOnly</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-sw-runtime-caching.RequestWrapper.html#main">RequestWrapper</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-sw-runtime-caching.StaleWhileRevalidate.html#main">StaleWhileRevalidate</a></dt>
+            <dd></dd>
+        </dl>
+        </div>
+    
+
+     
+
+    
+
+    
+        <h2 class="subsection-title">Member Variables</h2>
+
+        <div class="subsection-members">
+        
+            
+<div class="collapsing-entry member-type-member">
+<h4 class="js-collapse-title" id=".exports.getDefaultCacheName"><span class="type-attribs">(static, constant) </span>exports.getDefaultCacheName</h4>
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+<div class="description">
+    <p>The default cache name, used by
+<a href="module-sw-runtime-caching.RequestWrapper.html#main">RequestWrapper</a> when there's
+no name provided.</p>
+<p>It combines a constant prefix with the <code>registration.scope</code> value associated
+with the current service worker, ensuring that multiple service workers used
+on the same origin will have different default caches.</p>
+<p>Calling this method without any parameters, this will return
+<code>sw-runtime-caching-&lt;service worker scope&gt;</code>.</p>
+<p>If you pass in a cacheId, it will prepend this, returning:
+<code>&lt;cacheid&gt;-sw-runtime-caching-&lt;service worker scope&gt;</code>.</p>
+</div>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+</div>
+</div>
+
+        
+        </div>

@@ -1,0 +1,107 @@
+---
+layout: jsdoc
+title: "Source: sw-broadcast-cache-update/src/lib/responses-are-same.js"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+import ErrorFactory from './error-factory';
+import logHelper from '../../../../lib/log-helper.js';
+
+/**
+ * Given two `Response`s, compares several header values to see if they are
+ * the same or not.
+ *
+ * @example
+ * const responseIsSame = responsesAreSame({
+ *   first: firstResponse,
+ *   second: secondResponse,
+ *   headersToCheck: [
+ *     'content-length',
+ *     'etag',
+ *     'last-modified',
+ *   ]
+ * });
+ *
+ * @memberof module:sw-broadcast-cache-update
+ *
+ * @param {Object} input
+ * @param {Response} input.first One of the `Response`s.
+ * @param {Response} input.second Another of the `Response`s.
+ * @param {Array&lt;string>} input.headersToCheck A list of headers that will be
+ *        used to determine whether the `Response`s differ.
+ * @return {boolean} Whether or not the `Response` objects are assumed to be
+ *         the same.
+ */
+function responsesAreSame({first, second, headersToCheck}={}) {
+  if (!(first instanceof Response &amp;&amp;
+    second instanceof Response &amp;&amp;
+    headersToCheck instanceof Array)) {
+    throw ErrorFactory.createError('responses-are-same-parameters-required');
+  }
+
+  const atLeastOneHeaderAvailable = headersToCheck.some((header) => {
+    return first.headers.has(header) &amp;&amp; second.headers.has(header);
+  });
+  if (!atLeastOneHeaderAvailable) {
+    logHelper.log({
+      message: `Unable to determine whether the response has been updated
+        because none of the headers that would be checked are present.`,
+      data: {
+        'First Response': first,
+        'Second Response': second,
+        'Headers To Check': JSON.stringify(headersToCheck),
+      },
+    });
+
+    // Just return true, indicating the that responses are the same, since we
+    // can't determine otherwise.
+    return true;
+  }
+
+  return headersToCheck.every((header) => {
+    return (first.headers.has(header) === second.headers.has(header)) &amp;&amp;
+      (first.headers.get(header) === second.headers.get(header));
+  });
+}
+
+export default responsesAreSame;
+</code></pre>
+        </article>
+    </section>
+
+
+
+

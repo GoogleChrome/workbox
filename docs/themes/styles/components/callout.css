@@ -1,0 +1,34 @@
+.callout {
+  /* The gradients aren't variables as this doesn't work in Chrome */
+  background: linear-gradient(45deg, var(--callout-gradient-left), var(--callout-gradient-right));
+  background-image: url("../../images/callout-pattern.min.svg");
+  background-size:cover;
+  text-align: center;
+  padding: calc(var(--vertical-spacing) * 4) calc(var(--horizontal-spacing) * 2);
+  color: white;
+}
+
+.callout *:first-child {
+  margin-top: 0;
+}
+
+.callout *:last-child {
+  margin-bottom: 0;
+}
+
+.callout h1 {
+  font-size: var(--callout-h1-font-size-mobile);
+  font-weight: 300;
+  margin: 0;
+  color: white;
+}
+
+@media (min-width: 700px) {
+  .callout {
+    padding: calc(var(--vertical-spacing) * 9) calc(var(--horizontal-spacing) * 4);
+  }
+
+  .callout h1 {
+    font-size: var(--callout-h1-font-size-desktop);
+  }
+}

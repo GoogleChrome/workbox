@@ -1,0 +1,47 @@
+---
+layout: jsdoc
+title: "Source: sw-routing/src/lib/normalize-handler.js"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import assert from '../../../../lib/assert';
+
+/**
+ * @param {RouteHandler} handler The handler to normalize.
+ * @return {Object} An object with a `handle` property representing the handler
+ * function.
+ */
+export default function normalizeHandler(handler) {
+  if (typeof handler === 'object') {
+    assert.hasMethod({handler}, 'handle');
+    return handler;
+  } else {
+    assert.isType({handler}, 'function');
+    return {handle: handler};
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+

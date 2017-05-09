@@ -1,0 +1,5 @@
+{% if include.entry.url %}
+<li><a href="{{ include.entry.url }}">{{ include.entry.title }}</a></li>
+{% elsif include.entry.dropdown %}
+{% include components/navigation-drop-down.html entry=include.entry %}
+{% endif %}

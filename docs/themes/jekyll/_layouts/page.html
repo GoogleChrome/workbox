@@ -1,0 +1,14 @@
+---
+layout: default
+---
+{% include variables.html %}
+
+{% include components/navigation.html includeLogo=true %}
+
+{% include components/page-header.html title=page.title %}
+
+<main>
+  {{ content }}
+</main>
+
+{% include components/footer.html %}

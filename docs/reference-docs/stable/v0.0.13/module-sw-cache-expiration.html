@@ -1,0 +1,166 @@
+---
+layout: jsdoc
+title: "Module: sw-cache-expiration"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-appcache-behavior.html#main">sw-appcache-behavior</a>
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+
+
+    
+        
+            
+        
+    
+
+    
+        
+            <div class="description"><h1 id="sw-cache-expiration">sw-cache-expiration</h1>
+<p>The cache expiration plugin allows you define an expiration and/or
+limit on the responses cached.</p>
+<p>This can be used to ensure that responses aren't used when they are stale
+and that the cache size doesn't grow endlessly.</p></div>
+        
+
+        
+            
+
+<div class="collapsing-entry method-type-module ">
+
+
+
+<div class="collapse-details js-collapse-details">
+
+
+
+
+    <h5>Examples</h5>
+    
+        <p class="code-caption">Used as an automatically invoked "plugin".</p>
+    
+    <pre class="prettyprint"><code>// Add cache expiration plugin to `RequestWrapper`.
+const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+  cacheName: 'runtime-cache',
+  plugins: [
+    // The cache size will be capped at 10 entries.
+    new goog.cacheExpiration.Plugin({maxEntries: 10})
+  ]
+});
+
+// Add `RequestWrapper` to a runtime cache handler.
+const route = new goog.routing.RegExpRoute({
+  match: ({url}) => url.domain === 'example.com',
+  handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
+});</code></pre>
+
+        <p class="code-caption">To use the cache expiration as it's own module, you can
+call the <code>expireEntries()</code> method to clean up the cache.</p>
+    
+    <pre class="prettyprint"><code>expirationPlugin.expireEntries({
+  cacheName: 'example-cache-name'
+});</code></pre>
+
+
+
+<table class="method-info-table">
+
+  
+
+  
+
+  
+
+
+
+<!--
+<tr>
+<th>Details</th>
+<td>
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+</td>
+</tr>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+</table>
+
+</div>
+
+</div>
+
+        
+    
+
+    
+
+    
+        <h2 class="subsection-title">Classes</h2>
+
+        <div class="subsection-classes">
+        <dl>
+            <dt><a href="module-sw-cache-expiration.Plugin.html#main">Plugin</a></dt>
+            <dd></dd>
+        </dl>
+        </div>

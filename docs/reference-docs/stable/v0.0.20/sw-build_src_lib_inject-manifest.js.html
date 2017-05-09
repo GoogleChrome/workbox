@@ -1,0 +1,123 @@
+---
+layout: jsdoc
+title: "Source: sw-build/src/lib/inject-manifest.js"
+jsdocNav: 
+  - Modules:
+    - <a href="module-sw-background-sync-queue.html#main">sw-background-sync-queue</a>
+    - <a href="module-sw-broadcast-cache-update.html#main">sw-broadcast-cache-update</a>
+    - <a href="module-sw-build.html#main">sw-build</a>
+    - <a href="module-sw-cache-expiration.html#main">sw-cache-expiration</a>
+    - <a href="module-sw-cacheable-response.html#main">sw-cacheable-response</a>
+    - <a href="module-sw-lib.html#main">sw-lib</a>
+    - <a href="module-sw-offline-google-analytics.html#main">sw-offline-google-analytics</a>
+    - <a href="module-sw-precaching.html#main">sw-precaching</a>
+    - <a href="module-sw-routing.html#main">sw-routing</a>
+    - <a href="module-sw-runtime-caching.html#main">sw-runtime-caching</a>
+---
+
+
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const fs = require('fs');
+const mkdirp = require('mkdirp');
+const path = require('path');
+
+const getFileManifestEntries = require('./get-file-manifest-entries');
+const errors = require('./errors');
+
+/**
+ * @example &lt;caption>Generate a build manifest of static assets, which could
+ * then be used with a service worker.&lt;/caption>
+ * const swBuild = require('sw-build');
+ *
+ * swBuild.injectManifest({
+ *   globDirectory: './build/',
+ *   staticFileGlobs: ['**\/*.{html,js,css}'],
+ *   globIgnores: ['admin.html'],
+ *   swSrc: './src/sw.js',
+ *   swDest: './build/sw.js',
+ * })
+ * .then(() => {
+ *   console.log('Build Manifest generated.');
+ * });
+ *
+ * This method will read in an existing service worker file and replace an empty
+ * array in a call like so: `.precache([])`, to an array of files
+ * with up to date array revision details. This allows the service worker
+ * to efficiently cache assets that will be available offline.
+ * @param {Object} input
+ * @param {String} input.swDest The name and path you wish to write your
+ * manifest file to.
+ * @param {String} input.globDirectory The root of the files you wish to
+ * be cached. This will also be the directory the service worker and library
+ * files are written to.
+ * @param {Array&lt;String>} input.staticFileGlobs Patterns to glob for when
+ * generating the build manifest.
+ * @param {String|Array&lt;String>} [input.globIgnores] Patterns to exclude when
+ * generating the build manifest.
+ * @param {Object&lt;String,Array|String>} [input.templatedUrls]
+ * If a URL is rendered/templated on the server, its contents may not depend on
+ * a single file. This maps URLs to a list of file names, or to a string
+ * value, that uniquely determines each URL's contents.
+ * @param {String} input.swSrc File name for service worker file to read in
+ * and alter.
+ * @return {Promise} Resolves once the service worker has been generated
+ * with a precache list.
+ *
+ * @memberof module:sw-build
+ */
+const injectManifest = (input) => {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return Promise.reject(
+      new Error(errors['invalid-inject-manifest-arg']));
+  }
+
+  const injectionPointRegex = /(\.precache\()\s*\[\s*\]\s*(\))/g;
+
+  return getFileManifestEntries(input)
+  .then((manifestEntries) => {
+    let swFileContents = fs.readFileSync(input.swSrc, 'utf8');
+    const injectionResults = swFileContents.match(injectionPointRegex);
+    if (!injectionResults) {
+      throw new Error(errors['injection-point-not-found']);
+    }
+
+    if (injectionResults.length > 1) {
+      throw new Error(errors['multiple-injection-points-found']);
+    }
+
+    const entriesString = JSON.stringify(manifestEntries, null, 2);
+    swFileContents = swFileContents
+      .replace(injectionPointRegex, `$1${entriesString}$2`);
+
+    return new Promise((resolve, reject) => {
+      mkdirp(path.dirname(input.swDest), (err) => {
+        if (err) {
+          return reject(
+            new Error(
+              errors['unable-to-make-injection-directory'] +
+              ` '${err.message}'`
+            )
+          );
+        }
+        resolve();
+      });
+    })
+    .then(() => {
+      fs.writeFileSync(input.swDest, swFileContents);
+    });
+  });
+};
+
+module.exports = injectManifest;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
