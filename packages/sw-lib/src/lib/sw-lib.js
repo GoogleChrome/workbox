@@ -49,10 +49,14 @@ class SWLib {
    * plugin sends a message whenever a precached URL is updated. To disable this
    * plugin, set `precacheChannelName` to an empty string.
    * (Defaults to `'precache-updates'`)
+   * @param {Array<RegExp>} [input.ignoreUrlParametersMatching] An array of
+   * regex's to remove search params when looking for a cache match.
    */
   constructor({cacheId, clientsClaim, handleFetch,
                directoryIndex = 'index.html',
-               precacheChannelName = 'precache-updates'} = {}) {
+               precacheChannelName = 'precache-updates',
+               ignoreUrlParametersMatching = [/^utm_/],
+             } = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
     }
@@ -92,7 +96,7 @@ class SWLib {
       handleFetch
     );
     this._registerInstallActivateEvents(clientsClaim);
-    this._registerDefaultRoutes(directoryIndex);
+    this._registerDefaultRoutes(ignoreUrlParametersMatching, directoryIndex);
   }
 
   /**
@@ -287,14 +291,19 @@ class SWLib {
   /**
    * This method will register any default routes the library will need.
    * @private
+   * @param {Array<RegExp>} ignoreUrlParametersMatching An array of regex's
+   * used to remove search parameters which match on of them.
    * @param {string} directoryIndex The directory index is appended to URLs
    * ending with '/'.
    */
-  _registerDefaultRoutes(directoryIndex) {
+  _registerDefaultRoutes(ignoreUrlParametersMatching, directoryIndex) {
     const plugins = [];
+
     // Add custom directory index plugin.
-    if (directoryIndex) {
-      plugins.push(this._getDirectoryIndexPlugin(directoryIndex));
+    if (ignoreUrlParametersMatching || directoryIndex) {
+      plugins.push(
+        this._getCacheMatchPlugin(ignoreUrlParametersMatching, directoryIndex)
+      );
     }
 
     const cacheFirstHandler = this.strategies.cacheFirst({
@@ -309,7 +318,13 @@ class SWLib {
           return true;
         }
 
-        if (directoryIndex && url.pathname.endsWith('/')) {
+        let strippedUrl =
+          this._removeIgnoreUrlParams(url.href, ignoreUrlParametersMatching);
+        if (cachedUrls.indexOf(strippedUrl.href) !== -1) {
+          return true;
+        }
+
+        if (directoryIndex && strippedUrl.pathname.endsWith('/')) {
           url.pathname += directoryIndex;
           return cachedUrls.indexOf(url.href) !== -1;
         }
@@ -323,28 +338,79 @@ class SWLib {
 
   /**
    * @private
+   * @param  {Array<RegExp>} ignoreUrlParametersMatching An array of regex's to
+   * define which search parameters should be removed before looking for cache
+   * match.
    * @param {string} directoryIndex The directory index is appended to URLs
    * ending with '/'.
    * @return {Promise<Object>} Returns a plugin that attempts to match the
    * URL with /index.html
    */
-  _getDirectoryIndexPlugin(directoryIndex) {
-    const directoryIndexFunc = async (
+  _getCacheMatchPlugin(ignoreUrlParametersMatching, directoryIndex) {
+    const cacheMatchFunction = async (
       {request, cache, cachedResponse, matchOptions}) => {
       // If we already have a cache hit, then just return that.
       if (cachedResponse) {
         return cachedResponse;
       }
 
-      // Otherwise, try again with the indexHtmlString value.
-      if (request.url.endsWith('/')) {
-        let url = new URL(request.url);
-        url.pathname += directoryIndex;
-        return cache.match(url.toString(), matchOptions);
-      }
+      let strippedUrl =
+        this._removeIgnoreUrlParams(request.url, ignoreUrlParametersMatching);
+      return cache.match(strippedUrl.toString(), matchOptions)
+      .then((response) => {
+        if (!response) {
+          // Otherwise, try again with the indexHtmlString value.
+          if (strippedUrl.pathname.endsWith('/')) {
+            strippedUrl.pathname += directoryIndex;
+            return cache.match(strippedUrl.toString(), matchOptions);
+          }
+        }
+
+        return response;
+      });
     };
 
-    return {cacheWillMatch: directoryIndexFunc};
+    return {cacheWillMatch: cacheMatchFunction};
+  }
+
+  /**
+   * @param {string} originalUrl The original url to remove the search params.
+   * @param  {Array<RegExp>} ignoreUrlParametersMatching An array of regex's to
+   * define which search parameters should be removed before looking for cache
+   * match.
+   * @return {string} An object that can be used as a plugin within a
+   * RequestWrapper.
+   */
+  _removeIgnoreUrlParams(originalUrl, ignoreUrlParametersMatching) {
+    const url = new URL(originalUrl);
+
+    // Exclude initial '?'
+    const searchString = url.search.slice(1);
+
+    // Split into an array of 'key=value' strings
+    const keyValueStrings = searchString.split('&');
+    const keyValuePairs = keyValueStrings.map((keyValueString) => {
+      // Split each 'key=value' string into a [key, value] array
+      return keyValueString.split('=');
+    });
+
+    const filteredKeyValuesPairs = keyValuePairs.filter((keyValuePair) => {
+      return ignoreUrlParametersMatching
+        .every((ignoredRegex) => {
+          // Return true iff the key doesn't match any of the regexes.
+          return !ignoredRegex.test(keyValuePair[0]);
+        });
+    });
+    const filteredStrings = filteredKeyValuesPairs.map((keyValuePair) => {
+       // Join each [key, value] array into a 'key=value' string
+      return keyValuePair.join('=');
+    });
+
+    // Join the array of 'key=value' strings into a string with '&' in
+    // between each
+    url.search = filteredStrings.join('&');
+
+    return url;
   }
 }
 

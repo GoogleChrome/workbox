@@ -8,7 +8,7 @@ navigation_weight: 1
 
 These recipes cover the following `sw-lib` use case:
 - You want to write and maintain your own `sw.js` file that uses precaching via
-`sw-lib.cacheRevisionedAssets()` alongside other service worker logic.
+`sw-lib.precache()` alongside other service worker logic.
 - You'd like to use [ES2015 import syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
 to include `sw-lib` and other modules into your service worker.
 - You are comfortable using [`Rollup`](https://github.com/rollup/rollup) to
@@ -39,7 +39,7 @@ import swLib from 'sw-lib';
 // imports for any other libraries, e.g. idb-keyval, Firebase Messaging, etc.
 
 // This will precache the files in your manifest, and keep them up to date.
-swLib.cacheRevisionedAssets(manifest);
+swLib.precache(manifest);
 
 // Any additional runtime service worker logic can go here.
 ```
@@ -77,16 +77,16 @@ const BUILD_DIR = 'build';
 // The promise chain can be summarized as:
 //   manifest generation -> rollup configuration -> write bundle to disk
 swBuild.generateFileManifest({
- // The dest: option should match the path for manifest.js you provide in your
+ // The swDest: option should match the path for manifest.js you provide in your
  // unbundled service worker file.
- dest: '/tmp/manifest.js',
+ swDest: '/tmp/manifest.js',
  // Configure patterns to match the files your want the SW to manage.
  // See https://github.com/isaacs/node-glob##glob-primer
  staticFileGlobs: [
    `./${BUILD_DIR}/{css,images,js}/**/*`,
    `./${BUILD_DIR}/index.html`,
  ],
- rootDirectory: BUILD_DIR,
+ globDirectory: BUILD_DIR,
  format: 'es',
 }).then(() => rollup({
  // This should point to your unbundled service worker code.
@@ -98,7 +98,7 @@ swBuild.generateFileManifest({
  })],
 })).then((bundle) => bundle.write({
  format: 'iife',
- dest: `${BUILD_DIR}/sw.js`,
+ swDest: `${BUILD_DIR}/sw.js`,
 }));
 ```
 
@@ -120,16 +120,16 @@ const BUILD_DIR = 'build';
 // This task should be invoked as a dependency of bundle-sw.
 gulp.task('write-manifest', () => {
   return swBuild.generateFileManifest({
-    // The dest: option should match the path for manifest.js you provide in your
+    // The swDest: option should match the path for manifest.js you provide in your
     // unbundled service worker file.
-    dest: `/tmp/manifest.js`,
+    swDest: `/tmp/manifest.js`,
     // Configure patterns to match the files your want the SW to manage.
     // See https://github.com/isaacs/node-glob##glob-primer
     staticFileGlobs: [
       `./${BUILD_DIR}/{css,images,js}/**/*`,
       `./${BUILD_DIR}/index.html`,
     ],
-    rootDirectory: BUILD_DIR,
+    globDirectory: BUILD_DIR,
     format: 'es',
   });
 });
@@ -146,7 +146,7 @@ gulp.task('bundle-sw', ['write-manifest'], () => {
       browser: true,
     })],
   }).then((bundle) => bundle.write({
-    dest: `${BUILD_DIR}/sw.js`,
+    swDest: `${BUILD_DIR}/sw.js`,
     format: 'iife',
   }));
 });

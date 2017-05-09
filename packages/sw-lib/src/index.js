@@ -32,7 +32,7 @@ if (!assert.isSWEnv()) {
  * of assets during the install step of a service worker.
  *
  * @example <caption>Adding the Library to your project.</caption>
- * importScripts('/<Path to Module>/build/sw-lib.min.js');
+ * importScripts('/<Path to Module>/build/importScripts/sw-lib.prod.vX.Y.Z.js');
  *
  * @example <caption>Caching assets and registering routes.</caption>
  *

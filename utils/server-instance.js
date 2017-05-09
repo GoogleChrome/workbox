@@ -13,7 +13,7 @@
  limitations under the License.
  */
 
-/* eslint-disable require-jsdoc */
+/* eslint-disable require-jsdoc, no-console */
 
 const cookieParser = require('cookie-parser');
 const express = require('express');
@@ -78,6 +78,35 @@ class ServerInstance {
       res.send(JSON.stringify(req.cookies));
     });
 
+    function respondWithScriptMatchingPattern(pattern, res) {
+      const repoRoot = path.join(__dirname, '..');
+      const devScript = glob.sync(pattern, {
+        cwd: repoRoot,
+        root: repoRoot,
+      });
+
+      if (devScript.length === 0) {
+        const errMsg = `No built module found for pattern '${pattern}'.`;
+        console.log(errMsg);
+        res.status(500).send(errMsg);
+        return;
+      }
+
+      // We can't send a redirect here, as they're not allowed for resources
+      // pulled in via importScripts().
+      res.setHeader('Content-Type', 'application/javascript');
+      res.send(fs.readFileSync(devScript[0]));
+    }
+
+    // Used to return the latest iife bundle for a given package, without
+    // having to specify the version string.
+    // This is used within unit tests.
+    this._app.get('/__test/bundle/:pkg', function(req, res) {
+      const pkg = req.params.pkg;
+      const pattern = `packages/${pkg}/build/importScripts/*dev*.js`;
+      respondWithScriptMatchingPattern(pattern, res);
+    });
+
     // Harness to kick off all the in-browser tests for a given package.
     // It will pick up a list of all the top-level .js files and automatically
     // inject them into the HTML as <script> tags.
@@ -95,9 +124,7 @@ class ServerInstance {
       });
       if (scripts.length === 0) {
         const errMsg = `No test scripts match the pattern '${pattern}'.`;
-        /* eslint-disable no-console */
         console.log(errMsg);
-        /* eslint-enable no-console */
         res.status(500).send(errMsg);
         return;
       }
@@ -128,7 +155,6 @@ class ServerInstance {
     });
 
     this._app.get('/__test/mocha/sw/:pkg', function(req, res) {
-      /* eslint-disable no-console */
       const pkg = req.params.pkg;
       const pattern = `packages/${pkg}/test/sw/*.js`;
       const scriptPaths = glob.sync(pattern).map((script) => {
@@ -191,11 +217,9 @@ class ServerInstance {
     return new Promise((resolve, reject) => {
       this._server = this._app.listen(port, 'localhost', () => {
         if (process.env.TRAVIS) {
-          /* eslint-disable no-console */
           console.log(`[Debug Info] Test Server: ` +
             `http://localhost:${this._server.address().port}`);
           console.log('');
-          /* eslint-enable no-console */
         }
         resolve(this._server.address().port);
       });

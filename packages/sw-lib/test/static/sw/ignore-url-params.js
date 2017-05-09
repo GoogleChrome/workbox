@@ -2,16 +2,11 @@
 
 importScripts('/__test/bundle/sw-lib');
 importScripts('/packages/sw-precaching/test/static/skip-and-claim.js');
-importScripts('/packages/sw-precaching/test/static/test-data.js');
-importScripts('/packages/sw-lib/test/static/test-data.js');
 
-const testSet = self.goog.__TEST_DATA['sw-lib']['revisioned'];
 const swlib = new goog.SWLib();
-swlib.precache(testSet['set-1']);
-
-swlib.precache(testSet['set-2']);
-
-swlib.precache(testSet['set-3']);
+swlib.precache([
+  '/__echo/date/hello',
+]);
 
 // sw-lib should define a route just for the revisioned assets so this
 // fetch should never be called.

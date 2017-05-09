@@ -20,7 +20,7 @@ const {buildJSBundle, generateBuildConfigs} = require('../../utils/build');
 
 const productionBuildConfigs = generateBuildConfigs({
   formatToPath: {
-    es: pkg['jsnext:main'],
+    es: pkg.module,
     iife: pkg.main,
   },
   baseDir: __dirname,

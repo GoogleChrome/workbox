@@ -1,6 +1,6 @@
 {
   "name": "sw-background-sync-queue",
-  "version": "0.0.20",
+  "version": "0.0.22",
   "description": "Queues failed requests and uses the Background Sync API to replay those requests at a later time when the network state has changed.",
   "keywords": [
     "service worker",
@@ -10,7 +10,6 @@
     "sw-fw"
   ],
   "files": [
-    "src",
     "build"
   ],
   "scripts": {
@@ -21,7 +20,6 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-background-sync-queue",
-  "main": "build/background-sync-queue.min.js",
-  "module": "build/background-sync-queue.min.mjs",
-  "jsnext:main": "build/background-sync-queue.min.mjs"
+  "main": "build/importScripts/sw-background-sync-queue.prod.v0.0.22.js",
+  "module": "build/modules/sw-background-sync-queue.prod.v0.0.22.mjs"
 }

@@ -41,17 +41,22 @@ service worker script, and minimal, straight-forward configuration.
    importScripts('/third-party/sw-lib/sw-lib.min.js');
    ```
 
+   > Note: If you use a minifier on your service worker script, be aware that
+   > Workbox requires one that is ES2015-aware. At the time of Workbox's first
+   > release (May 2017)
+   > [Babili](https://github.com/babel/babili) is the only minifier that is.
+
 ## Precaching
 
 Precaching allows a [Progressive Web App](https://developers.google.com/web/progressive-web-apps/) to store an
 [AppShell](https://developers.google.com/web/fundamentals/architecture/app-shell).
 An AppShell is the minimal HTML, CSS and JavaScript required to power the user
-interface and when cached offline can ensure instant, reliably good performance
+interface and when cached offline can ensure instant, reliable performance
 to users on repeat visits. The sw-lib module implements the precaching needed
 for an app shell with the
-[goog.swlib.cacheRevisionedAssets(revisionedFiles)](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-lib.SWLib.html#cacheRevisionedAssets)
+[goog.swlib.precache(revisionedFiles)](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-lib.SWLib.html#precache)
 method. The revisioned files parameter should list all files that your web app
-needs at startup. There are two ways to do this, shown in the example below.
+needs at startup. There are two ways to do this, shown in the examples below.
 
 > Note: We recommend that you not create revision numbers
 > by hand. Do this automatically using `sw-build` or a
@@ -67,19 +72,19 @@ goog.swlib.cacheRevisionedAssets([
 ]);
 ```
 
-For assets where you can't revision the URLs / file you
+For assets where you can't revision the URLs or file you
 can pass in an object with a `url` and `revision`
 parameter:
 
 ```
-goog.swlib.cacheRevisionedAssets([
+goog.swlib.precache([
     {
       url: '/index.html',
-      revision: '1234'
+      revision: 'b3e78d93b20c49d0c927050682c99df3'
     },
     {
       url: '/about.html',
-      revision: 'abcd'
+      revision: 'd2cb0dda3e8313b990e8dcf5e25d2d0f'
     }
 ]);
 ```
@@ -95,8 +100,8 @@ To register a caching strategy for a URL, call
 `goog.swlib.router.registerRoute(capture, handler)`. This
 method takes two parameters:
 
-*capture*: Specifies which URLs to match.
-*handler*: Returns a resource for the URL using a specific caching strategy.
+- *capture*: Specifies which URLs to match.
+- *handler*: Returns a resource for the URL using a specific caching strategy.
 
 For example:
 
@@ -124,8 +129,8 @@ goog.swlib.router.registerRoute('/schedule', staleWhileRevalidate);
 ### A Collection of Similar URLs
 
 Many apps will need to handle URLS which contain
-parameters, for example, Reddit's URLs consist of
-`/r/<subreddit name>.json`, like this:
+parameters. For example, Reddit's URLs follow the pattern
+`/r/<subreddit name>.json`. For example:
 
 ```
 https://www.reddit.com/r/javascript.json

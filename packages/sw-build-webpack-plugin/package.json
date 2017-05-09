@@ -1,6 +1,6 @@
 {
   "name": "sw-build-webpack-plugin",
-  "version": "0.0.20",
+  "version": "0.0.22",
   "description": "This is a webpack plugin for sw-build",
   "keywords": [
     "webpack",
@@ -11,17 +11,21 @@
     "offline",
     "file manifest"
   ],
-  "scripts": {},
-  "main": "index.js",
+  "scripts": {
+    "prepublish": "gulp build --project sw-build-webpack-plugin"
+  },
+  "main": "build/index.js",
   "files": [
-    "src",
     "build"
   ],
   "engines": {
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "sw-build": "^0.0.20"
+    "sw-build": "^0.0.22"
+  },
+  "devDependencies": {
+    "fs-extra": "^3.0.1"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",

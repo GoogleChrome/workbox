@@ -5,27 +5,34 @@
 [![Dependency Status][dependency-image]][dependency-url]
 [![Dev Dependency Status][dev-dependency-image]][dev-dependency-url]
 
-# SW-Helpers
+# Welcome to Workbox
 
-## Contents
+Workbox is a suite of helper libraries for service workers and progressive web
+apps that lets you implement precaching in a manner of minutes. Its features
+support runtime caching, routing, offline analytics, background syncing, and
+more.
 
-- [What Does Workbox Do](#what-does-workbox-do)
-- [Setting Up](#setting-up)
-- [The Libraries](#the-libraries)
-  - [sw-background-sync-queue](#sw-background-sync-queue)
-  - [sw-broadcast-cache-update](#sw-broadcast-cache-update)
-  - [sw-build-webpack-plugin](#sw-build-webpack-plugin)
-  - [sw-build](#sw-build)
-  - [sw-cache-expiration](#sw-cache-expiration)
-  - [sw-cacheable-response](#sw-cacheable-response)
-  - [sw-cli](#sw-cli)
-  - [sw-lib](#sw-lib)
-  - [sw-offline-google-analytics](#sw-offline-google-analytics)
-  - [sw-precaching](#sw-precaching)
-  - [sw-routing](#sw-routing)
-  - [sw-runtime-caching](#sw-runtime-caching)
-- [External Contributions](#external-contributions)
-- [License](#license)
+## A service worker in two minutes
+
+Use [sw-cli](sw-cli) to add a service worker to an existing project in under two
+minutes. 
+
+## A build script in ten minutes
+
+Generate a service worker in your build process
+using [sw-build](sw-build).
+
+## Much more
+
+Go beyond the basics. If you'd like to use the Workbox libraries, and you
+already have your own service worker, then checkout
+[sw-lib](sw-lib) which lets
+you add to what you've already got.
+
+If you've been using Workbox for a while, or you're
+ambitious, you can delve into its more advanced features. Browse the
+[recipes section](recipes), try the [examples](examples), or look up
+something in the [mobules reference](reference-docs/stable/latest/).
 
 ## Installing a library
 

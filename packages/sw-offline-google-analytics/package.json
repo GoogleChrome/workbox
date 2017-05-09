@@ -1,6 +1,6 @@
 {
   "name": "sw-offline-google-analytics",
-  "version": "0.0.20",
+  "version": "0.0.22",
   "description": "A service worker helper library to retry offline Google Analytics requests when a connection is available.",
   "keywords": [
     "service worker",
@@ -20,9 +20,8 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-offline-google-analytics",
-  "main": "build/offline-google-analytics-import.min.js",
   "files": [
-    "src",
     "build"
-  ]
+  ],
+  "main": "build/importScripts/sw-offline-google-analytics.prod.v0.0.22.js"
 }

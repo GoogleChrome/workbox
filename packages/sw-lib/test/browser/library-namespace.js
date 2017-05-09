@@ -59,7 +59,7 @@ describe('Test Behaviors of Loading the Script', function() {
       };
 
       const scriptElement = document.createElement('script');
-      scriptElement.src = '/packages/sw-lib/build/sw-lib.min.js';
+      scriptElement.src = '/__test/bundle/sw-lib';
       scriptElement.addEventListener('error', (event) => {
         reject();
       });

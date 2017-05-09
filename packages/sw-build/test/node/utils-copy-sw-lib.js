@@ -5,32 +5,12 @@ const errors = require('../../src/lib/errors.js');
 require('chai').should();
 
 describe('Copy SW Lib', function() {
-  const INJECTED_ERROR = new Error('Injected Error');
-
-  it('should handle file stream error', function() {
+  it('should reject with an error when the copy fails', function() {
     this.timeout(5 * 1000);
 
-    const fakeStream = {
-      on: (eventName, cb) => {
-        if (eventName === 'error') {
-          setTimeout(() => cb(INJECTED_ERROR), 500);
-        }
-      },
-      pipe: (stream) => stream,
-    };
     const copySWLib = proxyquire('../../src/lib/utils/copy-sw-lib', {
-      mkdirp: {
-        sync: () => {
-          return;
-        },
-      },
-      fs: {
-        createReadStream: () => {
-          return fakeStream;
-        },
-        createWriteStream: () => {
-          return fakeStream;
-        },
+      'fs-extra': {
+        copy: () => Promise.reject(),
       },
     });
 
@@ -45,30 +25,12 @@ describe('Copy SW Lib', function() {
     });
   });
 
-  it('should resolve with file name on file stream end', function() {
+  it('should resolve with the file name after the copy completes', function() {
     this.timeout(5 * 1000);
 
-    const fakeStream = {
-      on: (eventName, cb) => {
-        if (eventName === 'finish') {
-          setTimeout(() => cb(), 500);
-        }
-      },
-      pipe: (stream) => stream,
-    };
     const copySWLib = proxyquire('../../src/lib/utils/copy-sw-lib', {
-      mkdirp: {
-        sync: () => {
-          return;
-        },
-      },
-      fs: {
-        createReadStream: () => {
-          return fakeStream;
-        },
-        createWriteStream: () => {
-          return fakeStream;
-        },
+      'fs-extra': {
+        copy: () => Promise.resolve(),
       },
     });
 
@@ -79,7 +41,7 @@ describe('Copy SW Lib', function() {
         pathSep = '\\\\';
       }
       const regexPattern = new RegExp(
-        `fake-path${pathSep}sw-lib\.v\\d+\.\\d+\.\\d+\.min\.js`);
+        `fake-path${pathSep}sw-lib\.prod\.v\\d+\.\\d+\.\\d+\.js`);
       if (!swLibPath.match(regexPattern)) {
         console.log('Regular expression: ' + regexPattern);
         throw new Error('Unexpected result from copying swlib: ' + swLibPath);
