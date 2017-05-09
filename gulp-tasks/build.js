@@ -19,7 +19,8 @@ const chalk = require('chalk');
 const fse = require('fs-extra');
 const gulp = require('gulp');
 const path = require('path');
-const {taskHarness, buildJSBundle} = require('../utils/build');
+const runSequence = require('run-sequence');
+const {taskHarness, buildJSBundle, lernaWrapper} = require('../utils/build');
 
 const printHeading = (heading) => {
   process.stdout.write(chalk.inverse(`  ⚒  ${heading}  `));
@@ -69,10 +70,6 @@ const updateVersionedBundles = (projectPath) => {
   });
 };
 
-gulp.task('update-versioned-bundles', () => {
-  return taskHarness(updateVersionedBundles, global.projectOrStar);
-});
-
 gulp.task('build:shared', () => {
   return buildJSBundle({
     rollupConfig: {
@@ -86,11 +83,59 @@ gulp.task('build:shared', () => {
   });
 });
 
-gulp.task('build', ['update-versioned-bundles'], () => {
+gulp.task('build', () => {
   return taskHarness(buildPackage, global.projectOrStar);
 });
 
 gulp.task('build:watch', ['build'], (unusedCallback) => {
   gulp.watch(`packages/${global.projectOrStar}/src/**/*`, ['build']);
   gulp.watch(`lib/**/*`, ['build']);
+});
+
+gulp.task('lerna-bootstrap', () => {
+  return lernaWrapper('bootstrap');
+});
+
+gulp.task('lerna-bootstrap-scoped', () => {
+  return lernaWrapper('bootstrap', '--include-filtered-dependencies', '--scope',
+    global.projectOrStar);
+});
+
+/**
+ * Helper task, used only within lerna-publish.
+ */
+gulp.task('_lerna-publish-dry-run', () => {
+  return lernaWrapper('publish', '--skip-npm', '--skip-git');
+});
+
+/**
+ * Helper task, used only within lerna-publish.
+ */
+gulp.task('_update-versioned-bundles', () => {
+  return taskHarness(updateVersionedBundles, global.projectOrStar);
+});
+
+/**
+ * Helper task, used only within lerna-publish.
+ */
+gulp.task('_lerna-publish-repo-version', () => {
+  return fse.readJson('lerna.json').then((lernaConfig) => {
+    return lernaWrapper('publish', '--yes', '--repo-version',
+      lernaConfig.version);
+  });
+});
+
+/**
+ * This is the task you should use to publish a new release of updated
+ * modules to npm.
+ */
+gulp.task('lerna-publish', (callback) => {
+  runSequence(
+    'lerna-bootstrap',
+    'test',
+    '_lerna-publish-dry-run',
+    '_update-versioned-bundles',
+    '_lerna-publish-repo-version',
+    callback
+  );
 });

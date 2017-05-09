@@ -6,9 +6,7 @@
   "scripts": {
     "local-docs": "npm-publish-scripts serve",
     "publish-docs": "npm-publish-scripts publish-docs",
-    "publish-release": "npm run lerna-bootstrap && gulp test && lerna publish --concurrency 1",
-    "lerna-bootstrap": "lerna bootstrap --concurrency 1",
-    "lerna-bootstrap-scoped": "lerna bootstrap --include-filtered-dependencies --concurrency 1 --scope"
+    "local-lerna": "lerna"
   },
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the sw-helpers monorepo. Not meant to be published to npm.",
@@ -49,7 +47,7 @@
     "gulp-spawn-mocha": "^3.1.0",
     "handlebars": "^4.0.6",
     "jsdoc-strip-async-await": "^0.1.0",
-    "lerna": "2.0.0-rc.3",
+    "lerna": "2.0.0-rc.4",
     "minimist": "^1.2.0",
     "mockdate": "^2.0.1",
     "npm-publish-scripts": "^4.1.16",

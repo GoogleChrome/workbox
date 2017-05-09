@@ -11,7 +11,7 @@ install:
   - ps: Install-Product node Stable
   - npm install
   - npm install -g gulp
-  - npm run lerna-bootstrap-scoped -- "sw-cli"
+  - gulp lerna-bootstrap-scoped --project="sw-cli"
   - cd packages/sw-cli/
   - npm install
   - cd ..

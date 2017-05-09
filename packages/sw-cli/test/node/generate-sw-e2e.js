@@ -1,8 +1,8 @@
-const proxyquire = require('proxyquire');
-const path = require('path');
 const fs = require('fs');
-
 const fsExtra = require('fs-extra');
+const os = require('os');
+const path = require('path');
+const proxyquire = require('proxyquire');
 
 const testServerGen = require('../../../../utils/test-server-generator.js');
 const validator = require('../utils/e2e-sw-validator.js');
@@ -18,9 +18,7 @@ describe('Generate SW End-to-End Tests', function() {
   const FILE_EXTENSIONS = ['html', 'css', 'js', 'png'];
 
   before(function() {
-    tmpDirectory = fs.mkdtempSync(
-      path.join(__dirname, 'tmp-')
-    );
+    tmpDirectory = fs.mkdtempSync(os.tmpdir() + path.sep);
 
     testServer = testServerGen();
     return testServer.start(tmpDirectory, 5050)
@@ -33,9 +31,9 @@ describe('Generate SW End-to-End Tests', function() {
   after(function() {
     this.timeout(10 * 1000);
 
-    fsExtra.removeSync(tmpDirectory);
-
-    return testServer.stop();
+    return testServer.stop()
+      .then(() => fsExtra.remove(tmpDirectory))
+      .catch((error) => console.log(error));
   });
 
   it('should be able to generate a service for example-1 with CLI', function() {

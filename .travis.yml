@@ -26,7 +26,7 @@ env:
 install:
   - npm install -g gulp-cli
   - npm install
-  - npm run lerna-bootstrap-scoped -- "${PROJECT}"
+  - gulp lerna-bootstrap-scoped --project="${PROJECT}"
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:

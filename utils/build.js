@@ -19,6 +19,7 @@ const babel = require('rollup-plugin-babel');
 const childProcess = require('child_process');
 const commonjs = require('rollup-plugin-commonjs');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const promisify = require('promisify-node');
 const replace = require('rollup-plugin-replace');
@@ -50,6 +51,19 @@ function processPromiseWrapper(command, args) {
       }
     });
   });
+}
+
+/**
+ * Wrapper that runs the local node_modules/.bin/lerna binary, returning a
+ * promise when complete.
+ *
+ * @param args Arguments to pass to the local lerna binary.
+ * @return {Promise}
+ */
+function lernaWrapper(...args) {
+  const nodeCommand = os.platform() === 'win32' ? 'npm.cmd' : 'npm';
+  return processPromiseWrapper(nodeCommand,
+    ['run', 'local-lerna', '--'].concat(args));
 }
 
 /**
@@ -185,6 +199,7 @@ module.exports = {
   buildJSBundle,
   generateBuildConfigs,
   globPromise,
+  lernaWrapper,
   processPromiseWrapper,
   taskHarness,
 };
