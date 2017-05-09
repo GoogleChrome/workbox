@@ -638,7 +638,6 @@ swlib.router.registerNavigationRoute("/shell", {
         },
         'fs': {
           writeFile: (filepath, stringToWrite, cb) => {
-            console.log(stringToWrite);
             if (stringToWrite === EXPECTED_RESULT) {
               cb();
             } else {

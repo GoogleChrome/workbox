@@ -8,7 +8,7 @@ const errors = require('./errors');
  * const swBuild = require('sw-build');
  *
  * swBuild.generateFileManifest({
- *   dest: './build/manifest.js'
+ *   manifestDest: './build/manifest.js'
  *   globDirectory: './build/',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
@@ -21,7 +21,7 @@ const errors = require('./errors');
  * This method will generate a file manifest that can be used in a service
  * worker for caching assets offline.
  * @param {Object} input
- * @param {String} input.dest The name and path you wish to write your
+ * @param {String} input.manifestDest The name and path you wish to write your
  * manifest file to.
  * @param {String} input.globDirectory The root of the files you wish to
  * be cached. This will also be the directory the service worker and library
@@ -49,7 +49,7 @@ const generateFileManifest = (input) => {
 
   return getFileManifestEntries(input)
   .then((fileEntries) => {
-    return writeFileManifest(input.dest, fileEntries, input.format);
+    return writeFileManifest(input.manifestDest, fileEntries, input.format);
   });
 };
 

@@ -36,7 +36,7 @@ Add the following to your `gulpfile.js`:
 
       return swBuild.generateSW({
         rootDirectory: './build/',
-        dest: './build/sw.js',
+        swDest: './build/sw.js',
         globPatterns: ['**\/*.{html,js,css}'],
         globIgnores: ['admin.html'],
         templatedUrls: {

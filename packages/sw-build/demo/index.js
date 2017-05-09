@@ -3,7 +3,7 @@
 const swBuild = require('../build/index');
 
 swBuild.generateFileManifest({
-  dest: './build/manifest.js',
+  manifestDest: './build/manifest.js',
   rootDirectory: './build/',
   staticFileGlobs: ['**/*.{html,js,css}'],
   globIgnores: ['admin.html'],

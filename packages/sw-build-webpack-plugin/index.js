@@ -9,7 +9,7 @@ const swBuild = require('sw-build');
  * plugins: [
  * 	new SwBuildWebpackPlugin({
  * 		rootDirectory: './build/',
- * 		dest: './build/sw.js',
+ * 		swDest: './build/sw.js',
  * 		globPatterns: ['**\/*.{html,js,css}'],
  * 		globIgnores: ['admin.html'],
  * 		templatedUrls: {

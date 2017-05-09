@@ -37,15 +37,15 @@ describe('Test Injection Manifest', function() {
 ])`;
   VALID_INJECTION_DOCS.forEach((docName, index) => {
     it(`should be able to read and inject in doc ${docName}`, function() {
-      const dest = path.join(tmpDirectory, `different-output-name-${index}.js`);
+      const swDest = path.join(tmpDirectory, `different-output-name-${index}.js`);
       return swBuild.injectManifest({
         globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
         staticFileGlobs: ['**\/*.{html,css}'],
         swSrc: path.join(__dirname, '..', 'static', 'injection-samples', docName),
-        swDest: dest,
+        swDest,
       })
       .then(() => {
-        const fileOutput = fs.readFileSync(dest).toString();
+        const fileOutput = fs.readFileSync(swDest).toString();
         if (fileOutput.indexOf(expectedString) === -1) {
           console.log('DocName: ' + docName);
           console.log('fileOutput: ' + fileOutput);
