@@ -19,6 +19,7 @@ const babel = require('rollup-plugin-babel');
 const childProcess = require('child_process');
 const commonjs = require('rollup-plugin-commonjs');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const promisify = require('promisify-node');
 const replace = require('rollup-plugin-replace');
@@ -60,7 +61,8 @@ function processPromiseWrapper(command, args) {
  * @return {Promise}
  */
 function lernaWrapper(...args) {
-  return processPromiseWrapper('npm',
+  const nodeCommand = os.platform() === 'win32' ? 'npm.cmd' : 'npm';
+  return processPromiseWrapper(nodeCommand,
     ['run', 'local-lerna', '--'].concat(args));
 }
 
