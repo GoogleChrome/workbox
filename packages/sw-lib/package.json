@@ -1,6 +1,6 @@
 {
   "name": "sw-lib",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "A service worker library to make managing fetch requests and caching as easy as possible.",
   "keywords": [
     "sw-fw",
@@ -20,6 +20,6 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-lib",
-  "main": "build/importScripts/sw-lib.prod.v0.0.20.js",
-  "module": "build/modules/sw-lib.prod.v0.0.20.mjs"
+  "main": "build/importScripts/sw-lib.prod.v0.0.22.js",
+  "module": "build/modules/sw-lib.prod.v0.0.22.mjs"
 }

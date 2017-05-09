@@ -1,6 +1,6 @@
 {
   "name": "sw-broadcast-cache-update",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "A helper library that uses the Broadcast Channel API to announce when two Response objects differ.",
   "keywords": [
     "service worker",
@@ -20,6 +20,6 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-broadcast-cache-update",
-  "main": "build/importScripts/sw-broadcast-cache-update.prod.v0.0.20.js",
-  "module": "build/modules/sw-broadcast-cache-update.prod.v0.0.20.mjs"
+  "main": "build/importScripts/sw-broadcast-cache-update.prod.v0.0.22.js",
+  "module": "build/modules/sw-broadcast-cache-update.prod.v0.0.22.mjs"
 }
