@@ -34,6 +34,7 @@ describe('Generate SW End-to-End Tests', function() {
     this.timeout(10 * 1000);
 
     return testServer.stop()
+      .then(() => new Promise((resolve) => setTimeout(resolve, 2000)))
       .then(() => fsExtra.remove(tmpDirectory));
   });
 
