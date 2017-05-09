@@ -1,7 +1,7 @@
 {
   "name": "sw-cache-expiration",
   "version": "0.0.22",
-  "description": "This library automatically expires cached responses based on age or maximum number of entries.",
+  "description": "Service worker helper library that expires cached responses based on age or maximum number of entries.",
   "keywords": [
     "service worker",
     "sw",
