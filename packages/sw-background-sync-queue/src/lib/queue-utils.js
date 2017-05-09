@@ -61,6 +61,7 @@ async function getFetchableRequest({idbRequestObject}) {
  *
  * @memberOf Queue
  * @private
+ * @param {string} dbName Name of database to cleanup.
  * @return {Promise}
  */
 async function cleanupQueue(dbName) {

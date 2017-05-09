@@ -111,6 +111,7 @@ class Queue {
 	 * defaults to bgQueueSyncDB
 	 * @param {String} id
 	 * @param {String} dbName
+	 * @return {Object} response Fetched response of the request.
 	 */
 	getResponse({id}) {
 		return getResponse({
