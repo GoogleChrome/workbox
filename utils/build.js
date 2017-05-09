@@ -53,6 +53,18 @@ function processPromiseWrapper(command, args) {
 }
 
 /**
+ * Wrapper that runs the local node_modules/.bin/lerna binary, returning a
+ * promise when complete.
+ *
+ * @param args Arguments to pass to the local lerna binary.
+ * @return {Promise}
+ */
+function lernaWrapper(...args) {
+  return processPromiseWrapper('npm',
+    ['run', 'local-lerna', '--'].concat(args));
+}
+
+/**
  * Promise.all() rejects immediately as soon as the first Promise rejects.
  * This wrapper will run each Promise to resolution, and if one or more
  * rejected, reject at the end with a concatenated error message.
@@ -185,6 +197,7 @@ module.exports = {
   buildJSBundle,
   generateBuildConfigs,
   globPromise,
+  lernaWrapper,
   processPromiseWrapper,
   taskHarness,
 };
