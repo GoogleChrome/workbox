@@ -33,9 +33,8 @@ describe('Generate SW End-to-End Tests', function() {
   after(function() {
     this.timeout(10 * 1000);
 
-    fsExtra.removeSync(tmpDirectory);
-
-    return testServer.stop();
+    return testServer.stop()
+      .then(() => fsExtra.remove(tmpDirectory));
   });
 
   it('should be able to generate a service for example-1 with CLI', function() {
