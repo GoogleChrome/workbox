@@ -44,7 +44,7 @@ const testBuildConfigs = libFiles.reduce((configs, libFile) => {
       iife: path.join('build', 'test', path.basename(libFile)),
     },
     baseDir: __dirname,
-    minify: false,
+    shouldBuildProd: false,
     entry: libFile,
     moduleName,
   }));

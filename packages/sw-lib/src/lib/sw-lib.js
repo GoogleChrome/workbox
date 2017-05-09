@@ -15,15 +15,16 @@
 
 /* eslint-env browser, serviceworker */
 
+import ErrorFactory from './error-factory.js';
 import Router from './router.js';
 import Strategies from './strategies';
-import ErrorFactory from './error-factory.js';
-import {RevisionedCacheManager} from '../../../sw-precaching/src/index.js';
-import {Route} from '../../../sw-routing/src/index.js';
+import environment from '../../../../lib/environment.js';
 import logHelper from '../../../../lib/log-helper';
-import {getDefaultCacheName} from '../../../sw-runtime-caching/src/index.js';
 import {BroadcastCacheUpdatePlugin} from
   '../../../sw-broadcast-cache-update/src/index.js';
+import {RevisionedCacheManager} from '../../../sw-precaching/src/index.js';
+import {Route} from '../../../sw-routing/src/index.js';
+import {getDefaultCacheName} from '../../../sw-runtime-caching/src/index.js';
 
 /**
  * A high level library to make it as easy as possible to precache assets
@@ -32,7 +33,6 @@ import {BroadcastCacheUpdatePlugin} from
  * @memberof module:sw-lib
  */
 class SWLib {
-
   /**
    * You should instantiate this class with `new self.goog.SWLib()`.
    * @param {Object} input
@@ -55,8 +55,37 @@ class SWLib {
   constructor({cacheId, clientsClaim, handleFetch,
                directoryIndex = 'index.html',
                precacheChannelName = 'precache-updates',
-               ignoreUrlParametersMatching = [/^utm_/],
-             } = {}) {
+               ignoreUrlParametersMatching = [/^utm_/]} = {}) {
+    if (!environment.isServiceWorkerGlobalScope()) {
+      // If we are not running in a service worker, fail early.
+      throw ErrorFactory.createError('not-in-sw');
+    }
+
+    if (environment.isDevBuild()) {
+      if (environment.isLocalhost()) {
+        // If this is a dev bundle on localhost, print a welcome message.
+        logHelper.debug({
+          message: 'Welcome to Workbox!',
+          data: {
+            '📖': 'https://googlechrome.github.io/sw-helpers/',
+            '❓': 'https://stackoverflow.com/questions/ask?tags=workbox',
+            '🐛': 'https://github.com/GoogleChrome/sw-helpers/issues/new',
+          },
+        });
+      } else {
+        // If this is a dev bundle not on localhost, recommend the prod bundle.
+        logHelper.warn(`This appears to be a production server. Please switch
+          to the smaller, optimized production build of Workbox.`);
+      }
+    } else {
+      // If this is a prod bundle on localhost, recommend the dev bundle.
+      if (environment.isLocalhost()) {
+        logHelper.warn(`This appears to be a development server. Additional
+          logging and runtime assertions are available by switching to a
+          development build of Workbox.`);
+      }
+    }
+
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
     }
