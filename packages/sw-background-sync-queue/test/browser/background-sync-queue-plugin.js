@@ -16,18 +16,14 @@
 
 'use strict';
 
-describe('background-sync-idb-helper test', () => {
-  it('check defaults', () => {
-    chai.assert.equal(
-      goog.backgroundSyncQueue.test.BackgroundSyncIdbHelper.getDbName(),
-      goog.backgroundSyncQueue.test.Constants.defaultDBName);
-  });
+describe('background-sync-queue-plugin test', () => {
+	console.log(goog.backgroundSyncQueue.test);
+	const backgroundSyncQueue
+    = new goog.backgroundSyncQueue.test.BackgroundSyncQueuePlugin({});
 
-  it('check getters and setters', () => {
-    const newDbName = 'DB_NAME_2';
-    goog.backgroundSyncQueue.test.BackgroundSyncIdbHelper.setDbName(newDbName);
-    chai.assert.equal(
-      goog.backgroundSyncQueue.test.BackgroundSyncIdbHelper.getDbName(),
-      newDbName);
+	it('check fetchDid fail proxy', async () => {
+    const currentLen = backgroundSyncQueue._queue.queue.length;
+    await backgroundSyncQueue.fetchDidFail({request: new Request('http://lipsum.com')});
+    chai.assert.equal(backgroundSyncQueue._queue.queue.length, currentLen + 1);
   });
 });

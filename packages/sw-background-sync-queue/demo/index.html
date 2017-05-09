@@ -123,9 +123,8 @@
         const toastContainer = document.querySelector('.toast-container');
 
         function purchase(){
-            fetch('https://jsonplaceholder.typicode.com/posts/1')
-            .then(res=>res.json())
-            .then(data=>{
+            fetch('http://localhost:3000/__echo/counter')
+            .then(()=>{
                 createToast('Product purchased');
             })
             .catch( async (e) =>{

@@ -19,34 +19,10 @@
  *
  * @module sw-background-sync-queue
  */
-import {getResponse} from './lib/response-manager';
-import {setDbName} from './lib/background-sync-idb-helper';
-import BackgroundSyncQueue from './lib/background-sync-queue';
-import {cleanupQueue} from './lib/queue-utils';
-import assert from '../../../lib/assert';
-
-/**
- * In order to use this library call `goog.backgroundSyncQueue.initialize()`.
- * It will take care of setting up IndexedDB for storing requests and broadcast
- * channel for communication of request creations. Also this attaches a handler
- * to `sync` event and replays the queued requeusts.
- *
- * @memberof module:sw-background-sync-queue
- *
- * @param {Object} [input] The input object to this function
- * @param {string} [input.dbName] The name of the db to store requests and
- * responses
- */
-async function initialize({dbName} = {}) {
-	if(dbName) {
-		assert.isType({dbName}, 'string');
-		setDbName(dbName);
-	}
-	await cleanupQueue();
-}
+import Queue from './lib/background-sync-queue';
+import QueuePlugin from './lib/background-sync-queue-plugin';
 
 export {
-	initialize,
-	getResponse,
-	BackgroundSyncQueue,
+	Queue,
+	QueuePlugin,
 };

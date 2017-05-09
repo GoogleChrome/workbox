@@ -24,7 +24,7 @@ const productionBuildConfigs = generateBuildConfigs({
     iife: pkg.main,
   },
   baseDir: __dirname,
-  moduleName: 'goog.backgroundSyncQueue',
+  moduleName: 'goog.backgroundSync',
 });
 
 // We don't want the test/ build output to be published.

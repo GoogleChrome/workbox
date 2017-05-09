@@ -23,7 +23,6 @@ describe('request-manager test', () => {
 			responseAchieved ++;
 		},
 	};
-	const swBackgroundQueue = goog.backgroundSyncQueue;
 
 	let queue;
 	let reqManager;
@@ -52,7 +51,6 @@ describe('request-manager test', () => {
   });
 
 	it('check replay', async function() {
-		swBackgroundQueue.initialize();
 		const backgroundSyncQueue
 			= new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
 				callbacks,

@@ -13,10 +13,8 @@ self.addEventListener('activate', (event) => {
 	event.waitUntil(self.clients.claim());
 });
 
-// initialize bdQ
-goog.backgroundSyncQueue.initialize();
 
-let bgQueue = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
+let bgQueue = new goog.backgroundSync.QueuePlugin({callbacks:
 	{
 		onResponse: async(hash, res) => {
 			self.registration.showNotification('Background sync demo', {
@@ -26,6 +24,7 @@ let bgQueue = new goog.backgroundSyncQueue.BackgroundSyncQueue({callbacks:
 		},
 		onRetryFailure: (hash) => {},
 	},
+	dbName: 'queues',
 });
 
 const replayBroadcastChannel = new BroadcastChannel('replay_channel');
@@ -38,7 +37,7 @@ const requestWrapper = new goog.runtimeCaching.RequestWrapper({
 });
 
 const route = new goog.routing.RegExpRoute({
-  regExp: new RegExp('^https://jsonplaceholder.typicode.com/(\\w+)'),
+  regExp: new RegExp('^http://localhost:3000/__echo/counter'),
   handler: new goog.runtimeCaching.NetworkOnly({requestWrapper}),
 });
 

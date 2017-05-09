@@ -16,14 +16,6 @@
 
 'use strict';
 
-function delay(timeout) {
-	return new Promise((resolve, reject) => {
-		setTimeout(function() {
-			resolve();
-		}, timeout);
-	});
-}
-
 describe('queue-utils test', () => {
 	const queueUtils = goog.backgroundSyncQueue.test.QueueUtils;
 	const maxAgeTimeStamp = 1000*60*60*24;
@@ -76,31 +68,5 @@ describe('queue-utils test', () => {
 				chai.assert.equal(reqObj.method, request.method);
 				chai.assert.equal(reqObj.redirect, request.redirect);
 			});
-	});
-
-	it('test queue cleanup', async () => {
-		const idbHelper = new goog.backgroundSyncQueue.test.IdbHelper(
-			'bgQueueSyncDB', 1, 'QueueStore');
-		await queueUtils.cleanupQueue();
-		/* code for clearing everything from IDB */
-
-		const backgroundSyncQueue
-    = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
-      maxRetentionTime: 1,
-    });
-
-		const backgroundSyncQueue2
-    = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
-      maxRetentionTime: 10000,
-    });
-
-		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum1.com')});
-		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum2.com')});
-		await backgroundSyncQueue2.pushIntoQueue({request: new Request('http://lipsum.com')});
-		const allKeys = (await idbHelper.getAllKeys());
-		await delay(100);
-		await queueUtils.cleanupQueue();
-		chai.assert.equal(allKeys.length,
-			(await idbHelper.getAllKeys()).length + 2);
 	});
 });

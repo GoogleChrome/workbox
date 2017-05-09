@@ -1,5 +1,4 @@
 import IDBHelper from '../../../../lib/idb-helper';
-import {getDbName} from './background-sync-idb-helper';
 import {allQueuesPlaceholder} from './constants';
 /**
  * takes a request and gives back JSON object that is storable in IDB
@@ -64,8 +63,8 @@ async function getFetchableRequest({idbRequestObject}) {
  * @private
  * @return {Promise}
  */
-async function cleanupQueue() {
-	let db = new IDBHelper(getDbName(), 1, 'QueueStore');
+async function cleanupQueue(dbName) {
+	let db = new IDBHelper(dbName, 1, 'QueueStore');
 	let queueObj = await db.get(allQueuesPlaceholder);
 
 	if(!queueObj) {
