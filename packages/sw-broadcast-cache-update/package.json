@@ -1,7 +1,7 @@
 {
   "name": "sw-broadcast-cache-update",
   "version": "0.0.22",
-  "description": "A helper library that uses the Broadcast Channel API to announce when two Response objects differ.",
+  "description": "A service worker helper library that uses the Broadcast Channel API to announce when two Response objects differ.",
   "keywords": [
     "service worker",
     "sw",
