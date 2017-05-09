@@ -5,7 +5,7 @@ module.exports = {
   'invalid-file-manifest-name': 'The File Manifest Name must have at lease ' +
     'one character.',
   'unable-to-get-file-manifest-name': 'Unable to get a file manifest name.',
-  'invalid-dest': `The 'dest' value must be a valid path.`,
+  'invalid-sw-dest': `The 'swDest' value must be a valid path.`,
   'unable-to-get-sw-name': 'Unable to get a service worker file name.',
   'unable-to-get-save-config': 'An error occurred when asking to save details' +
     'in a config file.',

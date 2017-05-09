@@ -28,7 +28,7 @@ const injectManifest = require('./lib/inject-manifest');
  *   globDirectory: './build/',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['service-worker.js','admin.html'],
- *   dest: './build/scripts/manifest.js',
+ *   mainfestDest: './build/scripts/manifest.js',
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
  *   },
@@ -59,7 +59,7 @@ const injectManifest = require('./lib/inject-manifest');
  *   globDirectory: './build/',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['service-worker.js','admin.html'],
- *   dest: './build/sw.js',
+ *   swDest: './build/sw.js',
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
  *   },

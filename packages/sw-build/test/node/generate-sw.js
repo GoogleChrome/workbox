@@ -12,14 +12,14 @@ describe('Test generateSW()', function() {
     globIgnores: [
       '!node_modules/',
     ],
-    dest: 'build/sw.js',
+    swDest: 'build/sw.js',
   };
 
   let generateSW;
   beforeEach(function() {
     generateSW = proxyquire('../../src/lib/generate-sw', {
       './utils/copy-sw-lib': (swlibPath) => {
-        if (swlibPath === path.dirname(EXAMPLE_INPUT.dest)) {
+        if (swlibPath === path.dirname(EXAMPLE_INPUT.swDest)) {
           return Promise.resolve(path.join(swlibPath, 'sw-lib.v0.0.0.js'));
         }
         return Promise.reject(new Error('Inject Error - copy-sw-lib'));
@@ -79,8 +79,8 @@ describe('Test generateSW()', function() {
     }, Promise.resolve());
   });
 
-  // dest - non string, undefined, null, boolean, array, object
-  it('should be able to handle bad dest input', function() {
+  // swDest - non string, undefined, null, boolean, array, object
+  it('should be able to handle bad swDest input', function() {
     const badInput = [
       undefined,
       null,
@@ -92,13 +92,13 @@ describe('Test generateSW()', function() {
     return badInput.reduce((promiseChain, input) => {
       return promiseChain.then(() => {
         let args = Object.assign({}, EXAMPLE_INPUT);
-        args.dest = input;
+        args.swDest = input;
         return generateSW(args)
         .then(() => {
           throw new Error('Expected to throw error.');
         })
         .catch((err) => {
-          if (err.message !== errors['invalid-dest']) {
+          if (err.message !== errors['invalid-sw-dest']) {
             throw new Error('Unexpected error: ' + err.message);
           }
         });
@@ -188,7 +188,7 @@ describe('Test generateSW()', function() {
 
     generateSW = proxyquire('../../src/lib/generate-sw', {
       './utils/copy-sw-lib': (copySWLibPath) => {
-        if (copySWLibPath === path.dirname(EXAMPLE_INPUT.dest)) {
+        if (copySWLibPath === path.dirname(EXAMPLE_INPUT.swDest)) {
           return Promise.resolve(path.join(copySWLibPath, 'sw-lib.v0.0.0.js'));
         }
         return Promise.reject(new Error('Inject Error - copy-sw-lib'));
@@ -201,7 +201,7 @@ describe('Test generateSW()', function() {
         }]);
       },
       './write-sw': (swPath, manifestEntries, swlibPath, globDirectory) => {
-        if (swPath !== EXAMPLE_INPUT.dest) {
+        if (swPath !== EXAMPLE_INPUT.swDest) {
           throw new Error(`Service worker path is an unexpected value: ${swPath}`);
         }
         if (swlibPath !== 'sw-lib.v0.0.0.js') {
@@ -221,7 +221,7 @@ describe('Test generateSW()', function() {
   it('should be able to write service worker to the a directory', function() {
     generateSW = proxyquire('../../src/lib/generate-sw', {
       './utils/copy-sw-lib': (swlibPath) => {
-        if (swlibPath === path.dirname(EXAMPLE_INPUT.dest)) {
+        if (swlibPath === path.dirname(EXAMPLE_INPUT.swDest)) {
           return Promise.resolve(path.join(swlibPath, 'sw-lib.v0.0.0.js'));
         }
         return Promise.reject(new Error('Inject Error - copy-sw-lib'));
@@ -234,7 +234,7 @@ describe('Test generateSW()', function() {
         }]);
       },
       './write-sw': (swPath, manifestEntries, swlibPath, globDirectory) => {
-        if (swPath !== EXAMPLE_INPUT.dest) {
+        if (swPath !== EXAMPLE_INPUT.swDest) {
           throw new Error(`Service worker path is an unexpected value: ${swPath}`);
         }
         if (swlibPath !== 'sw-lib.v0.0.0.js') {

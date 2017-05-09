@@ -8,7 +8,7 @@ describe('Test generateFileManifest', function() {
     globDirectory: 'src/',
     staticFileGlobs: ['./**/*.{html,css}'],
     globIgnores: [],
-    dest: './build/manifest.js',
+    manifestDest: './build/manifest.js',
   };
 
   it('should be able to handle bad input', function() {
@@ -79,7 +79,9 @@ describe('Test generateFileManifest', function() {
             throw new Error('Unexpected file entries - should have duplicates removed.');
           }
 
-          if (manifestFilePath !== EXAMPLE_INPUT.dest) {
+          if (manifestFilePath !== EXAMPLE_INPUT.manifestDest) {
+            console.log('manifestFilePath: ', manifestFilePath);
+            console.log('EXAMPLE_INPUT.manifestDest: ', EXAMPLE_INPUT.manifestDest);
             throw new Error('Unexpected manifest File Path');
           }
 

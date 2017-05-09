@@ -6,10 +6,6 @@
     "node": true,
     "es6": true
   },
-  "rules": {
-    "valid-jsdoc": 1,
-    "require-jsdoc": 1
-  },
   "parserOptions": {
     "ecmaVersion": 2017
   },

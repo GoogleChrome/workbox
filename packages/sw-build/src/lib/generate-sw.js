@@ -10,7 +10,7 @@ const errors = require('./errors');
  *
  * swBuild.generateSW({
  *   globDirectory: './build/',
- *   dest: './build/sw.js',
+ *   swDest: './build/sw.js',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   templatedUrls: {
@@ -31,7 +31,7 @@ const errors = require('./errors');
  * generating the build manifest.
  * @param {String|Array<String>} [input.globIgnores] Patterns to exclude when
  * generating the build manifest.
- * @param {String} input.dest The name you wish to give to your
+ * @param {String} input.swDest The name you wish to give to your
  * service worker file.
  * @param {Object<String,Array|String>} [input.templatedUrls]
  * If a URL is rendered/templated on the server, its contents may not depend on
@@ -86,9 +86,9 @@ const generateSW = function(input) {
       new Error(errors['invalid-glob-directory']));
   }
 
-  if (typeof input.dest !== 'string' || input.dest.length === 0) {
+  if (typeof input.swDest !== 'string' || input.swDest.length === 0) {
     return Promise.reject(
-      new Error(errors['invalid-dest']));
+      new Error(errors['invalid-sw-dest']));
   }
 
   if (input.runtimeCaching && !(Array.isArray(input.runtimeCaching))) {
@@ -98,24 +98,24 @@ const generateSW = function(input) {
 
   const globDirectory = input.globDirectory;
   input.globIgnores = input.globIgnores || [];
-  const dest = input.dest;
+  const swDest = input.swDest;
 
   let swlibPath;
-  let destDirectory = path.dirname(dest);
+  let destDirectory = path.dirname(swDest);
   return copySWLib(destDirectory)
   .then((libPath) => {
     // If sw file is in build/sw.js, the swlib file will be build/swlib.***.js
     // So the sw.js file should import swlib.***.js (i.e. not include build/).
     swlibPath = path.relative(destDirectory, libPath);
     input.globIgnores.push(libPath);
-    input.globIgnores.push(dest);
+    input.globIgnores.push(swDest);
   })
   .then(() => {
     return getFileManifestEntries(input);
   })
   .then((manifestEntries) => {
     return writeServiceWorker(
-      dest,
+      swDest,
       manifestEntries,
       swlibPath,
       globDirectory,

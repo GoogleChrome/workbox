@@ -135,10 +135,10 @@ class SWCli {
       }
     })
     .then(() => {
-      if (!config.dest) {
+      if (!config.swDest) {
         return askForServiceWorkerName()
         .then((swName) => {
-          config.dest = path.join(config.globDirectory, swName);
+          config.swDest = path.join(config.globDirectory, swName);
           config.globIgnores = [
             swName,
           ];
@@ -192,7 +192,7 @@ class SWCli {
         globIgnores: [
           fileManifestName,
         ],
-        dest: path.join(rootDirPath, fileManifestName),
+        manifestDest: path.join(rootDirPath, fileManifestName),
       });
     });
   }

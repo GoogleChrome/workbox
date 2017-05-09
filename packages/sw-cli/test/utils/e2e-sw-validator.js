@@ -11,7 +11,7 @@ const seleniumAssistant = require('selenium-assistant');
 
 let globalDriverBrowser;
 
-const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, dest, modifyUrlPrefix) => {
+const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, swDest, modifyUrlPrefix) => {
   // Check the manifest is defined by the manifest JS.
   expect(fileManifestOutput).to.exist;
 
@@ -19,8 +19,8 @@ const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, dest,
   let expectedFiles = glob.sync(
     `${exampleProject}/**/*.{${fileExtensions.join(',')}}`, {
     ignore: [
-      path.join(exampleProject, dest),
-      path.join(exampleProject, path.dirname(dest), 'sw-lib.prod.*.js'),
+      path.join(exampleProject, swDest),
+      path.join(exampleProject, path.dirname(swDest), 'sw-lib.prod.*.js'),
     ],
   });
 
@@ -90,7 +90,7 @@ const performCleanup = (err) => {
   });
 };
 
-const performTest = (generateSWCb, {exampleProject, dest, fileExtensions, baseTestUrl, modifyUrlPrefix}) => {
+const performTest = (generateSWCb, {exampleProject, swDest, fileExtensions, baseTestUrl, modifyUrlPrefix}) => {
   let fileManifestOutput;
   return generateSWCb()
   .then(() => {
@@ -104,7 +104,7 @@ const performTest = (generateSWCb, {exampleProject, dest, fileExtensions, baseTe
         SWLib,
       },
     };
-    const swContent = fs.readFileSync(dest);
+    const swContent = fs.readFileSync(swDest);
     // To smoke test the service worker is valid JavaScript we can run it
     // in Node's JavaScript parsed. `runInNewContext` comes without
     // any of the usual APIs (i.e. no require API, no console API, nothing)
@@ -116,7 +116,7 @@ const performTest = (generateSWCb, {exampleProject, dest, fileExtensions, baseTe
       },
     });
 
-    validateFiles(fileManifestOutput, exampleProject, fileExtensions, dest, modifyUrlPrefix);
+    validateFiles(fileManifestOutput, exampleProject, fileExtensions, swDest, modifyUrlPrefix);
   })
   .then(() => {
     // Rerun and ensure the sw and sw-lib files are excluded from the output.
@@ -134,7 +134,7 @@ const performTest = (generateSWCb, {exampleProject, dest, fileExtensions, baseTe
         SWLib,
       },
     };
-    const swContent = fs.readFileSync(dest);
+    const swContent = fs.readFileSync(swDest);
     // To smoke test the service worker is valid JavaScript we can run it
     // in Node's JavaScript parsed. `runInNewContext` comes without
     // any of the usual APIs (i.e. no require API, no console API, nothing)
@@ -146,7 +146,7 @@ const performTest = (generateSWCb, {exampleProject, dest, fileExtensions, baseTe
       },
     });
 
-    validateFiles(fileManifestOutput, exampleProject, fileExtensions, dest, modifyUrlPrefix);
+    validateFiles(fileManifestOutput, exampleProject, fileExtensions, swDest, modifyUrlPrefix);
   })
   .then(() => {
     if (process.platform === 'win32') {
@@ -181,7 +181,7 @@ const performTest = (generateSWCb, {exampleProject, dest, fileExtensions, baseTe
     }
 
     return getBrowserPromise.then(() => {
-      const urlFriendlyDest = querystring.escape(dest);
+      const urlFriendlyDest = querystring.escape(swDest);
       console.log(`URL: ${baseTestUrl}/index.html?sw=${urlFriendlyDest}`);
       return globalDriverBrowser.get(`${baseTestUrl}/index.html?sw=${urlFriendlyDest}`);
     })
