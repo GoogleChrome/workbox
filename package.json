@@ -4,8 +4,6 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "local-docs": "jekyll serve --source ./docs/ --trace --config ./docs/_config.yml",
-    "publish-docs": "npm-publish-scripts publish-docs",
     "local-lerna": "lerna"
   },
   "version": "0.0.0",

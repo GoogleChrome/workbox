@@ -19,6 +19,7 @@ const path = require('path');
 const rename = require('gulp-rename');
 const insert = require('gulp-insert');
 const ghpages = require('gh-pages');
+const spawn = require('child_process').spawn;
 const handlebars = require('gulp-compile-handlebars');
 
 const {globPromise, taskHarness} = require('../utils/build');
@@ -70,6 +71,28 @@ const documentPackage = (projectPath) => {
       .on('end', resolve);
   });
 };
+
+gulp.task('documentation:local', () => {
+  const params = [
+    'serve',
+    '--source', path.join(__dirname, '..', 'docs'),
+    '--trace',
+    '--config', path.join(__dirname, '..', 'docs', '_config.yml'),
+  ];
+  const jekyllProcess = spawn('jekyll', params, {
+    stdio: 'inherit',
+  });
+
+  jekyllProcess.on('error', (err) => {
+    console.error('Unable to run Jekyll. Please ensure that you ' +
+      'run the followings commands:');
+    console.error('');
+    console.error('    gem install bundler');
+    console.error('    rvm . do bundle install');
+    console.error('');
+    console.error(err);
+  });
+});
 
 gulp.task('documentation:gh-pages', () => {
   return new Promise((resolve) => {
