@@ -1,6 +1,6 @@
 {
   "name": "sw-build-webpack-plugin",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "This is a webpack plugin for sw-build",
   "keywords": [
     "webpack",
@@ -22,7 +22,7 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "sw-build": "^0.0.20"
+    "sw-build": "^0.0.21"
   },
   "devDependencies": {
     "fs-extra": "^3.0.1"

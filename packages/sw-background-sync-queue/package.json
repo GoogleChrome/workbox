@@ -1,6 +1,6 @@
 {
   "name": "sw-background-sync-queue",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Queues failed requests and uses the Background Sync API to replay those requests at a later time when the network state has changed.",
   "keywords": [
     "service worker",

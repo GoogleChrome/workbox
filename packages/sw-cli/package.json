@@ -1,6 +1,6 @@
 {
   "name": "sw-cli",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "A CLI tool to generate a service worker and a file manifest making use of the sw-lib module.",
   "keywords": [
     "sw-fw",
@@ -31,7 +31,7 @@
     "chalk": "^1.1.3",
     "inquirer": "^2.0.0",
     "meow": "^3.7.0",
-    "sw-build": "^0.0.20",
+    "sw-build": "^0.0.21",
     "update-notifier": "^1.0.3"
   },
   "devDependencies": {

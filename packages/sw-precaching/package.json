@@ -1,6 +1,6 @@
 {
   "name": "sw-precaching",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "This library is still a work in progress and is not functional.",
   "keywords": [
     "service worker",
@@ -23,8 +23,8 @@
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-precaching",
   "devDependencies": {
-    "sw-routing": "^0.0.20",
-    "sw-runtime-caching": "^0.0.20"
+    "sw-routing": "^0.0.21",
+    "sw-runtime-caching": "^0.0.21"
   },
   "main": "build/importScripts/sw-precaching.prod.v0.0.20.js",
   "module": "build/modules/sw-precaching.prod.v0.0.20.mjs"

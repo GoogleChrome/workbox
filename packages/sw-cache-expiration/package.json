@@ -1,6 +1,6 @@
 {
   "name": "sw-cache-expiration",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "This library automatically expires cached responses based on age or maximum number of entries.",
   "keywords": [
     "service worker",
@@ -23,6 +23,6 @@
   "main": "build/importScripts/sw-cache-expiration.prod.v0.0.20.js",
   "module": "build/modules/sw-cache-expiration.prod.v0.0.20.mjs",
   "devDependencies": {
-    "sw-runtime-caching": "^0.0.20"
+    "sw-runtime-caching": "^0.0.21"
   }
 }
