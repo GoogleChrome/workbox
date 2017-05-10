@@ -39,7 +39,7 @@ describe('Test Dependencies', function() {
     // this module itself. So dependencies are checked above and devDependencies
     // can be put in top level.
     const pkg = require('../../package.json');
-    if (pkg.devDependencies && pkg.devDependencies > 0) {
+    if (pkg.devDependencies && Object.keys(pkg.devDependencies) > 0) {
       throw new Error('No devDependencies in this module.');
     }
   });
