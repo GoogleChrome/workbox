@@ -1,0 +1,20 @@
+{
+  "browser": {
+    "scripts": [
+      "/node_modules/mockdate/src/mockdate.js",
+      "/node_modules/sinon/pkg/sinon.js",
+      "/__test/bundle/workbox-background-sync",
+      "/packages/workbox-background-sync/build/background-sync-queue.js",
+			"/packages/workbox-background-sync/build/test/background-sync-queue-plugin.js",
+      "/packages/workbox-background-sync/build/test/background-sync-idb-helper.js",
+      "/packages/workbox-background-sync/build/test/background-sync-queue.js",
+      "/packages/workbox-background-sync/build/test/broadcast-manager.js",
+      "/packages/workbox-background-sync/build/test/constants.js",
+      "/packages/workbox-background-sync/build/test/idb-helper.js",
+      "/packages/workbox-background-sync/build/test/queue-utils.js",
+      "/packages/workbox-background-sync/build/test/request-manager.js",
+      "/packages/workbox-background-sync/build/test/request-queue.js",
+      "/packages/workbox-background-sync/build/test/response-manager.js"
+    ]
+  }
+}

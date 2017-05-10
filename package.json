@@ -1,5 +1,5 @@
 {
-  "name": "sw-helpers",
+  "name": "workbox",
   "engines": {
     "node": ">=6.0.0"
   },
@@ -7,18 +7,18 @@
     "local-lerna": "lerna"
   },
   "version": "0.0.0",
-  "description": "Top-level scripts and dependencies for the sw-helpers monorepo. Not meant to be published to npm.",
+  "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GoogleChrome/sw-helpers.git"
+    "url": "git+https://github.com/GoogleChrome/workbox.git"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/GoogleChrome/sw-helpers/issues"
+    "url": "https://github.com/GoogleChrome/workbox/issues"
   },
-  "homepage": "https://github.com/GoogleChrome/sw-helpers#readme",
+  "homepage": "https://github.com/GoogleChrome/workbox#readme",
   "dependencies": {
     "idb": "^2.0.0",
     "mkdirp": "^0.5.1",
