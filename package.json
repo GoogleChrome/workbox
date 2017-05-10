@@ -36,7 +36,6 @@
     "express": "^4.14.0",
     "fs-extra": "^3.0.1",
     "geckodriver": "1.6.0",
-    "gh-pages": "^1.0.0",
     "glob": "^7.1.0",
     "gulp": "^3.9.1",
     "gulp-compile-handlebars": "^0.6.1",
