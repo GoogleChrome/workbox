@@ -11,17 +11,17 @@ node_js:
   - 'stable'
 
 env:
-  - PROJECT="sw-background-sync-queue"
-  - PROJECT="sw-broadcast-cache-update"
-  - PROJECT="sw-build"
-  - PROJECT="sw-build-webpack-plugin"
-  - PROJECT="sw-cache-expiration"
-  - PROJECT="sw-cli"
-  - PROJECT="sw-lib"
-  - PROJECT="sw-offline-google-analytics"
-  - PROJECT="sw-precaching"
-  - PROJECT="sw-routing"
-  - PROJECT="sw-runtime-caching"
+  - PROJECT="workbox-background-sync"
+  - PROJECT="workbox-broadcast-cache-update"
+  - PROJECT="workbox-build"
+  - PROJECT="workbox-webpack-plugin"
+  - PROJECT="workbox-cache-expiration"
+  - PROJECT="workbox-cli"
+  - PROJECT="workbox-sw"
+  - PROJECT="workbox-offline-google-analytics"
+  - PROJECT="workbox-precaching"
+  - PROJECT="workbox-routing"
+  - PROJECT="workbox-runtime-caching"
 
 install:
   - npm install -g gulp-cli

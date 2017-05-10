@@ -52,135 +52,135 @@ Each library is installed separately using the command line [as listed below](#t
 
 All of the libraries are described below. Each has an _About_ page with basic usage instructions and a _Demo_ directory with an example. The main page of the documentation is [here](https://googlechrome.github.io/sw-helpers/#main).
 
-### sw-background-sync-queue
+### workbox-background-sync
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-background-sync-queue%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-background-sync%22)][travis-url]
 
 Queues failed requests and uses the Background Sync API to replay those requests at a later time when the network state has changed.
 
-**Install**: `npm install --save-dev sw-background-sync-queue`
+**Install**: `npm install --save-dev workbox-background-sync`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-background-sync-queue.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-background-sync-queue/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-background-sync.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-background-sync/demo)
 
-### sw-broadcast-cache-update
+### workbox-broadcast-cache-update
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-broadcast-cache-update%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-broadcast-cache-update%22)][travis-url]
 
-A helper library that uses the Broadcast Channel API to announce when two Response objects differ.
+A service worker helper library that uses the Broadcast Channel API to announce when two Response objects differ.
 
-**Install**: `npm install --save-dev sw-broadcast-cache-update`
+**Install**: `npm install --save-dev workbox-broadcast-cache-update`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-broadcast-cache-update.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-broadcast-cache-update/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-broadcast-cache-update.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-broadcast-cache-update/demo)
 
-### sw-build-webpack-plugin
+### workbox-build
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-build-webpack-plugin%22)][travis-url]
-
-This is a webpack plugin for sw-build
-
-**Install**: `npm install --save-dev sw-build-webpack-plugin`
-
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-build-webpack-plugin.html)
-
-### sw-build
-
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-build%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-build%22)][travis-url]
 
 This module can be used to generate a file manifest or service worker, that can be used with sw-lib.
 
-**Install**: `npm install --save-dev sw-build`
+**Install**: `npm install --save-dev workbox-build`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-build.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-build/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-build.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-build/demo)
 
-### sw-cache-expiration
+### workbox-cache-expiration
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cache-expiration%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-cache-expiration%22)][travis-url]
 
-This library is still a work in progress and is not functional.
+Service worker helper library that expires cached responses based on age or maximum number of entries.
 
-**Install**: `npm install --save-dev sw-cache-expiration`
+**Install**: `npm install --save-dev workbox-cache-expiration`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-cache-expiration.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cache-expiration/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-cache-expiration.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-cache-expiration/demo)
 
-### sw-cacheable-response
+### workbox-cacheable-response
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cacheable-response%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-cacheable-response%22)][travis-url]
 
 This library takes a Response object and determines whether it&#x27;s cacheable, based on a specific configuration.
 
-**Install**: `npm install --save-dev sw-cacheable-response`
+**Install**: `npm install --save-dev workbox-cacheable-response`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-cacheable-response.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cacheable-response/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-cacheable-response.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-cacheable-response/demo)
 
-### sw-cli
+### workbox-cli
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-cli%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-cli%22)][travis-url]
 
 A CLI tool to generate a service worker and a file manifest making use of the sw-lib module.
 
-**Install**: `npm install --global sw-cli`
+**Install**: `npm install --global workbox-cli`
 
 
 
-### sw-lib
+### workbox-google-analytics
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-lib%22)][travis-url]
-
-A service worker library to make managing fetch requests and caching as easy as possible.
-
-**Install**: `npm install --save-dev sw-lib`
-
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-lib.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-lib/demo)
-
-### sw-offline-google-analytics
-
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-offline-google-analytics%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-google-analytics%22)][travis-url]
 
 A service worker helper library to retry offline Google Analytics requests when a connection is available.
 
-**Install**: `npm install --save-dev sw-offline-google-analytics`
+**Install**: `npm install --save-dev workbox-google-analytics`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-offline-google-analytics.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-offline-google-analytics/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-google-analytics.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-google-analytics/demo)
 
-### sw-precaching
+### workbox-precaching
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-precaching%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-precaching%22)][travis-url]
 
 This library is still a work in progress and is not functional.
 
-**Install**: `npm install --save-dev sw-precaching`
+**Install**: `npm install --save-dev workbox-precaching`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-precaching.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-precaching/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-precaching.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-precaching/demo)
 
-### sw-routing
+### workbox-routing
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-routing%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-routing%22)][travis-url]
 
 A service worker helper library to route request URLs to handlers.
 
-**Install**: `npm install --save-dev sw-routing`
+**Install**: `npm install --save-dev workbox-routing`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-routing.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-routing/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-routing.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-routing/demo)
 
-### sw-runtime-caching
+### workbox-runtime-caching
 
-[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22sw-runtime-caching%22)][travis-url]
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-runtime-caching%22)][travis-url]
 
 A service worker helper library that implements various runtime caching strategies.
 
-**Install**: `npm install --save-dev sw-runtime-caching`
+**Install**: `npm install --save-dev workbox-runtime-caching`
 
-**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-sw-runtime-caching.html) •
-                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-runtime-caching/demo)
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-runtime-caching.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-runtime-caching/demo)
+
+### workbox-sw
+
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-sw%22)][travis-url]
+
+A service worker library to make managing fetch requests and caching as easy as possible.
+
+**Install**: `npm install --save-dev workbox-sw`
+
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-sw.html) •
+                [Demo Code](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-sw/demo)
+
+### workbox-webpack-plugin
+
+[![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-webpack-plugin%22)][travis-url]
+
+This is a webpack plugin for sw-build
+
+**Install**: `npm install --save-dev workbox-webpack-plugin`
+
+**Learn More**: [About](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-webpack-plugin.html)
 
 
 ## External Contributions

@@ -1,5 +1,5 @@
 **Library Affected**:
-*sw-appcache-behavior, sw-offline-google-analytics, etc.*
+*workbox-lib, workbox-build, etc.*
 
 **Browser & Platform**:
 *E.g. Google Chrome v51.0.1 for Android, or "all browsers".*

@@ -1,0 +1,27 @@
+{
+  "name": "workbox-routing",
+  "version": "0.0.1",
+  "description": "A service worker helper library to route request URLs to handlers.",
+  "keywords": [
+    "workbox",
+    "workboxjs",
+    "service worker",
+    "sw",
+    "router",
+    "routing"
+  ],
+  "files": [
+    "src",
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "gulp build --project sw-routing"
+  },
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-routing",
+  "main": "build/importScripts/sw-routing.prod.v0.0.22.js",
+  "module": "build/modules/sw-routing.prod.v0.0.22.mjs"
+}
