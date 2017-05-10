@@ -1,6 +1,6 @@
 {
   "name": "sw-precaching",
-  "version": "0.0.22",
+  "version": "0.0.25",
   "description": "This library is still a work in progress and is not functional.",
   "keywords": [
     "service worker",
@@ -26,6 +26,6 @@
     "sw-routing": "^0.0.22",
     "sw-runtime-caching": "^0.0.22"
   },
-  "main": "build/importScripts/sw-precaching.prod.v0.0.22.js",
-  "module": "build/modules/sw-precaching.prod.v0.0.22.mjs"
+  "main": "build/importScripts/sw-precaching.prod.v0.0.25.js",
+  "module": "build/modules/sw-precaching.prod.v0.0.25.mjs"
 }
