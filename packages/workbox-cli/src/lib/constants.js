@@ -1,5 +1,5 @@
 module.exports = {
-  configName: 'sw-cli-config.json',
+  configName: 'workbox-cli-config.json',
   blacklistDirectoryNames: [
     'node_modules',
   ],

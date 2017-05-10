@@ -14,7 +14,7 @@
 */
 
 /**
- * # sw-cache-expiration
+ * # workbox-cache-expiration
  *
  * The cache expiration plugin allows you define an expiration and/or
  * limit on the responses cached.
@@ -45,7 +45,7 @@
  *   cacheName: 'example-cache-name'
  * });
  *
- * @module sw-cache-expiration
+ * @module workbox-cache-expiration
  */
 
 import {timestampPropertyName, urlPropertyName} from './lib/constants';

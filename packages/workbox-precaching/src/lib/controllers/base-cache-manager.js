@@ -1,10 +1,10 @@
 import ErrorFactory from '../error-factory';
-import {RequestWrapper} from '../../../../sw-runtime-caching/src/index';
+import {RequestWrapper} from '../../../../workbox-runtime-caching/src/index';
 /**
  * This class handles the shared logic for caching revisioned and unrevisioned
  * assets.
  * @private
- * @memberof module:sw-precaching
+ * @memberof module:workbox-precaching
  */
 class BaseCacheManager {
   /**

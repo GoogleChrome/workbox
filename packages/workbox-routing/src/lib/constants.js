@@ -19,7 +19,7 @@
  *
  * @private
  * @type {string}
- * @memberof module:sw-routing
+ * @memberof module:workbox-routing
  */
 export const defaultMethod = 'GET';
 
@@ -28,7 +28,7 @@ export const defaultMethod = 'GET';
  *
  * @private
  * @type {Array.<string>}
- * @memberof module:sw-routing
+ * @memberof module:workbox-routing
  */
 export const validMethods = [
   'DELETE',

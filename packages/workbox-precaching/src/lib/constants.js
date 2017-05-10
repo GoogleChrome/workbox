@@ -13,13 +13,13 @@
  limitations under the License.
 */
 
-export const cacheBustParamName = '_sw-precaching';
+export const cacheBustParamName = '_workbox-precaching';
 export const version = 'v1';
-export const dbName = 'sw-precaching';
+export const dbName = 'workbox-precaching';
 export const dbVersion = '1';
 export const dbStorename = 'asset-revisions';
 
-let tmpRevisionedCacheName = `sw-precaching-revisioned-${version}`;
+let tmpRevisionedCacheName = `workbox-precaching-revisioned-${version}`;
 if (self && self.registration) {
   tmpRevisionedCacheName += `-${self.registration.scope}`;
 }

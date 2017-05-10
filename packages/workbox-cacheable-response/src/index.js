@@ -14,7 +14,7 @@
 */
 
 /**
- * # sw-cacheable-response
+ * # workbox-cacheable-response
  *
  * Given a Response object this behaviour determines whether
  * it's cacheable, based on a specific configuration.
@@ -40,7 +40,7 @@
  *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
  * });
  *
- * @module sw-cacheable-response
+ * @module workbox-cacheable-response
  */
 
 import CacheableResponse from './lib/cacheable-response';

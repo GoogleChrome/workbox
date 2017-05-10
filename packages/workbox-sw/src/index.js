@@ -30,7 +30,7 @@ import SWLib from './lib/sw-lib';
  * @example <caption>Caching assets and registering routes.</caption>
  *
  * // DO NOT CREATE THIS MANIFEST OR EDIT IT MANUALLY!!
- * // Use sw-build or sw-cli to generate the manifest for you.
+ * // Use workbox-build or workbox-cli to generate the manifest for you.
  * const swlib = new goog.SWLib();
  * swlib.precache([
  *   {

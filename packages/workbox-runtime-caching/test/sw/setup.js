@@ -3,7 +3,7 @@ importScripts(
   '/node_modules/chai/chai.js',
   '/node_modules/sinon/pkg/sinon-no-sourcemaps.js',
   '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/__test/bundle/sw-runtime-caching'
+  '/__test/bundle/workbox-runtime-caching'
 );
 
 const expect = self.chai.expect;

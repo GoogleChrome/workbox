@@ -31,7 +31,7 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  * of the other modules in this repo.
  *
  * If you'd like to use this functionality but are already using `sw-lib` or
- * `sw-runtime-caching`, then please see the corresponding plugin,
+ * `workbox-runtime-caching`, then please see the corresponding plugin,
  * `BroadcastCacheUpdatePlugin`, for a easy integration.
  *
  * @example <caption>Using BroadcastCacheUpdate when you're handling your
@@ -51,7 +51,7 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  *   }
  * });
  *
- * @memberof module:sw-broadcast-cache-update
+ * @memberof module:workbox-broadcast-cache-update
  */
 class BroadcastCacheUpdate {
   /**
@@ -66,7 +66,7 @@ class BroadcastCacheUpdate {
    *        used to determine whether the responses differ. Defaults to
    *        `['content-length', 'etag', 'last-modified']`.
    * @param {string} input.source An attribution value that indicates where
-   *        the update originated. Defaults to 'sw-broadcast-cache-update'.
+   *        the update originated. Defaults to 'workbox-broadcast-cache-update'.
    */
   constructor({channelName, headersToCheck, source}={}) {
     if (typeof channelName !== 'string' || channelName.length === 0) {

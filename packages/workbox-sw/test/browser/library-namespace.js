@@ -19,7 +19,7 @@ describe('Test Behaviors of Loading the Script', function() {
   const deleteIndexedDB = () => {
     return new Promise((resolve, reject) => {
       // TODO: Move to constants
-      const req = indexedDB.deleteDatabase('sw-precaching');
+      const req = indexedDB.deleteDatabase('workbox-precaching');
       req.onsuccess = function() {
         resolve();
       };

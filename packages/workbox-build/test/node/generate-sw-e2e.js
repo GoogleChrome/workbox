@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 const testServerGen = require('../../../../utils/test-server-generator.js');
-const validator = require('../../../sw-cli/test/utils/e2e-sw-validator.js');
+const validator = require('../../../workbox-cli/test/utils/e2e-sw-validator.js');
 
 require('chai').should();
 
@@ -34,13 +34,13 @@ describe('Generate SW End-to-End Tests', function() {
     return testServer.stop();
   });
 
-  it('should be able to generate a service for example-1 with sw-build', function() {
+  it('should be able to generate a service for example-1 with workbox-build', function() {
     this.timeout(120 * 1000);
 
     process.chdir(tmpDirectory);
 
     fsExtra.copySync(
-      path.join(__dirname, '..', '..', '..', 'sw-cli', 'test', 'static', 'example-project-1'),
+      path.join(__dirname, '..', '..', '..', 'workbox-cli', 'test', 'static', 'example-project-1'),
       tmpDirectory);
 
     const swDest = `build/${Date.now()}-sw.js`;

@@ -27,7 +27,7 @@ import normalizeHandler from './normalize-handler';
  * that don't explicitly match a `Route`, and a "catch" handler that responds
  * to any requests that throw an exception while being routed.
  *
- * @memberof module:sw-routing
+ * @memberof module:workbox-routing
  *
  * @example
  * // The following example sets up two routes, one to match requests with
@@ -159,8 +159,8 @@ class Router {
    * });
    *
    * @param {Object} input
-   * @param {module:sw-routing.RouteHandler} input.handler The handler to use to
-   * provide a response.
+   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
+   * use to provide a response.
    */
   setDefaultHandler({handler} = {}) {
     this.defaultHandler = normalizeHandler(handler);
@@ -179,8 +179,8 @@ class Router {
    * });
    *
    * @param {Object} input
-   * @param {module:sw-routing.RouteHandler} input.handler The handler to use to
-   * provide a response.
+   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
+   * use to provide a response.
    */
   setCatchHandler({handler} = {}) {
     this.catchHandler = normalizeHandler(handler);
@@ -225,7 +225,7 @@ class Router {
    * });
    *
    * @param {Object} input
-   * @param {module:sw-routing.Route} input.route The route to register.
+   * @param {module:workbox-routing.Route} input.route The route to register.
    */
   registerRoute({route} = {}) {
     assert.isInstance({route}, Route);

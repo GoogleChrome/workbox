@@ -14,14 +14,14 @@
 */
 
 /**
- * # sw-broadcast-cache-update
+ * # workbox-broadcast-cache-update
  *
  * A helper library that uses the Broadcast Channel API to announce when
  * two Response objects differ.
  *
  * The main use of this module will be instantiating a new
  * `BroadcastCacheUpdatePlugin` and passing it to a
- * {@link module:sw-runtime-caching.RequestWrapper|RequestWrapper},
+ * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},
  * as shown in the first example below.
  *
  * You can listen for updates from your web app by adding an event listener on
@@ -55,7 +55,7 @@
  *   console.log(`Cache updated: ${event.data.payload.updatedUrl}`);
  * });
  *
- * @module sw-broadcast-cache-update
+ * @module workbox-broadcast-cache-update
  */
 
 import BroadcastCacheUpdate from './lib/broadcast-cache-update';

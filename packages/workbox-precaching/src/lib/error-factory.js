@@ -16,7 +16,7 @@
 import ErrorFactory from '../../../../lib/error-factory';
 
 const errors = {
-  'not-in-sw': 'sw-precaching must be loaded in your service worker file.',
+  'not-in-sw': 'workbox-precaching must be loaded in your service worker file.',
   'invalid-revisioned-entry': `File manifest entries must be either a ` +
     `string with revision info in the url or an object with a 'url' and ` +
     `'revision' parameters.`,

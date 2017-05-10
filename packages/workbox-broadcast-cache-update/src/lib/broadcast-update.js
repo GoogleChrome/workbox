@@ -32,7 +32,7 @@ import {cacheUpdatedMessageType} from './constants';
  * ```
  * {
  *   type: 'CACHE_UPDATED',
- *   meta: 'sw-broadcast-cache-update',
+ *   meta: 'workbox-broadcast-cache-update',
  *   payload: {
  *     cacheName: 'the-cache-name',
  *     updatedUrl: 'https://example.com/'
@@ -51,7 +51,7 @@ import {cacheUpdatedMessageType} from './constants';
  *   source: 'custom-library'
  * });
  *
- * @memberof module:sw-broadcast-cache-update
+ * @memberof module:workbox-broadcast-cache-update
  *
  * @param {Object} input
  * @param {BroadcastChannel} input.channel The `BroadcastChannel` to use.

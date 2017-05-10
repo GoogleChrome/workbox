@@ -1,12 +1,12 @@
 /* global goog, expect */
 
-describe('sw-precaching Test Revisioned Caching', function() {
-  const STATIC_ASSETS_PATH = '/packages/sw-precaching/test/static';
+describe('workbox-precaching Test Revisioned Caching', function() {
+  const STATIC_ASSETS_PATH = '/packages/workbox-precaching/test/static';
 
   const deleteIndexedDB = () => {
     return new Promise((resolve, reject) => {
       // TODO: Move to constants
-      const req = indexedDB.deleteDatabase('sw-precaching');
+      const req = indexedDB.deleteDatabase('workbox-precaching');
       req.onsuccess = function() {
         resolve();
       };

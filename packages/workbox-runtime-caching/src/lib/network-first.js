@@ -14,7 +14,7 @@
 */
 
 import {CacheableResponsePlugin} from
-  '../../../sw-cacheable-response/src/index';
+  '../../../workbox-cacheable-response/src/index';
 import ErrorFactory from './error-factory';
 import Handler from './handler';
 import assert from '../../../../lib/assert';
@@ -41,7 +41,7 @@ import assert from '../../../../lib/assert';
  * const router = new goog.routing.Router();
  * router.registerRoute({route});
  *
- * @memberof module:sw-runtime-caching
+ * @memberof module:workbox-runtime-caching
  * @extends Handler
  */
 class NetworkFirst extends Handler {
@@ -74,7 +74,7 @@ class NetworkFirst extends Handler {
 
   /**
    * The handle method will be called by the
-   * {@link module:sw-routing.Route|Route} class when a route matches a request.
+   * {@link module:workbox-routing.Route|Route} class when a route matches a request.
    *
    * @param {Object} input
    * @param {FetchEvent} input.event The event that triggered the service

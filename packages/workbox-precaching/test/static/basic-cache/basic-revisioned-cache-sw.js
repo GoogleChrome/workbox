@@ -1,7 +1,7 @@
 /* global goog */
-importScripts('/packages/sw-precaching/test/static/test-data.js');
-importScripts('/__test/bundle/sw-precaching');
-importScripts('/packages/sw-precaching/test/static/skip-and-claim.js');
+importScripts('/packages/workbox-precaching/test/static/test-data.js');
+importScripts('/__test/bundle/workbox-precaching');
+importScripts('/packages/workbox-precaching/test/static/skip-and-claim.js');
 
 const precacheManager = new goog.precaching.RevisionedCacheManager();
 precacheManager.addToCacheList({

@@ -8,7 +8,7 @@ const errors = require('./errors');
 /**
  * @example <caption>Generate a build manifest of static assets, which could
  * then be used with a service worker.</caption>
- * const swBuild = require('sw-build');
+ * const swBuild = require('workbox-build');
  *
  * swBuild.injectManifest({
  *   globDirectory: './build/',
@@ -44,7 +44,7 @@ const errors = require('./errors');
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
- * @memberof module:sw-build
+ * @memberof module:workbox-build
  */
 const injectManifest = (input) => {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {

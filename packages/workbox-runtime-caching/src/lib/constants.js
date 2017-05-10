@@ -15,20 +15,20 @@
 
 /**
  * The default cache name, used by
- * {@link module:sw-runtime-caching.RequestWrapper|RequestWrapper} when there's
- * no name provided.
+ * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper} when
+ * there's no name provided.
  *
  * It combines a constant prefix with the `registration.scope` value associated
  * with the current service worker, ensuring that multiple service workers used
  * on the same origin will have different default caches.
  *
  * Calling this method without any parameters, this will return
- * `sw-runtime-caching-<service worker scope>`.
+ * `workbox-runtime-caching-<service worker scope>`.
  *
  * If you pass in a cacheId, it will prepend this, returning:
- * `<cacheid>-sw-runtime-caching-<service worker scope>`.
+ * `<cacheid>-workbox-runtime-caching-<service worker scope>`.
  *
- * @memberof module:sw-runtime-caching
+ * @memberof module:workbox-runtime-caching
  * @param {Object} input
  * @param {string} input.cacheId This will be prepended to the default cache
  * name.
@@ -36,7 +36,7 @@
  * parameters.
  */
 export const getDefaultCacheName = ({cacheId} = {}) => {
-  let cacheName = `sw-runtime-caching`;
+  let cacheName = `workbox-runtime-caching`;
   if (cacheId) {
     cacheName = `${cacheId}-${cacheName}`;
   }
@@ -53,7 +53,7 @@ export const getDefaultCacheName = ({cacheId} = {}) => {
  *
  * @private
  * @type {Array.<string>}
- * @memberof module:sw-runtime-caching
+ * @memberof module:workbox-runtime-caching
  */
 export const pluginCallbacks = [
   'cacheDidUpdate',

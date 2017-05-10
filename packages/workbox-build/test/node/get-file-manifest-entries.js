@@ -90,7 +90,7 @@ describe('Test getFileManifestEntries', function() {
         '**/*.{html,js,css}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
-        'sw-cli', 'test', 'static', 'example-project-1'),
+        'workbox-cli', 'test', 'static', 'example-project-1'),
     };
 
     return swBuild.getFileManifestEntries(testInput)
@@ -122,7 +122,7 @@ describe('Test getFileManifestEntries', function() {
         '**/*.{html,js,css}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
-        'sw-cli', 'test', 'static', 'example-project-1'),
+        'workbox-cli', 'test', 'static', 'example-project-1'),
       modifyUrlPrefix: {
         '/styles': '/static/styles',
         '/page': '/pages/page',
@@ -158,7 +158,7 @@ describe('Test getFileManifestEntries', function() {
         '**/*.{html,js,css,jpg,png}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
-        'sw-cli', 'test', 'static', 'example-project-1'),
+        'workbox-cli', 'test', 'static', 'example-project-1'),
       maximumFileSizeToCacheInBytes: 2000,
     };
 
@@ -188,7 +188,7 @@ describe('Test getFileManifestEntries', function() {
         '**/*.{html,js,css}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
-        'sw-cli', 'test', 'static', 'example-project-1'),
+        'workbox-cli', 'test', 'static', 'example-project-1'),
       templatedUrls: {
         '/template/url1': ['/doesnt-exist/page-1.html', 'index.html'],
         '/template/url2': ['page-2.html', 'index.html'],
@@ -214,7 +214,7 @@ describe('Test getFileManifestEntries', function() {
         '**/*.{html,js,css}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
-        'sw-cli', 'test', 'static', 'example-project-1'),
+        'workbox-cli', 'test', 'static', 'example-project-1'),
       templatedUrls: {
         '/template/url1': ['page-1.html', 'index.html'],
         '/template/url2': ['page-2.html', 'index.html'],
@@ -260,7 +260,7 @@ describe('Test getFileManifestEntries', function() {
         '**/*.{html,js,css}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
-        'sw-cli', 'test', 'static', 'example-project-1'),
+        'workbox-cli', 'test', 'static', 'example-project-1'),
       dynamicUrlToDependencies: {
         '/template/url1': ['page-1.html', 'index.html'],
         '/template/url2': ['page-2.html', 'index.html'],
@@ -306,7 +306,7 @@ describe('Test getFileManifestEntries', function() {
         '**/*.{html,js,css}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
-        'sw-cli', 'test', 'static', 'example-project-1'),
+        'workbox-cli', 'test', 'static', 'example-project-1'),
       dontCacheBustUrlsMatching: /./,
     };
 

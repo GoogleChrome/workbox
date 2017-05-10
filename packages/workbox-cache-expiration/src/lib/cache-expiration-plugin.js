@@ -21,8 +21,8 @@ import assert from '../../../../lib/assert';
  * limit on the responses cached.
  *
  * This class is meant to be automatically invoked as a plugin to a
- * {@link module:sw-runtime-caching.RequestWrapper|RequestWrapper}, which is
- * used by the `sw-lib` and `sw-runtime-caching` modules.
+ * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper}, which
+ * is used by the `sw-lib` and `workbox-runtime-caching` modules.
  *
  * If you would like to use this functionality outside of the `RequestWrapper`
  * context, please use the `CacheExpiration` class directly.
@@ -33,7 +33,7 @@ import assert from '../../../../lib/assert';
  *   maxAgeSeconds: 10,
  * });
  *
- * @memberof module:sw-cache-expiration
+ * @memberof module:workbox-cache-expiration
  */
 class CacheExpirationPlugin extends CacheExpiration {
   /**

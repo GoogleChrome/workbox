@@ -2,7 +2,7 @@ importScripts(
   '/node_modules/mocha/mocha.js',
   '/node_modules/chai/chai.js',
   '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/__test/bundle/sw-cache-expiration'
+  '/__test/bundle/workbox-cache-expiration'
 );
 
 const expect = self.chai.expect;

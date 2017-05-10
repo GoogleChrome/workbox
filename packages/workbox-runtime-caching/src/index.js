@@ -14,7 +14,7 @@
 */
 
 /**
- * # sw-runtime-caching
+ * # workbox-runtime-caching
  *
  * A service worker helper library that implements various runtime caching
  * strategies.
@@ -24,13 +24,13 @@
  * which covers various ways of handling fetch events with a service worker.
  *
  * These strategies can be used as
- * {@link module:sw-routing.RouteHandler|RouteHandlers}
+ * {@link module:workbox-routing.RouteHandler|RouteHandlers}
  * that are automatically invoked by the lower-level
- * {@link module:sw-routing.Router|sw-routing Router}
+ * {@link module:workbox-routing.Router|workbox-routing Router}
  * or the higher-level {@link module:sw-lib.Router|SWLib Router}
  * interfaces.
  *
- * @module sw-runtime-caching
+ * @module workbox-runtime-caching
  */
 
 import RequestWrapper from './lib/request-wrapper';

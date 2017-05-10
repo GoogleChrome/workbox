@@ -6,7 +6,7 @@ const errors = require('./errors');
 
 /**
  * @example <caption>Generate a service worker for a project.</caption>
- * const swBuild = require('sw-build');
+ * const swBuild = require('workbox-build');
  *
  * swBuild.generateSW({
  *   globDirectory: './build/',
@@ -41,7 +41,7 @@ const errors = require('./errors');
  * where the key will be replaced at the start of a url with the corresponding
  * value.
  * @param {String} [input.cacheId] An optional ID to be prepended to caches
- * used by sw-build. This is primarily useful for local development where
+ * used by workbox-build. This is primarily useful for local development where
  * multiple sites may be served from `http://localhost`.
  * @param {Boolean} [input.handleFetch] Stops the generated service worker
  * from handling fetch events, i.e. everything goes to the network.
@@ -67,7 +67,7 @@ const errors = require('./errors');
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
- * @memberof module:sw-build
+ * @memberof module:workbox-build
  */
 const generateSW = function(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {

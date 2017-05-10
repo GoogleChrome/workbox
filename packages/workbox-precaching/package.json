@@ -16,17 +16,17 @@
     "build"
   ],
   "scripts": {
-    "prepublish": "gulp build --project sw-precaching"
+    "prepublish": "gulp build --project workbox-precaching"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-precaching",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-precaching",
   "devDependencies": {
-    "sw-routing": "^0.0.22",
-    "sw-runtime-caching": "^0.0.22"
+    "workbox-routing": "^0.0.1",
+    "workbox-runtime-caching": "^0.0.1"
   },
-  "main": "build/importScripts/sw-precaching.prod.v0.0.25.js",
-  "module": "build/modules/sw-precaching.prod.v0.0.25.mjs"
+  "main": "build/importScripts/workbox-precaching.prod.v0.0.1.js",
+  "module": "build/modules/workbox-precaching.prod.v0.0.1.mjs"
 }

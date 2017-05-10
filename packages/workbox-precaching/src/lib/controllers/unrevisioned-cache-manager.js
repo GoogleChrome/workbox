@@ -10,8 +10,8 @@ import assert from '../../../../../lib/assert';
  * to manage caching of unrevisioned assets.
  *
  * @private
- * @memberof module:sw-precaching
- * @extends {module:sw-precaching.BaseCacheManager}
+ * @memberof module:workbox-precaching
+ * @extends {module:workbox-precaching.BaseCacheManager}
  */
 class UnrevisionedCacheManager extends BaseCacheManager {
   /**

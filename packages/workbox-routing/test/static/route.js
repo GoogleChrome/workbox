@@ -1,6 +1,6 @@
 /* global goog */
 
-importScripts('/__test/bundle/sw-routing');
+importScripts('/__test/bundle/workbox-routing');
 
 self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));

@@ -1,5 +1,5 @@
-importScripts('/__test/bundle/sw-runtime-caching');
-importScripts('/__test/bundle/sw-cache-expiration');
+importScripts('/__test/bundle/workbox-runtime-caching');
+importScripts('/__test/bundle/workbox-cache-expiration');
 
 self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));

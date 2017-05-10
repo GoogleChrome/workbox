@@ -31,7 +31,7 @@ import logHelper from '../../../../lib/log-helper.js';
  *   ]
  * });
  *
- * @memberof module:sw-broadcast-cache-update
+ * @memberof module:workbox-broadcast-cache-update
  *
  * @param {Object} input
  * @param {Response} input.first One of the `Response`s.

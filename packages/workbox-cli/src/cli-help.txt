@@ -1,5 +1,5 @@
 Usage:
-    sw-cli [command] [options]
+    workbox-cli [command] [options]
 
 Commands:
 
@@ -9,4 +9,4 @@ Commands:
 Options
 
     -h --help               Show this help text.
-    -v --version            Show current version of sw-cli
+    -v --version            Show current version of workbox-cli

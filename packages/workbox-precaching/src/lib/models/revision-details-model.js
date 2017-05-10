@@ -7,7 +7,7 @@ import {dbName, dbVersion, dbStorename} from '../constants';
  * with different revisions are downloaded and updated.
  *
  * @private
- * @memberof module:sw-precaching
+ * @memberof module:workbox-precaching
  */
 class RevisionDetailsModel {
   /**

@@ -5,8 +5,8 @@ import ErrorFactory from '../../error-factory';
  * This class will take a Request object and parse it into a BaseCacheEntry.
  *
  * @private
- * @memberof module:sw-precaching
- * @extends {module:sw-precaching.BaseCacheEntry}
+ * @memberof module:workbox-precaching
+ * @extends {module:workbox-precaching.BaseCacheEntry}
  */
 class RequestCacheEntry extends BaseCacheEntry {
   /**

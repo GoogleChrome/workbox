@@ -14,8 +14,8 @@ import logHelper from '../../../../../lib/log-helper';
  * to manage caching of revisioned assets.
  *
  * @private
- * @memberof module:sw-precaching
- * @extends {module:sw-precaching.BaseCacheManager}
+ * @memberof module:workbox-precaching
+ * @extends {module:workbox-precaching.BaseCacheManager}
  */
 class RevisionedCacheManager extends BaseCacheManager {
   /**

@@ -16,7 +16,7 @@
 import ErrorFactory from './error-factory';
 import assert from '../../../../lib/assert';
 import {CacheableResponsePlugin} from
-  '../../../sw-cacheable-response/src/index';
+  '../../../workbox-cacheable-response/src/index';
 import {pluginCallbacks, getDefaultCacheName} from './constants';
 import cleanResponseCopy from './clean-response-copy';
 
@@ -40,7 +40,7 @@ import cleanResponseCopy from './clean-response-copy';
  *   perform validity/freshness checks.
  *   - `fetchDidFail({request})`: Called whenever a network request fails.
  *
- * @memberof module:sw-runtime-caching
+ * @memberof module:workbox-runtime-caching
  */
 class RequestWrapper {
   /**

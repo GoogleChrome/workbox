@@ -6,8 +6,8 @@ import assert from '../../../../../../lib/assert';
  * This class will take a string and parse it as a BaseCacheEntry.
  *
  * @private
- * @memberof module:sw-precaching
- * @extends {module:sw-precaching.BaseCacheEntry}
+ * @memberof module:workbox-precaching
+ * @extends {module:workbox-precaching.BaseCacheEntry}
  */
 class StringCacheEntry extends BaseCacheEntry {
   /**

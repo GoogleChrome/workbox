@@ -62,7 +62,7 @@ import replayQueuedRequests from './lib/replay-queued-requests.js';
  *   }
  * });
  *
- * @module sw-offline-google-analytics
+ * @module workbox-google-analytics
  */
 
 /**
@@ -80,7 +80,7 @@ import replayQueuedRequests from './lib/replay-queued-requests.js';
  *                    the original hit's URLSearchParams object as its only
  *                    argument. To abort the hit and prevent it from being
  *                    replayed, throw an error.
- * @memberof module:sw-offline-google-analytics
+ * @memberof module:workbox-google-analytics
  */
 const initialize = (config) => {
   config = config || {};

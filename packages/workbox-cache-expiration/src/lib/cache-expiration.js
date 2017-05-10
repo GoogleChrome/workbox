@@ -34,7 +34,7 @@ import ErrorFactory from './error-factory';
  *   maxAgeSeconds: 10,
  * });
  *
- * @memberof module:sw-cache-expiration
+ * @memberof module:workbox-cache-expiration
  */
 class CacheExpiration {
   /**

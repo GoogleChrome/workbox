@@ -1,14 +1,14 @@
 import {
   CacheFirst, CacheOnly, NetworkFirst,
   NetworkOnly, StaleWhileRevalidate,
-} from '../../../sw-runtime-caching/src/index.js';
+} from '../../../workbox-runtime-caching/src/index.js';
 import {CacheExpirationPlugin} from
-  '../../../sw-cache-expiration/src/index.js';
+  '../../../workbox-cache-expiration/src/index.js';
 import {BroadcastCacheUpdatePlugin} from
-  '../../../sw-broadcast-cache-update/src/index.js';
+  '../../../workbox-broadcast-cache-update/src/index.js';
 import {CacheableResponsePlugin} from
-  '../../../sw-cacheable-response/src/index.js';
-import {RequestWrapper} from '../../../sw-runtime-caching/src/index.js';
+  '../../../workbox-cacheable-response/src/index.js';
+import {RequestWrapper} from '../../../workbox-runtime-caching/src/index.js';
 
 /**
  * This is a simple class used to namespace the supported caching strategies in
@@ -41,7 +41,7 @@ class Strategies {
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
-   * @return {module:sw-runtime-caching.CacheFirst} A CacheFirst handler.
+   * @return {module:workbox-runtime-caching.CacheFirst} A CacheFirst handler.
    */
   cacheFirst(options) {
     return this._getCachingMechanism(CacheFirst, options);
@@ -59,7 +59,7 @@ class Strategies {
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
-   * @return {module:sw-runtime-caching.CacheOnly} The caching handler
+   * @return {module:workbox-runtime-caching.CacheOnly} The caching handler
    * instance.
    */
   cacheOnly(options) {
@@ -78,7 +78,7 @@ class Strategies {
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
-   * @return {module:sw-runtime-caching.NetworkFirst} The caching handler
+   * @return {module:workbox-runtime-caching.NetworkFirst} The caching handler
    * instance.
    */
   networkFirst(options) {
@@ -97,7 +97,7 @@ class Strategies {
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
-   * @return {module:sw-runtime-caching.NetworkOnly} The caching handler
+   * @return {module:workbox-runtime-caching.NetworkOnly} The caching handler
    * instance.
    */
   networkOnly(options) {
@@ -117,7 +117,7 @@ class Strategies {
    *
    * @param {module:sw-lib.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
-   * @return {module:sw-runtime-caching.StaleWhileRevalidate} The caching
+   * @return {module:workbox-runtime-caching.StaleWhileRevalidate} The caching
    * handler instance.
    */
   staleWhileRevalidate(options) {

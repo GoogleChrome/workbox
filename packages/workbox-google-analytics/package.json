@@ -16,14 +16,14 @@
     "url": "https://jeffy.info"
   },
   "scripts": {
-    "prepublish": "gulp build --project sw-offline-google-analytics"
+    "prepublish": "gulp build --project workbox-google-analytics"
   },
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-offline-google-analytics",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-google-analytics",
   "files": [
     "build"
   ],
-  "main": "build/importScripts/sw-offline-google-analytics.prod.v0.0.25.js"
+  "main": "build/importScripts/workbox-google-analytics.prod.v0.0.1.js"
 }

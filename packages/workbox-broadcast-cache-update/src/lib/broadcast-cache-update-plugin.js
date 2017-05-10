@@ -25,8 +25,8 @@ import assert from '../../../../lib/assert';
  * only specific response headers are checked.
  *
  * This class is meant to be automatically invoked as a plugin to a
- * {@link module:sw-runtime-caching.RequestWrapper|RequestWrapper}, which is
- * used by the `sw-lib` and `sw-runtime-caching` modules.
+ * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper}, which is
+ * used by the `sw-lib` and `workbox-runtime-caching` modules.
  *
  * If you would like to use this functionality outside of the `RequestWrapper`
  * context, please use the `BroadcastCacheUpdate` class directly.
@@ -45,12 +45,12 @@ import assert from '../../../../lib/assert';
  *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
  * });
  *
- * @memberof module:sw-broadcast-cache-update
+ * @memberof module:workbox-broadcast-cache-update
  */
 class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
   /**
    * A "lifecycle" callback that will be triggered automatically by the
-   * `sw-lib` and `sw-runtime-caching` handlers when an entry is added to a
+   * `sw-lib` and `workbox-runtime-caching` handlers when an entry is added to a
    * cache.
    *
    * @private

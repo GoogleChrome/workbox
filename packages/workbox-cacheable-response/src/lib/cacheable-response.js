@@ -32,7 +32,7 @@ import logHelper from '../../../../lib/log-helper.js';
  *   }
  * })
  *
- * @memberof module:sw-cacheable-response
+ * @memberof module:workbox-cacheable-response
  */
 class CacheableResponse {
   /**

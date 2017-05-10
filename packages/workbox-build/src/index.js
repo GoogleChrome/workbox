@@ -5,7 +5,7 @@ const generateFileManifest = require('./lib/generate-file-manifest');
 const injectManifest = require('./lib/inject-manifest');
 
 /**
- * # sw-build
+ * # workbox-build
  *
  * To get a list of url's and a corresponding revision details, call either
  * `generateFileManifest` or `getFileManifestEntries()`.
@@ -22,7 +22,7 @@ const injectManifest = require('./lib/inject-manifest');
  * with `generateSW()`.
  *
  * @example <caption>Generate a build manifest file.</caption>
- * const swBuild = require('sw-build');
+ * const swBuild = require('workbox-build');
  *
  * swBuild.generateFileManifest({
  *   globDirectory: './build/',
@@ -38,7 +38,7 @@ const injectManifest = require('./lib/inject-manifest');
  * });
  *
  * @example <caption>Get a list of files with revision details.</caption>
- * const swBuild = require('sw-build');
+ * const swBuild = require('workbox-build');
  *
  * swBuild.getFileManifestEntries({
  *   globDirectory: './build/',
@@ -53,7 +53,7 @@ const injectManifest = require('./lib/inject-manifest');
  * });
  *
  * @example <caption>Generate a service worker for a project.</caption>
- * const swBuild = require('sw-build');
+ * const swBuild = require('workbox-build');
  *
  * swBuild.generateSW({
  *   globDirectory: './build/',
@@ -68,7 +68,7 @@ const injectManifest = require('./lib/inject-manifest');
  *   console.log('Service worker generated.');
  * });
  *
- * @module sw-build
+ * @module workbox-build
  */
 
 module.exports = {

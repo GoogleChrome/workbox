@@ -14,13 +14,13 @@ more.
 
 ## A service worker in two minutes
 
-Use [sw-cli](sw-cli) to add a service worker to an existing project in under two
+Use [workbox-cli](workbox-cli) to add a service worker to an existing project in under two
 minutes. 
 
 ## A build script in ten minutes
 
 Generate a service worker in your build process
-using [sw-build](sw-build).
+using [workbox-build](workbox-build).
 
 ## Much more
 
@@ -176,7 +176,7 @@ A service worker library to make managing fetch requests and caching as easy as 
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-webpack-plugin%22)][travis-url]
 
-This is a webpack plugin for sw-build
+This is a webpack plugin for workbox-build
 
 **Install**: `npm install --save-dev workbox-webpack-plugin`
 

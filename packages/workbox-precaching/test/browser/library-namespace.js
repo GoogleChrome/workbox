@@ -32,7 +32,7 @@ describe('Test Behaviors of Loading the Script', function() {
       };
 
       const scriptElement = document.createElement('script');
-      scriptElement.src = '/__test/bundle/sw-precaching';
+      scriptElement.src = '/__test/bundle/workbox-precaching';
       scriptElement.addEventListener('error', (event) => {
         reject();
       });

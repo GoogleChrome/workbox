@@ -1,7 +1,7 @@
 importScripts(
-  '/__test/bundle/sw-precaching',
-  '/__test/bundle/sw-routing',
-  '/__test/bundle/sw-runtime-caching'
+  '/__test/bundle/workbox-precaching',
+  '/__test/bundle/workbox-routing',
+  '/__test/bundle/workbox-runtime-caching'
 );
 
 /* global goog */

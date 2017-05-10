@@ -21,10 +21,10 @@ import Strategies from './strategies';
 import environment from '../../../../lib/environment.js';
 import logHelper from '../../../../lib/log-helper';
 import {BroadcastCacheUpdatePlugin} from
-  '../../../sw-broadcast-cache-update/src/index.js';
-import {RevisionedCacheManager} from '../../../sw-precaching/src/index.js';
-import {Route} from '../../../sw-routing/src/index.js';
-import {getDefaultCacheName} from '../../../sw-runtime-caching/src/index.js';
+  '../../../workbox-broadcast-cache-update/src/index.js';
+import {RevisionedCacheManager} from '../../../workbox-precaching/src/index.js';
+import {Route} from '../../../workbox-routing/src/index.js';
+import {getDefaultCacheName} from '../../../workbox-runtime-caching/src/index.js';
 
 /**
  * A high level library to make it as easy as possible to precache assets
@@ -147,7 +147,7 @@ class SWLib {
    *
    * // ...precache() can also take objects to cache
    * // non-revisioned URLs.
-   * // Please use sw-build or sw-cli to generate the manifest for you.
+   * // Please use workbox-build or workbox-cli to generate the manifest for you.
    * swlib.precache([
    *     {
    *       url: '/index.html',

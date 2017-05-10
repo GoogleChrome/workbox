@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-let tmpIdbName = `sw-cache-expiration`;
+let tmpIdbName = `workbox-cache-expiration`;
 if (self && self.registration) {
   tmpIdbName += `-${self.registration.scope}`;
 }

@@ -35,7 +35,7 @@ import logHelper from '../../../../lib/log-helper';
  * To match all navigations, use a `whitelist` array containing a RegExp that
  * matches everything, i.e. `[/./]`.
  *
- * @memberof module:sw-routing
+ * @memberof module:workbox-routing
  * @extends Route
  *
  * @example
@@ -59,8 +59,8 @@ class NavigationRoute extends Route {
    * the route will handle the request (assuming the blacklist doesn't match).
    * @param {Array<RegExp>} [input.blacklist] If any of these patterns match,
    * the route will not handle the request (even if a whitelist entry matches).
-   * @param {module:sw-routing.RouteHandler} input.handler The handler to use to
-   * provide a response if the route matches.
+   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
+   * use to provide a response if the route matches.
    */
   constructor({whitelist, blacklist, handler} = {}) {
     assert.isArrayOfClass({whitelist}, RegExp);

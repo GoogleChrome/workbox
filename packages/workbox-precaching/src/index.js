@@ -14,7 +14,7 @@
 */
 
 /**
- * # sw-precaching
+ * # workbox-precaching
  *
  * The precaching module provides helpers that make it easy to cache files
  * during the install step of your service worker.
@@ -24,7 +24,7 @@
  * the currently cached value.
  *
  * @example
- * importScripts('/<Path to Module>/build/sw-precaching.min.js');
+ * importScripts('/<Path to Module>/build/workbox-precaching.min.js');
  *
  * const revCacheManager = new goog.precaching.RevisionedCacheManager();
  * revCacheManager.addToCacheList({
@@ -61,7 +61,7 @@
  *   event.waitUntil(promiseChain);
  * });
  *
- * @module sw-precaching
+ * @module workbox-precaching
  */
 import ErrorFactory from './lib/error-factory';
 import RevisionedCacheManager from

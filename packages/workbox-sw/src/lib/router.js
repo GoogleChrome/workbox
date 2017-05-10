@@ -21,12 +21,12 @@ import {
   RegExpRoute,
   Route,
   NavigationRoute,
-} from '../../../sw-routing/src/index.js';
+} from '../../../workbox-routing/src/index.js';
 import ErrorFactory from './error-factory.js';
 
 /**
  * Adds a friendly API on top of the router from the
- * {@link module:sw-routing|sw-routing module}.
+ * {@link module:workbox-routing|workbox-routing module}.
  *
  * @example <caption>How to define a simple route with caching
  * strategy.</caption>
@@ -79,7 +79,7 @@ class Router extends SWRoutingRouter {
    *    cross-origin routes, you must use a RegExp that matches the start of the
    *    full URL, like `new RegExp('https://cross-origin\.com/')`.
    * 1. A [Route]{@link module:sw-lib.SWLib#Route} instance.
-   * @param {module:sw-routing.RouteHandler} handler The handler to use to
+   * @param {module:workbox-routing.RouteHandler} handler The handler to use to
    * provide a response if the route matches. The handler argument is ignored if
    * you pass in a Route object, otherwise it's required.
    */
@@ -110,7 +110,7 @@ class Router extends SWRoutingRouter {
   }
 
   /**
-   * A shortcut used to register a {@link module:sw-routing.NavigationRoute}
+   * A shortcut used to register a {@link module:workbox-routing.NavigationRoute}
    * instance that will respond to navigation requests using a cache entry for
    * `url`.
    *

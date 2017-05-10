@@ -171,7 +171,7 @@ describe('lib/write-sw.js', function() {
  * By changing the file manifest manually, your users may end up not receiving
  * new versions of files because the revision hasn't changed.
  *
- * Please use sw-build or some other tool / approach to generate the file
+ * Please use workbox-build or some other tool / approach to generate the file
  * manifest which accounts for changes to local files and update the revision
  * accordingly.
  */
@@ -230,7 +230,7 @@ swlib.precache(fileManifest);
  * By changing the file manifest manually, your users may end up not receiving
  * new versions of files because the revision hasn't changed.
  *
- * Please use sw-build or some other tool / approach to generate the file
+ * Please use workbox-build or some other tool / approach to generate the file
  * manifest which accounts for changes to local files and update the revision
  * accordingly.
  */
@@ -294,7 +294,7 @@ swlib.precache(fileManifest);
  * By changing the file manifest manually, your users may end up not receiving
  * new versions of files because the revision hasn't changed.
  *
- * Please use sw-build or some other tool / approach to generate the file
+ * Please use workbox-build or some other tool / approach to generate the file
  * manifest which accounts for changes to local files and update the revision
  * accordingly.
  */
@@ -358,7 +358,7 @@ swlib.precache(fileManifest);
  * By changing the file manifest manually, your users may end up not receiving
  * new versions of files because the revision hasn't changed.
  *
- * Please use sw-build or some other tool / approach to generate the file
+ * Please use workbox-build or some other tool / approach to generate the file
  * manifest which accounts for changes to local files and update the revision
  * accordingly.
  */
@@ -422,7 +422,7 @@ swlib.precache(fileManifest);
  * By changing the file manifest manually, your users may end up not receiving
  * new versions of files because the revision hasn't changed.
  *
- * Please use sw-build or some other tool / approach to generate the file
+ * Please use workbox-build or some other tool / approach to generate the file
  * manifest which accounts for changes to local files and update the revision
  * accordingly.
  */
@@ -486,7 +486,7 @@ swlib.precache(fileManifest);
  * By changing the file manifest manually, your users may end up not receiving
  * new versions of files because the revision hasn't changed.
  *
- * Please use sw-build or some other tool / approach to generate the file
+ * Please use workbox-build or some other tool / approach to generate the file
  * manifest which accounts for changes to local files and update the revision
  * accordingly.
  */
@@ -550,7 +550,7 @@ swlib.precache(fileManifest);
  * By changing the file manifest manually, your users may end up not receiving
  * new versions of files because the revision hasn't changed.
  *
- * Please use sw-build or some other tool / approach to generate the file
+ * Please use workbox-build or some other tool / approach to generate the file
  * manifest which accounts for changes to local files and update the revision
  * accordingly.
  */
@@ -613,7 +613,7 @@ swlib.router.registerNavigationRoute("/shell");
  * By changing the file manifest manually, your users may end up not receiving
  * new versions of files because the revision hasn't changed.
  *
- * Please use sw-build or some other tool / approach to generate the file
+ * Please use workbox-build or some other tool / approach to generate the file
  * manifest which accounts for changes to local files and update the revision
  * accordingly.
  */
@@ -679,7 +679,7 @@ swlib.router.registerNavigationRoute("/shell", {
  * By changing the file manifest manually, your users may end up not receiving
  * new versions of files because the revision hasn't changed.
  *
- * Please use sw-build or some other tool / approach to generate the file
+ * Please use workbox-build or some other tool / approach to generate the file
  * manifest which accounts for changes to local files and update the revision
  * accordingly.
  */

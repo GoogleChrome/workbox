@@ -22,7 +22,7 @@
  * // Prints 'CACHE_UPDATED'
  * console.log(goog.broadcastCacheUpdate.cacheUpdatedMessageType);
  *
- * @memberof module:sw-broadcast-cache-update
+ * @memberof module:workbox-broadcast-cache-update
  */
 const cacheUpdatedMessageType = 'CACHE_UPDATED';
 
@@ -33,7 +33,7 @@ const cacheUpdatedMessageType = 'CACHE_UPDATED';
  * @private
  * @type {Array<string>}
  *
- * @memberof module:sw-broadcast-cache-update
+ * @memberof module:workbox-broadcast-cache-update
  */
 const defaultHeadersToCheck = [
   'content-length',
@@ -42,15 +42,15 @@ const defaultHeadersToCheck = [
 ];
 
 /**
- * The value `'sw-broadcast-cache-update'`, used as the `meta` field of the
+ * The value `'workbox-broadcast-cache-update'`, used as the `meta` field of the
  * update message.
  *
  * @private
  * @type {string}
  *
- * @memberof module:sw-broadcast-cache-update
+ * @memberof module:workbox-broadcast-cache-update
  */
-const defaultSource = 'sw-broadcast-cache-update';
+const defaultSource = 'workbox-broadcast-cache-update';
 
 export {
   cacheUpdatedMessageType,

@@ -14,16 +14,16 @@
     "build"
   ],
   "scripts": {
-    "prepublish": "gulp build --project sw-cache-expiration"
+    "prepublish": "gulp build --project workbox-cache-expiration"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-cache-expiration",
-  "main": "build/importScripts/sw-cache-expiration.prod.v0.0.24.js",
-  "module": "build/modules/sw-cache-expiration.prod.v0.0.24.mjs",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-cache-expiration",
+  "main": "build/importScripts/workbox-cache-expiration.prod.v0.0.1.js",
+  "module": "build/modules/workbox-cache-expiration.prod.v0.0.1.mjs",
   "devDependencies": {
-    "workbox-runtime-caching": "^0.0.22"
+    "workbox-runtime-caching": "^0.0.1"
   }
 }

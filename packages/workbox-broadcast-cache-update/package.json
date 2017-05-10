@@ -14,13 +14,13 @@
     "build"
   ],
   "scripts": {
-    "prepublish": "gulp build --project sw-broadcast-cache-update"
+    "prepublish": "gulp build --project workbox-broadcast-cache-update"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-broadcast-cache-update",
-  "main": "build/importScripts/sw-broadcast-cache-update.prod.v0.0.23.js",
-  "module": "build/modules/sw-broadcast-cache-update.prod.v0.0.23.mjs"
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-broadcast-cache-update",
+  "main": "build/importScripts/workbox-broadcast-cache-update.prod.v0.0.1.js",
+  "module": "build/modules/workbox-broadcast-cache-update.prod.v0.0.1.mjs"
 }

@@ -19,7 +19,7 @@
 const fs = require('fs');
 const path = require('path');
 const updateNotifier = require('update-notifier');
-const swBuild = require('sw-build');
+const swBuild = require('workbox-build');
 
 const cliLogHelper = require('./lib/log-helper');
 const generateGlobPattern = require('./lib/utils/generate-glob-pattern');

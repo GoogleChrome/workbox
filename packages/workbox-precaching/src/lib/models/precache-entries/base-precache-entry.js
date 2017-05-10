@@ -5,7 +5,7 @@ import {cacheBustParamName} from '../../constants';
  * and generates the required fields for a BaseCacheEntry.
  *
  * @private
- * @memberof module:sw-precaching
+ * @memberof module:workbox-precaching
  */
 class BaseCacheEntry {
   /**

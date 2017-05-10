@@ -23,13 +23,13 @@ import {defaultMethod, validMethods} from './constants';
  *
  * Instead of implementing your own handlers, you can use one of the
  * pre-defined runtime caching strategies from the
- * {@link module:sw-runtime-caching|sw-runtime-caching} module.
+ * {@link module:workbox-runtime-caching|workbox-runtime-caching} module.
  *
  * While you can use `Route` directly, the
- * {@link module:sw-routing.RegExpRoute|RegExpRoute}
- * and {@link module:sw-routing.ExpressRoute|ExpressRoute} subclasses provide a
- * convenient wrapper with a nicer interface for using regular expressions or
- * Express-style routes as the `match` criteria.
+ * {@link module:workbox-routing.RegExpRoute|RegExpRoute}
+ * and {@link module:workbox-routing.ExpressRoute|ExpressRoute} subclasses
+ * provide a convenient wrapper with a nicer interface for using regular
+ * expressions or Express-style routes as the `match` criteria.
  *
  * @example
  * // Any navigate requests for URLs that start with /path/to/ will match.
@@ -47,7 +47,7 @@ import {defaultMethod, validMethods} from './constants';
  * const router = new goog.routing.Router();
  * router.registerRoute({route});
  *
- * @memberof module:sw-routing
+ * @memberof module:workbox-routing
  */
 class Route {
   /**
@@ -59,8 +59,8 @@ class Route {
    * and `event`, which is a [FetchEvent](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent).
    * `match` should return a truthy value when the route applies, and
    * that value is passed on to the handle function.
-   * @param {module:sw-routing.RouteHandler} input.handler The handler to use to
-   * provide a response if the route matches.
+   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
+   * use to provide a response if the route matches.
    * @param {string} [input.method] Only match requests that use this
    * HTTP method. Defaults to `'GET'` if not specified.
    */
