@@ -147,11 +147,11 @@ function generateBuildConfigs({formatToPath, baseDir, moduleName,
   ];
 
   const devReplacePlugin = replace({
-    '`BUILD_TARGET`': '`dev`',
+    '`BUILD_PROCESS_REPLACE::BUILD_TARGET`': '`dev`',
   });
 
   const prodReplacePlugin = replace({
-    '`BUILD_TARGET`': '`prod`',
+    '`BUILD_PROCESS_REPLACE::BUILD_TARGET`': '`prod`',
     'error-stack-parser': './error-stack-parser-no-op',
   });
 

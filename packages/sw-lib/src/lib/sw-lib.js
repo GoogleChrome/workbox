@@ -67,22 +67,18 @@ class SWLib {
         logHelper.debug({
           message: 'Welcome to Workbox!',
           data: {
-            '📖': 'https://googlechrome.github.io/sw-helpers/',
-            '❓': 'https://stackoverflow.com/questions/ask?tags=workbox',
-            '🐛': 'https://github.com/GoogleChrome/sw-helpers/issues/new',
+            '📖': 'Read the guides and documentation\n' +
+              'https://googlechrome.github.io/sw-helpers/',
+            '❓': 'Use the [workbox] tag on StackOverflow to ask questions\n' +
+              'https://stackoverflow.com/questions/ask?tags=workbox',
+            '🐛': 'Found a bug? Report it on GitHub\n' +
+              'https://github.com/GoogleChrome/sw-helpers/issues/new',
           },
         });
       } else {
         // If this is a dev bundle not on localhost, recommend the prod bundle.
         logHelper.warn(`This appears to be a production server. Please switch
           to the smaller, optimized production build of Workbox.`);
-      }
-    } else {
-      // If this is a prod bundle on localhost, recommend the dev bundle.
-      if (environment.isLocalhost()) {
-        logHelper.warn(`This appears to be a development server. Additional
-          logging and runtime assertions are available by switching to a
-          development build of Workbox.`);
       }
     }
 
