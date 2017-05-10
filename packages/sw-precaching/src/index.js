@@ -69,9 +69,9 @@ import RevisionedCacheManager from
 import UnrevisionedCacheManager from
   './lib/controllers/unrevisioned-cache-manager.js';
 
-import assert from '../../../lib/assert.js';
+import environment from '../../../lib/environment.js';
 
-if (!assert.isSWEnv()) {
+if (!environment.isServiceWorkerGlobalScope()) {
   // We are not running in a service worker, print error message
   throw ErrorFactory.createError('not-in-sw');
 }

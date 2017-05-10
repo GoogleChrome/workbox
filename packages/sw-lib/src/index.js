@@ -15,14 +15,7 @@
 
 /* eslint-env browser */
 
-import ErrorFactory from './lib/error-factory';
 import SWLib from './lib/sw-lib';
-import assert from '../../../lib/assert.js';
-
-if (!assert.isSWEnv()) {
-  // We are not running in a service worker, print error message
-  throw ErrorFactory.createError('not-in-sw');
-}
 
 /**
  * # sw-lib

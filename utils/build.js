@@ -127,28 +127,15 @@ function buildJSBundle(options) {
  * ('iife', 'es', etc.) to the path to use for the output.
  * @param {String} input.baseDir The path of the project directory.
  * @param {String} input.moduleName The name of the module, for the iife output.
- * @param {boolean} [input.minify] Whether or not we should also build
- * minified output. Defaults to true.
+ * @param {boolean} [input.shouldBuildProd] Whether or not we should also build
+ * a production bundle. Defaults to true.
  * @param {String} [input.entry] Used to override the default entry value of
  * `${baseDir}/src/index.js`.
  * @returns {Array.<Object>}
  */
-function generateBuildConfigs({formatToPath, baseDir, moduleName, minify=true,
-                                entry}) {
+function generateBuildConfigs({formatToPath, baseDir, moduleName,
+                               entry, shouldBuildProd=true}) {
   const buildConfigs = [];
-
-  const babelPlugin = babel({
-    presets: [['babili', {
-      comments: false,
-    }]],
-  });
-
-  // This will replace the usage of the (somewhat large) error-stack-parser
-  // module with a no-op module that has the same interface. It sacrifices some
-  // debugging info in exchange for a smaller minimized bundle.
-  const replacePlugin = replace({
-    'error-stack-parser': './error-stack-parser-no-op',
-  });
 
   const basePlugins = [
     resolve({
@@ -159,11 +146,26 @@ function generateBuildConfigs({formatToPath, baseDir, moduleName, minify=true,
     commonjs(),
   ];
 
+  const devReplacePlugin = replace({
+    '`BUILD_PROCESS_REPLACE::BUILD_TARGET`': '`dev`',
+  });
+
+  const prodReplacePlugin = replace({
+    '`BUILD_PROCESS_REPLACE::BUILD_TARGET`': '`prod`',
+    'error-stack-parser': './error-stack-parser-no-op',
+  });
+
+  const babelPlugin = babel({
+    presets: [['babili', {
+      comments: false,
+    }]],
+  });
+
   for (let format of Object.keys(formatToPath)) {
     buildConfigs.push({
       rollupConfig: {
         entry: entry || path.join(baseDir, 'src', 'index.js'),
-        plugins: basePlugins,
+        plugins: [devReplacePlugin, ...basePlugins],
       },
       writeConfig: {
         banner: LICENSE_HEADER,
@@ -175,11 +177,11 @@ function generateBuildConfigs({formatToPath, baseDir, moduleName, minify=true,
       },
     });
 
-    if (minify) {
+    if (shouldBuildProd) {
       buildConfigs.push({
         rollupConfig: {
           entry: entry || path.join(baseDir, 'src', 'index.js'),
-          plugins: [replacePlugin, ...basePlugins, babelPlugin],
+          plugins: [prodReplacePlugin, ...basePlugins, babelPlugin],
         },
         writeConfig: {
           banner: LICENSE_HEADER,
