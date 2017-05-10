@@ -25,8 +25,8 @@ import assert from '../../../../lib/assert';
  * only specific response headers are checked.
  *
  * This class is meant to be automatically invoked as a plugin to a
- * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper}, which is
- * used by the `workbox-sw` and `workbox-runtime-caching` modules.
+ * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper}, which
+ * is used by the `workbox-sw` and `workbox-runtime-caching` modules.
  *
  * If you would like to use this functionality outside of the `RequestWrapper`
  * context, please use the `BroadcastCacheUpdate` class directly.
@@ -50,8 +50,8 @@ import assert from '../../../../lib/assert';
 class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
   /**
    * A "lifecycle" callback that will be triggered automatically by the
-   * `workbox-sw` and `workbox-runtime-caching` handlers when an entry is added to a
-   * cache.
+   * `workbox-sw` and `workbox-runtime-caching` handlers when an entry is
+   * added to a cache.
    *
    * @private
    * @param {Object} input The input object to this function.
