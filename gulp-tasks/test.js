@@ -59,3 +59,15 @@ gulp.task('mocha', ['build'], () => {
 gulp.task('test', ['lint', 'download-browsers'], (callback) => {
   runSequence('mocha', callback);
 });
+
+gulp.task('test:dev', (callback) => {
+  // The TEST_BUNDLE environment variable controls whether the test web server
+  // responds with the prod (default) or dev versions of bundled libraries.
+  // Here, we want the dev bundles.
+  const savedTestBundleValue = process.env.TEST_BUNDLE;
+  process.env.TEST_BUNDLE = 'dev';
+  runSequence('test', (error) => {
+    process.env.TEST_BUNDLE = savedTestBundleValue;
+    callback(error);
+  });
+});
