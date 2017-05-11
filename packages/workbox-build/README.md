@@ -3,7 +3,7 @@
 
 # workbox-build
 
-This module can be used to generate a file manifest or service worker, that can be used with sw-lib.
+This module can be used to generate a file manifest or service worker, that can be used with workbox-sw.
 
 ## Installation
 

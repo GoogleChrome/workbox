@@ -50,7 +50,7 @@ describe('Generate Manifest End-to-End Tests', function() {
         `${exampleProject}/**/*.{${FILE_EXTENSIONS.join(',')}}`, {
         ignore: [
           `${exampleProject}/${manifestName}`,
-          `${exampleProject}/sw-lib.*.min.js`,
+          `${exampleProject}/workbox-sw.*.min.js`,
         ],
       });
       expectedFiles = expectedFiles.map((file) => {
@@ -86,7 +86,7 @@ describe('Generate Manifest End-to-End Tests', function() {
       expectedFiles.length.should.equal(0);
     })
     .then(() => {
-      // Rerun and ensure the sw and sw-lib files are excluded from the output.
+      // Rerun and ensure the sw and workbox-sw files are excluded from the output.
       return generateManifestCb();
     })
     .then(() => {

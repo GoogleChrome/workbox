@@ -1,6 +1,6 @@
 /* global goog */
 
-importScripts('../build/sw-lib.js');
+importScripts('../build/workbox-sw.js');
 importScripts('./manifest.123456.js');
 
 const swlib = new goog.SWLib();

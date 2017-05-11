@@ -24,15 +24,16 @@ import {BroadcastCacheUpdatePlugin} from
   '../../../workbox-broadcast-cache-update/src/index.js';
 import {RevisionedCacheManager} from '../../../workbox-precaching/src/index.js';
 import {Route} from '../../../workbox-routing/src/index.js';
-import {getDefaultCacheName} from '../../../workbox-runtime-caching/src/index.js';
+import {
+  getDefaultCacheName} from '../../../workbox-runtime-caching/src/index.js';
 
 /**
  * A high level library to make it as easy as possible to precache assets
  * efficiently and define run time caching strategies.
  *
- * @memberof module:sw-lib
+ * @memberof module:workbox-sw
  */
-class SWLib {
+class WorkboxSW {
   /**
    * You should instantiate this class with `new self.goog.SWLib()`.
    * @param {Object} input
@@ -147,7 +148,8 @@ class SWLib {
    *
    * // ...precache() can also take objects to cache
    * // non-revisioned URLs.
-   * // Please use workbox-build or workbox-cli to generate the manifest for you.
+   * // Please use workbox-build or workbox-cli to generate the manifest for
+   * // you.
    * swlib.precache([
    *     {
    *       url: '/index.html',
@@ -175,7 +177,7 @@ class SWLib {
 
   /**
    * The router for this library is exposed via the `router` parameter.
-   * This is an instance of the {@link module:sw-lib.Router|Router}.
+   * This is an instance of the {@link module:workbox-sw.Router|Router}.
    *
    * @example
    * const swlib = new goog.SWLib();
@@ -189,7 +191,7 @@ class SWLib {
 
   /**
    * RuntimeStrategyOptions is just a JavaScript object, but the structure
-   * explains the options for runtime strategies used in sw-lib.
+   * explains the options for runtime strategies used in workbox-sw.
    *
    * See the example of how this can be used with the `cacheFirst()` caching
    * strategy.
@@ -239,13 +241,13 @@ class SWLib {
    * codes to cache.
    * @property {Array<Object>} cacheableResponse.headers An array of
    * header-value paris for HTTP headers to cache. See the example, above.
-   * @memberof module:sw-lib.SWLib
+   * @memberof module:workbox-sw.SWLib
    */
 
   /**
-   * The supported caching strategies shipped with sw-lib are provided via the
-   * `strategies` object.
-   * {@link module:sw-lib.Strategies|See Strategies for a complete list}.
+   * The supported caching strategies shipped with workbox-sw are provided via
+   * the `strategies` object.
+   * {@link module:workbox-sw.Strategies|See Strategies for a complete list}.
    *
    * @example
    * const swlib = new goog.SWLib();
@@ -439,4 +441,4 @@ class SWLib {
   }
 }
 
-export default SWLib;
+export default WorkboxSW;

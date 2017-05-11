@@ -14,13 +14,13 @@
     "build"
   ],
   "scripts": {
-    "prepublish": "gulp build --project sw-lib"
+    "prepublish": "gulp build --project workbox-sw"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/sw-lib",
-  "main": "build/importScripts/sw-lib.prod.v0.0.1.js",
-  "module": "build/modules/sw-lib.prod.v0.0.1.mjs"
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-sw",
+  "main": "build/importScripts/workbox-sw.prod.v0.0.1.js",
+  "module": "build/modules/workbox-sw.prod.v0.0.1.mjs"
 }

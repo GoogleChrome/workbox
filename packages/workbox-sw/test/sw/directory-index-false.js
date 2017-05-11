@@ -2,7 +2,7 @@ importScripts('/node_modules/mocha/mocha.js');
 importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sinon/pkg/sinon-no-sourcemaps.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
-importScripts('/__test/bundle/sw-lib');
+importScripts('/__test/bundle/workbox-sw');
 
 /* global goog, sinon */
 

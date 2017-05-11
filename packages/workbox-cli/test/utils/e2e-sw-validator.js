@@ -20,7 +20,7 @@ const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, swDes
     `${exampleProject}/**/*.{${fileExtensions.join(',')}}`, {
     ignore: [
       path.join(exampleProject, swDest),
-      path.join(exampleProject, path.dirname(swDest), 'sw-lib.prod.*.js'),
+      path.join(exampleProject, path.dirname(swDest), 'workbox-sw.prod.*.js'),
     ],
   });
 
@@ -119,7 +119,7 @@ const performTest = (generateSWCb, {exampleProject, swDest, fileExtensions, base
     validateFiles(fileManifestOutput, exampleProject, fileExtensions, swDest, modifyUrlPrefix);
   })
   .then(() => {
-    // Rerun and ensure the sw and sw-lib files are excluded from the output.
+    // Rerun and ensure the sw and workbox-sw files are excluded from the output.
     return generateSWCb();
   })
   .then(() => {

@@ -30,7 +30,7 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  * This class can be used inside any service worker, without having to use any
  * of the other modules in this repo.
  *
- * If you'd like to use this functionality but are already using `sw-lib` or
+ * If you'd like to use this functionality but are already using `workbox-sw` or
  * `workbox-runtime-caching`, then please see the corresponding plugin,
  * `BroadcastCacheUpdatePlugin`, for a easy integration.
  *

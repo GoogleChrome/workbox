@@ -1,6 +1,6 @@
 /* global goog */
 
-importScripts('/__test/bundle/sw-lib');
+importScripts('/__test/bundle/workbox-sw');
 
 const SHELL_URL = '/shell';
 const CACHE_NAME = 'navigation-route-e2e';

@@ -1,7 +1,7 @@
 {
   "name": "workbox-cli",
   "version": "0.0.1",
-  "description": "A CLI tool to generate a service worker and a file manifest making use of the sw-lib module.",
+  "description": "A CLI tool to generate a service worker and a file manifest making use of the workbox-sw module.",
   "keywords": [
     "workbox",
     "workboxjs",
@@ -33,7 +33,7 @@
     "fs-extra": "^3.0.1",
     "inquirer": "^2.0.0",
     "meow": "^3.7.0",
-    "workbox-build": "^0.0.25",
+    "workbox-build": "^0.0.1",
     "update-notifier": "^1.0.3"
   }
 }

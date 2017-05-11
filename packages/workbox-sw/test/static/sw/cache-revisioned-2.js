@@ -1,11 +1,11 @@
 /* global goog */
 
-importScripts('/__test/bundle/sw-lib');
+importScripts('/__test/bundle/workbox-sw');
 importScripts('/packages/workbox-precaching/test/static/skip-and-claim.js');
 importScripts('/packages/workbox-precaching/test/static/test-data.js');
-importScripts('/packages/sw-lib/test/static/test-data.js');
+importScripts('/packages/workbox-sw/test/static/test-data.js');
 
-const testSet = self.goog.__TEST_DATA['sw-lib']['revisioned'];
+const testSet = self.goog.__TEST_DATA['workbox-sw']['revisioned'];
 const swlib = new goog.SWLib();
 swlib.precache(testSet['set-4']);
 
@@ -13,7 +13,7 @@ swlib.precache(testSet['set-5']);
 
 swlib.precache(testSet['set-6']);
 
-// sw-lib should define a route just for the revisioned assets so this
+// workbox-sw should define a route just for the revisioned assets so this
 // fetch should never be called.
 self.addEventListener('fetch', (event) => {
   event.respondWith(null);

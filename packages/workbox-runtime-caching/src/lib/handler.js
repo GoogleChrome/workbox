@@ -54,8 +54,8 @@ class Handler {
    *        worker's fetch handler.
    * @param {Object} [input.params] Additional parameters that might be passed
    *        in to the method. If used in conjunction with the
-   *        {@link module:workbox-routing.Route|Route} class, then the return value
-   *        from the `match` function in the Route constructor
+   *        {@link module:workbox-routing.Route|Route} class, then the return
+   *        value from the `match` function in the Route constructor
    *        will be passed in as the `params` value.
    * @return {Promise.<Response>} A promise resolving with a response.
    */

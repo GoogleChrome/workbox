@@ -25,7 +25,7 @@ using [workbox-build](workbox-build).
 
 Go beyond the basics. If you'd like to use the Workbox libraries, and you
 already have your own service worker, then checkout
-[sw-lib](sw-lib) which lets
+[workbox-sw](workbox-sw) which lets
 you add to what you've already got.
 
 If you've been using Workbox for a while, or you're
@@ -39,13 +39,13 @@ Each library is installed separately using the command line [as listed below](#t
 
 1. Install the library. For example:
 
-   `npm install --save-dev sw-lib`
+   `npm install --save-dev workbox-sw`
 2. Copy the library's JavaScript and map files to your serving directory. 
 
-   `cp node_modules/sw-lib/build/* app/`
+   `cp node_modules/workbox-sw/build/* app/`
 3. Import the library to your service worker file. For example:
 
-   `importScripts('sw-lib.min.js');`
+   `importScripts('workbox-sw.min.js');`
 
 ## The Libraries
 

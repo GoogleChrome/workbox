@@ -15,17 +15,17 @@
 
 /* eslint-env browser */
 
-import SWLib from './lib/sw-lib';
+import WorkboxSW from './lib/workbox-sw';
 
 /**
- * # sw-lib
+ * # workbox-sw
  *
  * A high-level library that makes it easier to configure routes with
  * caching strategies as well as manage precaching
  * of assets during the install step of a service worker.
  *
  * @example <caption>Adding the Library to your project.</caption>
- * importScripts('/<Path to Module>/build/importScripts/sw-lib.prod.vX.Y.Z.js');
+ * importScripts('/node_modules/build/importScripts/workbox-sw.prod.vX.Y.Z.js');
  *
  * @example <caption>Caching assets and registering routes.</caption>
  *
@@ -73,6 +73,6 @@ import SWLib from './lib/sw-lib';
  *   })
  * );
  *
- * @module sw-lib
+ * @module workbox-sw
  */
-export default SWLib;
+export default WorkboxSW;

@@ -11,7 +11,7 @@ describe('Test Dependencies', function() {
         'demo',
       ],
       ignoreMatches: [
-        'sw-lib',
+        'workbox-sw',
       ],
     }, (unusedDeps) => {
       if (unusedDeps.dependencies.length > 0) {

@@ -24,7 +24,7 @@ import CacheableResponse from './cacheable-response';
  *
  * This class is meant to be automatically invoked as a plugin to a
  * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper}, which
- * is used by the `sw-lib` and `workbox-runtime-caching` modules.
+ * is used by the `workbox-sw` and `workbox-runtime-caching` modules.
  *
  * If you would like to use this functionality outside of the `RequestWrapper`
  * context, please use the `CacheableResponse` class directly.

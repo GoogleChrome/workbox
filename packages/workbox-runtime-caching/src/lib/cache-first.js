@@ -42,7 +42,8 @@ import assert from '../../../../lib/assert';
 class CacheFirst extends Handler {
   /**
    * The handle method will be called by the
-   * {@link module:workbox-routing.Route|Route} class when a route matches a request.
+   * {@link module:workbox-routing.Route|Route} class when a route matches a
+   * request.
    *
    * @param {Object} input
    * @param {FetchEvent} input.event The event that triggered the service

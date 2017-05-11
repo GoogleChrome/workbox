@@ -30,7 +30,7 @@ describe('lib/write-sw.js', function() {
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.v0.0.0.js',
+      'fake-path/workbox-sw.min.v0.0.0.js',
       'fake-path/')
     .then(() => {
       throw new Error('Expected error to be thrown');
@@ -64,7 +64,7 @@ describe('lib/write-sw.js', function() {
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.js',
+      'fake-path/workbox-sw.min.js',
       'fake-path/')
     .then(() => {
       throw new Error('Expected error to be thrown');
@@ -101,7 +101,7 @@ describe('lib/write-sw.js', function() {
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.js',
+      'fake-path/workbox-sw.min.js',
       'fake-path/')
     .then(() => {
       throw new Error('Expected error to be thrown');
@@ -143,7 +143,7 @@ describe('lib/write-sw.js', function() {
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.js',
+      'fake-path/workbox-sw.min.js',
       'fake-path/')
     .then(() => {
       throw new Error('Expected error to be thrown');
@@ -156,7 +156,7 @@ describe('lib/write-sw.js', function() {
   });
 
   it('should be able to generate sw for template', function() {
-    const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
+    const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
  * DO NOT EDIT THE FILE MANIFEST ENTRY
@@ -210,12 +210,12 @@ swlib.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.js',
+      'fake-path/workbox-sw.min.js',
       'fake-path/');
   });
 
   it('should be able to generate sw for template with cacheId', function() {
-    const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
+    const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
  * DO NOT EDIT THE FILE MANIFEST ENTRY
@@ -272,14 +272,14 @@ swlib.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.js',
+      'fake-path/workbox-sw.min.js',
       'fake-path/', {
         cacheId: 'cache-id-example',
       });
   });
 
   it('should be able to generate sw for template with directoryIndex', function() {
-    const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
+    const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
  * DO NOT EDIT THE FILE MANIFEST ENTRY
@@ -336,14 +336,14 @@ swlib.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.js',
+      'fake-path/workbox-sw.min.js',
       'fake-path/', {
         directoryIndex: 'custom.html',
       });
   });
 
   it('should be able to generate sw for template with handleFetch', function() {
-    const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
+    const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
  * DO NOT EDIT THE FILE MANIFEST ENTRY
@@ -400,14 +400,14 @@ swlib.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.js',
+      'fake-path/workbox-sw.min.js',
       'fake-path/', {
         handleFetch: false,
       });
   });
 
   it('should be able to generate sw for template with skipWaiting', function() {
-    const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
+    const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
  * DO NOT EDIT THE FILE MANIFEST ENTRY
@@ -464,14 +464,14 @@ swlib.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.js',
+      'fake-path/workbox-sw.min.js',
       'fake-path/', {
         skipWaiting: true,
       });
   });
 
   it('should be able to generate sw for template with clientsClaim', function() {
-    const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
+    const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
  * DO NOT EDIT THE FILE MANIFEST ENTRY
@@ -528,14 +528,14 @@ swlib.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.js',
+      'fake-path/workbox-sw.min.js',
       'fake-path/', {
         clientsClaim: true,
       });
   });
 
   it('should be able to generate sw for template with navigateFallback', function() {
-    const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
+    const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
  * DO NOT EDIT THE FILE MANIFEST ENTRY
@@ -591,14 +591,14 @@ swlib.router.registerNavigationRoute("/shell");
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.js',
+      'fake-path/workbox-sw.min.js',
       'fake-path/', {
         navigateFallback: '/shell',
       });
   });
 
   it('should be able to generate sw for template with navigateFallback and whitelist', function() {
-      const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
+      const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
  * DO NOT EDIT THE FILE MANIFEST ENTRY
@@ -656,7 +656,7 @@ swlib.router.registerNavigationRoute("/shell", {
             revision: '1234',
           },
         ],
-        'fake-path/sw-lib.min.js',
+        'fake-path/workbox-sw.min.js',
         'fake-path/', {
           navigateFallback: '/shell',
           navigateFallbackWhitelist: [/^\/guide\//, /^\/lolz\//],
@@ -664,7 +664,7 @@ swlib.router.registerNavigationRoute("/shell", {
     });
 
   it('should be able to generate sw for template with runtimeCaching', function() {
-    const EXPECTED_RESULT = `importScripts('sw-lib.min.js');
+    const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
  * DO NOT EDIT THE FILE MANIFEST ENTRY
@@ -749,7 +749,7 @@ swlib.router.registerRoute(/\\/articles\\//, swlib.strategies.staleWhileRevalida
           revision: '1234',
         },
       ],
-      'fake-path/sw-lib.min.js',
+      'fake-path/workbox-sw.min.js',
       'fake-path/', {
         runtimeCaching: [
           {

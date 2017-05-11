@@ -16,7 +16,7 @@
 import ErrorFactory from '../../../../lib/error-factory';
 
 const errors = {
-  'not-in-sw': 'sw-lib must be loaded in your service worker file.',
+  'not-in-sw': 'workbox-sw must be loaded in your service worker file.',
   'unsupported-route-type': 'Routes must be either a express style route ' +
     'string, a Regex to capture request URLs or a Route instance.',
   'empty-express-string': 'The Express style route string must have some ' +

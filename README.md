@@ -26,7 +26,7 @@ using [workbox-build](workbox-build).
 
 Go beyond the basics. If you'd like to use the Workbox libraries, and you
 already have your own service worker, then checkout
-[sw-lib](sw-lib) which lets
+[workbox-sw](workbox-sw) which lets
 you add to what you've already got.
 
 If you've been using Workbox for a while, or you're
@@ -40,13 +40,13 @@ Each library is installed separately using the command line [as listed below](#t
 
 1. Install the library. For example:
 
-   `npm install --save-dev sw-lib`
+   `npm install --save-dev workbox-sw`
 2. Copy the library's JavaScript and map files to your serving directory. 
 
-   `cp node_modules/sw-lib/build/* app/`
+   `cp node_modules/workbox-sw/build/* app/`
 3. Import the library to your service worker file. For example:
 
-   `importScripts('sw-lib.min.js');`
+   `importScripts('workbox-sw.min.js');`
 
 ## The Libraries
 
@@ -78,7 +78,7 @@ A service worker helper library that uses the Broadcast Channel API to announce 
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-build%22)][travis-url]
 
-This module can be used to generate a file manifest or service worker, that can be used with sw-lib.
+This module can be used to generate a file manifest or service worker, that can be used with workbox-sw.
 
 **Install**: `npm install --save-dev workbox-build`
 
@@ -111,7 +111,7 @@ This library takes a Response object and determines whether it&#x27;s cacheable,
 
 [![Build Status](https://travis-shields.appspot.com/shield/GoogleChrome/sw-helpers/master/PROJECT%3D%22workbox-cli%22)][travis-url]
 
-A CLI tool to generate a service worker and a file manifest making use of the sw-lib module.
+A CLI tool to generate a service worker and a file manifest making use of the workbox-sw module.
 
 **Install**: `npm install --global workbox-cli`
 

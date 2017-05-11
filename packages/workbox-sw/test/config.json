@@ -2,7 +2,7 @@
   "browser": {
     "scripts": [
       "/packages/workbox-precaching/test/static/test-data.js",
-      "/packages/sw-lib/test/static/test-data.js"
+      "/packages/workbox-sw/test/static/test-data.js"
     ]
   }
 }

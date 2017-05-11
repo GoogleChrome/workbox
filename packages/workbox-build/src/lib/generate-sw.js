@@ -1,5 +1,5 @@
 const path = require('path');
-const copySWLib = require('./utils/copy-sw-lib');
+const copySWLib = require('./utils/copy-workbox-sw');
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const writeServiceWorker = require('./write-sw');
 const errors = require('./errors');

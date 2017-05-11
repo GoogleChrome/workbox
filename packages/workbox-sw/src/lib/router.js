@@ -54,7 +54,7 @@ import ErrorFactory from './error-factory.js';
  *   return fetch(args.url);
  * }));
  *
- * @memberof module:sw-lib
+ * @memberof module:workbox-sw
  */
 class Router extends SWRoutingRouter {
   /**
@@ -78,7 +78,7 @@ class Router extends SWRoutingRouter {
    * 1. A regular expression that will be tested against request URLs. For
    *    cross-origin routes, you must use a RegExp that matches the start of the
    *    full URL, like `new RegExp('https://cross-origin\.com/')`.
-   * 1. A [Route]{@link module:sw-lib.SWLib#Route} instance.
+   * 1. A [Route]{@link module:workbox-sw.SWLib#Route} instance.
    * @param {module:workbox-routing.RouteHandler} handler The handler to use to
    * provide a response if the route matches. The handler argument is ignored if
    * you pass in a Route object, otherwise it's required.
@@ -110,16 +110,16 @@ class Router extends SWRoutingRouter {
   }
 
   /**
-   * A shortcut used to register a {@link module:workbox-routing.NavigationRoute}
-   * instance that will respond to navigation requests using a cache entry for
-   * `url`.
+   * A shortcut used to register a
+   * {@link module:workbox-routing.NavigationRoute} instance that will
+   * respond to navigation requests using a cache entry for `url`.
    *
    * This is useful when following the [App Shell pattern](https://developers.google.com/web/fundamentals/architecture/app-shell#example-html-for-appshell),
    * in which the previously cached shell is returned for all navigations.
    *
    * The `url` value should correspond to an entry that's already in the cache,
    * perhaps a URL that is managed by
-   * {@link module:sw-lib.SWLib#precache}. Using a URL that isn't
+   * {@link module:workbox-sw.SWLib#precache}. Using a URL that isn't
    * already cached will lead to failed navigations.
    *
    * @param {String} url The URL of the already cached HTML resource.

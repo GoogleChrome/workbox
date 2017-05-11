@@ -26,7 +26,7 @@ import assert from '../../../../lib/assert';
  *
  * This class is meant to be automatically invoked as a plugin to a
  * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper}, which is
- * used by the `sw-lib` and `workbox-runtime-caching` modules.
+ * used by the `workbox-sw` and `workbox-runtime-caching` modules.
  *
  * If you would like to use this functionality outside of the `RequestWrapper`
  * context, please use the `BroadcastCacheUpdate` class directly.
@@ -50,7 +50,7 @@ import assert from '../../../../lib/assert';
 class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
   /**
    * A "lifecycle" callback that will be triggered automatically by the
-   * `sw-lib` and `workbox-runtime-caching` handlers when an entry is added to a
+   * `workbox-sw` and `workbox-runtime-caching` handlers when an entry is added to a
    * cache.
    *
    * @private
