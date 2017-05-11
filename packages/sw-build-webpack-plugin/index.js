@@ -17,7 +17,7 @@ const swBuild = require('sw-build');
  *   },
  *   plugins: [
  *   	new SwBuildWebpackPlugin({
- *   		globDirectory: './build/',
+ *   	  globDirectory: './build/',
  *      staticFileGlobs: ['**\/*.{html,js,css}'],
  *      globIgnores: ['admin.html'],
  *      swSrc: './src/sw.js',
@@ -29,15 +29,15 @@ const swBuild = require('sw-build');
  * @class SwBuildWebpackPlugin
  */
 class SwBuildWebpackPlugin {
-	/**
-	 * Creates an instance of SwBuildWebpackPlugin.
-	 *
-	 * @param {Object} [config] all the options as passed to `swbuild`
-	 * @memberOf SwBuildWebpackPlugin
-	 */
-	constructor(config) {
-		this._config = config || {};
-	}
+  /**
+   * Creates an instance of SwBuildWebpackPlugin.
+   *
+   * @param {Object} [config] all the options as passed to `swbuild`
+   * @memberOf SwBuildWebpackPlugin
+   */
+  constructor(config) {
+    this._config = config || {};
+  }
 
   /**
    * @private
@@ -45,37 +45,37 @@ class SwBuildWebpackPlugin {
    * passed from Webpack to this plugin.
    * @return {Object} The configuration for a given compilation.
    */
-	getConfig(compilation) {
-		let config = this._config;
+  getConfig(compilation) {
+    let config = this._config;
 
-		// If no root directory is given, fallback to
-		// output path directory of webpack
-		if (!config.rootDirectory) {
-			config.rootDirectory = compilation.options.output.path;
-		}
+    // If no root directory is given, fallback to
+    // output path directory of webpack
+    if (!config.rootDirectory) {
+      config.rootDirectory = compilation.options.output.path;
+    }
 
-		return config;
-	}
+    return config;
+  }
 
-	/**
-	 * @param {Object} [compiler] default compiler object passed from webpack
-	 *
-	 * @memberOf SwBuildWebpackPlugin
-	 */
-	apply(compiler) {
-		compiler.plugin('after-emit', (compilation, callback) => {
-			const config = this.getConfig(compilation);
-			if (config.swSrc) {
-				swBuild.injectManifest(config)
-					.then(() => callback())
-					.catch((e) => callback(e));
-			} else {
-				swBuild.generateSW(config)
-				.then(() => callback())
-				.catch((e) => callback(e));
-			}
-		});
-	}
+  /**
+   * @param {Object} [compiler] default compiler object passed from webpack
+   *
+   * @memberOf SwBuildWebpackPlugin
+   */
+  apply(compiler) {
+    compiler.plugin('after-emit', (compilation, callback) => {
+      const config = this.getConfig(compilation);
+      if (config.swSrc) {
+        swBuild.injectManifest(config)
+          .then(() => callback())
+          .catch((e) => callback(e));
+      } else {
+        swBuild.generateSW(config)
+        .then(() => callback())
+        .catch((e) => callback(e));
+      }
+    });
+  }
 }
 
 module.exports = SwBuildWebpackPlugin;
