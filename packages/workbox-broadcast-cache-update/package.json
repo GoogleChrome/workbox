@@ -1,0 +1,26 @@
+{
+  "name": "workbox-broadcast-cache-update",
+  "version": "0.0.1",
+  "description": "A service worker helper library that uses the Broadcast Channel API to announce when two Response objects differ.",
+  "keywords": [
+    "workbox",
+    "workboxjs",
+    "service worker",
+    "sw",
+    "caching",
+    "cache"
+  ],
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "gulp build --project workbox-broadcast-cache-update"
+  },
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-broadcast-cache-update",
+  "main": "build/importScripts/workbox-broadcast-cache-update.prod.v0.0.1.js",
+  "module": "build/modules/workbox-broadcast-cache-update.prod.v0.0.1.mjs"
+}

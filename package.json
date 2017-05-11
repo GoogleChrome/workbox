@@ -1,5 +1,5 @@
 {
-  "name": "sw-helpers",
+  "name": "workbox",
   "engines": {
     "node": ">=6.0.0"
   },
@@ -7,7 +7,7 @@
     "local-lerna": "lerna"
   },
   "version": "0.0.0",
-  "description": "Top-level scripts and dependencies for the sw-helpers monorepo. Not meant to be published to npm.",
+  "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
   "private": true,
   "repository": {
     "type": "git",

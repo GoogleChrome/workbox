@@ -1,0 +1,26 @@
+{
+  "name": "workbox-sw",
+  "version": "0.0.1",
+  "description": "A service worker library to make managing fetch requests and caching as easy as possible.",
+  "keywords": [
+    "workbox",
+    "workboxjs",
+    "service worker",
+    "caching",
+    "fetch requests",
+    "offline"
+  ],
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "gulp build --project workbox-sw"
+  },
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-sw",
+  "main": "build/importScripts/workbox-sw.prod.v0.0.1.js",
+  "module": "build/modules/workbox-sw.prod.v0.0.1.mjs"
+}
