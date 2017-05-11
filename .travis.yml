@@ -18,7 +18,7 @@ env:
   - PROJECT="workbox-cache-expiration"
   - PROJECT="workbox-cli"
   - PROJECT="workbox-sw"
-  - PROJECT="workbox-offline-google-analytics"
+  - PROJECT="workbox-google-analytics"
   - PROJECT="workbox-precaching"
   - PROJECT="workbox-routing"
   - PROJECT="workbox-runtime-caching"
