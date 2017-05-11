@@ -31,7 +31,7 @@ describe('Test of the NavigationRoute class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isArrayOfClass');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw when NavigationRoute() is called without a valid whitelist`, function() {
@@ -42,7 +42,7 @@ describe('Test of the NavigationRoute class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isArrayOfClass');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw when NavigationRoute() is called without a valid handler`, function() {
@@ -53,7 +53,7 @@ describe('Test of the NavigationRoute class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isType');
+    expect(thrownError.name).to.equal('assertion-failed');
 
     try {
       new goog.routing.NavigationRoute({whitelist, handler: invalidHandler});
@@ -61,7 +61,7 @@ describe('Test of the NavigationRoute class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('hasMethod');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw when NavigationRoute() is called with an invalid blacklist`, function() {
@@ -72,7 +72,7 @@ describe('Test of the NavigationRoute class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isArrayOfClass');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should not throw when NavigationRoute() is called with valid whitelist and handler parameters`, function() {

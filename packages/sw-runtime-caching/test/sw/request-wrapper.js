@@ -26,7 +26,7 @@ describe('Test of the RequestWrapper class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isType');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw when RequestWrapper() is called with an invalid fetchOptions parameter`, function() {
@@ -37,7 +37,7 @@ describe('Test of the RequestWrapper class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isType');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw when RequestWrapper() is called with an invalid matchOptions parameter`, function() {
@@ -48,7 +48,7 @@ describe('Test of the RequestWrapper class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isType');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw when RequestWrapper() is called with an invalid plugins parameter`, function() {
@@ -59,7 +59,7 @@ describe('Test of the RequestWrapper class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isArrayOfType');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw when RequestWrapper() is called with multiple cacheWillUpdate plugins`, function() {

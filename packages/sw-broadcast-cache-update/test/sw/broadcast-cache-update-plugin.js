@@ -26,7 +26,7 @@ describe('Test of the BroadcastCacheUpdatePlugin class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isType');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw when cacheDidUpdate is called and newResponse is missing`, function() {
@@ -37,7 +37,7 @@ describe('Test of the BroadcastCacheUpdatePlugin class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isInstance');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw not throw when cacheDidUpdate is called with valid parameters`, function() {

@@ -102,8 +102,9 @@ class ServerInstance {
     // having to specify the version string.
     // This is used within unit tests.
     this._app.get('/__test/bundle/:pkg', function(req, res) {
+      const build = process.env.TEST_BUNDLE || 'dev';
       const pkg = req.params.pkg;
-      const pattern = `packages/${pkg}/build/importScripts/*dev*.js`;
+      const pattern = `packages/${pkg}/build/importScripts/*${build}*.js`;
       respondWithScriptMatchingPattern(pattern, res);
     });
 
