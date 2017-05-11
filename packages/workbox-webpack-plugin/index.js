@@ -1,9 +1,9 @@
-const swBuild = require('sw-build');
+const swBuild = require('workbox-build');
 
 /**
  * Use the instance of this in the plugins array of the webpack config.
  * @example
- * const SwBuildWebpackPlugin = require('sw-build-webpack-plugin');
+ * const SwBuildWebpackPlugin = require('workbox-webpack-plugin');
  * .
  * .
  * plugins: [

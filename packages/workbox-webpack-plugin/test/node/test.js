@@ -34,7 +34,7 @@ webpackCompilation.options={
 
 describe('Tests for webpack plugin', function() {
 	beforeEach(()=>{
-		// Build a proxy sw-build
+		// Build a proxy workbox-build
 		proxySwBuild = {
 			injectManifest: function() {},
 			generateSW: function() {},
@@ -55,7 +55,7 @@ describe('Tests for webpack plugin', function() {
 
 		// do a proxy require
 		SwWebpackPlugin = proxyquire('../../', {
-			'sw-build': proxySwBuild,
+			'workbox-build': proxySwBuild,
 		});
 	});
 

@@ -3,7 +3,7 @@
 
 # workbox-webpack-plugin
 
-This is a webpack plugin for sw-build
+This is a webpack plugin for workbox
 
 ## Installation
 
