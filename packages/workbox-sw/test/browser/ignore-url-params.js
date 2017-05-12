@@ -1,4 +1,4 @@
-/* global workbox */
+/* global workbox, goog */
 
 describe('Test ignore url params matching', function() {
   it(`should match with correct default params`, function() {
