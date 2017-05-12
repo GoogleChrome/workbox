@@ -11,8 +11,8 @@ This library is still a work in progress and is not functional.
 
 ## Demo
 
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-precaching/demo).
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-precaching/demo).
 
 ## Reference Docs
 
-You can find [documentation for this module here](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-precaching.html#main).
+You can find [documentation for this module here](https://googlechrome.github.io/workbox/reference-docs/stable/latest/module-workbox-precaching.html#main).

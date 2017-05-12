@@ -11,8 +11,8 @@ A service worker helper library to route request URLs to handlers.
 
 ## Demo
 
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-routing/demo).
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-routing/demo).
 
 ## Reference Docs
 
-You can find [documentation for this module here](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-routing.html#main).
+You can find [documentation for this module here](https://googlechrome.github.io/workbox/reference-docs/stable/latest/module-workbox-routing.html#main).

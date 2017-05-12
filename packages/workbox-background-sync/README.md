@@ -11,8 +11,8 @@ Queues failed requests and uses the Background Sync API to replay those requests
 
 ## Demo
 
-Browse sample source code in the [demo directory](https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-background-sync/demo).
+Browse sample source code in the [demo directory](https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-background-sync/demo).
 
 ## Reference Docs
 
-You can find [documentation for this module here](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-background-sync.html#main).
+You can find [documentation for this module here](https://googlechrome.github.io/workbox/reference-docs/stable/latest/module-workbox-background-sync.html#main).

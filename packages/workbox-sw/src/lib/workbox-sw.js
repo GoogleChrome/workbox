@@ -69,11 +69,11 @@ class WorkboxSW {
           message: 'Welcome to Workbox!',
           data: {
             '📖': 'Read the guides and documentation\n' +
-              'https://googlechrome.github.io/sw-helpers/',
+              'https://googlechrome.github.io/workbox/',
             '❓': 'Use the [workbox] tag on StackOverflow to ask questions\n' +
               'https://stackoverflow.com/questions/ask?tags=workbox',
             '🐛': 'Found a bug? Report it on GitHub\n' +
-              'https://github.com/GoogleChrome/sw-helpers/issues/new',
+              'https://github.com/GoogleChrome/workbox/issues/new',
           },
         });
       } else {

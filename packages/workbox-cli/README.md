@@ -12,4 +12,4 @@ A CLI tool to generate a service worker and a file manifest making use of the wo
 
 ## Reference Docs
 
-You can find [documentation for this module here](https://googlechrome.github.io/sw-helpers/reference-docs/stable/latest/module-workbox-cli.html#main).
+You can find [documentation for this module here](https://googlechrome.github.io/workbox/reference-docs/stable/latest/module-workbox-cli.html#main).
