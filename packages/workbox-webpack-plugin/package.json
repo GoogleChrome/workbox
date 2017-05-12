@@ -1,0 +1,33 @@
+{
+  "name": "workbox-webpack-plugin",
+  "version": "0.0.1",
+  "description": "This is a webpack plugin for workbox.",
+  "keywords": [
+    "workbox",
+    "workboxjs",
+    "webpack",
+    "service worker",
+    "caching",
+    "fetch requests",
+    "offline",
+    "file manifest"
+  ],
+  "scripts": {
+    "prepublish": "gulp build --project workbox-webpack-plugin"
+  },
+  "main": "build/index.js",
+  "files": [
+    "build"
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "dependencies": {
+    "workbox-build": "^0.0.1"
+  },
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
+  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-webpack-plugin"
+}

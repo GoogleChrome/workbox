@@ -1,7 +1,7 @@
 only_commits:
   files:
-    - packages/sw-cli/
-    - packages/sw-build/
+    - packages/workbox-cli/
+    - packages/workbox-build/
     - test/
     - appveyor.yml
     - .travis.yml
@@ -11,14 +11,14 @@ install:
   - ps: Install-Product node Stable
   - npm install
   - npm install -g gulp
-  - gulp lerna-bootstrap-scoped --project="sw-cli"
-  - cd packages/sw-cli/
+  - gulp lerna-bootstrap-scoped --project="workbox-cli"
+  - cd packages/workbox-cli/
   - npm install
   - cd ..
 
 test_script:
   - node --version
   - npm --version
-  - gulp test --project "sw-cli"
+  - gulp test --project "workbox-cli"
 
 build: off

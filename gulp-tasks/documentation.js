@@ -40,11 +40,11 @@ const generateHandlebarsData = (projectPath) => {
     handleBarsData.hasDemo = false;
   }
 
-  handleBarsData.hasRefDocs = (projectMetadata.name !== 'sw-cli');
+  handleBarsData.hasRefDocs = (projectMetadata.name !== 'workbox-cli');
 
-  // sw-cli needs a custom install command
-  if (projectMetadata.name === 'sw-cli') {
-    handleBarsData.installCmd = `npm install --global sw-cli`;
+  // workbox-cli needs a custom install command
+  if (projectMetadata.name === 'workbox-cli') {
+    handleBarsData.installCmd = `npm install --global workbox-cli`;
   }
 
   return handleBarsData;
