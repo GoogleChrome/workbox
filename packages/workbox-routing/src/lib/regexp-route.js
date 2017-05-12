@@ -90,7 +90,7 @@ class RegExpRoute extends Route {
       // If this is a cross-origin request, then confirm that the match included
       // the start of the URL. This means that regular expressions like
       // /styles.+/ will only match same-origin requests.
-      // See https://github.com/GoogleChrome/sw-helpers/issues/281#issuecomment-285130355
+      // See https://github.com/GoogleChrome/workbox/issues/281#issuecomment-285130355
       if ((url.origin !== location.origin) && (result.index !== 0)) {
         logHelper.debug({
           that: this,

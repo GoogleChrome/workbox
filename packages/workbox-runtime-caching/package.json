@@ -19,9 +19,9 @@
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
-  "repository": "googlechrome/sw-helpers",
-  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-runtime-caching",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-runtime-caching",
   "main": "build/importScripts/workbox-runtime-caching.prod.v0.0.1.js",
   "module": "build/modules/workbox-runtime-caching.prod.v0.0.1.mjs"
 }

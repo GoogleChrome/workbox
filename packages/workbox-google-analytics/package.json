@@ -19,9 +19,9 @@
     "prepublish": "gulp build --project workbox-google-analytics"
   },
   "license": "Apache-2.0",
-  "repository": "googlechrome/sw-helpers",
-  "bugs": "https://github.com/googlechrome/sw-helpers/issues",
-  "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-google-analytics",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-google-analytics",
   "files": [
     "build"
   ],
