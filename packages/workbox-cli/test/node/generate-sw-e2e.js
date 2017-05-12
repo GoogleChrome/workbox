@@ -17,7 +17,7 @@ describe('Generate SW End-to-End Tests', function() {
   const FILE_EXTENSIONS = ['html', 'css', 'js', 'png'];
 
   before(function() {
-    tmpDirectory = fs.mkdtempSync(path.join(__dirname, 'tmp-'));
+    tmpDirectory = fs.mkdtempSync(path.join(__dirname, 'temp-'));
 
     testServer = testServerGen();
     return testServer.start(tmpDirectory, 5050)
