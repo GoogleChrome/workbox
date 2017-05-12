@@ -132,6 +132,7 @@ gulp.task('_lerna-publish-repo-version', () => {
 gulp.task('lerna-publish', (callback) => {
   runSequence(
     'lerna-bootstrap',
+    'test:dev',
     'test',
     '_lerna-publish-dry-run',
     '_update-versioned-bundles',

@@ -102,8 +102,13 @@ class ServerInstance {
     // having to specify the version string.
     // This is used within unit tests.
     this._app.get('/__test/bundle/:pkg', function(req, res) {
+      // By default, the prod bundles of our library code is used, with the
+      // primary consumer being our test suite. This can be overridden by
+      // setting a TEST_BUNDLE environment variable to 'dev' prior to
+      // starting the test suite.
+      const build = process.env.TEST_BUNDLE || 'prod';
       const pkg = req.params.pkg;
-      const pattern = `packages/${pkg}/build/importScripts/*dev*.js`;
+      const pattern = `packages/${pkg}/build/importScripts/*${build}*.js`;
       respondWithScriptMatchingPattern(pattern, res);
     });
 

@@ -85,7 +85,7 @@ describe('Test of the NetworkFirst handler', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isType');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should return the network response and update the cache when the network request succeeds`, async function() {

@@ -27,7 +27,7 @@ describe('Test of the CacheableResponse class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('atLeastOne');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw when CacheableResponse() is called with an invalid 'statuses' parameter`, function() {
@@ -38,7 +38,7 @@ describe('Test of the CacheableResponse class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isArrayOfType');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw when CacheableResponse() is called with an invalid 'headers' parameter`, function() {
@@ -49,7 +49,7 @@ describe('Test of the CacheableResponse class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isType');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should throw when isResponseCacheable() is called with an invalid 'response' parameter`, function() {
@@ -62,7 +62,7 @@ describe('Test of the CacheableResponse class', function() {
       thrownError = err;
     }
     expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('isInstance');
+    expect(thrownError.name).to.equal('assertion-failed');
   });
 
   it(`should return true when one of the 'statuses' parameter values match`, function() {
