@@ -64,6 +64,8 @@ const errors = require('./errors');
  * of regexs to restrict which URL's use the navigateFallback cached response.
  * @param {Array<Object>} [input.runtimeCaching] An optional Array
  * of objects to define run time caching strategies.
+ * @param {Array<RegExp>} [input.ignoreUrlParametersMatching] An array of
+ * regex's to remove search params when looking for a cache match.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *
