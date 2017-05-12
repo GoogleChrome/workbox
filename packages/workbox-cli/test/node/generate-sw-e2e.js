@@ -1,6 +1,5 @@
 const fs = require('fs');
 const fsExtra = require('fs-extra');
-const os = require('os');
 const path = require('path');
 const proxyquire = require('proxyquire');
 
@@ -18,7 +17,7 @@ describe('Generate SW End-to-End Tests', function() {
   const FILE_EXTENSIONS = ['html', 'css', 'js', 'png'];
 
   before(function() {
-    tmpDirectory = fs.mkdtempSync(os.tmpdir() + path.sep);
+    tmpDirectory = fs.mkdtempSync(path.join(__dirname, 'tmp-'));
 
     testServer = testServerGen();
     return testServer.start(tmpDirectory, 5050)
@@ -38,7 +37,6 @@ describe('Generate SW End-to-End Tests', function() {
 
   it('should be able to generate a service for example-1 with CLI', function() {
     this.timeout(120 * 1000);
-    this.retries(3);
 
     process.chdir(tmpDirectory);
 
@@ -46,7 +44,7 @@ describe('Generate SW End-to-End Tests', function() {
       path.join(__dirname, '..', 'static', 'example-project-1'),
       tmpDirectory);
 
-    const swDest = `build/${Date.now()}-sw.js`;
+    const swDest = `${Date.now()}-sw.js`;
 
     let enforceNoQuestions = false;
     const SWCli = proxyquire('../../build/index', {
