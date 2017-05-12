@@ -33,7 +33,7 @@
     "fs-extra": "^3.0.1",
     "inquirer": "^2.0.0",
     "meow": "^3.7.0",
-    "workbox-build": "^0.0.1",
-    "update-notifier": "^1.0.3"
+    "update-notifier": "^1.0.3",
+    "workbox-build": "^0.0.1"
   }
 }
