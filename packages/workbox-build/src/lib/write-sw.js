@@ -47,6 +47,11 @@ module.exports =
     if (options.directoryIndex) {
       swlibOptions.directoryIndex = options.directoryIndex;
     }
+    if (options.ignoreUrlParametersMatching) {
+      // JSON.stringify can't output regexes so instead we'll
+      // inject it in the swlibOptionsString.
+      swlibOptions.ignoreUrlParametersMatching = [];
+    }
     let runtimeCaching = [];
     if (options.runtimeCaching) {
       options.runtimeCaching.forEach((cachingEntry) => {
@@ -71,12 +76,23 @@ module.exports =
     }
 
     try {
+      let swlibOptionsString = '';
+      if (Object.keys(swlibOptions).length > 0) {
+        swlibOptionsString = JSON.stringify(swlibOptions, null, 2);
+      }
+      if (options.ignoreUrlParametersMatching) {
+        swlibOptionsString = swlibOptionsString.replace(
+          '"ignoreUrlParametersMatching": []',
+          `"ignoreUrlParametersMatching": [` +
+              options.ignoreUrlParametersMatching.join(', ') + `]`
+        );
+      }
       return template(templateString)({
         manifestEntries: manifestEntries,
         swlibPath: relSwlibPath,
         navigateFallback: options.navigateFallback,
         navigateFallbackWhitelist: options.navigateFallbackWhitelist,
-        swlibOptions,
+        swlibOptionsString,
         runtimeCaching,
       }).trim() + '\n';
     } catch (err) {
