@@ -22,13 +22,13 @@ describe('response-manager test', () => {
   let resManager;
 
   before(() => {
-    idbHelper = new workbox.backgroundSyncQueue.test.IdbHelper(
+    idbHelper = new workbox.backgroundSync.test.IdbHelper(
       'bgQueueSyncDB', 1, 'QueueStore');
-    resManager = workbox.backgroundSyncQueue.test.ResponseManager;
+    resManager = workbox.backgroundSync.test.ResponseManager;
   });
 
   it('check get', () => {
-		const queue = new workbox.backgroundSyncQueue.test.BackgroundSyncQueue();
+		const queue = new workbox.backgroundSync.test.BackgroundSyncQueue();
     return idbHelper.put('key', {response: response}).then(()=>{
         return queue.getResponse({id: 'key'}).then((data)=>{
             chai.assert.equal(data, response);

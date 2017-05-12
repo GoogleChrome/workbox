@@ -20,7 +20,7 @@ describe('request-queue tests', () => {
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
   let queue =
-    new workbox.backgroundSyncQueue.test.RequestQueue({
+    new workbox.backgroundSync.test.RequestQueue({
       config: {maxAge: MAX_AGE},
       queueName: QUEUE_NAME,
     });
@@ -39,7 +39,7 @@ describe('request-queue tests', () => {
   it('config is correct', () => {
     chai.assert.equal(queue._config.maxAge, MAX_AGE);
     chai.assert.notEqual(
-      queue._config.maxAge, workbox.backgroundSyncQueue.test.Constants.maxAge);
+      queue._config.maxAge, workbox.backgroundSync.test.Constants.maxAge);
   });
 
   it('pushRequest is working', () => {
@@ -51,12 +51,12 @@ describe('request-queue tests', () => {
   });
 
   it('default config is correct', () => {
-    let tempQueue = new workbox.backgroundSyncQueue.test.RequestQueue({});
-    let tempQueue2 = new workbox.backgroundSyncQueue.test.RequestQueue({});
+    let tempQueue = new workbox.backgroundSync.test.RequestQueue({});
+    let tempQueue2 = new workbox.backgroundSync.test.RequestQueue({});
     chai.assert.equal(tempQueue._config, undefined);
     chai.assert.equal(tempQueue._queueName,
-      workbox.backgroundSyncQueue.test.Constants.defaultQueueName + '_0');
+      workbox.backgroundSync.test.Constants.defaultQueueName + '_0');
     chai.assert.equal(tempQueue2._queueName,
-      workbox.backgroundSyncQueue.test.Constants.defaultQueueName + '_1');
+      workbox.backgroundSync.test.Constants.defaultQueueName + '_1');
   });
 });

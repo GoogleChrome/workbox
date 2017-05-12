@@ -35,7 +35,7 @@ libFiles.push(path.join('lib', 'idb-helper.js'));
 
 const testBuildConfigs = libFiles.reduce((configs, libFile) => {
   const className = upperCamelCase(path.basename(libFile, '.js'));
-  const moduleName = `workbox.backgroundSyncQueue.test.${className}`;
+  const moduleName = `workbox.backgroundSync.test.${className}`;
 
   return configs.concat(generateBuildConfigs({
     formatToPath: {

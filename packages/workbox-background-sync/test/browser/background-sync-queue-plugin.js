@@ -17,9 +17,9 @@
 'use strict';
 
 describe('background-sync-queue-plugin test', () => {
-	console.log(workbox.backgroundSyncQueue.test);
+	console.log(workbox.backgroundSync.test);
 	const backgroundSyncQueue
-    = new workbox.backgroundSyncQueue.test.BackgroundSyncQueuePlugin({});
+    = new workbox.backgroundSync.test.BackgroundSyncQueuePlugin({});
 
 	it('check fetchDid fail proxy', async () => {
     const currentLen = backgroundSyncQueue._queue.queue.length;

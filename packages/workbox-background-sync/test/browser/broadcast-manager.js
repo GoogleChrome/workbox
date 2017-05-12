@@ -17,7 +17,7 @@
 'use strict';
 
 describe('broadcast manager test', () => {
-	const broadcastManager = workbox.backgroundSyncQueue.test.BroadcastManager;
+	const broadcastManager = workbox.backgroundSync.test.BroadcastManager;
 
   it('check broadcast', function(done) {
 		this.timeout(100);

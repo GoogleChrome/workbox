@@ -8,7 +8,7 @@ importScripts('../build/offline-google-analytics-import.js');
 // First, enable the offline Google Analytics behavior.
 // This will get "first shot" at responding to Google Analytics requests, before
 // our catch-all fetch event listener can handle it.
-workbox.offlineGoogleAnalytics.initialize({
+workbox.googleAnalytics.initialize({
   parameterOverrides: {
     // Add in any additional parameters here, or omit this section to
     // replay the Google Analytics request without additional parameters.

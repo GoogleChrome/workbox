@@ -17,11 +17,11 @@
 'use strict';
 
 describe('replay-queued-requests', () => {
-  const constants = workbox.offlineGoogleAnalytics.test.Constants;
-  const enqueueRequest = workbox.offlineGoogleAnalytics.test.EnqueueRequest;
+  const constants = workbox.googleAnalytics.test.Constants;
+  const enqueueRequest = workbox.googleAnalytics.test.EnqueueRequest;
   const replayRequests =
-    workbox.offlineGoogleAnalytics.test.ReplayQueuedRequests;
-  const IDBHelper = workbox.offlineGoogleAnalytics.test.IdbHelper;
+    workbox.googleAnalytics.test.ReplayQueuedRequests;
+  const IDBHelper = workbox.googleAnalytics.test.IdbHelper;
 
   const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
      constants.IDB.STORE);
