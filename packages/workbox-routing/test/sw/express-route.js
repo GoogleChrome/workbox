@@ -19,19 +19,19 @@ describe('Test of the ExpressRoute class', function() {
   const crossOrigin = 'https://cross-origin.example.com';
 
   it(`should throw when ExpressRoute() is called without any parameters`, function() {
-    expect(() => new goog.routing.ExpressRoute()).to.throw();
+    expect(() => new workbox.routing.ExpressRoute()).to.throw();
   });
 
   it(`should throw when ExpressRoute() is called without a valid handler`, function() {
-    expect(() => new goog.routing.ExpressRoute({path})).to.throw();
-    expect(() => new goog.routing.ExpressRoute({path, handler: invalidHandler})).to.throw();
+    expect(() => new workbox.routing.ExpressRoute({path})).to.throw();
+    expect(() => new workbox.routing.ExpressRoute({path, handler: invalidHandler})).to.throw();
   });
 
   it(`should throw when ExpressRoute() is called without a valid path`, function() {
     let thrownError = null;
 
     try {
-      new goog.routing.ExpressRoute({handler, path: invalidPath});
+      new workbox.routing.ExpressRoute({handler, path: invalidPath});
     } catch(err) {
       thrownError = err;
     }
@@ -41,14 +41,14 @@ describe('Test of the ExpressRoute class', function() {
   });
 
   it(`should not throw when ExpressRoute() is called with valid handler and path parameters`, function() {
-    expect(() => new goog.routing.ExpressRoute({handler, path})).not.to.throw();
+    expect(() => new workbox.routing.ExpressRoute({handler, path})).not.to.throw();
   });
 
   it(`should properly match URLs`, function() {
     const matchingUrl = new URL(path, location);
     const nonMatchingUrl = new URL('/does/not/match', location);
 
-    const route = new goog.routing.ExpressRoute({handler, path});
+    const route = new workbox.routing.ExpressRoute({handler, path});
     expect(route.match({url: matchingUrl})).to.be.ok;
     expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
   });
@@ -61,7 +61,7 @@ describe('Test of the ExpressRoute class', function() {
     const namedParameterMatchingUrl = new URL(`/${value1}/dummy/${value2}`, location);
     const namedParameterNonMatchingUrl = new URL(`/${value1}/${value2}`, location);
 
-    const route = new goog.routing.ExpressRoute({
+    const route = new workbox.routing.ExpressRoute({
       handler, path: namedParameterPath,
     });
 
@@ -75,14 +75,14 @@ describe('Test of the ExpressRoute class', function() {
 
   it(`should not match cross-origin requests when using a path starting with '/'`, function() {
     const crossOriginUrl = new URL(path, crossOrigin);
-    const route = new goog.routing.ExpressRoute({handler, path});
+    const route = new workbox.routing.ExpressRoute({handler, path});
 
     expect(route.match({url: crossOriginUrl})).not.to.be.ok;
   });
 
   it(`should match cross-origin requests when using a path starting with 'https://'`, function() {
     const crossOriginUrl = new URL(path, crossOrigin);
-    const route = new goog.routing.ExpressRoute({handler, path: crossOriginUrl.href});
+    const route = new workbox.routing.ExpressRoute({handler, path: crossOriginUrl.href});
 
     expect(route.match({url: crossOriginUrl})).to.be.ok;
   });
@@ -90,7 +90,7 @@ describe('Test of the ExpressRoute class', function() {
   it(`should only match same-origin requests when using the wildcard path '/(.*)'`, function() {
     const crossOriginUrl = new URL(path, crossOrigin);
     const sameOriginUrl = new URL(path, location);
-    const route = new goog.routing.ExpressRoute({handler, path: '/(.*)'});
+    const route = new workbox.routing.ExpressRoute({handler, path: '/(.*)'});
 
     expect(route.match({url: sameOriginUrl})).to.be.ok;
     expect(route.match({url: crossOriginUrl})).not.to.be.ok;
@@ -99,7 +99,7 @@ describe('Test of the ExpressRoute class', function() {
   it(`should only match cross-origin requests when using a path starting with 'https://' and the wildcard path '/(.*)'`, function() {
     const crossOriginUrl = new URL(path, crossOrigin);
     const sameOriginUrl = new URL(path, location);
-    const route = new goog.routing.ExpressRoute({handler, path: `${crossOrigin}/(.*)`});
+    const route = new workbox.routing.ExpressRoute({handler, path: `${crossOrigin}/(.*)`});
 
     expect(route.match({url: sameOriginUrl})).not.to.be.ok;
     expect(route.match({url: crossOriginUrl})).to.be.ok;

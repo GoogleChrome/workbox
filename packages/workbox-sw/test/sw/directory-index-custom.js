@@ -4,7 +4,7 @@ importScripts('/node_modules/sinon/pkg/sinon-no-sourcemaps.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-/* global goog, sinon */
+/* global workbox, sinon */
 
 self.chai.should();
 mocha.setup({
@@ -35,10 +35,10 @@ describe('Test Directory Index', function() {
     });
     stubs.push(claimStub);
 
-    const swlib = new goog.SWLib({
+    const workboxSW = new WorkboxSW({
       directoryIndex: DIRECTORY_INDEX,
     });
-    swlib.precache([`${EXAMPLE_URL}${DIRECTORY_INDEX}`]);
+    workboxSW.precache([`${EXAMPLE_URL}${DIRECTORY_INDEX}`]);
 
     return new Promise((resolve, reject) => {
       const fetchEvent = new FetchEvent('fetch', {

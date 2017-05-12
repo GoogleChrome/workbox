@@ -1,4 +1,4 @@
-/* global swlib */
+/* global workboxSW */
 // Example code above
 
 importScripts('./sample-import.js');
@@ -9,9 +9,9 @@ const precache = (input) => {
 
 precache([]);
 
-swlib.precache([]);
+workboxSW.precache([]);
 
-swlib.precache([
+workboxSW.precache([
   '/extra-assets/example.1234.css',
   '/extra-assets/example-2.1234.js',
 ]);

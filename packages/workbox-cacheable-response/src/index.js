@@ -24,20 +24,20 @@
  *
  * // The responses will be cached if the response code is 0, 200, or 404, and
  * // will not be cached otherwise.
- * const cacheablePlugin = new goog.cacheableResponse.Plugin({
+ * const cacheablePlugin = new workbox.cacheableResponse.Plugin({
  *   statuses: [0, 200, 404]
  * });
  *
- * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+ * const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
  *   cacheName: 'runtime-cache',
  *   plugins: [
  *     cacheablePlugin
  *   ]
  * });
  *
- * const route = new goog.routing.RegExpRoute({
+ * const route = new workbox.routing.RegExpRoute({
  *   match: ({url}) => url.domain === 'example.com',
- *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
+ *   handler: new workbox.runtimeCaching.StaleWhileRevalidate({requestWrapper})
  * });
  *
  * @module workbox-cacheable-response

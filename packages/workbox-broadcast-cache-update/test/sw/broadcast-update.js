@@ -19,14 +19,14 @@ describe('Test of the broadcastUpdate function', function() {
   const source = 'test-source';
 
   it(`should throw when broadcastUpdate() is called without any parameters`, function() {
-    expect(() => goog.broadcastCacheUpdate.broadcastUpdate()).to.throw();
+    expect(() => workbox.broadcastCacheUpdate.broadcastUpdate()).to.throw();
   });
 
   it(`should trigger the appropriate message event on a BroadcastChannel with the same channel name`, function(done) {
     const secondChannel = new BroadcastChannel(channelName);
     secondChannel.addEventListener('message', (event) => {
       expect(event.data).to.eql({
-        type: goog.broadcastCacheUpdate.cacheUpdatedMessageType,
+        type: workbox.broadcastCacheUpdate.cacheUpdatedMessageType,
         meta: source,
         payload: {
           cacheName,
@@ -35,6 +35,6 @@ describe('Test of the broadcastUpdate function', function() {
       });
       done();
     });
-    goog.broadcastCacheUpdate.broadcastUpdate({channel, cacheName, source, url});
+    workbox.broadcastCacheUpdate.broadcastUpdate({channel, cacheName, source, url});
   });
 });

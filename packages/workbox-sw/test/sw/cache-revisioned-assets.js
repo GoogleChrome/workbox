@@ -3,7 +3,7 @@ importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-/* global goog */
+/* global workbox */
 
 const expect = self.chai.expect;
 self.chai.should();
@@ -12,10 +12,10 @@ mocha.setup({
   reporter: null,
 });
 
-describe('Test swlib.precache', function() {
-  it('should be accessible swlib.precache', function() {
-    const swlib = new goog.SWLib();
-    expect(swlib.precache).to.exist;
+describe('Test workboxSW.precache', function() {
+  it('should be accessible workboxSW.precache', function() {
+    const workboxSW = new WorkboxSW();
+    expect(workboxSW.precache).to.exist;
   });
 
   const badInput = [
@@ -47,9 +47,9 @@ describe('Test swlib.precache', function() {
   badInput.forEach((badInput) => {
     it(`should throw on adding invalid route: '${JSON.stringify(badInput)}'`, function() {
       let thrownError = null;
-      const swlib = new goog.SWLib();
+      const workboxSW = new WorkboxSW();
       try {
-        swlib.precache(badInput.capture);
+        workboxSW.precache(badInput.capture);
       } catch(err) {
         thrownError = err;
       }
@@ -82,8 +82,8 @@ describe('Test swlib.precache', function() {
       },
     ];
 
-    const swlib = new goog.SWLib();
-    swlib.precache(validAssets1);
-    swlib.precache(validAssets2);
+    const workboxSW = new WorkboxSW();
+    workboxSW.precache(validAssets1);
+    workboxSW.precache(validAssets2);
   });
 });

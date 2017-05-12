@@ -31,15 +31,15 @@ import ErrorFactory from './error-factory.js';
  * @example <caption>How to define a simple route with caching
  * strategy.</caption>
  *
- * const swlib = new goog.SWLib();
- * swlib.router.registerRoute('/about',
- *  swlib.strategies.cacheFirst());
+ * const workboxSW = new WorkboxSW();
+ * workboxSW.router.registerRoute('/about',
+ *  workboxSW.strategies.cacheFirst());
  *
  * @example <caption>How to define a simple route with custom caching
  * strategy.</caption>
  *
- * const swlib = new goog.SWLib();
- * swlib.router.registerRoute('/about', (args) => {
+ * const workboxSW = new WorkboxSW();
+ * workboxSW.router.registerRoute('/about', (args) => {
  *   // The requested URL
  *   console.log(args.url);
  *

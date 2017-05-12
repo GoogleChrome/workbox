@@ -1,4 +1,4 @@
-/* global goog */
+/* global workbox */
 
 importScripts('/__test/bundle/workbox-routing');
 
@@ -7,14 +7,14 @@ self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim(
 
 const routes = [];
 
-routes.push(new goog.routing.RegExpRoute({
+routes.push(new workbox.routing.RegExpRoute({
   regExp: new RegExp('static$'),
   handler: {
     handle: () => Promise.resolve(new Response('static response')),
   },
 }));
 
-routes.push(new goog.routing.RegExpRoute({
+routes.push(new workbox.routing.RegExpRoute({
   regExp: new RegExp('/echo3/1st/(\\w+)/2nd/(\\w+)/3rd/(\\w+)'),
   handler: {
     handle: ({params}) => Promise.resolve(
@@ -25,5 +25,5 @@ routes.push(new goog.routing.RegExpRoute({
   },
 }));
 
-const router = new goog.routing.Router();
+const router = new workbox.routing.Router();
 router.registerRoutes({routes});

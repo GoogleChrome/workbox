@@ -10,9 +10,9 @@ describe('Test of the CacheFirst handler', function() {
   });
 
   it(`should add the initial response to the cache, and then reuse it without updating the cache`, async function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const cacheFirst = new goog.runtimeCaching.CacheFirst(
+    const cacheFirst = new workbox.runtimeCaching.CacheFirst(
       {requestWrapper, waitOnCache: true});
 
     const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
@@ -31,9 +31,9 @@ describe('Test of the CacheFirst handler', function() {
   });
 
   it(`should not update the cache with an the opaque cross-origin network response by default`, async function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const cacheFirst = new goog.runtimeCaching.CacheFirst(
+    const cacheFirst = new workbox.runtimeCaching.CacheFirst(
       {requestWrapper, waitOnCache: false});
 
     const event = new FetchEvent('fetch', {
@@ -50,11 +50,11 @@ describe('Test of the CacheFirst handler', function() {
 
   it(`should update the cache with an the opaque cross-origin network response when a cacheWillUpdate plugin returns true`, async function() {
     const cacheWillUpdate = {cacheWillUpdate: () => true};
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
       cacheName: CACHE_NAME,
       plugins: [cacheWillUpdate],
     });
-    const cacheFirst = new goog.runtimeCaching.CacheFirst(
+    const cacheFirst = new workbox.runtimeCaching.CacheFirst(
       {requestWrapper, waitOnCache: true});
 
     const event = new FetchEvent('fetch', {

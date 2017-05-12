@@ -1,12 +1,12 @@
-/* global goog */
+/* global workbox */
 
 importScripts('../build/workbox-precaching.js');
 importScripts('./manifest.123456.js');
 
-const revCacheManager = new goog.precaching.RevisionedCacheManager();
+const revCacheManager = new workbox.precaching.RevisionedCacheManager();
 revCacheManager.addToCacheList({revisionedFiles: self.__file_manifest});
 
-const unrevCacheManager = new goog.precaching.UnrevisionedCacheManager();
+const unrevCacheManager = new workbox.precaching.UnrevisionedCacheManager();
 unrevCacheManager.addToCacheList({
   unrevisionedFiles: [
     './example.html',

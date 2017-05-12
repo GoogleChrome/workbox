@@ -38,16 +38,18 @@ import normalizeHandler from './normalize-handler';
  * // strategy.
  * const assetRoute = new RegExpRoute({
  *   regExp: /assets/,
- *   handler: new goog.runtimeCaching.StaleWhileRevalidate(),
+ *   handler: new workbox.runtimeCaching.StaleWhileRevalidate(),
  * });
  * const imageRoute = new RegExpRoute({
  *   regExp: /images/,
- *   handler: new goog.runtimeCaching.CacheFirst(),
+ *   handler: new workbox.runtimeCaching.CacheFirst(),
  * });
  *
- * const router = new goog.routing.Router();
+ * const router = new workbox.routing.Router();
  * router.registerRoutes({routes: [assetRoute, imageRoute]});
- * router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
+ * router.setDefaultHandler({
+ *   handler: new workbox.runtimeCaching.NetworkFirst(),
+ * });
  */
 class Router {
   /**
@@ -155,7 +157,7 @@ class Router {
    *
    * @example
    * router.setDefaultHandler({
-   *   handler: new goog.runtimeCaching.NetworkFirst()
+   *   handler: new workbox.runtimeCaching.NetworkFirst()
    * });
    *
    * @param {Object} input

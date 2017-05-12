@@ -25,18 +25,18 @@
  * @example <caption>Used as an automatically invoked "plugin".</caption>
  *
  * // Add cache expiration plugin to `RequestWrapper`.
- * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+ * const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
  *   cacheName: 'runtime-cache',
  *   plugins: [
  *     // The cache size will be capped at 10 entries.
- *     new goog.cacheExpiration.Plugin({maxEntries: 10})
+ *     new workbox.cacheExpiration.Plugin({maxEntries: 10})
  *   ]
  * });
  *
  * // Add `RequestWrapper` to a runtime cache handler.
- * const route = new goog.routing.RegExpRoute({
+ * const route = new workbox.routing.RegExpRoute({
  *   match: ({url}) => url.domain === 'example.com',
- *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
+ *   handler: new workbox.runtimeCaching.StaleWhileRevalidate({requestWrapper})
  * });
  *
  * @example <caption>To use the cache expiration as it's own module, you can

@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, goog */
+/* global chai, workbox */
 
 'use strict';
 
@@ -22,13 +22,13 @@ describe('response-manager test', () => {
   let resManager;
 
   before(() => {
-    idbHelper = new goog.backgroundSyncQueue.test.IdbHelper(
+    idbHelper = new workbox.backgroundSyncQueue.test.IdbHelper(
       'bgQueueSyncDB', 1, 'QueueStore');
-    resManager = goog.backgroundSyncQueue.test.ResponseManager;
+    resManager = workbox.backgroundSyncQueue.test.ResponseManager;
   });
 
   it('check get', () => {
-		const queue = new goog.backgroundSyncQueue.test.BackgroundSyncQueue();
+		const queue = new workbox.backgroundSyncQueue.test.BackgroundSyncQueue();
     return idbHelper.put('key', {response: response}).then(()=>{
         return queue.getResponse({id: 'key'}).then((data)=>{
             chai.assert.equal(data, response);

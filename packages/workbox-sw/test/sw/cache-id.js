@@ -3,7 +3,7 @@ importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-/* global goog */
+/* global workbox */
 
 const expect = self.chai.expect;
 self.chai.should();
@@ -23,7 +23,7 @@ describe('Cache ID', function() {
     badInputs.forEach((badInput, index) => {
       let thrownError = null;
       try {
-        new goog.SWLib({
+        new WorkboxSW({
           cacheId: badInput,
         });
         throw new Error(`Expected error to be thrown for inputs[${index}]: '${badInput}'.`);
@@ -38,11 +38,11 @@ describe('Cache ID', function() {
 
   it('should precache and provide runtime cache with cacheId prefix', function() {
     const CACHE_ID = 'CACHE_ID_LOLZ';
-    const swlib = new goog.SWLib({
+    const workboxSW = new WorkboxSW({
       cacheId: CACHE_ID,
     });
 
-    swlib._revisionedCacheManager.getCacheName().indexOf(CACHE_ID).should.not.equal(-1);
-    swlib.runtimeCacheName.indexOf(CACHE_ID).should.not.equal(-1);
+    workboxSW._revisionedCacheManager.getCacheName().indexOf(CACHE_ID).should.not.equal(-1);
+    workboxSW.runtimeCacheName.indexOf(CACHE_ID).should.not.equal(-1);
   });
 });

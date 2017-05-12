@@ -33,7 +33,7 @@ import {defaultMethod, validMethods} from './constants';
  *
  * @example
  * // Any navigate requests for URLs that start with /path/to/ will match.
- * const route = new goog.routing.Route({
+ * const route = new workbox.routing.Route({
  *   match: ({url, event}) => {
  *     return event.request.mode === 'navigate' &&
  *            url.pathname.startsWith('/path/to/');
@@ -44,7 +44,7 @@ import {defaultMethod, validMethods} from './constants';
  *   },
  * });
  *
- * const router = new goog.routing.Router();
+ * const router = new workbox.routing.Router();
  * router.registerRoute({route});
  *
  * @memberof module:workbox-routing

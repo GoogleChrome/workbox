@@ -4,7 +4,7 @@ importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/packages/workbox-precaching/test/static/test-data.js');
 importScripts('/__test/bundle/workbox-precaching');
 
-/* global goog */
+/* global workbox */
 
 const expect = self.chai.expect;
 self.chai.should();
@@ -15,7 +15,7 @@ mocha.setup({
 
 describe('Test Failing Cache Behavior', function() {
   it('should fail to install revisioned with 404 cache request', function() {
-    const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
+    const revisionedCacheManager = new workbox.precaching.RevisionedCacheManager();
     revisionedCacheManager.addToCacheList({
       revisionedFiles: [
         '/__test/404/',
@@ -31,7 +31,7 @@ describe('Test Failing Cache Behavior', function() {
   });
 
   it('should fail to install unrevisioned with 404 cache request', function() {
-    const unrevisionedCacheManager = new goog.precaching.UnrevisionedCacheManager();
+    const unrevisionedCacheManager = new workbox.precaching.UnrevisionedCacheManager();
     unrevisionedCacheManager.addToCacheList({
       unrevisionedFiles: [
         '/__test/404/',
@@ -47,9 +47,9 @@ describe('Test Failing Cache Behavior', function() {
   });
 
   it('should fail to cache revisioned opaque responses by default', function() {
-    const revisionedCacheManager = new goog.precaching.RevisionedCacheManager();
+    const revisionedCacheManager = new workbox.precaching.RevisionedCacheManager();
     revisionedCacheManager.addToCacheList({
-      revisionedFiles: goog.__TEST_DATA['opaque'],
+      revisionedFiles: workbox.__TEST_DATA['opaque'],
     });
     return revisionedCacheManager.install()
     .then(() => {
@@ -61,9 +61,9 @@ describe('Test Failing Cache Behavior', function() {
   });
 
   it('should fail to cache unrevisioned opaque responses by default', function() {
-    const unrevisionedCacheManager = new goog.precaching.UnrevisionedCacheManager();
+    const unrevisionedCacheManager = new workbox.precaching.UnrevisionedCacheManager();
     unrevisionedCacheManager.addToCacheList({
-      unrevisionedFiles: goog.__TEST_DATA['opaque'],
+      unrevisionedFiles: workbox.__TEST_DATA['opaque'],
     });
     return unrevisionedCacheManager.install()
     .then(() => {

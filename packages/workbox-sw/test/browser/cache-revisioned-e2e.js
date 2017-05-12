@@ -1,4 +1,4 @@
-/* global goog, expect */
+/* global workbox, expect */
 
 describe('cache-revisioned-e2e.js', function() {
   const deleteIndexedDB = () => {
@@ -128,7 +128,7 @@ describe('cache-revisioned-e2e.js', function() {
   };
 
   it('should cache and fetch files', function() {
-    const testSet = goog.__TEST_DATA['workbox-sw']['revisioned'];
+    const testSet = workbox.__TEST_DATA['workbox-sw']['revisioned'];
     const allAssets1 = testSet['set-1']
       .concat(testSet['set-2'])
       .concat(testSet['set-3']);

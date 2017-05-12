@@ -22,7 +22,7 @@ const buildConfigs = generateBuildConfigs({
     iife: pkg.main,
   },
   baseDir: __dirname,
-  moduleName: 'goog.precaching',
+  moduleName: 'workbox.precaching',
 });
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

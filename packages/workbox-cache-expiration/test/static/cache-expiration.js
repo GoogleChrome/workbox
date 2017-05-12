@@ -4,14 +4,14 @@ importScripts('/__test/bundle/workbox-cache-expiration');
 self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
 
-const cacheExpirationPlugin= new goog.cacheExpiration.CacheExpirationPlugin({
+const cacheExpirationPlugin= new workbox.cacheExpiration.CacheExpirationPlugin({
   maxEntries: 5,
 });
-const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
   cacheName: 'cache-expiration',
   plugins: [cacheExpirationPlugin],
 });
-const handler = new goog.runtimeCaching.CacheFirst({
+const handler = new workbox.runtimeCaching.CacheFirst({
   requestWrapper,
   waitOnCache: true,
 });

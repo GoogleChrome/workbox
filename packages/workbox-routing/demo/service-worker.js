@@ -1,5 +1,5 @@
 /* eslint-env worker, serviceworker */
-/* global goog */
+/* global workbox */
 
 importScripts(
   '../../workbox-routing/build/workbox-routing.js',
@@ -14,7 +14,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });
 
-const route = new goog.routing.ExpressRoute({
+const route = new workbox.routing.ExpressRoute({
   path: '/packages/:project/demo/:file',
   handler: ({event, params}) => {
     console.log('The matching params are', params);
@@ -22,5 +22,5 @@ const route = new goog.routing.ExpressRoute({
   },
 });
 
-const router = new goog.routing.Router();
+const router = new workbox.routing.Router();
 router.registerRoute({route});

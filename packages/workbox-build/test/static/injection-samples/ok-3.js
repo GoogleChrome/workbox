@@ -1,4 +1,4 @@
-/* global goog */
+/* global workbox */
 // Example code above
 
 importScripts('./sample-import.js');
@@ -9,5 +9,5 @@ const precache = (input) => {
 
 precache([]);
 
-const swlib = new goog.SWLib();
-swlib.precache(    [    ]    );
+const workboxSW = new WorkboxSW();
+workboxSW.precache(    [    ]    );

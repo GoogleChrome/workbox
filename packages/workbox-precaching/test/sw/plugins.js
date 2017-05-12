@@ -3,7 +3,7 @@ importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-precaching');
 
-/* global goog */
+/* global workbox */
 
 const expect = self.chai.expect;
 mocha.setup({
@@ -14,7 +14,7 @@ mocha.setup({
 describe('Test plugins Parameter', function() {
   it('should pass the provided plugins configuration along to the RequestWrapper', function() {
     // Register two dummy fetchDidFail plugins, and one dummy cacheWillUpdate.
-    const cacheManager = new goog.precaching.RevisionedCacheManager({
+    const cacheManager = new workbox.precaching.RevisionedCacheManager({
       plugins: [{
         fetchDidFail: () => {},
         cacheWillUpdate: () => {},

@@ -1,4 +1,4 @@
-/* global goog, sinon */
+/* global workbox, sinon */
 importScripts('/packages/workbox-precaching/test/static/test-data.js');
 importScripts('/node_modules/sinon/pkg/sinon-no-sourcemaps.js');
 importScripts('/__test/bundle/workbox-precaching');
@@ -11,8 +11,8 @@ sinon.stub(self, 'fetch', (requestUrl) => {
   return Promise.resolve(new Response());
 });
 
-const precacheManager = new goog.precaching.RevisionedCacheManager();
-goog.__TEST_DATA['duplicate-entries'].forEach((entries) => {
+const precacheManager = new workbox.precaching.RevisionedCacheManager();
+workbox.__TEST_DATA['duplicate-entries'].forEach((entries) => {
   precacheManager.addToCacheList({
     revisionedFiles: entries,
   });

@@ -17,9 +17,9 @@ describe('Test of the NetworkFirst handler', function() {
   });
 
   it(`should add the network response to the cache`, async function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const networkFirst = new goog.runtimeCaching.NetworkFirst(
+    const networkFirst = new workbox.runtimeCaching.NetworkFirst(
       {requestWrapper, waitOnCache: true});
 
     const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
@@ -34,9 +34,9 @@ describe('Test of the NetworkFirst handler', function() {
   it(`should return the cached response and not update the cache when the network request fails`, async function() {
     globalStubs.push(sinon.stub(self, 'fetch').throws('NetworkError'));
 
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const networkFirst = new goog.runtimeCaching.NetworkFirst(
+    const networkFirst = new workbox.runtimeCaching.NetworkFirst(
       {requestWrapper, waitOnCache: true});
 
     const initialCachedResponse = new Response('response body');
@@ -62,9 +62,9 @@ describe('Test of the NetworkFirst handler', function() {
       });
     }));
 
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const networkFirstWithTimeout = new goog.runtimeCaching.NetworkFirst(
+    const networkFirstWithTimeout = new workbox.runtimeCaching.NetworkFirst(
       {requestWrapper, waitOnCache: true, networkTimeoutSeconds});
 
     const initialCachedResponse = new Response('response body');
@@ -80,7 +80,7 @@ describe('Test of the NetworkFirst handler', function() {
   it(`should throw when NetworkFirst() is called with an invalid networkTimeoutSeconds parameter`, function() {
     let thrownError = null;
     try {
-      new goog.runtimeCaching.NetworkFirst({networkTimeoutSeconds: 'invalid'});
+      new workbox.runtimeCaching.NetworkFirst({networkTimeoutSeconds: 'invalid'});
     } catch(err) {
       thrownError = err;
     }
@@ -89,9 +89,9 @@ describe('Test of the NetworkFirst handler', function() {
   });
 
   it(`should return the network response and update the cache when the network request succeeds`, async function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const networkFirst = new goog.runtimeCaching.NetworkFirst(
+    const networkFirst = new workbox.runtimeCaching.NetworkFirst(
       {requestWrapper, waitOnCache: true});
 
     const initialCachedResponse = new Response('response body');
@@ -109,9 +109,9 @@ describe('Test of the NetworkFirst handler', function() {
   });
 
   it(`should update the cache with an the opaque cross-origin network response`, async function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const networkFirst = new goog.runtimeCaching.NetworkFirst(
+    const networkFirst = new workbox.runtimeCaching.NetworkFirst(
       {requestWrapper, waitOnCache: true});
 
     const cache = await caches.open(CACHE_NAME);

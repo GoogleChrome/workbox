@@ -1,6 +1,6 @@
-self.goog.__TEST_DATA['workbox-sw'] = {
+self.workbox.__TEST_DATA['workbox-sw'] = {
   revisioned: {
-    'set-1': self.goog.__TEST_DATA['set-1']['step-1'],
+    'set-1': self.workbox.__TEST_DATA['set-1']['step-1'],
     'set-2': [
       '/__echo/date/workbox-sw-1.1234.txt',
       {url: '/__echo/date/workbox-sw-2.txt', revision: '1234'},

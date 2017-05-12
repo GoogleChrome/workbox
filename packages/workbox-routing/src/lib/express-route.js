@@ -35,7 +35,7 @@ import pathToRegExp from 'path-to-regexp';
  * // Any same-origin requests that start with /path/to and end with one
  * // additional path segment will match this route, with the last path
  * // segment passed along to the handler via params.file.
- * const route = new goog.routing.ExpressRoute({
+ * const route = new workbox.routing.ExpressRoute({
  *   path: '/path/to/:file',
  *   handler: ({event, params}) => {
  *     // params.file will be set based on the request URL that matched.
@@ -43,17 +43,17 @@ import pathToRegExp from 'path-to-regexp';
  *   },
  * });
  *
- * const router = new goog.routing.Router();
+ * const router = new workbox.routing.Router();
  * router.registerRoute({route});
  *
  * @example
  * // Any cross-origin requests for https://example.com will match this route.
- * const route = new goog.routing.ExpressRoute({
+ * const route = new workbox.routing.ExpressRoute({
  *   path: 'https://example.com/path/to/:file',
  *   handler: ({event}) => return caches.match(event.request),
  * });
  *
- * const router = new goog.routing.Router();
+ * const router = new workbox.routing.Router();
  * router.registerRoute({route});
  *
  * @memberof module:workbox-routing

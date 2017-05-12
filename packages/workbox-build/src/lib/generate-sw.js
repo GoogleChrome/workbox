@@ -102,13 +102,14 @@ const generateSW = function(input) {
   input.globIgnores = input.globIgnores || [];
   const swDest = input.swDest;
 
-  let swlibPath;
+  let workboxSWPath;
   let destDirectory = path.dirname(swDest);
   return copySWLib(destDirectory)
   .then((libPath) => {
-    // If sw file is in build/sw.js, the swlib file will be build/swlib.***.js
-    // So the sw.js file should import swlib.***.js (i.e. not include build/).
-    swlibPath = path.relative(destDirectory, libPath);
+    // If sw file is in build/sw.js, the workboxSW file will be
+    // build/workboxSW.***.js. So the sw.js file should import workboxSW.***.js
+    // (i.e. not include build/).
+    workboxSWPath = path.relative(destDirectory, libPath);
     input.globIgnores.push(libPath);
     input.globIgnores.push(swDest);
   })
@@ -119,7 +120,7 @@ const generateSW = function(input) {
     return writeServiceWorker(
       swDest,
       manifestEntries,
-      swlibPath,
+      workboxSWPath,
       globDirectory,
       input
     );

@@ -21,20 +21,20 @@ describe('Test of the RegExpRoute class', function() {
   const invalidHandler = {};
 
   it(`should throw when RegExpRoute() is called without any parameters`, function() {
-    expect(() => new goog.routing.RegExpRoute()).to.throw();
+    expect(() => new workbox.routing.RegExpRoute()).to.throw();
   });
 
   it(`should throw when RegExpRoute() is called without a valid handler`, function() {
-    expect(() => new goog.routing.RegExpRoute({path})).to.throw();
-    expect(() => new goog.routing.RegExpRoute({path, handler: invalidHandler})).to.throw();
+    expect(() => new workbox.routing.RegExpRoute({path})).to.throw();
+    expect(() => new workbox.routing.RegExpRoute({path, handler: invalidHandler})).to.throw();
   });
 
   it(`should throw when RegExpRoute() is called without a valid regExp`, function() {
-    expect(() => new goog.routing.RegExpRoute({handler})).to.throw();
+    expect(() => new workbox.routing.RegExpRoute({handler})).to.throw();
   });
 
   it(`should not throw when RegExpRoute() is called with valid handler and regExp parameters`, function() {
-    expect(() => new goog.routing.RegExpRoute({handler, regExp})).not.to.throw();
+    expect(() => new workbox.routing.RegExpRoute({handler, regExp})).not.to.throw();
   });
 
   it(`should properly match URLs`, function() {
@@ -42,7 +42,7 @@ describe('Test of the RegExpRoute class', function() {
     const nonMatchingUrl = new URL('/does/not/match', location);
     const crossOriginUrl = new URL(path, crossOrigin);
 
-    const route = new goog.routing.RegExpRoute({handler, regExp});
+    const route = new workbox.routing.RegExpRoute({handler, regExp});
     expect(route.match({url: matchingUrl})).to.be.ok;
     expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
     // This route will not match because while the RegExp matches, the match
@@ -54,7 +54,7 @@ describe('Test of the RegExpRoute class', function() {
     const matchingUrl = new URL('https://fonts.googleapis.com/icon?family=Material+Icons');
     const matchingUrl2 = new URL('https://code.getmdl.io/1.2.1/material.indigo-pink.min.css');
 
-    const route = new goog.routing.RegExpRoute({
+    const route = new workbox.routing.RegExpRoute({
       handler,
       regExp: /.*\.(?:googleapis|getmdl)\.(?:com|io)\/.*/,
     });
@@ -67,7 +67,7 @@ describe('Test of the RegExpRoute class', function() {
     const nonMatchingUrl = new URL('/does/not/match', crossOrigin);
     const crossOriginRegExp = new RegExp(crossOrigin + path);
 
-    const route = new goog.routing.RegExpRoute({handler, regExp: crossOriginRegExp});
+    const route = new workbox.routing.RegExpRoute({handler, regExp: crossOriginRegExp});
     expect(route.match({url: matchingUrl})).to.be.ok;
     expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
   });
@@ -80,7 +80,7 @@ describe('Test of the RegExpRoute class', function() {
     const captureGroupMatchingUrl = new URL(`/${value1}/dummy/${value2}`, location);
     const captureGroupNonMatchingUrl = new URL(`/${value1}/${value2}`, location);
 
-    const route = new goog.routing.RegExpRoute({
+    const route = new workbox.routing.RegExpRoute({
       handler, regExp: captureGroupRegExp,
     });
 

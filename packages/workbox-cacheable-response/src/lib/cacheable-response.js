@@ -24,7 +24,7 @@ import logHelper from '../../../../lib/log-helper.js';
  * status code and a matching header.
  *
  * @example
- * new goog.cacheableResponse.CacheableResponse({
+ * new workbox.cacheableResponse.CacheableResponse({
  *   statuses: [0, 200, 404],
  *   headers: {
  *     'Example-Header-1': 'Header-Value-1'

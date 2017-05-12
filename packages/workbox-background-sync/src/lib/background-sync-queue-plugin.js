@@ -6,7 +6,7 @@ import Queue from './background-sync-queue';
  * @example
  * When you want the workbox-sw framework to take care of failed
  * // requests
- * let bgQueue = new goog.backgroundSync.QueuePlugin({callbacks:
+ * let bgQueue = new workbox.backgroundSync.QueuePlugin({callbacks:
  *		{
  *			onResponse: async(hash, res) => {
  *				self.registration.showNotification('Background sync demo', {
@@ -18,16 +18,16 @@ import Queue from './background-sync-queue';
  *		},
  * });
  *
- * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+ * const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
  * 	plugins: [bgQueue],
  * });
  *
- * const route = new goog.routing.RegExpRoute({
+ * const route = new workbox.routing.RegExpRoute({
  * 	regExp: new RegExp('^https://jsonplaceholder.typicode.com'),
- * 	handler: new goog.runtimeCaching.NetworkOnly({requestWrapper}),
+ * 	handler: new workbox.runtimeCaching.NetworkOnly({requestWrapper}),
  * });
  *
- * const router = new goog.routing.Router();
+ * const router = new workbox.routing.Router();
  * router.registerRoute({route});
  *
  * @memberof module:queue-plugin

@@ -35,7 +35,7 @@ import {
  */
 class WorkboxSW {
   /**
-   * You should instantiate this class with `new self.goog.SWLib()`.
+   * You should instantiate this class with `new self.WorkboxSW()`.
    * @param {Object} input
    * @param {string} [input.cacheId] Defining a cacheId is useful to ensure
    * uniqueness across cache names. Useful if you have multiple sites served
@@ -140,8 +140,8 @@ class WorkboxSW {
    *
    * @example <caption>Cache revisioned assets.</caption>
    * // Cache a set of revisioned URLs
-   * const swlib = new goog.SWLib();
-   * swlib.precache([
+   * const workboxSW = new WorkboxSW();
+   * workboxSW.precache([
    *     '/styles/main.613e6c7332dd83e848a8b00c403827ed.css',
    *     '/images/logo.59a325f32baad11bd47a8c515ec44ae5.jpg'
    * ]);
@@ -150,7 +150,7 @@ class WorkboxSW {
    * // non-revisioned URLs.
    * // Please use workbox-build or workbox-cli to generate the manifest for
    * // you.
-   * swlib.precache([
+   * workboxSW.precache([
    *     {
    *       url: '/index.html',
    *       revision: '613e6c7332dd83e848a8b00c403827ed'
@@ -180,8 +180,8 @@ class WorkboxSW {
    * This is an instance of the {@link module:workbox-sw.Router|Router}.
    *
    * @example
-   * const swlib = new goog.SWLib();
-   * swlib.router.registerRoute('/', swlib.goog.cacheFirst());
+   * const workboxSW = new WorkboxSW();
+   * workboxSW.router.registerRoute('/', workboxSW.workbox.cacheFirst());
    *
    * @type {Router}
    */
@@ -197,8 +197,8 @@ class WorkboxSW {
    * strategy.
    *
    * @example
-   * const swlib = new goog.SWLib();
-   * const cacheFirstStrategy = swlib.strategies.cacheFirst({
+   * const workboxSW = new WorkboxSW();
+   * const cacheFirstStrategy = workboxSW.strategies.cacheFirst({
    *   cacheName: 'example-cache',
    *   cacheExpiration: {
    *     maxEntries: 10,
@@ -250,9 +250,9 @@ class WorkboxSW {
    * {@link module:workbox-sw.Strategies|See Strategies for a complete list}.
    *
    * @example
-   * const swlib = new goog.SWLib();
-   * swlib.router.registerRoute('/styles/*',
-   *  swlib.strategies.cacheFirst());
+   * const workboxSW = new WorkboxSW();
+   * workboxSW.router.registerRoute('/styles/*',
+   *  workboxSW.strategies.cacheFirst());
    */
   get strategies() {
     return this._strategies;
@@ -266,7 +266,7 @@ class WorkboxSW {
    *
    * You can override the default cache name when constructing a strategy if
    * you'd prefer, via
-   * `swlib.strategies.cacheFirst({cacheName: 'my-cache-name'});`
+   * `workboxSW.strategies.cacheFirst({cacheName: 'my-cache-name'});`
    *
    * If you would like to explicitly add to, remove, or check the contents of
    * the default cache, you can use the [Cache Storage API](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage)
@@ -275,7 +275,7 @@ class WorkboxSW {
    * managed via `precache()`.
    *
    * @example
-   * const cache = await caches.open(swlib.runtimeCacheName);
+   * const cache = await caches.open(workboxSW.runtimeCacheName);
    * await cache.add('https://third-party.com/path/to/file');
    * const contentsOfRuntimeCache = await cache.keys();
    */

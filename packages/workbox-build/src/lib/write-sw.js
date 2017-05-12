@@ -6,7 +6,7 @@ const template = require('lodash.template');
 const errors = require('./errors');
 
 module.exports =
-  (swSrc, manifestEntries, swlibPath, rootDirectory, options) => {
+  (swSrc, manifestEntries, workboxSWPath, rootDirectory, options) => {
   options = options || {};
   try {
     mkdirp.sync(path.dirname(swSrc));
@@ -29,28 +29,28 @@ module.exports =
     });
   })
   .then((templateString) => {
-    const relSwlibPath = path.relative(rootDirectory, swlibPath);
+    const relSwlibPath = path.relative(rootDirectory, workboxSWPath);
 
-    const swlibOptions = {};
+    const workboxSWOptions = {};
     if (options.cacheId) {
-      swlibOptions.cacheId = options.cacheId;
+      workboxSWOptions.cacheId = options.cacheId;
     }
     if (options.skipWaiting) {
-      swlibOptions.skipWaiting = true;
+      workboxSWOptions.skipWaiting = true;
     }
     if (options.handleFetch === false) {
-      swlibOptions.handleFetch = false;
+      workboxSWOptions.handleFetch = false;
     }
     if (options.clientsClaim) {
-      swlibOptions.clientsClaim = true;
+      workboxSWOptions.clientsClaim = true;
     }
     if (options.directoryIndex) {
-      swlibOptions.directoryIndex = options.directoryIndex;
+      workboxSWOptions.directoryIndex = options.directoryIndex;
     }
     if (options.ignoreUrlParametersMatching) {
       // JSON.stringify can't output regexes so instead we'll
-      // inject it in the swlibOptionsString.
-      swlibOptions.ignoreUrlParametersMatching = [];
+      // inject it in the workboxSWOptionsString.
+      workboxSWOptions.ignoreUrlParametersMatching = [];
     }
     let runtimeCaching = [];
     if (options.runtimeCaching) {
@@ -60,15 +60,16 @@ module.exports =
             'staleWhileRevalidate' : cachingEntry.handler;
           let optionsString = cachingEntry.options ?
             JSON.stringify(cachingEntry.options, null, 2) : '';
-          let stratString = `swlib.strategies.${handlerName}(${optionsString})`;
+          let stratString =
+            `workboxSW.strategies.${handlerName}(${optionsString})`;
           runtimeCaching.push(
-            `swlib.router.registerRoute(${cachingEntry.urlPattern}, ` +
+            `workboxSW.router.registerRoute(${cachingEntry.urlPattern}, ` +
             `${stratString});`
           );
         } else if (typeof cachingEntry.handler === 'function') {
           let handlerString = cachingEntry.handler.toString();
           runtimeCaching.push(
-            `swlib.router.registerRoute(${cachingEntry.urlPattern}, ` +
+            `workboxSW.router.registerRoute(${cachingEntry.urlPattern}, ` +
             `${handlerString});`
           );
         }
@@ -76,12 +77,12 @@ module.exports =
     }
 
     try {
-      let swlibOptionsString = '';
-      if (Object.keys(swlibOptions).length > 0) {
-        swlibOptionsString = JSON.stringify(swlibOptions, null, 2);
+      let workboxSWOptionsString = '';
+      if (Object.keys(workboxSWOptions).length > 0) {
+        workboxSWOptionsString = JSON.stringify(workboxSWOptions, null, 2);
       }
       if (options.ignoreUrlParametersMatching) {
-        swlibOptionsString = swlibOptionsString.replace(
+        workboxSWOptionsString = workboxSWOptionsString.replace(
           '"ignoreUrlParametersMatching": []',
           `"ignoreUrlParametersMatching": [` +
               options.ignoreUrlParametersMatching.join(', ') + `]`
@@ -89,10 +90,10 @@ module.exports =
       }
       return template(templateString)({
         manifestEntries: manifestEntries,
-        swlibPath: relSwlibPath,
+        workboxSWPath: relSwlibPath,
         navigateFallback: options.navigateFallback,
         navigateFallbackWhitelist: options.navigateFallbackWhitelist,
-        swlibOptionsString,
+        workboxSWOptionsString,
         runtimeCaching,
       }).trim() + '\n';
     } catch (err) {

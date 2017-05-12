@@ -20,13 +20,13 @@ const exportedClasses = [
 ];
 
 describe('Test Library Surface', function() {
-  it('should be accessible via goog.routing', function() {
-    expect(goog.routing).to.exist;
+  it('should be accessible via workbox.routing', function() {
+    expect(workbox.routing).to.exist;
   });
 
   exportedClasses.forEach((exportedClass) => {
-    it(`should expose ${exportedClass} via goog.routing`, function() {
-      expect(goog.routing[exportedClass]).to.exist;
+    it(`should expose ${exportedClass} via workbox.routing`, function() {
+      expect(workbox.routing[exportedClass]).to.exist;
     });
   });
 });

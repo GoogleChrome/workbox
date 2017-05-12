@@ -46,11 +46,11 @@ describe('Express/RegExp Routing Suite', function() {
 
   for (let testCase of testCases) {
     it(testCase.reason, function() {
-      const regExpRoute = new goog.routing.RegExpRoute({
+      const regExpRoute = new workbox.routing.RegExpRoute({
         handler,
         regExp: new RegExp(testCase.regExp),
       });
-      const expressRoute = new goog.routing.ExpressRoute({
+      const expressRoute = new workbox.routing.ExpressRoute({
         handler,
         path: testCase.express,
       });

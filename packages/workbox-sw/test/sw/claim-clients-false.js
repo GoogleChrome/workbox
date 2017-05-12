@@ -4,7 +4,7 @@ importScripts('/node_modules/sinon/pkg/sinon-no-sourcemaps.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-/* global goog, sinon */
+/* global workbox, sinon */
 
 /**
  *
@@ -41,7 +41,7 @@ describe('Clients Claim parameter', function() {
       return Promise.resolve();
     });
     stubs.push(claimStub);
-    new goog.SWLib({
+    new WorkboxSW({
       clientsClaim: false,
     });
     return new Promise((resolve, reject) => {

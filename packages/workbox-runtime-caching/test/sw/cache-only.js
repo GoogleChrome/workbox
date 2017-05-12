@@ -9,9 +9,9 @@ describe('Test of the CacheOnly handler', function() {
   });
 
   it(`should not return a response when the cache isn't populated`, async function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const cacheOnly = new goog.runtimeCaching.CacheOnly({requestWrapper});
+    const cacheOnly = new workbox.runtimeCaching.CacheOnly({requestWrapper});
 
     const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
     const handleResponse = await cacheOnly.handle({event});
@@ -20,9 +20,9 @@ describe('Test of the CacheOnly handler', function() {
   });
 
   it(`should return the cached response when the cache is populated`, async function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const cacheOnly = new goog.runtimeCaching.CacheOnly({requestWrapper});
+    const cacheOnly = new workbox.runtimeCaching.CacheOnly({requestWrapper});
 
     const cachedResponse = new Response('response body');
     const cache = await caches.open(CACHE_NAME);

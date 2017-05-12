@@ -3,7 +3,7 @@ importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-precaching');
 
-/* global goog */
+/* global workbox */
 
 const expect = self.chai.expect;
 self.chai.should();
@@ -13,20 +13,20 @@ mocha.setup({
 });
 
 describe('Test Library Surface', function() {
-  it('should be accessible via goog.precaching', function() {
-    expect(goog.precaching).to.exist;
+  it('should be accessible via workbox.precaching', function() {
+    expect(workbox.precaching).to.exist;
   });
 
-  it('should have RevisionedCacheManager via goog.precaching', function() {
-    expect(goog.precaching.RevisionedCacheManager).to.exist;
+  it('should have RevisionedCacheManager via workbox.precaching', function() {
+    expect(workbox.precaching.RevisionedCacheManager).to.exist;
   });
 
-  it('should have UnrevisionedCacheManager via goog.precaching', function() {
-    expect(goog.precaching.UnrevisionedCacheManager).to.exist;
+  it('should have UnrevisionedCacheManager via workbox.precaching', function() {
+    expect(workbox.precaching.UnrevisionedCacheManager).to.exist;
   });
 
-  it('should be able to get the revisioned cache manager via goog.precaching', function() {
-    const revisionedManager = new goog.precaching.RevisionedCacheManager();
+  it('should be able to get the revisioned cache manager via workbox.precaching', function() {
+    const revisionedManager = new workbox.precaching.RevisionedCacheManager();
     expect(revisionedManager).to.exist;
 
     const cacheName = revisionedManager.getCacheName();
@@ -63,8 +63,8 @@ describe('Test Library Surface', function() {
     });
   });
 
-  it('should be able to get the unrevisioned cache manager via goog.precaching', function() {
-    const unrevisionedManager = new goog.precaching.UnrevisionedCacheManager();
+  it('should be able to get the unrevisioned cache manager via workbox.precaching', function() {
+    const unrevisionedManager = new workbox.precaching.UnrevisionedCacheManager();
     expect(unrevisionedManager).to.exist;
 
     const cacheName = unrevisionedManager.getCacheName();

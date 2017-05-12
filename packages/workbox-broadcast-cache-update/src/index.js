@@ -31,20 +31,20 @@
  * @example <caption>Using the BroadcastCacheUpdatePlugin class in a
  * service worker.</caption>
  *
- * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+ * const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
  *   cacheName: 'text-files',
  *   plugins: [
- *     new goog.broadcastCacheUpdate.BroadcastCacheUpdatePlugin(
+ *     new workbox.broadcastCacheUpdate.BroadcastCacheUpdatePlugin(
  *       {channelName: 'cache-updates'})
  *   ],
  * });
  *
- * const route = new goog.routing.RegExpRoute({
+ * const route = new workbox.routing.RegExpRoute({
  *   regExp: /\.txt$/,
- *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper}),
+ *   handler: new workbox.runtimeCaching.StaleWhileRevalidate({requestWrapper}),
  * });
  *
- * const router = new goog.routing.Router();
+ * const router = new workbox.routing.Router();
  * router.registerRoute({route});
  *
  * @example <caption>Listening for the broadcast message in the

@@ -4,7 +4,7 @@ importScripts('/node_modules/sinon/pkg/sinon-no-sourcemaps.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-/* global goog */
+/* global workbox */
 
 self.chai.should();
 mocha.setup({
@@ -23,7 +23,7 @@ describe('Test Directory Index', function() {
     badInputs.forEach((badInput) => {
       let caughtError;
       try {
-        new goog.SWLib({
+        new WorkboxSW({
           directoryIndex: badInput,
         });
         throw new Error('Expected error to be thrown.');

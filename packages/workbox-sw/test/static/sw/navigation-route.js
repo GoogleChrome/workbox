@@ -1,4 +1,4 @@
-/* global goog */
+/* global workbox */
 
 importScripts('/__test/bundle/workbox-sw');
 
@@ -15,8 +15,8 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', () => self.clients.claim());
 
-const swlib = new goog.SWLib();
-swlib.router.registerNavigationRoute(SHELL_URL, {
+const workboxSW = new WorkboxSW();
+workboxSW.router.registerNavigationRoute(SHELL_URL, {
   blacklist: [/blacklisted/],
   cacheName: CACHE_NAME,
 });

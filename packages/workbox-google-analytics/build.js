@@ -25,7 +25,7 @@ const productionBuildConfigs = generateBuildConfigs({
     iife: pkg.main,
   },
   baseDir: __dirname,
-  moduleName: 'goog.offlineGoogleAnalytics',
+  moduleName: 'workbox.offlineGoogleAnalytics',
 });
 
 
@@ -37,7 +37,7 @@ libFiles.push(path.join('lib', 'idb-helper.js'));
 
 const testBuildConfigs = libFiles.reduce((configs, libFile) => {
   const className = upperCamelCase(path.basename(libFile, '.js'));
-  const moduleName = `goog.offlineGoogleAnalytics.test.${className}`;
+  const moduleName = `workbox.offlineGoogleAnalytics.test.${className}`;
 
   return configs.concat(generateBuildConfigs({
     formatToPath: {
