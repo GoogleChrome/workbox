@@ -29,8 +29,6 @@ module.exports =
     });
   })
   .then((templateString) => {
-    const relSwlibPath = path.relative(rootDirectory, workboxSWPath);
-
     const workboxSWOptions = {};
     if (options.cacheId) {
       workboxSWOptions.cacheId = options.cacheId;
@@ -90,7 +88,7 @@ module.exports =
       }
       return template(templateString)({
         manifestEntries: manifestEntries,
-        workboxSWPath: relSwlibPath,
+        workboxSWPath,
         navigateFallback: options.navigateFallback,
         navigateFallbackWhitelist: options.navigateFallbackWhitelist,
         workboxSWOptionsString,

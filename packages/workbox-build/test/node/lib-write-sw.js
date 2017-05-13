@@ -64,7 +64,7 @@ describe('lib/write-sw.js', function() {
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/')
     .then(() => {
       throw new Error('Expected error to be thrown');
@@ -101,7 +101,7 @@ describe('lib/write-sw.js', function() {
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/')
     .then(() => {
       throw new Error('Expected error to be thrown');
@@ -143,7 +143,7 @@ describe('lib/write-sw.js', function() {
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/')
     .then(() => {
       throw new Error('Expected error to be thrown');
@@ -210,7 +210,7 @@ workboxSW.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/');
   });
 
@@ -272,7 +272,7 @@ workboxSW.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/', {
         cacheId: 'cache-id-example',
       });
@@ -336,7 +336,7 @@ workboxSW.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/', {
         directoryIndex: 'custom.html',
       });
@@ -400,7 +400,7 @@ workboxSW.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/', {
         handleFetch: false,
       });
@@ -464,7 +464,7 @@ workboxSW.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/', {
         skipWaiting: true,
       });
@@ -528,7 +528,7 @@ workboxSW.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/', {
         clientsClaim: true,
       });
@@ -591,7 +591,7 @@ workboxSW.router.registerNavigationRoute("/shell");
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/', {
         navigateFallback: '/shell',
       });
@@ -656,7 +656,7 @@ workboxSW.router.registerNavigationRoute("/shell", {
             revision: '1234',
           },
         ],
-        'fake-path/workbox-sw.min.js',
+        'workbox-sw.min.js',
         'fake-path/', {
           navigateFallback: '/shell',
           navigateFallbackWhitelist: [/^\/guide\//, /^\/lolz\//],
@@ -749,7 +749,7 @@ workboxSW.router.registerRoute(/\\/articles\\//, workboxSW.strategies.staleWhile
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/', {
         runtimeCaching: [
           {
@@ -858,7 +858,7 @@ workboxSW.precache(fileManifest);
           revision: '1234',
         },
       ],
-      'fake-path/workbox-sw.min.js',
+      'workbox-sw.min.js',
       'fake-path/', {
         ignoreUrlParametersMatching: [/^example/, /^other/],
       });
