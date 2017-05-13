@@ -52,7 +52,7 @@
  *
  * const updateChannel = new BroadcastChannel('cache-updates');
  * updateChannel.addEventListener('message', event => {
- *   console.log(`Cache updated: ${event.data.payload.updatedUrl}`);
+ *   console.log(`Cache updated: ${event.data.payload.url}`);
  * });
  *
  * @module workbox-broadcast-cache-update
