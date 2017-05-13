@@ -1,4 +1,4 @@
-/* global goog, expect */
+/* global workbox, expect */
 
 describe('workbox-precaching Test Revisioned Caching', function() {
   const STATIC_ASSETS_PATH = '/packages/workbox-precaching/test/static';
@@ -135,19 +135,19 @@ describe('workbox-precaching Test Revisioned Caching', function() {
 
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
+      return testFileSet(iframe, sw1, workbox.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
       return window.goog.swUtils.activateSW(sw2)
       .then((iframe) => {
-        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-1']['step-2']);
+        return testFileSet(iframe, sw2, workbox.__TEST_DATA['set-1']['step-2']);
       })
       .then((step2Responses) => {
         compareRevisionedCachedAssets({
-          cacheList: goog.__TEST_DATA['set-1']['step-1'],
+          cacheList: workbox.__TEST_DATA['set-1']['step-1'],
           cachedResponses: step1Responses,
         }, {
-          cacheList: goog.__TEST_DATA['set-1']['step-2'],
+          cacheList: workbox.__TEST_DATA['set-1']['step-2'],
           cachedResponses: step2Responses,
         });
       });
@@ -159,12 +159,12 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-unrevisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-2']['step-1']);
+      return testFileSet(iframe, sw1, workbox.__TEST_DATA['set-2']['step-1']);
     })
     .then((step1Responses) => {
       return window.goog.swUtils.activateSW(sw2)
       .then((iframe) => {
-        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-2']['step-2']);
+        return testFileSet(iframe, sw2, workbox.__TEST_DATA['set-2']['step-2']);
       });
     });
   });
@@ -174,7 +174,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
+      return testFileSet(iframe, sw1, workbox.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
       return window.goog.swUtils.clearAllCaches()
@@ -182,7 +182,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
         return window.goog.swUtils.activateSW(sw2);
       })
       .then((iframe) => {
-        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-1']['step-2']);
+        return testFileSet(iframe, sw2, workbox.__TEST_DATA['set-1']['step-2']);
       });
     });
   });
@@ -192,7 +192,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-unrevisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-2']['step-1']);
+      return testFileSet(iframe, sw1, workbox.__TEST_DATA['set-2']['step-1']);
     })
     .then((step1Responses) => {
       return window.goog.swUtils.clearAllCaches()
@@ -200,7 +200,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
         return window.goog.swUtils.activateSW(sw2);
       })
       .then((iframe) => {
-        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-2']['step-2']);
+        return testFileSet(iframe, sw2, workbox.__TEST_DATA['set-2']['step-2']);
       });
     });
   });
@@ -210,7 +210,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
     .then((iframe) => {
-      return testFileSet(iframe, sw1, goog.__TEST_DATA['set-1']['step-1']);
+      return testFileSet(iframe, sw1, workbox.__TEST_DATA['set-1']['step-1']);
     })
     .then((step1Responses) => {
       return deleteIndexedDB()
@@ -218,14 +218,14 @@ describe('workbox-precaching Test Revisioned Caching', function() {
         return window.goog.swUtils.activateSW(sw2);
       })
       .then((iframe) => {
-        return testFileSet(iframe, sw2, goog.__TEST_DATA['set-1']['step-2']);
+        return testFileSet(iframe, sw2, workbox.__TEST_DATA['set-1']['step-2']);
       });
     });
   });
 
   it('should only request revisioned duplicate entries once', function() {
     let allEntries = [];
-    goog.__TEST_DATA['duplicate-entries'].forEach((entries) => {
+    workbox.__TEST_DATA['duplicate-entries'].forEach((entries) => {
       allEntries = allEntries.concat(entries);
     });
     allEntries = [...new Set(allEntries)];
@@ -253,7 +253,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
 
   it('should only request unrevisioned duplicate entries once', function() {
     let allEntries = [];
-    goog.__TEST_DATA['duplicate-entries'].forEach((entries) => {
+    workbox.__TEST_DATA['duplicate-entries'].forEach((entries) => {
       allEntries = allEntries.concat(entries);
     });
     allEntries = [...new Set(allEntries)];
@@ -282,7 +282,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
   it('should manage redirected revisioned requests', function() {
     return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/redirect-revisioned-sw.js`)
     .then((iframe) => {
-      const promises = goog.__TEST_DATA['redirect'].map((redirectPath) => {
+      const promises = workbox.__TEST_DATA['redirect'].map((redirectPath) => {
         const sections = redirectPath.split('/').filter((section) => {
           return section !== '';
         });
@@ -307,7 +307,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
   it('should manage redirected unrevisioned requests', function() {
     return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/redirect-unrevisioned-sw.js`)
     .then((iframe) => {
-      const promises = goog.__TEST_DATA['redirect'].map((redirectPath) => {
+      const promises = workbox.__TEST_DATA['redirect'].map((redirectPath) => {
         const sections = redirectPath.split('/').filter((section) => {
           return section !== '';
         });

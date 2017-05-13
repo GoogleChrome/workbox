@@ -10,6 +10,8 @@
     "ecmaVersion": 2017
   },
   "globals": {
-    "BroadcastChannel": false
+    "BroadcastChannel": false,
+    "WorkboxSW": false,
+    "workbox": false
   }
 }

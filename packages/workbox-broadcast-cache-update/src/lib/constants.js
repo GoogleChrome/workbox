@@ -20,7 +20,7 @@
  *
  * @example
  * // Prints 'CACHE_UPDATED'
- * console.log(goog.broadcastCacheUpdate.cacheUpdatedMessageType);
+ * console.log(workbox.broadcastCacheUpdate.cacheUpdatedMessageType);
  *
  * @memberof module:workbox-broadcast-cache-update
  */

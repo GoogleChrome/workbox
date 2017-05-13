@@ -1,10 +1,10 @@
-/* global goog */
+/* global workbox */
 
 importScripts('/__test/bundle/workbox-sw');
 importScripts('/packages/workbox-precaching/test/static/skip-and-claim.js');
 
-const swlib = new goog.SWLib();
-swlib.precache([
+const workboxSW = new WorkboxSW();
+workboxSW.precache([
   '/__echo/date/hello',
 ]);
 

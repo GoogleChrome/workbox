@@ -1,3 +1,3 @@
-/* global swlib */
+/* global workboxSW */
 
-swlib.precache([]);
+workboxSW.precache([]);

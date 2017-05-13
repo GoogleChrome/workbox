@@ -16,9 +16,9 @@ describe('Test of the NetworkOnly handler', function() {
   });
 
   it(`should return a response without adding anything to the cache when the network request is successful`, async function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const networkOnly = new goog.runtimeCaching.NetworkOnly(
+    const networkOnly = new workbox.runtimeCaching.NetworkOnly(
       {requestWrapper, waitOnCache: true});
 
     const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
@@ -33,9 +33,9 @@ describe('Test of the NetworkOnly handler', function() {
   it(`should reject when the network request fails`, function(done) {
     const message = 'expected error';
 
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const networkOnly = new goog.runtimeCaching.NetworkOnly(
+    const networkOnly = new workbox.runtimeCaching.NetworkOnly(
       {requestWrapper, waitOnCache: true});
 
     globalStubs.push(sinon.stub(self, 'fetch', () => {

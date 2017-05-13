@@ -33,12 +33,12 @@ import assert from '../../../../lib/assert';
  * @example
  * // Set up a route to match any requests made for URLs that end in .txt.
  * // The requests are handled with a network-first strategy.
- * const route = new goog.routing.RegExpRoute({
+ * const route = new workbox.routing.RegExpRoute({
  *   regExp: /\.txt$/,
- *   handler: new goog.runtimeCaching.NetworkFirst(),
+ *   handler: new workbox.runtimeCaching.NetworkFirst(),
  * });
  *
- * const router = new goog.routing.Router();
+ * const router = new workbox.routing.Router();
  * router.registerRoute({route});
  *
  * @memberof module:workbox-runtime-caching

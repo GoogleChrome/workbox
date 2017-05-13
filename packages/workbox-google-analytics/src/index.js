@@ -19,7 +19,8 @@ import logHelper from '../../../lib/log-helper.js';
 import replayQueuedRequests from './lib/replay-queued-requests.js';
 
 /**
- * In order to use the library, call`goog.offlineGoogleAnalytics.initialize()`.
+ * In order to use the library, call
+ * `workbox.googleAnalytics.initialize()`.
  * It will take care of setting up service worker `fetch` handlers to ensure
  * that the Google Analytics JavaScript is available offline, and that any
  * Google Analytics requests made while offline are saved (using `IndexedDB`)
@@ -32,8 +33,8 @@ import replayQueuedRequests from './lib/replay-queued-requests.js';
  * // First, import the library into the service worker global scope:
  * importScripts('path/to/offline-google-analytics-import.js');
  *
- * // Then, call goog.offlineGoogleAnalytics.initialize():
- * goog.offlineGoogleAnalytics.initialize();
+ * // Then, call workbox.googleAnalytics.initialize():
+ * workbox.googleAnalytics.initialize();
  *
  * // At this point, implement any other service worker caching strategies
  * // appropriate for your web app.
@@ -43,7 +44,7 @@ import replayQueuedRequests from './lib/replay-queued-requests.js';
  * // the `parameterOverrides` configuration option. This is useful in cases
  * // where you want to set a custom dimension on all hits sent by the service
  * // worker to differentiate them in your reports later.
- * goog.offlineGoogleAnalytics.initialize({
+ * workbox.googleAnalytics.initialize({
  *   parameterOverrides: {
  *     cd1: 'replay'
  *   }
@@ -54,7 +55,7 @@ import replayQueuedRequests from './lib/replay-queued-requests.js';
  * // parameters you can use the `hitFilter` option. One example of when this
  * // might be useful is if you wanted to track the amount of time that elapsed
  * // between when the hit was attempted and when it was successfully replayed.
- * goog.offlineGoogleAnalytics.initialize({
+ * workbox.googleAnalytics.initialize({
  *   hitFilter: searchParams =>
  *     // Sets the `qt` param as a custom metric.
  *     const qt = searchParams.get('qt');
@@ -66,7 +67,7 @@ import replayQueuedRequests from './lib/replay-queued-requests.js';
  */
 
 /**
- * @alias goog.offlineGoogleAnalytics.initialize
+ * @alias workbox.googleAnalytics.initialize
  * @param {Object=}   config
  * @param {Object=}   config.parameterOverrides
  *                    [Measurement Protocol parameters](https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters),

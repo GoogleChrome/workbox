@@ -19,7 +19,7 @@ describe('Test of the responsesAreSame function', function() {
   it(`should throw when responsesAreSame() is called without any parameters`, function() {
     let thrownError = null;
     try {
-      goog.broadcastCacheUpdate.responsesAreSame();
+      workbox.broadcastCacheUpdate.responsesAreSame();
     } catch(err) {
       thrownError = err;
     }
@@ -32,7 +32,7 @@ describe('Test of the responsesAreSame function', function() {
       [firstHeaderName]: 'same', [secondHeaderName]: 'same'}});
     const second = new Response('', {headers: {
       [firstHeaderName]: 'same', [secondHeaderName]: 'same'}});
-    expect(goog.broadcastCacheUpdate.responsesAreSame({
+    expect(workbox.broadcastCacheUpdate.responsesAreSame({
       first, second, headersToCheck})).to.be.true;
   });
 
@@ -41,14 +41,14 @@ describe('Test of the responsesAreSame function', function() {
       [firstHeaderName]: 'same'}});
     const second = new Response('', {headers: {
       [firstHeaderName]: 'same'}});
-    expect(goog.broadcastCacheUpdate.responsesAreSame({
+    expect(workbox.broadcastCacheUpdate.responsesAreSame({
       first, second, headersToCheck})).to.be.true;
   });
 
   it(`should return true when no headers exist`, function() {
     const first = new Response('');
     const second = new Response('');
-    expect(goog.broadcastCacheUpdate.responsesAreSame({
+    expect(workbox.broadcastCacheUpdate.responsesAreSame({
       first, second, headersToCheck})).to.be.true;
   });
 
@@ -57,7 +57,7 @@ describe('Test of the responsesAreSame function', function() {
       headers: {[firstHeaderName]: 'same', [secondHeaderName]: 'same'}});
     const second = new Response('', {
       headers: {[firstHeaderName]: 'same', [secondHeaderName]: 'different'}});
-    expect(goog.broadcastCacheUpdate.responsesAreSame({
+    expect(workbox.broadcastCacheUpdate.responsesAreSame({
       first, second, headersToCheck})).to.be.false;
   });
 
@@ -66,7 +66,7 @@ describe('Test of the responsesAreSame function', function() {
       [firstHeaderName]: 'same', [secondHeaderName]: 'same'}});
     const second = new Response('', {headers: {
       [firstHeaderName]: 'different', [secondHeaderName]: 'different'}});
-    expect(goog.broadcastCacheUpdate.responsesAreSame({
+    expect(workbox.broadcastCacheUpdate.responsesAreSame({
       first, second, headersToCheck})).to.be.false;
   });
 });

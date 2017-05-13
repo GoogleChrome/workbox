@@ -1,4 +1,4 @@
-/* global goog, expect */
+/* global workbox, goog, expect */
 
 describe('End to End Test of registerNavigationRoute()', function() {
   // This uses {once: true} to ensure that each load event handler is only called once.

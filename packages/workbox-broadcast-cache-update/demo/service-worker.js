@@ -1,5 +1,5 @@
 /* eslint-env worker, serviceworker */
-/* global goog */
+/* global workbox */
 
 importScripts(
   '../../workbox-routing/build/routing.js',
@@ -11,19 +11,19 @@ importScripts(
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', () => self.clients.claim());
 
-const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
   cacheName: 'text-files',
   plugins: [
-    new goog.broadcastCacheUpdate.BroadcastCacheUpdatePlugin(
+    new workbox.broadcastCacheUpdate.BroadcastCacheUpdatePlugin(
       {channelName: 'cache-updates'}),
   ],
 });
 
-const route = new goog.routing.RegExpRoute({
+const route = new workbox.routing.RegExpRoute({
   regExp: /\.txt$/,
-  handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper}),
+  handler: new workbox.runtimeCaching.StaleWhileRevalidate({requestWrapper}),
 });
 
-const router = new goog.routing.Router();
+const router = new workbox.routing.Router();
 router.registerRoute({route});
-router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
+router.setDefaultHandler({handler: new workbox.runtimeCaching.NetworkFirst()});

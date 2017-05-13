@@ -61,8 +61,8 @@ addNewEntry(location.origin);
 // Add entries with absolute path for a foreign origin
 addNewEntry(secondaryServer);
 
-self.goog = self.goog || {};
-self.goog.__TEST_DATA = {
+self.workbox = self.workbox || {};
+self.workbox.__TEST_DATA = {
   'set-1': {
     'step-1': EXAMPLE_REVISIONED_FILES_SET_1_STEP_1,
     'step-2': EXAMPLE_REVISIONED_FILES_SET_1_STEP_2,

@@ -1,13 +1,13 @@
 /* eslint-env worker, serviceworker */
-/* global goog */
+/* global workbox */
 
 // Import the helper libraries into our service worker's global scope.
 importScripts(
-  // This provides the goog.routing.* interfaces.
+  // This provides the workbox.routing.* interfaces.
   '../../workbox-routing/build/workbox-routing.js',
-  // This provides the goog.runtimeCaching.* interfaces.
+  // This provides the workbox.runtimeCaching.* interfaces.
   '../../workbox-runtime-caching/build/workbox-runtime-caching.js',
-  // This provides the goog.cacheExpiration.* interfaces.
+  // This provides the workbox.cacheExpiration.* interfaces.
   '../../workbox-cache-expiration/build/workbox-cache-expiration.js'
 );
 
@@ -21,10 +21,10 @@ self.addEventListener('activate', (event) => {
 
 // Configure a RequestWrapper to use a specific cache and impose a cache
 // expiration when it modifies that cache.
-const textFilesRequestWrapper = new goog.runtimeCaching.RequestWrapper({
+const textFilesRequestWrapper = new workbox.runtimeCaching.RequestWrapper({
   cacheName: 'text-files',
   plugins: [
-    new goog.cacheExpiration.Plugin({
+    new workbox.cacheExpiration.Plugin({
       maxEntries: 2,
       maxAgeSeconds: 10,
     }),
@@ -35,15 +35,15 @@ const textFilesRequestWrapper = new goog.runtimeCaching.RequestWrapper({
 // Anything that matches those requests will be handled using a
 // stale-while-revalidate policy, with caching plugin determined by the
 // textFilesRequestWrapper we just created.
-const textFilesRoute = new goog.routing.RegExpRoute({
+const textFilesRoute = new workbox.routing.RegExpRoute({
   regExp: /\.txt$/,
-  handler: new goog.runtimeCaching.StaleWhileRevalidate({
+  handler: new workbox.runtimeCaching.StaleWhileRevalidate({
     requestWrapper: textFilesRequestWrapper,
   }),
 });
 
 // Finally, set up our router, registering both the textFilesRoute and also
 // a default handler to match all other requests, using a network first policy.
-const router = new goog.routing.Router();
+const router = new workbox.routing.Router();
 router.registerRoute({route: textFilesRoute});
-router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
+router.setDefaultHandler({handler: new workbox.runtimeCaching.NetworkFirst()});

@@ -3,7 +3,7 @@ importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-precaching');
 
-/* global goog */
+/* global workbox */
 
 self.chai.should();
 mocha.setup({
@@ -13,8 +13,8 @@ mocha.setup({
 
 describe('Test Cookies with Precache', function() {
   it('should cache asset with appropriate cookies with revisions asset', function() {
-    const revManager = new goog.precaching.RevisionedCacheManager();
-    const unrevManager = new goog.precaching.UnrevisionedCacheManager();
+    const revManager = new workbox.precaching.RevisionedCacheManager();
+    const unrevManager = new workbox.precaching.UnrevisionedCacheManager();
     revManager.addToCacheList({
       revisionedFiles: [
         `/__test/cookie/1/`,

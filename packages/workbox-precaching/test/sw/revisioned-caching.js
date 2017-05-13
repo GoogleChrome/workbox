@@ -3,7 +3,7 @@ importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-precaching');
 
-/* global goog */
+/* global workbox */
 
 const expect = self.chai.expect;
 self.chai.should();
@@ -21,7 +21,7 @@ describe('sw/revisioned-caching()', function() {
   const VALID_REVISION = '1234';
 
   beforeEach(function() {
-    cacheManager = new goog.precaching.RevisionedCacheManager();
+    cacheManager = new workbox.precaching.RevisionedCacheManager();
   });
 
   afterEach(function() {

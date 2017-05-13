@@ -30,7 +30,7 @@ import CacheableResponse from './cacheable-response';
  * context, please use the `CacheableResponse` class directly.
  *
  * @example
- * new goog.cacheableResponse.CacheableResponsePlugin({
+ * new workbox.cacheableResponse.CacheableResponsePlugin({
  *   statuses: [0, 200, 404],
  *   headers: {
  *     'Example-Header-1': 'Header-Value-1'
@@ -43,7 +43,7 @@ import CacheableResponse from './cacheable-response';
 class CacheableResponsePlugin extends CacheableResponse {
   /**
    * A "lifecycle" callback that will be triggered automatically by the
-   * `goog.runtimeCaching` handlers prior to an entry being added to a cache.
+   * `workbox.runtimeCaching` handlers prior to an entry being added to a cache.
    *
    * @private
    * @param {Object} input

@@ -11,7 +11,7 @@ import {getResponse} from './response-manager';
  *
  * @example
  * When you want to push the requests manually
- * let bgQueue = new goog.backgroundSyncQueue.Queue();
+ * let bgQueue = new workbox.backgroundSync.Queue();
  * self.addEventListener('fetch', function(e) {
  *		if (e.request.url.startsWith('https://jsonplaceholder.typicode.com')) {
  *			const clone = e.request.clone();

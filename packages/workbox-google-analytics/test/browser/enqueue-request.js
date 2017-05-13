@@ -12,14 +12,14 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, goog */
+/* global chai, workbox */
 
 'use strict';
 
 describe('enqueue-request', () => {
-  const enqueueRequest = goog.offlineGoogleAnalytics.test.EnqueueRequest;
-  const constants = goog.offlineGoogleAnalytics.test.Constants;
-  const IDBHelper = goog.offlineGoogleAnalytics.test.IdbHelper;
+  const enqueueRequest = workbox.googleAnalytics.test.EnqueueRequest;
+  const constants = workbox.googleAnalytics.test.Constants;
+  const IDBHelper = workbox.googleAnalytics.test.IdbHelper;
 
   const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
     constants.IDB.STORE);

@@ -182,8 +182,8 @@ const fileManifest = [
   }
 ];
 
-const swlib = new self.goog.SWLib();
-swlib.precache(fileManifest);
+const workboxSW = new self.WorkboxSW();
+workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {
@@ -241,10 +241,10 @@ const fileManifest = [
   }
 ];
 
-const swlib = new self.goog.SWLib({
+const workboxSW = new self.WorkboxSW({
   "cacheId": "cache-id-example"
 });
-swlib.precache(fileManifest);
+workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {
@@ -305,10 +305,10 @@ const fileManifest = [
   }
 ];
 
-const swlib = new self.goog.SWLib({
+const workboxSW = new self.WorkboxSW({
   "directoryIndex": "custom.html"
 });
-swlib.precache(fileManifest);
+workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {
@@ -369,10 +369,10 @@ const fileManifest = [
   }
 ];
 
-const swlib = new self.goog.SWLib({
+const workboxSW = new self.WorkboxSW({
   "handleFetch": false
 });
-swlib.precache(fileManifest);
+workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {
@@ -433,10 +433,10 @@ const fileManifest = [
   }
 ];
 
-const swlib = new self.goog.SWLib({
+const workboxSW = new self.WorkboxSW({
   "skipWaiting": true
 });
-swlib.precache(fileManifest);
+workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {
@@ -497,10 +497,10 @@ const fileManifest = [
   }
 ];
 
-const swlib = new self.goog.SWLib({
+const workboxSW = new self.WorkboxSW({
   "clientsClaim": true
 });
-swlib.precache(fileManifest);
+workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {
@@ -561,9 +561,9 @@ const fileManifest = [
   }
 ];
 
-const swlib = new self.goog.SWLib();
-swlib.precache(fileManifest);
-swlib.router.registerNavigationRoute("/shell");
+const workboxSW = new self.WorkboxSW();
+workboxSW.precache(fileManifest);
+workboxSW.router.registerNavigationRoute("/shell");
 `;
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {
@@ -624,9 +624,9 @@ const fileManifest = [
   }
 ];
 
-const swlib = new self.goog.SWLib();
-swlib.precache(fileManifest);
-swlib.router.registerNavigationRoute("/shell", {
+const workboxSW = new self.WorkboxSW();
+workboxSW.precache(fileManifest);
+workboxSW.router.registerNavigationRoute("/shell", {
   whitelist: [/^\\/guide\\//,/^\\/lolz\\//],
 });
 `;
@@ -690,18 +690,18 @@ const fileManifest = [
   }
 ];
 
-const swlib = new self.goog.SWLib();
-swlib.precache(fileManifest);
-swlib.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, swlib.strategies.cacheFirst());
-swlib.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, swlib.strategies.cacheOnly());
-swlib.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, swlib.strategies.networkFirst());
-swlib.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, swlib.strategies.networkOnly());
-swlib.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, swlib.strategies.staleWhileRevalidate());
-swlib.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, swlib.strategies.staleWhileRevalidate());
-swlib.router.registerRoute(/images/:size/:name.jpg, (request, values, options) => {
+const workboxSW = new self.WorkboxSW();
+workboxSW.precache(fileManifest);
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.cacheFirst());
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.cacheOnly());
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.networkFirst());
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.networkOnly());
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.staleWhileRevalidate());
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.staleWhileRevalidate());
+workboxSW.router.registerRoute(/images/:size/:name.jpg, (request, values, options) => {
               return new Promise('params: ' + values.join(','));
             });
-swlib.router.registerRoute(/\\/articles\\//, swlib.strategies.staleWhileRevalidate({
+workboxSW.router.registerRoute(/\\/articles\\//, workboxSW.strategies.staleWhileRevalidate({
   "cacheName": "example-cache",
   "cacheExpiration": {
     "maxEntries": 10,
@@ -827,10 +827,10 @@ const fileManifest = [
   }
 ];
 
-const swlib = new self.goog.SWLib({
+const workboxSW = new self.WorkboxSW({
   "ignoreUrlParametersMatching": [/^example/, /^other/]
 });
-swlib.precache(fileManifest);
+workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {

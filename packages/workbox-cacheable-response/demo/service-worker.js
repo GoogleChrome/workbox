@@ -1,13 +1,13 @@
 /* eslint-env worker, serviceworker */
-/* global goog */
+/* global workbox */
 
 // Import the helper libraries into our service worker's global scope.
 importScripts(
-  // This provides the goog.routing.* interfaces.
+  // This provides the workbox.routing.* interfaces.
   '../../workbox-routing/build/workbox-routing.js',
-  // This provides the goog.runtimeCaching.* interfaces.
+  // This provides the workbox.runtimeCaching.* interfaces.
   '../../workbox-runtime-caching/build/workbox-runtime-caching.js',
-  // This provides the goog.cacheExpiration.* interfaces.
+  // This provides the workbox.cacheExpiration.* interfaces.
   '../../workbox-cacheable-response/build/workbox-cacheable-response.js'
 );
 
@@ -21,10 +21,10 @@ self.addEventListener('activate', (event) => {
 
 // Configure a RequestWrapper to use a specific cache and only cache responses
 // that have a status code of 200 or 404.
-const httpbinRequestWrapper = new goog.runtimeCaching.RequestWrapper({
+const httpbinRequestWrapper = new workbox.runtimeCaching.RequestWrapper({
   cacheName: 'httpbin',
   plugins: [
-    new goog.cacheableResponse.Plugin({
+    new workbox.cacheableResponse.Plugin({
       statuses: [200, 404],
     }),
   ],
@@ -34,15 +34,15 @@ const httpbinRequestWrapper = new goog.runtimeCaching.RequestWrapper({
 // Anything that matches those requests will be handled using a
 // stale-while-revalidate policy, with caching behavior determined by the
 // httpbinRequestWrapper we just created.
-const httpbinRoute = new goog.routing.RegExpRoute({
+const httpbinRoute = new workbox.routing.RegExpRoute({
   regExp: new RegExp('^https://httpbin.org/status/'),
-  handler: new goog.runtimeCaching.StaleWhileRevalidate({
+  handler: new workbox.runtimeCaching.StaleWhileRevalidate({
     requestWrapper: httpbinRequestWrapper,
   }),
 });
 
 // Finally, set up our router, registering both the textFilesRoute and also
 // a default handler to match all other requests, using a network first policy.
-const router = new goog.routing.Router();
+const router = new workbox.routing.Router();
 router.registerRoute({route: httpbinRoute});
-router.setDefaultHandler({handler: new goog.runtimeCaching.NetworkFirst()});
+router.setDefaultHandler({handler: new workbox.runtimeCaching.NetworkFirst()});

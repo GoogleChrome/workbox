@@ -12,12 +12,12 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, goog */
+/* global chai, workbox */
 
 'use strict';
 
 describe('broadcast manager test', () => {
-	const broadcastManager = goog.backgroundSyncQueue.test.BroadcastManager;
+	const broadcastManager = workbox.backgroundSync.test.BroadcastManager;
 
   it('check broadcast', function(done) {
 		this.timeout(100);

@@ -22,7 +22,7 @@ const buildConfigs = generateBuildConfigs({
     iife: pkg.main,
   },
   baseDir: __dirname,
-  moduleName: 'goog.runtimeCaching',
+  moduleName: 'workbox.runtimeCaching',
 });
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

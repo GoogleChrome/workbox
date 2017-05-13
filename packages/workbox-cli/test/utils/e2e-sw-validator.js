@@ -94,16 +94,13 @@ const performTest = (generateSWCb, {exampleProject, swDest, fileExtensions, base
   let fileManifestOutput;
   return generateSWCb()
   .then(() => {
-    class SWLib {
+    class WorkboxSW {
       precache(fileManifest) {
         fileManifestOutput = fileManifest;
       }
     }
-    const injectedSelf = {
-      goog: {
-        SWLib,
-      },
-    };
+    const injectedSelf = {WorkboxSW};
+
     const swContent = fs.readFileSync(swDest);
     // To smoke test the service worker is valid JavaScript we can run it
     // in Node's JavaScript parsed. `runInNewContext` comes without
@@ -123,17 +120,14 @@ const performTest = (generateSWCb, {exampleProject, swDest, fileExtensions, base
     return generateSWCb();
   })
   .then(() => {
-    class SWLib {
+    class WorkboxSW {
       precache(fileManifest) {
         fileManifestOutput = fileManifest;
       }
     }
 
-    const injectedSelf = {
-      goog: {
-        SWLib,
-      },
-    };
+    const injectedSelf = {WorkboxSW};
+
     const swContent = fs.readFileSync(swDest);
     // To smoke test the service worker is valid JavaScript we can run it
     // in Node's JavaScript parsed. `runInNewContext` comes without

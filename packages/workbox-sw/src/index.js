@@ -31,8 +31,8 @@ import WorkboxSW from './lib/workbox-sw';
  *
  * // DO NOT CREATE THIS MANIFEST OR EDIT IT MANUALLY!!
  * // Use workbox-build or workbox-cli to generate the manifest for you.
- * const swlib = new goog.SWLib();
- * swlib.precache([
+ * const workboxSW = new WorkboxSW();
+ * workboxSW.precache([
  *   {
  *     url: '/',
  *     revision: '613e6c7332dd83e848a8b00c403827ed'
@@ -44,18 +44,18 @@ import WorkboxSW from './lib/workbox-sw';
  * ]);
  *
  * // Register runtime routes like so.
- * swlib.router.registerRoute(
- *   '/example/', swlib.staleWhileRevalidate());
- * swlib.router.registerRoute(
+ * workboxSW.router.registerRoute(
+ *   '/example/', workboxSW.staleWhileRevalidate());
+ * workboxSW.router.registerRoute(
  *   /\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
- *   swlib.strategies.cacheFirst());
- * swlib.router.registerRoute(
- *   '/styles/:filename', swlib.strategies.cacheFirst());
+ *   workboxSW.strategies.cacheFirst());
+ * workboxSW.router.registerRoute(
+ *   '/styles/:filename', workboxSW.strategies.cacheFirst());
  *
  * @example <caption>Using plugins with caching strategies.</caption>
- * const swlib = new goog.SWLib();
- * swlib.router.registerRoute(/\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
- *   swlib.strategies.cacheFirst({
+ * const workboxSW = new WorkboxSW();
+ * workboxSW.router.registerRoute(/\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
+ *   workboxSW.strategies.cacheFirst({
  *     cacheName: 'example-cache',
  *     cacheExpiration: {
  *       maxEntries: 10,

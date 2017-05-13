@@ -39,7 +39,7 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  *
  * const url = '/path/to/file';
  * const cacheName = 'my-runtime-cache';
- * const bcu = new goog.broadcastCacheUpdate.BroadcastCacheUpdate(
+ * const bcu = new workbox.broadcastCacheUpdate.BroadcastCacheUpdate(
  *   {channelName: 'cache-updates'});
  *
  * Promise.all([

@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, goog */
+/* global chai, workbox */
 
 'use strict';
 
@@ -39,7 +39,7 @@ describe('background sync queue test', () => {
   };
 
   const backgroundSyncQueue
-    = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
+    = new workbox.backgroundSync.test.BackgroundSyncQueue({
       maxRetentionTime: MAX_AGE,
       queueName: QUEUE_NAME,
       callbacks: CALLBACKS,
@@ -47,13 +47,13 @@ describe('background sync queue test', () => {
 
   it('check defaults', () => {
     const defaultsBackgroundSyncQueue
-      = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({});
+      = new workbox.backgroundSync.test.BackgroundSyncQueue({});
     chai.assert.isObject(defaultsBackgroundSyncQueue._queue);
     chai.assert.isObject(defaultsBackgroundSyncQueue._requestManager);
     chai.assert.equal(defaultsBackgroundSyncQueue._queue._queueName,
-      goog.backgroundSyncQueue.test.Constants.defaultQueueName + '_0');
+      workbox.backgroundSync.test.Constants.defaultQueueName + '_0');
     chai.assert.equal(defaultsBackgroundSyncQueue._queue._config.maxAge,
-      goog.backgroundSyncQueue.test.Constants.maxAge);
+      workbox.backgroundSync.test.Constants.maxAge);
     chai.assert.equal(
       JSON.stringify(
         defaultsBackgroundSyncQueue._requestManager._globalCallbacks),
@@ -85,12 +85,12 @@ describe('background sync queue test', () => {
 	it('test queue cleanup', async () => {
 		/* code for clearing everything from IDB */
 		const backgroundSyncQueue
-    = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
+    = new workbox.backgroundSync.test.BackgroundSyncQueue({
       maxRetentionTime: 1,
     });
 
 		const backgroundSyncQueue2
-    = new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
+    = new workbox.backgroundSync.test.BackgroundSyncQueue({
       maxRetentionTime: 10000,
       dbName: 'Queue2',
     });

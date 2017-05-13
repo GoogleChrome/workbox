@@ -4,9 +4,9 @@ importScripts(
   '/__test/bundle/workbox-runtime-caching'
 );
 
-/* global goog */
+/* global workbox */
 
-const revcacheManager = new goog.precaching.RevisionedCacheManager();
+const revcacheManager = new workbox.precaching.RevisionedCacheManager();
 revcacheManager.addToCacheList({revisionedFiles: [
   {url: 'example.html', revision: '1234'},
 ]});
@@ -14,18 +14,18 @@ revcacheManager.addToCacheList({revisionedFiles: [
 const cacheName = revcacheManager.getCacheName();
 const cachedURLs = revcacheManager.getCachedUrls();
 
-const route = new goog.routing.Route({
+const route = new workbox.routing.Route({
   match: ({url, event}) => {
     return (cachedURLs.indexOf(url.href) !== -1);
   },
-  handler: new goog.runtimeCaching.CacheFirst({
-    requestWrapper: new goog.runtimeCaching.RequestWrapper({
+  handler: new workbox.runtimeCaching.CacheFirst({
+    requestWrapper: new workbox.runtimeCaching.RequestWrapper({
       cacheName: cacheName,
     }),
   }),
 });
 
-const router = new goog.routing.Router();
+const router = new workbox.routing.Router();
 router.registerRoute({route});
 
 self.addEventListener('install', (event) => {

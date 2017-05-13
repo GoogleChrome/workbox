@@ -29,7 +29,7 @@ import ErrorFactory from './error-factory';
  * limit on the responses cached.
  *
  * @example
- * const cacheExpiration = new goog.cacheExpiration.CacheExpiration({
+ * const cacheExpiration = new workbox.cacheExpiration.CacheExpiration({
  *   maxEntries: 2,
  *   maxAgeSeconds: 10,
  * });

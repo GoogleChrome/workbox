@@ -17,13 +17,13 @@ describe('Test of the CacheableResponsePlugin class', function() {
   };
 
   it(`should extend the CacheableResponse class`, function() {
-    const plugin = new goog.cacheableResponse.CacheableResponsePlugin(
+    const plugin = new workbox.cacheableResponse.CacheableResponsePlugin(
       {headers: VALID_HEADERS});
-    expect(plugin).to.be.instanceOf(goog.cacheableResponse.CacheableResponse);
+    expect(plugin).to.be.instanceOf(workbox.cacheableResponse.CacheableResponse);
   });
 
   it(`should expose a the cacheWillUpdate() method`, function() {
-    const plugin = new goog.cacheableResponse.CacheableResponsePlugin(
+    const plugin = new workbox.cacheableResponse.CacheableResponsePlugin(
       {headers: VALID_HEADERS});
     expect(plugin).to.respondTo('cacheWillUpdate');
   });

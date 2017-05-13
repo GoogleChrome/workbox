@@ -12,19 +12,19 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, goog */
+/* global chai, workbox */
 
 'use strict';
 
 describe('queue-utils test', () => {
-	const queueUtils = goog.backgroundSyncQueue.test.QueueUtils;
+	const queueUtils = workbox.backgroundSync.test.QueueUtils;
 	const maxAgeTimeStamp = 1000*60*60*24;
 	const config = {
 		maxAge: maxAgeTimeStamp,
 	};
 
 	beforeEach(function() {
-		const idbHelper = new goog.backgroundSyncQueue.test.IdbHelper(
+		const idbHelper = new workbox.backgroundSync.test.IdbHelper(
 			'bgQueueSyncDB', 1, 'QueueStore');
 		return idbHelper.getAllKeys()
 		.then((keys) => {

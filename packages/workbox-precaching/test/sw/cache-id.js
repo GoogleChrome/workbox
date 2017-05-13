@@ -3,7 +3,7 @@ importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-precaching');
 
-/* global goog */
+/* global workbox */
 
 const expect = self.chai.expect;
 self.chai.should();
@@ -25,7 +25,7 @@ describe('Test cacheId Parameter', function() {
   it('should throw on bad cacheId input', function() {
     let thrownError;
     try {
-      cacheManager = new goog.precaching.RevisionedCacheManager({
+      cacheManager = new workbox.precaching.RevisionedCacheManager({
         cacheId: {},
       });
     } catch (err) {
@@ -37,7 +37,7 @@ describe('Test cacheId Parameter', function() {
 
   it('should be able to generate cacheManager with cacheId', function() {
     const CACHE_ID = 'Cache_ID_Example';
-    cacheManager = new goog.precaching.RevisionedCacheManager({
+    cacheManager = new workbox.precaching.RevisionedCacheManager({
       cacheId: CACHE_ID,
     });
     cacheManager.getCacheName().indexOf(CACHE_ID).should.not.equal(-1);

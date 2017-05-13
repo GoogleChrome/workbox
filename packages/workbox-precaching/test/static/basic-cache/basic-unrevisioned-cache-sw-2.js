@@ -1,11 +1,11 @@
-/* global goog */
+/* global workbox */
 importScripts('/packages/workbox-precaching/test/static/test-data.js');
 importScripts('/__test/bundle/workbox-precaching');
 importScripts('/packages/workbox-precaching/test/static/skip-and-claim.js');
 
-const precacheManager = new goog.precaching.UnrevisionedCacheManager();
+const precacheManager = new workbox.precaching.UnrevisionedCacheManager();
 precacheManager.addToCacheList({
-  unrevisionedFiles: goog.__TEST_DATA['set-2']['step-2'],
+  unrevisionedFiles: workbox.__TEST_DATA['set-2']['step-2'],
 });
 
 self.addEventListener('install', (event) => {

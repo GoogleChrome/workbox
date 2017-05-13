@@ -24,7 +24,7 @@ const productionBuildConfigs = generateBuildConfigs({
     iife: pkg.main,
   },
   baseDir: __dirname,
-  moduleName: 'goog.backgroundSync',
+  moduleName: 'workbox.backgroundSync',
 });
 
 // We don't want the test/ build output to be published.
@@ -35,7 +35,7 @@ libFiles.push(path.join('lib', 'idb-helper.js'));
 
 const testBuildConfigs = libFiles.reduce((configs, libFile) => {
   const className = upperCamelCase(path.basename(libFile, '.js'));
-  const moduleName = `goog.backgroundSyncQueue.test.${className}`;
+  const moduleName = `workbox.backgroundSync.test.${className}`;
 
   return configs.concat(generateBuildConfigs({
     formatToPath: {

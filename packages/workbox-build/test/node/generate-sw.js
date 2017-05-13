@@ -18,9 +18,9 @@ describe('Test generateSW()', function() {
   let generateSW;
   beforeEach(function() {
     generateSW = proxyquire('../../src/lib/generate-sw', {
-      './utils/copy-workbox-sw': (swlibPath) => {
-        if (swlibPath === path.dirname(EXAMPLE_INPUT.swDest)) {
-          return Promise.resolve(path.join(swlibPath, 'workbox-sw.v0.0.0.js'));
+      './utils/copy-workbox-sw': (workboxSWPath) => {
+        if (workboxSWPath === path.dirname(EXAMPLE_INPUT.swDest)) {
+          return Promise.resolve(path.join(workboxSWPath, 'workbox-sw.v0.0.0.js'));
         }
         return Promise.reject(new Error('Inject Error - copy-workbox-sw'));
       },
@@ -200,12 +200,12 @@ describe('Test generateSW()', function() {
           size: 10,
         }]);
       },
-      './write-sw': (swPath, manifestEntries, swlibPath, globDirectory) => {
+      './write-sw': (swPath, manifestEntries, workboxSWPath, globDirectory) => {
         if (swPath !== EXAMPLE_INPUT.swDest) {
           throw new Error(`Service worker path is an unexpected value: ${swPath}`);
         }
-        if (swlibPath !== 'workbox-sw.v0.0.0.js') {
-          throw new Error(`workbox-sw path is an unexpected value: ${swlibPath}`);
+        if (workboxSWPath !== 'workbox-sw.v0.0.0.js') {
+          throw new Error(`workbox-sw path is an unexpected value: ${workboxSWPath}`);
         }
         if (globDirectory !== '.') {
           throw new Error(`globDirectory is an unexpected value: ${globDirectory}`);
@@ -220,9 +220,9 @@ describe('Test generateSW()', function() {
   // globDirectory - valid nested folder
   it('should be able to write service worker to the a directory', function() {
     generateSW = proxyquire('../../src/lib/generate-sw', {
-      './utils/copy-workbox-sw': (swlibPath) => {
-        if (swlibPath === path.dirname(EXAMPLE_INPUT.swDest)) {
-          return Promise.resolve(path.join(swlibPath, 'workbox-sw.v0.0.0.js'));
+      './utils/copy-workbox-sw': (workboxSWPath) => {
+        if (workboxSWPath === path.dirname(EXAMPLE_INPUT.swDest)) {
+          return Promise.resolve(path.join(workboxSWPath, 'workbox-sw.v0.0.0.js'));
         }
         return Promise.reject(new Error('Inject Error - copy-workbox-sw'));
       },
@@ -233,12 +233,12 @@ describe('Test generateSW()', function() {
           size: 10,
         }]);
       },
-      './write-sw': (swPath, manifestEntries, swlibPath, globDirectory) => {
+      './write-sw': (swPath, manifestEntries, workboxSWPath, globDirectory) => {
         if (swPath !== EXAMPLE_INPUT.swDest) {
           throw new Error(`Service worker path is an unexpected value: ${swPath}`);
         }
-        if (swlibPath !== 'workbox-sw.v0.0.0.js') {
-          throw new Error(`workbox-sw path is an unexpected value: ${swlibPath}`);
+        if (workboxSWPath !== 'workbox-sw.v0.0.0.js') {
+          throw new Error(`workbox-sw path is an unexpected value: ${workboxSWPath}`);
         }
         if (globDirectory !== EXAMPLE_INPUT.globDirectory) {
           throw new Error(`globDirectory is an unexpected value: ${globDirectory}`);

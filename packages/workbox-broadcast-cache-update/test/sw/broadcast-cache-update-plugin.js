@@ -16,7 +16,7 @@ describe('Test of the BroadcastCacheUpdatePlugin class', function() {
   const cacheName = 'test-cache';
   const oldResponse = new Response();
   const newResponse = new Response();
-  const bcuPlugin = new goog.broadcastCacheUpdate.BroadcastCacheUpdatePlugin({channelName});
+  const bcuPlugin = new workbox.broadcastCacheUpdate.BroadcastCacheUpdatePlugin({channelName});
 
   it(`should throw when cacheDidUpdate is called and cacheName is missing`, function() {
     let thrownError = null;

@@ -15,7 +15,7 @@ import {RequestWrapper} from '../../../workbox-runtime-caching/src/index.js';
  * workbox-sw.
  *
  * You would never access this class directly but instead use with
- * `swlib.strategies.<Strategy Name>`.
+ * `workboxSW.strategies.<Strategy Name>`.
  *
  * @memberof module:workbox-sw
  */
@@ -34,10 +34,10 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const = new goog.SWLib();
-   * const cacheFirstStrategy = swlib.strategies.cacheFirst();
+   * const = new WorkboxSW();
+   * const cacheFirstStrategy = workboxSW.strategies.cacheFirst();
    *
-   * swlib.router.registerRoute('/styles/*', cacheFirstStrategy);
+   * workboxSW.router.registerRoute('/styles/*', cacheFirstStrategy);
    *
    * @param {module:workbox-sw.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -52,10 +52,10 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const swlib = new goog.SWLib();
-   * const cacheOnlyStrategy = swlib.strategies.cacheOnly();
+   * const workboxSW = new WorkboxSW();
+   * const cacheOnlyStrategy = workboxSW.strategies.cacheOnly();
    *
-   * swlib.router.registerRoute('/styles/*', cacheOnlyStrategy);
+   * workboxSW.router.registerRoute('/styles/*', cacheOnlyStrategy);
    *
    * @param {module:workbox-sw.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -71,10 +71,10 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const swlib = new goog.SWLib();
-   * const networkFirstStrategy = swlib.strategies.networkFirst();
+   * const workboxSW = new WorkboxSW();
+   * const networkFirstStrategy = workboxSW.strategies.networkFirst();
    *
-   * swlib.router.registerRoute('/blog/', networkFirstStrategy);
+   * workboxSW.router.registerRoute('/blog/', networkFirstStrategy);
    *
    * @param {module:workbox-sw.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -90,10 +90,10 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const swlib = new goog.SWLib();
-   * const networkOnlyStrategy = swlib.strategies.networkOnly();
+   * const workboxSW = new WorkboxSW();
+   * const networkOnlyStrategy = workboxSW.strategies.networkOnly();
    *
-   * swlib.router.registerRoute('/admin/', networkOnlyStrategy);
+   * workboxSW.router.registerRoute('/admin/', networkOnlyStrategy);
    *
    * @param {module:workbox-sw.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.
@@ -109,11 +109,11 @@ class Strategies {
    * run-time caching strategy.
    *
    * @example
-   * const swlib = new goog.SWLib();
+   * const workboxSW = new WorkboxSW();
    * const staleWhileRevalidateStrategy =
-   *  swlib.strategies.staleWhileRevalidate();
+   *  workboxSW.strategies.staleWhileRevalidate();
    *
-   * swlib.router.registerRoute('/styles/*', staleWhileRevalidateStrategy);
+   * workboxSW.router.registerRoute('/styles/*', staleWhileRevalidateStrategy);
    *
    * @param {module:workbox-sw.SWLib.RuntimeStrategyOptions} [options] To define
    * any additional caching or broadcast plugins pass in option values.

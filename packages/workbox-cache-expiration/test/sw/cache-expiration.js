@@ -24,9 +24,9 @@ describe('Test of the CacheExpiration class', function() {
   const MAX_ENTRIES = 3;
   const NOW = 1487106334920;
 
-  const timestampPropertyName = goog.cacheExpiration.timestampPropertyName;
-  const urlPropertyName = goog.cacheExpiration.urlPropertyName;
-  const CacheExpiration = goog.cacheExpiration.CacheExpiration;
+  const timestampPropertyName = workbox.cacheExpiration.timestampPropertyName;
+  const urlPropertyName = workbox.cacheExpiration.urlPropertyName;
+  const CacheExpiration = workbox.cacheExpiration.CacheExpiration;
 
   it(`should throw when CacheExpiration() is called without any parameters`, function() {
     let thrownError = null;

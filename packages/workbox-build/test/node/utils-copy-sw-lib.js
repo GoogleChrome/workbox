@@ -44,7 +44,7 @@ describe('Copy SW Lib', function() {
         `fake-path${pathSep}workbox-sw\.prod\.v\\d+\.\\d+\.\\d+\.js`);
       if (!swLibPath.match(regexPattern)) {
         console.log('Regular expression: ' + regexPattern);
-        throw new Error('Unexpected result from copying swlib: ' + swLibPath);
+        throw new Error('Unexpected result from copying workboxSW: ' + swLibPath);
       }
     });
   });

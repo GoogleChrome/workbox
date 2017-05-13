@@ -20,13 +20,13 @@ const exportedSymbols = [
 ];
 
 describe('Test Library Surface', function() {
-  it('should be accessible via goog.broadcastCacheUpdate', function() {
-    expect(goog.broadcastCacheUpdate).to.exist;
+  it('should be accessible via workbox.broadcastCacheUpdate', function() {
+    expect(workbox.broadcastCacheUpdate).to.exist;
   });
 
   exportedSymbols.forEach((exportedSymbol) => {
-    it(`should expose ${exportedSymbol} via goog.broadcastCacheUpdate`, function() {
-      expect(goog.broadcastCacheUpdate[exportedSymbol]).to.exist;
+    it(`should expose ${exportedSymbol} via workbox.broadcastCacheUpdate`, function() {
+      expect(workbox.broadcastCacheUpdate[exportedSymbol]).to.exist;
     });
   });
 });

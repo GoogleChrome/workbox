@@ -1,4 +1,4 @@
-/* global goog */
+/* global workbox */
 
 importScripts('/__test/bundle/workbox-routing');
 
@@ -7,14 +7,14 @@ self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim(
 
 const routes = [];
 
-routes.push(new goog.routing.ExpressRoute({
+routes.push(new workbox.routing.ExpressRoute({
   path: '/static',
   handler: {
     handle: () => Promise.resolve(new Response('static response')),
   },
 }));
 
-routes.push(new goog.routing.ExpressRoute({
+routes.push(new workbox.routing.ExpressRoute({
   path: '/echo3/:1st/:2nd/:3rd',
   handler: {
     handle: ({params}) => Promise.resolve(
@@ -25,5 +25,5 @@ routes.push(new goog.routing.ExpressRoute({
   },
 }));
 
-const router = new goog.routing.Router();
+const router = new workbox.routing.Router();
 router.registerRoutes({routes});

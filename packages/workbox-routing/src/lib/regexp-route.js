@@ -48,7 +48,7 @@ import logHelper from '../../../../lib/log-helper.js';
  * @example
  * // Any requests that match the regular expression will match this route, with
  * // the capture groups passed along to the handler as an array via params.
- * const route = new goog.routing.RegExpRoute({
+ * const route = new workbox.routing.RegExpRoute({
  *   regExp: new RegExp('^https://example.com/path/to/(\\w+)'),
  *   handler: {
  *     handle: ({event, params}) => {
@@ -59,7 +59,7 @@ import logHelper from '../../../../lib/log-helper.js';
  *   },
  * });
  *
- * const router = new goog.routing.Router();
+ * const router = new workbox.routing.Router();
  * router.registerRoute({route});
  */
 class RegExpRoute extends Route {

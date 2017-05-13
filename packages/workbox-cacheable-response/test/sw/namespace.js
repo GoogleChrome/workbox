@@ -17,13 +17,13 @@ const exportedSymbols = [
 ];
 
 describe('Test Library Surface', function() {
-  it('should be accessible via goog.cacheableResponse', function() {
-    expect(goog.cacheableResponse).to.exist;
+  it('should be accessible via workbox.cacheableResponse', function() {
+    expect(workbox.cacheableResponse).to.exist;
   });
 
   exportedSymbols.forEach((exportedSymbol) => {
-    it(`should expose ${exportedSymbol} via goog.cacheableResponse`, function() {
-      expect(goog.cacheableResponse[exportedSymbol]).to.exist;
+    it(`should expose ${exportedSymbol} via workbox.cacheableResponse`, function() {
+      expect(workbox.cacheableResponse[exportedSymbol]).to.exist;
     });
   });
 });

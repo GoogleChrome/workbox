@@ -4,7 +4,7 @@ importScripts('/node_modules/sinon/pkg/sinon-no-sourcemaps.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-/* global goog */
+/* global workbox */
 
 const expect = self.chai.expect;
 self.chai.should();
@@ -34,7 +34,7 @@ describe('Clients Claim parameter', function() {
     badInputs.forEach((badInput, index) => {
       let thrownError = null;
       try {
-        new goog.SWLib({
+        new WorkboxSW({
           clientsClaim: badInput,
         });
         throw new Error(`Expected error to be thrown for inputs[${index}]: '${badInput}'.`);

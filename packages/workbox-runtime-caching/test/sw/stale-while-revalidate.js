@@ -17,9 +17,9 @@ describe('Test of the StaleWhileRevalidate handler', function() {
   });
 
   it(`should add the initial response to the cache`, async function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const staleWhileRevalidate = new goog.runtimeCaching.StaleWhileRevalidate(
+    const staleWhileRevalidate = new workbox.runtimeCaching.StaleWhileRevalidate(
       {requestWrapper, waitOnCache: true});
 
     const event = new FetchEvent('fetch', {request: new Request(COUNTER_URL)});
@@ -34,9 +34,9 @@ describe('Test of the StaleWhileRevalidate handler', function() {
   it(`should return the cached response and not update the cache when the network request fails`, async function() {
     globalStubs.push(sinon.stub(self, 'fetch').throws('NetworkError'));
 
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const staleWhileRevalidate = new goog.runtimeCaching.StaleWhileRevalidate(
+    const staleWhileRevalidate = new workbox.runtimeCaching.StaleWhileRevalidate(
       {requestWrapper, waitOnCache: true});
 
     const firstCachedResponse = new Response('response body');
@@ -54,9 +54,9 @@ describe('Test of the StaleWhileRevalidate handler', function() {
   });
 
   it(`should return the cached response and update the cache when the network request succeeds`, async function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const staleWhileRevalidate = new goog.runtimeCaching.StaleWhileRevalidate(
+    const staleWhileRevalidate = new workbox.runtimeCaching.StaleWhileRevalidate(
       {requestWrapper, waitOnCache: true});
 
     const firstCachedResponse = new Response('response body');
@@ -82,9 +82,9 @@ describe('Test of the StaleWhileRevalidate handler', function() {
   });
 
   it(`should update the cache with an the opaque cross-origin network response`, async function() {
-    const requestWrapper = new goog.runtimeCaching.RequestWrapper(
+    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
       {cacheName: CACHE_NAME});
-    const staleWhileRevalidate = new goog.runtimeCaching.StaleWhileRevalidate(
+    const staleWhileRevalidate = new workbox.runtimeCaching.StaleWhileRevalidate(
       {requestWrapper, waitOnCache: true});
 
     const wrapperCache = await requestWrapper.getCache();

@@ -34,15 +34,15 @@ import assert from '../../../../lib/assert';
  * @example <caption>Added as a "plugin" to a `RequestWrapper` to
  * automatically dispatch messages on a cache update</caption>
  *
- * const requestWrapper = new goog.runtimeCaching.RequestWrapper({
+ * const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
  *   cacheName: 'runtime-cache',
  *   plugins: [
- *     new goog.broadcastCacheUpdate.Plugin({channelName: 'cache-updates'})
+ *     new workbox.broadcastCacheUpdate.Plugin({channelName: 'cache-updates'})
  *   ]
  * });
- * const route = new goog.routing.RegExpRoute({
+ * const route = new workbox.routing.RegExpRoute({
  *   match: ({url}) => url.domain === 'example.com',
- *   handler: new goog.runtimeCaching.StaleWhileRevalidate({requestWrapper})
+ *   handler: new workbox.runtimeCaching.StaleWhileRevalidate({requestWrapper})
  * });
  *
  * @memberof module:workbox-broadcast-cache-update

@@ -1,5 +1,5 @@
 /* eslint-env worker, serviceworker */
-/* global goog */
+/* global workbox */
 
 const CACHE_NAME = 'runtime-caching';
 self.goog = {DEBUG: true};
@@ -8,7 +8,7 @@ importScripts('../build/offline-google-analytics-import.js');
 // First, enable the offline Google Analytics behavior.
 // This will get "first shot" at responding to Google Analytics requests, before
 // our catch-all fetch event listener can handle it.
-goog.offlineGoogleAnalytics.initialize({
+workbox.googleAnalytics.initialize({
   parameterOverrides: {
     // Add in any additional parameters here, or omit this section to
     // replay the Google Analytics request without additional parameters.

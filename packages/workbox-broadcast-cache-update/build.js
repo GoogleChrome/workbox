@@ -22,7 +22,7 @@ const buildConfigs = generateBuildConfigs({
     iife: pkg.main,
   },
   baseDir: __dirname,
-  moduleName: 'goog.broadcastCacheUpdate',
+  moduleName: 'workbox.broadcastCacheUpdate',
 });
 
 module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));

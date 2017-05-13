@@ -3,7 +3,7 @@ importScripts('/node_modules/chai/chai.js');
 importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-/* global goog */
+/* global workbox */
 
 const expect = self.chai.expect;
 self.chai.should();
@@ -12,10 +12,10 @@ mocha.setup({
   reporter: null,
 });
 
-describe('Test swlib.router', function() {
-  it('should be accessible swlib.router', function() {
-    const swlib = new goog.SWLib();
-    expect(swlib.router).to.exist;
+describe('Test workboxSW.router', function() {
+  it('should be accessible workboxSW.router', function() {
+    const workboxSW = new WorkboxSW();
+    expect(workboxSW.router).to.exist;
   });
 
   const badInput = [
@@ -51,9 +51,9 @@ describe('Test swlib.router', function() {
   badInput.forEach((badInput) => {
     it(`should throw on adding invalid route: ${JSON.stringify(badInput)}`, function() {
       let thrownError = null;
-      const swlib = new goog.SWLib();
+      const workboxSW = new WorkboxSW();
       try {
-        swlib.router.registerRoute(badInput.capture, () => {});
+        workboxSW.router.registerRoute(badInput.capture, () => {});
       } catch (err) {
         thrownError = err;
       }
@@ -71,10 +71,10 @@ describe('Test swlib.router', function() {
     const fakeID = '1234567890';
     const expressRoute = `/:date/:id/test/`;
     const exampleRoute = `/${date}/${fakeID}/test/`;
-    const swlib = new goog.SWLib();
+    const workboxSW = new WorkboxSW();
 
     return new Promise((resolve, reject) => {
-      swlib.router.registerRoute(expressRoute, (args) => {
+      workboxSW.router.registerRoute(expressRoute, (args) => {
         (args.event instanceof FetchEvent).should.equal(true);
         args.url.toString().should.equal(new URL(exampleRoute, location).toString());
         Object.keys(args.params).length.should.equal(2);
@@ -95,10 +95,10 @@ describe('Test swlib.router', function() {
     const capturingGroup = 'test';
     const regexRoute = /\/1234567890\/(\w+)\//;
     const exampleRoute = `/1234567890/${capturingGroup}/`;
-    const swlib = new goog.SWLib();
+    const workboxSW = new WorkboxSW();
 
     return new Promise((resolve, reject) => {
-      swlib.router.registerRoute(regexRoute, (args) => {
+      workboxSW.router.registerRoute(regexRoute, (args) => {
         (args.event instanceof FetchEvent).should.equal(true);
         args.url.toString().should.equal(new URL(exampleRoute, location).toString());
         args.params.length.should.equal(1);
@@ -116,9 +116,9 @@ describe('Test swlib.router', function() {
 
   it(`should throw when registerNavigationRoute() isn't passed a URL`, function() {
     let thrownError = null;
-    const swlib = new goog.SWLib();
+    const workboxSW = new WorkboxSW();
     try {
-      swlib.router.registerNavigationRoute();
+      workboxSW.router.registerNavigationRoute();
     } catch (err) {
       thrownError = err;
     }

@@ -58,11 +58,11 @@ module.exports = {
   'invalid-inject-manifest-arg': `The input to 'injectManifest()' must be ` +
     `be an object.`,
   'injection-point-not-found': `Unable to find a place to inject the ` +
-    `manifest. Please ensure that you have 'swlib.precache([])' ` +
+    `manifest. Please ensure that you have 'workboxSW.precache([])' ` +
     `somewhere in your service worker file.`,
   'multiple-injection-points-found': `There can only be one injection point ` +
     `in your service worker file. Please ensure you only have one instance ` +
-    `of  'swlib.precache([])' in your service worker file.`,
+    `of  'workboxSW.precache([])' in your service worker file.`,
   'populating-sw-tmpl-failed': `Unable to generate service worker from ` +
     `template.`,
   'useless-glob-pattern': `One of the glob patterns doesn't match any files. ` +

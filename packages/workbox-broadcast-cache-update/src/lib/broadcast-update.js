@@ -44,7 +44,7 @@ import {cacheUpdatedMessageType} from './constants';
  * all required.)
  *
  * @example
- * goog.broadcastCacheUpdate.broadcastUpdate({
+ * workbox.broadcastCacheUpdate.broadcastUpdate({
  *   channel: new BroadcastChannel('Channel Name'),
  *   cacheName: 'example-cache-name',
  *   url: '/',

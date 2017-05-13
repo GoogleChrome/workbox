@@ -12,15 +12,16 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, goog, MockDate, sinon */
+/* global chai, MockDate, sinon */
 
 'use strict';
 
 describe('replay-queued-requests', () => {
-  const constants = goog.offlineGoogleAnalytics.test.Constants;
-  const enqueueRequest = goog.offlineGoogleAnalytics.test.EnqueueRequest;
-  const replayRequests = goog.offlineGoogleAnalytics.test.ReplayQueuedRequests;
-  const IDBHelper = goog.offlineGoogleAnalytics.test.IdbHelper;
+  const constants = workbox.googleAnalytics.test.Constants;
+  const enqueueRequest = workbox.googleAnalytics.test.EnqueueRequest;
+  const replayRequests =
+    workbox.googleAnalytics.test.ReplayQueuedRequests;
+  const IDBHelper = workbox.googleAnalytics.test.IdbHelper;
 
   const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
      constants.IDB.STORE);

@@ -28,7 +28,7 @@ import assert from '../../../../lib/assert';
  * context, please use the `CacheExpiration` class directly.
  *
  * @example
- * const plugin = new goog.cacheExpiration.CacheExpirationPlugin({
+ * const plugin = new workbox.cacheExpiration.CacheExpirationPlugin({
  *   maxEntries: 2,
  *   maxAgeSeconds: 10,
  * });
@@ -38,7 +38,7 @@ import assert from '../../../../lib/assert';
 class CacheExpirationPlugin extends CacheExpiration {
   /**
    * A "lifecycle" callback that will be triggered automatically by the
-   * `goog.runtimeCaching` handlers when a `Response` is about to be returned
+   * `workbox.runtimeCaching` handlers when a `Response` is about to be returned
    * from a [Cache](https://developer.mozilla.org/en-US/docs/Web/API/Cache) to
    * the handler. It allows the `Response` to be inspected for freshness and
    * prevents it from being used if the `Response`'s `Date` header value is
@@ -62,7 +62,7 @@ class CacheExpirationPlugin extends CacheExpiration {
 
   /**
    * A "lifecycle" callback that will be triggered automatically by the
-   * `goog.runtimeCaching` handlers when an entry is added to a cache.
+   * `workbox.runtimeCaching` handlers when an entry is added to a cache.
    *
    * @private
    * @param {Object} input

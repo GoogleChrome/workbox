@@ -26,7 +26,7 @@
  * @example
  * importScripts('/<Path to Module>/build/workbox-precaching.min.js');
  *
- * const revCacheManager = new goog.precaching.RevisionedCacheManager();
+ * const revCacheManager = new workbox.precaching.RevisionedCacheManager();
  * revCacheManager.addToCacheList({
  *   revisionedFiles: [
  *     '/styles/main.1234.css',
@@ -37,7 +37,7 @@
  *   ],
  * });
  *
- * const unrevCacheManager = new goog.precaching.UnrevisionedCacheManager();
+ * const unrevCacheManager = new workbox.precaching.UnrevisionedCacheManager();
  * unrevCacheManager.addToCacheList({
  *   unrevisionedFiles: [
  *     '/',

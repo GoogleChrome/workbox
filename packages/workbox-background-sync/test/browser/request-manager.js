@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, goog */
+/* global chai, workbox */
 
 'use strict';
 
@@ -31,11 +31,11 @@ describe('request-manager test', () => {
 		const QUEUE_NAME = 'QUEUE_NAME';
 		const MAX_AGE = 6;
 		queue =
-			new goog.backgroundSyncQueue.test.RequestQueue({
+			new workbox.backgroundSync.test.RequestQueue({
 				config: {maxAge: MAX_AGE},
 				queueName: QUEUE_NAME,
 			});
-		reqManager = new goog.backgroundSyncQueue.test.RequestManager({
+		reqManager = new workbox.backgroundSync.test.RequestManager({
 			callbacks,
 			queue,
 		});
@@ -52,7 +52,7 @@ describe('request-manager test', () => {
 
 	it('check replay', async function() {
 		const backgroundSyncQueue
-			= new goog.backgroundSyncQueue.test.BackgroundSyncQueue({
+			= new workbox.backgroundSync.test.BackgroundSyncQueue({
 				callbacks,
 			});
 		await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/1')});

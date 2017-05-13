@@ -42,12 +42,12 @@ import logHelper from '../../../../lib/log-helper';
  * // Any navigation requests that match the whitelist (i.e. URLs whose path
  * // starts with /article/) will be handled with the cache entry for
  * // app-shell.html.
- * const route = new goog.routing.NavigationRoute({
+ * const route = new workbox.routing.NavigationRoute({
  *   whitelist: [new RegExp('^/article/')],
  *   handler: {handle: () => caches.match('app-shell.html')},
  * });
  *
- * const router = new goog.routing.Router();
+ * const router = new workbox.routing.Router();
  * router.registerRoute({route});
  */
 class NavigationRoute extends Route {

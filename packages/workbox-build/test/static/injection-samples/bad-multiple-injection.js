@@ -1,8 +1,8 @@
-/* global goog */
+/* global workbox */
 
 // Multiple entries.
 
-const swlib = new goog.SWLib();
-swlib.precache([]);
+const workboxSW = new WorkboxSW();
+workboxSW.precache([]);
 
-swlib.precache([]);
+workboxSW.precache([]);
