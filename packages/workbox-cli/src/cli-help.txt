@@ -1,0 +1,12 @@
+Usage:
+    workbox-cli [command] [options]
+
+Commands:
+
+    generate:sw
+    generate:manifest
+
+Options
+
+    -h --help               Show this help text.
+    -v --version            Show current version of workbox-cli

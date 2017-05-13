@@ -1,3 +1,0 @@
-/* global swlib */
-
-swlib.precache([]);

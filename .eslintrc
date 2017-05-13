@@ -6,14 +6,12 @@
     "node": true,
     "es6": true
   },
-  "rules": {
-    "valid-jsdoc": 1,
-    "require-jsdoc": 1
-  },
   "parserOptions": {
     "ecmaVersion": 2017
   },
   "globals": {
-    "BroadcastChannel": false
+    "BroadcastChannel": false,
+    "WorkboxSW": false,
+    "workbox": false
   }
 }

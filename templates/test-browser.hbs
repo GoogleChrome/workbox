@@ -50,7 +50,8 @@
     <script>
       mocha.setup({
         ui: 'bdd',
-        timeout: 10000
+        timeout: 10000,
+        globals: ['WorkboxSW', 'workbox'],
       });
 
       chai.should();
