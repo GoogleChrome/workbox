@@ -115,4 +115,11 @@ describe('Test caching strategies.', function() {
       expect(handler.requestWrapper.plugins.has('cacheWillUpdate')).to.be.true;
     });
   });
+
+  it(`should use the networkTimeoutSeconds parameter passed to workboxSW.strategies.networkFirst()`, function() {
+    const networkTimeoutSeconds = 5;
+    const workboxSW = new WorkboxSW();
+    const handler = workboxSW.strategies.networkFirst({networkTimeoutSeconds});
+    expect(handler.networkTimeoutSeconds).to.eql(networkTimeoutSeconds);
+  });
 });
