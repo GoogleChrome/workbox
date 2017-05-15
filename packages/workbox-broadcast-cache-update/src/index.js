@@ -19,6 +19,8 @@
  * A helper library that uses the Broadcast Channel API to announce when
  * two Response objects differ.
  *
+ * **Install:** `npm install --save-dev workbox-broadcast-cache-update`
+ *
  * The main use of this module will be instantiating a new
  * `BroadcastCacheUpdatePlugin` and passing it to a
  * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},

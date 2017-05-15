@@ -19,6 +19,8 @@
  * The cache expiration plugin allows you define an expiration and/or
  * limit on the responses cached.
  *
+ * **Install:** `npm install --save-dev workbox-cache-expiration`
+ *
  * This can be used to ensure that responses aren't used when they are stale
  * and that the cache size doesn't grow endlessly.
  *

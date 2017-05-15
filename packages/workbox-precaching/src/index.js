@@ -19,6 +19,8 @@
  * The precaching module provides helpers that make it easy to cache files
  * during the install step of your service worker.
  *
+ * **Install:** `npm install --save-dev workbox-precaching`
+ *
  * The revisioned caching will cache bust requests where appropriate and
  * only cache assets that have a changed revision asset compared to
  * the currently cached value.

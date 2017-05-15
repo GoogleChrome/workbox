@@ -7,6 +7,8 @@ const injectManifest = require('./lib/inject-manifest');
 /**
  * # workbox-build
  *
+ * **Install:** `npm install --save-dev workbox-build`
+ *
  * To get a list of url's and a corresponding revision details, call either
  * `generateFileManifest` or `getFileManifestEntries()`.
  *

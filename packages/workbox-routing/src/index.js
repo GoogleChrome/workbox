@@ -18,6 +18,8 @@
  *
  * A service worker helper library to route request URLs to handlers.
  *
+ * **Install:** `npm install --save-dev workbox-routing`
+ *
  * @module workbox-routing
  */
 

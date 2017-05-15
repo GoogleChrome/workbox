@@ -19,6 +19,8 @@
  * Given a Response object this behaviour determines whether
  * it's cacheable, based on a specific configuration.
  *
+ * **Install:** `npm install --save-dev workbox-cacheable-response`
+ *
  * @example <caption>Used as an automatically invoked
  * "plugin".</caption>
  *
