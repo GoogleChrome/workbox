@@ -11,4 +11,7 @@ module.exports = {
     'determine files to cache.',
   'no-file-extensions-selected': 'No file extensions were selected so nothing' +
     ' would be cached.',
+  'config-supplied-missing-fields': 'Some configuration was supplied by a ' +
+    `a config file or CLI flags, but you must supply 'globDirectory', ` +
+    `'staticFileGlobs' and 'swDest' parameters.`,
 };

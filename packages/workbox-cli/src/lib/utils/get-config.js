@@ -21,26 +21,3 @@ module.exports = () => {
     resolve(config);
   });
 };
-
-
-/**
-
-fs.readFile(configPath, (err, fileContents) => {
-  if (err) {
-    return resolve();
-  }
-
-  resolve(fileContents.toString());
-});
-})
-.then((configContents) => {
-if (!configContents) {
-  return null;
-}
-
-try {
-  return JSON.parse(configContents);
-} catch (err) {
-
-  return null;
-}**/
