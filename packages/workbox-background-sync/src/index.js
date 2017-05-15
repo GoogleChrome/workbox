@@ -17,6 +17,8 @@
  * Queues failed requests and uses the Background Sync API to replay those
  * requests at a later time when the network state has changed.
  *
+ * **Install:** `npm install --save-dev workbox-background-sync`
+ *
  * @module workbox-background-sync
  */
 import Queue from './lib/background-sync-queue';

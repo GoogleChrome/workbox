@@ -24,6 +24,8 @@ import WorkboxSW from './lib/workbox-sw';
  * caching strategies as well as manage precaching
  * of assets during the install step of a service worker.
  *
+ * **Install:** `npm install --save-dev workbox-sw`
+ *
  * @example <caption>Adding the Library to your project.</caption>
  * importScripts('/node_modules/build/importScripts/workbox-sw.prod.vX.Y.Z.js');
  *

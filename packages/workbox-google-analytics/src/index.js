@@ -26,6 +26,8 @@ import replayQueuedRequests from './lib/replay-queued-requests.js';
  * Google Analytics requests made while offline are saved (using `IndexedDB`)
  * and retried the next time the service worker starts up.
  *
+ * **Install:** `npm install --save-dev workbox-google-analytics`
+ *
  * @example
  * // This code should live inside your service worker JavaScript, ideally
  * // before any other 'fetch' event handlers are defined:
