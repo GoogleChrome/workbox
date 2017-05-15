@@ -1,6 +1,6 @@
 {
   "name": "workbox-background-sync",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Queues failed requests and uses the Background Sync API to replay those requests at a later time when the network state has changed.",
   "keywords": [
     "workbox",
@@ -21,6 +21,6 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/googlechrome/sw-helpers/issues",
   "homepage": "https://github.com/GoogleChrome/sw-helpers/tree/master/packages/workbox-background-sync",
-  "main": "build/importScripts/workbox-background-sync.prod.v0.0.1.js",
-  "module": "build/modules/workbox-background-sync.prod.v0.0.1.mjs"
+  "main": "build/importScripts/workbox-background-sync.prod.v0.0.2.js",
+  "module": "build/modules/workbox-background-sync.prod.v0.0.2.mjs"
 }

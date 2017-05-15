@@ -1,6 +1,6 @@
 {
   "name": "workbox-precaching",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This library is still a work in progress and is not functional.",
   "keywords": [
     "workbox",
@@ -24,9 +24,9 @@
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-precaching",
   "devDependencies": {
-    "workbox-routing": "^0.0.1",
-    "workbox-runtime-caching": "^0.0.1"
+    "workbox-routing": "^0.0.2",
+    "workbox-runtime-caching": "^0.0.2"
   },
-  "main": "build/importScripts/workbox-precaching.prod.v0.0.1.js",
-  "module": "build/modules/workbox-precaching.prod.v0.0.1.mjs"
+  "main": "build/importScripts/workbox-precaching.prod.v0.0.2.js",
+  "module": "build/modules/workbox-precaching.prod.v0.0.2.mjs"
 }

@@ -1,6 +1,6 @@
 {
   "name": "workbox-build",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This module can be used to generate a file manifest or service worker, that can be used with workbox-sw.",
   "keywords": [
     "workbox",
@@ -32,6 +32,6 @@
     "glob": "^7.1.1",
     "lodash.template": "^4.4.0",
     "mkdirp": "^0.5.1",
-    "workbox-sw": "^0.0.1"
+    "workbox-sw": "^0.0.2"
   }
 }
