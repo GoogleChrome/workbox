@@ -168,9 +168,10 @@ class Strategies {
       });
     }
 
-    return new HandlerClass({
-      requestWrapper: new RequestWrapper(wrapperOptions),
-    });
+    options.requestWrapper = new RequestWrapper(wrapperOptions);
+    // Pass through the initial options to the underlying Handler constructor
+    // to allow for Handler-specific customization.
+    return new HandlerClass(options);
   }
 }
 
