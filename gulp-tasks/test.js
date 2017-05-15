@@ -70,7 +70,12 @@ const testInEnv = (env, callback) => {
   const savedTestBundleValue = process.env.TEST_BUNDLE;
   process.env.TEST_BUNDLE = env;
   runSequence('test', (error) => {
-    process.env.TEST_BUNDLE = savedTestBundleValue;
+    if (savedTestBundleValue) {
+      process.env.TEST_BUNDLE = savedTestBundleValue;
+    } else {
+      delete process.env.TEST_BUNDLE;
+    }
+
     callback(error);
   });
 };
