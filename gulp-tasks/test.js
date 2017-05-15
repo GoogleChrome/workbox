@@ -60,14 +60,24 @@ gulp.task('test', ['lint', 'download-browsers'], (callback) => {
   runSequence('mocha', callback);
 });
 
-gulp.task('test:dev', (callback) => {
-  // The TEST_BUNDLE environment variable controls whether the test web server
-  // responds with the prod (default) or dev versions of bundled libraries.
-  // Here, we want the dev bundles.
-  const savedTestBundleValue = process.env.TEST_BUNDLE;
-  process.env.TEST_BUNDLE = 'dev';
+const testInEnv = (env, callback) => {
+  const supportedEnvs = ['dev', 'prod'];
+  if (!supportedEnvs.includes(env)) {
+    throw Error(`Environment ${env} is not supported. ` +
+      `Please use one of: ${JSON.stringify(supportedEnvs)}`);
+  }
+
+  process.env.WB_TEST_BUNDLE = env;
   runSequence('test', (error) => {
-    process.env.TEST_BUNDLE = savedTestBundleValue;
+    delete process.env.WB_TEST_BUNDLE;
     callback(error);
   });
+};
+
+gulp.task('test:prod', (callback) => {
+  testInEnv('prod', callback);
+});
+
+gulp.task('test:dev', (callback) => {
+  testInEnv('dev', callback);
 });
