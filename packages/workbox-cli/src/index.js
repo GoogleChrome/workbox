@@ -25,11 +25,11 @@ const cliLogHelper = require('./lib/log-helper');
 const generateGlobPattern = require('./lib/utils/generate-glob-pattern');
 const saveConfigFile = require('./lib/utils/save-config');
 const getConfigFile = require('./lib/utils/get-config');
+const errors = require('./lib/errors');
 
 const askForRootOfWebApp = require('./lib/questions/ask-root-of-web-app');
 const askForServiceWorkerName = require('./lib/questions/ask-sw-name');
 const askSaveConfigFile = require('./lib/questions/ask-save-config');
-const askManifestFileName = require('./lib/questions/ask-manifest-name');
 const askForExtensionsToCache =
   require('./lib/questions/ask-extensions-to-cache');
 
@@ -88,30 +88,69 @@ class SWCli {
   handleCommand(command, args, flags) {
     switch (command) {
       case 'generate:sw':
-        return this._generateSW();
-      case 'generate:manifest':
-        return this._generateBuildManifest();
+        return this._generateSW(flags);
       default:
-        cliLogHelper.error(`Invlaid command given '${command}'`);
+        cliLogHelper.error(`Invalid command given '${command}'`);
         return Promise.reject();
     }
   }
 
   /**
    * This method will generate a working service worker with a file manifest.
+   * @param {Object} flags The flags supplied as part of the CLI input.
    * @return {Promise} The promise returned here will be used to exit the
    * node process cleanly or not.
    */
-  _generateSW() {
+  _generateSW(flags) {
     let config = {};
 
     return getConfigFile()
     .then((savedConfig) => {
       if (savedConfig) {
         config = savedConfig;
-        config.wasSaved = true;
       }
+      config = Object.assign(config, flags);
     })
+    .then(() => {
+      const requiredFields = [
+        'globDirectory',
+        'staticFileGlobs',
+        'swDest',
+      ];
+
+      let askQuestions = false;
+      requiredFields.forEach((requiredField) => {
+        if (!config[requiredField]) {
+          askQuestions = true;
+        }
+      });
+
+      if (askQuestions) {
+        // If some configuration is defined but not all required fields
+        // throw an error forcing the developer to either go through
+        // the guided flow OR go through the config only flow.
+        if (Object.keys(config).length > 0) {
+          cliLogHelper.error(errors['config-supplied-missing-fields']);
+          return Promise.reject();
+        }
+
+        return this._askGenerateQuestions(config);
+      }
+
+      return Promise.resolve(config);
+    })
+    .then((config) => {
+      return swBuild.generateSW(config);
+    });
+  }
+
+  /**
+   * Ask questions required for input.
+   * @param  {object} config The config options.
+   * @return {Promise<object>} Promise resolves to the config object.
+   */
+  _askGenerateQuestions(config) {
+    return Promise.resolve()
     .then(() => {
       if (!config.globDirectory) {
         return askForRootOfWebApp()
@@ -146,55 +185,14 @@ class SWCli {
       }
     })
     .then(() => {
-      if (!config.wasSaved) {
-        return askSaveConfigFile();
-      }
-      // False since it's already saved.
-      return false;
+      return askSaveConfigFile();
     })
     .then((saveConfig) => {
       if (saveConfig) {
         return saveConfigFile(config);
       }
     })
-    .then(() => {
-      return swBuild.generateSW(config);
-    });
-  }
-
-  /**
-   * Generates a file manifest with revisioning details
-   * that can be used in your service worker for precaching assets.
-   * @return {Promise} Resolves when the node process exits.
-   */
-  _generateBuildManifest() {
-    let rootDirPath;
-    let fileManifestName;
-    let fileExtentionsToCache;
-
-    return askForRootOfWebApp()
-    .then((rDirectory) => {
-      rootDirPath = rDirectory;
-      return askForExtensionsToCache(rootDirPath);
-    })
-    .then((extensionsToCache) => {
-      fileExtentionsToCache = extensionsToCache;
-      return askManifestFileName();
-    })
-    .then((manifestName) => {
-      fileManifestName = manifestName;
-    })
-    .then(() => {
-      const globPattern = generateGlobPattern(fileExtentionsToCache);
-      return swBuild.generateFileManifest({
-        globDirectory: rootDirPath,
-        staticFileGlobs: [globPattern],
-        globIgnores: [
-          fileManifestName,
-        ],
-        manifestDest: path.join(rootDirPath, fileManifestName),
-      });
-    });
+    .then(() => config);
   }
 }
 
