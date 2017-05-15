@@ -106,7 +106,7 @@ class ServerInstance {
       // primary consumer being our test suite. This can be overridden by
       // setting a TEST_BUNDLE environment variable to 'dev' prior to
       // starting the test suite.
-      const build = process.env.TEST_BUNDLE || 'prod';
+      const build = process.env.WB_TEST_BUNDLE || 'prod';
       const pkg = req.params.pkg;
       const pattern = `packages/${pkg}/build/importScripts/*${build}*.js`;
       respondWithScriptMatchingPattern(pattern, res);

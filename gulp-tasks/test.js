@@ -67,15 +67,9 @@ const testInEnv = (env, callback) => {
       `Please use one of: ${JSON.stringify(supportedEnvs)}`);
   }
 
-  const savedTestBundleValue = process.env.TEST_BUNDLE;
-  process.env.TEST_BUNDLE = env;
+  process.env.WB_TEST_BUNDLE = env;
   runSequence('test', (error) => {
-    if (savedTestBundleValue) {
-      process.env.TEST_BUNDLE = savedTestBundleValue;
-    } else {
-      delete process.env.TEST_BUNDLE;
-    }
-
+    delete process.env.WB_TEST_BUNDLE;
     callback(error);
   });
 };
