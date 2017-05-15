@@ -88,9 +88,9 @@ class SWCli {
   handleCommand(command, args, flags) {
     switch (command) {
       case 'generate:sw':
-        return this._generateSW();
+        return this._generateSW(flags);
       case 'generate:manifest':
-        return this._generateBuildManifest();
+        return this._generateBuildManifest(flags);
       default:
         cliLogHelper.error(`Invlaid command given '${command}'`);
         return Promise.reject();
@@ -99,10 +99,11 @@ class SWCli {
 
   /**
    * This method will generate a working service worker with a file manifest.
+   * @param {Object} flags The flags supplied as part of the CLI input.
    * @return {Promise} The promise returned here will be used to exit the
    * node process cleanly or not.
    */
-  _generateSW() {
+  _generateSW(flags) {
     let config = {};
 
     return getConfigFile()
@@ -111,6 +112,7 @@ class SWCli {
         config = savedConfig;
         config.wasSaved = true;
       }
+      config = Object.assign(config, flags);
     })
     .then(() => {
       if (!config.globDirectory) {
