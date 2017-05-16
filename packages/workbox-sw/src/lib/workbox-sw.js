@@ -69,7 +69,7 @@ class WorkboxSW {
           message: 'Welcome to Workbox!',
           data: {
             '📖': 'Read the guides and documentation\n' +
-              'https://googlechrome.github.io/workbox/',
+              'https://workboxjs.org/',
             '❓': 'Use the [workbox] tag on StackOverflow to ask questions\n' +
               'https://stackoverflow.com/questions/ask?tags=workbox',
             '🐛': 'Found a bug? Report it on GitHub\n' +
