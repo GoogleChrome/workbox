@@ -1,7 +1,7 @@
 {
   "name": "workbox-build",
   "version": "0.0.2",
-  "description": "This module can be used to generate a file manifest or service worker, that can be used with workbox-sw.",
+  "description": "A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
     "workboxjs",

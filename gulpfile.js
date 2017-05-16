@@ -17,7 +17,6 @@
 
 const gulp = require('gulp');
 const minimist = require('minimist');
-const runSequence = require('run-sequence');
 
 const options = minimist(process.argv.slice(2));
 global.port = options.port || 3000;
@@ -29,7 +28,3 @@ require('./gulp-tasks/build.js');
 require('./gulp-tasks/test.js');
 require('./gulp-tasks/documentation.js');
 require('./gulp-tasks/serve.js');
-
-gulp.task('default', (callback) => {
-  runSequence(['lint', 'test'], 'documentation', callback);
-});
