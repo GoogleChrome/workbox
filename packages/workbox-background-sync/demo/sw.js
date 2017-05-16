@@ -3,7 +3,7 @@ importScripts(
 	'../build/importScripts/workbox-background-sync.dev.v0.0.1.js',
 	'../../workbox-routing/build/importScripts/workbox-routing.dev.v0.0.1.js',
 	'../../workbox-runtime-caching/build/importScripts/'
-	+ 'workbox-runtime-caching.dev.v0.0.1.js'
+	  + 'workbox-runtime-caching.dev.v0.0.1.js'
 );
 
 // Have the service worker take control as soon as possible.
