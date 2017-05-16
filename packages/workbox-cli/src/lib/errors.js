@@ -12,6 +12,10 @@ module.exports = {
   'no-file-extensions-selected': 'No file extensions were selected so nothing' +
     ' would be cached.',
   'config-supplied-missing-fields': 'Some configuration was supplied by a ' +
-    `a config file or CLI flags, but you must supply 'globDirectory', ` +
-    `'staticFileGlobs' and 'swDest' parameters.`,
+    'a config file or CLI flags, but you must supply all of the following ' +
+    'config options / flags: ',
+  'invalid-sw-dest': 'The supplied service worker output was invalid. It ' +
+    'must be a string with at least one character.',
+  'invalid-sw-src': 'The supplied service worker input file was invalid. It ' +
+    'must be a string with at least one character.',
 };
