@@ -30,7 +30,7 @@ import Queue from './background-sync-queue';
  * const router = new workbox.routing.Router();
  * router.registerRoute({route});
  *
- * @memberof module:queue-plugin
+ * @memberof module:workbox-background-sync
  */
 class QueuePlugin extends Queue {
 	/**

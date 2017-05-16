@@ -14,8 +14,29 @@
 /**
  * # workbox-background-sync
  *
- * Queues failed requests and uses the Background Sync API to replay those
- * requests at a later time when the network state has changed.
+ * A helper library that queues specified requests if they fail over network.
+ * Later it uses the Background Sync API to replay these queued requests
+ * when the network state has changed.
+ *
+ * The main use of this module will be instantiating a new
+ * `Queue`/`QueuePlugin` and passing it to a
+ * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},
+ * as shown in the first example below.
+ *
+ * @example <caption>Using the QueuePlugin class in a service worker.</caption>
+ *
+ * let bgQueue = new workbox.backgroundSync.QueuePlugin();
+ * const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
+ *   plugins: [bgQueue],
+ * });
+ *
+ * const route = new workbox.routing.RegExpRoute({
+ *   regExp: new RegExp('^http://localhost:3000/__echo/counter'),
+ *   handler: new workbox.runtimeCaching.NetworkOnly({requestWrapper}),
+ * });
+ *
+ * const router = new workbox.routing.Router();
+ * router.registerRoute({route});
  *
  * @module workbox-background-sync
  */
