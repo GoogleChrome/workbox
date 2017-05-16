@@ -8,6 +8,15 @@ const errors = require('../errors');
 module.exports = (configDetails) => {
   return new Promise((resolve, reject) => {
     const configPath = path.join(process.cwd(), constants.configName);
+
+    // Ignore the cli config if it's in the globDirectory.
+    if (configDetails.globDirectory) {
+      configDetails.globIgnores = configDetails.globIgnores || [];
+      configDetails.globIgnores.push(
+        path.relative(configDetails.globDirectory, configPath)
+      );
+    }
+
     const templatePath = path.join(
       __dirname, '..', 'templates', 'config.js.tmpl');
 
@@ -32,7 +41,7 @@ module.exports = (configDetails) => {
             ` '${err.message}'`));
         }
 
-        resolve();
+        resolve(configPath);
       });
     });
   });

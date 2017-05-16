@@ -18,8 +18,9 @@
 'use strict';
 
 const meow = require('meow');
+const cliHelpText = require('./cli-help');
 const CLI = require('./index.js');
 
 const cliInstance = new CLI();
-const meowOutput = meow(cliInstance.getHelpText());
+const meowOutput = meow(cliHelpText);
 cliInstance.argv(meowOutput);

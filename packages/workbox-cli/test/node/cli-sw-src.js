@@ -5,9 +5,9 @@ const errors = require('../../src/lib/errors.js');
 
 require('chai').should();
 
-describe('Ask for Service Worker Name', function() {
+describe('Ask for Service Worker Src', function() {
   const globalStubs = [];
-  const Q_PATH = '../../src/lib/questions/ask-sw-name.js';
+  const Q_PATH = '../../src/lib/questions/ask-sw-src.js';
 
   afterEach(function() {
     cliHelper.endLogCapture();
