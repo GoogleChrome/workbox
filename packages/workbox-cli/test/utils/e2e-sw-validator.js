@@ -21,6 +21,7 @@ const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, swDes
     ignore: [
       path.join(exampleProject, swDest),
       path.join(exampleProject, path.dirname(swDest), 'workbox-sw.prod.*.js'),
+      path.join(exampleProject, 'workbox-cli-config.js'),
     ],
   });
 
