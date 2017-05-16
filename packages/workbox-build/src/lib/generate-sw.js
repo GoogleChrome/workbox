@@ -1,5 +1,5 @@
 const path = require('path');
-const copySWLib = require('./utils/copy-workbox-sw');
+const copyWorkboxSW = require('./utils/copy-workbox-sw');
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const writeServiceWorker = require('./write-sw');
 const errors = require('./errors');
@@ -104,7 +104,7 @@ const generateSW = function(input) {
 
   let workboxSWPath;
   let destDirectory = path.dirname(swDest);
-  return copySWLib(destDirectory)
+  return copyWorkboxSW(destDirectory)
   .then((libPath) => {
     // If sw file is in build/sw.js, the workboxSW file will be
     // build/workboxSW.***.js. So the sw.js file should import workboxSW.***.js

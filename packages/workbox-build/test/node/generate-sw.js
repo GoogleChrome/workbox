@@ -187,9 +187,9 @@ describe('Test generateSW()', function() {
     args.globDirectory = '.';
 
     generateSW = proxyquire('../../src/lib/generate-sw', {
-      './utils/copy-workbox-sw': (copySWLibPath) => {
-        if (copySWLibPath === path.dirname(EXAMPLE_INPUT.swDest)) {
-          return Promise.resolve(path.join(copySWLibPath, 'workbox-sw.v0.0.0.js'));
+      './utils/copy-workbox-sw': (copyPath) => {
+        if (copyPath === path.dirname(EXAMPLE_INPUT.swDest)) {
+          return Promise.resolve(path.join(copyPath, 'workbox-sw.v0.0.0.js'));
         }
         return Promise.reject(new Error('Inject Error - copy-workbox-sw'));
       },

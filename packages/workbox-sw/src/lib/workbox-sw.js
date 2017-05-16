@@ -241,7 +241,7 @@ class WorkboxSW {
    * codes to cache.
    * @property {Array<Object>} cacheableResponse.headers An array of
    * header-value paris for HTTP headers to cache. See the example, above.
-   * @memberof module:workbox-sw.SWLib
+   * @memberof module:workbox-sw.WorkboxSW
    */
 
   /**
