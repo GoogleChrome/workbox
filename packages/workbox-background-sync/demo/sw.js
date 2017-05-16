@@ -1,36 +1,36 @@
 /* global workbox*/
 importScripts(
-	'../build/importScripts/workbox-background-sync.dev.v0.0.1.js',
-	'../../workbox-routing/build/importScripts/workbox-routing.dev.v0.0.1.js',
-	'../../workbox-runtime-caching/build/importScripts/'
-	  + 'workbox-runtime-caching.dev.v0.0.1.js'
+  '../build/importScripts/workbox-background-sync.dev.v0.0.1.js',
+  '../../workbox-routing/build/importScripts/workbox-routing.dev.v0.0.1.js',
+  '../../workbox-runtime-caching/build/importScripts/'
+    + 'workbox-runtime-caching.dev.v0.0.1.js'
 );
 
 // Have the service worker take control as soon as possible.
 self.addEventListener('install', (event) => {
-	event.waitUntil(self.skipWaiting());
+  event.waitUntil(self.skipWaiting());
 });
 self.addEventListener('activate', (event) => {
-	event.waitUntil(self.clients.claim());
+  event.waitUntil(self.clients.claim());
 });
 
 
 let bgQueue = new workbox.backgroundSync.QueuePlugin({callbacks:
-	{
-		onResponse: async(hash, res) => {
-			self.registration.showNotification('Background sync demo', {
-				body: 'Product has been purchased.',
-				icon: 'https://shop.polymer-project.org/images/shop-icon-384.png',
-			});
-		},
-		onRetryFailure: (hash) => {},
-	},
-	dbName: 'queues',
+  {
+    onResponse: async(hash, res) => {
+      self.registration.showNotification('Background sync demo', {
+        body: 'Product has been purchased.',
+        icon: 'https://shop.polymer-project.org/images/shop-icon-384.png',
+      });
+    },
+    onRetryFailure: (hash) => {},
+  },
+  dbName: 'queues',
 });
 
 const replayBroadcastChannel = new BroadcastChannel('replay_channel');
 replayBroadcastChannel.onmessage = function() {
-	bgQueue.replayRequests();
+  bgQueue.replayRequests();
 };
 
 const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
