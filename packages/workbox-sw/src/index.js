@@ -22,7 +22,7 @@ import WorkboxSW from './lib/workbox-sw';
  *
  * A high-level library that makes it easier to configure routes with
  * caching strategies as well as manage precaching
- * of assets during the install step of a service worker.
+ * of assets during the install event of a service worker.
  *
  * **Install:** `npm install --save-dev workbox-sw`
  *

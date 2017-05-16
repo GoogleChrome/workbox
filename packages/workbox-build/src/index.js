@@ -7,6 +7,8 @@ const injectManifest = require('./lib/inject-manifest');
 /**
  * # workbox-build
  *
+ * A module to use in build scripts for generating a service worker.
+ *
  * **Install:** `npm install --save-dev workbox-build`
  *
  * To get a list of url's and a corresponding revision details, call either

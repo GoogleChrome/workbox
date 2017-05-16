@@ -16,8 +16,7 @@
 /**
  * # workbox-cache-expiration
  *
- * The cache expiration plugin allows you define an expiration and/or
- * limit on the responses cached.
+ * A helper module to set an expiration and/or limit on the responses cached.
  *
  * **Install:** `npm install --save-dev workbox-cache-expiration`
  *

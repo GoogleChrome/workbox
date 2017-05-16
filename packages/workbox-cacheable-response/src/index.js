@@ -16,8 +16,8 @@
 /**
  * # workbox-cacheable-response
  *
- * Given a Response object this behaviour determines whether
- * it's cacheable, based on a specific configuration.
+ * A module that determines whether an object is cacheable based on a specific
+ * configuration.
  *
  * **Install:** `npm install --save-dev workbox-cacheable-response`
  *

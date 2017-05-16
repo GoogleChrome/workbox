@@ -16,7 +16,7 @@
 /**
  * # workbox-precaching
  *
- * The precaching module provides helpers that make it easy to cache files
+ * A helper library that make it easy to cache files
  * during the install step of your service worker.
  *
  * **Install:** `npm install --save-dev workbox-precaching`

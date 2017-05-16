@@ -20,6 +20,23 @@
  *
  * **Install:** `npm install --save-dev workbox-routing`
  *
+ * **Note:** A longer version of this example is available [here](../../examples/workbox-routing/index.html)
+ *
+ * @example <caption>Using the routing module to cache JSON files.</caption>
+ *
+ * const localRegExpRoute = new workbox.routing.RegExpRoute({
+ *   regExp: /\.json$/,
+ *   handler: ({event}) => {
+ *     console.log('Routed through the /\.json$/ handler.');
+ *     return fetch(event.request);
+ *   },
+ * });
+ *
+ * // A route is not active until it's registered.
+ * router.registerRoutes({
+ *  routes: [localRegExpRoute],
+ * });
+ *
  * @module workbox-routing
  */
 
