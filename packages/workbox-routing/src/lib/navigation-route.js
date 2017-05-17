@@ -18,8 +18,9 @@ import assert from '../../../../lib/assert';
 import logHelper from '../../../../lib/log-helper';
 
 /**
- * NavigationRoute is a helper class to create a [`Route`]{@link Route}
- * that matches browser navigation requests, i.e. requests for a page.
+ * NavigationRoute is a helper class to create a [Route]{@link
+ * module:workbox-routing.Route} that matches for browser navigation requests,
+ * i.e. requests for HTML pages.
  *
  * It will only match incoming requests whose [`mode`](https://fetch.spec.whatwg.org/#concept-request-mode)
  * is set to `navigate`.
@@ -59,8 +60,12 @@ class NavigationRoute extends Route {
    * the route will handle the request (assuming the blacklist doesn't match).
    * @param {Array<RegExp>} [input.blacklist] If any of these patterns match,
    * the route will not handle the request (even if a whitelist entry matches).
-   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
-   * use to provide a response if the route matches.
+   * @param {function|module:workbox-runtime-caching.Handler} input.handler The
+   * handler to use to provide a response if the route matches.
+   *
+   * If you wish to use a callback function [see handlerCallback]{@link
+   *   module:workbox-routing.Route~handlerCallback} for the callback
+   * definition.
    */
   constructor({whitelist, blacklist, handler} = {}) {
     assert.isArrayOfClass({whitelist}, RegExp);

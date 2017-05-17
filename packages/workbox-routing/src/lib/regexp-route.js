@@ -19,28 +19,30 @@ import logHelper from '../../../../lib/log-helper.js';
 
 /**
  * RegExpRoute is a helper class to make defining regular expression based
- * [Routes]{@link Route} easy.
+ * [Routes]{@link module:workbox-routing.Route} easy.
  *
- * For same-origin requests, the route will be used if the regular expression
- * matches **any portion** (not necessarily the entirety) of the full request
- * URL.
+ * The matching for regular expressioned are slightly different between
+ * same-origin requests and cross-origin requests.
  *
- * For cross-origin requests, the route will only be used if the regular
- * expression matches **from the start** of the full request URL.
+ * A common pattern is to use a regex pattern similar to `/styles/.*` to capture
+ * all stylesheets on your site.
  *
- * For example, assuming that your origin is 'https://example.com', and you use
- * the following regular expressions when constructing your `RegExpRoute`:
+ * If we used this on `https://workboxjs.org`,
+ * this regular expression would match for the end of
+ * <code>https://workboxjs.org<strong>/styles/main.css</strong></code>.
  *
- * - `/css$/` **will** match 'https://example.com/path/to/styles.css', but
- * **will not** match 'https://cross-origin.com/path/to/styles.css'
+ * However, it's unlikely that we'd intend for this to match against:
+ * <code>https://third-party-origin.com<strong>/styles/example.css</strong></code>.
  *
- * - `/^https:\/\/cross-origin\.com/` **will not** match
- * 'https://example.com/path/to/styles.css', but **will** match
- * 'https://cross-origin.com/path/to/styles.css'
+ * To overcome this common issue, regular expressions will only match against
+ * cross-origin requests if the regular expression matches from the start.
  *
- * - `/./` **will** match both 'https://example.com/path/to/styles.css' and
- * 'https://cross-origin.com/path/to/styles.css', because the `.` wildcard
- * matches the first character in both URLs.
+ * For example, matching the cross-origin example, we could change the
+ * regular expression to: `https://third-party-origin.com/styles/.*`, meaning
+ * we would now match <code><strong>https://third-party-origin.com/styles/example.css</strong></code>.
+ *
+ * If you wish your regular expression to match both, you just need to ensure
+ * you account for the full URL.
  *
  * @memberof module:workbox-routing
  * @extends Route
@@ -69,10 +71,14 @@ class RegExpRoute extends Route {
    * @param {Object} input
    * @param {RegExp} input.regExp The regular expression to match against URLs.
    * If the `RegExp` contains [capture groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references),
-   * then the array of captured values will be passed to the handler via
+   * then the array of captured values will be passed to the `handler` as
    * `params`.
-   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
-   * use to provide a response if the route matches.
+   * @param {function|module:workbox-runtime-caching.Handler} input.handler The
+   * handler to use to provide a response if the route matches.
+   *
+   * If you wish to use a callback function [see handlerCallback]{@link
+   *   module:workbox-routing.Route~handlerCallback} for the callback
+   * definition.
    * @param {string} [input.method] Only match requests that use this
    * HTTP method. Defaults to `'GET'` if not specified.
    */
