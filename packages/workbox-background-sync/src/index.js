@@ -11,11 +11,16 @@
  limitations under the License.
  */
 
+Queues failed requests and uses the
+ +[Background Sync API](https://developers.google.com/web/updates/2015/12/background-sync)
+ +to replay them when the network is available.
+
 /**
  * # workbox-background-sync
  *
- * A library to queue failed requests and use the Background Sync API to replay
- * those requests at a later time when the network state has changed.
+ * A library to queue failed requests and use the
+ * [Background Sync API](https://developers.google.com/web/updates/2015/12/background-sync)
+ * to replay those requests when the network is available.
  *
  * **Install:** `npm install --save-dev workbox-background-sync`
  *

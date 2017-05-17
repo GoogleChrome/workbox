@@ -4,10 +4,22 @@ const getFileManifestEntries = require('./lib/get-file-manifest-entries');
 const generateFileManifest = require('./lib/generate-file-manifest');
 const injectManifest = require('./lib/inject-manifest');
 
+
+ +
+ +
+ +
+ +
+
 /**
  * # workbox-build
  *
- * A module to use in build scripts for generating a service worker.
+ * A module that integrates into your build process, helping you generate a
+ * manifest of local files that [`workbox-sw`](../workbox-sw) should precache.
+ * It can also scaffold a full service worker implementation for you.
+ *
+ * While you can use this module directly, there are both
+ * [command-line](../workbox-cli) and [Webpack](../workbox-webpack-plugin)
+ * wrappers.
  *
  * **Install:** `npm install --save-dev workbox-build`
  *

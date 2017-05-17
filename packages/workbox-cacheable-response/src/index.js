@@ -11,13 +11,12 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
 
 /**
  * # workbox-cacheable-response
  *
- * A module that determines whether an object is cacheable based on a specific
- * configuration.
+ * A library that determines whether a Response object is cacheable based on a
+ * specific configuration.
  *
  * **Install:** `npm install --save-dev workbox-cacheable-response`
  *

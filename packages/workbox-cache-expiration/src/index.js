@@ -16,7 +16,8 @@
 /**
  * # workbox-cache-expiration
  *
- * A helper module to set an expiration and/or limit on the responses cached.
+ * A helper library that expires cached responses based on age or maximum
+ * number of entries.
  *
  * **Install:** `npm install --save-dev workbox-cache-expiration`
  *

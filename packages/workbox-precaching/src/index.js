@@ -11,13 +11,14 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-*/
 
 /**
  * # workbox-precaching
  *
- * A helper library that make it easy to cache files
- * during the install step of your service worker.
+ * A lover-level service worker library to precache a manifest of URLs.
+ *
+ * It's recommended that you use the higher-level [`workbox-sw`](../workbox-sw)
+ * library's `precache()` method rather than using this directly.
  *
  * **Install:** `npm install --save-dev workbox-precaching`
  *

@@ -19,7 +19,10 @@ import logHelper from '../../../lib/log-helper.js';
 import replayQueuedRequests from './lib/replay-queued-requests.js';
 
 /**
- * A module that ensures Google Analytics works offline. It does this by
+ * A service worker helper library to retry offline Google Analytics requests
+ * when a connection is available.
+ *
+ * It does this by
  * saving calls from the Google Analytics JavaScript when the network isn't
  * available (using `IndexedDB`) and replaying them when the network is
  * available.
