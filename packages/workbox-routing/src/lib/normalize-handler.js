@@ -1,7 +1,8 @@
 import assert from '../../../../lib/assert';
 
 /**
- * @param {RouteHandler} handler The handler to normalize.
+ * @param {function|module:workbox-runtime-caching.Handler} handler The
+ * handler to normalize.
  * @return {Object} An object with a `handle` property representing the handler
  * function.
  */

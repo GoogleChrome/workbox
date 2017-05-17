@@ -79,9 +79,9 @@ class Router extends SWRoutingRouter {
    *    cross-origin routes, you must use a RegExp that matches the start of the
    *    full URL, like `new RegExp('https://cross-origin\.com/')`.
    * 1. A [Route]{@link module:workbox-sw.WorkboxSW#Route} instance.
-   * @param {module:workbox-routing.RouteHandler} handler The handler to use to
-   * provide a response if the route matches. The handler argument is ignored if
-   * you pass in a Route object, otherwise it's required.
+   * @param {module:workbox-runtime-caching.Handler} handler The handler to use
+   * to provide a response if the route matches. The handler argument is
+   * ignored if you pass in a Route object, otherwise it's required.
    */
   registerRoute(capture, handler) {
     if (typeof handler === 'function') {

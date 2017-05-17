@@ -71,8 +71,8 @@ class RegExpRoute extends Route {
    * If the `RegExp` contains [capture groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references),
    * then the array of captured values will be passed to the handler via
    * `params`.
-   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
-   * use to provide a response if the route matches.
+   * @param {module:workbox-runtime-caching.Handler} input.handler The handler
+   * to use to provide a response if the route matches.
    * @param {string} [input.method] Only match requests that use this
    * HTTP method. Defaults to `'GET'` if not specified.
    */

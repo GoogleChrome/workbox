@@ -26,7 +26,7 @@
  * which covers various ways of handling fetch events with a service worker.
  *
  * These strategies can be used as
- * {@link module:workbox-routing.RouteHandler|RouteHandlers}
+ * {@link module:workbox-runtime-caching.Handler|Handlers}
  * that are automatically invoked by the lower-level
  * {@link module:workbox-routing.Router|workbox-routing Router}
  * or the higher-level {@link module:workbox-sw.Router|WorkboxSW.Router}

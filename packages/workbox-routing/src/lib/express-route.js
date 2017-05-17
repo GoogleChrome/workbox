@@ -68,8 +68,8 @@ class ExpressRoute extends Route {
    * If the path contains [named parameters](https://github.com/pillarjs/path-to-regexp#named-parameters),
    * then an Object that maps parameter names to their corresponding value
    * will be passed to the handler via `params`.
-   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
-   * use to provide a response if the route matches.
+   * @param {module:workbox-runtime-caching.Handler} input.handler The handler
+   * to use to provide a response if the route matches.
    * @param {string} [input.method] Only match requests that use this
    * HTTP method. Defaults to `'GET'` if not specified.
    */
