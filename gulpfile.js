@@ -26,5 +26,4 @@ global.cliOptions = options;
 require('./gulp-tasks/lint.js');
 require('./gulp-tasks/build.js');
 require('./gulp-tasks/test.js');
-require('./gulp-tasks/documentation.js');
 require('./gulp-tasks/serve.js');
