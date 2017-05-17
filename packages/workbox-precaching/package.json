@@ -1,7 +1,7 @@
 {
   "name": "workbox-precaching",
   "version": "0.0.2",
-  "description": "This library is still a work in progress and is not functional.",
+  "description": "A lower-level server worker library to precache a manifest of URLs.",
   "keywords": [
     "workbox",
     "workboxjs",

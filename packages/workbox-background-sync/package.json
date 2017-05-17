@@ -1,7 +1,7 @@
 {
   "name": "workbox-background-sync",
   "version": "0.0.2",
-  "description": "Queues failed requests and uses the Background Sync API to replay those requests at a later time when the network state has changed.",
+  "description": "Queues failed requests and uses the Background Sync API to replay them when the network is available",
   "keywords": [
     "workbox",
     "workboxjs",

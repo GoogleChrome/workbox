@@ -14,7 +14,8 @@
 */
 
 /**
- * The value `'CACHE_UPDATED'`, used as the `type` field of the update message.
+ * This is a static variable for the cache updated message type. Useful for
+ * comparing to the messages `type` parameter to identify the kind of message.
  *
  * @type {string}
  *

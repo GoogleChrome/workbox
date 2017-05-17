@@ -23,7 +23,7 @@ const workboxBuild = require('workbox-build');
 const cliLogHelper = require('./lib/log-helper');
 const generateGlobPattern = require('./lib/utils/generate-glob-pattern');
 const saveConfigFile = require('./lib/utils/save-config');
-const getConfigFile = require('./lib/utils/get-config');
+const getConfig = require('./lib/utils/get-config');
 const errors = require('./lib/errors');
 
 const askForRootOfWebApp = require('./lib/questions/ask-root-of-web-app');
@@ -96,8 +96,15 @@ class SWCli {
    */
   _generateSW(flags) {
     let config = {};
+    let configFile = null;
+    if (flags) {
+      configFile = flags.configFile;
+      // Remove configFile from flags (if it was present) so that it doesn't
+      // trigger the 'config-supplied-missing-fields' error later on.
+      delete flags.configFile;
+    }
 
-    return getConfigFile()
+    return getConfig(configFile)
     .then((savedConfig) => {
       if (savedConfig) {
         config = savedConfig;
@@ -202,13 +209,20 @@ class SWCli {
   /**
    * This function should ask questions or use config/flags to read in a sw
    * and inject the manifest into the destination service worker.
-   * @param  {[type]} flags [description]
-   * @return {[type]}       [description]
+   * @param  {object} flags Flags from command line.
+   * @return {Promise} Resolves on
    */
   _injectManifest(flags) {
     let config = {};
+    let configFile = null;
+    if (flags) {
+      configFile = flags.configFile;
+      // Remove configFile from flags (if it was present) so that it doesn't
+      // trigger the 'config-supplied-missing-fields' error later on.
+      delete flags.configFile;
+    }
 
-    return getConfigFile()
+    return getConfig(configFile)
     .then((savedConfig) => {
       if (savedConfig) {
         config = savedConfig;

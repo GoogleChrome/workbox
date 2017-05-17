@@ -7,7 +7,7 @@ const errors = require('../errors');
 
 module.exports = (configDetails) => {
   return new Promise((resolve, reject) => {
-    const configPath = path.join(process.cwd(), constants.configName);
+    const configPath = path.join(process.cwd(), constants.defaultConfigName);
 
     // Ignore the cli config if it's in the globDirectory.
     if (configDetails.globDirectory) {

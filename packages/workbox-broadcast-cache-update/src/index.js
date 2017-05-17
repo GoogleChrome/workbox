@@ -20,16 +20,15 @@
  * [Broadcast Channel API](https://developers.google.com/web/updates/2016/09/broadcastchannel)
  * to announce when two Response objects differ.
  *
- * **Install:** `npm install --save-dev workbox-broadcast-cache-update`
- *
- * The main use of this module will be instantiating a new
+ * Most develpers will use this module will by instantiating a new
  * `BroadcastCacheUpdatePlugin` and passing it to a
  * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},
  * as shown in the first example below.
  *
  * You can listen for updates from your web app by adding an event listener on
  * a `BroadcastChannel` within a page, using the same channel name as
- * what's used within the service worker, as shown in the second example below.
+ * what's used within the service worker, as shown in the second example.
+ *
  *
  * @example <caption>Using the BroadcastCacheUpdatePlugin class in a
  * service worker.</caption>

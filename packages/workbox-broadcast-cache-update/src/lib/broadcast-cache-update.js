@@ -31,23 +31,37 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  * of the other modules in this repo.
  *
  * If you'd like to use this functionality but are already using `workbox-sw` or
- * `workbox-runtime-caching`, then please see the corresponding plugin,
- * `BroadcastCacheUpdatePlugin`, for a easy integration.
+ * `workbox-runtime-caching`, please see use the
+ * [BroadcastCacheUpdatePlugin]{@link
+ *  module:workbox-broadcast-cache-update.BroadcastCacheUpdatePlugin}
+ * for a easy integration.
  *
- * @example <caption>Using BroadcastCacheUpdate when you're handling your
- * own fetch and request logic.</caption>
+ * @example <caption>Using BroadcastCacheUpdate to compare a cached and fetched
+ * request.</caption>
  *
  * const url = '/path/to/file';
  * const cacheName = 'my-runtime-cache';
- * const bcu = new workbox.broadcastCacheUpdate.BroadcastCacheUpdate(
- *   {channelName: 'cache-updates'});
  *
- * Promise.all([
- *   caches.open(cacheName).then((cache) => cache.match(url)),
- *   fetch(url),
- * ]).then(([first, second]) => {
- *   if (first) {
- *     bcu.notifyIfUpdated({cacheName, first, second});
+ * const bcu = new workbox.broadcastCacheUpdate.BroadcastCacheUpdate({
+ *   channelName: 'cache-updates'
+ * });
+ *
+ * caches.open(cacheName)
+ * .then((openCache) => {
+ *   return Promise.all([
+ *     cache.match(url),
+ *     fetch(url)
+ *   ]);
+ * })
+ * .then((responses) => {
+ *   const cachedResponse = responses[0];
+ *   const fetchedResponse = responses[1];
+ *   if (cachedResponse) {
+ *     bcu.notifyIfUpdated({
+ *       cacheName,
+ *       cachedResponse,
+ *       fetchedResponse
+ *     });
  *   }
  * });
  *
@@ -57,16 +71,19 @@ class BroadcastCacheUpdate {
   /**
    * Dispatches cache update messages when a cached response has been updated.
    * Messages will be dispatched on a broadcast channel with the name provided
-   * as channelName parameter in the constructor.
+   * as the `channelName` parameter.
    *
    * @param {Object} input
    * @param {string} input.channelName The name that will be used when creating
-   *        the `BroadcastChannel`.
+   * the `BroadcastChannel`.
    * @param {Array<string>} input.headersToCheck A list of headers that will be
-   *        used to determine whether the responses differ. Defaults to
-   *        `['content-length', 'etag', 'last-modified']`.
+   * used to determine whether the responses differ.
+   *
+   * Defaults to `['content-length', 'etag', 'last-modified']`.
    * @param {string} input.source An attribution value that indicates where
-   *        the update originated. Defaults to 'workbox-broadcast-cache-update'.
+   * the update originated.
+   *
+   * Defaults to `workbox-broadcast-cache-update`.
    */
   constructor({channelName, headersToCheck, source}={}) {
     if (typeof channelName !== 'string' || channelName.length === 0) {
@@ -94,17 +111,18 @@ class BroadcastCacheUpdate {
   /**
    * An explicit method to call from your own code to trigger the comparison of
    * two [Responses](https://developer.mozilla.org/en-US/docs/Web/API/Response)
-   * and fire off a notification via the
+   * and send a message via the
    * {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel API}
    * if they differ.
    *
    * @param {Object} input The input object to this function.
    * @param {Response} input.first One of the responses to compare.
-   *        This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
-   * @param {Response} input.second Another of the respones to compare.
-   *        This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
+   * This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
+   * @param {Response} input.second The response to compare with.
+   * This should not be an {@link http://stackoverflow.com/questions/39109789|opaque response}.
    * @param {string} input.cacheName Name of the cache the responses belong to.
-   * @param {string} input.url The cache key URL.
+   * This is included in the message posted on the broadcast channel.
+   * @param {string} input.url The URL of the updates request.
    */
   notifyIfUpdated({first, second, cacheName, url}) {
     assert.isType({cacheName}, 'string');

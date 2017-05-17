@@ -24,15 +24,18 @@ import assert from '../../../../lib/assert';
  * For efficiency's sake, the underlying response bodies are not compared;
  * only specific response headers are checked.
  *
- * This class is meant to be automatically invoked as a plugin to a
+ * This class is meant to be automatically invoked as a plugin by a
  * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper}, which
  * is used by the `workbox-sw` and `workbox-runtime-caching` modules.
  *
  * If you would like to use this functionality outside of the `RequestWrapper`
- * context, please use the `BroadcastCacheUpdate` class directly.
+ * context, please use the
+ * [BroadcastCacheUpdate]{@link
+ *  module:workbox-broadcast-cache-update.BroadcastCacheUpdate}
+ * class directly.
  *
- * @example <caption>Added as a "plugin" to a `RequestWrapper` to
- * automatically dispatch messages on a cache update</caption>
+ * @example <caption>Add a BroadcastCacheUpdatePlugin to a `RequestWrapper` to
+ * dispatch messages on a cache update.</caption>
  *
  * const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
  *   cacheName: 'runtime-cache',

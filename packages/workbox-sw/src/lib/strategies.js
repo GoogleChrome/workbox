@@ -39,8 +39,8 @@ class Strategies {
    *
    * workboxSW.router.registerRoute('/styles/*', cacheFirstStrategy);
    *
-   * @param {module:workbox-sw.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast plugins pass in option values.
+   * @param {module:workbox-sw.WorkboxSW.RuntimeStrategyOptions} [options] To
+   * define any additional caching or broadcast plugins pass in option values.
    * @return {module:workbox-runtime-caching.CacheFirst} A CacheFirst handler.
    */
   cacheFirst(options) {
@@ -57,8 +57,8 @@ class Strategies {
    *
    * workboxSW.router.registerRoute('/styles/*', cacheOnlyStrategy);
    *
-   * @param {module:workbox-sw.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast plugins pass in option values.
+   * @param {module:workbox-sw.WorkboxSW.RuntimeStrategyOptions} [options] To
+   * define any additional caching or broadcast plugins pass in option values.
    * @return {module:workbox-runtime-caching.CacheOnly} The caching handler
    * instance.
    */
@@ -76,8 +76,8 @@ class Strategies {
    *
    * workboxSW.router.registerRoute('/blog/', networkFirstStrategy);
    *
-   * @param {module:workbox-sw.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast plugins pass in option values.
+   * @param {module:workbox-sw.WorkboxSW.RuntimeStrategyOptions} [options] To
+   * define any additional caching or broadcast plugins pass in option values.
    * @return {module:workbox-runtime-caching.NetworkFirst} The caching handler
    * instance.
    */
@@ -95,8 +95,8 @@ class Strategies {
    *
    * workboxSW.router.registerRoute('/admin/', networkOnlyStrategy);
    *
-   * @param {module:workbox-sw.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast plugins pass in option values.
+   * @param {module:workbox-sw.WorkboxSW.RuntimeStrategyOptions} [options] To
+   * define any additional caching or broadcast plugins pass in option values.
    * @return {module:workbox-runtime-caching.NetworkOnly} The caching handler
    * instance.
    */
@@ -115,8 +115,8 @@ class Strategies {
    *
    * workboxSW.router.registerRoute('/styles/*', staleWhileRevalidateStrategy);
    *
-   * @param {module:workbox-sw.SWLib.RuntimeStrategyOptions} [options] To define
-   * any additional caching or broadcast plugins pass in option values.
+   * @param {module:workbox-sw.WorkboxSW.RuntimeStrategyOptions} [options] To
+   * define any additional caching or broadcast plugins pass in option values.
    * @return {module:workbox-runtime-caching.StaleWhileRevalidate} The caching
    * handler instance.
    */
