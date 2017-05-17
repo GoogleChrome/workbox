@@ -13,25 +13,25 @@ import {allQueuesPlaceholder} from './constants';
  * @private
  */
 async function getQueueableRequest({request, config}) {
-	let requestObject={
-		config,
-		metadata: {
-			creationTimestamp: Date.now(),
-		},
-	};
-	requestObject.request = {
-		url: request.url,
-		headers: JSON.stringify([...request.headers]),
-		mode: request.mode,
-		method: request.method,
-		redirect: request.redirect,
-		credentials: request.credentials,
-	};
-	const requestBody = await request.text();
-	if (requestBody.length > 0) {
-		requestObject.request.body = requestBody;
-	}
-	return requestObject;
+  let requestObject={
+    config,
+    metadata: {
+      creationTimestamp: Date.now(),
+    },
+  };
+  requestObject.request = {
+    url: request.url,
+    headers: JSON.stringify([...request.headers]),
+    mode: request.mode,
+    method: request.method,
+    redirect: request.redirect,
+    credentials: request.credentials,
+  };
+  const requestBody = await request.text();
+  if (requestBody.length > 0) {
+    requestObject.request.body = requestBody;
+  }
+  return requestObject;
 }
 
 /**
@@ -42,17 +42,17 @@ async function getQueueableRequest({request, config}) {
  * @private
  */
 async function getFetchableRequest({idbRequestObject}) {
-	let reqObject = {
-		mode: idbRequestObject.mode,
-		method: idbRequestObject.method,
-		redirect: idbRequestObject.redirect,
-		headers: new Headers(JSON.parse(idbRequestObject.headers)),
-		credentials: idbRequestObject.credentials,
-	};
-	if(idbRequestObject.body) {
-		reqObject.body = idbRequestObject.body;
-	}
-	return new Request(idbRequestObject.url, reqObject);
+  let reqObject = {
+    mode: idbRequestObject.mode,
+    method: idbRequestObject.method,
+    redirect: idbRequestObject.redirect,
+    headers: new Headers(JSON.parse(idbRequestObject.headers)),
+    credentials: idbRequestObject.credentials,
+  };
+  if(idbRequestObject.body) {
+    reqObject.body = idbRequestObject.body;
+  }
+  return new Request(idbRequestObject.url, reqObject);
 }
 
 /**
@@ -65,36 +65,36 @@ async function getFetchableRequest({idbRequestObject}) {
  * @return {Promise}
  */
 async function cleanupQueue(dbName) {
-	let db = new IDBHelper(dbName, 1, 'QueueStore');
-	let queueObj = await db.get(allQueuesPlaceholder);
+  let db = new IDBHelper(dbName, 1, 'QueueStore');
+  let queueObj = await db.get(allQueuesPlaceholder);
 
-	if(!queueObj) {
-		return null;
-	}
+  if(!queueObj) {
+    return null;
+  }
 
-	await Promise.all(queueObj.map(async (queueName)=>{
-		const requestQueues = await db.get(queueName);
-		let itemsToKeep = [];
-		let deletionPromises = [];
-		await Promise.all(requestQueues.map( async (hash) => {
-			const requestData = await db.get(hash);
-			if (requestData && requestData.metadata
-				&& requestData.metadata.creationTimestamp + requestData.config.maxAge
-					<= Date.now()) {
-				// Delete items that are too old.
-				deletionPromises.push(db.delete(hash));
-			} else {
-				// Keep elements whose definition exists in idb.
-				itemsToKeep.push(hash);
-			}
-		}));
-		await Promise.all(deletionPromises);
-		db.put(queueName, itemsToKeep);
-	}));
+  await Promise.all(queueObj.map(async (queueName)=>{
+    const requestQueues = await db.get(queueName);
+    let itemsToKeep = [];
+    let deletionPromises = [];
+    await Promise.all(requestQueues.map( async (hash) => {
+      const requestData = await db.get(hash);
+      if (requestData && requestData.metadata
+        && requestData.metadata.creationTimestamp + requestData.config.maxAge
+          <= Date.now()) {
+        // Delete items that are too old.
+        deletionPromises.push(db.delete(hash));
+      } else {
+        // Keep elements whose definition exists in idb.
+        itemsToKeep.push(hash);
+      }
+    }));
+    await Promise.all(deletionPromises);
+    db.put(queueName, itemsToKeep);
+  }));
 }
 
 export {
-	getQueueableRequest,
-	getFetchableRequest,
-	cleanupQueue,
+  getQueueableRequest,
+  getFetchableRequest,
+  cleanupQueue,
 };
