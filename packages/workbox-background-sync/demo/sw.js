@@ -17,13 +17,20 @@ self.addEventListener('activate', (event) => {
 
 let bgQueue = new workbox.backgroundSync.QueuePlugin({callbacks:
   {
-    onResponse: async(hash, res) => {
+    onResponse: async(requestId, response) => {
+      let res = await response.text();
       self.registration.showNotification('Background sync demo', {
-        body: 'Product has been purchased.',
+        body: `Replay for request id: ${requestId} is completed`
+        + ` with response counter: ${res}`,
         icon: 'https://shop.polymer-project.org/images/shop-icon-384.png',
       });
     },
-    onRetryFailure: (hash) => {},
+    onRetryFailure: (requestId) => {
+      self.registration.showNotification('Background sync demo', {
+        body: `Replay has been failed for request id: ${requestId}`,
+        icon: 'https://shop.polymer-project.org/images/shop-icon-384.png',
+      });
+    },
   },
   dbName: 'queues',
 });
