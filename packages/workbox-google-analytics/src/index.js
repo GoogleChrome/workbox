@@ -19,12 +19,13 @@ import logHelper from '../../../lib/log-helper.js';
 import replayQueuedRequests from './lib/replay-queued-requests.js';
 
 /**
- * In order to use the library, call
- * `workbox.googleAnalytics.initialize()`.
- * It will take care of setting up service worker `fetch` handlers to ensure
- * that the Google Analytics JavaScript is available offline, and that any
- * Google Analytics requests made while offline are saved (using `IndexedDB`)
- * and retried the next time the service worker starts up.
+ * A service worker helper library to retry offline Google Analytics requests
+ * when a connection is available.
+ *
+ * It does this by
+ * saving calls from the Google Analytics JavaScript when the network isn't
+ * available (using `IndexedDB`) and replaying them when the network is
+ * available.
  *
  * **Install:** `npm install --save-dev workbox-google-analytics`
  *

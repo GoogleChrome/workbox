@@ -16,8 +16,11 @@
 /**
  * # workbox-precaching
  *
- * The precaching library intelligently caches and updates files
- * during the install step of your service worker.
+ * A lover-level service worker library to precache a manifest of URLs.
+ *
+ * It's recommended that you use the higher-level
+ * [`workbox-sw`]{@link module:workbox-sw}
+ * library's `precache()` method rather than using this directly.
  *
  * When given a list of URL's to precache, this module will go through
  * each URL and check if the URL is already cached and, if it is, compare

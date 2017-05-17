@@ -16,9 +16,9 @@
 /**
  * # workbox-broadcast-cache-update
  *
- * A helper library that uses the Broadcast Channel API to announce when
- * a caches entry is updated with a new response, allowing your web app
- * to listen for these updates and react to them.
+ * A helper library that uses the
+ * [Broadcast Channel API](https://developers.google.com/web/updates/2016/09/broadcastchannel)
+ * to announce when two Response objects differ.
  *
  * Most developers will use this module by instantiating a new
  * `BroadcastCacheUpdatePlugin` and passing it to a

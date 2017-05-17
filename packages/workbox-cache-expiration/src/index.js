@@ -16,7 +16,8 @@
 /**
  * # workbox-cache-expiration
  *
- * A helper library that enforces restrictions on a cache including:
+ * A helper library that expires cached responses based on age or maximum
+ * number of entries.
  *
  * - Allowing a specific number of requests to be cached. This prevents
  * a cache from continuously growing in size.

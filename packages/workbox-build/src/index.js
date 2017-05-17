@@ -7,9 +7,16 @@ const injectManifest = require('./lib/inject-manifest');
 /**
  * # workbox-build
  *
- * This Node module can be used to generate a list of assets that should be
- * precached in a service worker, generating a hash that can be used to
- * intelligently update a cache when the service worker is updated.
+ * A module that integrates into your build process, helping you generate a
+ * manifest of local files that [`workbox-sw`](../workbox-sw) should precache.
+ * It can also scaffold a full service worker implementation for you.
+ *
+ * While you can use this module directly, there are both
+ * [command-line](/how_tos/sw-cli) and
+ * [Webpack](https://www.npmjs.com/package/workbox-webpack-plugin)
+ * wrappers.
+ *
+ * **Install:** `npm install --save-dev workbox-build`
  *
  * This module will use glob patterns to find assets in a given directory
  * and use the resulting URL and hash data for one of the follow uses:
