@@ -4,12 +4,6 @@ const getFileManifestEntries = require('./lib/get-file-manifest-entries');
 const generateFileManifest = require('./lib/generate-file-manifest');
 const injectManifest = require('./lib/inject-manifest');
 
-
- +
- +
- +
- +
-
 /**
  * # workbox-build
  *
