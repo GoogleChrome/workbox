@@ -51,6 +51,7 @@ import {cacheUpdatedMessageType} from './constants';
  *   source: 'custom-library'
  * });
  *
+ * @private
  * @memberof module:workbox-broadcast-cache-update
  *
  * @param {Object} input

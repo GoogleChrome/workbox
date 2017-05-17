@@ -17,18 +17,18 @@
  * # workbox-broadcast-cache-update
  *
  * A helper library that uses the Broadcast Channel API to announce when
- * two Response objects differ.
+ * a caches entry is updated with a new response, allowing your web app
+ * to listen for these updates and react to them.
  *
- * **Install:** `npm install --save-dev workbox-broadcast-cache-update`
- *
- * The main use of this module will be instantiating a new
+ * Most develpers will use this module will by instantiating a new
  * `BroadcastCacheUpdatePlugin` and passing it to a
  * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},
  * as shown in the first example below.
  *
  * You can listen for updates from your web app by adding an event listener on
  * a `BroadcastChannel` within a page, using the same channel name as
- * what's used within the service worker, as shown in the second example below.
+ * what's used within the service worker, as shown in the second example.
+ *
  *
  * @example <caption>Using the BroadcastCacheUpdatePlugin class in a
  * service worker.</caption>
