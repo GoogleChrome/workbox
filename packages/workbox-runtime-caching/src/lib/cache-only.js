@@ -22,7 +22,8 @@ import assert from '../../../../lib/assert';
  *
  * The advantage to using this versus directly calling `caches.match()` is that
  * it will use the cache configuration and trigger the plugins defined in
- * the underlying `RequestWrapper`.
+ * the underlying `RequestWrapper` which accounts for behaviors like cache
+ * expiration.
  *
  * @example
  * // Set up a route to match any requests made for URLs that end in .txt.
@@ -36,7 +37,7 @@ import assert from '../../../../lib/assert';
  * router.registerRoute({route});
  *
  * @memberof module:workbox-runtime-caching
- * @extends Handler
+ * @extends module:workbox-runtime-caching.Handler
  */
 class CacheOnly extends Handler {
   /**
@@ -47,7 +48,7 @@ class CacheOnly extends Handler {
    * @param {Object} input
    * @param {FetchEvent} input.event The event that triggered the service
    *        worker's fetch handler.
-   * @return {Promise.<Response>} The response from the cache.
+   * @return {Promise.<Response>} The response from the cache or null.
    */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);

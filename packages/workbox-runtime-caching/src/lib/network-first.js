@@ -42,15 +42,15 @@ import assert from '../../../../lib/assert';
  * router.registerRoute({route});
  *
  * @memberof module:workbox-runtime-caching
- * @extends Handler
+ * @extends module:workbox-runtime-caching.Handler
  */
 class NetworkFirst extends Handler {
   /**
    * Constructor for a new NetworkFirst instance.
    *
    * @param {Object} input
-   * @param {number} [input.networkTimeoutSeconds] If set, and a network
-   *        response isn't returned timeout is reached, then the cached response
+   * @param {number} [input.networkTimeoutSeconds] If set, and a valid network
+   *        response isn't returned, then the cached response
    *        will be returned instead. If there is no previously cached response,
    *        then an `null` response will be returned. This option is meant to
    *        combat "[lie-fi](https://developers.google.com/web/fundamentals/performance/poor-connectivity/#lie-fi)"

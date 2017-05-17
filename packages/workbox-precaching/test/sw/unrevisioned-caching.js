@@ -13,7 +13,7 @@ mocha.setup({
   reporter: null,
 });
 
-describe('sw/unrevisioned-caching.js', function() {
+describe.skip('sw/unrevisioned-caching.js', function() {
   let cacheManager;
 
   const VALID_PATH_REL = '/__echo/date/example.txt';

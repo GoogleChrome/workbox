@@ -1,35 +1,42 @@
 /* global workbox*/
 importScripts(
-	'../build/background-sync-queue.js',
-	'../../workbox-routing/build/workbox-routing.js',
-	'../../workbox-runtime-caching/build/workbox-runtime-caching.js'
+  '/__test/bundle/workbox-background-sync/',
+  '/__test/bundle/workbox-routing/',
+  '/__test/bundle/workbox-runtime-caching/',
 );
 
 // Have the service worker take control as soon as possible.
 self.addEventListener('install', (event) => {
-	event.waitUntil(self.skipWaiting());
+  event.waitUntil(self.skipWaiting());
 });
 self.addEventListener('activate', (event) => {
-	event.waitUntil(self.clients.claim());
+  event.waitUntil(self.clients.claim());
 });
 
 
 let bgQueue = new workbox.backgroundSync.QueuePlugin({callbacks:
-	{
-		onResponse: async(hash, res) => {
-			self.registration.showNotification('Background sync demo', {
-				body: 'Product has been purchased.',
-				icon: 'https://shop.polymer-project.org/images/shop-icon-384.png',
-			});
-		},
-		onRetryFailure: (hash) => {},
-	},
-	dbName: 'queues',
+  {
+    onResponse: async(requestId, response) => {
+      let res = await response.text();
+      self.registration.showNotification('Background sync demo', {
+        body: `Replay for request id: ${requestId} is completed`
+        + ` with response counter: ${res}`,
+        icon: 'https://shop.polymer-project.org/images/shop-icon-384.png',
+      });
+    },
+    onRetryFailure: (requestId) => {
+      self.registration.showNotification('Background sync demo', {
+        body: `Replay has been failed for request id: ${requestId}`,
+        icon: 'https://shop.polymer-project.org/images/shop-icon-384.png',
+      });
+    },
+  },
+  dbName: 'queues',
 });
 
 const replayBroadcastChannel = new BroadcastChannel('replay_channel');
 replayBroadcastChannel.onmessage = function() {
-	bgQueue.replayRequests();
+  bgQueue.replayRequests();
 };
 
 const requestWrapper = new workbox.runtimeCaching.RequestWrapper({

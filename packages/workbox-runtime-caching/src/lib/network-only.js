@@ -36,7 +36,7 @@ import assert from '../../../../lib/assert';
  * router.registerRoute({route});
  *
  * @memberof module:workbox-runtime-caching
- * @extends Handler
+ * @extends module:workbox-runtime-caching.Handler
  */
 class NetworkOnly extends Handler {
   /**
