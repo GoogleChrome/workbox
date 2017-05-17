@@ -11,6 +11,61 @@ import {CacheableResponsePlugin} from
 import {RequestWrapper} from '../../../workbox-runtime-caching/src/index.js';
 
 /**
+ * StrategyOptions is just a JavaScript object, but the structure
+ * explains the options for runtime strategies used in workbox-sw.
+ *
+ * See the example of how this can be used with the `cacheFirst()` caching
+ * strategy.
+ *
+ * @example
+ * const workboxSW = new WorkboxSW();
+ * const cacheFirstStrategy = workboxSW.strategies.cacheFirst({
+ *   cacheName: 'example-cache',
+ *   cacheExpiration: {
+ *     maxEntries: 10,
+ *     maxAgeSeconds: 7 * 24 * 60 * 60
+ *   },
+ *   broadcastCacheUpdate: {
+ *     channelName: 'example-channel-name'
+ *   },
+ *   cacheableResponse: {
+ *     statuses: [0, 200, 404],
+ *     headers: {
+ *       'Example-Header-1': 'Header-Value-1',
+ *       'Example-Header-2': 'Header-Value-2'
+ *     }
+ *   }
+ *   plugins: [
+ *     // Additional Plugins
+ *   ]
+ * });
+ *
+ * @typedef {Object} StrategyOptions
+ * @property {String} cacheName Name of cache to use
+ * for caching (both lookup and updating).
+ * @property {Object} cacheExpiration Defining this
+ * object will add a cache expiration plugins to this strategy.
+ * @property {Number} cacheExpiration.maxEntries
+ * The maximum number of entries to store in a cache.
+ * @property {Number} cacheExpiration.maxAgeSeconds
+ * The maximum lifetime of a request to stay in the cache before it's removed.
+ * @property {Object} broadcastCacheUpdate Defining
+ * this object will add a broadcast cache update plugin.
+ * @property {String} broadcastCacheUpdate.channelName
+ * The name of the broadcast channel to dispatch messages on.
+ * @property {Array<plugins>} plugins For
+ * any additional plugins you wish to add, simply include them in this
+ * array.
+ * @property {Object} cacheableResponse Specifies types of responses to cache
+ * by status codes, headers, or both.
+ * @property {Array<Number>} cacheableResponse.statuses An array of status
+ * codes to cache.
+ * @property {Array<Object>} cacheableResponse.headers An array of
+ * header-value pairs for HTTP headers to cache. See the example, above.
+ * @memberof module:workbox-sw.Strategies
+ */
+
+/**
  * This is a simple class used to namespace the supported caching strategies in
  * workbox-sw.
  *
@@ -39,9 +94,10 @@ class Strategies {
    *
    * workboxSW.router.registerRoute('/styles/*', cacheFirstStrategy);
    *
-   * @param {module:workbox-sw.WorkboxSW.RuntimeStrategyOptions} [options] To
+   * @param {module:workbox-sw.Strategies.StrategyOptions} [options] To
    * define any additional caching or broadcast plugins pass in option values.
-   * @return {module:workbox-runtime-caching.CacheFirst} A CacheFirst handler.
+   * @return {module:workbox-runtime-caching.CacheFirst} An instance of a
+   * `CacheFirst` handler.
    */
   cacheFirst(options) {
     return this._getCachingMechanism(CacheFirst, options);
@@ -57,10 +113,10 @@ class Strategies {
    *
    * workboxSW.router.registerRoute('/styles/*', cacheOnlyStrategy);
    *
-   * @param {module:workbox-sw.WorkboxSW.RuntimeStrategyOptions} [options] To
+   * @param {module:workbox-sw.Strategies.StrategyOptions} [options] To
    * define any additional caching or broadcast plugins pass in option values.
-   * @return {module:workbox-runtime-caching.CacheOnly} The caching handler
-   * instance.
+   * @return {module:workbox-runtime-caching.CacheOnly} An instance of a
+   * `CacheOnly` handler.
    */
   cacheOnly(options) {
     return this._getCachingMechanism(CacheOnly, options);
@@ -76,10 +132,10 @@ class Strategies {
    *
    * workboxSW.router.registerRoute('/blog/', networkFirstStrategy);
    *
-   * @param {module:workbox-sw.WorkboxSW.RuntimeStrategyOptions} [options] To
+   * @param {module:workbox-sw.Strategies.StrategyOptions} [options] To
    * define any additional caching or broadcast plugins pass in option values.
-   * @return {module:workbox-runtime-caching.NetworkFirst} The caching handler
-   * instance.
+   * @return {module:workbox-runtime-caching.NetworkFirst} An instance of a
+   * `NetworkFirst` handler.
    */
   networkFirst(options) {
     return this._getCachingMechanism(NetworkFirst, options);
@@ -95,10 +151,10 @@ class Strategies {
    *
    * workboxSW.router.registerRoute('/admin/', networkOnlyStrategy);
    *
-   * @param {module:workbox-sw.WorkboxSW.RuntimeStrategyOptions} [options] To
+   * @param {module:workbox-sw.Strategies.StrategyOptions} [options] To
    * define any additional caching or broadcast plugins pass in option values.
-   * @return {module:workbox-runtime-caching.NetworkOnly} The caching handler
-   * instance.
+   * @return {module:workbox-runtime-caching.NetworkOnly} An instance of a
+   * `NetworkOnly` handler.
    */
   networkOnly(options) {
     return this._getCachingMechanism(NetworkOnly, options);
@@ -115,10 +171,10 @@ class Strategies {
    *
    * workboxSW.router.registerRoute('/styles/*', staleWhileRevalidateStrategy);
    *
-   * @param {module:workbox-sw.WorkboxSW.RuntimeStrategyOptions} [options] To
+   * @param {module:workbox-sw.Strategies.StrategyOptions} [options] To
    * define any additional caching or broadcast plugins pass in option values.
-   * @return {module:workbox-runtime-caching.StaleWhileRevalidate} The caching
-   * handler instance.
+   * @return {module:workbox-runtime-caching.StaleWhileRevalidate}
+   *  An instance of a `StaleWhileRevalidate` handler.
    */
   staleWhileRevalidate(options) {
     return this._getCachingMechanism(StaleWhileRevalidate, options);

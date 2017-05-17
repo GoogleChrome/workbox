@@ -72,16 +72,16 @@ class Router extends SWRoutingRouter {
   /**
    * @param {String|RegExp|Route} capture The capture for a route can be one
    * of three types.
-   * 1. It can be an Express style route, like '/path/to/:anything' for
-   *    same-origin or 'https://cross-origin.com/path/to/:anything' for
+   * 1. It can be an Express style route, like `'/path/to/:anything'` for
+   *    same-origin or `'https://cross-origin.com/path/to/:anything'` for
    *    cross-origin routes.
    * 1. A regular expression that will be tested against request URLs. For
    *    cross-origin routes, you must use a RegExp that matches the start of the
    *    full URL, like `new RegExp('https://cross-origin\.com/')`.
-   * 1. A [Route]{@link module:workbox-sw.WorkboxSW#Route} instance.
-   * @param {module:workbox-runtime-caching.Handler} handler The handler to use
-   * to provide a response if the route matches. The handler argument is
-   * ignored if you pass in a Route object, otherwise it's required.
+   * 1. A [Route]{@link module:workbox-routing.Route} instance.
+   * @param {function|module:workbox-runtime-caching.Handler} handler The
+   * handler to use to provide a response if the route matches. The handler
+   * argument is ignored if you pass in a Route object, otherwise it's required.
    */
   registerRoute(capture, handler) {
     if (typeof handler === 'function') {
@@ -111,16 +111,16 @@ class Router extends SWRoutingRouter {
 
   /**
    * A shortcut used to register a
-   * {@link module:workbox-routing.NavigationRoute} instance that will
-   * respond to navigation requests using a cache entry for `url`.
+   * [NavigationRoute]{@link module:workbox-routing.NavigationRoute} instance
+   * that will respond to navigation requests using a cache entry for `url`.
    *
    * This is useful when following the [App Shell pattern](https://developers.google.com/web/fundamentals/architecture/app-shell#example-html-for-appshell),
    * in which the previously cached shell is returned for all navigations.
    *
    * The `url` value should correspond to an entry that's already in the cache,
    * perhaps a URL that is managed by
-   * {@link module:workbox-sw.WorkboxSW#precache}. Using a URL that isn't
-   * already cached will lead to failed navigations.
+   * [precache()]{@link module:workbox-sw.WorkboxSW#precache}. Using a URL that
+   * isn't already cached will lead to failed navigations.
    *
    * @param {String} url The URL of the already cached HTML resource.
    * @param {Object} [options]
