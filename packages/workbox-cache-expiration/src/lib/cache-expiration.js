@@ -174,6 +174,17 @@ class CacheExpiration {
   /**
    * Updates the timestamp stored in IndexedDB for `url` to be equal to `now`.
    *
+   * When using this class directly (i.e. not via `CacheExpirationPlugin`),
+   * it's your responsibility to call `updateTimestap()` each time an entry is
+   * put into the cache. Otherwise, the `expireEntries()` method will not
+   * know which entries to remove.
+   *
+   * @example
+   * expirationPlugin.updateTimestamp({
+   *   cacheName: 'example-cache-name',
+   *   url: '/example-url'
+   * });
+   *
    * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
    * @param {string} input.url The URL for the entry to update.
@@ -181,11 +192,6 @@ class CacheExpiration {
    *
    * Defaults to the current time.
    *
-   * @example
-   * expirationPlugin.updateTimestamp({
-   *   cacheName: 'example-cache-name',
-   *   url: '/example-url'
-   * });
    */
   async updateTimestamp({cacheName, url, now} = {}) {
     assert.isType({url}, 'string');
@@ -224,6 +230,8 @@ class CacheExpiration {
    * the function is currently executing the Promise will resolve immediately.
    *
    * @example
+   * // Assume that entries have been added to 'example-cache-name', and that
+   * // updateTimestamp() was called after each entry was added.
    * cacheExpiration.expireEntries({
    *   cacheName: 'example-cache-name'
    * });
