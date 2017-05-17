@@ -7,23 +7,48 @@ const injectManifest = require('./lib/inject-manifest');
 /**
  * # workbox-build
  *
- * **Install:** `npm install --save-dev workbox-build`
+ * This Node module can be used to generate a list of assets that should be
+ * precached in a service worker, generating a hash that can be used to
+ * intelligently update a cache when the service worker is updated.
  *
- * To get a list of url's and a corresponding revision details, call either
- * `generateFileManifest` or `getFileManifestEntries()`.
+ * This module will use glob patterns to find assets in a given directory
+ * and use the resulting URL and hash data for one of the follow uses:
  *
- * `generateFileManifest()` will run globs over a directory of static assets
- * and write a JavaScript file containing URL's and revision details for those
- * files.
+ * 1. Generate a complete service worker with precaching and some basic
+ * configurable options. See
+ * [generateSW()]{@link module:workbox-build.generateSW}.
+ * 1. Inject a manifest into an existing service worker. This allows you
+ * to control your own service worker while still taking advantage of
+ * [workboxSW.precache()]{@link module:workbox-sw.WorkboxSW#precache} logic.
+ * See [injectManifest()]{@link module:workbox-build.injectManifest}.
+ * 1. Generate a manifest file. This is useful if you want to read in the
+ * urls and revision details via an import script or ES2015 module import.
+ * See [generateFileManifest()]{@link
+ *  module:workbox-build.generateFileManifest}.
+ * 1. Get a JS object of the manifest details. Can be used in a build process
+ * if you want to inject the manifest into a file or template yourself.
+ * See [getFileManifestEntries()]{@link
+ *  module:workbox-build.getFileManifestEntries}.
  *
- * If you'd rather receive the data as a JavaScript Array, use
- * `getFileManifestEntries()` instead.
+ * @example <caption>Generate a complete service worker that will precache
+ * the discovered assets.</caption>
+ * const swBuild = require('workbox-build');
  *
- * If you only need precaching of your static assets in your service
- * worker and nothing else, you can generate complete service worker
- * with `generateSW()`.
+ * swBuild.generateSW({
+ *   globDirectory: './build/',
+ *   staticFileGlobs: ['**\/*.{html,js,css}'],
+ *   globIgnores: ['service-worker.js','admin.html'],
+ *   swDest: './build/sw.js',
+ *   templatedUrls: {
+ *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
+ *   },
+ * })
+ * .then(() => {
+ *   console.log('Service worker generated.');
+ * });
  *
- * @example <caption>Generate a build manifest file.</caption>
+ * @example <caption>Generate a file containing the assets to precache.
+ * </caption>
  * const swBuild = require('workbox-build');
  *
  * swBuild.generateFileManifest({
@@ -39,7 +64,7 @@ const injectManifest = require('./lib/inject-manifest');
  *   console.log('Build file has been created.');
  * });
  *
- * @example <caption>Get a list of files with revision details.</caption>
+ * @example <caption>Get an Array of files with revision details.</caption>
  * const swBuild = require('workbox-build');
  *
  * swBuild.getFileManifestEntries({
@@ -52,22 +77,6 @@ const injectManifest = require('./lib/inject-manifest');
  * })
  * .then((fileDetails) => {
  *   // An array of file details include a `url` and `revision` parameter.
- * });
- *
- * @example <caption>Generate a service worker for a project.</caption>
- * const swBuild = require('workbox-build');
- *
- * swBuild.generateSW({
- *   globDirectory: './build/',
- *   staticFileGlobs: ['**\/*.{html,js,css}'],
- *   globIgnores: ['service-worker.js','admin.html'],
- *   swDest: './build/sw.js',
- *   templatedUrls: {
- *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
- *   },
- * })
- * .then(() => {
- *   console.log('Service worker generated.');
  * });
  *
  * @module workbox-build

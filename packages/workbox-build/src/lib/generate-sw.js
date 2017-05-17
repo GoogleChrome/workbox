@@ -5,12 +5,77 @@ const writeServiceWorker = require('./write-sw');
 const errors = require('./errors');
 
 /**
- * @example <caption>Generate a service worker for a project.</caption>
+ * This method will generate a working service worker with an inlined
+ * file manifest.
+ *
+ * @param {Object} input
+ * @param {String} input.swDest The file path and name you wish to writh the
+ * service worker file to.
+ * @param {String} input.globDirectory The directory you wish to run the
+ * `staticFileGlobs` against.
+ * @param {Array<String>} input.staticFileGlobs Files matching against any of
+ * these glob patterns will be included in the file manifest.
+ * @param {String|Array<String>} [input.globIgnores] Files matching against any
+ * of these glob patterns will be excluded from the file manifest, even if the
+ * file matches against a `staticFileGlobs` pattern.
+ * @param {Object<String,Array|String>} [input.templatedUrls]
+ * If a URL is rendered with templates on the server, its contents may
+ * depend on multiple files. This maps URLs to an array of file names, or to a
+ * string value, that uniquely determines the URL's contents.
+ * @param {string} [input.navigateFallback] This URL will be used as a fallback
+ * if a navigation request can't be fulfilled. Normally this URL would be
+ * precached so it's always available. This is particularly useful for single
+ * page apps where requests should go to a single URL.
+ * @param {Array<Regexp>} [input.navigateFallbackWhitelist] An optional Array
+ * of regexs to restrict which URL's use the `navigateFallback` URL.
+ * @param {String} [input.cacheId] An optional ID to be prepended to caches
+ * used by workbox-build. This is primarily useful for local development where
+ * multiple sites may be served from the same `http://localhost` origin.
+ * @param {Boolean} [input.skipWaiting] When set to true the generated service
+ * worker activate immediately.
+ *
+ * Defaults to false.
+ * @param {Boolean} [input.clientsClaim] When set to true the generated service
+ * worker will claim any currently open pages.
+ *
+ * Defaults to false.
+ * @param {string} [input.directoryIndex] If a request for a URL ending in '/'
+ * fails, this value will be appended to the URL and a second request will be
+ * made.
+ *
+ * Defaults to 'index.html'.
+ * @param {Array<Object>} [input.runtimeCaching] Passing in an array of objects
+ * containing a `urlPattern` and a `handler` parameter will add the appropriate
+ * code to the service work to handle run time caching for URL's matching the
+ * pattern with the associated handler behavior.
+ * @param {String} [input.modifyUrlPrefix] An object of key value pairs
+ * where URL's starting with the key value will be replaced with the
+ * corresponding value.
+ * @param {Array<RegExp>} [input.ignoreUrlParametersMatching] Any search
+ * parameters matching against one of the regex's in this array will be removed
+ * before looking for a cache match.
+ * @param {Boolean} [input.handleFetch] When set to false all requests will
+ * go to the network. This is useful during development if you don't want the
+ * service worker from preventing updates.
+ *
+ * Defaults to true.
+ * @param {number} [input.maximumFileSizeToCacheInBytes] This value can be used
+ * to determine the maximum size of files that will be precached.
+ *
+ * Defaults to 2MB.
+ * @param {RegExp} [input.dontCacheBustUrlsMatching] Assets that match this
+ * regex will not have their revision details included in the precache. This
+ * is useful for assets that have revisioning details in the filename.
+ * @return {Promise} Resolves once the service worker has been generated
+ * with a precache list.
+ *
+ * @example <caption>Generate a service worker with precaching support.
+ * </caption>
  * const swBuild = require('workbox-build');
  *
  * swBuild.generateSW({
- *   globDirectory: './build/',
  *   swDest: './build/sw.js',
+ *   globDirectory: './build/',
  *   staticFileGlobs: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   templatedUrls: {
@@ -20,54 +85,6 @@ const errors = require('./errors');
  * .then(() => {
  *   console.log('Service worker generated.');
  * });
- *
- * This method will generate a working service worker with an inlined
- * file manifest.
- * @param {Object} input
- * @param {String} input.globDirectory The root of the files you wish to
- * be cached. This will also be the directory the service worker and library
- * files are written to.
- * @param {Array<String>} input.staticFileGlobs Patterns to glob for when
- * generating the build manifest.
- * @param {String|Array<String>} [input.globIgnores] Patterns to exclude when
- * generating the build manifest.
- * @param {String} input.swDest The name you wish to give to your
- * service worker file.
- * @param {Object<String,Array|String>} [input.templatedUrls]
- * If a URL is rendered/templated on the server, its contents may not depend on
- * a single file. This maps URLs to a list of file names, or to a string
- * value, that uniquely determines each URL's contents.
- * @param {String} [input.modifyUrlPrefix] An optional object of key value pairs
- * where the key will be replaced at the start of a url with the corresponding
- * value.
- * @param {String} [input.cacheId] An optional ID to be prepended to caches
- * used by workbox-build. This is primarily useful for local development where
- * multiple sites may be served from `http://localhost`.
- * @param {Boolean} [input.handleFetch] Stops the generated service worker
- * from handling fetch events, i.e. everything goes to the network.
- * (Defaults to true.)
- * @param {Boolean} [input.skipWaiting] An optional boolean that indicates if
- * the new service worker should activate immediately (Defaults to false).
- * @param {Boolean} [input.clientsClaim] An optional boolean that indicates if
- * the new service worker should claim current pages (Defaults to false).
- * @param {string} [input.directoryIndex] An optional string that will
- * append this string to urls ending with '/' (Defaults to 'index.html').
- * @param {number} [input.maximumFileSizeToCacheInBytes] An optional number to
- * define the maximum file size to consider whether the file should be
- * precached. (Defaults to 2MB).
- * @param {RegExp} [input.dontCacheBustUrlsMatching] An optional regex that will
- * return a URL string and exclude the revision details for urls matching this
- * regex. Useful if you have assets with file revisions in the URL.
- * @param {string} [input.navigateFallback] An optional string that will
- * attempt to serve the response for the URL defined as this option from cache.
- * @param {Array<Regexp>} [input.navigateFallbackWhitelist] An optional Array
- * of regexs to restrict which URL's use the navigateFallback cached response.
- * @param {Array<Object>} [input.runtimeCaching] An optional Array
- * of objects to define run time caching strategies.
- * @param {Array<RegExp>} [input.ignoreUrlParametersMatching] An array of
- * regex's to remove search params when looking for a cache match.
- * @return {Promise} Resolves once the service worker has been generated
- * with a precache list.
  *
  * @memberof module:workbox-build
  */
