@@ -114,7 +114,7 @@ class SWCli {
     .then(() => {
       const requiredFields = [
         'globDirectory',
-        'staticFileGlobs',
+        'globPatterns',
         'swDest',
       ];
 
@@ -167,11 +167,11 @@ class SWCli {
       }
     })
     .then(() => {
-      if (!config.staticFileGlobs &&
-        requiredFields.indexOf('staticFileGlobs') !== -1) {
+      if (!config.globPatterns &&
+        requiredFields.indexOf('globPatterns') !== -1) {
         return askForExtensionsToCache(config.globDirectory)
         .then((extensionsToCache) => {
-          config.staticFileGlobs = [
+          config.globPatterns = [
             generateGlobPattern(extensionsToCache),
           ];
         });
@@ -234,7 +234,7 @@ class SWCli {
         'swSrc',
         'swDest',
         'globDirectory',
-        'staticFileGlobs',
+        'globPatterns',
       ];
 
       let askQuestions = false;

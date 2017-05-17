@@ -4,7 +4,7 @@ describe('CLI Flags', function() {
   it('should merge config and override with flag input', function() {
     const configFile = {
       globDirectory: 'build/',
-      staticFileGlobs: [
+      globPatterns: [
         '**/*.{js,txt}',
       ],
       swDest: 'build/sw.js',

@@ -12,12 +12,12 @@ const errors = require('./errors');
  * @param {String} input.swDest The file path and name you wish to writh the
  * service worker file to.
  * @param {String} input.globDirectory The directory you wish to run the
- * `staticFileGlobs` against.
- * @param {Array<String>} input.staticFileGlobs Files matching against any of
+ * `globPatterns` against.
+ * @param {Array<String>} input.globPatterns Files matching against any of
  * these glob patterns will be included in the file manifest.
  * @param {String|Array<String>} [input.globIgnores] Files matching against any
  * of these glob patterns will be excluded from the file manifest, even if the
- * file matches against a `staticFileGlobs` pattern.
+ * file matches against a `globPatterns` pattern.
  * @param {Object<String,Array|String>} [input.templatedUrls]
  * If a URL is rendered with templates on the server, its contents may
  * depend on multiple files. This maps URLs to an array of file names, or to a
@@ -76,7 +76,7 @@ const errors = require('./errors');
  * swBuild.generateSW({
  *   swDest: './build/sw.js',
  *   globDirectory: './build/',
- *   staticFileGlobs: ['**\/*.{html,js,css}'],
+ *   globPatterns: ['**\/*.{html,js,css}'],
  *   globIgnores: ['admin.html'],
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],

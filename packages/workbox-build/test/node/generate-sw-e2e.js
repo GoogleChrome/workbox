@@ -50,7 +50,7 @@ describe('Generate SW End-to-End Tests', function() {
       return swBuild.generateSW({
         globDirectory: tmpDirectory,
         swDest,
-        staticFileGlobs: [`**\/*.{${FILE_EXTENSIONS.join(',')}}`],
+        globPatterns: [`**\/*.{${FILE_EXTENSIONS.join(',')}}`],
         cacheId: 'example-cache-id',
         modifyUrlPrefix,
       });
