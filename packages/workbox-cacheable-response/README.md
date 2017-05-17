@@ -1,6 +1,6 @@
 # workbox-cacheable-response
 
-This library takes a Response object and determines whether it's cacheable,
+This library takes a Response object and determines whether it's cacheable
 based on a specific configuration.
 
 ## Installation
