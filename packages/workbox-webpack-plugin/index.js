@@ -2,6 +2,7 @@ const swBuild = require('workbox-build');
 
 /**
  * Use the instance of this in the plugins array of the webpack config.
+ *
  * @example
  * const WorkboxBuildWebpackPlugin = require('workbox-webpack-plugin');
  * .
@@ -16,24 +17,23 @@ const swBuild = require('workbox-build');
  *     filename: '[name].js',
  *   },
  *   plugins: [
- *   	new WorkboxBuildWebpackPlugin({
+ *    new WorkboxBuildWebpackPlugin({
  *      globDirectory: './build/',
  *      globPatterns: ['**\/*.{html,js,css}'],
  *      globIgnores: ['admin.html'],
  *      swSrc: './src/sw.js',
  *      swDest: './build/sw.js',
- *   	});
+ *     });
  *   ]
  * }
  *
- * @class WorkboxBuildWebpackPlugin
+ * @module workbox-webpack-plugin
  */
 class WorkboxBuildWebpackPlugin {
   /**
    * Creates an instance of WorkboxBuildWebpackPlugin.
    *
-   * @param {Object} [config] all the options as passed to `swbuild`
-   * @memberOf WorkboxBuildWebpackPlugin
+   * @param {Object} [config] All the options as passed to `workbox-build`.
    */
   constructor(config) {
     this._config = config || {};
@@ -58,9 +58,8 @@ class WorkboxBuildWebpackPlugin {
   }
 
   /**
+   * @private
    * @param {Object} [compiler] default compiler object passed from webpack
-   *
-   * @memberOf WorkboxBuildWebpackPlugin
    */
   apply(compiler) {
     compiler.plugin('after-emit', (compilation, callback) => {

@@ -8,13 +8,13 @@ const broadcastMeta = 'SW_BACKGROUND_SYNC_QUEUE';
 const allQueuesPlaceholder = 'QUEUES';
 const replayAllQueuesTag = 'SW_BACKGROUND_QUEUE_TAG_REPLAY';
 export {
-	maxAge,
-	defaultDBName,
-	broadcastMessageAddedType,
-	broadcastMessageFailedType,
-	defaultQueueName,
-	tagNamePrefix,
-	broadcastMeta,
-	allQueuesPlaceholder,
-	replayAllQueuesTag,
+  maxAge,
+  defaultDBName,
+  broadcastMessageAddedType,
+  broadcastMessageFailedType,
+  defaultQueueName,
+  tagNamePrefix,
+  broadcastMeta,
+  allQueuesPlaceholder,
+  replayAllQueuesTag,
 };

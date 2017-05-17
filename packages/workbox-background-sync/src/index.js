@@ -19,8 +19,8 @@
  * when the network state has changed.
  *
  * The main use of this module will be instantiating a new
- * `Queue`/`QueuePlugin` and passing it to a
- * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},
+ * [QueuePlugin]{@link module:workbox-background-sync.QueuePlugin} and passing
+ * it to a {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},
  * as shown in the first example below.
  *
  * @example <caption>Using the QueuePlugin class in a service worker.</caption>
@@ -38,14 +38,12 @@
  * const router = new workbox.routing.Router();
  * router.registerRoute({route});
  *
- * **Install:** `npm install --save-dev workbox-background-sync`
- *
  * @module workbox-background-sync
  */
 import Queue from './lib/background-sync-queue';
 import QueuePlugin from './lib/background-sync-queue-plugin';
 
 export {
-	Queue,
-	QueuePlugin,
+  Queue,
+  QueuePlugin,
 };

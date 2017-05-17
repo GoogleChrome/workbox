@@ -17,23 +17,23 @@
 'use strict';
 
 describe('broadcast manager test', () => {
-	const broadcastManager = workbox.backgroundSync.test.BroadcastManager;
+  const broadcastManager = workbox.backgroundSync.test.BroadcastManager;
 
   it('check broadcast', function(done) {
-		this.timeout(100);
-		let msgRead = false;
+    this.timeout(100);
+    let msgRead = false;
     const channelName = 'CHANNEL';
-		const testBroadcastChannel = new BroadcastChannel(channelName);
-		const testReceiverChannel = new BroadcastChannel(channelName);
-		testReceiverChannel.onmessage = function() {
-			msgRead = true;
-			chai.assert.equal(msgRead, true);
-			done();
-		};
-		broadcastManager.broadcastMessage({
-			broadcastChannel: testBroadcastChannel,
-			type: 'SUCCESS',
-			url: 'http://google.com',
-		});
-	});
+    const testBroadcastChannel = new BroadcastChannel(channelName);
+    const testReceiverChannel = new BroadcastChannel(channelName);
+    testReceiverChannel.onmessage = function() {
+      msgRead = true;
+      chai.assert.equal(msgRead, true);
+      done();
+    };
+    broadcastManager.broadcastMessage({
+      broadcastChannel: testBroadcastChannel,
+      type: 'SUCCESS',
+      url: 'http://google.com',
+    });
+  });
 });
