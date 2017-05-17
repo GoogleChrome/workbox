@@ -3,7 +3,7 @@ import {RequestWrapper} from '../../../../workbox-runtime-caching/src/index';
 /**
  * This class handles the shared logic for caching revisioned and unrevisioned
  * assets.
- * @private
+ *
  * @memberof module:workbox-precaching
  */
 class BaseCacheManager {
@@ -54,8 +54,8 @@ class BaseCacheManager {
   }
 
   /**
-   * Gives access to the cache name used by thie caching manager.
-   * @return {String} The cache name used for this manager.
+   * Gives access to the cache name used by this caching manager.
+   * @return {String} The cache name used by this manager.
    */
   getCacheName() {
     return this._requestWrapper.cacheName;
@@ -64,6 +64,7 @@ class BaseCacheManager {
   /**
    * Returns an array of fully qualified URL's that will be cached by this
    * cache manager.
+   *
    * @return {Array<String>} An array of URLs that will be cached.
    */
   getCachedUrls() {
@@ -106,11 +107,11 @@ class BaseCacheManager {
   }
 
   /**
-   * Manages the service worker install event and caches the revisioned
-   * assets.
+   * This method will go through each asset added to the cache list and
+   * fetch and update the cache for assets which have a new revision hash.
    *
    * @return {Promise} The promise resolves when all the desired assets are
-   * cached.
+   * cached and up -to-date.
    */
   async install() {
     if (this._entriesToCache.size === 0) {

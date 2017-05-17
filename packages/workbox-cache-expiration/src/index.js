@@ -19,12 +19,20 @@
  * A helper library that expires cached responses based on age or maximum
  * number of entries.
  *
- * **Install:** `npm install --save-dev workbox-cache-expiration`
+ * - Allowing a specific number of requests to be cached. This prevents
+ * a cache from continuously growing in size.
+ * - Define an expiration for request.
  *
- * This can be used to ensure that responses aren't used when they are stale
- * and that the cache size doesn't grow endlessly.
+ * This means stale requests aren't used and the cache size is kept under
+ * control.
  *
- * @example <caption>Used as an automatically invoked "plugin".</caption>
+ * Most developers will use this module by instantiating a new
+ * `CacheExpirationPlugin` and passing it to a
+ * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},
+ * as shown in the first example below.
+ *
+ * @example <caption>Using the CacheExpirationPlugin to enforce caching
+ * rules.</caption>
  *
  * // Add cache expiration plugin to `RequestWrapper`.
  * const requestWrapper = new workbox.runtimeCaching.RequestWrapper({

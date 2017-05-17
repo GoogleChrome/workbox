@@ -43,9 +43,11 @@ class CacheExpiration {
    * once certain criteria—max number of entries, age of entry, or both—is met.
    *
    * @param {Object} input
-   * @param {Number} [input.maxEntries] The maximum size of the cache. Entries
-   *        will be expired using a LRU policy once the cache reaches this size.
-   * @param {Number} [input.maxAgeSeconds] The maximum age for fresh entries.
+   * @param {Number} [input.maxEntries] The maximum number of entries to cache.
+   * Entries will be expired using a least recently used (LRU) policy once
+   * the cache reaches this threshold.
+   * @param {Number} [input.maxAgeSeconds] The maximum age of an entry before
+   * it's treated as staled and removed.
    */
   constructor({maxEntries, maxAgeSeconds} = {}) {
     if (!(maxEntries || maxAgeSeconds)) {
@@ -120,18 +122,23 @@ class CacheExpiration {
   }
 
   /**
-   * Checks whether a `Response` is fresh, based on the `Response`'s
-   * `Date` header and the configured `maxAgeSeconds`.
+   * Checks whether a `Response` is "fresh", based on the `Response's`
+   * `Date` header and the `maxAgeSeconds` parameter passed into the
+   * constructor.
    *
    * If `maxAgeSeconds` or the `Date` header is not set then it will
-   * default to returning `true`.
+   * default to returning `true`, i.e. the response is still fresh and should
+   * be used.
    *
    * @param {Object} input
    * @param {Response} input.cachedResponse The `Response` object that's been
    *        read from a cache and whose freshness should be checked.
-   * @param {Number} [input.now] A timestamp. Defaults to the current time.
-   * @return {boolean} Either the `true`, if it's fresh, or `false` if the
-   *          `Response` is older than `maxAgeSeconds`.
+   * @param {Number} [input.now] A timestamp.
+   *
+   * Defaults to the current time.
+   * @return {boolean} Either `true` if the response is fresh, or `false` if the
+   * `Response` is older than `maxAgeSeconds` and should no longer be
+   * used.
    *
    * @example
    * expirationPlugin.isResponseFresh({
@@ -167,16 +174,24 @@ class CacheExpiration {
   /**
    * Updates the timestamp stored in IndexedDB for `url` to be equal to `now`.
    *
-   * @param {Object} input
-   * @param {string} input.cacheName Name of the cache the Responses belong to.
-   * @param {string} input.url The URL for the entry to update.
-   * @param {Number} [input.now] A timestamp. Defaults to the current time.
+   * When using this class directly (i.e. not via `CacheExpirationPlugin`),
+   * it's your responsibility to call `updateTimestap()` each time an entry is
+   * put into the cache. Otherwise, the `expireEntries()` method will not
+   * know which entries to remove.
    *
    * @example
    * expirationPlugin.updateTimestamp({
    *   cacheName: 'example-cache-name',
    *   url: '/example-url'
    * });
+   *
+   * @param {Object} input
+   * @param {string} input.cacheName Name of the cache the Responses belong to.
+   * @param {string} input.url The URL for the entry to update.
+   * @param {Number} [input.now] A timestamp.
+   *
+   * Defaults to the current time.
+   *
    */
   async updateTimestamp({cacheName, url, now} = {}) {
     assert.isType({url}, 'string');
@@ -197,21 +212,26 @@ class CacheExpiration {
   }
 
   /**
-   * Expires entries, both based on the the maximum age and the maximum number
-   * of entries, depending on how this instance is configured.
+   * Expires entries based on the the maximum age and the maximum number
+   * of entries defined in the constructor.
    *
-   * A mutex is used to ensure that there is only one copy of this asynchronous
-   * method running at a time. If another request to this method is made while
-   * it's already running, then the `now` timestamp associated with that request
-   * is saved and used to recursively trigger the method after the asynchronous
-   * operations are complete.
+   * To avoid concurrency issues, calls to this method when it's already running
+   * will result in the call begin re-run after the current execution has
+   * finished.
    *
    * @param {Object} input
-   * @param {string} input.cacheName Name of the cache the Responses belong to.
-   * @param {Number} [input.now] A timestamp. Defaults to the current time.
-   * @return {Promise} Resolves when the cache expiration has been performed.
+   * @param {string} input.cacheName Name of the cache to review and expire
+   * entries for.
+   * @param {Number} [input.now] A timestamp to treat as now. This is largely
+   * only useful for testing purposes.
+   *
+   * Defaults to the current time.
+   * @return {Promise} Resolves when the cache expiration has been performed. If
+   * the function is currently executing the Promise will resolve immediately.
    *
    * @example
+   * // Assume that entries have been added to 'example-cache-name', and that
+   * // updateTimestamp() was called after each entry was added.
    * cacheExpiration.expireEntries({
    *   cacheName: 'example-cache-name'
    * });

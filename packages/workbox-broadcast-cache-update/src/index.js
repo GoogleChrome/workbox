@@ -20,7 +20,7 @@
  * [Broadcast Channel API](https://developers.google.com/web/updates/2016/09/broadcastchannel)
  * to announce when two Response objects differ.
  *
- * Most develpers will use this module will by instantiating a new
+ * Most developers will use this module by instantiating a new
  * `BroadcastCacheUpdatePlugin` and passing it to a
  * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},
  * as shown in the first example below.
