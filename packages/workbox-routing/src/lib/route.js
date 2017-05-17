@@ -51,9 +51,10 @@ import {defaultMethod, validMethods} from './constants';
  * @param {Object} input
  * @param {URL} input.url The request's URL.
  * @param {FetchEvent} input.event The event that triggered the `fetch` handler.
- * @param {Array<Object>} input.params Parameters returned
+ * @param {Object} [input.params] Parameters returned
  * the Route's [match callback]{@link
- *   module:workbox-routing.Route~matchCallback} function.
+ *   module:workbox-routing.Route~matchCallback} function. This will be
+ * undefined if nothing was returned.
  * @return {Promise<Response>} The response that will fulfill the request.
  * @memberof module:workbox-routing
  */
