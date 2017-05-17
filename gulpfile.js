@@ -15,7 +15,6 @@
 
 /* eslint-disable no-console, valid-jsdoc */
 
-const gulp = require('gulp');
 const minimist = require('minimist');
 
 const options = minimist(process.argv.slice(2));
