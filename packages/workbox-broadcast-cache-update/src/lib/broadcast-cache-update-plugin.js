@@ -30,7 +30,8 @@ import assert from '../../../../lib/assert';
  *
  * If you would like to use this functionality outside of the `RequestWrapper`
  * context, please use the
- * {@link module:workbox-broadcast-cache-update.BroadcastCacheUpdate|BroadcastCacheUpdate}
+ * [BroadcastCacheUpdate]{@link
+ *  module:workbox-broadcast-cache-update.BroadcastCacheUpdate}
  * class directly.
  *
  * @example <caption>Add a BroadcastCacheUpdatePlugin to a `RequestWrapper` to

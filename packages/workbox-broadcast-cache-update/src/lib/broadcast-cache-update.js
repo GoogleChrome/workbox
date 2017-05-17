@@ -32,7 +32,8 @@ import {defaultHeadersToCheck, defaultSource} from './constants';
  *
  * If you'd like to use this functionality but are already using `workbox-sw` or
  * `workbox-runtime-caching`, please see use the
- * {@link module:workbox-broadcast-cache-update.BroadcastCacheUpdatePlugin|BroadcastCacheUpdatePlugin}
+ * [BroadcastCacheUpdatePlugin]{@link
+ *  module:workbox-broadcast-cache-update.BroadcastCacheUpdatePlugin}
  * for a easy integration.
  *
  * @example <caption>Using BroadcastCacheUpdate to compare a cached and fetched
