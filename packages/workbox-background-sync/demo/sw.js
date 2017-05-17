@@ -1,9 +1,8 @@
 /* global workbox*/
 importScripts(
-  '../build/importScripts/workbox-background-sync.dev.v0.0.1.js',
-  '../../workbox-routing/build/importScripts/workbox-routing.dev.v0.0.1.js',
-  '../../workbox-runtime-caching/build/importScripts/'
-    + 'workbox-runtime-caching.dev.v0.0.1.js'
+  '/__test/bundle/workbox-background-sync/',
+  '/__test/bundle/workbox-routing/',
+  '/__test/bundle/workbox-runtime-caching/',
 );
 
 // Have the service worker take control as soon as possible.
