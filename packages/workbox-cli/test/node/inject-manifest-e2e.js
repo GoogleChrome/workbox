@@ -23,7 +23,7 @@ describe('Generate SW End-to-End Tests', function() {
       .catch((error) => console.log(error));
   });
 
-  it('should be able to generate a service for example-1 with CLI', function() {
+  it('should be able to generate a service for example-2 with CLI', function() {
     this.timeout(120 * 1000);
 
     process.chdir(tmpDirectory);
@@ -39,31 +39,31 @@ describe('Generate SW End-to-End Tests', function() {
     const SWCli = proxyquire('../../build/index', {
       './lib/questions/ask-root-of-web-app': () => {
         if (enforceNoQuestions) {
-          return Promise.reject('Injected Error - No Questions Expected');
+          return Promise.reject(Error('Injected Error - No Questions Expected'));
         }
         return Promise.resolve(tmpDirectory);
       },
       './lib/questions/ask-sw-src': () => {
         if (enforceNoQuestions) {
-          return Promise.reject('Injected Error - No Questions Expected');
+          return Promise.reject(Error('Injected Error - No Questions Expected'));
         }
         return Promise.resolve(swSrc);
       },
       './lib/questions/ask-sw-dest': () => {
         if (enforceNoQuestions) {
-          return Promise.reject('Injected Error - No Questions Expected');
+          return Promise.reject(Error('Injected Error - No Questions Expected'));
         }
         return Promise.resolve(swDest);
       },
       './lib/questions/ask-save-config': () => {
         if (enforceNoQuestions) {
-          return Promise.reject('Injected Error - No Questions Expected');
+          return Promise.reject(Error('Injected Error - No Questions Expected'));
         }
         return Promise.resolve(true);
       },
       './lib/questions/ask-extensions-to-cache': () => {
         if (enforceNoQuestions) {
-          return Promise.reject('Injected Error - No Questions Expected');
+          return Promise.reject(Error('Injected Error - No Questions Expected'));
         }
         return Promise.resolve(FILE_EXTENSIONS);
       },

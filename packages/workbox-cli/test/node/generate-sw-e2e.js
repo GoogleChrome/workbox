@@ -50,25 +50,25 @@ describe('Generate SW End-to-End Tests', function() {
     const SWCli = proxyquire('../../build/index', {
       './lib/questions/ask-root-of-web-app': () => {
         if (enforceNoQuestions) {
-          return Promise.reject('Injected Error - No Questions Expected');
+          return Promise.reject(Error('Injected Error - No Questions Expected'));
         }
         return Promise.resolve(tmpDirectory);
       },
       './lib/questions/ask-sw-dest': () => {
         if (enforceNoQuestions) {
-          return Promise.reject('Injected Error - No Questions Expected');
+          return Promise.reject(Error('Injected Error - No Questions Expected'));
         }
         return Promise.resolve(swDest);
       },
       './lib/questions/ask-save-config': () => {
         if (enforceNoQuestions) {
-          return Promise.reject('Injected Error - No Questions Expected');
+          return Promise.reject(Error('Injected Error - No Questions Expected'));
         }
         return Promise.resolve(true);
       },
       './lib/questions/ask-extensions-to-cache': () => {
         if (enforceNoQuestions) {
-          return Promise.reject('Injected Error - No Questions Expected');
+          return Promise.reject(Error('Injected Error - No Questions Expected'));
         }
         return Promise.resolve(FILE_EXTENSIONS);
       },
