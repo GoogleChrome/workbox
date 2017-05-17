@@ -28,8 +28,8 @@ import {
   getDefaultCacheName} from '../../../workbox-runtime-caching/src/index.js';
 
 /**
- * A high level library to make it as easy as possible to precache assets
- * efficiently and define run time caching strategies.
+ * This class uses the Workbox libraries to create a clean and easy API for
+ * common caching and serving needs.
  *
  * @memberof module:workbox-sw
  */
@@ -40,20 +40,27 @@ class WorkboxSW {
    * @param {string} [input.cacheId] Defining a cacheId is useful to ensure
    * uniqueness across cache names. Useful if you have multiple sites served
    * over localhost.
+   * @param {boolean} [input.skipWaiting] To activate the service worker as
+   * soon as the install step has finished set this value to true.
+   *
+   * Defaults to false.
    * @param {boolean} [input.clientsClaim] To claim currently open clients set
-   * this value to true. (Defaults to false).
+   * this value to true.
+   *
+   * Defaults to false.
    * @param  {String} [input.directoryIndex]  The directoryIndex will
    * check cache entries for a URLs ending with '/' to see if there is a hit
    * when appending the directoryIndex (i.e. '/index.html').
+   * @param {Array<RegExp>} [input.ignoreUrlParametersMatching] An array of
+   * regex's to remove search params when looking for a cache match.
    * @param {string} [input.precacheChannelName] This value will be used as
    * the `channelName` to construct a {@link BroadcastCacheUpdate} plugin. The
    * plugin sends a message whenever a precached URL is updated. To disable this
    * plugin, set `precacheChannelName` to an empty string.
-   * (Defaults to `'precache-updates'`)
-   * @param {Array<RegExp>} [input.ignoreUrlParametersMatching] An array of
-   * regex's to remove search params when looking for a cache match.
+   *
+   * Defaults to `'precache-updates'`
    */
-  constructor({cacheId, clientsClaim, handleFetch,
+  constructor({cacheId, skipWaiting, clientsClaim, handleFetch,
                directoryIndex = 'index.html',
                precacheChannelName = 'precache-updates',
                ignoreUrlParametersMatching = [/^utm_/]} = {}) {
@@ -85,6 +92,9 @@ class WorkboxSW {
 
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
       throw ErrorFactory.createError('bad-cache-id');
+    }
+    if (skipWaiting && (typeof skipWaiting !== 'boolean')) {
+      throw ErrorFactory.createError('bad-skip-waiting');
     }
     if (clientsClaim && (typeof clientsClaim !== 'boolean')) {
       throw ErrorFactory.createError('bad-clients-claim');
@@ -121,7 +131,7 @@ class WorkboxSW {
       this._revisionedCacheManager.getCacheName(),
       handleFetch
     );
-    this._registerInstallActivateEvents(clientsClaim);
+    this._registerInstallActivateEvents(skipWaiting, clientsClaim);
     this._registerDefaultRoutes(ignoreUrlParametersMatching, directoryIndex);
   }
 
@@ -190,61 +200,6 @@ class WorkboxSW {
   }
 
   /**
-   * RuntimeStrategyOptions is just a JavaScript object, but the structure
-   * explains the options for runtime strategies used in workbox-sw.
-   *
-   * See the example of how this can be used with the `cacheFirst()` caching
-   * strategy.
-   *
-   * @example
-   * const workboxSW = new WorkboxSW();
-   * const cacheFirstStrategy = workboxSW.strategies.cacheFirst({
-   *   cacheName: 'example-cache',
-   *   cacheExpiration: {
-   *     maxEntries: 10,
-   *     maxAgeSeconds: 7 * 24 * 60 * 60
-   *   },
-   *   broadcastCacheUpdate: {
-   *     channelName: 'example-channel-name'
-   *   },
-   *   cacheableResponse: {
-   *     statuses: [0, 200, 404],
-   *     headers: {
-   *       'Example-Header-1': 'Header-Value-1',
-   *       'Example-Header-2': 'Header-Value-2'
-   *     }
-   *   }
-   *   plugins: [
-   *     // Additional Plugins
-   *   ]
-   * });
-   *
-   * @typedef {Object} RuntimeStrategyOptions
-   * @property {String} cacheName Name of cache to use
-   * for caching (both lookup and updating).
-   * @property {Object} cacheExpiration Defining this
-   * object will add a cache expiration plugins to this strategy.
-   * @property {Number} cacheExpiration.maxEntries
-   * The maximum number of entries to store in a cache.
-   * @property {Number} cacheExpiration.maxAgeSeconds
-   * The maximum lifetime of a request to stay in the cache before it's removed.
-   * @property {Object} broadcastCacheUpdate Defining
-   * this object will add a broadcast cache update plugin.
-   * @property {String} broadcastCacheUpdate.channelName
-   * The name of the broadcast channel to dispatch messages on.
-   * @property {Array<plugins>} plugins For
-   * any additional plugins you wish to add, simply include them in this
-   * array.
-   * @property {Object} cacheableResponse Specifies types of responses to cache
-   * by status codes, headers, or both.
-   * @property {Array<Number>} cacheableResponse.statuses An array of status
-   * codes to cache.
-   * @property {Array<Object>} cacheableResponse.headers An array of
-   * header-value paris for HTTP headers to cache. See the example, above.
-   * @memberof module:workbox-sw.WorkboxSW
-   */
-
-  /**
    * The supported caching strategies shipped with workbox-sw are provided via
    * the `strategies` object.
    * {@link module:workbox-sw.Strategies|See Strategies for a complete list}.
@@ -286,9 +241,11 @@ class WorkboxSW {
   /**
    * This method will register listeners for the install and activate events.
    * @private
+   * @param {boolean} skipWaiting Whether to activate service worker
+   * immediately.
    * @param {boolean} clientsClaim Whether to claim clients in activate or not.
    */
-  _registerInstallActivateEvents(clientsClaim) {
+  _registerInstallActivateEvents(skipWaiting, clientsClaim) {
     self.addEventListener('install', (event) => {
       const cachedUrls = this._revisionedCacheManager.getCachedUrls();
       if (cachedUrls.length > 0) {
@@ -300,7 +257,14 @@ class WorkboxSW {
         });
       }
 
-      event.waitUntil(this._revisionedCacheManager.install());
+      event.waitUntil(
+        this._revisionedCacheManager.install()
+        .then(() => {
+          if (skipWaiting) {
+            return self.skipWaiting();
+          }
+        })
+      );
     });
 
     self.addEventListener('activate', (event) => {
@@ -401,6 +365,7 @@ class WorkboxSW {
   }
 
   /**
+   * @private
    * @param {string} originalUrl The original url to remove the search params.
    * @param  {Array<RegExp>} ignoreUrlParametersMatching An array of regex's to
    * define which search parameters should be removed before looking for cache
