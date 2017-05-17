@@ -25,7 +25,8 @@ import assert from '../../../../lib/assert';
  * is used by the `workbox-sw` and `workbox-runtime-caching` modules.
  *
  * If you would like to use this functionality outside of the `RequestWrapper`
- * context, please use the `CacheExpiration` class directly.
+ * context, please use the [CacheExpiration]{@link
+ *  module:workbox-cache-expiration.CacheExpiration} class directly.
  *
  * @example
  * const plugin = new workbox.cacheExpiration.CacheExpirationPlugin({

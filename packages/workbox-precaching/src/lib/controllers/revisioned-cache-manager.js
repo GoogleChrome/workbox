@@ -10,21 +10,25 @@ import assert from '../../../../../lib/assert';
 import logHelper from '../../../../../lib/log-helper';
 
 /**
- * This class extends a lot of the internal methods from BaseCacheManager
- * to manage caching of revisioned assets.
+ * You can instantiate this class to add requests to a precache list and
+ * eventually install the assets by calling [install()]{@link
+ * module:workbox-precaching.BaseCacheManager#install} and to remove
+ * old entries call [cleanup()]{@link
+ *  module:workbox-precaching.RevisionedCacheManager#cleanup}.
  *
- * @private
  * @memberof module:workbox-precaching
- * @extends {module:workbox-precaching.BaseCacheManager}
+ * @extends module:workbox-precaching.BaseCacheManager
  */
 class RevisionedCacheManager extends BaseCacheManager {
   /**
-   * Constructor for RevisionedCacheManager
+   * Constructs a new RevisionedCacheManager to handle caching of revisioned
+   * assets only.
+   *
    * @param {Object} input
-   * @param {String} [input.cacheName] Define the cache used to stash these
-   * entries.
-   * @param {String} [input.cacheId] The cacheId can be used to ensure that
-   * multiple projects sharing `http://localhost` have unique cache names.
+   * @param {String} [input.cacheName] The cache to be used for precaching.
+   * @param {String} [input.cacheId] The cacheId is prepended to the
+   * cache name. This is useful if you have multiple projects sharing
+   * the same `http://localhost` origin and want unique cache names.
    * @param {Array<Object>} [input.plugins] Any plugins that should be
    * invoked by the underlying `RequestWrapper`.
    */
@@ -37,12 +41,27 @@ class RevisionedCacheManager extends BaseCacheManager {
   }
 
   /**
-   * This method will add the entries to the install list.
-   * This will manage duplicate entries and perform the caching during
-   * the install step.
+   * This method will add the supplied entries to the install list and
+   * can be called multiple times.
+   *
+   * The `revisionedFiles` parameter of the input should contain an array
+   * of objects or strings.
+   *
+   * Objects in this array should have a `url` and `revision` parameter where
+   * the revision is a hash, unique to the files contents, which changes
+   * whenever the file is updated. (See our [getting started guide to learn
+   * how to automate this](/#get-started)).
+   *
+   * Strings should be URL's that contain revisioning information
+   * i.e. `/styles/main.abcd.css` instead of `/styles/main.css`. If you supply
+   * a URL which *isn't* revisioned, the `install()` step will **never** update
+   * the precached asset.
+   *
+   * @param {Object} input
+   * @param {Array<String|Object>} input.revisionedFiles This should be an
+   * array of either objects or strings.
    *
    * @example
-   *
    * revisionedManager.addToCacheList({
    *   revisionedFiles: [
    *     '/styles/hello.1234.css',
@@ -52,9 +71,6 @@ class RevisionedCacheManager extends BaseCacheManager {
    *     }
    *   ]
    * });
-   *
-   * @param {Array<String|Object>} rawEntries A raw entry that can be
-   * parsed into a BaseCacheEntry.
    */
   addToCacheList({revisionedFiles} = {}) {
     assert.isInstance({revisionedFiles}, Array);
@@ -179,10 +195,12 @@ class RevisionedCacheManager extends BaseCacheManager {
   }
 
   /**
-   * Compare the URL's and determines which assets are no longer required
-   * in the cache.
+   * This method will compare the currently cached requests's and determine
+   * which requests are no longer in the cache list and can be removed from the
+   * cache.
    *
-   * This should be called in the service worker activate event.
+   * This should be called in a service worker's activate event to avoid
+   * removing requests that are still be used by currently open pages.
    *
    * @return {Promise} Promise that resolves once the cache entries have been
    * cleaned.

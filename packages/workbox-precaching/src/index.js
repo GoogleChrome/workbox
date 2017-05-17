@@ -22,11 +22,14 @@
  * [`workbox-sw`]{@link module:workbox-sw}
  * library's `precache()` method rather than using this directly.
  *
- * **Install:** `npm install --save-dev workbox-precaching`
+ * When given a list of URL's to precache, this module will go through
+ * each URL and check if the URL is already cached and, if it is, compare
+ * the hash to see if revision hash has changed.
  *
- * The revisioned caching will cache bust requests where appropriate and
- * only cache assets that have a changed revision asset compared to
- * the currently cached value.
+ * If the revision is old or the entry isn't cached, this library will make
+ * a request for the asset and cache it, ensuring the the browsers HTTP cache
+ * is skipped by using `Request.cache = 'reload'` or adding a cache busting
+ * search parameter to the request.
  *
  * @example
  * importScripts('/<Path to Module>/build/workbox-precaching.min.js');
@@ -42,28 +45,16 @@
  *   ],
  * });
  *
- * const unrevCacheManager = new workbox.precaching.UnrevisionedCacheManager();
- * unrevCacheManager.addToCacheList({
- *   unrevisionedFiles: [
- *     '/',
- *     '/images/logo.png'
- *   ]
- * });
- *
  * self.addEventListener('install', (event) => {
- *   const promiseChain = Promise.all([
- *     revCacheManager.install(),
- *     unrevCacheManager.install(),
- *   ]);
- *   event.waitUntil(promiseChain);
+ *   event.waitUntil(
+ *     revCacheManager.install()
+ *   );
  * });
  *
  * self.addEventListener('activate', (event) => {
- *   const promiseChain = Promise.all([
- *     revCacheManager.cleanup(),
- *     unrevCacheManager.cleanup()
- *   ]);
- *   event.waitUntil(promiseChain);
+ *   event.waitUntil(
+ *     revCacheManager.cleanup()
+ *   );
  * });
  *
  * @module workbox-precaching
@@ -71,8 +62,6 @@
 import ErrorFactory from './lib/error-factory';
 import RevisionedCacheManager from
   './lib/controllers/revisioned-cache-manager.js';
-import UnrevisionedCacheManager from
-  './lib/controllers/unrevisioned-cache-manager.js';
 
 import environment from '../../../lib/environment.js';
 
@@ -83,5 +72,4 @@ if (!environment.isServiceWorkerGlobalScope()) {
 
 export {
   RevisionedCacheManager,
-  UnrevisionedCacheManager,
 };

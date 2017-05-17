@@ -30,7 +30,7 @@ describe('Test Failing Cache Behavior', function() {
     });
   });
 
-  it('should fail to install unrevisioned with 404 cache request', function() {
+  it.skip('should fail to install unrevisioned with 404 cache request', function() {
     const unrevisionedCacheManager = new workbox.precaching.UnrevisionedCacheManager();
     unrevisionedCacheManager.addToCacheList({
       unrevisionedFiles: [
@@ -60,7 +60,7 @@ describe('Test Failing Cache Behavior', function() {
     });
   });
 
-  it('should fail to cache unrevisioned opaque responses by default', function() {
+  it.skip('should fail to cache unrevisioned opaque responses by default', function() {
     const unrevisionedCacheManager = new workbox.precaching.UnrevisionedCacheManager();
     unrevisionedCacheManager.addToCacheList({
       unrevisionedFiles: workbox.__TEST_DATA['opaque'],
