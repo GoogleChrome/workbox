@@ -24,7 +24,7 @@ import {getResponse} from './response-manager';
  *	 	}
  * });
  *
- * @memberof module:queue
+ * @memberof module:workbox-background-sync
  */
 class Queue {
 	/**
