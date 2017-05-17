@@ -21,7 +21,8 @@ import {pluginCallbacks, getDefaultCacheName} from './constants';
 import cleanResponseCopy from './clean-response-copy';
 
 /**
- * This class is used by the various subclasses of `Handler` to configure the
+ * This class is used by the various subclasses of
+ * [Handler]{@link module:workbox-runtime-caching.Handler} to configure the
  * cache name and any desired plugins, which is to say classes that implement
  * request lifecycle callbacks.
  *

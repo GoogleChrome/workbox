@@ -19,18 +19,15 @@
  * A service worker helper library that implements various runtime caching
  * strategies.
  *
- * **Install:** `npm install --save-dev workbox-runtime-caching`
- *
  * You can learn more about each caching strategy on
  * {@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/|Jake Archibald's blog post}
  * which covers various ways of handling fetch events with a service worker.
  *
- * These strategies can be used as
- * {@link module:workbox-routing.RouteHandler|RouteHandlers}
- * that are automatically invoked by the lower-level
- * {@link module:workbox-routing.Router|workbox-routing Router}
- * or the higher-level {@link module:workbox-sw.Router|WorkboxSW.Router}
- * interfaces.
+ * These strategies can be used as the
+ * [handler parameter in the Route constructor]{@link
+ * module:workbox-routing.Route} or as the
+ * [handler parameter in workboxSW.router.registerRoute()]{@link
+ * module:workbox-sw.Router#registerRoute}.
  *
  * @module workbox-runtime-caching
  */
