@@ -18,4 +18,6 @@ module.exports = {
     'must be a string with at least one character.',
   'invalid-sw-src': 'The supplied service worker input file was invalid. It ' +
     'must be a string with at least one character.',
+  'invalid-config-file-flag': 'The --config-file flag refers to an invalid ' +
+    'or non-existent file.',
 };
