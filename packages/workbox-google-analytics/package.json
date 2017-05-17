@@ -1,6 +1,6 @@
 {
   "name": "workbox-google-analytics",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "A service worker helper library to retry offline Google Analytics requests when a connection is available.",
   "keywords": [
     "workbox",
@@ -25,5 +25,5 @@
   "files": [
     "build"
   ],
-  "main": "build/importScripts/workbox-google-analytics.prod.v0.0.3.js"
+  "main": "build/importScripts/workbox-google-analytics.prod.v1.0.0.js"
 }

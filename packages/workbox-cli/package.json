@@ -1,6 +1,6 @@
 {
   "name": "workbox-cli",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "A CLI tool to generate a service worker and a file manifest making use of the workbox-sw module.",
   "keywords": [
     "workbox",
@@ -35,6 +35,6 @@
     "lodash.template": "^4.4.0",
     "meow": "^3.7.0",
     "update-notifier": "^1.0.3",
-    "workbox-build": "^0.0.3"
+    "workbox-build": "^1.0.0"
   }
 }
