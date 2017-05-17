@@ -41,7 +41,7 @@ class WorkboxSW {
    * uniqueness across cache names. Useful if you have multiple sites served
    * over localhost.
    * @param {boolean} [input.skipWaiting] To activate the service worker as
-   * soon the install step has finished set this value to true.
+   * soon as the install step has finished set this value to true.
    *
    * Defaults to false.
    * @param {boolean} [input.clientsClaim] To claim currently open clients set
