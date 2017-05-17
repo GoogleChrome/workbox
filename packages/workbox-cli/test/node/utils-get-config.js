@@ -61,20 +61,24 @@ describe('Test Get Config', function() {
     });
   });
 
+  // process.cwd() needs to be evaluated inside the it() callback, so just
+  // define a function that will eventually return the value we want.
   const configFileTestCases = new Map([
     [null, () => path.join(process.cwd(), constants.defaultConfigName)],
     ['relative-path.js', () => path.join(process.cwd(), 'relative-path.js')],
     ['/absolute/path.js', () => '/absolute/path.js'],
   ]);
 
-  for (const [configFile, configPathGenerator] of configFileTestCases) {
+  for (const [configFile, configPathFunc] of configFileTestCases) {
     it(`should handle reading the JS config when the configFile parameter is ${configFile}`, function() {
       const data = {
         example: 'Hi.',
       };
 
       const proxyquireInput = {};
-      proxyquireInput[configPathGenerator()] = data;
+      // Generate the config path here, to use the right process.cwd() value.
+      const configPath = configPathFunc();
+      proxyquireInput[configPath] = data;
       const getConfig = proxyquire('../../src/lib/utils/get-config',
         proxyquireInput);
 
