@@ -18,7 +18,7 @@ const injectManifest = require('./lib/inject-manifest');
  * configurable options. See
  * [generateSW()]{@link module:workbox-build.generateSW}.
  * 1. Inject a manifest into an existing service worker. This allows you
- * to control your own servier worker while still taking advantage of
+ * to control your own service worker while still taking advantage of
  * [workboxSW.precache()]{@link module:workbox-sw.WorkboxSW#precache} logic.
  * See [injectManifest()]{@link module:workbox-build.injectManifest}.
  * 1. Generate a manifest file. This is useful if you want to read in the
