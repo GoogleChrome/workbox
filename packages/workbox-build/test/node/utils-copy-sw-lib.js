@@ -8,13 +8,13 @@ describe('Copy SW Lib', function() {
   it('should reject with an error when the copy fails', function() {
     this.timeout(5 * 1000);
 
-    const copySWLib = proxyquire('../../src/lib/utils/copy-workbox-sw', {
+    const copyWorkboxSW = proxyquire('../../src/lib/utils/copy-workbox-sw', {
       'fs-extra': {
         copy: () => Promise.reject(),
       },
     });
 
-    return copySWLib('fake-path/')
+    return copyWorkboxSW('fake-path/')
     .then(() => {
       throw new Error('Expected an error to be throw');
     })
@@ -28,23 +28,24 @@ describe('Copy SW Lib', function() {
   it('should resolve with the file name after the copy completes', function() {
     this.timeout(5 * 1000);
 
-    const copySWLib = proxyquire('../../src/lib/utils/copy-workbox-sw', {
+    const copyWorkboxSW = proxyquire('../../src/lib/utils/copy-workbox-sw', {
       'fs-extra': {
         copy: () => Promise.resolve(),
       },
     });
 
-    return copySWLib('fake-path/')
-    .then((swLibPath) => {
+    return copyWorkboxSW('fake-path/')
+    .then((workboxSWPath) => {
       let pathSep = path.sep;
       if (path.sep === '\\') {
         pathSep = '\\\\';
       }
       const regexPattern = new RegExp(
         `fake-path${pathSep}workbox-sw\.prod\.v\\d+\.\\d+\.\\d+\.js`);
-      if (!swLibPath.match(regexPattern)) {
+      if (!workboxSWPath.match(regexPattern)) {
         console.log('Regular expression: ' + regexPattern);
-        throw new Error('Unexpected result from copying workboxSW: ' + swLibPath);
+        throw new Error('Unexpected result from copying workboxSW: ' +
+          workboxSWPath);
       }
     });
   });

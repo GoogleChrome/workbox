@@ -29,7 +29,7 @@
  * {@link module:workbox-routing.RouteHandler|RouteHandlers}
  * that are automatically invoked by the lower-level
  * {@link module:workbox-routing.Router|workbox-routing Router}
- * or the higher-level {@link module:workbox-sw.Router|SWLib Router}
+ * or the higher-level {@link module:workbox-sw.Router|WorkboxSW.Router}
  * interfaces.
  *
  * @module workbox-runtime-caching

@@ -202,8 +202,8 @@ class SWCli {
   /**
    * This function should ask questions or use config/flags to read in a sw
    * and inject the manifest into the destination service worker.
-   * @param  {[type]} flags [description]
-   * @return {[type]}       [description]
+   * @param  {object} flags Flags from command line.
+   * @return {Promise} Resolves on
    */
   _injectManifest(flags) {
     let config = {};
