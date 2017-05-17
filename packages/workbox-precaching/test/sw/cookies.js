@@ -14,32 +14,32 @@ mocha.setup({
 describe('Test Cookies with Precache', function() {
   it('should cache asset with appropriate cookies with revisions asset', function() {
     const revManager = new workbox.precaching.RevisionedCacheManager();
-    const unrevManager = new workbox.precaching.UnrevisionedCacheManager();
+    // const unrevManager = new workbox.precaching.UnrevisionedCacheManager();
     revManager.addToCacheList({
       revisionedFiles: [
         `/__test/cookie/1/`,
       ],
     });
-    unrevManager.addToCacheList({
+    /** unrevManager.addToCacheList({
       unrevisionedFiles: [
         `/__test/cookie/2/`,
       ],
-    });
+    });**/
 
     return Promise.all([
       revManager.install(),
-      unrevManager.install(),
+      // unrevManager.install(),
     ])
     .then(() => {
       return Promise.all([
         revManager.cleanup(),
-        unrevManager.cleanup(),
+        // unrevManager.cleanup(),
       ]);
     })
     .then(() => {
       return Promise.all([
         caches.match(`/__test/cookie/1/`),
-        caches.match(`/__test/cookie/2/`),
+        // caches.match(`/__test/cookie/2/`),
       ]);
     })
     .then((responses) => {
