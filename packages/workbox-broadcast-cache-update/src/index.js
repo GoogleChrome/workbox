@@ -20,7 +20,7 @@
  * a caches entry is updated with a new response, allowing your web app
  * to listen for these updates and react to them.
  *
- * Most develpers will use this module will by instantiating a new
+ * Most developers will use this module by instantiating a new
  * `BroadcastCacheUpdatePlugin` and passing it to a
  * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},
  * as shown in the first example below.
