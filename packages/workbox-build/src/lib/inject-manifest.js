@@ -19,9 +19,7 @@ const errors = require('./errors');
  * @param {String} input.globDirectory The directory you wish to run the
  * `globPatterns` against.
  * @param {Array<String>} input.globPatterns Files matching against any of
- * these glob patterns will be included in the file manifest. (For compatibility
- * with `sw-precache`, [staticFileGlobs](https://github.com/GoogleChrome/sw-precache#staticfileglobs-arraystring)
- * is supported as an alias for this parameter.)
+ * these glob patterns will be included in the file manifest.
  * @param {String|Array<String>} [input.globIgnores] Files matching against any
  * of these glob patterns will be excluded from the file manifest, even if the
  * file matches against a `globPatterns` pattern.
