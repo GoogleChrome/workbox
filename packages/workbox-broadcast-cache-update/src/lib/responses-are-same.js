@@ -17,7 +17,7 @@ import ErrorFactory from './error-factory';
 import logHelper from '../../../../lib/log-helper.js';
 
 /**
- * Given two `Response`s, compares several header values to see if they are
+ * Given two `Response's`, compares several header values to see if they are
  * the same or not.
  *
  * @example
@@ -31,6 +31,7 @@ import logHelper from '../../../../lib/log-helper.js';
  *   ]
  * });
  *
+ * @private
  * @memberof module:workbox-broadcast-cache-update
  *
  * @param {Object} input
