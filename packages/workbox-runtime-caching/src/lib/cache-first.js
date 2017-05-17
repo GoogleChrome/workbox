@@ -22,7 +22,7 @@ import assert from '../../../../lib/assert';
  *
  * The important thing to note with this caching strategy is that once a
  * response is cached, it will not be updated. This is useful for assets
- * that are revisioned as it caches the asset long term and doesn't waste
+ * that are revisioned since it caches the asset long term and doesn't waste
  * the user's data.
  *
  * @example
@@ -37,7 +37,7 @@ import assert from '../../../../lib/assert';
  * router.registerRoute({route});
  *
  * @memberof module:workbox-runtime-caching
- * @extends Handler
+ * @extends module:workbox-runtime-caching.Handler
  */
 class CacheFirst extends Handler {
   /**
@@ -49,7 +49,8 @@ class CacheFirst extends Handler {
    * @param {FetchEvent} input.event The event that triggered the service
    *        worker's fetch handler.
    * @return {Promise.<Response>} The response, either from the cache,
-   *          or if that isn't available, from the network.
+   *          or if that isn't available, the request will be made on the
+   *          the network and the result will be cached for future use.
    */
   async handle({event} = {}) {
     assert.isInstance({event}, FetchEvent);

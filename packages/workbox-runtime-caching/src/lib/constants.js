@@ -18,24 +18,25 @@
  * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper} when
  * there's no name provided.
  *
- * It combines a constant prefix with the `registration.scope` value associated
- * with the current service worker, ensuring that multiple service workers used
- * on the same origin will have different default caches.
+ * It combines a constant prefix with the service worker `scope`, ensuring
+ * that multiple service workers used on the same origin will have
+ * different default caches.
  *
- * Calling this method without any parameters, this will return
+ * Calling this method without any parameters will return
  * `workbox-runtime-caching-<service worker scope>`.
  *
- * If you pass in a cacheId, it will prepend this, returning:
+ * If you pass in a cacheId, it will be prepended, returning:
  * `<cacheid>-workbox-runtime-caching-<service worker scope>`.
  *
- * @memberof module:workbox-runtime-caching
  * @param {Object} input
- * @param {string} input.cacheId This will be prepended to the default cache
+ * @param {string} [input.cacheId] This will be prepended to the default cache
  * name.
- * @return {string} returns the default cache name used provided these
- * parameters.
+ * @return {string} Returns the default cache name used based on optional
+ * inputs.
+ *
+ * @memberof module:workbox-runtime-caching
  */
-export const getDefaultCacheName = ({cacheId} = {}) => {
+const getDefaultCacheName = ({cacheId} = {}) => {
   let cacheName = `workbox-runtime-caching`;
   if (cacheId) {
     cacheName = `${cacheId}-${cacheName}`;
@@ -55,10 +56,16 @@ export const getDefaultCacheName = ({cacheId} = {}) => {
  * @type {Array.<string>}
  * @memberof module:workbox-runtime-caching
  */
-export const pluginCallbacks = [
+const pluginCallbacks = [
   'cacheDidUpdate',
   'cacheWillMatch',
   'cacheWillUpdate',
   'fetchDidFail',
   'requestWillFetch',
 ];
+
+
+export {
+  getDefaultCacheName,
+  pluginCallbacks,
+};
