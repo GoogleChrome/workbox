@@ -13,11 +13,6 @@
  limitations under the License.
 */
 
-A service worker helper library that uses the
- +[Broadcast Channel API](https://developers.google.com/web/updates/2016/09/broadcastchannel)
- +to announce when two Response objects differ.
-
-
 /**
  * # workbox-broadcast-cache-update
  *
