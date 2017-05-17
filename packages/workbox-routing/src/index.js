@@ -20,7 +20,7 @@
  *
  * **Install:** `npm install --save-dev workbox-routing`
  *
- * **Note:** A longer version of this example is available [here](../../examples/workbox-routing/index.html)
+ * **Note:** A longer version of this example is available [here](/examples/workbox-routing/index.html)
  *
  * @example <caption>Using the routing module to cache JSON files.</caption>
  *

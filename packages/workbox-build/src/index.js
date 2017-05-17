@@ -12,7 +12,8 @@ const injectManifest = require('./lib/inject-manifest');
  * It can also scaffold a full service worker implementation for you.
  *
  * While you can use this module directly, there are both
- * [command-line](../workbox-cli) and [Webpack](../workbox-webpack-plugin)
+ * [command-line](/how_tos/sw-cli) and
+ * [Webpack](https://www.npmjs.com/package/workbox-webpack-plugin)
  * wrappers.
  *
  * **Install:** `npm install --save-dev workbox-build`

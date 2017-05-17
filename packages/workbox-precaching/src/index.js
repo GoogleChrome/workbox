@@ -18,7 +18,7 @@
  *
  * A lover-level service worker library to precache a manifest of URLs.
  *
- * It's recommended that you use the higher-level [`workbox-sw`](../workbox-sw)
+ * It's recommended that you use the higher-level [`workbox-sw`]{@link module:workbox-sw}
  * library's `precache()` method rather than using this directly.
  *
  * **Install:** `npm install --save-dev workbox-precaching`
