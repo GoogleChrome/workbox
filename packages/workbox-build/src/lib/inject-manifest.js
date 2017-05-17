@@ -6,6 +6,40 @@ const getFileManifestEntries = require('./get-file-manifest-entries');
 const errors = require('./errors');
 
 /**
+ * This method will read an existing service worker file and replace an empty
+ * precache() call, like: `.precache([])`, and replace the array with
+ * an array of assets to precache. This allows the service worker
+ * to efficiently cache assets for offline use.
+ *
+ * @param {Object} input
+ * @param {String} input.swSrc File path and name of the service worker file
+ * to read and inject the manifest into before writing to `swDest`.
+ * @param {String} input.swDest The file path and name you wish to writh the
+ * service worker file to.
+ * @param {String} input.globDirectory The directory you wish to run the
+ * `staticFileGlobs` against.
+ * @param {Array<String>} input.staticFileGlobs Files matching against any of
+ * these glob patterns will be included in the file manifest.
+ * @param {String|Array<String>} [input.globIgnores] Files matching against any
+ * of these glob patterns will be excluded from the file manifest, even if the
+ * file matches against a `staticFileGlobs` pattern.
+ * @param {Object<String,Array|String>} [input.templatedUrls]
+ * If a URL is rendered with templates on the server, its contents may
+ * depend on multiple files. This maps URLs to an array of file names, or to a
+ * string value, that uniquely determines the URL's contents.
+ * @param {String} [input.modifyUrlPrefix] An object of key value pairs
+ * where URL's starting with the key value will be replaced with the
+ * corresponding value.
+ * @param {number} [input.maximumFileSizeToCacheInBytes] This value can be used
+ * to determine the maximum size of files that will be precached.
+ *
+ * Defaults to 2MB.
+ * @param {RegExp} [input.dontCacheBustUrlsMatching] An optional regex that will
+ * return a URL string and exclude the revision details for urls matching this
+ * regex. Useful if you have assets with file revisions in the URL.
+ * @return {Promise} Resolves once the service worker has been written
+ * with the injected precache list.
+ *
  * @example <caption>Generate a build manifest of static assets, which could
  * then be used with a service worker.</caption>
  * const swBuild = require('workbox-build');
@@ -20,29 +54,6 @@ const errors = require('./errors');
  * .then(() => {
  *   console.log('Build Manifest generated.');
  * });
- *
- * This method will read in an existing service worker file and replace an empty
- * array in a call like so: `.precache([])`, to an array of files
- * with up to date array revision details. This allows the service worker
- * to efficiently cache assets that will be available offline.
- * @param {Object} input
- * @param {String} input.swDest The name and path you wish to write your
- * manifest file to.
- * @param {String} input.globDirectory The root of the files you wish to
- * be cached. This will also be the directory the service worker and library
- * files are written to.
- * @param {Array<String>} input.staticFileGlobs Patterns to glob for when
- * generating the build manifest.
- * @param {String|Array<String>} [input.globIgnores] Patterns to exclude when
- * generating the build manifest.
- * @param {Object<String,Array|String>} [input.templatedUrls]
- * If a URL is rendered/templated on the server, its contents may not depend on
- * a single file. This maps URLs to a list of file names, or to a string
- * value, that uniquely determines each URL's contents.
- * @param {String} input.swSrc File name for service worker file to read in
- * and alter.
- * @return {Promise} Resolves once the service worker has been generated
- * with a precache list.
  *
  * @memberof module:workbox-build
  */
