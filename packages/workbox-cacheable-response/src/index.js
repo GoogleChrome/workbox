@@ -16,13 +16,17 @@
 /**
  * # workbox-cacheable-response
  *
- * Given a Response object this behaviour determines whether
- * it's cacheable, based on a specific configuration.
+ * Given a `Response` object this library determines whether
+ * it's "cacheable", based on the response's status code and / or
+ * header values.
  *
- * **Install:** `npm install --save-dev workbox-cacheable-response`
+ * Most develpers will use this module by instantiating a new
+ * `CachaebleResponsePlugin` and passing it to a
+ * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},
+ * as shown in the example below.
  *
- * @example <caption>Used as an automatically invoked
- * "plugin".</caption>
+ * @example <caption>Using the CachaebleResponsePlugin class in a
+ * service worker.</caption>
  *
  * // The responses will be cached if the response code is 0, 200, or 404, and
  * // will not be cached otherwise.
