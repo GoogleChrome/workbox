@@ -7,7 +7,7 @@ require('chai').should();
 
 describe('Test getFileManifestEntries', function() {
   const EXAMPLE_INPUT = {
-    staticFileGlobs: ['./**/*.{html,css}'],
+    globPatterns: ['./**/*.{html,css}'],
     globIgnores: [],
     globDirectory: '.',
   };
@@ -59,7 +59,7 @@ describe('Test getFileManifestEntries', function() {
     }, Promise.resolve());
   });
 
-  it('should detect bad staticFileGlobs', function() {
+  it('should detect bad globPatterns', function() {
     const badInput = [
       undefined,
       null,
@@ -70,7 +70,7 @@ describe('Test getFileManifestEntries', function() {
     return badInput.reduce((promiseChain, input) => {
       return promiseChain.then(() => {
         let args = Object.assign({}, EXAMPLE_INPUT);
-        args.staticFileGlobs = input;
+        args.globPatterns = input;
         return swBuild.getFileManifestEntries(args)
         .then(() => {
           throw new Error('Expected to throw error.');
@@ -84,41 +84,42 @@ describe('Test getFileManifestEntries', function() {
     }, Promise.resolve());
   });
 
-  it('should return file entries from example project', function() {
-    const testInput = {
-      staticFileGlobs: [
-        '**/*.{html,js,css}',
-      ],
-      globDirectory: path.join(__dirname, '..', '..', '..',
-        'workbox-cli', 'test', 'static', 'example-project-1'),
-    };
+  for (const parameterVariation of ['globPatterns', 'staticFileGlobs']) {
+    it(`should return file entries from example project using ${parameterVariation}`, function() {
+      const testInput = {
+        globDirectory: path.join(__dirname, '..', '..', '..',
+          'workbox-cli', 'test', 'static', 'example-project-1'),
+      };
 
-    return swBuild.getFileManifestEntries(testInput)
-    .then((output) => {
-      output.should.deep.equal([
-        {
-          url: '/index.html',
-          revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
-        }, {
-          url: '/page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: '/page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: '/styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: '/styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        },
-      ]);
+      testInput[parameterVariation] = ['**/*.{html,js,css}'];
+
+      return swBuild.getFileManifestEntries(testInput)
+        .then((output) => {
+          output.should.deep.equal([
+            {
+              url: '/index.html',
+              revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
+            }, {
+              url: '/page-1.html',
+              revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            }, {
+              url: '/page-2.html',
+              revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            }, {
+              url: '/styles/stylesheet-1.css',
+              revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            }, {
+              url: '/styles/stylesheet-2.css',
+              revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            },
+          ]);
+        });
     });
-  });
+  }
 
   it('should return file entries from example project with prefix', function() {
     const testInput = {
-      staticFileGlobs: [
+      globPatterns: [
         '**/*.{html,js,css}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
@@ -154,7 +155,7 @@ describe('Test getFileManifestEntries', function() {
 
   it('should return file entries matching custom max file size', function() {
     const testInput = {
-      staticFileGlobs: [
+      globPatterns: [
         '**/*.{html,js,css,jpg,png}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
@@ -184,7 +185,7 @@ describe('Test getFileManifestEntries', function() {
 
   it('should handle an invalid templatedUrl', function() {
     const testInput = {
-      staticFileGlobs: [
+      globPatterns: [
         '**/*.{html,js,css}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
@@ -197,7 +198,7 @@ describe('Test getFileManifestEntries', function() {
 
     try {
       swBuild.getFileManifestEntries(testInput);
-      throw new Error('Should have thrown an error due to back input.');
+      throw new Error('Should have thrown an error due to bad input.');
     } catch (err) {
       // This error is made up of several pieces that are useful to the
       // developer. These checks ensure the relevant message is should with
@@ -210,7 +211,7 @@ describe('Test getFileManifestEntries', function() {
 
   it('should return file entries from example project with templatedUrls', function() {
     const testInput = {
-      staticFileGlobs: [
+      globPatterns: [
         '**/*.{html,js,css}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
@@ -256,7 +257,7 @@ describe('Test getFileManifestEntries', function() {
 
   it('should return file entries from example project with dynamicUrlToDependencies', function() {
     const testInput = {
-      staticFileGlobs: [
+      globPatterns: [
         '**/*.{html,js,css}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
@@ -302,7 +303,7 @@ describe('Test getFileManifestEntries', function() {
 
   it('should return file entries from example project without cache busting', function() {
     const testInput = {
-      staticFileGlobs: [
+      globPatterns: [
         '**/*.{html,js,css}',
       ],
       globDirectory: path.join(__dirname, '..', '..', '..',
@@ -320,5 +321,48 @@ describe('Test getFileManifestEntries', function() {
         '/styles/stylesheet-2.css',
       ]);
     });
+  });
+
+  it(`should throw an error when both templatedUrls and dynamicUrlsToDependencies are used`, function() {
+    const templatedUrlsValues = {
+      '/template/url1': ['page-1.html', 'index.html'],
+    };
+
+    const badInput = {
+      globPatterns: ['**/*.{html,js,css}'],
+      globDirectory: path.join(__dirname, '..', '..', '..',
+        'workbox-cli', 'test', 'static', 'example-project-1'),
+      dynamicUrlToDependencies: templatedUrlsValues,
+      templatedUrls: templatedUrlsValues,
+    };
+
+    try {
+      swBuild.getFileManifestEntries(badInput);
+      throw new Error('Expected error to be thrown.');
+    } catch (err) {
+      if (err.message !== errors['both-templated-urls-dynamic-urls']) {
+        throw new Error('Unexpected error: ' + err.message);
+      }
+    }
+  });
+
+  it(`should throw an error when both globPatterns and staticFileGlobs are used`, function() {
+    const globPatternsValue = ['**/*.{html,js,css}'];
+
+    const badInput = {
+      globPatterns: globPatternsValue,
+      staticFileGlobs: globPatternsValue,
+      globDirectory: path.join(__dirname, '..', '..', '..',
+        'workbox-cli', 'test', 'static', 'example-project-1'),
+    };
+
+    try {
+      swBuild.getFileManifestEntries(badInput);
+      throw new Error('Expected error to be thrown.');
+    } catch (err) {
+      if (err.message !== errors['both-glob-patterns-static-file-globs']) {
+        throw new Error('Unexpected error: ' + err.message);
+      }
+    }
   });
 });

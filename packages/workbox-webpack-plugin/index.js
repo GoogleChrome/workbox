@@ -18,7 +18,7 @@ const swBuild = require('workbox-build');
  *   plugins: [
  *   	new WorkboxBuildWebpackPlugin({
  *      globDirectory: './build/',
- *      staticFileGlobs: ['**\/*.{html,js,css}'],
+ *      globPatterns: ['**\/*.{html,js,css}'],
  *      globIgnores: ['admin.html'],
  *      swSrc: './src/sw.js',
  *      swDest: './build/sw.js',

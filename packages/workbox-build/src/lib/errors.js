@@ -42,13 +42,13 @@ module.exports = {
     'must be an Object.',
   'invalid-manifest-format': `The value of the 'format' option passed to
     generateFileManifest() must be either 'iife' (the default) or 'es'.`,
-  'invalid-static-file-globs': `The 'staticFileGlobs' value must be an array ` +
+  'invalid-static-file-globs': `The 'globPatterns' value must be an array ` +
     `of strings.`,
   'invalid-templated-urls': `The 'templatedUrls' value should be ` +
     `an object that maps URLs to either a string, or to an array of glob ` +
     `patterns.`,
   'templated-url-matches-glob': `One of the 'templatedUrls' URL s` +
-    `is already being tracked via staticFileGlobs: `,
+    `is already being tracked via 'globPatterns': `,
   'invalid-glob-ignores': `The 'globIgnore' parameter must be an ` +
     `array string glob patterns.`,
   'modify-url-prefix-bad-url': `modifyUrlPrefix helper was given a bad URL ` +
@@ -71,4 +71,8 @@ module.exports = {
     `templatedUrls.`,
   'invalid-runtime-caching': `The 'runtimeCaching' parameter must an an ` +
     `array of objects with at least a 'urlPattern' and 'handler'.`,
+  'both-glob-patterns-static-file-globs': `Both globPatterns and ` +
+    `staticFileGlobs are set. Please fully migrate to globPatterns.`,
+  'both-templated-urls-dynamic-urls': `Both templatedUrls and ` +
+    `dynamicUrlToDependencies are set. Please fully migrate to templatedUrls.`,
 };
