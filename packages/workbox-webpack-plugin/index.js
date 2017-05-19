@@ -19,7 +19,6 @@ const path = require('path');
  *   },
  *   plugins: [
  *    new WorkboxBuildWebpackPlugin({
- *      globDirectory: './build/',
  *      globPatterns: ['**\/*.{html,js,css}'],
  *      globIgnores: ['admin.html'],
  *      swSrc: './src/sw.js',
