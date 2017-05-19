@@ -6,7 +6,7 @@ const errors = require('../../src/lib/errors');
 describe('Test generateSW()', function() {
   const EXAMPLE_INPUT = {
     globDirectory: './valid-root',
-    staticFileGlobs: [
+    globPatterns: [
       '**/*.{css,js,html}',
     ],
     globIgnores: [
@@ -106,7 +106,7 @@ describe('Test generateSW()', function() {
     }, Promise.resolve());
   });
 
-  it('should be able to handle a bad staticFileGlobs input', function() {
+  it('should be able to handle a bad globPatterns input', function() {
     const badInput = [
       {},
       true,
@@ -115,7 +115,7 @@ describe('Test generateSW()', function() {
     return badInput.reduce((promiseChain, input) => {
       return promiseChain.then(() => {
         let args = Object.assign({}, EXAMPLE_INPUT);
-        args.staticFileGlobs = input;
+        args.globPatterns = input;
         return generateSW(args)
         .then(() => {
           console.log('Input did not cause error: ', input);
@@ -187,9 +187,9 @@ describe('Test generateSW()', function() {
     args.globDirectory = '.';
 
     generateSW = proxyquire('../../src/lib/generate-sw', {
-      './utils/copy-workbox-sw': (copySWLibPath) => {
-        if (copySWLibPath === path.dirname(EXAMPLE_INPUT.swDest)) {
-          return Promise.resolve(path.join(copySWLibPath, 'workbox-sw.v0.0.0.js'));
+      './utils/copy-workbox-sw': (copyPath) => {
+        if (copyPath === path.dirname(EXAMPLE_INPUT.swDest)) {
+          return Promise.resolve(path.join(copyPath, 'workbox-sw.v0.0.0.js'));
         }
         return Promise.reject(new Error('Inject Error - copy-workbox-sw'));
       },

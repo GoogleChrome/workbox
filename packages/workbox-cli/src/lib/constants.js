@@ -1,5 +1,5 @@
 module.exports = {
-  configName: 'workbox-cli-config.json',
+  defaultConfigName: 'workbox-cli-config.js',
   blacklistDirectoryNames: [
     'node_modules',
   ],

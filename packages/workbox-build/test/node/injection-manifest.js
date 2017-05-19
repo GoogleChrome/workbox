@@ -40,7 +40,7 @@ describe('Test Injection Manifest', function() {
       const swDest = path.join(tmpDirectory, `different-output-name-${index}.js`);
       return swBuild.injectManifest({
         globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
-        staticFileGlobs: ['**\/*.{html,css}'],
+        globPatterns: ['**\/*.{html,css}'],
         swSrc: path.join(__dirname, '..', 'static', 'injection-samples', docName),
         swDest,
       })
@@ -58,7 +58,7 @@ describe('Test Injection Manifest', function() {
   it(`should throw due to no injection point in bad-no-injection.js`, function() {
     return swBuild.injectManifest({
       globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
-      staticFileGlobs: ['**\/*.{html,css}'],
+      globPatterns: ['**\/*.{html,css}'],
       swSrc: path.join(__dirname, '..', 'static', 'injection-samples', 'bad-no-injection.js'),
       swDest: path.join(tmpDirectory, 'different-output-name.js'),
     })
@@ -76,7 +76,7 @@ describe('Test Injection Manifest', function() {
   it(`should throw due to no injection point in bad-multiple-injection.js`, function() {
     return swBuild.injectManifest({
       globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
-      staticFileGlobs: ['**\/*.{html,css}'],
+      globPatterns: ['**\/*.{html,css}'],
       swSrc: path.join(__dirname, '..', 'static', 'injection-samples', 'bad-multiple-injection.js'),
       swDest: path.join(tmpDirectory, 'different-output-name.js'),
     })

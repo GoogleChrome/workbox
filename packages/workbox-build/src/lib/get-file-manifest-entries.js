@@ -18,23 +18,30 @@ const getStringDetails = require('./utils/get-string-details');
  * precache assets in a service worker.
  *
  * @param {Object} input
- * @param {Array<String>} input.staticFileGlobs Patterns used to select files to
- * include in the file entries.
- * @param {Array<String>} [input.globIgnores] Patterns used to exclude files
- * from the file entries.
- * @param {String} input.globDirectory The directory run the glob patterns over.
+ * @param {String} input.globDirectory The directory you wish to run the
+ * `globPatterns` against.
+ * @param {Array<String>} input.globPatterns Files matching against any of
+ * these glob patterns will be included in the file manifest.
+ * @param {String|Array<String>} [input.globIgnores] Files matching against any
+ * of these glob patterns will be excluded from the file manifest, even if the
+ * file matches against a `globPatterns` pattern.
  * @param {Object<String,Array|String>} [input.templatedUrls]
- * If a URL is rendered/templated on the server, its contents may not depend on
- * a single file. This maps URLs to a list of file names, or to a string
- * value, that uniquely determines each URL's contents.
- * @param {number} [input.maximumFileSizeToCacheInBytes] An optional number to
- * define the maximum file size to consider whether the file should be
- * precached. (Defaults to 2MB).
+ * If a URL is rendered with templates on the server, its contents may
+ * depend on multiple files. This maps URLs to an array of file names, or to a
+ * string value, that uniquely determines the URL's contents.
+ * @param {String} [input.modifyUrlPrefix] An object of key value pairs
+ * where URL's starting with the key value will be replaced with the
+ * corresponding value.
+ * @param {number} [input.maximumFileSizeToCacheInBytes] This value can be used
+ * to determine the maximum size of files that will be precached.
+ *
+ * Defaults to 2MB.
  * @param {RegExp} [input.dontCacheBustUrlsMatching] An optional regex that will
  * return a URL string and exclude the revision details for urls matching this
  * regex. Useful if you have assets with file revisions in the URL.
- * @return {Array<ManifestEntry>} An array of ManifestEntries will include
- * a url and revision details for each file found.
+ * @return {Array<ManifestEntry>}
+ * An array of {@link module:workbox-build#ManifestEntry|ManifestEntries}
+ * which will include a url and revision parameter.
  * @memberof module:workbox-build
  */
 const getFileManifestEntries = (input) => {
@@ -42,10 +49,19 @@ const getFileManifestEntries = (input) => {
     throw new Error(errors['invalid-get-manifest-entries-input']);
   }
 
-  const staticFileGlobs = input.staticFileGlobs;
+  // staticFileGlobs is to ease workbox to sw-precache migration.
+  if (input.globPatterns && input.staticFileGlobs) {
+    throw new Error(errors['both-glob-patterns-static-file-globs']);
+  }
+  const globPatterns = input.globPatterns || input.staticFileGlobs;
+
   const globIgnores = input.globIgnores ? input.globIgnores : [];
   const globDirectory = input.globDirectory;
-  // dynamicUrlToDependencies is for workbox-precaching parity / migration.
+
+  // dynamicUrlToDependencies is to ease workbox to sw-precache migration.
+  if (input.templatedUrls && input.dynamicUrlToDependencies) {
+    throw new Error(errors['both-templated-urls-dynamic-urls']);
+  }
   const templatedUrls = input.templatedUrls || input.dynamicUrlToDependencies;
 
   if (typeof globDirectory !== 'string' || globDirectory.length === 0) {
@@ -53,7 +69,7 @@ const getFileManifestEntries = (input) => {
       new Error(errors['invalid-glob-directory']));
   }
 
-  if (!staticFileGlobs || !Array.isArray(staticFileGlobs)) {
+  if (!globPatterns || !Array.isArray(globPatterns)) {
     return Promise.reject(
       new Error(errors['invalid-static-file-globs']));
   }
@@ -82,7 +98,7 @@ const getFileManifestEntries = (input) => {
 
   const fileSet = new Set();
 
-  const fileDetails = staticFileGlobs.reduce((accumulated, globPattern) => {
+  const fileDetails = globPatterns.reduce((accumulated, globPattern) => {
     const globbedFileDetails = getFileDetails(
       globDirectory, globPattern, globIgnores);
     globbedFileDetails.forEach((fileDetails) => {

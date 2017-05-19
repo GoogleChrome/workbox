@@ -133,7 +133,7 @@ gulp.task('lerna-publish', (callback) => {
   runSequence(
     'lerna-bootstrap',
     'test:dev',
-    'test',
+    'test:prod',
     '_lerna-publish-dry-run',
     '_update-versioned-bundles',
     '_lerna-publish-repo-version',

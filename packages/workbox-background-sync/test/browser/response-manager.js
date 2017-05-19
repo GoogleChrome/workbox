@@ -28,7 +28,7 @@ describe('response-manager test', () => {
   });
 
   it('check get', () => {
-		const queue = new workbox.backgroundSync.test.BackgroundSyncQueue();
+    const queue = new workbox.backgroundSync.test.BackgroundSyncQueue();
     return idbHelper.put('key', {response: response}).then(()=>{
         return queue.getResponse({id: 'key'}).then((data)=>{
             chai.assert.equal(data, response);

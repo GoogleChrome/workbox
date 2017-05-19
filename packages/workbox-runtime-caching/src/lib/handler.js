@@ -26,14 +26,15 @@ class Handler {
    *
    * @param {Object} input
    * @param {boolean} [input.waitOnCache] For handlers that write to the cache,
-   *        `true` means the method should wait for the cache.put() to complete
-   *        before returning. The default value of `false` means return without
-   *        waiting. It this value is true and the response can't be cached, an
-   *        error will be thrown.
-   * @param {RequestWrapper} [input.requestWrapper] An optional `RequestWrapper`
-   *        that is used to configure the cache name and request plugins. If
-   *        not provided, a new `RequestWrapper` using the
-   *        [default cache name](#getDefaultCacheName) will be used.
+   * `true` means the method should wait for the `cache.put()` call to
+   * complete before returning. The default value of `false` means
+   * return without waiting. It this value is true and the response
+   * can't be cached, an error will be thrown.
+   * @param {module:workbox-runtime-caching.RequestWrapper}
+   * [input.requestWrapper] An optional `RequestWrapper` that is used to
+   * configure the cache name and request plugins. If not provided, a
+   * new `RequestWrapper` using the [default cache name](#getDefaultCacheName)
+   * will be used.
    */
   constructor({requestWrapper, waitOnCache} = {}) {
     if (requestWrapper) {

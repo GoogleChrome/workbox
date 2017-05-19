@@ -7,4 +7,5 @@ node_modules
 npm-debug.log
 packages/**/LICENSE
 temp
+tmp-*
 /_site/

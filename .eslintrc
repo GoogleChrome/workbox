@@ -13,5 +13,8 @@
     "BroadcastChannel": false,
     "WorkboxSW": false,
     "workbox": false
+  },
+  "rules": {
+    "no-tabs": 2
   }
 }

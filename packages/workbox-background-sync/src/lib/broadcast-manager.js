@@ -12,22 +12,22 @@ import assert from '../../../../lib/assert';
  * @private
  */
 function broadcastMessage({broadcastChannel, type, url}) {
-	if(!broadcastChannel)
-		return;
+  if(!broadcastChannel)
+    return;
 
-	assert.isInstance({broadcastChannel}, BroadcastChannel);
-	assert.isType({type}, 'string');
-	assert.isType({url}, 'string');
+  assert.isInstance({broadcastChannel}, BroadcastChannel);
+  assert.isType({type}, 'string');
+  assert.isType({url}, 'string');
 
-	broadcastChannel.postMessage({
-		type: type,
-		meta: broadcastMeta,
-		payload: {
-			url: url,
-		},
-	});
+  broadcastChannel.postMessage({
+    type: type,
+    meta: broadcastMeta,
+    payload: {
+      url: url,
+    },
+  });
 }
 
 export {
-	broadcastMessage,
+  broadcastMessage,
 };

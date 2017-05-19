@@ -28,6 +28,7 @@ const errors = {
     `expects a URL string as its first parameter.`,
   'bad-cache-id': `The 'cacheId' parameter must be a string with at least ` +
     `one character`,
+  'bad-skip-waiting': `The 'skipWaiting' parameter must be a boolean.`,
   'bad-clients-claim': `The 'clientsClaim' parameter must be a boolean.`,
   'bad-directory-index': `The 'directoryIndex' parameter must be a boolean.`,
 };

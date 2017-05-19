@@ -6,7 +6,7 @@ const errors = require('../../src/lib/errors');
 describe('Test generateFileManifest', function() {
   const EXAMPLE_INPUT = {
     globDirectory: 'src/',
-    staticFileGlobs: ['./**/*.{html,css}'],
+    globPatterns: ['./**/*.{html,css}'],
     globIgnores: [],
     manifestDest: './build/manifest.js',
   };
@@ -47,7 +47,7 @@ describe('Test generateFileManifest', function() {
     }];
     const generateFileManifest = proxyquire(
       '../../src/lib/generate-file-manifest.js', {
-        './get-file-manifest-entries': ({globDirectory, staticFileGlobs, globIgnores}) => {
+        './get-file-manifest-entries': ({globDirectory, globPatterns, globIgnores}) => {
           if (globIgnores !== EXAMPLE_INPUT.globIgnores) {
             throw new Error('Invalid glob ignores value.');
           }
@@ -56,7 +56,7 @@ describe('Test generateFileManifest', function() {
             throw new Error('Invalid globDirectory value.');
           }
 
-          if (staticFileGlobs !== EXAMPLE_INPUT.staticFileGlobs) {
+          if (globPatterns !== EXAMPLE_INPUT.globPatterns) {
             throw new Error('Invalid glob pattern.');
           }
 

@@ -28,10 +28,6 @@ import assert from '../../../../lib/assert';
  * also trigger any appropriate plugins defined in the underlying
  * `RequestWrapper`.
  *
- * This strategy is the closest equivalent to the sw-toolbox
- * [fastest](https://googlechrome.github.io/sw-toolbox/api.html#toolboxfastest)
- * strategy.
- *
  * By default, `StaleWhileRevalidate` will cache responses with a 200 status
  * code as well as [opaque responses](http://stackoverflow.com/q/39109789)
  * (responses from cross-origin servers which don't support
@@ -51,17 +47,19 @@ import assert from '../../../../lib/assert';
  * router.registerRoute({route});
  *
  * @memberof module:workbox-runtime-caching
- * @extends Handler
+ * @extends module:workbox-runtime-caching.Handler
  */
 class StaleWhileRevalidate extends Handler {
   /**
    * Constructor for a new StaleWhileRevalidate instance.
    *
    * @param {Object} input
-   * @param {RequestWrapper} [input.requestWrapper] An optional `RequestWrapper`
-   *        that is used to configure the cache name and request plugins. If
-   *        not provided, a new `RequestWrapper` using the
-   *        [default cache name](#defaultCacheName) will be used.
+   * @param {
+   * module:workbox-runtime-caching.RequestWrapper} [input.requestWrapper]
+   * An optional `RequestWrapper` that is used to
+   * configure the cache name and request plugins. If
+   * not provided, a new `RequestWrapper` using the
+   * [default cache name](#defaultCacheName) will be used.
    */
   constructor(input = {}) {
     super(input);

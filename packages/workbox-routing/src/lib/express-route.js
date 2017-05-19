@@ -19,17 +19,20 @@ import pathToRegExp from 'path-to-regexp';
 
 /**
  * `ExpressRoute` is a helper class to make defining Express-style
- * [Routes]{@link Route} easy.
+ * [Routes]{@link module:workbox-routing.Route} easy.
  *
  * Under the hood, it uses the [`path-to-regexp`](https://www.npmjs.com/package/path-to-regexp)
  * library to transform the `path` parameter into a regular expression, which is
  * then matched against the URL's path.
  *
  * Please note that `ExpressRoute` can match either same-origin or cross-origin
- * requests. To match only same-origin requests, use a `path` value that begins
- * with `'/'`, e.g. `'/path/to/:file'`. To match cross-origin requests, use
- * a `path` value that includes the origin, e.g.
- * `'https://example.com/path/to/:file'`.
+ * requests.
+ *
+ * To match same-origin requests, use a `path` value that begins with
+ * `'/'`, e.g. `'/path/to/:file'`.
+ *
+ * To match cross-origin requests, use a `path` value that includes the origin,
+ * e.g. `'https://example.com/path/to/:file'`.
  *
  * @example
  * // Any same-origin requests that start with /path/to and end with one
@@ -68,10 +71,16 @@ class ExpressRoute extends Route {
    * If the path contains [named parameters](https://github.com/pillarjs/path-to-regexp#named-parameters),
    * then an Object that maps parameter names to their corresponding value
    * will be passed to the handler via `params`.
-   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
-   * use to provide a response if the route matches.
+   * @param {function|module:workbox-runtime-caching.Handler} input.handler The
+   * handler to use to provide a response if the route matches.
+   *
+   * If you wish to use a callback function [see handlerCallback]{@link
+   *   module:workbox-routing.Route~handlerCallback} for the callback
+   * definition.
    * @param {string} [input.method] Only match requests that use this
-   * HTTP method. Defaults to `'GET'` if not specified.
+   * HTTP method.
+   *
+   * Defaults to `'GET'`.
    */
   constructor({path, handler, method}) {
     if (!(path.startsWith('/') || path.startsWith('http'))) {

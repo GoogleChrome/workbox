@@ -71,6 +71,7 @@ class Router {
 
   /**
    * This method will actually add the fetch event listener.
+   * @private
    */
   _addFetchListener() {
     self.addEventListener('fetch', (event) => {
@@ -149,7 +150,7 @@ class Router {
   }
 
   /**
-   * An optional {RouteHandler} that's called by default when no routes
+   * An optional `handler` that's called by default when no routes
    * explicitly match the incoming request.
    *
    * If the default is not provided, unmatched requests will go against the
@@ -161,15 +162,22 @@ class Router {
    * });
    *
    * @param {Object} input
-   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
-   * use to provide a response.
+   * @param {function|module:workbox-runtime-caching.Handler} input.handler
+   * This parameter can be either a function or an object which is a subclass
+   * of `Handler`.
+   *
+   * Either option should result in a `Response` that the `Route` can use to
+   * handle the `fetch` event.
+   *
+   * See [handlerCallback]{@link module:workbox-routing.Route~handlerCallback}
+   * for full details on using a callback function as the `handler`.
    */
   setDefaultHandler({handler} = {}) {
     this.defaultHandler = normalizeHandler(handler);
   }
 
   /**
-   * If a Route throws an error while handling a request, this {RouteHandler}
+   * If a Route throws an error while handling a request, this `handler`
    * will be called and given a chance to provide a response.
    *
    * @example
@@ -181,16 +189,22 @@ class Router {
    * });
    *
    * @param {Object} input
-   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
-   * use to provide a response.
+   * @param {function|module:workbox-runtime-caching.Handler} input.handler
+   * This parameter can be either a function or an object which is a subclass
+   * of `Handler`.
+   *
+   * Either option should result in a `Response` that the `Route` can use to
+   * handle the `fetch` event.
+   *
+   * See [handlerCallback]{@link module:workbox-routing.Route~handlerCallback}
+   * for full details on using a callback function as the `handler`.
    */
   setCatchHandler({handler} = {}) {
     this.catchHandler = normalizeHandler(handler);
   }
 
   /**
-   * Register routes will take an array of Routes to register with the
-   * router.
+   * Registers an array of routes with the router.
    *
    * @example
    * router.registerRoutes({
@@ -202,8 +216,8 @@ class Router {
    * });
    *
    * @param {Object} input
-   * @param {Array<Route>} input.routes An array of routes to
-   * register.
+   * @param {Array<module:workbox-routing.Route>} input.routes An array of
+   * routes to register.
    */
   registerRoutes({routes} = {}) {
     assert.isArrayOfClass({routes}, Route);

@@ -16,20 +16,20 @@
 
 'use strict';
 
-const fs = require('fs');
 const path = require('path');
 const updateNotifier = require('update-notifier');
-const swBuild = require('workbox-build');
+const workboxBuild = require('workbox-build');
 
 const cliLogHelper = require('./lib/log-helper');
 const generateGlobPattern = require('./lib/utils/generate-glob-pattern');
 const saveConfigFile = require('./lib/utils/save-config');
-const getConfigFile = require('./lib/utils/get-config');
+const getConfig = require('./lib/utils/get-config');
+const errors = require('./lib/errors');
 
 const askForRootOfWebApp = require('./lib/questions/ask-root-of-web-app');
-const askForServiceWorkerName = require('./lib/questions/ask-sw-name');
+const askForServiceWorkerSrc = require('./lib/questions/ask-sw-src');
+const askForServiceWorkerDest = require('./lib/questions/ask-sw-dest');
 const askSaveConfigFile = require('./lib/questions/ask-save-config');
-const askManifestFileName = require('./lib/questions/ask-manifest-name');
 const askForExtensionsToCache =
   require('./lib/questions/ask-extensions-to-cache');
 
@@ -69,15 +69,6 @@ class SWCli {
   }
 
   /**
-   * Prints the help text to the terminal.
-   * @return {string} The log output
-   */
-  getHelpText() {
-    return fs.readFileSync(
-      path.join(__dirname, 'cli-help.txt'), 'utf8');
-  }
-
-  /**
    * If a command is given in the command line args, this method will handle
    * the appropriate action.
    * @param {string} command The command name.
@@ -88,32 +79,83 @@ class SWCli {
   handleCommand(command, args, flags) {
     switch (command) {
       case 'generate:sw':
-        return this._generateSW();
-      case 'generate:manifest':
-        return this._generateBuildManifest();
+        return this._generateSW(flags);
+      case 'inject:manifest':
+        return this._injectManifest(flags);
       default:
-        cliLogHelper.error(`Invlaid command given '${command}'`);
+        cliLogHelper.error(`Invalid command given '${command}'`);
         return Promise.reject();
     }
   }
 
   /**
    * This method will generate a working service worker with a file manifest.
+   * @param {Object} flags The flags supplied as part of the CLI input.
    * @return {Promise} The promise returned here will be used to exit the
    * node process cleanly or not.
    */
-  _generateSW() {
+  _generateSW(flags) {
     let config = {};
+    let configFile = null;
+    if (flags) {
+      configFile = flags.configFile;
+      // Remove configFile from flags (if it was present) so that it doesn't
+      // trigger the 'config-supplied-missing-fields' error later on.
+      delete flags.configFile;
+    }
 
-    return getConfigFile()
+    return getConfig(configFile)
     .then((savedConfig) => {
       if (savedConfig) {
         config = savedConfig;
-        config.wasSaved = true;
       }
+      config = Object.assign(config, flags);
     })
     .then(() => {
-      if (!config.globDirectory) {
+      const requiredFields = [
+        'globDirectory',
+        'globPatterns',
+        'swDest',
+      ];
+
+      let askQuestions = false;
+      requiredFields.forEach((requiredField) => {
+        if (!config[requiredField]) {
+          askQuestions = true;
+        }
+      });
+
+      if (askQuestions) {
+        // If some configuration is defined but not all required fields
+        // throw an error forcing the developer to either go through
+        // the guided flow OR go through the config only flow.
+        if (Object.keys(config).length > 0) {
+          cliLogHelper.error(errors['config-supplied-missing-fields'] +
+            requiredFields.join(', '));
+          return Promise.reject();
+        }
+
+        return this._askGenerateQuestions(config, requiredFields);
+      }
+
+      return Promise.resolve(config);
+    })
+    .then((config) => {
+      return workboxBuild.generateSW(config);
+    });
+  }
+
+  /**
+   * Ask questions required for input.
+   * @param  {object} config The config options.
+   * @param  {object} requiredFields The required fields to ask questions for.
+   * @return {Promise<object>} Promise resolves to the config object.
+   */
+  _askGenerateQuestions(config, requiredFields) {
+    return Promise.resolve()
+    .then(() => {
+      if (!config.globDirectory &&
+        requiredFields.indexOf('globDirectory') !== -1) {
         return askForRootOfWebApp()
         .then((rDirectory) => {
           // This will give a pretty relative path:
@@ -125,75 +167,100 @@ class SWCli {
       }
     })
     .then(() => {
-      if (!config.staticFileGlobs) {
+      if (!config.globPatterns &&
+        requiredFields.indexOf('globPatterns') !== -1) {
         return askForExtensionsToCache(config.globDirectory)
         .then((extensionsToCache) => {
-          config.staticFileGlobs = [
+          config.globPatterns = [
             generateGlobPattern(extensionsToCache),
           ];
         });
       }
     })
     .then(() => {
-      if (!config.swDest) {
-        return askForServiceWorkerName()
-        .then((swName) => {
-          config.swDest = path.join(config.globDirectory, swName);
-          config.globIgnores = [
-            swName,
-          ];
+      if (!config.swSrc &&
+        requiredFields.indexOf('swSrc') !== -1) {
+        return askForServiceWorkerSrc()
+        .then((swSrc) => {
+          config.swSrc = swSrc;
         });
       }
     })
     .then(() => {
-      if (!config.wasSaved) {
-        return askSaveConfigFile();
+      if (!config.swDest &&
+        requiredFields.indexOf('swDest') !== -1) {
+        return askForServiceWorkerDest()
+        .then((swDest) => {
+          config.swDest = swDest;
+        });
       }
-      // False since it's already saved.
-      return false;
+    })
+    .then(() => {
+      return askSaveConfigFile();
     })
     .then((saveConfig) => {
       if (saveConfig) {
         return saveConfigFile(config);
       }
     })
-    .then(() => {
-      return swBuild.generateSW(config);
-    });
+    .then(() => config);
   }
 
   /**
-   * Generates a file manifest with revisioning details
-   * that can be used in your service worker for precaching assets.
-   * @return {Promise} Resolves when the node process exits.
+   * This function should ask questions or use config/flags to read in a sw
+   * and inject the manifest into the destination service worker.
+   * @param  {object} flags Flags from command line.
+   * @return {Promise} Resolves on
    */
-  _generateBuildManifest() {
-    let rootDirPath;
-    let fileManifestName;
-    let fileExtentionsToCache;
+  _injectManifest(flags) {
+    let config = {};
+    let configFile = null;
+    if (flags) {
+      configFile = flags.configFile;
+      // Remove configFile from flags (if it was present) so that it doesn't
+      // trigger the 'config-supplied-missing-fields' error later on.
+      delete flags.configFile;
+    }
 
-    return askForRootOfWebApp()
-    .then((rDirectory) => {
-      rootDirPath = rDirectory;
-      return askForExtensionsToCache(rootDirPath);
-    })
-    .then((extensionsToCache) => {
-      fileExtentionsToCache = extensionsToCache;
-      return askManifestFileName();
-    })
-    .then((manifestName) => {
-      fileManifestName = manifestName;
+    return getConfig(configFile)
+    .then((savedConfig) => {
+      if (savedConfig) {
+        config = savedConfig;
+      }
+      config = Object.assign(config, flags);
     })
     .then(() => {
-      const globPattern = generateGlobPattern(fileExtentionsToCache);
-      return swBuild.generateFileManifest({
-        globDirectory: rootDirPath,
-        staticFileGlobs: [globPattern],
-        globIgnores: [
-          fileManifestName,
-        ],
-        manifestDest: path.join(rootDirPath, fileManifestName),
+      const requiredFields = [
+        'swSrc',
+        'swDest',
+        'globDirectory',
+        'globPatterns',
+      ];
+
+      let askQuestions = false;
+      requiredFields.forEach((requiredField) => {
+        if (!config[requiredField]) {
+          askQuestions = true;
+        }
       });
+
+      if (askQuestions) {
+        // If some configuration is defined but not all required fields
+        // throw an error forcing the developer to either go through
+        // the guided flow OR go through the config only flow.
+        if (Object.keys(config).length > 0) {
+          cliLogHelper.error(errors['config-supplied-missing-fields'] +
+            requiredFields.join(', '));
+          return Promise.reject();
+        }
+
+        return this._askGenerateQuestions(config, requiredFields);
+      }
+
+      return Promise.resolve(config);
+    })
+    .then((config) => {
+      return workboxBuild.injectManifest(config);
     });
   }
 }

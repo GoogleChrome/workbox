@@ -18,17 +18,63 @@ import normalizeHandler from './normalize-handler';
 import {defaultMethod, validMethods} from './constants';
 
 /**
+ * This is the definition of the `match` callback passed into the
+ * `Route` constructor.
+ *
+ * This callback is used to determine if a new `fetch` event can be served
+ * by this `Route`. Returning a truthy value indicates that this `Route` can
+ * handle this `fetch` event. Return `null` if this shouldn't match against
+ * the `fetch` event.
+ *
+ * If you do return a truthy value, the object will be passed to the
+ * Route's `handler` (see the
+ * [Route Constructor]{@link module:workbox-routing.Route}).
+ *
+ * @callback Route~matchCallback
+ * @param {Object} input
+ * @param {URL} input.url The request's URL.
+ * @param {FetchEvent} input.event The event that triggered the `fetch` handler.
+ * @return {Object|null} To signify a match, return a truthy value, otherwise
+ * return null if the route shouldn't match. If you return an Object with
+ * contents it will be passed to the `handler` in the `Route` constructor.
+ * @memberof module:workbox-routing
+ */
+
+/**
+ * This is the definition of the `handler` callback that can be passed into the
+ * `Route` constructor.
+ *
+ * The `handler` callback is called when a request has been matched by
+ * a `Route` and should return a Promise that resolves with a `Response`.
+ *
+ * @callback Route~handlerCallback
+ * @param {Object} input
+ * @param {URL} input.url The request's URL.
+ * @param {FetchEvent} input.event The event that triggered the `fetch` handler.
+ * @param {Object} [input.params] Parameters returned
+ * the Route's [match callback]{@link
+ *   module:workbox-routing.Route~matchCallback} function. This will be
+ * undefined if nothing was returned.
+ * @return {Promise<Response>} The response that will fulfill the request.
+ * @memberof module:workbox-routing
+ */
+
+/**
  * A `Route` allows you to tell a service worker that it should handle
  * certain network requests using a specific response strategy.
+ *
+ * A consists or a matcher and a handler. A matcher needs to determine if a
+ * route should be used for a request. A handler should handle the request
+ * if it does match a Router.
  *
  * Instead of implementing your own handlers, you can use one of the
  * pre-defined runtime caching strategies from the
  * {@link module:workbox-runtime-caching|workbox-runtime-caching} module.
  *
- * While you can use `Route` directly, the
+ * There are also pre-defined Route's provided by this library:
  * {@link module:workbox-routing.RegExpRoute|RegExpRoute}
  * and {@link module:workbox-routing.ExpressRoute|ExpressRoute} subclasses
- * provide a convenient wrapper with a nicer interface for using regular
+ * which provide a convenient wrapper with a nicer interface for using regular
  * expressions or Express-style routes as the `match` criteria.
  *
  * @example
@@ -54,15 +100,23 @@ class Route {
    * Constructor for Route class.
    * @param {Object} input
    * @param {function} input.match The function that determines whether the
-   * route matches. The function is passed an object with two properties:
-   * `url`, which is a [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL),
-   * and `event`, which is a [FetchEvent](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent).
-   * `match` should return a truthy value when the route applies, and
-   * that value is passed on to the handle function.
-   * @param {module:workbox-routing.RouteHandler} input.handler The handler to
-   * use to provide a response if the route matches.
+   * route matches a given `fetch` event.
+   *
+   * See [matchCallback]{@link module:workbox-routing.Route~matchCallback} for
+   * full details on this function.
+   * @param {function|module:workbox-runtime-caching.Handler} input.handler
+   * This parameter can be either a function or an object which is a subclass
+   * of `Handler`.
+   *
+   * Either option should result in a `Response` that the `Route` can use to
+   * handle the `fetch` event.
+   *
+   * See [handlerCallback]{@link module:workbox-routing.Route~handlerCallback}
+   * for full details on using a callback function as the `handler`.
    * @param {string} [input.method] Only match requests that use this
-   * HTTP method. Defaults to `'GET'` if not specified.
+   * HTTP method.
+   *
+   * Defaults to `'GET'`.
    */
   constructor({match, handler, method} = {}) {
     this.handler = normalizeHandler(handler);

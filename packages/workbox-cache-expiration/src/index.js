@@ -16,13 +16,22 @@
 /**
  * # workbox-cache-expiration
  *
- * The cache expiration plugin allows you define an expiration and/or
- * limit on the responses cached.
+ * A helper library that enforces restrictions on a cache including:
  *
- * This can be used to ensure that responses aren't used when they are stale
- * and that the cache size doesn't grow endlessly.
+ * - Allowing a specific number of requests to be cached. This prevents
+ * a cache from continuously growing in size.
+ * - Define an expiration for request.
  *
- * @example <caption>Used as an automatically invoked "plugin".</caption>
+ * This means stale requests aren't used and the cache size is kept under
+ * control.
+ *
+ * Most developers will use this module by instantiating a new
+ * `CacheExpirationPlugin` and passing it to a
+ * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper},
+ * as shown in the first example below.
+ *
+ * @example <caption>Using the CacheExpirationPlugin to enforce caching
+ * rules.</caption>
  *
  * // Add cache expiration plugin to `RequestWrapper`.
  * const requestWrapper = new workbox.runtimeCaching.RequestWrapper({

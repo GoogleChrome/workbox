@@ -17,18 +17,18 @@
 'use strict';
 
 function delay(timeout) {
-	return new Promise((resolve, reject) => {
-		setTimeout(function() {
-			resolve();
-		}, timeout);
-	});
+  return new Promise((resolve, reject) => {
+    setTimeout(function() {
+      resolve();
+    }, timeout);
+  });
 }
 
 describe('background sync queue test', () => {
   let responseAchieved = 0;
   function onRes() {
-		responseAchieved = responseAchieved + 1;
-	}
+    responseAchieved = responseAchieved + 1;
+  }
   function onRetryFail() {}
 
   const QUEUE_NAME = 'QUEUE_NAME';
@@ -75,39 +75,39 @@ describe('background sync queue test', () => {
     chai.assert.equal(backgroundSyncQueue._queue.queue.length, currentLen + 1);
   });
 
-	it('check replay', async function() {
-		await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/1')});
-		await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/2')});
-		await backgroundSyncQueue.replayRequests();
-		chai.assert.equal(responseAchieved, 2);
+  it('check replay', async function() {
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/1')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/2')});
+    await backgroundSyncQueue.replayRequests();
+    chai.assert.equal(responseAchieved, 2);
   });
 
-	it('test queue cleanup', async () => {
-		/* code for clearing everything from IDB */
-		const backgroundSyncQueue
+  it('test queue cleanup', async () => {
+    /* code for clearing everything from IDB */
+    const backgroundSyncQueue
     = new workbox.backgroundSync.test.BackgroundSyncQueue({
       maxRetentionTime: 1,
     });
 
-		const backgroundSyncQueue2
+    const backgroundSyncQueue2
     = new workbox.backgroundSync.test.BackgroundSyncQueue({
       maxRetentionTime: 10000,
       dbName: 'Queue2',
     });
 
-		await backgroundSyncQueue.cleanupQueue();
-		await backgroundSyncQueue2.cleanupQueue();
-		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum1.com')});
-		await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum2.com')});
-		await backgroundSyncQueue2.pushIntoQueue({request: new Request('http://lipsum.com')});
-		const queue1Keys = (await backgroundSyncQueue._queue._idbQDb.getAllKeys());
-		const queue2Keys = (await backgroundSyncQueue2._queue._idbQDb.getAllKeys());
-		await delay(100);
-		await backgroundSyncQueue.cleanupQueue();
-		await backgroundSyncQueue2.cleanupQueue();
-		chai.assert.equal(queue1Keys.length,
-			(await backgroundSyncQueue._queue._idbQDb.getAllKeys()).length + 2);
-		chai.assert.equal(queue2Keys.length,
-			(await backgroundSyncQueue2._queue._idbQDb.getAllKeys()).length);
-	});
+    await backgroundSyncQueue.cleanupQueue();
+    await backgroundSyncQueue2.cleanupQueue();
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum1.com')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum2.com')});
+    await backgroundSyncQueue2.pushIntoQueue({request: new Request('http://lipsum.com')});
+    const queue1Keys = (await backgroundSyncQueue._queue._idbQDb.getAllKeys());
+    const queue2Keys = (await backgroundSyncQueue2._queue._idbQDb.getAllKeys());
+    await delay(100);
+    await backgroundSyncQueue.cleanupQueue();
+    await backgroundSyncQueue2.cleanupQueue();
+    chai.assert.equal(queue1Keys.length,
+      (await backgroundSyncQueue._queue._idbQDb.getAllKeys()).length + 2);
+    chai.assert.equal(queue2Keys.length,
+      (await backgroundSyncQueue2._queue._idbQDb.getAllKeys()).length);
+  });
 });

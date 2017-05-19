@@ -17,56 +17,56 @@
 'use strict';
 
 describe('queue-utils test', () => {
-	const queueUtils = workbox.backgroundSync.test.QueueUtils;
-	const maxAgeTimeStamp = 1000*60*60*24;
-	const config = {
-		maxAge: maxAgeTimeStamp,
-	};
+  const queueUtils = workbox.backgroundSync.test.QueueUtils;
+  const maxAgeTimeStamp = 1000*60*60*24;
+  const config = {
+    maxAge: maxAgeTimeStamp,
+  };
 
-	beforeEach(function() {
-		const idbHelper = new workbox.backgroundSync.test.IdbHelper(
-			'bgQueueSyncDB', 1, 'QueueStore');
-		return idbHelper.getAllKeys()
-		.then((keys) => {
-			keys.forEach((key) => {
-				idbHelper.delete(key);
-			});
-		});
-	});
-
-  it('test queueableRequest', () => {
-		const request = new Request('http://localhost:3001/__echo/date-with-cors/random');
-		return queueUtils.getQueueableRequest({
-			request,
-			config,
-		}).then((reqObj) => {
-			chai.assert.isObject(reqObj);
-			chai.assert.isObject(reqObj.config);
-			chai.assert.isObject(reqObj.request);
-
-			chai.assert.equal(reqObj.config.maxAge, maxAgeTimeStamp);
-			chai.assert.equal(reqObj.request.url, request.url);
-			chai.assert.equal(reqObj.request.mode, request.mode);
-			chai.assert.equal(reqObj.request.method, request.method);
-			chai.assert.equal(reqObj.request.redirect, request.redirect);
-		});
+  beforeEach(function() {
+    const idbHelper = new workbox.backgroundSync.test.IdbHelper(
+      'bgQueueSyncDB', 1, 'QueueStore');
+    return idbHelper.getAllKeys()
+    .then((keys) => {
+      keys.forEach((key) => {
+        idbHelper.delete(key);
+      });
+    });
   });
 
-	it('test fetchableRequest', () => {
-		const reqObj = {
-			'url': 'http://localhost:3001/__echo/date-with-cors/random',
-			'headers': '[]',
-			'mode': 'cors',
-			'method': 'GET',
-			'redirect': 'follow',
-		};
+  it('test queueableRequest', () => {
+    const request = new Request('http://localhost:3001/__echo/date-with-cors/random');
+    return queueUtils.getQueueableRequest({
+      request,
+      config,
+    }).then((reqObj) => {
+      chai.assert.isObject(reqObj);
+      chai.assert.isObject(reqObj.config);
+      chai.assert.isObject(reqObj.request);
 
-		return queueUtils.getFetchableRequest({idbRequestObject: reqObj})
-			.then( (request) => {
-				chai.assert.equal(reqObj.url, request.url);
-				chai.assert.equal(reqObj.mode, request.mode);
-				chai.assert.equal(reqObj.method, request.method);
-				chai.assert.equal(reqObj.redirect, request.redirect);
-			});
-	});
+      chai.assert.equal(reqObj.config.maxAge, maxAgeTimeStamp);
+      chai.assert.equal(reqObj.request.url, request.url);
+      chai.assert.equal(reqObj.request.mode, request.mode);
+      chai.assert.equal(reqObj.request.method, request.method);
+      chai.assert.equal(reqObj.request.redirect, request.redirect);
+    });
+  });
+
+  it('test fetchableRequest', () => {
+    const reqObj = {
+      'url': 'http://localhost:3001/__echo/date-with-cors/random',
+      'headers': '[]',
+      'mode': 'cors',
+      'method': 'GET',
+      'redirect': 'follow',
+    };
+
+    return queueUtils.getFetchableRequest({idbRequestObject: reqObj})
+      .then( (request) => {
+        chai.assert.equal(reqObj.url, request.url);
+        chai.assert.equal(reqObj.mode, request.mode);
+        chai.assert.equal(reqObj.method, request.method);
+        chai.assert.equal(reqObj.redirect, request.redirect);
+      });
+  });
 });

@@ -1,12 +1,12 @@
-Usage:
+module.exports = `Usage:
     workbox-cli [command] [options]
 
 Commands:
 
     generate:sw
-    generate:manifest
+    inject:manifest
 
 Options
 
     -h --help               Show this help text.
-    -v --version            Show current version of workbox-cli
+    -v --version            Show current version of workbox-cli`;
