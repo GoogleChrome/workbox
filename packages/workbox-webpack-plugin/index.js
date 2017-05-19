@@ -1,7 +1,9 @@
 const swBuild = require('workbox-build');
+const path = require('path');
 
 /**
  * Use the instance of this in the plugins array of the webpack config.
+ *
  * @example
  * const WorkboxBuildWebpackPlugin = require('workbox-webpack-plugin');
  * .
@@ -16,24 +18,23 @@ const swBuild = require('workbox-build');
  *     filename: '[name].js',
  *   },
  *   plugins: [
- *   	new WorkboxBuildWebpackPlugin({
+ *    new WorkboxBuildWebpackPlugin({
  *      globDirectory: './build/',
- *      staticFileGlobs: ['**\/*.{html,js,css}'],
+ *      globPatterns: ['**\/*.{html,js,css}'],
  *      globIgnores: ['admin.html'],
  *      swSrc: './src/sw.js',
  *      swDest: './build/sw.js',
- *   	});
+ *     });
  *   ]
  * }
  *
- * @class WorkboxBuildWebpackPlugin
+ * @module workbox-webpack-plugin
  */
 class WorkboxBuildWebpackPlugin {
   /**
    * Creates an instance of WorkboxBuildWebpackPlugin.
    *
-   * @param {Object} [config] all the options as passed to `swbuild`
-   * @memberOf WorkboxBuildWebpackPlugin
+   * @param {Object} [config] All the options as passed to `workbox-build`.
    */
   constructor(config) {
     this._config = config || {};
@@ -50,17 +51,24 @@ class WorkboxBuildWebpackPlugin {
 
     // If no root directory is given, fallback to
     // output path directory of webpack
-    if (!config.rootDirectory) {
-      config.rootDirectory = compilation.options.output.path;
+    if (!config.globDirectory) {
+      config.globDirectory = compilation.options.output.path;
+    }
+
+    if (!config.swDest) {
+      config.swDest = path.join(compilation.options.output.path, 'sw.js');
+    }
+
+    if (!config.globPatterns) {
+      config.globPatterns = ['**\/*.{html,js,css}'];
     }
 
     return config;
   }
 
   /**
+   * @private
    * @param {Object} [compiler] default compiler object passed from webpack
-   *
-   * @memberOf WorkboxBuildWebpackPlugin
    */
   apply(compiler) {
     compiler.plugin('after-emit', (compilation, callback) => {

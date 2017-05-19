@@ -1,6 +1,6 @@
 {
   "name": "workbox-webpack-plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "This is a webpack plugin for workbox.",
   "keywords": [
     "workbox",
