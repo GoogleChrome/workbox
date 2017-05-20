@@ -1,4 +1,5 @@
 const swBuild = require('workbox-build');
+const path = require('path');
 
 /**
  * Use the instance of this in the plugins array of the webpack config.
@@ -18,7 +19,6 @@ const swBuild = require('workbox-build');
  *   },
  *   plugins: [
  *    new WorkboxBuildWebpackPlugin({
- *      globDirectory: './build/',
  *      globPatterns: ['**\/*.{html,js,css}'],
  *      globIgnores: ['admin.html'],
  *      swSrc: './src/sw.js',
@@ -50,8 +50,16 @@ class WorkboxBuildWebpackPlugin {
 
     // If no root directory is given, fallback to
     // output path directory of webpack
-    if (!config.rootDirectory) {
-      config.rootDirectory = compilation.options.output.path;
+    if (!config.globDirectory) {
+      config.globDirectory = compilation.options.output.path;
+    }
+
+    if (!config.swDest) {
+      config.swDest = path.join(compilation.options.output.path, 'sw.js');
+    }
+
+    if (!config.globPatterns) {
+      config.globPatterns = ['**\/*.{html,js,css}'];
     }
 
     return config;

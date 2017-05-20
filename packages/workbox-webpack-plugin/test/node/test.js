@@ -61,13 +61,13 @@ describe('Tests for webpack plugin', function() {
 
   it('should mutate config accordin to webpack defaults', () => {
     let swWebpackPlugin = new SwWebpackPlugin({});
-    assert.equal(swWebpackPlugin.getConfig(webpackCompilation).rootDirectory,
+    assert.equal(swWebpackPlugin.getConfig(webpackCompilation).globDirectory,
       OUTPUT_DIR);
     const CUSTOM_ROOT_DIRECTORY = '/public';
     swWebpackPlugin = new SwWebpackPlugin({
-      rootDirectory: CUSTOM_ROOT_DIRECTORY,
+      globDirectory: CUSTOM_ROOT_DIRECTORY,
     });
-    assert.equal(swWebpackPlugin.getConfig(webpackCompilation).rootDirectory,
+    assert.equal(swWebpackPlugin.getConfig(webpackCompilation).globDirectory,
       CUSTOM_ROOT_DIRECTORY);
   });
 
