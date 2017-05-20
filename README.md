@@ -13,7 +13,7 @@ can do for you.
 
 ## External Contributions
 
-Please read the [guide to contributing](https://googlechrome.github.io/workbox/contributing.html)
+Please read the [guide to contributing](CONTRIBUTING.md)
 prior to filing any pull requests.
 
 ## License
