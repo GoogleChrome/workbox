@@ -2,7 +2,7 @@ module.exports = {
   'unable-to-get-rootdir': 'Unable to get the root directory of your web app.',
   'no-extension': 'Unable to detect a usable extension for a file in your ' +
     'web app directory.',
-  'invalid-file-manifest-name': 'The File Manifest Name must have at lease ' +
+  'invalid-file-manifest-name': 'The File Manifest Name must have at least ' +
     'one character.',
   'unable-to-get-file-manifest-name': 'Unable to get a file manifest name.',
   'invalid-sw-dest': `The 'swDest' value must be a valid path.`,
@@ -66,7 +66,7 @@ module.exports = {
   'populating-sw-tmpl-failed': `Unable to generate service worker from ` +
     `template.`,
   'useless-glob-pattern': `One of the glob patterns doesn't match any files. ` +
-    `Please remove of fix the following: `,
+    `Please remove or fix the following: `,
   'bad-template-urls-asset': `There was an issue reading one of the provided ` +
     `templatedUrls.`,
   'invalid-runtime-caching': `The 'runtimeCaching' parameter must an an ` +
