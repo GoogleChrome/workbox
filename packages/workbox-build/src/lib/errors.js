@@ -66,7 +66,7 @@ module.exports = {
   'populating-sw-tmpl-failed': `Unable to generate service worker from ` +
     `template.`,
   'useless-glob-pattern': `One of the glob patterns doesn't match any files. ` +
-    `Please remove of fix the following: `,
+    `Please remove or fix the following: `,
   'bad-template-urls-asset': `There was an issue reading one of the provided ` +
     `templatedUrls.`,
   'invalid-runtime-caching': `The 'runtimeCaching' parameter must an an ` +
