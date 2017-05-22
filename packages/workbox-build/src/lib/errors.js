@@ -2,7 +2,7 @@ module.exports = {
   'unable-to-get-rootdir': 'Unable to get the root directory of your web app.',
   'no-extension': 'Unable to detect a usable extension for a file in your ' +
     'web app directory.',
-  'invalid-file-manifest-name': 'The File Manifest Name must have atleast ' +
+  'invalid-file-manifest-name': 'The File Manifest Name must have at least ' +
     'one character.',
   'unable-to-get-file-manifest-name': 'Unable to get a file manifest name.',
   'invalid-sw-dest': `The 'swDest' value must be a valid path.`,
