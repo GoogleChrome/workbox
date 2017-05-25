@@ -63,6 +63,7 @@
     "sinon": "^2.2.0",
     "sw-testing-helpers": "^1.0.2",
     "tmp": "0.0.31",
-    "uppercamelcase": "^3.0.0"
+    "uppercamelcase": "^3.0.0",
+    "webpack": "^2.6.0"
   }
 }
