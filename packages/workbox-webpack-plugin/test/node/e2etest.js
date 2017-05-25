@@ -36,7 +36,9 @@ describe('Tests for webpack plugin', function() {
   it('should generate sw, when `swSrc` is not present', () => {
     this.timeout(35000);
     const webpackConfig = {
-      entry: path.join(__dirname, 'webpack-assets/src.js'),
+      entry: {
+        swApp: path.join(__dirname, 'webpack-assets/src.js'),
+      },
       output: {
         path: path.join(__dirname, '/webpack-assets/'),
         filename: '[name].js',
