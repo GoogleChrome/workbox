@@ -97,19 +97,19 @@ describe('Test getFileManifestEntries', function() {
         .then((output) => {
           output.should.deep.equal([
             {
-              url: '/index.html',
+              url: 'index.html',
               revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
             }, {
-              url: '/page-1.html',
+              url: 'page-1.html',
               revision: '544658ab25ee8762dc241e8b1c5ed96d',
             }, {
-              url: '/page-2.html',
+              url: 'page-2.html',
               revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
             }, {
-              url: '/styles/stylesheet-1.css',
+              url: 'styles/stylesheet-1.css',
               revision: '934823cbc67ccf0d67aa2a2eeb798f12',
             }, {
-              url: '/styles/stylesheet-2.css',
+              url: 'styles/stylesheet-2.css',
               revision: '884f6853a4fc655e4c2dc0c0f27a227c',
             },
           ]);
@@ -125,8 +125,8 @@ describe('Test getFileManifestEntries', function() {
       globDirectory: path.join(__dirname, '..', '..', '..',
         'workbox-cli', 'test', 'static', 'example-project-1'),
       modifyUrlPrefix: {
-        '/styles': '/static/styles',
-        '/page': '/pages/page',
+        'styles': 'static/styles',
+        'page': 'pages/page',
       },
     };
 
@@ -134,19 +134,19 @@ describe('Test getFileManifestEntries', function() {
     .then((output) => {
       output.should.deep.equal([
         {
-          url: '/index.html',
+          url: 'index.html',
           revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
         }, {
-          url: '/pages/page-1.html',
+          url: 'pages/page-1.html',
           revision: '544658ab25ee8762dc241e8b1c5ed96d',
         }, {
-          url: '/pages/page-2.html',
+          url: 'pages/page-2.html',
           revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
         }, {
-          url: '/static/styles/stylesheet-1.css',
+          url: 'static/styles/stylesheet-1.css',
           revision: '934823cbc67ccf0d67aa2a2eeb798f12',
         }, {
-          url: '/static/styles/stylesheet-2.css',
+          url: 'static/styles/stylesheet-2.css',
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         },
       ]);
@@ -167,16 +167,16 @@ describe('Test getFileManifestEntries', function() {
     .then((output) => {
       output.should.deep.equal([
         {
-          url: '/page-1.html',
+          url: 'page-1.html',
           revision: '544658ab25ee8762dc241e8b1c5ed96d',
         }, {
-          url: '/page-2.html',
+          url: 'page-2.html',
           revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
         }, {
-          url: '/styles/stylesheet-1.css',
+          url: 'styles/stylesheet-1.css',
           revision: '934823cbc67ccf0d67aa2a2eeb798f12',
         }, {
-          url: '/styles/stylesheet-2.css',
+          url: 'styles/stylesheet-2.css',
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         },
       ]);
@@ -217,9 +217,9 @@ describe('Test getFileManifestEntries', function() {
       globDirectory: path.join(__dirname, '..', '..', '..',
         'workbox-cli', 'test', 'static', 'example-project-1'),
       templatedUrls: {
-        '/template/url1': ['page-1.html', 'index.html'],
-        '/template/url2': ['page-2.html', 'index.html'],
-        '/template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
+        'template/url1': ['page-1.html', 'index.html'],
+        'template/url2': ['page-2.html', 'index.html'],
+        'template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
       },
     };
 
@@ -227,28 +227,28 @@ describe('Test getFileManifestEntries', function() {
     .then((output) => {
       output.should.deep.equal([
         {
-          url: '/index.html',
+          url: 'index.html',
           revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
         }, {
-          url: '/page-1.html',
+          url: 'page-1.html',
           revision: '544658ab25ee8762dc241e8b1c5ed96d',
         }, {
-          url: '/page-2.html',
+          url: 'page-2.html',
           revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
         }, {
-          url: '/styles/stylesheet-1.css',
+          url: 'styles/stylesheet-1.css',
           revision: '934823cbc67ccf0d67aa2a2eeb798f12',
         }, {
-          url: '/styles/stylesheet-2.css',
+          url: 'styles/stylesheet-2.css',
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
-          url: '/template/url1',
+          url: 'template/url1',
           revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
         }, {
-          url: '/template/url2',
+          url: 'template/url2',
           revision: 'bd9ef0ab8b57d5d716e6916610d34936',
         }, {
-          url: '/template/url3',
+          url: 'template/url3',
           revision: '538954a0f0fca1d067ff03dca8dce79e',
         },
       ]);
@@ -263,9 +263,9 @@ describe('Test getFileManifestEntries', function() {
       globDirectory: path.join(__dirname, '..', '..', '..',
         'workbox-cli', 'test', 'static', 'example-project-1'),
       dynamicUrlToDependencies: {
-        '/template/url1': ['page-1.html', 'index.html'],
-        '/template/url2': ['page-2.html', 'index.html'],
-        '/template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
+        'template/url1': ['page-1.html', 'index.html'],
+        'template/url2': ['page-2.html', 'index.html'],
+        'template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
       },
     };
 
@@ -273,28 +273,28 @@ describe('Test getFileManifestEntries', function() {
     .then((output) => {
       output.should.deep.equal([
         {
-          url: '/index.html',
+          url: 'index.html',
           revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
         }, {
-          url: '/page-1.html',
+          url: 'page-1.html',
           revision: '544658ab25ee8762dc241e8b1c5ed96d',
         }, {
-          url: '/page-2.html',
+          url: 'page-2.html',
           revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
         }, {
-          url: '/styles/stylesheet-1.css',
+          url: 'styles/stylesheet-1.css',
           revision: '934823cbc67ccf0d67aa2a2eeb798f12',
         }, {
-          url: '/styles/stylesheet-2.css',
+          url: 'styles/stylesheet-2.css',
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
-          url: '/template/url1',
+          url: 'template/url1',
           revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
         }, {
-          url: '/template/url2',
+          url: 'template/url2',
           revision: 'bd9ef0ab8b57d5d716e6916610d34936',
         }, {
-          url: '/template/url3',
+          url: 'template/url3',
           revision: '538954a0f0fca1d067ff03dca8dce79e',
         },
       ]);
@@ -314,11 +314,11 @@ describe('Test getFileManifestEntries', function() {
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
       output.should.deep.equal([
-        '/index.html',
-        '/page-1.html',
-        '/page-2.html',
-        '/styles/stylesheet-1.css',
-        '/styles/stylesheet-2.css',
+        'index.html',
+        'page-1.html',
+        'page-2.html',
+        'styles/stylesheet-1.css',
+        'styles/stylesheet-2.css',
       ]);
     });
   });
