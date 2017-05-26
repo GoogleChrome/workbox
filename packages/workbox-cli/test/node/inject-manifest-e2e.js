@@ -75,27 +75,27 @@ describe('Generate SW End-to-End Tests', function() {
       const fileOutput = fs.readFileSync(swDest).toString();
       fileOutput.should.equal(`someVariables.precache([
   {
-    "url": "/images/web-fundamentals-icon192x192.png",
+    "url": "images/web-fundamentals-icon192x192.png",
     "revision": "93ffb20d77327583892ca47f597b77aa"
   },
   {
-    "url": "/index.html",
+    "url": "index.html",
     "revision": "24abd5daf6d87c25f40c2b74ee3fbe93"
   },
   {
-    "url": "/page-1.html",
+    "url": "page-1.html",
     "revision": "544658ab25ee8762dc241e8b1c5ed96d"
   },
   {
-    "url": "/page-2.html",
+    "url": "page-2.html",
     "revision": "a3a71ce0b9b43c459cf58bd37e911b74"
   },
   {
-    "url": "/styles/stylesheet-1.css",
+    "url": "styles/stylesheet-1.css",
     "revision": "934823cbc67ccf0d67aa2a2eeb798f12"
   },
   {
-    "url": "/styles/stylesheet-2.css",
+    "url": "styles/stylesheet-2.css",
     "revision": "884f6853a4fc655e4c2dc0c0f27a227c"
   }
 ]);
