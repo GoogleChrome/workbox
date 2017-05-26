@@ -30,11 +30,9 @@ describe('Tests for webpack plugin', function() {
     WorkboxWebpackPlugin = proxyquire('../../', {
       'workbox-build': WorkboxBuild,
     });
-    new WorkboxWebpackPlugin();
   });
 
   it('should generate sw, when `swSrc` is not present', () => {
-    this.timeout(35000);
     const webpackConfig = {
       entry: {
         swApp: path.join(__dirname, 'webpack-assets/src.js'),
@@ -55,7 +53,6 @@ describe('Tests for webpack plugin', function() {
   });
 
   it('should inject manifest, when `swSrc` is present', () => {
-    this.timeout(35000);
     const webpackConfig = {
       entry: {
         swApp: path.join(__dirname, 'webpack-assets/src.js'),
