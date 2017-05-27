@@ -30,7 +30,7 @@ describe('Test of the broadcastUpdate function', function() {
         meta: source,
         payload: {
           cacheName,
-          updatedUrl: url,
+          url,
         },
       });
       done();

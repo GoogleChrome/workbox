@@ -35,7 +35,7 @@ import {cacheUpdatedMessageType} from './constants';
  *   meta: 'workbox-broadcast-cache-update',
  *   payload: {
  *     cacheName: 'the-cache-name',
- *     updatedUrl: 'https://example.com/'
+ *     url: 'https://example.com/'
  *   }
  * }
  * ```
@@ -73,7 +73,7 @@ function broadcastUpdate({channel, cacheName, url, source}) {
     meta: source,
     payload: {
       cacheName: cacheName,
-      updatedUrl: url,
+      url,
     },
   });
 }
