@@ -9,5 +9,3 @@ packages/**/LICENSE
 temp
 tmp-*
 /_site/
-packages/workbox-webpack-plugin/**/webpack-assets/sw*
-packages/workbox-webpack-plugin/**/webpack-assets/workbox*

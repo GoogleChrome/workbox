@@ -19,7 +19,7 @@ const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, swDes
   let expectedFiles = glob.sync(
     `${exampleProject}/**/*.{${fileExtensions.join(',')}}`, {
     ignore: [
-      path.join(exampleProject, swDest),
+      path.join(swDest),
       path.join(exampleProject, path.dirname(swDest), 'workbox-sw.prod.*.js'),
       path.join(exampleProject, 'workbox-cli-config.js'),
     ],
@@ -61,12 +61,11 @@ const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, swDes
     }
 
     expectedFiles.splice(expectedFileIndex, 1);
-
-    (typeof fileManifestEntryDetails.revision).should.equal('string');
-    fileManifestEntryDetails.revision.length.should.be.gt(0);
+    expect(typeof fileManifestEntryDetails.revision).to.equal('string');
+    expect(fileManifestEntryDetails.revision.length).to.be.gt(0);
   });
 
-  expectedFiles.length.should.equal(0);
+  expect(expectedFiles.length).to.equal(0);
 };
 
 const performCleanup = (err) => {
