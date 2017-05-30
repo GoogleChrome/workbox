@@ -1,14 +1,15 @@
-/* global workbox, expect, describe */
-const assert = require('chai').assert;
 const webpack = require('webpack');
 const fs = require('fs');
 const path = require('path');
 const validator = require('../../../workbox-cli/test/utils/e2e-sw-validator.js');
 const WorkboxWebpackPlugin = require('../../');
-const mkdirp = require('mkdirp');
 const testServerGen = require('../../../../utils/test-server-generator.js');
 const fsExtra = require('fs-extra');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const expect = require('chai').expect;
+require('chai').should();
+
+const FILE_EXTENSIONS = ['html', 'css', 'js'];
 
 function runWebpack(webpackConfig) {
   return new Promise((resolve, reject) => {
@@ -25,108 +26,123 @@ function runWebpack(webpackConfig) {
   });
 }
 
+/**
+ * NOTE:
+ * WebPack has a requirement of having an "entry" file that it will output
+ * in a flat directory.
+ *
+ * Because of this, we are building into a build directory rather than
+ * from the src directory.
+ */
+
 describe('Tests for webpack plugin', function() {
   this.timeout(120 * 1000);
   let testServer;
   let baseTestUrl;
-  const workingDir = path.join(__dirname, 'tmp-webpack-assets');
+  let tmpDirectory;
 
   before(() => {
+    tmpDirectory = fs.mkdtempSync(path.join(__dirname, 'tmp-'));
+
     testServer = testServerGen();
-    return testServer.start(workingDir, 5050)
+    return testServer.start(tmpDirectory, 5050)
     .then((portNumber) => {
       baseTestUrl = `http://localhost:${portNumber}`;
     });
+  });
+
+  afterEach(function() {
+    this.timeout(10 * 1000);
+
+    return fsExtra.remove(tmpDirectory);
   });
 
   // Kill the web server once all tests are complete.
   after(function() {
     this.timeout(10 * 1000);
 
-    return testServer.stop()
-      .then(() => fsExtra.remove(workingDir));
-  });
-
-  beforeEach((done)=>{
-    mkdirp(workingDir, () => {
-      fs.writeFileSync(path.join(workingDir, 'src.js'), '(function(){})()');
-      fs.writeFileSync(path.join(workingDir, 'sourceSw.js'),
-        'importScripts(\'https://www.gstatic.com/firebasejs/3.6.9/firebase-app.js\');'
-        + '\n importScripts(\'workbox-sw.prod.v1.0.0.js\');'
-        + '\n const workboxSW = new self.WorkboxSW();'
-        + '\n workboxSW.precache([]);'
-      );
-      done();
-    });
-  });
-
-  afterEach(() => {
-    fs.readdir(workingDir, (err, files) => {
-      if (err) throw err;
-
-      for (const file of files) {
-        fs.unlink(path.join(workingDir, file), (err) => {
-          if (err) throw err;
-        });
-      }
-    });
+    return testServer.stop();
   });
 
   it('should generate sw, when `swSrc` is not present', () => {
+    process.chdir(tmpDirectory);
+
+    fsExtra.copySync(
+      path.join(__dirname, '..', '..', '..', 'workbox-cli', 'test', 'static', 'example-project-1'),
+      tmpDirectory);
+
     const webpackConfig = {
       entry: {
-        swApp: path.join(__dirname, 'tmp-webpack-assets/src.js'),
+        webpackEntry: path.join(tmpDirectory, 'webpackEntry.js'),
       },
       output: {
-        path: path.join(__dirname, '/tmp-webpack-assets/'),
+        path: tmpDirectory,
         filename: '[name].js',
       },
       plugins: [
-        new HtmlWebpackPlugin(),
         new WorkboxWebpackPlugin(),
       ],
     };
+
     return validator.performTest(()=>{
       return runWebpack(webpackConfig);
     }, {
-      exampleProject: workingDir,
-      fileExtensions: ['html', 'js'],
-      swDest: path.join(__dirname, 'tmp-webpack-assets/sw.js'),
+      exampleProject: tmpDirectory,
+      fileExtensions: FILE_EXTENSIONS,
+      swDest: 'sw.js',
       baseTestUrl,
     });
   });
 
   it('should inject manifest, when `swSrc` is present', () => {
+    process.chdir(tmpDirectory);
+
+    fsExtra.copySync(
+      path.join(__dirname, '..', '..', '..', 'workbox-cli', 'test', 'static', 'example-project-2'),
+      tmpDirectory);
+
     const webpackConfig = {
       entry: {
-        swApp: path.join(__dirname, 'tmp-webpack-assets/src.js'),
+        webpackEntry: path.join(tmpDirectory, 'webpackEntry.js'),
       },
       output: {
-        path: path.join(__dirname, '/tmp-webpack-assets/'),
+        path: tmpDirectory,
         filename: '[name].js',
       },
       plugins: [
-        new HtmlWebpackPlugin(),
         new WorkboxWebpackPlugin({
-          swDest: path.join(__dirname, 'tmp-webpack-assets/swGenerated.js'),
-          swSrc: path.join(__dirname, 'tmp-webpack-assets/sourceSw.js'),
-          globIgnores: ['swGenerated.js'],
+          swDest: path.join(tmpDirectory, 'sw.js'),
+          swSrc: path.join(tmpDirectory, 'sw.tmpl'),
         }),
       ],
     };
-    return validator.performTest(()=>{
-      return runWebpack(webpackConfig);
-    }, {
-      exampleProject: workingDir,
-      fileExtensions: ['html', 'js'],
-      swDest: path.join(__dirname, 'tmp-webpack-assets/swGenerated.js'),
-      baseTestUrl,
-    }).then(()=>{
-      const swContents = fs.readFileSync(path.join(__dirname, 'tmp-webpack-assets/swGenerated.js'));
 
-      assert.isTrue(swContents.indexOf(
-        'importScripts(\'https://www.gstatic.com/firebasejs/3.6.9/firebase-app.js\');'
-      ) !== -1);
+    return runWebpack(webpackConfig)
+    .then(() => {
+      const swContents = fs.readFileSync(path.join(tmpDirectory, 'sw.js')).toString();
+      expect(swContents).to.equal(`someVariables.precache([
+  {
+    "url": "/index.html",
+    "revision": "24abd5daf6d87c25f40c2b74ee3fbe93"
+  },
+  {
+    "url": "/page-1.html",
+    "revision": "544658ab25ee8762dc241e8b1c5ed96d"
+  },
+  {
+    "url": "/page-2.html",
+    "revision": "a3a71ce0b9b43c459cf58bd37e911b74"
+  },
+  {
+    "url": "/styles/stylesheet-1.css",
+    "revision": "934823cbc67ccf0d67aa2a2eeb798f12"
+  },
+  {
+    "url": "/styles/stylesheet-2.css",
+    "revision": "884f6853a4fc655e4c2dc0c0f27a227c"
+  }
+]);
+`);
     });
   });
 });

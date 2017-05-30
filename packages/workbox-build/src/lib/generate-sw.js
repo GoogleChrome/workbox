@@ -127,8 +127,8 @@ const generateSW = function(input) {
     // build/workboxSW.***.js. So the sw.js file should import workboxSW.***.js
     // (i.e. not include build/).
     workboxSWPath = path.relative(destDirectory, libPath);
-    input.globIgnores.push(libPath);
-    input.globIgnores.push(swDest);
+    input.globIgnores.push(workboxSWPath);
+    input.globIgnores.push(path.relative(destDirectory, swDest));
   })
   .then(() => {
     return getFileManifestEntries(input);
