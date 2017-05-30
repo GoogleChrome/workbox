@@ -62,10 +62,6 @@ class WorkboxBuildWebpackPlugin {
       config.globPatterns = ['**\/*.{html,js,css}'];
     }
 
-    if (!config.globIgnores) {
-      config.globIgnores = ['sw.js'];
-    }
-
     return config;
   }
 
