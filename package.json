@@ -44,6 +44,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-spawn-mocha": "^3.1.0",
     "handlebars": "^4.0.6",
+    "html-webpack-plugin": "^2.28.0",
     "jsdoc-strip-async-await": "^0.1.0",
     "lerna": "2.0.0-rc.4",
     "minimist": "^1.2.0",
@@ -63,6 +64,7 @@
     "sinon": "^2.2.0",
     "sw-testing-helpers": "^1.0.2",
     "tmp": "0.0.31",
-    "uppercamelcase": "^3.0.0"
+    "uppercamelcase": "^3.0.0",
+    "webpack": "^2.6.0"
   }
 }
