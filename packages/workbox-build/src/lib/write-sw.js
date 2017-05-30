@@ -6,7 +6,7 @@ const template = require('lodash.template');
 const errors = require('./errors');
 
 module.exports =
-  (swSrc, manifestEntries, wbSWPathRelToSW, globDirectory, options) => {
+  (swSrc, manifestEntries, workboxSWImportPath, globDirectory, options) => {
   options = options || {};
   try {
     mkdirp.sync(path.dirname(swSrc));
@@ -88,7 +88,7 @@ module.exports =
       }
       return template(templateString)({
         manifestEntries: manifestEntries,
-        wbSWPathRelToSW,
+        workboxSWImportPath,
         navigateFallback: options.navigateFallback,
         navigateFallbackWhitelist: options.navigateFallbackWhitelist,
         workboxSWOptionsString,

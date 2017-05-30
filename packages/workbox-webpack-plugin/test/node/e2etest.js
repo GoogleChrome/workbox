@@ -65,11 +65,11 @@ describe('Tests for webpack plugin', function() {
   });
 
   it('should generate sw, when `swSrc` is not present', () => {
-    process.chdir(tmpDirectory);
-
     fsExtra.copySync(
       path.join(__dirname, '..', '..', '..', 'workbox-cli', 'test', 'static', 'example-project-1'),
       tmpDirectory);
+
+    process.chdir(tmpDirectory);
 
     const webpackConfig = {
       entry: {
@@ -95,11 +95,11 @@ describe('Tests for webpack plugin', function() {
   });
 
   it('should inject manifest, when `swSrc` is present', () => {
-    process.chdir(tmpDirectory);
-
     fsExtra.copySync(
       path.join(__dirname, '..', '..', '..', 'workbox-cli', 'test', 'static', 'example-project-2'),
       tmpDirectory);
+
+    process.chdir(tmpDirectory);
 
     const webpackConfig = {
       entry: {
