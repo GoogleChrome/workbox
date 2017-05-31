@@ -2,7 +2,7 @@ const errors = require('./errors');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
-const runtimeCachingConverter = require('utils/runtime-caching-converter');
+const runtimeCachingConverter = require('./utils/runtime-caching-converter');
 const template = require('lodash.template');
 
 module.exports =
