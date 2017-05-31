@@ -36,6 +36,7 @@ function getOptionsString(options) {
 }
 
 module.exports = (runtimeCaching) => {
+  runtimeCaching = runtimeCaching || [];
   return runtimeCaching.map((entry) => {
     if (entry.method && entry.method !== 'GET') {
       throw new Error(errors['method-not-supported']);

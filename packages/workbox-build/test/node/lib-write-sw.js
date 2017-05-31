@@ -692,13 +692,13 @@ const fileManifest = [
 
 const workboxSW = new self.WorkboxSW();
 workboxSW.precache(fileManifest);
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.cacheFirst());
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.cacheOnly());
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.networkFirst());
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.networkOnly());
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.staleWhileRevalidate());
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.staleWhileRevalidate());
-workboxSW.router.registerRoute(/images/:size/:name.jpg, (request, values, options) => {
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.cacheFirst({}));
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.cacheOnly({}));
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.networkFirst({}));
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.networkOnly({}));
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.staleWhileRevalidate({}));
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.staleWhileRevalidate({}));
+workboxSW.router.registerRoute('/images/:size/:name.jpg', (request, values, options) => {
               return new Promise('params: ' + values.join(','));
             });
 workboxSW.router.registerRoute(/\\/articles\\//, workboxSW.strategies.staleWhileRevalidate({
