@@ -111,6 +111,9 @@ describe('Test getFileManifestEntries', function() {
             }, {
               url: '/styles/stylesheet-2.css',
               revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            }, {
+              url: '/webpackEntry.js',
+              revision: 'd41d8cd98f00b204e9800998ecf8427e',
             },
           ]);
         });
@@ -148,6 +151,9 @@ describe('Test getFileManifestEntries', function() {
         }, {
           url: '/static/styles/stylesheet-2.css',
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        }, {
+          url: '/webpackEntry.js',
+          revision: 'd41d8cd98f00b204e9800998ecf8427e',
         },
       ]);
     });
@@ -178,6 +184,9 @@ describe('Test getFileManifestEntries', function() {
         }, {
           url: '/styles/stylesheet-2.css',
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        }, {
+          url: '/webpackEntry.js',
+          revision: 'd41d8cd98f00b204e9800998ecf8427e',
         },
       ]);
     });
@@ -242,6 +251,9 @@ describe('Test getFileManifestEntries', function() {
           url: '/styles/stylesheet-2.css',
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
+          url: '/webpackEntry.js',
+          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+        }, {
           url: '/template/url1',
           revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
         }, {
@@ -288,6 +300,9 @@ describe('Test getFileManifestEntries', function() {
           url: '/styles/stylesheet-2.css',
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
+          url: '/webpackEntry.js',
+          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+        }, {
           url: '/template/url1',
           revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
         }, {
@@ -319,6 +334,7 @@ describe('Test getFileManifestEntries', function() {
         '/page-2.html',
         '/styles/stylesheet-1.css',
         '/styles/stylesheet-2.css',
+        '/webpackEntry.js',
       ]);
     });
   });
