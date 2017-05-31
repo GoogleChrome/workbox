@@ -27,7 +27,7 @@ describe('Test Directory Index', function() {
     const DIRECTORY_INDEX = 'custom.html';
 
     let calledWithIndex = false;
-    const claimStub = sinon.stub(Cache.prototype, 'match', (request) => {
+    const claimStub = sinon.stub(Cache.prototype, 'match').callsFake((request) => {
       if (request === new URL(`${EXAMPLE_URL}${DIRECTORY_INDEX}`, self.location).toString()) {
         calledWithIndex = true;
       }
