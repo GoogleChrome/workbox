@@ -27,8 +27,9 @@ function getOptionsString(options) {
   }
 
   // Everything should be copied to the corresponding new option names at this
-  // point, so delete the old-style `cache` property if it's present.
-  delete effectiveOptions.cache;
+  // point, so set the old-style `cache` property to undefined so that it
+  // doesn't show up in the JSON output.
+  effectiveOptions.cache = undefined;
 
   // JSON.stringify() will automatically omit any properties that are set to
   // undefined values.
