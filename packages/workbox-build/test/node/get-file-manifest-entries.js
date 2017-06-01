@@ -217,9 +217,9 @@ describe('Test getFileManifestEntries', function() {
       globDirectory: path.join(__dirname, '..', '..', '..',
         'workbox-cli', 'test', 'static', 'example-project-1'),
       templatedUrls: {
-        'template/url1': ['page-1.html', 'index.html'],
-        'template/url2': ['page-2.html', 'index.html'],
-        'template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
+        '/template/url1': ['page-1.html', 'index.html'],
+        '/template/url2': ['page-2.html', 'index.html'],
+        '/template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
       },
     };
 
@@ -242,13 +242,13 @@ describe('Test getFileManifestEntries', function() {
           url: 'styles/stylesheet-2.css',
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
-          url: 'template/url1',
+          url: '/template/url1',
           revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
         }, {
-          url: 'template/url2',
+          url: '/template/url2',
           revision: 'bd9ef0ab8b57d5d716e6916610d34936',
         }, {
-          url: 'template/url3',
+          url: '/template/url3',
           revision: '538954a0f0fca1d067ff03dca8dce79e',
         },
       ]);
@@ -263,9 +263,9 @@ describe('Test getFileManifestEntries', function() {
       globDirectory: path.join(__dirname, '..', '..', '..',
         'workbox-cli', 'test', 'static', 'example-project-1'),
       dynamicUrlToDependencies: {
-        'template/url1': ['page-1.html', 'index.html'],
-        'template/url2': ['page-2.html', 'index.html'],
-        'template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
+        '/template/url1': ['page-1.html', 'index.html'],
+        '/template/url2': ['page-2.html', 'index.html'],
+        '/template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
       },
     };
 
@@ -288,13 +288,13 @@ describe('Test getFileManifestEntries', function() {
           url: 'styles/stylesheet-2.css',
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
-          url: 'template/url1',
+          url: '/template/url1',
           revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
         }, {
-          url: 'template/url2',
+          url: '/template/url2',
           revision: 'bd9ef0ab8b57d5d716e6916610d34936',
         }, {
-          url: 'template/url3',
+          url: '/template/url3',
           revision: '538954a0f0fca1d067ff03dca8dce79e',
         },
       ]);
