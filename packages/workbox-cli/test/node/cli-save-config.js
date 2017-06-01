@@ -54,7 +54,7 @@ describe('Ask to Save to Config File', function() {
 
   it('should handle failing inquirer', function() {
     const inquirer = require('inquirer');
-    const stub = sinon.stub(inquirer, 'prompt', () => {
+    const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.reject(INJECTED_ERROR);
     });
 
@@ -70,7 +70,7 @@ describe('Ask to Save to Config File', function() {
 
   it('should return correct value', function() {
     const inquirer = require('inquirer');
-    const stub = sinon.stub(inquirer, 'prompt', () => {
+    const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.resolve({
         saveConfig: true,
       });

@@ -22,7 +22,7 @@ const webpackCompilation = {
 let webpackEventCallback;
 const webpackDoneCallback = sinon.spy();
 // Create webpack callback handler
-sinon.stub(webpackCompilation.compiler, 'plugin', (event, callback)=> {
+sinon.stub(webpackCompilation.compiler, 'plugin').callsFake((event, callback)=> {
   webpackEventCallback = callback;
 });
 
@@ -41,13 +41,13 @@ describe('Tests for webpack plugin', function() {
     };
 
     // Generate stub methods
-    sinon.stub(proxySwBuild, 'generateSW', function() {
+    sinon.stub(proxySwBuild, 'generateSW').callsFake(function() {
       return new Promise((resolve) => {
         resolve();
       });
     });
 
-    sinon.stub(proxySwBuild, 'injectManifest', function() {
+    sinon.stub(proxySwBuild, 'injectManifest').callsFake(function() {
       return new Promise((resolve) => {
         resolve();
       });

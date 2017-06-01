@@ -37,7 +37,7 @@ describe('replay-queued-requests', () => {
   beforeEach(function() {
     MockDate.set(initialTimestamp + timestampOffset);
     fetchedUrls = [];
-    fetchStub = sinon.stub(window, 'fetch', (requestUrl) => {
+    fetchStub = sinon.stub(window, 'fetch').callsFake((requestUrl) => {
       const regex = /^https:\/\/replay-queued-requests.com\//g;
       if (regex.test(requestUrl)) {
         fetchedUrls.push(requestUrl);
