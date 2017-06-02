@@ -14,7 +14,7 @@
  */
 
 import Route from './route';
-import assert from '../../../../lib/assert';
+import {isArrayOfClass} from '../../../../lib/assert';
 import logHelper from '../../../../lib/log-helper';
 
 /**
@@ -68,9 +68,9 @@ class NavigationRoute extends Route {
    * definition.
    */
   constructor({whitelist, blacklist, handler} = {}) {
-    assert.isArrayOfClass({whitelist}, RegExp);
+    isArrayOfClass({whitelist}, RegExp);
     if (blacklist) {
-      assert.isArrayOfClass({blacklist}, RegExp);
+      isArrayOfClass({blacklist}, RegExp);
     } else {
       blacklist = [];
     }

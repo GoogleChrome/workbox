@@ -14,7 +14,7 @@
 */
 
 import Route from './route';
-import assert from '../../../../lib/assert';
+import {isArrayOfClass, isInstance} from '../../../../lib/assert';
 import logHelper from '../../../../lib/log-helper.js';
 import normalizeHandler from './normalize-handler';
 
@@ -220,7 +220,7 @@ class Router {
    * routes to register.
    */
   registerRoutes({routes} = {}) {
-    assert.isArrayOfClass({routes}, Route);
+    isArrayOfClass({routes}, Route);
 
     for (let route of routes) {
       if (!this._routes.has(route.method)) {
@@ -244,7 +244,7 @@ class Router {
    * @param {module:workbox-routing.Route} input.route The route to register.
    */
   registerRoute({route} = {}) {
-    assert.isInstance({route}, Route);
+    isInstance({route}, Route);
 
     this.registerRoutes({routes: [route]});
   }

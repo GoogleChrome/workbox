@@ -14,7 +14,8 @@
 */
 
 import ErrorFactory from './error-factory';
-import assert from '../../../../lib/assert';
+import {isArrayOfType, isType, atLeastOne, isInstance} from
+  '../../../../lib/assert';
 import {CacheableResponsePlugin} from
   '../../../workbox-cacheable-response/src/index';
 import {pluginCallbacks, getDefaultCacheName} from './constants';
@@ -65,7 +66,7 @@ class RequestWrapper {
     }
 
     if (cacheName) {
-      assert.isType({cacheName}, 'string');
+      isType({cacheName}, 'string');
       this.cacheName = cacheName;
       if (cacheId) {
         this.cacheName = `${cacheId}-${this.cacheName}`;
@@ -75,19 +76,19 @@ class RequestWrapper {
     }
 
     if (fetchOptions) {
-      assert.isType({fetchOptions}, 'object');
+      isType({fetchOptions}, 'object');
       this.fetchOptions = fetchOptions;
     }
 
     if (matchOptions) {
-      assert.isType({matchOptions}, 'object');
+      isType({matchOptions}, 'object');
       this.matchOptions = matchOptions;
     }
 
     this.plugins = new Map();
 
     if (plugins) {
-      assert.isArrayOfType({plugins}, 'object');
+      isArrayOfType({plugins}, 'object');
 
       plugins.forEach((plugin) => {
         for (let callbackName of pluginCallbacks) {
@@ -167,7 +168,7 @@ class RequestWrapper {
    * @return {Promise.<Response>} The cached response.
    */
   async match({request}) {
-    assert.atLeastOne({request});
+    atLeastOne({request});
 
     const cache = await this.getCache();
     let cachedResponse = await cache.match(request, this.matchOptions);
@@ -205,7 +206,7 @@ class RequestWrapper {
     if (typeof request === 'string') {
       request = new Request(request);
     } else {
-      assert.isInstance({request}, Request);
+      isInstance({request}, Request);
     }
 
     // If there is a fetchDidFail plugin, we need to save a clone of the
@@ -217,9 +218,9 @@ class RequestWrapper {
     if (this.plugins.has('requestWillFetch')) {
       for (let plugin of this.plugins.get('requestWillFetch')) {
         const returnedPromise = plugin.requestWillFetch({request});
-        assert.isInstance({returnedPromise}, Promise);
+        isInstance({returnedPromise}, Promise);
         const returnedRequest = await returnedPromise;
-        assert.isInstance({returnedRequest}, Request);
+        isInstance({returnedRequest}, Request);
         request = returnedRequest;
       }
     }
@@ -278,7 +279,7 @@ class RequestWrapper {
    */
   async fetchAndCache(
     {request, waitOnCache, cacheKey, cacheResponsePlugin, cleanRedirects}) {
-    assert.atLeastOne({request});
+    atLeastOne({request});
 
     let cachingComplete;
     const response = await this.fetch({request});

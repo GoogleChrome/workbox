@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
+import {isType, isInstance} from '../../../../lib/assert';
 import {cacheUpdatedMessageType} from './constants';
 
 /**
@@ -63,10 +63,10 @@ import {cacheUpdatedMessageType} from './constants';
  *        of the update message.
  */
 function broadcastUpdate({channel, cacheName, url, source}) {
-  assert.isInstance({channel}, BroadcastChannel);
-  assert.isType({cacheName}, 'string');
-  assert.isType({source}, 'string');
-  assert.isType({url}, 'string');
+  isInstance({channel}, BroadcastChannel);
+  isType({cacheName}, 'string');
+  isType({source}, 'string');
+  isType({url}, 'string');
 
   channel.postMessage({
     type: cacheUpdatedMessageType,

@@ -14,7 +14,7 @@
 */
 
 import CacheExpiration from './cache-expiration';
-import assert from '../../../../lib/assert';
+import {isType, isInstance} from '../../../../lib/assert';
 
 /**
  * The `CacheExpirationPlugin` class allows you define an expiration and / or
@@ -73,8 +73,8 @@ class CacheExpirationPlugin extends CacheExpiration {
    * @param {Number} [input.now] A timestamp. Defaults to the current time.
    */
   async cacheDidUpdate({cacheName, newResponse, url, now} = {}) {
-    assert.isType({cacheName}, 'string');
-    assert.isInstance({newResponse}, Response);
+    isType({cacheName}, 'string');
+    isInstance({newResponse}, Response);
 
     if (typeof now === 'undefined') {
       now = Date.now();

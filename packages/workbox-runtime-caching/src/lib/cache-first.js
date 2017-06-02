@@ -14,7 +14,7 @@
 */
 
 import Handler from './handler';
-import assert from '../../../../lib/assert';
+import {isInstance} from '../../../../lib/assert';
 
 /**
  * An implementation of a [cache-first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network)
@@ -53,7 +53,7 @@ class CacheFirst extends Handler {
    *          the network and the result will be cached for future use.
    */
   async handle({event} = {}) {
-    assert.isInstance({event}, FetchEvent);
+    isInstance({event}, FetchEvent);
 
     const cachedResponse = await this.requestWrapper.match({
       request: event.request,

@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
+import {isType, isOneOf} from '../../../../lib/assert';
 import normalizeHandler from './normalize-handler';
 import {defaultMethod, validMethods} from './constants';
 
@@ -121,11 +121,11 @@ class Route {
   constructor({match, handler, method} = {}) {
     this.handler = normalizeHandler(handler);
 
-    assert.isType({match}, 'function');
+    isType({match}, 'function');
     this.match = match;
 
     if (method) {
-      assert.isOneOf({method}, validMethods);
+      isOneOf({method}, validMethods);
       this.method = method;
     } else {
       this.method = defaultMethod;

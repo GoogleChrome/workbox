@@ -16,7 +16,7 @@
 import {CacheableResponsePlugin} from
   '../../../workbox-cacheable-response/src/index';
 import Handler from './handler';
-import assert from '../../../../lib/assert';
+import {isInstance} from '../../../../lib/assert';
 
 /**
  * An implementation of a [stale-while-revalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
@@ -79,7 +79,7 @@ class StaleWhileRevalidate extends Handler {
    *          from the network if not.
    */
   async handle({event} = {}) {
-    assert.isInstance({event}, FetchEvent);
+    isInstance({event}, FetchEvent);
 
     const fetchAndCacheResponse = this.requestWrapper.fetchAndCache({
       request: event.request,

@@ -1,5 +1,5 @@
 import {broadcastMeta} from './constants';
-import assert from '../../../../lib/assert';
+import {isType, isInstance} from '../../../../lib/assert';
 
 /**
  * broadcasts the message with the given type and url
@@ -15,9 +15,9 @@ function broadcastMessage({broadcastChannel, type, url}) {
   if(!broadcastChannel)
     return;
 
-  assert.isInstance({broadcastChannel}, BroadcastChannel);
-  assert.isType({type}, 'string');
-  assert.isType({url}, 'string');
+  isInstance({broadcastChannel}, BroadcastChannel);
+  isType({type}, 'string');
+  isType({url}, 'string');
 
   broadcastChannel.postMessage({
     type: type,
