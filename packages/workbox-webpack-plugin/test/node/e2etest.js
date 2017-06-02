@@ -123,7 +123,7 @@ describe('Tests for webpack plugin', function() {
       expect(swContents).to.equal(`someVariables.precache([
   {
     "url": "/index.html",
-    "revision": "24abd5daf6d87c25f40c2b74ee3fbe93"
+    "revision": "3883c45b119c9d7e9ad75a1b4a4672ac"
   },
   {
     "url": "/page-1.html",

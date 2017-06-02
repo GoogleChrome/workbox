@@ -15,6 +15,7 @@
     "workbox": false
   },
   "rules": {
-    "no-tabs": 2
+    "no-tabs": 2,
+    "linebreak-style": 0,
   }
 }

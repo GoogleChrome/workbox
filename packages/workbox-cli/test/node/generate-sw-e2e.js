@@ -1,7 +1,7 @@
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 const path = require('path');
-const proxyquire = require('proxyquire');
+const proxyquire = require('proxyquire').noPreserveCache();
 
 const testServerGen = require('../../../../utils/test-server-generator.js');
 const validator = require('../utils/e2e-sw-validator.js');
@@ -32,7 +32,12 @@ describe('Generate SW End-to-End Tests', function() {
 
     return testServer.stop()
       .then(() => fsExtra.remove(tmpDirectory))
-      .catch((error) => console.log(error));
+      .catch((err) => {
+        // This is an issue on Windows where the file system is locked
+        // but there doesn't seem to be a fixed based on a number of
+        // issues raised on the same subject on Github.
+        console.error(err);
+      });
   });
 
   it('should be able to generate a service for example-1 with CLI', function() {

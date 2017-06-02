@@ -98,7 +98,7 @@ describe('Test getFileManifestEntries', function() {
           output.should.deep.equal([
             {
               url: '/index.html',
-              revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
+              revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
             }, {
               url: '/page-1.html',
               revision: '544658ab25ee8762dc241e8b1c5ed96d',
@@ -138,7 +138,7 @@ describe('Test getFileManifestEntries', function() {
       output.should.deep.equal([
         {
           url: '/index.html',
-          revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
+          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
         }, {
           url: '/pages/page-1.html',
           revision: '544658ab25ee8762dc241e8b1c5ed96d',
@@ -237,7 +237,7 @@ describe('Test getFileManifestEntries', function() {
       output.should.deep.equal([
         {
           url: '/index.html',
-          revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
+          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
         }, {
           url: '/page-1.html',
           revision: '544658ab25ee8762dc241e8b1c5ed96d',
@@ -255,10 +255,10 @@ describe('Test getFileManifestEntries', function() {
           revision: 'd41d8cd98f00b204e9800998ecf8427e',
         }, {
           url: '/template/url1',
-          revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
+          revision: 'e2b06959c26a350d5776c3334aeb5a58',
         }, {
           url: '/template/url2',
-          revision: 'bd9ef0ab8b57d5d716e6916610d34936',
+          revision: '833f88706fde57f81de13b1b11632e6e',
         }, {
           url: '/template/url3',
           revision: '538954a0f0fca1d067ff03dca8dce79e',
@@ -286,7 +286,7 @@ describe('Test getFileManifestEntries', function() {
       output.should.deep.equal([
         {
           url: '/index.html',
-          revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
+          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
         }, {
           url: '/page-1.html',
           revision: '544658ab25ee8762dc241e8b1c5ed96d',
@@ -304,10 +304,10 @@ describe('Test getFileManifestEntries', function() {
           revision: 'd41d8cd98f00b204e9800998ecf8427e',
         }, {
           url: '/template/url1',
-          revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
+          revision: 'e2b06959c26a350d5776c3334aeb5a58',
         }, {
           url: '/template/url2',
-          revision: 'bd9ef0ab8b57d5d716e6916610d34936',
+          revision: '833f88706fde57f81de13b1b11632e6e',
         }, {
           url: '/template/url3',
           revision: '538954a0f0fca1d067ff03dca8dce79e',
