@@ -49,8 +49,9 @@ class RequestManager {
    * @memberOf RequestManager
    * @private
    */
-  replayRequests() {
-    return this._queue.queue.reduce((promise, hash) => {
+  async replayRequests() {
+    let allRequestsStatus = [];
+    await this._queue.queue.reduce((promise, hash) => {
       return promise
         .then(async (item) => {
           const reqData = await this._queue.getRequestFromQueue({hash});
@@ -66,6 +67,7 @@ class RequestManager {
           return fetch(request)
             .then((response)=>{
               if(!response.ok) {
+                allRequestsStatus.push(Promise.reject());
                 return Promise.resolve();
               } else {
                 // not blocking on putResponse.
@@ -77,14 +79,17 @@ class RequestManager {
                 });
                 this._globalCallbacks.onResponse
                   && this._globalCallbacks.onResponse(hash, response);
+                allRequestsStatus.push(Promise.resolve());
               }
             })
             .catch((err)=>{
+              allRequestsStatus.push(Promise.reject());
               this._globalCallbacks.onRetryFailure
                 && this._globalCallbacks.onRetryFailure(hash, err);
             });
         });
     }, Promise.resolve());
+    return Promise.all(allRequestsStatus);
   }
 }
 
