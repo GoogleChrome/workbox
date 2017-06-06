@@ -45,7 +45,9 @@ describe('request-manager test', () => {
   it('check constructor', () => {
     chai.assert.isObject(reqManager);
     chai.assert.isFunction(reqManager.attachSyncHandler);
+    chai.assert.isFunction(reqManager.replayRequest);
     chai.assert.isFunction(reqManager.replayRequests);
+
     chai.assert.equal(reqManager._globalCallbacks, callbacks);
     chai.assert.equal(reqManager._queue, queue);
   });

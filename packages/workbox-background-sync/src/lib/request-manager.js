@@ -57,7 +57,7 @@ class RequestManager {
         idbRequestObject: reqData.request});
       const response = await fetch(request);
       if(!response.ok) {
-        return Promise.reject();
+        return Promise.reject(response.status);
       } else {
         // not blocking on putResponse.
         putResponse({
@@ -72,7 +72,7 @@ class RequestManager {
     } catch(err) {
       this._globalCallbacks.onRetryFailure
         && this._globalCallbacks.onRetryFailure(hash, err);
-        return Promise.reject(err);
+      return Promise.reject(err);
     }
   }
 
@@ -85,15 +85,17 @@ class RequestManager {
    * @private
    */
   async replayRequests() {
-    let failedItems = 0;
+    let failedItems = [];
     for (let hash of this._queue.queue) {
       try {
         await this.replayRequest(hash);
-      } catch (e) {
+      } catch (err) {
+        failedItems.push(err);
         failedItems++;
       }
     }
-    return failedItems > 0 ? Promise.reject() : Promise.resolve();
+    return failedItems.length > 0 ?
+      Promise.reject(failedItems) : Promise.resolve();
   }
 }
 
