@@ -55,7 +55,7 @@ describe('Ask for File Manifest Name', function() {
 
   it('should handle failing inquirer', function() {
     const inquirer = require('inquirer');
-    const stub = sinon.stub(inquirer, 'prompt', () => {
+    const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.reject(INJECTED_ERROR);
     });
 
@@ -71,7 +71,7 @@ describe('Ask for File Manifest Name', function() {
 
   it('should handle empty filename', function() {
     const inquirer = require('inquirer');
-    const stub = sinon.stub(inquirer, 'prompt', () => {
+    const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.resolve({
         fileManifestName: '    ',
       });
@@ -90,7 +90,7 @@ describe('Ask for File Manifest Name', function() {
   it('should trim filename', function() {
     const EXAMPLE_FILENAME = 'example.json';
     const inquirer = require('inquirer');
-    const stub = sinon.stub(inquirer, 'prompt', () => {
+    const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.resolve({
         fileManifestName: `    ${EXAMPLE_FILENAME}    `,
       });
@@ -111,7 +111,7 @@ describe('Ask for File Manifest Name', function() {
   it('should return filename', function() {
     const EXAMPLE_FILENAME = 'example.json';
     const inquirer = require('inquirer');
-    const stub = sinon.stub(inquirer, 'prompt', () => {
+    const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.resolve({
         fileManifestName: EXAMPLE_FILENAME,
       });

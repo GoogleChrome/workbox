@@ -61,12 +61,11 @@ const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, swDes
     }
 
     expectedFiles.splice(expectedFileIndex, 1);
-
-    (typeof fileManifestEntryDetails.revision).should.equal('string');
-    fileManifestEntryDetails.revision.length.should.be.gt(0);
+    expect(typeof fileManifestEntryDetails.revision).to.equal('string');
+    expect(fileManifestEntryDetails.revision.length).to.be.gt(0);
   });
 
-  expectedFiles.length.should.equal(0);
+  expect(expectedFiles.length).to.equal(0);
 };
 
 const performCleanup = (err) => {
@@ -91,57 +90,59 @@ const performCleanup = (err) => {
   });
 };
 
+const smokeTestSWRuns = (swDest) => {
+  let manifestOutputFromSW;
+
+  // Create a fake class to get the manifest contents
+  class WorkboxSW {
+    precache(fileManifest) {
+      manifestOutputFromSW = fileManifest;
+    }
+  }
+  const injectedSelf = {WorkboxSW};
+
+  const swContent = fs.readFileSync(swDest);
+
+  // To smoke test the service worker is valid JavaScript we can run it
+  // in Node's JavaScript parsed. `runInNewContext` comes without
+  // any of the usual APIs (i.e. no require API, no console API, nothing)
+  // so we inject a `self` API to emulate the service worker environment.
+  vm.runInNewContext(swContent, {
+    self: injectedSelf,
+    importScripts: () => {
+      // NOOP
+    },
+  });
+
+  return manifestOutputFromSW;
+};
+
 const performTest = (generateSWCb, {exampleProject, swDest, fileExtensions, baseTestUrl, modifyUrlPrefix}) => {
   let fileManifestOutput;
+
   return generateSWCb()
   .then(() => {
-    class WorkboxSW {
-      precache(fileManifest) {
-        fileManifestOutput = fileManifest;
-      }
-    }
-    const injectedSelf = {WorkboxSW};
-
-    const swContent = fs.readFileSync(swDest);
-    // To smoke test the service worker is valid JavaScript we can run it
-    // in Node's JavaScript parsed. `runInNewContext` comes without
-    // any of the usual APIs (i.e. no require API, no console API, nothing)
-    // so we inject a `self` API to emulate the service worker environment.
-    vm.runInNewContext(swContent, {
-      self: injectedSelf,
-      importScripts: () => {
-        // NOOP
-      },
-    });
-
-    validateFiles(fileManifestOutput, exampleProject, fileExtensions, swDest, modifyUrlPrefix);
+    // First: see if SW is valid JavaScript and get the list of assets
+    // that are precached.
+    console.log(`         Smoke testing service worker @ '${swDest}'`);
+    fileManifestOutput = smokeTestSWRuns(swDest);
+  })
+  .then(() => {
+    // Second: Test to see if the precached assets are what we'd expect.
+    console.log(`         Verifying the precached assets are as expected`);
+    return validateFiles(fileManifestOutput, exampleProject, fileExtensions, swDest, modifyUrlPrefix);
   })
   .then(() => {
     // Rerun and ensure the sw and workbox-sw files are excluded from the output.
     return generateSWCb();
   })
   .then(() => {
-    class WorkboxSW {
-      precache(fileManifest) {
-        fileManifestOutput = fileManifest;
-      }
-    }
-
-    const injectedSelf = {WorkboxSW};
-
-    const swContent = fs.readFileSync(swDest);
-    // To smoke test the service worker is valid JavaScript we can run it
-    // in Node's JavaScript parsed. `runInNewContext` comes without
-    // any of the usual APIs (i.e. no require API, no console API, nothing)
-    // so we inject a `self` API to emulate the service worker environment.
-    vm.runInNewContext(swContent, {
-      self: injectedSelf,
-      importScripts: () => {
-        // NOOP
-      },
-    });
-
-    validateFiles(fileManifestOutput, exampleProject, fileExtensions, swDest, modifyUrlPrefix);
+    console.log(`         Smoke testing re-built service worker @ '${swDest}'`);
+    fileManifestOutput = smokeTestSWRuns(swDest);
+  })
+  .then(() => {
+    console.log(`         Verifying the re-run precached assets are as expected`);
+    return validateFiles(fileManifestOutput, exampleProject, fileExtensions, swDest, modifyUrlPrefix);
   })
   .then(() => {
     if (process.platform === 'win32') {

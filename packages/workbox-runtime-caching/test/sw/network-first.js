@@ -56,7 +56,7 @@ describe('Test of the NetworkFirst handler', function() {
   it(`should return the cached response if the network request times out`, async function() {
     const networkTimeoutSeconds = 0.1;
 
-    globalStubs.push(sinon.stub(self, 'fetch', () => {
+    globalStubs.push(sinon.stub(self, 'fetch').callsFake(() => {
       return new Promise((resolve) => {
         setTimeout(() => resolve(new Response('')), (networkTimeoutSeconds * 1000) + 5);
       });

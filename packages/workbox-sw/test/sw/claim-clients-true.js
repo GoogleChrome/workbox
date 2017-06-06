@@ -36,7 +36,7 @@ describe('Clients Claim parameter', function() {
 
   it('should claim when passed in true (clientsClaim)', function() {
     let called = false;
-    const claimStub = sinon.stub(self.clients, 'claim', () => {
+    const claimStub = sinon.stub(self.clients, 'claim').callsFake(() => {
       called = true;
       return Promise.resolve();
     });
