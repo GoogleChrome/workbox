@@ -51,6 +51,9 @@ module.exports = (runtimeCaching) => {
       throw new Error(errors['handler-is-required']);
     }
 
+    // urlPattern might be either a string or a RegExp object.
+    // If it's a string, it needs to be quoted. If it's a RegExp, it should
+    // be used as-is.
     const matcher = typeof entry.urlPattern === 'string' ?
       `'${entry.urlPattern}'` :
       entry.urlPattern;
