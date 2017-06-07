@@ -55,7 +55,7 @@ const injectManifest = require('./lib/inject-manifest');
  *   globDirectory: './build/',
  *   globPatterns: ['**\/*.{html,js,css}'],
  *   globIgnores: ['service-worker.js','admin.html'],
- *   mainfestDest: './build/scripts/manifest.js',
+ *   manifestDest: './build/scripts/manifest.js',
  *   templatedUrls: {
  *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
  *   },
