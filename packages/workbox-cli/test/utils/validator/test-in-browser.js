@@ -5,23 +5,26 @@ const path = require('path');
 const url = require('url');
 
 const getSeleniumBrowser = () => {
-  if (process.platform === 'win32') {
-    if (!process.env['SAUCELABS_USERNAME'] ||
-      !process.env['SAUCELABS_ACCESS_KEY']) {
-      console.warn('Skipping SauceLabs tests due to no credentials in environment');
-      return null;
-    }
-
-    const SAUCELABS_USERNAME = process.env['SAUCELABS_USERNAME'];
-    const SAUCELABS_ACCESS_KEY = process.env['SAUCELABS_ACCESS_KEY'];
-    seleniumAssistant.setSaucelabsDetails(SAUCELABS_USERNAME, SAUCELABS_ACCESS_KEY);
-    return seleniumAssistant.startSaucelabsConnect()
-    .then(() => {
-      return seleniumAssistant.getSauceLabsBrowser('chrome', 'latest');
-    });
-  } else {
+  if (process.platform !== 'win32') {
+    console.log('Running in Chrome stable.');
     return seleniumAssistant.getLocalBrowser('chrome', 'stable');
   }
+
+  if (!process.env['SAUCELABS_USERNAME'] ||
+    !process.env['SAUCELABS_ACCESS_KEY']) {
+    console.warn('Skipping SauceLabs tests due to no credentials in environment');
+    return null;
+  }
+
+  console.log('Running in a windows Windows Environment, using SauceLabs.');
+
+  const SAUCELABS_USERNAME = process.env['SAUCELABS_USERNAME'];
+  const SAUCELABS_ACCESS_KEY = process.env['SAUCELABS_ACCESS_KEY'];
+  seleniumAssistant.setSaucelabsDetails(SAUCELABS_USERNAME, SAUCELABS_ACCESS_KEY);
+  return seleniumAssistant.startSaucelabsConnect()
+  .then(() => {
+    return seleniumAssistant.getSauceLabsBrowser('chrome', 'latest');
+  });
 };
 
 const testInBrowser = (baseTestUrl, fileManifestOutput, swDest, exampleProject) => {
