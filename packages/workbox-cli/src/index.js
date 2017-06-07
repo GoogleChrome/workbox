@@ -141,11 +141,6 @@ class SWCli {
       return Promise.resolve(config);
     })
     .then((config) => {
-      if (!config.globIgnores) {
-        config.globIgnores = [
-          'node_modules/**/*',
-        ];
-      }
       return workboxBuild.generateSW(config);
     });
   }
