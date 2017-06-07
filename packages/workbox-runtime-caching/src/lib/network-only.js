@@ -14,7 +14,7 @@
 */
 
 import Handler from './handler';
-import assert from '../../../../lib/assert';
+import {isInstance} from '../../../../lib/assert';
 
 /**
  * An implementation of a [network-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only)
@@ -50,7 +50,7 @@ class NetworkOnly extends Handler {
    * @return {Promise.<Response>} The response from the network.
    */
   async handle({event} = {}) {
-    assert.isInstance({event}, FetchEvent);
+    isInstance({event}, FetchEvent);
 
     return await this.requestWrapper.fetch({request: event.request});
   }

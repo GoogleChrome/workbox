@@ -1,6 +1,6 @@
 import ErrorFactory from '../../error-factory';
 import BaseCacheEntry from './base-precache-entry';
-import assert from '../../../../../../lib/assert';
+import {isType} from '../../../../../../lib/assert';
 
 /**
  * This class will take a string and parse it as a BaseCacheEntry.
@@ -16,7 +16,7 @@ class StringCacheEntry extends BaseCacheEntry {
    * @param {String} url A URL to cache.
    */
   constructor(url) {
-    assert.isType({url}, 'string');
+    isType({url}, 'string');
     if (url.length === 0) {
       throw ErrorFactory.createError('invalid-revisioned-entry',
         new Error('Bad url Parameter. It should be a string:' +

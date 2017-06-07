@@ -17,7 +17,7 @@ import {CacheableResponsePlugin} from
   '../../../workbox-cacheable-response/src/index';
 import ErrorFactory from './error-factory';
 import Handler from './handler';
-import assert from '../../../../lib/assert';
+import {isType, isInstance} from '../../../../lib/assert';
 
 /**
  * An implementation of a [network first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache)
@@ -67,7 +67,7 @@ class NetworkFirst extends Handler {
 
     const {networkTimeoutSeconds} = input;
     if (networkTimeoutSeconds) {
-      assert.isType({networkTimeoutSeconds}, 'number');
+      isType({networkTimeoutSeconds}, 'number');
       this.networkTimeoutSeconds = networkTimeoutSeconds;
     }
   }
@@ -84,7 +84,7 @@ class NetworkFirst extends Handler {
    *          not available, a previously cached response.
    */
   async handle({event} = {}) {
-    assert.isInstance({event}, FetchEvent);
+    isInstance({event}, FetchEvent);
 
     const promises = [];
     let timeoutId;

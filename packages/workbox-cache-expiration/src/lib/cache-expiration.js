@@ -14,7 +14,7 @@
 */
 
 import idb from 'idb';
-import assert from '../../../../lib/assert';
+import {isType, isInstance, isArrayOfType} from '../../../../lib/assert';
 import logHelper from '../../../../lib/log-helper';
 import {
   idbName,
@@ -86,7 +86,7 @@ class CacheExpiration {
    * @return {DB} An open DB instance.
    */
   async getDB({cacheName} = {}) {
-    assert.isType({cacheName}, 'string');
+    isType({cacheName}, 'string');
 
     const idbId = `${idbName}-${cacheName}`;
     if (!this._dbs.has(idbId)) {
@@ -111,7 +111,7 @@ class CacheExpiration {
    * @return {Cache} An open Cache instance.
    */
   async getCache({cacheName} = {}) {
-    assert.isType({cacheName}, 'string');
+    isType({cacheName}, 'string');
 
     if (!this._caches.has(cacheName)) {
       const openCache = await caches.open(cacheName);
@@ -149,7 +149,7 @@ class CacheExpiration {
     // Only bother checking for freshness if we have a valid response and if
     // maxAgeSeconds is set. Otherwise, skip the check and always return true.
     if (cachedResponse && this.maxAgeSeconds) {
-      assert.isInstance({cachedResponse}, Response);
+      isInstance({cachedResponse}, Response);
 
       const dateHeader = cachedResponse.headers.get('date');
       if (dateHeader) {
@@ -194,8 +194,8 @@ class CacheExpiration {
    *
    */
   async updateTimestamp({cacheName, url, now} = {}) {
-    assert.isType({url}, 'string');
-    assert.isType({cacheName}, 'string');
+    isType({url}, 'string');
+    isType({cacheName}, 'string');
 
     if (typeof now === 'undefined') {
       now = Date.now();
@@ -248,7 +248,7 @@ class CacheExpiration {
     }
     this._expirationMutex = true;
 
-    assert.isType({cacheName}, 'string');
+    isType({cacheName}, 'string');
 
     if (typeof now === 'undefined') {
       now = Date.now();
@@ -298,8 +298,8 @@ class CacheExpiration {
    * @return {Array<string>} A list of the URLs that were expired.
    */
   async findOldEntries({cacheName, now} = {}) {
-    assert.isType({cacheName}, 'string');
-    assert.isType({now}, 'number');
+    isType({cacheName}, 'string');
+    isType({now}, 'number');
 
     const expireOlderThan = now - (this.maxAgeSeconds * 1000);
     const urls = [];
@@ -337,7 +337,7 @@ class CacheExpiration {
    *   expiration.
    */
   async findExtraEntries({cacheName} = {}) {
-    assert.isType({cacheName}, 'string');
+    isType({cacheName}, 'string');
 
     const urls = [];
     const db = await this.getDB({cacheName});
@@ -379,8 +379,8 @@ class CacheExpiration {
    * @param {Array<string>} urls The URLs to delete.
    */
   async deleteFromCacheAndIDB({cacheName, urls} = {}) {
-    assert.isType({cacheName}, 'string');
-    assert.isArrayOfType({urls}, 'string');
+    isType({cacheName}, 'string');
+    isArrayOfType({urls}, 'string');
 
     if (urls.length > 0) {
       const cache = await this.getCache({cacheName});

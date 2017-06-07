@@ -14,7 +14,7 @@
 */
 
 import Handler from './handler';
-import assert from '../../../../lib/assert';
+import {isInstance} from '../../../../lib/assert';
 
 /**
  * An implementation of a [cache-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only)
@@ -51,7 +51,7 @@ class CacheOnly extends Handler {
    * @return {Promise.<Response>} The response from the cache or null.
    */
   async handle({event} = {}) {
-    assert.isInstance({event}, FetchEvent);
+    isInstance({event}, FetchEvent);
 
     return await this.requestWrapper.match({request: event.request});
   }

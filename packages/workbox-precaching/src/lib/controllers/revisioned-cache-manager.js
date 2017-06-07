@@ -6,7 +6,7 @@ import StringPrecacheEntry from
   '../models/precache-entries/string-precache-entry';
 import ObjectPrecacheEntry from
   '../models/precache-entries/object-precache-entry';
-import assert from '../../../../../lib/assert';
+import {isInstance} from '../../../../../lib/assert';
 import logHelper from '../../../../../lib/log-helper';
 
 /**
@@ -73,7 +73,7 @@ class RevisionedCacheManager extends BaseCacheManager {
    * });
    */
   addToCacheList({revisionedFiles} = {}) {
-    assert.isInstance({revisionedFiles}, Array);
+    isInstance({revisionedFiles}, Array);
     super._addEntries(revisionedFiles);
 
     const urlsWithoutRevisionFields = revisionedFiles

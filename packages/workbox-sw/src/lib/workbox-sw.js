@@ -18,7 +18,8 @@
 import ErrorFactory from './error-factory.js';
 import Router from './router.js';
 import Strategies from './strategies';
-import environment from '../../../../lib/environment.js';
+import {isServiceWorkerGlobalScope, isDevBuild, isLocalhost} from
+  '../../../../lib/environment.js';
 import logHelper from '../../../../lib/log-helper';
 import {BroadcastCacheUpdatePlugin} from
   '../../../workbox-broadcast-cache-update/src/index.js';
@@ -64,13 +65,13 @@ class WorkboxSW {
                directoryIndex = 'index.html',
                precacheChannelName = 'precache-updates',
                ignoreUrlParametersMatching = [/^utm_/]} = {}) {
-    if (!environment.isServiceWorkerGlobalScope()) {
+    if (!isServiceWorkerGlobalScope()) {
       // If we are not running in a service worker, fail early.
       throw ErrorFactory.createError('not-in-sw');
     }
 
-    if (environment.isDevBuild()) {
-      if (environment.isLocalhost()) {
+    if (isDevBuild()) {
+      if (isLocalhost()) {
         // If this is a dev bundle on localhost, print a welcome message.
         logHelper.debug({
           message: 'Welcome to Workbox!',
