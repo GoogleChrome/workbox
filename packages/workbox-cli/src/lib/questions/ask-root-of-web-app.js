@@ -64,7 +64,8 @@ module.exports = () => {
       return inquirer.prompt([
         {
           name: 'rootDir',
-          message: 'Please enter the root of your web app? (Defaults to the current directory)',
+          message: 'Please enter the root of your web app? (Defaults to ' +
+            'the current directory)',
           default: '.',
         },
       ]);
