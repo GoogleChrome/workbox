@@ -1,8 +1,9 @@
 const fs = require('fs');
 const fsExtra = require('fs-extra');
 const path = require('path');
-const proxyquire = require('proxyquire').noPreserveCache();
+const sinon = require('sinon');
 
+const SWCli = require('../../build/index');
 const testServerGen = require('../../../../utils/test-server-generator.js');
 const validator = require('../utils/e2e-sw-validator.js');
 
@@ -12,6 +13,7 @@ describe('Generate SW End-to-End Tests', function() {
   let tmpDirectory;
   let testServer;
   let baseTestUrl;
+  let stubs = [];
 
   // NOTE: No jpg
   const FILE_EXTENSIONS = ['html', 'css', 'js', 'png'];
@@ -40,6 +42,13 @@ describe('Generate SW End-to-End Tests', function() {
       });
   });
 
+  afterEach(function() {
+    stubs.forEach((stub) => {
+      stub.restore();
+    });
+    stubs = [];
+  });
+
   it('should be able to generate a service for example-1 with CLI', function() {
     this.timeout(120 * 1000);
 
@@ -51,33 +60,18 @@ describe('Generate SW End-to-End Tests', function() {
 
     const swDest = `${Date.now()}-sw.js`;
 
-    let enforceNoQuestions = false;
-    const SWCli = proxyquire('../../build/index', {
-      './lib/questions/ask-root-of-web-app': () => {
-        if (enforceNoQuestions) {
-          return Promise.reject(Error('Injected Error - No Questions Expected'));
-        }
-        return Promise.resolve(tmpDirectory);
-      },
-      './lib/questions/ask-sw-dest': () => {
-        if (enforceNoQuestions) {
-          return Promise.reject(Error('Injected Error - No Questions Expected'));
-        }
-        return Promise.resolve(swDest);
-      },
-      './lib/questions/ask-save-config': () => {
-        if (enforceNoQuestions) {
-          return Promise.reject(Error('Injected Error - No Questions Expected'));
-        }
-        return Promise.resolve(true);
-      },
-      './lib/questions/ask-extensions-to-cache': () => {
-        if (enforceNoQuestions) {
-          return Promise.reject(Error('Injected Error - No Questions Expected'));
-        }
-        return Promise.resolve(FILE_EXTENSIONS);
-      },
-    });
+    const qStub = sinon.stub(SWCli.prototype, '_askGenerateQuestions')
+      .callsFake(() => {
+        return Promise.resolve({
+          // ./lib/questions/ask-root-of-web-app
+          globDirectory: tmpDirectory,
+          // ./lib/questions/ask-sw-dest
+          swDest: swDest,
+          // ./lib/questions/ask-extensions-to-cache
+          globPatterns: [`**/*.{${FILE_EXTENSIONS.join(',')}}`],
+        });
+      });
+    stubs.push(qStub);
 
     const cli = new SWCli();
     return validator.performTest(() => {
@@ -87,18 +81,6 @@ describe('Generate SW End-to-End Tests', function() {
       swDest,
       fileExtensions: FILE_EXTENSIONS,
       baseTestUrl,
-    })
-    .then(() => {
-      // Should be able to handle command with no questions
-      enforceNoQuestions = true;
-      return validator.performTest(() => {
-        return cli.handleCommand('generate:sw');
-      }, {
-        exampleProject: tmpDirectory,
-        swDest,
-        fileExtensions: FILE_EXTENSIONS,
-        baseTestUrl,
-      });
     });
   });
 });
