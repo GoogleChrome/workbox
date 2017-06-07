@@ -11,7 +11,7 @@ install:
   - ps: Install-Product node Stable
   - npm install
   - npm install -g gulp
-  - gulp lerna-bootstrap-scoped --project="workbox-cli"
+  - gulp lerna-bootstrap
   - cd packages/workbox-cli/
   - npm install
   - cd ..
