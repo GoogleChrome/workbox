@@ -86,6 +86,17 @@ describe('background sync queue test', () => {
     chai.assert.equal(responseAchieved, 2);
   });
 
+  it('check replay failure with rejected promise', async function() {
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3002/__echo/counter')});
+    try {
+      await backgroundSyncQueue.replayRequests();
+      throw new Error('Replay should have failed because of invalid URL');
+    } catch (err) {
+      chai.assert.equal('TypeError: Failed to fetch', err);
+    }
+  });
+
   it('test queue cleanup', async () => {
     /* code for clearing everything from IDB */
     const backgroundSyncQueue

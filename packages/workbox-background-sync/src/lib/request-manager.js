@@ -63,7 +63,7 @@ class RequestManager {
       });
       const response = await fetch(request);
       if(!response.ok) {
-        return Promise.reject(response.status);
+        return Promise.reject(response);
       } else {
         // not blocking on putResponse.
         putResponse({
@@ -76,7 +76,7 @@ class RequestManager {
           this._globalCallbacks.onResponse(hash, response);
       }
     } catch(err) {
-      return Promise.reject(err);
+      return Promise.reject(err.stack);
     }
   }
 
@@ -90,7 +90,7 @@ class RequestManager {
    * @private
    */
   async replayRequests() {
-    let failedItems = [];
+    const failedItems = [];
     for (let hash of this._queue.queue) {
       try {
         await this.replayRequest(hash);
