@@ -1,9 +1,9 @@
-const path = require('path');
-const mkdirp = require('mkdirp');
-const fs = require('fs');
-const template = require('lodash.template');
-
 const errors = require('./errors');
+const fs = require('fs');
+const mkdirp = require('mkdirp');
+const path = require('path');
+const runtimeCachingConverter = require('./utils/runtime-caching-converter');
+const template = require('lodash.template');
 
 module.exports =
   (swSrc, manifestEntries, workboxSWImportPath, globDirectory, options) => {
@@ -50,29 +50,8 @@ module.exports =
       // inject it in the workboxSWOptionsString.
       workboxSWOptions.ignoreUrlParametersMatching = [];
     }
-    let runtimeCaching = [];
-    if (options.runtimeCaching) {
-      options.runtimeCaching.forEach((cachingEntry) => {
-        if (typeof cachingEntry.handler === 'string') {
-          let handlerName = cachingEntry.handler === 'fastest' ?
-            'staleWhileRevalidate' : cachingEntry.handler;
-          let optionsString = cachingEntry.options ?
-            JSON.stringify(cachingEntry.options, null, 2) : '';
-          let stratString =
-            `workboxSW.strategies.${handlerName}(${optionsString})`;
-          runtimeCaching.push(
-            `workboxSW.router.registerRoute(${cachingEntry.urlPattern}, ` +
-            `${stratString});`
-          );
-        } else if (typeof cachingEntry.handler === 'function') {
-          let handlerString = cachingEntry.handler.toString();
-          runtimeCaching.push(
-            `workboxSW.router.registerRoute(${cachingEntry.urlPattern}, ` +
-            `${handlerString});`
-          );
-        }
-      });
-    }
+
+    const runtimeCaching = runtimeCachingConverter(options.runtimeCaching);
 
     try {
       let workboxSWOptionsString = '';
