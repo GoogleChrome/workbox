@@ -42,10 +42,12 @@ class RequestManager {
   }
 
   /**
-   * function to play one single request
-   * given its hash
-   * @param {String=} hash
-   * @return {Promise}
+   * function to play one single request given its hash
+   *
+   * @param {String} hash
+   *
+   * @return {Promise} Resolves if the request corresponding to the hash is
+   * played successfully, rejects if it fails during the replay
    *
    * @memberOf RequestManager
    * @private
@@ -66,20 +68,19 @@ class RequestManager {
           response: response.clone(),
           idbQDb: this._queue.idbQDb,
         });
-        this._globalCallbacks.onResponse
-          && this._globalCallbacks.onResponse(hash, response);
+        if (this._globalCallbacks.onResponse)
+          this._globalCallbacks.onResponse(hash, response);
       }
     } catch(err) {
-      this._globalCallbacks.onRetryFailure
-        && this._globalCallbacks.onRetryFailure(hash, err);
       return Promise.reject(err);
     }
   }
 
   /**
-   * function to start playing requests
-   * in sequence
-   * @return {Promise}
+   * function to start playing requests in sequence
+   *
+   * @return {Promise} Resolves if all requests are played successfully,
+   * rejects if any of the request fails during the replay
    *
    * @memberOf RequestManager
    * @private
@@ -90,8 +91,9 @@ class RequestManager {
       try {
         await this.replayRequest(hash);
       } catch (err) {
+        if(this._globalCallbacks.onRetryFailure)
+          this._globalCallbacks.onRetryFailure(hash, err);
         failedItems.push(err);
-        failedItems++;
       }
     }
     return failedItems.length > 0 ?
