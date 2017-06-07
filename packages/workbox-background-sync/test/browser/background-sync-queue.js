@@ -31,6 +31,9 @@ describe('background sync queue test', () => {
   }
   function onRetryFail() {}
 
+  beforeEach(()=>{
+    responseAchieved = 0;
+  });
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
   const CALLBACKS = {
@@ -71,13 +74,14 @@ describe('background sync queue test', () => {
 
   it('check push proxy', async () => {
     const currentLen = backgroundSyncQueue._queue.queue.length;
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum.com')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
+    await backgroundSyncQueue.replayRequests();
     chai.assert.equal(backgroundSyncQueue._queue.queue.length, currentLen + 1);
   });
 
   it('check replay', async function() {
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/1')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/2')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
     await backgroundSyncQueue.replayRequests();
     chai.assert.equal(responseAchieved, 2);
   });
@@ -97,9 +101,9 @@ describe('background sync queue test', () => {
 
     await backgroundSyncQueue.cleanupQueue();
     await backgroundSyncQueue2.cleanupQueue();
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum1.com')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum2.com')});
-    await backgroundSyncQueue2.pushIntoQueue({request: new Request('http://lipsum.com')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
+    await backgroundSyncQueue2.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
     const queue1Keys = (await backgroundSyncQueue._queue._idbQDb.getAllKeys());
     const queue2Keys = (await backgroundSyncQueue2._queue._idbQDb.getAllKeys());
     await delay(100);

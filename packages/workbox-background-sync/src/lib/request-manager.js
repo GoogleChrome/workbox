@@ -55,8 +55,12 @@ class RequestManager {
   async replayRequest(hash) {
     try {
       const reqData = await this._queue.getRequestFromQueue({hash});
+      if(reqData.response) {
+        return;
+      }
       const request = await getFetchableRequest({
-        idbRequestObject: reqData.request});
+        idbRequestObject: reqData.request,
+      });
       const response = await fetch(request);
       if(!response.ok) {
         return Promise.reject(response.status);

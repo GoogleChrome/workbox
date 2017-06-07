@@ -57,8 +57,8 @@ describe('request-manager test', () => {
       = new workbox.backgroundSync.test.BackgroundSyncQueue({
         callbacks,
       });
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/1')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/2')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
     await backgroundSyncQueue._requestManager.replayRequests();
     chai.assert.equal(responseAchieved, 2);
   });
