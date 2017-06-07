@@ -95,26 +95,16 @@ describe('Test getFileManifestEntries', function() {
 
       return swBuild.getFileManifestEntries(testInput)
         .then((output) => {
-          output.should.deep.equal([
-            {
-              url: '/index.html',
-              revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
-            }, {
-              url: '/page-1.html',
-              revision: '544658ab25ee8762dc241e8b1c5ed96d',
-            }, {
-              url: '/page-2.html',
-              revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-            }, {
-              url: '/styles/stylesheet-1.css',
-              revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-            }, {
-              url: '/styles/stylesheet-2.css',
-              revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-            }, {
-              url: '/webpackEntry.js',
-              revision: 'd41d8cd98f00b204e9800998ecf8427e',
-            },
+          const allUrls = output.map((entry) => {
+            return entry.url;
+          });
+          allUrls.should.deep.equal([
+            '/index.html',
+            '/page-1.html',
+            '/page-2.html',
+            '/styles/stylesheet-1.css',
+            '/styles/stylesheet-2.css',
+            '/webpackEntry.js',
           ]);
         });
     });
@@ -135,26 +125,16 @@ describe('Test getFileManifestEntries', function() {
 
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
-      output.should.deep.equal([
-        {
-          url: '/index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
-        }, {
-          url: '/pages/page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: '/pages/page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: '/static/styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: '/static/styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        }, {
-          url: '/webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
-        },
+      const allUrls = output.map((entry) => {
+        return entry.url;
+      });
+      allUrls.should.deep.equal([
+        '/index.html',
+        '/pages/page-1.html',
+        '/pages/page-2.html',
+        '/static/styles/stylesheet-1.css',
+        '/static/styles/stylesheet-2.css',
+        '/webpackEntry.js',
       ]);
     });
   });
@@ -171,23 +151,15 @@ describe('Test getFileManifestEntries', function() {
 
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
-      output.should.deep.equal([
-        {
-          url: '/page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: '/page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: '/styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: '/styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        }, {
-          url: '/webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
-        },
+      const allUrls = output.map((entry) => {
+        return entry.url;
+      });
+      allUrls.should.deep.equal([
+        '/page-1.html',
+        '/page-2.html',
+        '/styles/stylesheet-1.css',
+        '/styles/stylesheet-2.css',
+        '/webpackEntry.js',
       ]);
     });
   });
@@ -234,35 +206,19 @@ describe('Test getFileManifestEntries', function() {
 
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
-      output.should.deep.equal([
-        {
-          url: '/index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
-        }, {
-          url: '/page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: '/page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: '/styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: '/styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        }, {
-          url: '/webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
-        }, {
-          url: '/template/url1',
-          revision: 'e2b06959c26a350d5776c3334aeb5a58',
-        }, {
-          url: '/template/url2',
-          revision: '833f88706fde57f81de13b1b11632e6e',
-        }, {
-          url: '/template/url3',
-          revision: '538954a0f0fca1d067ff03dca8dce79e',
-        },
+      const allUrls = output.map((entry) => {
+        return entry.url;
+      });
+      allUrls.should.deep.equal([
+        '/index.html',
+        '/page-1.html',
+        '/page-2.html',
+        '/styles/stylesheet-1.css',
+        '/styles/stylesheet-2.css',
+        '/webpackEntry.js',
+        '/template/url1',
+        '/template/url2',
+        '/template/url3',
       ]);
     });
   });
@@ -283,35 +239,19 @@ describe('Test getFileManifestEntries', function() {
 
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
-      output.should.deep.equal([
-        {
-          url: '/index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
-        }, {
-          url: '/page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: '/page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: '/styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: '/styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        }, {
-          url: '/webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
-        }, {
-          url: '/template/url1',
-          revision: 'e2b06959c26a350d5776c3334aeb5a58',
-        }, {
-          url: '/template/url2',
-          revision: '833f88706fde57f81de13b1b11632e6e',
-        }, {
-          url: '/template/url3',
-          revision: '538954a0f0fca1d067ff03dca8dce79e',
-        },
+      const allUrls = output.map((entry) => {
+        return entry.url;
+      });
+      allUrls.should.deep.equal([
+        '/index.html',
+        '/page-1.html',
+        '/page-2.html',
+        '/styles/stylesheet-1.css',
+        '/styles/stylesheet-2.css',
+        '/webpackEntry.js',
+        '/template/url1',
+        '/template/url2',
+        '/template/url3',
       ]);
     });
   });
