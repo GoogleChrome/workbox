@@ -14,7 +14,7 @@
 */
 
 import Route from './route';
-import assert from '../../../../lib/assert';
+import {isInstance} from '../../../../lib/assert';
 import logHelper from '../../../../lib/log-helper.js';
 
 /**
@@ -83,7 +83,7 @@ class RegExpRoute extends Route {
    * HTTP method. Defaults to `'GET'` if not specified.
    */
   constructor({regExp, handler, method}) {
-    assert.isInstance({regExp}, RegExp);
+    isInstance({regExp}, RegExp);
 
     const match = ({url}) => {
       const result = regExp.exec(url.href);

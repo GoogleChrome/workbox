@@ -14,7 +14,7 @@
 */
 
 import ErrorFactory from './error-factory';
-import assert from '../../../../lib/assert';
+import {isType} from '../../../../lib/assert';
 import broadcastUpdate from './broadcast-update';
 import responsesAreSame from './responses-are-same';
 import {defaultHeadersToCheck, defaultSource} from './constants';
@@ -125,7 +125,7 @@ class BroadcastCacheUpdate {
    * @param {string} input.url The URL of the updates request.
    */
   notifyIfUpdated({first, second, cacheName, url}) {
-    assert.isType({cacheName}, 'string');
+    isType({cacheName}, 'string');
 
     if (
       !responsesAreSame({first, second, headersToCheck: this.headersToCheck})) {

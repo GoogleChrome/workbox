@@ -21,6 +21,8 @@ const gulp = require('gulp');
 const path = require('path');
 const runSequence = require('run-sequence');
 const {taskHarness, buildJSBundle, lernaWrapper} = require('../utils/build');
+const commonjs = require('rollup-plugin-commonjs');
+const resolve = require('rollup-plugin-node-resolve');
 
 const printHeading = (heading) => {
   process.stdout.write(chalk.inverse(`  ⚒  ${heading}  `));
@@ -71,15 +73,40 @@ const updateVersionedBundles = (projectPath) => {
 };
 
 gulp.task('build:shared', () => {
+  const basePlugins = [
+    resolve({
+      jsnext: true,
+      main: true,
+      browser: true,
+    }),
+    commonjs(),
+  ];
+
   return buildJSBundle({
     rollupConfig: {
       entry: path.join(__dirname, '..', 'lib', 'log-helper.js'),
-      format: 'umd',
-      moduleName: 'goog.logHelper',
       plugins: [],
     },
-    buildPath: 'build/log-helper.js',
-    projectDir: path.join(__dirname, '..'),
+    writeConfig: {
+      sourceMap: true,
+      format: 'umd',
+      moduleName: 'goog.logHelper',
+      dest: path.join(__dirname, '..', 'build', 'log-helper.js'),
+    },
+  })
+  .then(() => {
+    return buildJSBundle({
+      rollupConfig: {
+        entry: path.join(__dirname, '..', 'lib', 'assert.js'),
+        plugins: basePlugins,
+      },
+      writeConfig: {
+        sourceMap: true,
+        format: 'umd',
+        moduleName: 'goog.assert',
+        dest: path.join(__dirname, '..', 'build', 'assert.js'),
+      },
+    });
   });
 });
 

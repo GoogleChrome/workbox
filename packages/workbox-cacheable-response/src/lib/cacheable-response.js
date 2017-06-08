@@ -13,7 +13,8 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
+import {atLeastOne, isArrayOfType, isType, isInstance} from
+  '../../../../lib/assert';
 import logHelper from '../../../../lib/log-helper.js';
 
 /**
@@ -49,12 +50,12 @@ class CacheableResponse {
    *        checked when determining whether a `Response` is cacheable.
    */
   constructor({statuses, headers} = {}) {
-    assert.atLeastOne({statuses, headers});
+    atLeastOne({statuses, headers});
     if (statuses !== undefined) {
-      assert.isArrayOfType({statuses}, 'number');
+      isArrayOfType({statuses}, 'number');
     }
     if (headers !== undefined) {
-      assert.isType({headers}, 'object');
+      isType({headers}, 'object');
     }
 
     this.statuses = statuses;
@@ -73,7 +74,7 @@ class CacheableResponse {
    *          configuration of this object, and `false` otherwise.
    */
   isResponseCacheable({request, response} = {}) {
-    assert.isInstance({response}, Response);
+    isInstance({response}, Response);
 
     let cacheable = true;
 

@@ -120,29 +120,30 @@ describe('Tests for webpack plugin', function() {
     return runWebpack(webpackConfig)
     .then(() => {
       const swContents = fs.readFileSync(path.join(tmpDirectory, 'sw.js')).toString();
-      expect(swContents).to.equal(`someVariables.precache([
+      const regex = new RegExp(`someVariables.precache\\(\\[
   {
     "url": "/index.html",
-    "revision": "24abd5daf6d87c25f40c2b74ee3fbe93"
+    "revision": "\\w*"
   },
   {
     "url": "/page-1.html",
-    "revision": "544658ab25ee8762dc241e8b1c5ed96d"
+    "revision": "\\w*"
   },
   {
     "url": "/page-2.html",
-    "revision": "a3a71ce0b9b43c459cf58bd37e911b74"
+    "revision": "\\w*"
   },
   {
     "url": "/styles/stylesheet-1.css",
-    "revision": "934823cbc67ccf0d67aa2a2eeb798f12"
+    "revision": "\\w*"
   },
   {
     "url": "/styles/stylesheet-2.css",
-    "revision": "884f6853a4fc655e4c2dc0c0f27a227c"
+    "revision": "\\w*"
   }
-]);
-`);
+\\]\\);`);
+      const result = regex.exec(swContents);
+      expect(result).to.exist;
     });
   });
 });

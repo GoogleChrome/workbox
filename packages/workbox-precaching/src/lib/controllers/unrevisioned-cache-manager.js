@@ -3,7 +3,7 @@ import BaseCacheManager from './base-cache-manager';
 import RequestCacheEntry from '../models/precache-entries/request-entry';
 import StringPrecacheEntry from
   '../models/precache-entries/string-precache-entry';
-import assert from '../../../../../lib/assert';
+import {isInstance} from '../../../../../lib/assert';
 
 /**
  * This class extends a lot of the internal methods from BaseCacheManager
@@ -48,7 +48,7 @@ class UnrevisionedCacheManager extends BaseCacheManager {
    * parsed into a BaseCacheEntry.
    */
    addToCacheList({unrevisionedFiles} = {}) {
-     assert.isInstance({unrevisionedFiles}, Array);
+     isInstance({unrevisionedFiles}, Array);
      super._addEntries(unrevisionedFiles);
    }
 

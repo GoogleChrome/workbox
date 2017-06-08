@@ -165,4 +165,62 @@ describe('Ask for Root Directory', function() {
       rootDir.should.equal(path.join(process.cwd(), VALID_DIRECTORY_CONTENTS[0]));
     });
   });
+
+  it('should return absolute path from \'inquirer\' and filter bad directories', function() {
+    // .slice() here makes a clone of the array.
+    const injectedDirectories = VALID_DIRECTORY_CONTENTS.slice(0);
+
+    // Add node_modules and make sure it's removed via the blacklist
+    injectedDirectories.push('node_modules');
+
+    // Add a hidden directory and make sure it's removed via the blacklist
+    injectedDirectories.push('.hidden-directory');
+
+    const fakeFS = {
+      readdir: (directory, cb) => {
+        cb(null, injectedDirectories);
+      },
+      statSync: (name) => {
+        return {
+          isDirectory: () => {
+            return true;
+          },
+        };
+      },
+    };
+
+    const inquirer = require('inquirer');
+    const stub = sinon.stub(inquirer, 'prompt').callsFake((questions) => {
+      questions.length.should.be.gt(0);
+
+      const choices = questions[0].choices;
+      choices.length.should.equal(VALID_DIRECTORY_CONTENTS.length + 2);
+
+      VALID_DIRECTORY_CONTENTS.forEach((dirName, index) => {
+        choices[index].should.equal(dirName);
+      });
+
+      const results = {};
+      results[questions[0].name] = VALID_DIRECTORY_CONTENTS[0];
+      return Promise.resolve(results);
+    });
+
+    globalStubs.push(stub);
+
+    const askForRootOfWebApp = proxyquire(Q_PATH, {
+      'fs': fakeFS,
+      'inquirer': inquirer,
+    });
+
+    cliHelper.startLogCapture();
+    return askForRootOfWebApp()
+    .then((rootDir) => {
+      const captured = cliHelper.endLogCapture();
+      captured.consoleLogs.length.should.equal(0);
+      captured.consoleWarns.length.should.equal(0);
+      captured.consoleErrors.length.should.equal(0);
+
+      rootDir.should.equal(path.join(process.cwd(), VALID_DIRECTORY_CONTENTS[0]));
+    });
+  });
 });

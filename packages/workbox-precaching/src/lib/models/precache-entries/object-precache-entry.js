@@ -1,6 +1,6 @@
 import ErrorFactory from '../../error-factory';
 import BaseCacheEntry from './base-precache-entry';
-import assert from '../../../../../../lib/assert';
+import {isType} from '../../../../../../lib/assert';
 
 /**
  * This class will take an object of parameters, validate the input and
@@ -30,28 +30,28 @@ class DefaultsCacheEntry extends BaseCacheEntry {
       entryID = new URL(url, location).toString();
     }
 
-    assert.isType({revision}, 'string');
+    isType({revision}, 'string');
     if (revision.length === 0) {
       throw ErrorFactory.createError('invalid-revisioned-entry',
         new Error('Bad revision Parameter. It should be a string with at ' +
           'least one character: ' + JSON.stringify(revision)));
     }
 
-    assert.isType({url}, 'string');
+    isType({url}, 'string');
     if (url.length === 0) {
       throw ErrorFactory.createError('invalid-revisioned-entry',
         new Error('Bad url Parameter. It should be a string:' +
           JSON.stringify(url)));
     }
 
-    assert.isType({entryID}, 'string');
+    isType({entryID}, 'string');
     if (entryID.length === 0) {
       throw ErrorFactory.createError('invalid-revisioned-entry',
         new Error('Bad entryID Parameter. It should be a string with at ' +
           'least one character: ' + JSON.stringify(entryID)));
     }
 
-    assert.isType({cacheBust}, 'boolean');
+    isType({cacheBust}, 'boolean');
 
     super({
       entryID,

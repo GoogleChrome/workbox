@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import assert from '../../../../lib/assert';
+import {isInstance} from '../../../../lib/assert';
 
 /**
  * Helper method to "clean" a redirected response, so that it could be used
@@ -27,7 +27,7 @@ import assert from '../../../../lib/assert';
  * @return {Promise<Response>} A clone of the response, with `redirected` false.
  */
 export default ({response}) => {
-  assert.isInstance({response}, Response);
+  isInstance({response}, Response);
 
   const clonedResponse = response.clone();
 

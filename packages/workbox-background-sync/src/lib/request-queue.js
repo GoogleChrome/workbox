@@ -7,7 +7,7 @@ import {
   tagNamePrefix,
   allQueuesPlaceholder,
 } from './constants';
-import assert from '../../../../lib/assert';
+import {isInstance, isType} from '../../../../lib/assert';
 
 let _requestCounter = 0;
 let _queueCounter = 0;
@@ -91,7 +91,7 @@ class RequestQueue {
    * @private
    */
   async push({request}) {
-    assert.isInstance({request}, Request);
+    isInstance({request}, Request);
 
     const hash = `${request.url}!${Date.now()}!${_requestCounter++}`;
     const queuableRequest =
@@ -137,7 +137,7 @@ class RequestQueue {
    * @private
    */
   async getRequestFromQueue({hash}) {
-    assert.isType({hash}, 'string');
+    isType({hash}, 'string');
 
     if(this._queue.includes(hash)) {
       return await this._idbQDb.get(hash);

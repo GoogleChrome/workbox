@@ -9,12 +9,9 @@ only_commits:
 
 install:
   - ps: Install-Product node Stable
-  - npm install
   - npm install -g gulp
-  - gulp lerna-bootstrap-scoped --project="workbox-cli"
-  - cd packages/workbox-cli/
   - npm install
-  - cd ..
+  - gulp lerna-bootstrap-scoped --project="workbox-cli"
 
 test_script:
   - node --version

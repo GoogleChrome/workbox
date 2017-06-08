@@ -56,9 +56,19 @@
     };
   })
   .catch((err) => {
-    console.log(err);
-    window.__testresult = {
-      error: err
-    };
+    document.body.style.color = 'red';
+    document.body.innerHTML = `<h1>${err.message}</h1>
+
+    <pre>${err.stack}</pre>`;
+
+    console.error(err.message)
+    console.error(err.stack);
+
+    // This is just to help with local development so we know there is an error
+    setTimeout(() => {
+      window.__testresult = {
+        error: err
+      };
+    }, 5 * 1000);
   });
 </script>
