@@ -34,7 +34,17 @@ module.exports = () => {
   })
   .then((subdirectories) => {
     return subdirectories.filter((subdirectory) => {
-      return !constants.blacklistDirectoryNames.includes(subdirectory);
+      // Strip black listed directories from options.
+      if (constants.blacklistDirectoryNames.includes(subdirectory)) {
+        return false;
+      }
+
+      // Strip hidden directories from options.
+      if (subdirectory.indexOf('.') === 0) {
+        return false;
+      }
+
+      return true;
     });
   })
   .then((subdirectories) => {
