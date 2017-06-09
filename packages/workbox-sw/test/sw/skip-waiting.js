@@ -1,16 +1,5 @@
-importScripts('/node_modules/mocha/mocha.js');
-importScripts('/node_modules/chai/chai.js');
-importScripts('/node_modules/sinon/pkg/sinon.js');
-importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
-
+importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-sw');
-
-const expect = self.chai.expect;
-self.chai.should();
-mocha.setup({
-  ui: 'bdd',
-  reporter: null,
-});
 
 describe('Skip Waiting parameter', function() {
   let stubs = [];

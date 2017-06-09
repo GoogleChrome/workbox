@@ -1,15 +1,5 @@
-importScripts(
-  '/node_modules/mocha/mocha.js',
-  '/node_modules/chai/chai.js',
-  '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/__test/bundle/workbox-cacheable-response'
-);
-
-const expect = self.chai.expect;
-mocha.setup({
-  ui: 'bdd',
-  reporter: null,
-});
+importScripts('/__test/mocha/sw-utils.js');
+importScripts('/__test/bundle/workbox-cacheable-response');
 
 describe('Test of the CacheableResponse class', function() {
   const VALID_STATUS = 418;

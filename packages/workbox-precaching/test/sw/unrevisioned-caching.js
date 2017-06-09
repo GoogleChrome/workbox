@@ -1,17 +1,5 @@
-importScripts('/node_modules/mocha/mocha.js');
-importScripts('/node_modules/chai/chai.js');
-importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
+importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-precaching');
-
-/* global workbox */
-
-const expect = self.chai.expect;
-self.chai.should();
-
-mocha.setup({
-  ui: 'bdd',
-  reporter: null,
-});
 
 describe.skip('sw/unrevisioned-caching.js', function() {
   let cacheManager;

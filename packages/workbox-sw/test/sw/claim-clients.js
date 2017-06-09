@@ -1,17 +1,5 @@
-importScripts('/node_modules/mocha/mocha.js');
-importScripts('/node_modules/chai/chai.js');
-importScripts('/node_modules/sinon/pkg/sinon-no-sourcemaps.js');
-importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
+importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-sw');
-
-/* global workbox */
-
-const expect = self.chai.expect;
-self.chai.should();
-mocha.setup({
-  ui: 'bdd',
-  reporter: null,
-});
 
 describe('Clients Claim parameter', function() {
   let stubs = [];

@@ -1,15 +1,5 @@
-importScripts(
-  '/node_modules/mocha/mocha.js',
-  '/node_modules/chai/chai.js',
-  '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/__test/bundle/workbox-routing'
-);
-
-const expect = self.chai.expect;
-mocha.setup({
-  ui: 'bdd',
-  reporter: null,
-});
+importScripts('/__test/mocha/sw-utils.js');
+importScripts('/__test/bundle/workbox-routing');
 
 const exportedClasses = [
   'ExpressRoute',

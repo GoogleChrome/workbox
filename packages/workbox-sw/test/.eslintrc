@@ -6,5 +6,10 @@
   },
   "env": {
     "mocha": true
+  },
+  "globals":{
+    "workbox": true,
+    "expect": true,
+    "sinon": true
   }
 }

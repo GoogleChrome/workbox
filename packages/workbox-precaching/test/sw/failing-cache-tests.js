@@ -1,17 +1,6 @@
-importScripts('/node_modules/mocha/mocha.js');
-importScripts('/node_modules/chai/chai.js');
-importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
-importScripts('/packages/workbox-precaching/test/static/test-data.js');
+importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-precaching');
-
-/* global workbox */
-
-const expect = self.chai.expect;
-self.chai.should();
-mocha.setup({
-  ui: 'bdd',
-  reporter: null,
-});
+importScripts('/packages/workbox-precaching/test/static/test-data.js');
 
 describe('Test Failing Cache Behavior', function() {
   it('should fail to install revisioned with 404 cache request', function() {

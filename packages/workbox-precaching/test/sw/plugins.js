@@ -1,15 +1,5 @@
-importScripts('/node_modules/mocha/mocha.js');
-importScripts('/node_modules/chai/chai.js');
-importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
+importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-precaching');
-
-/* global workbox */
-
-const expect = self.chai.expect;
-mocha.setup({
-  ui: 'bdd',
-  reporter: null,
-});
 
 describe('Test plugins Parameter', function() {
   it('should pass the provided plugins configuration along to the RequestWrapper', function() {

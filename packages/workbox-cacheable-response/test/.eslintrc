@@ -9,7 +9,6 @@
     "mocha": true
   },
   "globals": {
-    "goog": true,
     "expect": true
   }
 }

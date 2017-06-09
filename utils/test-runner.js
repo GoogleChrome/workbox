@@ -62,6 +62,10 @@ class TestRunner {
       switch(browser.getId()) {
         case 'chrome':
         case 'firefox':
+          if (browser.getId() === 'firefox' &&
+            browser.getReleaseName() === 'unstable') {
+            return;
+          }
           this._addBrowserTests(browser, getBaseTestUrl);
           break;
       }
