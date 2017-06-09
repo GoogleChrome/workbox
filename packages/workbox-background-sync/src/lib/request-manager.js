@@ -16,7 +16,6 @@ class RequestManager {
    * attaches event handler
    * @param {Object=} config
    *
-   * @memberOf RequestManager
    * @private
    */
   constructor({callbacks, queue}) {
@@ -29,7 +28,6 @@ class RequestManager {
    * attaches sync handler to replay requests when
    * sync event is fired
    *
-   * @memberOf RequestManager
    * @private
    */
   attachSyncHandler() {
@@ -49,7 +47,7 @@ class RequestManager {
    * @return {Promise} Resolves if the request corresponding to the hash is
    * played successfully, rejects if it fails during the replay
    *
-   * @memberOf RequestManager
+   *
    * @private
    */
   async replayRequest(hash) {
@@ -81,7 +79,9 @@ class RequestManager {
   }
 
   /**
-   * function to start playing requests in sequence
+   * This function is to be called to replay all the requests
+   * in the current queue. It will play all the requests and return a promise
+   * based on the successfull execution of the requests.
    *
    * @return {Promise} Resolves if all requests are played successfully,
    * rejects if any of the request fails during the replay

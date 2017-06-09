@@ -15,12 +15,13 @@
 /* global chai, workbox */
 
 'use strict';
+const IDBHelper = require('../../../../lib/idb-helper');
 
 describe('request-queue tests', () => {
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
-  const idbHelper = new workbox.backgroundSync.test.IdbHelper(
-      'bgQueueSyncDB', 1, 'QueueStore');
+  const idbHelper = new IDBHelper(
+    'bgQueueSyncDB', 1, 'QueueStore');
   let queue =
     new workbox.backgroundSync.test.RequestQueue({
       idbQDb: idbHelper,
@@ -54,8 +55,12 @@ describe('request-queue tests', () => {
   });
 
   it('default config is correct', () => {
-    let tempQueue = new workbox.backgroundSync.test.RequestQueue({});
-    let tempQueue2 = new workbox.backgroundSync.test.RequestQueue({});
+    let tempQueue = new workbox.backgroundSync.test.RequestQueue({
+      idbQDb: idbHelper,
+    });
+    let tempQueue2 = new workbox.backgroundSync.test.RequestQueue({
+      idbQDb: idbHelper,
+    });
     chai.assert.equal(tempQueue._config, undefined);
     chai.assert.equal(tempQueue._queueName,
       workbox.backgroundSync.test.Constants.defaultQueueName + '_0');

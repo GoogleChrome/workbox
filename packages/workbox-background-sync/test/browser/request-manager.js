@@ -15,9 +15,36 @@
 /* global chai, workbox */
 
 'use strict';
-
+const testServerGen = require('../../../../utils/test-server-generator.js');
+const path = require('path');
+const fs = require('fs');
+const fsExtra = require('fs-extra');
+const IDBHelper = require('../../../../lib/idb-helper');
 describe('request-manager test', () => {
+  let tmpDirectory;
+  let testServer;
+  let baseTestUrl;
   let responseAchieved = 0;
+  before(function() {
+    tmpDirectory = fs.mkdtempSync(
+      path.join(__dirname, 'tmp-')
+    );
+
+    testServer = testServerGen();
+    return testServer.start(tmpDirectory, 5050)
+    .then((portNumber) => {
+      baseTestUrl = `http://localhost:${portNumber}`;
+    });
+  });
+
+  // Kill the web server once all tests are complete.
+  after(function() {
+    this.timeout(10 * 1000);
+
+    fsExtra.removeSync(tmpDirectory);
+
+    return testServer.stop();
+  });
   const callbacks = {
     onResponse: function() {
       responseAchieved ++;
@@ -27,11 +54,15 @@ describe('request-manager test', () => {
   let queue;
   let reqManager;
 
+  const idbHelper = new IDBHelper(
+    'bgQueueSyncDB', 1, 'QueueStore');
+
   before( (done) => {
     const QUEUE_NAME = 'QUEUE_NAME';
     const MAX_AGE = 6;
     queue =
       new workbox.backgroundSync.test.RequestQueue({
+        idbQDb: idbHelper,
         config: {maxAge: MAX_AGE},
         queueName: QUEUE_NAME,
       });
@@ -57,8 +88,8 @@ describe('request-manager test', () => {
       = new workbox.backgroundSync.test.BackgroundSyncQueue({
         callbacks,
       });
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request(`${baseTestUrl}/__echo/counter`)});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request(`${baseTestUrl}/__echo/counter`)});
     await backgroundSyncQueue._requestManager.replayRequests();
     chai.assert.equal(responseAchieved, 2);
   });
