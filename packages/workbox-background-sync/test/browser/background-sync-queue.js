@@ -31,9 +31,6 @@ describe('background sync queue test', () => {
   }
   function onRetryFail() {}
 
-  beforeEach(()=>{
-    responseAchieved = 0;
-  });
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
   const CALLBACKS = {
@@ -41,12 +38,16 @@ describe('background sync queue test', () => {
     onRetryFail: onRetryFail,
   };
 
-  const backgroundSyncQueue
-    = new workbox.backgroundSync.test.BackgroundSyncQueue({
+  let backgroundSyncQueue;
+
+  beforeEach(async ()=>{
+    responseAchieved = 0;
+    backgroundSyncQueue = new workbox.backgroundSync.test.BackgroundSyncQueue({
       maxRetentionTime: MAX_AGE,
       queueName: QUEUE_NAME,
       callbacks: CALLBACKS,
     });
+  });
 
   it('check defaults', () => {
     const defaultsBackgroundSyncQueue
@@ -73,10 +74,8 @@ describe('background sync queue test', () => {
   });
 
   it('check push proxy', async () => {
-    const currentLen = backgroundSyncQueue._queue.queue.length;
     await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
-    await backgroundSyncQueue.replayRequests();
-    chai.assert.equal(backgroundSyncQueue._queue.queue.length, currentLen + 1);
+    chai.assert.equal(backgroundSyncQueue._queue.queue.length, 1);
   });
 
   it('check replay', async function() {
@@ -88,12 +87,12 @@ describe('background sync queue test', () => {
 
   it('check replay failure with rejected promise', async function() {
     await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__echo/counter')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3002/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://localhost:3000/__test/404')});
     try {
       await backgroundSyncQueue.replayRequests();
       throw new Error('Replay should have failed because of invalid URL');
     } catch (err) {
-      chai.assert.equal('TypeError: Failed to fetch', err);
+      chai.assert.equal(404, err[0].status);
     }
   });
 

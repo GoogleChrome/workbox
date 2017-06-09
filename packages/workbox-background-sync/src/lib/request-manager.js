@@ -76,7 +76,7 @@ class RequestManager {
           this._globalCallbacks.onResponse(hash, response);
       }
     } catch(err) {
-      return Promise.reject(err.stack);
+      return Promise.reject(err);
     }
   }
 
@@ -86,7 +86,6 @@ class RequestManager {
    * @return {Promise} Resolves if all requests are played successfully,
    * rejects if any of the request fails during the replay
    *
-   * @memberOf RequestManager
    * @private
    */
   async replayRequests() {
