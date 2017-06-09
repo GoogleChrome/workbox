@@ -176,6 +176,13 @@ class ServerInstance {
       res.send(html);
     });
 
+    this._app.get('/__test/mocha/sw-utils.js', function(req, res) {
+      const source = fs.readFileSync(path.join(
+        __dirname, 'sw-test-utils.js'), 'utf-8');
+
+        res.send(source);
+    });
+
     // Redirect /packages/:pkg/test/browser/ to the /__test/mocha/browser/:pkg
     // templated page, but only if there's no
     // /packages/:pkg/test/browser/index.html

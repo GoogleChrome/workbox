@@ -1,15 +1,5 @@
-importScripts('/node_modules/mocha/mocha.js');
-importScripts('/node_modules/chai/chai.js');
-importScripts('/node_modules/sw-testing-helpers/build/browser/mocha-utils.js');
+importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-precaching');
-
-/* global workbox */
-
-self.chai.should();
-mocha.setup({
-  ui: 'bdd',
-  reporter: null,
-});
 
 describe('Test Cookies with Precache', function() {
   it('should cache asset with appropriate cookies with revisions asset', function() {

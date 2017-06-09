@@ -1,19 +1,3 @@
-importScripts(
-  '/node_modules/mocha/mocha.js',
-  '/node_modules/chai/chai.js',
-  '/node_modules/sinon/pkg/sinon-no-sourcemaps.js',
-  '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/__test/bundle/workbox-runtime-caching'
-);
-
-const expect = self.chai.expect;
-self.chai.should();
-mocha.setup({
-  ui: 'bdd',
-  reporter: null,
-  globals: ['fetch'],
-});
-
 /* eslint-disable no-unused-vars */
 
 function expectDifferentResponseBodies(first, second) {

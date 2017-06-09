@@ -1,4 +1,6 @@
-importScripts('setup.js');
+importScripts('/__test/mocha/sw-utils.js');
+importScripts('/__test/bundle/workbox-runtime-caching');
+importScripts('/packages/workbox-runtime-caching/test/utils/setup.js');
 
 describe('Test of the RequestWrapper class', function() {
   const CACHE_NAME = location.href;

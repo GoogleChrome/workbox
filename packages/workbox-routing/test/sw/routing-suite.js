@@ -1,18 +1,8 @@
+importScripts('/__test/mocha/sw-utils.js');
+importScripts('/__test/bundle/workbox-routing');
+
 // This tests Express and RegExp routing side by side, to ensure consistent,
 // expected behavior across the same set of URLs.
-
-importScripts(
-  '/node_modules/mocha/mocha.js',
-  '/node_modules/chai/chai.js',
-  '/node_modules/sw-testing-helpers/build/browser/mocha-utils.js',
-  '/__test/bundle/workbox-routing'
-);
-
-const expect = self.chai.expect;
-mocha.setup({
-  ui: 'bdd',
-  reporter: null,
-});
 
 describe('Express/RegExp Routing Suite', function() {
   const crossOrigin = 'https://cross-origin.example.com/';
