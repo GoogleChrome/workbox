@@ -21,16 +21,18 @@ describe('Test getFileManifestEntries', function() {
       true,
       false,
     ];
-    badInputs.forEach((badInput) => {
-      try {
-        swBuild.getFileManifestEntries(badInput);
-        throw new Error('Expected error to be thrown.');
-      } catch (err) {
-        if (err.message !== errors['invalid-get-manifest-entries-input']) {
-          throw new Error('Unexpected error: ' + err.message);
-        }
-      }
-    });
+    return badInputs.reduce((promiseChain, input) => {
+      return promiseChain.then(() => {
+        return swBuild.getFileManifestEntries(input)
+        .then(() => {
+          throw new Error('Expected to throw error.');
+        }, (err) => {
+          if (err.message !== errors['invalid-get-manifest-entries-input']) {
+            throw new Error('Unexpected error: ' + err.message);
+          }
+        });
+      });
+    }, Promise.resolve());
   });
 
   it('should detect bad globDirectory', function() {
@@ -49,8 +51,7 @@ describe('Test getFileManifestEntries', function() {
         return swBuild.getFileManifestEntries(args)
         .then(() => {
           throw new Error('Expected to throw error.');
-        })
-        .catch((err) => {
+        }, (err) => {
           if (err.message !== errors['invalid-glob-directory']) {
             throw new Error('Unexpected error: ' + err.message);
           }
@@ -74,8 +75,7 @@ describe('Test getFileManifestEntries', function() {
         return swBuild.getFileManifestEntries(args)
         .then(() => {
           throw new Error('Expected to throw error.');
-        })
-        .catch((err) => {
+        }, (err) => {
           if (err.message !== errors['invalid-static-file-globs']) {
             throw new Error('Unexpected error: ' + err.message);
           }
@@ -177,17 +177,17 @@ describe('Test getFileManifestEntries', function() {
       },
     };
 
-    try {
-      swBuild.getFileManifestEntries(testInput);
+    return swBuild.getFileManifestEntries(testInput)
+    .then(() => {
       throw new Error('Should have thrown an error due to bad input.');
-    } catch (err) {
+    }, (err) => {
       // This error is made up of several pieces that are useful to the
       // developer. These checks ensure the relevant message is should with
       // relevant details called out.
       err.message.indexOf(errors['bad-template-urls-asset']).should.not.equal(-1);
       err.message.indexOf('/template/url1').should.not.equal(-1);
       err.message.indexOf('/doesnt-exist/page-1.html').should.not.equal(-1);
-    }
+    });
   });
 
   it('should return file entries from example project with templatedUrls', function() {
@@ -292,14 +292,14 @@ describe('Test getFileManifestEntries', function() {
       templatedUrls: templatedUrlsValues,
     };
 
-    try {
-      swBuild.getFileManifestEntries(badInput);
+    return swBuild.getFileManifestEntries(badInput)
+    .then(() => {
       throw new Error('Expected error to be thrown.');
-    } catch (err) {
+    }, (err) => {
       if (err.message !== errors['both-templated-urls-dynamic-urls']) {
         throw new Error('Unexpected error: ' + err.message);
       }
-    }
+    });
   });
 
   it(`should throw an error when both globPatterns and staticFileGlobs are used`, function() {
@@ -312,13 +312,13 @@ describe('Test getFileManifestEntries', function() {
         'workbox-cli', 'test', 'static', 'example-project-1'),
     };
 
-    try {
-      swBuild.getFileManifestEntries(badInput);
+    return swBuild.getFileManifestEntries(badInput)
+    .then(() => {
       throw new Error('Expected error to be thrown.');
-    } catch (err) {
+    }, (err) => {
       if (err.message !== errors['both-glob-patterns-static-file-globs']) {
         throw new Error('Unexpected error: ' + err.message);
       }
-    }
+    });
   });
 });
