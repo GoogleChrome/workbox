@@ -24,7 +24,8 @@ import WorkboxSW from './lib/workbox-sw';
  * routes with caching strategies in a service worker.
  *
  * @example <caption>Adding the Library to your service worker.</caption>
- * importScripts('/node_modules/build/importScripts/workbox-sw.prod.vX.Y.Z.js');
+ * importScripts(
+ *   '/node_modules/workbox-sw/build/importScripts/workbox-sw.prod.vX.Y.Z.js');
  *
  * @example <caption>Caching assets and registering routes.</caption>
  *

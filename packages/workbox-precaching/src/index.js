@@ -60,9 +60,9 @@ import ErrorFactory from './lib/error-factory';
 import RevisionedCacheManager from
   './lib/controllers/revisioned-cache-manager.js';
 
-import environment from '../../../lib/environment.js';
+import {isServiceWorkerGlobalScope} from '../../../lib/environment.js';
 
-if (!environment.isServiceWorkerGlobalScope()) {
+if (!isServiceWorkerGlobalScope()) {
   // We are not running in a service worker, print error message
   throw ErrorFactory.createError('not-in-sw');
 }

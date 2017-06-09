@@ -21,16 +21,18 @@ describe('Test getFileManifestEntries', function() {
       true,
       false,
     ];
-    badInputs.forEach((badInput) => {
-      try {
-        swBuild.getFileManifestEntries(badInput);
-        throw new Error('Expected error to be thrown.');
-      } catch (err) {
-        if (err.message !== errors['invalid-get-manifest-entries-input']) {
-          throw new Error('Unexpected error: ' + err.message);
-        }
-      }
-    });
+    return badInputs.reduce((promiseChain, input) => {
+      return promiseChain.then(() => {
+        return swBuild.getFileManifestEntries(input)
+        .then(() => {
+          throw new Error('Expected to throw error.');
+        }, (err) => {
+          if (err.message !== errors['invalid-get-manifest-entries-input']) {
+            throw new Error('Unexpected error: ' + err.message);
+          }
+        });
+      });
+    }, Promise.resolve());
   });
 
   it('should detect bad globDirectory', function() {
@@ -49,8 +51,7 @@ describe('Test getFileManifestEntries', function() {
         return swBuild.getFileManifestEntries(args)
         .then(() => {
           throw new Error('Expected to throw error.');
-        })
-        .catch((err) => {
+        }, (err) => {
           if (err.message !== errors['invalid-glob-directory']) {
             throw new Error('Unexpected error: ' + err.message);
           }
@@ -74,8 +75,7 @@ describe('Test getFileManifestEntries', function() {
         return swBuild.getFileManifestEntries(args)
         .then(() => {
           throw new Error('Expected to throw error.');
-        })
-        .catch((err) => {
+        }, (err) => {
           if (err.message !== errors['invalid-static-file-globs']) {
             throw new Error('Unexpected error: ' + err.message);
           }
@@ -95,23 +95,16 @@ describe('Test getFileManifestEntries', function() {
 
       return swBuild.getFileManifestEntries(testInput)
         .then((output) => {
-          output.should.deep.equal([
-            {
-              url: 'index.html',
-              revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
-            }, {
-              url: 'page-1.html',
-              revision: '544658ab25ee8762dc241e8b1c5ed96d',
-            }, {
-              url: 'page-2.html',
-              revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-            }, {
-              url: 'styles/stylesheet-1.css',
-              revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-            }, {
-              url: 'styles/stylesheet-2.css',
-              revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-            },
+          const allUrls = output.map((entry) => {
+            return entry.url;
+          });
+          allUrls.should.deep.equal([
+            '/index.html',
+            '/page-1.html',
+            '/page-2.html',
+            '/styles/stylesheet-1.css',
+            '/styles/stylesheet-2.css',
+            '/webpackEntry.js',
           ]);
         });
     });
@@ -132,23 +125,16 @@ describe('Test getFileManifestEntries', function() {
 
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
-      output.should.deep.equal([
-        {
-          url: 'index.html',
-          revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
-        }, {
-          url: 'pages/page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: 'pages/page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: 'static/styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: 'static/styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        },
+      const allUrls = output.map((entry) => {
+        return entry.url;
+      });
+      allUrls.should.deep.equal([
+        '/index.html',
+        '/pages/page-1.html',
+        '/pages/page-2.html',
+        '/static/styles/stylesheet-1.css',
+        '/static/styles/stylesheet-2.css',
+        '/webpackEntry.js',
       ]);
     });
   });
@@ -165,20 +151,15 @@ describe('Test getFileManifestEntries', function() {
 
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
-      output.should.deep.equal([
-        {
-          url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        },
+      const allUrls = output.map((entry) => {
+        return entry.url;
+      });
+      allUrls.should.deep.equal([
+        '/page-1.html',
+        '/page-2.html',
+        '/styles/stylesheet-1.css',
+        '/styles/stylesheet-2.css',
+        '/webpackEntry.js',
       ]);
     });
   });
@@ -196,17 +177,17 @@ describe('Test getFileManifestEntries', function() {
       },
     };
 
-    try {
-      swBuild.getFileManifestEntries(testInput);
+    return swBuild.getFileManifestEntries(testInput)
+    .then(() => {
       throw new Error('Should have thrown an error due to bad input.');
-    } catch (err) {
+    }, (err) => {
       // This error is made up of several pieces that are useful to the
       // developer. These checks ensure the relevant message is should with
       // relevant details called out.
       err.message.indexOf(errors['bad-template-urls-asset']).should.not.equal(-1);
       err.message.indexOf('/template/url1').should.not.equal(-1);
       err.message.indexOf('/doesnt-exist/page-1.html').should.not.equal(-1);
-    }
+    });
   });
 
   it('should return file entries from example project with templatedUrls', function() {
@@ -225,32 +206,19 @@ describe('Test getFileManifestEntries', function() {
 
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
-      output.should.deep.equal([
-        {
-          url: 'index.html',
-          revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
-        }, {
-          url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        }, {
-          url: '/template/url1',
-          revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
-        }, {
-          url: '/template/url2',
-          revision: 'bd9ef0ab8b57d5d716e6916610d34936',
-        }, {
-          url: '/template/url3',
-          revision: '538954a0f0fca1d067ff03dca8dce79e',
-        },
+      const allUrls = output.map((entry) => {
+        return entry.url;
+      });
+      allUrls.should.deep.equal([
+        '/index.html',
+        '/page-1.html',
+        '/page-2.html',
+        '/styles/stylesheet-1.css',
+        '/styles/stylesheet-2.css',
+        '/webpackEntry.js',
+        '/template/url1',
+        '/template/url2',
+        '/template/url3',
       ]);
     });
   });
@@ -271,32 +239,19 @@ describe('Test getFileManifestEntries', function() {
 
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
-      output.should.deep.equal([
-        {
-          url: 'index.html',
-          revision: '24abd5daf6d87c25f40c2b74ee3fbe93',
-        }, {
-          url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        }, {
-          url: '/template/url1',
-          revision: 'a505dfb0ac2cad8933ec437dd97ccc66',
-        }, {
-          url: '/template/url2',
-          revision: 'bd9ef0ab8b57d5d716e6916610d34936',
-        }, {
-          url: '/template/url3',
-          revision: '538954a0f0fca1d067ff03dca8dce79e',
-        },
+      const allUrls = output.map((entry) => {
+        return entry.url;
+      });
+      allUrls.should.deep.equal([
+        '/index.html',
+        '/page-1.html',
+        '/page-2.html',
+        '/styles/stylesheet-1.css',
+        '/styles/stylesheet-2.css',
+        '/webpackEntry.js',
+        '/template/url1',
+        '/template/url2',
+        '/template/url3',
       ]);
     });
   });
@@ -314,11 +269,12 @@ describe('Test getFileManifestEntries', function() {
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
       output.should.deep.equal([
-        'index.html',
-        'page-1.html',
-        'page-2.html',
-        'styles/stylesheet-1.css',
-        'styles/stylesheet-2.css',
+        '/index.html',
+        '/page-1.html',
+        '/page-2.html',
+        '/styles/stylesheet-1.css',
+        '/styles/stylesheet-2.css',
+        '/webpackEntry.js',
       ]);
     });
   });
@@ -336,14 +292,14 @@ describe('Test getFileManifestEntries', function() {
       templatedUrls: templatedUrlsValues,
     };
 
-    try {
-      swBuild.getFileManifestEntries(badInput);
+    return swBuild.getFileManifestEntries(badInput)
+    .then(() => {
       throw new Error('Expected error to be thrown.');
-    } catch (err) {
+    }, (err) => {
       if (err.message !== errors['both-templated-urls-dynamic-urls']) {
         throw new Error('Unexpected error: ' + err.message);
       }
-    }
+    });
   });
 
   it(`should throw an error when both globPatterns and staticFileGlobs are used`, function() {
@@ -356,13 +312,13 @@ describe('Test getFileManifestEntries', function() {
         'workbox-cli', 'test', 'static', 'example-project-1'),
     };
 
-    try {
-      swBuild.getFileManifestEntries(badInput);
+    return swBuild.getFileManifestEntries(badInput)
+    .then(() => {
       throw new Error('Expected error to be thrown.');
-    } catch (err) {
+    }, (err) => {
       if (err.message !== errors['both-glob-patterns-static-file-globs']) {
         throw new Error('Unexpected error: ' + err.message);
       }
-    }
+    });
   });
 });

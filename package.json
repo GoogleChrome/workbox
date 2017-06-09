@@ -31,7 +31,7 @@
     "clear-require": "^2.0.0",
     "cookie-parser": "^1.4.3",
     "depcheck": "^0.6.7",
-    "error-stack-parser": "^2.0.0",
+    "error-stack-parser": "^2.0.1",
     "eslint-config-google": "^0.7.0",
     "express": "^4.14.0",
     "fs-extra": "^3.0.1",
@@ -45,7 +45,7 @@
     "gulp-spawn-mocha": "^3.1.0",
     "handlebars": "^4.0.6",
     "jsdoc-strip-async-await": "^0.1.0",
-    "lerna": "2.0.0-rc.4",
+    "lerna": "2.0.0-rc.5",
     "minimist": "^1.2.0",
     "mockdate": "^2.0.1",
     "path-to-regexp": "^1.6.0",
@@ -63,6 +63,7 @@
     "sinon": "^2.2.0",
     "sw-testing-helpers": "^1.0.2",
     "tmp": "0.0.31",
-    "uppercamelcase": "^3.0.0"
+    "uppercamelcase": "^3.0.0",
+    "webpack": "^2.6.0"
   }
 }

@@ -14,7 +14,7 @@
 */
 
 import BroadcastCacheUpdate from './broadcast-cache-update';
-import assert from '../../../../lib/assert';
+import {isType, isInstance} from '../../../../lib/assert';
 
 /**
  * Can be used to compare two [Responses](https://developer.mozilla.org/en-US/docs/Web/API/Response)
@@ -64,8 +64,8 @@ class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
    * @param {string} input.url The cache key URL.
    */
   cacheDidUpdate({cacheName, oldResponse, newResponse, url}) {
-    assert.isType({cacheName}, 'string');
-    assert.isInstance({newResponse}, Response);
+    isType({cacheName}, 'string');
+    isInstance({newResponse}, Response);
 
     if (oldResponse) {
       this.notifyIfUpdated({

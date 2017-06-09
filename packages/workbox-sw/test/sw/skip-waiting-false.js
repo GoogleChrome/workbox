@@ -37,7 +37,7 @@ describe('Skip Waiting parameter - false', function() {
 
   it('should not claim when passed in false (clientsClaim)', function() {
     let called = false;
-    const claimStub = sinon.stub(self, 'skipWaiting', () => {
+    const claimStub = sinon.stub(self, 'skipWaiting').callsFake(() => {
       called = true;
       return Promise.resolve();
     });

@@ -6,5 +6,6 @@
     "no-console": 0,
     "max-len": 0,
     "no-invalid-this": 0,
+    "require-jsdoc": 0
   }
 }

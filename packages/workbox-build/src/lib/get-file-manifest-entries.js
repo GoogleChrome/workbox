@@ -39,19 +39,21 @@ const getStringDetails = require('./utils/get-string-details');
  * @param {RegExp} [input.dontCacheBustUrlsMatching] An optional regex that will
  * return a URL string and exclude the revision details for urls matching this
  * regex. Useful if you have assets with file revisions in the URL.
- * @return {Array<ManifestEntry>}
+ * @return {Promise<Array<ManifestEntry>>}
  * An array of {@link module:workbox-build#ManifestEntry|ManifestEntries}
  * which will include a url and revision parameter.
  * @memberof module:workbox-build
  */
 const getFileManifestEntries = (input) => {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    throw new Error(errors['invalid-get-manifest-entries-input']);
+    return Promise.reject(
+      new Error(errors['invalid-get-manifest-entries-input']));
   }
 
   // staticFileGlobs is to ease workbox to sw-precache migration.
   if (input.globPatterns && input.staticFileGlobs) {
-    throw new Error(errors['both-glob-patterns-static-file-globs']);
+    return Promise.reject(
+      new Error(errors['both-glob-patterns-static-file-globs']));
   }
   const globPatterns = input.globPatterns || input.staticFileGlobs;
 
@@ -60,7 +62,8 @@ const getFileManifestEntries = (input) => {
 
   // dynamicUrlToDependencies is to ease workbox to sw-precache migration.
   if (input.templatedUrls && input.dynamicUrlToDependencies) {
-    throw new Error(errors['both-templated-urls-dynamic-urls']);
+    return Promise.reject(
+      new Error(errors['both-templated-urls-dynamic-urls']));
   }
   const templatedUrls = input.templatedUrls || input.dynamicUrlToDependencies;
 
@@ -122,20 +125,24 @@ const getFileManifestEntries = (input) => {
 
       const dependencies = templatedUrls[url];
       if (Array.isArray(dependencies)) {
-        const dependencyDetails = dependencies.reduce((previous, pattern) => {
-          try {
-            const globbedFileDetails = getFileDetails(
-              globDirectory, pattern, globIgnores);
-            return previous.concat(globbedFileDetails);
-          } catch (err) {
-            const debugObj = {};
-            debugObj[url] = dependencies;
-            throw new Error(`${errors['bad-template-urls-asset']} ` +
-              `'${pattern}' in templateUrl '${JSON.stringify(debugObj)}' ` +
-              `could not be found.`);
-          }
-        }, []);
-        fileDetails.push(getCompositeDetails(url, dependencyDetails));
+        try {
+          const dependencyDetails = dependencies.reduce((previous, pattern) => {
+            try {
+              const globbedFileDetails = getFileDetails(
+                globDirectory, pattern, globIgnores);
+              return previous.concat(globbedFileDetails);
+            } catch (err) {
+              const debugObj = {};
+              debugObj[url] = dependencies;
+              throw new Error(`${errors['bad-template-urls-asset']} ` +
+                  `'${pattern}' in templateUrl '${JSON.stringify(debugObj)}' ` +
+                  `could not be found.`);
+            }
+          }, []);
+          fileDetails.push(getCompositeDetails(url, dependencyDetails));
+        } catch (err) {
+          return Promise.reject(err);
+        }
       } else if (typeof dependencies === 'string') {
         fileDetails.push(getStringDetails(url, dependencies));
       } else {

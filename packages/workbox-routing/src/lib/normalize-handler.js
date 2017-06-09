@@ -1,4 +1,4 @@
-import assert from '../../../../lib/assert';
+import {hasMethod, isType} from '../../../../lib/assert';
 
 /**
  * @param {function|module:workbox-runtime-caching.Handler} handler The
@@ -8,10 +8,10 @@ import assert from '../../../../lib/assert';
  */
 export default function normalizeHandler(handler) {
   if (typeof handler === 'object') {
-    assert.hasMethod({handler}, 'handle');
+    hasMethod({handler}, 'handle');
     return handler;
   } else {
-    assert.isType({handler}, 'function');
+    isType({handler}, 'function');
     return {handle: handler};
   }
 }

@@ -65,7 +65,7 @@ describe('Test of the StaleWhileRevalidate handler', function() {
 
     const wrapperCache = await requestWrapper.getCache();
     const cachePutPromise = new Promise((resolve) => {
-      const cachePutStub = sinon.stub(wrapperCache, 'put', (request, response) => {
+      const cachePutStub = sinon.stub(wrapperCache, 'put').callsFake((request, response) => {
         resolve(response);
       });
       globalStubs.push(cachePutStub);
@@ -89,7 +89,7 @@ describe('Test of the StaleWhileRevalidate handler', function() {
 
     const wrapperCache = await requestWrapper.getCache();
     const cachePutPromise = new Promise((resolve) => {
-      const cachePutStub = sinon.stub(wrapperCache, 'put', (request, response) => {
+      const cachePutStub = sinon.stub(wrapperCache, 'put').callsFake((request, response) => {
         resolve(response);
       });
       globalStubs.push(cachePutStub);

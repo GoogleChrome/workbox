@@ -6,7 +6,7 @@ importScripts('/packages/workbox-precaching/test/static/skip-and-claim.js');
 
 let requestsMade = [];
 
-sinon.stub(self, 'fetch', (requestUrl) => {
+sinon.stub(self, 'fetch').callsFake((requestUrl) => {
   requestsMade.push(requestUrl);
   return Promise.resolve(new Response());
 });

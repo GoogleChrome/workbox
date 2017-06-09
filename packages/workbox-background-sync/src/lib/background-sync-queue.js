@@ -1,7 +1,7 @@
 import RequestManager from './request-manager';
 import RequestQueue from './request-queue';
 import {maxAge, defaultDBName} from './constants';
-import assert from '../../../../lib/assert';
+import {isType, isInstance} from '../../../../lib/assert';
 import IDBHelper from '../../../../lib/idb-helper';
 import {cleanupQueue} from './queue-utils';
 import {getResponse} from './response-manager';
@@ -45,18 +45,18 @@ class Queue {
   constructor({maxRetentionTime = maxAge, callbacks, queueName,
     broadcastChannel, dbName = defaultDBName} = {}) {
       if(queueName) {
-        assert.isType({queueName}, 'string');
+        isType({queueName}, 'string');
       }
 
       if(maxRetentionTime) {
-        assert.isType({maxRetentionTime}, 'number');
+        isType({maxRetentionTime}, 'number');
       }
 
       if(broadcastChannel) {
-        assert.isInstance({broadcastChannel}, BroadcastChannel);
+        isInstance({broadcastChannel}, BroadcastChannel);
       }
 
-      assert.isType({dbName}, 'string');
+      isType({dbName}, 'string');
 
       this._dbName = dbName;
       this._queue = new RequestQueue({
@@ -94,7 +94,7 @@ class Queue {
    * the queue.
    */
   pushIntoQueue({request}) {
-    assert.isInstance({request}, Request);
+    isInstance({request}, Request);
     return this._queue.push({request});
   }
 

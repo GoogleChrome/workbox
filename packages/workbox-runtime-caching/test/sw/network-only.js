@@ -38,7 +38,7 @@ describe('Test of the NetworkOnly handler', function() {
     const networkOnly = new workbox.runtimeCaching.NetworkOnly(
       {requestWrapper, waitOnCache: true});
 
-    globalStubs.push(sinon.stub(self, 'fetch', () => {
+    globalStubs.push(sinon.stub(self, 'fetch').callsFake(() => {
       throw new Error(message);
     }));
 

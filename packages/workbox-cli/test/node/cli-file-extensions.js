@@ -183,7 +183,7 @@ describe('Ask for File Extensions to Cache', function() {
     };
 
     const inquirer = require('inquirer');
-    const stub = sinon.stub(inquirer, 'prompt', () => {
+    const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.reject(INJECTED_ERROR);
     });
 
@@ -218,7 +218,7 @@ describe('Ask for File Extensions to Cache', function() {
     };
 
     const inquirer = require('inquirer');
-    const stub = sinon.stub(inquirer, 'prompt', (questions) => {
+    const stub = sinon.stub(inquirer, 'prompt').callsFake((questions) => {
       const results = {};
       results[questions[0].name] = [];
       return Promise.resolve(results);
@@ -255,7 +255,7 @@ describe('Ask for File Extensions to Cache', function() {
     };
 
     const inquirer = require('inquirer');
-    const stub = sinon.stub(inquirer, 'prompt', (questions) => {
+    const stub = sinon.stub(inquirer, 'prompt').callsFake((questions) => {
       questions.length.should.be.gt(0);
       const choices = questions[0].choices;
       choices.length.should.equal(FILE_ONLY_INPUT.length);
