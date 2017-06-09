@@ -75,27 +75,27 @@ describe('Generate SW End-to-End Tests', function() {
       const fileOutput = fs.readFileSync(swDest).toString();
       const regex = new RegExp(`someVariables.precache\\(\\[
   {
-    "url": "/images/web-fundamentals-icon192x192.png",
+    "url": "images/web-fundamentals-icon192x192.png",
     "revision": "\\w*"
   },
   {
-    "url": "/index.html",
+    "url": "index.html",
     "revision": "\\w*"
   },
   {
-    "url": "/page-1.html",
+    "url": "page-1.html",
     "revision": "\\w*"
   },
   {
-    "url": "/page-2.html",
+    "url": "page-2.html",
     "revision": "\\w*"
   },
   {
-    "url": "/styles/stylesheet-1.css",
+    "url": "styles/stylesheet-1.css",
     "revision": "\\w*"
   },
   {
-    "url": "/styles/stylesheet-2.css",
+    "url": "styles/stylesheet-2.css",
     "revision": "\\w*"
   }
 \\]\\);`);
