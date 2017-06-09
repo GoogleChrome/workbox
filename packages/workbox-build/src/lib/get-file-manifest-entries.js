@@ -3,6 +3,7 @@ const filterFiles = require('./utils/filter-files');
 const getCompositeDetails = require('./utils/get-composite-details');
 const getFileDetails = require('./utils/get-file-details');
 const getStringDetails = require('./utils/get-string-details');
+const constants = require('./constants');
 
 /**
  * @typedef {Object} ManifestEntry
@@ -24,7 +25,8 @@ const getStringDetails = require('./utils/get-string-details');
  * these glob patterns will be included in the file manifest.
  * @param {String|Array<String>} [input.globIgnores] Files matching against any
  * of these glob patterns will be excluded from the file manifest, even if the
- * file matches against a `globPatterns` pattern.
+ * file matches against a `globPatterns` pattern. Defaults to ignoring
+ * 'node_modules'.
  * @param {Object<String,Array|String>} [input.templatedUrls]
  * If a URL is rendered with templates on the server, its contents may
  * depend on multiple files. This maps URLs to an array of file names, or to a
@@ -57,7 +59,7 @@ const getFileManifestEntries = (input) => {
   }
   const globPatterns = input.globPatterns || input.staticFileGlobs;
 
-  const globIgnores = input.globIgnores ? input.globIgnores : [];
+  const globIgnores = input.globIgnores || constants.defaultGlobIgnores;
   const globDirectory = input.globDirectory;
 
   // dynamicUrlToDependencies is to ease workbox to sw-precache migration.

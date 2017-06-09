@@ -3,6 +3,7 @@ const copyWorkboxSW = require('./utils/copy-workbox-sw');
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const writeServiceWorker = require('./write-sw');
 const errors = require('./errors');
+const constants = require('./constants');
 
 /**
  * This method will generate a working service worker with an inlined
@@ -17,7 +18,8 @@ const errors = require('./errors');
  * these glob patterns will be included in the file manifest.
  * @param {String|Array<String>} [input.globIgnores] Files matching against any
  * of these glob patterns will be excluded from the file manifest, even if the
- * file matches against a `globPatterns` pattern.
+ * file matches against a `globPatterns` pattern. Defaults to ignoring
+ * 'node_modules'.
  * @param {Object<String,Array|String>} [input.templatedUrls]
  * If a URL is rendered with templates on the server, its contents may
  * depend on multiple files. This maps URLs to an array of file names, or to a
@@ -116,7 +118,7 @@ const generateSW = function(input) {
   }
 
   const globDirectory = input.globDirectory;
-  input.globIgnores = input.globIgnores || [];
+  input.globIgnores = input.globIgnores || constants.defaultGlobIgnores;
   const swDest = input.swDest;
 
   let workboxSWImportPath;
