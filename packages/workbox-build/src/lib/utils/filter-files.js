@@ -22,9 +22,6 @@ module.exports = (fileDetails, options) => {
   // Convert to manifest format
   return filteredFileDetails.map((fileDetails) => {
     let url = fileDetails.file.replace(path.sep, '/');
-    if (!url.startsWith('/')) {
-      url = '/' + url;
-    }
 
     // Modify URL Prefix
     if (options && options.modifyUrlPrefix) {

@@ -20,7 +20,7 @@ const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, swDes
   });
 
   expectedFiles = expectedFiles.map((file) => {
-    return `/${path.relative(exampleProject, file).replace(path.sep, '/')}`;
+    return `${path.relative(exampleProject, file).replace(path.sep, '/')}`;
   });
 
   if (fileManifestOutput.length !== expectedFiles.length) {
