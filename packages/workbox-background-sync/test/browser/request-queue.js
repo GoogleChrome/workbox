@@ -15,12 +15,11 @@
 /* global chai, workbox */
 
 'use strict';
-const IDBHelper = require('../../../../lib/idb-helper');
 
 describe('request-queue tests', () => {
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
-  const idbHelper = new IDBHelper(
+  const idbHelper = new workbox.backgroundSync.test.IdbHelper(
     'bgQueueSyncDB', 1, 'QueueStore');
   let queue =
     new workbox.backgroundSync.test.RequestQueue({
