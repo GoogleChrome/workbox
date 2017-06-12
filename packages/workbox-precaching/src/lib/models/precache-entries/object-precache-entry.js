@@ -1,4 +1,4 @@
-import ErrorFactory from '../../error-factory';
+import WorkboxError from '../../../../../../lib/workbox-error';
 import BaseCacheEntry from './base-precache-entry';
 import {isType} from '../../../../../../lib/assert';
 
@@ -32,23 +32,20 @@ class DefaultsCacheEntry extends BaseCacheEntry {
 
     isType({revision}, 'string');
     if (revision.length === 0) {
-      throw ErrorFactory.createError('invalid-revisioned-entry',
-        new Error('Bad revision Parameter. It should be a string with at ' +
-          'least one character: ' + JSON.stringify(revision)));
+      throw new WorkboxError('invalid-revisioned-entry',
+        {entryID, revision, url});
     }
 
     isType({url}, 'string');
     if (url.length === 0) {
-      throw ErrorFactory.createError('invalid-revisioned-entry',
-        new Error('Bad url Parameter. It should be a string:' +
-          JSON.stringify(url)));
+      throw new WorkboxError('invalid-revisioned-entry',
+        {entryID, revision, url});
     }
 
     isType({entryID}, 'string');
     if (entryID.length === 0) {
-      throw ErrorFactory.createError('invalid-revisioned-entry',
-        new Error('Bad entryID Parameter. It should be a string with at ' +
-          'least one character: ' + JSON.stringify(entryID)));
+      throw new WorkboxError('invalid-revisioned-entry',
+        {entryID, revision, url});
     }
 
     isType({cacheBust}, 'boolean');
