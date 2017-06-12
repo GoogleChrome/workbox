@@ -243,12 +243,12 @@ describe('Test getFileManifestEntries', function() {
         return entry.url;
       });
       allUrls.should.deep.equal([
-        '/index.html',
-        '/page-1.html',
-        '/page-2.html',
-        '/styles/stylesheet-1.css',
-        '/styles/stylesheet-2.css',
-        '/webpackEntry.js',
+        'index.html',
+        'page-1.html',
+        'page-2.html',
+        'styles/stylesheet-1.css',
+        'styles/stylesheet-2.css',
+        'webpackEntry.js',
         '/template/url1',
         'template/url2',
         '/template/url3',

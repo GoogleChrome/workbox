@@ -29,7 +29,7 @@ const getSeleniumBrowser = () => {
   });
 };
 
-const testInBrowser = (baseTestUrl, fileManifestOutput, swDest, exampleProject) => {
+const testInBrowser = (baseTestUrl, fileManifestOutput, swDest, exampleProject, modifyUrlPrefix) => {
   return getSeleniumBrowser()
   .then((assistantBrowser) => {
     if (!assistantBrowser) {
@@ -95,14 +95,22 @@ const testInBrowser = (baseTestUrl, fileManifestOutput, swDest, exampleProject) 
         });
 
         fileManifestOutput.forEach((details) => {
+          let correctedURL = details.url;
           try {
-            fs.statSync(path.join(exampleProject, details.url));
+            if (modifyUrlPrefix && Object.keys(modifyUrlPrefix).length > 0) {
+              Object.keys(modifyUrlPrefix).forEach((key) => {
+                const value = modifyUrlPrefix[key];
+                correctedURL = correctedURL.replace(value, key);
+              });
+            }
+            let filePath = path.join(exampleProject, correctedURL);
+            fs.statSync(filePath);
           } catch (err) {
             throw new Error(`The path '${details.url}' from the manifest doesn't seem valid.`);
           }
-
-          const expectedFileIndex = pathnames.indexOf(details.url);
+          const expectedFileIndex = pathnames.indexOf(`/${correctedURL}`);
           if (expectedFileIndex === -1) {
+            console.log(pathnames);
             console.log(entries);
             console.log('Problem file: ', details.url);
             throw new Error(`Unexpected file in manifest (2): '${details.url}'`);

@@ -33,7 +33,7 @@ describe('src/lib/utils/filter-files.js', function() {
     manifestEntries.forEach((manifestEntry) => {
       let matchingGoodFile = null;
       goodFiles.forEach((goodFile) => {
-        if (`/${goodFile.file}` === manifestEntry.url) {
+        if (`${goodFile.file}` === manifestEntry.url) {
           matchingGoodFile = goodFile;
         }
       });
@@ -42,7 +42,7 @@ describe('src/lib/utils/filter-files.js', function() {
         throw new Error('Unable to find matching file for manifest entry: ');
       }
 
-      manifestEntry.url.should.equal(`/${matchingGoodFile.file}`);
+      manifestEntry.url.should.equal(`${matchingGoodFile.file}`);
       manifestEntry.revision.should.equal(matchingGoodFile.hash);
     });
   });

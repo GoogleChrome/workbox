@@ -6,7 +6,7 @@ const performTest = (generateSWCb, {exampleProject, swDest, fileExtensions, base
   console.log(`Validating a new project, SWDest is: '${swDest}'`);
   return fakeRunAndCompare(generateSWCb, swDest, exampleProject, fileExtensions, modifyUrlPrefix)
   .then((manifest) => {
-    return testInBrowser(baseTestUrl, manifest, swDest, exampleProject);
+    return testInBrowser(baseTestUrl, manifest, swDest, exampleProject, modifyUrlPrefix);
   });
 };
 

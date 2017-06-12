@@ -33,14 +33,13 @@ const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, swDes
   fileManifestOutput.forEach((fileManifestEntryDetails) => {
     let correctedURL = fileManifestEntryDetails.url;
     try {
-      let filePath = path.join(exampleProject, fileManifestEntryDetails.url);
       if (modifyUrlPrefix && Object.keys(modifyUrlPrefix).length > 0) {
         Object.keys(modifyUrlPrefix).forEach((key) => {
           const value = modifyUrlPrefix[key];
-          filePath = filePath.replace(value, key);
           correctedURL = correctedURL.replace(value, key);
         });
       }
+      let filePath = path.join(exampleProject, correctedURL);
       fs.statSync(filePath);
     } catch (err) {
       console.error(err);
