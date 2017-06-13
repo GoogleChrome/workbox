@@ -27,11 +27,11 @@ describe('Test Injection Manifest', function() {
   ];
   const expectedString = `workboxSW.precache([
   {
-    "url": "/index.css",
+    "url": "index.css",
     "revision": "d41d8cd98f00b204e9800998ecf8427e"
   },
   {
-    "url": "/index.html",
+    "url": "index.html",
     "revision": "d41d8cd98f00b204e9800998ecf8427e"
   }
 ])`;

@@ -99,12 +99,12 @@ describe('Test getFileManifestEntries', function() {
             return entry.url;
           });
           allUrls.should.deep.equal([
-            '/index.html',
-            '/page-1.html',
-            '/page-2.html',
-            '/styles/stylesheet-1.css',
-            '/styles/stylesheet-2.css',
-            '/webpackEntry.js',
+            'index.html',
+            'page-1.html',
+            'page-2.html',
+            'styles/stylesheet-1.css',
+            'styles/stylesheet-2.css',
+            'webpackEntry.js',
           ]);
         });
     });
@@ -118,8 +118,8 @@ describe('Test getFileManifestEntries', function() {
       globDirectory: path.join(__dirname, '..', '..', '..',
         'workbox-cli', 'test', 'static', 'example-project-1'),
       modifyUrlPrefix: {
-        '/styles': '/static/styles',
-        '/page': '/pages/page',
+        'styles': 'static/styles',
+        'page': 'pages/page',
       },
     };
 
@@ -129,12 +129,12 @@ describe('Test getFileManifestEntries', function() {
         return entry.url;
       });
       allUrls.should.deep.equal([
-        '/index.html',
-        '/pages/page-1.html',
-        '/pages/page-2.html',
-        '/static/styles/stylesheet-1.css',
-        '/static/styles/stylesheet-2.css',
-        '/webpackEntry.js',
+        'index.html',
+        'pages/page-1.html',
+        'pages/page-2.html',
+        'static/styles/stylesheet-1.css',
+        'static/styles/stylesheet-2.css',
+        'webpackEntry.js',
       ]);
     });
   });
@@ -155,11 +155,11 @@ describe('Test getFileManifestEntries', function() {
         return entry.url;
       });
       allUrls.should.deep.equal([
-        '/page-1.html',
-        '/page-2.html',
-        '/styles/stylesheet-1.css',
-        '/styles/stylesheet-2.css',
-        '/webpackEntry.js',
+        'page-1.html',
+        'page-2.html',
+        'styles/stylesheet-1.css',
+        'styles/stylesheet-2.css',
+        'webpackEntry.js',
       ]);
     });
   });
@@ -199,7 +199,7 @@ describe('Test getFileManifestEntries', function() {
         'workbox-cli', 'test', 'static', 'example-project-1'),
       templatedUrls: {
         '/template/url1': ['page-1.html', 'index.html'],
-        '/template/url2': ['page-2.html', 'index.html'],
+        'template/url2': ['page-2.html', 'index.html'],
         '/template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
       },
     };
@@ -210,14 +210,14 @@ describe('Test getFileManifestEntries', function() {
         return entry.url;
       });
       allUrls.should.deep.equal([
-        '/index.html',
-        '/page-1.html',
-        '/page-2.html',
-        '/styles/stylesheet-1.css',
-        '/styles/stylesheet-2.css',
-        '/webpackEntry.js',
+        'index.html',
+        'page-1.html',
+        'page-2.html',
+        'styles/stylesheet-1.css',
+        'styles/stylesheet-2.css',
+        'webpackEntry.js',
         '/template/url1',
-        '/template/url2',
+        'template/url2',
         '/template/url3',
       ]);
     });
@@ -232,7 +232,7 @@ describe('Test getFileManifestEntries', function() {
         'workbox-cli', 'test', 'static', 'example-project-1'),
       dynamicUrlToDependencies: {
         '/template/url1': ['page-1.html', 'index.html'],
-        '/template/url2': ['page-2.html', 'index.html'],
+        'template/url2': ['page-2.html', 'index.html'],
         '/template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
       },
     };
@@ -243,14 +243,14 @@ describe('Test getFileManifestEntries', function() {
         return entry.url;
       });
       allUrls.should.deep.equal([
-        '/index.html',
-        '/page-1.html',
-        '/page-2.html',
-        '/styles/stylesheet-1.css',
-        '/styles/stylesheet-2.css',
-        '/webpackEntry.js',
+        'index.html',
+        'page-1.html',
+        'page-2.html',
+        'styles/stylesheet-1.css',
+        'styles/stylesheet-2.css',
+        'webpackEntry.js',
         '/template/url1',
-        '/template/url2',
+        'template/url2',
         '/template/url3',
       ]);
     });
@@ -269,12 +269,12 @@ describe('Test getFileManifestEntries', function() {
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
       output.should.deep.equal([
-        '/index.html',
-        '/page-1.html',
-        '/page-2.html',
-        '/styles/stylesheet-1.css',
-        '/styles/stylesheet-2.css',
-        '/webpackEntry.js',
+        'index.html',
+        'page-1.html',
+        'page-2.html',
+        'styles/stylesheet-1.css',
+        'styles/stylesheet-2.css',
+        'webpackEntry.js',
       ]);
     });
   });

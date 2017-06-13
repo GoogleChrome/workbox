@@ -44,7 +44,9 @@ describe('Generate SW End-to-End Tests', function() {
       tmpDirectory);
 
     const swDest = `build/${Date.now()}-sw.js`;
-    const modifyUrlPrefix = {};
+    const modifyUrlPrefix = {
+      '': '../',
+    };
     const swBuild = require('../../build/index.js');
     return validator.performTest(() => {
       return swBuild.generateSW({
