@@ -153,6 +153,7 @@ function generateBuildConfigs({formatToPath, baseDir, moduleName,
   const prodReplacePlugin = replace({
     '`BUILD_PROCESS_REPLACE::BUILD_TARGET`': '`prod`',
     'error-stack-parser': './error-stack-parser-no-op',
+    'error-message-factory': './error-message-factory-no-op',
   });
 
   const babelPlugin = babel({
