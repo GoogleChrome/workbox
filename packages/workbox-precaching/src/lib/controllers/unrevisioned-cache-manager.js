@@ -2,7 +2,7 @@ import ErrorFactory from '../error-factory';
 import BaseCacheManager from './base-cache-manager';
 import RequestCacheEntry from '../models/precache-entries/request-entry';
 import StringPrecacheEntry from
-  '../models/precache-entries/string-precache-entry';
+  '../models/precache-entries/string-cache-entry';
 import {isInstance} from '../../../../../lib/assert';
 
 /**

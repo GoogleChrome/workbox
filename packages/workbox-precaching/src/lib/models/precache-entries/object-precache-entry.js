@@ -10,7 +10,7 @@ import {isType} from '../../../../../../lib/assert';
  * @memberof module:workbox-precaching
  * @extends {module:workbox-precaching.BaseCacheEntry}
  */
-class DefaultsCacheEntry extends BaseCacheEntry {
+class ObjectCacheEntry extends BaseCacheEntry {
   /**
    * This class gives most control over configuring a cache entry.
    * @param {Object} input
@@ -32,20 +32,20 @@ class DefaultsCacheEntry extends BaseCacheEntry {
 
     isType({revision}, 'string');
     if (revision.length === 0) {
-      throw new WorkboxError('invalid-revisioned-entry',
-        {entryID, revision, url});
+      throw new WorkboxError('invalid-object-entry',
+        {problemParam: 'revision', problemValue: revision});
     }
 
     isType({url}, 'string');
     if (url.length === 0) {
-      throw new WorkboxError('invalid-revisioned-entry',
-        {entryID, revision, url});
+      throw new WorkboxError('invalid-object-entry',
+        {problemParam: 'url', problemValue: url});
     }
 
     isType({entryID}, 'string');
     if (entryID.length === 0) {
-      throw new WorkboxError('invalid-revisioned-entry',
-        {entryID, revision, url});
+      throw new WorkboxError('invalid-object-entry',
+        {problemParam: 'entryID', problemValue: entryID});
     }
 
     isType({cacheBust}, 'boolean');
@@ -59,4 +59,4 @@ class DefaultsCacheEntry extends BaseCacheEntry {
   }
 }
 
-export default DefaultsCacheEntry;
+export default ObjectCacheEntry;

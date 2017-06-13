@@ -1,13 +1,13 @@
-import ErrorFactory from '../error-factory';
 import BaseCacheManager from './base-cache-manager';
 import RevisionDetailsModel from '../models/revision-details-model';
 import {defaultRevisionedCacheName} from '../constants';
-import StringPrecacheEntry from
-  '../models/precache-entries/string-precache-entry';
+import StringCacheEntry from
+  '../models/precache-entries/string-cache-entry';
 import ObjectPrecacheEntry from
   '../models/precache-entries/object-precache-entry';
 import {isInstance} from '../../../../../lib/assert';
 import logHelper from '../../../../../lib/log-helper';
+import WorkboxError from '../../../../../lib/workbox-error';
 
 /**
  * You can instantiate this class to add requests to a precache list and
@@ -107,25 +107,20 @@ class RevisionedCacheManager extends BaseCacheManager {
    * @return {BaseCacheEntry} Returns a parsed version of the file entry.
    */
   _parseEntry(input) {
-    if (typeof input === 'undefined' || input === null) {
-      throw ErrorFactory.createError('invalid-revisioned-entry',
-        new Error('Invalid file entry: ' + JSON.stringify(input))
-      );
+    if (input === null) {
+      throw new WorkboxError('unexpected-precache-entry', {input});
     }
 
     let precacheEntry;
     switch(typeof input) {
       case 'string':
-        precacheEntry = new StringPrecacheEntry(input);
+        precacheEntry = new StringCacheEntry(input);
         break;
       case 'object':
         precacheEntry = new ObjectPrecacheEntry(input);
         break;
       default:
-        throw ErrorFactory.createError('invalid-revisioned-entry',
-          new Error('Invalid file entry: ' +
-            JSON.stringify(precacheEntry))
-          );
+        throw new WorkboxError('unexpected-precache-entry', {input});
     }
 
     return precacheEntry;
@@ -143,10 +138,16 @@ class RevisionedCacheManager extends BaseCacheManager {
    */
   _onDuplicateInstallEntryFound(newEntry, previousEntry) {
     if (previousEntry.revision !== newEntry.revision) {
-      throw ErrorFactory.createError(
-        'duplicate-entry-diff-revisions',
-        new Error(`${JSON.stringify(previousEntry)} <=> ` +
-          `${JSON.stringify(newEntry)}`));
+      throw new WorkboxError('duplicate-entry-diff-revisions', {
+        firstEntry: {
+          url: previousEntry.request.url,
+          revision: previousEntry.revision,
+        },
+        secondEntry: {
+          url: newEntry.request.url,
+          revision: newEntry.revision,
+        },
+      });
     }
   }
 

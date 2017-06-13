@@ -56,15 +56,15 @@
  *
  * @module workbox-precaching
  */
-import ErrorFactory from './lib/error-factory';
 import RevisionedCacheManager from
   './lib/controllers/revisioned-cache-manager.js';
 
+import WorkboxError from '../../../lib/workbox-error';
 import {isServiceWorkerGlobalScope} from '../../../lib/environment.js';
 
 if (!isServiceWorkerGlobalScope()) {
   // We are not running in a service worker, print error message
-  throw ErrorFactory.createError('not-in-sw');
+  throw new WorkboxError('not-in-sw');
 }
 
 export {
