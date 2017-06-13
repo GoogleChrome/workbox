@@ -48,25 +48,38 @@ module.exports = () => {
     });
   })
   .then((subdirectories) => {
-    const choices = subdirectories.concat([
-      new inquirer.Separator(),
-      manualEntryChoice,
-    ]);
-    return inquirer.prompt([
-      {
-        name: 'rootDir',
-        message: 'What is the root of your web app?',
-        type: 'list',
-        choices: choices,
-      },
-      {
-        name: 'rootDir',
-        message: 'Please manually enter the root of your web app?',
-        when: (answers) => {
-          return answers.rootDir === manualEntryChoice;
+    if (subdirectories.length > 0) {
+      // There are subdirectories we can set for the root of the project.
+      const choices = subdirectories.concat([
+        new inquirer.Separator(),
+        manualEntryChoice,
+      ]);
+      return inquirer.prompt([
+        {
+          name: 'rootDir',
+          message: 'What is the root of your web app?',
+          type: 'list',
+          choices: choices,
         },
-      },
-    ]);
+        {
+          name: 'rootDir',
+          message: 'Please manually enter the root of your web app?',
+          when: (answers) => {
+            return answers.rootDir === manualEntryChoice;
+          },
+        },
+      ]);
+    } else {
+      // There are no subdirectories so the developer must manually define this.
+      return inquirer.prompt([
+        {
+          name: 'rootDir',
+          message: 'Please enter the root of your web app? (Defaults to ' +
+            'the current directory)',
+          default: '.',
+        },
+      ]);
+    }
   })
   .then((answers) => {
     return path.join(currentDirectory, answers.rootDir);
