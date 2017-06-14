@@ -195,7 +195,7 @@ describe('sw/revisioned-caching()', function() {
     await secondCacheManager.install();
     await secondCacheManager.cleanup();
 
-    const secondIdbUrls = await cacheManager._revisionDetailsModel._idbHelper.getAllKeys();
+    const secondIdbUrls = await secondCacheManager._revisionDetailsModel._idbHelper.getAllKeys();
     expect(secondIdbUrls).to.include.members(urls);
     expect(secondIdbUrls).not.to.include.members([removedUrl]);
   });
