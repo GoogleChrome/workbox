@@ -184,16 +184,16 @@ describe('sw/revisioned-caching()', function() {
     const firstIdbUrls = await cacheManager._revisionDetailsModel._idbHelper.getAllKeys();
     expect(firstIdbUrls).to.include.members(urls);
 
-    // Reset the cache list to simulate a new install.
-    cacheManager._entriesToCache = new Map();
+    // Create a new RevisionedCacheManager to trigger a new installation.
+    const secondCacheManager = new workbox.precaching.RevisionedCacheManager();
 
     const removedUrl = urls.pop();
     const secondRevisionedFiles = urls.map((url) => {
       return {url, revision: 'dummy-revision'};
     });
-    cacheManager.addToCacheList({revisionedFiles: secondRevisionedFiles});
-    await cacheManager.install();
-    await cacheManager.cleanup();
+    secondCacheManager.addToCacheList({revisionedFiles: secondRevisionedFiles});
+    await secondCacheManager.install();
+    await secondCacheManager.cleanup();
 
     const secondIdbUrls = await cacheManager._revisionDetailsModel._idbHelper.getAllKeys();
     expect(secondIdbUrls).to.include.members(urls);
