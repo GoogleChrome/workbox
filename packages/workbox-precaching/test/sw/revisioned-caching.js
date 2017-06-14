@@ -170,4 +170,33 @@ describe('sw/revisioned-caching()', function() {
     expect(thrownError).to.exist;
     thrownError.name.should.equal('duplicate-entry-diff-revisions');
   });
+
+  it('should clean up IDB after a URL is removed from the precache list', async function() {
+    const urls = [1, 2, 3].map((i) => new URL(`/__echo/date/${i}`, location).href);
+
+    const firstRevisionedFiles = urls.map((url) => {
+      return {url, revision: 'dummy-revision'};
+    });
+    cacheManager.addToCacheList({revisionedFiles: firstRevisionedFiles});
+    await cacheManager.install();
+    await cacheManager.cleanup();
+
+    const firstIdbUrls = await cacheManager._revisionDetailsModel._idbHelper.getAllKeys();
+    expect(firstIdbUrls).to.include.members(urls);
+
+    // Reset the cache list to simulate a new install.
+    cacheManager._entriesToCache = new Map();
+
+    const removedUrl = urls.pop();
+    const secondRevisionedFiles = urls.map((url) => {
+      return {url, revision: 'dummy-revision'};
+    });
+    cacheManager.addToCacheList({revisionedFiles: secondRevisionedFiles});
+    await cacheManager.install();
+    await cacheManager.cleanup();
+
+    const secondIdbUrls = await cacheManager._revisionDetailsModel._idbHelper.getAllKeys();
+    expect(secondIdbUrls).to.include.members(urls);
+    expect(secondIdbUrls).not.to.include.members([removedUrl]);
+  });
 });
