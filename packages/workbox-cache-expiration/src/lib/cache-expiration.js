@@ -187,15 +187,17 @@ class CacheExpiration {
    *
    * @param {Object} input
    * @param {string} input.cacheName Name of the cache the Responses belong to.
-   * @param {string} input.url The URL for the entry to update.
-   * @param {Number} [input.now] A timestamp.
-   *
-   * Defaults to the current time.
-   *
+   * @param {string} input.url The URL for the entry to update. The hash portion
+   * of the URL will be ignored.
+   * @param {Number} [input.now] A timestamp. Defaults to the current time.
    */
   async updateTimestamp({cacheName, url, now} = {}) {
     isType({url}, 'string');
     isType({cacheName}, 'string');
+
+    // Remove the hash, if present.
+    const urlObject = new URL(url, location);
+    urlObject.hash = '';
 
     if (typeof now === 'undefined') {
       now = Date.now();
@@ -205,7 +207,7 @@ class CacheExpiration {
     const tx = db.transaction(cacheName, 'readwrite');
     tx.objectStore(cacheName).put({
       [timestampPropertyName]: now,
-      [urlPropertyName]: url,
+      [urlPropertyName]: urlObject.href,
     });
 
     await tx.complete;

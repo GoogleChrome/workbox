@@ -305,6 +305,9 @@ class WorkboxSW {
 
     const route = new Route({
       match: ({url}) => {
+        // See https://github.com/GoogleChrome/workbox/issues/488
+        url.hash = '';
+
         const cachedUrls = this._revisionedCacheManager.getCachedUrls();
         if (cachedUrls.indexOf(url.href) !== -1) {
           return true;

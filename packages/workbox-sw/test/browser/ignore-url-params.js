@@ -110,4 +110,16 @@ describe('Test ignore url params matching', function() {
       });
     });
   });
+
+  it(`should ignore the URL's hash when routing to a precached URL`, async function() {
+    const responseBody = 'hello';
+    const urlObject = new URL(`/__echo/date/${responseBody}`, location);
+    urlObject.hash = 'should-be-ignored';
+
+    const iframe = await goog.swUtils.activateSW('../static/sw/ignore-url-params.js');
+    const fetchResponse = await iframe.contentWindow.fetch(urlObject.href);
+    const fetchResponseBody = await fetchResponse.text();
+
+    expect(fetchResponseBody.startsWith(responseBody)).to.be.true;
+  });
 });
