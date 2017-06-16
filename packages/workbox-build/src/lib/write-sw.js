@@ -6,10 +6,10 @@ const runtimeCachingConverter = require('./utils/runtime-caching-converter');
 const template = require('lodash.template');
 
 module.exports =
-  (swSrc, manifestEntries, workboxSWImportPath, globDirectory, options) => {
+  (swDest, manifestEntries, workboxSWImportPath, globDirectory, options) => {
   options = options || {};
   try {
-    mkdirp.sync(path.dirname(swSrc));
+    mkdirp.sync(path.dirname(swDest));
   } catch (err) {
     return Promise.reject(
       new Error(`${errors['unable-to-make-sw-directory']}. '${err.message}'`)
@@ -80,11 +80,14 @@ module.exports =
   })
   .then((populatedTemplate) => {
     return new Promise((resolve, reject) => {
-      fs.writeFile(swSrc, populatedTemplate, (err) => {
-        if (err) {
-          return reject(
-            new Error(`${errors['sw-write-failure']}. '${err.message}'`)
-          );
+      fs.writeFile(swDest, populatedTemplate, (error) => {
+        if (error) {
+          if (error.code === 'EISDIR') {
+            // See https://github.com/GoogleChrome/workbox/issues/612
+            return reject(new Error(errors['sw-write-failure-directory']));
+          }
+          return reject(new Error(
+            `${errors['sw-write-failure']}. '${error.message}'`));
         }
 
         resolve();
