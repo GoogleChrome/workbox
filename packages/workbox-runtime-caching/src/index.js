@@ -39,6 +39,7 @@ import Handler from './lib/handler';
 import NetworkFirst from './lib/network-first';
 import NetworkOnly from './lib/network-only';
 import StaleWhileRevalidate from './lib/stale-while-revalidate';
+import StreamedComposite from './lib/streamed-composite';
 import {getDefaultCacheName} from './lib/constants';
 
 export {
@@ -49,5 +50,6 @@ export {
   NetworkOnly,
   RequestWrapper,
   StaleWhileRevalidate,
+  StreamedComposite,
   getDefaultCacheName,
 };
