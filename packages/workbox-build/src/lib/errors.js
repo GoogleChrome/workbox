@@ -25,6 +25,8 @@ module.exports = {
   'read-sw-template-failure': 'Unable to read the service worker template ' +
     'file.',
   'sw-write-failure': 'Unable to write the service worker file.',
+  'sw-write-failure-directory': 'Unable to write the service worker file; ' +
+    'swDest should be a full path to the file, not a path to a directory.',
   'unable-to-copy-workbox-sw': 'workbox-sw is needed by the service worker ' +
     'and could not be copied over to your new site.',
   'invalid-generate-sw-input': 'The input to generateSW() must be an ' +
