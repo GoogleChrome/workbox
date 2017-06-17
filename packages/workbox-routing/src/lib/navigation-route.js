@@ -30,8 +30,10 @@ import logHelper from '../../../../lib/log-helper';
  * both lists are provided, and there's a navigation to a URL which matches
  * both, then the blacklist will take precedence and the request will not be
  * matched by this route. The regular expressions in `whitelist` and `blacklist`
- * are matched against the [`pathname`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/pathname)
- * portion of the requested URL.
+ * are matched against the concatenated
+ * [`pathname`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/pathname)
+ * and [`search`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/search)
+ * portions of the requested URL.
  *
  * To match all navigations, use a `whitelist` array containing a RegExp that
  * matches everything, i.e. `[/./]`.
@@ -80,8 +82,9 @@ class NavigationRoute extends Route {
       let message;
 
       if (event.request.mode === 'navigate') {
-        if (whitelist.some((regExp) => regExp.test(url.pathname))) {
-          if (blacklist.some((regExp) => regExp.test(url.pathname))) {
+        const pathnameAndSearch = url.pathname + url.search;
+        if (whitelist.some((regExp) => regExp.test(pathnameAndSearch))) {
+          if (blacklist.some((regExp) => regExp.test(pathnameAndSearch))) {
             message = `The navigation route is not being used, since the ` +
               `request URL matches both the whitelist and blacklist.`;
           } else {
