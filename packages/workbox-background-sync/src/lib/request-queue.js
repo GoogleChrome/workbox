@@ -140,7 +140,8 @@ class RequestQueue {
     isType({hash}, 'string');
 
     if(this._queue.includes(hash)) {
-      return await this._idbQDb.get(hash);
+      const req = await this._idbQDb.get(hash);
+      return req;
     }
   }
 

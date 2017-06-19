@@ -17,7 +17,6 @@
 'use strict';
 
 describe('background-sync-queue-plugin test', () => {
-  console.log(workbox.backgroundSync.test);
   const backgroundSyncQueue
     = new workbox.backgroundSync.test.BackgroundSyncQueuePlugin({});
 
