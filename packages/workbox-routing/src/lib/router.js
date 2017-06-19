@@ -248,6 +248,67 @@ class Router {
 
     this.registerRoutes({routes: [route]});
   }
+
+  /**
+   * Unregisters an array of routes with the router.
+   *
+   * @example
+   * const firstRoute = new RegExpRoute({ ... });
+   * const secondRoute = new RegExpRoute({ ... });
+   * router.registerRoutes({routes: [firstRoute, secondRoute]});
+   *
+   * // Later, if you no longer want the routes to be used:
+   * router.unregisterRoutes({routes: [firstRoute, secondRoute]});
+   *
+   * @param {Object} input
+   * @param {Array<module:workbox-routing.Route>} input.routes An array of
+   * routes to unregister.
+   */
+  unregisterRoutes({routes} = {}) {
+    isArrayOfClass({routes}, Route);
+
+    for (let route of routes) {
+      if (!this._routes.has(route.method)) {
+        logHelper.error({
+          that: this,
+          message: `Can't unregister route; there are no ${route.method}
+            routes registered.`,
+          data: {route},
+        });
+      }
+
+      const routeIndex = this._routes.get(route.method).indexOf(route);
+      if (routeIndex > -1) {
+        this._routes.get(route.method).splice(routeIndex, 1);
+      } else {
+        logHelper.error({
+          that: this,
+          message: `Can't unregister route; the route wasn't previously
+            registered.`,
+          data: {route},
+        });
+      }
+    }
+  }
+
+  /**
+   * Unregisters a single route with the router.
+   *
+   * @example
+   * const route = new RegExpRoute({ ... });
+   * router.registerRoute({route});
+   *
+   * // Later, if you no longer want the route to be used:
+   * router.unregisterRoute({route});
+   *
+   * @param {Object} input
+   * @param {module:workbox-routing.Route} input.route The route to unregister.
+   */
+  unregisterRoute({route} = {}) {
+    isInstance({route}, Route);
+
+    this.unregisterRoutes({routes: [route]});
+  }
 }
 
 export default Router;
