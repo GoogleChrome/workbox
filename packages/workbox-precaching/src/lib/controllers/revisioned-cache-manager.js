@@ -187,6 +187,17 @@ class RevisionedCacheManager extends BaseCacheManager {
   }
 
   /**
+   * Removes a URL from IndexedDB when the corresponding entry has been removed
+   * from the Cache Storage API.
+   *
+   * @private
+   * @param {String} url The URL that has been deleted from the cache.
+   */
+  async _onEntryDeleted(url) {
+    await this._revisionDetailsModel.delete(url);
+  }
+
+  /**
    * This method closes the indexdDB helper. This is used for unit testing
    * to ensure cleanup between tests.
    * @private

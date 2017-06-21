@@ -38,6 +38,15 @@ class RevisionDetailsModel {
   }
 
   /**
+   * This method deletes the revision details from indexedDB for a given entry.
+   * @param {String} entryID The ID of the revision.
+   * @return {Promise} Promise that resolves once the data has been deleted.
+   */
+  delete(entryID) {
+    return this._idbHelper.delete(entryID);
+  }
+
+  /**
    * This method closes the indexdDB helper. This is only used for unit testing
    * to ensure clean state between tests.
    *

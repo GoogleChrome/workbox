@@ -231,4 +231,33 @@ describe('sw/revisioned-caching()', function() {
       },
     });
   });
+
+  it('should clean up IDB after a URL is removed from the precache list', async function() {
+    const urls = [1, 2, 3].map((i) => new URL(`/__echo/date/${i}`, location).href);
+
+    const firstRevisionedFiles = urls.map((url) => {
+      return {url, revision: 'dummy-revision'};
+    });
+    cacheManager.addToCacheList({revisionedFiles: firstRevisionedFiles});
+    await cacheManager.install();
+    await cacheManager.cleanup();
+
+    const firstIdbUrls = await cacheManager._revisionDetailsModel._idbHelper.getAllKeys();
+    expect(firstIdbUrls).to.include.members(urls);
+
+    // Create a new RevisionedCacheManager to trigger a new installation.
+    const secondCacheManager = new workbox.precaching.RevisionedCacheManager();
+
+    const removedUrl = urls.pop();
+    const secondRevisionedFiles = urls.map((url) => {
+      return {url, revision: 'dummy-revision'};
+    });
+    secondCacheManager.addToCacheList({revisionedFiles: secondRevisionedFiles});
+    await secondCacheManager.install();
+    await secondCacheManager.cleanup();
+
+    const secondIdbUrls = await secondCacheManager._revisionDetailsModel._idbHelper.getAllKeys();
+    expect(secondIdbUrls).to.include.members(urls);
+    expect(secondIdbUrls).not.to.include.members([removedUrl]);
+  });
 });

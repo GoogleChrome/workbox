@@ -109,6 +109,16 @@ class UnrevisionedCacheManager extends BaseCacheManager {
   _onEntryCached(precacheEntry) {
     // NOOP
   }
+
+  /**
+   * @private
+   * @param {String} url The URL of the entry that was deleted.
+   * @return {Promise} Returns a Promise that resolves once the work is done.
+   */
+  _onEntryDeleted(url) {
+    // Effectively a no-op.
+    return Promise.resolve();
+  }
 }
 
 export default UnrevisionedCacheManager;

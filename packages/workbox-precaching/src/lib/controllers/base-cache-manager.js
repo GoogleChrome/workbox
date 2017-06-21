@@ -185,16 +185,13 @@ class BaseCacheManager {
     const openCache = await this._getCache();
     const allCachedRequests = await openCache.keys();
 
-    const cachedRequestsToDelete = allCachedRequests.filter((cachedRequest) => {
-      if (requestsCachedOnInstall.includes(cachedRequest.url)) {
-        return false;
-      }
-      return true;
-    });
+    const cachedRequestsToDelete = allCachedRequests.filter(
+      (cachedRequest) => !requestsCachedOnInstall.includes(cachedRequest.url));
 
     return Promise.all(
-      cachedRequestsToDelete.map((cachedRequest) => {
-        return openCache.delete(cachedRequest);
+      cachedRequestsToDelete.map(async (cachedRequest) => {
+        await openCache.delete(cachedRequest);
+        await this._onEntryDeleted(cachedRequest.url);
       })
     );
   }
@@ -271,6 +268,19 @@ class BaseCacheManager {
    */
   _onEntryCached(precacheEntry) {
     throw new WorkboxError('requires-overriding');
+  }
+
+  /**
+   * Subclasses can use this method for any work that needs to be done once a
+   * URL has been deleted from the cache.
+   *
+   * @private
+   * @abstract
+   * @param {String} url The URL of the entry that was deleted.
+   * @return {Promise} Returns a Promise that resolves once the work is done.
+   */
+  _onEntryDeleted(url) {
+    throw ErrorFactory.createError('should-override');
   }
 }
 
