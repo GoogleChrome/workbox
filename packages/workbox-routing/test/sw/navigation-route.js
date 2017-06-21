@@ -75,6 +75,16 @@ describe('Test of the NavigationRoute class', function() {
     expect(route.match({event, url})).to.be.ok;
   });
 
+  it(`should match navigation requests for URLs whose search portion is in the whitelist`, function() {
+    const url = new URL('/willnotmatch', location);
+    const urlSearchValue = 'willmatch';
+    url.search = urlSearchValue;
+    const route = new workbox.routing.NavigationRoute({handler, whitelist: [
+      new RegExp(`${urlSearchValue}$`),
+    ]});
+    expect(route.match({event, url})).to.be.ok;
+  });
+
   it(`should not match navigation requests for URLs that are in both the whitelist and the blacklist`, function() {
     const url = new URL(path, location);
     const route = new workbox.routing.NavigationRoute({handler, whitelist, blacklist});

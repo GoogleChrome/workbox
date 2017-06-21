@@ -62,8 +62,8 @@ describe('Test workboxSW.router', function() {
     const exampleRoute = `/${date}/${fakeID}/test/`;
     const workboxSW = new WorkboxSW();
 
-    return new Promise((resolve, reject) => {
-      workboxSW.router.registerRoute(expressRoute, (args) => {
+    return new Promise((resolve) => {
+      const route = workboxSW.router.registerRoute(expressRoute, (args) => {
         (args.event instanceof FetchEvent).should.equal(true);
         args.url.toString().should.equal(new URL(exampleRoute, location).toString());
         Object.keys(args.params).length.should.equal(2);
@@ -72,6 +72,8 @@ describe('Test workboxSW.router', function() {
 
         resolve();
       });
+      expect(route).to.exist;
+
       const fetchEvent = new FetchEvent('fetch', {
         request: new Request(self.location.origin + exampleRoute),
       });
@@ -82,12 +84,12 @@ describe('Test workboxSW.router', function() {
 
   it('should be able to register a valid regex route', function() {
     const capturingGroup = 'test';
-    const regexRoute = /\/1234567890\/(\w+)\//;
+    const regExp = /\/1234567890\/(\w+)\//;
     const exampleRoute = `/1234567890/${capturingGroup}/`;
     const workboxSW = new WorkboxSW();
 
-    return new Promise((resolve, reject) => {
-      workboxSW.router.registerRoute(regexRoute, (args) => {
+    return new Promise((resolve) => {
+      const route = workboxSW.router.registerRoute(regExp, (args) => {
         (args.event instanceof FetchEvent).should.equal(true);
         args.url.toString().should.equal(new URL(exampleRoute, location).toString());
         args.params.length.should.equal(1);
@@ -95,6 +97,8 @@ describe('Test workboxSW.router', function() {
 
         resolve();
       });
+      expect(route).to.exist;
+
       const fetchEvent = new FetchEvent('fetch', {
         request: new Request(self.location.origin + exampleRoute),
       });

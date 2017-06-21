@@ -15,7 +15,6 @@
 /* global chai, workbox */
 
 'use strict';
-
 describe('request-manager test', () => {
   let responseAchieved = 0;
   const callbacks = {
@@ -27,11 +26,15 @@ describe('request-manager test', () => {
   let queue;
   let reqManager;
 
+  const idbHelper = new workbox.backgroundSync.test.IdbHelper(
+    'bgQueueSyncDB', 1, 'QueueStore');
+
   before( (done) => {
     const QUEUE_NAME = 'QUEUE_NAME';
     const MAX_AGE = 6;
     queue =
       new workbox.backgroundSync.test.RequestQueue({
+        idbQDb: idbHelper,
         config: {maxAge: MAX_AGE},
         queueName: QUEUE_NAME,
       });
@@ -45,7 +48,9 @@ describe('request-manager test', () => {
   it('check constructor', () => {
     chai.assert.isObject(reqManager);
     chai.assert.isFunction(reqManager.attachSyncHandler);
+    chai.assert.isFunction(reqManager.replayRequest);
     chai.assert.isFunction(reqManager.replayRequests);
+
     chai.assert.equal(reqManager._globalCallbacks, callbacks);
     chai.assert.equal(reqManager._queue, queue);
   });
@@ -55,8 +60,8 @@ describe('request-manager test', () => {
       = new workbox.backgroundSync.test.BackgroundSyncQueue({
         callbacks,
       });
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/1')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/2')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
     await backgroundSyncQueue._requestManager.replayRequests();
     chai.assert.equal(responseAchieved, 2);
   });

@@ -1,7 +1,6 @@
 const proxyquire = require('proxyquire');
 const errors = require('../../src/lib/errors.js');
-
-require('chai').should();
+const expect = require('chai').expect;
 
 describe('lib/write-sw.js', function() {
   const INJECTED_ERROR = new Error('Injected Error');
@@ -153,6 +152,29 @@ describe('lib/write-sw.js', function() {
         throw new Error('Unexpected error thrown: ' + caughtError.message);
       }
     });
+  });
+
+  it('should handle error writing file due to swDest being a directory', async function() {
+    const writeSw = proxyquire('../../src/lib/write-sw', {
+      'mkdirp': {sync: () => {}},
+      'fs': {
+        readFile: (pathname, encoding, cb) => {
+          cb(null, 'Injected Template');
+        },
+        writeFile: (filepath, stringToWrite, cb) => {
+          cb({code: 'EISDIR'});
+        },
+      },
+      'lodash.template': () => () => 'Injected populated template.',
+    });
+
+    try {
+      await writeSw('fake-path/', [{url: '/', revision: '1234'}],
+        'workbox-sw.min.js', 'fake-path/');
+      throw new Error('Expected error to be thrown');
+    } catch(error) {
+      expect(error.message).to.eql(errors['sw-write-failure-directory']);
+    }
   });
 
   it('should be able to generate sw for template', function() {
