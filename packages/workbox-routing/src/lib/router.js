@@ -13,10 +13,11 @@
  limitations under the License.
 */
 
-import Route from './route';
-import {isArrayOfClass, isInstance} from '../../../../lib/assert';
+import {isArrayOfInterface, isInterface} from '../../../../lib/assert';
 import logHelper from '../../../../lib/log-helper.js';
 import normalizeHandler from './normalize-handler';
+
+const ROUTE_INTERFACE = ['match', 'handler', 'method'];
 
 /**
  * The Router takes one or more [Routes]{@link Route} and registers a [`fetch`
@@ -220,7 +221,10 @@ class Router {
    * routes to register.
    */
   registerRoutes({routes} = {}) {
-    isArrayOfClass({routes}, Route);
+    // Rather than explicitly checking for Route subclasses, check to ensure
+    // that the object exposes the interface we need.
+    // See https://github.com/GoogleChrome/workbox/issues/385
+    isArrayOfInterface({routes}, ROUTE_INTERFACE);
 
     for (let route of routes) {
       if (!this._routes.has(route.method)) {
@@ -244,7 +248,7 @@ class Router {
    * @param {module:workbox-routing.Route} input.route The route to register.
    */
   registerRoute({route} = {}) {
-    isInstance({route}, Route);
+    isInterface({route}, ROUTE_INTERFACE);
 
     this.registerRoutes({routes: [route]});
   }
@@ -265,7 +269,7 @@ class Router {
    * routes to unregister.
    */
   unregisterRoutes({routes} = {}) {
-    isArrayOfClass({routes}, Route);
+    isArrayOfInterface({routes}, ROUTE_INTERFACE);
 
     for (let route of routes) {
       if (!this._routes.has(route.method)) {
@@ -305,7 +309,7 @@ class Router {
    * @param {module:workbox-routing.Route} input.route The route to unregister.
    */
   unregisterRoute({route} = {}) {
-    isInstance({route}, Route);
+    isInterface({route}, ROUTE_INTERFACE);
 
     this.unregisterRoutes({routes: [route]});
   }

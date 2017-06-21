@@ -82,10 +82,12 @@ class Router extends SWRoutingRouter {
    * @param {function|module:workbox-runtime-caching.Handler} handler The
    * handler to use to provide a response if the route matches. The handler
    * argument is ignored if you pass in a Route object, otherwise it's required.
+   * @param {String} [method] Only match requests that use this HTTP method.
+   * Defaults to `'GET'`.
    * @return {module:workbox-routing.Route} The Route object that was
    * registered.
    */
-  registerRoute(capture, handler) {
+  registerRoute(capture, handler, method = 'GET') {
     if (typeof handler === 'function') {
       handler = {
         handle: handler,
@@ -97,9 +99,9 @@ class Router extends SWRoutingRouter {
       if (capture.length === 0) {
         throw ErrorFactory.createError('empty-express-string');
       }
-      route = new ExpressRoute({path: capture, handler});
+      route = new ExpressRoute({path: capture, handler, method});
     } else if (capture instanceof RegExp) {
-      route = new RegExpRoute({regExp: capture, handler});
+      route = new RegExpRoute({regExp: capture, handler, method});
     } else if (capture instanceof Route) {
       route = capture;
     } else {
