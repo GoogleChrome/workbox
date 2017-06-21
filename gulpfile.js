@@ -22,7 +22,7 @@ const path = require('path');
 const options = minimist(process.argv.slice(2));
 
 if (options.project) {
-  // Ensure the project is invalid before running tasks
+  // Ensure the project is valid before running tasks
   try {
     fs.statSync(path.join(__dirname, 'packages', options.project));
   } catch (err) {
