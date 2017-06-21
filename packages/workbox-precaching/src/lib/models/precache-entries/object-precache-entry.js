@@ -1,4 +1,4 @@
-import ErrorFactory from '../../error-factory';
+import WorkboxError from '../../../../../../lib/workbox-error';
 import BaseCacheEntry from './base-precache-entry';
 import {isType} from '../../../../../../lib/assert';
 
@@ -10,7 +10,7 @@ import {isType} from '../../../../../../lib/assert';
  * @memberof module:workbox-precaching
  * @extends {module:workbox-precaching.BaseCacheEntry}
  */
-class DefaultsCacheEntry extends BaseCacheEntry {
+class ObjectCacheEntry extends BaseCacheEntry {
   /**
    * This class gives most control over configuring a cache entry.
    * @param {Object} input
@@ -32,23 +32,20 @@ class DefaultsCacheEntry extends BaseCacheEntry {
 
     isType({revision}, 'string');
     if (revision.length === 0) {
-      throw ErrorFactory.createError('invalid-revisioned-entry',
-        new Error('Bad revision Parameter. It should be a string with at ' +
-          'least one character: ' + JSON.stringify(revision)));
+      throw new WorkboxError('invalid-object-entry',
+        {problemParam: 'revision', problemValue: revision});
     }
 
     isType({url}, 'string');
     if (url.length === 0) {
-      throw ErrorFactory.createError('invalid-revisioned-entry',
-        new Error('Bad url Parameter. It should be a string:' +
-          JSON.stringify(url)));
+      throw new WorkboxError('invalid-object-entry',
+        {problemParam: 'url', problemValue: url});
     }
 
     isType({entryID}, 'string');
     if (entryID.length === 0) {
-      throw ErrorFactory.createError('invalid-revisioned-entry',
-        new Error('Bad entryID Parameter. It should be a string with at ' +
-          'least one character: ' + JSON.stringify(entryID)));
+      throw new WorkboxError('invalid-object-entry',
+        {problemParam: 'entryID', problemValue: entryID});
     }
 
     isType({cacheBust}, 'boolean');
@@ -62,4 +59,4 @@ class DefaultsCacheEntry extends BaseCacheEntry {
   }
 }
 
-export default DefaultsCacheEntry;
+export default ObjectCacheEntry;

@@ -22,6 +22,7 @@ describe('Test cacheId Parameter', function() {
     }
     expect(thrownError).to.exist;
     expect(thrownError.name).to.equal('bad-cache-id');
+    expect(thrownError.extras).to.deep.equal({cacheId: {}});
   });
 
   it('should be able to generate cacheManager with cacheId', function() {

@@ -62,6 +62,18 @@ describe('sw/revisioned-caching()', function() {
     }).to.throw('null');
   });
 
+  it(`should handle cacheRevisioned null array inputs`, function() {
+    expect(() => {
+      cacheManager.addToCacheList({revisionedFiles: [null]});
+    }).to.throw().that.has.property('name', 'unexpected-precache-entry');
+  });
+
+  it(`should handle cacheRevisioned undefined array inputs`, function() {
+    expect(() => {
+      cacheManager.addToCacheList({revisionedFiles: [undefined]});
+    }).to.throw().that.has.property('name', 'unexpected-precache-entry');
+  });
+
   const badPaths = [
     null,
     undefined,
@@ -72,31 +84,11 @@ describe('sw/revisioned-caching()', function() {
     [],
   ];
 
-  const badRevisions = [
-    null,
-    undefined,
-    false,
-    true,
-    '',
-    12345,
-    {},
-    [],
-  ];
-
-  const badFileManifests = [];
   badPaths.forEach((badPath) => {
-    badFileManifests.push([badPath]);
-    badFileManifests.push([{url: badPath, revision: VALID_REVISION}]);
-  });
-  badRevisions.forEach((badRevision) => {
-    badFileManifests.push([{url: VALID_PATH_REL, revision: badRevision}]);
-  });
-
-  badFileManifests.forEach((badFileManifest) => {
-    it(`should throw an errror for bad url / revision value '${JSON.stringify(badFileManifest)}'`, function() {
+    it(`should throw an errror for bad path value '${JSON.stringify(badPath)}'`, function() {
       let caughtError;
       try {
-        cacheManager.addToCacheList({revisionedFiles: badFileManifest});
+        cacheManager.addToCacheList({revisionedFiles: [badPath]});
       } catch (err) {
         caughtError = err;
       }
@@ -106,8 +98,67 @@ describe('sw/revisioned-caching()', function() {
       }
       // TODO: Changed assertion library to support throwing custom errors.
       // caughtError.name.should.equal('invalid-revisioned-entry');
+      console.log(caughtError);
+    });
+
+    it(`should throw an errror for bad path value with valid revision '${JSON.stringify(badPath)}'`, function() {
+      let caughtError;
+      try {
+        cacheManager.addToCacheList({revisionedFiles: [{url: badPath, revision: VALID_REVISION}]});
+      } catch (err) {
+        caughtError = err;
+      }
+
+      if (!caughtError) {
+        throw new Error('Expected file manifest to cause an error.');
+      }
+      // TODO: Changed assertion library to support throwing custom errors.
+      // caughtError.name.should.equal('invalid-revisioned-entry');
+      console.log(caughtError);
     });
   });
+
+  const invalidTypeRevisions = [
+    null,
+    undefined,
+    false,
+    true,
+    12345,
+    {},
+    [],
+  ];
+  invalidTypeRevisions.forEach((invalidRevision) => {
+    it(`should throw an errror for bad revision value '${JSON.stringify(invalidRevision)}'`, function() {
+      let caughtError;
+      try {
+        cacheManager.addToCacheList({revisionedFiles: [{url: VALID_PATH_REL, revision: invalidRevision}]});
+      } catch (err) {
+        caughtError = err;
+      }
+
+      if (!caughtError) {
+        throw new Error('Expected file manifest to cause an error.');
+      }
+      caughtError.message.indexOf(`The 'revision' parameter has the wrong type`).should.equal(0);
+    });
+  });
+
+  it(`should throw an errror for an empty string revision.`, function() {
+      let caughtError;
+      try {
+        cacheManager.addToCacheList({revisionedFiles: [{url: VALID_PATH_REL, revision: ''}]});
+      } catch (err) {
+        caughtError = err;
+      }
+
+      if (!caughtError) {
+        throw new Error('Expected file manifest to cause an error.');
+      }
+
+      caughtError.name.should.equal('invalid-object-entry');
+      caughtError.extras.should.deep.equal({problemParam: 'revision', problemValue: ''});
+    });
+
 
   const badCacheBusts = [
     null,
@@ -169,5 +220,15 @@ describe('sw/revisioned-caching()', function() {
     }
     expect(thrownError).to.exist;
     thrownError.name.should.equal('duplicate-entry-diff-revisions');
+    thrownError.extras.should.deep.equal({
+      firstEntry: {
+        url: new URL(TEST_PATH, self.location).toString(),
+        revision: '1234',
+      },
+      secondEntry: {
+        url: new URL(TEST_PATH, self.location).toString(),
+        revision: '5678',
+      },
+    });
   });
 });

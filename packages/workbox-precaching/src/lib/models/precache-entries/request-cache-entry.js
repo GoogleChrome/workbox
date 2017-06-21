@@ -1,5 +1,5 @@
 import BaseCacheEntry from './base-precache-entry';
-import ErrorFactory from '../../error-factory';
+import WorkboxError from '../../../../../../lib/workbox-error';
 
 /**
  * This class will take a Request object and parse it into a BaseCacheEntry.
@@ -16,9 +16,9 @@ class RequestCacheEntry extends BaseCacheEntry {
    */
   constructor(request) {
     if (!(request instanceof Request)) {
-      throw ErrorFactory.createError('invalid-unrevisioned-entry',
-        new Error('Invalid file entry: ' +
-          JSON.stringify(request)));
+      throw new WorkboxError('invalid-request-entry', {
+        url: request.url,
+      });
     }
 
     super({

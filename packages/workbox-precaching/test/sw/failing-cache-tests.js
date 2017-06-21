@@ -16,6 +16,7 @@ describe('Test Failing Cache Behavior', function() {
     }, (err) => {
       expect(err).to.exist;
       expect(err.name).to.equal('request-not-cached');
+      expect(err.extras.url).to.equal(new URL('/__test/404/', self.location).toString());
     });
   });
 
@@ -32,6 +33,7 @@ describe('Test Failing Cache Behavior', function() {
     }, (err) => {
       expect(err).to.exist;
       expect(err.name).to.equal('request-not-cached');
+      expect(err.extras.url).to.equal(new URL('/__test/404/', self.location).toString());
     });
   });
 
@@ -46,6 +48,7 @@ describe('Test Failing Cache Behavior', function() {
     }, (err) => {
       expect(err).to.exist;
       expect(err.name).to.equal('request-not-cached');
+      expect(err.extras.url).to.equal(new URL(workbox.__TEST_DATA['opaque'][0], self.location).toString());
     });
   });
 
@@ -60,6 +63,7 @@ describe('Test Failing Cache Behavior', function() {
     }, (err) => {
       expect(err).to.exist;
       expect(err.name).to.equal('request-not-cached');
+      expect(err.extras.url).to.equal(new URL(workbox.__TEST_DATA['opaque'][0], self.location).toString());
     });
   });
 });
