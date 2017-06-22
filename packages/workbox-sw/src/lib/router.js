@@ -70,22 +70,26 @@ class Router extends SWRoutingRouter {
   }
 
   /**
-   * @param {String|RegExp|Route} capture The capture for a route can be one
-   * of three types.
-   * 1. It can be an Express style route, like `'/path/to/:anything'` for
+   * @param {String|RegExp|module:workbox-routing.matchCallback} capture
+   * The capture for a route can be one of three types:
+   * 1. An Express-style route, like `'/path/to/:anything'` for
    *    same-origin or `'https://cross-origin.com/path/to/:anything'` for
    *    cross-origin routes.
    * 1. A regular expression that will be tested against request URLs. For
    *    cross-origin routes, you must use a RegExp that matches the start of the
    *    full URL, like `new RegExp('https://cross-origin\.com/')`.
-   * 1. A [Route]{@link module:workbox-routing.Route} instance.
+   * 1. A [function]{@link module:workbox-routing.matchCallback} which is
+   *    passed the URL and `FetchEvent`, and should returns a truthy value if
+   *    the route matches.
    * @param {function|module:workbox-runtime-caching.Handler} handler The
    * handler to use to provide a response if the route matches. The handler
    * argument is ignored if you pass in a Route object, otherwise it's required.
+   * @param {String} [method] Only match requests that use this HTTP method.
+   + Defaults to `'GET'`.
    * @return {module:workbox-routing.Route} The Route object that was
    * registered.
    */
-  registerRoute(capture, handler) {
+  registerRoute(capture, handler, method = 'GET') {
     if (typeof handler === 'function') {
       handler = {
         handle: handler,
@@ -97,11 +101,11 @@ class Router extends SWRoutingRouter {
       if (capture.length === 0) {
         throw ErrorFactory.createError('empty-express-string');
       }
-      route = new ExpressRoute({path: capture, handler});
+      route = new ExpressRoute({path: capture, handler, method});
     } else if (capture instanceof RegExp) {
-      route = new RegExpRoute({regExp: capture, handler});
-    } else if (capture instanceof Route) {
-      route = capture;
+      route = new RegExpRoute({regExp: capture, handler, method});
+    } else if (typeof capture === 'function') {
+      route = new Route({match: capture, handler, method});
     } else {
       throw ErrorFactory.createError('unsupported-route-type');
     }
