@@ -4,6 +4,7 @@
       "/node_modules/mockdate/src/mockdate.js",
       "/node_modules/sinon/pkg/sinon.js",
       "/__test/bundle/workbox-background-sync",
+      "/__test/bundle/workbox-runtime-caching",
       "/packages/workbox-background-sync/build/test/background-sync-queue.js",
       "/packages/workbox-background-sync/build/test/background-sync-queue-plugin.js",
       "/packages/workbox-background-sync/build/test/broadcast-manager.js",
