@@ -1,5 +1,7 @@
 import RequestManager from './request-manager';
 import RequestQueue from './request-queue';
+import RequestWrapper from
+  '../../../workbox-runtime-caching/src/lib/request-wrapper';
 import {maxAge, defaultDBName} from './constants';
 import {isType, isInstance} from '../../../../lib/assert';
 import IDBHelper from '../../../../lib/idb-helper';
@@ -30,47 +32,58 @@ import {getResponse} from './response-manager';
  */
 class Queue {
   /**
-   * Creates an instance of Queue with the given options
+   * Creates an instance of Queue with the given options.
    *
    * @param {Object} [input]
    * @param {Number} [input.maxRetentionTime = 5 days] Time for which a queued
    * request will live in the queue(irespective of failed/success of replay).
-   * @param {Object} [input.callbacks] Callbacks for successfull/ failed
-   * replay of a request.
-   * @param {string} [input.queueName] Queue name inside db in which
+   * @param {Object<String, function>} [input.callbacks] Callbacks for
+   * successful/failed replay of a request.
+   * @param {String} [input.queueName] Queue name inside db in which
    * requests will be queued.
-   * @param {BroadcastChannel=} [input.broadcastChannel] BroadcastChannel
+   * @param {BroadcastChannel} [input.broadcastChannel] BroadcastChannel
    * which will be used to publish messages when the request will be queued.
+   * @param {module:workbox-runtime-caching.RequestWrapper}
+   * [input.requestWrapper] An optional `RequestWrapper` with a configured
+   * `requestWillFetch` plugin. The plugin will be applied to transform the
+   * queued `Request` before it's replayed.
    */
-  constructor({maxRetentionTime = maxAge, callbacks, queueName,
-    broadcastChannel, dbName = defaultDBName} = {}) {
-      if(queueName) {
-        isType({queueName}, 'string');
-      }
+  constructor({
+                maxRetentionTime = maxAge, callbacks, queueName,
+                broadcastChannel, dbName = defaultDBName, requestWrapper,
+              } = {}) {
+    if (queueName) {
+      isType({queueName}, 'string');
+    }
 
-      if(maxRetentionTime) {
-        isType({maxRetentionTime}, 'number');
-      }
+    if (maxRetentionTime) {
+      isType({maxRetentionTime}, 'number');
+    }
 
-      if(broadcastChannel) {
-        isInstance({broadcastChannel}, BroadcastChannel);
-      }
+    if (broadcastChannel) {
+      isInstance({broadcastChannel}, BroadcastChannel);
+    }
 
-      isType({dbName}, 'string');
+    isType({dbName}, 'string');
 
-      this._dbName = dbName;
-      this._queue = new RequestQueue({
-        config: {
-          maxAge: maxRetentionTime,
-        },
-        queueName,
-        idbQDb: new IDBHelper(this._dbName, 1, 'QueueStore'),
-        broadcastChannel,
-      });
-      this._requestManager = new RequestManager({callbacks,
-        queue: this._queue});
+    this._dbName = dbName;
 
-      this.cleanupQueue();
+    this._queue = new RequestQueue({
+      config: {
+        maxAge: maxRetentionTime,
+      },
+      queueName,
+      idbQDb: new IDBHelper(this._dbName, 1, 'QueueStore'),
+      broadcastChannel,
+    });
+
+    this._requestManager = new RequestManager({
+      callbacks,
+      queue: this._queue,
+      requestWrapper: requestWrapper || new RequestWrapper(),
+    });
+
+    this.cleanupQueue();
   }
 
   /**
