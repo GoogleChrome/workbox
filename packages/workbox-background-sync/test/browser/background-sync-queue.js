@@ -13,7 +13,6 @@
 
 /* eslint-env mocha, browser */
 /* global chai, workbox */
-
 'use strict';
 
 function delay(timeout) {
@@ -38,12 +37,25 @@ describe('background sync queue test', () => {
     onRetryFail: onRetryFail,
   };
 
-  const backgroundSyncQueue
-    = new workbox.backgroundSync.test.BackgroundSyncQueue({
+  let backgroundSyncQueue;
+
+  beforeEach(async function() {
+    responseAchieved = 0;
+    backgroundSyncQueue = new workbox.backgroundSync.test.BackgroundSyncQueue({
       maxRetentionTime: MAX_AGE,
-      queueName: QUEUE_NAME,
       callbacks: CALLBACKS,
     });
+  });
+
+  afterEach(async function() {
+    // replay queue so that further tests are not affected
+    try {
+      await backgroundSyncQueue.replayRequests();
+    } catch (e) {
+      // do nothing as this is just a cleanup exercise
+    }
+    await backgroundSyncQueue.cleanupQueue();
+  });
 
   it('check defaults', () => {
     const defaultsBackgroundSyncQueue
@@ -51,7 +63,7 @@ describe('background sync queue test', () => {
     chai.assert.isObject(defaultsBackgroundSyncQueue._queue);
     chai.assert.isObject(defaultsBackgroundSyncQueue._requestManager);
     chai.assert.equal(defaultsBackgroundSyncQueue._queue._queueName,
-      workbox.backgroundSync.test.Constants.defaultQueueName + '_0');
+      workbox.backgroundSync.test.Constants.defaultQueueName + '_1');
     chai.assert.equal(defaultsBackgroundSyncQueue._queue._config.maxAge,
       workbox.backgroundSync.test.Constants.maxAge);
     chai.assert.equal(
@@ -61,6 +73,11 @@ describe('background sync queue test', () => {
   });
 
   it('check parameterised constructor', () =>{
+    backgroundSyncQueue = new workbox.backgroundSync.test.BackgroundSyncQueue({
+      maxRetentionTime: MAX_AGE,
+      queueName: QUEUE_NAME,
+      callbacks: CALLBACKS,
+    });
     chai.assert.isObject(backgroundSyncQueue._queue);
     chai.assert.isObject(backgroundSyncQueue._requestManager);
     chai.assert.equal(backgroundSyncQueue._queue._queueName, QUEUE_NAME);
@@ -69,17 +86,28 @@ describe('background sync queue test', () => {
       CALLBACKS);
   });
 
-  it('check push proxy', async () => {
-    const currentLen = backgroundSyncQueue._queue.queue.length;
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum.com')});
-    chai.assert.equal(backgroundSyncQueue._queue.queue.length, currentLen + 1);
+  it('check push proxy', async function() {
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
+    chai.assert.equal(backgroundSyncQueue._queue.queue.length, 1);
   });
 
   it('check replay', async function() {
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/1')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('https://jsonplaceholder.typicode.com/posts/2')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
+    chai.assert.equal(backgroundSyncQueue._queue.queue.length, 2);
     await backgroundSyncQueue.replayRequests();
     chai.assert.equal(responseAchieved, 2);
+  });
+
+  it('check replay failure with rejected promise', async function() {
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__test/404')});
+    try {
+      await backgroundSyncQueue.replayRequests();
+      throw new Error('Replay should have failed because of invalid URL');
+    } catch (err) {
+      chai.assert.equal(404, err[0].status);
+    }
   });
 
   it('test queue cleanup', async () => {
@@ -97,9 +125,9 @@ describe('background sync queue test', () => {
 
     await backgroundSyncQueue.cleanupQueue();
     await backgroundSyncQueue2.cleanupQueue();
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum1.com')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('http://lipsum2.com')});
-    await backgroundSyncQueue2.pushIntoQueue({request: new Request('http://lipsum.com')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
+    await backgroundSyncQueue2.pushIntoQueue({request: new Request('/__echo/counter')});
     const queue1Keys = (await backgroundSyncQueue._queue._idbQDb.getAllKeys());
     const queue2Keys = (await backgroundSyncQueue2._queue._idbQDb.getAllKeys());
     await delay(100);

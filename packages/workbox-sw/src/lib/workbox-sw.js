@@ -24,7 +24,6 @@ import logHelper from '../../../../lib/log-helper';
 import {BroadcastCacheUpdatePlugin} from
   '../../../workbox-broadcast-cache-update/src/index.js';
 import {RevisionedCacheManager} from '../../../workbox-precaching/src/index.js';
-import {Route} from '../../../workbox-routing/src/index.js';
 import {
   getDefaultCacheName} from '../../../workbox-runtime-caching/src/index.js';
 
@@ -303,35 +302,33 @@ class WorkboxSW {
       plugins,
     });
 
-    const route = new Route({
-      match: ({url}) => {
-        // See https://github.com/GoogleChrome/workbox/issues/488.
-        // The incoming URL might include a hash/URL fragment, and the URLs in
-        // the cachedUrls array will never include a hash. We need to normalize
-        // the incoming URL to ensure that the string comparison works.
-        url.hash = '';
+    const capture = ({url}) => {
+      // See https://github.com/GoogleChrome/workbox/issues/488.
+      // The incoming URL might include a hash/URL fragment, and the URLs in
+      // the cachedUrls array will never include a hash. We need to normalize
+      // the incoming URL to ensure that the string comparison works.
+      url.hash = '';
 
-        const cachedUrls = this._revisionedCacheManager.getCachedUrls();
-        if (cachedUrls.indexOf(url.href) !== -1) {
-          return true;
-        }
+      const cachedUrls = this._revisionedCacheManager.getCachedUrls();
+      if (cachedUrls.indexOf(url.href) !== -1) {
+        return true;
+      }
 
-        let strippedUrl =
-          this._removeIgnoreUrlParams(url.href, ignoreUrlParametersMatching);
-        if (cachedUrls.indexOf(strippedUrl.href) !== -1) {
-          return true;
-        }
+      let strippedUrl =
+        this._removeIgnoreUrlParams(url.href, ignoreUrlParametersMatching);
+      if (cachedUrls.indexOf(strippedUrl.href) !== -1) {
+        return true;
+      }
 
-        if (directoryIndex && strippedUrl.pathname.endsWith('/')) {
-          url.pathname += directoryIndex;
-          return cachedUrls.indexOf(url.href) !== -1;
-        }
+      if (directoryIndex && strippedUrl.pathname.endsWith('/')) {
+        url.pathname += directoryIndex;
+        return cachedUrls.indexOf(url.href) !== -1;
+      }
 
-        return false;
-      },
-      handler: cacheFirstHandler,
-    });
-    this.router.registerRoute(route);
+      return false;
+    };
+
+    this.router.registerRoute(capture, cacheFirstHandler);
   }
 
   /**

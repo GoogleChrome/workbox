@@ -2,7 +2,7 @@ import ErrorFactory from '../error-factory';
 import BaseCacheManager from './base-cache-manager';
 import RequestCacheEntry from '../models/precache-entries/request-entry';
 import StringPrecacheEntry from
-  '../models/precache-entries/string-precache-entry';
+  '../models/precache-entries/string-cache-entry';
 import {isInstance} from '../../../../../lib/assert';
 
 /**
@@ -108,6 +108,16 @@ class UnrevisionedCacheManager extends BaseCacheManager {
    */
   _onEntryCached(precacheEntry) {
     // NOOP
+  }
+
+  /**
+   * @private
+   * @param {String} url The URL of the entry that was deleted.
+   * @return {Promise} Returns a Promise that resolves once the work is done.
+   */
+  _onEntryDeleted(url) {
+    // Effectively a no-op.
+    return Promise.resolve();
   }
 }
 

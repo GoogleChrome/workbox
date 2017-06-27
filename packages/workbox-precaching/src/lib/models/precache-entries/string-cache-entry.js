@@ -1,6 +1,6 @@
-import ErrorFactory from '../../error-factory';
 import BaseCacheEntry from './base-precache-entry';
 import {isType} from '../../../../../../lib/assert';
+import WorkboxError from '../../../../../../lib/workbox-error';
 
 /**
  * This class will take a string and parse it as a BaseCacheEntry.
@@ -18,9 +18,9 @@ class StringCacheEntry extends BaseCacheEntry {
   constructor(url) {
     isType({url}, 'string');
     if (url.length === 0) {
-      throw ErrorFactory.createError('invalid-revisioned-entry',
-        new Error('Bad url Parameter. It should be a string:' +
-          JSON.stringify(url)));
+      throw new WorkboxError('invalid-string-entry', {
+        url,
+      });
     }
 
     super({

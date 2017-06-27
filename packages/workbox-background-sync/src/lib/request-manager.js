@@ -16,7 +16,6 @@ class RequestManager {
    * attaches event handler
    * @param {Object=} config
    *
-   * @memberOf RequestManager
    * @private
    */
   constructor({callbacks, queue}) {
@@ -29,7 +28,6 @@ class RequestManager {
    * attaches sync handler to replay requests when
    * sync event is fired
    *
-   * @memberOf RequestManager
    * @private
    */
   attachSyncHandler() {
@@ -42,49 +40,67 @@ class RequestManager {
   }
 
   /**
-   * function to start playing requests
-   * in sequence
-   * @return {void}
+   * function to play one single request given its hash
    *
-   * @memberOf RequestManager
+   * @param {String} hash
+   *
+   * @return {Promise} Resolves if the request corresponding to the hash is
+   * played successfully, rejects if it fails during the replay
+   *
+   *
    * @private
    */
-  replayRequests() {
-    return this._queue.queue.reduce((promise, hash) => {
-      return promise
-        .then(async (item) => {
-          const reqData = await this._queue.getRequestFromQueue({hash});
-          if(reqData.response) {
-            // check if request is not played already
-            return;
-          }
-
-          const request = await getFetchableRequest({
-            idbRequestObject: reqData.request,
-          });
-
-          return fetch(request)
-            .then((response)=>{
-              if(!response.ok) {
-                return Promise.resolve();
-              } else {
-                // not blocking on putResponse.
-                putResponse({
-                  hash,
-                  idbObject: reqData,
-                  response: response.clone(),
-                  idbQDb: this._queue.idbQDb,
-                });
-                this._globalCallbacks.onResponse
-                  && this._globalCallbacks.onResponse(hash, response);
-              }
-            })
-            .catch((err)=>{
-              this._globalCallbacks.onRetryFailure
-                && this._globalCallbacks.onRetryFailure(hash, err);
-            });
+  async replayRequest(hash) {
+    try {
+      const reqData = await this._queue.getRequestFromQueue({hash});
+      if(reqData.response) {
+        return;
+      }
+      const request = await getFetchableRequest({
+        idbRequestObject: reqData.request,
+      });
+      const response = await fetch(request);
+      if(!response.ok) {
+        return Promise.reject(response);
+      } else {
+        // not blocking on putResponse.
+        putResponse({
+          hash,
+          idbObject: reqData,
+          response: response.clone(),
+          idbQDb: this._queue.idbQDb,
         });
-    }, Promise.resolve());
+        if (this._globalCallbacks.onResponse)
+          this._globalCallbacks.onResponse(hash, response);
+      }
+    } catch(err) {
+      return Promise.reject(err);
+    }
+  }
+
+  /**
+   * This function is to be called to replay all the requests
+   * in the current queue. It will play all the requests and return a promise
+   * based on the successfull execution of the requests.
+   *
+   * @return {Promise} Resolves if all requests are played successfully,
+   * rejects if any of the request fails during the replay
+   *
+   * @private
+   */
+  async replayRequests() {
+    const failedItems = [];
+    for (let hash of this._queue.queue) {
+      try {
+        await this.replayRequest(hash);
+      } catch (err) {
+        if(this._globalCallbacks.onRetryFailure)
+          this._globalCallbacks.onRetryFailure(hash, err);
+        failedItems.push(err);
+      }
+    }
+    return failedItems.length > 0 ?
+      Promise.reject(failedItems) : Promise.resolve();
   }
 }
 

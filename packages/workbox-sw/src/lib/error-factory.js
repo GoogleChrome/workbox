@@ -17,8 +17,8 @@ import ErrorFactory from '../../../../lib/error-factory';
 
 const errors = {
   'not-in-sw': 'workbox-sw must be loaded in your service worker file.',
-  'unsupported-route-type': 'Routes must be either a express style route ' +
-    'string, a Regex to capture request URLs or a Route instance.',
+  'unsupported-route-type': 'The first parameter to registerRoute() should be' +
+    ' either an Express-style path string, a RegExp, or a function.',
   'empty-express-string': 'The Express style route string must have some ' +
     'characters, an empty string is invalid.',
   'bad-revisioned-cache-list': `The 'precache()' method expects` +

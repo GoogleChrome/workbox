@@ -9,6 +9,7 @@
   },
   "globals": {
     "goog": true,
-    "expect": true
+    "expect": true,
+    "sinon": true,
   }
 }

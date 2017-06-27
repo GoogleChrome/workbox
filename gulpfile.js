@@ -16,8 +16,20 @@
 /* eslint-disable no-console, valid-jsdoc */
 
 const minimist = require('minimist');
+const fs = require('fs');
+const path = require('path');
 
 const options = minimist(process.argv.slice(2));
+
+if (options.project) {
+  // Ensure the project is valid before running tasks
+  try {
+    fs.statSync(path.join(__dirname, 'packages', options.project));
+  } catch (err) {
+    throw new Error(`The supplied project '${options.project}' is invalid.`);
+  }
+}
+
 global.port = options.port || 3000;
 global.projectOrStar = options.project || '*';
 global.cliOptions = options;

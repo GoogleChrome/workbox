@@ -1,5 +1,6 @@
-import ErrorFactory from '../error-factory';
 import {RequestWrapper} from '../../../../workbox-runtime-caching/src/index';
+import WorkboxError from '../../../../../lib/workbox-error';
+
 /**
  * This class handles the shared logic for caching revisioned and unrevisioned
  * assets.
@@ -20,7 +21,7 @@ class BaseCacheManager {
    */
   constructor({cacheName, cacheId, plugins} = {}) {
     if (cacheId && (typeof cacheId !== 'string' || cacheId.length === 0)) {
-      throw ErrorFactory.createError('bad-cache-id');
+      throw new WorkboxError('bad-cache-id', {cacheId});
     }
 
     this._entriesToCache = new Map();
@@ -154,9 +155,9 @@ class BaseCacheManager {
 
       return this._onEntryCached(precacheEntry);
     } catch (err) {
-      throw ErrorFactory.createError('request-not-cached', {
-        message: `Failed to get a cacheable response for ` +
-          `'${precacheEntry.request.url}': ${err.message}`,
+      throw new WorkboxError('request-not-cached', {
+        url: precacheEntry.request.url,
+        error: err,
       });
     }
   }
@@ -184,16 +185,13 @@ class BaseCacheManager {
     const openCache = await this._getCache();
     const allCachedRequests = await openCache.keys();
 
-    const cachedRequestsToDelete = allCachedRequests.filter((cachedRequest) => {
-      if (requestsCachedOnInstall.includes(cachedRequest.url)) {
-        return false;
-      }
-      return true;
-    });
+    const cachedRequestsToDelete = allCachedRequests.filter(
+      (cachedRequest) => !requestsCachedOnInstall.includes(cachedRequest.url));
 
     return Promise.all(
-      cachedRequestsToDelete.map((cachedRequest) => {
-        return openCache.delete(cachedRequest);
+      cachedRequestsToDelete.map(async (cachedRequest) => {
+        await openCache.delete(cachedRequest);
+        await this._onEntryDeleted(cachedRequest.url);
       })
     );
   }
@@ -223,7 +221,7 @@ class BaseCacheManager {
    * @return {BaseCacheEntry} Returns a parsed version of the file entry.
    */
   _parseEntry(input) {
-    throw ErrorFactory.createError('should-override');
+    throw new WorkboxError('requires-overriding');
   }
 
   /**
@@ -239,7 +237,7 @@ class BaseCacheManager {
    * @param {BaseCacheEntry} previous The entry that is currently cached.
    */
   _onDuplicateEntryFound(newEntry, previous) {
-    throw ErrorFactory.createError('should-override');
+    throw new WorkboxError('requires-overriding');
   }
 
   /**
@@ -254,7 +252,7 @@ class BaseCacheManager {
    * cached, false otherwise.
    */
   _isAlreadyCached(precacheEntry) {
-    throw ErrorFactory.createError('should-override');
+    throw new WorkboxError('requires-overriding');
   }
 
   /**
@@ -269,7 +267,20 @@ class BaseCacheManager {
    * been done.
    */
   _onEntryCached(precacheEntry) {
-    throw ErrorFactory.createError('should-override');
+    throw new WorkboxError('requires-overriding');
+  }
+
+  /**
+   * Subclasses can use this method for any work that needs to be done once a
+   * URL has been deleted from the cache.
+   *
+   * @private
+   * @abstract
+   * @param {String} url The URL of the entry that was deleted.
+   * @return {Promise} Returns a Promise that resolves once the work is done.
+   */
+  _onEntryDeleted(url) {
+    throw new WorkboxError('requires-overriding');
   }
 }
 
