@@ -198,4 +198,28 @@ describe('Test of the CacheExpiration class', function() {
           .then((idbEntryUrls) => expect(idbEntryUrls).to.eql(urls.slice(extraEntryCount)));
       });
   });
+
+  it(`should ignore the URL's hash when updateTimestamp() is called`, async function() {
+    const cacheExpiration = new CacheExpiration({maxEntries: MAX_ENTRIES});
+    const cacheName = getUniqueCacheName();
+    const url = getUniqueUrl();
+    const firstNow = NOW;
+
+    await cacheExpiration.updateTimestamp({cacheName, url, now: firstNow});
+    const db = await cacheExpiration.getDB({cacheName});
+    const firstTx = db.transaction(cacheName, 'readonly');
+    const firstStore = firstTx.objectStore(cacheName);
+    const firstEntry = await firstStore.get(url);
+    expect(firstEntry[timestampPropertyName]).to.equal(firstNow);
+
+    const urlWithHash = `${url}#hashvalue`;
+    const secondNow = firstNow + 1;
+
+    await cacheExpiration.updateTimestamp({cacheName, url: urlWithHash, now: secondNow});
+    const secondTx = db.transaction(cacheName, 'readonly');
+    const secondStore = secondTx.objectStore(cacheName);
+    // Get the entry for the original url.
+    const secondEntry = await secondStore.get(url);
+    expect(secondEntry[timestampPropertyName]).to.equal(secondNow);
+  });
 });

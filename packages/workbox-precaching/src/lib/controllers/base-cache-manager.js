@@ -280,7 +280,7 @@ class BaseCacheManager {
    * @return {Promise} Returns a Promise that resolves once the work is done.
    */
   _onEntryDeleted(url) {
-    throw ErrorFactory.createError('should-override');
+    throw new WorkboxError('requires-overriding');
   }
 }
 

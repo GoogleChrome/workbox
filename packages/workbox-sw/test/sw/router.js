@@ -119,4 +119,28 @@ describe('Test workboxSW.router', function() {
     expect(thrownError).to.exist;
     expect(thrownError.name).to.equal('navigation-route-url-string');
   });
+
+  it(`should throw when the method passed in to registerRoute() isn't valid`, function() {
+    const workboxSW = new WorkboxSW();
+    try {
+      workboxSW.router.registerRoute(/123/, () => {}, 'INVALID_METHOD');
+      throw new Error();
+    } catch(error) {
+      expect(error.name).to.eql('assertion-failed',
+        `The expected assertion-failed error wasn't thrown.`);
+    }
+  });
+
+  it(`should use the valid method passed in to registerRoute()`, function() {
+    const workboxSW = new WorkboxSW();
+    const method = 'POST';
+    const route = workboxSW.router.registerRoute(/123/, () => {}, method);
+    expect(route.method).to.eql(method);
+  });
+
+  it(`should support calling registerRoute() with a function as the capture parameter`, function() {
+    const workboxSW = new WorkboxSW();
+    const route = workboxSW.router.registerRoute(() => {}, () => {});
+    expect(route).to.exist;
+  });
 });
