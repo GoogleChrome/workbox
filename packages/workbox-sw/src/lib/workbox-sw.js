@@ -303,6 +303,12 @@ class WorkboxSW {
     });
 
     const capture = ({url}) => {
+      // See https://github.com/GoogleChrome/workbox/issues/488.
+      // The incoming URL might include a hash/URL fragment, and the URLs in
+      // the cachedUrls array will never include a hash. We need to normalize
+      // the incoming URL to ensure that the string comparison works.
+      url.hash = '';
+
       const cachedUrls = this._revisionedCacheManager.getCachedUrls();
       if (cachedUrls.indexOf(url.href) !== -1) {
         return true;
