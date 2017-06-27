@@ -134,7 +134,7 @@ describe('Test workboxSW.router', function() {
   it(`should use the valid method passed in to registerRoute()`, function() {
     const workboxSW = new WorkboxSW();
     const method = 'POST';
-    const route =workboxSW.router.registerRoute(/123/, () => {}, method);
+    const route = workboxSW.router.registerRoute(/123/, () => {}, method);
     expect(route.method).to.eql(method);
   });
 

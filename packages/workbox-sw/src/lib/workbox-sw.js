@@ -24,7 +24,6 @@ import logHelper from '../../../../lib/log-helper';
 import {BroadcastCacheUpdatePlugin} from
   '../../../workbox-broadcast-cache-update/src/index.js';
 import {RevisionedCacheManager} from '../../../workbox-precaching/src/index.js';
-import {Route} from '../../../workbox-routing/src/index.js';
 import {
   getDefaultCacheName} from '../../../workbox-runtime-caching/src/index.js';
 
