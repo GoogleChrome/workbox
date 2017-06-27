@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, workbox */
+/* global chai, workbox, sinon */
 
 'use strict';
 describe('request-manager test', () => {
