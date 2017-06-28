@@ -89,7 +89,8 @@ const injectManifest = (input) => {
   })
   .then((manifestEntries) => {
     let swFileContents = fs.readFileSync(input.swSrc, 'utf8');
-    swFileContents = `importScripts('${workboxSWImportPath}');\n` + swFileContents;
+    swFileContents = `importScripts('${workboxSWImportPath}');\n`
+                      + swFileContents;
     const injectionResults = swFileContents.match(injectionPointRegex);
     if (!injectionResults) {
       throw new Error(errors['injection-point-not-found']);
