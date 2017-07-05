@@ -714,15 +714,15 @@ const fileManifest = [
 
 const workboxSW = new self.WorkboxSW();
 workboxSW.precache(fileManifest);
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.cacheFirst({}));
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.cacheOnly({}));
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.networkFirst({}));
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.networkOnly({}));
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.staleWhileRevalidate({}));
-workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.staleWhileRevalidate({}));
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.cacheFirst({}), 'GET');
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.cacheOnly({}), 'GET');
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.networkFirst({}), 'GET');
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.networkOnly({}), 'GET');
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.staleWhileRevalidate({}), 'GET');
+workboxSW.router.registerRoute(/^https:\\/\\/example\\.com\\/api/, workboxSW.strategies.staleWhileRevalidate({}), 'GET');
 workboxSW.router.registerRoute('/images/:size/:name.jpg', (request, values, options) => {
               return new Promise('params: ' + values.join(','));
-            });
+            }, 'GET');
 workboxSW.router.registerRoute(/\\/articles\\//, workboxSW.strategies.staleWhileRevalidate({
   "cacheName": "example-cache",
   "cacheExpiration": {
@@ -743,7 +743,7 @@ workboxSW.router.registerRoute(/\\/articles\\//, workboxSW.strategies.staleWhile
       "Example-Header-2": "Header-Value-2"
     }
   }
-}));
+}), 'GET');
 `;
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {
