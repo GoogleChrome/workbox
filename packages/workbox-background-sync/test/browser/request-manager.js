@@ -12,23 +12,24 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, workbox, sinon */
+/* global chai, workbox */
 
 'use strict';
 describe('request-manager test', () => {
   let responseAchieved = 0;
   const callbacks = {
     onResponse: function() {
-      responseAchieved++;
+      responseAchieved ++;
     },
   };
 
   let queue;
   let reqManager;
+
   const idbHelper = new workbox.backgroundSync.test.IdbHelper(
     'bgQueueSyncDB', 1, 'QueueStore');
 
-  before((done) => {
+  before( (done) => {
     const QUEUE_NAME = 'QUEUE_NAME';
     const MAX_AGE = 6;
     queue =
@@ -44,13 +45,6 @@ describe('request-manager test', () => {
     done();
   });
 
-  let globalStubs = [];
-  afterEach(function() {
-    globalStubs.forEach((stub) => stub.restore());
-    globalStubs = [];
-  });
-
-
   it('check constructor', () => {
     chai.assert.isObject(reqManager);
     chai.assert.isFunction(reqManager.attachSyncHandler);
@@ -64,31 +58,11 @@ describe('request-manager test', () => {
   it('check replay', async function() {
     const backgroundSyncQueue
       = new workbox.backgroundSync.test.BackgroundSyncQueue({
-      callbacks,
-    });
+        callbacks,
+      });
     await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
     await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
     await backgroundSyncQueue._requestManager.replayRequests();
     chai.assert.equal(responseAchieved, 2);
-  });
-
-  it(`will fetch() the request returned by the RequestWrapper's requestWillFetch plugin`, async function() {
-    const stub = sinon.stub(self, 'fetch').returns(new Response());
-    globalStubs.push(stub);
-
-    const expectedRequest = new Request('expected');
-    const plugins = [{
-      requestWillFetch: () => Promise.resolve(expectedRequest),
-    }];
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper({plugins});
-    const bsq = new workbox.backgroundSync.test.BackgroundSyncQueue({
-      callbacks,
-      requestWrapper,
-    });
-
-    await bsq.pushIntoQueue({request: new Request('notexpected')});
-    await bsq._requestManager.replayRequests();
-
-    chai.expect(stub.getCall(0).args[0]).to.eql(expectedRequest);
   });
 });

@@ -13,18 +13,14 @@ class RequestManager {
   /**
    * Initializes the request manager
    * stores the callbacks object, maintains config and
-   * attaches event handler.
+   * attaches event handler
+   * @param {Object=} config
    *
    * @private
-   * @param {Object} input
-   * @param {Object<String, function>} callbacks
-   * @param {Queue} queue
-   * @param {RequestWrapper} requestWrapper
    */
-  constructor({callbacks, queue, requestWrapper}) {
+  constructor({callbacks, queue}) {
     this._globalCallbacks = callbacks || {};
     this._queue = queue;
-    this._requestWrapper = requestWrapper;
     this.attachSyncHandler();
   }
 
@@ -36,7 +32,7 @@ class RequestManager {
    */
   attachSyncHandler() {
     self.addEventListener('sync', (event) => {
-      if (event.tag === tagNamePrefix + this._queue.queueName
+      if(event.tag === tagNamePrefix + this._queue.queueName
         || event.tag === replayAllQueuesTag) {
         event.waitUntil(this.replayRequests());
       }
@@ -44,24 +40,27 @@ class RequestManager {
   }
 
   /**
-   * Replays a single request, identified by its hash.
+   * function to play one single request given its hash
    *
-   * @private
    * @param {String} hash
+   *
    * @return {Promise} Resolves if the request corresponding to the hash is
    * played successfully, rejects if it fails during the replay
+   *
+   *
+   * @private
    */
   async replayRequest(hash) {
     try {
       const reqData = await this._queue.getRequestFromQueue({hash});
-      if (reqData.response) {
+      if(reqData.response) {
         return;
       }
       const request = await getFetchableRequest({
         idbRequestObject: reqData.request,
       });
-      const response = await this._requestWrapper.fetch({request});
-      if (!response.ok) {
+      const response = await fetch(request);
+      if(!response.ok) {
         return Promise.reject(response);
       } else {
         // not blocking on putResponse.
@@ -74,7 +73,7 @@ class RequestManager {
         if (this._globalCallbacks.onResponse)
           this._globalCallbacks.onResponse(hash, response);
       }
-    } catch (err) {
+    } catch(err) {
       return Promise.reject(err);
     }
   }
@@ -95,7 +94,7 @@ class RequestManager {
       try {
         await this.replayRequest(hash);
       } catch (err) {
-        if (this._globalCallbacks.onRetryFailure)
+        if(this._globalCallbacks.onRetryFailure)
           this._globalCallbacks.onRetryFailure(hash, err);
         failedItems.push(err);
       }

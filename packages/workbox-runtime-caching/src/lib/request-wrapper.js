@@ -41,9 +41,6 @@ import cleanResponseCopy from './clean-response-copy';
  *   from the cache and is about to be used, giving the callback a chance to
  *   perform validity/freshness checks.
  *   - `fetchDidFail({request})`: Called whenever a network request fails.
- *   - `requestWillFetch({request})`: Called prior to fetch(); should return a
- *   promise for a modified `Request` that will be used instead of the original
- *   `Request`.
  *
  * @memberof module:workbox-runtime-caching
  */
