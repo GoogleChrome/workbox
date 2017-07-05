@@ -38,6 +38,12 @@ function validate(runtimeCachingOptions, convertedOptions) {
     const registerRouteCall = globalScope.workboxSW.router.registerRoute.getCall(i);
     expect(registerRouteCall.args[0]).to.eql(runtimeCachingOption.urlPattern);
 
+    if (runtimeCachingOption.method) {
+      expect(registerRouteCall.args[2]).to.eql(runtimeCachingOption.method);
+    } else {
+      expect(registerRouteCall.args[2]).to.eql('GET');
+    }
+
     if (typeof runtimeCachingOption.handler === 'function') {
       // We can't make assumptions about what custom function handlers will do.
       return;
@@ -72,18 +78,6 @@ function validate(runtimeCachingOptions, convertedOptions) {
 }
 
 describe('src/lib/utils/runtime-caching-converter.js', function() {
-  it(`should throw when a method other than GET is used`, function() {
-    const runtimeCachingOptions = [{
-      urlPattern: /xyz/,
-      handler: 'cacheFirst',
-      method: 'POST',
-    }];
-
-    expect(() => {
-      runtimeCachingConverter(runtimeCachingOptions);
-    }).to.throw(errors['method-not-supported']);
-  });
-
   it(`should throw when urlPattern isn't set`, function() {
     const runtimeCachingOptions = [{
       handler: 'cacheFirst',
@@ -161,6 +155,17 @@ describe('src/lib/utils/runtime-caching-converter.js', function() {
     const runtimeCachingOptions = [{
       urlPattern: '/path/to/file',
       handler: () => {},
+    }];
+
+    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    validate(runtimeCachingOptions, convertedOptions);
+  });
+
+  it(`should support registering non-GET methods`, function() {
+    const runtimeCachingOptions = [{
+      urlPattern: '/path/to/file',
+      handler: 'cacheFirst',
+      method: 'POST',
     }];
 
     const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);

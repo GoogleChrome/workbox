@@ -77,8 +77,6 @@ module.exports = {
     `staticFileGlobs are set. Please fully migrate to globPatterns.`,
   'both-templated-urls-dynamic-urls': `Both templatedUrls and ` +
     `dynamicUrlToDependencies are set. Please fully migrate to templatedUrls.`,
-  'method-not-supported': `Using a method other than 'GET' in runtimeCaching is 
-    not supported.`,
   'urlPattern-is-required': `The urlPattern option is required when using
     runtimeCaching.`,
   'handler-is-required': `The handler option is required when using
