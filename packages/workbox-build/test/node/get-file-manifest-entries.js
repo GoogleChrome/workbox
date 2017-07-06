@@ -268,13 +268,13 @@ describe('Test getFileManifestEntries', function() {
 
     return swBuild.getFileManifestEntries(testInput)
     .then((output) => {
-      output.should.deep.equal([
-        'index.html',
-        'page-1.html',
-        'page-2.html',
-        'styles/stylesheet-1.css',
-        'styles/stylesheet-2.css',
-        'webpackEntry.js',
+      output.should.eql([
+        {url: 'index.html'},
+        {url: 'page-1.html'},
+        {url: 'page-2.html'},
+        {url: 'styles/stylesheet-1.css'},
+        {url: 'styles/stylesheet-2.css'},
+        {url: 'webpackEntry.js'},
       ]);
     });
   });
