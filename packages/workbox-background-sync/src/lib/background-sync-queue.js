@@ -35,8 +35,8 @@ class Queue {
    * @param {Object} [input]
    * @param {Number} [input.maxRetentionTime = 5 days] Time for which a queued
    * request will live in the queue(irespective of failed/success of replay).
-   * @param {Object} [input.callbacks] Callbacks for successfull/ failed
-   * replay of a request.
+   * @param {Object} [input.callbacks] Callbacks for successfull/failed
+   * replay of a request as well as modifying before enqueue/dequeue-ing.
    * @param {string} [input.queueName] Queue name inside db in which
    * requests will be queued.
    * @param {BroadcastChannel=} [input.broadcastChannel] BroadcastChannel
@@ -66,9 +66,12 @@ class Queue {
         queueName,
         idbQDb: new IDBHelper(this._dbName, 1, 'QueueStore'),
         broadcastChannel,
+        callbacks,
       });
-      this._requestManager = new RequestManager({callbacks,
-        queue: this._queue});
+      this._requestManager = new RequestManager({
+        callbacks,
+        queue: this._queue
+      });
 
       this.cleanupQueue();
   }

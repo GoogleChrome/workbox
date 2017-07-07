@@ -7,13 +7,15 @@ import Queue from './background-sync-queue';
  * failed requests.</caption>
  * let bgQueue = new workbox.backgroundSync.QueuePlugin({
  *   callbacks: {
- *     onResponse: async(hash, res) => {
+ *     replayDidSucceed: async(hash, res) => {
  *       self.registration.showNotification('Background sync demo', {
  *         body: 'Product has been purchased.',
  *         icon: '/images/shop-icon-384.png',
  *        });
  *     },
- *     onRetryFailure: (hash) => {},
+ *     replayDidFail: (hash) => {},
+ *     requestWillEnqueue: (reqData) => {},
+ *     requestWillDequeue: (reqData) => {},
  *   },
  * });
  *
