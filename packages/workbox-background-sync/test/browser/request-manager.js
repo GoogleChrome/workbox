@@ -52,8 +52,8 @@ describe('request-manager test', () => {
   it('check replay', async function() {
     sinon.spy(self, 'fetch');
 
-    callbacks.retryDidSucceed = sinon.spy();
-    callbacks.retryDidFail = sinon.spy();
+    callbacks.replayDidSucceed = sinon.spy();
+    callbacks.replayDidFail = sinon.spy();
 
     const backgroundSyncQueue =
         new workbox.backgroundSync.test.BackgroundSyncQueue({callbacks});
@@ -62,9 +62,9 @@ describe('request-manager test', () => {
     await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
     await backgroundSyncQueue._requestManager.replayRequests();
 
-    // Asset retryDidSucceed callback was called with the correct arguments.
-    chai.assert.equal(callbacks.retryDidSucceed.callCount, 2);
-    chai.assert(callbacks.retryDidSucceed.alwaysCalledWith(
+    // Asset replayDidSucceed callback was called with the correct arguments.
+    chai.assert.equal(callbacks.replayDidSucceed.callCount, 2);
+    chai.assert(callbacks.replayDidSucceed.alwaysCalledWith(
         sinon.match.string, sinon.match.instanceOf(Response)));
 
     // Assert fetch was called for each replayed request.
@@ -77,14 +77,14 @@ describe('request-manager test', () => {
       // Error is expected due to 404 response.
     }
 
-    // Asset retryDidFail callback was called with the correct arguments.
-    chai.assert.equal(callbacks.retryDidSucceed.callCount, 2);
-    chai.assert.equal(callbacks.retryDidFail.callCount, 1);
-    chai.assert(callbacks.retryDidFail.alwaysCalledWith(
+    // Asset replayDidFail callback was called with the correct arguments.
+    chai.assert.equal(callbacks.replayDidSucceed.callCount, 2);
+    chai.assert.equal(callbacks.replayDidFail.callCount, 1);
+    chai.assert(callbacks.replayDidFail.alwaysCalledWith(
         sinon.match.string, sinon.match.instanceOf(Response)));
 
-    delete callbacks.retryDidSucceed;
-    delete callbacks.retryDidFail;
+    delete callbacks.replayDidSucceed;
+    delete callbacks.replayDidFail;
 
     self.fetch.restore();
   });
