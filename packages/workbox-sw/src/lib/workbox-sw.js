@@ -342,7 +342,7 @@ class WorkboxSW {
    * URL with /index.html
    */
   _getCacheMatchPlugin(ignoreUrlParametersMatching, directoryIndex) {
-    const cacheMatchFunction = async (
+    const cacheMatchFunction = async(
       {request, cache, cachedResponse, matchOptions}) => {
       // If we already have a cache hit, then just return that.
       if (cachedResponse) {

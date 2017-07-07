@@ -40,8 +40,10 @@ describe('Copy SW Lib', function() {
       if (path.sep === '\\') {
         pathSep = '\\\\';
       }
+      /* eslint-disable no-useless-escape */
       const regexPattern = new RegExp(
         `fake-path${pathSep}workbox-sw\.prod\.v\\d+\.\\d+\.\\d+\.js`);
+      /* eslint-enable no-useless-escape */
       if (!workboxSWPath.match(regexPattern)) {
         console.log('Regular expression: ' + regexPattern);
         throw new Error('Unexpected result from copying workboxSW: ' +

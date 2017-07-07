@@ -17,7 +17,7 @@ describe('Test of the NavigationRoute class', function() {
     let thrownError = null;
     try {
       new workbox.routing.NavigationRoute();
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;
@@ -28,7 +28,7 @@ describe('Test of the NavigationRoute class', function() {
     let thrownError = null;
     try {
       new workbox.routing.NavigationRoute({whitelist: invalidWhitelist});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;
@@ -39,7 +39,7 @@ describe('Test of the NavigationRoute class', function() {
     let thrownError = null;
     try {
       new workbox.routing.NavigationRoute({whitelist});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;
@@ -47,7 +47,7 @@ describe('Test of the NavigationRoute class', function() {
 
     try {
       new workbox.routing.NavigationRoute({whitelist, handler: invalidHandler});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;
@@ -58,7 +58,7 @@ describe('Test of the NavigationRoute class', function() {
     let thrownError = null;
     try {
       new workbox.routing.NavigationRoute({whitelist, handler, blacklist: invalidBlacklist});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;

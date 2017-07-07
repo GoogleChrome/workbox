@@ -33,7 +33,7 @@ describe('src/lib/utils/generate-glob-pattern.js', function() {
         try {
           generateGlobPattern(input);
           throw new Error('Expected to throw error.');
-        } catch(err) {
+        } catch (err) {
           if (err.message !== errors['no-file-extensions-to-cache']) {
             throw new Error('Unexpected error: ' + err.message);
           }
@@ -48,7 +48,7 @@ describe('src/lib/utils/generate-glob-pattern.js', function() {
     try {
       generateGlobPattern(['.example']);
       throw new Error('Expected to throw error.');
-    } catch(err) {
+    } catch (err) {
       if (err.message !== errors['no-file-extensions-to-cache']) {
         throw new Error('Unexpected error: ' + err.message);
       }

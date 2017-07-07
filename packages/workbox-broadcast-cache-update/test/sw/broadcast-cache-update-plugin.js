@@ -12,7 +12,7 @@ describe('Test of the BroadcastCacheUpdatePlugin class', function() {
     let thrownError = null;
     try {
       bcuPlugin.cacheDidUpdate({oldResponse, newResponse});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;
@@ -23,7 +23,7 @@ describe('Test of the BroadcastCacheUpdatePlugin class', function() {
     let thrownError = null;
     try {
       bcuPlugin.cacheDidUpdate({cacheName, oldResponse});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;

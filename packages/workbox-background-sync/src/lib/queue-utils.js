@@ -49,7 +49,7 @@ async function getFetchableRequest({idbRequestObject}) {
     headers: new Headers(JSON.parse(idbRequestObject.headers)),
     credentials: idbRequestObject.credentials,
   };
-  if(idbRequestObject.body) {
+  if (idbRequestObject.body) {
     reqObject.body = idbRequestObject.body;
   }
   return new Request(idbRequestObject.url, reqObject);
@@ -68,15 +68,15 @@ async function cleanupQueue(dbName) {
   let db = new IDBHelper(dbName, 1, 'QueueStore');
   let queueObj = await db.get(allQueuesPlaceholder);
 
-  if(!queueObj) {
+  if (!queueObj) {
     return null;
   }
 
-  await Promise.all(queueObj.map(async (queueName)=>{
+  await Promise.all(queueObj.map(async(queueName)=>{
     const requestQueues = await db.get(queueName);
     let itemsToKeep = [];
     let deletionPromises = [];
-    await Promise.all(requestQueues.map( async (hash) => {
+    await Promise.all(requestQueues.map( async(hash) => {
       const requestData = await db.get(hash);
       if (requestData && requestData.metadata
         && requestData.metadata.creationTimestamp + requestData.config.maxAge

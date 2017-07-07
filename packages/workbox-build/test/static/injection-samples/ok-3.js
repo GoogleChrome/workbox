@@ -10,4 +10,4 @@ const precache = (input) => {
 precache([]);
 
 const workboxSW = new WorkboxSW();
-workboxSW.precache(    [    ]    );
+workboxSW.precache( [] );

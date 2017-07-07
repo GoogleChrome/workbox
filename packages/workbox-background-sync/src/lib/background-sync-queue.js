@@ -44,15 +44,15 @@ class Queue {
    */
   constructor({maxRetentionTime = maxAge, callbacks, queueName,
     broadcastChannel, dbName = defaultDBName} = {}) {
-      if(queueName) {
+      if (queueName) {
         isType({queueName}, 'string');
       }
 
-      if(maxRetentionTime) {
+      if (maxRetentionTime) {
         isType({maxRetentionTime}, 'number');
       }
 
-      if(broadcastChannel) {
+      if (broadcastChannel) {
         isInstance({broadcastChannel}, BroadcastChannel);
       }
 

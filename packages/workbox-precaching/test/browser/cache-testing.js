@@ -295,7 +295,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
           return response.text();
         })
         .then((responseText) => {
-          if(responseText !== expectedResponse) {
+          if (responseText !== expectedResponse) {
             throw new Error('Unexpected response: ' + redirectPath);
           }
         });
@@ -320,7 +320,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
           return response.text();
         })
         .then((responseText) => {
-          if(responseText !== expectedResponse) {
+          if (responseText !== expectedResponse) {
             throw new Error('Unexpected response: ' + redirectPath);
           }
         });
