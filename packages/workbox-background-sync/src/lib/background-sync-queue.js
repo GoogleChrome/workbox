@@ -70,7 +70,7 @@ class Queue {
       });
       this._requestManager = new RequestManager({
         callbacks,
-        queue: this._queue
+        queue: this._queue,
       });
 
       this.cleanupQueue();

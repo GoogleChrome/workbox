@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, workbox */
+/* global chai, sinon, workbox */
 
 'use strict';
 
@@ -52,7 +52,7 @@ describe('request-queue tests', () => {
 
     const queueLength = queue._queue.length;
     const hash = await queue.push({
-      request: new Request('http://lipsum.com/generate')
+      request: new Request('http://lipsum.com/generate'),
     });
 
     chai.assert.isString(hash);
@@ -69,7 +69,7 @@ describe('request-queue tests', () => {
     callbacks.requestWillDequeue = sinon.spy();
 
     const hash = await queue.push({
-      request: new Request('http://lipsum.com/generate')
+      request: new Request('http://lipsum.com/generate'),
     });
 
     const reqData = await queue.getRequestFromQueue({hash});
