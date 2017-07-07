@@ -24,8 +24,8 @@ class RequestManager {
 
     // Rename deprecated callbacks.
     const base = 'workbox-background-sync.RequestManager.callbacks';
-    deprecate(callbacks, base, 'onResponse', 'retryDidSucceed');
-    deprecate(callbacks, base, 'onRetryFailure', 'retryDidFail');
+    deprecate(callbacks, base, 'onResponse', 'replayDidSucceed');
+    deprecate(callbacks, base, 'onRetryFailure', 'replayDidFail');
 
     this._globalCallbacks = callbacks;
     this._queue = queue;
@@ -78,8 +78,8 @@ class RequestManager {
           response: response.clone(),
           idbQDb: this._queue.idbQDb,
         });
-        if (this._globalCallbacks.retryDidSucceed)
-          this._globalCallbacks.retryDidSucceed(hash, response);
+        if (this._globalCallbacks.replayDidSucceed)
+          this._globalCallbacks.replayDidSucceed(hash, response);
       }
     } catch(err) {
       return Promise.reject(err);
@@ -102,8 +102,8 @@ class RequestManager {
       try {
         await this.replayRequest(hash);
       } catch (err) {
-        if (this._globalCallbacks.retryDidFail) {
-          this._globalCallbacks.retryDidFail(hash, err);
+        if (this._globalCallbacks.replayDidFail) {
+          this._globalCallbacks.replayDidFail(hash, err);
         }
         failedItems.push(err);
       }
