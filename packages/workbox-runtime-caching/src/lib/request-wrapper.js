@@ -314,7 +314,7 @@ class RequestWrapper {
 
       // cachingComplete is a promise that may or may not be used to delay the
       // completion of this method, depending on the value of `waitOnCache`.
-      cachingComplete = this.getCache().then(async(cache) => {
+      cachingComplete = this.getCache().then(async (cache) => {
         let oldResponse;
         const cacheRequest = cacheKey || request;
 

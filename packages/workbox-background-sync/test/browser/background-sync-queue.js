@@ -110,7 +110,7 @@ describe('background sync queue test', () => {
     }
   });
 
-  it('test queue cleanup', async() => {
+  it('test queue cleanup', async () => {
     /* code for clearing everything from IDB */
     const backgroundSyncQueue
     = new workbox.backgroundSync.test.BackgroundSyncQueue({

@@ -189,7 +189,7 @@ class BaseCacheManager {
       (cachedRequest) => !requestsCachedOnInstall.includes(cachedRequest.url));
 
     return Promise.all(
-      cachedRequestsToDelete.map(async(cachedRequest) => {
+      cachedRequestsToDelete.map(async (cachedRequest) => {
         await openCache.delete(cachedRequest);
         await this._onEntryDeleted(cachedRequest.url);
       })

@@ -71,8 +71,8 @@ class RequestManager {
           idbQDb: this._queue.idbQDb,
         });
         if (this._globalCallbacks.onResponse) {
-this._globalCallbacks.onResponse(hash, response);
-}
+          this._globalCallbacks.onResponse(hash, response);
+        }
       }
     } catch (err) {
       return Promise.reject(err);
@@ -96,8 +96,8 @@ this._globalCallbacks.onResponse(hash, response);
         await this.replayRequest(hash);
       } catch (err) {
         if (this._globalCallbacks.onRetryFailure) {
-this._globalCallbacks.onRetryFailure(hash, err);
-}
+          this._globalCallbacks.onRetryFailure(hash, err);
+        }
         failedItems.push(err);
       }
     }

@@ -72,11 +72,11 @@ async function cleanupQueue(dbName) {
     return null;
   }
 
-  await Promise.all(queueObj.map(async(queueName)=>{
+  await Promise.all(queueObj.map(async (queueName)=>{
     const requestQueues = await db.get(queueName);
     let itemsToKeep = [];
     let deletionPromises = [];
-    await Promise.all(requestQueues.map( async(hash) => {
+    await Promise.all(requestQueues.map(async (hash) => {
       const requestData = await db.get(hash);
       if (requestData && requestData.metadata
         && requestData.metadata.creationTimestamp + requestData.config.maxAge

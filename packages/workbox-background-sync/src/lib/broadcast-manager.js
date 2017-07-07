@@ -13,8 +13,8 @@ import {isType, isInstance} from '../../../../lib/assert';
  */
 function broadcastMessage({broadcastChannel, type, url}) {
   if (!broadcastChannel) {
-return;
-}
+    return;
+  }
 
   isInstance({broadcastChannel}, BroadcastChannel);
   isType({type}, 'string');
