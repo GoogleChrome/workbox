@@ -23,9 +23,9 @@ class RequestManager {
     callbacks = callbacks || {};
 
     // Rename deprecated callbacks.
-    const base = 'workbox-background-sync.RequestManager.callbacks';
-    deprecate(callbacks, base, 'onResponse', 'replayDidSucceed');
-    deprecate(callbacks, base, 'onRetryFailure', 'replayDidFail');
+    const ctx = 'workbox-background-sync.RequestManager.callbacks';
+    deprecate(callbacks, 'onResponse', 'replayDidSucceed', ctx);
+    deprecate(callbacks, 'onRetryFailure', 'replayDidFail', ctx);
 
     this._globalCallbacks = callbacks;
     this._queue = queue;
