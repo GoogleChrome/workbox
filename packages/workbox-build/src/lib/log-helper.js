@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Copyright 2016 Google Inc.
  *

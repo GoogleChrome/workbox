@@ -1,3 +1,5 @@
+'use strict';
+
 const errors = require('../errors');
 const fse = require('fs-extra');
 const path = require('path');
