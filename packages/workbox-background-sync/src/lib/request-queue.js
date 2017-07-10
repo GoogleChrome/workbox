@@ -145,7 +145,7 @@ class RequestQueue {
    * get the Request from the queue at a particular index
    *
    * @param {string} hash hash of the request at the given index
-   * @return {Promise} request object corresponding to given hash
+   * @return {Promise<Object>} request object corresponding to given hash
    * @memberOf Queue
    * @private
    */
