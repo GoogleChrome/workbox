@@ -1,6 +1,6 @@
 {
   "name": "workbox-routing",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A service worker helper library to route request URLs to handlers.",
   "keywords": [
     "workbox",

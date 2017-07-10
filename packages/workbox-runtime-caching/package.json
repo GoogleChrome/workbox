@@ -1,6 +1,6 @@
 {
   "name": "workbox-runtime-caching",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A service worker helper library that implements various runtime caching strategies.",
   "keywords": [
     "workbox",
