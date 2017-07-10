@@ -16,13 +16,7 @@ module.exports = {
     workbox: false,
   },
   rules: {
-    'no-tabs': 2,
     'linebreak-style': 0,
-    'space-before-function-paren': ['error', {
-      asyncArrow: 'always',
-      anonymous: 'never',
-      named: 'never',
-    }],
   },
   overrides: [{
     files: ['**/test/**/*.js', '**/test.js'],
