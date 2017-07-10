@@ -59,7 +59,7 @@ class TestRunner {
 
     const availableBrowsers = seleniumAssistant.getLocalBrowsers();
     availableBrowsers.forEach((browser) => {
-      switch(browser.getId()) {
+      switch (browser.getId()) {
         case 'chrome':
         case 'firefox':
           if (browser.getId() === 'firefox' &&

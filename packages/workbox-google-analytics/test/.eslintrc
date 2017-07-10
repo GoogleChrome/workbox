@@ -1,7 +1,0 @@
-{
-  "rules": {
-    "no-invalid-this": 0,
-    "no-console": 0,
-    "valid-jsdoc": 0,
-  }
-}

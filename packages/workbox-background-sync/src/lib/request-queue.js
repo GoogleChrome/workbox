@@ -60,10 +60,10 @@ class RequestQueue {
    * @private
    */
   async addQueueNameToAllQueues() {
-    if(!this._isQueueNameAddedToAllQueue) {
+    if (!this._isQueueNameAddedToAllQueue) {
       let allQueues = await this._idbQDb.get(allQueuesPlaceholder);
       allQueues = allQueues || [];
-      if(!allQueues.includes(this._queueName)) {
+      if (!allQueues.includes(this._queueName)) {
         allQueues.push(this._queueName);
       }
       this._idbQDb.put(allQueuesPlaceholder, allQueues);
@@ -99,7 +99,7 @@ class RequestQueue {
         request,
         config: this._config,
       });
-    try{
+    try {
       this._queue.push(hash);
 
       // add to queue
@@ -117,7 +117,7 @@ class RequestQueue {
         id: hash,
         url: request.url,
       });
-    } catch(e) {
+    } catch (e) {
       // broadcast the failure of request added to the queue
       broadcastMessage({
         broadcastChannel: this._broadcastChannel,
@@ -139,7 +139,7 @@ class RequestQueue {
   async getRequestFromQueue({hash}) {
     isType({hash}, 'string');
 
-    if(this._queue.includes(hash)) {
+    if (this._queue.includes(hash)) {
       const req = await this._idbQDb.get(hash);
       return req;
     }

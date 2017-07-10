@@ -10,7 +10,7 @@ describe('Test of the responsesAreSame function', function() {
     let thrownError = null;
     try {
       workbox.broadcastCacheUpdate.responsesAreSame();
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;

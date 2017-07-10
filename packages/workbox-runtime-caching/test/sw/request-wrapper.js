@@ -24,7 +24,7 @@ describe('Test of the RequestWrapper class', function() {
     let thrownError = null;
     try {
       new workbox.runtimeCaching.RequestWrapper({cacheName: []});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;
@@ -35,7 +35,7 @@ describe('Test of the RequestWrapper class', function() {
     let thrownError = null;
     try {
       new workbox.runtimeCaching.RequestWrapper({fetchOptions: 'invalid'});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;
@@ -46,7 +46,7 @@ describe('Test of the RequestWrapper class', function() {
     let thrownError = null;
     try {
       new workbox.runtimeCaching.RequestWrapper({matchOptions: 'invalid'});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;
@@ -57,7 +57,7 @@ describe('Test of the RequestWrapper class', function() {
     let thrownError = null;
     try {
       new workbox.runtimeCaching.RequestWrapper({plugins: [1]});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;
@@ -69,7 +69,7 @@ describe('Test of the RequestWrapper class', function() {
     try {
       new workbox.runtimeCaching.RequestWrapper({plugins: [
         CACHE_WILL_UPDATE_PLUGIN, CACHE_WILL_UPDATE_PLUGIN]});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;
@@ -81,7 +81,7 @@ describe('Test of the RequestWrapper class', function() {
     try {
       new workbox.runtimeCaching.RequestWrapper({plugins: [
         CACHE_WILL_MATCH_PLUGIN, CACHE_WILL_MATCH_PLUGIN]});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;
@@ -92,7 +92,7 @@ describe('Test of the RequestWrapper class', function() {
     let thrownError = null;
     try {
       new workbox.runtimeCaching.RequestWrapper({cacheId: {}});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;

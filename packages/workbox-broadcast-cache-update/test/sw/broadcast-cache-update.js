@@ -10,7 +10,7 @@ describe('Test of the BroadcastCacheUpdate class', function() {
     let thrownError = null;
     try {
       new workbox.broadcastCacheUpdate.BroadcastCacheUpdate();
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;

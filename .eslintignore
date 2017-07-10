@@ -1,2 +1,2 @@
-third_party
-/_site/
+packages/*/node_modules/
+packages/*/build/

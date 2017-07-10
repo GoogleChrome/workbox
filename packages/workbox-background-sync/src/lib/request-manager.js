@@ -32,7 +32,7 @@ class RequestManager {
    */
   attachSyncHandler() {
     self.addEventListener('sync', (event) => {
-      if(event.tag === tagNamePrefix + this._queue.queueName
+      if (event.tag === tagNamePrefix + this._queue.queueName
         || event.tag === replayAllQueuesTag) {
         event.waitUntil(this.replayRequests());
       }
@@ -53,14 +53,14 @@ class RequestManager {
   async replayRequest(hash) {
     try {
       const reqData = await this._queue.getRequestFromQueue({hash});
-      if(reqData.response) {
+      if (reqData.response) {
         return;
       }
       const request = await getFetchableRequest({
         idbRequestObject: reqData.request,
       });
       const response = await fetch(request);
-      if(!response.ok) {
+      if (!response.ok) {
         return Promise.reject(response);
       } else {
         // not blocking on putResponse.
@@ -70,10 +70,11 @@ class RequestManager {
           response: response.clone(),
           idbQDb: this._queue.idbQDb,
         });
-        if (this._globalCallbacks.onResponse)
+        if (this._globalCallbacks.onResponse) {
           this._globalCallbacks.onResponse(hash, response);
+        }
       }
-    } catch(err) {
+    } catch (err) {
       return Promise.reject(err);
     }
   }
@@ -94,8 +95,9 @@ class RequestManager {
       try {
         await this.replayRequest(hash);
       } catch (err) {
-        if(this._globalCallbacks.onRetryFailure)
+        if (this._globalCallbacks.onRetryFailure) {
           this._globalCallbacks.onRetryFailure(hash, err);
+        }
         failedItems.push(err);
       }
     }
