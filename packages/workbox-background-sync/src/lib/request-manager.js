@@ -1,3 +1,4 @@
+import deprecate from '../../../../lib/deprecate';
 import {putResponse} from './response-manager';
 import {getFetchableRequest} from './queue-utils';
 import {tagNamePrefix, replayAllQueuesTag} from './constants';
@@ -18,8 +19,15 @@ class RequestManager {
    *
    * @private
    */
-  constructor({callbacks, queue}) {
-    this._globalCallbacks = callbacks || {};
+  constructor({callbacks, queue} = {}) {
+    callbacks = callbacks || {};
+
+    // Rename deprecated callbacks.
+    const ctx = 'workbox-background-sync.RequestManager.callbacks';
+    deprecate(callbacks, 'onResponse', 'replayDidSucceed', ctx);
+    deprecate(callbacks, 'onRetryFailure', 'replayDidFail', ctx);
+
+    this._globalCallbacks = callbacks;
     this._queue = queue;
     this.attachSyncHandler();
   }
@@ -70,8 +78,8 @@ class RequestManager {
           response: response.clone(),
           idbQDb: this._queue.idbQDb,
         });
-        if (this._globalCallbacks.onResponse) {
-          this._globalCallbacks.onResponse(hash, response);
+        if (this._globalCallbacks.replayDidSucceed) {
+          this._globalCallbacks.replayDidSucceed(hash, response);
         }
       }
     } catch (err) {
@@ -95,8 +103,8 @@ class RequestManager {
       try {
         await this.replayRequest(hash);
       } catch (err) {
-        if (this._globalCallbacks.onRetryFailure) {
-          this._globalCallbacks.onRetryFailure(hash, err);
+        if (this._globalCallbacks.replayDidFail) {
+          this._globalCallbacks.replayDidFail(hash, err);
         }
         failedItems.push(err);
       }

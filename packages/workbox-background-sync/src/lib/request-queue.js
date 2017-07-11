@@ -32,12 +32,14 @@ class RequestQueue {
     queueName = defaultQueueName + '_' + _queueCounter++,
     idbQDb,
     broadcastChannel,
+    callbacks,
   }) {
     this._isQueueNameAddedToAllQueue = false;
     this._queueName = queueName;
     this._config = config;
     this._idbQDb = idbQDb;
     this._broadcastChannel = broadcastChannel;
+    this._globalCallbacks = callbacks || {};
     this._queue = [];
     this.initQueue();
   }
@@ -86,6 +88,7 @@ class RequestQueue {
    * preferably when network comes back
    *
    * @param {Request} request request object to be queued by this
+   * @return {Promise}
    *
    * @memberOf Queue
    * @private
@@ -94,17 +97,23 @@ class RequestQueue {
     isInstance({request}, Request);
 
     const hash = `${request.url}!${Date.now()}!${_requestCounter++}`;
-    const queuableRequest =
-      await getQueueableRequest({
-        request,
-        config: this._config,
-      });
+    const reqData = await getQueueableRequest({
+      request,
+      config: this._config,
+    });
+
+    // Apply the `requestWillEnqueue` callback so plugins can modify the
+    // request data before it's stored in IndexedDB.
+    if (this._globalCallbacks.requestWillEnqueue) {
+      this._globalCallbacks.requestWillEnqueue(reqData);
+    }
+
     try {
       this._queue.push(hash);
 
       // add to queue
       this.saveQueue();
-      this._idbQDb.put(hash, queuableRequest);
+      this._idbQDb.put(hash, reqData);
       await this.addQueueNameToAllQueues();
       // register sync
       self.registration &&
@@ -117,7 +126,9 @@ class RequestQueue {
         id: hash,
         url: request.url,
       });
-    } catch (e) {
+
+      return hash;
+    } catch (err) {
       // broadcast the failure of request added to the queue
       broadcastMessage({
         broadcastChannel: this._broadcastChannel,
@@ -125,6 +136,8 @@ class RequestQueue {
         id: hash,
         url: request.url,
       });
+
+      return err;
     }
   }
 
@@ -132,7 +145,7 @@ class RequestQueue {
    * get the Request from the queue at a particular index
    *
    * @param {string} hash hash of the request at the given index
-   * @return {Request} request object corresponding to given hash
+   * @return {Promise<Object>} request object corresponding to given hash
    * @memberOf Queue
    * @private
    */
@@ -140,8 +153,15 @@ class RequestQueue {
     isType({hash}, 'string');
 
     if (this._queue.includes(hash)) {
-      const req = await this._idbQDb.get(hash);
-      return req;
+      const reqData = await this._idbQDb.get(hash);
+
+      // Apply the `requestWillDequeue` callback so plugins can modify the
+      // stored data before it's converted back into a request to be replayed.
+      if (this._globalCallbacks.requestWillDequeue) {
+        this._globalCallbacks.requestWillDequeue(reqData);
+      }
+
+      return reqData;
     }
   }
 

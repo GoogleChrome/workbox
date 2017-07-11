@@ -12,17 +12,11 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, workbox */
+/* global chai, sinon, workbox */
 
 'use strict';
 describe('request-manager test', () => {
-  let responseAchieved = 0;
-  const callbacks = {
-    onResponse: function() {
-      responseAchieved ++;
-    },
-  };
-
+  const callbacks = {};
   let queue;
   let reqManager;
 
@@ -56,13 +50,42 @@ describe('request-manager test', () => {
   });
 
   it('check replay', async function() {
-    const backgroundSyncQueue
-      = new workbox.backgroundSync.test.BackgroundSyncQueue({
-        callbacks,
-      });
+    sinon.spy(self, 'fetch');
+
+    callbacks.replayDidSucceed = sinon.spy();
+    callbacks.replayDidFail = sinon.spy();
+
+    const backgroundSyncQueue =
+        new workbox.backgroundSync.test.BackgroundSyncQueue({callbacks});
+
     await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
     await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
     await backgroundSyncQueue._requestManager.replayRequests();
-    chai.assert.equal(responseAchieved, 2);
+
+    // Asset replayDidSucceed callback was called with the correct arguments.
+    chai.assert.equal(callbacks.replayDidSucceed.callCount, 2);
+    chai.assert(callbacks.replayDidSucceed.alwaysCalledWith(
+        sinon.match.string, sinon.match.instanceOf(Response)));
+
+    // Assert fetch was called for each replayed request.
+    chai.assert(self.fetch.calledTwice);
+
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__test/404')});
+    try {
+      await backgroundSyncQueue._requestManager.replayRequests();
+    } catch (err) {
+      // Error is expected due to 404 response.
+    }
+
+    // Asset replayDidFail callback was called with the correct arguments.
+    chai.assert.equal(callbacks.replayDidSucceed.callCount, 2);
+    chai.assert.equal(callbacks.replayDidFail.callCount, 1);
+    chai.assert(callbacks.replayDidFail.alwaysCalledWith(
+        sinon.match.string, sinon.match.instanceOf(Response)));
+
+    delete callbacks.replayDidSucceed;
+    delete callbacks.replayDidFail;
+
+    self.fetch.restore();
   });
 });

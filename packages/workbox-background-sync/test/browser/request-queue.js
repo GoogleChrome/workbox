@@ -12,21 +12,23 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, workbox */
+/* global chai, sinon, workbox */
 
 'use strict';
 
 describe('request-queue tests', () => {
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
+
+  const callbacks = {};
   const idbHelper = new workbox.backgroundSync.test.IdbHelper(
     'bgQueueSyncDB', 1, 'QueueStore');
-  let queue =
-    new workbox.backgroundSync.test.RequestQueue({
-      idbQDb: idbHelper,
-      config: {maxAge: MAX_AGE},
-      queueName: QUEUE_NAME,
-    });
+  const queue = new workbox.backgroundSync.test.RequestQueue({
+    idbQDb: idbHelper,
+    config: {maxAge: MAX_AGE},
+    queueName: QUEUE_NAME,
+    callbacks,
+  });
 
   it('queue object should exist', () => {
     chai.assert.isObject(queue);
@@ -45,12 +47,38 @@ describe('request-queue tests', () => {
       queue._config.maxAge, workbox.backgroundSync.test.Constants.maxAge);
   });
 
-  it('pushRequest is working', () => {
-    let queueLength = queue._queue.length;
-    return queue.push({request: new Request('http://lipsum.com/generate')})
-      .then(() => {
-        chai.assert.equal(queue._queue.length, queueLength + 1);
-      });
+  it('push is working', async () => {
+    callbacks.requestWillEnqueue = sinon.spy();
+
+    const queueLength = queue._queue.length;
+    const hash = await queue.push({
+      request: new Request('http://lipsum.com/generate'),
+    });
+
+    chai.assert.isString(hash);
+    chai.assert.equal(queue._queue.length, queueLength + 1);
+
+    chai.assert(callbacks.requestWillEnqueue.calledOnce);
+    chai.assert(callbacks.requestWillEnqueue.calledWith(
+        sinon.match.has('request')));
+
+    delete callbacks.requestWillEnqueue;
+  });
+
+  it('getRequestFromQueue is working', async () => {
+    callbacks.requestWillDequeue = sinon.spy();
+
+    const hash = await queue.push({
+      request: new Request('http://lipsum.com/generate'),
+    });
+
+    const reqData = await queue.getRequestFromQueue({hash});
+
+    chai.assert.hasAllKeys(reqData, ['request', 'config', 'metadata']);
+    chai.assert(callbacks.requestWillDequeue.calledOnce);
+    chai.assert(callbacks.requestWillDequeue.calledWith(reqData));
+
+    delete callbacks.requestWillDequeue;
   });
 
   it('default config is correct', () => {
