@@ -108,7 +108,7 @@ class RequestQueue {
       this._globalCallbacks.requestWillEnqueue(reqData);
     }
 
-    try{
+    try {
       this._queue.push(hash);
 
       // add to queue
@@ -152,7 +152,7 @@ class RequestQueue {
   async getRequestFromQueue({hash}) {
     isType({hash}, 'string');
 
-    if(this._queue.includes(hash)) {
+    if (this._queue.includes(hash)) {
       const reqData = await this._idbQDb.get(hash);
 
       // Apply the `requestWillDequeue` callback so plugins can modify the

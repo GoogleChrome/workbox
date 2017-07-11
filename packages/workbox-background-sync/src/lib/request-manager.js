@@ -78,8 +78,9 @@ class RequestManager {
           response: response.clone(),
           idbQDb: this._queue.idbQDb,
         });
-        if (this._globalCallbacks.replayDidSucceed)
+        if (this._globalCallbacks.replayDidSucceed) {
           this._globalCallbacks.replayDidSucceed(hash, response);
+        }
       }
     } catch (err) {
       return Promise.reject(err);
