@@ -23,6 +23,14 @@ class ObjectCacheEntry extends BaseCacheEntry {
    * will require cache busting (i.e. the URL is not unique between SW install).
    */
   constructor({entryID, revision, url, cacheBust}) {
+    if (typeof revision !== 'undefined') {
+      isType({revision}, 'string');
+      if (revision.length === 0) {
+        throw new WorkboxError('invalid-object-entry',
+          {problemParam: 'revision', problemValue: revision});
+      }
+    }
+
     if (typeof cacheBust === 'undefined') {
       // If the cacheBust value is not explicitly set, then set it to true
       // if there's a revision provided, and false if there's no revision.

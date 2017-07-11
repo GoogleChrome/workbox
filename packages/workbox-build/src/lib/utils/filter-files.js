@@ -10,10 +10,11 @@ const path = require('path');
  * `revision` properties of some or all of the
  * {@link module:workbox-build#ManifestEntry|ManifestEntries} in the manifest.
  *
- * Setting the `revision` property of an entry to a "falsey" value will cause
+ * Deleting the `revision` property of an entry will cause
  * the corresponding `url` to be precached without cache-busting parameters
  * applied, which is to say, it implies that the URL itself contains
- * proper versioning info.
+ * proper versioning info. If the `revision` property is present, it must be
+ * set to a string.
  *
  * @example <caption>A transformation that prepended the origin of a CDN for any
  * URL starting with '/assets/' could be implemented as:</caption>
@@ -49,7 +50,7 @@ module.exports = (fileDetails, options) => {
   const maximumFileSize = options.maximumFileSizeToCacheInBytes ||
     constants.maximumFileSize;
   const filteredFileDetails = fileDetails.filter((fileDetails) => {
-    // Remove oversize files.
+    // Remove oversized files.
     if (fileDetails.size > maximumFileSize) {
       logHelper.warn(`Skipping file '${fileDetails.file}' due to size. ` +
         `[Max size supported is ${maximumFileSize}, this file is ` +
@@ -69,7 +70,7 @@ module.exports = (fileDetails, options) => {
     };
   });
 
-  const manifestTransforms = options.manifestTransforms || [];
+  const manifestTransforms = [];
 
   if (options.modifyUrlPrefix) {
     manifestTransforms.push(modifyUrlPrefixTranform(options.modifyUrlPrefix));
@@ -78,6 +79,10 @@ module.exports = (fileDetails, options) => {
   if (options.dontCacheBustUrlsMatching) {
     manifestTransforms.push(
       noRevisionForUrlsMatchingTransform(options.dontCacheBustUrlsMatching));
+  }
+
+  if (Array.isArray(options.manifestTransforms)) {
+    manifestTransforms.concat(options.manifestTransforms);
   }
 
   // Apply the transformations sequentially, and return the result.

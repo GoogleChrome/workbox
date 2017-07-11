@@ -44,7 +44,7 @@ const constants = require('./constants');
  * @param {Array<ManifestTransform>} [input.manifestTransforms] A list of
  * manifest transformations, which will be applied sequentially against the
  * generated manifest. If `modifyUrlPrefix` or `dontCacheBustUrlsMatching` are
- * also specified, their corresponding transformations will be applied last.
+ * also specified, their corresponding transformations will be applied first.
  * @return {Promise<Array<ManifestEntry>>}
  * An array of {@link module:workbox-build#ManifestEntry|ManifestEntries}
  * which will include a url and revision parameter.

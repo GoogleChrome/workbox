@@ -3,11 +3,16 @@ const expect = require('chai').expect;
 const modifyUrlPrefix = require('../../src/lib/utils/modify-url-prefix-transform');
 
 describe('Test modifyUrlPrefix Logic', function() {
-  const MANIFEST = [{
-    url: '/first-match/12345/hello',
-  }, {
-    url: '/second-match/12345/hello',
-  }];
+  /**
+   * @return {Array<ManifestEntry>} A fresh manifest.
+   */
+  function getManifest() {
+    return [{
+      url: '/first-match/12345/hello',
+    }, {
+      url: '/second-match/12345/hello',
+    }];
+  }
 
   it('should handle bad URLs in the manifest', function() {
     const badInputs = [
@@ -58,7 +63,7 @@ describe('Test modifyUrlPrefix Logic', function() {
     };
 
     const transform = modifyUrlPrefix(modifications);
-    expect(transform(MANIFEST)).to.eql([{
+    expect(transform(getManifest())).to.eql([{
       url: '/12345/hello',
     }, {
       url: '/second-match/12345/hello',
@@ -71,7 +76,7 @@ describe('Test modifyUrlPrefix Logic', function() {
     };
 
     const transform = modifyUrlPrefix(modifications);
-    expect(transform(MANIFEST)).to.eql([{
+    expect(transform(getManifest())).to.eql([{
       url: '/public/first-match/12345/hello',
     }, {
       url: '/public/second-match/12345/hello',
@@ -85,7 +90,7 @@ describe('Test modifyUrlPrefix Logic', function() {
     };
 
     const transform = modifyUrlPrefix(modifications);
-    expect(transform(MANIFEST)).to.eql([{
+    expect(transform(getManifest())).to.eql([{
       url: '/second-match/12345/hello',
     }, {
       url: '/third-match/12345/hello',
@@ -98,6 +103,6 @@ describe('Test modifyUrlPrefix Logic', function() {
     };
 
     const transform = modifyUrlPrefix(modifications);
-    expect(transform(MANIFEST)).to.eql(MANIFEST);
+    expect(transform(getManifest())).to.eql(getManifest());
   });
 });

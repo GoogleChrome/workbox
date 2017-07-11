@@ -118,6 +118,46 @@ describe('sw/revisioned-caching()', function() {
     });
   });
 
+  const invalidTypeRevisions = [
+    null,
+    false,
+    true,
+    12345,
+    {},
+    [],
+  ];
+  invalidTypeRevisions.forEach((invalidRevision) => {
+    it(`should throw an error for bad revision value '${JSON.stringify(invalidRevision)}'`, function() {
+      let caughtError;
+      try {
+        cacheManager.addToCacheList({revisionedFiles: [{url: VALID_PATH_REL, revision: invalidRevision}]});
+      } catch (err) {
+        caughtError = err;
+      }
+
+      if (!caughtError) {
+        throw new Error('Expected file manifest to cause an error.');
+      }
+      caughtError.message.indexOf(`The 'revision' parameter has the wrong type`).should.equal(0);
+    });
+  });
+
+  it(`should throw an error for an empty string revision.`, function() {
+    let caughtError;
+    try {
+      cacheManager.addToCacheList({revisionedFiles: [{url: VALID_PATH_REL, revision: ''}]});
+    } catch (err) {
+      caughtError = err;
+    }
+
+    if (!caughtError) {
+      throw new Error('Expected file manifest to cause an error.');
+    }
+
+    caughtError.name.should.equal('invalid-object-entry');
+    caughtError.extras.should.deep.equal({problemParam: 'revision', problemValue: ''});
+  });
+
   const badCacheBusts = [
     null,
     '',

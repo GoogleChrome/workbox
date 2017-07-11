@@ -47,10 +47,10 @@ module.exports = (modifyUrlPrefix) => {
       throw new Error(errors['manifest-entry-bad-url']);
     }
 
-    const modifiedUrl = entry.url.replace(modifyRegex, (match) => {
+    entry.url = entry.url.replace(modifyRegex, (match) => {
       return modifyUrlPrefix[match];
     });
 
-    return Object.assign({}, entry, {url: modifiedUrl});
+    return entry;
   });
 };

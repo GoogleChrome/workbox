@@ -40,7 +40,7 @@ const errors = require('./errors');
  * @param {Array<ManifestTransform>} [input.manifestTransforms] A list of
  * manifest transformations, which will be applied sequentially against the
  * generated manifest. If `modifyUrlPrefix` or `dontCacheBustUrlsMatching` are
- * also specified, their corresponding transformations will be applied last.
+ * also specified, their corresponding transformations will be applied first.
  * @return {Promise} Resolves once the service worker has been written
  * with the injected precache list.
  *
