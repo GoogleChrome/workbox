@@ -12,55 +12,24 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
+
 const gulp = require('gulp');
 const eslint = require('gulp-eslint');
 
-const {taskHarness} = require('../utils/build');
-
-/**
- * Lints a given project.
- * @param {String} projectPath The path to a project directory.
- * @return {Promise} Resolves if linting succeeds, rejects if it fails.
- */
-const lintPackage = (projectPath) => {
-  return new Promise((resolve, reject) => {
-    gulp.src([`${projectPath}/**/*.js`,
-      `!${projectPath}/**/build/**`,
-      `!${projectPath}/**/node_modules/**`,
-      ])
-      .pipe(eslint())
-      .pipe(eslint.format())
-      .pipe(eslint.results((results) => {
-        if (results.errorCount > 0) {
-          reject(`Linting '${projectPath}' failed.`);
-        } else {
-          resolve();
-        }
-      }))
-      // See https://github.com/adametry/gulp-eslint/issues/36#issuecomment-109595391
-      .on('data', () => {});
-  });
-};
-
 gulp.task('lint:repo', () => {
-  return gulp.src([
-    `!./packages/**/*`,
-    `!./build/**`,
-    `!./docs/**`,
-    // Gulp -tasks
-    `./**/*.js`,
-    // Root level JS Files
-    `../*.js`,
-  ])
-  .pipe(eslint())
-  .pipe(eslint.format())
-  .pipe(eslint.results((results) => {
-    if (results.errorCount > 0) {
-      throw new Error(`Linting repo files failed.`);
-    }
-  }));
+  return gulp.src(['{gulp-tasks,lib,templates,test,utils}/**/*.js', '*.js'])
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
+    // See https://github.com/adametry/gulp-eslint/issues/36#issuecomment-109595391
+    .on('data', () => {});
 });
 
 gulp.task('lint', ['lint:repo'], () => {
-  return taskHarness(lintPackage, global.projectOrStar);
+  return gulp.src([`packages/${global.projectOrStar}/**/*.js`])
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
+    // See https://github.com/adametry/gulp-eslint/issues/36#issuecomment-109595391
+    .on('data', () => {});
 });

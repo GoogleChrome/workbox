@@ -1,6 +1,6 @@
 {
   "name": "workbox-broadcast-cache-update",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A service worker helper library that uses the Broadcast Channel API to announce when two Response objects differ.",
   "keywords": [
     "workbox",

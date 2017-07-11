@@ -40,7 +40,7 @@ class RequestManager {
    */
   attachSyncHandler() {
     self.addEventListener('sync', (event) => {
-      if(event.tag === tagNamePrefix + this._queue.queueName
+      if (event.tag === tagNamePrefix + this._queue.queueName
         || event.tag === replayAllQueuesTag) {
         event.waitUntil(this.replayRequests());
       }
@@ -61,14 +61,14 @@ class RequestManager {
   async replayRequest(hash) {
     try {
       const reqData = await this._queue.getRequestFromQueue({hash});
-      if(reqData.response) {
+      if (reqData.response) {
         return;
       }
       const request = await getFetchableRequest({
         idbRequestObject: reqData.request,
       });
       const response = await fetch(request);
-      if(!response.ok) {
+      if (!response.ok) {
         return Promise.reject(response);
       } else {
         // not blocking on putResponse.
@@ -81,7 +81,7 @@ class RequestManager {
         if (this._globalCallbacks.replayDidSucceed)
           this._globalCallbacks.replayDidSucceed(hash, response);
       }
-    } catch(err) {
+    } catch (err) {
       return Promise.reject(err);
     }
   }

@@ -59,7 +59,7 @@ class WorkboxBuildWebpackPlugin {
     }
 
     if (!config.globPatterns) {
-      config.globPatterns = ['**\/*.{html,js,css}'];
+      config.globPatterns = ['**/*.{html,js,css}'];
     }
 
     return config;

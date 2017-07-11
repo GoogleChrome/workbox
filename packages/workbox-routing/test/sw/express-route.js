@@ -22,7 +22,7 @@ describe('Test of the ExpressRoute class', function() {
 
     try {
       new workbox.routing.ExpressRoute({handler, path: invalidPath});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
 

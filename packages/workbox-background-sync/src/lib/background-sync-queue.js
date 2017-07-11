@@ -60,15 +60,15 @@ class Queue {
     dbName = defaultDBName,
     maxRetentionTime = maxAge,
   } = {}) {
-    if(queueName) {
-      isType({queueName}, 'string');
-    }
+  if (queueName) {
+    isType({queueName}, 'string');
+  }
 
-    if(maxRetentionTime) {
+    if (maxRetentionTime) {
       isType({maxRetentionTime}, 'number');
     }
 
-    if(broadcastChannel) {
+    if (broadcastChannel) {
       isInstance({broadcastChannel}, BroadcastChannel);
     }
 

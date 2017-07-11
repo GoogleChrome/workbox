@@ -39,7 +39,7 @@ describe('Test workboxSW.precache', function() {
       const workboxSW = new WorkboxSW();
       try {
         workboxSW.precache(badInput.capture);
-      } catch(err) {
+      } catch (err) {
         thrownError = err;
       }
 

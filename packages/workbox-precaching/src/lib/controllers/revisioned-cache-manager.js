@@ -112,7 +112,7 @@ class RevisionedCacheManager extends BaseCacheManager {
     }
 
     let precacheEntry;
-    switch(typeof input) {
+    switch (typeof input) {
       case 'string':
         precacheEntry = new StringCacheEntry(input);
         break;

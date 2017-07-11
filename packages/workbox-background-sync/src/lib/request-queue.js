@@ -62,10 +62,10 @@ class RequestQueue {
    * @private
    */
   async addQueueNameToAllQueues() {
-    if(!this._isQueueNameAddedToAllQueue) {
+    if (!this._isQueueNameAddedToAllQueue) {
       let allQueues = await this._idbQDb.get(allQueuesPlaceholder);
       allQueues = allQueues || [];
-      if(!allQueues.includes(this._queueName)) {
+      if (!allQueues.includes(this._queueName)) {
         allQueues.push(this._queueName);
       }
       this._idbQDb.put(allQueuesPlaceholder, allQueues);

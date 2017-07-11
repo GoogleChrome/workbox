@@ -172,7 +172,7 @@ describe('lib/write-sw.js', function() {
       await writeSw('fake-path/', [{url: '/', revision: '1234'}],
         'workbox-sw.min.js', 'fake-path/');
       throw new Error('Expected error to be thrown');
-    } catch(error) {
+    } catch (error) {
       expect(error.message).to.eql(errors['sw-write-failure-directory']);
     }
   });
