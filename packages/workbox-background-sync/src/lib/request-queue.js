@@ -41,7 +41,7 @@ class RequestQueue {
     this._broadcastChannel = broadcastChannel;
     this._globalCallbacks = callbacks || {};
     this._queue = [];
-    this._initializationPromise = this.initQueue();
+    this.initQueue();
   }
 
   /**
@@ -82,7 +82,7 @@ class RequestQueue {
    * @private
    */
   async saveQueue() {
-    await this._idbQDb.put(this._queueName, await this._getQueue());
+    await this._idbQDb.put(this._queueName, this._queue);
   }
 
   /**
@@ -96,7 +96,6 @@ class RequestQueue {
    * @private
    */
   async push({request}) {
-    await this._initializationPromise;
     isInstance({request}, Request);
 
     const hash = `${request.url}!${Date.now()}!${_requestCounter++}`;
@@ -153,10 +152,9 @@ class RequestQueue {
    * @private
    */
   async getRequestFromQueue({hash}) {
-    const queue = await this._getQueue();
     isType({hash}, 'string');
 
-    if (queue.includes(hash)) {
+    if (this._queue.includes(hash)) {
       const reqData = await this._idbQDb.get(hash);
 
       // Apply the `requestWillDequeue` callback so plugins can modify the
@@ -191,19 +189,6 @@ class RequestQueue {
    */
   get queueName() {
     return this._queueName;
-  }
-
-  /**
-   * returns the queue after initialization is complete
-   *
-   * @return {Promise<Object>} Queue object containing the current requests
-   * @readonly
-   * @memberOf RequestQueue
-   * @private
-   */
-  async _getQueue() {
-    await this._initializationPromise;
-    return Object.assign([], this._queue);
   }
 
   /**

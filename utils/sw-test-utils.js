@@ -11,10 +11,6 @@ self.chai.should();
 mocha.setup({
   ui: 'bdd',
   reporter: null,
+  // Lets sinon stub these globals without triggering a mocha leak warning.
+  globals: ['fetch', 'addEventListener'],
 });
-
-// This is a bit of a hack, but means workbox-runtime-caching can
-// stub out fetch without triggering a mocha global leak.
-// This thread inspired this "solution":
-// https://github.com/sinonjs/sinon/issues/143
-self.fetch = fetch;

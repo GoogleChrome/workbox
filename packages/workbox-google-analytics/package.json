@@ -1,6 +1,6 @@
 {
   "name": "workbox-google-analytics",
-  "version": "2.0.0",
+  "version": "1.3.0",
   "description": "A service worker helper library to retry offline Google Analytics requests when a connection is available.",
   "keywords": [
     "workbox",
@@ -10,20 +10,22 @@
     "offline",
     "analytics"
   ],
-  "author": {
-    "name": "Jeff Posnick",
-    "email": "jeffy@google.com",
-    "url": "https://jeffy.info"
-  },
   "scripts": {
     "prepublish": "gulp build --project workbox-google-analytics"
   },
+  "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-google-analytics",
+  "devDependencies": {
+    "workbox-background-sync": "^1.3.0",
+    "workbox-routing": "^1.3.0",
+    "workbox-runtime-caching": "^1.3.0"
+  },
   "files": [
     "build"
   ],
-  "main": "build/importScripts/workbox-google-analytics.prod.v2.0.0.js"
+  "main": "build/importScripts/workbox-google-analytics.prod.v1.3.0.js",
+  "module": "build/modules/workbox-google-analytics.prod.v1.3.0.mjs"
 }

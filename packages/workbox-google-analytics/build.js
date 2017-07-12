@@ -13,43 +13,16 @@
  limitations under the License.
 */
 
-const fsExtra = require('fs-extra');
-const glob = require('glob');
-const path = require('path');
 const pkg = require('./package.json');
-const upperCamelCase = require('uppercamelcase');
 const {buildJSBundle, generateBuildConfigs} = require('../../utils/build');
 
-const productionBuildConfigs = generateBuildConfigs({
+const buildConfigs = generateBuildConfigs({
   formatToPath: {
+    es: pkg.module,
     iife: pkg.main,
   },
   baseDir: __dirname,
   moduleName: 'workbox.googleAnalytics',
 });
 
-
-// We don't want the test/ build output to be published.
-fsExtra.ensureFileSync(path.join(__dirname, 'build', 'test', '.npmignore'));
-
-const libFiles = glob.sync(`${__dirname}/src/lib/*.js`);
-libFiles.push(path.join('lib', 'idb-helper.js'));
-
-const testBuildConfigs = libFiles.reduce((configs, libFile) => {
-  const className = upperCamelCase(path.basename(libFile, '.js'));
-  const moduleName = `workbox.googleAnalytics.test.${className}`;
-
-  return configs.concat(generateBuildConfigs({
-    formatToPath: {
-      iife: path.join('build', 'test', path.basename(libFile)),
-    },
-    baseDir: __dirname,
-    shouldBuildProd: false,
-    entry: libFile,
-    moduleName,
-  }));
-}, []);
-
-module.exports = () => Promise.all(
-  [...productionBuildConfigs, ...testBuildConfigs].map(buildJSBundle)
-);
+module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));
