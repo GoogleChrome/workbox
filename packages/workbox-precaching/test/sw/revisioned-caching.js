@@ -139,7 +139,8 @@ describe('sw/revisioned-caching()', function() {
       if (!caughtError) {
         throw new Error('Expected file manifest to cause an error.');
       }
-      caughtError.message.indexOf(`The 'revision' parameter has the wrong type`).should.equal(0);
+
+      caughtError.message.indexOf(`The 'revision' parameter has the wrong type`).should.not.equal(-1);
     });
   });
 
