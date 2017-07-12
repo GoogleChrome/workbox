@@ -21,6 +21,6 @@
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-sw",
-  "main": "build/importScripts/workbox-sw.prod.v1.0.1.js",
-  "module": "build/modules/workbox-sw.prod.v1.0.1.mjs"
+  "main": "build/importScripts/workbox-sw.prod.v1.1.0.js",
+  "module": "build/modules/workbox-sw.prod.v1.1.0.mjs"
 }

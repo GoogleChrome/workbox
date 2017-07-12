@@ -21,6 +21,6 @@
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-broadcast-cache-update",
-  "main": "build/importScripts/workbox-broadcast-cache-update.prod.v1.0.0.js",
-  "module": "build/modules/workbox-broadcast-cache-update.prod.v1.0.0.mjs"
+  "main": "build/importScripts/workbox-broadcast-cache-update.prod.v1.1.0.js",
+  "module": "build/modules/workbox-broadcast-cache-update.prod.v1.1.0.mjs"
 }

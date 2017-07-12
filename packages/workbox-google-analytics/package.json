@@ -25,5 +25,5 @@
   "files": [
     "build"
   ],
-  "main": "build/importScripts/workbox-google-analytics.prod.v1.0.0.js"
+  "main": "build/importScripts/workbox-google-analytics.prod.v1.1.0.js"
 }

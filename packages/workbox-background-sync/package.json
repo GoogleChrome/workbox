@@ -21,6 +21,6 @@
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/GoogleChrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-background-sync",
-  "main": "build/importScripts/workbox-background-sync.prod.v1.0.0.js",
-  "module": "build/modules/workbox-background-sync.prod.v1.0.0.mjs"
+  "main": "build/importScripts/workbox-background-sync.prod.v1.1.0.js",
+  "module": "build/modules/workbox-background-sync.prod.v1.1.0.mjs"
 }

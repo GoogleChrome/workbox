@@ -27,6 +27,6 @@
     "workbox-routing": "^1.1.0",
     "workbox-runtime-caching": "^1.1.0"
   },
-  "main": "build/importScripts/workbox-precaching.prod.v1.0.0.js",
-  "module": "build/modules/workbox-precaching.prod.v1.0.0.mjs"
+  "main": "build/importScripts/workbox-precaching.prod.v1.1.0.js",
+  "module": "build/modules/workbox-precaching.prod.v1.1.0.mjs"
 }
