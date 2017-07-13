@@ -234,8 +234,8 @@ class RevisionedCacheManager extends BaseCacheManager {
   _createLogFriendlyString(allCacheDetails) {
     let stringVersion = `\n`;
     allCacheDetails.forEach((cacheDetails) => {
-      stringVersion += `    URL: ${cacheDetails.url} Revision: ` +
-        `${cacheDetails.revision}\n`;
+      stringVersion += `    URL: '${cacheDetails.url}' Revision: ` +
+        `'${cacheDetails.revision}'\n`;
     });
     return stringVersion;
   }
