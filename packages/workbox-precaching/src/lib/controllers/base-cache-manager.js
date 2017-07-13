@@ -1,5 +1,7 @@
 import {RequestWrapper} from '../../../../workbox-runtime-caching/src/index';
 import WorkboxError from '../../../../../lib/workbox-error';
+import logHelper from '../../../../../lib/log-helper';
+import {isDevBuild} from '../../../../../lib/environment';
 
 /**
  * This class handles the shared logic for caching revisioned and unrevisioned
@@ -127,7 +129,51 @@ class BaseCacheManager {
     });
 
     // Wait for all requests to be cached.
-    return Promise.all(cachePromises);
+    return Promise.all(cachePromises)
+    .then((allCacheDetails) => {
+      const updatedCacheDetails = [];
+      const notUpdatedCacheDetails = [];
+      allCacheDetails.forEach((cacheDetails) => {
+        if (cacheDetails.wasUpdated) {
+          updatedCacheDetails.push({
+            url: cacheDetails.url,
+            revision: cacheDetails.revision,
+          });
+        } else {
+          notUpdatedCacheDetails.push({
+            url: cacheDetails.url,
+            revision: cacheDetails.revision,
+          });
+        }
+      });
+
+      const logData = {};
+      if (updatedCacheDetails.length > 0) {
+        let stringVersion = `\n`;
+        updatedCacheDetails.forEach((cacheDetails) => {
+          stringVersion += `    URL: ${cacheDetails.url} Revision: ` +
+            `${cacheDetails.revision}\n`;
+        });
+        logData['New / Updated Precache URL\'s'] = stringVersion;
+      }
+
+      if (notUpdatedCacheDetails.length > 0) {
+        let stringVersion = `\n`;
+        notUpdatedCacheDetails.forEach((cacheDetails) => {
+          stringVersion += `    URL: ${cacheDetails.url} Revision: ` +
+            `${cacheDetails.revision}\n`;
+        });
+        logData['Up-to-date Precache URL\'s'] = stringVersion;
+      }
+
+      logHelper.log({
+        message: `Precache Details: ${updatedCacheDetails.length} requests ` +
+        `were added or updated and ` +
+        `${notUpdatedCacheDetails.length} request are already ` +
+        `cached and up-to-date.`,
+        data: logData,
+      });
+    });
   }
 
   /**
@@ -136,13 +182,19 @@ class BaseCacheManager {
    *
    * @private
    * @param {BaseCacheEntry} precacheEntry The entry to fetch and cache.
-   * @return {Promise} Returns a promise that resolves once the entry is fetched
-   * and cached.
+   * @return {Promise<Object>} Returns a promise that resolves once the entry
+   * has been fetched and cached or skipped if no update is needed. The
+   * promise resolved with details of the entry and whether it was
+   * updated or not.
    */
   async _cacheEntry(precacheEntry) {
     const isCached = await this._isAlreadyCached(precacheEntry);
     if (isCached) {
-      return;
+      return {
+        url: precacheEntry.request.url,
+        revision: precacheEntry.revision,
+        wasUpdated: false,
+      };
     }
 
     try {
@@ -153,7 +205,12 @@ class BaseCacheManager {
         cleanRedirects: true,
       });
 
-      return this._onEntryCached(precacheEntry);
+      await this._onEntryCached(precacheEntry);
+      return {
+        url: precacheEntry.request.url,
+        revision: precacheEntry.revision,
+        wasUpdated: true,
+      };
     } catch (err) {
       throw new WorkboxError('request-not-cached', {
         url: precacheEntry.request.url,

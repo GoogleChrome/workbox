@@ -1,6 +1,8 @@
 importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-precaching');
 
+workbox.logLevel = self.workbox.LOG_LEVEL.verbose;
+
 describe('sw/revisioned-caching()', function() {
   let cacheManager;
 
