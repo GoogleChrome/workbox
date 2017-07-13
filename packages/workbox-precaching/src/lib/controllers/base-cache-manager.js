@@ -1,7 +1,6 @@
 import {RequestWrapper} from '../../../../workbox-runtime-caching/src/index';
 import WorkboxError from '../../../../../lib/workbox-error';
 import logHelper from '../../../../../lib/log-helper';
-import {isDevBuild} from '../../../../../lib/environment';
 
 /**
  * This class handles the shared logic for caching revisioned and unrevisioned
