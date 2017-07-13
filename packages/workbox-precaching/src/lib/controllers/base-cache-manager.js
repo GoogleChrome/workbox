@@ -112,8 +112,8 @@ class BaseCacheManager {
    * This method will go through each asset added to the cache list and
    * fetch and update the cache for assets which have a new revision hash.
    *
-   * @return {Promise} The promise resolves when all the desired assets are
-   * cached and up -to-date.
+   * @return {Promise<Array<Object>>} The promise resolves when all the
+   * desired assets are cached and up -to-date.
    */
   async install() {
     if (this._entriesToCache.size === 0) {
@@ -128,51 +128,7 @@ class BaseCacheManager {
     });
 
     // Wait for all requests to be cached.
-    return Promise.all(cachePromises)
-    .then((allCacheDetails) => {
-      const updatedCacheDetails = [];
-      const notUpdatedCacheDetails = [];
-      allCacheDetails.forEach((cacheDetails) => {
-        if (cacheDetails.wasUpdated) {
-          updatedCacheDetails.push({
-            url: cacheDetails.url,
-            revision: cacheDetails.revision,
-          });
-        } else {
-          notUpdatedCacheDetails.push({
-            url: cacheDetails.url,
-            revision: cacheDetails.revision,
-          });
-        }
-      });
-
-      const logData = {};
-      if (updatedCacheDetails.length > 0) {
-        let stringVersion = `\n`;
-        updatedCacheDetails.forEach((cacheDetails) => {
-          stringVersion += `    URL: ${cacheDetails.url} Revision: ` +
-            `${cacheDetails.revision}\n`;
-        });
-        logData['New / Updated Precache URL\'s'] = stringVersion;
-      }
-
-      if (notUpdatedCacheDetails.length > 0) {
-        let stringVersion = `\n`;
-        notUpdatedCacheDetails.forEach((cacheDetails) => {
-          stringVersion += `    URL: ${cacheDetails.url} Revision: ` +
-            `${cacheDetails.revision}\n`;
-        });
-        logData['Up-to-date Precache URL\'s'] = stringVersion;
-      }
-
-      logHelper.log({
-        message: `Precache Details: ${updatedCacheDetails.length} requests ` +
-        `were added or updated and ` +
-        `${notUpdatedCacheDetails.length} request are already ` +
-        `cached and up-to-date.`,
-        data: logData,
-      });
-    });
+    return Promise.all(cachePromises);
   }
 
   /**
@@ -188,12 +144,13 @@ class BaseCacheManager {
    */
   async _cacheEntry(precacheEntry) {
     const isCached = await this._isAlreadyCached(precacheEntry);
+    const precacheDetails = {
+      url: precacheEntry.request.url,
+      revision: precacheEntry.revision,
+      wasUpdated: !isCached,
+    };
     if (isCached) {
-      return {
-        url: precacheEntry.request.url,
-        revision: precacheEntry.revision,
-        wasUpdated: false,
-      };
+      return precacheDetails;
     }
 
     try {
@@ -205,11 +162,7 @@ class BaseCacheManager {
       });
 
       await this._onEntryCached(precacheEntry);
-      return {
-        url: precacheEntry.request.url,
-        revision: precacheEntry.revision,
-        wasUpdated: true,
-      };
+      return precacheDetails;
     } catch (err) {
       throw new WorkboxError('request-not-cached', {
         url: precacheEntry.request.url,

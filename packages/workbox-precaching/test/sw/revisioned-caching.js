@@ -242,7 +242,20 @@ describe('sw/revisioned-caching()', function() {
       return {url, revision: 'dummy-revision'};
     });
     cacheManager.addToCacheList({revisionedFiles: firstRevisionedFiles});
-    await cacheManager.install();
+
+    const firstCacheDetails = await cacheManager.install();
+    let updatedCount = 0;
+    let notUpdatedCount = 0;
+    firstCacheDetails.forEach((cacheDetails) => {
+      if (cacheDetails.wasUpdated) {
+        updatedCount++;
+      } else {
+        notUpdatedCount++;
+      }
+    });
+    expect(updatedCount).to.equal(3);
+    expect(notUpdatedCount).to.equal(0);
+
     await cacheManager.cleanup();
 
     const firstIdbUrls = await cacheManager._revisionDetailsModel._idbHelper.getAllKeys();
@@ -256,7 +269,20 @@ describe('sw/revisioned-caching()', function() {
       return {url, revision: 'dummy-revision'};
     });
     secondCacheManager.addToCacheList({revisionedFiles: secondRevisionedFiles});
-    await secondCacheManager.install();
+
+    const secondCacheDetails = await secondCacheManager.install();
+    updatedCount = 0;
+    notUpdatedCount = 0;
+    secondCacheDetails.forEach((cacheDetails) => {
+      if (cacheDetails.wasUpdated) {
+        updatedCount++;
+      } else {
+        notUpdatedCount++;
+      }
+    });
+    expect(updatedCount).to.equal(0);
+    expect(notUpdatedCount).to.equal(2);
+
     await secondCacheManager.cleanup();
 
     const secondIdbUrls = await secondCacheManager._revisionDetailsModel._idbHelper.getAllKeys();

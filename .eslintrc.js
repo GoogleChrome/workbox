@@ -36,7 +36,7 @@ module.exports = {
       'no-invalid-this': 0,
     },
   }, {
-    files: ['./gulp-tasks/*.js'],
+    files: ['gulp-tasks/*.js'],
     rules: {
       'no-console': 0,
     },

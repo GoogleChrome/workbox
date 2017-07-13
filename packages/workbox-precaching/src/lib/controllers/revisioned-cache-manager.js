@@ -223,6 +223,63 @@ class RevisionedCacheManager extends BaseCacheManager {
       return this._close();
     });
   }
+
+  /**
+   * This method will go through each asset added to the cache list and
+   * fetch and update the cache for assets which have a new revision hash.
+   *
+   * @return {Promise<Array<Object>>} The promise resolves when all the
+   * desired assets are cached and up -to-date.
+   */
+  install() {
+    return super.install()
+    .then((allCacheDetails) => {
+      const updatedCacheDetails = [];
+      const notUpdatedCacheDetails = [];
+      allCacheDetails.forEach((cacheDetails) => {
+        if (cacheDetails.wasUpdated) {
+          updatedCacheDetails.push({
+            url: cacheDetails.url,
+            revision: cacheDetails.revision,
+          });
+        } else {
+          notUpdatedCacheDetails.push({
+            url: cacheDetails.url,
+            revision: cacheDetails.revision,
+          });
+        }
+      });
+
+      const logData = {};
+      if (updatedCacheDetails.length > 0) {
+        let stringVersion = `\n`;
+        updatedCacheDetails.forEach((cacheDetails) => {
+          stringVersion += `    URL: ${cacheDetails.url} Revision: ` +
+            `${cacheDetails.revision}\n`;
+        });
+        logData['New / Updated Precache URL\'s'] = stringVersion;
+      }
+
+      if (notUpdatedCacheDetails.length > 0) {
+        let stringVersion = `\n`;
+        notUpdatedCacheDetails.forEach((cacheDetails) => {
+          stringVersion += `    URL: ${cacheDetails.url} Revision: ` +
+            `${cacheDetails.revision}\n`;
+        });
+        logData['Up-to-date Precache URL\'s'] = stringVersion;
+      }
+
+      logHelper.log({
+        message: `Precache Details: ${updatedCacheDetails.length} requests ` +
+        `were added or updated and ` +
+        `${notUpdatedCacheDetails.length} request are already ` +
+        `cached and up-to-date.`,
+        data: logData,
+      });
+
+      return allCacheDetails;
+    });
+  }
 }
 
 export default RevisionedCacheManager;
