@@ -225,6 +225,22 @@ class RevisionedCacheManager extends BaseCacheManager {
   }
 
   /**
+   * Given an array of objects with a 'url', 'revision' value this
+   * method will create a friendly string to log.
+   * @private
+   * @param {Array<Object>} allCacheDetails
+   * @return {String} A log friendly string.
+   */
+  _createLogFriendlyString(allCacheDetails) {
+    let stringVersion = `\n`;
+    allCacheDetails.forEach((cacheDetails) => {
+      stringVersion += `    URL: ${cacheDetails.url} Revision: ` +
+        `${cacheDetails.revision}\n`;
+    });
+    return stringVersion;
+  }
+
+  /**
    * This method will go through each asset added to the cache list and
    * fetch and update the cache for assets which have a new revision hash.
    *
@@ -252,21 +268,13 @@ class RevisionedCacheManager extends BaseCacheManager {
 
       const logData = {};
       if (updatedCacheDetails.length > 0) {
-        let stringVersion = `\n`;
-        updatedCacheDetails.forEach((cacheDetails) => {
-          stringVersion += `    URL: ${cacheDetails.url} Revision: ` +
-            `${cacheDetails.revision}\n`;
-        });
-        logData['New / Updated Precache URL\'s'] = stringVersion;
+        logData['New / Updated Precache URL\'s'] =
+          this._createLogFriendlyString(updatedCacheDetails);
       }
 
       if (notUpdatedCacheDetails.length > 0) {
-        let stringVersion = `\n`;
-        notUpdatedCacheDetails.forEach((cacheDetails) => {
-          stringVersion += `    URL: ${cacheDetails.url} Revision: ` +
-            `${cacheDetails.revision}\n`;
-        });
-        logData['Up-to-date Precache URL\'s'] = stringVersion;
+        logData['Up-to-date Precache URL\'s'] =
+          this._createLogFriendlyString(notUpdatedCacheDetails);
       }
 
       logHelper.log({
