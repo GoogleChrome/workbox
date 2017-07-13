@@ -1,3 +1,5 @@
+'use strict';
+
 const fs = require('fs');
 
 const getStringHash = require('./get-string-hash');

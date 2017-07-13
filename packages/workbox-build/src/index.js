@@ -1,3 +1,4 @@
+'use strict';
 // This will be the logic that powers both module and CLI
 const generateSW = require('./lib/generate-sw');
 const getFileManifestEntries = require('./lib/get-file-manifest-entries');

@@ -1,3 +1,5 @@
+'use strict';
+
 const errors = require('./errors');
 const fs = require('fs');
 const mkdirp = require('mkdirp');

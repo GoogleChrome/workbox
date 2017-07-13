@@ -1,3 +1,5 @@
+'use strict';
+
 const path = require('path');
 const copyWorkboxSW = require('./utils/copy-workbox-sw');
 const getFileManifestEntries = require('./get-file-manifest-entries');

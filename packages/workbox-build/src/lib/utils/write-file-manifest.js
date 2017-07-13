@@ -1,3 +1,5 @@
+'use strict';
+
 const mkdirp = require('mkdirp');
 const path = require('path');
 const fs = require('fs');
