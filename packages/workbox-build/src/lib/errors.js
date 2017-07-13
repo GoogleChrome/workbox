@@ -83,4 +83,6 @@ module.exports = {
     runtimeCaching.`,
   'handler-is-required': `The handler option is required when using
     runtimeCaching.`,
+  'bad-manifest-transforms': `The 'manifestTransforms' value should be an ` +
+    `array of functions.`,
 };

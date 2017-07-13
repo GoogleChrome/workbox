@@ -1,6 +1,7 @@
 'use strict';
 
 const constants = require('../constants');
+const errors = require('../errors');
 const logHelper = require('../log-helper');
 const modifyUrlPrefixTranform = require('./modify-url-prefix-transform');
 const noRevisionForUrlsMatchingTransform =
@@ -21,7 +22,7 @@ const path = require('path');
  * @example <caption>A transformation that prepended the origin of a CDN for any
  * URL starting with '/assets/' could be implemented as:</caption>
  *
- * const cdnTransform = (manifest) => manifest.map(entry => {
+ * const cdnTransform = (manifestEntries) => manifestEntries.map(entry => {
  *   const cdnOrigin = 'https://example.com';
  *   if (entry.url.startsWith('/assets/')) {
  *     entry.url = cdnOrigin + entry.url;
@@ -33,18 +34,21 @@ const path = require('path');
  * URL contains an 8-character hash surrounded by '.', indicating that it
  * already contains revision information:</caption>
  *
- * const removeRevisionTransform = (manifest) => manifest.map(entry => {
- *   const hashRegExp = /\.\w{8}\./;
- *   if (entry.url.match(hashRegExp)) {
- *     delete entry.revision;
- *   }
- *   return entry;
- * });
+ * const removeRevisionTransform = (manifestEntries) => {
+ *   return manifestEntries.map(entry => {
+ *     const hashRegExp = /\.\w{8}\./;
+ *     if (entry.url.match(hashRegExp)) {
+ *       delete entry.revision;
+ *     }
+ *     return entry;
+ *   });
+ * };
  *
  * @callback ManifestTransform
- * @param {Array<ManifestEntry>} manifest The manifest, prior to the current
- * transformation.
- * @return {Array<ManifestEntry>} The manifest with the transformation applied.
+ * @param {Array<ManifestEntry>} manifestEntries The full array of entries,
+ * prior to the current transformation.
+ * @return {Array<ManifestEntry>} The array of entries with the transformation
+ * applied.
  * @memberof module:workbox-build
  */
 
@@ -83,8 +87,12 @@ module.exports = (fileDetails, options) => {
       noRevisionForUrlsMatchingTransform(options.dontCacheBustUrlsMatching));
   }
 
-  if (Array.isArray(options.manifestTransforms)) {
-    manifestTransforms.concat(options.manifestTransforms);
+  if (options.manifestTransforms) {
+    if (Array.isArray(options.manifestTransforms)) {
+      manifestTransforms.concat(options.manifestTransforms);
+    } else {
+      throw new Error(errors['bad-manifest-transforms']);
+    }
   }
 
   // Apply the transformations sequentially, and return the result.
