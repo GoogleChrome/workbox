@@ -1,11 +1,9 @@
-!docs/recipes/build
 .DS_Store
 build
-docs/Gemfile*
 lerna-debug.log
 node_modules
 npm-debug.log
 packages/**/LICENSE
 temp
 tmp-*
-/_site/
+!packages/workbox-cli/test/static/example-project-1/node_modules

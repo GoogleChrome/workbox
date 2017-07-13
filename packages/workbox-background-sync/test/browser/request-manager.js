@@ -12,23 +12,18 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, workbox, sinon */
+/* global chai, sinon, workbox */
 
 'use strict';
 describe('request-manager test', () => {
-  let responseAchieved = 0;
-  const callbacks = {
-    onResponse: function() {
-      responseAchieved++;
-    },
-  };
-
+  const callbacks = {};
   let queue;
   let reqManager;
+
   const idbHelper = new workbox.backgroundSync.test.IdbHelper(
     'bgQueueSyncDB', 1, 'QueueStore');
 
-  before((done) => {
+  before( (done) => {
     const QUEUE_NAME = 'QUEUE_NAME';
     const MAX_AGE = 6;
     queue =
@@ -44,13 +39,6 @@ describe('request-manager test', () => {
     done();
   });
 
-  let globalStubs = [];
-  afterEach(function() {
-    globalStubs.forEach((stub) => stub.restore());
-    globalStubs = [];
-  });
-
-
   it('check constructor', () => {
     chai.assert.isObject(reqManager);
     chai.assert.isFunction(reqManager.attachSyncHandler);
@@ -62,33 +50,42 @@ describe('request-manager test', () => {
   });
 
   it('check replay', async function() {
-    const backgroundSyncQueue
-      = new workbox.backgroundSync.test.BackgroundSyncQueue({
-      callbacks,
-    });
+    sinon.spy(self, 'fetch');
+
+    callbacks.replayDidSucceed = sinon.spy();
+    callbacks.replayDidFail = sinon.spy();
+
+    const backgroundSyncQueue =
+        new workbox.backgroundSync.test.BackgroundSyncQueue({callbacks});
+
     await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
     await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
     await backgroundSyncQueue._requestManager.replayRequests();
-    chai.assert.equal(responseAchieved, 2);
-  });
 
-  it(`will fetch() the request returned by the RequestWrapper's requestWillFetch plugin`, async function() {
-    const stub = sinon.stub(self, 'fetch').returns(new Response());
-    globalStubs.push(stub);
+    // Asset replayDidSucceed callback was called with the correct arguments.
+    chai.assert.equal(callbacks.replayDidSucceed.callCount, 2);
+    chai.assert(callbacks.replayDidSucceed.alwaysCalledWith(
+        sinon.match.string, sinon.match.instanceOf(Response)));
 
-    const expectedRequest = new Request('expected');
-    const plugins = [{
-      requestWillFetch: () => Promise.resolve(expectedRequest),
-    }];
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper({plugins});
-    const bsq = new workbox.backgroundSync.test.BackgroundSyncQueue({
-      callbacks,
-      requestWrapper,
-    });
+    // Assert fetch was called for each replayed request.
+    chai.assert(self.fetch.calledTwice);
 
-    await bsq.pushIntoQueue({request: new Request('notexpected')});
-    await bsq._requestManager.replayRequests();
+    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__test/404')});
+    try {
+      await backgroundSyncQueue._requestManager.replayRequests();
+    } catch (err) {
+      // Error is expected due to 404 response.
+    }
 
-    chai.expect(stub.getCall(0).args[0]).to.eql(expectedRequest);
+    // Asset replayDidFail callback was called with the correct arguments.
+    chai.assert.equal(callbacks.replayDidSucceed.callCount, 2);
+    chai.assert.equal(callbacks.replayDidFail.callCount, 1);
+    chai.assert(callbacks.replayDidFail.alwaysCalledWith(
+        sinon.match.string, sinon.match.instanceOf(Response)));
+
+    delete callbacks.replayDidSucceed;
+    delete callbacks.replayDidFail;
+
+    self.fetch.restore();
   });
 });

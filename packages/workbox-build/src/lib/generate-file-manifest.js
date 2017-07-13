@@ -1,3 +1,5 @@
+'use strict';
+
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const writeFileManifest = require('./utils/write-file-manifest');
 const errors = require('./errors');

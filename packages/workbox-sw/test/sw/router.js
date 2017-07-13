@@ -125,7 +125,7 @@ describe('Test workboxSW.router', function() {
     try {
       workboxSW.router.registerRoute(/123/, () => {}, 'INVALID_METHOD');
       throw new Error();
-    } catch(error) {
+    } catch (error) {
       expect(error.name).to.eql('assertion-failed',
         `The expected assertion-failed error wasn't thrown.`);
     }

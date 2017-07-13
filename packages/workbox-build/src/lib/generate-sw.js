@@ -1,3 +1,5 @@
+'use strict';
+
 const path = require('path');
 const copyWorkboxSW = require('./utils/copy-workbox-sw');
 const getFileManifestEntries = require('./get-file-manifest-entries');
@@ -100,6 +102,9 @@ const generateSW = function(input) {
   }
 
   // Type check input so that defaults can be used if appropriate.
+  if (typeof input.globIgnores === 'string') {
+    input.globIgnores = [input.globIgnores];
+  }
   if (input.globIgnores && !(Array.isArray(input.globIgnores))) {
     return Promise.reject(
       new Error(errors['invalid-glob-ignores']));

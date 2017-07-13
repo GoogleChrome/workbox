@@ -40,7 +40,7 @@ describe('Test Cookies with Precache', function() {
     })
     .then((responses) => {
       responses.forEach((response) => {
-        if(!response.swtesting) {
+        if (!response.swtesting) {
           throw new Error(`The 'swtesting' cookie was not found.`);
         }
       });

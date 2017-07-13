@@ -83,7 +83,7 @@ describe('Test of the NetworkFirst handler', function() {
     let thrownError = null;
     try {
       new workbox.runtimeCaching.NetworkFirst({networkTimeoutSeconds: 'invalid'});
-    } catch(err) {
+    } catch (err) {
       thrownError = err;
     }
     expect(thrownError).to.exist;

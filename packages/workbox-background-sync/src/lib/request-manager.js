@@ -1,3 +1,4 @@
+import deprecate from '../../../../lib/deprecate';
 import {putResponse} from './response-manager';
 import {getFetchableRequest} from './queue-utils';
 import {tagNamePrefix, replayAllQueuesTag} from './constants';
@@ -13,18 +14,21 @@ class RequestManager {
   /**
    * Initializes the request manager
    * stores the callbacks object, maintains config and
-   * attaches event handler.
+   * attaches event handler
+   * @param {Object=} config
    *
    * @private
-   * @param {Object} input
-   * @param {Object<String, function>} callbacks
-   * @param {Queue} queue
-   * @param {RequestWrapper} requestWrapper
    */
-  constructor({callbacks, queue, requestWrapper}) {
-    this._globalCallbacks = callbacks || {};
+  constructor({callbacks, queue} = {}) {
+    callbacks = callbacks || {};
+
+    // Rename deprecated callbacks.
+    const ctx = 'workbox-background-sync.RequestManager.callbacks';
+    deprecate(callbacks, 'onResponse', 'replayDidSucceed', ctx);
+    deprecate(callbacks, 'onRetryFailure', 'replayDidFail', ctx);
+
+    this._globalCallbacks = callbacks;
     this._queue = queue;
-    this._requestWrapper = requestWrapper;
     this.attachSyncHandler();
   }
 
@@ -44,12 +48,15 @@ class RequestManager {
   }
 
   /**
-   * Replays a single request, identified by its hash.
+   * function to play one single request given its hash
    *
-   * @private
    * @param {String} hash
+   *
    * @return {Promise} Resolves if the request corresponding to the hash is
    * played successfully, rejects if it fails during the replay
+   *
+   *
+   * @private
    */
   async replayRequest(hash) {
     try {
@@ -60,7 +67,7 @@ class RequestManager {
       const request = await getFetchableRequest({
         idbRequestObject: reqData.request,
       });
-      const response = await this._requestWrapper.fetch({request});
+      const response = await fetch(request);
       if (!response.ok) {
         return Promise.reject(response);
       } else {
@@ -71,8 +78,9 @@ class RequestManager {
           response: response.clone(),
           idbQDb: this._queue.idbQDb,
         });
-        if (this._globalCallbacks.onResponse)
-          this._globalCallbacks.onResponse(hash, response);
+        if (this._globalCallbacks.replayDidSucceed) {
+          this._globalCallbacks.replayDidSucceed(hash, response);
+        }
       }
     } catch (err) {
       return Promise.reject(err);
@@ -95,8 +103,9 @@ class RequestManager {
       try {
         await this.replayRequest(hash);
       } catch (err) {
-        if (this._globalCallbacks.onRetryFailure)
-          this._globalCallbacks.onRetryFailure(hash, err);
+        if (this._globalCallbacks.replayDidFail) {
+          this._globalCallbacks.replayDidFail(hash, err);
+        }
         failedItems.push(err);
       }
     }

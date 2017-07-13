@@ -1,7 +1,5 @@
 import RequestManager from './request-manager';
 import RequestQueue from './request-queue';
-import RequestWrapper from
-  '../../../workbox-runtime-caching/src/lib/request-wrapper';
 import {maxAge, defaultDBName} from './constants';
 import {isType, isInstance} from '../../../../lib/assert';
 import IDBHelper from '../../../../lib/idb-helper';
@@ -32,29 +30,39 @@ import {getResponse} from './response-manager';
  */
 class Queue {
   /**
-   * Creates an instance of Queue with the given options.
+   * Creates an instance of Queue with the given options
    *
    * @param {Object} [input]
    * @param {Number} [input.maxRetentionTime = 5 days] Time for which a queued
-   * request will live in the queue(irespective of failed/success of replay).
-   * @param {Object<String, function>} [input.callbacks] Callbacks for
-   * successful/failed replay of a request.
-   * @param {String} [input.queueName] Queue name inside db in which
+   * request will live in the queue(irrespective of failed/success of replay).
+   * @param {Object} [input.callbacks] Callbacks for successfull/failed
+   * replay of a request as well as modifying before enqueue/dequeue-ing.
+   * @param {Fuction} [input.callbacks.replayDidSucceed]
+   * Invoked with params (hash:string, response:Response) after a request is
+   * successfully replayed.
+   * @param {Fuction<string>} [input.callbacks.replayDidFail]
+   * Invoked with param (hash:string) after a replay attempt has failed.
+   * @param {Fuction<Object>} [input.callbacks.requestWillEnqueue]
+   * Invoked with param (reqData:Object) before a failed request is saved to
+   * the queue. Use this to modify the saved data.
+   * @param {Fuction<Object>} [input.callbacks.requestWillDequeue]
+   * Invoked with param (reqData:Object) before a failed request is retrieved
+   * from the queue. Use this to modify the data before the request is replayed.
+   * @param {string} [input.queueName] Queue name inside db in which
    * requests will be queued.
-   * @param {BroadcastChannel} [input.broadcastChannel] BroadcastChannel
+   * @param {BroadcastChannel=} [input.broadcastChannel] BroadcastChannel
    * which will be used to publish messages when the request will be queued.
-   * @param {module:workbox-runtime-caching.RequestWrapper}
-   * [input.requestWrapper] An optional `RequestWrapper` with a configured
-   * `requestWillFetch` plugin. The plugin will be applied to transform the
-   * queued `Request` before it's replayed.
    */
   constructor({
-                maxRetentionTime = maxAge, callbacks, queueName,
-                broadcastChannel, dbName = defaultDBName, requestWrapper,
-              } = {}) {
-    if (queueName) {
-      isType({queueName}, 'string');
-    }
+    broadcastChannel,
+    callbacks,
+    queueName,
+    dbName = defaultDBName,
+    maxRetentionTime = maxAge,
+  } = {}) {
+  if (queueName) {
+    isType({queueName}, 'string');
+  }
 
     if (maxRetentionTime) {
       isType({maxRetentionTime}, 'number');
@@ -67,7 +75,6 @@ class Queue {
     isType({dbName}, 'string');
 
     this._dbName = dbName;
-
     this._queue = new RequestQueue({
       config: {
         maxAge: maxRetentionTime,
@@ -75,12 +82,11 @@ class Queue {
       queueName,
       idbQDb: new IDBHelper(this._dbName, 1, 'QueueStore'),
       broadcastChannel,
+      callbacks,
     });
-
     this._requestManager = new RequestManager({
       callbacks,
       queue: this._queue,
-      requestWrapper: requestWrapper || new RequestWrapper(),
     });
 
     this.cleanupQueue();

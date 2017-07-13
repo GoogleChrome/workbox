@@ -1,3 +1,5 @@
+'use strict';
+
 const errors = require('../errors');
 
 /**
@@ -39,9 +41,7 @@ function getOptionsString(options) {
 module.exports = (runtimeCaching) => {
   runtimeCaching = runtimeCaching || [];
   return runtimeCaching.map((entry) => {
-    if (entry.method && entry.method !== 'GET') {
-      throw new Error(errors['method-not-supported']);
-    }
+    const method = entry.method || 'GET';
 
     if (!entry.urlPattern) {
       throw new Error(errors['urlPattern-is-required']);
@@ -69,10 +69,10 @@ module.exports = (runtimeCaching) => {
         `workboxSW.strategies.${handlerName}(${optionsString})`;
 
       return `workboxSW.router.registerRoute(` +
-        `${matcher}, ${strategyString});`;
+        `${matcher}, ${strategyString}, '${method}');`;
     } else if (typeof entry.handler === 'function') {
       return `workboxSW.router.registerRoute(` +
-        `${matcher}, ${entry.handler});`;
+        `${matcher}, ${entry.handler}, '${method}');`;
     }
   }).filter((entry) => Boolean(entry)); // Remove undefined map() return values.
 };

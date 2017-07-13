@@ -10,4 +10,6 @@ const precache = (input) => {
 precache([]);
 
 const workboxSW = new WorkboxSW();
+/* eslint-disable */
 workboxSW.precache(    [    ]    );
+/* eslint-enable */

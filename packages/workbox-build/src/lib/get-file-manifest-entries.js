@@ -1,3 +1,5 @@
+'use strict';
+
 const errors = require('./errors');
 const filterFiles = require('./utils/filter-files');
 const getCompositeDetails = require('./utils/get-composite-details');

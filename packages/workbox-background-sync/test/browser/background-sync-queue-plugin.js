@@ -17,12 +17,14 @@
 'use strict';
 
 describe('background-sync-queue-plugin test', () => {
-  const backgroundSyncQueue
-    = new workbox.backgroundSync.test.BackgroundSyncQueuePlugin({});
+  const backgroundSyncQueue =
+      new workbox.backgroundSync.test.BackgroundSyncQueuePlugin({});
 
   it('check fetchDid fail proxy', async () => {
     const currentLen = backgroundSyncQueue._queue.queue.length;
-    await backgroundSyncQueue.fetchDidFail({request: new Request('http://lipsum.com')});
+    await backgroundSyncQueue.fetchDidFail({
+      request: new Request('http://lipsum.com'),
+    });
     chai.assert.equal(backgroundSyncQueue._queue.queue.length, currentLen + 1);
   });
 });

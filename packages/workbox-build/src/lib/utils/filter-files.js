@@ -1,3 +1,5 @@
+'use strict';
+
 const constants = require('../constants');
 const logHelper = require('../log-helper');
 const modifyUrlPrefixTranform = require('./modify-url-prefix-transform');
