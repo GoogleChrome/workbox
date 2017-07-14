@@ -37,6 +37,13 @@ describe('request-queue tests', () => {
     chai.assert.isObject(queue._config);
   });
 
+  it('initialize should not fail for null data', async () => {
+    chai.assert.equal(queue._queue.length, 0);
+    idbHelper.put(queue._queueName, null);
+    await queue.initQueue();
+    chai.assert.equal(queue._queue.length, 0);
+  });
+
   it('initialize should re-fill the queue', async () => {
     chai.assert.equal(queue._queue.length, 0);
     const hash = await queue.push({
@@ -50,7 +57,7 @@ describe('request-queue tests', () => {
     chai.assert.equal(queue._queue[0], hash);
   });
 
-  it('queueName is correct', () =>{
+  it('queueName is correct', () => {
     chai.assert.equal(queue._queueName, QUEUE_NAME);
   });
 
