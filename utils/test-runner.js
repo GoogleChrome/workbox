@@ -175,7 +175,7 @@ class TestRunner {
   _runBrowserTests(webdriverCb, packagePath, getBaseTestUrl, browserName) {
     const that = this;
     it(`should pass '${path.basename(packagePath)}' browser tests in ${browserName}`, function() {
-      this.timeout(20 * 1000);
+      this.timeout(10 * 1000);
 
       const webdriver = webdriverCb();
       if (!webdriver) {
@@ -195,7 +195,7 @@ class TestRunner {
   _runServiceWorkerTests(webdriverCb, packagePath, getBaseTestUrl, browserName) {
     const that = this;
     it(`should pass '${path.basename(packagePath)}' sw tests in ${browserName}`, function() {
-      this.timeout(20 * 1000);
+      this.timeout(10 * 1000);
 
       const webdriver = webdriverCb();
       if (!webdriver) {

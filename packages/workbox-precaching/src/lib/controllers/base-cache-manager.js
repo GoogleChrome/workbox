@@ -116,7 +116,7 @@ class BaseCacheManager {
    */
   async install() {
     if (this._entriesToCache.size === 0) {
-      return;
+      return [];
     }
 
     const cachePromises = [];
