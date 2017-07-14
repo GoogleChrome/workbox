@@ -222,6 +222,71 @@ class RevisionedCacheManager extends BaseCacheManager {
       return this._close();
     });
   }
+
+  /**
+   * Given an array of objects with a 'url', 'revision' value this
+   * method will create a friendly string to log.
+   * @private
+   * @param {Array<Object>} allCacheDetails
+   * @return {String} A log friendly string.
+   */
+  _createLogFriendlyString(allCacheDetails) {
+    let stringVersion = `\n`;
+    allCacheDetails.forEach((cacheDetails) => {
+      stringVersion += `    URL: '${cacheDetails.url}' Revision: ` +
+        `'${cacheDetails.revision}'\n`;
+    });
+    return stringVersion;
+  }
+
+  /**
+   * This method will go through each asset added to the cache list and
+   * fetch and update the cache for assets which have a new revision hash.
+   *
+   * @return {Promise<Array<Object>>} The promise resolves when all the
+   * desired assets are cached and up -to-date.
+   */
+  install() {
+    return super.install()
+    .then((allCacheDetails) => {
+      const updatedCacheDetails = [];
+      const notUpdatedCacheDetails = [];
+      allCacheDetails.forEach((cacheDetails) => {
+        if (cacheDetails.wasUpdated) {
+          updatedCacheDetails.push({
+            url: cacheDetails.url,
+            revision: cacheDetails.revision,
+          });
+        } else {
+          notUpdatedCacheDetails.push({
+            url: cacheDetails.url,
+            revision: cacheDetails.revision,
+          });
+        }
+      });
+
+      const logData = {};
+      if (updatedCacheDetails.length > 0) {
+        logData['New / Updated Precache URL\'s'] =
+          this._createLogFriendlyString(updatedCacheDetails);
+      }
+
+      if (notUpdatedCacheDetails.length > 0) {
+        logData['Up-to-date Precache URL\'s'] =
+          this._createLogFriendlyString(notUpdatedCacheDetails);
+      }
+
+      logHelper.log({
+        message: `Precache Details: ${updatedCacheDetails.length} requests ` +
+        `were added or updated and ` +
+        `${notUpdatedCacheDetails.length} request are already ` +
+        `cached and up-to-date.`,
+        data: logData,
+      });
+
+      return allCacheDetails;
+    });
+  }
 }
 
 export default RevisionedCacheManager;

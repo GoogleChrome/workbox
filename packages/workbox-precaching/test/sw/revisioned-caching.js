@@ -1,6 +1,8 @@
 importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-precaching');
 
+workbox.logLevel = self.workbox.LOG_LEVEL.verbose;
+
 describe('sw/revisioned-caching()', function() {
   let cacheManager;
 
@@ -239,7 +241,20 @@ describe('sw/revisioned-caching()', function() {
       return {url, revision: 'dummy-revision'};
     });
     cacheManager.addToCacheList({revisionedFiles: firstRevisionedFiles});
-    await cacheManager.install();
+
+    const firstCacheDetails = await cacheManager.install();
+    let updatedCount = 0;
+    let notUpdatedCount = 0;
+    firstCacheDetails.forEach((cacheDetails) => {
+      if (cacheDetails.wasUpdated) {
+        updatedCount++;
+      } else {
+        notUpdatedCount++;
+      }
+    });
+    expect(updatedCount).to.equal(3);
+    expect(notUpdatedCount).to.equal(0);
+
     await cacheManager.cleanup();
 
     const firstIdbUrls = await cacheManager._revisionDetailsModel._idbHelper.getAllKeys();
@@ -253,11 +268,30 @@ describe('sw/revisioned-caching()', function() {
       return {url, revision: 'dummy-revision'};
     });
     secondCacheManager.addToCacheList({revisionedFiles: secondRevisionedFiles});
-    await secondCacheManager.install();
+
+    const secondCacheDetails = await secondCacheManager.install();
+    updatedCount = 0;
+    notUpdatedCount = 0;
+    secondCacheDetails.forEach((cacheDetails) => {
+      if (cacheDetails.wasUpdated) {
+        updatedCount++;
+      } else {
+        notUpdatedCount++;
+      }
+    });
+    expect(updatedCount).to.equal(0);
+    expect(notUpdatedCount).to.equal(2);
+
     await secondCacheManager.cleanup();
 
     const secondIdbUrls = await secondCacheManager._revisionDetailsModel._idbHelper.getAllKeys();
     expect(secondIdbUrls).to.include.members(urls);
     expect(secondIdbUrls).not.to.include.members([removedUrl]);
+  });
+
+  it('should return empty array from install() if no resources to precache', async function() {
+    const cacheDetails = await cacheManager.install();
+    (Array.isArray(cacheDetails)).should.equal(true);
+    (cacheDetails.length).should.equal(0);
   });
 });

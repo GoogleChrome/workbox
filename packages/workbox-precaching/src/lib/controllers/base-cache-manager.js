@@ -111,12 +111,12 @@ class BaseCacheManager {
    * This method will go through each asset added to the cache list and
    * fetch and update the cache for assets which have a new revision hash.
    *
-   * @return {Promise} The promise resolves when all the desired assets are
-   * cached and up -to-date.
+   * @return {Promise<Array<Object>>} The promise resolves when all the
+   * desired assets are cached and up -to-date.
    */
   async install() {
     if (this._entriesToCache.size === 0) {
-      return;
+      return [];
     }
 
     const cachePromises = [];
@@ -136,13 +136,20 @@ class BaseCacheManager {
    *
    * @private
    * @param {BaseCacheEntry} precacheEntry The entry to fetch and cache.
-   * @return {Promise} Returns a promise that resolves once the entry is fetched
-   * and cached.
+   * @return {Promise<Object>} Returns a promise that resolves once the entry
+   * has been fetched and cached or skipped if no update is needed. The
+   * promise resolved with details of the entry and whether it was
+   * updated or not.
    */
   async _cacheEntry(precacheEntry) {
     const isCached = await this._isAlreadyCached(precacheEntry);
+    const precacheDetails = {
+      url: precacheEntry.request.url,
+      revision: precacheEntry.revision,
+      wasUpdated: !isCached,
+    };
     if (isCached) {
-      return;
+      return precacheDetails;
     }
 
     try {
@@ -153,7 +160,8 @@ class BaseCacheManager {
         cleanRedirects: true,
       });
 
-      return this._onEntryCached(precacheEntry);
+      await this._onEntryCached(precacheEntry);
+      return precacheDetails;
     } catch (err) {
       throw new WorkboxError('request-not-cached', {
         url: precacheEntry.request.url,

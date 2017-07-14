@@ -35,5 +35,10 @@ module.exports = {
       'max-len': 0,
       'no-invalid-this': 0,
     },
+  }, {
+    files: ['gulp-tasks/*.js'],
+    rules: {
+      'no-console': 0,
+    },
   }],
 };
