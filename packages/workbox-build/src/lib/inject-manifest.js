@@ -39,6 +39,10 @@ const errors = require('./errors');
  * @param {RegExp} [input.dontCacheBustUrlsMatching] An optional regex that will
  * return a URL string and exclude the revision details for urls matching this
  * regex. Useful if you have assets with file revisions in the URL.
+ * @param {Array<ManifestTransform>} [input.manifestTransforms] A list of
+ * manifest transformations, which will be applied sequentially against the
+ * generated manifest. If `modifyUrlPrefix` or `dontCacheBustUrlsMatching` are
+ * also specified, their corresponding transformations will be applied first.
  * @return {Promise} Resolves once the service worker has been written
  * with the injected precache list.
  *

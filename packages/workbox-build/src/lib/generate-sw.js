@@ -70,6 +70,10 @@ const constants = require('./constants');
  * @param {RegExp} [input.dontCacheBustUrlsMatching] Assets that match this
  * regex will not have their revision details included in the precache. This
  * is useful for assets that have revisioning details in the filename.
+ * @param {Array<ManifestTransform>} [input.manifestTransforms] A list of
+ * manifest transformations, which will be applied sequentially against the
+ * generated manifest. If `modifyUrlPrefix` or `dontCacheBustUrlsMatching` are
+ * also specified, their corresponding transformations will be applied first.
  * @return {Promise} Resolves once the service worker has been generated
  * with a precache list.
  *

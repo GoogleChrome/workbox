@@ -77,7 +77,7 @@ class RevisionedCacheManager extends BaseCacheManager {
     super._addEntries(revisionedFiles);
 
     const urlsWithoutRevisionFields = revisionedFiles
-      .filter((entry) => typeof entry === 'string');
+      .filter((entry) => typeof entry === 'string' || !entry.revision);
     if (urlsWithoutRevisionFields.length > 0) {
       logHelper.debug({
         that: this,
@@ -101,9 +101,8 @@ class RevisionedCacheManager extends BaseCacheManager {
    * can be parsed as a BaseCacheEntry.
    *
    * @private
-   * @abstract
-   * @param {String | Object} input Either a URL string
-   * or an object with a `url`, `revision` and optional `cacheBust` parameter.
+   * @param {String | Object} input Either a URL string or an object with a
+   * `url` and optional `revision` and `cacheBust` parameters.
    * @return {BaseCacheEntry} Returns a parsed version of the file entry.
    */
   _parseEntry(input) {

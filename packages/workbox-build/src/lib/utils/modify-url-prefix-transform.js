@@ -17,18 +17,17 @@ const escapeRegExp = (string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };
 
-module.exports = (urlString, modifyUrlPrefix) => {
-  if (typeof urlString !== 'string') {
-    throw new Error(errors['modify-url-prefix-bad-url']);
-  }
-
-  if (!modifyUrlPrefix || typeof modifyUrlPrefix !== 'object' ||
-    Array.isArray(modifyUrlPrefix)) {
+module.exports = (modifyUrlPrefix) => {
+  if (!modifyUrlPrefix ||
+      typeof modifyUrlPrefix !== 'object' ||
+      Array.isArray(modifyUrlPrefix)) {
     throw new Error(errors['modify-url-prefix-bad-prefixes']);
   }
 
+  // If there are no entries in modifyUrlPrefix, just return an identity
+  // function as a shortcut.
   if (Object.keys(modifyUrlPrefix).length === 0) {
-    return urlString;
+    return (entry) => entry;
   }
 
   Object.keys(modifyUrlPrefix).forEach((key) => {
@@ -45,7 +44,15 @@ module.exports = (urlString, modifyUrlPrefix) => {
   // a string.
   const modifyRegex = new RegExp(`^(${prefixMatchesStrings})`);
 
-  return urlString.replace(modifyRegex, (match) => {
-    return modifyUrlPrefix[match];
+  return (manifest) => manifest.map((entry) => {
+    if (typeof entry.url !== 'string') {
+      throw new Error(errors['manifest-entry-bad-url']);
+    }
+
+    entry.url = entry.url.replace(modifyRegex, (match) => {
+      return modifyUrlPrefix[match];
+    });
+
+    return entry;
   });
 };

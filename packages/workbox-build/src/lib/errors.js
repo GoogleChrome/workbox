@@ -33,6 +33,8 @@ module.exports = {
     'object',
   'invalid-glob-directory': 'The supplied globDirectory must be ' +
     'a path as a string.',
+  'invalid-dont-cache-bust': 'The supplied dontCacheBustUrlsMatching ' +
+    'parameter must be a RegExp.',
   'invalid-exclude-files': 'The excluded files should be an array of strings.',
   'invalid-get-manifest-entries-input': 'The input to ' +
     'getFileManifestEntries() must be an object.',
@@ -53,8 +55,8 @@ module.exports = {
     `is already being tracked via 'globPatterns': `,
   'invalid-glob-ignores': `The 'globIgnore' parameter must be an ` +
     `array string glob patterns.`,
-  'modify-url-prefix-bad-url': `modifyUrlPrefix helper was given a bad URL ` +
-    `for input. This is likely an error with workbox-build.`,
+  'manifest-entry-bad-url': `The generated manifest contains an entry ` +
+    `without a URL string. This is likely an error with workbox-build.`,
   'modify-url-prefix-bad-prefixes': `The 'modifyUrlPrefix' parameter must be ` +
     `an object with string key value pairs.`,
   'invalid-inject-manifest-arg': `The input to 'injectManifest()' must be ` +
@@ -81,4 +83,6 @@ module.exports = {
     runtimeCaching.`,
   'handler-is-required': `The handler option is required when using
     runtimeCaching.`,
+  'bad-manifest-transforms': `The 'manifestTransforms' value should be an ` +
+    `array of functions.`,
 };

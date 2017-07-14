@@ -120,7 +120,6 @@ describe('sw/revisioned-caching()', function() {
 
   const invalidTypeRevisions = [
     null,
-    undefined,
     false,
     true,
     12345,
@@ -128,7 +127,7 @@ describe('sw/revisioned-caching()', function() {
     [],
   ];
   invalidTypeRevisions.forEach((invalidRevision) => {
-    it(`should throw an errror for bad revision value '${JSON.stringify(invalidRevision)}'`, function() {
+    it(`should throw an error for bad revision value '${JSON.stringify(invalidRevision)}'`, function() {
       let caughtError;
       try {
         cacheManager.addToCacheList({revisionedFiles: [{url: VALID_PATH_REL, revision: invalidRevision}]});
@@ -144,22 +143,21 @@ describe('sw/revisioned-caching()', function() {
     });
   });
 
-  it(`should throw an errror for an empty string revision.`, function() {
-      let caughtError;
-      try {
-        cacheManager.addToCacheList({revisionedFiles: [{url: VALID_PATH_REL, revision: ''}]});
-      } catch (err) {
-        caughtError = err;
-      }
+  it(`should throw an error for an empty string revision.`, function() {
+    let caughtError;
+    try {
+      cacheManager.addToCacheList({revisionedFiles: [{url: VALID_PATH_REL, revision: ''}]});
+    } catch (err) {
+      caughtError = err;
+    }
 
-      if (!caughtError) {
-        throw new Error('Expected file manifest to cause an error.');
-      }
+    if (!caughtError) {
+      throw new Error('Expected file manifest to cause an error.');
+    }
 
-      caughtError.name.should.equal('invalid-object-entry');
-      caughtError.extras.should.deep.equal({problemParam: 'revision', problemValue: ''});
-    });
-
+    caughtError.name.should.equal('invalid-object-entry');
+    caughtError.extras.should.deep.equal({problemParam: 'revision', problemValue: ''});
+  });
 
   const badCacheBusts = [
     null,
@@ -197,6 +195,7 @@ describe('sw/revisioned-caching()', function() {
     {url: VALID_PATH_REL, revision: VALID_REVISION, cacheBust: false},
     VALID_PATH_ABS,
     {url: VALID_PATH_ABS, revision: VALID_REVISION},
+    {url: VALID_PATH_ABS},
     {url: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: true},
     {url: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: false},
   ];

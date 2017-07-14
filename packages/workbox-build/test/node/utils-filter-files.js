@@ -1,4 +1,6 @@
 const constants = require('../../src/lib/constants');
+const errors = require('../../src/lib/errors');
+const expect = require('chai').expect;
 const filterFiles = require('../../src/lib/utils/filter-files');
 
 require('chai').should();
@@ -45,5 +47,11 @@ describe('src/lib/utils/filter-files.js', function() {
       manifestEntry.url.should.equal(`${matchingGoodFile.file}`);
       manifestEntry.revision.should.equal(matchingGoodFile.hash);
     });
+  });
+
+  it('should throw an error when a bad manifestTransforms value is used', function() {
+    expect(
+      () => filterFiles([], {manifestTransforms: () => {}})
+    ).to.throw(errors['bad-manifest-transforms']);
   });
 });

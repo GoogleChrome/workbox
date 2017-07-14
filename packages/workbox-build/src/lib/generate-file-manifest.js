@@ -40,6 +40,10 @@ const errors = require('./errors');
  * @param {RegExp} [input.dontCacheBustUrlsMatching] Assets that match this
  * regex will not have their revision details included in the precache. This
  * is useful for assets that have revisioning details in the filename.
+ * @param {Array<ManifestTransform>} [input.manifestTransforms] A list of
+ * manifest transformations, which will be applied sequentially against the
+ * generated manifest. If `modifyUrlPrefix` or `dontCacheBustUrlsMatching` are
+ * also specified, their corresponding transformations will be applied first.
  * @return {Promise} The returned promise resolves once the manifest file has
  * been generated.
  *
