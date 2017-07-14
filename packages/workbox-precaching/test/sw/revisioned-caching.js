@@ -289,4 +289,10 @@ describe('sw/revisioned-caching()', function() {
     expect(secondIdbUrls).to.include.members(urls);
     expect(secondIdbUrls).not.to.include.members([removedUrl]);
   });
+
+  it('should return empty array from install() if no resources to precache', async function() {
+    const cacheDetails = await cacheManager.install();
+    (Array.isArray(cacheDetails)).should.equal(true);
+    (cacheDetails.length).should.equal(0);
+  });
 });
