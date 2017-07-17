@@ -87,16 +87,9 @@ describe('Test getFileManifestEntries', function() {
       let args = Object.assign({}, EXAMPLE_INPUT);
       delete args.globPatterns;
 
-      try {
+      expect(() => {
         swBuild.getFileManifestEntries(args);
-
-        throw new Error('No error was thrown.');
-      } catch (err) {
-        args.globPatterns = ['**/*.{js,css,html}'];
-        if (err.message !== `${errors['useless-glob-pattern']} ${JSON.stringify(args)}`) {
-          throw new Error('Unexpected error: ' + err.message);
-        }
-      }
+      }).to.throw(`${errors['useless-glob-pattern']} ${JSON.stringify(args)}`);
   });
 
   for (const parameterVariation of ['globPatterns', 'staticFileGlobs']) {
