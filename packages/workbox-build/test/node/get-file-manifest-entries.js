@@ -92,7 +92,8 @@ describe('Test getFileManifestEntries', function() {
 
         throw new Error('No error was thrown.');
       } catch (err) {
-        if (err.message.indexOf(errors['useless-glob-pattern']) !== 0) {
+        args.globPatterns = ['**/*.{js,css,html}'];
+        if (err.message !== `${errors['useless-glob-pattern']} ${JSON.stringify(args)}`) {
           throw new Error('Unexpected error: ' + err.message);
         }
       }
