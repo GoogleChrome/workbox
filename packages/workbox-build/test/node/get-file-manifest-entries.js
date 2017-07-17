@@ -83,6 +83,21 @@ describe('Test getFileManifestEntries', function() {
     }, Promise.resolve());
   });
 
+  it('should use defaults for undefined globPatterns', function() {
+      let args = Object.assign({}, EXAMPLE_INPUT);
+      delete args.globPatterns;
+
+      try {
+        swBuild.getFileManifestEntries(args);
+
+        throw new Error('No error was thrown.');
+      } catch (err) {
+        if (err.message.indexOf(errors['useless-glob-pattern']) !== 0) {
+          throw new Error('Unexpected error: ' + err.message);
+        }
+      }
+  });
+
   for (const parameterVariation of ['globPatterns', 'staticFileGlobs']) {
     it(`should return file entries from example project using ${parameterVariation}`, function() {
       const testInput = {
