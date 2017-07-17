@@ -122,6 +122,7 @@ describe('Test generateSW()', function() {
           throw new Error('Expected to throw error.');
         })
         .catch((err) => {
+          console.log(`Bad error for input: '${JSON.stringify(input)}'`);
           if (err.message !== errors['invalid-static-file-globs']) {
             throw new Error('Unexpected error: ' + err.message);
           }

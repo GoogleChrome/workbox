@@ -63,7 +63,12 @@ const getFileManifestEntries = (input) => {
     return Promise.reject(
       new Error(errors['both-glob-patterns-static-file-globs']));
   }
-  const globPatterns = input.globPatterns || input.staticFileGlobs;
+
+  let globPatterns = input.globPatterns || input.staticFileGlobs;
+  if (typeof input.globPatterns === 'undefined' &&
+    typeof input.staticFileGlobs === 'undefined') {
+    globPatterns = constants.defaultGlobPatterns;
+  }
 
   const globIgnores = input.globIgnores || constants.defaultGlobIgnores;
   const globDirectory = input.globDirectory;

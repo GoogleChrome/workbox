@@ -62,7 +62,6 @@ describe('Test getFileManifestEntries', function() {
 
   it('should detect bad globPatterns', function() {
     const badInput = [
-      undefined,
       null,
       '',
       true,
