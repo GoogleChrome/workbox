@@ -4,6 +4,7 @@ const swBuild = require('../../src/index.js');
 const errors = require('../../src/lib/errors');
 
 require('chai').should();
+const expect = require('chai').expect;
 
 describe('Test getFileManifestEntries', function() {
   const EXAMPLE_INPUT = {
@@ -89,7 +90,7 @@ describe('Test getFileManifestEntries', function() {
 
       expect(() => {
         swBuild.getFileManifestEntries(args);
-      }).to.throw(`${errors['useless-glob-pattern']} ${JSON.stringify(args)}`);
+      }).to.throw(`${errors['useless-glob-pattern']}`);
   });
 
   for (const parameterVariation of ['globPatterns', 'staticFileGlobs']) {
