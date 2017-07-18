@@ -3,27 +3,31 @@
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- */
+*/
 
 /* eslint-env mocha, browser */
-/* global chai, sinon, workbox */
+/* global chai */
 
-'use strict';
+import IDBHelper from '../../../../lib/idb-helper.js';
+import {defaultDBName, defaultQueueName, maxAge}
+    from '../../src/lib/constants.js';
+import RequestQueue from '../../src/lib/request-queue.js';
 
 describe('request-queue tests', () => {
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
 
   const callbacks = {};
-  const idbHelper = new workbox.backgroundSync.test.IdbHelper(
-    'bgQueueSyncDB', 1, 'QueueStore');
-  const queue = new workbox.backgroundSync.test.RequestQueue({
+  const idbHelper = new IDBHelper(defaultDBName, 1, 'QueueStore');
+  const queue = new RequestQueue({
     idbQDb: idbHelper,
     config: {maxAge: MAX_AGE},
     queueName: QUEUE_NAME,
@@ -43,8 +47,7 @@ describe('request-queue tests', () => {
 
   it('config is correct', () => {
     chai.assert.equal(queue._config.maxAge, MAX_AGE);
-    chai.assert.notEqual(
-      queue._config.maxAge, workbox.backgroundSync.test.Constants.maxAge);
+    chai.assert.notEqual(queue._config.maxAge, maxAge);
   });
 
   it('push is working', async () => {
@@ -82,16 +85,14 @@ describe('request-queue tests', () => {
   });
 
   it('default config is correct', () => {
-    let tempQueue = new workbox.backgroundSync.test.RequestQueue({
-      idbQDb: idbHelper,
-    });
-    let tempQueue2 = new workbox.backgroundSync.test.RequestQueue({
-      idbQDb: idbHelper,
-    });
+    let tempQueue = new RequestQueue({idbQDb: idbHelper});
+    let tempQueue2 = new RequestQueue({idbQDb: idbHelper});
     chai.assert.equal(tempQueue._config, undefined);
-    chai.assert.equal(tempQueue._queueName,
-      workbox.backgroundSync.test.Constants.defaultQueueName + '_0');
-    chai.assert.equal(tempQueue2._queueName,
-      workbox.backgroundSync.test.Constants.defaultQueueName + '_1');
+    chai.assert.match(
+        tempQueue._queueName,
+        new RegExp(defaultQueueName + '_\\d+'));
+    chai.assert.match(
+        tempQueue2._queueName,
+        new RegExp(defaultQueueName + '_\\d+'));
   });
 });
