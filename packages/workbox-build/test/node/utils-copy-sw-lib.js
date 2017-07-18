@@ -3,6 +3,7 @@ const path = require('path');
 const errors = require('../../src/lib/errors.js');
 
 require('chai').should();
+const expect = require('chai').expect;
 
 describe('Copy SW Lib', function() {
   it('should reject with an error when the copy fails', function() {
@@ -28,9 +29,27 @@ describe('Copy SW Lib', function() {
   it('should resolve with the file name after the copy completes', function() {
     this.timeout(5 * 1000);
 
+    let jsFileCopied = false;
+    let mapFileCopied = false;
+
     const copyWorkboxSW = proxyquire('../../src/lib/utils/copy-workbox-sw', {
       'fs-extra': {
-        copy: () => Promise.resolve(),
+        copy: (inputFilePath, outputFilePath) => {
+          // Make sure the filenames are the same from input and output paths.
+          expect(path.basename(inputFilePath)).to.equal(path.basename(outputFilePath));
+          switch (path.extname(inputFilePath)) {
+            case '.js':
+              jsFileCopied = true;
+              break;
+            case '.map':
+              mapFileCopied = true;
+              break;
+            default:
+              throw new Error('Unexpected file extension: ' + inputFilePath);
+          }
+
+          return Promise.resolve();
+        },
       },
     });
 
@@ -49,6 +68,9 @@ describe('Copy SW Lib', function() {
         throw new Error('Unexpected result from copying workboxSW: ' +
           workboxSWPath);
       }
+
+      expect(jsFileCopied).to.equal(true);
+      expect(mapFileCopied).to.equal(true);
     });
   });
 });
