@@ -6,7 +6,7 @@ const url = require('url');
 
 const getSeleniumBrowser = () => {
   if (process.platform !== 'win32') {
-    console.log('Running in Chrome stable.');
+    console.log('Running in local Chrome stable.');
     return Promise.resolve(
       seleniumAssistant.getLocalBrowser('chrome', 'stable')
     );
@@ -39,6 +39,9 @@ const testInBrowser = (baseTestUrl, fileManifestOutput, swDest, exampleProject, 
     let globalDriver;
 
     const performCleanup = (err) => {
+      if (err) {
+        console.error(err);
+      }
       console.log('Performing cleanup of selenium browser...');
       return seleniumAssistant.stopSaucelabsConnect()
       .then(() => {
@@ -58,6 +61,7 @@ const testInBrowser = (baseTestUrl, fileManifestOutput, swDest, exampleProject, 
       });
     };
 
+    console.log('Getting selenium driver....');
     return assistantBrowser.getSeleniumDriver()
     .then((browserDriver) => {
       globalDriver = browserDriver;

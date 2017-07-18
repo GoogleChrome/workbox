@@ -1,7 +1,9 @@
 const path = require('path');
+const proxyquire = require('proxyquire');
 
 const swBuild = require('../../src/index.js');
 const errors = require('../../src/lib/errors');
+const constants = require('../../src/lib/constants');
 
 require('chai').should();
 
@@ -62,7 +64,6 @@ describe('Test getFileManifestEntries', function() {
 
   it('should detect bad globPatterns', function() {
     const badInput = [
-      undefined,
       null,
       '',
       true,
@@ -82,6 +83,25 @@ describe('Test getFileManifestEntries', function() {
         });
       });
     }, Promise.resolve());
+  });
+
+  it('should use defaults for undefined globPatterns', function() {
+    let args = Object.assign({}, EXAMPLE_INPUT);
+    delete args.globPatterns;
+
+    return new Promise((resolve, reject) => {
+      const proxiedGetFileManifestEntries = proxyquire('../../src/lib/get-file-manifest-entries.js', {
+        './utils/get-file-details': (globDirectory, globPattern, globIgnores) => {
+          if (globPattern === constants.defaultGlobPatterns[0]) {
+            resolve();
+            return;
+          }
+          reject(`Unexpected globPattern: ${JSON.stringify(globPattern)}`);
+        },
+      });
+
+      proxiedGetFileManifestEntries(args);
+    });
   });
 
   for (const parameterVariation of ['globPatterns', 'staticFileGlobs']) {

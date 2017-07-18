@@ -25,6 +25,8 @@ const constants = require('./constants');
  * `globPatterns` against.
  * @param {Array<String>} input.globPatterns Files matching against any of
  * these glob patterns will be included in the file manifest.
+ *
+ * Defaults to ['**\/*.{js,css}']
  * @param {String|Array<String>} [input.globIgnores] Files matching against any
  * of these glob patterns will be excluded from the file manifest, even if the
  * file matches against a `globPatterns` pattern. Defaults to ignoring
@@ -63,7 +65,12 @@ const getFileManifestEntries = (input) => {
     return Promise.reject(
       new Error(errors['both-glob-patterns-static-file-globs']));
   }
-  const globPatterns = input.globPatterns || input.staticFileGlobs;
+
+  let globPatterns = input.globPatterns || input.staticFileGlobs;
+  if (typeof input.globPatterns === 'undefined' &&
+    typeof input.staticFileGlobs === 'undefined') {
+    globPatterns = constants.defaultGlobPatterns;
+  }
 
   const globIgnores = input.globIgnores || constants.defaultGlobIgnores;
   const globDirectory = input.globDirectory;
