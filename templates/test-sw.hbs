@@ -44,22 +44,22 @@
 
     <script>
       mocha.setup({
-        ui: 'bdd'
+        ui: 'bdd',
+        timeout: 10000,
       });
 
       chai.should();
-      const expect = chai.expect;
+      window.expect = chai.expect;
     </script>
 
     <!-- Package-specific tests matching packages/<pkg>/test/browser/*.js -->
 
     <script>
     describe('{{pkg}} > test/sw/*.js', function() {
-      {{#each scripts}}
-      it(`should run '{{this}}' sw tests`, function() {
-        return window.goog.mochaUtils.registerServiceWorkerMochaTests('{{this}}');
+      it(`should run sw tests`, function() {
+        return window.goog.mochaUtils.registerServiceWorkerMochaTests(
+            '/packages/{{pkg}}/build/test/sw.js');
       });
-      {{/each}}
     });
     </script>
 
@@ -75,7 +75,7 @@
           return;
         }
 
-        window.goog.mochaUtils.startInBrowserMochaTests().then(results => {
+        window.goog.mochaUtils.startInBrowserMochaTests().then((results) => {
           window.testsuite = results;
         });
       })();

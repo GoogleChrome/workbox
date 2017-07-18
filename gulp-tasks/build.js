@@ -19,8 +19,10 @@ const chalk = require('chalk');
 const fse = require('fs-extra');
 const gulp = require('gulp');
 const path = require('path');
-const {taskHarness, buildJSBundle} = require('../utils/build');
+const runSequence = require('run-sequence');
+const {taskHarness, buildJSBundle, lernaWrapper} = require('../utils/build');
 const commonjs = require('rollup-plugin-commonjs');
+const multiEntry = require('rollup-plugin-multi-entry');
 const resolve = require('rollup-plugin-node-resolve');
 
 const printHeading = (heading) => {
@@ -44,9 +46,79 @@ const buildPackage = (projectPath) => {
 
   return fse.emptyDir(buildDir)
     .then(() => projectBuildProcess())
-    .then(() => fse.copy(path.join(__dirname, '..', 'LICENSE'),
-      path.join(projectPath, 'LICENSE')))
+    .then(() => buildTestBundles(projectPath))
+    .then(() => {
+      fse.copy(path.join(__dirname, '..', 'LICENSE'),
+          path.join(projectPath, 'LICENSE'));
+    })
     .then(() => printBuildTime(`${(Date.now() - startTime) / 1000}s`));
+};
+
+
+/**
+ * Builds the browser and service worker test bundles.
+ * @param {String} projectPath The path to a project directory.
+ * @return {Promise} Resolves if building succeeds, rejects if it fails.
+ */
+const buildTestBundles = (projectPath) => {
+  const getPlugins = () => [
+    // multiEntry uses glob so it requires `/` separators in paths.
+    multiEntry({exports: false}),
+    resolve({jsnext: true, main: true, browser: true}),
+    commonjs(),
+  ];
+
+  const project = path.basename(projectPath);
+
+  return Promise.all([
+    buildJSBundle({
+      rollupConfig: {
+        entry: `./packages/${project}/test/browser/*.js`,
+        plugins: getPlugins(),
+      },
+      writeConfig: {
+        sourceMap: true,
+        format: 'iife',
+        dest: `./packages/${project}/build/test/browser.js`,
+      },
+    }),
+    buildJSBundle({
+      rollupConfig: {
+        entry: [
+          `./utils/sw-test-utils.js`,
+          `./packages/${project}/test/sw/*.js`,
+        ],
+        plugins: getPlugins(),
+      },
+      writeConfig: {
+        sourceMap: true,
+        format: 'iife',
+        dest: `./packages/${project}/build/test/sw.js`,
+      },
+    }),
+  ]);
+};
+
+/**
+ * Updates the fields in package.json that contain version string to match
+ * the latest version from lerna.json.
+ *
+ * @param {String} projectPath The path to a project directory.
+ * @return {Promise} Resolves if updating succeeds, and rejects if it fails.
+ */
+const updateVersionedBundles = (projectPath) => {
+  const packageJsonPath = path.join(projectPath, 'package.json');
+
+  return fse.readJson(packageJsonPath).then((pkg) => {
+    const regexp = /v\d+\.\d+\.\d+/;
+    for (let field of ['main', 'module']) {
+      if (field in pkg) {
+        pkg[field] = pkg[field].replace(regexp, `v${pkg.version}`);
+      }
+    }
+
+    return fse.writeJson(packageJsonPath, pkg, {spaces: 2});
+  });
 };
 
 gulp.task('build:shared', () => {
@@ -87,11 +159,61 @@ gulp.task('build:shared', () => {
   });
 });
 
+
 gulp.task('build', () => {
   return taskHarness(buildPackage, global.projectOrStar);
 });
 
 gulp.task('build:watch', ['build'], (unusedCallback) => {
-  gulp.watch(`packages/${global.projectOrStar}/src/**/*`, ['build']);
+  gulp.watch(`packages/${global.projectOrStar}/+(src|test)/**/*`, ['build']);
   gulp.watch(`lib/**/*`, ['build']);
+});
+
+gulp.task('lerna-bootstrap', () => {
+  return lernaWrapper('bootstrap');
+});
+
+gulp.task('lerna-bootstrap-scoped', () => {
+  return lernaWrapper('bootstrap', '--include-filtered-dependencies', '--scope',
+    global.projectOrStar);
+});
+
+/**
+ * Helper task, used only within lerna-publish.
+ */
+gulp.task('_lerna-publish-dry-run', () => {
+  return lernaWrapper('publish', '--skip-npm', '--skip-git');
+});
+
+/**
+ * Helper task, used only within lerna-publish.
+ */
+gulp.task('_update-versioned-bundles', () => {
+  return taskHarness(updateVersionedBundles, global.projectOrStar);
+});
+
+/**
+ * Helper task, used only within lerna-publish.
+ */
+gulp.task('_lerna-publish-repo-version', () => {
+  return fse.readJson('lerna.json').then((lernaConfig) => {
+    return lernaWrapper('publish', '--yes', '--repo-version',
+      lernaConfig.version);
+  });
+});
+
+/**
+ * This is the task you should use to publish a new release of updated
+ * modules to npm.
+ */
+gulp.task('lerna-publish', (callback) => {
+  runSequence(
+    'lerna-bootstrap',
+    'test:dev',
+    'test:prod',
+    '_lerna-publish-dry-run',
+    '_update-versioned-bundles',
+    '_lerna-publish-repo-version',
+    callback
+  );
 });

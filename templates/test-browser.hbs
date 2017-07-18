@@ -41,27 +41,18 @@
     <script src="/node_modules/sw-testing-helpers/build/browser/mocha-utils.js"></script>
     <script src="/node_modules/sw-testing-helpers/build/browser/sw-utils.js"></script>
     <script src="/node_modules/sinon/pkg/sinon.js"></script>
-    {{#if config.browser}}
-    {{#each config.browser.scripts}}
-    <script src="{{this}}"></script>
-    {{/each}}
-    {{/if}}
 
     <script>
       mocha.setup({
         ui: 'bdd',
         timeout: 10000,
-        globals: ['WorkboxSW', 'workbox'],
       });
 
       chai.should();
-      const expect = chai.expect;
+      window.expect = chai.expect;
     </script>
 
-    <!-- Package-specific tests matching packages/<pkg>/test/browser/*.js -->
-    {{#each scripts}}
-      <script src="{{this}}"></script>
-    {{/each}}
+    <script src="/packages/{{pkg}}/build/test/browser.js"></script>
 
     <script>
       (function() {
