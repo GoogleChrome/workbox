@@ -51,7 +51,7 @@ describe('request-manager test', () => {
     chai.assert.equal(reqManager._queue, queue);
   });
 
-  it('check replay', async function() {
+  it('check replay', async () => {
     sinon.spy(self, 'fetch');
 
     callbacks.replayDidSucceed = sinon.spy();

@@ -21,9 +21,7 @@ import {defaultQueueName, maxAge} from '../../src/lib/constants.js';
 
 function delay(timeout) {
   return new Promise((resolve, reject) => {
-    setTimeout(function() {
-      resolve();
-    }, timeout);
+    setTimeout(() => resolve(), timeout);
   });
 }
 
@@ -74,7 +72,7 @@ describe('background sync queue test', () => {
         JSON.stringify({}));
   });
 
-  it('check parameterised constructor', () =>{
+  it('check parameterised constructor', () => {
     backgroundSyncQueue = new BackgroundSyncQueue({
       maxRetentionTime: MAX_AGE,
       queueName: QUEUE_NAME,
@@ -88,14 +86,14 @@ describe('background sync queue test', () => {
       CALLBACKS);
   });
 
-  it('check push proxy', async function() {
+  it('check push proxy', async () => {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
     chai.assert.equal(backgroundSyncQueue._queue.queue.length, 1);
   });
 
-  it('check replay', async function() {
+  it('check replay', async () => {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
@@ -107,7 +105,7 @@ describe('background sync queue test', () => {
     chai.assert.equal(responseAchieved, 2);
   });
 
-  it('check replay failure with rejected promise', async function() {
+  it('check replay failure with rejected promise', async () => {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });

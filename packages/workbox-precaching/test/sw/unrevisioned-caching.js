@@ -1,6 +1,4 @@
-importScripts('/__test/mocha/sw-utils.js');
-importScripts('/__test/bundle/workbox-precaching');
-
+/*
 describe.skip('sw/unrevisioned-caching.js', function() {
   let cacheManager;
 
@@ -150,3 +148,4 @@ describe.skip('sw/unrevisioned-caching.js', function() {
     });
   });
 });
+*/

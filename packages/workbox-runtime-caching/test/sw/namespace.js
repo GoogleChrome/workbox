@@ -19,11 +19,14 @@
 import * as namespace from '../../src/index.js';
 
 const exportedSymbols = [
-  'BroadcastCacheUpdate',
-  'BroadcastCacheUpdatePlugin',
-  'broadcastUpdate',
-  'cacheUpdatedMessageType',
-  'responsesAreSame',
+  'CacheFirst',
+  'CacheOnly',
+  'Handler',
+  'NetworkFirst',
+  'NetworkOnly',
+  'RequestWrapper',
+  'StaleWhileRevalidate',
+  'getDefaultCacheName',
 ];
 
 describe(`Test Library Surface`, () => {
