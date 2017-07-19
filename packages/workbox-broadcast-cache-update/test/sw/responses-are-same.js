@@ -45,14 +45,14 @@ describe('Test of the responsesAreSame function', () => {
     expect(responsesAreSame({
       first,
       second,
-      headersToCheck
+      headersToCheck,
     })).to.be.true;
   });
 
   it(`should return true when only a subset of headers exist, but the existing ones match`, () => {
     const first = new Response('', {
       headers: {
-        [firstHeaderName]: 'same'
+        [firstHeaderName]: 'same',
       },
     });
     const second = new Response('', {

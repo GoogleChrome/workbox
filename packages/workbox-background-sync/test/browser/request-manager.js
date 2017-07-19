@@ -60,10 +60,10 @@ describe('request-manager test', () => {
     const backgroundSyncQueue = new BackgroundSyncQueue({callbacks});
 
     await backgroundSyncQueue.pushIntoQueue({
-      request: new Request('/__echo/counter')
+      request: new Request('/__echo/counter'),
     });
     await backgroundSyncQueue.pushIntoQueue({
-      request: new Request('/__echo/counter')
+      request: new Request('/__echo/counter'),
     });
     await backgroundSyncQueue._requestManager.replayRequests();
 
@@ -76,7 +76,7 @@ describe('request-manager test', () => {
     chai.assert(self.fetch.calledTwice);
 
     await backgroundSyncQueue.pushIntoQueue({
-      request: new Request('/__test/404')
+      request: new Request('/__test/404'),
     });
     try {
       await backgroundSyncQueue._requestManager.replayRequests();

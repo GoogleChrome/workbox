@@ -36,7 +36,6 @@ describe(`Test of the BroadcastCacheUpdatePlugin class`, () => {
     expect(() => {
       bcuPlugin.cacheDidUpdate({cacheName, oldResponse});
     }).to.throw().with.property('name', 'assertion-failed');
-
   });
 
   it(`should throw not throw when cacheDidUpdate is called with valid parameters`, () => {

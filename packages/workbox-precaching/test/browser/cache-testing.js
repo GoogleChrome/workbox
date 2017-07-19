@@ -27,7 +27,7 @@ describe(`workbox-precaching Test Revisioned Caching`, () => {
       req.onsuccess = () => resolve();
       req.onerror = () => reject();
       req.onblocked = () => {
-        console.error('Database deletion is blocked.')
+        console.error('Database deletion is blocked.');
         reject();
       };
     });
