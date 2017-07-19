@@ -52,7 +52,9 @@ class RequestQueue {
    */
   async initQueue() {
     const idbQueue = await this._idbQDb.get(this._queueName);
-    this._queue.concat(idbQueue);
+    if (idbQueue) {
+      this._queue.push(...idbQueue);
+    }
   }
 
   /**

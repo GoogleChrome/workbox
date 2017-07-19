@@ -37,7 +37,27 @@ describe('request-queue tests', () => {
     chai.assert.isObject(queue._config);
   });
 
-  it('queueName is corrent', () =>{
+  it('initialize should not fail for null data', async () => {
+    chai.assert.equal(queue._queue.length, 0);
+    idbHelper.put(queue._queueName, null);
+    await queue.initQueue();
+    chai.assert.equal(queue._queue.length, 0);
+  });
+
+  it('initialize should re-fill the queue', async () => {
+    chai.assert.equal(queue._queue.length, 0);
+    const hash = await queue.push({
+      request: new Request('http://lipsum.com/generate'),
+    });
+    chai.assert.equal(queue._queue.length, 1);
+    queue._queue = [];
+    chai.assert.equal(queue._queue.length, 0);
+    await queue.initQueue();
+    chai.assert.equal(queue._queue.length, 1);
+    chai.assert.equal(queue._queue[0], hash);
+  });
+
+  it('queueName is correct', () => {
     chai.assert.equal(queue._queueName, QUEUE_NAME);
   });
 
