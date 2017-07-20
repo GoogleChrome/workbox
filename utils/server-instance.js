@@ -54,6 +54,14 @@ class ServerInstance {
       res.send(`${req.params.file}-${Date.now()}`);
     });
 
+    this._app.all('/__echo/cors-no-cache/:file', function(req, res) {
+      res.setHeader('Access-Control-Allow-Methods',
+        'POST, GET, PUT, DELETE, OPTIONS');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.send(`${req.params.file}-${Date.now()}`);
+    });
+
     this._app.all('/__echo/date-with-cors/:file', function(req, res) {
       res.setHeader('Access-Control-Allow-Methods',
         'POST, GET, PUT, DELETE, OPTIONS');

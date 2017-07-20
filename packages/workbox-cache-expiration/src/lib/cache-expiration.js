@@ -131,21 +131,22 @@ class CacheExpiration {
    * be used.
    *
    * @param {Object} input
+   * @param {string} input.cacheName Name of the cache the responses belong to.
    * @param {Response} input.cachedResponse The `Response` object that's been
    *        read from a cache and whose freshness should be checked.
    * @param {Number} [input.now] A timestamp.
    *
    * Defaults to the current time.
-   * @return {boolean} Either `true` if the response is fresh, or `false` if the
-   * `Response` is older than `maxAgeSeconds` and should no longer be
-   * used.
+   * @return {Promise<boolean>} Either `true` if the response is fresh, or
+   * `false` if the `Response` is older than `maxAgeSeconds` and should no
+   * longer be used.
    *
    * @example
    * expirationPlugin.isResponseFresh({
    *   cachedResponse: responseFromCache
    * });
    */
-  isResponseFresh({cachedResponse, now} = {}) {
+  async isResponseFresh({cacheName, cachedResponse, now} = {}) {
     // Only bother checking for freshness if we have a valid response and if
     // maxAgeSeconds is set. Otherwise, skip the check and always return true.
     if (cachedResponse && this.maxAgeSeconds) {
@@ -165,6 +166,8 @@ class CacheExpiration {
           // Only return false if all the conditions are met.
           return false;
         }
+      } else {
+        await this.expireEntries({cacheName, now});
       }
     }
 
