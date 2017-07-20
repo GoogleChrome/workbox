@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 import ExpressRoute from '../../src/lib/express-route.js';
 

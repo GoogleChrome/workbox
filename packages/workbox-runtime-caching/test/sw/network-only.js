@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 import RequestWrapper from '../../src/lib/request-wrapper.js';
 import NetworkOnly from '../../src/lib/network-only.js';

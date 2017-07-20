@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 import * as namespace from '../../src/index.js';
 

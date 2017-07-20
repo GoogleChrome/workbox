@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 import BroadcastCacheUpdate from '../../src/lib/broadcast-cache-update.js';
 

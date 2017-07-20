@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 import CacheExpirationPlugin from '../../src/lib/cache-expiration-plugin.js';
 import CacheExpiration from '../../src/lib/cache-expiration.js';

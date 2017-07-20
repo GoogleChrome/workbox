@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 import RevisionedCacheManager
     from '../../src/lib/controllers/revisioned-cache-manager.js';

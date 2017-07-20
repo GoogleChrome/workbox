@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 import RequestWrapper from '../../src/lib/request-wrapper.js';
 import StaleWhileRevalidate from '../../src/lib/stale-while-revalidate.js';

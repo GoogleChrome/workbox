@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 import RegExpRoute from '../../src/lib/regexp-route.js';
 

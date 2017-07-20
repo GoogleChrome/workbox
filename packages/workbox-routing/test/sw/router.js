@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 import Route from '../../src/lib/route.js';
 import Router from '../../src/lib/router.js';

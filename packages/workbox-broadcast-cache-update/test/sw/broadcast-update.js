@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 import {cacheUpdatedMessageType} from '../../src/lib/constants.js';
 import broadcastUpdate from '../../src/lib/broadcast-update.js';

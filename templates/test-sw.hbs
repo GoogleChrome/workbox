@@ -58,7 +58,7 @@
     describe('{{pkg}} > test/sw/*.js', function() {
       it(`should run sw tests`, function() {
         return window.goog.mochaUtils.registerServiceWorkerMochaTests(
-            '/packages/{{pkg}}/build/test/sw.js');
+            '/packages/{{pkg}}/build/test/sw-bundle.js');
       });
     });
     </script>

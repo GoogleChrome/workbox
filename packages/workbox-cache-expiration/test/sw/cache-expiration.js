@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 
 import {timestampPropertyName, urlPropertyName}

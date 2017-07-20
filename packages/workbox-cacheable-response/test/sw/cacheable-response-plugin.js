@@ -14,7 +14,6 @@
 */
 
 /* eslint-env mocha, browser */
-/* global expect */
 
 import CacheableResponse from '../../src/lib/cacheable-response.js';
 import CacheableResponsePlugin
