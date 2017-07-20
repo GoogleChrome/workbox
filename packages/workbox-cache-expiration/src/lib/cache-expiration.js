@@ -137,7 +137,7 @@ class CacheExpiration {
    * @param {Number} [input.now] A timestamp.
    *
    * Defaults to the current time.
-   * @return {Promise<boolean>} Either `true` if the response is fresh, or
+   * @return {boolean} Either `true` if the response is fresh, or
    * `false` if the `Response` is older than `maxAgeSeconds` and should no
    * longer be used.
    *
@@ -146,7 +146,7 @@ class CacheExpiration {
    *   cachedResponse: responseFromCache
    * });
    */
-  async isResponseFresh({cacheName, cachedResponse, now} = {}) {
+  isResponseFresh({cacheName, cachedResponse, now} = {}) {
     // Only bother checking for freshness if we have a valid response and if
     // maxAgeSeconds is set. Otherwise, skip the check and always return true.
     if (cachedResponse && this.maxAgeSeconds) {
@@ -167,7 +167,7 @@ class CacheExpiration {
           return false;
         }
       } else {
-        await this.expireEntries({cacheName, now});
+        this.expireEntries({cacheName, now});
       }
     }
 

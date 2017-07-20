@@ -175,7 +175,7 @@ class RequestWrapper {
 
     if (this.plugins.has('cacheWillMatch')) {
       const plugin = this.plugins.get('cacheWillMatch')[0];
-      cachedResponse = await plugin.cacheWillMatch({
+      cachedResponse = plugin.cacheWillMatch({
         request, cache, cachedResponse,
         matchOptions: this.matchOptions, cacheName: this.cacheName,
       });
