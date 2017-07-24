@@ -12,7 +12,7 @@ const constants = require('./constants');
  * file manifest.
  *
  * @param {Object} input
- * @param {String} input.swDest The file path and name you wish to writh the
+ * @param {String} input.swDest The file path and name you wish to write the
  * service worker file to.
  * @param {String} input.globDirectory The directory you wish to run the
  * `globPatterns` against.
