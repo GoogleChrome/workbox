@@ -41,7 +41,7 @@ class RequestQueue {
     this._broadcastChannel = broadcastChannel;
     this._globalCallbacks = callbacks || {};
     this._queue = [];
-    this.initQueue();
+    this._initializationPromise = this.initQueue();
   }
 
   /**
@@ -96,6 +96,7 @@ class RequestQueue {
    * @private
    */
   async push({request}) {
+    await this._initializationPromise;
     isInstance({request}, Request);
 
     const hash = `${request.url}!${Date.now()}!${_requestCounter++}`;
@@ -152,6 +153,7 @@ class RequestQueue {
    * @private
    */
   async getRequestFromQueue({hash}) {
+    await this._initializationPromise;
     isType({hash}, 'string');
 
     if (this._queue.includes(hash)) {

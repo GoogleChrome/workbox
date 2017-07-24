@@ -30,6 +30,14 @@ describe('request-queue tests', () => {
     callbacks,
   });
 
+  const getDelayedPromise = () => {
+    return new Promise((resolve)=>{
+      setTimeout(()=>{
+        resolve();
+      }, 800);
+    });
+  };
+
   it('queue object should exist', () => {
     chai.assert.isObject(queue);
     chai.assert.isArray(queue._queue);
@@ -69,7 +77,8 @@ describe('request-queue tests', () => {
 
   it('push is working', async () => {
     callbacks.requestWillEnqueue = sinon.spy();
-
+    const startTime = Date.now();
+    queue._initializationPromise = getDelayedPromise();
     const queueLength = queue._queue.length;
     const hash = await queue.push({
       request: new Request('http://lipsum.com/generate'),
@@ -81,6 +90,7 @@ describe('request-queue tests', () => {
     chai.assert(callbacks.requestWillEnqueue.calledOnce);
     chai.assert(callbacks.requestWillEnqueue.calledWith(
         sinon.match.has('request')));
+    chai.assert(Date.now() - startTime > 800);
 
     delete callbacks.requestWillEnqueue;
   });
@@ -91,13 +101,13 @@ describe('request-queue tests', () => {
     const hash = await queue.push({
       request: new Request('http://lipsum.com/generate'),
     });
-
+    const startTime = Date.now();
+    queue._initializationPromise = getDelayedPromise();
     const reqData = await queue.getRequestFromQueue({hash});
-
     chai.assert.hasAllKeys(reqData, ['request', 'config', 'metadata']);
     chai.assert(callbacks.requestWillDequeue.calledOnce);
     chai.assert(callbacks.requestWillDequeue.calledWith(reqData));
-
+    chai.assert(Date.now() - startTime > 800);
     delete callbacks.requestWillDequeue;
   });
 
