@@ -1,7 +1,7 @@
 importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-describe('Test Directory Index', function() {
+describe(`Test Directory Index`, function() {
   let stubs = [];
 
   afterEach(function() {
@@ -11,7 +11,7 @@ describe('Test Directory Index', function() {
     stubs = [];
   });
 
-  it('should default to index.html index', function() {
+  it(`should default to index.html index`, function() {
     const EXAMPLE_URL = '/example/url/';
 
     let calledWithIndex = false;

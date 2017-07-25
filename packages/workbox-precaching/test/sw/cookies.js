@@ -18,8 +18,8 @@
 import RevisionedCacheManager
     from '../../src/lib/controllers/revisioned-cache-manager.js';
 
-describe(`Test Cookies with Precache`, () => {
-  it(`should cache asset with appropriate cookies with revisions asset`, () => {
+describe(`Test Cookies with Precache`, function() {
+  it(`should cache asset with appropriate cookies with revisions asset`, function() {
     const revManager = new RevisionedCacheManager();
     // const unrevManager = new workbox.precaching.UnrevisionedCacheManager();
     revManager.addToCacheList({

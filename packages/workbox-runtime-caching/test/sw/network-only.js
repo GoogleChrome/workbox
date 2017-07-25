@@ -20,22 +20,22 @@ import NetworkOnly from '../../src/lib/network-only.js';
 
 importScripts('/packages/workbox-runtime-caching/test/utils/setup.js');
 
-describe(`Test of the NetworkOnly handler`, () => {
+describe(`Test of the NetworkOnly handler`, function() {
   const CACHE_NAME = location.href;
   const COUNTER_URL = new URL('/__echo/counter', location).href;
 
   let globalStubs = [];
 
-  beforeEach(async () => {
+  beforeEach(async function() {
     await caches.delete(CACHE_NAME);
   });
 
-  afterEach(() => {
+  afterEach(function() {
     globalStubs.forEach((stub) => stub.restore());
     globalStubs = [];
   });
 
-  it(`should return a response without adding anything to the cache when the network request is successful`, async () => {
+  it(`should return a response without adding anything to the cache when the network request is successful`, async function() {
     const requestWrapper = new RequestWrapper({cacheName: CACHE_NAME});
     const networkOnly = new NetworkOnly({requestWrapper, waitOnCache: true});
 
@@ -48,7 +48,7 @@ describe(`Test of the NetworkOnly handler`, () => {
     expect(keys).to.be.empty;
   });
 
-  it(`should reject when the network request fails`, (done) => {
+  it(`should reject when the network request fails`, function(done) {
     const message = 'expected error';
 
     const requestWrapper = new RequestWrapper({cacheName: CACHE_NAME});

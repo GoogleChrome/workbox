@@ -20,7 +20,7 @@ import IDBHelper from '../../../../lib/idb-helper.js';
 import {defaultDBName} from '../../src/lib/constants.js';
 import * as queueUtils from '../../src/lib/queue-utils.js';
 
-describe('queue-utils test', () => {
+describe(`queue-utils test`, function() {
   const maxAgeTimeStamp = 1000 * 60 * 60 * 24;
   const config = {
     maxAge: maxAgeTimeStamp,
@@ -35,7 +35,7 @@ describe('queue-utils test', () => {
   before(resetDb);
   afterEach(resetDb);
 
-  it('test queueableRequest', () => {
+  it(`test queueableRequest`, function() {
     const request = new Request(
         'http://localhost:3001/__echo/date-with-cors/random');
 
@@ -52,7 +52,7 @@ describe('queue-utils test', () => {
     });
   });
 
-  it('test fetchableRequest', () => {
+  it(`test fetchableRequest`, function() {
     const reqObj = {
       'url': 'http://localhost:3001/__echo/date-with-cors/random',
       'headers': '[]',

@@ -1,8 +1,8 @@
 importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-describe('Test workboxSW.precache', function() {
-  it('should be accessible workboxSW.precache', function() {
+describe(`Test workboxSW.precache`, function() {
+  it(`should be accessible workboxSW.precache`, function() {
     const workboxSW = new WorkboxSW();
     expect(workboxSW.precache).to.exist;
   });
@@ -48,7 +48,7 @@ describe('Test workboxSW.precache', function() {
     });
   });
 
-  it('should be able to add arrays of items to the cache.', function() {
+  it(`should be able to add arrays of items to the cache.`, function() {
     const corsOrigin = `${location.protocol}//${location.hostname}:${location.port}`;
     const validAssets1 = [
       '/__echo/date/1.1234.txt',

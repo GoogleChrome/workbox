@@ -18,7 +18,7 @@ import {getResponse} from './response-manager';
  *   }
  *
  *   const clone = e.request.clone();
- *   e.respondWith(fetch(e.request).catch((err)=>{
+ *   e.respondWith(fetch(e.request).catch((err) => {
  *     bgQueue.pushIntoQueue({
  *       request: clone,
  *     });

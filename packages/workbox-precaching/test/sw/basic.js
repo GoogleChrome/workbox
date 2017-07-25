@@ -18,8 +18,8 @@
 import RevisionedCacheManager
     from '../../src/lib/controllers/revisioned-cache-manager.js';
 
-describe(`Test Library Surface`, () => {
-  it(`should be able to get the revisioned cache manager`, () => {
+describe(`Test Library Surface`, function() {
+  it(`should be able to get the revisioned cache manager`, function() {
     const revisionedManager = new RevisionedCacheManager();
 
     const cacheName = revisionedManager.getCacheName();

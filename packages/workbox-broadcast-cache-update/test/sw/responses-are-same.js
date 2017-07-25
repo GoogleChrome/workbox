@@ -17,18 +17,18 @@
 
 import responsesAreSame from '../../src/lib/responses-are-same.js';
 
-describe('Test of the responsesAreSame function', () => {
+describe(`Test of the responsesAreSame function`, function() {
   const firstHeaderName = 'x-first-header';
   const secondHeaderName = 'x-second-header';
   const headersToCheck = [firstHeaderName, secondHeaderName];
 
-  it(`should throw when responsesAreSame() is called without any parameters`, () => {
+  it(`should throw when responsesAreSame() is called without any parameters`, function() {
     expect(() => {
       responsesAreSame();
     }).to.throw().with.property('name', 'responses-are-same-parameters-required');
   });
 
-  it(`should return true when all the headers match`, () => {
+  it(`should return true when all the headers match`, function() {
     const first = new Response('', {
       headers: {
         [firstHeaderName]: 'same',
@@ -48,7 +48,7 @@ describe('Test of the responsesAreSame function', () => {
     })).to.be.true;
   });
 
-  it(`should return true when only a subset of headers exist, but the existing ones match`, () => {
+  it(`should return true when only a subset of headers exist, but the existing ones match`, function() {
     const first = new Response('', {
       headers: {
         [firstHeaderName]: 'same',
@@ -66,7 +66,7 @@ describe('Test of the responsesAreSame function', () => {
     })).to.be.true;
   });
 
-  it(`should return true when no headers exist`, () => {
+  it(`should return true when no headers exist`, function() {
     const first = new Response('');
     const second = new Response('');
     expect(responsesAreSame({
@@ -76,7 +76,7 @@ describe('Test of the responsesAreSame function', () => {
     })).to.be.true;
   });
 
-  it(`should return false when one header matches and the other doesn't`, () => {
+  it(`should return false when one header matches and the other doesn't`, function() {
     const first = new Response('', {
       headers: {
         [firstHeaderName]: 'same',
@@ -96,7 +96,7 @@ describe('Test of the responsesAreSame function', () => {
     })).to.be.false;
   });
 
-  it(`should return false when none of the headers match`, () => {
+  it(`should return false when none of the headers match`, function() {
     const first = new Response('', {
       headers: {
         [firstHeaderName]: 'same',

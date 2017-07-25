@@ -1,7 +1,7 @@
 importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-describe('Test caching strategies.', function() {
+describe(`Test caching strategies.`, function() {
   const strategies = [
     'cacheFirst',
     'cacheOnly',

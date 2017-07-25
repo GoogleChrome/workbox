@@ -77,7 +77,7 @@ function validate(runtimeCachingOptions, convertedOptions) {
   });
 }
 
-describe('src/lib/utils/runtime-caching-converter.js', function() {
+describe(`src/lib/utils/runtime-caching-converter.js`, function() {
   it(`should throw when urlPattern isn't set`, function() {
     const runtimeCachingOptions = [{
       handler: 'cacheFirst',
@@ -104,7 +104,7 @@ describe('src/lib/utils/runtime-caching-converter.js', function() {
     validate(runtimeCachingOptions, convertedOptions);
   });
 
-  it('should support a single option, using mostly defaults', function() {
+  it(`should support a single option, using mostly defaults`, function() {
     const runtimeCachingOptions = [{
       urlPattern: /xyz/,
       handler: 'cacheFirst',

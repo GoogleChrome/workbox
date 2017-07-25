@@ -21,9 +21,9 @@ import BackgroundSyncQueuePlugin
     from '../../src/lib/background-sync-queue-plugin.js';
 import {defaultDBName} from '../../src/lib/constants.js';
 
-describe('background-sync-queue-plugin test', () => {
+describe(`background-sync-queue-plugin test`, function() {
   const db = new IDBHelper(defaultDBName, 1, 'QueueStore');
-  const resetDb = async () => {
+  const resetDb = async function() {
     const keys = await db.getAllKeys();
     return Promise.all(keys.map((key) => db.delete(key)));
   };
@@ -31,7 +31,7 @@ describe('background-sync-queue-plugin test', () => {
   before(resetDb);
   afterEach(resetDb);
 
-  it('check fetchDid fail proxy', async () => {
+  it(`check fetchDid fail proxy`, async function() {
     const backgroundSyncQueue = new BackgroundSyncQueuePlugin({});
     const currentLen = backgroundSyncQueue._queue.queue.length;
 

@@ -24,40 +24,40 @@ let count = 0;
 const getUniqueUrl = () => `https://example.com/?count=${count++}`;
 const getUniqueCacheName = () => `test-cache-${count++}`;
 
-describe(`Test of the CacheExpiration class`, () => {
+describe(`Test of the CacheExpiration class`, function() {
   const MAX_AGE_SECONDS = 3;
   const MAX_ENTRIES = 3;
   const NOW = 1487106334920;
 
-  it(`should throw when CacheExpiration() is called without any parameters`, () => {
+  it(`should throw when CacheExpiration() is called without any parameters`, function() {
     expect(() => {
       new CacheExpiration();
     }).to.throw().with.property('name', 'max-entries-or-age-required');
   });
 
-  it(`should throw when CacheExpiration() is called with an invalid maxEntries parameter`, () => {
+  it(`should throw when CacheExpiration() is called with an invalid maxEntries parameter`, function() {
     expect(() => {
       new CacheExpiration({maxEntries: 'invalid'});
     }).to.throw().with.property('name', 'max-entries-must-be-number');
   });
 
-  it(`should throw when CacheExpiration() is called with an invalid maxAgeSeconds parameter`, () => {
+  it(`should throw when CacheExpiration() is called with an invalid maxAgeSeconds parameter`, function() {
     expect(() => {
       new CacheExpiration({maxAgeSeconds: 'invalid'});
     }).to.throw().with.property('name', 'max-age-seconds-must-be-number');
   });
 
-  it(`should use the maxAgeSeconds from the constructor`, () => {
+  it(`should use the maxAgeSeconds from the constructor`, function() {
     const plugin = new CacheExpiration({maxAgeSeconds: MAX_AGE_SECONDS});
     expect(plugin.maxAgeSeconds).to.equal(MAX_AGE_SECONDS);
   });
 
-  it(`should use the maxEntries from the constructor`, () => {
+  it(`should use the maxEntries from the constructor`, function() {
     const plugin = new CacheExpiration({maxEntries: MAX_ENTRIES});
     expect(plugin.maxEntries).to.equal(MAX_ENTRIES);
   });
 
-  it(`should return the same IDB instance when getDB() is called multiple times`, () => {
+  it(`should return the same IDB instance when getDB() is called multiple times`, function() {
     const cacheName = getUniqueCacheName();
     const plugin = new CacheExpiration({maxEntries: MAX_ENTRIES});
     return plugin.getDB({cacheName}).then((firstDB) => {
@@ -67,7 +67,7 @@ describe(`Test of the CacheExpiration class`, () => {
     });
   });
 
-  it(`should return the same Cache instance when getCache() is called multiple times`, () => {
+  it(`should return the same Cache instance when getCache() is called multiple times`, function() {
     const cacheName = getUniqueCacheName();
     const plugin = new CacheExpiration({maxEntries: MAX_ENTRIES});
     return plugin.getCache({cacheName}).then((firstCache) => {
@@ -77,31 +77,31 @@ describe(`Test of the CacheExpiration class`, () => {
     });
   });
 
-  it(`should return true when there's no cachedResponse passed to isResponseFresh()`, () => {
+  it(`should return true when there's no cachedResponse passed to isResponseFresh()`, function() {
     const plugin = new CacheExpiration({maxAgeSeconds: MAX_AGE_SECONDS});
     expect(plugin.isResponseFresh()).to.be.true;
   });
 
-  it(`should return true when isResponseFresh() is called and there's no maxAgeSeconds`, () => {
+  it(`should return true when isResponseFresh() is called and there's no maxAgeSeconds`, function() {
     const plugin = new CacheExpiration({maxEntries: MAX_ENTRIES});
     const cachedResponse = new Response();
     expect(plugin.isResponseFresh({cachedResponse})).to.be.true;
   });
 
-  it(`should return true when isResponseFresh() is called and there's no Date: header in the cachedResponse`, () => {
+  it(`should return true when isResponseFresh() is called and there's no Date: header in the cachedResponse`, function() {
     const plugin = new CacheExpiration({maxAgeSeconds: MAX_AGE_SECONDS});
     const cachedResponse = new Response();
     expect(plugin.isResponseFresh({cachedResponse})).to.be.true;
   });
 
-  it(`should return true when isResponseFresh() is called and the Date: header in the cachedResponse is recent`, () => {
+  it(`should return true when isResponseFresh() is called and the Date: header in the cachedResponse is recent`, function() {
     const plugin = new CacheExpiration({maxAgeSeconds: MAX_AGE_SECONDS});
     const date = new Date(NOW).toUTCString();
     const cachedResponse = new Response('', {headers: {date}});
     expect(plugin.isResponseFresh({cachedResponse, now: NOW})).to.be.true;
   });
 
-  it(`should return false when isResponseFresh() is called and the Date: header in the cachedResponse is not recent`, () => {
+  it(`should return false when isResponseFresh() is called and the Date: header in the cachedResponse is not recent`, function() {
     const plugin = new CacheExpiration({maxAgeSeconds: MAX_AGE_SECONDS});
     // This will construct a date that is 1 second past the expiration.
     const date = new Date(NOW - ((MAX_AGE_SECONDS + 1) * 1000)).toUTCString();
@@ -109,7 +109,7 @@ describe(`Test of the CacheExpiration class`, () => {
     expect(plugin.isResponseFresh({cachedResponse, now: NOW})).to.be.false;
   });
 
-  it(`should update IndexedDB when updateTimestamp() is called`, () => {
+  it(`should update IndexedDB when updateTimestamp() is called`, function() {
     const cacheName = getUniqueCacheName();
     const plugin = new CacheExpiration({maxAgeSeconds: MAX_AGE_SECONDS});
     const url = getUniqueUrl();
@@ -123,7 +123,7 @@ describe(`Test of the CacheExpiration class`, () => {
       }).then((entry) => expect(entry[timestampPropertyName]).to.equal(NOW));
   });
 
-  it(`should only find expired entries when findOldEntries() is called`, () => {
+  it(`should only find expired entries when findOldEntries() is called`, function() {
     const cacheName = getUniqueCacheName();
     const plugin = new CacheExpiration({maxAgeSeconds: MAX_AGE_SECONDS});
     const firstStaleUrl = getUniqueUrl();
@@ -144,7 +144,7 @@ describe(`Test of the CacheExpiration class`, () => {
       .then((oldEntries) => expect(oldEntries).to.eql([firstStaleUrl, secondStaleUrl]));
   });
 
-  it(`should find only extra entries when findExtraEntries() is called`, () => {
+  it(`should find only extra entries when findExtraEntries() is called`, function() {
     const cacheName = getUniqueCacheName();
     const plugin = new CacheExpiration({maxEntries: MAX_ENTRIES});
     const urls = [];
@@ -164,7 +164,7 @@ describe(`Test of the CacheExpiration class`, () => {
       .then((extraEntries) => expect(extraEntries).to.eql(urls.slice(1, extraEntryCount + 1)));
   });
 
-  it(`should delete expired entries when deleteFromCacheAndIDB() is called`, () => {
+  it(`should delete expired entries when deleteFromCacheAndIDB() is called`, function() {
     const cacheName = getUniqueCacheName();
     const plugin = new CacheExpiration({maxEntries: MAX_ENTRIES});
     const urls = [];
@@ -194,7 +194,7 @@ describe(`Test of the CacheExpiration class`, () => {
       });
   });
 
-  it(`should ignore the URL's hash when updateTimestamp() is called`, async () => {
+  it(`should ignore the URL's hash when updateTimestamp() is called`, async function() {
     const cacheExpiration = new CacheExpiration({maxEntries: MAX_ENTRIES});
     const cacheName = getUniqueCacheName();
     const url = getUniqueUrl();

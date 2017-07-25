@@ -18,26 +18,26 @@
 import BroadcastCacheUpdatePlugin
     from '../../src/lib/broadcast-cache-update-plugin.js';
 
-describe(`Test of the BroadcastCacheUpdatePlugin class`, () => {
+describe(`Test of the BroadcastCacheUpdatePlugin class`, function() {
   const channelName = 'test-channel';
   const cacheName = 'test-cache';
   const oldResponse = new Response();
   const newResponse = new Response();
   const bcuPlugin = new BroadcastCacheUpdatePlugin({channelName});
 
-  it(`should throw when cacheDidUpdate is called and cacheName is missing`, () => {
+  it(`should throw when cacheDidUpdate is called and cacheName is missing`, function() {
     expect(() => {
       bcuPlugin.cacheDidUpdate({oldResponse, newResponse});
     }).to.throw().with.property('name', 'assertion-failed');
   });
 
-  it(`should throw when cacheDidUpdate is called and newResponse is missing`, () => {
+  it(`should throw when cacheDidUpdate is called and newResponse is missing`, function() {
     expect(() => {
       bcuPlugin.cacheDidUpdate({cacheName, oldResponse});
     }).to.throw().with.property('name', 'assertion-failed');
   });
 
-  it(`should throw not throw when cacheDidUpdate is called with valid parameters`, () => {
+  it(`should throw not throw when cacheDidUpdate is called with valid parameters`, function() {
     expect(() => {
       bcuPlugin.cacheDidUpdate({cacheName, oldResponse, newResponse});
     }).to.not.throw();

@@ -20,23 +20,23 @@ import StaleWhileRevalidate from '../../src/lib/stale-while-revalidate.js';
 
 importScripts('/packages/workbox-runtime-caching/test/utils/setup.js');
 
-describe(`Test of the StaleWhileRevalidate handler`, () => {
+describe(`Test of the StaleWhileRevalidate handler`, function() {
   const CACHE_NAME = location.href;
   const COUNTER_URL = new URL('/__echo/counter', location).href;
   const CROSS_ORIGIN_COUNTER_URL = generateCrossOriginUrl(COUNTER_URL);
 
   let globalStubs = [];
 
-  beforeEach(async () => {
+  beforeEach(async function() {
     await caches.delete(CACHE_NAME);
   });
 
-  afterEach(() => {
+  afterEach(function() {
     globalStubs.forEach((stub) => stub.restore());
     globalStubs = [];
   });
 
-  it(`should add the initial response to the cache`, async () => {
+  it(`should add the initial response to the cache`, async function() {
     const requestWrapper = new RequestWrapper(
       {cacheName: CACHE_NAME});
     const staleWhileRevalidate = new StaleWhileRevalidate(
@@ -51,7 +51,7 @@ describe(`Test of the StaleWhileRevalidate handler`, () => {
     await expectSameResponseBodies(cachedResponse, handleResponse);
   });
 
-  it(`should return the cached response and not update the cache when the network request fails`, async () => {
+  it(`should return the cached response and not update the cache when the network request fails`, async function() {
     globalStubs.push(sinon.stub(self, 'fetch').throws('NetworkError'));
 
     const requestWrapper = new RequestWrapper(
@@ -73,7 +73,7 @@ describe(`Test of the StaleWhileRevalidate handler`, () => {
     await expectSameResponseBodies(firstCachedResponse, secondCachedResponse);
   });
 
-  it(`should return the cached response and update the cache when the network request succeeds`, async () => {
+  it(`should return the cached response and update the cache when the network request succeeds`, async function() {
     const requestWrapper = new RequestWrapper(
       {cacheName: CACHE_NAME});
     const staleWhileRevalidate = new StaleWhileRevalidate(
@@ -101,7 +101,7 @@ describe(`Test of the StaleWhileRevalidate handler`, () => {
     await expectDifferentResponseBodies(firstCachedResponse, secondCachedResponse);
   });
 
-  it(`should update the cache with an the opaque cross-origin network response`, async () => {
+  it(`should update the cache with an the opaque cross-origin network response`, async function() {
     const requestWrapper = new RequestWrapper(
       {cacheName: CACHE_NAME});
     const staleWhileRevalidate = new StaleWhileRevalidate(

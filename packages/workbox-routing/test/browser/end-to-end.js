@@ -16,12 +16,17 @@
 /* eslint-env mocha, browser */
 
 
-describe(`End to End Tests`, () => {
-  beforeEach(() => window.goog.swUtils.cleanState());
-  afterEach(() => window.goog.swUtils.cleanState());
+describe(`End to End Tests`, function() {
+  beforeEach(function() {
+    window.goog.swUtils.cleanState();
+  });
 
-  describe(`End to End Test of RegExpRoute`, () => {
-    it(`should work properly when there are multiple routes`, () => {
+  afterEach(function() {
+    window.goog.swUtils.cleanState();
+  });
+
+  describe(`End to End Test of RegExpRoute`, function() {
+    it(`should work properly when there are multiple routes`, function() {
       return goog.swUtils.activateSW('../static/regexp-route.js')
         .then((iframe) => Promise.all([
           iframe.contentWindow.fetch('/static')
@@ -38,8 +43,8 @@ describe(`End to End Tests`, () => {
     });
   });
 
-  describe(`End to End Test of ExpressRoute`, () => {
-    it(`should work properly when there are multiple routes`, () => {
+  describe(`End to End Test of ExpressRoute`, function() {
+    it(`should work properly when there are multiple routes`, function() {
       return goog.swUtils.activateSW('../static/express-route.js')
         .then((iframe) => Promise.all([
           iframe.contentWindow.fetch('/static')
@@ -60,7 +65,7 @@ describe(`End to End Tests`, () => {
     });
   });
 
-  describe(`End to End Test of NavigationRoute`, () => {
+  describe(`End to End Test of NavigationRoute`, function() {
     it(`should work properly when there's a navigation matching the whitelist`, function(callback) {
       goog.swUtils.activateSW('../static/navigation-route.js')
         .then((iframe) => {
@@ -75,8 +80,8 @@ describe(`End to End Tests`, () => {
     });
   });
 
-  describe(`End to End Test of Route`, () => {
-    it(`should work properly when there are multiple routes, matching different HTTP methods`, () => {
+  describe(`End to End Test of Route`, function() {
+    it(`should work properly when there are multiple routes, matching different HTTP methods`, function() {
       return goog.swUtils.activateSW('../static/route.js')
         .then((iframe) => Promise.all([
           iframe.contentWindow.fetch('/static')
@@ -105,8 +110,8 @@ describe(`End to End Tests`, () => {
     });
   });
 
-  describe(`End to End Test of Router`, () => {
-    it(`should work properly with routes, defaultHandler, and catchHandler`, () => {
+  describe(`End to End Test of Router`, function() {
+    it(`should work properly with routes, defaultHandler, and catchHandler`, function() {
       return goog.swUtils.activateSW('../static/router.js')
         .then((iframe) => Promise.all([
           iframe.contentWindow.fetch('/static')
@@ -123,7 +128,7 @@ describe(`End to End Tests`, () => {
         ]));
     });
 
-    it(`should always go to network with handleFetch set to false - includes routes, defaultHandler, and catchHandler`, () => {
+    it(`should always go to network with handleFetch set to false - includes routes, defaultHandler, and catchHandler`, function() {
       return goog.swUtils.activateSW('../static/router-handle-fetch-false.js')
         .then((iframe) => Promise.all([
           iframe.contentWindow.fetch('/static')

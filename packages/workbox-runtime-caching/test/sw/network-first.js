@@ -20,23 +20,23 @@ import NetworkFirst from '../../src/lib/network-first.js';
 
 importScripts('/packages/workbox-runtime-caching/test/utils/setup.js');
 
-describe(`Test of the NetworkFirst handler`, () => {
+describe(`Test of the NetworkFirst handler`, function() {
   const CACHE_NAME = location.href;
   const COUNTER_URL = new URL('/__echo/counter', location).href;
   const CROSS_ORIGIN_COUNTER_URL = generateCrossOriginUrl(COUNTER_URL);
 
   let globalStubs = [];
 
-  beforeEach(async () => {
+  beforeEach(async function() {
     await caches.delete(CACHE_NAME);
   });
 
-  afterEach(() => {
+  afterEach(function() {
     globalStubs.forEach((stub) => stub.restore());
     globalStubs = [];
   });
 
-  it(`should add the network response to the cache`, async () => {
+  it(`should add the network response to the cache`, async function() {
     const requestWrapper = new RequestWrapper({cacheName: CACHE_NAME});
     const networkFirst = new NetworkFirst({requestWrapper, waitOnCache: true});
 
@@ -49,7 +49,7 @@ describe(`Test of the NetworkFirst handler`, () => {
     await expectSameResponseBodies(cachedResponse, handleResponse);
   });
 
-  it(`should return the cached response and not update the cache when the network request fails`, async () => {
+  it(`should return the cached response and not update the cache when the network request fails`, async function() {
     globalStubs.push(sinon.stub(self, 'fetch').throws('NetworkError'));
 
     const requestWrapper = new RequestWrapper({cacheName: CACHE_NAME});
@@ -69,7 +69,7 @@ describe(`Test of the NetworkFirst handler`, () => {
     await expectSameResponseBodies(initialCachedResponse, currentCachedResponse);
   });
 
-  it(`should return the cached response if the network request times out`, async () => {
+  it(`should return the cached response if the network request times out`, async function() {
     const networkTimeoutSeconds = 0.1;
 
     globalStubs.push(sinon.stub(self, 'fetch').callsFake(() => {
@@ -93,13 +93,13 @@ describe(`Test of the NetworkFirst handler`, () => {
     await expectSameResponseBodies(initialCachedResponse, handleResponse);
   });
 
-  it(`should throw when NetworkFirst() is called with an invalid networkTimeoutSeconds parameter`, () => {
+  it(`should throw when NetworkFirst() is called with an invalid networkTimeoutSeconds parameter`, function() {
     expect(() => {
       new NetworkFirst({networkTimeoutSeconds: 'invalid'});
     }).to.throw().with.property('name', 'assertion-failed');
   });
 
-  it(`should return the network response and update the cache when the network request succeeds`, async () => {
+  it(`should return the network response and update the cache when the network request succeeds`, async function() {
     const requestWrapper = new RequestWrapper({cacheName: CACHE_NAME});
     const networkFirst = new NetworkFirst({requestWrapper, waitOnCache: true});
 
@@ -117,7 +117,7 @@ describe(`Test of the NetworkFirst handler`, () => {
     await expectSameResponseBodies(handleResponse, currentCachedResponse);
   });
 
-  it(`should update the cache with an the opaque cross-origin network response`, async () => {
+  it(`should update the cache with an the opaque cross-origin network response`, async function() {
     const requestWrapper = new RequestWrapper({cacheName: CACHE_NAME});
     const networkFirst = new NetworkFirst({requestWrapper, waitOnCache: true});
 

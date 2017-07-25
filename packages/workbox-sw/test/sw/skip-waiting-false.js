@@ -13,7 +13,7 @@ importScripts('/__test/bundle/workbox-sw');
  *
  */
 
-describe('Skip Waiting parameter - false', function() {
+describe(`Skip Waiting parameter - false`, function() {
   let stubs = [];
 
   afterEach(function() {
@@ -23,7 +23,7 @@ describe('Skip Waiting parameter - false', function() {
     stubs = [];
   });
 
-  it('should not claim when passed in false (clientsClaim)', function() {
+  it(`should not claim when passed in false (clientsClaim)`, function() {
     let called = false;
     const claimStub = sinon.stub(self, 'skipWaiting').callsFake(() => {
       called = true;

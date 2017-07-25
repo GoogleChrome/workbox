@@ -4,7 +4,9 @@ describe(`End to End Test of Cache Expiration`, function() {
   const CACHE_NAME = 'cache-expiration';
   const EXPECTED_CACHE_SIZE = 5;
 
-  beforeEach(() => goog.swUtils.cleanState());
+  beforeEach(function() {
+    goog.swUtils.cleanState();
+  });
 
   it(`should work properly when there are many simultaneous requests`, async function() {
     const iframe = await goog.swUtils.controlledBySW(

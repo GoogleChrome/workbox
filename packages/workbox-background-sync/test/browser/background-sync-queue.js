@@ -25,7 +25,7 @@ function delay(timeout) {
   });
 }
 
-describe('background sync queue test', () => {
+describe(`background sync queue test`, function() {
   let responseAchieved = 0;
   function onRes() {
     responseAchieved = responseAchieved + 1;
@@ -41,7 +41,7 @@ describe('background sync queue test', () => {
 
   let backgroundSyncQueue;
 
-  beforeEach(async () => {
+  beforeEach(async function() {
     responseAchieved = 0;
     backgroundSyncQueue = new BackgroundSyncQueue({
       maxRetentionTime: MAX_AGE,
@@ -49,7 +49,7 @@ describe('background sync queue test', () => {
     });
   });
 
-  afterEach(async () => {
+  afterEach(async function() {
     // replay queue so that further tests are not affected
     try {
       await backgroundSyncQueue.replayRequests();
@@ -59,7 +59,7 @@ describe('background sync queue test', () => {
     await backgroundSyncQueue.cleanupQueue();
   });
 
-  it('check defaults', () => {
+  it(`check defaults`, function() {
     const bgSyncQueue = new BackgroundSyncQueue({});
     chai.assert.isObject(bgSyncQueue._queue);
     chai.assert.isObject(bgSyncQueue._requestManager);
@@ -72,7 +72,7 @@ describe('background sync queue test', () => {
         JSON.stringify({}));
   });
 
-  it('check parameterised constructor', () => {
+  it(`check parameterised constructor`, function() {
     backgroundSyncQueue = new BackgroundSyncQueue({
       maxRetentionTime: MAX_AGE,
       queueName: QUEUE_NAME,
@@ -86,14 +86,14 @@ describe('background sync queue test', () => {
       CALLBACKS);
   });
 
-  it('check push proxy', async () => {
+  it(`check push proxy`, async function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
     chai.assert.equal(backgroundSyncQueue._queue.queue.length, 1);
   });
 
-  it('check replay', async () => {
+  it(`check replay`, async function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
@@ -105,7 +105,7 @@ describe('background sync queue test', () => {
     chai.assert.equal(responseAchieved, 2);
   });
 
-  it('check replay failure with rejected promise', async () => {
+  it(`check replay failure with rejected promise`, async function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
@@ -120,7 +120,7 @@ describe('background sync queue test', () => {
     }
   });
 
-  it('test queue cleanup', async () => {
+  it(`test queue cleanup`, async function() {
     // code for clearing everything from IDB.
     const backgroundSyncQueue = new BackgroundSyncQueue({
       maxRetentionTime: 1,

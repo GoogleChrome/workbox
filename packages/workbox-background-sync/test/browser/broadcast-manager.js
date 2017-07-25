@@ -18,8 +18,8 @@
 
 import * as broadcastManager from '../../src/lib/broadcast-manager.js';
 
-describe('broadcast manager test', () => {
-  it('check broadcast', function(done) {
+describe(`broadcast manager test`, function() {
+  it(`check broadcast`, function(done) {
     this.timeout(100);
     let msgRead = false;
     const channelName = 'CHANNEL';

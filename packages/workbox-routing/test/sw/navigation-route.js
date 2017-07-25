@@ -17,7 +17,7 @@
 
 import NavigationRoute from '../../src/lib/navigation-route.js';
 
-describe(`Test of the NavigationRoute class`, () => {
+describe(`Test of the NavigationRoute class`, function() {
   const path = '/test/path';
   const whitelist = [new RegExp(path)];
   const blacklist = [new RegExp(path)];
@@ -29,19 +29,19 @@ describe(`Test of the NavigationRoute class`, () => {
   const invalidWhitelist = 'invalid';
   const invalidEvent = {request: {mode: 'cors'}};
 
-  it(`should throw when NavigationRoute() is called without any parameters`, () => {
+  it(`should throw when NavigationRoute() is called without any parameters`, function() {
     expect(() => {
       new NavigationRoute();
     }).to.throw().with.property('name', 'assertion-failed');
   });
 
-  it(`should throw when NavigationRoute() is called without a valid whitelist`, () => {
+  it(`should throw when NavigationRoute() is called without a valid whitelist`, function() {
     expect(() => {
       new NavigationRoute({whitelist: invalidWhitelist});
     }).to.throw().with.property('name', 'assertion-failed');
   });
 
-  it(`should throw when NavigationRoute() is called without a valid handler`, () => {
+  it(`should throw when NavigationRoute() is called without a valid handler`, function() {
     expect(() => {
       new NavigationRoute({whitelist});
     }).to.throw().with.property('name', 'assertion-failed');
@@ -50,23 +50,23 @@ describe(`Test of the NavigationRoute class`, () => {
     }).to.throw().with.property('name', 'assertion-failed');
   });
 
-  it(`should throw when NavigationRoute() is called with an invalid blacklist`, () => {
+  it(`should throw when NavigationRoute() is called with an invalid blacklist`, function() {
     expect(() => {
       new NavigationRoute({whitelist, handler, blacklist: invalidBlacklist});
     }).to.throw().with.property('name', 'assertion-failed');
   });
 
-  it(`should not throw when NavigationRoute() is called with valid whitelist and handler parameters`, () => {
+  it(`should not throw when NavigationRoute() is called with valid whitelist and handler parameters`, function() {
     expect(() => new NavigationRoute({handler, whitelist})).not.to.throw();
   });
 
-  it(`should match navigation requests for URLs that are in the whitelist`, () => {
+  it(`should match navigation requests for URLs that are in the whitelist`, function() {
     const url = new URL(path, location);
     const route = new NavigationRoute({handler, whitelist});
     expect(route.match({event, url})).to.be.ok;
   });
 
-  it(`should match navigation requests for URLs whose search portion is in the whitelist`, () => {
+  it(`should match navigation requests for URLs whose search portion is in the whitelist`, function() {
     const url = new URL('/willnotmatch', location);
     const urlSearchValue = 'willmatch';
     url.search = urlSearchValue;
@@ -76,19 +76,19 @@ describe(`Test of the NavigationRoute class`, () => {
     expect(route.match({event, url})).to.be.ok;
   });
 
-  it(`should not match navigation requests for URLs that are in both the whitelist and the blacklist`, () => {
+  it(`should not match navigation requests for URLs that are in both the whitelist and the blacklist`, function() {
     const url = new URL(path, location);
     const route = new NavigationRoute({handler, whitelist, blacklist});
     expect(route.match({event, url})).to.not.be.ok;
   });
 
-  it(`should not match navigation requests for URLs that are not in the whitelist`, () => {
+  it(`should not match navigation requests for URLs that are not in the whitelist`, function() {
     const url = new URL('/does/not/match', location);
     const route = new NavigationRoute({handler, whitelist});
     expect(route.match({event, url})).to.not.be.ok;
   });
 
-  it(`should not match non-navigation requests for URLs that are in the whitelist`, () => {
+  it(`should not match non-navigation requests for URLs that are in the whitelist`, function() {
     const url = new URL(path, location);
     const route = new NavigationRoute({handler, whitelist});
     expect(route.match({event: invalidEvent, url})).to.not.be.ok;

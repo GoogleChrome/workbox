@@ -18,18 +18,18 @@
 import RevisionedCacheManager
     from '../../src/lib/controllers/revisioned-cache-manager.js';
 
-describe(`sw/revisioned-caching()`, () => {
+describe(`sw/revisioned-caching()`, function() {
   let cacheManager;
 
   const VALID_PATH_REL = '/__echo/date/example.txt';
   const VALID_PATH_ABS = `${location.origin}${VALID_PATH_REL}`;
   const VALID_REVISION = '1234';
 
-  beforeEach(() => {
+  beforeEach(function() {
     cacheManager = new RevisionedCacheManager();
   });
 
-  afterEach(() => {
+  afterEach(function() {
     cacheManager._close();
     cacheManager = null;
   });
@@ -48,7 +48,7 @@ describe(`sw/revisioned-caching()`, () => {
     new Request(VALID_PATH_REL),
   ];
   badRevisionFileInputs.forEach((badInput) => {
-    it(`should handle bad cacheRevisioned({revisionedFiles='${badInput}'}) input`, () => {
+    it(`should handle bad cacheRevisioned({revisionedFiles='${badInput}'}) input`, function() {
       expect(() => {
         cacheManager.addToCacheList({
           revisionedFiles: badInput,
@@ -56,20 +56,20 @@ describe(`sw/revisioned-caching()`, () => {
       }).to.throw(`instance of 'Array'`);
     });
 
-    it(`should handle bad cacheRevisioned('${badInput}') input`, () => {
+    it(`should handle bad cacheRevisioned('${badInput}') input`, function() {
       expect(() => {
         cacheManager.addToCacheList(badInput);
       }).to.throw(`instance of 'Array'`);
     });
   });
 
-  it(`should handle bad cacheRevisioned('[]') input`, () => {
+  it(`should handle bad cacheRevisioned('[]') input`, function() {
     expect(() => {
       cacheManager.addToCacheList([]);
     }).to.throw(`instance of 'Array'`);
   });
 
-  it(`should handle cacheRevisioned(null / undefined) inputs`, () => {
+  it(`should handle cacheRevisioned(null / undefined) inputs`, function() {
     expect(() => {
       cacheManager.addToCacheList({revisionedFiles: null});
     }).to.throw(`instance of 'Array'`);
@@ -79,13 +79,13 @@ describe(`sw/revisioned-caching()`, () => {
     }).to.throw('null');
   });
 
-  it(`should handle cacheRevisioned null array inputs`, () => {
+  it(`should handle cacheRevisioned null array inputs`, function() {
     expect(() => {
       cacheManager.addToCacheList({revisionedFiles: [null]});
     }).to.throw().with.property('name', 'unexpected-precache-entry');
   });
 
-  it(`should handle cacheRevisioned undefined array inputs`, () => {
+  it(`should handle cacheRevisioned undefined array inputs`, function() {
     expect(() => {
       cacheManager.addToCacheList({revisionedFiles: [undefined]});
     }).to.throw().with.property('name', 'unexpected-precache-entry');
@@ -101,7 +101,7 @@ describe(`sw/revisioned-caching()`, () => {
     [],
   ];
   badPaths.forEach((badPath) => {
-    it(`should throw an errror for bad path value '${JSON.stringify(badPath)}'`, () => {
+    it(`should throw an errror for bad path value '${JSON.stringify(badPath)}'`, function() {
       let caughtError;
       try {
         cacheManager.addToCacheList({revisionedFiles: [badPath]});
@@ -117,7 +117,7 @@ describe(`sw/revisioned-caching()`, () => {
       console.log(caughtError);
     });
 
-    it(`should throw an errror for bad path value with valid revision '${JSON.stringify(badPath)}'`, () => {
+    it(`should throw an errror for bad path value with valid revision '${JSON.stringify(badPath)}'`, function() {
       let caughtError;
       try {
         cacheManager.addToCacheList({revisionedFiles: [{url: badPath, revision: VALID_REVISION}]});
@@ -143,7 +143,7 @@ describe(`sw/revisioned-caching()`, () => {
     [],
   ];
   invalidTypeRevisions.forEach((invalidRevision) => {
-    it(`should throw an error for bad revision value '${JSON.stringify(invalidRevision)}'`, () => {
+    it(`should throw an error for bad revision value '${JSON.stringify(invalidRevision)}'`, function() {
       let caughtError;
       try {
         cacheManager.addToCacheList({revisionedFiles: [{url: VALID_PATH_REL, revision: invalidRevision}]});
@@ -159,7 +159,7 @@ describe(`sw/revisioned-caching()`, () => {
     });
   });
 
-  it(`should throw an error for an empty string revision.`, () => {
+  it(`should throw an error for an empty string revision.`, function() {
     let caughtError;
     try {
       cacheManager.addToCacheList({revisionedFiles: [{url: VALID_PATH_REL, revision: ''}]});
@@ -185,7 +185,7 @@ describe(`sw/revisioned-caching()`, () => {
   ];
 
   badCacheBusts.forEach((badCacheBust) => {
-    it(`should be able to handle bad cacheBust value '${JSON.stringify(badCacheBust)}'`, () => {
+    it(`should be able to handle bad cacheBust value '${JSON.stringify(badCacheBust)}'`, function() {
       let caughtError;
       try {
         cacheManager.addToCacheList({revisionedFiles: [
@@ -216,12 +216,12 @@ describe(`sw/revisioned-caching()`, () => {
     {url: VALID_PATH_ABS, revision: VALID_REVISION, cacheBust: false},
   ];
   goodManifestInputs.forEach((goodInput) => {
-    it(`should be able to handle good cache input '${JSON.stringify(goodInput)}'`, () => {
+    it(`should be able to handle good cache input '${JSON.stringify(goodInput)}'`, function() {
       cacheManager.addToCacheList({revisionedFiles: [goodInput]});
     });
   });
 
-  it('should throw error when precaching the same path but different revision', () => {
+  it(`should throw error when precaching the same path but different revision`, function() {
     const TEST_PATH = '/__echo/date/hello.txt';
     let thrownError = null;
     try {
@@ -248,7 +248,7 @@ describe(`sw/revisioned-caching()`, () => {
     });
   });
 
-  it('should clean up IDB after a URL is removed from the precache list', async () => {
+  it(`should clean up IDB after a URL is removed from the precache list`, async function() {
     const urls = [1, 2, 3].map((i) => new URL(`/__echo/date/${i}`, location).href);
 
     const firstRevisionedFiles = urls.map((url) => {
@@ -303,7 +303,7 @@ describe(`sw/revisioned-caching()`, () => {
     expect(secondIdbUrls).not.to.include.members([removedUrl]);
   });
 
-  it('should return empty array from install() if no resources to precache', async () => {
+  it(`should return empty array from install() if no resources to precache`, async function() {
     const cacheDetails = await cacheManager.install();
     (Array.isArray(cacheDetails)).should.equal(true);
     (cacheDetails.length).should.equal(0);

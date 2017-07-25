@@ -22,9 +22,9 @@ const exportedSymbols = [
   'QueuePlugin',
 ];
 
-describe(`Test Library Surface`, () => {
+describe(`Test Library Surface`, function() {
   exportedSymbols.forEach((exportedSymbol) => {
-    it(`should expose ${exportedSymbol} publicly`, () => {
+    it(`should expose ${exportedSymbol} publicly`, function() {
       expect(namespace[exportedSymbol]).to.exist;
     });
   });

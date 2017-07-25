@@ -17,33 +17,33 @@
 
 import ExpressRoute from '../../src/lib/express-route.js';
 
-describe(`Test of the ExpressRoute class`, () => {
+describe(`Test of the ExpressRoute class`, function() {
   const path = '/test/path';
   const handler = () => {};
   const invalidHandler = {};
   const invalidPath = 'invalid';
   const crossOrigin = 'https://cross-origin.example.com';
 
-  it(`should throw when ExpressRoute() is called without any parameters`, () => {
+  it(`should throw when ExpressRoute() is called without any parameters`, function() {
     expect(() => new ExpressRoute()).to.throw();
   });
 
-  it(`should throw when ExpressRoute() is called without a valid handler`, () => {
+  it(`should throw when ExpressRoute() is called without a valid handler`, function() {
     expect(() => new ExpressRoute({path})).to.throw();
     expect(() => new ExpressRoute({path, handler: invalidHandler})).to.throw();
   });
 
-  it(`should throw when ExpressRoute() is called without a valid path`, () => {
+  it(`should throw when ExpressRoute() is called without a valid path`, function() {
     expect(() => {
       new ExpressRoute({handler, path: invalidPath});
     }).to.throw().with.property('name', 'express-route-invalid-path');
   });
 
-  it(`should not throw when ExpressRoute() is called with valid handler and path parameters`, () => {
+  it(`should not throw when ExpressRoute() is called with valid handler and path parameters`, function() {
     expect(() => new ExpressRoute({handler, path})).not.to.throw();
   });
 
-  it(`should properly match URLs`, () => {
+  it(`should properly match URLs`, function() {
     const matchingUrl = new URL(path, location);
     const nonMatchingUrl = new URL('/does/not/match', location);
 
@@ -52,7 +52,7 @@ describe(`Test of the ExpressRoute class`, () => {
     expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
   });
 
-  it(`should properly match URLs with named parameters`, () => {
+  it(`should properly match URLs with named parameters`, function() {
     const value1 = 'value1';
     const value2 = 'value2';
 
@@ -72,21 +72,21 @@ describe(`Test of the ExpressRoute class`, () => {
     expect(route.match({url: namedParameterNonMatchingUrl})).not.to.be.ok;
   });
 
-  it(`should not match cross-origin requests when using a path starting with '/'`, () => {
+  it(`should not match cross-origin requests when using a path starting with '/'`, function() {
     const crossOriginUrl = new URL(path, crossOrigin);
     const route = new ExpressRoute({handler, path});
 
     expect(route.match({url: crossOriginUrl})).not.to.be.ok;
   });
 
-  it(`should match cross-origin requests when using a path starting with 'https://'`, () => {
+  it(`should match cross-origin requests when using a path starting with 'https://'`, function() {
     const crossOriginUrl = new URL(path, crossOrigin);
     const route = new ExpressRoute({handler, path: crossOriginUrl.href});
 
     expect(route.match({url: crossOriginUrl})).to.be.ok;
   });
 
-  it(`should only match same-origin requests when using the wildcard path '/(.*)'`, () => {
+  it(`should only match same-origin requests when using the wildcard path '/(.*)'`, function() {
     const crossOriginUrl = new URL(path, crossOrigin);
     const sameOriginUrl = new URL(path, location);
     const route = new ExpressRoute({handler, path: '/(.*)'});
@@ -95,7 +95,7 @@ describe(`Test of the ExpressRoute class`, () => {
     expect(route.match({url: crossOriginUrl})).not.to.be.ok;
   });
 
-  it(`should only match cross-origin requests when using a path starting with 'https://' and the wildcard path '/(.*)'`, () => {
+  it(`should only match cross-origin requests when using a path starting with 'https://' and the wildcard path '/(.*)'`, function() {
     const crossOriginUrl = new URL(path, crossOrigin);
     const sameOriginUrl = new URL(path, location);
     const route = new ExpressRoute({handler, path: `${crossOrigin}/(.*)`});

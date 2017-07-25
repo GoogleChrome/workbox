@@ -20,16 +20,16 @@ import CacheFirst from '../../src/lib/cache-first.js';
 
 importScripts('/packages/workbox-runtime-caching/test/utils/setup.js');
 
-describe(`Test of the CacheFirst handler`, () => {
+describe(`Test of the CacheFirst handler`, function() {
   const CACHE_NAME = location.href;
   const COUNTER_URL = new URL('/__echo/counter', location).href;
   const CROSS_ORIGIN_COUNTER_URL = generateCrossOriginUrl(COUNTER_URL);
 
-  beforeEach(async () => {
+  beforeEach(async function() {
     await caches.delete(CACHE_NAME);
   });
 
-  it(`should add the initial response to the cache, and then reuse it without updating the cache`, async () => {
+  it(`should add the initial response to the cache, and then reuse it without updating the cache`, async function() {
     const requestWrapper = new RequestWrapper({cacheName: CACHE_NAME});
     const cacheFirst = new CacheFirst({requestWrapper, waitOnCache: true});
 
@@ -48,7 +48,7 @@ describe(`Test of the CacheFirst handler`, () => {
     await expectSameResponseBodies(firstCachedResponse, secondCachedResponse);
   });
 
-  it(`should not update the cache with an the opaque cross-origin network response by default`, async () => {
+  it(`should not update the cache with an the opaque cross-origin network response by default`, async function() {
     const requestWrapper = new RequestWrapper({cacheName: CACHE_NAME});
     const cacheFirst = new CacheFirst({requestWrapper, waitOnCache: false});
 
@@ -64,7 +64,7 @@ describe(`Test of the CacheFirst handler`, () => {
     expect(cachedResponse).to.be.undefined;
   });
 
-  it(`should update the cache with an the opaque cross-origin network response when a cacheWillUpdate plugin returns true`, async () => {
+  it(`should update the cache with an the opaque cross-origin network response when a cacheWillUpdate plugin returns true`, async function() {
     const cacheWillUpdate = {cacheWillUpdate: () => true};
     const requestWrapper = new RequestWrapper({
       cacheName: CACHE_NAME,

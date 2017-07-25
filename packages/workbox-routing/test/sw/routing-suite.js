@@ -21,7 +21,7 @@ import RegExpRoute from '../../src/lib/regexp-route.js';
 // This tests Express and RegExp routing side by side, to ensure consistent,
 // expected behavior across the same set of URLs.
 
-describe('Express/RegExp Routing Suite', function() {
+describe(`Express/RegExp Routing Suite`, function() {
   const crossOrigin = 'https://cross-origin.example.com/';
   const handler = () => {};
 

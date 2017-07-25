@@ -1,8 +1,8 @@
 importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-describe('Test workboxSW.router', function() {
-  it('should be accessible workboxSW.router', function() {
+describe(`Test workboxSW.router`, function() {
+  it(`should be accessible workboxSW.router`, function() {
     const workboxSW = new WorkboxSW();
     expect(workboxSW.router).to.exist;
   });
@@ -55,7 +55,7 @@ describe('Test workboxSW.router', function() {
     });
   });
 
-  it('should be able to register a valid express route', function() {
+  it(`should be able to register a valid express route`, function() {
     const date = Date.now();
     const fakeID = '1234567890';
     const expressRoute = `/:date/:id/test/`;
@@ -82,7 +82,7 @@ describe('Test workboxSW.router', function() {
     });
   });
 
-  it('should be able to register a valid regex route', function() {
+  it(`should be able to register a valid regex route`, function() {
     const capturingGroup = 'test';
     const regExp = /\/1234567890\/(\w+)\//;
     const exampleRoute = `/1234567890/${capturingGroup}/`;

@@ -21,18 +21,18 @@ import {defaultDBName} from '../../src/lib/constants.js';
 import BackgroundSyncQueue from '../../src/lib/background-sync-queue.js';
 import * as responseManager from '../../src/lib/response-manager.js';
 
-describe('response-manager test', () => {
+describe(`response-manager test`, function() {
   const response = 'VALUE';
   const idbHelper = new IDBHelper(defaultDBName, 1, 'QueueStore');
 
-  it('check get', async () => {
+  it(`check get`, async function() {
     const queue = new BackgroundSyncQueue();
     await idbHelper.put('key', {response});
     const data = await queue.getResponse({id: 'key'});
     chai.assert.equal(data, response);
   });
 
-  it('check put', async () => {
+  it(`check put`, async function() {
     await responseManager.putResponse({
       hash: 'somehash',
       idbObject: {},

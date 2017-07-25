@@ -16,7 +16,7 @@
 
 'use strict';
 
-describe('enqueue-request', () => {
+describe(`enqueue-request`, function() {
   const enqueueRequest = workbox.googleAnalytics.test.EnqueueRequest;
   const constants = workbox.googleAnalytics.test.Constants;
   const IDBHelper = workbox.googleAnalytics.test.IdbHelper;
@@ -24,7 +24,7 @@ describe('enqueue-request', () => {
   const idbHelper = new IDBHelper(constants.IDB.NAME, constants.IDB.VERSION,
     constants.IDB.STORE);
 
-  it('should write to IndexedDB', () => {
+  it(`should write to IndexedDB`, function() {
     const url = 'https://enqueue-request.com/?random=' + Math.random();
     const request = new Request(url);
     return enqueueRequest(request)
@@ -32,7 +32,7 @@ describe('enqueue-request', () => {
       .then((keys) => chai.expect(keys).to.include(url));
   });
 
-  it('should use the request body, when present, in the IndexedDB key', () => {
+  it(`should use the request body, when present, in the IndexedDB key`, function() {
     const baseUrl = 'https://enqueue-request.com/';
     const body = 'random=' + Math.random();
     const url = `${baseUrl}?${body}`;

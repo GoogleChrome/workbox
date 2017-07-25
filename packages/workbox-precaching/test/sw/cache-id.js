@@ -18,17 +18,17 @@
 import RevisionedCacheManager
     from '../../src/lib/controllers/revisioned-cache-manager.js';
 
-describe(`Test cacheId Parameter`, () => {
+describe(`Test cacheId Parameter`, function() {
   let cacheManager;
 
-  afterEach(() => {
+  afterEach(function() {
     if (cacheManager) {
       cacheManager._close();
     }
     cacheManager = null;
   });
 
-  it('should throw on bad cacheId input', () => {
+  it(`should throw on bad cacheId input`, function() {
     expect(() => {
       cacheManager = new RevisionedCacheManager({
         cacheId: {},
@@ -36,7 +36,7 @@ describe(`Test cacheId Parameter`, () => {
     }).to.throw().with.property('name', 'bad-cache-id');
   });
 
-  it('should be able to generate cacheManager with cacheId', () => {
+  it(`should be able to generate cacheManager with cacheId`, function() {
     const CACHE_ID = 'Cache_ID_Example';
     cacheManager = new RevisionedCacheManager({
       cacheId: CACHE_ID,

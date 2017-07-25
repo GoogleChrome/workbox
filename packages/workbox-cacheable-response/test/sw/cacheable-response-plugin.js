@@ -19,17 +19,17 @@ import CacheableResponse from '../../src/lib/cacheable-response.js';
 import CacheableResponsePlugin
     from '../../src/lib/cacheable-response-plugin.js';
 
-describe(`Test of the CacheableResponsePlugin class`, () => {
+describe(`Test of the CacheableResponsePlugin class`, function() {
   const VALID_HEADERS = {
     'x-test': 'true',
   };
 
-  it(`should extend the CacheableResponse class`, () => {
+  it(`should extend the CacheableResponse class`, function() {
     const plugin = new CacheableResponsePlugin({headers: VALID_HEADERS});
     expect(plugin).to.be.instanceOf(CacheableResponse);
   });
 
-  it(`should expose a the cacheWillUpdate() method`, () => {
+  it(`should expose a the cacheWillUpdate() method`, function() {
     const plugin = new CacheableResponsePlugin({headers: VALID_HEADERS});
     expect(plugin).to.respondTo('cacheWillUpdate');
   });

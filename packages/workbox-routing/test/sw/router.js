@@ -18,17 +18,17 @@
 import Route from '../../src/lib/route.js';
 import Router from '../../src/lib/router.js';
 
-describe(`Test of the Router class`, () => {
+describe(`Test of the Router class`, function() {
   const MATCH = () => {};
   const HANDLER = () => {};
 
   let globalStubs = [];
-  afterEach(() => {
+  afterEach(function() {
     globalStubs.forEach((stub) => stub.restore());
     globalStubs = [];
   });
 
-  it(`should call _addFetchListener() when Router() is called without any parameters`, () => {
+  it(`should call _addFetchListener() when Router() is called without any parameters`, function() {
     const _addFetchListener = sinon.spy(Router.prototype, '_addFetchListener');
     globalStubs.push(_addFetchListener);
 
@@ -36,7 +36,7 @@ describe(`Test of the Router class`, () => {
     expect(_addFetchListener.calledOnce).to.be.true;
   });
 
-  it(`should call _addFetchListener() when Router() is called with handleFetch: true`, () => {
+  it(`should call _addFetchListener() when Router() is called with handleFetch: true`, function() {
     const _addFetchListener = sinon.spy(Router.prototype, '_addFetchListener');
     globalStubs.push(_addFetchListener);
 
@@ -44,7 +44,7 @@ describe(`Test of the Router class`, () => {
     expect(_addFetchListener.calledOnce).to.be.true;
   });
 
-  it(`should call _addFetchListener() when Router() is called with handleFetch: false`, () => {
+  it(`should call _addFetchListener() when Router() is called with handleFetch: false`, function() {
     const _addFetchListener = sinon.spy(Router.prototype, '_addFetchListener');
     globalStubs.push(_addFetchListener);
 
@@ -52,7 +52,7 @@ describe(`Test of the Router class`, () => {
     expect(_addFetchListener.calledOnce).to.be.false;
   });
 
-  it(`should modify the internal arrays of routes when register/unregister is called`, () => {
+  it(`should modify the internal arrays of routes when register/unregister is called`, function() {
     const router = new Router();
 
     // Routes without an explicit method will default to GET.

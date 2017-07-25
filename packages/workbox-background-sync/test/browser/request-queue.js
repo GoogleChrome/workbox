@@ -21,7 +21,7 @@ import {defaultDBName, defaultQueueName, maxAge}
     from '../../src/lib/constants.js';
 import RequestQueue from '../../src/lib/request-queue.js';
 
-describe('request-queue tests', () => {
+describe(`request-queue tests`, function() {
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
 
@@ -34,23 +34,23 @@ describe('request-queue tests', () => {
     callbacks,
   });
 
-  it('queue object should exist', () => {
+  it(`queue object should exist`, function() {
     chai.assert.isObject(queue);
     chai.assert.isArray(queue._queue);
     chai.assert.isString(queue._queueName);
     chai.assert.isObject(queue._config);
   });
 
-  it('queueName is corrent', () =>{
+  it(`queueName is corrent`, function() {
     chai.assert.equal(queue._queueName, QUEUE_NAME);
   });
 
-  it('config is correct', () => {
+  it(`config is correct`, function() {
     chai.assert.equal(queue._config.maxAge, MAX_AGE);
     chai.assert.notEqual(queue._config.maxAge, maxAge);
   });
 
-  it('push is working', async () => {
+  it(`push is working`, async function() {
     callbacks.requestWillEnqueue = sinon.spy();
 
     const queueLength = queue._queue.length;
@@ -68,7 +68,7 @@ describe('request-queue tests', () => {
     delete callbacks.requestWillEnqueue;
   });
 
-  it('getRequestFromQueue is working', async () => {
+  it(`getRequestFromQueue is working`, async function() {
     callbacks.requestWillDequeue = sinon.spy();
 
     const hash = await queue.push({
@@ -84,7 +84,7 @@ describe('request-queue tests', () => {
     delete callbacks.requestWillDequeue;
   });
 
-  it('default config is correct', () => {
+  it(`default config is correct`, function() {
     let tempQueue = new RequestQueue({idbQDb: idbHelper});
     let tempQueue2 = new RequestQueue({idbQDb: idbHelper});
     chai.assert.equal(tempQueue._config, undefined);

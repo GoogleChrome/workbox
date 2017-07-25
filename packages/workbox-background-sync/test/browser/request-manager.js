@@ -22,14 +22,14 @@ import BackgroundSyncQueue from '../../src/lib/background-sync-queue.js';
 import RequestManager from '../../src/lib/request-manager.js';
 import RequestQueue from '../../src/lib/request-queue.js';
 
-describe('request-manager test', () => {
+describe(`request-manager test`, function() {
   const callbacks = {};
   let queue;
   let reqManager;
 
   const idbHelper = new IDBHelper(defaultDBName, 1, 'QueueStore');
 
-  before((done) => {
+  before(function(done) {
     const QUEUE_NAME = 'QUEUE_NAME';
     const MAX_AGE = 6;
     queue = new RequestQueue({
@@ -41,7 +41,7 @@ describe('request-manager test', () => {
     done();
   });
 
-  it('check constructor', () => {
+  it(`check constructor`, function() {
     chai.assert.isObject(reqManager);
     chai.assert.isFunction(reqManager.attachSyncHandler);
     chai.assert.isFunction(reqManager.replayRequest);
@@ -51,7 +51,7 @@ describe('request-manager test', () => {
     chai.assert.equal(reqManager._queue, queue);
   });
 
-  it('check replay', async () => {
+  it(`check replay`, async function() {
     sinon.spy(self, 'fetch');
 
     callbacks.replayDidSucceed = sinon.spy();

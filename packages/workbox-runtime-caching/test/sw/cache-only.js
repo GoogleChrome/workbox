@@ -20,15 +20,15 @@ import CacheOnly from '../../src/lib/cache-only.js';
 
 importScripts('/packages/workbox-runtime-caching/test/utils/setup.js');
 
-describe(`Test of the CacheOnly handler`, () => {
+describe(`Test of the CacheOnly handler`, function() {
   const CACHE_NAME = location.href;
   const COUNTER_URL = new URL('/__echo/counter', location).href;
 
-  beforeEach(async () => {
+  beforeEach(async function() {
     await caches.delete(CACHE_NAME);
   });
 
-  it(`should not return a response when the cache isn't populated`, async () => {
+  it(`should not return a response when the cache isn't populated`, async function() {
     const requestWrapper = new RequestWrapper({cacheName: CACHE_NAME});
     const cacheOnly = new CacheOnly({requestWrapper});
 
@@ -38,7 +38,7 @@ describe(`Test of the CacheOnly handler`, () => {
     expect(handleResponse).not.to.exist;
   });
 
-  it(`should return the cached response when the cache is populated`, async () => {
+  it(`should return the cached response when the cache is populated`, async function() {
     const requestWrapper = new RequestWrapper({cacheName: CACHE_NAME});
     const cacheOnly = new CacheOnly({requestWrapper});
 

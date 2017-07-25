@@ -18,33 +18,33 @@
 import CacheExpirationPlugin from '../../src/lib/cache-expiration-plugin.js';
 import CacheExpiration from '../../src/lib/cache-expiration.js';
 
-describe(`Test of the CacheExpirationPlugin class`, () => {
+describe(`Test of the CacheExpirationPlugin class`, function() {
   const MAX_AGE_SECONDS = 3;
   const NOW = 1487106334920;
 
-  it(`should extend the CacheExpiration class`, () => {
+  it(`should extend the CacheExpiration class`, function() {
     const plugin = new CacheExpirationPlugin({maxAgeSeconds: MAX_AGE_SECONDS});
     expect(plugin).to.be.instanceOf(CacheExpiration);
   });
 
-  it(`should expose a cacheWillMatch() method`, () => {
+  it(`should expose a cacheWillMatch() method`, function() {
     const plugin = new CacheExpirationPlugin({maxAgeSeconds: MAX_AGE_SECONDS});
     expect(plugin).to.respondTo('cacheWillMatch');
   });
 
-  it(`should expose a cacheDidUpdate() method`, () => {
+  it(`should expose a cacheDidUpdate() method`, function() {
     const plugin = new CacheExpirationPlugin({maxAgeSeconds: MAX_AGE_SECONDS});
     expect(plugin).to.respondTo('cacheDidUpdate');
   });
 
-  it(`should return cachedResponse when cacheWillMatch() is called and isResponseFresh() is true`, () => {
+  it(`should return cachedResponse when cacheWillMatch() is called and isResponseFresh() is true`, function() {
     const plugin = new CacheExpirationPlugin({maxAgeSeconds: MAX_AGE_SECONDS});
     const date = new Date(NOW).toUTCString();
     const cachedResponse = new Response('', {headers: {date}});
     expect(plugin.cacheWillMatch({cachedResponse, now: NOW})).to.eql(cachedResponse);
   });
 
-  it(`should return null when cacheWillMatch() is called and isResponseFresh() is false`, () => {
+  it(`should return null when cacheWillMatch() is called and isResponseFresh() is false`, function() {
     const plugin = new CacheExpirationPlugin({maxAgeSeconds: MAX_AGE_SECONDS});
     // This will construct a date that is 1 second past the expiration.
     const date = new Date(NOW - ((MAX_AGE_SECONDS + 1) * 1000)).toUTCString();

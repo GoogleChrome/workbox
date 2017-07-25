@@ -1,8 +1,8 @@
 importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-describe('Test Directory Index', function() {
-  it('should throw on bad input', function() {
+describe(`Test Directory Index`, function() {
+  it(`should throw on bad input`, function() {
     const badInputs = [
       '',
       {},

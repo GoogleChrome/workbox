@@ -18,8 +18,8 @@
 import RevisionedCacheManager
     from '../../src/lib/controllers/revisioned-cache-manager.js';
 
-describe(`Test plugins Parameter`, () => {
-  it(`should pass the provided plugins configuration along to the RequestWrapper`, () => {
+describe(`Test plugins Parameter`, function() {
+  it(`should pass the provided plugins configuration along to the RequestWrapper`, function() {
     // Register two dummy fetchDidFail plugins, and one dummy cacheWillUpdate.
     const cacheManager = new RevisionedCacheManager({
       plugins: [{

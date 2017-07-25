@@ -13,7 +13,7 @@ importScripts('/__test/bundle/workbox-sw');
  *
  */
 
-describe('Clients Claim parameter', function() {
+describe(`Clients Claim parameter`, function() {
   let stubs = [];
 
   afterEach(function() {
@@ -23,7 +23,7 @@ describe('Clients Claim parameter', function() {
     stubs = [];
   });
 
-  it('should claim when passed in true (clientsClaim)', function() {
+  it(`should claim when passed in true (clientsClaim)`, function() {
     let called = false;
     const claimStub = sinon.stub(self.clients, 'claim').callsFake(() => {
       called = true;

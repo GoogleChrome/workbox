@@ -1,6 +1,6 @@
 /* global workbox, expect */
 
-describe('cache-revisioned-e2e.js', function() {
+describe(`cache-revisioned-e2e.js`, function() {
   const deleteIndexedDB = () => {
     return new Promise((resolve, reject) => {
       // TODO: Move to constants
@@ -127,7 +127,7 @@ describe('cache-revisioned-e2e.js', function() {
     });
   };
 
-  it('should cache and fetch files', function() {
+  it(`should cache and fetch files`, function() {
     const testSet = workbox.__TEST_DATA['workbox-sw']['revisioned'];
     const allAssets1 = testSet['set-1']
       .concat(testSet['set-2'])

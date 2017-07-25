@@ -1,6 +1,6 @@
 /* global workbox, goog */
 
-describe('Test ignore url params matching', function() {
+describe(`Test ignore url params matching`, function() {
   it(`should match with correct default params`, function() {
     return goog.swUtils.activateSW('../static/sw/ignore-url-params.js')
     .then((iframe) => {
