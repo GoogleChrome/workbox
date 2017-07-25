@@ -45,6 +45,7 @@ describe(`End to End Test of Cache Expiration`, function() {
   it(`should work properly when a cache-first strategy + maxAgeSeconds is used, and responses lack a Date header`, async function() {
     // See the comment later about a source of potential flakiness.
     this.retries(2);
+    this.timeout(6 * 1000);
 
     const iframe = await goog.swUtils.controlledBySW(
       '/packages/workbox-cache-expiration/test/static/cache-first-max-age-seconds.js');

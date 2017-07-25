@@ -161,11 +161,17 @@ class CacheExpiration {
         }
 
         const parsedDate = new Date(dateHeader);
+        const headerTime = parsedDate.getTime();
         // If the Date header was invalid for some reason, parsedDate.getTime()
-        // will return NaN, and the comparison will always be false. We want
-        // invalid dates to be treated as fresh. In order to ensure this
-        // behavior, we need to return the negation of this comparison.
-        return !((parsedDate.getTime() + (this.maxAgeSeconds * 1000)) < now);
+        // will return NaN. We want to treat that as a fresh response, since we
+        // assume fresh unless proven otherwise.
+        if (isNaN(headerTime)) {
+          return true;
+        }
+
+        // If we have a valid headerTime, then our response is fresh iff the
+        // headerTime plus maxAgeSeconds is greater than the current time.
+        return (headerTime + (this.maxAgeSeconds * 1000)) > now;
       } else {
         // TODO (jeffposnick): Change this method interface to be async, and
         // check for the IDB for the specific URL in order to determine
