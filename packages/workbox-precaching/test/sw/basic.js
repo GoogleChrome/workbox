@@ -45,7 +45,42 @@ describe(`Test Library Surface`, function() {
     });
 
     cacheUrls = revisionedManager.getCachedUrls();
+    if (!Array.isArray(cacheUrls) || cacheUrls.length !== 2) {
+      throw new Error('Unexpected cacheUrls value: ' + JSON.stringify(cacheUrls));
+    }
 
+    const urlsToFind = [URL_1, URL_2];
+    urlsToFind.forEach((urlToFind) => {
+      if (cacheUrls.indexOf(new URL(urlToFind, location).href) === -1) {
+        throw new Error(`Unable to find value '${urlToFind}' in cacheUrls: ` + JSON.stringify(cacheUrls));
+      }
+    });
+  });
+
+  it.skip('should be able to get the unrevisioned cache manager via workbox.precaching', function() {
+    const unrevisionedManager = new workbox.precaching.UnrevisionedCacheManager();
+    expect(unrevisionedManager).to.exist;
+
+    const cacheName = unrevisionedManager.getCacheName();
+    if (!cacheName || typeof cacheName !== 'string' || cacheName.length === 0) {
+      throw new Error('Unexpected cache name: ' + cacheName);
+    }
+
+    let cacheUrls = unrevisionedManager.getCachedUrls();
+    if (!Array.isArray(cacheUrls) || cacheUrls.length !== 0) {
+      throw new Error('Unexpected cacheUrls value: ' + JSON.stringify(cacheUrls));
+    }
+
+    const URL_1 = '/';
+    const URL_2 = '/__echo/date/example.1234.txt';
+    unrevisionedManager.addToCacheList({
+      unrevisionedFiles: [
+        new Request(URL_1),
+        URL_2,
+      ],
+    });
+
+    cacheUrls = unrevisionedManager.getCachedUrls();
     if (!Array.isArray(cacheUrls) || cacheUrls.length !== 2) {
       throw new Error('Unexpected cacheUrls value: ' + JSON.stringify(cacheUrls));
     }

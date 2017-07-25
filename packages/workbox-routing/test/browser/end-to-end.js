@@ -18,11 +18,11 @@
 
 describe(`End to End Tests`, function() {
   beforeEach(function() {
-    window.goog.swUtils.cleanState();
+    return window.goog.swUtils.cleanState();
   });
 
   afterEach(function() {
-    window.goog.swUtils.cleanState();
+    return window.goog.swUtils.cleanState();
   });
 
   describe(`End to End Test of RegExpRoute`, function() {

@@ -33,11 +33,13 @@ describe(`workbox-precaching Test Revisioned Caching`, function() {
   };
 
   beforeEach(function() {
-    window.goog.swUtils.cleanState().then(deleteIndexedDB);
+    return window.goog.swUtils.cleanState()
+    .then(deleteIndexedDB);
   });
 
   afterEach(function() {
-    window.goog.swUtils.cleanState().then(deleteIndexedDB);
+    return window.goog.swUtils.cleanState()
+    .then(deleteIndexedDB);
   });
 
   const testCacheEntries = (fileSet) => {
