@@ -26,7 +26,9 @@ describe(`Test of the broadcastUpdate function`, function() {
   const source = 'test-source';
 
   it(`should throw when broadcastUpdate() is called without any parameters`, function() {
-    expect(() => broadcastUpdate().to.throw();
+    expect(() => {
+      broadcastUpdate();
+    }).to.throw().with.property('name', 'assertion-failed');
   });
 
   it(`should trigger the appropriate message event on a BroadcastChannel with the same channel name`, function(done) {
