@@ -7,11 +7,13 @@ describe('Test of the NavigationRoute class', function() {
   const blacklist = [new RegExp(path)];
   const handler = {handle: () => {}};
   const event = {request: {mode: 'navigate'}};
+  const match = (path) => path.startsWith('/test');
 
   const invalidHandler = {};
   const invalidBlacklist = 'invalid';
   const invalidWhitelist = 'invalid';
   const invalidEvent = {request: {mode: 'cors'}};
+
 
   it(`should throw when NavigationRoute() is called without any parameters`, function() {
     let thrownError = null;
@@ -101,5 +103,17 @@ describe('Test of the NavigationRoute class', function() {
     const url = new URL(path, location);
     const route = new workbox.routing.NavigationRoute({handler, whitelist});
     expect(route.match({event: invalidEvent, url})).to.not.be.ok;
+  });
+
+  it(`should match navigation requests for URLs who match the function`, function() {
+    const url = new URL(path, location);
+    const route = new workbox.routing.NavigationRoute({handler, match});
+    expect(route.match({event, url})).to.be.ok;
+  });
+
+  it(`should not match navigation requests for URLs that do not match the function`, function() {
+    const url = new URL('/does/not/match', location);
+    const route = new workbox.routing.NavigationRoute({handler, match});
+    expect(route.match({event, url})).to.not.be.ok;
   });
 });
