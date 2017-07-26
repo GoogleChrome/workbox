@@ -126,28 +126,31 @@ class CacheExpiration {
    * `Date` header and the `maxAgeSeconds` parameter passed into the
    * constructor.
    *
+   * The general approach is to default to fresh unless proven otherwise.
+   *
    * If `maxAgeSeconds` or the `Date` header is not set then it will
    * default to returning `true`, i.e. the response is still fresh and should
    * be used.
    *
    * @param {Object} input
+   * @param {string} input.cacheName Name of the cache the responses belong to.
    * @param {Response} input.cachedResponse The `Response` object that's been
    *        read from a cache and whose freshness should be checked.
    * @param {Number} [input.now] A timestamp.
    *
    * Defaults to the current time.
-   * @return {boolean} Either `true` if the response is fresh, or `false` if the
-   * `Response` is older than `maxAgeSeconds` and should no longer be
-   * used.
+   * @return {boolean} Either `true` if the response is fresh, or
+   * `false` if the `Response` is older than `maxAgeSeconds` and should no
+   * longer be used.
    *
    * @example
    * expirationPlugin.isResponseFresh({
    *   cachedResponse: responseFromCache
    * });
    */
-  isResponseFresh({cachedResponse, now} = {}) {
+  isResponseFresh({cacheName, cachedResponse, now} = {}) {
     // Only bother checking for freshness if we have a valid response and if
-    // maxAgeSeconds is set. Otherwise, skip the check and always return true.
+    // maxAgeSeconds is set.
     if (cachedResponse && this.maxAgeSeconds) {
       isInstance({cachedResponse}, Response);
 
@@ -158,16 +161,38 @@ class CacheExpiration {
         }
 
         const parsedDate = new Date(dateHeader);
+        const headerTime = parsedDate.getTime();
         // If the Date header was invalid for some reason, parsedDate.getTime()
-        // will return NaN, and the comparison will always be false. That means
-        // that an invalid date will be treated as if the response is fresh.
-        if ((parsedDate.getTime() + (this.maxAgeSeconds * 1000)) < now) {
-          // Only return false if all the conditions are met.
-          return false;
+        // will return NaN. We want to treat that as a fresh response, since we
+        // assume fresh unless proven otherwise.
+        if (isNaN(headerTime)) {
+          return true;
         }
+
+        // If we have a valid headerTime, then our response is fresh iff the
+        // headerTime plus maxAgeSeconds is greater than the current time.
+        return (headerTime + (this.maxAgeSeconds * 1000)) > now;
+      } else {
+        // TODO (jeffposnick): Change this method interface to be async, and
+        // check for the IDB for the specific URL in order to determine
+        // freshness when Date is not available.
+
+        // If there is no Date header (i.e. if this is a cross-origin response),
+        // then we don't know for sure whether the response is fresh or not.
+        // One thing we can do is trigger cache expiration, which will clean up
+        // any old responses based on IDB timestamps, and ensure that when a
+        // cache-first handler is used, stale responses will eventually be
+        // replaced (though not until the *next* request is made).
+        // See https://github.com/GoogleChrome/workbox/issues/691
+        this.expireEntries({cacheName, now});
+        // Return true, since otherwise a cross-origin cached response without
+        // a Date header would *never* be considered valid.
+        return true;
       }
     }
 
+    // If either cachedResponse or maxAgeSeconds wasn't set, then the response
+    // is "trivially" fresh, so return true.
     return true;
   }
 
