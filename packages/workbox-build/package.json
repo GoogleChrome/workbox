@@ -1,6 +1,6 @@
 {
   "name": "workbox-build",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
