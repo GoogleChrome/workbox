@@ -14,48 +14,128 @@
 */
 
 import ErrorFactory from './error-factory';
-import {atLeastOne, isArrayOfType, isType, isInstance} from
-  '../../../../lib/assert';
-import logHelper from '../../../../lib/log-helper.js';
+import {isType, isInstance} from '../../../../lib/assert';
+import logHelper from '../../../../lib/log-helper';
 
 /**
- * Use this plugin to cache responses with certain HTTP status codes or
- * header values.
- *
- * Defining both status codes and headers will cache requests with a matching
- * status code and a matching header.
- *
- * @example
- * new workbox.cacheableResponse.CacheableResponse({
- *   statuses: [0, 200, 404],
- *   headers: {
- *     'Example-Header-1': 'Header-Value-1'
- *     'Example-Header-2': 'Header-Value-2'
- *   }
- * })
+ * Inspired by https://github.com/jakearchibald/range-request-test/blob/master/static/sw.js
  *
  * @memberof module:workbox-cache-range-response
  */
 class CacheRangeResponse {
-  static parseRangeHeader({rangeHeader}) {
+  /**
+   * @param {Object} input
+   * @param {string} input.rangeHeader
+   * @return {Object}
+   */
+  static parseRangeHeader({rangeHeader} = {}) {
     isType({rangeHeader}, 'string');
 
-    const [unit, range] = rangeHeader.split(/\s+/, 2);
-    if (unit !== 'bytes') {
+    const normalizedRangeHeader = rangeHeader.trim().toLowerCase();
+    if (!normalizedRangeHeader.startsWith('bytes=')) {
       throw ErrorFactory.createError('unit-must-be-bytes');
     }
 
-    if (range.inclues(',')) {
+    if (normalizedRangeHeader.includes(',')) {
       throw ErrorFactory.createError('single-range-only');
     }
 
-    const [start, end] = range.split(/-/, 2);
+    const rangeParts = /(\d*)-(\d*)/.exec(normalizedRangeHeader);
+    // We need either at least one of the start or end values.
+    if (rangeParts === null || !(rangeParts[1] || rangeParts[2])) {
+      throw ErrorFactory.createError('invalid-range-values');
+    }
 
     return {
-      start: parseInt(start),
-      end: parseInt(end),
+      start: rangeParts[1] === '' ? null : Number(rangeParts[1]),
+      end: rangeParts[2] === '' ? null : Number(rangeParts[2]),
     };
   }
+
+  /**
+   * @param {Object} input
+   * @param {Blob} input.blob
+   * @param {Number} [input.start]
+   * @param {Number} [input.end]
+   * @return {Blob}
+   */
+  static sliceBlob({blob, start, end} = {}) {
+    isInstance({blob}, Blob);
+    const blobSize = blob.size;
+
+    if (end > blobSize || start < 0) {
+      throw ErrorFactory.createError('range-not-satisfiable');
+    }
+
+    let effectiveStart;
+    let effectiveEnd;
+
+    if (start === null) {
+      effectiveStart = blobSize - end;
+      effectiveEnd = blobSize;
+    } else if (end === null) {
+      effectiveStart = start;
+      effectiveEnd = blobSize;
+    } else {
+      effectiveStart = start;
+      // Range values are inclusive, so add 1 to the value.
+      effectiveEnd = end + 1;
+    }
+
+    return blob.slice(effectiveStart, effectiveEnd);
+  }
+
+  /**
+   * @param {Object} input
+   * @param {Request} input.request
+   * @param {Response} input.response
+   * @return {Promise<Response>}
+   */
+  static async sliceResponse({request, response} = {}) {
+    try {
+      isInstance({request}, Request);
+      isInstance({response}, Response);
+
+      const rangeHeader = request.headers.get('range');
+      if (!rangeHeader) {
+        throw ErrorFactory.createError('no-range-header');
+      }
+
+      const boundaries = CacheRangeResponse.parseRangeHeader({rangeHeader});
+      const originalBlob = await response.blob();
+
+      const slicedBlob = CacheRangeResponse.sliceBlob({
+        blob: originalBlob,
+        start: boundaries.start,
+        end: boundaries.end,
+      });
+      const slicedBlobSize = slicedBlob.size;
+
+      const slicedResponse = new Response(slicedBlob, {
+        // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/206
+        status: 206,
+        headers: response.headers,
+      });
+
+      slicedResponse.headers.set('Content-Length', slicedBlobSize);
+      slicedResponse.headers.set('Content-Range',
+        `bytes ${boundaries.start}-${boundaries.end}/${originalBlob.size}`);
+
+      return slicedResponse;
+    } catch (error) {
+      logHelper.warn({
+        message: `Unable to construct a sliced response; returning a 416 Range
+          Not Satisfiable response instead.`,
+        data: {request, response, error},
+      });
+
+      return new Response('', {
+        status: 416,
+        statusText: 'Range Not Satisfiable',
+      });
+    }
+  }
 }
+
 
 export default CacheRangeResponse;

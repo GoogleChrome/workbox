@@ -1,19 +1,19 @@
 importScripts('/__test/mocha/sw-utils.js');
-importScripts('/__test/bundle/workbox-cacheable-response');
+importScripts('/__test/bundle/workbox-cache-range-response');
 
 const exportedSymbols = [
-  'CacheableResponse',
-  'CacheableResponsePlugin',
+  'CacheRangeResponse',
+  'CacheRangeResponsePlugin',
 ];
 
 describe('Test Library Surface', function() {
-  it('should be accessible via workbox.cacheableResponse', function() {
-    expect(workbox.cacheableResponse).to.exist;
+  it('should be accessible via workbox.cacheRangeResponse', function() {
+    expect(workbox.cacheRangeResponse).to.exist;
   });
 
   exportedSymbols.forEach((exportedSymbol) => {
-    it(`should expose ${exportedSymbol} via workbox.cacheableResponse`, function() {
-      expect(workbox.cacheableResponse[exportedSymbol]).to.exist;
+    it(`should expose ${exportedSymbol} via workbox.cacheRangeResponse`, function() {
+      expect(workbox.cacheRangeResponse[exportedSymbol]).to.exist;
     });
   });
 });

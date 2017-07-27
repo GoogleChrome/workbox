@@ -1,5 +1,5 @@
 /*
- Copyright 2016 Google Inc. All Rights Reserved.
+ Copyright 2017 Google Inc. All Rights Reserved.
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -20,6 +20,11 @@ const errors = {
     'bytes'.`,
   'single-range-only': `Multiple ranges are not supported. Please provide a
     single start value, and optional end value.`,
+  'invalid-range-values': `The Range header is missing both start and end 
+    values. At least one of those values is needed.`,
+  'no-range-header': `No Range header was found in the Request provided.`,
+  'range-not-satisfiable': `The start and end values in the Range are not 
+    satisfiable by the cached response.`,
 };
 
 export default new ErrorFactory(errors);
