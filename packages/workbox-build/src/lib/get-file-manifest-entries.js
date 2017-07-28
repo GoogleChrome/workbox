@@ -67,8 +67,7 @@ const getFileManifestEntries = (input) => {
   }
 
   let globPatterns = input.globPatterns || input.staticFileGlobs;
-  if (typeof input.globPatterns === 'undefined' &&
-    typeof input.staticFileGlobs === 'undefined') {
+  if (typeof globPatterns === 'undefined') {
     globPatterns = constants.defaultGlobPatterns;
   }
 
