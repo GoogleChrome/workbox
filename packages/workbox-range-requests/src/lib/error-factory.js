@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import ErrorFactory from '../../../../lib/error-factory';
+import ErrorFactory from '../../../../lib/error-factory.js';
 
 const errors = {
   'unit-must-be-bytes': `The 'unit' portion of the Range header must be set to

@@ -1,7 +1,7 @@
 importScripts('/__test/mocha/sw-utils.js');
-importScripts('/__test/bundle/workbox-cache-range-response');
+importScripts('/__test/bundle/workbox-range-requests');
 
-describe('Tests for the CacheRangeResponse class', function() {
+describe('Tests for the handle-range-request.js functions', function() {
   function constructBlob(startValue, length) {
     const buffer = new ArrayBuffer(length);
     const intView = new Uint8Array(buffer);
@@ -23,29 +23,28 @@ describe('Tests for the CacheRangeResponse class', function() {
     return finished;
   }
 
-  const CacheRangeResponse = workbox.cacheRangeResponse.CacheRangeResponse;
   const SOURCE_BLOB_SIZE = 256;
   const SOURCE_BLOB = constructBlob(0, SOURCE_BLOB_SIZE);
 
-  describe(`Tests for the static parseRangeHeader() function`, function() {
+  describe(`Tests for the parseRangeHeader() function`, function() {
     it(`should throw when it's is called with an invalid 'rangeHeader' parameter`, function() {
       const rangeHeader = null;
       expect(
-        () => CacheRangeResponse.parseRangeHeader({rangeHeader})
+        () => workbox.rangeRequests.parseRangeHeader({rangeHeader})
       ).to.throw().with.property('name', 'assertion-failed');
     });
 
     it(`should throw when it's is called with a rangeHeader that doesn't start with 'bytes='`, function() {
       const rangeHeader = 'not-bytes=';
       expect(
-        () => CacheRangeResponse.parseRangeHeader({rangeHeader})
+        () => workbox.rangeRequests.parseRangeHeader({rangeHeader})
       ).to.throw().with.property('name', 'unit-must-be-bytes');
     });
 
     it(`should throw when it's is called with a rangeHeader contains multiple ranges`, function() {
-      const rangeHeader = 'bytes= 1-2, 3-4';
+      const rangeHeader = 'bytes=1-2, 3-4';
       expect(
-        () => CacheRangeResponse.parseRangeHeader({rangeHeader})
+        () => workbox.rangeRequests.parseRangeHeader({rangeHeader})
       ).to.throw().with.property('name', 'single-range-only');
     });
 
@@ -58,32 +57,32 @@ describe('Tests for the CacheRangeResponse class', function() {
       ];
 
       for (const badRange of badRanges) {
-        const rangeHeader = `bytes= ${badRange}`;
+        const rangeHeader = `bytes=${badRange}`;
         expect(
-          () => CacheRangeResponse.parseRangeHeader({rangeHeader})
+          () => workbox.rangeRequests.parseRangeHeader({rangeHeader})
         ).to.throw().with.property('name', 'invalid-range-values', `for test case '${badRange}'`);
       }
     });
 
     it(`should return the expected start and end values when it's is called with a valid rangeHeader`, function() {
       const testCases = [
-        ['bytes= 100-200', {start: 100, end: 200}],
-        ['bytes= -200', {start: null, end: 200}],
-        ['bytes= 100-', {start: 100, end: null}],
+        ['bytes=100-200', {start: 100, end: 200}],
+        ['bytes=-200', {start: null, end: 200}],
+        ['bytes=100-', {start: 100, end: null}],
       ];
 
       for (const [rangeHeader, expectedValue] of testCases) {
-        const boundaries = CacheRangeResponse.parseRangeHeader({rangeHeader});
+        const boundaries = workbox.rangeRequests.parseRangeHeader({rangeHeader});
         expect(boundaries).to.eql(expectedValue, `for test case '${rangeHeader}'`);
       }
     });
   });
 
-  describe(`Tests for the static sliceBlob() function`, function() {
+  describe(`Tests for the calculateEffectiveBoundaries() function`, function() {
     it(`should throw when it's is called with an invalid 'blob' parameter`, function() {
       const invalidBlob = null;
       expect(
-        () => CacheRangeResponse.sliceBlob({blob: invalidBlob})
+        () => workbox.rangeRequests.calculateEffectiveBoundaries({blob: invalidBlob})
       ).to.throw().with.property('name', 'assertion-failed');
     });
 
@@ -91,7 +90,7 @@ describe('Tests for the CacheRangeResponse class', function() {
       const start = -1;
       const end = 1;
       expect(
-        () => CacheRangeResponse.sliceBlob({blob: SOURCE_BLOB, start, end})
+        () => workbox.rangeRequests.calculateEffectiveBoundaries({blob: SOURCE_BLOB, start, end})
       ).to.throw().with.property('name', 'range-not-satisfiable');
     });
 
@@ -99,31 +98,35 @@ describe('Tests for the CacheRangeResponse class', function() {
       const start = 0;
       const end = SOURCE_BLOB_SIZE + 1;
       expect(
-        () => CacheRangeResponse.sliceBlob({blob: SOURCE_BLOB, start, end})
+        () => workbox.rangeRequests.calculateEffectiveBoundaries({blob: SOURCE_BLOB, start, end})
       ).to.throw().with.property('name', 'range-not-satisfiable');
     });
 
-    it(`should return the expected slice of the blob when it's called with valid parameters`, async function() {
+    it(`should return the expected boundaries when it's called with valid parameters`, function() {
       const testCases = [
-        [{start: 100, end: 200}, constructBlob(100, 101)],
-        [{start: null, end: 200}, constructBlob(SOURCE_BLOB_SIZE - 200, 200)],
-        [{start: 100, end: null}, constructBlob(100, SOURCE_BLOB_SIZE - 100)],
+        [{start: 100, end: 200}, {start: 100, end: 201}],
+        [{start: null, end: 200}, {start: 56, end: 256}],
+        [{start: 100, end: null}, {start: 100, end: 256}],
       ];
 
-      for (const [{start, end}, expectedBlob] of testCases) {
-        const slicedBlob = CacheRangeResponse.sliceBlob({blob: SOURCE_BLOB, start, end});
-        const slicedBlobText = await blobToText(slicedBlob);
-        const expectedBlobText = await blobToText(expectedBlob);
-        expect(slicedBlobText).to.eql(expectedBlobText, `for test case '${start}-${end}'`);
+      for (const [sourceBoundaries, expectedBoundaries] of testCases) {
+        const calculatedBoundaries = workbox.rangeRequests.calculateEffectiveBoundaries({
+          blob: SOURCE_BLOB,
+          start: sourceBoundaries.start,
+          end: sourceBoundaries.end,
+        });
+
+        expect(expectedBoundaries).to.eql(calculatedBoundaries,
+          `for test case '${sourceBoundaries.start}-${sourceBoundaries.end}'`);
       }
     });
   });
 
-  describe(`Tests for the static sliceResponse() function`, function() {
+  describe(`Tests for the handleRangeRequest() function`, function() {
     const TEST_HEADER = 'x-test-header';
     const VALID_REQUEST = new Request('/', {
       headers: {
-        range: 'bytes= 100-200',
+        range: 'bytes=100-200',
       },
     });
 
@@ -132,7 +135,7 @@ describe('Tests for the CacheRangeResponse class', function() {
     });
 
     it(`should return a Response with status 416 when the 'request' parameter isn't valid`, async function() {
-      const response = await CacheRangeResponse.sliceResponse({
+      const response = await workbox.rangeRequests.handleRangeRequest({
         request: null,
         response: VALID_RESPONSE,
       });
@@ -140,7 +143,7 @@ describe('Tests for the CacheRangeResponse class', function() {
     });
 
     it(`should return a Response with status 416 when the 'response' parameter isn't valid`, async function() {
-      const response = await CacheRangeResponse.sliceResponse({
+      const response = await workbox.rangeRequests.handleRangeRequest({
         request: VALID_REQUEST,
         response: null,
       });
@@ -149,7 +152,7 @@ describe('Tests for the CacheRangeResponse class', function() {
 
     it(`should return a Response with status 416 when there's no Range: header in the request`, async function() {
       const noRangeHeaderRequest = new Request('/');
-      const response = await CacheRangeResponse.sliceResponse({
+      const response = await workbox.rangeRequests.handleRangeRequest({
         request: noRangeHeaderRequest,
         response: VALID_RESPONSE,
       });
@@ -157,7 +160,7 @@ describe('Tests for the CacheRangeResponse class', function() {
     });
 
     it(`should return the expected Response when it's called with valid parameters`, async function() {
-      const response = await CacheRangeResponse.sliceResponse({
+      const response = await workbox.rangeRequests.handleRangeRequest({
         request: VALID_REQUEST,
         response: VALID_RESPONSE,
       });

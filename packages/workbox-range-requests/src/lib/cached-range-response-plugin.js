@@ -13,13 +13,40 @@
  limitations under the License.
 */
 
-import CachedRangeResponse from './cache-range-response';
+import {handleRangeRequest} from './handle-range-request.js';
 
 /**
- * @memberof module:workbox-cache-range-response
+ * @memberof module:workbox-range-requests
+ *
+ * This class is meant to be automatically invoked as a plugin to a
+ * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper}, which
+ * is used by the `workbox-sw` and `workbox-runtime-caching` modules. If you
+ * are not using `workbox-sw` or `workbox-runtime-caching`, then using the
+ * {@link handleRangeRequest} function directly is recommended.
+ *
+ * Under the hood, this will call `handleRangeRequest()`, passing
+ * in the appropriate request and response objects.
+ *
+ * @example
+ * const workboxSW = new WorkboxSW();
+ *
+ * const cacheFirstRangeHandler = workboxSW.strategies.cacheFirst({
+ *   cacheName: 'range-requests',
+ *   // There's no need to instantiate the class; all methods are static.
+ *   plugins: [workbox.rangedRequests.CachedRangeResponsePlugin]
+ * });
+ *
+ * // Create a route which will match all requests that have a Range: header,
+ * // and handle them using a cache-first strategy, taking the Range: header
+ * // into account.
+ * workboxSW.registerRoute(
+ *   ({event}) => event.request.headers.has('range'),
+ *   cacheFirstRangeHandler
+ * );
  */
-class CachedRangeResponsePlugin extends CachedRangeResponse {
+class CachedRangeResponsePlugin {
   /**
+   * @private
    * @param {Object} input
    * @param {Request} input.request The original request, which may or may not
    * contain a Range: header.
@@ -32,7 +59,7 @@ class CachedRangeResponsePlugin extends CachedRangeResponse {
   static async cacheWillMatch({request, cachedResponse} = {}) {
     // Only return a sliced response if there's a Range: header in the request.
     if (request.headers.has('range')) {
-      return await CachedRangeResponsePlugin.sliceResponse({
+      return await handleRangeRequest({
         request,
         response: cachedResponse,
       });

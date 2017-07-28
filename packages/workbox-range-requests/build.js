@@ -13,16 +13,16 @@
  limitations under the License.
 */
 
-/**
- * # workbox-cache-range-response
- *
- * @module workbox-cache-range-response
- */
+const pkg = require('./package.json');
+const {buildJSBundle, generateBuildConfigs} = require('../../utils/build');
 
-import CacheRangeResponse from './lib/cache-range-response';
-import CacheRangeResponsePlugin from './lib/cache-range-response-plugin';
+const buildConfigs = generateBuildConfigs({
+  formatToPath: {
+    es: pkg.module,
+    iife: pkg.main,
+  },
+  baseDir: __dirname,
+  moduleName: 'workbox.rangeRequests',
+});
 
-export {
-  CacheRangeResponse,
-  CacheRangeResponsePlugin,
-};
+module.exports = () => Promise.all(buildConfigs.map(buildJSBundle));
