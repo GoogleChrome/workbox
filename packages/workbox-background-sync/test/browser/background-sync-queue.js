@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, workbox */
+/* global expect, workbox */
 'use strict';
 
 function delay(timeout) {
@@ -60,16 +60,16 @@ describe('background sync queue test', () => {
   it('check defaults', () => {
     const defaultsBackgroundSyncQueue
       = new workbox.backgroundSync.test.BackgroundSyncQueue({});
-    chai.assert.isObject(defaultsBackgroundSyncQueue._queue);
-    chai.assert.isObject(defaultsBackgroundSyncQueue._requestManager);
-    chai.assert.equal(defaultsBackgroundSyncQueue._queue._queueName,
-      workbox.backgroundSync.test.Constants.defaultQueueName + '_1');
-    chai.assert.equal(defaultsBackgroundSyncQueue._queue._config.maxAge,
-      workbox.backgroundSync.test.Constants.maxAge);
-    chai.assert.equal(
-      JSON.stringify(
-        defaultsBackgroundSyncQueue._requestManager._globalCallbacks),
-      JSON.stringify({}));
+    expect(defaultsBackgroundSyncQueue._queue).to.be.an('object');
+    expect(defaultsBackgroundSyncQueue._requestManager).to.be.an('object');
+    expect(defaultsBackgroundSyncQueue._queue._queueName).to.be
+        .equal(workbox.backgroundSync.test.Constants.defaultQueueName + '_1');
+    expect(defaultsBackgroundSyncQueue._queue._config.maxAge).to.be
+        .equal(workbox.backgroundSync.test.Constants.maxAge);
+    expect(
+        JSON.stringify(
+            defaultsBackgroundSyncQueue._requestManager._globalCallbacks))
+        .to.be.equal(JSON.stringify({}));
   });
 
   it('check parameterised constructor', () =>{
@@ -78,35 +78,40 @@ describe('background sync queue test', () => {
       queueName: QUEUE_NAME,
       callbacks: CALLBACKS,
     });
-    chai.assert.isObject(backgroundSyncQueue._queue);
-    chai.assert.isObject(backgroundSyncQueue._requestManager);
-    chai.assert.equal(backgroundSyncQueue._queue._queueName, QUEUE_NAME);
-    chai.assert.equal(backgroundSyncQueue._queue._config.maxAge, MAX_AGE);
-    chai.assert.equal(backgroundSyncQueue._requestManager._globalCallbacks,
-      CALLBACKS);
+    expect(backgroundSyncQueue._queue).to.be.an('object');
+    expect(backgroundSyncQueue._requestManager).to.be.an('object');
+    expect(backgroundSyncQueue._queue._queueName).to.be.equal(QUEUE_NAME);
+    expect(backgroundSyncQueue._queue._config.maxAge).to.be.equal(MAX_AGE);
+    expect(backgroundSyncQueue._requestManager._globalCallbacks).to.be
+        .equal(CALLBACKS);
   });
 
   it('check push proxy', async function() {
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
-    chai.assert.equal(backgroundSyncQueue._queue.queue.length, 1);
+    await backgroundSyncQueue.pushIntoQueue(
+        {request: new Request('/__echo/counter')});
+    expect(backgroundSyncQueue._queue.queue.length).to.be.equal(1);
   });
 
   it('check replay', async function() {
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
-    chai.assert.equal(backgroundSyncQueue._queue.queue.length, 2);
+    await backgroundSyncQueue.pushIntoQueue(
+        {request: new Request('/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue(
+        {request: new Request('/__echo/counter')});
+    expect(backgroundSyncQueue._queue.queue.length).to.be.equal(2);
     await backgroundSyncQueue.replayRequests();
-    chai.assert.equal(responseAchieved, 2);
+    expect(responseAchieved).to.be.equal(2);
   });
 
   it('check replay failure with rejected promise', async function() {
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__test/404')});
+    await backgroundSyncQueue.pushIntoQueue(
+        {request: new Request('/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue(
+        {request: new Request('/__test/404')});
     try {
       await backgroundSyncQueue.replayRequests();
       throw new Error('Replay should have failed because of invalid URL');
     } catch (err) {
-      chai.assert.equal(404, err[0].status);
+      expect(404).to.be.equal(err[0].status);
     }
   });
 
@@ -125,17 +130,22 @@ describe('background sync queue test', () => {
 
     await backgroundSyncQueue.cleanupQueue();
     await backgroundSyncQueue2.cleanupQueue();
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
-    await backgroundSyncQueue2.pushIntoQueue({request: new Request('/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue(
+        {request: new Request('/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue(
+        {request: new Request('/__echo/counter')});
+    await backgroundSyncQueue2.pushIntoQueue(
+        {request: new Request('/__echo/counter')});
     const queue1Keys = (await backgroundSyncQueue._queue._idbQDb.getAllKeys());
     const queue2Keys = (await backgroundSyncQueue2._queue._idbQDb.getAllKeys());
     await delay(100);
     await backgroundSyncQueue.cleanupQueue();
     await backgroundSyncQueue2.cleanupQueue();
-    chai.assert.equal(queue1Keys.length,
-      (await backgroundSyncQueue._queue._idbQDb.getAllKeys()).length + 2);
-    chai.assert.equal(queue2Keys.length,
-      (await backgroundSyncQueue2._queue._idbQDb.getAllKeys()).length);
+    const expectedQueue1Keys =
+        (await backgroundSyncQueue._queue._idbQDb.getAllKeys()).length + 2;
+    const expectedQueue2Keys =
+        (await backgroundSyncQueue2._queue._idbQDb.getAllKeys()).length;
+    expect(queue1Keys.length).to.be.equal(expectedQueue1Keys);
+    expect(queue2Keys.length).to.be.equal(expectedQueue2Keys);
   });
 });

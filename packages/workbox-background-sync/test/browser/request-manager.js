@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, sinon, workbox */
+/* global expect, sinon, workbox */
 
 'use strict';
 describe('request-manager test', () => {
@@ -40,13 +40,13 @@ describe('request-manager test', () => {
   });
 
   it('check constructor', () => {
-    chai.assert.isObject(reqManager);
-    chai.assert.isFunction(reqManager.attachSyncHandler);
-    chai.assert.isFunction(reqManager.replayRequest);
-    chai.assert.isFunction(reqManager.replayRequests);
+    expect(reqManager).to.be.an('object');
+    expect(reqManager.attachSyncHandler).to.be.a('function');
+    expect(reqManager.replayRequest).to.be.a('function');
+    expect(reqManager.replayRequests).to.be.a('function');
 
-    chai.assert.equal(reqManager._globalCallbacks, callbacks);
-    chai.assert.equal(reqManager._queue, queue);
+    expect(reqManager._globalCallbacks).to.be.equal(callbacks);
+    expect(reqManager._queue).to.be.equal(queue);
   });
 
   it('check replay', async function() {
@@ -63,12 +63,12 @@ describe('request-manager test', () => {
     await backgroundSyncQueue._requestManager.replayRequests();
 
     // Asset replayDidSucceed callback was called with the correct arguments.
-    chai.assert.equal(callbacks.replayDidSucceed.callCount, 2);
-    chai.assert(callbacks.replayDidSucceed.alwaysCalledWith(
-        sinon.match.string, sinon.match.instanceOf(Response)));
+    expect(callbacks.replayDidSucceed.callCount).to.be.equal(2);
+    expect(callbacks.replayDidSucceed.alwaysCalledWith(
+        sinon.match.string, sinon.match.instanceOf(Response))).to.be.true;
 
     // Assert fetch was called for each replayed request.
-    chai.assert(self.fetch.calledTwice);
+    expect(self.fetch.calledTwice).to.be.true;
 
     await backgroundSyncQueue.pushIntoQueue({request: new Request('/__test/404')});
     try {
@@ -78,10 +78,10 @@ describe('request-manager test', () => {
     }
 
     // Asset replayDidFail callback was called with the correct arguments.
-    chai.assert.equal(callbacks.replayDidSucceed.callCount, 2);
-    chai.assert.equal(callbacks.replayDidFail.callCount, 1);
-    chai.assert(callbacks.replayDidFail.alwaysCalledWith(
-        sinon.match.string, sinon.match.instanceOf(Response)));
+    expect(callbacks.replayDidSucceed.callCount).to.be.equal(2);
+    expect(callbacks.replayDidFail.callCount).to.be.equal(1);
+    expect(callbacks.replayDidFail.alwaysCalledWith(
+        sinon.match.string, sinon.match.instanceOf(Response))).to.be.true;
 
     delete callbacks.replayDidSucceed;
     delete callbacks.replayDidFail;

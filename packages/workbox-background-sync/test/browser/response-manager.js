@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, workbox */
+/* global expect, workbox */
 
 'use strict';
 
@@ -31,7 +31,7 @@ describe('response-manager test', () => {
     const queue = new workbox.backgroundSync.test.BackgroundSyncQueue();
     return idbHelper.put('key', {response: response}).then(()=>{
         return queue.getResponse({id: 'key'}).then((data)=>{
-            chai.assert.equal(data, response);
+            expect(data).to.be.equal(response);
         });
     });
   });
@@ -49,7 +49,7 @@ describe('response-manager test', () => {
             reader.readAsText(cachedResponse.response.body);
             reader.onloadend = function() {
                 const data = reader.result;
-                chai.assert.equal(data, response);
+                expect(data).to.be.equal(response);
                 done();
             };
         });

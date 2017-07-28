@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, sinon, workbox */
+/* global expect, sinon, workbox */
 
 'use strict';
 
@@ -31,40 +31,40 @@ describe('request-queue tests', () => {
   });
 
   it('queue object should exist', () => {
-    chai.assert.isObject(queue);
-    chai.assert.isArray(queue._queue);
-    chai.assert.isString(queue._queueName);
-    chai.assert.isObject(queue._config);
+    expect(queue).to.be.an('object');
+    expect(queue._queue).to.be.an('array');
+    expect(queue._queueName).to.be.a('string');
+    expect(queue._config).to.be.an('object');
   });
 
   it('initialize should not fail for null data', async () => {
-    chai.assert.equal(queue._queue.length, 0);
+    expect(queue._queue.length).to.be.equal(0);
     idbHelper.put(queue._queueName, null);
     await queue.initQueue();
-    chai.assert.equal(queue._queue.length, 0);
+    expect(queue._queue.length).to.be.equal(0);
   });
 
   it('initialize should re-fill the queue', async () => {
-    chai.assert.equal(queue._queue.length, 0);
+    expect(queue._queue.length).to.be.equal(0);
     const hash = await queue.push({
       request: new Request('http://lipsum.com/generate'),
     });
-    chai.assert.equal(queue._queue.length, 1);
+    expect(queue._queue.length).to.be.equal(1);
     queue._queue = [];
-    chai.assert.equal(queue._queue.length, 0);
+    expect(queue._queue.length).to.be.equal(0);
     await queue.initQueue();
-    chai.assert.equal(queue._queue.length, 1);
-    chai.assert.equal(queue._queue[0], hash);
+    expect(queue._queue.length).to.be.equal(1);
+    expect(queue._queue[0]).to.be.equal(hash);
   });
 
   it('queueName is correct', () => {
-    chai.assert.equal(queue._queueName, QUEUE_NAME);
+    expect(queue._queueName).to.be.equal(QUEUE_NAME);
   });
 
   it('config is correct', () => {
-    chai.assert.equal(queue._config.maxAge, MAX_AGE);
-    chai.assert.notEqual(
-      queue._config.maxAge, workbox.backgroundSync.test.Constants.maxAge);
+    expect(queue._config.maxAge).to.be.equal(MAX_AGE);
+    expect(queue._config.maxAge).to.be.not
+        .equal(workbox.backgroundSync.test.Constants.maxAge);
   });
 
   it('push is working', async () => {
@@ -75,12 +75,12 @@ describe('request-queue tests', () => {
       request: new Request('http://lipsum.com/generate'),
     });
 
-    chai.assert.isString(hash);
-    chai.assert.equal(queue._queue.length, queueLength + 1);
+    expect(hash).to.be.a('string');
+    expect(queue._queue.length).to.be.equal(queueLength + 1);
 
-    chai.assert(callbacks.requestWillEnqueue.calledOnce);
-    chai.assert(callbacks.requestWillEnqueue.calledWith(
-        sinon.match.has('request')));
+    expect(callbacks.requestWillEnqueue.calledOnce).to.be.true;
+    expect(callbacks.requestWillEnqueue.calledWith(sinon.match.has('request')))
+        .to.be.true;
 
     delete callbacks.requestWillEnqueue;
   });
@@ -94,9 +94,9 @@ describe('request-queue tests', () => {
 
     const reqData = await queue.getRequestFromQueue({hash});
 
-    chai.assert.hasAllKeys(reqData, ['request', 'config', 'metadata']);
-    chai.assert(callbacks.requestWillDequeue.calledOnce);
-    chai.assert(callbacks.requestWillDequeue.calledWith(reqData));
+    expect(reqData).to.have.all.keys(['request', 'config', 'metadata']);
+    expect(callbacks.requestWillDequeue.calledOnce).to.be.true;
+    expect(callbacks.requestWillDequeue.calledWith(reqData)).to.be.true;
 
     delete callbacks.requestWillDequeue;
   });
@@ -108,10 +108,10 @@ describe('request-queue tests', () => {
     let tempQueue2 = new workbox.backgroundSync.test.RequestQueue({
       idbQDb: idbHelper,
     });
-    chai.assert.equal(tempQueue._config, undefined);
-    chai.assert.equal(tempQueue._queueName,
-      workbox.backgroundSync.test.Constants.defaultQueueName + '_0');
-    chai.assert.equal(tempQueue2._queueName,
-      workbox.backgroundSync.test.Constants.defaultQueueName + '_1');
+    expect(tempQueue._config).to.be.equal(undefined);
+    expect(tempQueue._queueName).to.be
+        .equal(workbox.backgroundSync.test.Constants.defaultQueueName + '_0');
+    expect(tempQueue2._queueName).to.be
+        .equal(workbox.backgroundSync.test.Constants.defaultQueueName + '_1');
   });
 });

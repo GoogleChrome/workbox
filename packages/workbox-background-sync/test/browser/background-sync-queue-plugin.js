@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, workbox */
+/* global expect, workbox */
 
 'use strict';
 
@@ -25,6 +25,6 @@ describe('background-sync-queue-plugin test', () => {
     await backgroundSyncQueue.fetchDidFail({
       request: new Request('http://lipsum.com'),
     });
-    chai.assert.equal(backgroundSyncQueue._queue.queue.length, currentLen + 1);
+    expect(backgroundSyncQueue._queue.queue.length).to.equal(currentLen + 1);
   });
 });

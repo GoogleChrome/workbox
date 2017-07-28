@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, workbox */
+/* global expect, workbox */
 
 'use strict';
 
@@ -27,7 +27,7 @@ describe('broadcast manager test', () => {
     const testReceiverChannel = new BroadcastChannel(channelName);
     testReceiverChannel.onmessage = function() {
       msgRead = true;
-      chai.assert.equal(msgRead, true);
+      expect(msgRead).to.be.true;
       done();
     };
     broadcastManager.broadcastMessage({

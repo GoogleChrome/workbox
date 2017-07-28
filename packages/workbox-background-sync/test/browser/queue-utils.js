@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global chai, workbox */
+/* global expect, workbox */
 
 'use strict';
 
@@ -40,15 +40,15 @@ describe('queue-utils test', () => {
       request,
       config,
     }).then((reqObj) => {
-      chai.assert.isObject(reqObj);
-      chai.assert.isObject(reqObj.config);
-      chai.assert.isObject(reqObj.request);
+      expect(reqObj).to.be.an('object');
+      expect(reqObj.config).to.be.an('object');
+      expect(reqObj.request).to.be.an('object');
 
-      chai.assert.equal(reqObj.config.maxAge, maxAgeTimeStamp);
-      chai.assert.equal(reqObj.request.url, request.url);
-      chai.assert.equal(reqObj.request.mode, request.mode);
-      chai.assert.equal(reqObj.request.method, request.method);
-      chai.assert.equal(reqObj.request.redirect, request.redirect);
+      expect(reqObj.config.maxAge).to.be.equal(maxAgeTimeStamp);
+      expect(reqObj.request.url).to.be.equal(request.url);
+      expect(reqObj.request.mode).to.be.equal(request.mode);
+      expect(reqObj.request.method).to.be.equal(request.method);
+      expect(reqObj.request.redirect).to.be.equal(request.redirect);
     });
   });
 
@@ -63,10 +63,10 @@ describe('queue-utils test', () => {
 
     return queueUtils.getFetchableRequest({idbRequestObject: reqObj})
       .then( (request) => {
-        chai.assert.equal(reqObj.url, request.url);
-        chai.assert.equal(reqObj.mode, request.mode);
-        chai.assert.equal(reqObj.method, request.method);
-        chai.assert.equal(reqObj.redirect, request.redirect);
+        expect(reqObj.url).to.be.equal(request.url);
+        expect(reqObj.mode).to.be.equal(request.mode);
+        expect(reqObj.method).to.be.equal(request.method);
+        expect(reqObj.redirect).to.be.equal(request.redirect);
       });
   });
 });
