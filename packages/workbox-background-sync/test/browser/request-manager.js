@@ -39,7 +39,7 @@ describe('request-manager test', () => {
     done();
   });
 
-  it('check constructor', () => {
+  it('should initialize private methods with the given values iin constructor', () => {
     expect(reqManager).to.be.an('object');
     expect(reqManager.attachSyncHandler).to.be.a('function');
     expect(reqManager.replayRequest).to.be.a('function');
@@ -49,7 +49,7 @@ describe('request-manager test', () => {
     expect(reqManager._queue).to.be.equal(queue);
   });
 
-  it('check replay', async function() {
+  it('should replay all queued request via replay method', async function() {
     sinon.spy(self, 'fetch');
 
     callbacks.replayDidSucceed = sinon.spy();

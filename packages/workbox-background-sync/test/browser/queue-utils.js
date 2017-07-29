@@ -34,7 +34,7 @@ describe('queue-utils test', () => {
     });
   });
 
-  it('test queueableRequest', () => {
+  it('should be able to convert Request object to a javascript object', () => {
     const request = new Request('http://localhost:3001/__echo/date-with-cors/random');
     return queueUtils.getQueueableRequest({
       request,
@@ -52,7 +52,7 @@ describe('queue-utils test', () => {
     });
   });
 
-  it('test fetchableRequest', () => {
+  it('should be able to convert a javascript object to Request object', () => {
     const reqObj = {
       'url': 'http://localhost:3001/__echo/date-with-cors/random',
       'headers': '[]',

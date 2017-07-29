@@ -57,7 +57,7 @@ describe('background sync queue test', () => {
     await backgroundSyncQueue.cleanupQueue();
   });
 
-  it('check defaults', () => {
+  it('should get default values if nothing is given in constructor', () => {
     const defaultsBackgroundSyncQueue
       = new workbox.backgroundSync.test.BackgroundSyncQueue({});
     expect(defaultsBackgroundSyncQueue._queue).to.be.an('object');
@@ -72,7 +72,7 @@ describe('background sync queue test', () => {
         .to.be.equal(JSON.stringify({}));
   });
 
-  it('check parameterised constructor', () =>{
+  it('should take values from when given in constructor', () =>{
     backgroundSyncQueue = new workbox.backgroundSync.test.BackgroundSyncQueue({
       maxRetentionTime: MAX_AGE,
       queueName: QUEUE_NAME,
@@ -86,13 +86,13 @@ describe('background sync queue test', () => {
         .equal(CALLBACKS);
   });
 
-  it('check push proxy', async function() {
+  it('should push request in queue via pushIntoQueue method', async function() {
     await backgroundSyncQueue.pushIntoQueue(
         {request: new Request('/__echo/counter')});
     expect(backgroundSyncQueue._queue.queue.length).to.be.equal(1);
   });
 
-  it('check replay', async function() {
+  it('check replay queued request via replayRequests method', async function() {
     await backgroundSyncQueue.pushIntoQueue(
         {request: new Request('/__echo/counter')});
     await backgroundSyncQueue.pushIntoQueue(
@@ -102,7 +102,7 @@ describe('background sync queue test', () => {
     expect(responseAchieved).to.be.equal(2);
   });
 
-  it('check replay failure with rejected promise', async function() {
+  it('should rejected promise on replay failure', async function() {
     await backgroundSyncQueue.pushIntoQueue(
         {request: new Request('/__echo/counter')});
     await backgroundSyncQueue.pushIntoQueue(
@@ -115,7 +115,7 @@ describe('background sync queue test', () => {
     }
   });
 
-  it('test queue cleanup', async () => {
+  it('should remove requests from queue which are post threir maxRetentionTime', async () => {
     /* code for clearing everything from IDB */
     const backgroundSyncQueue
     = new workbox.backgroundSync.test.BackgroundSyncQueue({

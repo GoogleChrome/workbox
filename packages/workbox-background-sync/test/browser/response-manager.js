@@ -27,7 +27,7 @@ describe('response-manager test', () => {
     resManager = workbox.backgroundSync.test.ResponseManager;
   });
 
-  it('check get', () => {
+  it('should be able to get the Response back from IDB of the given key', () => {
     const queue = new workbox.backgroundSync.test.BackgroundSyncQueue();
     return idbHelper.put('key', {response: response}).then(()=>{
         return queue.getResponse({id: 'key'}).then((data)=>{
@@ -36,7 +36,7 @@ describe('response-manager test', () => {
     });
   });
 
-  it('check put', (done) => {
+  it('should be able to put the Response in IBD with the given key', (done) => {
       resManager.putResponse({
           hash: 'somehash',
           idbObject: {},

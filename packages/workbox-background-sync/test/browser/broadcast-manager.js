@@ -19,7 +19,7 @@
 describe('broadcast manager test', () => {
   const broadcastManager = workbox.backgroundSync.test.BroadcastManager;
 
-  it('check broadcast', function(done) {
+  it('should broadcast message on given channel name', function(done) {
     this.timeout(100);
     let msgRead = false;
     const channelName = 'CHANNEL';

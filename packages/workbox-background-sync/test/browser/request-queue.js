@@ -30,21 +30,21 @@ describe('request-queue tests', () => {
     callbacks,
   });
 
-  it('queue object should exist', () => {
+  it('should initialize with correct object types', () => {
     expect(queue).to.be.an('object');
     expect(queue._queue).to.be.an('array');
     expect(queue._queueName).to.be.a('string');
     expect(queue._config).to.be.an('object');
   });
 
-  it('initialize should not fail for null data', async () => {
+  it('should should not fail for null data', async () => {
     expect(queue._queue.length).to.be.equal(0);
     idbHelper.put(queue._queueName, null);
     await queue.initQueue();
     expect(queue._queue.length).to.be.equal(0);
   });
 
-  it('initialize should re-fill the queue', async () => {
+  it('should re-fill the queue', async () => {
     expect(queue._queue.length).to.be.equal(0);
     const hash = await queue.push({
       request: new Request('http://lipsum.com/generate'),
@@ -57,17 +57,17 @@ describe('request-queue tests', () => {
     expect(queue._queue[0]).to.be.equal(hash);
   });
 
-  it('queueName is correct', () => {
+  it('should fill the queueName correctly', () => {
     expect(queue._queueName).to.be.equal(QUEUE_NAME);
   });
 
-  it('config is correct', () => {
+  it('should configure correctly', () => {
     expect(queue._config.maxAge).to.be.equal(MAX_AGE);
     expect(queue._config.maxAge).to.be.not
         .equal(workbox.backgroundSync.test.Constants.maxAge);
   });
 
-  it('push is working', async () => {
+  it('should push the Request given in the private array', async () => {
     callbacks.requestWillEnqueue = sinon.spy();
 
     const queueLength = queue._queue.length;
@@ -85,7 +85,7 @@ describe('request-queue tests', () => {
     delete callbacks.requestWillEnqueue;
   });
 
-  it('getRequestFromQueue is working', async () => {
+  it('should the the proper Request back via getRequestFromQueue', async () => {
     callbacks.requestWillDequeue = sinon.spy();
 
     const hash = await queue.push({
@@ -101,7 +101,7 @@ describe('request-queue tests', () => {
     delete callbacks.requestWillDequeue;
   });
 
-  it('default config is correct', () => {
+  it('should configure correctly without any optional parameters given', () => {
     let tempQueue = new workbox.backgroundSync.test.RequestQueue({
       idbQDb: idbHelper,
     });

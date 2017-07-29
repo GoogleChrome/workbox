@@ -20,7 +20,7 @@ describe('background-sync-queue-plugin test', () => {
   const backgroundSyncQueue =
       new workbox.backgroundSync.test.BackgroundSyncQueuePlugin({});
 
-  it('check fetchDid fail proxy', async () => {
+  it('should add the request to queue when fetch fails', async () => {
     const currentLen = backgroundSyncQueue._queue.queue.length;
     await backgroundSyncQueue.fetchDidFail({
       request: new Request('http://lipsum.com'),
