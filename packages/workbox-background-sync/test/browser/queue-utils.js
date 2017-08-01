@@ -12,11 +12,11 @@
  */
 
 /* eslint-env mocha, browser */
-/* global expect, workbox */
+/* global workbox */
 
 'use strict';
 
-describe('queue-utils test', () => {
+describe('queue-utils', () => {
   const queueUtils = workbox.backgroundSync.test.QueueUtils;
   const maxAgeTimeStamp = 1000*60*60*24;
   const config = {
@@ -44,11 +44,11 @@ describe('queue-utils test', () => {
       expect(reqObj.config).to.be.an('object');
       expect(reqObj.request).to.be.an('object');
 
-      expect(reqObj.config.maxAge).to.be.equal(maxAgeTimeStamp);
-      expect(reqObj.request.url).to.be.equal(request.url);
-      expect(reqObj.request.mode).to.be.equal(request.mode);
-      expect(reqObj.request.method).to.be.equal(request.method);
-      expect(reqObj.request.redirect).to.be.equal(request.redirect);
+      expect(reqObj.config.maxAge).to.equal(maxAgeTimeStamp);
+      expect(reqObj.request.url).to.equal(request.url);
+      expect(reqObj.request.mode).to.equal(request.mode);
+      expect(reqObj.request.method).to.equal(request.method);
+      expect(reqObj.request.redirect).to.equal(request.redirect);
     });
   });
 
@@ -63,10 +63,10 @@ describe('queue-utils test', () => {
 
     return queueUtils.getFetchableRequest({idbRequestObject: reqObj})
       .then( (request) => {
-        expect(reqObj.url).to.be.equal(request.url);
-        expect(reqObj.mode).to.be.equal(request.mode);
-        expect(reqObj.method).to.be.equal(request.method);
-        expect(reqObj.redirect).to.be.equal(request.redirect);
+        expect(reqObj.url).to.equal(request.url);
+        expect(reqObj.mode).to.equal(request.mode);
+        expect(reqObj.method).to.equal(request.method);
+        expect(reqObj.redirect).to.equal(request.redirect);
       });
   });
 });

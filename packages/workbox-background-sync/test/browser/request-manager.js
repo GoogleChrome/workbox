@@ -12,10 +12,10 @@
  */
 
 /* eslint-env mocha, browser */
-/* global expect, sinon, workbox */
+/* global sinon, workbox */
 
 'use strict';
-describe('request-manager test', () => {
+describe('request-manager', () => {
   const callbacks = {};
   let queue;
   let reqManager;
@@ -39,53 +39,57 @@ describe('request-manager test', () => {
     done();
   });
 
-  it('should initialize private methods with the given values iin constructor', () => {
-    expect(reqManager).to.be.an('object');
-    expect(reqManager.attachSyncHandler).to.be.a('function');
-    expect(reqManager.replayRequest).to.be.a('function');
-    expect(reqManager.replayRequests).to.be.a('function');
+  describe('constructor', () => {
+    it('should initialize private methods with the given values iin constructor', () => {
+      expect(reqManager).to.be.an('object');
+      expect(reqManager.attachSyncHandler).to.be.a('function');
+      expect(reqManager.replayRequest).to.be.a('function');
+      expect(reqManager.replayRequests).to.be.a('function');
 
-    expect(reqManager._globalCallbacks).to.be.equal(callbacks);
-    expect(reqManager._queue).to.be.equal(queue);
+      expect(reqManager._globalCallbacks).to.equal(callbacks);
+      expect(reqManager._queue).to.equal(queue);
+    });
   });
 
-  it('should replay all queued request via replay method', async function() {
-    sinon.spy(self, 'fetch');
+  describe('replay method', () => {
+    it('should replay all queued request via replay method', async function() {
+      sinon.spy(self, 'fetch');
 
-    callbacks.replayDidSucceed = sinon.spy();
-    callbacks.replayDidFail = sinon.spy();
+      callbacks.replayDidSucceed = sinon.spy();
+      callbacks.replayDidFail = sinon.spy();
 
-    const backgroundSyncQueue =
-        new workbox.backgroundSync.test.BackgroundSyncQueue({callbacks});
+      const backgroundSyncQueue =
+          new workbox.backgroundSync.test.BackgroundSyncQueue({callbacks});
 
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
-    await backgroundSyncQueue._requestManager.replayRequests();
-
-    // Asset replayDidSucceed callback was called with the correct arguments.
-    expect(callbacks.replayDidSucceed.callCount).to.be.equal(2);
-    expect(callbacks.replayDidSucceed.alwaysCalledWith(
-        sinon.match.string, sinon.match.instanceOf(Response))).to.be.true;
-
-    // Assert fetch was called for each replayed request.
-    expect(self.fetch.calledTwice).to.be.true;
-
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__test/404')});
-    try {
+      await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
+      await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
       await backgroundSyncQueue._requestManager.replayRequests();
-    } catch (err) {
-      // Error is expected due to 404 response.
-    }
 
-    // Asset replayDidFail callback was called with the correct arguments.
-    expect(callbacks.replayDidSucceed.callCount).to.be.equal(2);
-    expect(callbacks.replayDidFail.callCount).to.be.equal(1);
-    expect(callbacks.replayDidFail.alwaysCalledWith(
-        sinon.match.string, sinon.match.instanceOf(Response))).to.be.true;
+      // Asset replayDidSucceed callback was called with the correct arguments.
+      expect(callbacks.replayDidSucceed.callCount).to.equal(2);
+      expect(callbacks.replayDidSucceed.alwaysCalledWith(
+          sinon.match.string, sinon.match.instanceOf(Response))).to.be.true;
 
-    delete callbacks.replayDidSucceed;
-    delete callbacks.replayDidFail;
+      // Assert fetch was called for each replayed request.
+      expect(self.fetch.calledTwice).to.be.true;
 
-    self.fetch.restore();
+      await backgroundSyncQueue.pushIntoQueue({request: new Request('/__test/404')});
+      try {
+        await backgroundSyncQueue._requestManager.replayRequests();
+      } catch (err) {
+        // Error is expected due to 404 response.
+      }
+
+      // Asset replayDidFail callback was called with the correct arguments.
+      expect(callbacks.replayDidSucceed.callCount).to.equal(2);
+      expect(callbacks.replayDidFail.callCount).to.equal(1);
+      expect(callbacks.replayDidFail.alwaysCalledWith(
+          sinon.match.string, sinon.match.instanceOf(Response))).to.be.ok;
+
+      delete callbacks.replayDidSucceed;
+      delete callbacks.replayDidFail;
+
+      self.fetch.restore();
+    });
   });
 });

@@ -12,11 +12,11 @@
  */
 
 /* eslint-env mocha, browser */
-/* global expect, workbox */
+/* global workbox */
 
 'use strict';
 
-describe('response-manager test', () => {
+describe('response-manager', () => {
   const response = 'VALUE';
   let idbHelper;
   let resManager;
@@ -31,7 +31,7 @@ describe('response-manager test', () => {
     const queue = new workbox.backgroundSync.test.BackgroundSyncQueue();
     return idbHelper.put('key', {response: response}).then(()=>{
         return queue.getResponse({id: 'key'}).then((data)=>{
-            expect(data).to.be.equal(response);
+            expect(data).to.equal(response);
         });
     });
   });
@@ -49,7 +49,7 @@ describe('response-manager test', () => {
             reader.readAsText(cachedResponse.response.body);
             reader.onloadend = function() {
                 const data = reader.result;
-                expect(data).to.be.equal(response);
+                expect(data).to.equal(response);
                 done();
             };
         });

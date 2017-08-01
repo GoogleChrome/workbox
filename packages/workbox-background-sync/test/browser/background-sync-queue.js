@@ -12,7 +12,7 @@
  */
 
 /* eslint-env mocha, browser */
-/* global expect, workbox */
+/* global workbox */
 'use strict';
 
 function delay(timeout) {
@@ -23,7 +23,7 @@ function delay(timeout) {
   });
 }
 
-describe('background sync queue test', () => {
+describe('background sync queue', () => {
   let responseAchieved = 0;
   function onRes() {
     responseAchieved = responseAchieved + 1;
@@ -69,7 +69,7 @@ describe('background sync queue test', () => {
     expect(
         JSON.stringify(
             defaultsBackgroundSyncQueue._requestManager._globalCallbacks))
-        .to.be.equal(JSON.stringify({}));
+        .to.equal(JSON.stringify({}));
   });
 
   it('should take values from when given in constructor', () =>{
@@ -80,8 +80,8 @@ describe('background sync queue test', () => {
     });
     expect(backgroundSyncQueue._queue).to.be.an('object');
     expect(backgroundSyncQueue._requestManager).to.be.an('object');
-    expect(backgroundSyncQueue._queue._queueName).to.be.equal(QUEUE_NAME);
-    expect(backgroundSyncQueue._queue._config.maxAge).to.be.equal(MAX_AGE);
+    expect(backgroundSyncQueue._queue._queueName).to.equal(QUEUE_NAME);
+    expect(backgroundSyncQueue._queue._config.maxAge).to.equal(MAX_AGE);
     expect(backgroundSyncQueue._requestManager._globalCallbacks).to.be
         .equal(CALLBACKS);
   });
@@ -89,7 +89,7 @@ describe('background sync queue test', () => {
   it('should push request in queue via pushIntoQueue method', async function() {
     await backgroundSyncQueue.pushIntoQueue(
         {request: new Request('/__echo/counter')});
-    expect(backgroundSyncQueue._queue.queue.length).to.be.equal(1);
+    expect(backgroundSyncQueue._queue.queue.length).to.equal(1);
   });
 
   it('check replay queued request via replayRequests method', async function() {
@@ -97,9 +97,9 @@ describe('background sync queue test', () => {
         {request: new Request('/__echo/counter')});
     await backgroundSyncQueue.pushIntoQueue(
         {request: new Request('/__echo/counter')});
-    expect(backgroundSyncQueue._queue.queue.length).to.be.equal(2);
+    expect(backgroundSyncQueue._queue.queue.length).to.equal(2);
     await backgroundSyncQueue.replayRequests();
-    expect(responseAchieved).to.be.equal(2);
+    expect(responseAchieved).to.equal(2);
   });
 
   it('should rejected promise on replay failure', async function() {
@@ -111,22 +111,22 @@ describe('background sync queue test', () => {
       await backgroundSyncQueue.replayRequests();
       throw new Error('Replay should have failed because of invalid URL');
     } catch (err) {
-      expect(404).to.be.equal(err[0].status);
+      expect(err[0].status).to.equal(404);
     }
   });
 
   it('should remove requests from queue which are post threir maxRetentionTime', async () => {
     /* code for clearing everything from IDB */
     const backgroundSyncQueue
-    = new workbox.backgroundSync.test.BackgroundSyncQueue({
-      maxRetentionTime: 1,
-    });
+        = new workbox.backgroundSync.test.BackgroundSyncQueue({
+          maxRetentionTime: 1,
+        });
 
     const backgroundSyncQueue2
-    = new workbox.backgroundSync.test.BackgroundSyncQueue({
-      maxRetentionTime: 10000,
-      dbName: 'Queue2',
-    });
+        = new workbox.backgroundSync.test.BackgroundSyncQueue({
+          maxRetentionTime: 10000,
+          dbName: 'Queue2',
+        });
 
     await backgroundSyncQueue.cleanupQueue();
     await backgroundSyncQueue2.cleanupQueue();
@@ -145,7 +145,7 @@ describe('background sync queue test', () => {
         (await backgroundSyncQueue._queue._idbQDb.getAllKeys()).length + 2;
     const expectedQueue2Keys =
         (await backgroundSyncQueue2._queue._idbQDb.getAllKeys()).length;
-    expect(queue1Keys.length).to.be.equal(expectedQueue1Keys);
-    expect(queue2Keys.length).to.be.equal(expectedQueue2Keys);
+    expect(queue1Keys.length).to.equal(expectedQueue1Keys);
+    expect(queue2Keys.length).to.equal(expectedQueue2Keys);
   });
 });

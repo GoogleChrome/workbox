@@ -12,11 +12,11 @@
  */
 
 /* eslint-env mocha, browser */
-/* global expect, workbox */
+/* global workbox */
 
 'use strict';
 
-describe('broadcast manager test', () => {
+describe('broadcast manager', () => {
   const broadcastManager = workbox.backgroundSync.test.BroadcastManager;
 
   it('should broadcast message on given channel name', function(done) {

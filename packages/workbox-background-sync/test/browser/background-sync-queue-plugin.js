@@ -12,11 +12,11 @@
  */
 
 /* eslint-env mocha, browser */
-/* global expect, workbox */
+/* global workbox */
 
 'use strict';
 
-describe('background-sync-queue-plugin test', () => {
+describe('background-sync-queue-plugin', () => {
   const backgroundSyncQueue =
       new workbox.backgroundSync.test.BackgroundSyncQueuePlugin({});
 
