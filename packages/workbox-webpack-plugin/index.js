@@ -62,6 +62,25 @@ class WorkboxBuildWebpackPlugin {
       config.globPatterns = ['**/*.{html,js,css}'];
     }
 
+    if (compilation.options.output.publicPath && !config.manifestTransforms) {
+      const publicPath = compilation.options.output.publicPath;
+      const compiledAssets = [];
+      for (let key in compilation.assets) {
+        if (compilation.assets.hasOwnProperty(key)) {
+          compiledAssets.push(path.resolve(publicPath, './' + key));
+        }
+      }
+      config.manifestTransforms= [(manifestEntries) =>
+          manifestEntries.map((entry) => {
+            if (compiledAssets.indexOf(path.resolve(publicPath, entry.url))
+                !== -1) {
+                  entry.url = publicPath + entry.url;
+                }
+                return entry;
+              }
+          )];
+    }
+
     return config;
   }
 
