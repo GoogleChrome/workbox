@@ -76,7 +76,7 @@ const buildTestBundles = (projectPath) => {
       },
       writeConfig: {
         sourceMap: true,
-        format: 'iife',
+        format: 'es',
         dest: `./packages/${project}/build/test/browser-bundle.js`,
       },
     }),
@@ -90,7 +90,7 @@ const buildTestBundles = (projectPath) => {
       },
       writeConfig: {
         sourceMap: true,
-        format: 'iife',
+        format: 'es',
         dest: `./packages/${project}/build/test/sw-bundle.js`,
       },
     }),
