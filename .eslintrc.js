@@ -11,12 +11,8 @@ module.exports = {
     sourceType: 'module',
   },
   globals: {
-    BroadcastChannel: false,
-    WorkboxSW: false,
-    workbox: false,
   },
   rules: {
-    'linebreak-style': 0,
   },
   overrides: [{
     files: ['**/test/**/*.js', '**/test.js'],
@@ -26,14 +22,12 @@ module.exports = {
     globals: {
       expect: true,
       sinon: true,
-      goog: true,
     },
     rules: {
       'no-console': 0,
       'valid-jsdoc': 0,
       'require-jsdoc': 0,
       'max-len': 0,
-      'no-invalid-this': 0,
     },
   }, {
     files: ['gulp-tasks/*.js'],
