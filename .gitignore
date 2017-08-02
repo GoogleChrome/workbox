@@ -7,3 +7,4 @@ packages/**/LICENSE
 temp
 tmp-*
 !packages/workbox-cli/test/static/example-project-1/node_modules
+packages/**/test/bundle-build/
