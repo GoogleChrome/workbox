@@ -70,6 +70,7 @@ class WorkboxBuildWebpackPlugin {
           compiledAssets.push(path.resolve(publicPath, './' + key));
         }
       }
+			console.log(compiledAssets, publicPath);
       config.manifestTransforms= [(manifestEntries) =>
           manifestEntries.map((entry) => {
             if (compiledAssets.indexOf(path.resolve(publicPath, entry.url))

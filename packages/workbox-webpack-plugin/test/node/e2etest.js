@@ -51,9 +51,8 @@ describe('Tests for webpack plugin', function() {
     });
   });
 
-  afterEach(function() {
+  after(function() {
     this.timeout(10 * 1000);
-
     return fsExtra.remove(tmpDirectory);
   });
 
@@ -139,6 +138,10 @@ describe('Tests for webpack plugin', function() {
   },
   {
     "url": "styles/stylesheet-2.css",
+    "revision": "\\w*"
+  },
+  {
+    "url": "webpackEntry.js",
     "revision": "\\w*"
   }
 \\]\\);`);
