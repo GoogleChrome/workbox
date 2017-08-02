@@ -12,10 +12,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-describe('Test Behaviors of Loading the Script', function() {
+
+describe(`Test Behaviors of Loading the Script`, function() {
   this.timeout(60 * 1000);
 
-  it('should print an error when added to the window.', function() {
+  it(`should print an error when added to the window.`, function() {
     this.timeout(2000);
 
     return new Promise((resolve, reject) => {
