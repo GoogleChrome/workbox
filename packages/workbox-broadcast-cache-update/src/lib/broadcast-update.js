@@ -62,7 +62,7 @@ import {cacheUpdatedMessageType} from './constants';
  * @param {string} input.source A string identifying this library as the source
  *        of the update message.
  */
-function broadcastUpdate({channel, cacheName, url, source}) {
+function broadcastUpdate({channel, cacheName, url, source} = {}) {
   isInstance({channel}, BroadcastChannel);
   isType({cacheName}, 'string');
   isType({source}, 'string');

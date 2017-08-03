@@ -72,7 +72,7 @@ async function cleanupQueue(dbName) {
     return null;
   }
 
-  await Promise.all(queueObj.map(async (queueName)=>{
+  await Promise.all(queueObj.map(async (queueName) => {
     const requestQueues = await db.get(queueName);
     let itemsToKeep = [];
     let deletionPromises = [];

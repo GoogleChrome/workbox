@@ -1,8 +1,8 @@
 const path = require('path');
 const depcheck = require('depcheck');
 
-describe('Test Dependencies', function() {
-  it('should have required dependencies', function() {
+describe(`Test Dependencies`, function() {
+  it(`should have required dependencies`, function() {
     return new Promise((resolve, reject) => {
       depcheck(path.join(__dirname, '..', '..'), {
       ignoreDirs: [
@@ -34,7 +34,7 @@ describe('Test Dependencies', function() {
     });
   });
 
-  it('should have no devDependencies', function() {
+  it(`should have no devDependencies`, function() {
     // This test exists because there have been a number of situations where
     // dependencies have been used from the top level project and NOT from
     // this module itself. So dependencies are checked above and devDependencies

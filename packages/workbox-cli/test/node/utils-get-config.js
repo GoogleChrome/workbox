@@ -5,7 +5,7 @@ const cliHelper = require('../utils/cli-test-helper.js');
 const errors = require('../../src/lib/errors');
 const constants = require('../../src/lib/constants');
 
-describe('Test Get Config', function() {
+describe(`Test Get Config`, function() {
   before(function() {
     proxyquire.noCallThru();
   });
@@ -14,7 +14,7 @@ describe('Test Get Config', function() {
     proxyquire.callThru();
   });
 
-  it('should be able to handle readFile error', function() {
+  it(`should be able to handle readFile error`, function() {
     const configPath = path.join(process.cwd(), constants.defaultConfigName);
     const proxyquireInput = {};
     proxyquireInput[configPath] = null;
@@ -28,7 +28,7 @@ describe('Test Get Config', function() {
     });
   });
 
-  it('should handle non-JS Object config file', function() {
+  it(`should handle non-JS Object config file`, function() {
     const configPath = path.join(process.cwd(), constants.defaultConfigName);
     const proxyquireInput = {};
     proxyquireInput[configPath] = [];

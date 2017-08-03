@@ -6,7 +6,7 @@ const errors = require('../../src/lib/errors.js');
 
 require('chai').should();
 
-describe('Ask for Root Directory', function() {
+describe(`Ask for Root Directory`, function() {
   const globalStubs = [];
   const Q_PATH = '../../src/lib/questions/ask-root-of-web-app.js';
 

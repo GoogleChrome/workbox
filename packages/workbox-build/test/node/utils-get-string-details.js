@@ -1,8 +1,8 @@
 const getCompositeDetails = require('../../src/lib/utils/get-composite-details');
 require('chai').should();
 
-describe('src/lib/utils/get-composite-details.js', function() {
-  it('should return the expected details', function() {
+describe(`src/lib/utils/get-composite-details.js`, function() {
+  it(`should return the expected details`, function() {
     const inputToExpectedDetails = new Map([
       [['/url-one', [{hash: 'abc', size: 1}, {hash: 'def', size: 10}]], {
         file: '/url-one',

@@ -18,11 +18,7 @@
 import * as namespace from '../../src/index.js';
 
 const exportedSymbols = [
-  'ExpressRoute',
-  'NavigationRoute',
-  'RegExpRoute',
-  'Route',
-  'Router',
+  'RevisionedCacheManager',
 ];
 
 describe(`Test Library Surface`, function() {

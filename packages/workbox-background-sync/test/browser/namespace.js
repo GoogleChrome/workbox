@@ -18,11 +18,8 @@
 import * as namespace from '../../src/index.js';
 
 const exportedSymbols = [
-  'ExpressRoute',
-  'NavigationRoute',
-  'RegExpRoute',
-  'Route',
-  'Router',
+  'Queue',
+  'QueuePlugin',
 ];
 
 describe(`Test Library Surface`, function() {

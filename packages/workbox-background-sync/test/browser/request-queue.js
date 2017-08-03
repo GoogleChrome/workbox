@@ -3,71 +3,54 @@
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- */
+*/
 
 /* eslint-env mocha, browser */
-/* global chai, sinon, workbox */
+/* global chai */
 
-'use strict';
+import IDBHelper from '../../../../lib/idb-helper.js';
+import {defaultDBName, defaultQueueName, maxAge}
+    from '../../src/lib/constants.js';
+import RequestQueue from '../../src/lib/request-queue.js';
 
-describe('request-queue tests', () => {
+describe(`request-queue tests`, function() {
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
 
   const callbacks = {};
-  const idbHelper = new workbox.backgroundSync.test.IdbHelper(
-    'bgQueueSyncDB', 1, 'QueueStore');
-  const queue = new workbox.backgroundSync.test.RequestQueue({
+  const idbHelper = new IDBHelper(defaultDBName, 1, 'QueueStore');
+  const queue = new RequestQueue({
     idbQDb: idbHelper,
     config: {maxAge: MAX_AGE},
     queueName: QUEUE_NAME,
     callbacks,
   });
 
-  it('queue object should exist', () => {
+  it(`queue object should exist`, function() {
     chai.assert.isObject(queue);
     chai.assert.isArray(queue._queue);
     chai.assert.isString(queue._queueName);
     chai.assert.isObject(queue._config);
   });
 
-  it('initialize should not fail for null data', async () => {
-    chai.assert.equal(queue._queue.length, 0);
-    idbHelper.put(queue._queueName, null);
-    await queue.initQueue();
-    chai.assert.equal(queue._queue.length, 0);
-  });
-
-  it('initialize should re-fill the queue', async () => {
-    chai.assert.equal(queue._queue.length, 0);
-    const hash = await queue.push({
-      request: new Request('http://lipsum.com/generate'),
-    });
-    chai.assert.equal(queue._queue.length, 1);
-    queue._queue = [];
-    chai.assert.equal(queue._queue.length, 0);
-    await queue.initQueue();
-    chai.assert.equal(queue._queue.length, 1);
-    chai.assert.equal(queue._queue[0], hash);
-  });
-
-  it('queueName is correct', () => {
+  it(`queueName is corrent`, function() {
     chai.assert.equal(queue._queueName, QUEUE_NAME);
   });
 
-  it('config is correct', () => {
+  it(`config is correct`, function() {
     chai.assert.equal(queue._config.maxAge, MAX_AGE);
-    chai.assert.notEqual(
-      queue._config.maxAge, workbox.backgroundSync.test.Constants.maxAge);
+    chai.assert.notEqual(queue._config.maxAge, maxAge);
   });
 
-  it('push is working', async () => {
+  it(`push is working`, async function() {
     callbacks.requestWillEnqueue = sinon.spy();
 
     const queueLength = queue._queue.length;
@@ -85,7 +68,7 @@ describe('request-queue tests', () => {
     delete callbacks.requestWillEnqueue;
   });
 
-  it('getRequestFromQueue is working', async () => {
+  it(`getRequestFromQueue is working`, async function() {
     callbacks.requestWillDequeue = sinon.spy();
 
     const hash = await queue.push({
@@ -101,17 +84,15 @@ describe('request-queue tests', () => {
     delete callbacks.requestWillDequeue;
   });
 
-  it('default config is correct', () => {
-    let tempQueue = new workbox.backgroundSync.test.RequestQueue({
-      idbQDb: idbHelper,
-    });
-    let tempQueue2 = new workbox.backgroundSync.test.RequestQueue({
-      idbQDb: idbHelper,
-    });
+  it(`default config is correct`, function() {
+    let tempQueue = new RequestQueue({idbQDb: idbHelper});
+    let tempQueue2 = new RequestQueue({idbQDb: idbHelper});
     chai.assert.equal(tempQueue._config, undefined);
-    chai.assert.equal(tempQueue._queueName,
-      workbox.backgroundSync.test.Constants.defaultQueueName + '_0');
-    chai.assert.equal(tempQueue2._queueName,
-      workbox.backgroundSync.test.Constants.defaultQueueName + '_1');
+    chai.assert.match(
+        tempQueue._queueName,
+        new RegExp(defaultQueueName + '_\\d+'));
+    chai.assert.match(
+        tempQueue2._queueName,
+        new RegExp(defaultQueueName + '_\\d+'));
   });
 });

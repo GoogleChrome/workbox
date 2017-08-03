@@ -6,7 +6,7 @@ importScripts('/node_modules/sinon/pkg/sinon-no-sourcemaps.js');
 /* globals mocha */
 /* eslint-disable no-unused-vars */
 
-const expect = self.chai.expect;
+self.expect = self.chai.expect;
 self.chai.should();
 mocha.setup({
   ui: 'bdd',

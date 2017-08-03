@@ -1,8 +1,8 @@
 importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-describe('Cache ID', function() {
-  it('should fail on bad cacheId parameter', function() {
+describe(`Cache ID`, function() {
+  it(`should fail on bad cacheId parameter`, function() {
     const EXPECTED_ERROR_NAME = 'bad-cache-id';
     const badInputs = [
       true,
@@ -25,7 +25,7 @@ describe('Cache ID', function() {
     });
   });
 
-  it('should precache and provide runtime cache with cacheId prefix', function() {
+  it(`should precache and provide runtime cache with cacheId prefix`, function() {
     const CACHE_ID = 'CACHE_ID_LOLZ';
     const workboxSW = new WorkboxSW({
       cacheId: CACHE_ID,

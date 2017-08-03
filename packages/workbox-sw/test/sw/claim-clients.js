@@ -1,7 +1,7 @@
 importScripts('/__test/mocha/sw-utils.js');
 importScripts('/__test/bundle/workbox-sw');
 
-describe('Clients Claim parameter', function() {
+describe(`Clients Claim parameter`, function() {
   let stubs = [];
 
   afterEach(function() {
@@ -11,7 +11,7 @@ describe('Clients Claim parameter', function() {
     stubs = [];
   });
 
-  it('should fail on bad clientsClaim parameter', function() {
+  it(`should fail on bad clientsClaim parameter`, function() {
     const EXPECTED_ERROR_NAME = 'bad-clients-claim';
     const badInputs = [
       'Example',

@@ -18,11 +18,14 @@
 import * as namespace from '../../src/index.js';
 
 const exportedSymbols = [
-  'ExpressRoute',
-  'NavigationRoute',
-  'RegExpRoute',
-  'Route',
-  'Router',
+  'CacheFirst',
+  'CacheOnly',
+  'Handler',
+  'NetworkFirst',
+  'NetworkOnly',
+  'RequestWrapper',
+  'StaleWhileRevalidate',
+  'getDefaultCacheName',
 ];
 
 describe(`Test Library Surface`, function() {

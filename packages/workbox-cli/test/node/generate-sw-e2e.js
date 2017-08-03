@@ -9,7 +9,7 @@ const validator = require('../utils/e2e-sw-validator.js');
 
 require('chai').should();
 
-describe('Generate SW End-to-End Tests', function() {
+describe(`Generate SW End-to-End Tests`, function() {
   let tmpDirectory;
   let testServer;
   let baseTestUrl;
@@ -49,7 +49,7 @@ describe('Generate SW End-to-End Tests', function() {
     stubs = [];
   });
 
-  it('should be able to generate a service for example-1 with CLI', function() {
+  it(`should be able to generate a service for example-1 with CLI`, function() {
     this.timeout(120 * 1000);
 
     process.chdir(tmpDirectory);
