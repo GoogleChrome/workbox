@@ -13,8 +13,6 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-
 import WorkboxSW from '../../src';
 
 describe(`Test Library Surface`, function() {

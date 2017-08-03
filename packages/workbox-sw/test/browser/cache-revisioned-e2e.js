@@ -13,8 +13,6 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-
 describe(`cache-revisioned-e2e.js`, function() {
   const deleteIndexedDB = () => {
     return new Promise((resolve, reject) => {

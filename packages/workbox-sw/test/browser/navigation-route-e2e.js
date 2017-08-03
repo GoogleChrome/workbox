@@ -13,8 +13,6 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-
 describe(`End to End Test of registerNavigationRoute()`, function() {
   // This uses {once: true} to ensure that each load event handler is only called once.
   // It also modifies the iframe.src instead of using fetch(), since you can't use fetch()

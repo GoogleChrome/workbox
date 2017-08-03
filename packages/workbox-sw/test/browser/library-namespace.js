@@ -13,8 +13,6 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-
 describe(`Test Behaviors of Loading the Script`, function() {
   this.timeout(5 * 60 * 1000);
 
