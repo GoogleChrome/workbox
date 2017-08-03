@@ -33,13 +33,11 @@ describe(`Test Behaviors of Loading the Script`, function() {
   };
 
   beforeEach(function() {
-    return window.goog.swUtils.cleanState()
-    .then(deleteIndexedDB);
+    return goog.swUtils.cleanState().then(deleteIndexedDB);
   });
 
   afterEach(function() {
-    return window.goog.swUtils.cleanState()
-    .then(deleteIndexedDB);
+    return goog.swUtils.cleanState().then(deleteIndexedDB);
   });
 
   it(`should print an error when added to the window.`, function() {
