@@ -34,4 +34,13 @@ describe(`Cache ID`, function() {
     workboxSW._revisionedCacheManager.getCacheName().indexOf(CACHE_ID).should.not.equal(-1);
     workboxSW.runtimeCacheName.indexOf(CACHE_ID).should.not.equal(-1);
   });
+
+  it(`should honor {excludeCacheId: true} when creating a strategy`, function() {
+    const cacheId = 'CACHE_ID';
+
+    const workboxSW = new WorkboxSW({cacheId});
+
+    const strategy = workboxSW.strategies.cacheFirst({excludeCacheId: true});
+    expect(strategy.requestWrapper.cacheName).not.to.have.string(cacheId);
+  });
 });
