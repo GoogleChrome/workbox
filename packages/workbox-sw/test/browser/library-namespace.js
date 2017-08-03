@@ -13,6 +13,8 @@
  limitations under the License.
 */
 
+/* eslint-env mocha, browser */
+
 describe(`Test Behaviors of Loading the Script`, function() {
   this.timeout(5 * 60 * 1000);
 
@@ -33,13 +35,11 @@ describe(`Test Behaviors of Loading the Script`, function() {
   };
 
   beforeEach(function() {
-    return window.goog.swUtils.cleanState()
-    .then(deleteIndexedDB);
+    return goog.swUtils.cleanState().then(deleteIndexedDB);
   });
 
   afterEach(function() {
-    return window.goog.swUtils.cleanState()
-    .then(deleteIndexedDB);
+    return goog.swUtils.cleanState().then(deleteIndexedDB);
   });
 
   it(`should print an error when added to the window.`, function() {
