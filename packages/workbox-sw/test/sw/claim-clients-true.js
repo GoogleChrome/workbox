@@ -37,7 +37,9 @@ describe(`Clients Claim parameter`, function() {
     stubs = [];
   });
 
-  it(`should claim when passed in true (clientsClaim)`, function() {
+  // TODO(gauntface): skipped due to
+  // https://github.com/GoogleChrome/workbox/pull/717
+  it.skip(`should claim when passed in true (clientsClaim)`, function() {
     let called = false;
     const claimStub = sinon.stub(self.clients, 'claim').callsFake(() => {
       called = true;

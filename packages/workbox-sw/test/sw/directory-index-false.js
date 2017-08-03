@@ -25,7 +25,9 @@ describe(`Test Directory Index`, function() {
     stubs = [];
   });
 
-  it(`should do nothing if passing in false`, function() {
+  // TODO(gauntface): skipped due to
+  // https://github.com/GoogleChrome/workbox/pull/717
+  it.skip(`should do nothing if passing in false`, function() {
     const EXAMPLE_URL = '/example/url/';
 
     let calledWithIndex = false;
