@@ -132,6 +132,10 @@ class Router extends SWRoutingRouter {
    * @param {Array<RegExp>} [options.blacklist] Defaults to an empty blacklist.
    * @param {Array<RegExp>} [options.whitelist] Defaults to `[/./]`, which will
    *        match all request URLs.
+   * @param {function} [options.match] A function which is used to determine
+   *        if the current path is matched. This can be used with the whitelist
+   *        param. If you are using an external router, you can use this option
+   *        to hook into the routers matcher.
    * @param {String} [options.cacheName] The name of the cache which contains
    *        the cached response for `url`. Defaults to the name of the cache
    *        used by precache().
@@ -151,6 +155,7 @@ class Router extends SWRoutingRouter {
       handler: () => caches.match(url, {cacheName}),
       whitelist: options.whitelist || [/./],
       blacklist: options.blacklist || [],
+      match: options.match || ((path) => true),
     })});
   }
 }

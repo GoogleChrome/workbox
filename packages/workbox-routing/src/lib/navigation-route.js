@@ -14,7 +14,7 @@
  */
 
 import Route from './route';
-import {isArrayOfClass} from '../../../../lib/assert';
+import {isArrayOfClass, atLeastOne, isType} from '../../../../lib/assert';
 import logHelper from '../../../../lib/log-helper';
 
 /**
@@ -60,6 +60,8 @@ class NavigationRoute extends Route {
    * @param {Object} input
    * @param {Array<RegExp>} input.whitelist If any of these patterns match,
    * the route will handle the request (assuming the blacklist doesn't match).
+   * @param {function} input.match The function that determines whether the
+   * path should be served by the handler.
    * @param {Array<RegExp>} [input.blacklist] If any of these patterns match,
    * the route will not handle the request (even if a whitelist entry matches).
    * @param {function|module:workbox-runtime-caching.Handler} input.handler The
@@ -69,21 +71,35 @@ class NavigationRoute extends Route {
    *   module:workbox-routing.Route~handlerCallback} for the callback
    * definition.
    */
-  constructor({whitelist, blacklist, handler} = {}) {
-    isArrayOfClass({whitelist}, RegExp);
+  constructor({whitelist, match, blacklist, handler} = {}) {
+    atLeastOne({whitelist, match});
+
+    if (whitelist) {
+      isArrayOfClass({whitelist}, RegExp);
+    } else {
+      whitelist = [/./];
+    }
+
     if (blacklist) {
       isArrayOfClass({blacklist}, RegExp);
     } else {
       blacklist = [];
     }
 
-    const match = ({event, url}) => {
+    if (match) {
+      isType({match}, 'function');
+    } else {
+      match = () => true;
+    }
+
+    const eventMatcher = ({event, url}) => {
       let matched = false;
       let message;
 
       if (event.request.mode === 'navigate') {
         const pathnameAndSearch = url.pathname + url.search;
-        if (whitelist.some((regExp) => regExp.test(pathnameAndSearch))) {
+        if (whitelist.some((regExp) => regExp.test(pathnameAndSearch)) &&
+            match(pathnameAndSearch)) {
           if (blacklist.some((regExp) => regExp.test(pathnameAndSearch))) {
             message = `The navigation route is not being used, since the ` +
               `request URL matches both the whitelist and blacklist.`;
@@ -93,7 +109,7 @@ class NavigationRoute extends Route {
           }
         } else {
           message = `The navigation route is not being used, since the ` +
-            `URL being navigated to doesn't match the whitelist.`;
+            `URL being navigated to doesn't match the whitelist or match.`;
         }
 
         logHelper.debug({
@@ -106,7 +122,7 @@ class NavigationRoute extends Route {
       return matched;
     };
 
-    super({match, handler, method: 'GET'});
+    super({match: eventMatcher, handler, method: 'GET'});
   }
 }
 
