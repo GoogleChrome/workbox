@@ -5,10 +5,10 @@ const errors = require('../../src/lib/errors.js');
 
 require('chai').should();
 
-describe('src/lib/utils/get-file-hash.js', function() {
+describe(`src/lib/utils/get-file-hash.js`, function() {
   const INJECTED_ERROR = new Error('Injected Error');
 
-  it('should handle readFileSync Error', function() {
+  it(`should handle readFileSync Error`, function() {
     const getFileHash = proxyquire('../../src/lib/utils/get-file-hash', {
       fs: {
         readFileSync: () => {
@@ -29,7 +29,7 @@ describe('src/lib/utils/get-file-hash.js', function() {
     }
   });
 
-  it('should return string for valid file', function() {
+  it(`should return string for valid file`, function() {
     const getFileHash = proxyquire('../../src/lib/utils/get-file-hash', {
       fs: {
         readFileSync: (file) => {
@@ -47,7 +47,7 @@ describe('src/lib/utils/get-file-hash.js', function() {
     }
   });
 
-  it('should handle unexpected input', function() {
+  it(`should handle unexpected input`, function() {
     // Proxyquire's old version is used if we don't clear it.
     clearRequire('../../src/lib/utils/get-file-hash');
     const getFileHash = require('../../src/lib/utils/get-file-hash');

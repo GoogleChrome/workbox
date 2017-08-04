@@ -5,7 +5,7 @@ const errors = require('../../src/lib/errors.js');
 
 require('chai').should();
 
-describe('Ask to Save to Config File', function() {
+describe(`Ask to Save to Config File`, function() {
   const globalStubs = [];
   const Q_PATH = '../../src/lib/questions/ask-save-config.js';
 
@@ -52,7 +52,7 @@ describe('Ask to Save to Config File', function() {
     });
   };
 
-  it('should handle failing inquirer', function() {
+  it(`should handle failing inquirer`, function() {
     const inquirer = require('inquirer');
     const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.reject(INJECTED_ERROR);
@@ -68,7 +68,7 @@ describe('Ask to Save to Config File', function() {
     return checkError(askSaveConfigFile, 'unable-to-get-save-config');
   });
 
-  it('should return correct value', function() {
+  it(`should return correct value`, function() {
     const inquirer = require('inquirer');
     const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.resolve({

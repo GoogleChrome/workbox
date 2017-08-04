@@ -6,7 +6,7 @@ const validator = require('../../../workbox-cli/test/utils/e2e-sw-validator.js')
 
 require('chai').should();
 
-describe('Generate SW End-to-End Tests', function() {
+describe(`Generate SW End-to-End Tests`, function() {
   let tmpDirectory;
   let testServer;
   let baseTestUrl;
@@ -34,7 +34,7 @@ describe('Generate SW End-to-End Tests', function() {
     return testServer.stop();
   });
 
-  it('should be able to generate a service for example-1 with workbox-build', function() {
+  it(`should be able to generate a service for example-1 with workbox-build`, function() {
     this.timeout(120 * 1000);
 
     process.chdir(tmpDirectory);

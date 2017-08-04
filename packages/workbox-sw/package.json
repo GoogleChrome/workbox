@@ -22,5 +22,13 @@
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-sw",
   "main": "build/importScripts/workbox-sw.prod.v1.1.0.js",
-  "module": "build/modules/workbox-sw.prod.v1.1.0.mjs"
+  "module": "build/modules/workbox-sw.prod.v1.1.0.mjs",
+  "devDependencies": {
+    "workbox-broadcast-cache-update": "^1.1.0",
+    "workbox-cache-expiration": "^1.2.0",
+    "workbox-cacheable-response": "^1.1.0",
+    "workbox-precaching": "^1.2.0",
+    "workbox-routing": "^1.1.0",
+    "workbox-runtime-caching": "^1.2.0"
+  }
 }
