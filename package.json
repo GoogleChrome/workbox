@@ -4,7 +4,9 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "local-lerna": "lerna"
+    "local-lerna": "lerna",
+    "lint": "eslint '.' --ignore-path .gitignore",
+    "bot": "pr-bot"
   },
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
@@ -20,6 +22,28 @@
   },
   "homepage": "https://github.com/GoogleChrome/workbox#readme",
   "devDependencies": {
-    "lerna": "^2.0.0"
+    "chai": "^4.1.0",
+    "chalk": "^2.0.1",
+    "eslint": "^4.3.0",
+    "eslint-config-google": "^0.9.1",
+    "fs-extra": "^4.0.1",
+    "glob": "^7.1.2",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-spawn-mocha": "^3.3.1",
+    "lerna": "^2.0.0",
+    "mocha": "^3.5.0",
+    "path-extra": "^4.2.0",
+    "pr-bot": "0.0.4",
+    "rollup": "^0.45.2",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-multi-entry": "^2.0.1",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-replace": "^1.1.1",
+    "rollup-stream": "^1.23.1",
+    "sinon": "^2.4.1",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "common-tags": "^1.4.0"
   }
 }
