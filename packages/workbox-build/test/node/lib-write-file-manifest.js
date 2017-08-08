@@ -4,11 +4,11 @@ const errors = require('../../src/lib/errors.js');
 
 require('chai').should();
 
-describe('src/lib/utils/write-file-manifest.js', function() {
+describe(`src/lib/utils/write-file-manifest.js`, function() {
   const INJECTED_ERROR = new Error('Injected Error');
   const FAKE_PATH = 'fake-path/manifest-name.js';
 
-  it('should handle a bad manifest format', function() {
+  it(`should handle a bad manifest format`, function() {
     const writeFileManifest = require('../../src/lib/utils/write-file-manifest');
     return writeFileManifest(FAKE_PATH, [], 'invalid-format')
       .then(() => {
@@ -21,7 +21,7 @@ describe('src/lib/utils/write-file-manifest.js', function() {
       });
   });
 
-  it('should handle bad manifest path', function() {
+  it(`should handle bad manifest path`, function() {
     const badInputs = [
       true,
       false,
@@ -47,7 +47,7 @@ describe('src/lib/utils/write-file-manifest.js', function() {
     }, Promise.resolve());
   });
 
-  it('should handle bad manifest entries', function() {
+  it(`should handle bad manifest entries`, function() {
     const badInputs = [
       true,
       false,
@@ -80,7 +80,7 @@ describe('src/lib/utils/write-file-manifest.js', function() {
     }, Promise.resolve());
   });
 
-  it('should handle failing mkdirp.sync', function() {
+  it(`should handle failing mkdirp.sync`, function() {
     const writeFileManifest = proxyquire('../../src/lib/utils/write-file-manifest', {
       mkdirp: (dirname, cb) => {
         cb(INJECTED_ERROR);
@@ -98,7 +98,7 @@ describe('src/lib/utils/write-file-manifest.js', function() {
     });
   });
 
-  it('should handle fs.readFile error when checking template', function() {
+  it(`should handle fs.readFile error when checking template`, function() {
     const writeFileManifest = proxyquire('../../src/lib/utils/write-file-manifest', {
       mkdirp: (dirname, cb) => {
         cb();
@@ -121,7 +121,7 @@ describe('src/lib/utils/write-file-manifest.js', function() {
     });
   });
 
-  it('should handle error when populating template', function() {
+  it(`should handle error when populating template`, function() {
     const writeFileManifest = proxyquire('../../src/lib/utils/write-file-manifest', {
       'mkdirp': (dirname, cb) => {
         cb();
@@ -147,7 +147,7 @@ describe('src/lib/utils/write-file-manifest.js', function() {
     });
   });
 
-  it('should handle error writing file', function() {
+  it(`should handle error writing file`, function() {
     const writeFileManifest = proxyquire('../../src/lib/utils/write-file-manifest', {
       'mkdirp': (dirname, cb) => {
         cb();

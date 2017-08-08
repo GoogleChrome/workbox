@@ -22,18 +22,18 @@ const webpackCompilation = {
 let webpackEventCallback;
 const webpackDoneCallback = sinon.spy();
 // Create webpack callback handler
-sinon.stub(webpackCompilation.compiler, 'plugin').callsFake((event, callback)=> {
+sinon.stub(webpackCompilation.compiler, 'plugin').callsFake((event, callback) => {
   webpackEventCallback = callback;
 });
 
-webpackCompilation.options={
+webpackCompilation.options = {
   output: {
     path: OUTPUT_DIR,
   },
 };
 
-describe('Tests for webpack plugin', function() {
-  beforeEach(()=>{
+describe(`Tests for webpack plugin`, function() {
+  beforeEach(function() {
     // Build a proxy workbox-build
     proxySwBuild = {
       injectManifest: function() {},
@@ -59,7 +59,7 @@ describe('Tests for webpack plugin', function() {
     });
   });
 
-  it('should mutate config accordin to webpack defaults', () => {
+  it(`should mutate config accordin to webpack defaults`, function() {
     let swWebpackPlugin = new SwWebpackPlugin({});
     assert.equal(swWebpackPlugin.getConfig(webpackCompilation).globDirectory,
       OUTPUT_DIR);
@@ -71,7 +71,7 @@ describe('Tests for webpack plugin', function() {
       CUSTOM_ROOT_DIRECTORY);
   });
 
-  it('should call generateSw when swSrc is not given', () => {
+  it(`should call generateSw when swSrc is not given`, function() {
     let swWebpackPlugin = new SwWebpackPlugin({});
     swWebpackPlugin.apply(webpackCompilation.compiler);
     // Plugin is being called once
@@ -86,7 +86,7 @@ describe('Tests for webpack plugin', function() {
     assert.isTrue(proxySwBuild.injectManifest.notCalled);
   });
 
-  it('should call injectManifest when swSrc is given', () => {
+  it(`should call injectManifest when swSrc is given`, function() {
     let swWebpackPlugin = new SwWebpackPlugin({
       swSrc: './sw.js',
     });

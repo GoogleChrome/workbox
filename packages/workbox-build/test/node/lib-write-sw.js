@@ -2,7 +2,7 @@ const proxyquire = require('proxyquire');
 const errors = require('../../src/lib/errors.js');
 const expect = require('chai').expect;
 
-describe('lib/write-sw.js', function() {
+describe(`lib/write-sw.js`, function() {
   const INJECTED_ERROR = new Error('Injected Error');
   const globalStubs = [];
 
@@ -12,7 +12,7 @@ describe('lib/write-sw.js', function() {
     });
   });
 
-  it('should handle failing mkdirp.sync', function() {
+  it(`should handle failing mkdirp.sync`, function() {
     const writeSw = proxyquire('../../src/lib/write-sw', {
       mkdirp: {
         sync: () => {
@@ -41,7 +41,7 @@ describe('lib/write-sw.js', function() {
     });
   });
 
-  it('should handle fs.readFile error when checking template', function() {
+  it(`should handle fs.readFile error when checking template`, function() {
     const writeSw = proxyquire('../../src/lib/write-sw', {
       mkdirp: {
         sync: () => {
@@ -75,7 +75,7 @@ describe('lib/write-sw.js', function() {
     });
   });
 
-  it('should handle error when populating template', function() {
+  it(`should handle error when populating template`, function() {
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
@@ -112,7 +112,7 @@ describe('lib/write-sw.js', function() {
     });
   });
 
-  it('should handle error writing file', function() {
+  it(`should handle error writing file`, function() {
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
@@ -154,7 +154,7 @@ describe('lib/write-sw.js', function() {
     });
   });
 
-  it('should handle error writing file due to swDest being a directory', async function() {
+  it(`should handle error writing file due to swDest being a directory`, async function() {
     const writeSw = proxyquire('../../src/lib/write-sw', {
       'mkdirp': {sync: () => {}},
       'fs': {
@@ -177,7 +177,7 @@ describe('lib/write-sw.js', function() {
     }
   });
 
-  it('should be able to generate sw for template', function() {
+  it(`should be able to generate sw for template`, function() {
     const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
@@ -236,7 +236,7 @@ workboxSW.precache(fileManifest);
       'fake-path/');
   });
 
-  it('should be able to generate sw for template with cacheId', function() {
+  it(`should be able to generate sw for template with cacheId`, function() {
     const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
@@ -300,7 +300,7 @@ workboxSW.precache(fileManifest);
       });
   });
 
-  it('should be able to generate sw for template with directoryIndex', function() {
+  it(`should be able to generate sw for template with directoryIndex`, function() {
     const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
@@ -364,7 +364,7 @@ workboxSW.precache(fileManifest);
       });
   });
 
-  it('should be able to generate sw for template with handleFetch', function() {
+  it(`should be able to generate sw for template with handleFetch`, function() {
     const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
@@ -428,7 +428,7 @@ workboxSW.precache(fileManifest);
       });
   });
 
-  it('should be able to generate sw for template with skipWaiting', function() {
+  it(`should be able to generate sw for template with skipWaiting`, function() {
     const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
@@ -492,7 +492,7 @@ workboxSW.precache(fileManifest);
       });
   });
 
-  it('should be able to generate sw for template with clientsClaim', function() {
+  it(`should be able to generate sw for template with clientsClaim`, function() {
     const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
@@ -556,7 +556,7 @@ workboxSW.precache(fileManifest);
       });
   });
 
-  it('should be able to generate sw for template with navigateFallback', function() {
+  it(`should be able to generate sw for template with navigateFallback`, function() {
     const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
@@ -619,7 +619,7 @@ workboxSW.router.registerNavigationRoute("/shell");
       });
   });
 
-  it('should be able to generate sw for template with navigateFallback and whitelist', function() {
+  it(`should be able to generate sw for template with navigateFallback and whitelist`, function() {
       const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
@@ -685,7 +685,7 @@ workboxSW.router.registerNavigationRoute("/shell", {
         });
     });
 
-  it('should be able to generate sw for template with runtimeCaching', function() {
+  it(`should be able to generate sw for template with runtimeCaching`, function() {
     const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
@@ -822,7 +822,7 @@ workboxSW.router.registerRoute(/\\/articles\\//, workboxSW.strategies.staleWhile
       });
   });
 
-  it('should be able to generate sw for template with navigateFallback and whitelist', function() {
+  it(`should be able to generate sw for template with navigateFallback and whitelist`, function() {
       const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
@@ -886,7 +886,7 @@ workboxSW.precache(fileManifest);
       });
   });
 
-  it('should correctly handle diff sw output from globDirectory output', function() {
+  it(`should correctly handle diff sw output from globDirectory output`, function() {
       const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**

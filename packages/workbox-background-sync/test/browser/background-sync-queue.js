@@ -3,27 +3,27 @@
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- */
+*/
 
 /* eslint-env mocha, browser */
-/* global workbox */
-'use strict';
+import BackgroundSyncQueue from '../../src/lib/background-sync-queue.js';
+import * as Constants from '../../src/lib/constants.js';
 
 function delay(timeout) {
   return new Promise((resolve, reject) => {
-    setTimeout(function() {
-      resolve();
-    }, timeout);
+    setTimeout(() => resolve(), timeout);
   });
 }
 
-describe('background sync queue', () => {
+describe(`background sync queue`, function() {
   let responseAchieved = 0;
   function onRes() {
     responseAchieved = responseAchieved + 1;
@@ -41,7 +41,7 @@ describe('background sync queue', () => {
 
   beforeEach(async function() {
     responseAchieved = 0;
-    backgroundSyncQueue = new workbox.backgroundSync.test.BackgroundSyncQueue({
+    backgroundSyncQueue = new BackgroundSyncQueue({
       maxRetentionTime: MAX_AGE,
       callbacks: CALLBACKS,
     });
@@ -57,23 +57,22 @@ describe('background sync queue', () => {
     await backgroundSyncQueue.cleanupQueue();
   });
 
-  it('should get default values if nothing is given in constructor', () => {
-    const defaultsBackgroundSyncQueue
-      = new workbox.backgroundSync.test.BackgroundSyncQueue({});
+  it(`should get default values if nothing is given in constructor`, function() {
+    const defaultsBackgroundSyncQueue = new BackgroundSyncQueue({});
     expect(defaultsBackgroundSyncQueue._queue).to.be.an('object');
     expect(defaultsBackgroundSyncQueue._requestManager).to.be.an('object');
     expect(defaultsBackgroundSyncQueue._queue._queueName).to.be
-        .equal(workbox.backgroundSync.test.Constants.defaultQueueName + '_1');
+        .equal(Constants.defaultQueueName + '_2');
     expect(defaultsBackgroundSyncQueue._queue._config.maxAge).to.be
-        .equal(workbox.backgroundSync.test.Constants.maxAge);
+        .equal(Constants.maxAge);
     expect(
         JSON.stringify(
             defaultsBackgroundSyncQueue._requestManager._globalCallbacks))
         .to.equal(JSON.stringify({}));
   });
 
-  it('should take values from when given in constructor', () =>{
-    backgroundSyncQueue = new workbox.backgroundSync.test.BackgroundSyncQueue({
+  it(`should take values from when given in constructor`, function() {
+    backgroundSyncQueue = new BackgroundSyncQueue({
       maxRetentionTime: MAX_AGE,
       queueName: QUEUE_NAME,
       callbacks: CALLBACKS,
@@ -86,27 +85,32 @@ describe('background sync queue', () => {
         .equal(CALLBACKS);
   });
 
-  it('should push request in queue via pushIntoQueue method', async function() {
-    await backgroundSyncQueue.pushIntoQueue(
-        {request: new Request('/__echo/counter')});
+  it(`should push request in queue via pushIntoQueue method`, async function() {
+    await backgroundSyncQueue.pushIntoQueue({
+      request: new Request('/__echo/counter'),
+    });
     expect(backgroundSyncQueue._queue.queue.length).to.equal(1);
   });
 
-  it('check replay queued request via replayRequests method', async function() {
-    await backgroundSyncQueue.pushIntoQueue(
-        {request: new Request('/__echo/counter')});
-    await backgroundSyncQueue.pushIntoQueue(
-        {request: new Request('/__echo/counter')});
+  it(`check replay queued request via replayRequests method`, async function() {
+    await backgroundSyncQueue.pushIntoQueue({
+      request: new Request('/__echo/counter'),
+    });
+    await backgroundSyncQueue.pushIntoQueue({
+      request: new Request('/__echo/counter'),
+    });
     expect(backgroundSyncQueue._queue.queue.length).to.equal(2);
     await backgroundSyncQueue.replayRequests();
     expect(responseAchieved).to.equal(2);
   });
 
-  it('should rejected promise on replay failure', async function() {
-    await backgroundSyncQueue.pushIntoQueue(
-        {request: new Request('/__echo/counter')});
-    await backgroundSyncQueue.pushIntoQueue(
-        {request: new Request('/__test/404')});
+  it(`should rejected promise on replay failure`, async function() {
+    await backgroundSyncQueue.pushIntoQueue({
+      request: new Request('/__echo/counter'),
+    });
+    await backgroundSyncQueue.pushIntoQueue({
+      request: new Request('/__test/404'),
+    });
     try {
       await backgroundSyncQueue.replayRequests();
       throw new Error('Replay should have failed because of invalid URL');
@@ -115,27 +119,30 @@ describe('background sync queue', () => {
     }
   });
 
-  it('should remove requests from queue which are post threir maxRetentionTime', async () => {
+  it(`should remove requests from queue which are post threir maxRetentionTime`, async function() {
     /* code for clearing everything from IDB */
     const backgroundSyncQueue
-        = new workbox.backgroundSync.test.BackgroundSyncQueue({
+        = new BackgroundSyncQueue({
           maxRetentionTime: 1,
         });
 
     const backgroundSyncQueue2
-        = new workbox.backgroundSync.test.BackgroundSyncQueue({
+        = new BackgroundSyncQueue({
           maxRetentionTime: 10000,
           dbName: 'Queue2',
         });
 
     await backgroundSyncQueue.cleanupQueue();
     await backgroundSyncQueue2.cleanupQueue();
-    await backgroundSyncQueue.pushIntoQueue(
-        {request: new Request('/__echo/counter')});
-    await backgroundSyncQueue.pushIntoQueue(
-        {request: new Request('/__echo/counter')});
-    await backgroundSyncQueue2.pushIntoQueue(
-        {request: new Request('/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({
+      request: new Request('/__echo/counter'),
+    });
+    await backgroundSyncQueue.pushIntoQueue({
+      request: new Request('/__echo/counter'),
+    });
+    await backgroundSyncQueue2.pushIntoQueue({
+      request: new Request('/__echo/counter'),
+    });
     const queue1Keys = (await backgroundSyncQueue._queue._idbQDb.getAllKeys());
     const queue2Keys = (await backgroundSyncQueue2._queue._idbQDb.getAllKeys());
     await delay(100);

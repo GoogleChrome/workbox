@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-describe('Test Behaviors of Loading the Script', function() {
+describe(`Test Behaviors of Loading the Script`, function() {
   this.timeout(5 * 60 * 1000);
 
   const deleteIndexedDB = () => {
@@ -33,16 +33,14 @@ describe('Test Behaviors of Loading the Script', function() {
   };
 
   beforeEach(function() {
-    return window.goog.swUtils.cleanState()
-    .then(deleteIndexedDB);
+    return goog.swUtils.cleanState().then(deleteIndexedDB);
   });
 
   afterEach(function() {
-    return window.goog.swUtils.cleanState()
-    .then(deleteIndexedDB);
+    return goog.swUtils.cleanState().then(deleteIndexedDB);
   });
 
-  it('should print an error when added to the window.', function() {
+  it(`should print an error when added to the window.`, function() {
     this.timeout(2000);
 
     return new Promise((resolve, reject) => {

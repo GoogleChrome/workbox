@@ -27,6 +27,45 @@ The main purpose of this repository is to continue evolving the Workbox librarie
 
 Please read the [guide to contributing](CONTRIBUTING.md) prior to filing any pull requests.
 
+<h2>Core Team</h2>
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/jeffposnick.png?s=150">
+        <br>
+        <a href="https://github.com/jeffposnick">Jeff Posnick</a>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/gauntface.png?s=150">
+        <br>
+        <a href="https://github.com/gauntface">Matt Gaunt</a>
+      </td>
+      <td align="center" width="20%" valign="top">
+        <img width="100" height="100" src="https://github.com/addyosmani.png?s=150">
+        <br>
+        <a href="https://github.com/addyosmani">Addy Osmani</a>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/philipwalton.png?s=150">
+        <br>
+        <a href="https://github.com/philipwalton">Philip Walton</a>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/prateekbh.png?s=150">
+        <br>
+        <a href="https://github.com/prateekbh">Prateek Bhatnagar</a>
+      </td>
+       <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/kaycebasques.png?s=150">
+        <br>
+        <a href="https://github.com/kaycebasques">Kayce Basques</a>
+      </td>
+     </tr>
+  </tbody>
+</table>
+
 ## License
 
 Copyright 2017 Google, Inc.

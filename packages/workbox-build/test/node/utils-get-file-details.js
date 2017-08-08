@@ -5,10 +5,10 @@ const errors = require('../../src/lib/errors.js');
 
 require('chai').should();
 
-describe('src/lib/utils/get-file-details.js', function() {
+describe(`src/lib/utils/get-file-details.js`, function() {
   const INJECTED_ERROR = new Error('Injected Error');
 
-  it('should handle glob sync error', function() {
+  it(`should handle glob sync error`, function() {
     const getFileDetails = proxyquire('../../src/lib/utils/get-file-details', {
       glob: {
         sync: () => {
@@ -48,7 +48,7 @@ describe('src/lib/utils/get-file-details.js', function() {
     }
   });
 
-  it('should return array of file details, minus null values', function() {
+  it(`should return array of file details, minus null values`, function() {
     const EXAMPLE_DIRECTORY = './EXAMPLE_DIRECTORY';
     const INJECTED_SIZE = 1234;
     const INJECTED_HASH = 'example-hash';
@@ -96,7 +96,7 @@ describe('src/lib/utils/get-file-details.js', function() {
     });
   });
 
-  it('should return array of file details, minus glob ignore values', function() {
+  it(`should return array of file details, minus glob ignore values`, function() {
     const EXAMPLE_DIRECTORY = './EXAMPLE_DIRECTORY';
     const INJECTED_SIZE = 1234;
     const INJECTED_HASH = 'example-hash';

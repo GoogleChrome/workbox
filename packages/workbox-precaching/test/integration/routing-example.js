@@ -9,7 +9,7 @@ const testServerGen = require('../../../../utils/test-server-generator.js');
  * is possible.
  */
 module.exports = (webdriverCb) => {
-  describe('Routing Example', function() {
+  describe(`Routing Example`, function() {
     let tmpDirectory;
     let testServer;
     let baseTestUrl;
@@ -44,7 +44,7 @@ module.exports = (webdriverCb) => {
       return testServer.stop();
     });
 
-    it('should be able to install a service worker and serve page offline', function() {
+    it(`should be able to install a service worker and serve page offline`, function() {
       this.timeout(14 * 1000);
 
       const relativePath = path.relative('.', tmpDirectory);

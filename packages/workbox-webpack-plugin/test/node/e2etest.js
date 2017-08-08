@@ -14,11 +14,11 @@ const FILE_EXTENSIONS = ['html', 'css', 'js'];
 function runWebpack(webpackConfig) {
   return new Promise((resolve, reject) => {
     let compiler = webpack(webpackConfig);
-    compiler.run((err, stats)=>{
+    compiler.run((err, stats) => {
       if (err) reject(err);
       else {
         // Timeout for plugins that work on `after-emit` event of webpack
-        setTimeout(()=>{
+        setTimeout(() => {
           resolve(stats);
         }, 20);
       }
@@ -35,13 +35,13 @@ function runWebpack(webpackConfig) {
  * from the src directory.
  */
 
-describe('Tests for webpack plugin', function() {
+describe(`Tests for webpack plugin`, function() {
   this.timeout(120 * 1000);
   let testServer;
   let baseTestUrl;
   let tmpDirectory;
 
-  before(() => {
+  before(function() {
     tmpDirectory = fs.mkdtempSync(path.join(__dirname, 'tmp-'));
 
     testServer = testServerGen();
@@ -64,7 +64,7 @@ describe('Tests for webpack plugin', function() {
     return testServer.stop();
   });
 
-  it('should generate sw, when `swSrc` is not present', () => {
+  it(`should generate sw, when swSrc is not present`, function() {
     fsExtra.copySync(
       path.join(__dirname, '..', '..', '..', 'workbox-cli', 'test', 'static', 'example-project-1'),
       tmpDirectory);
@@ -84,7 +84,7 @@ describe('Tests for webpack plugin', function() {
       ],
     };
 
-    return validator.performTest(()=>{
+    return validator.performTest(() => {
       return runWebpack(webpackConfig);
     }, {
       exampleProject: tmpDirectory,
@@ -94,7 +94,7 @@ describe('Tests for webpack plugin', function() {
     });
   });
 
-  it('should inject manifest, when `swSrc` is present', () => {
+  it(`should inject manifest, when swSrc is present`, function() {
     fsExtra.copySync(
       path.join(__dirname, '..', '..', '..', 'workbox-cli', 'test', 'static', 'example-project-2'),
       tmpDirectory);

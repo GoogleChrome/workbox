@@ -14,6 +14,7 @@ module.exports = {
     BroadcastChannel: false,
     WorkboxSW: false,
     workbox: false,
+    goog: false,
   },
   rules: {
     'linebreak-style': 0,

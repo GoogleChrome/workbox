@@ -3,38 +3,39 @@
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- */
+*/
 
 /* eslint-env mocha, browser */
 /* global workbox */
 
-'use strict';
+import IDBHelper from '../../../../lib/idb-helper.js';
+import {defaultDBName} from '../../src/lib/constants.js';
+import * as queueUtils from '../../src/lib/queue-utils.js';
 
-describe('queue-utils', () => {
-  const queueUtils = workbox.backgroundSync.test.QueueUtils;
-  const maxAgeTimeStamp = 1000*60*60*24;
+describe(`queue-utils`, function() {
+  const maxAgeTimeStamp = 1000 * 60 * 60 * 24;
   const config = {
     maxAge: maxAgeTimeStamp,
   };
 
-  beforeEach(function() {
-    const idbHelper = new workbox.backgroundSync.test.IdbHelper(
-      'bgQueueSyncDB', 1, 'QueueStore');
-    return idbHelper.getAllKeys()
-    .then((keys) => {
-      keys.forEach((key) => {
-        idbHelper.delete(key);
-      });
-    });
-  });
+  const db = new IDBHelper(defaultDBName, 1, 'QueueStore');
+  const resetDb = async () => {
+    const keys = await db.getAllKeys();
+    return Promise.all(keys.map((key) => db.delete(key)));
+  };
 
-  it('should be able to convert Request object to a javascript object', () => {
+  before(resetDb);
+  afterEach(resetDb);
+
+  it(`should be able to convert Request object to a javascript object`, function() {
     const request = new Request('http://localhost:3001/__echo/date-with-cors/random');
     return queueUtils.getQueueableRequest({
       request,
@@ -52,7 +53,7 @@ describe('queue-utils', () => {
     });
   });
 
-  it('should be able to convert a javascript object to Request object', () => {
+  it(`should be able to convert a javascript object to Request object`, function() {
     const reqObj = {
       'url': 'http://localhost:3001/__echo/date-with-cors/random',
       'headers': '[]',
