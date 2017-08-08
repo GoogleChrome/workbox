@@ -22,6 +22,7 @@
   "dependencies": {
     "idb": "^2.0.0",
     "mkdirp": "^0.5.1",
+    "mute-stream": "0.0.7",
     "update-notifier": "^2.1.0"
   },
   "devDependencies": {
