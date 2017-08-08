@@ -48,4 +48,29 @@ describe(`Cache ID`, function() {
     workboxSW._revisionedCacheManager.getCacheName().indexOf(CACHE_ID).should.not.equal(-1);
     workboxSW.runtimeCacheName.indexOf(CACHE_ID).should.not.equal(-1);
   });
+
+  it(`should honor an explicit {excludeCacheId: true} when creating a strategy`, function() {
+    const cacheId = 'CACHE_ID';
+
+    const workboxSW = new WorkboxSW({cacheId});
+
+    const strategy = workboxSW.strategies.cacheFirst({excludeCacheId: true});
+    expect(strategy.requestWrapper.cacheName).not.to.have.string(cacheId);
+  });
+
+  // See https://github.com/GoogleChrome/workbox/issues/714
+  it(`should only prepend the cacheId once when creating the internal precaching route`, function() {
+    const cacheId = 'CACHE_ID';
+    const expectedCachePrefix = `${cacheId}-workbox-precaching-revisioned`;
+
+    const workboxSW = new WorkboxSW({cacheId});
+    // We need to poke around a bit at the internals to get the route we care
+    // about; it's not possible to spy on the method calls and check parameters,
+    // since they're called during the WorkboxSW constructor and are called on
+    // object instances that don't exist prior to the constructor.
+    const precacheRoute = workboxSW.router._routes.get('GET')[0];
+    const actualCacheName = precacheRoute.handler.requestWrapper.cacheName;
+
+    expect(actualCacheName.startsWith(expectedCachePrefix)).to.be.true;
+  });
 });

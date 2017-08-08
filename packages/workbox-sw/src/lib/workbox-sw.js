@@ -300,6 +300,12 @@ class WorkboxSW {
     const cacheFirstHandler = this.strategies.cacheFirst({
       cacheName: this._revisionedCacheManager.getCacheName(),
       plugins,
+      // this._revisionedCacheManager.getCacheName() already includes a cacheId
+      // prefix if the developer set one. We want to tell the cacheFirst()
+      // factory method to exclude the cacheId to ensure that it doesn't prepend
+      // the cacheId twice when it determines its cache name.
+      // See https://github.com/GoogleChrome/workbox/issues/714
+      excludeCacheId: true,
     });
 
     const capture = ({url}) => {
