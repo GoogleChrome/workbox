@@ -54,4 +54,40 @@ describe(`src/lib/utils/filter-files.js`, function() {
       () => filterFiles([], {manifestTransforms: () => {}})
     ).to.throw(errors['bad-manifest-transforms']);
   });
+
+  it(`should use valid manifestTransforms`, function() {
+    const files = [
+      {
+        file: 'func1',
+        size: 1,
+        hash: 'func1-hash',
+      }, {
+        file: 'func2',
+        size: 2,
+        hash: 'func2-hash',
+      },
+    ];
+    const func1 = (files) => {
+      return files.map((file) => {
+        file.url = `func1-prefix/${file.url}`;
+        return file;
+      });
+    };
+    const func2 = (files) => {
+      return files.map((file) => {
+        file.url = `func2-prefix/${file.url}`;
+        return file;
+      });
+    };
+    const filteredFiles = filterFiles(files, {manifestTransforms: [func1, func2]});
+    expect(filteredFiles).to.deep.equal([
+      {
+        url: 'func2-prefix/func1-prefix/func1',
+        revision: 'func1-hash',
+      }, {
+        url: 'func2-prefix/func1-prefix/func2',
+      revision: 'func2-hash',
+      },
+    ]);
+  });
 });
