@@ -13,9 +13,6 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-/* global sinon, workbox */
-
 import IDBHelper from '../../../../lib/idb-helper.js';
 import * as Constants from '../../src/lib/constants.js';
 import RequestQueue from '../../src/lib/request-queue.js';

@@ -13,8 +13,6 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-
 import * as broadcastManager from '../../src/lib/broadcast-manager.js';
 
 describe(`broadcast manager`, function() {

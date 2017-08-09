@@ -13,9 +13,6 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-/* global workbox */
-
 import IDBHelper from '../../../../lib/idb-helper.js';
 import {defaultDBName} from '../../src/lib/constants.js';
 import BackgroundSyncQueue from '../../src/lib/background-sync-queue.js';

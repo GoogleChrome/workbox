@@ -13,7 +13,6 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
 import BackgroundSyncQueue from '../../src/lib/background-sync-queue.js';
 import * as Constants from '../../src/lib/constants.js';
 
