@@ -92,7 +92,7 @@ gulp.task('build-test-bundles:clean',
 // i.e. we'll have a browser build for no NODE_ENV and one for 'production'
 // NODE_ENV and the same for sw and node tests.
 const bundleBuilds = [];
-constants.ENVIRONMENTS.forEach((environment) => {
+constants.BUILD_TYPES.forEach((environment) => {
   bundleBuilds.push(
     packageRunnner('build-test-bundles:build', buildTestBundle,
     'browser', environment)

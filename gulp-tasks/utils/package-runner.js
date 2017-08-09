@@ -93,7 +93,7 @@ module.exports = (displayName, func, ...args) => {
     wrappedFunc.displayName = oneLine`
       ${displayName}
       (${pkgPathToName(packageRootPath)})
-      ${JSON.stringify(args)}`;
+      ${args.length === 0 ? '' : JSON.stringify(args)}`;
     return wrappedFunc;
   });
 };
