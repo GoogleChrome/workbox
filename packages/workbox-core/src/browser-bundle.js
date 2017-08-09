@@ -1,5 +1,5 @@
-import module from './module.js';
+import defaultExport from './module.js';
 
 export {
-  module as instance,
+  defaultExport as instance,
 };

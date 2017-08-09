@@ -67,12 +67,10 @@ const buildPackage = (packagePath, buildType) => {
     // Before adding a plugin, give serious consideration as to whether it
     // is the best option. It will complicate the build and could have
     // adverse affects on file size.
-    /**
     babili({
       // Remove comments from source code.
       comments: false,
     }),
-    */
   ];
 
   if (buildType) {
@@ -115,13 +113,6 @@ const buildPackage = (packagePath, buildType) => {
   .pipe(buffer())
   // This tells gulp-sourcemaps to load the inline sourcemap
   .pipe(sourcemaps.init({loadMaps: true}))
-  .pipe(compiler({
-    compilationLevel: 'SIMPLE',
-    warningLevel: 'VERBOSE',
-    outputWrapper: '(function(){\n%output%\n}).call(this)',
-    jsOutputFile: 'output.min.js',  // outputs single file
-    createSourceMap: true,
-  }))
   // This renames the output file
   .pipe(rename(outputFilename))
   // This writes the sourcemap alongside the final build file

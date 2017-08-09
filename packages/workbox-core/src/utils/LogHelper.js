@@ -10,7 +10,7 @@ export default class LogHelper {
    */
   constructor() {
     // TODO: Set initial log level based on localhost
-    this._logLevel = this.LOG_LEVELS.verbose;
+    this.__logLevel = this.LOG_LEVELS.verbose;
   }
 
   /**
@@ -43,7 +43,7 @@ export default class LogHelper {
       throw new Error(`Invalid new level`);
     }
 
-    this._logLevel = newLevel;
+    this.__logLevel = newLevel;
   }
 
   /**
@@ -54,7 +54,7 @@ export default class LogHelper {
    * @param {number} minLevel
    */
   _print(logFunction, logArgs, minLevel) {
-    if (this._logLevel > minLevel) {
+    if (this.__logLevel > minLevel) {
       return;
     }
 
