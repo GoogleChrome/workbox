@@ -13,86 +13,119 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-/* global chai */
-
 import IDBHelper from '../../../../lib/idb-helper.js';
-import {defaultDBName, defaultQueueName, maxAge}
-    from '../../src/lib/constants.js';
+import * as Constants from '../../src/lib/constants.js';
 import RequestQueue from '../../src/lib/request-queue.js';
 
-describe(`request-queue tests`, function() {
+describe(`request-queue`, function() {
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
 
   const callbacks = {};
-  const idbHelper = new IDBHelper(defaultDBName, 1, 'QueueStore');
+  const db = new IDBHelper(Constants.defaultDBName, 1, 'QueueStore');
   const queue = new RequestQueue({
-    idbQDb: idbHelper,
+    idbQDb: db,
     config: {maxAge: MAX_AGE},
     queueName: QUEUE_NAME,
     callbacks,
   });
 
-  it(`queue object should exist`, function() {
-    chai.assert.isObject(queue);
-    chai.assert.isArray(queue._queue);
-    chai.assert.isString(queue._queueName);
-    chai.assert.isObject(queue._config);
-  });
+  const resetDb = async function() {
+    const keys = await db.getAllKeys();
+    return Promise.all(keys.map((key) => db.delete(key)));
+  };
 
-  it(`queueName is corrent`, function() {
-    chai.assert.equal(queue._queueName, QUEUE_NAME);
-  });
+  before(resetDb);
+  afterEach(resetDb);
 
-  it(`config is correct`, function() {
-    chai.assert.equal(queue._config.maxAge, MAX_AGE);
-    chai.assert.notEqual(queue._config.maxAge, maxAge);
-  });
-
-  it(`push is working`, async function() {
-    callbacks.requestWillEnqueue = sinon.spy();
-
-    const queueLength = queue._queue.length;
-    const hash = await queue.push({
-      request: new Request('http://lipsum.com/generate'),
+  describe(`constructor`, function() {
+    it(`should initialize with correct object types`, function() {
+      expect(queue).to.be.an('object');
+      expect(queue._queue).to.be.an('array');
+      expect(queue._queueName).to.be.a('string');
+      expect(queue._config).to.be.an('object');
     });
 
-    chai.assert.isString(hash);
-    chai.assert.equal(queue._queue.length, queueLength + 1);
-
-    chai.assert(callbacks.requestWillEnqueue.calledOnce);
-    chai.assert(callbacks.requestWillEnqueue.calledWith(
-        sinon.match.has('request')));
-
-    delete callbacks.requestWillEnqueue;
-  });
-
-  it(`getRequestFromQueue is working`, async function() {
-    callbacks.requestWillDequeue = sinon.spy();
-
-    const hash = await queue.push({
-      request: new Request('http://lipsum.com/generate'),
+    it(`should should not fail for null data`, async function() {
+      expect(queue._queue.length).to.equal(0);
+      db.put(queue._queueName, null);
+      await queue.initQueue();
+      expect(queue._queue.length).to.equal(0);
     });
 
-    const reqData = await queue.getRequestFromQueue({hash});
+    it(`should re-fill the queue`, async function() {
+      expect(queue._queue.length).to.equal(0);
+      const hash = await queue.push({
+        request: new Request('http://lipsum.com/generate'),
+      });
+      expect(queue._queue.length).to.equal(1);
+      queue._queue = [];
+      expect(queue._queue.length).to.equal(0);
+      await queue.initQueue();
+      expect(queue._queue.length).to.equal(1);
+      expect(queue._queue[0]).to.equal(hash);
+    });
 
-    chai.assert.hasAllKeys(reqData, ['request', 'config', 'metadata']);
-    chai.assert(callbacks.requestWillDequeue.calledOnce);
-    chai.assert(callbacks.requestWillDequeue.calledWith(reqData));
+    it(`should fill the queueName correctly`, function() {
+      expect(queue._queueName).to.equal(QUEUE_NAME);
+    });
 
-    delete callbacks.requestWillDequeue;
+    it(`should configure correctly`, function() {
+      expect(queue._config.maxAge).to.equal(MAX_AGE);
+      expect(queue._config.maxAge).to.not
+          .equal(Constants.maxAge);
+    });
+
+    it(`should configure correctly without any optional parameters given`, function() {
+      let tempQueue = new RequestQueue({
+        idbQDb: db,
+      });
+      let tempQueue2 = new RequestQueue({
+        idbQDb: db,
+      });
+      expect(tempQueue._config).to.equal(undefined);
+      expect(tempQueue._queueName).to.match(
+        new RegExp(Constants.defaultQueueName + '_\\d+'));
+      expect(tempQueue2._queueName).to.match(
+        new RegExp(Constants.defaultQueueName + '_\\d+'));
+    });
   });
 
-  it(`default config is correct`, function() {
-    let tempQueue = new RequestQueue({idbQDb: idbHelper});
-    let tempQueue2 = new RequestQueue({idbQDb: idbHelper});
-    chai.assert.equal(tempQueue._config, undefined);
-    chai.assert.match(
-        tempQueue._queueName,
-        new RegExp(defaultQueueName + '_\\d+'));
-    chai.assert.match(
-        tempQueue2._queueName,
-        new RegExp(defaultQueueName + '_\\d+'));
+  describe(`push method`, function() {
+    it(`should push the Request given in the private array`, async function() {
+      callbacks.requestWillEnqueue = sinon.spy();
+
+      const queueLength = queue._queue.length;
+      const hash = await queue.push({
+        request: new Request('http://lipsum.com/generate'),
+      });
+
+      expect(hash).to.be.a('string');
+      expect(queue._queue.length).to.equal(queueLength + 1);
+
+      expect(callbacks.requestWillEnqueue.calledOnce).to.be.true;
+      expect(callbacks.requestWillEnqueue.calledWith(sinon.match.has('request')))
+          .to.be.true;
+
+      delete callbacks.requestWillEnqueue;
+    });
+  });
+
+  describe(`getRequestFromQueue method`, function() {
+    it(`should get the proper Request back`, async function() {
+      callbacks.requestWillDequeue = sinon.spy();
+
+      const hash = await queue.push({
+        request: new Request('http://lipsum.com/generate'),
+      });
+
+      const reqData = await queue.getRequestFromQueue({hash});
+
+      expect(reqData).to.have.all.keys(['request', 'config', 'metadata']);
+      expect(callbacks.requestWillDequeue.calledOnce).to.be.true;
+      expect(callbacks.requestWillDequeue.calledWith(reqData)).to.be.true;
+
+      delete callbacks.requestWillDequeue;
+    });
   });
 });

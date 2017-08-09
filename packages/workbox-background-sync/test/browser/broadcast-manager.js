@@ -13,13 +13,10 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-/* global chai */
-
 import * as broadcastManager from '../../src/lib/broadcast-manager.js';
 
-describe(`broadcast manager test`, function() {
-  it(`check broadcast`, function(done) {
+describe(`broadcast manager`, function() {
+  it(`should broadcast message on given channel name`, function(done) {
     this.timeout(100);
     let msgRead = false;
     const channelName = 'CHANNEL';
@@ -27,7 +24,7 @@ describe(`broadcast manager test`, function() {
     const testReceiverChannel = new BroadcastChannel(channelName);
     testReceiverChannel.onmessage = function() {
       msgRead = true;
-      chai.assert.equal(msgRead, true);
+      expect(msgRead).to.be.true;
       done();
     };
     broadcastManager.broadcastMessage({

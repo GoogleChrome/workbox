@@ -13,8 +13,6 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-
 import * as namespace from '../../src/index.js';
 
 const exportedSymbols = [

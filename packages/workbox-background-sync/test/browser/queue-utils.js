@@ -13,14 +13,11 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-/* global chai */
-
 import IDBHelper from '../../../../lib/idb-helper.js';
 import {defaultDBName} from '../../src/lib/constants.js';
 import * as queueUtils from '../../src/lib/queue-utils.js';
 
-describe(`queue-utils test`, function() {
+describe(`queue-utils`, function() {
   const maxAgeTimeStamp = 1000 * 60 * 60 * 24;
   const config = {
     maxAge: maxAgeTimeStamp,
@@ -35,24 +32,25 @@ describe(`queue-utils test`, function() {
   before(resetDb);
   afterEach(resetDb);
 
-  it(`test queueableRequest`, function() {
-    const request = new Request(
-        'http://localhost:3001/__echo/date-with-cors/random');
+  it(`should be able to convert Request object to a javascript object`, function() {
+    const request = new Request('http://localhost:3001/__echo/date-with-cors/random');
+    return queueUtils.getQueueableRequest({
+      request,
+      config,
+    }).then((reqObj) => {
+      expect(reqObj).to.be.an('object');
+      expect(reqObj.config).to.be.an('object');
+      expect(reqObj.request).to.be.an('object');
 
-    return queueUtils.getQueueableRequest({request, config}).then((reqObj) => {
-      chai.assert.isObject(reqObj);
-      chai.assert.isObject(reqObj.config);
-      chai.assert.isObject(reqObj.request);
-
-      chai.assert.equal(reqObj.config.maxAge, maxAgeTimeStamp);
-      chai.assert.equal(reqObj.request.url, request.url);
-      chai.assert.equal(reqObj.request.mode, request.mode);
-      chai.assert.equal(reqObj.request.method, request.method);
-      chai.assert.equal(reqObj.request.redirect, request.redirect);
+      expect(reqObj.config.maxAge).to.equal(maxAgeTimeStamp);
+      expect(reqObj.request.url).to.equal(request.url);
+      expect(reqObj.request.mode).to.equal(request.mode);
+      expect(reqObj.request.method).to.equal(request.method);
+      expect(reqObj.request.redirect).to.equal(request.redirect);
     });
   });
 
-  it(`test fetchableRequest`, function() {
+  it(`should be able to convert a javascript object to Request object`, function() {
     const reqObj = {
       'url': 'http://localhost:3001/__echo/date-with-cors/random',
       'headers': '[]',
@@ -62,11 +60,11 @@ describe(`queue-utils test`, function() {
     };
 
     return queueUtils.getFetchableRequest({idbRequestObject: reqObj})
-        .then((request) => {
-          chai.assert.equal(reqObj.url, request.url);
-          chai.assert.equal(reqObj.mode, request.mode);
-          chai.assert.equal(reqObj.method, request.method);
-          chai.assert.equal(reqObj.redirect, request.redirect);
-        });
+      .then( (request) => {
+        expect(reqObj.url).to.equal(request.url);
+        expect(reqObj.mode).to.equal(request.mode);
+        expect(reqObj.method).to.equal(request.method);
+        expect(reqObj.redirect).to.equal(request.redirect);
+      });
   });
 });

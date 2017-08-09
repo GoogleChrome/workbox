@@ -13,26 +13,25 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-/* global chai */
-
 import IDBHelper from '../../../../lib/idb-helper.js';
 import {defaultDBName} from '../../src/lib/constants.js';
 import BackgroundSyncQueue from '../../src/lib/background-sync-queue.js';
 import * as responseManager from '../../src/lib/response-manager.js';
 
-describe(`response-manager test`, function() {
+describe(`response-manager`, function() {
   const response = 'VALUE';
   const idbHelper = new IDBHelper(defaultDBName, 1, 'QueueStore');
 
-  it(`check get`, async function() {
+  it(`should be able to get the Response back from IDB of the given key`, () => {
     const queue = new BackgroundSyncQueue();
-    await idbHelper.put('key', {response});
-    const data = await queue.getResponse({id: 'key'});
-    chai.assert.equal(data, response);
+    return idbHelper.put('key', {response: response}).then(()=>{
+        return queue.getResponse({id: 'key'}).then((data)=>{
+            expect(data).to.equal(response);
+        });
+    });
   });
 
-  it(`check put`, async function() {
+  it(`should be able to put the Response in IBD with the given key`, async function() {
     await responseManager.putResponse({
       hash: 'somehash',
       idbObject: {},
@@ -48,7 +47,7 @@ describe(`response-manager test`, function() {
     return new Promise((resolve) => {
       reader.onloadend = () => {
         const data = reader.result;
-        chai.assert.equal(data, response);
+        expect(data).to.equal(response);
         resolve();
       };
     });

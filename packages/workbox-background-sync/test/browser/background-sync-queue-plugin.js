@@ -13,15 +13,12 @@
  limitations under the License.
 */
 
-/* eslint-env mocha, browser */
-/* global chai */
-
 import IDBHelper from '../../../../lib/idb-helper.js';
 import BackgroundSyncQueuePlugin
     from '../../src/lib/background-sync-queue-plugin.js';
 import {defaultDBName} from '../../src/lib/constants.js';
 
-describe(`background-sync-queue-plugin test`, function() {
+describe(`background-sync-queue-plugin`, function() {
   const db = new IDBHelper(defaultDBName, 1, 'QueueStore');
   const resetDb = async function() {
     const keys = await db.getAllKeys();
@@ -31,13 +28,13 @@ describe(`background-sync-queue-plugin test`, function() {
   before(resetDb);
   afterEach(resetDb);
 
-  it(`check fetchDid fail proxy`, async function() {
+  it(`should add the request to queue when fetch fails`, async function() {
     const backgroundSyncQueue = new BackgroundSyncQueuePlugin({});
     const currentLen = backgroundSyncQueue._queue.queue.length;
 
     await backgroundSyncQueue.fetchDidFail({
       request: new Request('http://lipsum.com'),
     });
-    chai.assert.equal(backgroundSyncQueue._queue.queue.length, currentLen + 1);
+    expect(backgroundSyncQueue._queue.queue.length).to.equal(currentLen + 1);
   });
 });
