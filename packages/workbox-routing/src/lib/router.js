@@ -53,7 +53,13 @@ import normalizeHandler from './normalize-handler';
  */
 class Router {
   /**
-   * Start with an empty array of routes, and set up the fetch handler.
+   * Start with an empty array of routes, and by default, sets up the `fetch`
+   * handler.
+   *
+   * @param {Boolean} [handleFetch=true] Whether or not the Router should
+   * register a `fetch` handler and respond to requests. This can be set to
+   * `false` in a development environment, to prevent the service worker
+   * from responding with cached responses.
    */
   constructor({handleFetch} = {}) {
     if (typeof handleFetch === 'undefined') {
