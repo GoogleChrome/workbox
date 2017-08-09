@@ -7,6 +7,7 @@
   "scripts": {
     "prepublish": "gulp build-package --package workbox-core"
   },
+  "browserNamespace": "core",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-core",
@@ -15,5 +16,6 @@
     "workboxjs",
     "service worker",
     "sw"
-  ]
+  ],
+  "main": "build/browser-bundles/workbox-core.prod.js"
 }

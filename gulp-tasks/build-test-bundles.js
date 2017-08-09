@@ -88,22 +88,22 @@ gulp.task('build-test-bundles:clean',
   gulp.series(packageRunnner('build-test-bundles:clean', cleanBundleFile))
 );
 
-// This will create one version of the tests for each environment.
+// This will create one version of the tests for each buildType.
 // i.e. we'll have a browser build for no NODE_ENV and one for 'production'
 // NODE_ENV and the same for sw and node tests.
 const bundleBuilds = [];
-constants.BUILD_TYPES.forEach((environment) => {
+constants.BUILD_TYPES.forEach((buildType) => {
   bundleBuilds.push(
     packageRunnner('build-test-bundles:build', buildTestBundle,
-    'browser', environment)
+    'browser', buildType)
   );
   bundleBuilds.push(
     packageRunnner('build-test-bundles:build', buildTestBundle,
-    'sw', environment)
+    'sw', buildType)
   );
   bundleBuilds.push(
     packageRunnner('build-test-bundles:build', buildTestBundle,
-    'node', environment)
+    'node', buildType)
   );
 });
 
