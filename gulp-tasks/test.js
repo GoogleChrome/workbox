@@ -15,7 +15,7 @@ const runBundledTests = (packagePath, env) => {
   `);
 
   const bundleTestDirectory = path.posix.join(
-    packagePath, 'test', constants.BUNDLE_BUILD_DIRNAME);
+    packagePath, 'test', constants.TEST_BUNDLE_BUILD_DIRNAME);
   return gulp.src(
     path.posix.join(bundleTestDirectory, env, '*.js'), {read: false})
   .pipe(mocha());

@@ -5,19 +5,28 @@ const oneLine = require('common-tags').oneLine;
 const rollup = require('rollup-stream');
 const source = require('vinyl-source-stream');
 const replace = require('rollup-plugin-replace');
+const sourcemaps = require('gulp-sourcemaps');
+const rename = require('gulp-rename');
+const buffer = require('vinyl-buffer');
+const babili = require('rollup-plugin-babili');
+const compiler = require('google-closure-compiler-js').gulp();
 
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
 const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
 
+/**
+ * To test sourcemaps are valid and working, use:
+ * http://paulirish.github.io/source-map-visualization/#custom-choose
+ */
+
 const buildPackage = (packagePath, buildType) => {
   const srcPath = path.posix.join(packagePath, 'src');
   const browserBundlePath = path.posix.join(srcPath, 'browser-bundle.js');
 
-  // First check if the bundle directory exists, if it doesn't
-  // there is nothing to build (NOTE: Rollup + multientry will
-  // always create a file, even if the directory doesn't exist)
+  // First check if the bundle file exists, if it doesn't
+  // there is nothing to build
   if (!fs.pathExistsSync(browserBundlePath)) {
     const errorMsg = oneLine`
       Could not find the browser bundle for ${pkgPathToName(packagePath)}.
@@ -25,16 +34,6 @@ const buildPackage = (packagePath, buildType) => {
     logHelper.error(errorMsg);
     return Promise.reject(errorMsg);
   }
-
-  const plugins = [
-    // No plugins are needed at present apart from the optional replace plugin.
-    //
-    // !!! ATTENTION !!!
-    //
-    // Before adding a plugin, give serious consideration as to where it
-    // is the best option. It will complicate the build and could have
-    // adverse affects on file size.
-  ];
 
   const buildName = typeof buildType === 'undefined' ? 'dev' : buildType;
   let outputFilename = `${pkgPathToName(packagePath)}.${buildName}.js`;
@@ -61,6 +60,21 @@ const buildPackage = (packagePath, buildType) => {
   logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
+  const plugins = [
+    //
+    // !!! ATTENTION !!!
+    //
+    // Before adding a plugin, give serious consideration as to whether it
+    // is the best option. It will complicate the build and could have
+    // adverse affects on file size.
+    /**
+    babili({
+      // Remove comments from source code.
+      comments: false,
+    }),
+    */
+  ];
+
   if (buildType) {
     // Replace allows us to input NODE_ENV and strip code accordingly
     plugins.push(replace({
@@ -69,7 +83,7 @@ const buildPackage = (packagePath, buildType) => {
   }
 
   const outputPath = path.join(
-    packagePath, constants.BUILD_DIRNAME, 'browser-bundles');
+    packagePath, constants.BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
 
   const relOutputPath = path.relative(packagePath, outputPath);
   if (!pkgJson.main || path.dirname(pkgJson.main) !== relOutputPath) {
@@ -94,10 +108,36 @@ const buildPackage = (packagePath, buildType) => {
       throw new Error(`Unable to resolve import. ${warning.message}`);
     },
   })
-  // This gives the generated stream a file name
-  .pipe(source(outputFilename))
+  // We must give the generated stream the same name as the entry file
+  // for the sourcemaps to work correctly
+  .pipe(source(browserBundlePath))
+  // gulp-sourcemaps don't work with streams so we need
+  .pipe(buffer())
+  // This tells gulp-sourcemaps to load the inline sourcemap
+  .pipe(sourcemaps.init({loadMaps: true}))
+  .pipe(compiler({
+    compilationLevel: 'SIMPLE',
+    warningLevel: 'VERBOSE',
+    outputWrapper: '(function(){\n%output%\n}).call(this)',
+    jsOutputFile: 'output.min.js',  // outputs single file
+    createSourceMap: true,
+  }))
+  // This renames the output file
+  .pipe(rename(outputFilename))
+  // This writes the sourcemap alongside the final build file
+  .pipe(sourcemaps.write('.'))
   .pipe(gulp.dest(outputPath));
 };
+
+const cleanPackages = (packagePath) => {
+  const browserBuildDirectory = path.join(
+    packagePath, constants.BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
+  return fs.remove(browserBuildDirectory);
+};
+
+gulp.task('build-packages:clean', gulp.series(
+  packageRunnner('build-packages:clean', cleanPackages)
+));
 
 // This will create one version of the tests for each buildType.
 // i.e. we'll have a browser build for no NODE_ENV and one for 'production'
@@ -109,4 +149,9 @@ constants.BUILD_TYPES.forEach((buildType) => {
   );
 });
 
-gulp.task('build-package', gulp.series(packageBuilds));
+gulp.task('build-packages:build', gulp.series(packageBuilds));
+
+gulp.task('build-packages', gulp.series([
+  'build-packages:clean',
+  'build-packages:build',
+]));

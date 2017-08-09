@@ -14,7 +14,7 @@ const packageRunnner = require('./utils/package-runner');
 const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
 
-const buildTestBundle = (packagePath, runningEnv, nodeEnv) => {
+const buildTestBundle = (packagePath, runningEnv, buildType) => {
   const testPath = path.posix.join(packagePath, 'test');
   const environmentPath = path.posix.join(testPath, 'bundle', runningEnv);
 
@@ -28,7 +28,7 @@ const buildTestBundle = (packagePath, runningEnv, nodeEnv) => {
   logHelper.log(oneLine`
     Building Test Bundle for ${logHelper.highlight(pkgPathToName(packagePath))}
     to run in '${logHelper.highlight(runningEnv)}'
-    with NODE_ENV='${logHelper.highlight(nodeEnv)}'.
+    with NODE_ENV='${logHelper.highlight(buildType)}'.
   `);
 
   const plugins = [
@@ -46,12 +46,12 @@ const buildTestBundle = (packagePath, runningEnv, nodeEnv) => {
 
   let outputFilename = `${runningEnv}.js`;
 
-  if (nodeEnv) {
+  if (buildType) {
     // Make a unique bundle file for this environment
-    outputFilename = path.fileNameWithPostfix(outputFilename, `.${nodeEnv}`);
+    outputFilename = path.fileNameWithPostfix(outputFilename, `.${buildType}`);
     // Replace allows us to input NODE_ENV and strip code accordingly
     plugins.push(replace({
-      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
+      'process.env.NODE_ENV': JSON.stringify(buildType),
     }));
   }
 
@@ -73,14 +73,14 @@ const buildTestBundle = (packagePath, runningEnv, nodeEnv) => {
   // This gives the generated stream a file name
   .pipe(source(outputFilename))
   .pipe(gulp.dest(
-    path.posix.join(testPath, constants.BUNDLE_BUILD_DIRNAME, runningEnv)
+    path.posix.join(testPath, constants.TEST_BUNDLE_BUILD_DIRNAME, runningEnv)
   ));
 };
 
 const cleanBundleFile = (packagePath) => {
-  const testPath = path.posix.join(packagePath, 'test');
-  const outputDirectory = path.posix.join(
-    testPath, constants.BUNDLE_BUILD_DIRNAME);
+  const testPath = path.join(packagePath, 'test');
+  const outputDirectory = path.join(
+    testPath, constants.TEST_BUNDLE_BUILD_DIRNAME);
   return fs.remove(outputDirectory);
 };
 
