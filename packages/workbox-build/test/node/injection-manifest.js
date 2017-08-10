@@ -5,7 +5,7 @@ const fsExtra = require('fs-extra');
 const errors = require('../../src/lib/errors');
 const swBuild = require('../../build/index.js');
 
-describe('Test Injection Manifest', function() {
+describe(`Test Injection Manifest`, function() {
   let tmpDirectory;
 
   before(function() {

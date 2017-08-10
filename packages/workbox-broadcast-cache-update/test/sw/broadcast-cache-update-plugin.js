@@ -1,36 +1,45 @@
-importScripts('/__test/mocha/sw-utils.js');
-importScripts('/__test/bundle/workbox-broadcast-cache-update');
+/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-describe('Test of the BroadcastCacheUpdatePlugin class', function() {
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+/* eslint-env mocha, browser */
+
+import BroadcastCacheUpdatePlugin
+    from '../../src/lib/broadcast-cache-update-plugin.js';
+
+describe(`Test of the BroadcastCacheUpdatePlugin class`, function() {
   const channelName = 'test-channel';
   const cacheName = 'test-cache';
   const oldResponse = new Response();
   const newResponse = new Response();
-  const bcuPlugin = new workbox.broadcastCacheUpdate.BroadcastCacheUpdatePlugin({channelName});
+  const bcuPlugin = new BroadcastCacheUpdatePlugin({channelName});
 
   it(`should throw when cacheDidUpdate is called and cacheName is missing`, function() {
-    let thrownError = null;
-    try {
+    expect(() => {
       bcuPlugin.cacheDidUpdate({oldResponse, newResponse});
-    } catch (err) {
-      thrownError = err;
-    }
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('assertion-failed');
+    }).to.throw().with.property('name', 'assertion-failed');
   });
 
   it(`should throw when cacheDidUpdate is called and newResponse is missing`, function() {
-    let thrownError = null;
-    try {
+    expect(() => {
       bcuPlugin.cacheDidUpdate({cacheName, oldResponse});
-    } catch (err) {
-      thrownError = err;
-    }
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('assertion-failed');
+    }).to.throw().with.property('name', 'assertion-failed');
   });
 
   it(`should throw not throw when cacheDidUpdate is called with valid parameters`, function() {
-    bcuPlugin.cacheDidUpdate({cacheName, oldResponse, newResponse});
+    expect(() => {
+      bcuPlugin.cacheDidUpdate({cacheName, oldResponse, newResponse});
+    }).to.not.throw();
   });
 });

@@ -1,10 +1,27 @@
-importScripts('/__test/mocha/sw-utils.js');
-importScripts('/__test/bundle/workbox-precaching');
+/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-describe('Test plugins Parameter', function() {
-  it('should pass the provided plugins configuration along to the RequestWrapper', function() {
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+/* eslint-env mocha, browser */
+
+import RevisionedCacheManager
+    from '../../src/lib/controllers/revisioned-cache-manager.js';
+
+describe(`Test plugins Parameter`, function() {
+  it(`should pass the provided plugins configuration along to the RequestWrapper`, function() {
     // Register two dummy fetchDidFail plugins, and one dummy cacheWillUpdate.
-    const cacheManager = new workbox.precaching.RevisionedCacheManager({
+    const cacheManager = new RevisionedCacheManager({
       plugins: [{
         fetchDidFail: () => {},
         cacheWillUpdate: () => {},

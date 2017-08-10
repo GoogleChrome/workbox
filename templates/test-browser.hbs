@@ -55,13 +55,10 @@
       });
 
       chai.should();
-      const expect = chai.expect;
+      window.expect = chai.expect;
     </script>
 
-    <!-- Package-specific tests matching packages/<pkg>/test/browser/*.js -->
-    {{#each scripts}}
-      <script src="{{this}}"></script>
-    {{/each}}
+    <script src="/packages/{{pkg}}/build/test/browser-bundle.js"></script>
 
     <script>
       (function() {

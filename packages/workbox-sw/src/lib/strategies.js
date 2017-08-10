@@ -187,6 +187,9 @@ class Strategies {
    * @private
    * @param {Class} HandlerClass The class to be configured and instantiated.
    * @param {Object} [options] Options to configure the handler.
+   * @param {boolean} [options.excludeCacheId] If true, we assume that
+   * options.cacheName already includes the cacheId, and it does not need to
+   * be specified twice.
    * @return {Handler} A handler instance configured with the appropriate
    * behaviours
    */
@@ -199,8 +202,11 @@ class Strategies {
 
     const wrapperOptions = {
       plugins: [],
-      cacheId: this._cacheId,
     };
+
+    if (!options.excludeCacheId) {
+      wrapperOptions.cacheId = this._cacheId;
+    }
 
     if (options['cacheName']) {
       wrapperOptions['cacheName'] = options['cacheName'];

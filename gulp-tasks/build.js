@@ -21,6 +21,7 @@ const gulp = require('gulp');
 const path = require('path');
 const {taskHarness, buildJSBundle} = require('../utils/build');
 const commonjs = require('rollup-plugin-commonjs');
+const multiEntry = require('rollup-plugin-multi-entry');
 const resolve = require('rollup-plugin-node-resolve');
 
 const printHeading = (heading) => {
@@ -44,9 +45,56 @@ const buildPackage = (projectPath) => {
 
   return fse.emptyDir(buildDir)
     .then(() => projectBuildProcess())
-    .then(() => fse.copy(path.join(__dirname, '..', 'LICENSE'),
-      path.join(projectPath, 'LICENSE')))
+    .then(() => buildTestBundles(projectPath))
+    .then(() => {
+      fse.copy(path.join(__dirname, '..', 'LICENSE'),
+          path.join(projectPath, 'LICENSE'));
+    })
     .then(() => printBuildTime(`${(Date.now() - startTime) / 1000}s`));
+};
+
+/**
+ * Builds the browser and service worker test bundles.
+ * @param {String} projectPath The path to a project directory.
+ * @return {Promise} Resolves if building succeeds, rejects if it fails.
+ */
+const buildTestBundles = (projectPath) => {
+  const getPlugins = () => [
+    // multiEntry uses glob so it requires `/` separators in paths.
+    multiEntry({exports: false}),
+    resolve({jsnext: true, main: true, browser: true}),
+    commonjs(),
+  ];
+
+  const project = path.basename(projectPath);
+
+  return Promise.all([
+    buildJSBundle({
+      rollupConfig: {
+        entry: `./packages/${project}/test/browser/*.js`,
+        plugins: getPlugins(),
+      },
+      writeConfig: {
+        sourceMap: true,
+        format: 'es',
+        dest: `./packages/${project}/build/test/browser-bundle.js`,
+      },
+    }),
+    buildJSBundle({
+      rollupConfig: {
+        entry: [
+          `./utils/sw-test-utils.js`,
+          `./packages/${project}/test/sw/*.js`,
+        ],
+        plugins: getPlugins(),
+      },
+      writeConfig: {
+        sourceMap: true,
+        format: 'es',
+        dest: `./packages/${project}/build/test/sw-bundle.js`,
+      },
+    }),
+  ]);
 };
 
 gulp.task('build:shared', () => {
@@ -92,6 +140,6 @@ gulp.task('build', () => {
 });
 
 gulp.task('build:watch', ['build'], (unusedCallback) => {
-  gulp.watch(`packages/${global.projectOrStar}/src/**/*`, ['build']);
+  gulp.watch(`packages/${global.projectOrStar}/+(src|test)/**/*`, ['build']);
   gulp.watch(`lib/**/*`, ['build']);
 });

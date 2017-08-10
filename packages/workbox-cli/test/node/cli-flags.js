@@ -1,7 +1,7 @@
 const proxyquire = require('proxyquire');
 
-describe('CLI Flags', function() {
-  it('should merge config and override with flag input', function() {
+describe(`CLI Flags`, function() {
+  it(`should merge config and override with flag input`, function() {
     const configFile = {
       globDirectory: 'build/',
       globPatterns: [

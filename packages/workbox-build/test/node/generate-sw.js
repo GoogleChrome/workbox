@@ -3,7 +3,7 @@ const path = require('path');
 
 const errors = require('../../src/lib/errors');
 
-describe('Test generateSW()', function() {
+describe(`Test generateSW()`, function() {
   const EXAMPLE_INPUT = {
     globDirectory: './valid-root',
     globPatterns: [
@@ -28,7 +28,7 @@ describe('Test generateSW()', function() {
   });
 
   // Bad inputs (undefined, null, string, array, boolean)
-  it('should be able to handle non-object input', function() {
+  it(`should be able to handle non-object input`, function() {
     const badInput = [
       undefined,
       null,
@@ -53,7 +53,7 @@ describe('Test generateSW()', function() {
   });
 
   // globDirectory - non string - undefined, null, array, boolean,  object
-  it('should be able to handle a bad globDirectory iput', function() {
+  it(`should be able to handle a bad globDirectory iput`, function() {
     const badInput = [
       undefined,
       null,
@@ -80,7 +80,7 @@ describe('Test generateSW()', function() {
   });
 
   // swDest - non string, undefined, null, boolean, array, object
-  it('should be able to handle bad swDest input', function() {
+  it(`should be able to handle bad swDest input`, function() {
     const badInput = [
       undefined,
       null,
@@ -106,7 +106,7 @@ describe('Test generateSW()', function() {
     }, Promise.resolve());
   });
 
-  it('should be able to handle a bad globPatterns input', function() {
+  it(`should be able to handle a bad globPatterns input`, function() {
     const badInput = [
       {},
       true,
@@ -130,7 +130,7 @@ describe('Test generateSW()', function() {
     }, Promise.resolve());
   });
 
-  it('should be able to handle a bad templatedUrls input', function() {
+  it(`should be able to handle a bad templatedUrls input`, function() {
     this.timeout(4000);
 
     const badInput = [
@@ -155,7 +155,7 @@ describe('Test generateSW()', function() {
     }, Promise.resolve());
   });
 
-  it('should be able to handle a bad globIgnores input', function() {
+  it(`should be able to handle a bad globIgnores input`, function() {
     const badInput = [
       {},
       true,
@@ -182,7 +182,7 @@ describe('Test generateSW()', function() {
   // Success.........................................................
 
   // globDirectory - dot
-  it('should be able to write service worker to current directory', function() {
+  it(`should be able to write service worker to current directory`, function() {
     let args = Object.assign({}, EXAMPLE_INPUT);
     args.globDirectory = '.';
 
@@ -218,7 +218,7 @@ describe('Test generateSW()', function() {
   });
 
   // globDirectory - valid nested folder
-  it('should be able to write service worker to the a directory', function() {
+  it(`should be able to write service worker to the a directory`, function() {
     generateSW = proxyquire('../../src/lib/generate-sw', {
       './utils/copy-workbox-sw': (workboxSWPath) => {
         if (workboxSWPath === path.dirname(EXAMPLE_INPUT.swDest)) {
@@ -251,7 +251,7 @@ describe('Test generateSW()', function() {
     return generateSW(args);
   });
 
-  it('should be able to handle bad runtimeCaching input', function() {
+  it(`should be able to handle bad runtimeCaching input`, function() {
     const badInput = [
       {},
       true,

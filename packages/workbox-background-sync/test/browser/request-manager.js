@@ -3,89 +3,97 @@
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- */
+*/
 
-/* eslint-env mocha, browser */
-/* global chai, sinon, workbox */
+import IDBHelper from '../../../../lib/idb-helper.js';
+import {defaultDBName} from '../../src/lib/constants.js';
+import BackgroundSyncQueue from '../../src/lib/background-sync-queue.js';
+import RequestManager from '../../src/lib/request-manager.js';
+import RequestQueue from '../../src/lib/request-queue.js';
 
-'use strict';
-describe('request-manager test', () => {
+describe(`request-manager `, function() {
   const callbacks = {};
   let queue;
   let reqManager;
 
-  const idbHelper = new workbox.backgroundSync.test.IdbHelper(
-    'bgQueueSyncDB', 1, 'QueueStore');
+  const idbHelper = new IDBHelper(defaultDBName, 1, 'QueueStore');
 
-  before( (done) => {
+  before(function(done) {
     const QUEUE_NAME = 'QUEUE_NAME';
     const MAX_AGE = 6;
-    queue =
-      new workbox.backgroundSync.test.RequestQueue({
-        idbQDb: idbHelper,
-        config: {maxAge: MAX_AGE},
-        queueName: QUEUE_NAME,
-      });
-    reqManager = new workbox.backgroundSync.test.RequestManager({
-      callbacks,
-      queue,
+    queue = new RequestQueue({
+      idbQDb: idbHelper,
+      config: {maxAge: MAX_AGE},
+      queueName: QUEUE_NAME,
     });
+    reqManager = new RequestManager({callbacks, queue});
     done();
   });
 
-  it('check constructor', () => {
-    chai.assert.isObject(reqManager);
-    chai.assert.isFunction(reqManager.attachSyncHandler);
-    chai.assert.isFunction(reqManager.replayRequest);
-    chai.assert.isFunction(reqManager.replayRequests);
+  describe(`constructor`, function() {
+    it(`should initialize private methods with the given values iin constructor`, function() {
+      expect(reqManager).to.be.an('object');
+      expect(reqManager.attachSyncHandler).to.be.a('function');
+      expect(reqManager.replayRequest).to.be.a('function');
+      expect(reqManager.replayRequests).to.be.a('function');
 
-    chai.assert.equal(reqManager._globalCallbacks, callbacks);
-    chai.assert.equal(reqManager._queue, queue);
+      expect(reqManager._globalCallbacks).to.equal(callbacks);
+      expect(reqManager._queue).to.equal(queue);
+    });
   });
 
-  it('check replay', async function() {
-    sinon.spy(self, 'fetch');
+  describe(`replay method`, function() {
+    it(`should replay all queued request via replay method`, async function() {
+      sinon.spy(self, 'fetch');
 
-    callbacks.replayDidSucceed = sinon.spy();
-    callbacks.replayDidFail = sinon.spy();
+      callbacks.replayDidSucceed = sinon.spy();
+      callbacks.replayDidFail = sinon.spy();
 
-    const backgroundSyncQueue =
-        new workbox.backgroundSync.test.BackgroundSyncQueue({callbacks});
+    const backgroundSyncQueue = new BackgroundSyncQueue({callbacks});
 
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__echo/counter')});
+    await backgroundSyncQueue.pushIntoQueue({
+      request: new Request('/__echo/counter'),
+    });
+    await backgroundSyncQueue.pushIntoQueue({
+      request: new Request('/__echo/counter'),
+    });
     await backgroundSyncQueue._requestManager.replayRequests();
 
-    // Asset replayDidSucceed callback was called with the correct arguments.
-    chai.assert.equal(callbacks.replayDidSucceed.callCount, 2);
-    chai.assert(callbacks.replayDidSucceed.alwaysCalledWith(
-        sinon.match.string, sinon.match.instanceOf(Response)));
+      // Asset replayDidSucceed callback was called with the correct arguments.
+      expect(callbacks.replayDidSucceed.callCount).to.equal(2);
+      expect(callbacks.replayDidSucceed.alwaysCalledWith(
+          sinon.match.string, sinon.match.instanceOf(Response))).to.be.true;
 
-    // Assert fetch was called for each replayed request.
-    chai.assert(self.fetch.calledTwice);
+      // Assert fetch was called for each replayed request.
+      expect(self.fetch.calledTwice).to.be.true;
 
-    await backgroundSyncQueue.pushIntoQueue({request: new Request('/__test/404')});
+    await backgroundSyncQueue.pushIntoQueue({
+      request: new Request('/__test/404'),
+    });
     try {
       await backgroundSyncQueue._requestManager.replayRequests();
     } catch (err) {
       // Error is expected due to 404 response.
     }
 
-    // Asset replayDidFail callback was called with the correct arguments.
-    chai.assert.equal(callbacks.replayDidSucceed.callCount, 2);
-    chai.assert.equal(callbacks.replayDidFail.callCount, 1);
-    chai.assert(callbacks.replayDidFail.alwaysCalledWith(
-        sinon.match.string, sinon.match.instanceOf(Response)));
+      // Asset replayDidFail callback was called with the correct arguments.
+      expect(callbacks.replayDidSucceed.callCount).to.equal(2);
+      expect(callbacks.replayDidFail.callCount).to.equal(1);
+      expect(callbacks.replayDidFail.alwaysCalledWith(
+          sinon.match.string, sinon.match.instanceOf(Response))).to.be.ok;
 
-    delete callbacks.replayDidSucceed;
-    delete callbacks.replayDidFail;
+      delete callbacks.replayDidSucceed;
+      delete callbacks.replayDidFail;
 
-    self.fetch.restore();
+      self.fetch.restore();
+    });
   });
 });
