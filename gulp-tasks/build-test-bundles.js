@@ -5,7 +5,6 @@ const rollup = require('rollup-stream');
 const source = require('vinyl-source-stream');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
-const replace = require('rollup-plugin-replace');
 const multiEntry = require('rollup-plugin-multi-entry');
 const oneLine = require('common-tags').oneLine;
 
@@ -31,29 +30,22 @@ const buildTestBundle = (packagePath, runningEnv, buildType) => {
     with NODE_ENV='${logHelper.highlight(buildType)}'.
   `);
 
-  const plugins = [
-    // Resolve allows bundled tests to pull in node modules like chai.
-    resolve(),
-    // CommonJS allows the loaded modules to work as ES2015 imports.
+  const plugins = constants.getDefaultRollupPlugins(buildType);
+  // Resolve allows bundled tests to pull in node modules like chai.
+  plugins.push(resolve());
+  // CommonJS allows the loaded modules to work as ES2015 imports.
+  plugins.push(
     commonjs({
       namedExports: {
         'node_modules/chai/index.js': ['expect'],
       },
-    }),
-    // Multi entry globs for multiple files. Used to pull in all test files.
-    multiEntry(),
-  ];
+    })
+  );
+  // Multi entry globs for multiple files. Used to pull in all test files.
+  plugins.push(multiEntry());
 
-  let outputFilename = `${runningEnv}.js`;
-
-  if (buildType) {
-    // Make a unique bundle file for this environment
-    outputFilename = path.fileNameWithPostfix(outputFilename, `.${buildType}`);
-    // Replace allows us to input NODE_ENV and strip code accordingly
-    plugins.push(replace({
-      'process.env.NODE_ENV': JSON.stringify(buildType),
-    }));
-  }
+  const buildPostfix = typeof buildType === 'undefined' ? '' : `.${buildType}`;
+  const outputFilename = `${runningEnv}${buildPostfix}.js`;
 
   return rollup({
     entry: path.posix.join(environmentPath, '**', '*.js'),

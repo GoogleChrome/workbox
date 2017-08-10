@@ -4,12 +4,9 @@ const fs = require('fs-extra');
 const oneLine = require('common-tags').oneLine;
 const rollup = require('rollup-stream');
 const source = require('vinyl-source-stream');
-const replace = require('rollup-plugin-replace');
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
 const buffer = require('vinyl-buffer');
-// const babili = require('rollup-plugin-babili');
-const uglify = require('rollup-plugin-uglify-es');
 
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
@@ -35,9 +32,6 @@ const buildPackage = (packagePath, buildType) => {
     return Promise.reject(errorMsg);
   }
 
-  const buildName = typeof buildType === 'undefined' ? 'dev' : buildType;
-  let outputFilename = `${pkgPathToName(packagePath)}.${buildName}.js`;
-
   const pkgJson = require(path.join(packagePath, 'package.json'));
   if (!pkgJson.browserNamespace) {
     const errorMsg = oneLine`
@@ -51,43 +45,9 @@ const buildPackage = (packagePath, buildType) => {
     return Promise.reject(errorMsg);
   }
 
+  const buildName = typeof buildType === 'undefined' ? 'dev' : buildType;
+  const outputFilename = `${pkgPathToName(packagePath)}.${buildName}.js`;
   const namespace = `google.workbox.${pkgJson.browserNamespace}`;
-
-  logHelper.log(oneLine`
-    Building Browser Bundle for
-    ${logHelper.highlight(pkgPathToName(packagePath))}.
-  `);
-  logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
-  logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
-
-  const plugins = [
-    //
-    // !!! ATTENTION !!!
-    //
-    // Before adding a plugin, give serious consideration as to whether it
-    // is the best option. It will complicate the build and could have
-    // adverse affects on file size.
-    /**
-    babili({
-      // Remove comments from source code.
-      comments: false,
-    }),
-    **/
-    uglify({
-      mangle: {
-        properties: {
-          regex: /^_/,
-        },
-      },
-    }),
-  ];
-
-  if (buildType) {
-    // Replace allows us to input NODE_ENV and strip code accordingly
-    plugins.push(replace({
-      'process.env.NODE_ENV': JSON.stringify(buildType),
-    }));
-  }
 
   const outputPath = path.join(
     packagePath, constants.BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
@@ -102,6 +62,15 @@ const buildPackage = (packagePath, buildType) => {
     logHelper.error(errorMsg);
     return Promise.reject(errorMsg);
   }
+
+  logHelper.log(oneLine`
+    Building Browser Bundle for
+    ${logHelper.highlight(pkgPathToName(packagePath))}.
+  `);
+  logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
+  logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
+
+  const plugins = constants.getDefaultRollupPlugins(buildType);
 
   return rollup({
     entry: browserBundlePath,

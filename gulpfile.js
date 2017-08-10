@@ -22,17 +22,17 @@ const glob = require('glob');
 
 const options = minimist(process.argv.slice(2));
 
-if (options.project) {
+if (options.package) {
   // Ensure the project is valid before running tasks
   try {
-    fs.statSync(path.posix.join(__dirname, 'packages', options.project));
+    fs.statSync(path.posix.join(__dirname, 'packages', options.package));
   } catch (err) {
-    throw new Error(`The supplied project '${options.project}' is invalid.`);
+    throw new Error(`The supplied project '${options.package}' is invalid.`);
   }
 }
 
 global.port = options.port || 3000;
-global.projectOrStar = options.project || '*';
+global.packageOrStar = options.package || '*';
 global.cliOptions = options;
 
 const gulpTaskFiles = glob.sync('./gulp-tasks/*.js');
