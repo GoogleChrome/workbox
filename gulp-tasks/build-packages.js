@@ -8,8 +8,8 @@ const replace = require('rollup-plugin-replace');
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
 const buffer = require('vinyl-buffer');
-const babili = require('rollup-plugin-babili');
-const compiler = require('google-closure-compiler-js').gulp();
+// const babili = require('rollup-plugin-babili');
+const uglify = require('rollup-plugin-uglify-es');
 
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
@@ -67,9 +67,18 @@ const buildPackage = (packagePath, buildType) => {
     // Before adding a plugin, give serious consideration as to whether it
     // is the best option. It will complicate the build and could have
     // adverse affects on file size.
+    /**
     babili({
       // Remove comments from source code.
       comments: false,
+    }),
+    **/
+    uglify({
+      mangle: {
+        properties: {
+          regex: /^_/,
+        },
+      },
     }),
   ];
 
