@@ -12,6 +12,7 @@ const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
 const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
+const rollupHelper = require('./utils/rollup-helper');
 
 /**
  * To test sourcemaps are valid and working, use:
@@ -59,7 +60,7 @@ const buildPackage = (packagePath, buildType) => {
   logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
-  const plugins = constants.getDefaultRollupPlugins(buildType);
+  const plugins = rollupHelper.getDefaultPlugins(buildType);
 
   return rollup({
     entry: browserBundlePath,

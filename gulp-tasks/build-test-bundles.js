@@ -12,6 +12,7 @@ const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
 const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
+const rollupHelper = require('./utils/rollup-helper');
 
 const buildTestBundle = (packagePath, runningEnv, buildType) => {
   const testPath = path.posix.join(packagePath, 'test');
@@ -30,7 +31,7 @@ const buildTestBundle = (packagePath, runningEnv, buildType) => {
     with NODE_ENV='${logHelper.highlight(buildType)}'.
   `);
 
-  const plugins = constants.getDefaultRollupPlugins(buildType);
+  const plugins = rollupHelper.getDefaultPlugins(buildType);
   // Resolve allows bundled tests to pull in node modules like chai.
   plugins.push(resolve());
   // CommonJS allows the loaded modules to work as ES2015 imports.
