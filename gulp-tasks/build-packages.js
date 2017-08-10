@@ -19,8 +19,8 @@ const pkgPathToName = require('./utils/pkg-path-to-name');
  */
 
 const buildPackage = (packagePath, buildType) => {
-  const srcPath = path.posix.join(packagePath, 'src');
-  const browserBundlePath = path.posix.join(srcPath, 'browser-bundle.js');
+  const srcPath = path.join(packagePath, 'src');
+  const browserBundlePath = path.join(srcPath, 'browser-bundle.js');
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
@@ -100,11 +100,8 @@ gulp.task('build-packages:clean', gulp.series(
 // This will create one version of the tests for each buildType.
 // i.e. we'll have a browser build for no NODE_ENV and one for 'production'
 // NODE_ENV and the same for sw and node tests.
-const packageBuilds = [];
-constants.BUILD_TYPES.forEach((buildType) => {
-  packageBuilds.push(
-    packageRunnner('build-package', buildPackage, buildType)
-  );
+const packageBuilds =constants.BUILD_TYPES.map((buildType) => {
+  return packageRunnner('build-package', buildPackage, buildType);
 });
 
 gulp.task('build-packages:build', gulp.series(packageBuilds));
