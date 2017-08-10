@@ -15,40 +15,11 @@ const constants = require('./constants');
  * @memberof module:workbox-build
  */
 
-
 /**
  * To get a list of files and revision details that can be used to ultimately
  * precache assets in a service worker.
  *
- * @param {Object} input
- * @param {String} input.globDirectory The directory you wish to run the
- * `globPatterns` against.
- * @param {Array<String>} input.globPatterns Files matching against any of
- * these glob patterns will be included in the file manifest.
- *
- * Defaults to ['**\/*.{js,css}']
- * @param {String|Array<String>} [input.globIgnores] Files matching against any
- * of these glob patterns will be excluded from the file manifest, even if the
- * file matches against a `globPatterns` pattern. Defaults to ignoring
- * 'node_modules'.
- * @param {Object<String,Array|String>} [input.templatedUrls]
- * If a URL is rendered with templates on the server, its contents may
- * depend on multiple files. This maps URLs to an array of file names, or to a
- * string value, that uniquely determines the URL's contents.
- * @param {String} [input.modifyUrlPrefix] An object of key value pairs
- * where URL's starting with the key value will be replaced with the
- * corresponding value.
- * @param {number} [input.maximumFileSizeToCacheInBytes] This value can be used
- * to determine the maximum size of files that will be precached.
- *
- * Defaults to 2MB.
- * @param {RegExp} [input.dontCacheBustUrlsMatching] An optional regex that will
- * return a URL string and exclude the revision details for urls matching this
- * regex. Useful if you have assets with file revisions in the URL.
- * @param {Array<ManifestTransform>} [input.manifestTransforms] A list of
- * manifest transformations, which will be applied sequentially against the
- * generated manifest. If `modifyUrlPrefix` or `dontCacheBustUrlsMatching` are
- * also specified, their corresponding transformations will be applied first.
+ * @param {module:workbox-build.Configuration} input
  * @return {Promise<Array<ManifestEntry>>}
  * An array of {@link module:workbox-build#ManifestEntry|ManifestEntries}
  * which will include a url and revision parameter.

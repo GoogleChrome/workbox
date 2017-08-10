@@ -13,7 +13,7 @@ const injectManifest = require('./lib/inject-manifest');
  * intelligently update a cache when the service worker is updated.
  *
  * This module will use glob patterns to find assets in a given directory
- * and use the resulting URL and hash data for one of the follow uses:
+ * and use the resulting URL and revision data for one of the follow uses:
  *
  * 1. Generate a complete service worker with precaching and some basic
  * configurable options. See
@@ -31,77 +31,32 @@ const injectManifest = require('./lib/inject-manifest');
  * See [getFileManifestEntries()]{@link
  *  module:workbox-build.getFileManifestEntries}.
  *
- * @example <caption>Generate a complete service worker that will precache
- * the discovered assets.</caption>
- * const swBuild = require('workbox-build');
- *
- * swBuild.generateSW({
- *   globDirectory: './build/',
- *   globPatterns: ['**\/*.{html,js,css}'],
- *   globIgnores: ['service-worker.js','admin.html'],
- *   swDest: './build/sw.js',
- *   templatedUrls: {
- *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
- *   },
- * })
- * .then(() => {
- *   console.log('Service worker generated.');
- * });
- *
- * @example <caption>Generate a file containing the assets to precache.
- * </caption>
- * const swBuild = require('workbox-build');
- *
- * swBuild.generateFileManifest({
- *   globDirectory: './build/',
- *   globPatterns: ['**\/*.{html,js,css}'],
- *   globIgnores: ['service-worker.js','admin.html'],
- *   manifestDest: './build/scripts/manifest.js',
- *   templatedUrls: {
- *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
- *   },
- * })
- * .then(() => {
- *   console.log('Build file has been created.');
- * });
- *
- * @example <caption>Get an Array of files with revision details.</caption>
- * const swBuild = require('workbox-build');
- *
- * swBuild.getFileManifestEntries({
- *   globDirectory: './build/',
- *   globPatterns: ['**\/*.{html,js,css}'],
- *   globIgnores: ['service-worker.js','admin.html'],
- *   templatedUrls: {
- *     '/shell': ['shell.hbs', 'main.css', 'shell.css'],
- *   },
- * })
- * .then((fileDetails) => {
- *   // An array of file details include a `url` and `revision` parameter.
- * });
- *
  * @module workbox-build
  */
 
 /**
  * These are the full set of options that could potentially be used to configure
  * one of the build tools. Each of the build tools has a slightly different way
- * of providing these options:
+ * of providing this configuration:
  *
- * - When using the `workbox-build` `node` module directly, pass them in to the
- * appropriate method. For example, `workboxBuild.injectManifest(configuration)`
- * or `workboxBuild.injectManifest(configuration)`.
+ * - When using the `workbox-build` `node` module directly, pass the
+ * configuration object to appropriate method. For example,
+ * `workboxBuild.injectManifest(configuration)` or
+ * `workboxBuild.generateSW(configuration)`.
  *
  * - When using the `workbox-cli` command line interface, use the
  * `--config-file` flag to point to a
  * [CommonJS module file](https://nodejs.org/docs/latest/api/modules.html) that
- * assigns the configuration to `module.exports`.
+ * assigns the configuration object to `module.exports`.
  *
- * `workbox-webpack-plugin` (a [Webpack](https://webpack.js.org/) interface.)
+ * - When using `workbox-webpack-plugin` within a
+ * [Webpack](https://webpack.js.org/) build, pass the configuration object to
+ * the plugin's constructor, like
+ * `new WorkboxBuildWebpackPlugin(configuration)`.
  *
  * Some specific options might not make sense with certain combinations of
- * interfaces, and in those cases, the limitations are called out in the
- * documentation, and may lead to build-time errors.
+ * interfaces. In those cases, the limitations are called out in the
+ * documentation, and may lead to build-time warnings or errors.
  *
  * Each option documented here includes an example, which, for the sake of
  * illustration, assumes the following local filesystem setup. Please adjust
@@ -110,95 +65,279 @@ const injectManifest = require('./lib/inject-manifest');
  * ```sh
  * ./
  * ├── dev/
- * │   ├── app.js
- * │   ├── index.html
- * │   └── main.css
+ * │   ├── app.js
+ * │   ├── ignored.html
+ * │   ├── image.png
+ * │   ├── index.html
+ * │   ├── main.css
+ * │   ├── sw.js
+ * │   └── templates/
+ * │       └── app_shell.hbs
  * └── dist/
  *     ├── app.js
+ *     ├── image.png
  *     ├── index.html
  *     ├── main.css
  *     └── sw.js
  * ```
  *
- * @param {Object} input
+ * @typedef Configuration
  *
- * @param {String} input.swDest The path to the final service worker file that
- * will be created by the build process.
+ * @param {Object} configuration
+ *
+ * @param {String} configuration.swDest The path to the final service worker
+ * file that will be created by the build process, relative to the current
+ * working directory.
  *
  * E.g.: `'./dist/sw.js'`
  *
- * @param {String} input.globDirectory The base directory you wish to match
- * `globPatterns` against.
+ * @param {String} configuration.swSrc The path to the source service worker
+ * containing a `precache([])` placeholder, which will be replaced with the
+ * precache manifest generated by the build.
  *
- * E.g.: `'./dev'`
+ * E.g.: `'./dev/sw.js'`
  *
- * @param {Array<String>} [input.globPatterns='**\/*.{js,css}']
+ *  Note: This option is only valid when used with {@link module:workbox-build.injectManifest|injectManifest()}.
+ *
+ * @param {Array<String>} [configuration.globPatterns=['**\/*.{js,css,html}']]
  * Files matching against any of these
  * [glob patterns](https://github.com/isaacs/node-glob) will be included in the
  * precache manifest.
  *
- * E.g.: `'**\/*.{js,css,html}'`
+ * E.g.: `'**\/*.{js,css,html,png}'`
  *
- * @param {String|Array<String>} [input.globIgnores='node_modules'] Files matching against any
- * of these glob patterns will be excluded from the file manifest, even if the
- * file matches against a `globPatterns` pattern.
+ * @param {String} configuration.globDirectory The base directory you wish to
+ * match `globPatterns` against, related to the current working directory.
+ *
+ * E.g.: `'./dev'`
+ *
+ * @param {String|Array<String>} [configuration.globIgnores='node_modules']
+ * Files matching against any of these glob patterns will be excluded from the
+ * file manifest, overriding any matches from `globPatterns`.
+ *
+ * E.g. `['**\/ignored.html']`
+ *
  * @param {Object<String,Array|String>} [input.templatedUrls]
- * If a URL is rendered with templates on the server, its contents may
- * depend on multiple files. This maps URLs to an array of file names, or to a
- * string value, that uniquely determines the URL's contents.
- * @param {string} [input.navigateFallback] This URL will be used as a fallback
- * if a navigation request can't be fulfilled. Normally this URL would be
- * precached so it's always available. This is particularly useful for single
- * page apps where requests should go to a single URL.
- * @param {Array<Regexp>} [input.navigateFallbackWhitelist] An optional Array
- * of regexs to restrict which URL's use the `navigateFallback` URL.
- * @param {String} [input.cacheId] An optional ID to be prepended to caches
- * used by workbox-build. This is primarily useful for local development where
- * multiple sites may be served from the same `http://localhost` origin.
- * @param {Boolean} [input.skipWaiting] When set to true the generated service
- * worker activate immediately.
+ * If a URL is rendered generated based on some server-side logic, its contents
+ * may depend on multiple files or on some other unique string value.
  *
- * Defaults to false.
- * @param {Boolean} [input.clientsClaim] When set to true the generated service
- * worker will claim any currently open pages.
+ * If used with an array of strings, they will be interpreted as
+ * [glob patterns](https://github.com/isaacs/node-glob), and the contents of
+ * any files matching the patterns will be used to uniquely version the URL.
  *
- * Defaults to false.
- * @param {string} [input.directoryIndex] If a request for a URL ending in '/'
- * fails, this value will be appended to the URL and a second request will be
- * made.
+ * If used with a single string, it will be interpreted as unique versioning
+ * information that you've generated out of band for a given URL.
  *
- * Defaults to 'index.html'.
- * @param {Array<Object>} [input.runtimeCaching] Passing in an array of objects
- * containing a `urlPattern` and a `handler` parameter will add the appropriate
- * code to the service work to handle run time caching for URL's matching the
- * pattern with the associated handler behavior.
- * @param {String} [input.modifyUrlPrefix] An object of key value pairs
- * where URL's starting with the key value will be replaced with the
- * corresponding value.
- * @param {Array<RegExp>} [input.ignoreUrlParametersMatching] Any search
- * parameters matching against one of the regex's in this array will be removed
- * before looking for a cache match.
- * @param {Boolean} [input.handleFetch] When set to false all requests will
- * go to the network. This is useful during development if you don't want the
- * service worker from preventing updates.
+ * E.g.
+ * ```js
+ * // /app-shell's dynamic HTML depends on a template file and CSS files.
+ * // /other-page's dynamic HTML is uniquely versioned via some other process,
+ * // and the output of the versioning is passed in as a string.
+ * {
+ *   '/app-shell': ['dev/templates/app-shell.hbs', 'dev/**\/*.css'],
+ *   '/other-page': 'my-version-info-for-other-page',
+ * }
+ * ```
  *
- * Defaults to true.
- * @param {number} [input.maximumFileSizeToCacheInBytes] This value can be used
- * to determine the maximum size of files that will be precached.
+ * @param {number} [input.maximumFileSizeToCacheInBytes=2097152]
+ * This value can be used to determine the maximum size of files that will be
+ * precached. This prevents you from inadvertantly precaching very large files
+ * that might have been accidentally match your `globPatterns` values.
  *
- * Defaults to 2MB.
  * @param {RegExp} [input.dontCacheBustUrlsMatching] Assets that match this
- * regex will not have their revision details included in the precache. This
- * is useful for assets that have revisioning details in the filename.
- * @param {Array<ManifestTransform>} [input.manifestTransforms] A list of
+ * regex will be assumed to be uniquely versioned via their URL, an exempted
+ * from the normal HTTP cache-busting that's done when populating the precache.
+ *
+ * While not required, it's recommended that if your existing build process
+ * already inserts a `[hash]` value into each filename, you provide a RegExp
+ * that will detect those values, as it will reduce the amount of bandwidth
+ * consumed when precaching.
+ *
+ * E.g. `/\.\w{8}\./`
+ *
+ * @param {Array<ManifestTransform>} [input.manifestTransforms] An arroy of
  * manifest transformations, which will be applied sequentially against the
  * generated manifest. If `modifyUrlPrefix` or `dontCacheBustUrlsMatching` are
  * also specified, their corresponding transformations will be applied first.
  *
- * @typedef Configuration
+ * E.g.
+ * ```js
+ * [
+ *   (manifestEntries) => manifestEntries.map(entry => {
+ *     const cdnOrigin = 'https://example.com';
+ *     if (entry.url.startsWith('/assets/')) {
+ *       entry.url = cdnOrigin + entry.url;
+ *     }
+ *     return entry;
+ *   }),
+ * ]
+ * ```
+ *
+ * @param {String} [input.navigateFallback] This will be used to create a
+ * {@link module:workbox-routing.NavigationRoute|NavigationRoute} that will
+ * respond to navigation requests for URLs that that aren't precached.
+ *
+ * This is meant to be used in a
+ * [Single Page App](https://en.wikipedia.org/wiki/Single-page_application)
+ * scenario, in which you want all navigations to result in common App Shell
+ * HTML being reused.
+ *
+ * It's *not* intended for use as a fallback that's displayed when the browser
+ * is offline.
+ *
+ * Note: This option is only valid when used with {@link module:workbox-build#generateSW|generateSW()}. When using
+ * {@link module:workbox-build.injectManifest|injectManifest()}, you can explicitly add in a call to
+ * {@link module:workbox-sw.Router#registerNavigationRoute|registerNavigationRoute()}
+ * in your `swSrc` file.
+ *
+ * E.g. `'/app-shell'`
+ *
+ * @param {Array<RegExp>} [input.navigateFallbackWhitelist=/./] An optional
+ * array of regular expressions that restrict which URLs the navigation route
+ * applies to.
+ *
+ * Note: This option is only valid when used with {@link module:workbox-build#generateSW|generateSW()}. When using
+ * {@link module:workbox-build.injectManifest|injectManifest()}, you can explicitly add in the whitelist when calling
+ * {@link module:workbox-sw.Router#registerNavigationRoute|registerNavigationRoute()}
+ * in your `swSrc` file.
+ *
+ * E.g. `[/pages/, /articles/]`
+ *
+ * @param {String} [input.cacheId] An optional ID to be prepended to caches
+ * used by `workbox-sw`. This is primarily useful for local development where
+ * multiple sites may be served from the same `http://localhost` origin.
+ *
+ * Note: This option is only valid when used with {@link module:workbox-build#generateSW|generateSW()}. When using
+ * {@link module:workbox-build.injectManifest|injectManifest()}, you can explicitly pass the desired value in to the
+ * {@link module:workbox-sw.WorkboxSW|WorkboxSW() constructor} in your `swSrc`
+ * file.
+ *
+ * E.g. `'my-app-name'`
+ *
+ * @param {Boolean} [input.skipWaiting=false] Whether or not the service worker
+ * should skip over the [waiting](https://developers.google.com/web/fundamentals/instant-and-offline/service-worker/lifecycle#waiting)
+ * lifecycle stage.
+ *
+ *  Note: This option is only valid when used with {@link module:workbox-build#generateSW|generateSW()}. When using
+ * {@link module:workbox-build.injectManifest|injectManifest()}, you can explicitly pass the desired value in to the
+ * {@link module:workbox-sw.WorkboxSW|WorkboxSW() constructor} in your `swSrc`
+ * file.
+ *
+ * @param {Boolean} [input.clientsClaim=false] Whether or not the service worker
+ * should [start controlling](https://developers.google.com/web/fundamentals/instant-and-offline/service-worker/lifecycle#clientsclaim)
+ * any existing clients as soon as it activates.
+ *
+ * Note: This option is only valid when used with {@link module:workbox-build#generateSW|generateSW()}. When using
+ * {@link module:workbox-build.injectManifest|injectManifest()}, you can explicitly pass the desired value in to the
+ * {@link module:workbox-sw.WorkboxSW|WorkboxSW() constructor} in your `swSrc`
+ * file.
+ *
+ * @param {string} [input.directoryIndex='index.html'] If a request for a URL
+ * ending in '/' fails, this value will be appended to the URL and a second
+ * request will be made.
+ *
+ * This should be configured to whatever your web server is using, if anything,
+ * for its [directory index](https://httpd.apache.org/docs/2.0/mod/mod_dir.html).
+ *
+ * Note: This option is only valid when used with {@link module:workbox-build#generateSW|generateSW()}. When using
+ * {@link module:workbox-build.injectManifest|injectManifest()}, you can explicitly pass the desired value in to the
+ * {@link module:workbox-sw.WorkboxSW|WorkboxSW() constructor} in your `swSrc`
+ * file.
+ *
+ * @param {Array<Object>} [input.runtimeCaching] Passing in an array of objects
+ * containing `urlPattern`s, `handler`s, and potentially `option`s that will add
+ * the appropriate code to the generated service worker to handle runtime
+ * caching.
+ *
+ * Requests for precached URLs that are picked up via `globPatterns` are handled
+ * by default, and don't need to be accomodated in `runtimeCaching`.
+ *
+ * The `handler` values correspond the names of the
+ * {@link module:workbox-sw.Strategies|strategies} supported by `workbox-sw`.
+ *
+ *
+ * Note: This option is only valid when used with {@link module:workbox-build#generateSW|generateSW()}. When using
+ * {@link module:workbox-build.injectManifest|injectManifest()}, you can explicitly add in the corresponding runtime
+ * caching behavior via
+ * {@link module:workbox-sw~registerRoute()|registerRoute()} in your `swSrc`
+ * file.
+ *
+ * E.g.
+ * ```js
+ * [{
+ *   // You can use a RegExp as the pattern:
+ *   urlPattern: /.jpg$/,
+ *   handler: 'cacheFirst',
+ *   // Any options provided will be used when creating the caching strategy.
+ *   options: {
+ *     cacheName: 'image-cache',
+ *     cacheExpiration: {
+ *       maxEntries: 10,
+ *     },
+ *   },
+ * }, {
+ *   // Alternatively, you can use Express-style route strings:
+ *   urlPattern: 'https://example.com/path/to/:file',
+ *   handler: 'staleWhileRevalidate',
+ *   options: {
+ *     cacheableResponse: {
+         statuses: [0],
+ *     },
+ *   },
+ * }]
+ * ```
+ *
+ * @param {Object<String,String>} [input.modifyUrlPrefix] A mapping of
+ * prefixes that, if present in an entry in the precache manifest, will be
+ * replaced with the corresponding value.
+ *
+ * This can be used to, for example, remove or add a path prefix from a manifest
+ * entry if your web hosting setup doesn't match your local filesystem setup.
+ *
+ * As an alternative with more flexibility, you can use the `manifestTransforms`
+ * option and provide a function that modifies the entries in the manifest using
+ * whatever logic you provide.
+ *
+ * E.g.
+ * ```js
+ * {
+ *   // This would prepend '/assets' to every entry's URL.
+ *   '': '/assets',
+ *   // This would remove a leading '/' from every entry's URL.
+ *   '/': '',
+ * }
+ * ```
+ *
+ * @param {Array<RegExp>} [input.ignoreUrlParametersMatching=[/^utm_/]] Any
+ * search parameter names that match against one of the regex's in this array
+ * will be removed before looking for a precache match.
+ *
+ * This is useful if your users might request URLs that contain, for example,
+ * URL parameters used to track the source of the traffic. Those URL parameters
+ * would normally cause the cache lookup to fail, since the URL strings used
+ * as cache keys would not be expected to include them.
+ *
+ * You can use `[/./]` to ignore all URL parameters.
+ *
+ * Note: This option is only valid when used with {@link module:workbox-build#generateSW|generateSW()}. When using
+ * {@link module:workbox-build.injectManifest|injectManifest()}, you can explicitly pass the desired value in to the
+ * {@link module:workbox-sw.WorkboxSW|WorkboxSW() constructor} in your `swSrc`
+ * file.
+ *
+ * E.g. `[/homescreen/]`
+ *
+ * @param {Boolean} [input.handleFetch=true] Whether or not `workbox-sw` should
+ * create a `fetch` event handler that responds to network requests. This is
+ * useful during development if you don't want the service worker serving stale
+ * content.
+ *
+ * Note: This option is only valid when used with {@link module:workbox-build#generateSW|generateSW()}. When using
+ * {@link module:workbox-build.injectManifest|injectManifest()}, you can explicitly pass the desired value in to the
+ * {@link module:workbox-sw.WorkboxSW|WorkboxSW() constructor} in your `swSrc`
+ * file.
+ *
  * @memberof module:workbox-build
  */
-
 
 module.exports = {
   generateSW,
