@@ -9,7 +9,7 @@ const lernaBinPath = path.join(
   require.resolve('lerna'), '..', '..', 'bin', 'lerna.js');
 
 module.exports = {
-  bootstrap: (args) => {
+  bootstrap: (...args) => {
     return spawnPromiseWrapper(lernaBinPath, ['bootstrap', ...args]);
   },
 };

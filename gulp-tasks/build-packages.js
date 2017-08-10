@@ -49,8 +49,8 @@ const buildPackage = (packagePath, buildType) => {
   const outputFilename = `${pkgPathToName(packagePath)}.${buildName}.js`;
   const namespace = `google.workbox.${pkgJson.browserNamespace}`;
 
-  const outputPath = path.join(
-    packagePath, constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
+  const outputDirectory = path.join(packagePath,
+    constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
 
   logHelper.log(oneLine`
     Building Browser Bundle for
@@ -84,13 +84,13 @@ const buildPackage = (packagePath, buildType) => {
   .pipe(rename(outputFilename))
   // This writes the sourcemap alongside the final build file
   .pipe(sourcemaps.write('.'))
-  .pipe(gulp.dest(outputPath));
+  .pipe(gulp.dest(outputDirectory));
 };
 
 const cleanPackages = (packagePath) => {
-  const browserBuildDirectory = path.join(
-    packagePath, constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
-  return fs.remove(browserBuildDirectory);
+  const outputDirectory = path.join(packagePath,
+    constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
+  return fs.remove(outputDirectory);
 };
 
 gulp.task('build-packages:clean', gulp.series(
