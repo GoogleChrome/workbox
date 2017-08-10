@@ -65,14 +65,14 @@ const buildTestBundle = (packagePath, runningEnv, buildType) => {
   // This gives the generated stream a file name
   .pipe(source(outputFilename))
   .pipe(gulp.dest(
-    path.posix.join(testPath, constants.TEST_BUNDLE_BUILD_DIRNAME, runningEnv)
+    path.posix.join(testPath, constants.TEST_BUNDLES_BUILD_DIRNAME, runningEnv)
   ));
 };
 
 const cleanBundleFile = (packagePath) => {
   const testPath = path.join(packagePath, 'test');
   const outputDirectory = path.join(
-    testPath, constants.TEST_BUNDLE_BUILD_DIRNAME);
+    testPath, constants.TEST_BUNDLES_BUILD_DIRNAME);
   return fs.remove(outputDirectory);
 };
 

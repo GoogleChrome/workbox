@@ -50,18 +50,7 @@ const buildPackage = (packagePath, buildType) => {
   const namespace = `google.workbox.${pkgJson.browserNamespace}`;
 
   const outputPath = path.join(
-    packagePath, constants.BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
-
-  const relOutputPath = path.relative(packagePath, outputPath);
-  if (!pkgJson.main || path.dirname(pkgJson.main) !== relOutputPath) {
-    const errorMsg = oneLine`
-      You must define a 'main' parameter in the 'package.json'
-      for ${pkgPathToName(packagePath)} which points to a build
-      file in the directory '${relOutputPath}'.
-    `;
-    logHelper.error(errorMsg);
-    return Promise.reject(errorMsg);
-  }
+    packagePath, constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
 
   logHelper.log(oneLine`
     Building Browser Bundle for
@@ -100,7 +89,7 @@ const buildPackage = (packagePath, buildType) => {
 
 const cleanPackages = (packagePath) => {
   const browserBuildDirectory = path.join(
-    packagePath, constants.BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
+    packagePath, constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
   return fs.remove(browserBuildDirectory);
 };
 

@@ -5,9 +5,9 @@ module.exports = {
   // This is a directory that should not be commited
   // to git and will be removed and rebuilt between
   // test runs.
-  BUILD_DIRNAME: 'build',
+  PACKAGE_BUILD_DIRNAME: 'build',
   BROWSER_BUILD_DIRNAME: 'browser-bundles',
-  TEST_BUNDLE_BUILD_DIRNAME: 'bundle-build',
+  TEST_BUNDLES_BUILD_DIRNAME: 'bundle-builds',
 
   // This is the environments that we should use for NODE_ENV.
   BUILD_TYPES: [undefined, 'production'],
@@ -21,7 +21,7 @@ module.exports = {
         mangle: {
           properties: {
             reserved: [
-              // Chai uses this.
+              // Chai will break unless we reserve this private variable.
               '_obj',
             ],
             // mangle > properties > regex will allow uglify-es to minify
@@ -30,7 +30,7 @@ module.exports = {
             // If you are getting an error due to a property mangle
             // set this flag to true and the property will be changed
             // from '_foo' to '$_foo$' to help diagnose the problem.
-            debug: true,
+            debug: false,
           },
         },
       }),
