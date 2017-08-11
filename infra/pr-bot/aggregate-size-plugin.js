@@ -54,8 +54,7 @@ class AggregateSizePlugin extends PluginInterface {
       `;
     }
 
-    // TODO: Find a clean way to allow a plugin to fail the build in pr-bot
-    // let failBuild = totalSize >= MAX_SIZE;
+    const failPR = totalSize >= MAX_SIZE;
 
     const markdownLog = `${markdownWarning}\n\n`+
       `**Total Size**:                   ${totalSizeString} ${unitString}\n` +
@@ -66,6 +65,7 @@ class AggregateSizePlugin extends PluginInterface {
     return Promise.resolve({
       prettyLog,
       markdownLog,
+      failPR,
     });
   }
 }
