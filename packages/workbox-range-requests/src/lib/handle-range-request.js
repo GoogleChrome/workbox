@@ -68,6 +68,9 @@ export function parseRangeHeader({rangeHeader} = {}) {
     throw ErrorFactory.createError('unit-must-be-bytes');
   }
 
+  // Specifying multiple ranges separate by commas is valid syntax, but this
+  // library only attempts to handle a single, contiguous sequence of bytes.
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Range#Syntax
   if (normalizedRangeHeader.includes(',')) {
     throw ErrorFactory.createError('single-range-only');
   }
@@ -161,6 +164,7 @@ export async function handleRangeRequest({request, response} = {}) {
     const slicedBlobSize = slicedBlob.size;
 
     const slicedResponse = new Response(slicedBlob, {
+      // Status code 206 is for a Partial Content response.
       // See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/206
       status: 206,
       statusText: 'Partial Content',
