@@ -1,9 +1,10 @@
 const glob = require('glob');
 const path = require('path');
+const PluginInterface = require('pr-bot').PluginInterface;
 
-class AggregateSizePlugin {
-  get name() {
-    return `Workbox Aggregate Size Plugin`;
+class AggregateSizePlugin extends PluginInterface {
+  constructor() {
+    super(`Workbox Aggregate Size Plugin`);
   }
 
   run(beforePath, afterPath) {
