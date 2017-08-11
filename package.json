@@ -36,7 +36,7 @@
     "lerna": "^2.0.0",
     "mocha": "^3.5.0",
     "path-extra": "^4.2.0",
-    "pr-bot": "0.0.4",
+    "pr-bot": "0.1.0",
     "rollup": "^0.45.2",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-multi-entry": "^2.0.1",
