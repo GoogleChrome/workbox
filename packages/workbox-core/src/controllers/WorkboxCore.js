@@ -8,17 +8,22 @@ export default class WorkboxCore {
   /**
    * @private
    */
-  get INTERNAL() {
-    if (!this._internal) {
-      this._internal = {
-        logHelper: new LogHelper(),
-      };
+  constructor() {
+    this._internal = {
+      logHelper: new LogHelper(),
+    };
 
-      if (process.env.NODE_ENV !== 'production') {
-        this._internal.assert = new Assert();
-      }
+    if (process.env.NODE_ENV !== 'production') {
+      this._internal.assert = new Assert();
     }
+  }
 
+  /**
+   * Prevent INTERNAL from being set or altered outside
+   * of this class.
+   * @private
+   */
+  get INTERNAL() {
     return this._internal;
   }
 }
