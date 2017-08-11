@@ -45,6 +45,7 @@ const buildTestBundle = (packagePath, runningEnv, buildType) => {
   );
   // Multi entry globs for multiple files. Used to pull in all test files.
   plugins.push(multiEntry());
+  // This adds code coverage to our tests
   plugins.push(istanbul({
     exclude: ['test/*.js', 'node_modules/**/*'],
   }));
