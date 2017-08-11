@@ -7,6 +7,7 @@ const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
 const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
+const mochaCoverageReporter = require('./utils/mocha-coverage-reporter');
 
 const runBundledTests = (packagePath, env) => {
   logHelper.log(oneLine`
@@ -14,7 +15,9 @@ const runBundledTests = (packagePath, env) => {
     ${logHelper.highlight(pkgPathToName(packagePath))}.
   `);
 
-  const mochaOptions = {};
+  const mochaOptions = {
+    R: mochaCoverageReporter,
+  };
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
   }
