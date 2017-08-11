@@ -14,8 +14,7 @@
 const glob = require('glob');
 const path = require('path');
 const fs = require('fs-extra');
-
-const PROPERTY_REGEX = /\.(\w+)/g;
+const babylon = require('babylon');
 
 class AnalyseBuildForProperties {
   run() {
@@ -40,16 +39,21 @@ class AnalyseBuildForProperties {
   analyzeFile(filePath) {
     const fileContents = fs.readFileSync(filePath).toString();
 
+    const parsedCode = babylon.parse(fileContents);
+    const tokens = parsedCode.tokens;
+    const nameTokens = tokens.filter((token) => {
+      return token.type.label === 'name';
+    });
+
     const matches = {};
 
-    let result;
-    while (result = PROPERTY_REGEX.exec(fileContents)) {
-      const resultKey = result[1];
-      if (!matches[resultKey]) {
-        matches[resultKey] = 0;
+    nameTokens.forEach((token) => {
+      const variableName = token.value;
+      if (!matches[variableName]) {
+        matches[variableName] = 0;
       }
-      matches[resultKey]++;
-    }
+      matches[variableName]++;
+    });
 
     return Object.keys(matches).map((matchKey) => {
       return {
