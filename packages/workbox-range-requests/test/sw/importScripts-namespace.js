@@ -13,13 +13,21 @@
  limitations under the License.
 */
 
-import CachedRangeResponsePlugin from
-  '../../src/lib/cached-range-response-plugin';
+importScripts('/__test/bundle/workbox-range-requests');
 
-describe('Test of the CachedRangeResponsePlugin class', function() {
-  it(`should expose a the cacheWillMatch() method`, function() {
-    expect(
-      CachedRangeResponsePlugin
-    ).itself.to.respondTo('cacheWillMatch');
+const exportedSymbols = [
+  'handleRangeRequest',
+  'CachedRangeResponsePlugin',
+];
+
+describe('Test Library Surface', function() {
+  it('should be accessible via workbox.rangeRequests', function() {
+    expect(workbox.rangeRequests).to.exist;
+  });
+
+  exportedSymbols.forEach((exportedSymbol) => {
+    it(`should expose ${exportedSymbol} via workbox.rangeRequests`, function() {
+      expect(workbox.rangeRequests[exportedSymbol]).to.exist;
+    });
   });
 });

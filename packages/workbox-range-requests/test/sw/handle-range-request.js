@@ -1,5 +1,21 @@
-importScripts('/__test/mocha/sw-utils.js');
-importScripts('/__test/bundle/workbox-range-requests');
+/*
+ Copyright 2017 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+import {
+  parseRangeHeader, calculateEffectiveBoundaries, default as handleRangeRequest,
+} from '../../src/lib/handle-range-request';
 
 describe('Tests for the handle-range-request.js functions', function() {
   function constructBlob(startValue, length) {
@@ -13,7 +29,7 @@ describe('Tests for the handle-range-request.js functions', function() {
 
   function blobToText(blob) {
     const reader = new FileReader();
-    const finished = new Promise(resolve => {
+    const finished = new Promise((resolve) => {
       reader.addEventListener('loadend', (event) => {
         resolve(event.srcElement.result);
       });
@@ -30,21 +46,21 @@ describe('Tests for the handle-range-request.js functions', function() {
     it(`should throw when it's is called with an invalid 'rangeHeader' parameter`, function() {
       const rangeHeader = null;
       expect(
-        () => workbox.rangeRequests.parseRangeHeader({rangeHeader})
+        () => parseRangeHeader({rangeHeader})
       ).to.throw().with.property('name', 'assertion-failed');
     });
 
     it(`should throw when it's is called with a rangeHeader that doesn't start with 'bytes='`, function() {
       const rangeHeader = 'not-bytes=';
       expect(
-        () => workbox.rangeRequests.parseRangeHeader({rangeHeader})
+        () => parseRangeHeader({rangeHeader})
       ).to.throw().with.property('name', 'unit-must-be-bytes');
     });
 
     it(`should throw when it's is called with a rangeHeader contains multiple ranges`, function() {
       const rangeHeader = 'bytes=1-2, 3-4';
       expect(
-        () => workbox.rangeRequests.parseRangeHeader({rangeHeader})
+        () => parseRangeHeader({rangeHeader})
       ).to.throw().with.property('name', 'single-range-only');
     });
 
@@ -59,7 +75,7 @@ describe('Tests for the handle-range-request.js functions', function() {
       for (const badRange of badRanges) {
         const rangeHeader = `bytes=${badRange}`;
         expect(
-          () => workbox.rangeRequests.parseRangeHeader({rangeHeader})
+          () => parseRangeHeader({rangeHeader})
         ).to.throw().with.property('name', 'invalid-range-values', `for test case '${badRange}'`);
       }
     });
@@ -72,7 +88,7 @@ describe('Tests for the handle-range-request.js functions', function() {
       ];
 
       for (const [rangeHeader, expectedValue] of testCases) {
-        const boundaries = workbox.rangeRequests.parseRangeHeader({rangeHeader});
+        const boundaries = parseRangeHeader({rangeHeader});
         expect(boundaries).to.eql(expectedValue, `for test case '${rangeHeader}'`);
       }
     });
@@ -82,7 +98,7 @@ describe('Tests for the handle-range-request.js functions', function() {
     it(`should throw when it's is called with an invalid 'blob' parameter`, function() {
       const invalidBlob = null;
       expect(
-        () => workbox.rangeRequests.calculateEffectiveBoundaries({blob: invalidBlob})
+        () => calculateEffectiveBoundaries({blob: invalidBlob})
       ).to.throw().with.property('name', 'assertion-failed');
     });
 
@@ -90,7 +106,7 @@ describe('Tests for the handle-range-request.js functions', function() {
       const start = -1;
       const end = 1;
       expect(
-        () => workbox.rangeRequests.calculateEffectiveBoundaries({blob: SOURCE_BLOB, start, end})
+        () => calculateEffectiveBoundaries({blob: SOURCE_BLOB, start, end})
       ).to.throw().with.property('name', 'range-not-satisfiable');
     });
 
@@ -98,7 +114,7 @@ describe('Tests for the handle-range-request.js functions', function() {
       const start = 0;
       const end = SOURCE_BLOB_SIZE + 1;
       expect(
-        () => workbox.rangeRequests.calculateEffectiveBoundaries({blob: SOURCE_BLOB, start, end})
+        () => calculateEffectiveBoundaries({blob: SOURCE_BLOB, start, end})
       ).to.throw().with.property('name', 'range-not-satisfiable');
     });
 
@@ -110,7 +126,7 @@ describe('Tests for the handle-range-request.js functions', function() {
       ];
 
       for (const [sourceBoundaries, expectedBoundaries] of testCases) {
-        const calculatedBoundaries = workbox.rangeRequests.calculateEffectiveBoundaries({
+        const calculatedBoundaries = calculateEffectiveBoundaries({
           blob: SOURCE_BLOB,
           start: sourceBoundaries.start,
           end: sourceBoundaries.end,
@@ -135,7 +151,7 @@ describe('Tests for the handle-range-request.js functions', function() {
     });
 
     it(`should return a Response with status 416 when the 'request' parameter isn't valid`, async function() {
-      const response = await workbox.rangeRequests.handleRangeRequest({
+      const response = await handleRangeRequest({
         request: null,
         response: VALID_RESPONSE,
       });
@@ -143,7 +159,7 @@ describe('Tests for the handle-range-request.js functions', function() {
     });
 
     it(`should return a Response with status 416 when the 'response' parameter isn't valid`, async function() {
-      const response = await workbox.rangeRequests.handleRangeRequest({
+      const response = await handleRangeRequest({
         request: VALID_REQUEST,
         response: null,
       });
@@ -152,7 +168,7 @@ describe('Tests for the handle-range-request.js functions', function() {
 
     it(`should return a Response with status 416 when there's no Range: header in the request`, async function() {
       const noRangeHeaderRequest = new Request('/');
-      const response = await workbox.rangeRequests.handleRangeRequest({
+      const response = await handleRangeRequest({
         request: noRangeHeaderRequest,
         response: VALID_RESPONSE,
       });
@@ -160,7 +176,7 @@ describe('Tests for the handle-range-request.js functions', function() {
     });
 
     it(`should return the expected Response when it's called with valid parameters`, async function() {
-      const response = await workbox.rangeRequests.handleRangeRequest({
+      const response = await handleRangeRequest({
         request: VALID_REQUEST,
         response: VALID_RESPONSE,
       });

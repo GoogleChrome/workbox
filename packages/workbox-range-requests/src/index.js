@@ -39,13 +39,10 @@
  * - https://github.com/GoogleChrome/sample-media-pwa/blob/master/src/client/scripts/ranged-response.js
  */
 
-import {calculateEffectiveBoundaries, handleRangeRequest, parseRangeHeader}
-  from './lib/handle-range-request.js';
+import handleRangeRequest from './lib/handle-range-request.js';
 import CachedRangeResponsePlugin from './lib/cached-range-response-plugin.js';
 
 export {
-  calculateEffectiveBoundaries,
   handleRangeRequest,
-  parseRangeHeader,
   CachedRangeResponsePlugin,
 };

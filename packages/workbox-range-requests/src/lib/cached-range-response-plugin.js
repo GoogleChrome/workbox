@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import {handleRangeRequest} from './handle-range-request.js';
+import handleRangeRequest from './handle-range-request.js';
 
 /**
  * @memberof module:workbox-range-requests
