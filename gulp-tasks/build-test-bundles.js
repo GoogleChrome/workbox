@@ -5,7 +5,6 @@ const rollup = require('rollup-stream');
 const source = require('vinyl-source-stream');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
-const replace = require('rollup-plugin-replace');
 const multiEntry = require('rollup-plugin-multi-entry');
 const oneLine = require('common-tags').oneLine;
 
@@ -13,8 +12,9 @@ const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
 const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
+const rollupHelper = require('./utils/rollup-helper');
 
-const buildTestBundle = (packagePath, runningEnv, nodeEnv) => {
+const buildTestBundle = (packagePath, runningEnv, buildType) => {
   const testPath = path.posix.join(packagePath, 'test');
   const environmentPath = path.posix.join(testPath, 'bundle', runningEnv);
 
@@ -28,32 +28,25 @@ const buildTestBundle = (packagePath, runningEnv, nodeEnv) => {
   logHelper.log(oneLine`
     Building Test Bundle for ${logHelper.highlight(pkgPathToName(packagePath))}
     to run in '${logHelper.highlight(runningEnv)}'
-    with NODE_ENV='${logHelper.highlight(nodeEnv)}'.
+    with NODE_ENV='${logHelper.highlight(buildType)}'.
   `);
 
-  const plugins = [
-    // Resolve allows bundled tests to pull in node modules like chai.
-    resolve(),
-    // CommonJS allows the loaded modules to work as ES2015 imports.
+  const plugins = rollupHelper.getDefaultPlugins(buildType);
+  // Resolve allows bundled tests to pull in node modules like chai.
+  plugins.push(resolve());
+  // CommonJS allows the loaded modules to work as ES2015 imports.
+  plugins.push(
     commonjs({
       namedExports: {
         'node_modules/chai/index.js': ['expect'],
       },
-    }),
-    // Multi entry globs for multiple files. Used to pull in all test files.
-    multiEntry(),
-  ];
+    })
+  );
+  // Multi entry globs for multiple files. Used to pull in all test files.
+  plugins.push(multiEntry());
 
-  let outputFilename = `${runningEnv}.js`;
-
-  if (nodeEnv) {
-    // Make a unique bundle file for this environment
-    outputFilename = path.fileNameWithPostfix(outputFilename, `.${nodeEnv}`);
-    // Replace allows us to input NODE_ENV and strip code accordingly
-    plugins.push(replace({
-      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
-    }));
-  }
+  const buildPostfix = typeof buildType === 'undefined' ? '' : `.${buildType}`;
+  const outputFilename = `${runningEnv}${buildPostfix}.js`;
 
   return rollup({
     entry: path.posix.join(environmentPath, '**', '*.js'),
@@ -73,14 +66,14 @@ const buildTestBundle = (packagePath, runningEnv, nodeEnv) => {
   // This gives the generated stream a file name
   .pipe(source(outputFilename))
   .pipe(gulp.dest(
-    path.posix.join(testPath, constants.BUNDLE_BUILD_DIRNAME, runningEnv)
+    path.posix.join(testPath, constants.TEST_BUNDLES_BUILD_DIRNAME, runningEnv)
   ));
 };
 
 const cleanBundleFile = (packagePath) => {
-  const testPath = path.posix.join(packagePath, 'test');
-  const outputDirectory = path.posix.join(
-    testPath, constants.BUNDLE_BUILD_DIRNAME);
+  const testPath = path.join(packagePath, 'test');
+  const outputDirectory = path.join(
+    testPath, constants.TEST_BUNDLES_BUILD_DIRNAME);
   return fs.remove(outputDirectory);
 };
 
@@ -88,22 +81,22 @@ gulp.task('build-test-bundles:clean',
   gulp.series(packageRunnner('build-test-bundles:clean', cleanBundleFile))
 );
 
-// This will create one version of the tests for each environment.
+// This will create one version of the tests for each buildType.
 // i.e. we'll have a browser build for no NODE_ENV and one for 'production'
 // NODE_ENV and the same for sw and node tests.
 const bundleBuilds = [];
-constants.ENVIRONMENTS.forEach((environment) => {
+constants.BUILD_TYPES.forEach((buildType) => {
   bundleBuilds.push(
     packageRunnner('build-test-bundles:build', buildTestBundle,
-    'browser', environment)
+    'browser', buildType)
   );
   bundleBuilds.push(
     packageRunnner('build-test-bundles:build', buildTestBundle,
-    'sw', environment)
+    'sw', buildType)
   );
   bundleBuilds.push(
     packageRunnner('build-test-bundles:build', buildTestBundle,
-    'node', environment)
+    'node', buildType)
   );
 });
 

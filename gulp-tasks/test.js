@@ -14,11 +14,16 @@ const runBundledTests = (packagePath, env) => {
     ${logHelper.highlight(pkgPathToName(packagePath))}.
   `);
 
+  const mochaOptions = {};
+  if (global.cliOptions.grep) {
+    mochaOptions.grep = global.cliOptions.grep;
+  }
+
   const bundleTestDirectory = path.posix.join(
-    packagePath, 'test', constants.BUNDLE_BUILD_DIRNAME);
+    packagePath, 'test', constants.TEST_BUNDLES_BUILD_DIRNAME);
   return gulp.src(
     path.posix.join(bundleTestDirectory, env, '*.js'), {read: false})
-  .pipe(mocha());
+  .pipe(mocha(mochaOptions));
 };
 
 gulp.task('test:node', gulp.series(

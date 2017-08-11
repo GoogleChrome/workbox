@@ -78,7 +78,7 @@ const pkgPathToName = require('./pkg-path-to-name');
  */
 module.exports = (displayName, func, ...args) => {
   const packagePaths = glob.sync(
-    `packages/${global.projectOrStar}/package.json`, {
+    `packages/${global.packageOrStar}/package.json`, {
       absolute: true,
     }
   );
@@ -93,7 +93,7 @@ module.exports = (displayName, func, ...args) => {
     wrappedFunc.displayName = oneLine`
       ${displayName}
       (${pkgPathToName(packageRootPath)})
-      ${JSON.stringify(args)}`;
+      ${args.length === 0 ? '' : JSON.stringify(args)}`;
     return wrappedFunc;
   });
 };

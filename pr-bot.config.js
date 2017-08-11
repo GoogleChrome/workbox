@@ -1,7 +1,7 @@
 const prbot = require('pr-bot');
 
 module.exports = {
-  buildCommand: `npm install && gulp test`,
+  buildCommand: `npm install && gulp build && gulp test`,
   botUsername: `workbox-pr-bot`,
 
   // This is required until v3 is the primary branch (i.e. moved to master)
@@ -13,7 +13,7 @@ module.exports = {
   },
   plugins: [
     new prbot.plugins.Size({
-      globPattern: 'packages/*/src/**/*.js',
+      globPattern: 'packages/*/{src,build}/**/*.js',
       globOptions: {
         ignore: [
           '**/node_modules/**/*',
