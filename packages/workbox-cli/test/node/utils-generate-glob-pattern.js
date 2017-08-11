@@ -3,18 +3,18 @@ const errors = require('../../src/lib/errors');
 
 require('chai').should();
 
-describe('src/lib/utils/generate-glob-pattern.js', function() {
-  it('should handle a single file extension', function() {
+describe(`src/lib/utils/generate-glob-pattern.js`, function() {
+  it(`should handle a single file extension`, function() {
     const globPattern = generateGlobPattern(['txt']);
     globPattern.should.equal('**/*.txt');
   });
 
-  it('should handle a multiple file extensions', function() {
+  it(`should handle a multiple file extensions`, function() {
     const globPattern = generateGlobPattern(['txt', 'js']);
     globPattern.should.equal('**/*.{txt,js}');
   });
 
-  it('should be able to handle a bad fileExtentionsToCache iput', function() {
+  it(`should be able to handle a bad fileExtentionsToCache iput`, function() {
     const badInput = [
       undefined,
       null,
@@ -44,7 +44,7 @@ describe('src/lib/utils/generate-glob-pattern.js', function() {
 
   // fileExtensionsToCache - Add warning if the extension name has a '.' as
   //                         first character
-  it('should be able to handle a bad file extension', function() {
+  it(`should be able to handle a bad file extension`, function() {
     try {
       generateGlobPattern(['.example']);
       throw new Error('Expected to throw error.');

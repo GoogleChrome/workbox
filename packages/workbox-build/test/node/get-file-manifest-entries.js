@@ -7,14 +7,14 @@ const constants = require('../../src/lib/constants');
 
 require('chai').should();
 
-describe('Test getFileManifestEntries', function() {
+describe(`Test getFileManifestEntries`, function() {
   const EXAMPLE_INPUT = {
     globPatterns: ['./**/*.{html,css}'],
     globIgnores: [],
     globDirectory: '.',
   };
 
-  it('should be able to handle bad input', function() {
+  it(`should be able to handle bad input`, function() {
     const badInputs = [
       undefined,
       null,
@@ -37,7 +37,7 @@ describe('Test getFileManifestEntries', function() {
     }, Promise.resolve());
   });
 
-  it('should detect bad globDirectory', function() {
+  it(`should detect bad globDirectory`, function() {
     const badInput = [
       undefined,
       null,
@@ -62,7 +62,7 @@ describe('Test getFileManifestEntries', function() {
     }, Promise.resolve());
   });
 
-  it('should detect bad globPatterns', function() {
+  it(`should detect bad globPatterns`, function() {
     const badInput = [
       null,
       '',
@@ -85,7 +85,7 @@ describe('Test getFileManifestEntries', function() {
     }, Promise.resolve());
   });
 
-  it('should use defaults for undefined globPatterns', function() {
+  it(`should use defaults for undefined globPatterns`, function() {
     let args = Object.assign({}, EXAMPLE_INPUT);
     delete args.globPatterns;
 
@@ -130,7 +130,7 @@ describe('Test getFileManifestEntries', function() {
     });
   }
 
-  it('should return file entries from example project with prefix', function() {
+  it(`should return file entries from example project with prefix`, function() {
     const testInput = {
       globPatterns: [
         '**/*.{html,js,css}',
@@ -159,7 +159,7 @@ describe('Test getFileManifestEntries', function() {
     });
   });
 
-  it('should return file entries matching custom max file size', function() {
+  it(`should return file entries matching custom max file size`, function() {
     const testInput = {
       globPatterns: [
         '**/*.{html,js,css,jpg,png}',
@@ -184,7 +184,7 @@ describe('Test getFileManifestEntries', function() {
     });
   });
 
-  it('should handle an invalid templatedUrl', function() {
+  it(`should handle an invalid templatedUrl`, function() {
     const testInput = {
       globPatterns: [
         '**/*.{html,js,css}',
@@ -210,7 +210,7 @@ describe('Test getFileManifestEntries', function() {
     });
   });
 
-  it('should return file entries from example project with templatedUrls', function() {
+  it(`should return file entries from example project with templatedUrls`, function() {
     const testInput = {
       globPatterns: [
         '**/*.{html,js,css}',
@@ -243,7 +243,7 @@ describe('Test getFileManifestEntries', function() {
     });
   });
 
-  it('should return file entries from example project with dynamicUrlToDependencies', function() {
+  it(`should return file entries from example project with dynamicUrlToDependencies`, function() {
     const testInput = {
       globPatterns: [
         '**/*.{html,js,css}',
@@ -276,7 +276,7 @@ describe('Test getFileManifestEntries', function() {
     });
   });
 
-  it('should return file entries from example project without cache busting', function() {
+  it(`should return file entries from example project without cache busting`, function() {
     const testInput = {
       globPatterns: [
         '**/*.{html,js,css}',

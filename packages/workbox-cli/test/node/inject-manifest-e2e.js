@@ -5,7 +5,7 @@ const proxyquire = require('proxyquire');
 
 const expect = require('chai').expect;
 
-describe('Generate SW End-to-End Tests', function() {
+describe(`Generate SW End-to-End Tests`, function() {
   let tmpDirectory;
 
   // NOTE: No jpg
@@ -23,7 +23,7 @@ describe('Generate SW End-to-End Tests', function() {
       .catch((error) => console.log(error));
   });
 
-  it('should be able to generate a service for example-2 with CLI', function() {
+  it(`should be able to generate a service for example-2 with CLI`, function() {
     this.timeout(120 * 1000);
 
     process.chdir(tmpDirectory);

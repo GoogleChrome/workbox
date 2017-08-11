@@ -3,7 +3,7 @@ const expect = require('chai').expect;
 const noRevisionForUrlsMatching =
   require('../../src/lib/utils/no-revision-for-urls-matching-transform');
 
-describe('Test noRevisionForUrlsMatching Logic', function() {
+describe(`Test noRevisionForUrlsMatching Logic`, function() {
   const MANIFEST = [{
     url: '/first-match/12345/hello',
     revision: '1234abcd',
@@ -14,7 +14,7 @@ describe('Test noRevisionForUrlsMatching Logic', function() {
     url: '/third-match/12345/hello',
   }];
 
-  it('should handle bad URLs in the manifest', function() {
+  it(`should handle bad URLs in the manifest`, function() {
     const badInputs = [
       null,
       undefined,
@@ -32,7 +32,7 @@ describe('Test noRevisionForUrlsMatching Logic', function() {
     }
   });
 
-  it('should handle bad dontCacheBustUrlsMatching input', function() {
+  it(`should handle bad dontCacheBustUrlsMatching input`, function() {
     const badInputs = [
       null,
       undefined,
@@ -52,7 +52,7 @@ describe('Test noRevisionForUrlsMatching Logic', function() {
     }
   });
 
-  it('should remove revision info from a single matching entry', function() {
+  it(`should remove revision info from a single matching entry`, function() {
     const transform = noRevisionForUrlsMatching(/first-match/);
     expect(transform(MANIFEST)).to.eql([{
       url: '/first-match/12345/hello',
@@ -64,7 +64,7 @@ describe('Test noRevisionForUrlsMatching Logic', function() {
     }]);
   });
 
-  it('should remove revision info from multiple matching entries', function() {
+  it(`should remove revision info from multiple matching entries`, function() {
     const transform = noRevisionForUrlsMatching(/12345/);
     expect(transform(MANIFEST)).to.eql([{
       url: '/first-match/12345/hello',

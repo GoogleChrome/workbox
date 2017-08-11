@@ -16,7 +16,7 @@
 
 'use strict';
 
-describe('replay-queued-requests', () => {
+describe(`replay-queued-requests`, function() {
   const constants = workbox.googleAnalytics.test.Constants;
   const enqueueRequest = workbox.googleAnalytics.test.EnqueueRequest;
   const replayRequests =
@@ -60,7 +60,7 @@ describe('replay-queued-requests', () => {
     .then((keys) => chai.expect(keys.length).to.equal(0));
   };
 
-  it('should replay queued requests', () => {
+  it(`should replay queued requests`, function() {
     const urls = ['one', 'two?three=4'].map((suffix) => urlPrefix + suffix);
     const time = initialTimestamp;
     const urlsWithQt = urls.map((url) => {
@@ -72,7 +72,7 @@ describe('replay-queued-requests', () => {
     return testLogic(urls, urlsWithQt, time);
   });
 
-  it('should replay queued requests with parameters overrides', () => {
+  it(`should replay queued requests with parameters overrides`, function() {
     const urls = ['one', 'two?three=4'].map((suffix) => urlPrefix + suffix);
     const time = initialTimestamp;
     const parameterOverrides = {
@@ -92,7 +92,7 @@ describe('replay-queued-requests', () => {
       {parameterOverrides});
   });
 
-  it('should replay queued requests with a hit filter', () => {
+  it(`should replay queued requests with a hit filter`, function() {
     const urls = ['one', 'two?three=4'].map((suffix) => urlPrefix + suffix);
     const time = initialTimestamp;
     const hitFilter = (searchParams) => {
@@ -110,7 +110,7 @@ describe('replay-queued-requests', () => {
       {hitFilter});
   });
 
-  it('should not a replay queued requests when hit filter throws', () => {
+  it(`should not a replay queued requests when hit filter throws`, function() {
     const urls = ['one', 'two?three=4'].map((suffix) => urlPrefix + suffix);
     const time = initialTimestamp;
     const hitFilter = (searchParams) => {

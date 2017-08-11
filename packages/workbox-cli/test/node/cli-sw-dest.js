@@ -5,7 +5,7 @@ const errors = require('../../src/lib/errors.js');
 
 require('chai').should();
 
-describe('Ask for Service Worker Dest', function() {
+describe(`Ask for Service Worker Dest`, function() {
   const globalStubs = [];
   const Q_PATH = '../../src/lib/questions/ask-sw-dest.js';
 
@@ -52,7 +52,7 @@ describe('Ask for Service Worker Dest', function() {
     });
   };
 
-  it('should handle failing inquirer', function() {
+  it(`should handle failing inquirer`, function() {
     const inquirer = require('inquirer');
     const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.reject(INJECTED_ERROR);
@@ -68,7 +68,7 @@ describe('Ask for Service Worker Dest', function() {
     return checkError(askForServiceWorkerName, 'unable-to-get-sw-name');
   });
 
-  it('should handle empty filename', function() {
+  it(`should handle empty filename`, function() {
     const inquirer = require('inquirer');
     const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.resolve({
@@ -86,7 +86,7 @@ describe('Ask for Service Worker Dest', function() {
     return checkError(askForServiceWorkerName, 'invalid-sw-name', false);
   });
 
-  it('should trim filename', function() {
+  it(`should trim filename`, function() {
     const EXAMPLE_FILENAME = 'example.json';
     const inquirer = require('inquirer');
     const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
@@ -107,7 +107,7 @@ describe('Ask for Service Worker Dest', function() {
     });
   });
 
-  it('should return filename', function() {
+  it(`should return filename`, function() {
     const EXAMPLE_FILENAME = 'example.json';
     const inquirer = require('inquirer');
     const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {

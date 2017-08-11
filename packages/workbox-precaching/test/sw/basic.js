@@ -1,22 +1,26 @@
-importScripts('/__test/mocha/sw-utils.js');
-importScripts('/__test/bundle/workbox-precaching');
+/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-describe('Test Library Surface', function() {
-  it('should be accessible via workbox.precaching', function() {
-    expect(workbox.precaching).to.exist;
-  });
+     http://www.apache.org/licenses/LICENSE-2.0
 
-  it('should have RevisionedCacheManager via workbox.precaching', function() {
-    expect(workbox.precaching.RevisionedCacheManager).to.exist;
-  });
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
 
-  it.skip('should have UnrevisionedCacheManager via workbox.precaching', function() {
-    expect(workbox.precaching.UnrevisionedCacheManager).to.exist;
-  });
+/* eslint-env mocha, browser */
 
-  it('should be able to get the revisioned cache manager via workbox.precaching', function() {
-    const revisionedManager = new workbox.precaching.RevisionedCacheManager();
-    expect(revisionedManager).to.exist;
+import RevisionedCacheManager
+    from '../../src/lib/controllers/revisioned-cache-manager.js';
+
+describe(`Test Library Surface`, function() {
+  it(`should be able to get the revisioned cache manager`, function() {
+    const revisionedManager = new RevisionedCacheManager();
 
     const cacheName = revisionedManager.getCacheName();
     if (!cacheName || typeof cacheName !== 'string' || cacheName.length === 0) {
@@ -31,12 +35,13 @@ describe('Test Library Surface', function() {
     const URL_1 = '/';
     const URL_2 = '/__echo/date/example.1234.txt';
     revisionedManager.addToCacheList({
-      revisionedFiles: [{
-        url: URL_1,
-        revision: '1234',
-      },
-      URL_2,
-    ],
+      revisionedFiles: [
+        {
+          url: URL_1,
+          revision: '1234',
+        },
+        URL_2,
+      ],
     });
 
     cacheUrls = revisionedManager.getCachedUrls();

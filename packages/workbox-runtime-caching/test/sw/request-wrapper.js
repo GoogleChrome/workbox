@@ -1,8 +1,25 @@
-importScripts('/__test/mocha/sw-utils.js');
-importScripts('/__test/bundle/workbox-runtime-caching');
+/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+/* eslint-env mocha, browser */
+
+import RequestWrapper from '../../src/lib/request-wrapper.js';
+
 importScripts('/packages/workbox-runtime-caching/test/utils/setup.js');
 
-describe('Test of the RequestWrapper class', function() {
+describe(`Test of the RequestWrapper class`, function() {
   const CACHE_NAME = location.href;
   const CACHE_WILL_UPDATE_PLUGIN = {cacheWillUpdate: () => {}};
   const CACHE_WILL_MATCH_PLUGIN = {cacheWillMatch: () => {}};
@@ -21,94 +38,67 @@ describe('Test of the RequestWrapper class', function() {
   });
 
   it(`should throw when RequestWrapper() is called with an invalid cacheName parameter`, function() {
-    let thrownError = null;
-    try {
-      new workbox.runtimeCaching.RequestWrapper({cacheName: []});
-    } catch (err) {
-      thrownError = err;
-    }
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('assertion-failed');
+    expect(() => {
+      new RequestWrapper({cacheName: []});
+    }).to.throw().with.property('name', 'assertion-failed');
   });
 
   it(`should throw when RequestWrapper() is called with an invalid fetchOptions parameter`, function() {
-    let thrownError = null;
-    try {
-      new workbox.runtimeCaching.RequestWrapper({fetchOptions: 'invalid'});
-    } catch (err) {
-      thrownError = err;
-    }
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('assertion-failed');
+    expect(() => {
+      new RequestWrapper({fetchOptions: 'invalid'});
+    }).to.throw().with.property('name', 'assertion-failed');
   });
 
   it(`should throw when RequestWrapper() is called with an invalid matchOptions parameter`, function() {
-    let thrownError = null;
-    try {
-      new workbox.runtimeCaching.RequestWrapper({matchOptions: 'invalid'});
-    } catch (err) {
-      thrownError = err;
-    }
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('assertion-failed');
+    expect(() => {
+      new RequestWrapper({matchOptions: 'invalid'});
+    }).to.throw().with.property('name', 'assertion-failed');
   });
 
   it(`should throw when RequestWrapper() is called with an invalid plugins parameter`, function() {
-    let thrownError = null;
-    try {
-      new workbox.runtimeCaching.RequestWrapper({plugins: [1]});
-    } catch (err) {
-      thrownError = err;
-    }
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('assertion-failed');
+    expect(() => {
+      new RequestWrapper({plugins: [1]});
+    }).to.throw().with.property('name', 'assertion-failed');
   });
 
   it(`should throw when RequestWrapper() is called with multiple cacheWillUpdate plugins`, function() {
-    let thrownError = null;
-    try {
-      new workbox.runtimeCaching.RequestWrapper({plugins: [
-        CACHE_WILL_UPDATE_PLUGIN, CACHE_WILL_UPDATE_PLUGIN]});
-    } catch (err) {
-      thrownError = err;
-    }
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('multiple-cache-will-update-plugins');
+    expect(() => {
+      new RequestWrapper({
+        plugins: [
+          CACHE_WILL_UPDATE_PLUGIN,
+          CACHE_WILL_UPDATE_PLUGIN,
+        ],
+      });
+    }).to.throw().with.property('name', 'multiple-cache-will-update-plugins');
   });
 
   it(`should throw when RequestWrapper() is called with multiple cacheWillMatch plugins`, function() {
-    let thrownError = null;
-    try {
-      new workbox.runtimeCaching.RequestWrapper({plugins: [
-        CACHE_WILL_MATCH_PLUGIN, CACHE_WILL_MATCH_PLUGIN]});
-    } catch (err) {
-      thrownError = err;
-    }
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('multiple-cache-will-match-plugins');
+    expect(() => {
+      new RequestWrapper({
+        plugins: [
+          CACHE_WILL_MATCH_PLUGIN,
+          CACHE_WILL_MATCH_PLUGIN,
+        ],
+      });
+    }).to.throw().with.property('name', 'multiple-cache-will-match-plugins');
   });
 
   it(`it should throw when RequestWrapper() is called with invalid cacheId`, function() {
-    let thrownError = null;
-    try {
-      new workbox.runtimeCaching.RequestWrapper({cacheId: {}});
-    } catch (err) {
-      thrownError = err;
-    }
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('bad-cache-id');
+    expect(() => {
+      new RequestWrapper({cacheId: {}});
+    }).to.throw().with.property('name', 'bad-cache-id');
   });
 
   it(`it should include cacheId in the cacheName`, function() {
     const CACHE_ID = 'CacheIdTest';
-    const runtimeCaching = new workbox.runtimeCaching.RequestWrapper({cacheId: CACHE_ID});
+    const runtimeCaching = new RequestWrapper({cacheId: CACHE_ID});
     runtimeCaching.cacheName.indexOf(CACHE_ID).should.not.equal(-1);
   });
 
   it(`it should include cacheId in the cacheName`, function() {
     const CACHE_ID = 'CacheIdTest';
     const CACHE_NAME = 'CacheNameTest';
-    const runtimeCaching = new workbox.runtimeCaching.RequestWrapper({
+    const runtimeCaching = new RequestWrapper({
       cacheId: CACHE_ID,
       cacheName: CACHE_NAME,
     });
@@ -117,15 +107,14 @@ describe('Test of the RequestWrapper class', function() {
   });
 
   it(`should return an valid Cache instance when getCache() is called`, async function() {
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper();
+    const requestWrapper = new RequestWrapper();
     const cache = await requestWrapper.getCache();
 
     expect(cache).to.be.instanceOf(Cache);
   });
 
   it(`should find an entry in the correct cache when match() is called`, async function() {
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper(
-      {cacheName: CACHE_NAME});
+    const requestWrapper = new RequestWrapper({cacheName: CACHE_NAME});
 
     const cachedResponse = new Response('response body');
     const cache = await caches.open(CACHE_NAME);
@@ -139,9 +128,9 @@ describe('Test of the RequestWrapper class', function() {
   it(`should correctly respect matchOptions when performing a match()`, async function() {
     const cachedUrlWithSearchParams = `${CACHED_URL}?k=v`;
 
-    const requestWrapperWithoutMatchOptions = new workbox.runtimeCaching.RequestWrapper(
+    const requestWrapperWithoutMatchOptions = new RequestWrapper(
       {cacheName: CACHE_NAME});
-    const requestWrapperWithMatchOptions = new workbox.runtimeCaching.RequestWrapper(
+    const requestWrapperWithMatchOptions = new RequestWrapper(
       {cacheName: CACHE_NAME, matchOptions: {ignoreSearch: true}});
 
     const cachedResponse = new Response('response body');
@@ -162,7 +151,7 @@ describe('Test of the RequestWrapper class', function() {
   it(`should fulfill the match() promise with the value returned by a cacheWillMatch callback`, async function() {
     const testResponse = new Response('test');
     const cacheWillMatchPlugin = {cacheWillMatch: () => testResponse};
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
+    const requestWrapper = new RequestWrapper({
       cacheName: CACHE_NAME,
       plugins: [cacheWillMatchPlugin],
     });
@@ -173,7 +162,7 @@ describe('Test of the RequestWrapper class', function() {
   });
 
   it(`should return a response from the network when fetch() is called`, async function() {
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper();
+    const requestWrapper = new RequestWrapper();
     const fetchResponse = await requestWrapper.fetch({request: CACHED_URL});
 
     expect(fetchResponse).to.be.instanceOf(Response);
@@ -185,7 +174,7 @@ describe('Test of the RequestWrapper class', function() {
 
     const testRequest = new Request('/test');
     const requestWillFetch = {requestWillFetch: () => Promise.resolve(testRequest)};
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
+    const requestWrapper = new RequestWrapper({
       plugins: [requestWillFetch],
     });
     await requestWrapper.fetch({request: CACHED_URL});
@@ -199,7 +188,7 @@ describe('Test of the RequestWrapper class', function() {
 
     const fetchDidFailSpy = sinon.spy();
     const fetchDidFail = {fetchDidFail: fetchDidFailSpy};
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
+    const requestWrapper = new RequestWrapper({
       plugins: [fetchDidFail],
     });
     // This promise should reject, so call done() passing in an error string
@@ -215,7 +204,7 @@ describe('Test of the RequestWrapper class', function() {
 
   it(`should cache the response when fetchAndCache() is called and cacheWillUpdate returns true`, async function() {
     const cacheWillUpdate = {cacheWillUpdate: () => true};
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
+    const requestWrapper = new RequestWrapper({
       plugins: [cacheWillUpdate],
     });
 
@@ -232,7 +221,7 @@ describe('Test of the RequestWrapper class', function() {
 
   it(`should reject without caching the response when fetchAndCache() is called and cacheWillUpdate returns false`, function(done) {
     const cacheWillUpdate = {cacheWillUpdate: () => false};
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper({
+    const requestWrapper = new RequestWrapper({
       plugins: [cacheWillUpdate],
     });
 
@@ -253,7 +242,7 @@ describe('Test of the RequestWrapper class', function() {
   });
 
   it(`should cache a non-redirected response when fetchAndCache() is called with cleanRedirects set to true`, async function() {
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper();
+    const requestWrapper = new RequestWrapper();
 
     const cache = await requestWrapper.getCache();
 
@@ -274,7 +263,7 @@ describe('Test of the RequestWrapper class', function() {
   });
 
   it(`should cache a redirected response when fetchAndCache() is called and cleanRedirects isn't set`, async function() {
-    const requestWrapper = new workbox.runtimeCaching.RequestWrapper();
+    const requestWrapper = new RequestWrapper();
 
     const cache = await requestWrapper.getCache();
 

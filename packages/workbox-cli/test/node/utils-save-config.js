@@ -1,8 +1,8 @@
 const proxyquire = require('proxyquire');
 const errors = require('../../src/lib/errors');
 
-describe('Test Save Config', function() {
-  it('should be able to handle writeFile error', function() {
+describe(`Test Save Config`, function() {
+  it(`should be able to handle writeFile error`, function() {
     const saveConfig = proxyquire('../../src/lib/utils/save-config', {
       fs: {
         writeFile: (path, content, cb) => {
@@ -20,7 +20,7 @@ describe('Test Save Config', function() {
     });
   });
 
-  it('should resolve on writing file', function() {
+  it(`should resolve on writing file`, function() {
     const saveConfig = proxyquire('../../src/lib/utils/save-config', {
       fs: {
         writeFile: (path, content, cb) => {
