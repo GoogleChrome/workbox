@@ -37,7 +37,7 @@ module.exports = {
   }, {
     files: [
       'gulp-tasks/**/*.js',
-      'infra/tools/analyse-properties.js'
+      'infra/**/*.js'
     ],
     rules: {
       'valid-jsdoc': 0,
