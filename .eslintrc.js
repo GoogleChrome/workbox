@@ -34,7 +34,10 @@ module.exports = {
       'no-console': 0,
     },
   }, {
-    files: ['gulp-tasks/**/*.js'],
+    files: [
+      'gulp-tasks/**/*.js',
+      'infra/**/*.js'
+    ],
     rules: {
       'valid-jsdoc': 0,
       'require-jsdoc': 0,

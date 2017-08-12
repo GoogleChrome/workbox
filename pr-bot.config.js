@@ -1,7 +1,9 @@
 const prbot = require('pr-bot');
 
+const AggregateSizePlugin = require('./infra/pr-bot/aggregate-size-plugin.js');
+
 module.exports = {
-  buildCommand: `npm install && gulp build && gulp test`,
+  buildCommand: `npm install && gulp build`,
   botUsername: `workbox-pr-bot`,
 
   // This is required until v3 is the primary branch (i.e. moved to master)
@@ -20,5 +22,7 @@ module.exports = {
         ],
       },
     }),
+
+    new AggregateSizePlugin(),
   ],
 };
