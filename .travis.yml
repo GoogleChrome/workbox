@@ -22,8 +22,8 @@ install:
 jobs:
   include:
     - stage: "Test Packages"
-      script: gulp test --package="workbox-core"
-      script: gulp test --package="TEST"
+      - script: gulp test --package="workbox-core"
+      - script: gulp test --package="TEST"
     - stage: "Run pr-bot"
       before_script: skip
       script: npm run bot
