@@ -17,7 +17,12 @@ Workbox is a collection of JavaScript libraries for
 Visit [workboxjs.org](https://workboxjs.org/) to learn more about what Workbox
 can do for you.
 
-## Installation
+## Documentation
+
+* **Main site:** [workboxjs.org](https://workboxjs.org)
+* [Get started](https://workboxjs.org/#get-started)
+* [Overview](https://workboxjs.org/overview.html)
+* [Contribute](CONTRIBUTING.md)
 
 Workbox is available on npm. We have [install instructions](https://workboxjs.org/#get-started) available depending on your build tool or bundler of choice, including Webpack.
 
