@@ -12,7 +12,8 @@
     "cli"
   ],
   "bin": {
-    "workbox-cli": "build/bin.js"
+    "workbox-cli": "build/bin.js",
+    "workbox": "build/bin.js"
   },
   "files": [
     "build"

@@ -1,4 +1,4 @@
-workbox-cli --cacheId 'input-cache-id' --clientsClaim true --directoryIndex '/example-index.html' --handleFetch false --maximumFileSizeToCacheInBytes 2000 --navigateFallback /shell --skipWaiting true
+workbox --cacheId 'input-cache-id' --clientsClaim true --directoryIndex '/example-index.html' --handleFetch false --maximumFileSizeToCacheInBytes 2000 --navigateFallback /shell --skipWaiting true
 
 
   --dontCacheBustUrlsMatching /./

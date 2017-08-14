@@ -30,7 +30,7 @@ import WorkboxSW from './lib/workbox-sw';
  * @example <caption>Caching assets and registering routes.</caption>
  *
  * // DO NOT CREATE THIS MANIFEST OR EDIT IT MANUALLY!!
- * // Use workbox-build or workbox-cli to generate the manifest for you.
+ * // Use workbox-build or the workbox CLI to generate the manifest for you.
  * const workboxSW = new WorkboxSW();
  * workboxSW.precache([
  *   {
