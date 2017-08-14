@@ -16,6 +16,7 @@ jobs:
     - stage: "Test Packages"
       env:
         - PACKAGE="workbox-core"
+        - PACKAGE="TEST"
       # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
       before_script:
         - "export DISPLAY=:99.0"
