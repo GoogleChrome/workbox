@@ -15,12 +15,6 @@ describe(`WorkboxCore - ${process.env.NODE_ENV}`, function() {
       expect(core.INTERNAL).to.exist;
     });
 
-    it(`should return the same INTERNAL instance after first call`, function() {
-      const core = new WorkboxCore();
-      const internal = core.INTERNAL;
-      expect(core.INTERNAL).to.equal(internal);
-    });
-
     it(`should expose logHelper`, function() {
       const core = new WorkboxCore();
       expect(core.INTERNAL.logHelper).to.exist;

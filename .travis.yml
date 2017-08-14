@@ -11,7 +11,8 @@ node_js:
   - 'stable'
 
 env:
-  - PROJECT="workbox-core"
+  matrix:
+    - PROJECT="workbox-core"
 
 jobs:
   include:
