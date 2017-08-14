@@ -15,10 +15,6 @@ const glob = require('glob');
 const path = require('path');
 const fs = require('fs-extra');
 const babylon = require('babylon');
-const gulp = require('gulp');
-
-// Load up the gulpfile.
-require(path.join(__dirname, '..', '..', 'gulpfile.js'));
 
 class AnalyseBuildForProperties {
   run() {
@@ -100,24 +96,4 @@ class AnalyseBuildForProperties {
   }
 }
 
-new Promise((resolve, reject) => {
-  gulp.task('build')((err, results) => {
-    if (err) {
-      return reject(err);
-    }
-
-    resolve();
-  });
-})
-.then(() => {
-  const analysisTool = new AnalyseBuildForProperties();
-  analysisTool.run()
-  .then((results) => {
-    results.forEach((entry) => {
-      analysisTool.printDetails(entry);
-    });
-  });
-})
-.catch((err) => {
-  console.error(err);
-});
+module.exports = AnalyseBuildForProperties;
