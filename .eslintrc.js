@@ -26,9 +26,10 @@ module.exports = {
     },
   }, {
     files: [
-      'gulp-tasks/utils/log-helper.js',
       'packages/workbox-core/src/utils/LogHelper.js',
       'packages/workbox-core/test/bundle/node/utils/test-LogHelper.js',
+      'gulp-tasks/utils/log-helper.js',
+      'infra/tools/analyse-properties.js',
     ],
     rules: {
       'no-console': 0,
@@ -44,7 +45,7 @@ module.exports = {
     },
   }, {
     files: [
-      'infra/utils/generate-variant-tests.js'
+      'infra/utils/generate-variant-tests.js',
     ],
     env: {
       'mocha': true

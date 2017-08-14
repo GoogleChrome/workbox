@@ -18,7 +18,6 @@
 const minimist = require('minimist');
 const fs = require('fs');
 const path = require('path');
-const glob = require('glob');
 
 const options = minimist(process.argv.slice(2));
 
@@ -35,8 +34,18 @@ global.port = options.port || 3000;
 global.packageOrStar = options.package || '*';
 global.cliOptions = options;
 
-const gulpTaskFiles = glob.sync('./gulp-tasks/*.js');
+// Forward referencing means the order of gulp-task
+// requires is important
+const gulpTaskFiles = [
+  'build-packages',
+  'build-test-bundles',
+  'build',
+  'lint',
+  'test',
+  'analyze-properties',
+];
+
 gulpTaskFiles.forEach((gulpTaskFile) => {
   // Requiring will be enough to register the tasks with gulp.
-  require(gulpTaskFile);
+  require(path.join(__dirname, 'gulp-tasks', gulpTaskFile));
 });
