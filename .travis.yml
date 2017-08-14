@@ -12,7 +12,6 @@ node_js:
 
 env:
   - BROWSER_PACKAGE="workbox-core"
-  - BROWSER_PACKAGE="TEST"
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
@@ -24,10 +23,11 @@ install:
 script: gulp test --package="${BROWSER_PACKAGE}"
 after_success: npm run coveralls
 
-# Jobs split up the Travis tasks into multiple sections
+# Run PR-Bot once the other scripts are complete.
 jobs:
   include:
     - stage: "Run pr-bot"
+      env: ignore
       before_script: skip
       script: npm run bot
       after_success: skip
