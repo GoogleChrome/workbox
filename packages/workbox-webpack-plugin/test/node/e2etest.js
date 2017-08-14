@@ -2,7 +2,11 @@ const webpack = require('webpack');
 const fs = require('fs');
 const path = require('path');
 const validator = require('../../../workbox-cli/test/utils/e2e-sw-validator.js');
-const WorkboxWebpackPlugin = require('../../');
+const {
+    GenerateSWPlugin,
+    GenerateFileManifestPlugin,
+    InjectManifestPlugin,
+} = require('../../src/index.js');
 const testServerGen = require('../../../../utils/test-server-generator.js');
 const fsExtra = require('fs-extra');
 
@@ -80,7 +84,7 @@ describe(`Tests for webpack plugin`, function() {
         filename: '[name].js',
       },
       plugins: [
-        new WorkboxWebpackPlugin(),
+        new GenerateSWPlugin(),
       ],
     };
 
@@ -94,7 +98,7 @@ describe(`Tests for webpack plugin`, function() {
     });
   });
 
-  it(`should inject manifest, when swSrc is present`, function() {
+  it(`should inject manifest`, function() {
     fsExtra.copySync(
       path.join(__dirname, '..', '..', '..', 'workbox-cli', 'test', 'static', 'example-project-2'),
       tmpDirectory);
@@ -110,7 +114,7 @@ describe(`Tests for webpack plugin`, function() {
         filename: '[name].js',
       },
       plugins: [
-        new WorkboxWebpackPlugin({
+        new InjectManifestPlugin({
           swDest: path.join(tmpDirectory, 'sw.js'),
           swSrc: path.join(tmpDirectory, 'sw.tmpl'),
         }),
@@ -144,6 +148,54 @@ describe(`Tests for webpack plugin`, function() {
 \\]\\);`);
       const result = regex.exec(swContents);
       expect(result).to.exist;
+    });
+  });
+
+  it(`should generate manifest file`, function() {
+    fsExtra.copySync(
+      path.join(__dirname, '..', '..', '..', 'workbox-cli', 'test', 'static', 'example-project-2'),
+      tmpDirectory);
+
+    process.chdir(tmpDirectory);
+
+    const webpackConfig = {
+      entry: {
+        webpackEntry: path.join(tmpDirectory, 'webpackEntry.js'),
+      },
+      output: {
+        path: tmpDirectory,
+        filename: '[name].js',
+      },
+      plugins: [
+        new GenerateFileManifestPlugin({
+          manifestDest: path.join(tmpDirectory, 'sw-manifest.js'),
+        }),
+      ],
+    };
+
+    return runWebpack(webpackConfig)
+    .then(() => {
+      const swContents = fs.readFileSync(path.join(tmpDirectory, 'sw-manifest.js')).toString();
+      const expectedUrls = [
+          'index.html',
+          'page-1.html',
+          'page-2.html',
+          'styles/stylesheet-1.css',
+          'styles/stylesheet-2.css',
+      ];
+
+      const self = {};
+      eval(swContents);
+
+      // urls should match with expected
+      expect(
+        self.__file_manifest.map((x) => x.url),
+      ).to.deep.equal(expectedUrls);
+
+      // revisions should exist
+      expect(
+        self.__file_manifest.every((x) => /\w+/.test(x.revision)),
+      ).to.be.true;
     });
   });
 });

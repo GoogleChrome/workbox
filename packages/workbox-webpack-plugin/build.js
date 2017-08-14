@@ -17,6 +17,5 @@ const fse = require('fs-extra');
 const path = require('path');
 
 module.exports = () => {
-  return fse.copy(path.join(__dirname, 'index.js'),
-    path.join(__dirname, 'build', 'index.js'));
+  return fse.copy(path.join(__dirname, 'src'), path.join(__dirname, 'build'));
 };
