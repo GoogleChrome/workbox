@@ -54,7 +54,7 @@ describe(`Tests for webpack plugin`, function() {
   // Kill the web server once all tests are complete.
   after(function() {
     this.timeout(10 * 1000);
-    fsExtra.remove(tmpDirectory);
+    fsExtra.removeSync(tmpDirectory);
     return testServer.stop();
   });
 
@@ -159,7 +159,7 @@ describe(`Tests for webpack plugin`, function() {
       output: {
         path: tmpDirectory,
         filename: '[name].js',
-        publicPath: '/public',
+        publicPath: '/public/',
       },
       plugins: [
         new WorkboxWebpackPlugin({

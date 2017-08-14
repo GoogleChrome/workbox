@@ -63,7 +63,7 @@ class WorkboxBuildWebpackPlugin {
     }
 
     if (compilation.options.output.publicPath) {
-      const publicPath = compilation.options.output.publicPath;
+      const {publicPath} = compilation.options.output;
       const compiledAssets = [];
       for (let key in compilation.assets) {
         if (Object.prototype.hasOwnProperty.call(compilation.assets, key)) {
