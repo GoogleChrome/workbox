@@ -10,6 +10,10 @@ cache:
 node_js:
   - 'stable'
 
+env:
+  - BROWSER_PACKAGE="workbox-core"
+  - BROWSER_PACKAGE="TEST"
+
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
   - "export DISPLAY=:99.0"
@@ -17,13 +21,13 @@ before_script:
   - sleep 3 # give xvfb some time to start
 install:
   - npm install
+script: gulp test --package="${BROWSER_PACKAGE}"
+after_success: npm run coveralls
 
 # Jobs split up the Travis tasks into multiple sections
 jobs:
   include:
-    - stage: "Test Packages"
-      script: gulp test --package="workbox-core"
-      script: gulp test --package="TEST"
     - stage: "Run pr-bot"
       before_script: skip
       script: npm run bot
+      after_success: skip
