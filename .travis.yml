@@ -27,6 +27,6 @@ jobs:
         # Building is handled in gulp test.
         - gulp test --package="${PROJECT}"
         # Upload the coverage details to coveralls
-        - npm run coverage
+        - npm run coveralls
     - stage: "Run pr-bot"
       script: npm run bot
