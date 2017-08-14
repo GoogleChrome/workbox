@@ -1,6 +1,6 @@
 const swBuild = require('workbox-build');
 const path = require('path');
-
+const url = require('url');
 /**
  * Use the instance of this in the plugins array of the webpack config.
  *
@@ -60,6 +60,30 @@ class WorkboxBuildWebpackPlugin {
 
     if (!config.globPatterns) {
       config.globPatterns = ['**/*.{html,js,css}'];
+    }
+
+    if (compilation.options.output.publicPath) {
+      const {publicPath} = compilation.options.output;
+      const compiledAssets = [];
+      for (let key in compilation.assets) {
+        if (Object.prototype.hasOwnProperty.call(compilation.assets, key)) {
+          compiledAssets.push(url.resolve(publicPath, key));
+        }
+      }
+
+      const publicPathTransform = (manifestEntries) =>
+          manifestEntries.map((entry) => {
+            if (compilation.assets[entry.url]) {
+              entry.url = url.resolve(publicPath, entry.url);
+            }
+              return entry;
+          });
+
+      if (Array.isArray(config.manifestTransforms)) {
+        config.manifestTransforms.unshift(publicPathTransform);
+      } else {
+        config.manifestTransforms = [publicPathTransform];
+      }
     }
 
     return config;
