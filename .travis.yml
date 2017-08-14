@@ -27,7 +27,6 @@ after_success: npm run coveralls
 jobs:
   include:
     - stage: "Run pr-bot"
-      env: ignore
       before_script: skip
       script: npm run bot
       after_success: skip
