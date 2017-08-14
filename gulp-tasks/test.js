@@ -14,7 +14,9 @@ const runBundledTests = (packagePath, env) => {
     ${logHelper.highlight(pkgPathToName(packagePath))}.
   `);
 
-  const mochaOptions = {};
+  const mochaOptions = {
+    reporter: path.join(__dirname, './utils/mocha-coverage-reporter'),
+  };
   if (global.cliOptions.grep) {
     mochaOptions.grep = global.cliOptions.grep;
   }

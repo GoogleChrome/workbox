@@ -10,8 +10,8 @@ cache:
 node_js:
   - 'stable'
 
-install:
-  - npm install
+env:
+  - BROWSER_PACKAGE="workbox-core"
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
@@ -19,9 +19,12 @@ before_script:
   - "sh -e /etc/init.d/xvfb start || echo \"Unable to start virtual display.\""
   - sleep 3 # give xvfb some time to start
 
-script:
-  # Building is handled in gulp test.
-  - gulp test
+install:
+  - npm install
 
-after_script:
+script:
+  - gulp test --package="${BROWSER_PACKAGE}"
+
+after_success:
+  - npm run coveralls
   - npm run bot

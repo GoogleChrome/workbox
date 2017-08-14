@@ -6,7 +6,8 @@
   "scripts": {
     "local-lerna": "lerna",
     "lint": "eslint '.' --ignore-path .gitignore",
-    "bot": "pr-bot"
+    "bot": "pr-bot",
+    "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
@@ -25,6 +26,7 @@
     "chai": "^4.1.0",
     "chalk": "^2.0.1",
     "common-tags": "^1.4.0",
+    "coveralls": "^2.13.1",
     "eslint": "^4.3.0",
     "eslint-config-google": "^0.9.1",
     "fs-extra": "^4.0.1",
@@ -33,12 +35,14 @@
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-spawn-mocha": "^3.3.1",
+    "istanbul": "^0.4.5",
     "lerna": "^2.0.0",
     "mocha": "^3.5.0",
     "path-extra": "^4.2.0",
     "pr-bot": "0.2.0",
     "rollup": "^0.45.2",
     "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-istanbul": "^1.1.0",
     "rollup-plugin-multi-entry": "^2.0.1",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^1.1.1",

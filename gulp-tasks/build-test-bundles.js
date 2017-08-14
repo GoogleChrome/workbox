@@ -6,6 +6,7 @@ const source = require('vinyl-source-stream');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const multiEntry = require('rollup-plugin-multi-entry');
+const istanbul = require('rollup-plugin-istanbul');
 const oneLine = require('common-tags').oneLine;
 
 const constants = require('./utils/constants');
@@ -44,6 +45,10 @@ const buildTestBundle = (packagePath, runningEnv, buildType) => {
   );
   // Multi entry globs for multiple files. Used to pull in all test files.
   plugins.push(multiEntry());
+  // This adds code coverage to our tests
+  plugins.push(istanbul({
+    exclude: ['test/*.js', 'node_modules/**/*'],
+  }));
 
   const buildPostfix = typeof buildType === 'undefined' ? '' : `.${buildType}`;
   const outputFilename = `${runningEnv}${buildPostfix}.js`;
