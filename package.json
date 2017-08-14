@@ -7,7 +7,7 @@
     "local-lerna": "lerna",
     "lint": "eslint '.' --ignore-path .gitignore",
     "bot": "pr-bot",
-    "coveralls": "coveralls ./coverage/lcov.info"
+    "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
