@@ -15,7 +15,7 @@ jobs:
   include:
     - stage: "Test Packages"
       env:
-        - PROJECT="workbox-core"
+        - PACKAGE="workbox-core"
       # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
       before_script:
         - "export DISPLAY=:99.0"
@@ -25,7 +25,7 @@ jobs:
         - npm install
       script:
         # Building is handled in gulp test.
-        - gulp test --package="${PROJECT}"
+        - gulp test --package="${PACKAGE}"
         # Upload the coverage details to coveralls
         - npm run coveralls
     - stage: "Run pr-bot"
