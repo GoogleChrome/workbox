@@ -23,7 +23,7 @@ install:
 script: gulp test --package="${BROWSER_PACKAGE}"
 after_success: npm run coveralls
 
-# Run PR-Bot once the other scripts are complete.
+# Jobs split up the Travis tasks into multiple sections
 jobs:
   include:
     - stage: "Run pr-bot"
