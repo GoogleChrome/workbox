@@ -11,13 +11,7 @@ node_js:
   - 'stable'
 
 env:
-  matrix:
-    - PROJECT="workbox-core"
-
-jobs:
-  include:
-    - stage: pr-bot
-      script: npm run bot
+  - PROJECT="workbox-core"
 
 install:
   - npm install
@@ -33,3 +27,9 @@ script:
   - gulp test --package="${PROJECT}"
   # Upload the coverage details to coveralls
   - npm run coverage
+
+# This must be at the end to add an additional "job section" to Travis
+jobs:
+  include:
+    - stage: pr-bot
+      script: npm run bot
