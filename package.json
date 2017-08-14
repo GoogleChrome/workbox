@@ -50,6 +50,7 @@
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-uglify-es": "0.0.1",
     "rollup-stream": "^1.23.1",
+    "semver": "^5.4.1",
     "sinon": "^2.4.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
