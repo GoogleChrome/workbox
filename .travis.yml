@@ -10,6 +10,14 @@ cache:
 node_js:
   - 'stable'
 
+env:
+  - PROJECT="workbox-core"
+
+jobs:
+  include:
+    - stage: pr-bot
+      script: npm run bot
+
 install:
   - npm install
 
@@ -21,7 +29,6 @@ before_script:
 
 script:
   # Building is handled in gulp test.
-  - gulp test
-
-after_script:
-  - npm run bot
+  - gulp test --package="${PROJECT}"
+  # Upload the coverage details to coveralls
+  - npm run coverage

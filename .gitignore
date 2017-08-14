@@ -1,11 +1,11 @@
 .DS_Store
 build
 lerna-debug.log
-node_modules
+node_modules/
 npm-debug.log
 packages/**/LICENSE
 temp
 tmp-*
 !packages/workbox-cli/test/static/example-project-1/node_modules
 packages/**/test/bundle-builds/
-coverage
+coverage/
