@@ -197,6 +197,7 @@ gulp.task('publish-bundle:clean', () => {
   return fs.remove(BUILD_PATH);
 });
 
+// TODO: Delete this task when v3 is about to launch.
 gulp.task('publish-bundle:temp-v3-branch-build', () => {
   const tagName = 'v3.0.0-alpha';
   const gitBranch = 'v3';
