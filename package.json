@@ -42,7 +42,6 @@
     "mocha": "^3.5.0",
     "path-extra": "^4.2.0",
     "pr-bot": "0.2.0",
-    "remote-git-tags": "^2.0.0",
     "rollup": "^0.45.2",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-istanbul": "^1.1.0",
