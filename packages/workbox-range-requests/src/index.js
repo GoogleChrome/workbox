@@ -28,10 +28,9 @@
  * If you are using Workbox for routing or request handling already, then
  * {@link CacheRangeResponsePlugin} will offer the easiest integration.
  *
- * **Please note that the entire body of the response that's being manipulated
- * is read into memory in order to create the final response. If your original
- * resource is larger than you'd expect would fit comfortably into memory on
- * your users devices, this library should not be used.**
+ * **If your cached resources are large, use caution when adding this library.
+ * Some browsers need to read the entire resource into memory before it can be
+ * modified to respond to the request.**
  *
  * Inspired by
  *
