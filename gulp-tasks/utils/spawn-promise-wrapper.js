@@ -1,10 +1,8 @@
 const spawn = require('child_process').spawn;
 
-module.exports = (command, args, options = {}) => {
-  options.stdio = 'inherit';
-
+module.exports = (command, args) => {
   return new Promise((resolve, reject) => {
-    const process = spawn(command, args, options);
+    const process = spawn(command, args, {stdio: 'inherit'});
     process.on('error', reject);
     process.on('close', (code) => {
       if (code === 0) {
