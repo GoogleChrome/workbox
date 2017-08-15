@@ -1,0 +1,28 @@
+{
+  "name": "workbox-range-requests",
+  "version": "1.1.0",
+  "description": "This library creates a new Response, given a source Response and a Range header value.",
+  "keywords": [
+    "workbox",
+    "workboxjs",
+    "service worker",
+    "sw",
+    "caching",
+    "cache",
+    "range",
+    "media"
+  ],
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "prepublish": "gulp build --project workbox-range-requests"
+  },
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-range-requests",
+  "main": "build/importScripts/workbox-range-requests.prod.v1.1.0.js",
+  "module": "build/modules/workbox-range-requests.prod.v1.1.0.mjs"
+}
