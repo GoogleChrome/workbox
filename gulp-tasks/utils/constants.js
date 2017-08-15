@@ -8,4 +8,6 @@ module.exports = {
 
   // This is the environments that we should use for NODE_ENV.
   BUILD_TYPES: [undefined, 'production'],
+
+  CDN_BUNDLE: 'cdn-bundle',
 };
