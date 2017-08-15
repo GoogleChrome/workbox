@@ -56,7 +56,7 @@ class CachedRangeResponsePlugin {
    * request does not have a Range: header, then cachedResponse is returned
    * as-is.
    */
-  static async cacheWillMatch({request, cachedResponse} = {}) {
+  static async cachedResponseWillBeUsed({request, cachedResponse} = {}) {
     // Only return a sliced response if there's a Range: header in the request.
     if (request.headers.has('range')) {
       return await handleRangeRequest({

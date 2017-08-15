@@ -31,7 +31,7 @@ describe('Tests for the handle-range-request.js functions', function() {
     const reader = new FileReader();
     const finished = new Promise((resolve) => {
       reader.addEventListener('loadend', (event) => {
-        resolve(event.srcElement.result);
+        resolve(event.target.result);
       });
     });
     reader.readAsText(blob);

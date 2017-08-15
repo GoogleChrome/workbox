@@ -73,7 +73,7 @@ import cleanResponseCopy from './clean-response-copy';
  * @example <caption>Returns `null` to indicate that a cached response shouldn't
  * be used if its Date header is too far in the past.</caption>
  *
- * async function cacheWillMatch({cachedResponse}) {
+ * async function cachedResponseWillBeUsed({cachedResponse}) {
  *   if (cachedResponse) {
  *     const dateHeader = cachedResponse.headers.get('date');
  *     const date = new Date(dateHeader);
@@ -85,7 +85,7 @@ import cleanResponseCopy from './clean-response-copy';
  *   return null;
  * }
  *
- * @callback cacheWillMatch
+ * @callback cachedResponseWillBeUsed
  * @param {Object} input
  * @param {Request} input.request The original request.
  * @param {Cache} input.cache An open instance of the cache.
@@ -209,9 +209,9 @@ class RequestWrapper {
             } else if (callbackName === 'cacheWillUpdate') {
               throw ErrorFactory.createError(
                 'multiple-cache-will-update-plugins');
-            } else if (callbackName === 'cacheWillMatch') {
+            } else if (callbackName === 'cachedResponseWillBeUsed') {
               throw ErrorFactory.createError(
-                'multiple-cache-will-match-plugins');
+                'multiple-cached-response-will-be-used-plugins');
             }
             this.plugins.get(callbackName).push(plugin);
           }
@@ -284,9 +284,9 @@ class RequestWrapper {
     const cache = await this.getCache();
     let cachedResponse = await cache.match(request, this.matchOptions);
 
-    if (this.plugins.has('cacheWillMatch')) {
-      const plugin = this.plugins.get('cacheWillMatch')[0];
-      cachedResponse = await plugin.cacheWillMatch({
+    if (this.plugins.has('cachedResponseWillBeUsed')) {
+      const plugin = this.plugins.get('cachedResponseWillBeUsed')[0];
+      cachedResponse = await plugin.cachedResponseWillBeUsed({
         request, cache, cachedResponse,
         matchOptions: this.matchOptions, cacheName: this.cacheName,
       });

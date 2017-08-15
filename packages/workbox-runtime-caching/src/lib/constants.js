@@ -58,7 +58,7 @@ const getDefaultCacheName = ({cacheId} = {}) => {
  */
 const pluginCallbacks = [
   'cacheDidUpdate',
-  'cacheWillMatch',
+  'cachedResponseWillBeUsed',
   'cacheWillUpdate',
   'fetchDidFail',
   'requestWillFetch',
