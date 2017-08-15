@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/GoogleChrome/workbox#readme",
   "devDependencies": {
+    "@google-cloud/storage": "^1.2.1",
     "archiver": "^2.0.0",
     "babylon": "^6.17.4",
     "chai": "^4.1.0",
@@ -53,7 +54,6 @@
     "rollup-stream": "^1.23.1",
     "semver": "^5.4.1",
     "sinon": "^2.4.1",
-    "tar.gz": "^1.0.5",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }

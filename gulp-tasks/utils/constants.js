@@ -5,6 +5,7 @@ module.exports = {
   PACKAGE_BUILD_DIRNAME: 'build',
   BROWSER_BUILD_DIRNAME: 'browser-bundles',
   TEST_BUNDLES_BUILD_DIRNAME: 'bundle-builds',
+  GENERATED_RELEASE_FILES_DIRNAME: 'generated-release-files',
 
   // This is the environments that we should use for NODE_ENV.
   BUILD_TYPES: [undefined, 'production'],

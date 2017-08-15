@@ -43,7 +43,8 @@ const gulpTaskFiles = [
   'lint',
   'test',
   'analyze-properties',
-  'publish-bundle',
+  'publish-github',
+  'publish-cdn',
   'publish',
 ];
 
