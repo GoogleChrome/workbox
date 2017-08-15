@@ -158,7 +158,7 @@ class WorkboxSW {
    *
    * // ...precache() can also take objects to cache
    * // non-revisioned URLs.
-   * // Please use workbox-build or workbox-cli to generate the manifest for
+   * // Please use workbox-build or the workbox CLI to generate the manifest for
    * // you.
    * workboxSW.precache([
    *     {
