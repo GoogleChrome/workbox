@@ -5,6 +5,7 @@ const semver = require('semver');
 const glob = require('glob');
 const fs = require('fs-extra');
 const TarGz = require('tar.gz');
+const archiver = require('archiver');
 
 const logHelper = require('./utils/log-helper');
 const constants = require('./utils/constants');
@@ -49,6 +50,36 @@ const buildProject = (projectPath) => {
   });
 };
 
+const createTar = (bundleDirectory, bundleName) => {
+  const tarball = new TarGz({}, {
+    // Do not inlcude the top level in the tar.gz
+    fromBase: true,
+  });
+  const tarPath = path.join(bundleDirectory, '..', `${bundleName}.tar.gz`);
+  return tarball.compress(bundleDirectory, tarPath)
+  .then(() => {
+    return tarPath;
+  });
+};
+
+const createZip = (bundleDirectory, bundleName) => {
+  const zipPath = path.join(bundleDirectory, '..', `${bundleName}.zip`);
+
+  return new Promise((resolve, reject) => {
+    const writeStream = fs.createWriteStream(zipPath);
+    writeStream.on('close', () => resolve(zipPath));
+
+    const archive = archiver('zip');
+    archive.on('error', (err) => {
+      reject(err);
+    });
+    archive.pipe(writeStream);
+    // Adds the directory contents to the zip.
+    archive.directory(bundleDirectory, false);
+    archive.finalize();
+  });
+};
+
 /**
  * This function will create a directory with the same name at the
  * .tar.gz file it generates. This way when the file is extracted
@@ -58,8 +89,6 @@ const bundleProject = (projectPath, tagName) => {
   const pattern = path.posix.join(projectPath, 'packages', '**',
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME,
     '*.{js,map}');
-
-  const tarName = `workbox-${tagName}.tar.gz`;
 
   const filesToIncludeInBundle = glob.sync(pattern);
   const bundleDirectory = path.join(projectPath, '..', 'github-bundle');
@@ -71,17 +100,17 @@ const bundleProject = (projectPath, tagName) => {
     );
   });
 
-  const tarball = new TarGz({}, {
-    // Do not inlcude the top level in the tar.gz
-    fromBase: true,
-  });
-  const tarPath = path.join(bundleDirectory, '..', tarName);
-  return tarball.compress(bundleDirectory, tarPath)
-  .then(() => {
-    return {
-      bundleDirectory,
-      tarPath,
-    };
+  const bundleName = `workbox-${tagName}`;
+  return createTar(bundleDirectory, bundleName)
+  .then((tarPath) => {
+    return createZip(bundleDirectory, bundleName)
+    .then((zipPath) => {
+      return {
+        bundleDirectory,
+        tarPath,
+        zipPath,
+      };
+    });
   });
 };
 
@@ -110,7 +139,7 @@ const handleGithubAndCDNRelease = (tagName, gitBranch, release) => {
       return bundleProject(tagDownloadPath, tagName);
     });
   })
-  .then(({bundleDirectory, tarPath}) => {
+  .then(({bundleDirectory, tarPath, zipPath}) => {
     return github.repos.uploadAsset({
       owner: GITHUB_OWNER,
       repo: GITHUB_REPO,
@@ -120,8 +149,56 @@ const handleGithubAndCDNRelease = (tagName, gitBranch, release) => {
       label: path.basename(tarPath),
     })
     .then(() => {
+      return github.repos.uploadAsset({
+        owner: GITHUB_OWNER,
+        repo: GITHUB_REPO,
+        id: release.id,
+        filePath: tarPath,
+        name: path.basename(zipPath),
+        label: path.basename(zipPath),
+      });
+    })
+    .then(() => {
       return uploadBundleToCDN(tagName, bundleDirectory);
     });
+  });
+};
+
+const findReleasesForTags = (tagNames) => {
+  return github.repos.getReleases({
+    owner: GITHUB_OWNER,
+    repo: GITHUB_REPO,
+  })
+  .then((releasesData) => {
+    const allReleases = releasesData.data;
+    return tagNames.map((tagData) => {
+      let matchingRelease = null;
+
+      allReleases.forEach((release) => {
+        if (release.tag_name === tagData.name) {
+          matchingRelease = release;
+        }
+      });
+
+      return {
+        tagData: tagData,
+        release: matchingRelease,
+      };
+    });
+  });
+};
+
+const filterTagsWithBundles = (tagsAndReleases) => {
+  return tagsAndReleases.filter((tagAndRelease) => {
+    const release = tagAndRelease.release;
+    if (release && release.assets.length > 0) {
+      // If a tag has a release and there is an asset let's assume the
+      // the release is fine. Note: Github's source doesn't count as an
+      // asset
+      return false;
+    }
+
+    return true;
   });
 };
 
@@ -142,55 +219,23 @@ const findTagsWithoutBundles = () => {
       return semver.gte(tagData.name, 'v3.0.0-alpha');
     });
   })
-  .then((allTags) => {
-    return github.repos.getReleases({
-      owner: GITHUB_OWNER,
-      repo: GITHUB_REPO,
-    })
-    .then((releasesData) => {
-      const allReleases = releasesData.data;
-      return allTags.map((tagData) => {
-        let matchingRelease = null;
+  .then(findReleasesForTags)
+  .then(filterTagsWithBundles);
+};
 
-        allReleases.forEach((release) => {
-          if (release.tag_name === tagData.name) {
-            matchingRelease = release;
-          }
-        });
-
-        return {
-          tagData: tagData,
-          release: matchingRelease,
-        };
-      });
-    });
-  })
-  .then((tagsAndReleases) => {
-    return tagsAndReleases.filter((tagAndRelease) => {
+const publishTagAndReleaseBundles = (tagAndReleaseData) => {
+  return tagAndReleaseData.reduce((promiseChain, tagAndRelease) => {
+    return promiseChain.then(() => {
+      const tag = tagAndRelease.tagData;
       const release = tagAndRelease.release;
-      if (release && release.assets.length) {
-        // If a tag has a release and there is an asset let's assume the
-        // the release is fine. Note: Github's source doesn't count as an
-        // asset
-        return false;
-      }
-
-      return true;
+      return handleGithubAndCDNRelease(tag.name, tag.name, release);
     });
-  });
+  }, Promise.resolve());
 };
 
 gulp.task('publish-bundle:generate-from-tags', () => {
   return findTagsWithoutBundles()
-  .then((tagsAndReleases) => {
-    return tagsAndReleases.reduce((promiseChain, tagAndRelease) => {
-      return promiseChain.then(() => {
-        const tag = tagAndRelease.tagData;
-        const release = tagAndRelease.release;
-        return handleGithubAndCDNRelease(tag.name, tag.name, release);
-      });
-    }, Promise.resolve());
-  });
+  .then(publishTagAndReleaseBundles);
 });
 
 gulp.task('publish-bundle:clean', () => {
@@ -201,7 +246,18 @@ gulp.task('publish-bundle:clean', () => {
 gulp.task('publish-bundle:temp-v3-branch-build', () => {
   const tagName = 'v3.0.0-alpha';
   const gitBranch = 'v3';
-  return handleGithubAndCDNRelease(tagName, gitBranch);
+
+  return findReleasesForTags([{name: tagName}])
+  .then(filterTagsWithBundles)
+  .then((tagAndReleaseData) => {
+    return tagAndReleaseData.reduce((promiseChain, tagAndRelease) => {
+      const tag = tagAndRelease.tagData;
+      const release = tagAndRelease.release;
+      // Override the git branch here since we aren't actually
+      // using a tagged release.
+      return handleGithubAndCDNRelease(tag.name, gitBranch, release);
+    }, Promise.resolve());
+  });
 });
 
 gulp.task('publish-bundle', gulp.series(
