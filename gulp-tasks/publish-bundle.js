@@ -24,7 +24,7 @@ github.authenticate({
   token: process.env.GITHUB_TOKEN,
 });
 
-const downloadGitCommit = (tagName) => {
+const downloadGitCommit = async (tagName) => {
   logHelper.log(`Clone Git repo for tag: '${tagName}'.`);
   const tempPath = path.join(BUILD_PATH, tagName, 'source-code');
   const params = [
@@ -35,31 +35,29 @@ const downloadGitCommit = (tagName) => {
     tempPath,
   ];
 
-  return spawnPromiseWrapper('git', params)
-  .then(() => tempPath);
+  await spawnPromiseWrapper('git', params);
+
+  return tempPath;
 };
 
-const buildProject = (projectPath) => {
-  return spawnPromiseWrapper('npm', ['install'], {
+const buildProject = async (projectPath) => {
+  await spawnPromiseWrapper('npm', ['install'], {
     cwd: projectPath,
-  })
-  .then(() => {
-    return spawnPromiseWrapper('gulp', ['build'], {
-      cwd: projectPath,
-    });
+  });
+
+  await spawnPromiseWrapper('gulp', ['build'], {
+    cwd: projectPath,
   });
 };
 
-const createTar = (bundleDirectory, bundleName) => {
+const createTar = async (bundleDirectory, bundleName) => {
   const tarball = new TarGz({}, {
     // Do not inlcude the top level in the tar.gz
     fromBase: true,
   });
   const tarPath = path.join(bundleDirectory, '..', `${bundleName}.tar.gz`);
-  return tarball.compress(bundleDirectory, tarPath)
-  .then(() => {
-    return tarPath;
-  });
+  await tarball.compress(bundleDirectory, tarPath);
+  return tarPath;
 };
 
 const createZip = (bundleDirectory, bundleName) => {
@@ -85,7 +83,7 @@ const createZip = (bundleDirectory, bundleName) => {
  * .tar.gz file it generates. This way when the file is extracted
  * the folder structure will have the sam
  */
-const bundleProject = (projectPath, tagName) => {
+const bundleProject = async (projectPath, tagName) => {
   const pattern = path.posix.join(projectPath, 'packages', '**',
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME,
     '*.{js,map}');
@@ -101,20 +99,17 @@ const bundleProject = (projectPath, tagName) => {
   });
 
   const bundleName = `workbox-${tagName}`;
-  return createTar(bundleDirectory, bundleName)
-  .then((tarPath) => {
-    return createZip(bundleDirectory, bundleName)
-    .then((zipPath) => {
-      return {
-        bundleDirectory,
-        tarPath,
-        zipPath,
-      };
-    });
-  });
+  const tarPath = await createTar(bundleDirectory, bundleName);
+  const zipPath = await createZip(bundleDirectory, bundleName);
+
+  return {
+    bundleDirectory,
+    tarPath,
+    zipPath,
+  };
 };
 
-const handleGithubAndCDNRelease = (tagName, gitBranch, release) => {
+const handleGithubAndCDNRelease = async (tagName, gitBranch, release) => {
   let releaseCreation = Promise.resolve();
   if (!release) {
     releaseCreation = github.repos.createRelease({
@@ -129,62 +124,55 @@ const handleGithubAndCDNRelease = (tagName, gitBranch, release) => {
     });
   }
 
-  return releaseCreation
-  .then(() => {
-    return downloadGitCommit(gitBranch);
-  })
-  .then((tagDownloadPath) => {
-    return buildProject(tagDownloadPath)
-    .then(() => {
-      return bundleProject(tagDownloadPath, tagName);
-    });
-  })
-  .then(({bundleDirectory, tarPath, zipPath}) => {
-    return github.repos.uploadAsset({
-      owner: GITHUB_OWNER,
-      repo: GITHUB_REPO,
-      id: release.id,
-      filePath: tarPath,
-      name: path.basename(tarPath),
-      label: path.basename(tarPath),
-    })
-    .then(() => {
-      return github.repos.uploadAsset({
-        owner: GITHUB_OWNER,
-        repo: GITHUB_REPO,
-        id: release.id,
-        filePath: tarPath,
-        name: path.basename(zipPath),
-        label: path.basename(zipPath),
-      });
-    })
-    .then(() => {
-      return uploadBundleToCDN(tagName, bundleDirectory);
-    });
-  });
-};
+  await releaseCreation;
 
-const findReleasesForTags = (tagNames) => {
-  return github.repos.getReleases({
+  const tagDownloadPath = await downloadGitCommit(gitBranch);
+
+  await buildProject(tagDownloadPath);
+
+  const bundleDetails = await bundleProject(tagDownloadPath, tagName);
+
+  await github.repos.uploadAsset({
     owner: GITHUB_OWNER,
     repo: GITHUB_REPO,
-  })
-  .then((releasesData) => {
-    const allReleases = releasesData.data;
-    return tagNames.map((tagData) => {
-      let matchingRelease = null;
+    id: release.id,
+    filePath: bundleDetails.tarPath,
+    name: path.basename(bundleDetails.tarPath),
+    label: path.basename(bundleDetails.tarPath),
+  });
 
-      allReleases.forEach((release) => {
-        if (release.tag_name === tagData.name) {
-          matchingRelease = release;
-        }
-      });
+  await github.repos.uploadAsset({
+    owner: GITHUB_OWNER,
+    repo: GITHUB_REPO,
+    id: release.id,
+    filePath: bundleDetails.zipPath,
+    name: path.basename(bundleDetails.zipPath),
+    label: path.basename(bundleDetails.zipPath),
+  });
 
-      return {
-        tagData: tagData,
-        release: matchingRelease,
-      };
+  await uploadBundleToCDN(tagName, bundleDetails.bundleDirectory);
+};
+
+const findReleasesForTags = async (tagNames) => {
+  const releasesData = await github.repos.getReleases({
+    owner: GITHUB_OWNER,
+    repo: GITHUB_REPO,
+  });
+
+  const allReleases = releasesData.data;
+  return tagNames.map((tagData) => {
+    let matchingRelease = null;
+
+    allReleases.forEach((release) => {
+      if (release.tag_name === tagData.name) {
+        matchingRelease = release;
+      }
     });
+
+    return {
+      tagData: tagData,
+      release: matchingRelease,
+    };
   });
 };
 
@@ -202,40 +190,36 @@ const filterTagsWithBundles = (tagsAndReleases) => {
   });
 };
 
-const findTagsWithoutBundles = () => {
+const findTagsWithoutBundles = async () => {
   // Get all of the tags in the repo.
-  return github.repos.getTags({
+  const tagsResponse = await github.repos.getTags({
     owner: GITHUB_OWNER,
     repo: GITHUB_REPO,
-  })
-  .then((tagsResponse) => {
-    // We only want tags that are v3.0.0 or above.
-    const tagsData = tagsResponse.data;
-    return tagsData.filter((tagData) => {
-      // The "-alpha" means semver will match against tags with prelease
-      // info (although the prelease tag must be a string >= 'alpha'
-      // alphabetically speaking).
-      // TODO: Change to v3.0.0 when v3 is launched.
-      return semver.gte(tagData.name, 'v3.0.0-alpha');
-    });
-  })
-  .then(findReleasesForTags)
-  .then(filterTagsWithBundles);
+  });
+
+  // We only want tags that are v3.0.0 or above.
+  const tagsData = tagsResponse.data;
+  let tagsAndReleaseData = tagsData.filter((tagData) => {
+    return semver.gte(tagData.name, constants.MIN_RELEASE_TAG_TO_PUBLISH);
+  });
+
+  tagsAndReleaseData = await findReleasesForTags(tagsAndReleaseData);
+  tagsAndReleaseData = filterTagsWithBundles(tagsAndReleaseData);
+
+  return tagsAndReleaseData;
 };
 
-const publishTagAndReleaseBundles = (tagAndReleaseData) => {
-  return tagAndReleaseData.reduce((promiseChain, tagAndRelease) => {
-    return promiseChain.then(() => {
-      const tag = tagAndRelease.tagData;
-      const release = tagAndRelease.release;
-      return handleGithubAndCDNRelease(tag.name, tag.name, release);
-    });
-  }, Promise.resolve());
+const publishTagAndReleaseBundles = async (tagsAndReleaseData) => {
+  for (let tagAndRelease of tagsAndReleaseData) {
+    const tag = tagAndRelease.tagData;
+    const release = tagAndRelease.release;
+    await handleGithubAndCDNRelease(tag.name, tag.name, release);
+  }
 };
 
-gulp.task('publish-bundle:generate-from-tags', () => {
-  return findTagsWithoutBundles()
-  .then(publishTagAndReleaseBundles);
+gulp.task('publish-bundle:generate-from-tags', async () => {
+  const tagsAndReleaseData = await findTagsWithoutBundles();
+  await publishTagAndReleaseBundles(tagsAndReleaseData);
 });
 
 gulp.task('publish-bundle:clean', () => {
@@ -243,21 +227,19 @@ gulp.task('publish-bundle:clean', () => {
 });
 
 // TODO: Delete this task when v3 is about to launch.
-gulp.task('publish-bundle:temp-v3-branch-build', () => {
+gulp.task('publish-bundle:temp-v3-branch-build', async () => {
   const tagName = 'v3.0.0-alpha';
   const gitBranch = 'v3';
 
-  return findReleasesForTags([{name: tagName}])
-  .then(filterTagsWithBundles)
-  .then((tagAndReleaseData) => {
-    return tagAndReleaseData.reduce((promiseChain, tagAndRelease) => {
-      const tag = tagAndRelease.tagData;
-      const release = tagAndRelease.release;
-      // Override the git branch here since we aren't actually
-      // using a tagged release.
-      return handleGithubAndCDNRelease(tag.name, gitBranch, release);
-    }, Promise.resolve());
-  });
+  let tagsAndReleaseData = await findReleasesForTags([{name: tagName}]);
+  tagsAndReleaseData = filterTagsWithBundles(tagsAndReleaseData);
+  for (let tagAndRelease of tagsAndReleaseData) {
+    const tag = tagAndRelease.tagData;
+    const release = tagAndRelease.release;
+    // Override the git branch here since we aren't actually
+    // using a tagged release.
+    await handleGithubAndCDNRelease(tag.name, gitBranch, release);
+  }
 });
 
 gulp.task('publish-bundle', gulp.series(

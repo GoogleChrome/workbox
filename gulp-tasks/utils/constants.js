@@ -8,4 +8,13 @@ module.exports = {
 
   // This is the environments that we should use for NODE_ENV.
   BUILD_TYPES: [undefined, 'production'],
+
+  // This is used in the publish-bundle step to avoid doing anything
+  // with tags < v3.0.0.
+  // The "-alpha" means semver will match against tags with prelease
+  // info (although the prelease tag must be a string >= 'alpha'
+  // alphabetically speaking).
+  // TODO: Change to v3.0.0 when v3 is launched to avoid doing anything
+  // with prelease versions.
+  MIN_RELEASE_TAG_TO_PUBLISH: 'v3.0.0-alpha',
 };
