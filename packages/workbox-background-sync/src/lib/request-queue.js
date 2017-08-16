@@ -196,8 +196,8 @@ class RequestQueue {
   /**
    * returns the queue after initialization is complete
    *
+   * @return {Promise<Object>} Queue object containing the current requests
    * @readonly
-   *
    * @memberOf RequestQueue
    * @private
    */
