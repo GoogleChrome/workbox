@@ -2,8 +2,8 @@ module.exports = {
   // This is a directory that should not be commited
   // to git and will be removed and rebuilt between
   // test runs.
-  PACKAGE_BUILD_DIRNAME: 'build',
-  BROWSER_BUILD_DIRNAME: 'browser-bundles',
+  PACKAGE_BUILD_DIRNAME: 'dist',
+  BROWSER_BUILD_DIRNAME: 'browser',
   TEST_BUNDLES_BUILD_DIRNAME: 'bundle-builds',
   GENERATED_RELEASE_FILES_DIRNAME: 'generated-release-files',
 

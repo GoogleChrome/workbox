@@ -4,6 +4,10 @@
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This module is used by a number of the other workboxjs.org modules to share common code.",
+  "files": [
+    "dist",
+
+  ],
   "scripts": {
     "prepublish": "gulp build-packages --package workbox-core"
   },
