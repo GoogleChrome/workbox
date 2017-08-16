@@ -20,8 +20,7 @@ const rollupHelper = require('./utils/rollup-helper');
  */
 
 const buildPackage = (packagePath, buildType) => {
-  const srcPath = path.join(packagePath, 'src');
-  const browserBundlePath = path.join(srcPath, '._browser.js');
+  const browserBundlePath = path.join(packagePath, '_browser.mjs');
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build

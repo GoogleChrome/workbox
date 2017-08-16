@@ -1,5 +1,5 @@
-import Assert from '../utils/Assert';
-import LogHelper from '../utils/LogHelper';
+import Assert from './utils/Assert.mjs';
+import LogHelper from './utils/LogHelper.mjs';
 
 /**
  * WorkboxCore shares code across Workbox modules.

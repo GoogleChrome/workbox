@@ -1,4 +1,4 @@
-import WorkboxError from '../models/WorkboxError';
+import WorkboxError from '../WorkboxError.mjs';
 /**
  * These variables should be referenced over this.LOG_LEVELS as
  * the minifier can't minify public LOG_LEVELS function.

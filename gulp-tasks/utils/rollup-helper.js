@@ -6,6 +6,9 @@ module.exports = {
   // plugin set up and used to ensure as consist set of tests
   // as possible.
   getDefaultPlugins: (buildType) => {
+    // TODO: Once rollup-plugin-uglify-es is updated, use keep_classnames
+    // for dev.
+    // https://github.com/ezekielchentnik/rollup-plugin-uglify-es/issues/1
     const plugins = [
       uglify({
         mangle: {
