@@ -6,7 +6,7 @@ const errors = require('../../src/lib/errors.js');
 
 require('chai').should();
 
-describe('Ask for File Extensions to Cache', function() {
+describe(`Ask for File Extensions to Cache`, function() {
   const globalStubs = [];
   const Q_PATH = '../../src/lib/questions/ask-extensions-to-cache.js';
 
@@ -129,7 +129,7 @@ describe('Ask for File Extensions to Cache', function() {
     return checkError(askForExtensionsToCache, 'unable-to-get-file-extensions');
   });
 
-  it('should handle no file extensions being available', function() {
+  it(`should handle no file extensions being available`, function() {
     const fakeFS = {
       readdir: (directory, cb) => {
         if (directory === INITIAL_ROOT_DIR) {

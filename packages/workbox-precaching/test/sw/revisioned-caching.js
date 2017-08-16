@@ -1,9 +1,24 @@
-importScripts('/__test/mocha/sw-utils.js');
-importScripts('/__test/bundle/workbox-precaching');
+/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-workbox.logLevel = self.workbox.LOG_LEVEL.verbose;
+     http://www.apache.org/licenses/LICENSE-2.0
 
-describe('sw/revisioned-caching()', function() {
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+/* eslint-env mocha, browser */
+
+import RevisionedCacheManager
+    from '../../src/lib/controllers/revisioned-cache-manager.js';
+
+describe(`sw/revisioned-caching()`, function() {
   let cacheManager;
 
   const VALID_PATH_REL = '/__echo/date/example.txt';
@@ -11,7 +26,7 @@ describe('sw/revisioned-caching()', function() {
   const VALID_REVISION = '1234';
 
   beforeEach(function() {
-    cacheManager = new workbox.precaching.RevisionedCacheManager();
+    cacheManager = new RevisionedCacheManager();
   });
 
   afterEach(function() {
@@ -38,26 +53,26 @@ describe('sw/revisioned-caching()', function() {
         cacheManager.addToCacheList({
           revisionedFiles: badInput,
         });
-      }).to.throw('instance of \'Array\'');
+      }).to.throw(`instance of 'Array'`);
     });
 
     it(`should handle bad cacheRevisioned('${badInput}') input`, function() {
       expect(() => {
         cacheManager.addToCacheList(badInput);
-      }).to.throw('instance of \'Array\'');
+      }).to.throw(`instance of 'Array'`);
     });
   });
 
   it(`should handle bad cacheRevisioned('[]') input`, function() {
     expect(() => {
       cacheManager.addToCacheList([]);
-    }).to.throw('instance of \'Array\'');
+    }).to.throw(`instance of 'Array'`);
   });
 
   it(`should handle cacheRevisioned(null / undefined) inputs`, function() {
     expect(() => {
       cacheManager.addToCacheList({revisionedFiles: null});
-    }).to.throw('instance of \'Array\'');
+    }).to.throw(`instance of 'Array'`);
 
     expect(() => {
       cacheManager.addToCacheList(null);
@@ -67,13 +82,13 @@ describe('sw/revisioned-caching()', function() {
   it(`should handle cacheRevisioned null array inputs`, function() {
     expect(() => {
       cacheManager.addToCacheList({revisionedFiles: [null]});
-    }).to.throw().that.has.property('name', 'unexpected-precache-entry');
+    }).to.throw().with.property('name', 'unexpected-precache-entry');
   });
 
   it(`should handle cacheRevisioned undefined array inputs`, function() {
     expect(() => {
       cacheManager.addToCacheList({revisionedFiles: [undefined]});
-    }).to.throw().that.has.property('name', 'unexpected-precache-entry');
+    }).to.throw().with.property('name', 'unexpected-precache-entry');
   });
 
   const badPaths = [
@@ -85,7 +100,6 @@ describe('sw/revisioned-caching()', function() {
     {},
     [],
   ];
-
   badPaths.forEach((badPath) => {
     it(`should throw an errror for bad path value '${JSON.stringify(badPath)}'`, function() {
       let caughtError;
@@ -207,7 +221,7 @@ describe('sw/revisioned-caching()', function() {
     });
   });
 
-  it('should throw error when precaching the same path but different revision', function() {
+  it(`should throw error when precaching the same path but different revision`, function() {
     const TEST_PATH = '/__echo/date/hello.txt';
     let thrownError = null;
     try {
@@ -234,7 +248,7 @@ describe('sw/revisioned-caching()', function() {
     });
   });
 
-  it('should clean up IDB after a URL is removed from the precache list', async function() {
+  it(`should clean up IDB after a URL is removed from the precache list`, async function() {
     const urls = [1, 2, 3].map((i) => new URL(`/__echo/date/${i}`, location).href);
 
     const firstRevisionedFiles = urls.map((url) => {
@@ -261,7 +275,7 @@ describe('sw/revisioned-caching()', function() {
     expect(firstIdbUrls).to.include.members(urls);
 
     // Create a new RevisionedCacheManager to trigger a new installation.
-    const secondCacheManager = new workbox.precaching.RevisionedCacheManager();
+    const secondCacheManager = new RevisionedCacheManager();
 
     const removedUrl = urls.pop();
     const secondRevisionedFiles = urls.map((url) => {
@@ -289,7 +303,7 @@ describe('sw/revisioned-caching()', function() {
     expect(secondIdbUrls).not.to.include.members([removedUrl]);
   });
 
-  it('should return empty array from install() if no resources to precache', async function() {
+  it(`should return empty array from install() if no resources to precache`, async function() {
     const cacheDetails = await cacheManager.install();
     (Array.isArray(cacheDetails)).should.equal(true);
     (cacheDetails.length).should.equal(0);

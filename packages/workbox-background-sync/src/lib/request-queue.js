@@ -82,7 +82,7 @@ class RequestQueue {
    * @private
    */
   async saveQueue() {
-    await this._idbQDb.put(this._queueName, this._queue);
+    await this._idbQDb.put(this._queueName, await this._getQueue());
   }
 
   /**
@@ -153,10 +153,10 @@ class RequestQueue {
    * @private
    */
   async getRequestFromQueue({hash}) {
-    await this._initializationPromise;
+    const queue = await this._getQueue();
     isType({hash}, 'string');
 
-    if (this._queue.includes(hash)) {
+    if (queue.includes(hash)) {
       const reqData = await this._idbQDb.get(hash);
 
       // Apply the `requestWillDequeue` callback so plugins can modify the
@@ -191,6 +191,19 @@ class RequestQueue {
    */
   get queueName() {
     return this._queueName;
+  }
+
+  /**
+   * returns the queue after initialization is complete
+   *
+   * @readonly
+   *
+   * @memberOf RequestQueue
+   * @private
+   */
+  async _getQueue() {
+    await this._initializationPromise;
+    return Object.assign([], this._queue);
   }
 
   /**

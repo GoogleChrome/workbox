@@ -3,28 +3,28 @@
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- */
+*/
 
-/* eslint-env mocha, browser */
-/* global chai, sinon, workbox */
+import IDBHelper from '../../../../lib/idb-helper.js';
+import * as Constants from '../../src/lib/constants.js';
+import RequestQueue from '../../src/lib/request-queue.js';
 
-'use strict';
-
-describe('request-queue tests', () => {
+describe(`request-queue`, function() {
   const QUEUE_NAME = 'QUEUE_NAME';
   const MAX_AGE = 6;
 
   const callbacks = {};
-  const idbHelper = new workbox.backgroundSync.test.IdbHelper(
-    'bgQueueSyncDB', 1, 'QueueStore');
-  const queue = new workbox.backgroundSync.test.RequestQueue({
-    idbQDb: idbHelper,
+  const db = new IDBHelper(Constants.defaultDBName, 1, 'QueueStore');
+  const queue = new RequestQueue({
+    idbQDb: db,
     config: {maxAge: MAX_AGE},
     queueName: QUEUE_NAME,
     callbacks,
@@ -38,90 +38,109 @@ describe('request-queue tests', () => {
     });
   };
 
-  it('queue object should exist', () => {
+	const resetDb = async function() {
+    const keys = await db.getAllKeys();
+    return Promise.all(keys.map((key) => db.delete(key)));
+  };
+
+  it(`queue object should exist`, () => {
     chai.assert.isObject(queue);
     chai.assert.isArray(queue._queue);
     chai.assert.isString(queue._queueName);
     chai.assert.isObject(queue._config);
   });
 
-  it('initialize should not fail for null data', async () => {
-    chai.assert.equal(queue._queue.length, 0);
-    idbHelper.put(queue._queueName, null);
-    await queue.initQueue();
-    chai.assert.equal(queue._queue.length, 0);
-  });
+  before(resetDb);
+  afterEach(resetDb);
 
-  it('initialize should re-fill the queue', async () => {
-    chai.assert.equal(queue._queue.length, 0);
-    const hash = await queue.push({
-      request: new Request('http://lipsum.com/generate'),
-    });
-    chai.assert.equal(queue._queue.length, 1);
-    queue._queue = [];
-    chai.assert.equal(queue._queue.length, 0);
-    await queue.initQueue();
-    chai.assert.equal(queue._queue.length, 1);
-    chai.assert.equal(queue._queue[0], hash);
-  });
-
-  it('queueName is correct', () => {
-    chai.assert.equal(queue._queueName, QUEUE_NAME);
-  });
-
-  it('config is correct', () => {
-    chai.assert.equal(queue._config.maxAge, MAX_AGE);
-    chai.assert.notEqual(
-      queue._config.maxAge, workbox.backgroundSync.test.Constants.maxAge);
-  });
-
-  it('push is working', async () => {
-    callbacks.requestWillEnqueue = sinon.spy();
-    const startTime = Date.now();
-    queue._initializationPromise = getDelayedPromise();
-    const queueLength = queue._queue.length;
-    const hash = await queue.push({
-      request: new Request('http://lipsum.com/generate'),
+  describe(`constructor`, function() {
+    it(`should initialize with correct object types`, function() {
+      expect(queue).to.be.an('object');
+      expect(queue._queue).to.be.an('array');
+      expect(queue._queueName).to.be.a('string');
+      expect(queue._config).to.be.an('object');
     });
 
-    chai.assert.isString(hash);
-    chai.assert.equal(queue._queue.length, queueLength + 1);
+    it(`should should not fail for null data`, async function() {
+      expect(queue._queue.length).to.equal(0);
+      db.put(queue._queueName, null);
+      await queue.initQueue();
+      expect(queue._queue.length).to.equal(0);
+    });
 
-    chai.assert(callbacks.requestWillEnqueue.calledOnce);
-    chai.assert(callbacks.requestWillEnqueue.calledWith(
-        sinon.match.has('request')));
-    chai.assert(Date.now() - startTime > 800);
+    it(`should re-fill the queue`, async function() {
+      expect(queue._queue.length).to.equal(0);
+      const hash = await queue.push({
+        request: new Request('http://lipsum.com/generate'),
+      });
+      expect(queue._queue.length).to.equal(1);
+      queue._queue = [];
+      expect(queue._queue.length).to.equal(0);
+      await queue.initQueue();
+      expect(queue._queue.length).to.equal(1);
+      expect(queue._queue[0]).to.equal(hash);
+    });
 
-    delete callbacks.requestWillEnqueue;
+    it(`should fill the queueName correctly`, function() {
+      expect(queue._queueName).to.equal(QUEUE_NAME);
+    });
+
+    it(`should configure correctly`, function() {
+      expect(queue._config.maxAge).to.equal(MAX_AGE);
+      expect(queue._config.maxAge).to.not
+          .equal(Constants.maxAge);
+    });
+
+    it(`should configure correctly without any optional parameters given`, function() {
+      let tempQueue = new RequestQueue({
+        idbQDb: db,
+      });
+      let tempQueue2 = new RequestQueue({
+        idbQDb: db,
+      });
+      expect(tempQueue._config).to.equal(undefined);
+      expect(tempQueue._queueName).to.match(
+        new RegExp(Constants.defaultQueueName + '_\\d+'));
+      expect(tempQueue2._queueName).to.match(
+        new RegExp(Constants.defaultQueueName + '_\\d+'));
+    });
   });
 
-  it('getRequestFromQueue is working', async () => {
-    callbacks.requestWillDequeue = sinon.spy();
+  describe(`push method`, function() {
+    it(`should push the Request given in the private array`, async function() {
+      callbacks.requestWillEnqueue = sinon.spy();
 
-    const hash = await queue.push({
-      request: new Request('http://lipsum.com/generate'),
+      const queueLength = queue._queue.length;
+      const hash = await queue.push({
+        request: new Request('http://lipsum.com/generate'),
+      });
+
+      expect(hash).to.be.a('string');
+      expect(queue._queue.length).to.equal(queueLength + 1);
+
+      expect(callbacks.requestWillEnqueue.calledOnce).to.be.true;
+      expect(callbacks.requestWillEnqueue.calledWith(sinon.match.has('request')))
+          .to.be.true;
+
+      delete callbacks.requestWillEnqueue;
     });
-    const startTime = Date.now();
-    queue._initializationPromise = getDelayedPromise();
-    const reqData = await queue.getRequestFromQueue({hash});
-    chai.assert.hasAllKeys(reqData, ['request', 'config', 'metadata']);
-    chai.assert(callbacks.requestWillDequeue.calledOnce);
-    chai.assert(callbacks.requestWillDequeue.calledWith(reqData));
-    chai.assert(Date.now() - startTime > 800);
-    delete callbacks.requestWillDequeue;
   });
 
-  it('default config is correct', () => {
-    let tempQueue = new workbox.backgroundSync.test.RequestQueue({
-      idbQDb: idbHelper,
+  describe(`getRequestFromQueue method`, function() {
+    it(`should get the proper Request back`, async function() {
+      callbacks.requestWillDequeue = sinon.spy();
+
+      const hash = await queue.push({
+        request: new Request('http://lipsum.com/generate'),
+      });
+
+      const reqData = await queue.getRequestFromQueue({hash});
+
+      expect(reqData).to.have.all.keys(['request', 'config', 'metadata']);
+      expect(callbacks.requestWillDequeue.calledOnce).to.be.true;
+      expect(callbacks.requestWillDequeue.calledWith(reqData)).to.be.true;
+
+      delete callbacks.requestWillDequeue;
     });
-    let tempQueue2 = new workbox.backgroundSync.test.RequestQueue({
-      idbQDb: idbHelper,
-    });
-    chai.assert.equal(tempQueue._config, undefined);
-    chai.assert.equal(tempQueue._queueName,
-      workbox.backgroundSync.test.Constants.defaultQueueName + '_0');
-    chai.assert.equal(tempQueue2._queueName,
-      workbox.backgroundSync.test.Constants.defaultQueueName + '_1');
   });
 });

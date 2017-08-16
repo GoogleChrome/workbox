@@ -54,6 +54,14 @@ class ServerInstance {
       res.send(`${req.params.file}-${Date.now()}`);
     });
 
+    this._app.all('/__echo/cors-no-cache/:file', function(req, res) {
+      res.setHeader('Access-Control-Allow-Methods',
+        'POST, GET, PUT, DELETE, OPTIONS');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.send(`${req.params.file}-${Date.now()}`);
+    });
+
     this._app.all('/__echo/date-with-cors/:file', function(req, res) {
       res.setHeader('Access-Control-Allow-Methods',
         'POST, GET, PUT, DELETE, OPTIONS');
@@ -117,22 +125,6 @@ class ServerInstance {
     // inject them into the HTML as <script> tags.
     this._app.get('/__test/mocha/browser/:pkg', function(req, res) {
       const pkg = req.params.pkg;
-      const pattern = `packages/${pkg}/test/browser/*.js`;
-      const repoRoot = path.join(__dirname, '..');
-      const scripts = glob.sync(pattern, {
-        cwd: repoRoot,
-        root: repoRoot,
-      }).map((script) => {
-        // Converts packages/<pkg name>/test/sw/<filename>.js
-        // to      /packages/<pkg name>/test/sw/<filename>.js
-        return `/${script}`;
-      });
-      if (scripts.length === 0) {
-        const errMsg = `No test scripts match the pattern '${pattern}'.`;
-        console.log(errMsg);
-        res.status(500).send(errMsg);
-        return;
-      }
 
       let config = {};
       try {
@@ -149,9 +141,9 @@ class ServerInstance {
 
       const source = fs.readFileSync(path.join(
         __dirname, '..', 'templates', 'test-browser.hbs'), 'utf-8');
+
       const template = handlebars.compile(source);
       const html = template({
-        scripts,
         config,
         pkg,
       });
@@ -161,17 +153,10 @@ class ServerInstance {
 
     this._app.get('/__test/mocha/sw/:pkg', function(req, res) {
       const pkg = req.params.pkg;
-      const pattern = `packages/${pkg}/test/sw/*.js`;
-      const scriptPaths = glob.sync(pattern).map((script) => {
-        // Converts packages/<pkg name>/test/sw/<filename>.js
-        // to      /packages/<pkg name>/test/sw/<filename>.js
-        return `/${script}`;
-      });
-
       const source = fs.readFileSync(path.join(
         __dirname, '..', 'templates', 'test-sw.hbs'), 'utf-8');
       const template = handlebars.compile(source);
-      const html = template({scripts: scriptPaths, pkg});
+      const html = template({pkg});
 
       res.send(html);
     });

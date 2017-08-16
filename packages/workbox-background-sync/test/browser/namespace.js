@@ -13,14 +13,17 @@
  limitations under the License.
 */
 
-import WorkboxSW from '../../src';
+import * as namespace from '../../src/index.js';
+
+const exportedSymbols = [
+  'Queue',
+  'QueuePlugin',
+];
 
 describe(`Test Library Surface`, function() {
-  it(`should be accessible via WorkboxSW`, function() {
-    expect(WorkboxSW).to.exist;
-  });
-
-  it(`should be able to construct WorkboxSW without error`, function() {
-    new WorkboxSW();
+  exportedSymbols.forEach((exportedSymbol) => {
+    it(`should expose ${exportedSymbol} publicly`, function() {
+      expect(namespace[exportedSymbol]).to.exist;
+    });
   });
 });

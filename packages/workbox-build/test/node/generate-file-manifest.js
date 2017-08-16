@@ -3,7 +3,7 @@ const proxyquire = require('proxyquire');
 const swBuild = require('../../src/index.js');
 const errors = require('../../src/lib/errors');
 
-describe('Test generateFileManifest', function() {
+describe(`Test generateFileManifest`, function() {
   const EXAMPLE_INPUT = {
     globDirectory: 'src/',
     globPatterns: ['./**/*.{html,css}'],
@@ -11,7 +11,7 @@ describe('Test generateFileManifest', function() {
     manifestDest: './build/manifest.js',
   };
 
-  it('should be able to handle bad input', function() {
+  it(`should be able to handle bad input`, function() {
     const badInputs = [
       undefined,
       null,
@@ -35,7 +35,7 @@ describe('Test generateFileManifest', function() {
     }, Promise.resolve());
   });
 
-  it('should return file entries through each phase', function() {
+  it(`should return file entries through each phase`, function() {
     const FILE_ENTRIES = [{
       file: './glob-entry-1',
       hash: '1234',

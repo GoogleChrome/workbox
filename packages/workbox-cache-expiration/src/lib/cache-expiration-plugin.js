@@ -47,14 +47,15 @@ class CacheExpirationPlugin extends CacheExpiration {
    *
    * @private
    * @param {Object} input
+   * @param {string} input.cacheName Name of the cache the responses belong to.
    * @param {Response} input.cachedResponse The `Response` object that's been
    *        read from a cache and whose freshness should be checked.
    * @param {Number} [input.now] A timestamp. Defaults to the current time.
-   * @return {Response|null} Either the `cachedResponse`, if it's fresh, or
-   *          `null` if the `Response` is older than `maxAgeSeconds`.
+   * @return {Response} Either the `cachedResponse`, if it's
+   *         fresh, or `null` if the `Response` is older than `maxAgeSeconds`.
    */
-  cacheWillMatch({cachedResponse, now} = {}) {
-    if (this.isResponseFresh({cachedResponse, now})) {
+  cacheWillMatch({cacheName, cachedResponse, now} = {}) {
+    if (this.isResponseFresh({cacheName, cachedResponse, now})) {
       return cachedResponse;
     }
 

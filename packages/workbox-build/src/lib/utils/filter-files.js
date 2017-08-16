@@ -76,7 +76,7 @@ module.exports = (fileDetails, options) => {
     };
   });
 
-  const manifestTransforms = [];
+  let manifestTransforms = [];
 
   if (options.modifyUrlPrefix) {
     manifestTransforms.push(modifyUrlPrefixTranform(options.modifyUrlPrefix));
@@ -89,7 +89,9 @@ module.exports = (fileDetails, options) => {
 
   if (options.manifestTransforms) {
     if (Array.isArray(options.manifestTransforms)) {
-      manifestTransforms.concat(options.manifestTransforms);
+      manifestTransforms = manifestTransforms.concat(
+        options.manifestTransforms
+      );
     } else {
       throw new Error(errors['bad-manifest-transforms']);
     }

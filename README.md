@@ -17,7 +17,12 @@ Workbox is a collection of JavaScript libraries for
 Visit [workboxjs.org](https://workboxjs.org/) to learn more about what Workbox
 can do for you.
 
-## Installation
+## Documentation
+
+* **Main site:** [workboxjs.org](https://workboxjs.org)
+* [Get started](https://workboxjs.org/#get-started)
+* [Overview](https://workboxjs.org/overview.html)
+* [Contribute](CONTRIBUTING.md)
 
 Workbox is available on npm. We have [install instructions](https://workboxjs.org/#get-started) available depending on your build tool or bundler of choice, including Webpack.
 
@@ -26,6 +31,45 @@ Workbox is available on npm. We have [install instructions](https://workboxjs.or
 The main purpose of this repository is to continue evolving the Workbox libraries, making them robust for production use. Development happens in the open on GitHub. We're thankful to the community for contributing any improvements.
 
 Please read the [guide to contributing](CONTRIBUTING.md) prior to filing any pull requests.
+
+<h2>Core Team</h2>
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/jeffposnick.png?s=150">
+        <br>
+        <a href="https://github.com/jeffposnick">Jeff Posnick</a>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/gauntface.png?s=150">
+        <br>
+        <a href="https://github.com/gauntface">Matt Gaunt</a>
+      </td>
+      <td align="center" width="20%" valign="top">
+        <img width="100" height="100" src="https://github.com/addyosmani.png?s=150">
+        <br>
+        <a href="https://github.com/addyosmani">Addy Osmani</a>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/philipwalton.png?s=150">
+        <br>
+        <a href="https://github.com/philipwalton">Philip Walton</a>
+      </td>
+      <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/prateekbh.png?s=150">
+        <br>
+        <a href="https://github.com/prateekbh">Prateek Bhatnagar</a>
+      </td>
+       <td align="center" valign="top">
+        <img width="100" height="100" src="https://github.com/kaycebasques.png?s=150">
+        <br>
+        <a href="https://github.com/kaycebasques">Kayce Basques</a>
+      </td>
+     </tr>
+  </tbody>
+</table>
 
 ## License
 

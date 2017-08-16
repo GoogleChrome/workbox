@@ -1,3 +1,5 @@
+Welcome! Please use this template for reporting bugs or requesting features. For questions about using Workbox, the best place to ask is Stack Overflow, tagged with `[workbox]`: https://stackoverflow.com/questions/ask?tags=workbox
+
 **Library Affected**:
 *workbox-sw, workbox-build, etc.*
 

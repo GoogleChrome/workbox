@@ -1,20 +1,33 @@
-/* global workbox, expect */
+/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-describe('workbox-precaching Test Revisioned Caching', function() {
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+/* eslint-env mocha, browser */
+
+import {dbName} from '../../src/lib/constants.js';
+
+describe(`workbox-precaching Test Revisioned Caching`, function() {
   const STATIC_ASSETS_PATH = '/packages/workbox-precaching/test/static';
 
   const deleteIndexedDB = () => {
     return new Promise((resolve, reject) => {
-      // TODO: Move to constants
-      const req = indexedDB.deleteDatabase('workbox-precaching');
-      req.onsuccess = function() {
-        resolve();
-      };
-      req.onerror = function() {
-        reject();
-      };
-      req.onblocked = function() {
+      const req = indexedDB.deleteDatabase(dbName);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject();
+      req.onblocked = () => {
         console.error('Database deletion is blocked.');
+        reject();
       };
     });
   };
@@ -35,9 +48,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
       cacheNames.length.should.equal(1);
       return window.caches.open(cacheNames[0]);
     })
-    .then((cache) => {
-      return cache.keys();
-    })
+    .then((cache) => cache.keys())
     .then((cachedResponses) => {
       cachedResponses.length.should.equal(fileSet.length);
 
@@ -71,7 +82,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
         }
 
         // This handles relative URL's that will be relative to the service
-        // works path.
+        // worker's path.
         const parsedURL = new URL(
           url,
           new URL(swPath, location).toString()
@@ -95,7 +106,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     });
   };
 
-  const compareRevisionedCachedAssets = function(beforeData, afterData) {
+  const compareRevisionedCachedAssets = (beforeData, afterData) => {
     afterData.cacheList.forEach((afterAssetAndHash) => {
       if (typeof afterAssetAndHash === 'string') {
         afterAssetAndHash = {url: afterAssetAndHash, revision: afterAssetAndHash};
@@ -129,7 +140,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     });
   };
 
-  it('should cache and fetch revisioned urls', function() {
+  it(`should cache and fetch revisioned urls`, function() {
     const sw1 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw.js`;
     const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw-2.js`;
 
@@ -154,7 +165,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     });
   });
 
-  it.skip('should cache and fetch unrevisioned urls', function() {
+  it.skip(`should cache and fetch unrevisioned urls`, function() {
     const sw1 = `${STATIC_ASSETS_PATH}/basic-cache/basic-unrevisioned-cache-sw.js`;
     const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-unrevisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
@@ -169,7 +180,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     });
   });
 
-  it('should manage revisioned cache deletion', function() {
+  it(`should manage revisioned cache deletion`, function() {
     const sw1 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw.js`;
     const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
@@ -187,7 +198,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     });
   });
 
-  it.skip('should manage unrevisioned cache deletion', function() {
+  it.skip(`should manage unrevisioned cache deletion`, function() {
     const sw1 = `${STATIC_ASSETS_PATH}/basic-cache/basic-unrevisioned-cache-sw.js`;
     const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-unrevisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
@@ -205,7 +216,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     });
   });
 
-  it('should manage revisioned indexedDB deletion', function() {
+  it(`should manage revisioned indexedDB deletion`, function() {
     const sw1 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw.js`;
     const sw2 = `${STATIC_ASSETS_PATH}/basic-cache/basic-revisioned-cache-sw-2.js`;
     return window.goog.swUtils.activateSW(sw1)
@@ -223,7 +234,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     });
   });
 
-  it('should only request revisioned duplicate entries once', function() {
+  it(`should only request revisioned duplicate entries once`, function() {
     let allEntries = [];
     workbox.__TEST_DATA['duplicate-entries'].forEach((entries) => {
       allEntries = allEntries.concat(entries);
@@ -251,7 +262,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     });
   });
 
-  it.skip('should only request unrevisioned duplicate entries once', function() {
+  it.skip(`should only request unrevisioned duplicate entries once`, function() {
     let allEntries = [];
     workbox.__TEST_DATA['duplicate-entries'].forEach((entries) => {
       allEntries = allEntries.concat(entries);
@@ -279,7 +290,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     });
   });
 
-  it('should manage redirected revisioned requests', function() {
+  it(`should manage redirected revisioned requests`, function() {
     return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/redirect-revisioned-sw.js`)
     .then((iframe) => {
       const promises = workbox.__TEST_DATA['redirect'].map((redirectPath) => {
@@ -304,7 +315,7 @@ describe('workbox-precaching Test Revisioned Caching', function() {
     });
   });
 
-  it.skip('should manage redirected unrevisioned requests', function() {
+  it.skip(`should manage redirected unrevisioned requests`, function() {
     return window.goog.swUtils.activateSW(`${STATIC_ASSETS_PATH}/response-types/redirect-unrevisioned-sw.js`)
     .then((iframe) => {
       const promises = workbox.__TEST_DATA['redirect'].map((redirectPath) => {

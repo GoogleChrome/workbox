@@ -1,55 +1,50 @@
-importScripts('/__test/mocha/sw-utils.js');
-importScripts('/__test/bundle/workbox-cache-expiration');
+/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+/* eslint-env mocha, browser */
+
+
+import {timestampPropertyName, urlPropertyName}
+    from '../../src/lib/constants.js';
+import CacheExpiration from '../../src/lib/cache-expiration.js';
 
 let count = 0;
-function getUniqueUrl() {
-  return 'https://example.com/?count=' + count++;
-}
-function getUniqueCacheName() {
-  return 'test-cache-' + count++;
-}
+const getUniqueUrl = () => `https://example.com/?count=${count++}`;
+const getUniqueCacheName = () => `test-cache-${count++}`;
 
-describe('Test of the CacheExpiration class', function() {
+describe(`Test of the CacheExpiration class`, function() {
   const MAX_AGE_SECONDS = 3;
   const MAX_ENTRIES = 3;
   const NOW = 1487106334920;
 
-  const timestampPropertyName = workbox.cacheExpiration.timestampPropertyName;
-  const urlPropertyName = workbox.cacheExpiration.urlPropertyName;
-  const CacheExpiration = workbox.cacheExpiration.CacheExpiration;
-
   it(`should throw when CacheExpiration() is called without any parameters`, function() {
-    let thrownError = null;
-    try {
+    expect(() => {
       new CacheExpiration();
-    } catch (err) {
-      thrownError = err;
-    }
-
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('max-entries-or-age-required');
+    }).to.throw().with.property('name', 'max-entries-or-age-required');
   });
 
   it(`should throw when CacheExpiration() is called with an invalid maxEntries parameter`, function() {
-    let thrownError = null;
-    try {
+    expect(() => {
       new CacheExpiration({maxEntries: 'invalid'});
-    } catch (err) {
-      thrownError = err;
-    }
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('max-entries-must-be-number');
+    }).to.throw().with.property('name', 'max-entries-must-be-number');
   });
 
   it(`should throw when CacheExpiration() is called with an invalid maxAgeSeconds parameter`, function() {
-    let thrownError = null;
-    try {
+    expect(() => {
       new CacheExpiration({maxAgeSeconds: 'invalid'});
-    } catch (err) {
-      thrownError = err;
-    }
-    expect(thrownError).to.exist;
-    expect(thrownError.name).to.equal('max-age-seconds-must-be-number');
+    }).to.throw().with.property('name', 'max-age-seconds-must-be-number');
   });
 
   it(`should use the maxAgeSeconds from the constructor`, function() {

@@ -6,7 +6,7 @@ const errors = require('../../src/lib/errors.js');
 require('chai').should();
 
 
-describe('Ask for File Manifest Name', function() {
+describe(`Ask for File Manifest Name`, function() {
   const globalStubs = [];
   const Q_PATH = '../../src/lib/questions/ask-manifest-name.js';
 
@@ -53,7 +53,7 @@ describe('Ask for File Manifest Name', function() {
     });
   };
 
-  it('should handle failing inquirer', function() {
+  it(`should handle failing inquirer`, function() {
     const inquirer = require('inquirer');
     const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.reject(INJECTED_ERROR);
@@ -69,7 +69,7 @@ describe('Ask for File Manifest Name', function() {
     return checkError(askManifestFileName, 'unable-to-get-file-manifest-name');
   });
 
-  it('should handle empty filename', function() {
+  it(`should handle empty filename`, function() {
     const inquirer = require('inquirer');
     const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
       return Promise.resolve({
@@ -87,7 +87,7 @@ describe('Ask for File Manifest Name', function() {
     return checkError(askManifestFileName, 'invalid-file-manifest-name', false);
   });
 
-  it('should trim filename', function() {
+  it(`should trim filename`, function() {
     const EXAMPLE_FILENAME = 'example.json';
     const inquirer = require('inquirer');
     const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
@@ -108,7 +108,7 @@ describe('Ask for File Manifest Name', function() {
     });
   });
 
-  it('should return filename', function() {
+  it(`should return filename`, function() {
     const EXAMPLE_FILENAME = 'example.json';
     const inquirer = require('inquirer');
     const stub = sinon.stub(inquirer, 'prompt').callsFake(() => {
