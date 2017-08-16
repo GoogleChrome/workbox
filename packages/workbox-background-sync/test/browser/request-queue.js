@@ -30,6 +30,14 @@ describe(`request-queue`, function() {
     callbacks,
   });
 
+  const getDelayedPromise = () => {
+    return new Promise((resolve)=>{
+      setTimeout(()=>{
+        resolve();
+      }, 800);
+    });
+  };
+
   const resetDb = async function() {
     const keys = await db.getAllKeys();
     return Promise.all(keys.map((key) => db.delete(key)));
@@ -94,7 +102,8 @@ describe(`request-queue`, function() {
   describe(`push method`, function() {
     it(`should push the Request given in the private array`, async function() {
       callbacks.requestWillEnqueue = sinon.spy();
-
+      const startTime = performance.now();
+      queue._initializationPromise = getDelayedPromise();
       const queueLength = queue._queue.length;
       const hash = await queue.push({
         request: new Request('http://lipsum.com/generate'),
@@ -106,7 +115,7 @@ describe(`request-queue`, function() {
       expect(callbacks.requestWillEnqueue.calledOnce).to.be.true;
       expect(callbacks.requestWillEnqueue.calledWith(sinon.match.has('request')))
           .to.be.true;
-
+      expect(performance.now() - startTime).to.be.above(800);
       delete callbacks.requestWillEnqueue;
     });
   });
@@ -114,7 +123,8 @@ describe(`request-queue`, function() {
   describe(`getRequestFromQueue method`, function() {
     it(`should get the proper Request back`, async function() {
       callbacks.requestWillDequeue = sinon.spy();
-
+      const startTime = performance.now();
+      queue._initializationPromise = getDelayedPromise();
       const hash = await queue.push({
         request: new Request('http://lipsum.com/generate'),
       });
@@ -124,7 +134,7 @@ describe(`request-queue`, function() {
       expect(reqData).to.have.all.keys(['request', 'config', 'metadata']);
       expect(callbacks.requestWillDequeue.calledOnce).to.be.true;
       expect(callbacks.requestWillDequeue.calledWith(reqData)).to.be.true;
-
+      expect(performance.now() - startTime).to.be.above(800);
       delete callbacks.requestWillDequeue;
     });
   });
