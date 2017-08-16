@@ -54,7 +54,7 @@ class CacheExpirationPlugin extends CacheExpiration {
    * @return {Response} Either the `cachedResponse`, if it's
    *         fresh, or `null` if the `Response` is older than `maxAgeSeconds`.
    */
-  cacheWillMatch({cacheName, cachedResponse, now} = {}) {
+  cachedResponseWillBeUsed({cacheName, cachedResponse, now} = {}) {
     if (this.isResponseFresh({cacheName, cachedResponse, now})) {
       return cachedResponse;
     }

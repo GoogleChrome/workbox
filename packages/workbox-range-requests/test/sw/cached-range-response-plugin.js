@@ -17,9 +17,9 @@ import CachedRangeResponsePlugin from
   '../../src/lib/cached-range-response-plugin';
 
 describe('Test of the CachedRangeResponsePlugin class', function() {
-  it(`should expose a the cacheWillMatch() method`, function() {
+  it(`should expose a the cachedResponseWillBeUsed() method`, function() {
     expect(
       CachedRangeResponsePlugin
-    ).itself.to.respondTo('cacheWillMatch');
+    ).itself.to.respondTo('cachedResponseWillBeUsed');
   });
 });

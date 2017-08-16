@@ -371,7 +371,7 @@ class WorkboxSW {
       });
     };
 
-    return {cacheWillMatch: cacheMatchFunction};
+    return {cachedResponseWillBeUsed: cacheMatchFunction};
   }
 
   /**
