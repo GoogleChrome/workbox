@@ -43,6 +43,9 @@ const gulpTaskFiles = [
   'lint',
   'test',
   'analyze-properties',
+  'publish-github',
+  'publish-cdn',
+  'publish',
 ];
 
 gulpTaskFiles.forEach((gulpTaskFile) => {

@@ -1,5 +1,4 @@
 const gulp = require('gulp');
-
 const lernaWrapper = require('./utils/lerna-wrapper');
 
 gulp.task('lerna-bootstrap', () => {
@@ -16,5 +15,5 @@ gulp.task('lerna-bootstrap', () => {
 });
 
 gulp.task('build', gulp.series(
-  'lerna-bootstrap'
+  'lerna-bootstrap',
 ));
