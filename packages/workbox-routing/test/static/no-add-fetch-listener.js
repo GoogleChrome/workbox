@@ -31,9 +31,7 @@ const catchHandler = {
   handle: () => Promise.resolve(new Response('catchHandler response')),
 };
 
-const router = new workbox.routing.Router({
-  handleFetch: false,
-});
+const router = new workbox.routing.Router();
 router.registerRoutes({routes});
 
 router.setDefaultHandler({handler: defaultHandler});

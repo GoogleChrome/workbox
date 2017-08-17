@@ -32,6 +32,7 @@ const catchHandler = {
 };
 
 const router = new workbox.routing.Router();
+router.addFetchListener();
 router.registerRoutes({routes});
 
 router.setDefaultHandler({handler: defaultHandler});

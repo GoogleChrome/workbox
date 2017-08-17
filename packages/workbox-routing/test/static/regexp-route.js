@@ -26,4 +26,5 @@ routes.push(new workbox.routing.RegExpRoute({
 }));
 
 const router = new workbox.routing.Router();
+router.addFetchListener();
 router.registerRoutes({routes});

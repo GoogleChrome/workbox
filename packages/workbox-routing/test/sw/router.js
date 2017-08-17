@@ -28,30 +28,6 @@ describe(`Test of the Router class`, function() {
     globalStubs = [];
   });
 
-  it(`should call _addFetchListener() when Router() is called without any parameters`, function() {
-    const _addFetchListener = sinon.spy(Router.prototype, '_addFetchListener');
-    globalStubs.push(_addFetchListener);
-
-    new Router();
-    expect(_addFetchListener.calledOnce).to.be.true;
-  });
-
-  it(`should call _addFetchListener() when Router() is called with handleFetch: true`, function() {
-    const _addFetchListener = sinon.spy(Router.prototype, '_addFetchListener');
-    globalStubs.push(_addFetchListener);
-
-    new Router({handleFetch: true});
-    expect(_addFetchListener.calledOnce).to.be.true;
-  });
-
-  it(`should call _addFetchListener() when Router() is called with handleFetch: false`, function() {
-    const _addFetchListener = sinon.spy(Router.prototype, '_addFetchListener');
-    globalStubs.push(_addFetchListener);
-
-    new Router({handleFetch: false});
-    expect(_addFetchListener.calledOnce).to.be.false;
-  });
-
   it(`should modify the internal arrays of routes when register/unregister is called`, function() {
     const router = new Router();
 
@@ -72,5 +48,33 @@ describe(`Test of the Router class`, function() {
 
     expect(router._routes.get('GET')).to.have.members([getRoute1]);
     expect(router._routes.get('PUT')).to.have.members([putRoute1]);
+  });
+
+  it(`should call self.addEventListener('fetch') when addFetchListener() is called`, function() {
+    const stub = sinon.stub(self.__proto__.__proto__.__proto__, 'addEventListener');
+    globalStubs.push(stub);
+
+    const router = new Router();
+    router.addFetchListener();
+
+    expect(stub.calledOnce).to.be.true;
+    expect(stub.firstCall.args[0]).to.eql('fetch');
+  });
+
+  it(`should return a promise for the correct response when handleRequest() is called`, async function() {
+    const expectedText = 'testing';
+    const router = new Router();
+    const route = new Route({
+      match: () => true,
+      handler: () => new Response(expectedText),
+    });
+    router.registerRoute({route});
+
+    // route.match() always returns true, so the Request details don't matter.
+    const event = new FetchEvent('fetch', {request: new Request('/')});
+    const response = await router.handleRequest({event});
+    const responseBody = await response.text();
+
+    expect(responseBody).to.eql(expectedText);
   });
 });

@@ -128,8 +128,8 @@ describe(`End to End Tests`, function() {
         ]));
     });
 
-    it(`should always go to network with handleFetch set to false - includes routes, defaultHandler, and catchHandler`, function() {
-      return goog.swUtils.activateSW('../static/router-handle-fetch-false.js')
+    it(`should always go to network when addFetchListener() is not called - includes routes, defaultHandler, and catchHandler`, function() {
+      return goog.swUtils.activateSW('../static/no-add-fetch-listener.js')
         .then((iframe) => Promise.all([
           iframe.contentWindow.fetch('/static')
             .then((response) => expect(response.ok).to.equal(false)),

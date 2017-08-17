@@ -26,6 +26,7 @@ const route = new workbox.routing.Route({
 });
 
 const router = new workbox.routing.Router();
+router.addFetchListener();
 router.registerRoute({route});
 
 self.addEventListener('install', (event) => {
