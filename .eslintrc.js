@@ -16,7 +16,7 @@ module.exports = {
   rules: {
   },
   overrides: [{
-    files: ['tests/**/*.js'],
+    files: ['test/**/*.js'],
     env: {
       mocha: true,
     },
@@ -28,7 +28,7 @@ module.exports = {
   }, {
     files: [
       'packages/workbox-core/src/utils/LogHelper.js',
-      'tests/workbox-core/bundle/node/utils/test-LogHelper.js',
+      'test/workbox-core/bundle/node/utils/test-LogHelper.js',
       'gulp-tasks/utils/log-helper.js',
       'infra/tools/analyse-properties.js',
     ],

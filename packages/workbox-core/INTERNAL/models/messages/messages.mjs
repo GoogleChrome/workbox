@@ -1,4 +1,5 @@
 export default {
+  'welcome-message': 'Welcome to Workbox!',
   'invalid-type': ({paramName, expectedType, value} = {}) => {
     let baseMessage = 'An argument was given a value with an unexpected ' +
       'type. Please check the stack trace for more info.';

@@ -1,4 +1,4 @@
-import messageFactory from './messages/messageFactory.mjs';
+import messageGenerator from './messages/messageGenerator.mjs';
 
 /**
  * Workbox errors should be thrown with this class.
@@ -19,8 +19,8 @@ export default class WorkboxError extends Error {
    * be added as a key on the context object.
    */
   constructor(errorCode, details) {
-    let message = messageFactory ?
-      messageFactory(errorCode, details) : errorCode;
+    let message = messageGenerator ?
+      messageGenerator(errorCode, details) : errorCode;
 
     super(message);
 

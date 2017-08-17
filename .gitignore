@@ -7,7 +7,7 @@ packages/**/LICENSE
 temp
 tmp-*
 !packages/workbox-cli/test/static/example-project-1/node_modules
-packages/**/test/bundle-builds/
+bundle-builds/
 coverage/
 generated-release-files/
 workbox-cdn-service-account.json

@@ -11,13 +11,5 @@ describe(`WorkboxCore - ${process.env.NODE_ENV}`, function() {
     it(`should expose logHelper`, function() {
       expect(core.INTERNAL.logHelper).to.exist;
     });
-
-    it.skip(`should expose assertions only in non-production builds`, function() {
-      if (process.env.NODE_ENV === 'prod') {
-        expect(core.INTERNAL.assert).to.not.exist;
-      } else {
-        expect(core.INTERNAL.assert).to.exist;
-      }
-    });
   });
 });

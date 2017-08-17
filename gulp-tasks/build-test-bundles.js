@@ -16,7 +16,7 @@ const pkgPathToName = require('./utils/pkg-path-to-name');
 const rollupHelper = require('./utils/rollup-helper');
 
 const buildTestBundle = (packagePath, runningEnv, buildType) => {
-  const testPath = path.join('tests', pkgPathToName(packagePath));
+  const testPath = path.join('test', pkgPathToName(packagePath));
   const environmentPath = path.posix.join(testPath, 'bundle', runningEnv);
 
   // First check if the bundle directory exists, if it doesn't
@@ -47,7 +47,7 @@ const buildTestBundle = (packagePath, runningEnv, buildType) => {
   plugins.push(multiEntry());
   // This adds code coverage to our tests
   plugins.push(istanbul({
-    exclude: ['tests/**/*.js', 'node_modules/**/*'],
+    exclude: ['test/**/*.js', 'node_modules/**/*'],
   }));
 
   const buildPostfix = typeof buildType === 'undefined' ? '' : `.${buildType}`;
@@ -76,7 +76,7 @@ const buildTestBundle = (packagePath, runningEnv, buildType) => {
 };
 
 const cleanBundleFile = (packagePath) => {
-  const testPath = path.join('tests', pkgPathToName(packagePath));
+  const testPath = path.join('test', pkgPathToName(packagePath));
   const outputDirectory = path.join(
     testPath, constants.TEST_BUNDLES_BUILD_DIRNAME);
   return fs.remove(outputDirectory);
