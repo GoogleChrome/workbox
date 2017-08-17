@@ -20,7 +20,7 @@ const rollupHelper = require('./utils/rollup-helper');
  */
 
 const buildPackage = (packagePath, buildType) => {
-  const browserBundlePath = path.join(packagePath, '_browser.mjs');
+  const browserBundlePath = path.join(packagePath, '._browser.mjs');
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
@@ -47,7 +47,7 @@ const buildPackage = (packagePath, buildType) => {
 
   const buildName = typeof buildType === 'undefined' ? 'dev' : buildType;
   const outputFilename = `${pkgPathToName(packagePath)}.${buildName}.js`;
-  const namespace = `google.workbox.${pkgJson.browserNamespace}`;
+  const namespace = `${constants.NAMESPACE_PREFIX}.${pkgJson.browserNamespace}`;
 
   const outputDirectory = path.join(packagePath,
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
@@ -62,11 +62,24 @@ const buildPackage = (packagePath, buildType) => {
   const nodeEnv = typeof buildType === 'undefined' ? 'dev' : buildType;
   const plugins = rollupHelper.getDefaultPlugins(nodeEnv);
 
+  // This makes Rollup assume workbox-core will be added to the global
+  // scope and replace references with the core namespace
+  const globals = {
+    'workbox-core': `${constants.NAMESPACE_PREFIX}.core`,
+  };
+  const external = [
+    'workbox-core',
+  ];
+
   return rollup({
     entry: browserBundlePath,
     format: 'iife',
     moduleName: namespace,
     sourceMap: true,
+    // Treat export defaults as <namespace>.default
+    exports: 'named',
+    globals,
+    external,
     plugins,
     onwarn: (warning) => {
       // The final builds should have no warnings.
