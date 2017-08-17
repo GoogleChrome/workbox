@@ -2,34 +2,44 @@ import {expect} from 'chai';
 
 import messageGenerator from '../../../../../../packages/workbox-core/INTERNAL/models/messages/messageGenerator.mjs';
 
-describe('messageGenerator - ${process.env.NODE_ENV}', function() {
-  it('should return null for prod', function() {
-    // Returning null ensures it's excluded in prod builds including
-    // the message text.
-    if (process.env.NODE_ENV === 'prod') {
-      expect(messageGenerator).to.equal(null);
-    } else {
-      expect(messageGenerator).to.not.equal(null);
-    }
-  });
-
-  // If the generator doesn't exist, then we have nothing to test.
-  if (!messageGenerator) {
-    return;
-  }
-
+describe(`messageGenerator - ${process.env.NODE_ENV}`, function() {
+  const detailsObj = {
+    exampleDetail: 'With Value',
+  };
+  const detailsString = `${JSON.stringify([detailsObj])}`;
   it('should return the code if the code is unknown', function() {
     const message = messageGenerator('fake-code');
     expect(message).to.equal('fake-code');
   });
 
-  it('should return the message if the code is known', function() {
-    const message = messageGenerator('invalid-type');
-    expect(message).to.not.equal('invalid-type');
+  it('should return the code with details if the code is unknown', function() {
+    const message = messageGenerator('fake-code', detailsObj);
+    expect(message).to.equal(`fake-code :: ${detailsString}`);
   });
 
-  it('should manage messages which are strings', function() {
-    const message = messageGenerator('welcome-message');
-    expect(message).to.not.equal('welcome-message');
-  })
+  it('should return the code if the code is valid, requires specific details but nothing given', function() {
+    const message = messageGenerator('invalid-type');
+    expect(message).to.equal(`invalid-type`);
+  });
+
+  it('should return the code if the code is valid but requires specific details', function() {
+    const message = messageGenerator('invalid-type', detailsObj);
+    expect(message).to.equal(`invalid-type :: ${detailsString}`);
+  });
+
+  it('should return the message if the code and details are valid', function() {
+    const invalidTypeDetails = {
+      paramName: 'Param',
+      expectedType: 'Type',
+      value: {
+        example: 'Value',
+      },
+    };
+    const message = messageGenerator('invalid-type', invalidTypeDetails);
+    if (process.env.NODE_ENV === 'prod') {
+      expect(message).to.equal(`invalid-type :: ${JSON.stringify([invalidTypeDetails])}`);
+    } else {
+      expect(message.indexOf('invalid-type')).to.equal(-1);
+    }
+  });
 });

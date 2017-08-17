@@ -11,7 +11,7 @@ module.exports = {
   NAMESPACE_PREFIX: 'google.workbox',
 
   // This is the environments that we should use for NODE_ENV.
-  BUILD_TYPES: [undefined, 'prod'],
+  BUILD_TYPES: ['dev', 'prod'],
 
   // This is used in the publish-bundle step to avoid doing anything
   // with tags < v3.0.0.

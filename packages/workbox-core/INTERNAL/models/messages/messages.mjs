@@ -1,44 +1,19 @@
 export default {
-  'welcome-message': 'Welcome to Workbox!',
-  'invalid-type': ({paramName, expectedType, value} = {}) => {
-    let baseMessage = 'An argument was given a value with an unexpected ' +
-      'type. Please check the stack trace for more info.';
-
-    if (paramName) {
-      baseMessage =
-        `The '${paramName}' parameter was given a value with an ` +
-        `unexpected type.`;
+  'invalid-type': ({paramName, expectedType, value}) => {
+    if (!paramName || !expectedType || !value) {
+      throw new Error(`Unexpected input to 'invlaid-type' error.`);
     }
-
-    if (expectedType) {
-      baseMessage += ` Expected a '${expectedType}' value.`;
-    }
-
-    if (typeof value !== undefined) {
-      baseMessage += ` Received ${JSON.stringify(value)}.`;
-    }
-
-    return baseMessage;
+    return `The '${paramName}' parameter was given a value with an ` +
+      `unexpected type. Expected Type: '${expectedType}' but received a ` +
+      `value of ${JSON.stringify(value)}.`;
   },
 
   'invalid-value': ({paramName, validValueDescription, value} = {}) => {
-    let baseMessage = 'An argument was given a value with an invalid ' +
-      'value. Please check the stack trace for more info.';
-
-    if (paramName) {
-      baseMessage =
-        `The '${paramName}' parameter was given a value with an ` +
-        `unexpected value.`;
+    if (!paramName || !validValueDescription || !value) {
+      throw new Error(`Unexpected input to 'invlaid-value' error.`);
     }
-
-    if (validValueDescription) {
-      baseMessage += ` ${validValueDescription}`;
-    }
-
-    if (typeof value !== undefined) {
-      baseMessage += ` Received ${JSON.stringify(value)}.`;
-    }
-
-    return baseMessage;
+    return `The '${paramName}' parameter was given a value with an ` +
+      `unexpected value. ${validValueDescription} Received a value of ` +
+      `${JSON.stringify(value)}.`;
   },
 };

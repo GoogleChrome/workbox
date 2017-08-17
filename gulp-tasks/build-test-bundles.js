@@ -50,8 +50,7 @@ const buildTestBundle = (packagePath, runningEnv, buildType) => {
     exclude: ['test/**/*.js', 'node_modules/**/*'],
   }));
 
-  const buildPostfix = typeof buildType === 'undefined' ? '' : `.${buildType}`;
-  const outputFilename = `${runningEnv}${buildPostfix}.js`;
+  const outputFilename = `${runningEnv}.${buildType}.js`;
 
   return rollup({
     entry: path.posix.join(environmentPath, '**', '*.js'),

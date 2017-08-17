@@ -1,21 +1,29 @@
 import messages from './messages.mjs';
 import core from '../../../index.mjs';
 
+const fallback = (code, ...args) => {
+  let msg = `${code}`;
+  if (args.length > 0) {
+    msg += ` :: ${JSON.stringify(args)}`;
+  }
+  return msg;
+};
+
 const generatorFunction = (code, ...args) => {
   const message = messages[code];
   if (!message) {
     core.INTERNAL.logHelper.warn(`Unable to find message for code '${code}'`);
-    return code;
+    return fallback(code, ...args);
   }
 
-  if (typeof message === 'function') {
+  try {
     return message(...args);
+  } catch (err) {
+    return fallback(code, ...args);
   }
-
-  return message;
 };
 
 const exportedValue = (process.env.NODE_ENV === 'prod') ?
-  null : generatorFunction;
+  fallback : generatorFunction;
 
 export default exportedValue;

@@ -19,8 +19,7 @@ export default class WorkboxError extends Error {
    * be added as a key on the context object.
    */
   constructor(errorCode, details) {
-    let message = messageGenerator ?
-      messageGenerator(errorCode, details) : errorCode;
+    let message = messageGenerator(errorCode, details);
 
     super(message);
 

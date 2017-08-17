@@ -45,8 +45,7 @@ const buildPackage = (packagePath, buildType) => {
     return Promise.reject(errorMsg);
   }
 
-  const buildName = typeof buildType === 'undefined' ? 'dev' : buildType;
-  const outputFilename = `${pkgPathToName(packagePath)}.${buildName}.js`;
+  const outputFilename = `${pkgPathToName(packagePath)}.${buildType}.js`;
   const namespace = `${constants.NAMESPACE_PREFIX}.${pkgJson.browserNamespace}`;
 
   const outputDirectory = path.join(packagePath,
@@ -59,7 +58,7 @@ const buildPackage = (packagePath, buildType) => {
   logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
-  const nodeEnv = typeof buildType === 'undefined' ? 'dev' : buildType;
+  const nodeEnv = buildType;
   const plugins = rollupHelper.getDefaultPlugins(nodeEnv);
 
   // This makes Rollup assume workbox-core will be added to the global
