@@ -13,7 +13,7 @@ export default class WorkboxCore {
       logHelper: new LogHelper(),
     };
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'prod') {
       this._internal.assert = new Assert();
     }
   }

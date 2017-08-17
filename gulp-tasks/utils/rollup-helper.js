@@ -6,9 +6,11 @@ module.exports = {
   // plugin set up and used to ensure as consist set of tests
   // as possible.
   getDefaultPlugins: (buildType) => {
+    const keepClassnames = (buildType !== 'prod');
     const plugins = [
       uglify({
         mangle: {
+          keep_classnames: keepClassnames,
           properties: {
             reserved: [
               // Chai will break unless we reserve this private variable.

@@ -60,7 +60,8 @@ const buildPackage = (packagePath, buildType) => {
   logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
-  const plugins = rollupHelper.getDefaultPlugins(buildType);
+  const nodeEnv = typeof buildType === 'undefined' ? 'dev' : buildType;
+  const plugins = rollupHelper.getDefaultPlugins(nodeEnv);
 
   return rollup({
     entry: browserBundlePath,
@@ -99,7 +100,7 @@ gulp.task('build-packages:clean', gulp.series(
 ));
 
 // This will create one version of the tests for each buildType.
-// i.e. we'll have a browser build for no NODE_ENV and one for 'production'
+// i.e. we'll have a browser build for no NODE_ENV and one for 'prod'
 // NODE_ENV and the same for sw and node tests.
 const packageBuilds =constants.BUILD_TYPES.map((buildType) => {
   return packageRunnner('build-package', buildPackage, buildType);

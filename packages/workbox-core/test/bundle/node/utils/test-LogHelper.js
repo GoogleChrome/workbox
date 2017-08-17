@@ -2,6 +2,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 
 import LogHelper from '../../../../src/utils/LogHelper';
+import WorkboxError from '../../../../src/models/WorkboxError';
 import generateVariantTests from '../../../../../../infra/utils/generate-variant-tests';
 
 describe(`logHelper [${process.env.NODE_ENV}]`, function() {
@@ -54,7 +55,7 @@ describe(`logHelper [${process.env.NODE_ENV}]`, function() {
       const logHelper = new LogHelper();
       expect(() => {
         logHelper.logLevel = logHelper.LOG_LEVELS.verbose - 1;
-      }).to.throw();
+      }).to.throw(WorkboxError).that.has.property('name').that.equals('invalid-log-level');
     });
 
     // TODO: Catch WorkboxError with error code
@@ -62,7 +63,7 @@ describe(`logHelper [${process.env.NODE_ENV}]`, function() {
       const logHelper = new LogHelper();
       expect(() => {
         logHelper.logLevel = logHelper.LOG_LEVELS.error + 1;
-      }).to.throw();
+      }).to.throw(WorkboxError).that.has.property('name').that.equals('invalid-log-level');
     });
 
     // TODO: Catch WorkboxError with error code
@@ -76,7 +77,7 @@ describe(`logHelper [${process.env.NODE_ENV}]`, function() {
       expect(() => {
         const logHelper = new LogHelper();
         logHelper.logLevel = undefined;
-      }).to.throw();
+      }).to.throw(WorkboxError);
     });
   });
 

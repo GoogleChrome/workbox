@@ -50,10 +50,11 @@
     "rollup-plugin-multi-entry": "^2.0.1",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^1.1.1",
-    "rollup-plugin-uglify-es": "0.0.1",
+    "rollup-plugin-uglify-es": "gauntface/rollup-plugin-uglify-es#build-included",
     "rollup-stream": "^1.23.1",
     "semver": "^5.4.1",
     "sinon": "^2.4.1",
+    "uglify-es": "^3.0.27",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }

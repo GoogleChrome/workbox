@@ -8,7 +8,7 @@ module.exports = {
   GENERATED_RELEASE_FILES_DIRNAME: 'generated-release-files',
 
   // This is the environments that we should use for NODE_ENV.
-  BUILD_TYPES: [undefined, 'production'],
+  BUILD_TYPES: [undefined, 'prod'],
 
   // This is used in the publish-bundle step to avoid doing anything
   // with tags < v3.0.0.

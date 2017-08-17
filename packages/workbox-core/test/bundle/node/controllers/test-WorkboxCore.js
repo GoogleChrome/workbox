@@ -22,7 +22,7 @@ describe(`WorkboxCore - ${process.env.NODE_ENV}`, function() {
 
     it(`should expose assertions only in non-production builds`, function() {
       const core = new WorkboxCore();
-      if (process.env.NODE_ENV === 'production') {
+      if (process.env.NODE_ENV === 'prod') {
         expect(core.INTERNAL.assert).to.not.exist;
       } else {
         expect(core.INTERNAL.assert).to.exist;
