@@ -8,19 +8,26 @@ const GITHUB_REPO = 'workbox';
 
 const github = new GitHubApi();
 
-github.authenticate({
-  type: 'token',
-  token: process.env.GITHUB_TOKEN,
-});
+// github.authenticate() is synchronous, and it only stores the credentials for
+// the next request, so it should be called once per method that requires auth.
+// See https://github.com/mikedeboer/node-github#authentication
+const authenticate = () => {
+  github.authenticate({
+    type: 'token',
+    token: process.env.GITHUB_TOKEN,
+  });
+};
 
 module.exports = {
   createRelease: (args) => {
+    authenticate();
     args.owner = GITHUB_OWNER;
     args.repo = GITHUB_REPO;
     return github.repos.createRelease(args);
   },
 
   uploadAsset: (args) => {
+    authenticate();
     args.owner = GITHUB_OWNER;
     args.repo = GITHUB_REPO;
     return github.repos.uploadAsset(args);
