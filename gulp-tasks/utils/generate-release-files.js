@@ -7,32 +7,32 @@ const logHelper = require('./log-helper');
 const spawnPromiseWrapper = require('./spawn-promise-wrapper');
 const constants = require('./constants');
 
-const BUILD_PATH = path.join(__dirname, '..', '..',
-  constants.GENERATED_RELEASE_FILES_DIRNAME);
-const GITHUB_OWNER = 'GoogleChrome';
-const GITHUB_REPO = 'workbox';
-
-const downloadGitCommit = async (gitBranch, sourceCodePath) => {
+const doesDirectoryExist = async (directoryPath) => {
+  let stats = null;
   try {
-    const stats = await fs.stat(sourceCodePath);
-    if (stats) {
-      logHelper.log(`Git repo for branch '${gitBranch}' is cloned already.`);
-      return;
-    }
+    stats = await fs.stat(directoryPath);
   } catch (err) {
     // NOOP
   }
+  return stats !== null;
+};
+
+const downloadGitCommit = async (gitBranch, sourceCodePath) => {
+  const dirExists = await doesDirectoryExist(sourceCodePath);
+  if (dirExists) {
+    logHelper.log(`Git repo for branch '${gitBranch}' is cloned already.`);
+    return;
+  }
 
   logHelper.log(`Clone Git repo for branch: '${gitBranch}'.`);
-  const params = [
+
+  await spawnPromiseWrapper('git', [
     'clone',
     '--branch', gitBranch,
     '--depth', '1',
-    `http://github.com/${GITHUB_OWNER}/${GITHUB_REPO}.git`,
+    `http://github.com/${constants.GITHUB_OWNER}/${constants.GITHUB_REPO}.git`,
     sourceCodePath,
-  ];
-
-  await spawnPromiseWrapper('git', params);
+  ]);
 };
 
 const buildProject = async (sourceCodePath) => {
@@ -67,7 +67,8 @@ const createArchive = (bundleDirectory, outputFilePath, format, options) => {
  * the folder structure will have the sam
  */
 const groupBuildFiles = async (tagName, sourceCodePath, outputDir) => {
-  const pattern = path.posix.join(sourceCodePath, 'packages', '**',
+  const pattern = path.posix.join(
+    sourceCodePath, 'packages', '**',
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME,
     '*.{js,map}');
 
@@ -75,6 +76,7 @@ const groupBuildFiles = async (tagName, sourceCodePath, outputDir) => {
   const filesToIncludeInBundle = glob.sync(pattern);
   await Promise.all(
     filesToIncludeInBundle.map(
+      // Copy code from build files into a temporary bundle directory.
       (fileToInclude) => fs.copy(
         fileToInclude,
         path.join(outputDir, path.basename(fileToInclude)),
@@ -84,10 +86,12 @@ const groupBuildFiles = async (tagName, sourceCodePath, outputDir) => {
 };
 
 module.exports = async (tagName, gitBranch) => {
-  const rootOfTag = path.join(BUILD_PATH, tagName);
-  const sourceCodePath = path.join(rootOfTag, 'source-code');
-  const buildFilesPath = path.join(rootOfTag, 'build-files');
-  const archiveFilesPath = path.join(rootOfTag, 'archives');
+  const tempReleasePath = path.join(
+    __dirname, '..', '..', constants.GENERATED_RELEASE_FILES_DIRNAME);
+  const tagBuildPath = path.join(tempReleasePath, tagName);
+  const sourceCodePath = path.join(tagBuildPath, 'source-code');
+  const buildFilesPath = path.join(tagBuildPath, 'build-files');
+  const archiveFilesPath = path.join(tagBuildPath, 'archives');
 
   await downloadGitCommit(gitBranch, sourceCodePath);
   await buildProject(sourceCodePath);

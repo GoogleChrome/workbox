@@ -9,6 +9,19 @@ const BUCKET_NAME = 'workbox-cdn';
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, '..', '..',
   `workbox-cdn-service-account.json`);
 
+const ERROR_GCS_INIT = oneLine`
+  Google Cloud Storage instance not initialised.
+  Call init() before any other function.
+`;
+const ERROR_SERVICE_ACCOUNT = oneLine`
+  Unable to find the service account file that is required to upload
+  to the CDN.
+  Please get the service account file and put it at the root of the
+  workbox repo.
+
+  File Path Tested: '${SERVICE_ACCOUNT_PATH}'.
+`;
+
 class CDNHelper {
   constructor() {
     this._gcs = null;
@@ -16,10 +29,7 @@ class CDNHelper {
 
   getGCS() {
     if (!this._gcs) {
-      throw new Error(oneLine`
-        Google Cloud Storage instance not initialised.
-        Call init() before any other function.
-      `);
+      throw new Error(ERROR_GCS_INIT);
     }
 
     return this._gcs;
@@ -28,14 +38,7 @@ class CDNHelper {
   async init() {
     const access = fs.access(SERVICE_ACCOUNT_PATH);
     if (!access) {
-      throw new Error(oneLine`
-        Unable to find the service account file that is required to upload
-        to the CDN.
-        Please get the service account file and put it at the root of the
-        workbox repo.
-
-        File Path Tested: '${SERVICE_ACCOUNT_PATH}'.
-      `);
+      throw new Error(ERROR_SERVICE_ACCOUNT);
     }
 
     this._gcs = storage({

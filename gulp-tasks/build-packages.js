@@ -14,38 +14,40 @@ const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
 const rollupHelper = require('./utils/rollup-helper');
 
+const ERROR_NO_BROWSER_BUNDLE = `Could not find the browser bundle: `;
+const ERROR_NO_NAMSPACE = oneLine`
+  You must define a 'browserNamespace' parameter in the 'package.json'.
+  Exmaple: 'workbox-precaching' would have a browserNamespace param of
+  'precaching' in 'package.json'. This will be appended to 'google.workbox'
+  meaning developers would use 'google.workbox.precaching' in their
+  JavaScript. Please fix for:
+`;
+
 /**
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose
  */
 
 const buildPackage = (packagePath, buildType) => {
+  const packageName = pkgPathToName(packagePath);
   const browserBundlePath = path.join(packagePath, '._browser.mjs');
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
   if (!fs.pathExistsSync(browserBundlePath)) {
-    const errorMsg = oneLine`
-      Could not find the browser bundle for ${pkgPathToName(packagePath)}.
-    `;
-    logHelper.error(errorMsg);
-    return Promise.reject(errorMsg);
+    logHelper.error(ERROR_NO_BROWSER_BUNDLE + packageName);
+    return Promise.reject(ERROR_NO_BROWSER_BUNDLE + packageName);
   }
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
   if (!pkgJson.browserNamespace) {
-    const errorMsg = oneLine`
-      You must define a 'browserNamespace' parameter in the 'package.json'
-      for ${pkgPathToName(packagePath)}. Exmaple: 'workbox-precaching'
-      would have a browserNamespace of 'precaching', which will be
-      appended to 'google.workbox' meaning developers would use
-      'google.workbox.precaching' in their JavaScript.
-    `;
-    logHelper.error(errorMsg);
-    return Promise.reject(errorMsg);
+    logHelper.error(ERROR_NO_NAMSPACE + packageName);
+    return Promise.reject(ERROR_NO_NAMSPACE + packageName);
   }
 
-  const outputFilename = `${pkgPathToName(packagePath)}.${buildType}.js`;
+  // Filename should be format <package name>.<build type>.js
+  const outputFilename = `${packageName}.${buildType}.js`;
+  // Namespace should be google.workbox.<browser namespace>
   const namespace = `${constants.NAMESPACE_PREFIX}.${pkgJson.browserNamespace}`;
 
   const outputDirectory = path.join(packagePath,
@@ -53,13 +55,12 @@ const buildPackage = (packagePath, buildType) => {
 
   logHelper.log(oneLine`
     Building Browser Bundle for
-    ${logHelper.highlight(pkgPathToName(packagePath))}.
+    ${logHelper.highlight(packageName)}.
   `);
   logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
-  const nodeEnv = buildType;
-  const plugins = rollupHelper.getDefaultPlugins(nodeEnv);
+  const plugins = rollupHelper.getDefaultPlugins(buildType);
 
   // This makes Rollup assume workbox-core will be added to the global
   // scope and replace references with the core namespace

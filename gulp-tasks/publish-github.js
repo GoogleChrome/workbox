@@ -35,29 +35,9 @@ const handleGithubRelease = async (tagName, gitBranch, release) => {
   });
 };
 
-const findReleasesForTags = async (tagNames) => {
-  const releasesData = await githubHelper.getReleases();
-
-  const allReleases = releasesData.data;
-  return tagNames.map((tagData) => {
-    let matchingRelease = null;
-
-    allReleases.forEach((release) => {
-      if (release.tag_name === tagData.name) {
-        matchingRelease = release;
-      }
-    });
-
-    return {
-      tagData: tagData,
-      release: matchingRelease,
-    };
-  });
-};
-
-const filterTagsWithReleaseBundles = (tagsAndReleases) => {
-  return tagsAndReleases.filter((tagAndRelease) => {
-    const release = tagAndRelease.release;
+const filterTagsWithReleaseBundles = (taggedReleases) => {
+  return Object.keys(taggedReleases).filter((tagName) => {
+    const release = taggedReleases[tagName];
     if (release && release.assets.length > 0) {
       // If a tag has a release and there is an asset let's assume the
       // the release is fine. Note: Github's source doesn't count as an
@@ -71,19 +51,15 @@ const filterTagsWithReleaseBundles = (tagsAndReleases) => {
 
 gulp.task('publish-github:generate-from-tags', async () => {
   // Get all of the tags in the repo.
-  const tags = await githubHelper.getTags();
+  const taggedReleases = await githubHelper.getTaggedReleases();
+  const tagsToBuild = await filterTagsWithReleaseBundles(taggedReleases);
 
-  let tagsAndReleaseData = await findReleasesForTags(tags);
-  tagsAndReleaseData = await filterTagsWithReleaseBundles(tagsAndReleaseData);
-
-  if (tagsAndReleaseData.length === 0) {
+  if (tagsToBuild.length === 0) {
     logHelper.log(`No tags missing from Github.`);
   }
 
-  for (let tagAndRelease of tagsAndReleaseData) {
-    const tag = tagAndRelease.tagData;
-    const release = tagAndRelease.release;
-    await handleGithubRelease(tag.name, tag.name, release);
+  for (let tagName of tagsToBuild) {
+    await handleGithubRelease(tagName, tagName, taggedReleases[tagName]);
   }
 });
 
@@ -92,15 +68,15 @@ gulp.task('publish-github:temp-v3', async () => {
   const tagName = 'v3.0.0-alpha';
   const gitBranch = 'v3';
 
-  let tagsAndReleaseData = await findReleasesForTags([{name: tagName}]);
-  tagsAndReleaseData = filterTagsWithReleaseBundles(tagsAndReleaseData);
+  const taggedReleases = await githubHelper.getTaggedReleases();
+  const tagsToBuild = await filterTagsWithReleaseBundles([
+    taggedReleases[tagName],
+  ]);
 
-  for (let tagAndRelease of tagsAndReleaseData) {
-    const tag = tagAndRelease.tagData;
-    const release = tagAndRelease.release;
+  for (let tagName of tagsToBuild) {
     // Override the git branch here since we aren't actually
     // using a tagged release.
-    await handleGithubRelease(tag.name, gitBranch, release);
+    await handleGithubRelease(tagName, gitBranch, taggedReleases[tagName]);
   }
 });
 

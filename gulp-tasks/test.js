@@ -32,20 +32,8 @@ gulp.task('test:node', gulp.series(
   packageRunnner('test:node [bundled tests]', runBundledTests, 'node')
 ));
 
-gulp.task('test:browser', () => {
-  // TODO: This needs implementing
-  return Promise.resolve();
-});
-
-gulp.task('test:sw', () => {
-  // TODO: This needs implementing
-  return Promise.resolve();
-});
-
 gulp.task('test', gulp.series(
   'build-test-bundles',
   'test:node',
-  'test:browser',
-  'test:sw',
   'lint'
 ));
