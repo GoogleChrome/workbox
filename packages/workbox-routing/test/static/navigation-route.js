@@ -13,4 +13,5 @@ const route = new workbox.routing.NavigationRoute({
 });
 
 const router = new workbox.routing.Router();
+router.addFetchListener();
 router.registerRoute({route});
