@@ -56,7 +56,7 @@ export default class LogHelper {
       newLevel < VERBOSE_LOG_LEVEL) {
       throw new WorkboxError('invalid-value', {
         paramName: 'logLevel',
-        validValueDescription: `Please use a value from 'LOG_LEVEL', i.e ` +
+        validValueDescription: `Please use a value from LOG_LEVELS, i.e ` +
           `'logLevel = LOG_LEVELS.verbose'.`,
         value: newLevel,
       });

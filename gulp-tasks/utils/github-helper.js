@@ -30,23 +30,21 @@ module.exports = {
     return github.repos.uploadAsset(args);
   },
 
-  getTaggedReleases: () => {
-    authenticate();
-    return github.repos.getReleases({
+  getTaggedReleases: async () => {
+    const releasesData = await github.repos.getReleases({
       owner: constants.GITHUB_OWNER,
       repo: constants.GITHUB_REPO,
-    })
-    .then((releasesData) => {
-      const releases = releasesData.data;
-      const releasesByTags = {};
-      releases.forEach((release) => {
-        const tagName = release.tag_name;
-        if (semver.gte(tagName, constants.MIN_RELEASE_TAG_TO_PUBLISH)) {
-          releasesByTags[tagName] = release;
-        }
-      });
-      return releasesByTags;
     });
+
+    const releases = releasesData.data;
+    const releasesByTags = {};
+    releases.forEach((release) => {
+      const tagName = release.tag_name;
+      if (semver.gte(tagName, constants.MIN_RELEASE_TAG_TO_PUBLISH)) {
+        releasesByTags[tagName] = release;
+      }
+    });
+    return releasesByTags;
   },
 
   getTags: async () => {

@@ -18,8 +18,9 @@ const ERROR_NO_BROWSER_BUNDLE = `Could not find the browser bundle: `;
 const ERROR_NO_NAMSPACE = oneLine`
   You must define a 'browserNamespace' parameter in the 'package.json'.
   Exmaple: 'workbox-precaching' would have a browserNamespace param of
-  'precaching' in 'package.json'. This will be appended to 'google.workbox'
-  meaning developers would use 'google.workbox.precaching' in their
+  'precaching' in 'package.json'. This will be appended to
+  '${constants.NAMESPACE_PREFIX}' meaning developers would use
+  '${constants.NAMESPACE_PREFIX}.precaching' in their
   JavaScript. Please fix for:
 `;
 
@@ -47,7 +48,7 @@ const buildPackage = (packagePath, buildType) => {
 
   // Filename should be format <package name>.<build type>.js
   const outputFilename = `${packageName}.${buildType}.js`;
-  // Namespace should be google.workbox.<browser namespace>
+  // Namespace should be <name space>.<modules browser namespace>
   const namespace = `${constants.NAMESPACE_PREFIX}.${pkgJson.browserNamespace}`;
 
   const outputDirectory = path.join(packagePath,

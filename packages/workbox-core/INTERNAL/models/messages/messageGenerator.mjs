@@ -2,7 +2,7 @@ import messages from './messages.mjs';
 import core from '../../../index.mjs';
 
 const fallback = (code, ...args) => {
-  let msg = `${code}`;
+  let msg = code;
   if (args.length > 0) {
     msg += ` :: ${JSON.stringify(args)}`;
   }
@@ -19,6 +19,8 @@ const generatorFunction = (code, ...args) => {
   try {
     return message(...args);
   } catch (err) {
+    core.INTERNAL.logHelper.error(
+      `Unable to generate full error message.`, err);
     return fallback(code, ...args);
   }
 };
