@@ -50,6 +50,11 @@ describe(`Test of the Router class`, function() {
     expect(router._routes.get('PUT')).to.have.members([putRoute1]);
   });
 
+  // addEventListener is defined on the EventTarget interface.
+  // In order to properly stub out the method without triggering mocha's
+  // global leak detection, we need to walk up the inheritance chain to
+  // from ServiceWorkerGlobalScope to EventTarget.
+  // See https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
   it(`should call self.addEventListener('fetch') when addFetchListener() is called`, function() {
     const stub = sinon.stub(self.__proto__.__proto__.__proto__, 'addEventListener');
     globalStubs.push(stub);
@@ -59,6 +64,18 @@ describe(`Test of the Router class`, function() {
 
     expect(stub.calledOnce).to.be.true;
     expect(stub.firstCall.args[0]).to.eql('fetch');
+  });
+
+  it(`should return false when addFetchListener() is called multiple times`, function() {
+    const stub = sinon.stub(self.__proto__.__proto__.__proto__, 'addEventListener');
+    globalStubs.push(stub);
+
+    const router = new Router();
+    const firstResponse = router.addFetchListener();
+    expect(firstResponse).to.be.true;
+
+    const secondResponse = router.addFetchListener();
+    expect(secondResponse).to.be.false;
   });
 
   it(`should return a promise for the correct response when handleRequest() is called`, async function() {

@@ -22,6 +22,11 @@ describe(`handleFetch Parameter`, function() {
     stubs = [];
   });
 
+  // addEventListener is defined on the EventTarget interface.
+  // In order to properly stub out the method without triggering mocha's
+  // global leak detection, we need to walk up the inheritance chain to
+  // from ServiceWorkerGlobalScope to EventTarget.
+  // See https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
   it(`should call addEventListener('fetch') by default`, function() {
     const stub = sinon.stub(self.__proto__.__proto__.__proto__, 'addEventListener');
     stubs.push(stub);
