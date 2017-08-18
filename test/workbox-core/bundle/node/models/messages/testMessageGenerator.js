@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 
-import messageGenerator from '../../../../../../packages/workbox-core/INTERNAL/models/messages/messageGenerator.mjs';
+import messageGenerator from '../../../../../../packages/workbox-core/internal/models/messages/messageGenerator.mjs';
 
 describe(`messageGenerator - ${process.env.NODE_ENV}`, function() {
   const detailsObj = {

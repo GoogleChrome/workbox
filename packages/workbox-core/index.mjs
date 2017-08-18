@@ -1,4 +1,4 @@
-import LogHelper from './INTERNAL/utils/LogHelper.mjs';
+import LogHelper from './internal/utils/LogHelper.mjs';
 
 /**
  * WorkboxCore shares code across Workbox modules.
