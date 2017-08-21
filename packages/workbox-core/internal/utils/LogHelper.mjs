@@ -43,7 +43,7 @@ export default class LogHelper {
    * @param {number} newLevel the new logLevel to use.
    */
   set logLevel(newLevel) {
-    // TODO: Assert newLevel is a number
+    // TODO: Switch to Assertion class
     if (typeof newLevel !== 'number') {
       throw new WorkboxError('invalid-type', {
         paramName: 'logLevel',

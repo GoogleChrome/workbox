@@ -64,7 +64,6 @@ describe(`logHelper [${process.env.NODE_ENV}]`, function() {
       }).to.throw(WorkboxError).that.has.property('name').that.equals('invalid-value');
     });
 
-    // TODO: Catch WorkboxError with error code
     generateVariantTests(`should not allow non-number log levels`, [
       undefined,
       null,
@@ -74,7 +73,7 @@ describe(`logHelper [${process.env.NODE_ENV}]`, function() {
     ], (variant) => {
       expect(() => {
         const logHelper = new LogHelper();
-        logHelper.logLevel = undefined;
+        logHelper.logLevel = variant;
       }).to.throw(WorkboxError).that.has.property('name').that.equals('invalid-type');
     });
   });

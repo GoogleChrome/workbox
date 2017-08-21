@@ -17,6 +17,7 @@ export default (itTitle, variants, func) => {
     it(`${itTitle}. Variant: '${JSON.stringify(variant)}'`,
       function() {
         return func(variant);
-      });
+      }
+    );
   });
 };
