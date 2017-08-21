@@ -27,7 +27,7 @@ const pkgPathToName = require('./utils/pkg-path-to-name');
   .pipe(mocha(mochaOptions));
 };**/
 
-const runNodeTests = (packagePath) => {
+const runNodeTests = (packagePath, buildType) => {
   logHelper.log(oneLine`
     Running Node Tests for
     ${logHelper.highlight(pkgPathToName(packagePath))}.
@@ -40,7 +40,7 @@ const runNodeTests = (packagePath) => {
 };
 
 gulp.task('test:node', gulp.series(
-  packageRunnner('test:node [bundled tests]', runNodeTests, 'node')
+  packageRunnner('test:node [bundled tests]', runNodeTests)
 ));
 
 gulp.task('test', gulp.series(

@@ -1,15 +1,22 @@
 import {expect} from 'chai';
 
+import constants from '../../../../gulp-tasks/utils/constants.js';
 import core from '../../../../packages/workbox-core/index.mjs';
 
-describe(`WorkboxCore - ${process.env.NODE_ENV}`, function() {
-  describe(`INTERNAL.*`, function() {
-    it(`should expose INTERNAL`, function() {
-      expect(core.INTERNAL).to.exist;
+constants.BUILD_TYPES.forEach((buildType) => {
+  describe(`WorkboxCore - ${buildType}`, function() {
+    before(function() {
+      process.env.NODE_ENV = buildType;
     });
 
-    it(`should expose logHelper`, function() {
-      expect(core.INTERNAL.logHelper).to.exist;
+    describe(`INTERNAL.*`, function() {
+      it(`should expose INTERNAL`, function() {
+        expect(core.INTERNAL).to.exist;
+      });
+
+      it(`should expose logHelper`, function() {
+        expect(core.INTERNAL.logHelper).to.exist;
+      });
     });
   });
 });
