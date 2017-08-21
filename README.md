@@ -19,7 +19,7 @@ can do for you.
 
 ## Documentation
 
-* **Main site:** [workboxjs.org](https://workboxjs.org)
+* **Main site:** [workboxjs.org](https://workboxjs.org) ([site source](https://github.com/GoogleChrome/workbox-microsite))
 * [Get started](https://workboxjs.org/#get-started)
 * [Overview](https://workboxjs.org/overview.html)
 * [Contribute](CONTRIBUTING.md)
