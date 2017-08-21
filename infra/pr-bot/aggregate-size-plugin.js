@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const oneLine = require('common-tags').oneLine;
 const PluginInterface = require('pr-bot').PluginInterface;
+const gzipSize = require('gzip-size');
 
 // 10 KB max size
 const MAX_SIZE = 10 * 1000;
@@ -29,8 +30,8 @@ class AggregateSizePlugin extends PluginInterface {
     const files = glob.sync(globPattern);
     let totalSize = 0;
     files.forEach((filePath) => {
-      const stats = fs.statSync(filePath);
-      totalSize += stats.size;
+      const fileContents = fs.readFileSync(filePath);
+      totalSize += gzipSize.sync(fileContents);
     });
 
     const percentValue = (totalSize / MAX_SIZE) * 100;
