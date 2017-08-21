@@ -25,9 +25,10 @@ class AggregateSizePlugin extends PluginInterface {
     ];
     const globPattern = path.posix.join(
       afterPath, 'packages', `{${packagesToAggregate.join(',')}}`,
-      'build', 'browser-bundles', '*.prod.js',
+      'builds', 'browser', '*.prod.js',
     );
     const files = glob.sync(globPattern);
+    console.log(files);
     let totalSize = 0;
     files.forEach((filePath) => {
       const fileContents = fs.readFileSync(filePath);
