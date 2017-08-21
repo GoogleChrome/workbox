@@ -23,7 +23,10 @@ install:
   - npm install
 
 script:
+  # Build and run the test files
   - gulp test --package="${BROWSER_PACKAGE}"
+  # Build the browser bundles
+  - gulp build --package="${BROWSER_PACKAGE}"
 
 after_success:
   - npm run coveralls

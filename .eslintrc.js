@@ -11,11 +11,12 @@ module.exports = {
     sourceType: 'module',
   },
   globals: {
+    'google': false,
   },
   rules: {
   },
   overrides: [{
-    files: ['packages/*/test/**/*.js'],
+    files: ['test/**/*.js'],
     env: {
       mocha: true,
     },
@@ -27,7 +28,7 @@ module.exports = {
   }, {
     files: [
       'packages/workbox-core/src/utils/LogHelper.js',
-      'packages/workbox-core/test/bundle/node/utils/test-LogHelper.js',
+      'test/workbox-core/bundle/node/utils/test-LogHelper.js',
       'gulp-tasks/utils/log-helper.js',
       'infra/tools/analyse-properties.js',
     ],

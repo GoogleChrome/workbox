@@ -14,59 +14,74 @@ const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
 const rollupHelper = require('./utils/rollup-helper');
 
+const ERROR_NO_BROWSER_BUNDLE = `Could not find the browser bundle: `;
+const ERROR_NO_NAMSPACE = oneLine`
+  You must define a 'browserNamespace' parameter in the 'package.json'.
+  Exmaple: 'workbox-precaching' would have a browserNamespace param of
+  'precaching' in 'package.json'. This will be appended to
+  '${constants.NAMESPACE_PREFIX}' meaning developers would use
+  '${constants.NAMESPACE_PREFIX}.precaching' in their
+  JavaScript. Please fix for:
+`;
+
 /**
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose
  */
 
 const buildPackage = (packagePath, buildType) => {
-  const srcPath = path.join(packagePath, 'src');
-  const browserBundlePath = path.join(srcPath, 'browser-bundle.js');
+  const packageName = pkgPathToName(packagePath);
+  const browserBundlePath = path.join(packagePath, 'browser.mjs');
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
   if (!fs.pathExistsSync(browserBundlePath)) {
-    const errorMsg = oneLine`
-      Could not find the browser bundle for ${pkgPathToName(packagePath)}.
-    `;
-    logHelper.error(errorMsg);
-    return Promise.reject(errorMsg);
+    logHelper.error(ERROR_NO_BROWSER_BUNDLE + packageName);
+    return Promise.reject(ERROR_NO_BROWSER_BUNDLE + packageName);
   }
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
-  if (!pkgJson.browserNamespace) {
-    const errorMsg = oneLine`
-      You must define a 'browserNamespace' parameter in the 'package.json'
-      for ${pkgPathToName(packagePath)}. Exmaple: 'workbox-precaching'
-      would have a browserNamespace of 'precaching', which will be
-      appended to 'google.workbox' meaning developers would use
-      'google.workbox.precaching' in their JavaScript.
-    `;
-    logHelper.error(errorMsg);
-    return Promise.reject(errorMsg);
+  if (!pkgJson['workbox::browserNamespace']) {
+    logHelper.error(ERROR_NO_NAMSPACE + packageName);
+    return Promise.reject(ERROR_NO_NAMSPACE + packageName);
   }
 
-  const buildName = typeof buildType === 'undefined' ? 'dev' : buildType;
-  const outputFilename = `${pkgPathToName(packagePath)}.${buildName}.js`;
-  const namespace = `google.workbox.${pkgJson.browserNamespace}`;
+  // Filename should be format <package name>.<build type>.js
+  const outputFilename = `${packageName}.${buildType}.js`;
+  // Namespace should be <name space>.<modules browser namespace>
+  const namespace =
+    `${constants.NAMESPACE_PREFIX}.${pkgJson['workbox::browserNamespace']}`;
 
   const outputDirectory = path.join(packagePath,
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
 
   logHelper.log(oneLine`
     Building Browser Bundle for
-    ${logHelper.highlight(pkgPathToName(packagePath))}.
+    ${logHelper.highlight(packageName)}.
   `);
   logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
   const plugins = rollupHelper.getDefaultPlugins(buildType);
 
+  // This makes Rollup assume workbox-core will be added to the global
+  // scope and replace references with the core namespace
+  const globals = {
+    'workbox-core': `${constants.NAMESPACE_PREFIX}.core`,
+  };
+  const external = [
+    'workbox-core',
+  ];
+
   return rollup({
     entry: browserBundlePath,
     format: 'iife',
     moduleName: namespace,
     sourceMap: true,
+    // Treat export defaults as <namespace>.default
+    exports: 'named',
+    globals,
+    external,
     plugins,
     onwarn: (warning) => {
       // The final builds should have no warnings.
@@ -99,7 +114,7 @@ gulp.task('build-packages:clean', gulp.series(
 ));
 
 // This will create one version of the tests for each buildType.
-// i.e. we'll have a browser build for no NODE_ENV and one for 'production'
+// i.e. we'll have a browser build for no NODE_ENV and one for 'prod'
 // NODE_ENV and the same for sw and node tests.
 const packageBuilds =constants.BUILD_TYPES.map((buildType) => {
   return packageRunnner('build-package', buildPackage, buildType);

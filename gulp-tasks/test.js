@@ -22,7 +22,7 @@ const runBundledTests = (packagePath, env) => {
   }
 
   const bundleTestDirectory = path.posix.join(
-    packagePath, 'test', constants.TEST_BUNDLES_BUILD_DIRNAME);
+    'test', pkgPathToName(packagePath), constants.TEST_BUNDLES_BUILD_DIRNAME);
   return gulp.src(
     path.posix.join(bundleTestDirectory, env, '*.js'), {read: false})
   .pipe(mocha(mochaOptions));
@@ -32,20 +32,8 @@ gulp.task('test:node', gulp.series(
   packageRunnner('test:node [bundled tests]', runBundledTests, 'node')
 ));
 
-gulp.task('test:browser', () => {
-  // TODO: This needs implementing
-  return Promise.resolve();
-});
-
-gulp.task('test:sw', () => {
-  // TODO: This needs implementing
-  return Promise.resolve();
-});
-
 gulp.task('test', gulp.series(
   'build-test-bundles',
   'test:node',
-  'test:browser',
-  'test:sw',
   'lint'
 ));

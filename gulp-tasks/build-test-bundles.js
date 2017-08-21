@@ -16,7 +16,7 @@ const pkgPathToName = require('./utils/pkg-path-to-name');
 const rollupHelper = require('./utils/rollup-helper');
 
 const buildTestBundle = (packagePath, runningEnv, buildType) => {
-  const testPath = path.posix.join(packagePath, 'test');
+  const testPath = path.join('test', pkgPathToName(packagePath));
   const environmentPath = path.posix.join(testPath, 'bundle', runningEnv);
 
   // First check if the bundle directory exists, if it doesn't
@@ -47,11 +47,10 @@ const buildTestBundle = (packagePath, runningEnv, buildType) => {
   plugins.push(multiEntry());
   // This adds code coverage to our tests
   plugins.push(istanbul({
-    exclude: ['test/*.js', 'node_modules/**/*'],
+    exclude: ['test/**/*.js', 'node_modules/**/*'],
   }));
 
-  const buildPostfix = typeof buildType === 'undefined' ? '' : `.${buildType}`;
-  const outputFilename = `${runningEnv}${buildPostfix}.js`;
+  const outputFilename = `${runningEnv}.${buildType}.js`;
 
   return rollup({
     entry: path.posix.join(environmentPath, '**', '*.js'),
@@ -76,7 +75,7 @@ const buildTestBundle = (packagePath, runningEnv, buildType) => {
 };
 
 const cleanBundleFile = (packagePath) => {
-  const testPath = path.join(packagePath, 'test');
+  const testPath = path.join('test', pkgPathToName(packagePath));
   const outputDirectory = path.join(
     testPath, constants.TEST_BUNDLES_BUILD_DIRNAME);
   return fs.remove(outputDirectory);
@@ -87,7 +86,7 @@ gulp.task('build-test-bundles:clean',
 );
 
 // This will create one version of the tests for each buildType.
-// i.e. we'll have a browser build for no NODE_ENV and one for 'production'
+// i.e. we'll have a browser build for no NODE_ENV and one for 'prod'
 // NODE_ENV and the same for sw and node tests.
 const bundleBuilds = [];
 constants.BUILD_TYPES.forEach((buildType) => {

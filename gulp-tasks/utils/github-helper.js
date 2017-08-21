@@ -3,9 +3,6 @@ const semver = require('semver');
 
 const constants = require('./constants');
 
-const GITHUB_OWNER = 'GoogleChrome';
-const GITHUB_REPO = 'workbox';
-
 const github = new GitHubApi();
 
 // github.authenticate() is synchronous, and it only stores the credentials for
@@ -21,29 +18,40 @@ const authenticate = () => {
 module.exports = {
   createRelease: (args) => {
     authenticate();
-    args.owner = GITHUB_OWNER;
-    args.repo = GITHUB_REPO;
+    args.owner = constants.GITHUB_OWNER;
+    args.repo = constants.GITHUB_REPO;
     return github.repos.createRelease(args);
   },
 
   uploadAsset: (args) => {
     authenticate();
-    args.owner = GITHUB_OWNER;
-    args.repo = GITHUB_REPO;
+    args.owner = constants.GITHUB_OWNER;
+    args.repo = constants.GITHUB_REPO;
     return github.repos.uploadAsset(args);
   },
 
-  getReleases: () => {
-    return github.repos.getReleases({
-      owner: GITHUB_OWNER,
-      repo: GITHUB_REPO,
+  getTaggedReleases: async () => {
+    const releasesData = await github.repos.getReleases({
+      owner: constants.GITHUB_OWNER,
+      repo: constants.GITHUB_REPO,
     });
+
+    const releases = releasesData.data;
+    const releasesByTags = {};
+    releases.forEach((release) => {
+      const tagName = release.tag_name;
+      if (semver.gte(tagName, constants.MIN_RELEASE_TAG_TO_PUBLISH)) {
+        releasesByTags[tagName] = release;
+      }
+    });
+    return releasesByTags;
   },
 
   getTags: async () => {
+    authenticate();
     const tagsResponse = await github.repos.getTags({
-      owner: GITHUB_OWNER,
-      repo: GITHUB_REPO,
+      owner: constants.GITHUB_OWNER,
+      repo: constants.GITHUB_REPO,
     });
 
     // We only want tags that are v3.0.0 or above.
