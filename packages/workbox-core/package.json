@@ -4,10 +4,6 @@
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This module is used by a number of the other workboxjs.org modules to share common code.",
-  "scripts": {
-    "prepublish": "gulp build-packages --package workbox-core"
-  },
-  "browserNamespace": "core",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-core",
@@ -17,5 +13,10 @@
     "service worker",
     "sw"
   ],
-  "main": "build/browser-bundles/workbox-core.prod.js"
+  "scripts": {
+    "prepublish": "gulp build-packages --package workbox-core"
+  },
+  "workbox::browserNamespace": "core",
+  "main": "build/browser-bundles/workbox-core.prod.js",
+  "module": "index.mjs"
 }

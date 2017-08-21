@@ -19,7 +19,7 @@ const generatorFunction = (code, ...args) => {
   try {
     return message(...args);
   } catch (err) {
-    core.INTERNAL.logHelper.error(
+    core.INTERNAL.logHelper.warn(
       `Unable to generate full error message.`, err);
     return fallback(code, ...args);
   }

@@ -31,7 +31,7 @@ const ERROR_NO_NAMSPACE = oneLine`
 
 const buildPackage = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
-  const browserBundlePath = path.join(packagePath, '._browser.mjs');
+  const browserBundlePath = path.join(packagePath, 'browser.mjs');
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
@@ -41,7 +41,7 @@ const buildPackage = (packagePath, buildType) => {
   }
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
-  if (!pkgJson.browserNamespace) {
+  if (!pkgJson['workbox::browserNamespace']) {
     logHelper.error(ERROR_NO_NAMSPACE + packageName);
     return Promise.reject(ERROR_NO_NAMSPACE + packageName);
   }
@@ -49,7 +49,8 @@ const buildPackage = (packagePath, buildType) => {
   // Filename should be format <package name>.<build type>.js
   const outputFilename = `${packageName}.${buildType}.js`;
   // Namespace should be <name space>.<modules browser namespace>
-  const namespace = `${constants.NAMESPACE_PREFIX}.${pkgJson.browserNamespace}`;
+  const namespace =
+    `${constants.NAMESPACE_PREFIX}.${pkgJson['workbox::browserNamespace']}`;
 
   const outputDirectory = path.join(packagePath,
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);

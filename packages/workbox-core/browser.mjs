@@ -1,5 +1,5 @@
 import defaultExport from './index.mjs';
-import WorkboxError from './INTERNAL/models/WorkboxError.mjs';
+import WorkboxError from './internal/models/WorkboxError.mjs';
 
 export default defaultExport;
 
