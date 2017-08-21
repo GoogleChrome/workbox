@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import messageGenerator from '../../../../../../packages/workbox-core/internal/models/messages/messageGenerator.mjs';
+import messageGenerator from '../../../../../packages/workbox-core/internal/models/messages/messageGenerator.mjs';
 
 describe(`messageGenerator - ${process.env.NODE_ENV}`, function() {
   const detailsObj = {

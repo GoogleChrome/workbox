@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 
-import core from '../../../../../packages/workbox-core/index.mjs';
+import core from '../../../../packages/workbox-core/index.mjs';
 
 describe(`WorkboxCore - ${process.env.NODE_ENV}`, function() {
   describe(`INTERNAL.*`, function() {

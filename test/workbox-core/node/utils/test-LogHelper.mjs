@@ -1,9 +1,9 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import LogHelper from '../../../../../packages/workbox-core/internal/utils/LogHelper.mjs';
-import WorkboxError from '../../../../../packages/workbox-core/internal/models/WorkboxError.mjs';
-import generateVariantTests from '../../../../../infra/utils/generate-variant-tests';
+import LogHelper from '../../../../packages/workbox-core/internal/utils/LogHelper.mjs';
+import WorkboxError from '../../../../packages/workbox-core/internal/models/WorkboxError.mjs';
+import generateVariantTests from '../../../../infra/utils/generate-variant-tests';
 
 describe(`logHelper [${process.env.NODE_ENV}]`, function() {
   let sandbox;
