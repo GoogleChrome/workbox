@@ -11,3 +11,5 @@ bundle-builds/
 coverage/
 generated-release-files/
 workbox-cdn-service-account.json
+.esm-cache/
+.nyc_output/

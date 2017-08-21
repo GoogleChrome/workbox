@@ -1,7 +1,6 @@
 const gulp = require('gulp');
-const mocha = require('gulp-spawn-mocha');
-const path = require('path');
 const oneLine = require('common-tags').oneLine;
+const spawn = require('./utils/spawn-promise-wrapper');
 
 // const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
@@ -33,18 +32,11 @@ const runNodeTests = (packagePath) => {
     Running Node Tests for
     ${logHelper.highlight(pkgPathToName(packagePath))}.
   `);
-
-  const mochaOptions = {
-    require: '@std/esm',
-  };
-  if (global.cliOptions.grep) {
-    mochaOptions.grep = global.cliOptions.grep;
-  }
-
-  const testsDirectory = path.posix.join(
-    'test', pkgPathToName(packagePath), 'node', '**', '*.mjs');
-  return gulp.src(testsDirectory, {read: false})
-  .pipe(mocha(mochaOptions));
+  return spawn('npm', ['run', 'test'])
+  .catch((err) => {
+    logHelper.error(err);
+    throw new Error(`[Workbox Error Msg] 'gulp test' discovered errors.`);
+  });
 };
 
 gulp.task('test:node', gulp.series(
