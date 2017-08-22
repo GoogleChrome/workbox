@@ -59,4 +59,32 @@ describe(`Test Directory Index`, function() {
       self.dispatchEvent(fetchEvent);
     });
   });
+
+  it(`should take the ignoreUrlParametersMatching setting into account when using the directoryIndex`, function() {
+    const EXAMPLE_URL = '/example/url/';
+    const DIRECTORY_INDEX = 'custom.html';
+    const URL_PARAM = 'test';
+    const IGNORE_URL_PARAMETERS_MATCHING = [new RegExp(URL_PARAM)];
+
+    const workboxSW = new WorkboxSW({
+      directoryIndex: DIRECTORY_INDEX,
+      ignoreUrlParametersMatching: IGNORE_URL_PARAMETERS_MATCHING,
+    });
+
+    workboxSW.precache([`${EXAMPLE_URL}${DIRECTORY_INDEX}`]);
+
+    return new Promise((resolve) => {
+      const fetchEvent = new FetchEvent('fetch', {
+        // Fire a request for the URL without the directory index, but with the URL param.
+        request: new Request(`${EXAMPLE_URL}?${URL_PARAM}`),
+      });
+
+      // cache.match() will only be called if the precache route's capture
+      // function returned true, which implies that the URL param was ignored.
+      const stub = sinon.stub(Cache.prototype, 'match').callsFake(resolve);
+      stubs.push(stub);
+
+      self.dispatchEvent(fetchEvent);
+    });
+  });
 });
