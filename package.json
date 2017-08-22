@@ -5,9 +5,21 @@
   },
   "scripts": {
     "local-lerna": "lerna",
+    "test": "nyc --require @std/esm --reporter=lcov --reporter=text mocha './test/**/node/**/*.mjs'",
     "lint": "eslint '.' --ignore-path .gitignore",
     "bot": "pr-bot",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
+  },
+  "@std/esm": {
+    "cjs": true
+  },
+  "nyc": {
+    "include": [
+      "packages/**/*"
+    ],
+    "extension": [
+      ".mjs"
+    ]
   },
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
@@ -24,6 +36,7 @@
   "homepage": "https://github.com/GoogleChrome/workbox#readme",
   "devDependencies": {
     "@google-cloud/storage": "^1.2.1",
+    "@std/esm": "^0.5.1",
     "archiver": "^2.0.0",
     "babylon": "^6.17.4",
     "chai": "^4.1.0",
@@ -38,10 +51,10 @@
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.0",
-    "gulp-spawn-mocha": "^3.3.1",
-    "istanbul": "^0.4.5",
+    "gzip-size": "^3.0.0",
     "lerna": "^2.0.0",
     "mocha": "^3.5.0",
+    "nyc": "^11.1.0",
     "path-extra": "^4.2.0",
     "pr-bot": "0.2.0",
     "rollup": "^0.45.2",

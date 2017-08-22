@@ -10,7 +10,7 @@
  * @param {function} func This is the function that will be called, with a
  * variant as the only argument. This function should perform the desired test.
  */
-export default (itTitle, variants, func) => {
+const generateVariantTests = (itTitle, variants, func) => {
   variants.forEach((variant) => {
     // We are using function() {} here and NOT ARROW FUNCTIONS
     // to work with Mocha's binding for tests.
@@ -21,3 +21,9 @@ export default (itTitle, variants, func) => {
     );
   });
 };
+
+if (module.exports) {
+  module.exports = generateVariantTests;
+} else {
+  self.__workbox.generateVariantTests = generateVariantTests;
+}
