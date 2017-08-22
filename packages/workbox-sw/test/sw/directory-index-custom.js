@@ -66,24 +66,30 @@ describe(`Test Directory Index`, function() {
     const URL_PARAM = 'test';
     const IGNORE_URL_PARAMETERS_MATCHING = [new RegExp(URL_PARAM)];
 
+    const stub = sinon.stub(Cache.prototype, 'match')
+      .callsFake(() => Promise.resolve(null));
+    stubs.push(stub);
+
     const workboxSW = new WorkboxSW({
       directoryIndex: DIRECTORY_INDEX,
       ignoreUrlParametersMatching: IGNORE_URL_PARAMETERS_MATCHING,
     });
-
     workboxSW.precache([`${EXAMPLE_URL}${DIRECTORY_INDEX}`]);
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const fetchEvent = new FetchEvent('fetch', {
         // Fire a request for the URL without the directory index, but with the URL param.
         request: new Request(`${EXAMPLE_URL}?${URL_PARAM}`),
       });
-
-      // cache.match() will only be called if the precache route's capture
-      // function returned true, which implies that the URL param was ignored.
-      const stub = sinon.stub(Cache.prototype, 'match').callsFake(resolve);
-      stubs.push(stub);
-
+      fetchEvent.respondWith = (promiseChain) => {
+        promiseChain.then(() => {
+          if (stub.called) {
+            resolve();
+          } else {
+            reject('The expected stub function was not called.');
+          }
+        });
+      };
       self.dispatchEvent(fetchEvent);
     });
   });
