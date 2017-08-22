@@ -15,7 +15,7 @@ module.exports = {
   },
   plugins: [
     new prbot.plugins.Size({
-      globPattern: 'packages/*/{src,builds}/**/*.{js,mjs}',
+      globPattern: 'packages/*/**/*.{js,mjs}',
       globOptions: {
         ignore: [
           '**/node_modules/**/*',
