@@ -4,6 +4,7 @@ module.exports = {
   // test runs.
   PACKAGE_BUILD_DIRNAME: 'builds',
   BROWSER_BUILD_DIRNAME: 'browser',
+  BROWSER_ENTRY_FILENAME: '._browser-entry.mjs',
   TEST_BUNDLES_BUILD_DIRNAME: 'bundle-builds',
   GENERATED_RELEASE_FILES_DIRNAME: 'generated-release-files',
 

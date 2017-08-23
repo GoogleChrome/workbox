@@ -1,5 +1,6 @@
 const gulp = require('gulp');
 const path = require('path');
+const glob = require('glob');
 const fs = require('fs-extra');
 const oneLine = require('common-tags').oneLine;
 const rollup = require('rollup-stream');
@@ -31,11 +32,12 @@ const ERROR_NO_NAMSPACE = oneLine`
 
 const buildPackage = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
-  const browserBundlePath = path.join(packagePath, 'browser.mjs');
+  const browserEntry = path.join(packagePath, constants.PACKAGE_BUILD_DIRNAME,
+    constants.BROWSER_ENTRY_FILENAME);
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
-  if (!fs.pathExistsSync(browserBundlePath)) {
+  if (!fs.pathExistsSync(browserEntry)) {
     logHelper.error(ERROR_NO_BROWSER_BUNDLE + packageName);
     return Promise.reject(ERROR_NO_BROWSER_BUNDLE + packageName);
   }
@@ -74,12 +76,10 @@ const buildPackage = (packagePath, buildType) => {
   ];
 
   return rollup({
-    entry: browserBundlePath,
+    entry: browserEntry,
     format: 'iife',
     moduleName: namespace,
     sourceMap: true,
-    // Treat export defaults as <namespace>.default
-    exports: 'named',
     globals,
     external,
     plugins,
@@ -91,7 +91,7 @@ const buildPackage = (packagePath, buildType) => {
   })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
-  .pipe(source(browserBundlePath))
+  .pipe(source(browserEntry))
   // gulp-sourcemaps don't work with streams so we need
   .pipe(buffer())
   // This tells gulp-sourcemaps to load the inline sourcemap
@@ -116,13 +116,81 @@ gulp.task('build-packages:clean', gulp.series(
 // This will create one version of the tests for each buildType.
 // i.e. we'll have a browser build for no NODE_ENV and one for 'prod'
 // NODE_ENV and the same for sw and node tests.
-const packageBuilds =constants.BUILD_TYPES.map((buildType) => {
+const packageBuilds = constants.BUILD_TYPES.map((buildType) => {
   return packageRunnner('build-package', buildPackage, buildType);
 });
 
 gulp.task('build-packages:build', gulp.series(packageBuilds));
 
+const convertExportObject = (exportObject, levels = 0) => {
+  let outputStrings = [];
+  const keys = Object.keys(exportObject);
+  keys.forEach((key) => {
+    const value = exportObject[key];
+    if (typeof(value) === 'string') {
+      if (key === value) {
+        outputStrings.push(`${value}`);
+      } else {
+        outputStrings.push(`${key}: ${value}`);
+      }
+    } else {
+      const valueString = convertExportObject(value, levels + 1);
+      outputStrings.push(`${key}: ${valueString}`);
+    }
+  });
+  const padding = '  '.repeat(levels + 1);
+  const closePadding = '  '.repeat(levels);
+  const joinString = `,\n${padding}`;
+  return `{\n${padding}${outputStrings.join(joinString)}\n${closePadding}}`;
+};
+
+const generateBrowserEntry = (pkgPath) => {
+  const filesToPublish = glob.sync(path.posix.join(pkgPath, '**', '*.mjs'));
+
+  let browserEntryFileContents = ``;
+  let browserEntryExport = {};
+  filesToPublish.forEach((importPath) => {
+    const relativePath = path.relative(pkgPath, importPath);
+    let exportName = path.basename(importPath, '.mjs');
+    let isDefault = false;
+    if (relativePath === 'index.mjs') {
+      // This is the default module export
+      exportName = 'modulesDefaultExport';
+      isDefault = true;
+    }
+
+    browserEntryFileContents += `import ${exportName} from '${importPath}';\n`;
+    if (isDefault) {
+      browserEntryExport.default = exportName;
+    } else {
+      let currentObject = browserEntryExport;
+      path.dirname(relativePath).split(path.sep).forEach((pathSection) => {
+        if (!currentObject[pathSection]) {
+          currentObject[pathSection] = {};
+        }
+        currentObject = currentObject[pathSection];
+      });
+      currentObject[exportName] = exportName;
+    }
+  });
+
+  const exportObjectString = convertExportObject(browserEntryExport);
+  browserEntryFileContents += `\nexport default ${exportObjectString}`;
+
+  const outputPath = path.join(pkgPath, constants.PACKAGE_BUILD_DIRNAME,
+    constants.BROWSER_ENTRY_FILENAME);
+  return fs.writeFile(outputPath, browserEntryFileContents);
+};
+
+gulp.task('build-packages:generate-browser-entry', gulp.series(
+  packageRunnner(
+    'build-packages:generate-browser-entry',
+    generateBrowserEntry,
+  )
+));
+
 gulp.task('build-packages', gulp.series([
   'build-packages:clean',
+  'build-packages:generate-browser-entry',
   'build-packages:build',
 ]));
