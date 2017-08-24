@@ -145,26 +145,31 @@ const convertExportObject = (exportObject, levels = 0) => {
 };
 
 const generateBrowserEntry = (pkgPath) => {
+  const outputPath = path.join(pkgPath, constants.PACKAGE_BUILD_DIRNAME,
+    constants.BROWSER_ENTRY_FILENAME);
   const filesToPublish = glob.sync(path.posix.join(pkgPath, '**', '*.mjs'));
 
   let browserEntryFileContents = ``;
   let browserEntryExport = {};
   filesToPublish.forEach((importPath) => {
-    const relativePath = path.relative(pkgPath, importPath);
+    const pkgRelativePath = path.relative(pkgPath, importPath);
     let exportName = path.basename(importPath, '.mjs');
     let isDefault = false;
-    if (relativePath === 'index.mjs') {
+    if (pkgRelativePath === 'index.mjs') {
       // This is the default module export
       exportName = 'modulesDefaultExport';
       isDefault = true;
     }
 
-    browserEntryFileContents += `import ${exportName} from '${importPath}';\n`;
+    const entryRelativePath = path.relative(
+      path.dirname(outputPath), importPath);
+    browserEntryFileContents +=
+      `import ${exportName} from '${entryRelativePath}';\n`;
     if (isDefault) {
       browserEntryExport.default = exportName;
     } else {
       let currentObject = browserEntryExport;
-      path.dirname(relativePath).split(path.sep).forEach((pathSection) => {
+      path.dirname(pkgRelativePath).split(path.sep).forEach((pathSection) => {
         if (!currentObject[pathSection]) {
           currentObject[pathSection] = {};
         }
@@ -177,8 +182,8 @@ const generateBrowserEntry = (pkgPath) => {
   const exportObjectString = convertExportObject(browserEntryExport);
   browserEntryFileContents += `\nexport default ${exportObjectString}`;
 
-  const outputPath = path.join(pkgPath, constants.PACKAGE_BUILD_DIRNAME,
-    constants.BROWSER_ENTRY_FILENAME);
+  fs.ensureDirSync(path.dirname(outputPath));
+
   return fs.writeFile(outputPath, browserEntryFileContents);
 };
 
