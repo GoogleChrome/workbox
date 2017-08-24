@@ -1,6 +1,6 @@
 {
   "name": "workbox-webpack-plugin",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "description": "A plugin for your Webpack build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
@@ -23,7 +23,7 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "workbox-build": "^1.3.0"
+    "workbox-build": "^2.0.0"
   },
   "author": "Google's Web DevRel Team",
   "license": "Apache-2.0",
