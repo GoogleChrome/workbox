@@ -1,4 +1,4 @@
-import messages from './messages.mjs';
+import messages from './_messages.mjs';
 import core from '../../../index.mjs';
 
 const fallback = (code, ...args) => {

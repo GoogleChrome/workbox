@@ -152,6 +152,10 @@ const generateBrowserEntry = (pkgPath) => {
   let browserEntryFileContents = ``;
   let browserEntryExport = {};
   filesToPublish.forEach((importPath) => {
+    if (path.basename(importPath).indexOf('_') === 0) {
+      return;
+    }
+
     const pkgRelativePath = path.relative(pkgPath, importPath);
     let exportName = path.basename(importPath, '.mjs');
     let isDefault = false;
