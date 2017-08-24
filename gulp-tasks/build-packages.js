@@ -152,6 +152,12 @@ const generateBrowserEntry = (pkgPath) => {
   let browserEntryFileContents = ``;
   let browserEntryExport = {};
   filesToPublish.forEach((importPath) => {
+    // This will prevent files starting with '_' from
+    // being included in the browser bundle. This should
+    // only be used in very rare cases. See
+    // workbox-core/internal/models/messages/ for example
+    // where the file shouldn't be included in browser
+    // bundle.
     if (path.basename(importPath).indexOf('_') === 0) {
       return;
     }
