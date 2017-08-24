@@ -60,6 +60,11 @@ gulp.task('_lerna-publish-dry-run', () => {
   return lernaWrapper('publish', '--skip-npm', '--skip-git');
 });
 
+gulp.task('_lerna-publish-dry-run:force-all', () => {
+  return lernaWrapper('publish', '--skip-npm', '--skip-git',
+    '--force-publish=*');
+});
+
 /**
  * Helper task, used only within lerna-publish.
  */
@@ -87,6 +92,18 @@ gulp.task('lerna-publish', (callback) => {
     'test:dev',
     'test:prod',
     '_lerna-publish-dry-run',
+    '_update-versioned-bundles',
+    '_lerna-publish-repo-version',
+    callback
+  );
+});
+
+gulp.task('lerna-publish:force-all', (callback) => {
+  runSequence(
+    'lerna-bootstrap',
+    'test:dev',
+    'test:prod',
+    '_lerna-publish-dry-run:force-all',
     '_update-versioned-bundles',
     '_lerna-publish-repo-version',
     callback
