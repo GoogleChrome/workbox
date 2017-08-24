@@ -22,25 +22,136 @@ import {pluginCallbacks, getDefaultCacheName} from './constants';
 import cleanResponseCopy from './clean-response-copy';
 
 /**
+ * Called prior to a response being written to the cache. This allows you to
+ * prevent the cache from being updated if the response doesn't meet your
+ * custom criteria.
+ *
+ * @example <caption>Determines whether a response is cacheable based on
+ * whether its Cache-Control header contains the string 'no-cache'.</caption>
+ *
+ * async function cacheWillUpdate({response}) {
+ *   return !response.headers.get('cache-control').includes('no-cache');
+ * }
+ *
+ * @callback cacheWillUpdate
+ * @param {Object} input
+ * @param {Request} input.request The original request.
+ * @param {Response} input.response The response to the request, based on the
+ * configured strategy.
+ * @return {Promise<Boolean>} `true` if the response meets your criteria for
+ * being added to the appropriate cache, and `false` if it doesn't.
+ *
+ * @memberof module:workbox-runtime-caching.RequestWrapper
+ */
+
+/**
+ * Called after a response has been written to the cache.
+ *
+ * @example <caption>Logs a message when the cache has been updated.</caption>
+ *
+ * async function cacheDidUpdate({cacheName, url}) {
+ *   console.log(`The entry for ${url} in cache ${cacheName} was updated.`);
+ * }
+ *
+ * @callback cacheDidUpdate
+ * @param {Object} input
+ * @param {String} input.cacheName The name of the cache that was updated.
+ * @param {String} input.url The URL used as a key for the cache.
+ * @param {Response|null} input.oldResponse The response that was previously in
+ * the cache, prior to the update, or `null` if the cache didn't previously
+ * contain an entry for `url`.
+ * @param {Response|null} input.newResponse The response that was written to
+ * the cache.
+ *
+ * @memberof module:workbox-runtime-caching.RequestWrapper
+ */
+
+/**
+ * Called before a previously cached response that has been read from the cache
+ * is used. This allows you to modify it or return `null` if it's not valid.
+ *
+ * @example <caption>Returns `null` to indicate that a cached response shouldn't
+ * be used if its Date header is too far in the past.</caption>
+ *
+ * async function cachedResponseWillBeUsed({cachedResponse}) {
+ *   if (cachedResponse) {
+ *     const dateHeader = cachedResponse.headers.get('date');
+ *     const date = new Date(dateHeader);
+ *     if (dateHeader && (Date.now() - date.getTime()) < 1000) {
+ *       return cachedResponse;
+ *     }
+ *   }
+ *
+ *   return null;
+ * }
+ *
+ * @callback cachedResponseWillBeUsed
+ * @param {Object} input
+ * @param {Request} input.request The original request.
+ * @param {Cache} input.cache An open instance of the cache.
+ * @param {String} input.cacheName The name corresponding to `cache`.
+ * @param {Response|null} input.cachedResponse The response for `request` that's
+ * currently in `cache`, or `null` if there isn't currently a response cached.
+ * @param {Object} input.matchOptions The
+ * [cache match options](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match#Parameters)
+ * that were configured when the current `RequestWrapper` was constructed.
+ * @return {Promise<Response|null>} The response to be used as the effective
+ * cache match. This might be the same response as `cachedResponse`, if it was
+ * valid, a modified version of the response, or `null` if there's no valid
+ * match.
+ *
+ * @memberof module:workbox-runtime-caching.RequestWrapper
+ */
+
+/**
+ * Called prior to a network request being made. This allows you to update the
+ * request's URL or headers as appropriate, or just return the original request
+ * if there are no modifications needed.
+ *
+ * @example <caption>Appends a URL parameter to all outgoing requests.</caption>
+ *
+ * async function requestWillFetch({request}) {
+ *   const url = new URL(request.url);
+ *   url.searchParams.set('from-workbox', 'true');
+ *   return new Request(url.href, {headers: request.headers});
+ * }
+ *
+ * @callback requestWillFetch
+ * @param {Object} input
+ * @param {Request} input.request The request that would otherwise have been
+ * made against the network.
+ * @return {Promise<Request>} The request that will be used against the network
+ * instead.
+ *
+ * @memberof module:workbox-runtime-caching.RequestWrapper
+ */
+
+/**
+ * Called after a network request has failed. This allows you to report the
+ * failure, or save a copy of the failed request to be retried later.
+ *
+ * @example <caption>Logs a message when a network request fails.</caption>
+ *
+ * async function fetchDidFail({request}) {
+ *   const body = await request.text();
+ *   console.log(`A request for ${request.url} with body ${body} failed.`);
+ * }
+ *
+ * @callback fetchDidFail
+ * @param {Object} input
+ * @param {Request} input.request A clone of the request that failed. You can
+ * consume the request's body if needed.
+ *
+ * @memberof module:workbox-runtime-caching.RequestWrapper
+ */
+
+/**
  * This class is used by the various subclasses of
  * [Handler]{@link module:workbox-runtime-caching.Handler} to configure the
  * cache name and any desired plugins, which is to say classes that implement
  * request lifecycle callbacks.
  *
  * It automatically triggers any registered callbacks at the appropriate time.
- * The current set of plugin callbacks, along with the parameters they're
- * given and when they're called, is:
- *
- *   - `cacheWillUpdate({request, response})`: Called prior to writing an entry
- *   to the cache, allowing the callback to decide whether or not the cache
- *   entry should be written.
- *   - `cacheDidUpdate({cacheName, oldResponse, newResponse, url})`: Called
- *   whenever an entry is written to the cache, giving the callback a chance to
- *   notify clients about the update or implement cache expiration.
- *   - `cacheWillMatch({cachedResponse})`: Called whenever a response is read
- *   from the cache and is about to be used, giving the callback a chance to
- *   perform validity/freshness checks.
- *   - `fetchDidFail({request})`: Called whenever a network request fails.
  *
  * @memberof module:workbox-runtime-caching
  */
@@ -98,9 +209,9 @@ class RequestWrapper {
             } else if (callbackName === 'cacheWillUpdate') {
               throw ErrorFactory.createError(
                 'multiple-cache-will-update-plugins');
-            } else if (callbackName === 'cacheWillMatch') {
+            } else if (callbackName === 'cachedResponseWillBeUsed') {
               throw ErrorFactory.createError(
-                'multiple-cache-will-match-plugins');
+                'multiple-cached-response-will-be-used-plugins');
             }
             this.plugins.get(callbackName).push(plugin);
           }
@@ -173,9 +284,9 @@ class RequestWrapper {
     const cache = await this.getCache();
     let cachedResponse = await cache.match(request, this.matchOptions);
 
-    if (this.plugins.has('cacheWillMatch')) {
-      const plugin = this.plugins.get('cacheWillMatch')[0];
-      cachedResponse = plugin.cacheWillMatch({
+    if (this.plugins.has('cachedResponseWillBeUsed')) {
+      const plugin = this.plugins.get('cachedResponseWillBeUsed')[0];
+      cachedResponse = await plugin.cachedResponseWillBeUsed({
         request, cache, cachedResponse,
         matchOptions: this.matchOptions, cacheName: this.cacheName,
       });
@@ -219,9 +330,7 @@ class RequestWrapper {
 
     if (this.plugins.has('requestWillFetch')) {
       for (let plugin of this.plugins.get('requestWillFetch')) {
-        const returnedPromise = plugin.requestWillFetch({request});
-        isInstance({returnedPromise}, Promise);
-        const returnedRequest = await returnedPromise;
+        const returnedRequest = await plugin.requestWillFetch({request});
         isInstance({returnedRequest}, Request);
         request = returnedRequest;
       }
@@ -232,7 +341,7 @@ class RequestWrapper {
     } catch (err) {
       if (this.plugins.has('fetchDidFail')) {
         for (let plugin of this.plugins.get('fetchDidFail')) {
-          plugin.fetchDidFail({request: clonedRequest.clone()});
+          await plugin.fetchDidFail({request: clonedRequest.clone()});
         }
       }
 
@@ -304,7 +413,7 @@ class RequestWrapper {
 
     // Whichever plugin we've decided is appropriate, we now call its
     // cacheWillUpdate() method to determine cacheability of the response.
-    const cacheable = effectiveCacheableResponsePlugin.cacheWillUpdate(
+    const cacheable = await effectiveCacheableResponsePlugin.cacheWillUpdate(
       {request, response});
 
     if (cacheable) {

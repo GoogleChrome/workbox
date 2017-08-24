@@ -22,7 +22,7 @@ importScripts('/packages/workbox-runtime-caching/test/utils/setup.js');
 describe(`Test of the RequestWrapper class`, function() {
   const CACHE_NAME = location.href;
   const CACHE_WILL_UPDATE_PLUGIN = {cacheWillUpdate: () => {}};
-  const CACHE_WILL_MATCH_PLUGIN = {cacheWillMatch: () => {}};
+  const CACHE_WILL_MATCH_PLUGIN = {cachedResponseWillBeUsed: () => {}};
   const CACHED_URL = '/cached';
   const REDIRECTED_URL = '/__test/redirect/301/';
 
@@ -72,7 +72,7 @@ describe(`Test of the RequestWrapper class`, function() {
     }).to.throw().with.property('name', 'multiple-cache-will-update-plugins');
   });
 
-  it(`should throw when RequestWrapper() is called with multiple cacheWillMatch plugins`, function() {
+  it(`should throw when RequestWrapper() is called with multiple cachedResponseWillBeUsed plugins`, function() {
     expect(() => {
       new RequestWrapper({
         plugins: [
@@ -80,7 +80,7 @@ describe(`Test of the RequestWrapper class`, function() {
           CACHE_WILL_MATCH_PLUGIN,
         ],
       });
-    }).to.throw().with.property('name', 'multiple-cache-will-match-plugins');
+    }).to.throw().with.property('name', 'multiple-cached-response-will-be-used-plugins');
   });
 
   it(`it should throw when RequestWrapper() is called with invalid cacheId`, function() {
@@ -148,12 +148,12 @@ describe(`Test of the RequestWrapper class`, function() {
     await expectSameResponseBodies(cachedResponse, matchResponse);
   });
 
-  it(`should fulfill the match() promise with the value returned by a cacheWillMatch callback`, async function() {
+  it(`should fulfill the match() promise with the value returned by a cachedResponseWillBeUsed callback`, async function() {
     const testResponse = new Response('test');
-    const cacheWillMatchPlugin = {cacheWillMatch: () => testResponse};
+    const cachedResponseWillBeUsedPlugin = {cachedResponseWillBeUsed: () => testResponse};
     const requestWrapper = new RequestWrapper({
       cacheName: CACHE_NAME,
-      plugins: [cacheWillMatchPlugin],
+      plugins: [cachedResponseWillBeUsedPlugin],
     });
 
     const matchResponse = await requestWrapper.match({request: CACHED_URL});

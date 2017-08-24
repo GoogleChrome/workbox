@@ -27,9 +27,9 @@ describe(`Test of the CacheExpirationPlugin class`, function() {
     expect(plugin).to.be.instanceOf(CacheExpiration);
   });
 
-  it(`should expose a cacheWillMatch() method`, function() {
+  it(`should expose a cachedResponseWillBeUsed() method`, function() {
     const plugin = new CacheExpirationPlugin({maxAgeSeconds: MAX_AGE_SECONDS});
-    expect(plugin).to.respondTo('cacheWillMatch');
+    expect(plugin).to.respondTo('cachedResponseWillBeUsed');
   });
 
   it(`should expose a cacheDidUpdate() method`, function() {
@@ -37,18 +37,18 @@ describe(`Test of the CacheExpirationPlugin class`, function() {
     expect(plugin).to.respondTo('cacheDidUpdate');
   });
 
-  it(`should return cachedResponse when cacheWillMatch() is called and isResponseFresh() is true`, function() {
+  it(`should return cachedResponse when cachedResponseWillBeUsed() is called and isResponseFresh() is true`, function() {
     const plugin = new CacheExpirationPlugin({maxAgeSeconds: MAX_AGE_SECONDS});
     const date = new Date(NOW).toUTCString();
     const cachedResponse = new Response('', {headers: {date}});
-    expect(plugin.cacheWillMatch({cachedResponse, now: NOW})).to.eql(cachedResponse);
+    expect(plugin.cachedResponseWillBeUsed({cachedResponse, now: NOW})).to.eql(cachedResponse);
   });
 
-  it(`should return null when cacheWillMatch() is called and isResponseFresh() is false`, function() {
+  it(`should return null when cachedResponseWillBeUsed() is called and isResponseFresh() is false`, function() {
     const plugin = new CacheExpirationPlugin({maxAgeSeconds: MAX_AGE_SECONDS});
     // This will construct a date that is 1 second past the expiration.
     const date = new Date(NOW - ((MAX_AGE_SECONDS + 1) * 1000)).toUTCString();
     const cachedResponse = new Response('', {headers: {date}});
-    expect(plugin.cacheWillMatch({cachedResponse, now: NOW})).to.be.null;
+    expect(plugin.cachedResponseWillBeUsed({cachedResponse, now: NOW})).to.be.null;
   });
 });

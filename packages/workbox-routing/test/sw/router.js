@@ -28,30 +28,6 @@ describe(`Test of the Router class`, function() {
     globalStubs = [];
   });
 
-  it(`should call _addFetchListener() when Router() is called without any parameters`, function() {
-    const _addFetchListener = sinon.spy(Router.prototype, '_addFetchListener');
-    globalStubs.push(_addFetchListener);
-
-    new Router();
-    expect(_addFetchListener.calledOnce).to.be.true;
-  });
-
-  it(`should call _addFetchListener() when Router() is called with handleFetch: true`, function() {
-    const _addFetchListener = sinon.spy(Router.prototype, '_addFetchListener');
-    globalStubs.push(_addFetchListener);
-
-    new Router({handleFetch: true});
-    expect(_addFetchListener.calledOnce).to.be.true;
-  });
-
-  it(`should call _addFetchListener() when Router() is called with handleFetch: false`, function() {
-    const _addFetchListener = sinon.spy(Router.prototype, '_addFetchListener');
-    globalStubs.push(_addFetchListener);
-
-    new Router({handleFetch: false});
-    expect(_addFetchListener.calledOnce).to.be.false;
-  });
-
   it(`should modify the internal arrays of routes when register/unregister is called`, function() {
     const router = new Router();
 
@@ -72,5 +48,50 @@ describe(`Test of the Router class`, function() {
 
     expect(router._routes.get('GET')).to.have.members([getRoute1]);
     expect(router._routes.get('PUT')).to.have.members([putRoute1]);
+  });
+
+  // addEventListener is defined on the EventTarget interface.
+  // In order to properly stub out the method without triggering mocha's
+  // global leak detection, we need to walk up the inheritance chain to
+  // from ServiceWorkerGlobalScope to EventTarget.
+  // See https://developer.mozilla.org/en-US/docs/Web/API/EventTarget
+  it(`should call self.addEventListener('fetch') when addFetchListener() is called`, function() {
+    const stub = sinon.stub(self.__proto__.__proto__.__proto__, 'addEventListener');
+    globalStubs.push(stub);
+
+    const router = new Router();
+    router.addFetchListener();
+
+    expect(stub.calledOnce).to.be.true;
+    expect(stub.firstCall.args[0]).to.eql('fetch');
+  });
+
+  it(`should return false when addFetchListener() is called multiple times`, function() {
+    const stub = sinon.stub(self.__proto__.__proto__.__proto__, 'addEventListener');
+    globalStubs.push(stub);
+
+    const router = new Router();
+    const firstResponse = router.addFetchListener();
+    expect(firstResponse).to.be.true;
+
+    const secondResponse = router.addFetchListener();
+    expect(secondResponse).to.be.false;
+  });
+
+  it(`should return a promise for the correct response when handleRequest() is called`, async function() {
+    const expectedText = 'testing';
+    const router = new Router();
+    const route = new Route({
+      match: () => true,
+      handler: () => new Response(expectedText),
+    });
+    router.registerRoute({route});
+
+    // route.match() always returns true, so the Request details don't matter.
+    const event = new FetchEvent('fetch', {request: new Request('/')});
+    const response = await router.handleRequest({event});
+    const responseBody = await response.text();
+
+    expect(responseBody).to.eql(expectedText);
   });
 });

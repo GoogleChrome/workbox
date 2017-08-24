@@ -19,13 +19,18 @@ import logHelper from '../../../../lib/log-helper.js';
 import normalizeHandler from './normalize-handler';
 
 /**
- * The Router takes one or more [Routes]{@link Route} and registers a [`fetch`
- * event listener](https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent)
- * that will respond to network requests if there's a matching route.
+ * The Router takes one or more [Routes]{@link Route} and allows you to apply
+ * that routing logic to determine the appropriate way of handling requests
+ * inside of a service worker.
  *
  * It also allows you to define a "default" handler that applies to any requests
  * that don't explicitly match a `Route`, and a "catch" handler that responds
  * to any requests that throw an exception while being routed.
+ *
+ * You can use the `handleRequest()` method to pass a `FetchEvent` through the
+ * router and ultimately get a "routed response" back.
+ * If you'd like this to be handled automatically for you, calling
+ * `addFetchListener()` will cause the `Router` to respond to `fetch` events.
  *
  * @memberof module:workbox-routing
  *
@@ -46,6 +51,7 @@ import normalizeHandler from './normalize-handler';
  * });
  *
  * const router = new workbox.routing.Router();
+ * router.addFetchListener();
  * router.registerRoutes({routes: [assetRoute, imageRoute]});
  * router.setDefaultHandler({
  *   handler: new workbox.runtimeCaching.NetworkFirst(),
@@ -53,106 +59,158 @@ import normalizeHandler from './normalize-handler';
  */
 class Router {
   /**
-   * Start with an empty array of routes, and by default, sets up the `fetch`
-   * handler.
-   *
-   * @param {Boolean} [handleFetch=true] Whether or not the Router should
-   * register a `fetch` handler and respond to requests. This can be set to
-   * `false` in a development environment, to prevent the service worker
-   * from responding with cached responses.
+   * Constructs a new `Router` instance, without any registered routes.
    */
-  constructor({handleFetch} = {}) {
-    if (typeof handleFetch === 'undefined') {
-      handleFetch = true;
-    }
-
+  constructor() {
     // _routes will contain a mapping of HTTP method name ('GET', etc.) to an
     // array of all the corresponding Route instances that are registered.
     this._routes = new Map();
+    this._isListenerRegistered = false;
+  }
 
-    if (handleFetch) {
-      this._addFetchListener();
+  /**
+   * This will register a `fetch` event listener on your behalf which will check
+   * the incoming request to see if there's a matching route, and only respond
+   * if there is a match.
+   *
+   * @example
+   * const imageRoute = new RegExpRoute({
+   *   regExp: /images/,
+   *   handler: new CacheFirst(),
+   * });
+   *
+   * const router = new Router();
+   * router.registerRoute({route: imageRoute});
+   * router.addFetchListener();
+   *
+   * @return {boolean} Returns `true` if this is the first time the method is
+   * called and the listener was registered. Returns `false` if called again,
+   * as the listener will only be registered once.
+   */
+  addFetchListener() {
+    if (!this._isListenerRegistered) {
+      this._isListenerRegistered = true;
+      self.addEventListener('fetch', (event) => {
+        const responsePromise = this.handleRequest({event});
+        if (responsePromise) {
+          event.respondWith(responsePromise);
+        }
+      });
+      return true;
+    } else {
+      logHelper.warn({
+        that: this,
+        message: `addFetchListener() has already been called for this Router.`,
+      });
+      return false;
     }
   }
 
   /**
-   * This method will actually add the fetch event listener.
-   * @private
+   * This can be used to apply the routing rules to generate a response for a
+   * given request inside your own `fetch` event handler.
+   *
+   * @example
+   * const imageRoute = new RegExpRoute({
+   *   regExp: /images/,
+   *   handler: new CacheFirst(),
+   * });
+   *
+   * const router = new Router();
+   * router.registerRoute({route: imageRoute});
+   *
+   * self.addEventListener('fetch', (event) => {
+   *   event.waitUntil((async () => {
+   *     let response = await router.handleRequest({event});
+   *     // Do something with response, and then eventually respond with it.
+   *     event.respondWith(response);
+   *   })());
+   * });
+   *
+   * @param {Object} input
+   * @param {FetchEvent} input.event The event passed in to a `fetch` handler.
+   * @return {Promise<Response>|undefined} Returns a promise for a response,
+   * taking the registered routes into account. If there was no matching route
+   * and there's no `defaultHandler`, then returns undefined.
    */
-  _addFetchListener() {
-    self.addEventListener('fetch', (event) => {
-      const url = new URL(event.request.url);
-      if (!url.protocol.startsWith('http')) {
-        logHelper.log({
-          that: this,
-          message: 'URL does not start with HTTP and so not passing ' +
-            'through the router.',
-          data: {
-            request: event.request,
-          },
-        });
-        return;
-      }
+  handleRequest({event}) {
+    isInstance({event}, FetchEvent);
+    const url = new URL(event.request.url);
+    if (!url.protocol.startsWith('http')) {
+      logHelper.log({
+        that: this,
+        message: `The URL does not start with HTTP, so it can't be handled.`,
+        data: {
+          request: event.request,
+        },
+      });
+      return;
+    }
 
-      let responsePromise;
-      let matchingRoute;
-      for (let route of (this._routes.get(event.request.method) || [])) {
-        const matchResult = route.match({url, event});
-        if (matchResult) {
-          matchingRoute = route;
+    let {handler, params} = this._findHandlerAndParams({event, url});
 
-          logHelper.log({
-            that: this,
-            message: 'The router found a matching route.',
-            data: {
-              route: matchingRoute,
-              request: event.request,
-            },
-          });
+    // If we don't have a handler because there was no matching route, then
+    // fall back to defaultHandler if that's defined.
+    if (!handler && this.defaultHandler) {
+      handler = this.defaultHandler;
+    }
 
-          let params = matchResult;
-
-          if (Array.isArray(params) && params.length === 0) {
-            // Instead of passing an empty array in as params, use undefined.
-            params = undefined;
-          } else if (params.constructor === Object &&
-                     Object.keys(params).length === 0) {
-            // Instead of passing an empty object in as params, use undefined.
-            params = undefined;
-          }
-
-          responsePromise = route.handler.handle({url, event, params});
-          break;
-        }
-      }
-
-      if (!responsePromise && this.defaultHandler) {
-        responsePromise = this.defaultHandler.handle({url, event});
-      }
-
-      if (responsePromise && this.catchHandler) {
+    if (handler) {
+      let responsePromise = handler.handle({url, event, params});
+      if (this.catchHandler) {
         responsePromise = responsePromise.catch((error) => {
           return this.catchHandler.handle({url, event, error});
         });
       }
+      return responsePromise;
+    }
+  }
 
-      if (responsePromise) {
-        event.respondWith(responsePromise
-          .then((response) => {
-            logHelper.debug({
-              that: this,
-              message: 'The router is managing a route with a response.',
-              data: {
-                route: matchingRoute,
-                request: event.request,
-                response: response,
-              },
-            });
+  /**
+   * Checks the incoming event.request against the registered routes, and if
+   * there's a match, returns the corresponding handler along with any params
+   * generated by the match.
+   *
+   * @param {FetchEvent} input.event
+   * @param {URL} input.url
+   * @return {Object} Returns an object with `handler` and `params` properties.
+   * They are populated if a matching route was found or `undefined` otherwise.
+   * @private
+   */
+  _findHandlerAndParams({event, url}) {
+    const routes = this._routes.get(event.request.method) || [];
+    for (const route of routes) {
+      let matchResult = route.match({url, event});
+      if (matchResult) {
+        logHelper.log({
+          that: this,
+          message: 'The router found a matching route.',
+          data: {
+            route,
+            request: event.request,
+          },
+        });
 
-            return response;
-          }));
+        if (Array.isArray(matchResult) && matchResult.length === 0) {
+          // Instead of passing an empty array in as params, use undefined.
+          matchResult = undefined;
+        } else if (matchResult.constructor === Object &&
+          Object.keys(matchResult).length === 0) {
+          // Instead of passing an empty object in as params, use undefined.
+          matchResult = undefined;
+        }
+
+        // Break out of the loop and return the appropriate values as soon as
+        // we have a match.
+        return {
+          params: matchResult,
+          handler: route.handler,
+        };
       }
-    });
+    }
+
+    // If we didn't have a match, then return undefined values.
+    return {handler: undefined, params: undefined};
   }
 
   /**

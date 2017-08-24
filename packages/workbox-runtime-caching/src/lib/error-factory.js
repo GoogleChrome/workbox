@@ -18,8 +18,8 @@ import ErrorFactory from '../../../../lib/error-factory';
 const errors = {
   'multiple-cache-will-update-plugins': 'You cannot register more than one ' +
     'plugin that implements cacheWillUpdate.',
-  'multiple-cache-will-match-plugins': 'You cannot register more than one ' +
-    'plugin that implements cacheWillMatch.',
+  'multiple-cached-response-will-be-used-plugins': 'You cannot register more ' +
+    'than one plugin that implements cachedResponseWillBeUsed.',
   'invalid-response-for-caching': 'The fetched response could not be cached ' +
     'due to an invalid response code.',
   'no-response-received': 'No response received; falling back to cache.',

@@ -26,4 +26,5 @@ routes.push(new workbox.routing.ExpressRoute({
 }));
 
 const router = new workbox.routing.Router();
+router.addFetchListener();
 router.registerRoutes({routes});

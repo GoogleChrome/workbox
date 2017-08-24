@@ -60,7 +60,8 @@ class WorkboxSW {
    *
    * Defaults to `'precache-updates'`
    */
-  constructor({cacheId, skipWaiting, clientsClaim, handleFetch,
+  constructor({cacheId, skipWaiting, clientsClaim,
+               handleFetch = true,
                directoryIndex = 'index.html',
                precacheChannelName = 'precache-updates',
                ignoreUrlParametersMatching = [/^utm_/]} = {}) {
@@ -129,8 +130,12 @@ class WorkboxSW {
 
     this._router = new Router(
       this._revisionedCacheManager.getCacheName(),
-      handleFetch
     );
+
+    if (handleFetch) {
+      this._router.addFetchListener();
+    }
+
     this._registerInstallActivateEvents(skipWaiting, clientsClaim);
     this._registerDefaultRoutes(ignoreUrlParametersMatching, directoryIndex);
   }
@@ -158,7 +163,7 @@ class WorkboxSW {
    *
    * // ...precache() can also take objects to cache
    * // non-revisioned URLs.
-   * // Please use workbox-build or workbox-cli to generate the manifest for
+   * // Please use workbox-build or the workbox CLI to generate the manifest for
    * // you.
    * workboxSW.precache([
    *     {
@@ -371,7 +376,7 @@ class WorkboxSW {
       });
     };
 
-    return {cacheWillMatch: cacheMatchFunction};
+    return {cachedResponseWillBeUsed: cacheMatchFunction};
   }
 
   /**
