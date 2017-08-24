@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const oneLine = require('common-tags').oneLine;
 const PluginInterface = require('pr-bot').PluginInterface;
 const gzipSize = require('gzip-size');
+const bytes = require('bytes');
 
 // 10 KB max size
 const MAX_SIZE = 10 * 1000;
@@ -29,20 +30,19 @@ class AggregateSizePlugin extends PluginInterface {
     );
     const files = glob.sync(globPattern);
     let totalSize = 0;
+    let totalGzipSize = 0;
     files.forEach((filePath) => {
       const fileContents = fs.readFileSync(filePath);
-      totalSize += gzipSize.sync(fileContents);
+      const stat = fs.statSync(filePath);
+      totalSize += stat.size;
+      totalGzipSize += gzipSize.sync(fileContents);
     });
 
     const percentValue = (totalSize / MAX_SIZE) * 100;
     const percentString = parseFloat(percentValue).toFixed(0);
 
-    let totalSizeString = totalSize.toString();
-    let unitString = 'B';
-    if (totalSize > 1000) {
-      unitString = 'KB';
-      totalSizeString = parseFloat(totalSize).toFixed(2);
-    }
+    let totalSizeString = bytes(totalSize);
+    let totalGzipString = bytes(totalGzipSize);
 
     let markdownWarning = ``;
     if (percentValue >= 90) {
@@ -58,11 +58,13 @@ class AggregateSizePlugin extends PluginInterface {
     const failPR = totalSize >= MAX_SIZE;
 
     const markdownLog = `${markdownWarning}\n\n`+
-      `**Total Size**:                   ${totalSizeString} ${unitString}\n` +
-      `**Percentage of Size Remaining:** ${percentString}%`;
+      `**Total Size:**                   ${totalSizeString}\n` +
+      `**Percentage of Size Remaining:** ${percentString}%\n\n` +
+      `**Gzipped:**                      ${totalGzipString}`;
     const prettyLog =
-      `Total Size:                   ${totalSizeString} ${unitString}\n` +
-      `Percentage of Size Remaining: ${percentString}%`;
+      `Total Size:                   ${totalSizeString}\n` +
+      `Percentage of Size Remaining: ${percentString}%\n\n` +
+      `Gzipped:                      ${totalGzipString}`;
     return Promise.resolve({
       prettyLog,
       markdownLog,
