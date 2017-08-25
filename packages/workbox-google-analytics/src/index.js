@@ -66,6 +66,7 @@ import {NetworkFirst, NetworkOnly, RequestWrapper}
  * `qt` param based on the current time, as well as applies any other
  * user-defined hit modifications.
  * @param {Object} config See workbox.googleAnalytics.initialize.
+ * @return {Function} The requestWillDequeu callback function.
  */
 const createRequestWillDequeueCallback = (config) => {
   return (reqData) => {
@@ -100,6 +101,8 @@ const createRequestWillDequeueCallback = (config) => {
 
 /**
  * Creates GET and POST routes to catch failed Measurement Protocol hits.
+ * @param {Function} requestWillDequeueCallback The callback used by
+ *     background sync when requests are dequeued and retried.
  * @return {Array<Route>} The created routes.
  */
 const createCollectRoutes = (requestWillDequeueCallback) => {

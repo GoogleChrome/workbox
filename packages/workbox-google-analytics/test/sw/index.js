@@ -13,21 +13,14 @@
  limitations under the License.
 */
 
-import idb from 'idb';
 import IDBHelper from '../../../../lib/idb-helper.js';
 import * as googleAnalytics from '../../src/index.js';
 import constants from '../../src/lib/constants.js';
 import {QueuePlugin} from '../../../workbox-background-sync/src/index.js';
-import {Route, Router} from '../../../workbox-routing/src/index.js';
-import {NetworkFirst, NetworkOnly, RequestWrapper}
+import {NetworkFirst, NetworkOnly}
     from '../../../workbox-runtime-caching/src/index.js';
 
-
-const sleep = (amount) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, amount);
-  });
-};
+const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const waitUntil = async (test) => {
   if (test() === true) {
@@ -70,7 +63,7 @@ describe(`initialize`, function() {
       self.removeEventListener(evt, listener);
     }
     self.addEventListener.restore();
-  }
+  };
 
   beforeEach(function() {
     trackAddedEventListeners();
@@ -103,7 +96,7 @@ describe(`initialize`, function() {
     sinon.spy(NetworkOnly.prototype, 'handle');
 
     googleAnalytics.initialize();
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F'
+    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
@@ -131,7 +124,7 @@ describe(`initialize`, function() {
     sinon.stub(self, 'fetch');
 
     googleAnalytics.initialize();
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F'
+    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
@@ -165,7 +158,7 @@ describe(`initialize`, function() {
     sinon.spy(QueuePlugin.prototype, 'pushIntoQueue');
 
     googleAnalytics.initialize();
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F'
+    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
@@ -184,9 +177,7 @@ describe(`initialize`, function() {
 
     await waitUntil(() => QueuePlugin.prototype.pushIntoQueue.callCount == 2);
 
-    const [queuePlugin] = QueuePlugin.prototype.pushIntoQueue.thisValues;
     const [call1Args, call2Args] = QueuePlugin.prototype.pushIntoQueue.args;
-
     expect(call1Args[0].request.url).to.equal(`https://` +
         `${constants.URL.HOST}${constants.URL.COLLECT_PATH}?${payload}`);
     expect(call2Args[0].request.url).to.equal(`https://` +
@@ -201,7 +192,7 @@ describe(`initialize`, function() {
     sinon.spy(QueuePlugin.prototype, 'pushIntoQueue');
 
     googleAnalytics.initialize();
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F'
+    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
@@ -220,12 +211,10 @@ describe(`initialize`, function() {
 
     await waitUntil(() => QueuePlugin.prototype.pushIntoQueue.callCount == 2);
 
-    const [queuePlugin] = QueuePlugin.prototype.pushIntoQueue.thisValues;
-    const [call1Args, call2Args] = QueuePlugin.prototype.pushIntoQueue.args;
-
     self.fetch.restore();
     sinon.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
+    const [queuePlugin] = QueuePlugin.prototype.pushIntoQueue.thisValues;
     await queuePlugin.replayRequests();
 
     expect(self.fetch.callCount).to.equal(2);
@@ -263,7 +252,7 @@ describe(`initialize`, function() {
         cm1: 1,
       },
     });
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F'
+    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
@@ -282,12 +271,10 @@ describe(`initialize`, function() {
 
     await waitUntil(() => QueuePlugin.prototype.pushIntoQueue.callCount == 2);
 
-    const [queuePlugin] = QueuePlugin.prototype.pushIntoQueue.thisValues;
-    const [call1Args, call2Args] = QueuePlugin.prototype.pushIntoQueue.args;
-
     self.fetch.restore();
     sinon.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
+    const [queuePlugin] = QueuePlugin.prototype.pushIntoQueue.thisValues;
     await queuePlugin.replayRequests();
 
     expect(self.fetch.callCount).to.equal(2);
@@ -321,7 +308,7 @@ describe(`initialize`, function() {
         }
       },
     });
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F'
+    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
@@ -340,12 +327,10 @@ describe(`initialize`, function() {
 
     await waitUntil(() => QueuePlugin.prototype.pushIntoQueue.callCount == 2);
 
-    const [queuePlugin] = QueuePlugin.prototype.pushIntoQueue.thisValues;
-    const [call1Args, call2Args] = QueuePlugin.prototype.pushIntoQueue.args;
-
     self.fetch.restore();
     sinon.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
+    const [queuePlugin] = QueuePlugin.prototype.pushIntoQueue.thisValues;
     await queuePlugin.replayRequests();
 
     expect(self.fetch.callCount).to.equal(2);

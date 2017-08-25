@@ -13,16 +13,13 @@
 
 import constants from '../../src/lib/constants.js';
 import IDBHelper from '../../../../lib/idb-helper.js';
-import RequestQueue from '../../../workbox-background-sync/src/lib/request-queue.js';
-
 
 const STATIC_ASSETS_PATH = '/packages/workbox-google-analytics/test/static';
-const HIT_PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F'
-
+const HIT_PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
 describe(`workbox-google-analytics`, function() {
   const db = new IDBHelper(constants.IDB.NAME, 1, 'QueueStore');
-  const resetDb = async function() {
+  const resetDb = async () => {
     const keys = await db.getAllKeys();
     return Promise.all(keys.map((key) => db.delete(key)));
   };
@@ -39,7 +36,6 @@ describe(`workbox-google-analytics`, function() {
     // A promise that resolves once the sync event fires and the requests
     // are replayed in the service worker.
     const syncMessageReceived = new Promise((resolve, reject) => {
-      let replayedRequests = 0;
       const channel = new BroadcastChannel('workbox-google-analytics-sync');
       channel.onmessage = (evt) => {
         if (evt.data == 'replay:success') {
@@ -59,7 +55,7 @@ describe(`workbox-google-analytics`, function() {
 
       await iframe.contentWindow.fetch(`https://${constants.URL.HOST}` +
           `${constants.URL.COLLECT_PATH}?${HIT_PAYLOAD}&foo=2`);
-    } catch(err) {
+    } catch (err) {
       // A network error is expected.
     }
 
