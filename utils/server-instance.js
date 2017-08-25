@@ -93,8 +93,6 @@ class ServerInstance {
         root: repoRoot,
       });
 
-      console.log(devScript);
-
       if (devScript.length === 0) {
         const errMsg = `No built module found for pattern '${pattern}'.`;
         console.log(errMsg);
