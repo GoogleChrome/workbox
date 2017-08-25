@@ -99,7 +99,7 @@ class RequestManager {
    */
   async replayRequests() {
     const failedItems = [];
-    for (let hash of this._queue.queue) {
+    for (let hash of await this._queue.getQueue()) {
       try {
         await this.replayRequest(hash);
       } catch (err) {

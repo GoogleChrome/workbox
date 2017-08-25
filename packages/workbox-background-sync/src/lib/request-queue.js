@@ -82,7 +82,7 @@ class RequestQueue {
    * @private
    */
   async saveQueue() {
-    await this._idbQDb.put(this._queueName, await this._getQueue());
+    await this._idbQDb.put(this._queueName, await this.getQueue());
   }
 
   /**
@@ -95,7 +95,7 @@ class RequestQueue {
    * @memberOf Queue
    * @private
    */
-  async push({request}) {
+  async pushIntoQueue({request}) {
     await this._initializationPromise;
     isInstance({request}, Request);
 
@@ -153,7 +153,7 @@ class RequestQueue {
    * @private
    */
   async getRequestFromQueue({hash}) {
-    const queue = await this._getQueue();
+    const queue = await this.getQueue();
     isType({hash}, 'string');
 
     if (queue.includes(hash)) {
@@ -167,18 +167,6 @@ class RequestQueue {
 
       return reqData;
     }
-  }
-
-  /**
-   * returns the instance of queue.
-   *
-   * @readonly
-   *
-   * @memberOf RequestQueue
-   * @private
-   */
-  get queue() {
-    return Object.assign([], this._queue);
   }
 
   /**
@@ -201,7 +189,7 @@ class RequestQueue {
    * @memberOf RequestQueue
    * @private
    */
-  async _getQueue() {
+  async getQueue() {
     await this._initializationPromise;
     return Object.assign([], this._queue);
   }

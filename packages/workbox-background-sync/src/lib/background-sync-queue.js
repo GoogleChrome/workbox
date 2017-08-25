@@ -114,7 +114,7 @@ class Queue {
    */
   pushIntoQueue({request}) {
     isInstance({request}, Request);
-    return this._queue.push({request});
+    return this._queue.pushIntoQueue({request});
   }
 
   /**

@@ -30,11 +30,12 @@ describe(`request-queue`, function() {
     callbacks,
   });
 
+  const promiseDelayTime = 800;
   const getDelayedPromise = () => {
     return new Promise((resolve)=>{
       setTimeout(()=>{
         resolve();
-      }, 800);
+      }, promiseDelayTime);
     });
   };
 
@@ -63,7 +64,7 @@ describe(`request-queue`, function() {
 
     it(`should re-fill the queue`, async function() {
       expect(queue._queue.length).to.equal(0);
-      const hash = await queue.push({
+      const hash = await queue.pushIntoQueue({
         request: new Request('http://lipsum.com/generate'),
       });
       expect(queue._queue.length).to.equal(1);
@@ -105,7 +106,7 @@ describe(`request-queue`, function() {
       const startTime = performance.now();
       queue._initializationPromise = getDelayedPromise();
       const queueLength = queue._queue.length;
-      const hash = await queue.push({
+      const hash = await queue.pushIntoQueue({
         request: new Request('http://lipsum.com/generate'),
       });
 
@@ -115,7 +116,7 @@ describe(`request-queue`, function() {
       expect(callbacks.requestWillEnqueue.calledOnce).to.be.true;
       expect(callbacks.requestWillEnqueue.calledWith(sinon.match.has('request')))
           .to.be.true;
-      expect(performance.now() - startTime).to.be.above(800);
+      expect(performance.now() - startTime).to.be.above(promiseDelayTime);
       delete callbacks.requestWillEnqueue;
     });
   });
@@ -125,7 +126,7 @@ describe(`request-queue`, function() {
       callbacks.requestWillDequeue = sinon.spy();
       const startTime = performance.now();
       queue._initializationPromise = getDelayedPromise();
-      const hash = await queue.push({
+      const hash = await queue.pushIntoQueue({
         request: new Request('http://lipsum.com/generate'),
       });
 
@@ -134,7 +135,7 @@ describe(`request-queue`, function() {
       expect(reqData).to.have.all.keys(['request', 'config', 'metadata']);
       expect(callbacks.requestWillDequeue.calledOnce).to.be.true;
       expect(callbacks.requestWillDequeue.calledWith(reqData)).to.be.true;
-      expect(performance.now() - startTime).to.be.above(800);
+      expect(performance.now() - startTime).to.be.above(promiseDelayTime);
       delete callbacks.requestWillDequeue;
     });
   });
