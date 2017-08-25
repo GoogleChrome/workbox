@@ -108,7 +108,6 @@ const createRequestWillDequeueCallback = (config) => {
 const createCollectRoutes = (requestWillDequeueCallback) => {
   const bgSyncQueuePlugin = new QueuePlugin({
     dbName: constants.IDB.NAME,
-    // queueName: constants.IDB.STORE,
     maxRetentionTime: constants.STOP_RETRYING_AFTER,
     callbacks: {requestWillDequeue: requestWillDequeueCallback},
   });
