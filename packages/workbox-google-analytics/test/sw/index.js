@@ -20,6 +20,8 @@ import {QueuePlugin} from '../../../workbox-background-sync/src/index.js';
 import {NetworkFirst, NetworkOnly}
     from '../../../workbox-runtime-caching/src/index.js';
 
+const PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
+
 const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const waitUntil = async (test) => {
@@ -96,11 +98,10 @@ describe(`initialize`, function() {
     sinon.spy(NetworkOnly.prototype, 'handle');
 
     googleAnalytics.initialize();
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
-          `${constants.URL.COLLECT_PATH}?${payload}`, {
+          `${constants.URL.COLLECT_PATH}?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
@@ -111,7 +112,7 @@ describe(`initialize`, function() {
       request: new Request(`https://${constants.URL.HOST}` +
           `${constants.URL.COLLECT_PATH}`, {
         method: 'POST',
-        body: payload,
+        body: PAYLOAD,
       }),
     }));
 
@@ -124,31 +125,30 @@ describe(`initialize`, function() {
     sinon.stub(self, 'fetch');
 
     googleAnalytics.initialize();
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
-          `${constants.URL.COLLECT_PATH}?${payload}`, {
+          `${constants.URL.COLLECT_PATH}?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
 
     expect(self.fetch.calledOnce).to.be.ok;
     expect(self.fetch.firstCall.args[0].url).to.equal(`https://` +
-        `${constants.URL.HOST}${constants.URL.COLLECT_PATH}?${payload}`);
+        `${constants.URL.HOST}${constants.URL.COLLECT_PATH}?${PAYLOAD}`);
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
           `${constants.URL.COLLECT_PATH}`, {
         method: 'POST',
-        body: payload,
+        body: PAYLOAD,
       }),
     }));
 
     expect(self.fetch.calledTwice).to.be.ok;
 
     const bodyText = await self.fetch.secondCall.args[0].text();
-    expect(bodyText).to.equal(payload);
+    expect(bodyText).to.equal(PAYLOAD);
 
     self.fetch.restore();
   });
@@ -158,11 +158,10 @@ describe(`initialize`, function() {
     sinon.spy(QueuePlugin.prototype, 'pushIntoQueue');
 
     googleAnalytics.initialize();
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
-          `${constants.URL.COLLECT_PATH}?${payload}`, {
+          `${constants.URL.COLLECT_PATH}?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
@@ -171,7 +170,7 @@ describe(`initialize`, function() {
       request: new Request(`https://${constants.URL.HOST}` +
           `${constants.URL.COLLECT_PATH}`, {
         method: 'POST',
-        body: payload,
+        body: PAYLOAD,
       }),
     }));
 
@@ -179,7 +178,7 @@ describe(`initialize`, function() {
 
     const [call1Args, call2Args] = QueuePlugin.prototype.pushIntoQueue.args;
     expect(call1Args[0].request.url).to.equal(`https://` +
-        `${constants.URL.HOST}${constants.URL.COLLECT_PATH}?${payload}`);
+        `${constants.URL.HOST}${constants.URL.COLLECT_PATH}?${PAYLOAD}`);
     expect(call2Args[0].request.url).to.equal(`https://` +
         `${constants.URL.HOST}${constants.URL.COLLECT_PATH}`);
 
@@ -192,11 +191,10 @@ describe(`initialize`, function() {
     sinon.spy(QueuePlugin.prototype, 'pushIntoQueue');
 
     googleAnalytics.initialize();
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
-          `${constants.URL.COLLECT_PATH}?${payload}`, {
+          `${constants.URL.COLLECT_PATH}?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
@@ -205,7 +203,7 @@ describe(`initialize`, function() {
       request: new Request(`https://${constants.URL.HOST}` +
           `${constants.URL.COLLECT_PATH}`, {
         method: 'POST',
-        body: payload,
+        body: PAYLOAD,
       }),
     }));
 
@@ -224,7 +222,7 @@ describe(`initialize`, function() {
 
     const replayParams1 = new URLSearchParams(await replay1.text());
     const replayParams2 = new URLSearchParams(await replay2.text());
-    const payloadParams = new URLSearchParams(payload);
+    const payloadParams = new URLSearchParams(PAYLOAD);
 
     expect(parseInt(replayParams1.get('qt'))).to.be.above(0);
     expect(parseInt(replayParams1.get('qt'))).to.be.below(
@@ -252,11 +250,10 @@ describe(`initialize`, function() {
         cm1: 1,
       },
     });
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
-          `${constants.URL.COLLECT_PATH}?${payload}`, {
+          `${constants.URL.COLLECT_PATH}?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
@@ -265,7 +262,7 @@ describe(`initialize`, function() {
       request: new Request(`https://${constants.URL.HOST}` +
           `${constants.URL.COLLECT_PATH}`, {
         method: 'POST',
-        body: payload,
+        body: PAYLOAD,
       }),
     }));
 
@@ -308,11 +305,10 @@ describe(`initialize`, function() {
         }
       },
     });
-    const payload = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${constants.URL.HOST}` +
-          `${constants.URL.COLLECT_PATH}?${payload}&foo=1`, {
+          `${constants.URL.COLLECT_PATH}?${PAYLOAD}&foo=1`, {
         method: 'GET',
       }),
     }));
@@ -321,7 +317,7 @@ describe(`initialize`, function() {
       request: new Request(`https://${constants.URL.HOST}` +
           `${constants.URL.COLLECT_PATH}`, {
         method: 'POST',
-        body: payload + '&foo=2',
+        body: PAYLOAD + '&foo=2',
       }),
     }));
 
