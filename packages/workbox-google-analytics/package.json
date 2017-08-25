@@ -19,9 +19,9 @@
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-google-analytics",
   "devDependencies": {
-    "workbox-background-sync": "^1.3.0",
-    "workbox-routing": "^1.3.0",
-    "workbox-runtime-caching": "^1.3.0"
+    "workbox-background-sync": "^2.0.0",
+    "workbox-routing": "^2.0.0",
+    "workbox-runtime-caching": "^2.0.0"
   },
   "files": [
     "build"

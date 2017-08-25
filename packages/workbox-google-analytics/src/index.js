@@ -165,5 +165,6 @@ export const initialize = (config = {}) => {
       ...createCollectRoutes(requestWillDequeueCallback),
     ],
   });
+  router.addFetchListener();
 };
 
