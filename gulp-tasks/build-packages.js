@@ -8,6 +8,7 @@ const source = require('vinyl-source-stream');
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
 const buffer = require('vinyl-buffer');
+const glob = require('glob');
 
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
@@ -45,16 +46,16 @@ const buildPackage = (packagePath, buildType) => {
   }
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
-  if (!pkgJson['workbox::browserNamespace']) {
-    logHelper.error(ERROR_NO_NAMSPACE + packageName);
-    return Promise.reject(ERROR_NO_NAMSPACE + packageName);
+  if (!pkgJson.workbox || !pkgJson.workbox.browserNamespace) {
+    logHelper.error(ERROR_NO_NAMSPACE + ' ' + packageName);
+    return Promise.reject(ERROR_NO_NAMSPACE + ' ' + packageName);
   }
 
   // Filename should be format <package name>.<build type>.js
   const outputFilename = `${packageName}.${buildType}.js`;
   // Namespace should be <name space>.<modules browser namespace>
   const namespace =
-    `${constants.NAMESPACE_PREFIX}.${pkgJson['workbox::browserNamespace']}`;
+    `${constants.NAMESPACE_PREFIX}.${pkgJson.workbox.browserNamespace}`;
 
   const outputDirectory = path.join(packagePath,
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
@@ -68,14 +69,79 @@ const buildPackage = (packagePath, buildType) => {
 
   const plugins = rollupHelper.getDefaultPlugins(buildType);
 
-  // This makes Rollup assume workbox-core will be added to the global
+  // This makes Rollup assume workbox-* will be added to the global
   // scope and replace references with the core namespace
-  const globals = {
-    'workbox-core': `${constants.NAMESPACE_PREFIX}.core`,
+  const globals = (moduleId) => {
+    // This regex matches for (workbox-*)(/any/path/here.mjs)
+    const workboxModuleIdRegex = /(workbox-\w*)([\/\w\.]*)*/g;
+    const result = workboxModuleIdRegex.exec(moduleId);
+    if (!result) {
+      throw new Error(`Unknown global module ID: ${moduleId}`);
+    }
+
+    const packageName = result[1];
+    let importFilePath = null;
+    if (result.length === 3) {
+      importFilePath = result[2];
+    }
+
+    // Get a packages browser namespace so we know where it will be
+    // ont he global scope (i.e. google.workbox.????)
+    let browserNamespace = null;
+    const packagePath = path.join(__dirname, '..', 'packages', packageName);
+    try {
+      const pkg = require(path.join(packagePath, 'package.json'));
+      browserNamespace = pkg.workbox.browserNamespace;
+    } catch (err) {
+      logHelper.error(`Unable to get browserNamespace for package: ` +
+        `'${packageName}'`);
+      logHelper.error(err);
+      throw err;
+    }
+
+    let globalNamespace = `${constants.NAMESPACE_PREFIX}.${browserNamespace}`;
+
+    // If the module pulls in a specific files we'll need to add this
+    // to the namespace. i.e. workbox-core/internal/logHelper should
+    // become google.workbox.core.internal.logHelper.
+    if (importFilePath) {
+      // Glob for the file we want so that file extensions are automatically
+      // searched for.
+      // This is just to ensure a file is there.
+      const matchingFiles = glob.sync(
+        path.join(packagePath, importFilePath + '*'));
+
+      // If we have no matches or multiple matches, we can't be sure what
+      // the import should be, so error out as it's ambiguous.
+      if (matchingFiles.length !== 1) {
+        logHelper.error(
+          `Expect a single file when searching for '${moduleId}': `,
+          matchingFiles);
+        throw new Error('Unexpected result when looking for appropriate file ' +
+          `to match ${moduleId}`);
+      }
+
+      // Strip any file extensions
+      importFilePath = importFilePath.replace(path.extname(importFilePath), '');
+
+      // Replace all forward slashes with a dot
+      const fileNamespace = importFilePath.replace(/\//g, '.');
+
+      // To further ensure exports and imports are where they are expect,
+      // we could test the generated browser export to ensure our new global
+      // module is correct.
+      const packgeBrowserNamespace =
+
+      globalNamespace += fileNamespace;
+    }
+
+    logHelper.log(`Swapping import '${moduleId}' for '${globalNamespace}'`);
+    return globalNamespace;
   };
-  const external = [
-    'workbox-core',
-  ];
+  // This ensures all workbox-* modules are treated as external.
+  const external = (moduleId) => {
+    return (moduleId.indexOf('workbox-') === 0);
+  };
 
   return rollup({
     entry: browserEntryPath,

@@ -16,7 +16,9 @@
   "scripts": {
     "prepublish": "gulp build-packages --package workbox-core"
   },
-  "workbox::browserNamespace": "core",
+  "workbox": {
+    "browserNamespace": "core"
+  },
   "main": "build/browser-bundles/workbox-core.prod.js",
   "module": "index.mjs"
 }
