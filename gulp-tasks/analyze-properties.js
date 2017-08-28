@@ -1,6 +1,6 @@
 const gulp = require('gulp');
 
-const AnalyseBuildForProperties = require('../infra/tools/analyse-properties');
+const AnalyseBuildForProperties = require('./utils/analyse-properties');
 
 gulp.task('analyze-properties:run', async () => {
   const analysisTool = new AnalyseBuildForProperties();

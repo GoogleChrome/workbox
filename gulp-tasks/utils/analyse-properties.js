@@ -16,6 +16,9 @@ const path = require('path');
 const fs = require('fs-extra');
 const babylon = require('babylon');
 
+const logHelper = require('./log-helper');
+const constants = require('./constants');
+
 class AnalyseBuildForProperties {
   run() {
     const filePaths = this.getBuildFiles();
@@ -32,7 +35,8 @@ class AnalyseBuildForProperties {
 
   getBuildFiles() {
     const buildGlob = path.join(__dirname, '..', '..', 'packages',
-      '*', 'build', 'browser-bundles', '*.js');
+      '*', constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME,
+      '*.js');
     return glob.sync(buildGlob);
   }
 
@@ -82,17 +86,17 @@ class AnalyseBuildForProperties {
       }
     });
 
-    console.log();
-    console.log(`Results for '${path.relative(process.cwd(), filePath)}'`);
-    console.log();
+    logHelper.log();
+    logHelper.log(`Results for '${path.relative(process.cwd(), filePath)}'`);
+    logHelper.log();
 
     analysis.forEach((entry) => {
       const numberOfSpaces = longestPropertyName - entry.propertyName.length;
       const extraSpace = ' '.repeat(numberOfSpaces);
-      console.log(`    ${entry.propertyName} ` +
+      logHelper.log(`    ${entry.propertyName} ` +
         `${extraSpace} ${entry.propertyCount}`);
     });
-      console.log();
+      logHelper.log();
   }
 }
 
