@@ -6,7 +6,6 @@ const logHelper = require('../log-helper');
 const modifyUrlPrefixTranform = require('./modify-url-prefix-transform');
 const noRevisionForUrlsMatchingTransform =
   require('./no-revision-for-urls-matching-transform');
-const path = require('path');
 
 /**
  * A `ManifestTransform` function can be used to modify the modify the `url` or
@@ -71,7 +70,7 @@ module.exports = (fileDetails, options) => {
   // {url, revision} objects, with path.sep replaced with /.
   const normalizedManifest = filteredFileDetails.map((fileDetails) => {
     return {
-      url: fileDetails.file.replace(path.sep, '/'),
+      url: fileDetails.file.replace(/\\/g, '/'),
       revision: fileDetails.hash,
     };
   });
