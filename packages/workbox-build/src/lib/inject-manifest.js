@@ -4,6 +4,7 @@ const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
 
+const copyWorkboxSW = require('./utils/copy-workbox-sw');
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const errors = require('./errors');
 
@@ -47,9 +48,31 @@ const injectManifest = (input) => {
 
   const injectionPointRegex = /(\.precache\()\s*\[\s*\]\s*(\))/g;
 
-  return getFileManifestEntries(input)
+  const globDirectory = input.globDirectory;
+  input.globIgnores = input.globIgnores || [];
+  const swDest = input.swDest;
+
+  let workboxSWImportPath;
+  let destDirectory = path.dirname(swDest);
+  return copyWorkboxSW(destDirectory)
+  .then((libPath) => {
+    // If sw file is in build/sw.js, the workboxSW file will be
+    // build/workboxSW.***.js. So the sw.js file should import workboxSW.***.js
+    // (i.e. not include build/).
+    workboxSWImportPath = path.relative(destDirectory, libPath);
+
+    // we will be globbing in the globDirectory, so we need to ignore relative
+    // to that path.
+    input.globIgnores.push(path.relative(globDirectory, libPath));
+    input.globIgnores.push(path.relative(globDirectory, swDest));
+  })
+  .then(() => {
+    return getFileManifestEntries(input);
+  })
   .then((manifestEntries) => {
     let swFileContents = fs.readFileSync(input.swSrc, 'utf8');
+    swFileContents = `importScripts('${workboxSWImportPath}');\n`
+                      + swFileContents;
     const injectionResults = swFileContents.match(injectionPointRegex);
     if (!injectionResults) {
       throw new Error(errors['injection-point-not-found']);
