@@ -14,7 +14,6 @@
 */
 
 /**
- * @module workbox-range-requests
  * # workbox-range-requests
  *
  * A helper library that instructs a service worker respond to HTTP requests
@@ -36,6 +35,8 @@
  *
  * - https://github.com/jakearchibald/range-request-test/blob/master/static/sw.js
  * - https://github.com/GoogleChrome/sample-media-pwa/blob/master/src/client/scripts/ranged-response.js
+ *
+ * @module workbox-range-requests
  */
 
 import handleRangeRequest from './lib/handle-range-request.js';

@@ -18,8 +18,6 @@ import logHelper from '../../../../lib/log-helper.js';
 import {isType, isInstance} from '../../../../lib/assert.js';
 
 /**
- * @memberof module:workbox-range-requests
- *
  * The public function `handleRangeRequest()` takes a `Request` and `Response`
  * object as input, and returns one of two things:
  *
@@ -50,6 +48,8 @@ import {isType, isInstance} from '../../../../lib/assert.js';
  *     );
  *   }
  * });
+ *
+ * @memberof module:workbox-range-requests
  */
 
 /**

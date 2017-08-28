@@ -16,8 +16,6 @@
 import handleRangeRequest from './handle-range-request.js';
 
 /**
- * @memberof module:workbox-range-requests
- *
  * This class is meant to be automatically invoked as a plugin to a
  * {@link module:workbox-runtime-caching.RequestWrapper|RequestWrapper}, which
  * is used by the `workbox-sw` and `workbox-runtime-caching` modules. If you
@@ -26,6 +24,8 @@ import handleRangeRequest from './handle-range-request.js';
  *
  * Under the hood, this will call `handleRangeRequest()`, passing
  * in the appropriate request and response objects.
+ *
+
  *
  * @example
  * const workboxSW = new WorkboxSW();
