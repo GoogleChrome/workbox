@@ -32,12 +32,14 @@ const ERROR_NO_NAMSPACE = oneLine`
 
 const buildPackage = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
-  const browserEntry = path.join(packagePath, constants.PACKAGE_BUILD_DIRNAME,
+  const browserEntryPath = path.join(
+    packagePath,
+    constants.PACKAGE_BUILD_DIRNAME,
     constants.BROWSER_ENTRY_FILENAME);
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
-  if (!fs.pathExistsSync(browserEntry)) {
+  if (!fs.pathExistsSync(browserEntryPath)) {
     logHelper.error(ERROR_NO_BROWSER_BUNDLE + packageName);
     return Promise.reject(ERROR_NO_BROWSER_BUNDLE + packageName);
   }
@@ -76,7 +78,7 @@ const buildPackage = (packagePath, buildType) => {
   ];
 
   return rollup({
-    entry: browserEntry,
+    entry: browserEntryPath,
     format: 'iife',
     moduleName: namespace,
     sourceMap: true,
@@ -91,7 +93,7 @@ const buildPackage = (packagePath, buildType) => {
   })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
-  .pipe(source(browserEntry))
+  .pipe(source(browserEntryPath))
   // gulp-sourcemaps don't work with streams so we need
   .pipe(buffer())
   // This tells gulp-sourcemaps to load the inline sourcemap
@@ -122,6 +124,21 @@ const packageBuilds = constants.BUILD_TYPES.map((buildType) => {
 
 gulp.task('build-packages:build', gulp.series(packageBuilds));
 
+/**
+ * This function will take an object and generate a friend export
+ * object.
+ * For example, { hello: world, example: { foo: foo } } will output:
+ * "{
+ *   hello: world,
+ *   example: {
+ *     foo,
+ *   },
+ * }"
+ * @param {*} exportObject This is the object that needs to be converted
+ * to a string.
+ * @param {*} levels This value is just used for indenting the code to
+ * ensure the final output is human readable and easy to understand.
+ */
 const convertExportObject = (exportObject, levels = 0) => {
   let outputStrings = [];
   const keys = Object.keys(exportObject);
@@ -144,7 +161,12 @@ const convertExportObject = (exportObject, levels = 0) => {
   return `{\n${padding}${outputStrings.join(joinString)}\n${closePadding}}`;
 };
 
-const generateBrowserEntry = (pkgPath) => {
+/**
+ * This function will generate a file containing all the imports and exports
+ * for a package. This file will then be passed to Rollup as the "entry" file
+ * to generate the 'iife' browser bundle.
+ */
+const generateBrowserEntryFile = (pkgPath) => {
   const outputPath = path.join(pkgPath, constants.PACKAGE_BUILD_DIRNAME,
     constants.BROWSER_ENTRY_FILENAME);
   const filesToPublish = glob.sync(path.posix.join(pkgPath, '**', '*.mjs'));
@@ -200,7 +222,7 @@ const generateBrowserEntry = (pkgPath) => {
 gulp.task('build-packages:generate-browser-entry', gulp.series(
   packageRunnner(
     'build-packages:generate-browser-entry',
-    generateBrowserEntry,
+    generateBrowserEntryFile,
   )
 ));
 
