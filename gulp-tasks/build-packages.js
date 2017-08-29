@@ -181,7 +181,7 @@ const buildPackage = (packagePath, buildType) => {
     entry: browserEntryPath,
     format: 'iife',
     moduleName: namespace,
-    // sourceMap: true,
+    sourceMap: true,
     globals,
     external,
     plugins,
