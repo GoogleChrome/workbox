@@ -37,6 +37,8 @@ import {NetworkFirst, NetworkOnly, RequestWrapper}
  * // the `parameterOverrides` configuration option. This is useful in cases
  * // where you want to set a custom dimension on all hits sent by the service
  * // worker to differentiate them in your reports later.
+ * // For parameter usage details, see:
+ * // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
  * workbox.googleAnalytics.initialize({
  *   parameterOverrides: {
  *     cd1: 'replay'
@@ -48,6 +50,8 @@ import {NetworkFirst, NetworkOnly, RequestWrapper}
  * // parameters you can use the `hitFilter` option. One example of when this
  * // might be useful is if you wanted to track the amount of time that elapsed
  * // between when the hit was attempted and when it was successfully replayed.
+ * // For parameter usage details, see:
+ * // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
  * workbox.googleAnalytics.initialize({
  *   hitFilter: (params) =>
  *     // Sets the `qt` param as a custom metric.
@@ -73,6 +77,9 @@ const createRequestWillDequeueCallback = (config) => {
     const {request} = reqData;
     const hitTime = reqData.metadata.creationTimestamp;
     const queueTime = Date.now() - hitTime;
+
+    // Measurement protocol requests can set their payload parameters in either
+    // the URL query string (for GET requests) or the POST body.
     const params = request.body ? new URLSearchParams(request.body) :
         new URL(request.url).searchParams;
 

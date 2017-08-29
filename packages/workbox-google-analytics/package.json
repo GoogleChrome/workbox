@@ -18,7 +18,7 @@
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-google-analytics",
-  "devDependencies": {
+  "dependencies": {
     "workbox-background-sync": "^2.0.0",
     "workbox-routing": "^2.0.0",
     "workbox-runtime-caching": "^2.0.0"
