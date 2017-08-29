@@ -88,7 +88,7 @@ const buildPackage = (packagePath, buildType) => {
   // scope and replace references with the core namespace
   const globals = (moduleId) => {
     // This regex matches for (workbox-*)(/any/path/here.mjs)
-    const workboxModuleIdRegex = /(workbox-\w*)([\/\w\.]*)*/g;
+    const workboxModuleIdRegex = /(workbox-\w*)([/\w.]*)*/g;
     const result = workboxModuleIdRegex.exec(moduleId);
     if (!result) {
       throw new Error(`Unknown global module ID: ${moduleId}`);
