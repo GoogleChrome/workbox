@@ -32,12 +32,12 @@ const ERROR_NO_NAMSPACE = oneLine`
 const testObjectValueExists = (object, nestedPath) => {
   const pieces = nestedPath.split('.');
   let currentRoot = object;
-  pieces.forEach((piece) => {
+  for (let i = 0; i < pieces.length; i++) {
     if (!currentRoot.piece) {
       return false;
     }
-    currentRoot = object[piece];
-  });
+    currentRoot = object[pieces[i]];
+  }
   return true;
 };
 
@@ -103,8 +103,8 @@ const buildPackage = (packagePath, buildType) => {
       }
     }
 
-    // Get a packages browser namespace so we know where it will be
-    // ont he global scope (i.e. google.workbox.????)
+    // Get a package's browserNamespace so we know where it will be
+    // on the global scope (i.e. google.workbox.????)
     let browserNamespace = null;
     const packagePath = path.join(__dirname, '..', 'packages', packageName);
     try {
@@ -119,9 +119,9 @@ const buildPackage = (packagePath, buildType) => {
 
     let globalNamespace = `${constants.NAMESPACE_PREFIX}.${browserNamespace}`;
     let fileNamespace = '';
-    // If the module pulls in a specific files we'll need to add this
-    // to the namespace. i.e. workbox-core/internal/logHelper should
-    // become google.workbox.core.internal.logHelper.
+    // If a module pulls in a specific file the namespace will need to
+    // include this information. i.e. workbox-core/internal/logHelper should
+    // become google.workbox.core.internal.logHelper
     if (importFilePath) {
       // Glob for the file we want so that file extensions are automatically
       // searched for.
