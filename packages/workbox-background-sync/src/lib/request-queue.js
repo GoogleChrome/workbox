@@ -115,9 +115,11 @@ class RequestQueue {
       this._queue.push(hash);
 
       // add to queue
-      this.saveQueue();
-      this._idbQDb.put(hash, reqData);
-      await this.addQueueNameToAllQueues();
+      await Promise.all([
+         this.saveQueue(),
+         this._idbQDb.put(hash, reqData),
+         this.addQueueNameToAllQueues(),
+      ]);
       // register sync
       self.registration &&
         self.registration.sync.register(tagNamePrefix + this._queueName);
