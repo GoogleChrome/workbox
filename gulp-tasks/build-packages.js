@@ -8,7 +8,6 @@ const source = require('vinyl-source-stream');
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
 const buffer = require('vinyl-buffer');
-const glob = require('glob');
 
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
@@ -25,6 +24,22 @@ const ERROR_NO_NAMSPACE = oneLine`
   '${constants.NAMESPACE_PREFIX}.precaching' in their
   JavaScript. Please fix for:
 `;
+
+/**
+ * This function takes an object like { nested: { foo: bar } } and a string
+ * like `nested.foo` and returns true if that value is defined on the obejct.
+ */
+const testObjectValueExists = (object, nestedPath) => {
+  const pieces = nestedPath.split('.');
+  let currentRoot = object;
+  pieces.forEach((piece) => {
+    if (!currentRoot.piece) {
+      return false;
+    }
+    currentRoot = object[piece];
+  });
+  return true;
+};
 
 /**
  * To test sourcemaps are valid and working, use:
@@ -83,6 +98,9 @@ const buildPackage = (packagePath, buildType) => {
     let importFilePath = null;
     if (result.length === 3) {
       importFilePath = result[2];
+      if (importFilePath && importFilePath.indexOf('/') === 0) {
+        importFilePath = importFilePath.replace('/', '');
+      }
     }
 
     // Get a packages browser namespace so we know where it will be
@@ -100,7 +118,7 @@ const buildPackage = (packagePath, buildType) => {
     }
 
     let globalNamespace = `${constants.NAMESPACE_PREFIX}.${browserNamespace}`;
-
+    let fileNamespace = '';
     // If the module pulls in a specific files we'll need to add this
     // to the namespace. i.e. workbox-core/internal/logHelper should
     // become google.workbox.core.internal.logHelper.
@@ -125,19 +143,35 @@ const buildPackage = (packagePath, buildType) => {
       importFilePath = importFilePath.replace(path.extname(importFilePath), '');
 
       // Replace all forward slashes with a dot
-      const fileNamespace = importFilePath.replace(/\//g, '.');
-
-      // To further ensure exports and imports are where they are expect,
-      // we could test the generated browser export to ensure our new global
-      // module is correct.
-      const packgeBrowserNamespace =
-
-      globalNamespace += fileNamespace;
+      fileNamespace = importFilePath.replace(/\//g, '.');
     }
 
-    logHelper.log(`Swapping import '${moduleId}' for '${globalNamespace}'`);
-    return globalNamespace;
+    // To further ensure exports and imports are where they are expect,
+    // we could test the generated browser export to ensure our new global
+    // module is correct.
+    const browserEntryDetails = getBrowserExports(packagePath);
+    const exports = browserEntryDetails.exports;
+
+    const expectedExportName = fileNamespace ? fileNamespace : 'default';
+    if (!testObjectValueExists(exports, expectedExportName)) {
+      logHelper.warn(`Unable to find the browser namespace for imported ` +
+        `module`);
+      logHelper.warn(`Imported Module ID: '${moduleId}'`);
+      logHelper.warn(`Looking at package: '${packagePath}'`);
+      logHelper.warn(`Expected Export Name: '${expectedExportName}'`);
+      logHelper.warn(`Known exports from this package:\n` +
+        `${JSON.stringify(browserEntryDetails.exports, null, 2)}`);
+      throw new Error(`Unable to find a valid replacement for module: ` +
+        `'${moduleId}'`);
+    }
+
+    const finalNamespace = fileNamespace ?
+      `${globalNamespace}.${fileNamespace}` :
+      globalNamespace;
+    logHelper.log(`Swapping import '${moduleId}' for '${finalNamespace}'`);
+    return finalNamespace;
   };
+
   // This ensures all workbox-* modules are treated as external.
   const external = (moduleId) => {
     return (moduleId.indexOf('workbox-') === 0);
@@ -147,7 +181,7 @@ const buildPackage = (packagePath, buildType) => {
     entry: browserEntryPath,
     format: 'iife',
     moduleName: namespace,
-    sourceMap: true,
+    // sourceMap: true,
     globals,
     external,
     plugins,
@@ -227,18 +261,11 @@ const convertExportObject = (exportObject, levels = 0) => {
   return `{\n${padding}${outputStrings.join(joinString)}\n${closePadding}}`;
 };
 
-/**
- * This function will generate a file containing all the imports and exports
- * for a package. This file will then be passed to Rollup as the "entry" file
- * to generate the 'iife' browser bundle.
- */
-const generateBrowserEntryFile = (pkgPath) => {
-  const outputPath = path.join(pkgPath, constants.PACKAGE_BUILD_DIRNAME,
-    constants.BROWSER_ENTRY_FILENAME);
-  const filesToPublish = glob.sync(path.posix.join(pkgPath, '**', '*.mjs'));
-
-  let browserEntryFileContents = ``;
+const getBrowserExports = (pkgPath) => {
   let browserEntryExport = {};
+  let browserEntryImports = {};
+
+  const filesToPublish = glob.sync(path.posix.join(pkgPath, '**', '*.mjs'));
   filesToPublish.forEach((importPath) => {
     // This will prevent files starting with '_' from
     // being included in the browser bundle. This should
@@ -259,10 +286,8 @@ const generateBrowserEntryFile = (pkgPath) => {
       isDefault = true;
     }
 
-    const entryRelativePath = path.relative(
-      path.dirname(outputPath), importPath);
-    browserEntryFileContents +=
-      `import ${exportName} from '${entryRelativePath}';\n`;
+    browserEntryImports[exportName] = importPath;
+
     if (isDefault) {
       browserEntryExport.default = exportName;
     } else {
@@ -277,11 +302,34 @@ const generateBrowserEntryFile = (pkgPath) => {
     }
   });
 
-  const exportObjectString = convertExportObject(browserEntryExport);
+  return {
+    imports: browserEntryImports,
+    exports: browserEntryExport,
+  };
+};
+
+/**
+ * This function will generate a file containing all the imports and exports
+ * for a package. This file will then be passed to Rollup as the "entry" file
+ * to generate the 'iife' browser bundle.
+ */
+const generateBrowserEntryFile = (pkgPath) => {
+  const outputPath = path.join(pkgPath, constants.PACKAGE_BUILD_DIRNAME,
+    constants.BROWSER_ENTRY_FILENAME);
+
+  let browserEntryFileContents = ``;
+  const browserEntryDetails = getBrowserExports(pkgPath);
+  Object.keys(browserEntryDetails.imports).forEach((importKey) => {
+    const entryRelativePath = path.relative(
+      path.dirname(outputPath), browserEntryDetails.imports[importKey]);
+  browserEntryFileContents +=
+    `import ${importKey} from '${entryRelativePath}';\n`;
+  });
+
+  const exportObjectString = convertExportObject(browserEntryDetails.exports);
   browserEntryFileContents += `\nexport default ${exportObjectString}`;
 
   fs.ensureDirSync(path.dirname(outputPath));
-
   return fs.writeFile(outputPath, browserEntryFileContents);
 };
 

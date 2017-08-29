@@ -10,6 +10,7 @@ class WorkboxCore {
   constructor() {
     this.INTERNAL = {
       logHelper: new LogHelper(),
+      precaching,
     };
   }
 }
