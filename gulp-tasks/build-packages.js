@@ -32,11 +32,11 @@ const ERROR_NO_NAMSPACE = oneLine`
 const testObjectValueExists = (object, nestedPath) => {
   const pieces = nestedPath.split('.');
   let currentRoot = object;
-  for (let i = 0; i < pieces.length; i++) {
-    if (!currentRoot[pieces[i]]) {
+  for (const piece of pieces) {
+    if (!currentRoot[piece]) {
       return false;
     }
-    currentRoot = currentRoot[pieces[i]];
+    currentRoot = currentRoot[piece];
   }
   return true;
 };
