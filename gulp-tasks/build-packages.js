@@ -33,7 +33,7 @@ const testObjectValueExists = (object, nestedPath) => {
   const pieces = nestedPath.split('.');
   let currentRoot = object;
   for (let i = 0; i < pieces.length; i++) {
-    if (!currentRoot.piece) {
+    if (!currentRoot[pieces[i]]) {
       return false;
     }
     currentRoot = object[pieces[i]];
