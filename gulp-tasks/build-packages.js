@@ -36,7 +36,7 @@ const testObjectValueExists = (object, nestedPath) => {
     if (!currentRoot[pieces[i]]) {
       return false;
     }
-    currentRoot = object[pieces[i]];
+    currentRoot = currentRoot[pieces[i]];
   }
   return true;
 };
