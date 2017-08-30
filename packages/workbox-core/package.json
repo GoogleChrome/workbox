@@ -6,7 +6,7 @@
   "description": "This module is used by a number of the other workboxjs.org modules to share common code.",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
-  "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-core",
+  "homepage": "https://github.com/GoogleChrome/workbox",
   "keywords": [
     "workbox",
     "workboxjs",
@@ -16,7 +16,9 @@
   "scripts": {
     "prepublish": "gulp build-packages --package workbox-core"
   },
-  "workbox::browserNamespace": "core",
+  "workbox": {
+    "browserNamespace": "core"
+  },
   "main": "build/browser-bundles/workbox-core.prod.js",
   "module": "index.mjs"
 }
