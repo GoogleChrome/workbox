@@ -48,7 +48,7 @@ const testObjectValueExists = (object, nestedPath) => {
 
 const buildPackage = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
-  const browserEntryPath = path.join(
+  /** const browserEntryPath = path.join(
     packagePath,
     constants.PACKAGE_BUILD_DIRNAME,
     constants.BROWSER_ENTRY_FILENAME);
@@ -58,7 +58,7 @@ const buildPackage = (packagePath, buildType) => {
   if (!fs.pathExistsSync(browserEntryPath)) {
     logHelper.error(ERROR_NO_BROWSER_BUNDLE + packageName);
     return Promise.reject(ERROR_NO_BROWSER_BUNDLE + packageName);
-  }
+  }**/
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
   if (!pkgJson.workbox || !pkgJson.workbox.browserNamespace) {
@@ -177,9 +177,11 @@ const buildPackage = (packagePath, buildType) => {
     return (moduleId.indexOf('workbox-') === 0);
   };
 
+  const inputFile = path.join(packagePath, `index.mjs`);
   return rollup({
-    entry: browserEntryPath,
+    entry: inputFile,
     format: 'iife',
+    exports: 'named',
     moduleName: namespace,
     sourceMap: true,
     globals,
@@ -209,7 +211,7 @@ const buildPackage = (packagePath, buildType) => {
   })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
-  .pipe(source(browserEntryPath))
+  .pipe(source(inputFile))
   // gulp-sourcemaps don't work with streams so we need
   .pipe(buffer())
   // This tells gulp-sourcemaps to load the inline sourcemap
@@ -335,7 +337,7 @@ const getBrowserExports = (pkgPath) => {
  * for a package. This file will then be passed to Rollup as the "entry" file
  * to generate the 'iife' browser bundle.
  */
-const generateBrowserEntryFile = (pkgPath) => {
+/** const generateBrowserEntryFile = (pkgPath) => {
   const outputPath = path.join(pkgPath, constants.PACKAGE_BUILD_DIRNAME,
     constants.BROWSER_ENTRY_FILENAME);
 
@@ -353,17 +355,17 @@ const generateBrowserEntryFile = (pkgPath) => {
 
   fs.ensureDirSync(path.dirname(outputPath));
   return fs.writeFile(outputPath, browserEntryFileContents);
-};
+};**/
 
-gulp.task('build-packages:generate-browser-entry', gulp.series(
+/** gulp.task('build-packages:generate-browser-entry', gulp.series(
   packageRunnner(
     'build-packages:generate-browser-entry',
     generateBrowserEntryFile,
   )
-));
+));**/
 
 gulp.task('build-packages', gulp.series([
   'build-packages:clean',
-  'build-packages:generate-browser-entry',
+  // 'build-packages:generate-browser-entry',
   'build-packages:build',
 ]));
