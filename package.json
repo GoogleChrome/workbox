@@ -5,7 +5,7 @@
   },
   "scripts": {
     "local-lerna": "lerna",
-    "test": "nyc --require @std/esm --reporter=lcov --reporter=text mocha './test/**/node/**/*.mjs'",
+    "test": "nyc --require @std/esm --reporter=lcov --reporter=text mocha",
     "lint": "eslint '.' --ignore-path .gitignore",
     "bot": "pr-bot",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
@@ -42,6 +42,7 @@
     "bytes": "^2.5.0",
     "chai": "^4.1.0",
     "chalk": "^2.0.1",
+    "clear-require": "^2.0.0",
     "common-tags": "^1.4.0",
     "coveralls": "^2.13.1",
     "eslint": "^4.3.0",
@@ -58,7 +59,6 @@
     "nyc": "^11.1.0",
     "path-extra": "^4.2.0",
     "pr-bot": "0.2.0",
-    "rollup": "^0.45.2",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-istanbul": "^1.1.0",
     "rollup-plugin-multi-entry": "^2.0.1",

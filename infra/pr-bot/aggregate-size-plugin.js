@@ -59,11 +59,11 @@ class AggregateSizePlugin extends PluginInterface {
 
     const markdownLog = `${markdownWarning}\n\n`+
       `**Total Size:**                   ${totalSizeString}\n` +
-      `**Percentage of Size Remaining:** ${percentString}%\n\n` +
+      `**Percentage of Size Used:**      ${percentString}%\n\n` +
       `**Gzipped:**                      ${totalGzipString}`;
     const prettyLog =
       `Total Size:                   ${totalSizeString}\n` +
-      `Percentage of Size Remaining: ${percentString}%\n\n` +
+      `**Percentage of Size Used:**  ${percentString}%\n\n` +
       `Gzipped:                      ${totalGzipString}`;
     return Promise.resolve({
       prettyLog,

@@ -1,9 +1,9 @@
 {
-  "name": "workbox-core",
+  "name": "workbox-precaching",
   "version": "3.0.0",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
-  "description": "This module is used by a number of the other workboxjs.org modules to share common code.",
+  "description": "This module efficiently precaches assets.",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
@@ -14,11 +14,14 @@
     "sw"
   ],
   "scripts": {
-    "prepublish": "gulp build-packages --package workbox-core"
+    "prepublish": "gulp build-packages --package workbox-precaching"
   },
   "workbox": {
-    "browserNamespace": "core"
+    "browserNamespace": "precaching"
   },
-  "main": "build/browser-bundles/workbox-core.prod.js",
-  "module": "index.mjs"
+  "main": "build/browser-bundles/workbox-precaching.prod.js",
+  "module": "index.mjs",
+  "dependencies": {
+    "workbox-core": "3.0.0"
+  }
 }

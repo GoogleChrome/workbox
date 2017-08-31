@@ -1,5 +1,5 @@
 import messages from './_messages.mjs';
-import core from '../../../index.mjs';
+import {logger} from '../../../index.mjs';
 
 const fallback = (code, ...args) => {
   let msg = code;
@@ -12,14 +12,14 @@ const fallback = (code, ...args) => {
 const generatorFunction = (code, ...args) => {
   const message = messages[code];
   if (!message) {
-    core.INTERNAL.logHelper.warn(`Unable to find message for code '${code}'`);
+    logger.warn(`Unable to find message for code '${code}'.`, args);
     return fallback(code, ...args);
   }
 
   try {
     return message(...args);
   } catch (err) {
-    core.INTERNAL.logHelper.warn(
+    logger.warn(
       `Unable to generate full error message.`, err);
     return fallback(code, ...args);
   }
