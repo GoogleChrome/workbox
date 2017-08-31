@@ -20,6 +20,7 @@ gulp.task('test:node', gulp.series(
 ));
 
 gulp.task('test', gulp.series(
+  'build',
   'test:node',
   'lint'
 ));
