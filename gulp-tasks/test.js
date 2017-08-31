@@ -2,14 +2,11 @@ const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
 const spawn = require('./utils/spawn-promise-wrapper');
 
-const packageRunnner = require('./utils/package-runner');
 const logHelper = require('./utils/log-helper');
-const pkgPathToName = require('./utils/pkg-path-to-name');
 
-const runNodeTests = (packagePath, buildType) => {
+const runNodeTests = () => {
   logHelper.log(oneLine`
-    Running Node Tests for
-    ${logHelper.highlight(pkgPathToName(packagePath))}.
+    Running Node Tests.
   `);
   return spawn('npm', ['run', 'test'])
   .catch((err) => {
@@ -19,7 +16,7 @@ const runNodeTests = (packagePath, buildType) => {
 };
 
 gulp.task('test:node', gulp.series(
-  packageRunnner('test:node [bundled tests]', runNodeTests)
+  runNodeTests
 ));
 
 gulp.task('test', gulp.series(

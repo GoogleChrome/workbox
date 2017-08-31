@@ -1,6 +1,6 @@
 {
   "name": "workbox-precaching",
-  "version": "1.2.0",
+  "version": "3.0.0",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This module efficiently precaches assets.",
@@ -20,5 +20,8 @@
     "browserNamespace": "precaching"
   },
   "main": "build/browser-bundles/workbox-precaching.prod.js",
-  "module": "index.mjs"
+  "module": "index.mjs",
+  "dependencies": {
+    "workbox-core": "3.0.0"
+  }
 }

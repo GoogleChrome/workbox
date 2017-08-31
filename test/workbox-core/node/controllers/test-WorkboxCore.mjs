@@ -1,22 +1,30 @@
 import {expect} from 'chai';
+import clearRequire from 'clear-require';
 
 import constants from '../../../../gulp-tasks/utils/constants.js';
-import core from '../../../../packages/workbox-core/index.mjs';
 
-constants.BUILD_TYPES.forEach((buildType) => {
-  describe(`WorkboxCore - ${buildType}`, function() {
-    before(function() {
-      process.env.NODE_ENV = buildType;
+describe(`WorkboxCore`, function() {
+  beforeEach(function() {
+    clearRequire.all();
+  });
+
+  describe(`assert.*`, function() {
+    it(`should expose assert in dev build`, async function() {
+      process.env.NODE_ENV = 'dev';
+
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+
+      expect(core.assert).to.exist;
     });
 
-    describe(`INTERNAL.*`, function() {
-      it(`should expose INTERNAL`, function() {
-        expect(core.INTERNAL).to.exist;
-      });
+    it(`should NOT expose assert in prod build`, async function() {
+      process.env.NODE_ENV = 'prod';
 
-      it(`should expose logHelper`, function() {
-        expect(core.INTERNAL.logHelper).to.exist;
-      });
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+
+      expect(core.assert).to.not.exist;
     });
   });
 });

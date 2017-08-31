@@ -205,6 +205,7 @@ const buildPackage = (packagePath, buildType) => {
       args.push(`${key}: ${err[key]}`);
     });
     logHelper.error(err, `\n\n${args.join('\n')}`);
+    throw err;
   })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
@@ -280,7 +281,11 @@ const getBrowserExports = (pkgPath) => {
   let browserEntryExport = {};
   let browserEntryImports = {};
 
-  const filesToPublish = glob.sync(path.posix.join(pkgPath, '**', '*.mjs'));
+  const filesToPublish = glob.sync(path.posix.join(pkgPath, '**', '*.mjs'), {
+    ignore: [
+      '**/node_modules/**/*',
+    ],
+  });
   filesToPublish.forEach((importPath) => {
     // This will prevent files starting with '_' from
     // being included in the browser bundle. This should

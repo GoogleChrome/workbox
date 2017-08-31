@@ -1,8 +1,8 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
+import clearRequire from 'clear-require';
 
 import constants from '../../../../../gulp-tasks/utils/constants.js';
-
 
 constants.BUILD_TYPES.forEach((buildType) => {
   describe(`messageGenerator - ${buildType}`, function() {
@@ -11,21 +11,18 @@ constants.BUILD_TYPES.forEach((buildType) => {
     };
     const detailsString = `${JSON.stringify([detailsObj])}`;
 
+    const MSG_GEN_PATH = '../../../../../packages/workbox-core/internal/models/messages/messageGenerator.mjs';
     let sandbox;
     let messageGenerator;
 
-    before(function() {
+    before(async function() {
       sandbox = sinon.sandbox.create();
       process.env.NODE_ENV = buildType;
 
-      const msgGeneratorPath = '../../../../../packages/workbox-core/internal/models/messages/messageGenerator.mjs';
-      // Ensure the new NODE_ENV sticks by clearing the require cache before importing.
-      delete require.cache[require.resolve(msgGeneratorPath)];
+      clearRequire.all();
 
-      return import(msgGeneratorPath)
-      .then((msgGen) => {
-        messageGenerator = msgGen.default;
-      });
+      const messageGenModule = await import(MSG_GEN_PATH);
+      messageGenerator = messageGenModule.default;
     });
 
     afterEach(function() {
@@ -92,6 +89,7 @@ constants.BUILD_TYPES.forEach((buildType) => {
           example: 'Value',
         },
       };
+
       const message = messageGenerator('invalid-type', invalidTypeDetails);
       if (process.env.NODE_ENV === 'prod') {
         expect(message).to.equal(`invalid-type :: ${JSON.stringify([invalidTypeDetails])}`);

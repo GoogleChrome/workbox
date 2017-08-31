@@ -1,11 +1,11 @@
 /**
  * This method returns true if the current context is a service worker.
  */
-const isServiceWorkerEnvironment = () => {
+const isSWEnv = () => {
   return (typeof ServiceWorkerGlobalScope !== 'undefined' &&
     self instanceof ServiceWorkerGlobalScope);
 }
 
 export default {
-  isServiceWorkerEnvironment,
+  isSWEnv,
 };

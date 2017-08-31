@@ -15,7 +15,7 @@ const ERROR_LOG_LEVEL = 3;
  * This class will allow Workbox to log in a consistent style and
  * take advantage of console coloring and groups.
  */
-export default class LogHelper {
+class Logger {
   /**
    * Initialises the log level based on the current origin.
    */
@@ -108,3 +108,5 @@ export default class LogHelper {
     this._print(console.error, args, ERROR_LOG_LEVEL);
   }
 }
+
+export default new Logger();

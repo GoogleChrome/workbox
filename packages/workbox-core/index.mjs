@@ -1,4 +1,6 @@
 import assert from './internal/utils/_assert.mjs';
+import logger from './internal/utils/logger.mjs';
+import WorkboxError from './internal/models/WorkboxError.mjs';
 
 /**
  * WorkboxCore shares code across Workbox modules.
@@ -15,5 +17,8 @@ class WorkboxCore {
     }
   }
 }
+
+export {logger};
+export {WorkboxError};
 
 export default new WorkboxCore();
