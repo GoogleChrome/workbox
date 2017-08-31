@@ -1,6 +1,5 @@
 const gulp = require('gulp');
 const path = require('path');
-const glob = require('glob');
 const fs = require('fs-extra');
 const oneLine = require('common-tags').oneLine;
 const rollup = require('rollup-stream');
