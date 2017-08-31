@@ -68,7 +68,7 @@ const handleRollupGlobal = (moduleId) => {
       throw err;
     }
 
-    return browserNamespace;
+    return `${constants.NAMESPACE_PREFIX}.${browserNamespace}`;
 };
 
 const buildPackage = (packagePath, buildType) => {
