@@ -133,10 +133,10 @@ const buildPackage = (packagePath, buildType) => {
       // the import should be, so error out as it's ambiguous.
       if (matchingFiles.length !== 1) {
         logHelper.error(
-          `Expect a single file when searching for '${moduleId}': `,
-          matchingFiles);
-        throw new Error('Unexpected result when looking for appropriate file ' +
-          `to match ${moduleId}`);
+          `Unable to find an "import <-> browser namespace" match for ` +
+          `'${moduleId}': `, matchingFiles);
+        throw new Error(`Unable to find an "import <-> browser namespace" ` +
+          `match for '${moduleId}'`);
       }
 
       // Strip any file extensions
@@ -186,10 +186,25 @@ const buildPackage = (packagePath, buildType) => {
     external,
     plugins,
     onwarn: (warning) => {
+      if (buildType === 'prod' && warning.code === 'UNUSED_EXTERNAL_IMPORT') {
+        // This can occur when using rollup-plugin-replace.
+        logHelper.warn(`[${warning.code}] ${warning.message}`);
+        return;
+      }
+
       // The final builds should have no warnings.
-      logHelper.error(`Unable to resolve import. `, warning.message);
-      throw new Error(`Unable to resolve import. ${warning.message}`);
+      logHelper.error(`Unhandled Rollup Warning: [${warning.code}] `,
+        warning.message);
+      throw new Error(`Unhandled Rollup Warning: [${warning.code}] ` +
+        `'${warning.message}'`);
     },
+  })
+  .on('error', (err) => {
+    const args = [];
+    Object.keys(err).forEach((key) => {
+      args.push(`${key}: ${err[key]}`);
+    });
+    logHelper.error(err, `\n\n${args.join('\n')}`);
   })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
