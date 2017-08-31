@@ -282,6 +282,8 @@ const getBrowserExports = (pkgPath) => {
   let browserEntryImports = {};
 
   const filesToPublish = glob.sync(path.posix.join(pkgPath, '**', '*.mjs'), {
+    // Modules depending on other workbox-* modules will have their .mjs
+    // files included when we don't want them to.
     ignore: [
       '**/node_modules/**/*',
     ],

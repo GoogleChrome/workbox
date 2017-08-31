@@ -42,6 +42,7 @@
     "bytes": "^2.5.0",
     "chai": "^4.1.0",
     "chalk": "^2.0.1",
+    "clear-require": "^2.0.0",
     "common-tags": "^1.4.0",
     "coveralls": "^2.13.1",
     "eslint": "^4.3.0",
