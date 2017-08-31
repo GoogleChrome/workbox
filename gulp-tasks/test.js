@@ -8,7 +8,8 @@ const runNodeTests = () => {
   logHelper.log(oneLine`
     Running Node Tests.
   `);
-  return spawn('npm', ['run', 'test'])
+  return spawn('npm', ['run', 'test', '--',
+    `./test/${global.packageOrStar}/node/**/*.mjs`])
   .catch((err) => {
     logHelper.error(err);
     throw new Error(`[Workbox Error Msg] 'gulp test' discovered errors.`);
