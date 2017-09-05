@@ -4,7 +4,7 @@ const oneLine = require('common-tags').oneLine;
 
 const pkgPathToName = require('./pkg-path-to-name');
 
-/**
+/*
  * This methods only purpose is to call a function with
  * the package path that needs to be acted upon.
  *

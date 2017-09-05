@@ -3,7 +3,7 @@ const path = require('path');
 const glob = require('glob');
 const fs = require('fs-extra');
 const oneLine = require('common-tags').oneLine;
-const rollup = require('rollup-stream');
+const rollupStream = require('rollup-stream');
 const source = require('vinyl-source-stream');
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
@@ -25,7 +25,7 @@ const ERROR_NO_NAMSPACE = oneLine`
   JavaScript. Please fix for:
 `;
 
-/**
+/*
  * This function takes an object like { nested: { foo: bar } } and a string
  * like `nested.foo` and returns true if that value is defined on the obejct.
  */
@@ -41,7 +41,7 @@ const testObjectValueExists = (object, nestedPath) => {
   return true;
 };
 
-/**
+/*
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose
  */
@@ -133,10 +133,10 @@ const buildPackage = (packagePath, buildType) => {
       // the import should be, so error out as it's ambiguous.
       if (matchingFiles.length !== 1) {
         logHelper.error(
-          `Expect a single file when searching for '${moduleId}': `,
-          matchingFiles);
-        throw new Error('Unexpected result when looking for appropriate file ' +
-          `to match ${moduleId}`);
+          `Unable to find an "import <-> browser namespace" match for ` +
+          `'${moduleId}': `, matchingFiles);
+        throw new Error(`Unable to find an "import <-> browser namespace" ` +
+          `match for '${moduleId}'`);
       }
 
       // Strip any file extensions
@@ -172,24 +172,40 @@ const buildPackage = (packagePath, buildType) => {
     return finalNamespace;
   };
 
-  // This ensures all workbox-* modules are treated as external.
-  const external = (moduleId) => {
+  // This ensures all workbox-* modules are treated as external and are
+  // referenced as globals.
+  const externalAndPure = (moduleId) => {
     return (moduleId.indexOf('workbox-') === 0);
   };
 
-  return rollup({
+  return rollupStream({
     entry: browserEntryPath,
     format: 'iife',
     moduleName: namespace,
     sourceMap: true,
     globals,
-    external,
+    external: externalAndPure,
+    pureExternalModules: externalAndPure,
     plugins,
     onwarn: (warning) => {
+      if (buildType === 'prod' && warning.code === 'UNUSED_EXTERNAL_IMPORT') {
+        // This can occur when using rollup-plugin-replace.
+        logHelper.warn(`[${warning.code}] ${warning.message}`);
+        return;
+      }
+
       // The final builds should have no warnings.
-      logHelper.error(`Unable to resolve import. `, warning.message);
-      throw new Error(`Unable to resolve import. ${warning.message}`);
+      throw new Error(`Unhandled Rollup Warning: [${warning.code}] ` +
+        `'${warning.message}'`);
     },
+  })
+  .on('error', (err) => {
+    const args = [];
+    Object.keys(err).forEach((key) => {
+      args.push(`${key}: ${err[key]}`);
+    });
+    logHelper.error(err, `\n\n${args.join('\n')}`);
+    throw err;
   })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
@@ -224,7 +240,7 @@ const packageBuilds = constants.BUILD_TYPES.map((buildType) => {
 
 gulp.task('build-packages:build', gulp.series(packageBuilds));
 
-/**
+/*
  * This function will take an object and generate a friend export
  * object.
  * For example, { hello: world, example: { foo: foo } } will output:
@@ -265,7 +281,13 @@ const getBrowserExports = (pkgPath) => {
   let browserEntryExport = {};
   let browserEntryImports = {};
 
-  const filesToPublish = glob.sync(path.posix.join(pkgPath, '**', '*.mjs'));
+  const filesToPublish = glob.sync(path.posix.join(pkgPath, '**', '*.mjs'), {
+    // Modules depending on other workbox-* modules will have their .mjs
+    // files included when we don't want them to.
+    ignore: [
+      '**/node_modules/**/*',
+    ],
+  });
   filesToPublish.forEach((importPath) => {
     // This will prevent files starting with '_' from
     // being included in the browser bundle. This should
@@ -308,7 +330,7 @@ const getBrowserExports = (pkgPath) => {
   };
 };
 
-/**
+/*
  * This function will generate a file containing all the imports and exports
  * for a package. This file will then be passed to Rollup as the "entry" file
  * to generate the 'iife' browser bundle.
