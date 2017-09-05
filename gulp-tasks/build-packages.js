@@ -25,7 +25,7 @@ const ERROR_NO_NAMSPACE = oneLine`
   JavaScript. Please fix for:
 `;
 
-/**
+/*
  * This function takes an object like { nested: { foo: bar } } and a string
  * like `nested.foo` and returns true if that value is defined on the obejct.
  */
@@ -41,7 +41,7 @@ const testObjectValueExists = (object, nestedPath) => {
   return true;
 };
 
-/**
+/*
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose
  */
@@ -240,7 +240,7 @@ const packageBuilds = constants.BUILD_TYPES.map((buildType) => {
 
 gulp.task('build-packages:build', gulp.series(packageBuilds));
 
-/**
+/*
  * This function will take an object and generate a friend export
  * object.
  * For example, { hello: world, example: { foo: foo } } will output:
@@ -330,7 +330,7 @@ const getBrowserExports = (pkgPath) => {
   };
 };
 
-/**
+/*
  * This function will generate a file containing all the imports and exports
  * for a package. This file will then be passed to Rollup as the "entry" file
  * to generate the 'iife' browser bundle.

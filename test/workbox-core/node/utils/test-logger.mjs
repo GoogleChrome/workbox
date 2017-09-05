@@ -69,12 +69,13 @@ describe(`logger`, function() {
     });
   });
 
-  /**
+  /*
    * Why .calledWithMatch()?
    *
-   * This method on sinon spies will ensure that the spied method was called
-   * "with matching arguments (and possibly others)." This means logHelper
-   * can add a prefix to the log and still pass the assertion.
+   * This method is part of the sinon stub API and will ensure that the
+   * stubbed method was called "with matching arguments (and possibly others)."
+   * This means logHelper can add a prefix to the log and still pass the
+   * assertion.
    */
 
   describe('.log()', function() {

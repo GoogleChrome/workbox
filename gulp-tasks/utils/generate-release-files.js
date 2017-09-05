@@ -61,7 +61,7 @@ const createArchive = (bundleDirectory, outputFilePath, format, options) => {
   });
 };
 
-/**
+/*
  * This function will create a directory with the same name at the
  * .tar.gz file it generates. This way when the file is extracted
  * the folder structure will have the sam

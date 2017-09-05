@@ -1,4 +1,4 @@
-/**
+/*
  * This file should be run as a node script to analyse the content of the
  * browser bundles.
  *

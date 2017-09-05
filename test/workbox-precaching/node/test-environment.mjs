@@ -21,7 +21,7 @@ describe(`WorkboxPrecaching`, function() {
   });
 
   describe(`Used in a window`, function() {
-    it(`should throw in dev builds when no in SW`, async function() {
+    it(`should throw in dev builds when loaded outside of a service worker`, async function() {
       process.env.NODE_ENV = 'dev';
 
       try {
