@@ -66,8 +66,8 @@ describe(`Test Directory Index`, function() {
     const baseUrl = '/example/url/';
     const directoryIndex = 'custom.html';
 
-    const urlToPrecache = baseUrl + directoryIndex;
-    const urlToRequest = baseUrl + '?' + urlParameter;
+    const urlToPrecache = new URL(baseUrl + directoryIndex, self.location).href;
+    const urlToRequest = new URL(baseUrl + '?' + urlParameter, self.location).href;
 
     // We need to create a stub for match() that returns a real Promise,
     // rather than null, or else Firefox is unhappy.
@@ -88,10 +88,17 @@ describe(`Test Directory Index`, function() {
       });
       fetchEvent.respondWith = (promiseChain) => {
         promiseChain.then(() => {
-          // Make sure that the cache.match() stub was called, indicating that
-          // there was a match against the precached URL.
+          // Make sure that the cache.match() stub was called with the arguments
+          // we expect.
           if (stub.called) {
-            resolve();
+            try {
+              const cacheMatchArgument = stub.firstCall.args[0];
+              expect(cacheMatchArgument).to.be.a('Request');
+              expect(cacheMatchArgument.url).to.eql(urlToRequest);
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
           } else {
             reject('The expected stub function was not called.');
           }
