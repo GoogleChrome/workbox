@@ -61,28 +61,35 @@ describe(`Test Directory Index`, function() {
   });
 
   it(`should take the ignoreUrlParametersMatching setting into account when using the directoryIndex`, function() {
-    const EXAMPLE_URL = '/example/url/';
-    const DIRECTORY_INDEX = 'custom.html';
-    const URL_PARAM = 'test';
-    const IGNORE_URL_PARAMETERS_MATCHING = [new RegExp(URL_PARAM)];
+    const urlParameter = 'test';
+    const ignoreUrlParametersMatching = [new RegExp(urlParameter)];
+    const baseUrl = '/example/url/';
+    const directoryIndex = 'custom.html';
 
+    const urlToPrecache = baseUrl + directoryIndex;
+    const urlToRequest = baseUrl + '?' + urlParameter;
+
+    // We need to create a stub for match() that returns a real Promise,
+    // rather than null, or else Firefox is unhappy.
     const stub = sinon.stub(Cache.prototype, 'match')
       .callsFake(() => Promise.resolve(null));
     stubs.push(stub);
 
     const workboxSW = new WorkboxSW({
-      directoryIndex: DIRECTORY_INDEX,
-      ignoreUrlParametersMatching: IGNORE_URL_PARAMETERS_MATCHING,
+      directoryIndex,
+      ignoreUrlParametersMatching,
     });
-    workboxSW.precache([`${EXAMPLE_URL}${DIRECTORY_INDEX}`]);
+    workboxSW.precache([urlToPrecache]);
 
     return new Promise((resolve, reject) => {
       const fetchEvent = new FetchEvent('fetch', {
-        // Fire a request for the URL without the directory index, but with the URL param.
-        request: new Request(`${EXAMPLE_URL}?${URL_PARAM}`),
+        // Request the URL without the directory index, but with the URL param.
+        request: new Request(urlToRequest),
       });
       fetchEvent.respondWith = (promiseChain) => {
         promiseChain.then(() => {
+          // Make sure that the cache.match() stub was called, indicating that
+          // there was a match against the precached URL.
           if (stub.called) {
             resolve();
           } else {
