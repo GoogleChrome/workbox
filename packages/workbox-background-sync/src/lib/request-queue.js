@@ -96,7 +96,8 @@ class RequestQueue {
    * @private
    */
   async pushIntoQueue({request}) {
-    await this._initializationPromise;
+    // Any request should be pushed only after it is initialized
+    await this.getQueue();
     isInstance({request}, Request);
 
     const hash = `${request.url}!${Date.now()}!${_requestCounter++}`;
