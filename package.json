@@ -21,6 +21,7 @@
       ".mjs"
     ]
   },
+  "pre-commit": ["lint"],
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
   "private": true,
@@ -59,6 +60,7 @@
     "nyc": "^11.1.0",
     "path-extra": "^4.2.0",
     "pr-bot": "0.2.0",
+    "pre-commit": "^1.2.2",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-istanbul": "^1.1.0",
     "rollup-plugin-multi-entry": "^2.0.1",
