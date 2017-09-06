@@ -36,7 +36,7 @@ class WorkboxCore {
       });
     }
 
-    if (newLevel > LOG_LEVELS.error ||
+    if (newLevel > LOG_LEVELS.silent ||
       newLevel < LOG_LEVELS.verbose) {
       throw new WorkboxError('invalid-value', {
         paramName: 'logLevel',

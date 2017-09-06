@@ -64,7 +64,7 @@ describe(`WorkboxCore`, function() {
   });
 
   describe(`core.logLevel (set)`, function() {
-    /** it(`should allow valid log levels`, async function() {
+    it(`should allow valid log levels`, async function() {
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
 
@@ -73,6 +73,7 @@ describe(`WorkboxCore`, function() {
         core.logLevel = coreModule.LOG_LEVELS.debug;
         core.logLevel = coreModule.LOG_LEVELS.warn;
         core.logLevel = coreModule.LOG_LEVELS.error;
+        core.logLevel = coreModule.LOG_LEVELS.silent;
       }).to.not.throw();
     });
 
@@ -107,6 +108,6 @@ describe(`WorkboxCore`, function() {
       expect(() => {
         core.logLevel = variant;
       }).to.throw(WorkboxError).that.has.property('name').that.equals('invalid-type');
-    });**/
+    });
   });
 });
