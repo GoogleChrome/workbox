@@ -1,5 +1,6 @@
 import core from '../index.mjs';
 import LOG_LEVELS from '../models/LogLevels.mjs';
+import logPrefix from './logPrefix.mjs';
 
 const GREY = `#7f8c8d`;
 const GREEN = `#2ecc71`;
@@ -12,17 +13,7 @@ const _print = function(logFunction, logArgs, minLevel, levelColor) {
     return;
   }
 
-  const initLogOutput = [
-    '%cworkbox',
-    `
-      background: ${levelColor};
-      color: white;
-      padding: 2px 0.5em;
-      border-radius: 0.5em;
-    `,
-  ];
-
-  logFunction(...initLogOutput, ...logArgs);
+  logFunction(...logPrefix(levelColor), ...logArgs);
 };
 
 const log = (...args) => _print(console.log, args, LOG_LEVELS.verbose, GREY);

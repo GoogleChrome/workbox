@@ -2,6 +2,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 
 import logger from '../../../../packages/workbox-core/utils/logger.mjs';
+import logPrefix from '../../../../packages/workbox-core/utils/logPrefix.mjs';
 import {LOG_LEVELS} from '../../../../packages/workbox-core/index.mjs';
 
 describe(`logger`, function() {
@@ -45,13 +46,14 @@ describe(`logger`, function() {
     it('should work several inputs', function() {
       const stub = sandbox.stub(console, 'log');
 
-      logger.log('', 'test', null, undefined, [], {});
+      const args = ['', 'test', null, undefined, [], {}];
+      logger.log(...args);
 
       // Restore to avoid upsetting mocha logs.
       sandbox.restore();
 
       expect(stub.callCount).to.equal(1);
-      expect(stub.calledWithMatch('', 'test', null, undefined, [], {})).to.equal(true);
+      expect(stub.calledWithMatch(...logPrefix(LOG_LEVELS.verbose), ...args)).to.equal(true);
     });
 
     it('should log with verbose log level', function() {
