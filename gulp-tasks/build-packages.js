@@ -33,50 +33,38 @@ const ERROR_NO_NAMSPACE = oneLine`
 // This makes Rollup assume workbox-* will be added to the global
 // scope and replace references with the core namespace
 const globals = (moduleId) => {
-  // This regex matches for (workbox-*)(/any/path/here.mjs)
-  const workboxModuleIdRegex = /(workbox-\w*)([/\w.]*)*/g;
-  const result = workboxModuleIdRegex.exec(moduleId);
-  if (!result) {
+  const splitModuleId = moduleId.split('/');
+  if (splitModuleId[0].indexOf('workbox-') !== 0) {
     throw new Error(`Unknown global module ID: ${moduleId}`);
   }
 
-  const packageName = result[1];
-  let importFilePath = null;
-  if (result.length === 3) {
-    importFilePath = result[2];
-  }
-
-  if (importFilePath) {
+  const packageName = splitModuleId.shift();
+  if (splitModuleId.length > 0) {
     throw new Error(oneLine`
-      All imports of workbox-* modules must be done from the top level export.
-      (i.e. import * from 'workbox-*') This ensures that the browser
-      namespacing works correctly. Please remove '${importFilePath}' from
-      the import '${moduleId}'.
-    `);
+    All imports of workbox-* modules must be done from the top level export.
+    (i.e. import * from 'workbox-*') This ensures that the browser
+    namespacing works correctly. Please remove '${splitModuleId.join('/')}'
+    from the import '${moduleId}'.
+  `);
   }
 
   // Get a package's browserNamespace so we know where it will be
-  // on the global scope (i.e. workbox.????)
-  let browserNamespace = null;
+  // on the global scope (i.e. workbox.<name space>)
   const packagePath = path.join(__dirname, '..', 'packages', packageName);
   try {
     const pkg = require(path.join(packagePath, 'package.json'));
-    browserNamespace = pkg.workbox.browserNamespace;
+    `${constants.NAMESPACE_PREFIX}.${pkg.workbox.browserNamespace}`
   } catch (err) {
     logHelper.error(`Unable to get browserNamespace for package: ` +
       `'${packageName}'`);
     logHelper.error(err);
     throw err;
   }
-
-  return `${constants.NAMESPACE_PREFIX}.${browserNamespace}`;
 };
 
 // This ensures all workbox-* modules are treated as external and are
 // referenced as globals.
-const externalAndPure = (moduleId) => {
-  return (moduleId.indexOf('workbox-') === 0);
-};
+const externalAndPure = (moduleId) => (moduleId.indexOf('workbox-') === 0);
 
 const buildPackage = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
