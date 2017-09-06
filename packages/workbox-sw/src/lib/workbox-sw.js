@@ -332,8 +332,8 @@ class WorkboxSW {
       }
 
       if (directoryIndex && strippedUrl.pathname.endsWith('/')) {
-        url.pathname += directoryIndex;
-        return cachedUrls.indexOf(url.href) !== -1;
+        strippedUrl.pathname += directoryIndex;
+        return cachedUrls.indexOf(strippedUrl.href) !== -1;
       }
 
       return false;
