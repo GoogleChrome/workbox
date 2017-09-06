@@ -53,7 +53,7 @@ const globals = (moduleId) => {
   const packagePath = path.join(__dirname, '..', 'packages', packageName);
   try {
     const pkg = require(path.join(packagePath, 'package.json'));
-    return `${constants.NAMESPACE_PREFIX}.${pkg.workbox.browserNamespace}`
+    return `${constants.NAMESPACE_PREFIX}.${pkg.workbox.browserNamespace}`;
   } catch (err) {
     logHelper.error(`Unable to get browserNamespace for package: ` +
       `'${packageName}'`);
