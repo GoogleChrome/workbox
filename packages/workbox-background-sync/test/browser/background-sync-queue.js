@@ -110,10 +110,11 @@ describe(`background sync queue`, function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__test/404'),
     });
-    return backgroundSyncQueue.replayRequests().then(()=>{
+    return backgroundSyncQueue.replayRequests()
+    .then(() => {
       throw new Error('Replay should have failed because of invalid URL');
-    }).catch(()=>{
-       // The promise gets rejected as expected
+    }, () => {
+       // The promise rejected as expected
     });
   });
 
