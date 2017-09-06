@@ -88,7 +88,7 @@ describe(`background sync queue`, function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
-    expect(backgroundSyncQueue._queue.queue.length).to.equal(1);
+    expect((await backgroundSyncQueue._queue.getQueue()).length).to.equal(1);
   });
 
   it(`check replay queued request via replayRequests method`, async function() {
@@ -98,12 +98,12 @@ describe(`background sync queue`, function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
-    expect(backgroundSyncQueue._queue.queue.length).to.equal(2);
+    expect((await backgroundSyncQueue._queue.getQueue()).length).to.equal(2);
     await backgroundSyncQueue.replayRequests();
     expect(responseAchieved).to.equal(2);
   });
 
-  it(`should rejected promise on replay failure`, async function() {
+  it(`should rejecte promise on replay failure`, async function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
@@ -114,6 +114,7 @@ describe(`background sync queue`, function() {
       await backgroundSyncQueue.replayRequests();
       throw new Error('Replay should have failed because of invalid URL');
     } catch (err) {
+      expect(err.length).to.equal(1);
       expect(err[0].status).to.equal(404);
     }
   });
