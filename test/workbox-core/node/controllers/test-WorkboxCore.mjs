@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import clearRequire from 'clear-require';
 
+import expectError from '../../../../infra/utils/expectError';
 import constants from '../../../../gulp-tasks/utils/constants.js';
 import generateVariantTests from '../../../../infra/utils/generate-variant-tests';
 import WorkboxError from '../../../../packages/workbox-core/models/WorkboxError.mjs';
@@ -30,22 +31,7 @@ describe(`WorkboxCore`, function() {
     });
   });
 
-  describe(`import {LOG_LEVELS} from 'workbox-core';`, function() {
-    it(`should expose the valid LOG_LEVELS`, async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      expect(coreModule.LOG_LEVELS).to.exist;
-    });
-
-    it(`should expose the expected LOG_LEVELS`, async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      expect(coreModule.LOG_LEVELS.verbose).to.exist;
-      expect(coreModule.LOG_LEVELS.debug).to.exist;
-      expect(coreModule.LOG_LEVELS.warn).to.exist;
-      expect(coreModule.LOG_LEVELS.error).to.exist;
-    });
-  });
-
-  describe(`core.logLevel (get)`, function() {
+  describe(`core.logLevel (getter)`, function() {
     it(`should initialise to 'verbose' log level for dev build`, async function() {
       process.env.NODE_ENV = 'dev';
 
@@ -69,11 +55,10 @@ describe(`WorkboxCore`, function() {
       const core = coreModule.default;
 
       expect(() => {
-        core.logLevel = coreModule.LOG_LEVELS.verbose;
-        core.logLevel = coreModule.LOG_LEVELS.debug;
-        core.logLevel = coreModule.LOG_LEVELS.warn;
-        core.logLevel = coreModule.LOG_LEVELS.error;
-        core.logLevel = coreModule.LOG_LEVELS.silent;
+        const logLevelNames = Object.keys(coreModule.LOG_LEVELS);
+        logLevelNames.forEach((logLevelName) => {
+          core.logLevel = coreModule.LOG_LEVELS[logLevelName];
+        });
       }).to.not.throw();
     });
 
@@ -81,18 +66,18 @@ describe(`WorkboxCore`, function() {
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
 
-      expect(() => {
+      expectError(() => {
         core.logLevel = coreModule.LOG_LEVELS.verbose - 1;
-      }).to.throw(WorkboxError).that.has.property('name').that.equals('invalid-value');
+      }, 'invalid-value');
     });
 
-    it(`should not allow log level greater than error`, async function() {
+    it(`should not allow log level greater than silent`, async function() {
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
 
-      expect(() => {
-        core.logLevel = coreModule.LOG_LEVELS.error + 1;
-      }).to.throw(WorkboxError).that.has.property('name').that.equals('invalid-value');
+      expectError(() => {
+        core.logLevel = coreModule.LOG_LEVELS.silent + 1;
+      }, 'invalid-value');
     });
 
     generateVariantTests(`should not allow non-number log levels`, [
@@ -105,9 +90,9 @@ describe(`WorkboxCore`, function() {
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
 
-      expect(() => {
+      expectError(() => {
         core.logLevel = variant;
-      }).to.throw(WorkboxError).that.has.property('name').that.equals('invalid-type');
+      }, 'invalid-type');
     });
   });
 });
