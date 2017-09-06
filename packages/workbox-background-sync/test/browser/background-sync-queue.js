@@ -110,13 +110,12 @@ describe(`background sync queue`, function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__test/404'),
     });
-    try {
-      await backgroundSyncQueue.replayRequests();
+    return backgroundSyncQueue.replayRequests()
+    .then(() => {
       throw new Error('Replay should have failed because of invalid URL');
-    } catch (err) {
-      expect(err.length).to.equal(1);
-      expect(err[0].status).to.equal(404);
-    }
+    }, () => {
+       // The promise rejected as expected
+    });
   });
 
   it(`should remove requests from queue which are post threir maxRetentionTime`, async function() {
