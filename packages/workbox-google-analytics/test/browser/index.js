@@ -39,7 +39,6 @@ describe(`workbox-google-analytics`, function() {
       const channel = new BroadcastChannel('workbox-google-analytics-sync');
       channel.onmessage = (evt) => {
         if (evt.data == 'replay:success') {
-          channel.close();
           resolve();
         } else {
           reject(new Error('replay:failure'));
