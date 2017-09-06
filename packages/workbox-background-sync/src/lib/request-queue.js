@@ -41,7 +41,7 @@ class RequestQueue {
     this._broadcastChannel = broadcastChannel;
     this._globalCallbacks = callbacks || {};
     this._queue = [];
-    this.initQueue();
+    this._initializationPromise = this.initQueue();
   }
 
   /**
@@ -82,7 +82,7 @@ class RequestQueue {
    * @private
    */
   async saveQueue() {
-    await this._idbQDb.put(this._queueName, this._queue);
+    await this._idbQDb.put(this._queueName, await this.getQueue());
   }
 
   /**
@@ -95,7 +95,9 @@ class RequestQueue {
    * @memberOf Queue
    * @private
    */
-  async push({request}) {
+  async pushIntoQueue({request}) {
+    // Any request should be pushed only after it is initialized
+    await this.getQueue();
     isInstance({request}, Request);
 
     const hash = `${request.url}!${Date.now()}!${_requestCounter++}`;
@@ -114,9 +116,11 @@ class RequestQueue {
       this._queue.push(hash);
 
       // add to queue
-      this.saveQueue();
-      this._idbQDb.put(hash, reqData);
-      await this.addQueueNameToAllQueues();
+      await Promise.all([
+         this.saveQueue(),
+         this._idbQDb.put(hash, reqData),
+         this.addQueueNameToAllQueues(),
+      ]);
       // register sync
       self.registration &&
         self.registration.sync.register(tagNamePrefix + this._queueName);
@@ -152,9 +156,10 @@ class RequestQueue {
    * @private
    */
   async getRequestFromQueue({hash}) {
+    const queue = await this.getQueue();
     isType({hash}, 'string');
 
-    if (this._queue.includes(hash)) {
+    if (queue.includes(hash)) {
       const reqData = await this._idbQDb.get(hash);
 
       // Apply the `requestWillDequeue` callback so plugins can modify the
@@ -168,18 +173,6 @@ class RequestQueue {
   }
 
   /**
-   * returns the instance of queue.
-   *
-   * @readonly
-   *
-   * @memberOf RequestQueue
-   * @private
-   */
-  get queue() {
-    return Object.assign([], this._queue);
-  }
-
-  /**
    * returns the name of the current queue
    *
    * @readonly
@@ -189,6 +182,19 @@ class RequestQueue {
    */
   get queueName() {
     return this._queueName;
+  }
+
+  /**
+   * returns the queue after initialization is complete
+   *
+   * @return {Promise<Object>} Queue object containing the current requests
+   * @readonly
+   * @memberOf RequestQueue
+   * @private
+   */
+  async getQueue() {
+    await this._initializationPromise;
+    return Object.assign([], this._queue);
   }
 
   /**

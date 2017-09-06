@@ -59,4 +59,52 @@ describe(`Test Directory Index`, function() {
       self.dispatchEvent(fetchEvent);
     });
   });
+
+  it(`should take the ignoreUrlParametersMatching setting into account when using the directoryIndex`, function() {
+    const urlParameter = 'test';
+    const ignoreUrlParametersMatching = [new RegExp(urlParameter)];
+    const baseUrl = '/example/url/';
+    const directoryIndex = 'custom.html';
+
+    const urlToPrecache = new URL(baseUrl + directoryIndex, self.location).href;
+    const urlToRequest = new URL(baseUrl + '?' + urlParameter, self.location).href;
+
+    // We need to create a stub for match() that returns a real Promise,
+    // rather than null, or else Firefox is unhappy.
+    const stub = sinon.stub(Cache.prototype, 'match')
+      .callsFake(() => Promise.resolve(null));
+    stubs.push(stub);
+
+    const workboxSW = new WorkboxSW({
+      directoryIndex,
+      ignoreUrlParametersMatching,
+    });
+    workboxSW.precache([urlToPrecache]);
+
+    return new Promise((resolve, reject) => {
+      const fetchEvent = new FetchEvent('fetch', {
+        // Request the URL without the directory index, but with the URL param.
+        request: new Request(urlToRequest),
+      });
+      fetchEvent.respondWith = (promiseChain) => {
+        promiseChain.then(() => {
+          // Make sure that the cache.match() stub was called with the arguments
+          // we expect.
+          if (stub.called) {
+            try {
+              const cacheMatchArgument = stub.firstCall.args[0];
+              expect(cacheMatchArgument).to.be.a('Request');
+              expect(cacheMatchArgument.url).to.eql(urlToRequest);
+              resolve();
+            } catch (error) {
+              reject(error);
+            }
+          } else {
+            reject('The expected stub function was not called.');
+          }
+        });
+      };
+      self.dispatchEvent(fetchEvent);
+    });
+  });
 });

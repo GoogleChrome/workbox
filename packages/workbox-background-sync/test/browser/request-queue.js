@@ -55,7 +55,7 @@ describe(`request-queue`, function() {
 
     it(`should re-fill the queue`, async function() {
       expect(queue._queue.length).to.equal(0);
-      const hash = await queue.push({
+      const hash = await queue.pushIntoQueue({
         request: new Request('http://lipsum.com/generate'),
       });
       expect(queue._queue.length).to.equal(1);
@@ -92,11 +92,11 @@ describe(`request-queue`, function() {
   });
 
   describe(`push method`, function() {
-    it(`should push the Request given in the private array`, async function() {
+    it(`should push the given Request in the private array`, async function() {
       callbacks.requestWillEnqueue = sinon.spy();
-
+      const spy = sinon.spy(queue, 'getQueue');
       const queueLength = queue._queue.length;
-      const hash = await queue.push({
+      const hash = await queue.pushIntoQueue({
         request: new Request('http://lipsum.com/generate'),
       });
 
@@ -104,9 +104,10 @@ describe(`request-queue`, function() {
       expect(queue._queue.length).to.equal(queueLength + 1);
 
       expect(callbacks.requestWillEnqueue.calledOnce).to.be.true;
+      expect(spy.called).to.be.true;
+      queue.getQueue.restore();
       expect(callbacks.requestWillEnqueue.calledWith(sinon.match.has('request')))
           .to.be.true;
-
       delete callbacks.requestWillEnqueue;
     });
   });
@@ -114,8 +115,8 @@ describe(`request-queue`, function() {
   describe(`getRequestFromQueue method`, function() {
     it(`should get the proper Request back`, async function() {
       callbacks.requestWillDequeue = sinon.spy();
-
-      const hash = await queue.push({
+      const spy = sinon.spy(queue, 'getQueue');
+      const hash = await queue.pushIntoQueue({
         request: new Request('http://lipsum.com/generate'),
       });
 
@@ -124,7 +125,8 @@ describe(`request-queue`, function() {
       expect(reqData).to.have.all.keys(['request', 'config', 'metadata']);
       expect(callbacks.requestWillDequeue.calledOnce).to.be.true;
       expect(callbacks.requestWillDequeue.calledWith(reqData)).to.be.true;
-
+      expect(spy.called).to.be.true;
+      queue.getQueue.restore();
       delete callbacks.requestWillDequeue;
     });
   });

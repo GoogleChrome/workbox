@@ -30,11 +30,11 @@ describe(`background-sync-queue-plugin`, function() {
 
   it(`should add the request to queue when fetch fails`, async function() {
     const backgroundSyncQueue = new BackgroundSyncQueuePlugin({});
-    const currentLen = backgroundSyncQueue._queue.queue.length;
+    const currentLen = (await backgroundSyncQueue._queue.getQueue()).length;
 
     await backgroundSyncQueue.fetchDidFail({
       request: new Request('http://lipsum.com'),
     });
-    expect(backgroundSyncQueue._queue.queue.length).to.equal(currentLen + 1);
+    expect((await backgroundSyncQueue._queue.getQueue()).length).to.equal(currentLen + 1);
   });
 });
