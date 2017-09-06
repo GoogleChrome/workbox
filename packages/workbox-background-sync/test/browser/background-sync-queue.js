@@ -103,7 +103,7 @@ describe(`background sync queue`, function() {
     expect(responseAchieved).to.equal(2);
   });
 
-  it(`should rejecte promise on replay failure`, async function() {
+  it(`should reject promise on replay failure`, async function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
