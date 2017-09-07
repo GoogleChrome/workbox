@@ -32,6 +32,9 @@ import normalizeHandler from './normalize-handler';
  * If you'd like this to be handled automatically for you, calling
  * `addFetchListener()` will cause the `Router` to respond to `fetch` events.
  *
+ * If a request matches multiple routes, precedence will be given to the 
+ * last-registered route.
+ *
  * @memberof module:workbox-routing
  *
  * @example
@@ -41,6 +44,8 @@ import normalizeHandler from './normalize-handler';
  * // Both the routes are registered with the router, and any requests that
  * // don't match either route will be handled using the default NetworkFirst
  * // strategy.
+ * // "If a request matches both routes, the last route will be used to handle 
+ * // the request, in this case, the "images" handler would take precedence.
  * const assetRoute = new RegExpRoute({
  *   regExp: /assets/,
  *   handler: new workbox.runtimeCaching.StaleWhileRevalidate(),
