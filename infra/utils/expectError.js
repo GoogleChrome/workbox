@@ -1,9 +1,12 @@
 const expect = require('chai').expect;
 
-module.exports = (func, errorName, finalCb) => {
+module.exports = async (func, errorName, finalCb) => {
   let caughtError = null;
   try {
-    func();
+    const result = func();
+    if (result && result instanceof Promise) {
+      await result;
+    }
   } catch (err) {
     caughtError = err;
   }

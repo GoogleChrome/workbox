@@ -66,7 +66,7 @@ describe(`WorkboxCore`, function() {
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
 
-      expectError(() => {
+      return expectError(() => {
         core.logLevel = coreModule.LOG_LEVELS.verbose - 1;
       }, 'invalid-value');
     });
@@ -75,7 +75,7 @@ describe(`WorkboxCore`, function() {
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
 
-      expectError(() => {
+      return expectError(() => {
         core.logLevel = coreModule.LOG_LEVELS.silent + 1;
       }, 'invalid-value');
     });
@@ -90,7 +90,7 @@ describe(`WorkboxCore`, function() {
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
 
-      expectError(() => {
+      return expectError(() => {
         core.logLevel = variant;
       }, 'invalid-type');
     });

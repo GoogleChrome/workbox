@@ -57,6 +57,8 @@ class WorkboxCore {
   }
 }
 
-export {_private};
-export {LOG_LEVELS};
+export {
+  _private,
+  LOG_LEVELS,
+};
 export default new WorkboxCore();

@@ -2,6 +2,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 import clearRequire from 'clear-require';
 
+import expectError from '../../../infra/utils/expectError';
 import constants from '../../../gulp-tasks/utils/constants.js';
 
 describe(`WorkboxPrecaching`, function() {
@@ -23,14 +24,11 @@ describe(`WorkboxPrecaching`, function() {
     it(`should throw in dev builds when loaded outside of a service worker`, async function() {
       process.env.NODE_ENV = 'dev';
 
-      try {
+      return expectError(async () => {
         await import('../../../packages/workbox-precaching/index.mjs');
-        throw new Error('Expected error to be thrown in dev builds.');
-      } catch (err) {
-        expect(err.constructor.name).to.equal('WorkboxError');
-        expect(err).to.have.property('name').that.equal('not-in-sw');
+      }, 'not-in-sw', (err) => {
         expect(err.details).to.have.property('moduleName').that.equal('workbox-precaching');
-      }
+      });
     });
 
     it(`should not throw in dev builds when in SW`, async function() {
