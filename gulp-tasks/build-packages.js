@@ -1,9 +1,9 @@
 const gulp = require('gulp');
 const path = require('path');
-const glob = require('glob');
 const fs = require('fs-extra');
 const oneLine = require('common-tags').oneLine;
 const rollupStream = require('rollup-stream');
+const rollup = require('rollup');
 const source = require('vinyl-source-stream');
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
@@ -97,11 +97,12 @@ const buildPackage = (packagePath, buildType) => {
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
   return rollupStream({
-    entry: moduleIndexPath,
+    input: moduleIndexPath,
+    rollup,
     format: 'iife',
-    moduleName: namespace,
-    sourceMap: true,
     exports: 'named',
+    name: namespace,
+    sourcemap: true,
     globals,
     external: externalAndPure,
     pureExternalModules: externalAndPure,
@@ -196,93 +197,7 @@ const convertExportObject = (exportObject, levels = 0) => {
   return `{\n${padding}${outputStrings.join(joinString)}\n${closePadding}}`;
 };
 
-const getBrowserExports = (pkgPath) => {
-  let browserEntryExport = {};
-  let browserEntryImports = {};
-
-  const filesToPublish = glob.sync(path.posix.join(pkgPath, '**', '*.mjs'), {
-    // Modules depending on other workbox-* modules will have their .mjs
-    // files included when we don't want them to.
-    ignore: [
-      '**/node_modules/**/*',
-    ],
-  });
-  filesToPublish.forEach((importPath) => {
-    // This will prevent files starting with '_' from
-    // being included in the browser bundle. This should
-    // only be used in very rare cases. See
-    // workbox-core/internal/models/messages/ for example
-    // where the file shouldn't be included in browser
-    // bundle.
-    if (path.basename(importPath).indexOf('_') === 0) {
-      return;
-    }
-
-    const pkgRelativePath = path.relative(pkgPath, importPath);
-    let exportName = path.basename(importPath, '.mjs');
-    let isDefault = false;
-    if (pkgRelativePath === 'index.mjs') {
-      // This is the default module export
-      exportName = 'modulesDefaultExport';
-      isDefault = true;
-    }
-
-    browserEntryImports[exportName] = importPath;
-
-    if (isDefault) {
-      browserEntryExport.default = exportName;
-    } else {
-      let currentObject = browserEntryExport;
-      path.dirname(pkgRelativePath).split(path.sep).forEach((pathSection) => {
-        if (!currentObject[pathSection]) {
-          currentObject[pathSection] = {};
-        }
-        currentObject = currentObject[pathSection];
-      });
-      currentObject[exportName] = exportName;
-    }
-  });
-
-  return {
-    imports: browserEntryImports,
-    exports: browserEntryExport,
-  };
-};
-
-/*
- * This function will generate a file containing all the imports and exports
- * for a package. This file will then be passed to Rollup as the "entry" file
- * to generate the 'iife' browser bundle.
- */
-const generateBrowserEntryFile = (pkgPath) => {
-  const outputPath = path.join(pkgPath, constants.PACKAGE_BUILD_DIRNAME,
-    constants.BROWSER_ENTRY_FILENAME);
-
-  let browserEntryFileContents = ``;
-  const browserEntryDetails = getBrowserExports(pkgPath);
-  Object.keys(browserEntryDetails.imports).forEach((importKey) => {
-    const entryRelativePath = path.relative(
-      path.dirname(outputPath), browserEntryDetails.imports[importKey]);
-  browserEntryFileContents +=
-    `import ${importKey} from '${entryRelativePath}';\n`;
-  });
-
-  const exportObjectString = convertExportObject(browserEntryDetails.exports);
-  browserEntryFileContents += `\nexport default ${exportObjectString}`;
-
-  fs.ensureDirSync(path.dirname(outputPath));
-  return fs.writeFile(outputPath, browserEntryFileContents);
-};
-
-gulp.task('build-packages:generate-browser-entry', gulp.series(
-  packageRunnner(
-    'build-packages:generate-browser-entry',
-    generateBrowserEntryFile,
-  )
-));
-
 gulp.task('build-packages', gulp.series([
   'build-packages:clean',
-  'build-packages:generate-browser-entry',
   'build-packages:build',
 ]));
