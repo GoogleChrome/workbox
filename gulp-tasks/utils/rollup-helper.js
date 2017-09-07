@@ -11,7 +11,7 @@ module.exports = {
     // https://github.com/ezekielchentnik/rollup-plugin-uglify-es/issues/1
     const plugins = [];
 
-    let minifyBuild = false;
+    let minifyBuild = buildType === 'prod';
     if (minifyBuild) {
       plugins.push(
         uglify({
