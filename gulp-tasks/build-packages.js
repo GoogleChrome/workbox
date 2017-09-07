@@ -11,9 +11,9 @@ const buffer = require('vinyl-buffer');
 
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
-const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
 const rollupHelper = require('./utils/rollup-helper');
+const logHelper = require('../infra/utils/log-helper');
 
 /*
  * To test sourcemaps are valid and working, use:

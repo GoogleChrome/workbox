@@ -1,6 +1,6 @@
 const istanbul = require('istanbul');
 const MochaSpecReporter = require('mocha/lib/reporters/spec');
-const logHelper = require('./log-helper');
+const logHelper = require('../../infra/utils/log-helper');
 
 // This must be a function to work with mocha who calls "new RepoterFunc()"
 module.exports = function(runner) {

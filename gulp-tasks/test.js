@@ -1,8 +1,8 @@
 const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
-const spawn = require('./utils/spawn-promise-wrapper');
 
-const logHelper = require('./utils/log-helper');
+const spawn = require('./utils/spawn-promise-wrapper');
+const logHelper = require('../infra/utils/log-helper');
 
 const runNodeTests = () => {
   logHelper.log(oneLine`

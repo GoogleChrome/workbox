@@ -31,4 +31,25 @@ export default {
     return `The parameter '${paramName}' passed into ` +
       `'${moduleName}.${className}.${funcName}()' must be an array.`;
   },
+
+  'add-to-cache-list-unexpected-type': ({entry}) => {
+    return `An unexpected entry was passed to ` +
+    `'workbox-precaching.PrecacheManager.addToCacheList()'. The entry ` +
+    `'${JSON.stringify(entry)}' isn't supported. You must supply an array of ` +
+    `strings with one or more characters, objects with a url property or ` +
+    `Request objects.`;
+  },
+
+  'add-to-cache-list-conflicting-entries': ({firstEntry, secondEntry}) => {
+    if (!firstEntry || !secondEntry) {
+      throw new Error(`Unexpected input to ` +
+        `'add-to-cache-list-duplicate-entries' error.`);
+    }
+
+    return `Two of the entries passed to ` +
+      `'workbox-precaching.PrecacheManager.addToCacheList()'. had matching ` +
+      `URLs but different revision details. This means workbox-precaching ` +
+      `is unable to determine cache the asset correctly. Please remove one ` +
+      `of the entries.`;
+  },
 };

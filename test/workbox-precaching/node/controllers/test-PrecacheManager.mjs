@@ -14,6 +14,7 @@ describe(`PrecacheManager`, function() {
   const sandbox = sinon.sandbox.create();
 
   beforeEach(function() {
+    process.env.NODE_ENV = 'dev';
     clearRequire.all();
   });
 
@@ -31,8 +32,7 @@ describe(`PrecacheManager`, function() {
   });
 
   describe(`addToCacheList() with bad values`, function() {
-    describe(`with bad values`, function() {
-      // TODO Bad input tests
+    describe(`with non-array values`, function() {
       const badTopLevelInputs = [
         {},
         true,
@@ -42,31 +42,33 @@ describe(`PrecacheManager`, function() {
         null,
         undefined
       ];
-      generateTestVariants(`should throw when passing in non-array values.`, badTopLevelInputs, async (variant) => {
+      generateTestVariants(`should throw when passing in non-array values`, badTopLevelInputs, async (variant) => {
         const PrecacheManager = (await import(PRECACHE_MANAGER_PATH)).default;
         const precacheManager = new PrecacheManager();
-        expectError(() => {
+        return expectError(() => {
           precacheManager.addToCacheList(variant);
         }, 'not-an-array');
       });
 
       const badNestedInputs = [
-        {},
         true,
         false,
         123,
-        '',
         null,
         undefined,
         [],
+        '',
+        {},
       ];
       generateTestVariants(`should throw when passing in invalid inputs in the array.`, badNestedInputs, async (variant) => {
         const PrecacheManager = (await import(PRECACHE_MANAGER_PATH)).default;
         const precacheManager = new PrecacheManager();
-        // TODO: Check this is a workbox error with correct error name
-        expect(() => {
+
+        return expectError(() => {
           precacheManager.addToCacheList([variant]);
-        }).to.throw();
+        }, 'add-to-cache-list-unexpected-type', (err) => {
+          expect(err.details.entry).to.deep.equal(variant);
+        });
       });
     });
 
@@ -89,13 +91,10 @@ describe(`PrecacheManager`, function() {
           const entry = precacheManager._entriesToCacheMap.get(inputUrl);
           expect(entry.entryId).to.equal(inputUrl);
           expect(entry.revision).to.equal(inputUrl);
-          expect(entry.request.url).to.equal(inputUrl);
         });
       });
 
       it(`should warn developers on non-prod builds`, async function() {
-        process.env.NODE_ENV = 'dev';
-
         const PrecacheManager = (await import(PRECACHE_MANAGER_PATH)).default;
 
         const stub = sandbox.stub(console, 'debug');
@@ -104,6 +103,18 @@ describe(`PrecacheManager`, function() {
         precacheManager.addToCacheList(['/example.html']);
 
         expect(stub.callCount).to.be.gt(0);
+      });
+
+      it(`should not-warn developers on non-prod builds if 'checkEntryRevisioning' is set to false`, async function() {
+        const PrecacheManager = (await import(PRECACHE_MANAGER_PATH)).default;
+
+        const stub = sandbox.stub(console, 'debug');
+
+        const precacheManager = new PrecacheManager();
+        precacheManager.checkEntryRevisioning = false;
+        precacheManager.addToCacheList(['/example.123.html']);
+
+        expect(stub.callCount).to.equal(0);
       });
 
       it(`should not warn developers on prod builds`, async function() {
@@ -135,7 +146,6 @@ describe(`PrecacheManager`, function() {
         const entry = precacheManager._entriesToCacheMap.get(url);
         expect(entry.entryId).to.equal(url);
         expect(entry.revision).to.equal(url);
-        expect(entry.request.url).to.equal(url);
       });
     });
 
@@ -158,13 +168,10 @@ describe(`PrecacheManager`, function() {
           const entry = precacheManager._entriesToCacheMap.get(inputObject.url);
           expect(entry.entryId).to.equal(inputObject.url);
           expect(entry.revision).to.equal(inputObject.url);
-          expect(entry.request.url).to.equal(inputObject.url);
         });
       });
 
       it(`should warn developers on non-prod builds`, async function() {
-        process.env.NODE_ENV = 'dev';
-
         const PrecacheManager = (await import(PRECACHE_MANAGER_PATH)).default;
 
         const stub = sandbox.stub(console, 'debug');
@@ -176,6 +183,21 @@ describe(`PrecacheManager`, function() {
         ]);
 
         expect(stub.callCount).to.be.gt(0);
+      });
+
+      it(`should not-warn developers on non-prod builds if 'checkEntryRevisioning' is set to false`, async function() {
+        const PrecacheManager = (await import(PRECACHE_MANAGER_PATH)).default;
+
+        const stub = sandbox.stub(console, 'debug');
+
+        const precacheManager = new PrecacheManager();
+        precacheManager.checkEntryRevisioning = false;
+        precacheManager.addToCacheList([
+          { url: '/example.123.html' },
+          { url: '/example-2.123.html' },
+        ]);
+
+        expect(stub.callCount).to.equal(0);
       });
 
       it(`should not warn developers on prod builds`, async function() {
@@ -207,7 +229,6 @@ describe(`PrecacheManager`, function() {
         const entry = precacheManager._entriesToCacheMap.get(singleObject.url);
         expect(entry.entryId).to.equal(singleObject.url);
         expect(entry.revision).to.equal(singleObject.url);
-        expect(entry.request.url).to.equal(singleObject.url);
       });
     });
 
@@ -230,13 +251,10 @@ describe(`PrecacheManager`, function() {
           const entry = precacheManager._entriesToCacheMap.get(inputObject.url);
           expect(entry.entryId).to.equal(inputObject.url);
           expect(entry.revision).to.equal(inputObject.revision);
-          expect(entry.request.url).to.equal(inputObject.url);
         });
       });
 
       it(`should not warn developers`, async function() {
-        process.env.NODE_ENV = 'dev';
-
         const PrecacheManager = (await import(PRECACHE_MANAGER_PATH)).default;
 
         const stub = sandbox.stub(console, 'debug');
@@ -263,20 +281,23 @@ describe(`PrecacheManager`, function() {
         const entry = precacheManager._entriesToCacheMap.get(singleObject.url);
         expect(entry.entryId).to.equal(singleObject.url);
         expect(entry.revision).to.equal(singleObject.revision);
-        expect(entry.request.url).to.equal(singleObject.url);
       });
 
-      it(`should throw on duplicate URL's with different revisions`, async function() {
+      it(`should throw on conflicting entries with different revisions`, async function() {
         const PrecacheManager = (await import(PRECACHE_MANAGER_PATH)).default;
-        // TODO Check it's a workbox error with correct error name.
-        expect(() => {
+        const firstEntry = { url: '/duplicate.html', revision: '123' };
+        const secondEntry = { url: '/duplicate.html', revision: '456' };
+        return expectError(() => {
           const precacheManager = new PrecacheManager();
           const inputObjects = [
-            { url: '/duplicate.html', revision: '123' },
-            { url: '/duplicate.html', revision: '456' },
+            firstEntry,
+            secondEntry,
           ];
           precacheManager.addToCacheList(inputObjects);
-        }).to.throw();
+        }, 'add-to-cache-list-conflicting-entries', (err) => {
+          expect(err.details.firstEntry).to.deep.equal(firstEntry);
+          expect(err.details.secondEntry).to.deep.equal(secondEntry);
+        });
       });
     });
   });

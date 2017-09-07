@@ -11,9 +11,9 @@ const oneLine = require('common-tags').oneLine;
 
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
-const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
 const rollupHelper = require('./utils/rollup-helper');
+const logHelper = require('../infra/utils/log-helper');
 
 const buildTestBundle = (packagePath, runningEnv, buildType) => {
   const testPath = path.join('test', pkgPathToName(packagePath));

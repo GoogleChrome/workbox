@@ -1,6 +1,9 @@
 import {_private} from 'workbox-core';
 import core from 'workbox-core';
 
+import PrecacheEntry from '../models/PrecacheEntry.mjs';
+import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
+
 /**
  * Performs efficient precaching of assets.
  */
@@ -10,98 +13,87 @@ export default class PrecacheManager {
    */
   constructor() {
     this._entriesToCacheMap = new Map();
+    if (process.env.NODE_ENV !== 'prod') {
+      this.checkEntryRevisioning = true;
+    }
   }
 
   /**
    * This method will add items to the precache list, removing duplicates
-   * and ensuring the information is valie.
-   * @param {Array<object|string>} revisionedEntries Array of entries to
+   * and ensuring the information is valid.
+   * @param {Array<object|string>} userEntries Array of entries to
    * precache.
    */
-  addToCacheList(revisionedEntries) {
+  addToCacheList(userEntries) {
     if (process.env.NODE_ENV !== 'prod') {
-      core.assert.isArray(revisionedEntries, {
+      core.assert.isArray(userEntries, {
         moduleName: 'workbox-precaching',
         className: 'PrecacheManager',
         funcName: 'addToCacheList',
-        paramName: 'revisionedEntries',
+        paramName: 'userEntries',
       });
     }
 
-    revisionedEntries.map((revisionedEntry) => {
-      const newEntry = this._parseEntry(revisionedEntry);
-
-      // Check if the entry is already part of the map
-      const previousEntry = this._entriesToCacheMap.get(newEntry.entryId);
-      if (previousEntry) {
-        if (previousEntry.revision !== newEntry.revision) {
-          throw new _private.WorkboxError('duplicate-entries', {
-            firstEntry: previousEntry,
-            secondEntry: newEntry,
-          });
-        }
-        return;
-      }
-
-      // This entry isn't in the install list
-      this._entriesToCacheMap.set(newEntry.entryId, newEntry);
+    userEntries.map((userEntry) => {
+      this._addEntryToCacheList(
+        this._parseEntry(userEntry)
+      );
     });
 
-    if (process.env.NODE_ENV !== 'prod') {
-      const urlOnlyEntries = revisionedEntries.filter(
-        (entry) => (typeof entry === 'string' || !entry.revision)
-      );
-
-      // TODO Add a way to opt out of this check.
-      if (urlOnlyEntries.length > 0) {
-        let pluralString = `${urlOnlyEntries.length} precache entries`;
-        if (urlOnlyEntries.length === 1) {
-          pluralString = `1 precache entry`;
-        }
-
-        // TODO Change to group collapsed
-        _private.logger.debug(`PrecacheManager.addToCacheList() found ` +
-          `${pluralString} that consists of just a URL and no revision ` +
-          `information.`);
-        _private.logger.debug(`For Example:`);
-        _private.logger.debug(`    /styles/example.css`);
-        _private.logger.debug(`    /styles/example.1234.css`);
-        _private.logger.debug(`  or`);
-        _private.logger.debug(`    { url: '/index.html' }`);
-        _private.logger.debug(`    { url: '/index.html', revision: '123' }`);
-        _private.logger.debug(`The following URL's should be checked: `);
-        urlOnlyEntries.forEach((urlOnlyEntry) => {
-          _private.logger.debug(`    ${JSON.stringify(urlOnlyEntry)}`);
-        });
-        _private.logger.debug(`You can disable this message by ....`);
-      }
+    if (process.env.NODE_ENV !== 'prod' &&
+      this.checkEntryRevisioning === true) {
+      showWarningsIfNeeded(userEntries);
     }
   }
 
+  /**
+   * This method returns a precache entry.
+   * @param input
+   */
   _parseEntry(input) {
     switch (typeof input) {
       case 'string':
         if (input.length === 0) {
-          throw new Error('TODO change to WorkboxError');
+          throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
+            entry: input,
+          });
         }
 
-        return {
-          entryId: input,
-          revision: input,
-          request: new Request(input),
-        };
+        return new PrecacheEntry(input, input, input);
       case 'object':
-        if (!input.url) {
-          throw new Error('TODO change to WorkboxError');
+        if (!input || !input.url) {
+          throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
+            entry: input,
+          });
         }
 
-        return {
-          entryId: input.url,
-          revision: input.revision || input.url,
-          request: new Request(input.url),
-        };
+        return new PrecacheEntry(input, input.url, input.revision || input.url);
       default:
-        throw new Error('TODO: Move to WorkboxError and Add Meaningful Msg');
+        throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
+          entry: input,
+        });
+    }
+  }
+
+  /**
+   * Adds an entry to the precache list, accounting for possible duplicates.
+   * @param {PrecacheEntry} entryToAdd
+   */
+  _addEntryToCacheList(entryToAdd) {
+    // Check if the entry is already part of the map
+    const existingEntry = this._entriesToCacheMap.get(entryToAdd.entryId);
+    if (!existingEntry) {
+      this._entriesToCacheMap.set(entryToAdd.entryId, entryToAdd);
+      return;
+    }
+
+    // Duplicates are fine, but make sure the revision information
+    // is the same.
+    if (existingEntry.revision !== entryToAdd.revision) {
+      throw new _private.WorkboxError('add-to-cache-list-conflicting-entries', {
+        firstEntry: existingEntry.originalInput,
+        secondEntry: entryToAdd.originalInput,
+      });
     }
   }
 }

@@ -4,7 +4,7 @@ const path = require('path');
 
 const generateReleaseFiles = require('./utils/generate-release-files');
 const githubHelper = require('./utils/github-helper');
-const logHelper = require('./utils/log-helper');
+const logHelper = require('../infra/utils/log-helper');
 
 const handleGithubRelease = async (tagName, gitBranch, release) => {
   // First attempt to generate the files. If this fails, we won't have

@@ -16,8 +16,8 @@ const path = require('path');
 const fs = require('fs-extra');
 const babylon = require('babylon');
 
-const logHelper = require('./log-helper');
 const constants = require('./constants');
+const logHelper = require('../../infra/utils/log-helper');
 
 class AnalyseBuildForProperties {
   run() {
@@ -36,7 +36,7 @@ class AnalyseBuildForProperties {
   getBuildFiles() {
     const buildGlob = path.join(__dirname, '..', '..', 'packages',
       '*', constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME,
-      '*.js');
+      '*.prod.js');
     return glob.sync(buildGlob);
   }
 
