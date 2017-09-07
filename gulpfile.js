@@ -46,6 +46,7 @@ const gulpTaskFiles = [
   'publish-github',
   'publish-cdn',
   'publish',
+  'watch',
 ];
 
 gulpTaskFiles.forEach((gulpTaskFile) => {
