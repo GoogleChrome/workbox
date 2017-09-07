@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 
-import assert from '../../../../packages/workbox-core/internal/utils/_assert';
+import assert from '../../../../packages/workbox-core/utils/assert';
 
 describe(`_assert`, function() {
   describe(`isSWEnv`, function() {

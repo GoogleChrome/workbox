@@ -2,7 +2,6 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 import clearRequire from 'clear-require';
 
-import {WorkboxError} from '../../../packages/workbox-core/index.mjs';
 import constants from '../../../gulp-tasks/utils/constants.js';
 
 describe(`WorkboxPrecaching`, function() {

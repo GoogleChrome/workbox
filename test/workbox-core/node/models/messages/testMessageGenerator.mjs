@@ -11,7 +11,7 @@ constants.BUILD_TYPES.forEach((buildType) => {
     };
     const detailsString = `${JSON.stringify([detailsObj])}`;
 
-    const MSG_GEN_PATH = '../../../../../packages/workbox-core/internal/models/messages/messageGenerator.mjs';
+    const MSG_GEN_PATH = '../../../../../packages/workbox-core/models/messages/messageGenerator.mjs';
     let sandbox;
     let messageGenerator;
 

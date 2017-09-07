@@ -15,7 +15,12 @@ const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
 const rollupHelper = require('./utils/rollup-helper');
 
-const ERROR_NO_BROWSER_BUNDLE = `Could not find the browser bundle: `;
+/*
+ * To test sourcemaps are valid and working, use:
+ * http://paulirish.github.io/source-map-visualization/#custom-choose
+ */
+
+const ERROR_NO_MODULE_INDEX = `Could not find the modules index.mjs file: `;
 const ERROR_NO_NAMSPACE = oneLine`
   You must define a 'browserNamespace' parameter in the 'package.json'.
   Exmaple: 'workbox-precaching' would have a browserNamespace param of
@@ -25,39 +30,51 @@ const ERROR_NO_NAMSPACE = oneLine`
   JavaScript. Please fix for:
 `;
 
-/*
- * This function takes an object like { nested: { foo: bar } } and a string
- * like `nested.foo` and returns true if that value is defined on the obejct.
- */
-const testObjectValueExists = (object, nestedPath) => {
-  const pieces = nestedPath.split('.');
-  let currentRoot = object;
-  for (const piece of pieces) {
-    if (!currentRoot[piece]) {
-      return false;
-    }
-    currentRoot = currentRoot[piece];
+// This makes Rollup assume workbox-* will be added to the global
+// scope and replace references with the core namespace
+const globals = (moduleId) => {
+  const splitModuleId = moduleId.split('/');
+  if (splitModuleId[0].indexOf('workbox-') !== 0) {
+    throw new Error(`Unknown global module ID: ${moduleId}`);
   }
-  return true;
+
+  const packageName = splitModuleId.shift();
+  if (splitModuleId.length > 0) {
+    throw new Error(oneLine`
+    All imports of workbox-* modules must be done from the top level export.
+    (i.e. import * from 'workbox-*') This ensures that the browser
+    namespacing works correctly. Please remove '${splitModuleId.join('/')}'
+    from the import '${moduleId}'.
+  `);
+  }
+
+  // Get a package's browserNamespace so we know where it will be
+  // on the global scope (i.e. workbox.<name space>)
+  const packagePath = path.join(__dirname, '..', 'packages', packageName);
+  try {
+    const pkg = require(path.join(packagePath, 'package.json'));
+    return `${constants.NAMESPACE_PREFIX}.${pkg.workbox.browserNamespace}`;
+  } catch (err) {
+    logHelper.error(`Unable to get browserNamespace for package: ` +
+      `'${packageName}'`);
+    logHelper.error(err);
+    throw err;
+  }
 };
 
-/*
- * To test sourcemaps are valid and working, use:
- * http://paulirish.github.io/source-map-visualization/#custom-choose
- */
+// This ensures all workbox-* modules are treated as external and are
+// referenced as globals.
+const externalAndPure = (moduleId) => (moduleId.indexOf('workbox-') === 0);
 
 const buildPackage = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
-  const browserEntryPath = path.join(
-    packagePath,
-    constants.PACKAGE_BUILD_DIRNAME,
-    constants.BROWSER_ENTRY_FILENAME);
+  const moduleIndexPath = path.join(packagePath, `index.mjs`);
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
-  if (!fs.pathExistsSync(browserEntryPath)) {
-    logHelper.error(ERROR_NO_BROWSER_BUNDLE + packageName);
-    return Promise.reject(ERROR_NO_BROWSER_BUNDLE + packageName);
+  if (!fs.pathExistsSync(moduleIndexPath)) {
+    logHelper.error(ERROR_NO_MODULE_INDEX + packageName);
+    return Promise.reject(ERROR_NO_MODULE_INDEX + packageName);
   }
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
@@ -66,12 +83,9 @@ const buildPackage = (packagePath, buildType) => {
     return Promise.reject(ERROR_NO_NAMSPACE + ' ' + packageName);
   }
 
-  // Filename should be format <package name>.<build type>.js
-  const outputFilename = `${packageName}.${buildType}.js`;
-  // Namespace should be <name space>.<modules browser namespace>
   const namespace =
     `${constants.NAMESPACE_PREFIX}.${pkgJson.workbox.browserNamespace}`;
-
+  const outputFilename = `${packageName}.${buildType}.js`;
   const outputDirectory = path.join(packagePath,
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
 
@@ -82,111 +96,16 @@ const buildPackage = (packagePath, buildType) => {
   logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
-  const plugins = rollupHelper.getDefaultPlugins(buildType);
-
-  // This makes Rollup assume workbox-* will be added to the global
-  // scope and replace references with the core namespace
-  const globals = (moduleId) => {
-    // This regex matches for (workbox-*)(/any/path/here.mjs)
-    const workboxModuleIdRegex = /(workbox-\w*)([/\w.]*)*/g;
-    const result = workboxModuleIdRegex.exec(moduleId);
-    if (!result) {
-      throw new Error(`Unknown global module ID: ${moduleId}`);
-    }
-
-    const packageName = result[1];
-    let importFilePath = null;
-    if (result.length === 3) {
-      importFilePath = result[2];
-      if (importFilePath && importFilePath.indexOf('/') === 0) {
-        importFilePath = importFilePath.replace('/', '');
-      }
-    }
-
-    // Get a package's browserNamespace so we know where it will be
-    // on the global scope (i.e. google.workbox.????)
-    let browserNamespace = null;
-    const packagePath = path.join(__dirname, '..', 'packages', packageName);
-    try {
-      const pkg = require(path.join(packagePath, 'package.json'));
-      browserNamespace = pkg.workbox.browserNamespace;
-    } catch (err) {
-      logHelper.error(`Unable to get browserNamespace for package: ` +
-        `'${packageName}'`);
-      logHelper.error(err);
-      throw err;
-    }
-
-    let globalNamespace = `${constants.NAMESPACE_PREFIX}.${browserNamespace}`;
-    let fileNamespace = '';
-    // If a module pulls in a specific file the namespace will need to
-    // include this information. i.e. workbox-core/internal/logHelper should
-    // become google.workbox.core.internal.logHelper
-    if (importFilePath) {
-      // Glob for the file we want so that file extensions are automatically
-      // searched for.
-      // This is just to ensure a file is there.
-      const matchingFiles = glob.sync(
-        path.join(packagePath, importFilePath + '*'));
-
-      // If we have no matches or multiple matches, we can't be sure what
-      // the import should be, so error out as it's ambiguous.
-      if (matchingFiles.length !== 1) {
-        logHelper.error(
-          `Unable to find an "import <-> browser namespace" match for ` +
-          `'${moduleId}': `, matchingFiles);
-        throw new Error(`Unable to find an "import <-> browser namespace" ` +
-          `match for '${moduleId}'`);
-      }
-
-      // Strip any file extensions
-      importFilePath = importFilePath.replace(path.extname(importFilePath), '');
-
-      // Replace all forward slashes with a dot
-      fileNamespace = importFilePath.replace(/\//g, '.');
-    }
-
-    // To further ensure exports and imports are where they are expect,
-    // we could test the generated browser export to ensure our new global
-    // module is correct.
-    const browserEntryDetails = getBrowserExports(packagePath);
-    const exports = browserEntryDetails.exports;
-
-    const expectedExportName = fileNamespace ? fileNamespace : 'default';
-    if (!testObjectValueExists(exports, expectedExportName)) {
-      logHelper.warn(`Unable to find the browser namespace for imported ` +
-        `module`);
-      logHelper.warn(`Imported Module ID: '${moduleId}'`);
-      logHelper.warn(`Looking at package: '${packagePath}'`);
-      logHelper.warn(`Expected Export Name: '${expectedExportName}'`);
-      logHelper.warn(`Known exports from this package:\n` +
-        `${JSON.stringify(browserEntryDetails.exports, null, 2)}`);
-      throw new Error(`Unable to find a valid replacement for module: ` +
-        `'${moduleId}'`);
-    }
-
-    const finalNamespace = fileNamespace ?
-      `${globalNamespace}.${fileNamespace}` :
-      globalNamespace;
-    logHelper.log(`Swapping import '${moduleId}' for '${finalNamespace}'`);
-    return finalNamespace;
-  };
-
-  // This ensures all workbox-* modules are treated as external and are
-  // referenced as globals.
-  const externalAndPure = (moduleId) => {
-    return (moduleId.indexOf('workbox-') === 0);
-  };
-
   return rollupStream({
-    entry: browserEntryPath,
+    entry: moduleIndexPath,
     format: 'iife',
     moduleName: namespace,
     sourceMap: true,
+    exports: 'named',
     globals,
     external: externalAndPure,
     pureExternalModules: externalAndPure,
-    plugins,
+    plugins: rollupHelper.getDefaultPlugins(buildType),
     onwarn: (warning) => {
       if (buildType === 'prod' && warning.code === 'UNUSED_EXTERNAL_IMPORT') {
         // This can occur when using rollup-plugin-replace.
@@ -209,7 +128,7 @@ const buildPackage = (packagePath, buildType) => {
   })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
-  .pipe(source(browserEntryPath))
+  .pipe(source(moduleIndexPath))
   // gulp-sourcemaps don't work with streams so we need
   .pipe(buffer())
   // This tells gulp-sourcemaps to load the inline sourcemap

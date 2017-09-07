@@ -1,8 +1,8 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import logger from '../../../../packages/workbox-core/internal/utils/logger.mjs';
-import WorkboxError from '../../../../packages/workbox-core/internal/models/WorkboxError.mjs';
+import logger from '../../../../packages/workbox-core/utils/logger.mjs';
+import WorkboxError from '../../../../packages/workbox-core/models/WorkboxError.mjs';
 import generateVariantTests from '../../../../infra/utils/generate-variant-tests';
 
 describe(`logger`, function() {
