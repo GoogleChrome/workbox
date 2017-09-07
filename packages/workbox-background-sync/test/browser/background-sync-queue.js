@@ -88,7 +88,7 @@ describe(`background sync queue`, function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
-    expect(backgroundSyncQueue._queue.queue.length).to.equal(1);
+    expect((await backgroundSyncQueue._queue.getQueue()).length).to.equal(1);
   });
 
   it(`check replay queued request via replayRequests method`, async function() {
@@ -98,24 +98,24 @@ describe(`background sync queue`, function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
-    expect(backgroundSyncQueue._queue.queue.length).to.equal(2);
+    expect((await backgroundSyncQueue._queue.getQueue()).length).to.equal(2);
     await backgroundSyncQueue.replayRequests();
     expect(responseAchieved).to.equal(2);
   });
 
-  it(`should rejected promise on replay failure`, async function() {
+  it(`should reject promise on replay failure`, async function() {
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__echo/counter'),
     });
     await backgroundSyncQueue.pushIntoQueue({
       request: new Request('/__test/404'),
     });
-    try {
-      await backgroundSyncQueue.replayRequests();
+    return backgroundSyncQueue.replayRequests()
+    .then(() => {
       throw new Error('Replay should have failed because of invalid URL');
-    } catch (err) {
-      expect(err[0].status).to.equal(404);
-    }
+    }, () => {
+       // The promise rejected as expected
+    });
   });
 
   it(`should remove requests from queue which are post threir maxRetentionTime`, async function() {
