@@ -34,7 +34,7 @@ export default {
 
   'add-to-cache-list-unexpected-type': ({entry}) => {
     return `An unexpected entry was passed to ` +
-    `'workbox-precaching.PrecacheManager.addToCacheList()'. The entry ` +
+    `'workbox-precaching.PrecacheController.addToCacheList()' The entry ` +
     `'${JSON.stringify(entry)}' isn't supported. You must supply an array of ` +
     `strings with one or more characters, objects with a url property or ` +
     `Request objects.`;
@@ -47,7 +47,7 @@ export default {
     }
 
     return `Two of the entries passed to ` +
-      `'workbox-precaching.PrecacheManager.addToCacheList()'. had matching ` +
+      `'workbox-precaching.PrecacheController.addToCacheList()' had matching ` +
       `URLs but different revision details. This means workbox-precaching ` +
       `is unable to determine cache the asset correctly. Please remove one ` +
       `of the entries.`;

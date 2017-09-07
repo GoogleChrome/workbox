@@ -7,13 +7,13 @@ import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
 /**
  * Performs efficient precaching of assets.
  */
-export default class PrecacheManager {
+export default class PrecacheController {
   /**
-   * Create a new PrecacheManager Instance
+   * Create a new PrecacheController Instance
    */
   constructor() {
     this._entriesToCacheMap = new Map();
-    if (process.env.NODE_ENV !== 'prod') {
+    if (process.env.NODE_ENV !== 'production') {
       this.checkEntryRevisioning = true;
     }
   }
@@ -21,14 +21,14 @@ export default class PrecacheManager {
   /**
    * This method will add items to the precache list, removing duplicates
    * and ensuring the information is valid.
-   * @param {Array<object|string>} userEntries Array of entries to
+   * @param {Array<Object|String>} userEntries Array of entries to
    * precache.
    */
   addToCacheList(userEntries) {
-    if (process.env.NODE_ENV !== 'prod') {
+    if (process.env.NODE_ENV !== 'production') {
       core.assert.isArray(userEntries, {
         moduleName: 'workbox-precaching',
-        className: 'PrecacheManager',
+        className: 'PrecacheController',
         funcName: 'addToCacheList',
         paramName: 'userEntries',
       });
@@ -40,7 +40,7 @@ export default class PrecacheManager {
       );
     });
 
-    if (process.env.NODE_ENV !== 'prod' &&
+    if (process.env.NODE_ENV !== 'production' &&
       this.checkEntryRevisioning === true) {
       showWarningsIfNeeded(userEntries);
     }

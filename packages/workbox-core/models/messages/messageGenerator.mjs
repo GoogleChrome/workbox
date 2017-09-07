@@ -22,7 +22,7 @@ const generatorFunction = (code, ...args) => {
   return message(...args);
 };
 
-const exportedValue = (process.env.NODE_ENV === 'prod') ?
+const exportedValue = (process.env.NODE_ENV === 'production') ?
   fallback : generatorFunction;
 
 export default exportedValue;

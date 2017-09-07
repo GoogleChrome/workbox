@@ -3,7 +3,7 @@ import expectError from '../../../../infra/utils/expectError';
 import assert from '../../../../packages/workbox-core/utils/assert';
 
 describe(`_assert`, function() {
-  describe(`isSWEnv`, function() {
+  describe(`isSwEnv`, function() {
     class FakeSWGlobalScope {}
 
     beforeEach(function() {
@@ -17,14 +17,14 @@ describe(`_assert`, function() {
     });
 
     it(`should throw if ServiceWorkerGlobalScope is not defined`, function() {
-      return expectError(() => assert.isSWEnv('example-module'), 'not-in-sw');
+      return expectError(() => assert.isSwEnv('example-module'), 'not-in-sw');
     });
 
     it(`should return false if self is not an instance of ServiceWorkerGlobalScope`, function() {
       global.ServiceWorkerGlobalScope = FakeSWGlobalScope;
       global.self = {};
 
-      return expectError(() => assert.isSWEnv('example-module'), 'not-in-sw');
+      return expectError(() => assert.isSwEnv('example-module'), 'not-in-sw');
     });
 
     it(`should return true if self is an instance of ServiceWorkerGlobalScope`, function() {
@@ -32,7 +32,7 @@ describe(`_assert`, function() {
       global.ServiceWorkerGlobalScope = Test;
       global.self = new Test();
 
-      assert.isSWEnv('example-module');
+      assert.isSwEnv('example-module');
     });
   });
 });

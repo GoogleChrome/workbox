@@ -86,7 +86,7 @@ gulp.task('build-test-bundles:clean',
 );
 
 // This will create one version of the tests for each buildType.
-// i.e. we'll have a browser build for no NODE_ENV and one for 'prod'
+// i.e. we'll have a browser build for no NODE_ENV and one for 'production'
 // NODE_ENV and the same for sw and node tests.
 const bundleBuilds = [];
 constants.BUILD_TYPES.forEach((buildType) => {

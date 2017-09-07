@@ -10,32 +10,50 @@ export default (userEntries) => {
     return;
   }
 
+  _private.logger.groupCollapsed('Are your precached assets revisioned?');
+
+  const urlsList = urlOnlyEntries.map((urlOnlyEntry) => {
+    return `    - ${JSON.stringify(urlOnlyEntry)}`;
+  }).join(`\n`);
+  _private.logger.debug(
+    `The following precache entries might not be revisioned:\n` +
+    `\n` +
+    urlsList +
+    `\n\n`
+  );
+
   let pluralString = `${urlOnlyEntries.length} precache entries`;
   if (urlOnlyEntries.length === 1) {
     pluralString = `1 precache entry`;
   }
 
-  _private.logger.groupCollapsed('Are you precached assets revisioned?');
+  _private.logger.log(
+    `'workbox-precaching' ensures assets are only downloaded when needed, ` +
+    `saving user's data and speeding up the install time of new service ` +
+    `workers.\n` +
+    `\n` +
+    `To do this, 'workbox-precaching' needs assets to by revisioned so it ` +
+    `can detect when a file has changed. Without revisioning, your users ` +
+    `may not get the latest files, causing problems when you a new ` +
+    `service worker is deployed.\n` +
+    `\n` +
+    `For example, the following entries have URLs without revisioning:\n` +
+    `\n` +
+    `        '/styles/example.css'\n` +
+    `        { url: '/index.html' }\n` +
+    `\n` +
+    `Compare this to URLs which are revisioned:\n` +
+    `\n` +
+    `        '/styles/example.1234.css'\n` +
+    `        { url: '/index.1234.html' }\n` +
+    `\n` +
+    `If your URLs aren't revisioned, please remove them from ` +
+    `precaching to make sure your users don't end up in a broken state.\n`
+  );
 
-  _private.logger.debug(
-    `workbox-precaching.PrecacheManager.addToCacheList() ` +
-    `found ${pluralString} that consist of just a URL meaning we can't ` +
-    `confirm it's revisioned.`);
-  _private.logger.debug(`For example, these entries are just URLs:`);
-  _private.logger.debug(`    /styles/example.css`);
-  _private.logger.debug(`    { url: '/index.html' }`);
-  _private.logger.debug(`These entries are URLs with revision information:`);
-  _private.logger.debug(`    /styles/example.1234.css`);
-  _private.logger.debug(`    { url: '/index.html', revision: '123' }`);
-  _private.logger.debug(`The following URL's should be checked: `);
-  urlOnlyEntries.forEach((urlOnlyEntry) => {
-    _private.logger.debug(`    ${JSON.stringify(urlOnlyEntry)}`);
-  });
-  _private.logger.debug(`*If they aren't revisioned*, you will be unable to ` +
-    `update these assets when you publish a new service worker due to how ` +
-    `workbox-precaching works.`);
-  // TODO Add a useful link
-  _private.logger.debug(`Learn more about this message here ....`);
+  // TODO Add link to docs here.....
+  _private.logger.debug(`You can learn more about this issue and possible ` +
+    `solutions here...`);
 
   _private.logger.groupEnd();
 };

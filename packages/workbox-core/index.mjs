@@ -11,13 +11,13 @@ class WorkboxCore {
    * @private
    */
   constructor() {
-    // Only expose assert if the build is not prod, allowing Rollup to
+    // Only expose assert if the build is not production, allowing Rollup to
     // Remove the imports otherwise.
-    if (process.env.NODE_ENV !== 'prod') {
+    if (process.env.NODE_ENV !== 'production') {
       this.assert = assert;
     }
 
-    this._logLevel = (process.env.NODE_ENV === 'prod') ?
+    this._logLevel = (process.env.NODE_ENV === 'production') ?
       LOG_LEVELS.warn : LOG_LEVELS.verbose;
   }
 

@@ -35,13 +35,13 @@ describe(`WorkboxPrecaching`, function() {
       process.env.NODE_ENV = 'dev';
 
       const coreModule = await import('../../../packages/workbox-core/index.mjs');
-      sandbox.stub(coreModule.default.assert, 'isSWEnv').callsFake(() => true);
+      sandbox.stub(coreModule.default.assert, 'isSwEnv').callsFake(() => true);
 
       await import('../../../packages/workbox-precaching/index.mjs');
     });
 
-    it(`should not throw in prod builds`, async function() {
-      process.env.NODE_ENV = 'prod';
+    it(`should not throw in production builds`, async function() {
+      process.env.NODE_ENV = 'production';
 
       await import('../../../packages/workbox-precaching/index.mjs')
     });

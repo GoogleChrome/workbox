@@ -30,7 +30,7 @@ constants.BUILD_TYPES.forEach((buildType) => {
     });
 
     it('should handle unknown codes', function() {
-      if (process.env.NODE_ENV === 'prod') {
+      if (process.env.NODE_ENV === 'production') {
         const message = messageGenerator('fake-code');
 
         expect(message).to.equal('fake-code');
@@ -42,7 +42,7 @@ constants.BUILD_TYPES.forEach((buildType) => {
     });
 
     it('should return the code with details if the code is unknown', function() {
-      if (process.env.NODE_ENV === 'prod') {
+      if (process.env.NODE_ENV === 'production') {
         const message = messageGenerator('fake-code', detailsObj);
         expect(message).to.equal(`fake-code :: ${detailsString}`);
       } else {
@@ -53,7 +53,7 @@ constants.BUILD_TYPES.forEach((buildType) => {
     });
 
     it('should throw an error if the code is valid but no required details are defined', function() {
-      if (process.env.NODE_ENV === 'prod') {
+      if (process.env.NODE_ENV === 'production') {
         const message = messageGenerator('invalid-type');
         expect(message).to.equal(`invalid-type`);
       } else {
@@ -64,7 +64,7 @@ constants.BUILD_TYPES.forEach((buildType) => {
     });
 
     it('should throw an error if the code is valid but the arguments are missing details', function() {
-      if (process.env.NODE_ENV === 'prod') {
+      if (process.env.NODE_ENV === 'production') {
         const message = messageGenerator('invalid-type', detailsObj);
         expect(message).to.equal(`invalid-type :: ${detailsString}`);
       } else {
@@ -84,7 +84,7 @@ constants.BUILD_TYPES.forEach((buildType) => {
       };
 
       const message = messageGenerator('invalid-type', invalidTypeDetails);
-      if (process.env.NODE_ENV === 'prod') {
+      if (process.env.NODE_ENV === 'production') {
         expect(message).to.equal(`invalid-type :: ${JSON.stringify([invalidTypeDetails])}`);
       } else {
         expect(message.indexOf('invalid-type')).to.equal(-1);

@@ -22,7 +22,7 @@ describe(`WorkboxCore`, function() {
     });
 
     it(`should NOT expose assert in prod build`, async function() {
-      process.env.NODE_ENV = 'prod';
+      process.env.NODE_ENV = 'production';
 
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
@@ -40,8 +40,8 @@ describe(`WorkboxCore`, function() {
       expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.verbose);
     });
 
-    it(`should initialise to 'warn' log level for prod build`, async function() {
-      process.env.NODE_ENV = 'prod';
+    it(`should initialise to 'warn' log level for production build`, async function() {
+      process.env.NODE_ENV = 'production';
 
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
