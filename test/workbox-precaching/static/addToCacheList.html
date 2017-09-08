@@ -4,7 +4,7 @@
 </head>
 <body>
   <h3>precache.addToCacheList()</h3>
-  <button class="js-index-string">Add '/index.html'</button>
+  <button class="js-index-unrevisioned">Add Unrevisioned Assets</button>
 
 <script src="../../../../packages/workbox-core/builds/browser/workbox-core.dev.js"></script>
 <script>
@@ -15,9 +15,12 @@
 <script>
   const precacheController = new workbox.precaching.PrecacheController();
 
-  const indexStringBtn = document.querySelector('.js-index-string');
+  const indexStringBtn = document.querySelector('.js-index-unrevisioned');
   indexStringBtn.addEventListener('click', () => {
-    precacheController.addToCacheList(['/index.html']);
+    precacheController.addToCacheList([
+      '/index.html',
+      { url: '/example.html' }
+    ]);
   });
 </script>
 </body>

@@ -15,7 +15,8 @@ export default (userEntries) => {
   const urlsList = urlOnlyEntries.map((urlOnlyEntry) => {
     return `    - ${JSON.stringify(urlOnlyEntry)}`;
   }).join(`\n`);
-  _private.logger.debug(
+
+  _private.logger.warn(
     `The following precache entries might not be revisioned:\n` +
     `\n` +
     urlsList +
