@@ -5,13 +5,16 @@ import clearRequire from 'clear-require';
 import expectError from '../../../../infra/utils/expectError';
 import generateTestVariants from '../../../../infra/utils/generate-variant-tests'
 
-// This sets Request mock on the Global scope
-import '../../../mocks/Request.mjs';
+import makeServiceWorkerEnv from 'service-worker-mock';
 
 const PRECACHE_MANAGER_PATH = '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
 
 describe(`PrecacheController`, function() {
   const sandbox = sinon.sandbox.create();
+
+  before(function() {
+    Object.assign(global, makeServiceWorkerEnv());
+  });
 
   beforeEach(function() {
     process.env.NODE_ENV = 'dev';
