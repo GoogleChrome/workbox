@@ -34,8 +34,8 @@ describe(`PrecacheController`, function() {
     });
   });
 
-  describe(`addToCacheList() with bad values`, function() {
-    describe(`with non-array values`, function() {
+  describe(`addToCacheList()`, function() {
+    describe(`Error Cases`, function() {
       const badTopLevelInputs = [
         {},
         true,
@@ -75,232 +75,226 @@ describe(`PrecacheController`, function() {
       });
     });
 
-    describe(`with strings`, function() {
-      it(`should add strings to cache entries`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-        const precacheController = new PrecacheController();
+    it(`should add strings to cache entries`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
 
-        const inputUrls = [
-          '/',
-          '/hello.html',
-          '/styles/hello.css',
-          '/scripts/controllers/hello.js',
-        ];
-        precacheController.addToCacheList(inputUrls);
+      const inputUrls = [
+        '/',
+        '/hello.html',
+        '/styles/hello.css',
+        '/scripts/controllers/hello.js',
+      ];
+      precacheController.addToCacheList(inputUrls);
 
-        expect(precacheController._entriesToCacheMap.size).to.equal(inputUrls.length);
+      expect(precacheController._entriesToCacheMap.size).to.equal(inputUrls.length);
 
-        inputUrls.forEach((inputUrl) => {
-          const entry = precacheController._entriesToCacheMap.get(inputUrl);
-          expect(entry.entryId).to.equal(inputUrl);
-          expect(entry.revision).to.equal(inputUrl);
-        });
-      });
-
-      it(`should warn developers on non-production builds`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-
-        const stub = sandbox.stub(console, 'debug');
-
-        const precacheController = new PrecacheController();
-        precacheController.addToCacheList(['/example.html']);
-
-        expect(stub.callCount).to.be.gt(0);
-      });
-
-      it(`should not-warn developers on non-production builds if 'checkEntryRevisioning' is set to false`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-
-        const stub = sandbox.stub(console, 'debug');
-
-        const precacheController = new PrecacheController();
-        precacheController.checkEntryRevisioning = false;
-        precacheController.addToCacheList(['/example.123.html']);
-
-        expect(stub.callCount).to.equal(0);
-      });
-
-      it(`should not warn developers on production builds`, async function() {
-        process.env.NODE_ENV = 'production';
-
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-
-        const stub = sandbox.stub(console, 'debug');
-
-        const precacheController = new PrecacheController();
-        precacheController.addToCacheList(['/example.html']);
-
-        expect(stub.callCount).to.equal(0);
-      });
-
-      it(`should remove duplicate string entries`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-        const precacheController = new PrecacheController();
-
-        const url = '/duplicate.html';
-        const inputUrls = [
-          url,
-          url,
-        ];
-        precacheController.addToCacheList(inputUrls);
-
-        expect(precacheController._entriesToCacheMap.size).to.equal(1);
-
-        const entry = precacheController._entriesToCacheMap.get(url);
-        expect(entry.entryId).to.equal(url);
-        expect(entry.revision).to.equal(url);
+      inputUrls.forEach((inputUrl) => {
+        const entry = precacheController._entriesToCacheMap.get(inputUrl);
+        expect(entry._entryId).to.equal(inputUrl);
+        expect(entry._revision).to.equal(inputUrl);
       });
     });
 
-    describe(`with objects containing urls`, function() {
-      it(`should add objects to cache entries`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-        const precacheController = new PrecacheController();
+    it(`should warn developers on non-production builds with string entries`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
 
-        const inputObjects = [
-          { url: '/' },
-          { url: '/hello.html' },
-          { url: '/styles/hello.css' },
-          { url: '/scripts/controllers/hello.js' },
-        ];
-        precacheController.addToCacheList(inputObjects);
+      const stub = sandbox.stub(console, 'debug');
 
-        expect(precacheController._entriesToCacheMap.size).to.equal(inputObjects.length);
+      const precacheController = new PrecacheController();
+      precacheController.addToCacheList(['/example.html']);
 
-        inputObjects.forEach((inputObject) => {
-          const entry = precacheController._entriesToCacheMap.get(inputObject.url);
-          expect(entry.entryId).to.equal(inputObject.url);
-          expect(entry.revision).to.equal(inputObject.url);
-        });
-      });
+      expect(stub.callCount).to.be.gt(0);
+    });
 
-      it(`should warn developers on non-production builds`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+    it(`should not-warn developers on non-production builds with string entries if 'checkEntryRevisioning' is set to false`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
 
-        const stub = sandbox.stub(console, 'debug');
+      const stub = sandbox.stub(console, 'debug');
 
-        const precacheController = new PrecacheController();
-        precacheController.addToCacheList([
-          { url: '/example.html' },
-          { url: '/example-2.html' },
-        ]);
+      const precacheController = new PrecacheController();
+      precacheController.checkEntryRevisioning = false;
+      precacheController.addToCacheList(['/example.123.html']);
 
-        expect(stub.callCount).to.be.gt(0);
-      });
+      expect(stub.callCount).to.equal(0);
+    });
 
-      it(`should not-warn developers on non-production builds if 'checkEntryRevisioning' is set to false`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+    it(`should not warn developers on production builds with string entries`, async function() {
+      process.env.NODE_ENV = 'production';
 
-        const stub = sandbox.stub(console, 'debug');
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
 
-        const precacheController = new PrecacheController();
-        precacheController.checkEntryRevisioning = false;
-        precacheController.addToCacheList([
-          { url: '/example.123.html' },
-          { url: '/example-2.123.html' },
-        ]);
+      const stub = sandbox.stub(console, 'debug');
 
-        expect(stub.callCount).to.equal(0);
-      });
+      const precacheController = new PrecacheController();
+      precacheController.addToCacheList(['/example.html']);
 
-      it(`should not warn developers on production builds`, async function() {
-        process.env.NODE_ENV = 'production';
+      expect(stub.callCount).to.equal(0);
+    });
 
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+    it(`should remove duplicate string entries`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
 
-        const stub = sandbox.stub(console, 'debug');
+      const url = '/duplicate.html';
+      const inputUrls = [
+        url,
+        url,
+      ];
+      precacheController.addToCacheList(inputUrls);
 
-        const precacheController = new PrecacheController();
-        precacheController.addToCacheList([{ url: '/example.html' }]);
+      expect(precacheController._entriesToCacheMap.size).to.equal(1);
 
-        expect(stub.callCount).to.equal(0);
-      });
+      const entry = precacheController._entriesToCacheMap.get(url);
+      expect(entry._entryId).to.equal(url);
+      expect(entry._revision).to.equal(url);
+    });
 
-      it(`should remove duplicate object entries`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-        const precacheController = new PrecacheController();
+    it(`should add URL only objects to cache entries`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
 
-        const singleObject = { url: '/duplicate.html'};
-        const inputObjects = [
-          singleObject,
-          singleObject,
-        ];
-        precacheController.addToCacheList(inputObjects);
+      const inputObjects = [
+        { url: '/' },
+        { url: '/hello.html' },
+        { url: '/styles/hello.css' },
+        { url: '/scripts/controllers/hello.js' },
+      ];
+      precacheController.addToCacheList(inputObjects);
 
-        expect(precacheController._entriesToCacheMap.size).to.equal(1);
+      expect(precacheController._entriesToCacheMap.size).to.equal(inputObjects.length);
 
-        const entry = precacheController._entriesToCacheMap.get(singleObject.url);
-        expect(entry.entryId).to.equal(singleObject.url);
-        expect(entry.revision).to.equal(singleObject.url);
+      inputObjects.forEach((inputObject) => {
+        const entry = precacheController._entriesToCacheMap.get(inputObject.url);
+        expect(entry._entryId).to.equal(inputObject.url);
+        expect(entry._revision).to.equal(inputObject.url);
       });
     });
 
-    describe(`with objects containing urls and revisions`, function() {
-      it(`should add objects to cache entries`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-        const precacheController = new PrecacheController();
+    it(`should warn developers on non-production builds with URL only objects`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
 
+      const stub = sandbox.stub(console, 'debug');
+
+      const precacheController = new PrecacheController();
+      precacheController.addToCacheList([
+        { url: '/example.html' },
+        { url: '/example-2.html' },
+      ]);
+
+      expect(stub.callCount).to.be.gt(0);
+    });
+
+    it(`should not-warn developers on non-production builds with URL only objects if 'checkEntryRevisioning' is set to false`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+
+      const stub = sandbox.stub(console, 'debug');
+
+      const precacheController = new PrecacheController();
+      precacheController.checkEntryRevisioning = false;
+      precacheController.addToCacheList([
+        { url: '/example.123.html' },
+        { url: '/example-2.123.html' },
+      ]);
+
+      expect(stub.callCount).to.equal(0);
+    });
+
+    it(`should not warn developers on production builds with url only strings`, async function() {
+      process.env.NODE_ENV = 'production';
+
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+
+      const stub = sandbox.stub(console, 'debug');
+
+      const precacheController = new PrecacheController();
+      precacheController.addToCacheList([{ url: '/example.html' }]);
+
+      expect(stub.callCount).to.equal(0);
+    });
+
+    it(`should remove duplicate url only object entries`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
+
+      const singleObject = { url: '/duplicate.html'};
+      const inputObjects = [
+        singleObject,
+        singleObject,
+      ];
+      precacheController.addToCacheList(inputObjects);
+
+      expect(precacheController._entriesToCacheMap.size).to.equal(1);
+
+      const entry = precacheController._entriesToCacheMap.get(singleObject.url);
+      expect(entry._entryId).to.equal(singleObject.url);
+      expect(entry._revision).to.equal(singleObject.url);
+    });
+
+    it(`should add url + revision objects to cache entries`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
+
+      const inputObjects = [
+        { url: '/', revision: '123' },
+        { url: '/hello.html', revision: '123' },
+        { url: '/styles/hello.css', revision: '123' },
+        { url: '/scripts/controllers/hello.js', revision: '123' },
+      ];
+      precacheController.addToCacheList(inputObjects);
+
+      expect(precacheController._entriesToCacheMap.size).to.equal(inputObjects.length);
+
+      inputObjects.forEach((inputObject) => {
+        const entry = precacheController._entriesToCacheMap.get(inputObject.url);
+        expect(entry._entryId).to.equal(inputObject.url);
+        expect(entry._revision).to.equal(inputObject.revision);
+      });
+    });
+
+    it(`should not warn developers with url + revision objects.`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+
+      const stub = sandbox.stub(console, 'debug');
+
+      const precacheController = new PrecacheController();
+      precacheController.addToCacheList([{ url: '/example.html', revision: '123' }]);
+
+      expect(stub.callCount).to.equals(0);
+    });
+
+    it(`should remove duplicate object entries`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
+
+      const singleObject = { url: '/duplicate.html', revision: '123' };
+      const inputObjects = [
+        singleObject,
+        singleObject,
+      ];
+      precacheController.addToCacheList(inputObjects);
+
+      expect(precacheController._entriesToCacheMap.size).to.equal(1);
+
+      const entry = precacheController._entriesToCacheMap.get(singleObject.url);
+      expect(entry._entryId).to.equal(singleObject.url);
+      expect(entry._revision).to.equal(singleObject.revision);
+    });
+
+    it(`should throw on conflicting entries with different revisions for url + revisoin entries`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const firstEntry = { url: '/duplicate.html', revision: '123' };
+      const secondEntry = { url: '/duplicate.html', revision: '456' };
+      return expectError(() => {
+        const precacheController = new PrecacheController();
         const inputObjects = [
-          { url: '/', revision: '123' },
-          { url: '/hello.html', revision: '123' },
-          { url: '/styles/hello.css', revision: '123' },
-          { url: '/scripts/controllers/hello.js', revision: '123' },
+          firstEntry,
+          secondEntry,
         ];
         precacheController.addToCacheList(inputObjects);
-
-        expect(precacheController._entriesToCacheMap.size).to.equal(inputObjects.length);
-
-        inputObjects.forEach((inputObject) => {
-          const entry = precacheController._entriesToCacheMap.get(inputObject.url);
-          expect(entry.entryId).to.equal(inputObject.url);
-          expect(entry.revision).to.equal(inputObject.revision);
-        });
-      });
-
-      it(`should not warn developers`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-
-        const stub = sandbox.stub(console, 'debug');
-
-        const precacheController = new PrecacheController();
-        precacheController.addToCacheList([{ url: '/example.html', revision: '123' }]);
-
-        expect(stub.callCount).to.equals(0);
-      });
-
-      it(`should remove duplicate object entries`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-        const precacheController = new PrecacheController();
-
-        const singleObject = { url: '/duplicate.html', revision: '123' };
-        const inputObjects = [
-          singleObject,
-          singleObject,
-        ];
-        precacheController.addToCacheList(inputObjects);
-
-        expect(precacheController._entriesToCacheMap.size).to.equal(1);
-
-        const entry = precacheController._entriesToCacheMap.get(singleObject.url);
-        expect(entry.entryId).to.equal(singleObject.url);
-        expect(entry.revision).to.equal(singleObject.revision);
-      });
-
-      it(`should throw on conflicting entries with different revisions`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-        const firstEntry = { url: '/duplicate.html', revision: '123' };
-        const secondEntry = { url: '/duplicate.html', revision: '456' };
-        return expectError(() => {
-          const precacheController = new PrecacheController();
-          const inputObjects = [
-            firstEntry,
-            secondEntry,
-          ];
-          precacheController.addToCacheList(inputObjects);
-        }, 'add-to-cache-list-conflicting-entries', (err) => {
-          expect(err.details.firstEntry).to.deep.equal(firstEntry);
-          expect(err.details.secondEntry).to.deep.equal(secondEntry);
-        });
+      }, 'add-to-cache-list-conflicting-entries', (err) => {
+        expect(err.details.firstEntry).to.deep.equal(firstEntry);
+        expect(err.details.secondEntry).to.deep.equal(secondEntry);
       });
     });
   });

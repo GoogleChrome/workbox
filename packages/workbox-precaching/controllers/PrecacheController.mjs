@@ -82,18 +82,18 @@ export default class PrecacheController {
    */
   _addEntryToCacheList(entryToAdd) {
     // Check if the entry is already part of the map
-    const existingEntry = this._entriesToCacheMap.get(entryToAdd.entryId);
+    const existingEntry = this._entriesToCacheMap.get(entryToAdd._entryId);
     if (!existingEntry) {
-      this._entriesToCacheMap.set(entryToAdd.entryId, entryToAdd);
+      this._entriesToCacheMap.set(entryToAdd._entryId, entryToAdd);
       return;
     }
 
     // Duplicates are fine, but make sure the revision information
     // is the same.
-    if (existingEntry.revision !== entryToAdd.revision) {
+    if (existingEntry._revision !== entryToAdd._revision) {
       throw new _private.WorkboxError('add-to-cache-list-conflicting-entries', {
-        firstEntry: existingEntry.originalInput,
-        secondEntry: entryToAdd.originalInput,
+        firstEntry: existingEntry._originalInput,
+        secondEntry: entryToAdd._originalInput,
       });
     }
   }

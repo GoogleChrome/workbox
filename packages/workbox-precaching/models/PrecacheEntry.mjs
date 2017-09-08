@@ -7,8 +7,8 @@ export default class PrecacheEntry {
  * @param {string} revision
  */
   constructor(originalInput, entryId, revision) {
-    this.originalInput = originalInput;
-    this.entryId = entryId;
-    this.revision = revision;
+    this._originalInput = originalInput;
+    this._entryId = entryId;
+    this._revision = revision;
   }
 }
