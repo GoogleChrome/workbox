@@ -40,9 +40,10 @@ export default class PrecacheController {
       );
     });
 
-    if (process.env.NODE_ENV !== 'production' &&
-      this.checkEntryRevisioning === true) {
-      showWarningsIfNeeded(userEntries);
+    if (process.env.NODE_ENV !== 'production') {
+      if (this.checkEntryRevisioning === true) {
+        showWarningsIfNeeded(userEntries);
+      }
     }
   }
 
