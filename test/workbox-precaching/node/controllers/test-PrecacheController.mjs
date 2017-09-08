@@ -11,14 +11,17 @@ const PRECACHE_MANAGER_PATH = '../../../../packages/workbox-precaching/controlle
 
 describe(`PrecacheController`, function() {
   const sandbox = sinon.sandbox.create();
+  let logger;
 
   before(function() {
     Object.assign(global, makeServiceWorkerEnv());
   });
 
-  beforeEach(function() {
+  beforeEach(async function() {
     process.env.NODE_ENV = 'dev';
     clearRequire.all();
+    const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+    logger = coreModule._private.logger;
   });
 
   afterEach(function() {
@@ -95,13 +98,11 @@ describe(`PrecacheController`, function() {
         const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
         const precacheController = new PrecacheController();
 
-        const warnStub = sandbox.stub(console, 'warn');
-        const debugStub = sandbox.stub(console, 'debug');
-        const logStub = sandbox.stub(console, 'log');
+        const warnStub = sandbox.stub(logger, 'warn');
+        const debugStub = sandbox.stub(logger, 'debug');
+        const logStub = sandbox.stub(logger, 'log');
 
         precacheController.addToCacheList(inputGroup);
-
-        sandbox.restore();
 
         expect(precacheController._entriesToCacheMap.size).to.equal(inputGroup.length);
 
@@ -123,14 +124,12 @@ describe(`PrecacheController`, function() {
         const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
         const precacheController = new PrecacheController();
 
-        const warnStub = sandbox.stub(console, 'warn');
-        const debugStub = sandbox.stub(console, 'debug');
-        const logStub = sandbox.stub(console, 'log');
+        const warnStub = sandbox.stub(logger, 'warn');
+        const debugStub = sandbox.stub(logger, 'debug');
+        const logStub = sandbox.stub(logger, 'log');
 
         precacheController.checkEntryRevisioning = false;
         precacheController.addToCacheList(inputGroup);
-
-        sandbox.restore();
 
         expect(warnStub.callCount).to.equal(0);
         expect(debugStub.callCount).to.equal(0);
@@ -142,9 +141,9 @@ describe(`PrecacheController`, function() {
         const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
         const precacheController = new PrecacheController();
 
-        const warnStub = sandbox.stub(console, 'warn');
-        const debugStub = sandbox.stub(console, 'debug');
-        const logStub = sandbox.stub(console, 'log');
+        const warnStub = sandbox.stub(logger, 'warn');
+        const debugStub = sandbox.stub(logger, 'debug');
+        const logStub = sandbox.stub(logger, 'log');
 
         precacheController.addToCacheList(['/example.html']);
 
@@ -163,13 +162,11 @@ describe(`PrecacheController`, function() {
         ];
 
         // Prevent logs in the mocha output
-        sandbox.stub(console, 'warn');
-        sandbox.stub(console, 'debug');
-        sandbox.stub(console, 'log');
+        sandbox.stub(logger, 'warn');
+        sandbox.stub(logger, 'debug');
+        sandbox.stub(logger, 'log');
 
         precacheController.addToCacheList(inputUrls);
-
-        sandbox.restore();
 
         expect(precacheController._entriesToCacheMap.size).to.equal(inputGroup.length);
 
@@ -207,12 +204,14 @@ describe(`PrecacheController`, function() {
     it(`should not warn developers with url + revision objects.`, async function() {
       const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
 
-      const debugStub = sandbox.stub(console, 'debug');
-      const logStub = sandbox.stub(console, 'log');
+      const warnStub = sandbox.stub(logger, 'warn');
+      const debugStub = sandbox.stub(logger, 'debug');
+      const logStub = sandbox.stub(logger, 'log');
 
       const precacheController = new PrecacheController();
       precacheController.addToCacheList([{ url: '/example.html', revision: '123' }]);
 
+      expect(warnStub.callCount).to.equal(0);
       expect(debugStub.callCount).to.equal(0);
       expect(logStub.callCount).to.equal(0);
     });
