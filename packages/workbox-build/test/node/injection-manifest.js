@@ -1,9 +1,13 @@
-const path = require('path');
+const clearRequire = require('clear-require');
+const expect = require('chai').expect;
 const fs = require('fs');
 const fsExtra = require('fs-extra');
+const path = require('path');
+const proxyquire = require('proxyquire');
+const sinon = require('sinon');
 
 const errors = require('../../src/lib/errors');
-const swBuild = require('../../build/index.js');
+const workboxBuild = require('../../build/index.js');
 
 describe(`Test Injection Manifest`, function() {
   let tmpDirectory;
@@ -38,7 +42,7 @@ describe(`Test Injection Manifest`, function() {
   VALID_INJECTION_DOCS.forEach((docName, index) => {
     it(`should be able to read and inject in doc ${docName}`, function() {
       const swDest = path.join(tmpDirectory, `different-output-name-${index}.js`);
-      return swBuild.injectManifest({
+      return workboxBuild.injectManifest({
         globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
         globPatterns: ['**/*.{html,css}'],
         swSrc: path.join(__dirname, '..', 'static', 'injection-samples', docName),
@@ -56,7 +60,7 @@ describe(`Test Injection Manifest`, function() {
   });
 
   it(`should throw due to no injection point in bad-no-injection.js`, function() {
-    return swBuild.injectManifest({
+    return workboxBuild.injectManifest({
       globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
       globPatterns: ['**/*.{html,css}'],
       swSrc: path.join(__dirname, '..', 'static', 'injection-samples', 'bad-no-injection.js'),
@@ -74,7 +78,7 @@ describe(`Test Injection Manifest`, function() {
   });
 
   it(`should throw due to no injection point in bad-multiple-injection.js`, function() {
-    return swBuild.injectManifest({
+    return workboxBuild.injectManifest({
       globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
       globPatterns: ['**/*.{html,css}'],
       swSrc: path.join(__dirname, '..', 'static', 'injection-samples', 'bad-multiple-injection.js'),
@@ -89,5 +93,44 @@ describe(`Test Injection Manifest`, function() {
         throw new Error('Unexpected error thrown.');
       }
     });
+  });
+
+  it(`should log a warning when a blacklisted option is used`, function() {
+    const warnSpy = sinon.spy();
+    // Clear out the previously cached require()
+    clearRequire('../../build/index.js');
+    const proxiedWorkboxBuild = proxyquire('../../build/index.js', {
+      '../log-helper': {
+        'warn': warnSpy,
+        '@global': true,
+      },
+    });
+
+    return proxiedWorkboxBuild.injectManifest({
+      globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
+      globPatterns: ['**/*.{html,css}'],
+      swSrc: path.join(__dirname, '..', 'static', 'injection-samples', 'ok-1.js'),
+      swDest: path.join(tmpDirectory, 'different-output-name.js'),
+      runtimeCaching: [],
+    }).then(() => expect(warnSpy.called).to.be.true);
+  });
+
+  it(`should not log a warning when a blacklisted option is not used`, function() {
+    const warnSpy = sinon.spy();
+    // Clear out the previously cached require()
+    clearRequire('../../build/index.js');
+    const proxiedWorkboxBuild = proxyquire('../../build/index.js', {
+      '../log-helper': {
+        'warn': warnSpy,
+        '@global': true,
+      },
+    });
+
+    return proxiedWorkboxBuild.injectManifest({
+      globDirectory: path.join(__dirname, '..', 'static', 'injection-samples'),
+      globPatterns: ['**/*.{html,css}'],
+      swSrc: path.join(__dirname, '..', 'static', 'injection-samples', 'ok-1.js'),
+      swDest: path.join(tmpDirectory, 'different-output-name.js'),
+    }).then(() => expect(warnSpy.called).to.be.false);
   });
 });

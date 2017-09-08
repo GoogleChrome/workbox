@@ -1,8 +1,13 @@
 'use strict';
 
-const getFileManifestEntries = require('./get-file-manifest-entries');
-const writeFileManifest = require('./utils/write-file-manifest');
 const errors = require('./errors');
+const getFileManifestEntries = require('./get-file-manifest-entries');
+const warnAboutConfig = require('./utils/warn-about-config');
+const writeFileManifest = require('./utils/write-file-manifest');
+
+// A list of config options that are valid in some contexts, but not when
+// using generateFileManifest().
+const INVALID_CONFIG_OPTIONS = ['swSrc'];
 
 /**
  * This method will generate a file manifest that can be used in a service
@@ -43,6 +48,8 @@ const generateFileManifest = (input) => {
     return Promise.reject(
       new Error(errors['invalid-generate-file-manifest-arg']));
   }
+
+  warnAboutConfig(INVALID_CONFIG_OPTIONS, input, 'generateFileManifest');
 
   return getFileManifestEntries(input)
   .then((fileEntries) => {

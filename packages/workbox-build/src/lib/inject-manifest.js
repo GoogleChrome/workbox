@@ -6,6 +6,15 @@ const path = require('path');
 
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const errors = require('./errors');
+const warnAboutConfig = require('./utils/warn-about-config');
+
+// A list of config options that are valid in some contexts, but not when
+// using injectManifest().
+const INVALID_CONFIG_OPTIONS = [
+  'runtimeCaching',
+  'navigateFallback',
+  'navigateFallbackWhitelist',
+];
 
 /**
  * This method will read an existing service worker file, find an instance of
@@ -58,6 +67,8 @@ const injectManifest = (input) => {
     if (injectionResults.length > 1) {
       throw new Error(errors['multiple-injection-points-found']);
     }
+
+    warnAboutConfig(INVALID_CONFIG_OPTIONS, input, 'injectManifest');
 
     const entriesString = JSON.stringify(manifestEntries, null, 2);
     swFileContents = swFileContents

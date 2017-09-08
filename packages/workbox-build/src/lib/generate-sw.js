@@ -1,11 +1,17 @@
 'use strict';
 
 const path = require('path');
-const copyWorkboxSW = require('./utils/copy-workbox-sw');
-const getFileManifestEntries = require('./get-file-manifest-entries');
-const writeServiceWorker = require('./write-sw');
-const errors = require('./errors');
+
 const constants = require('./constants');
+const copyWorkboxSW = require('./utils/copy-workbox-sw');
+const errors = require('./errors');
+const getFileManifestEntries = require('./get-file-manifest-entries');
+const warnAboutConfig = require('./utils/warn-about-config');
+const writeServiceWorker = require('./write-sw');
+
+// A list of config options that are valid in some contexts, but not when
+// using generateSW().
+const INVALID_CONFIG_OPTIONS = ['swSrc'];
 
 /**
  * This method will generate a working service worker with code to precache
@@ -62,6 +68,8 @@ const generateSW = function(input) {
     return Promise.reject(
       new Error(errors['invalid-runtime-caching']));
   }
+
+  warnAboutConfig(INVALID_CONFIG_OPTIONS, input, 'generateSW');
 
   const globDirectory = input.globDirectory;
   input.globIgnores = input.globIgnores || constants.defaultGlobIgnores;
