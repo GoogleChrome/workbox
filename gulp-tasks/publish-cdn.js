@@ -3,7 +3,7 @@ const cdnUploadHelper = require('./utils/cdn-helper');
 
 const generateReleaseFiles = require('./utils/generate-release-files');
 const githubHelper = require('./utils/github-helper');
-const logHelper = require('./utils/log-helper');
+const logHelper = require('../infra/utils/log-helper');
 
 const findMissingCDNTags = async (tagsData) => {
   const missingTags = [];

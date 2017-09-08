@@ -29,7 +29,7 @@ module.exports = {
     files: [
       'packages/workbox-core/src/utils/LogHelper.js',
       'test/workbox-core/bundle/node/utils/test-LogHelper.js',
-      'gulp-tasks/utils/log-helper.js',
+      'infra/utils/log-helper.js',
       'infra/tools/analyse-properties.js',
     ],
     rules: {

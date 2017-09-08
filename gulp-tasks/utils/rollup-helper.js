@@ -7,11 +7,11 @@ module.exports = {
   // as possible.
   getDefaultPlugins: (buildType) => {
     // TODO: Once rollup-plugin-uglify-es is updated, use keep_classnames
-    // for dev.
+    // for dev. Will enable us to keep 'WorkboxError' if we want to.
     // https://github.com/ezekielchentnik/rollup-plugin-uglify-es/issues/1
     const plugins = [];
 
-    let minifyBuild = buildType === 'prod';
+    let minifyBuild = buildType === 'production';
     if (minifyBuild) {
       plugins.push(
         uglify({

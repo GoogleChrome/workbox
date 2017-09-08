@@ -12,20 +12,17 @@ const fallback = (code, ...args) => {
 const generatorFunction = (code, ...args) => {
   const message = messages[code];
   if (!message) {
-    logger.warn(`Unable to find message for code '${code}'.`, args);
-    return fallback(code, ...args);
+    throw new Error(`Unable to find message for code '${code}'.`);
   }
 
-  try {
-    return message(...args);
-  } catch (err) {
-    logger.warn(
-      `Unable to generate full error message.`, err);
-    return fallback(code, ...args);
+  if (typeof message === 'string') {
+    return message;
   }
+
+  return message(...args);
 };
 
-const exportedValue = (process.env.NODE_ENV === 'prod') ?
+const exportedValue = (process.env.NODE_ENV === 'production') ?
   fallback : generatorFunction;
 
 export default exportedValue;

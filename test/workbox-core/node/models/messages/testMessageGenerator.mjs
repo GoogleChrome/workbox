@@ -29,55 +29,48 @@ constants.BUILD_TYPES.forEach((buildType) => {
       sandbox.restore();
     });
 
-    it('should return the code if the code is unknown', function() {
-      const stub = sandbox.stub(console, 'warn');
+    it('should handle unknown codes', function() {
+      if (process.env.NODE_ENV === 'production') {
+        const message = messageGenerator('fake-code');
 
-      const message = messageGenerator('fake-code');
-      expect(message).to.equal('fake-code');
-
-      if (process.env.NODE_ENV === 'prod') {
-        expect(stub.callCount).to.equal(0);
+        expect(message).to.equal('fake-code');
       } else {
-        expect(stub.callCount).to.equal(1);
+        expect(() => {
+          messageGenerator('fake-code');
+        }).to.throw();
       }
     });
 
     it('should return the code with details if the code is unknown', function() {
-      const stub = sandbox.stub(console, 'warn');
-
-      const message = messageGenerator('fake-code', detailsObj);
-      expect(message).to.equal(`fake-code :: ${detailsString}`);
-
-      if (process.env.NODE_ENV === 'prod') {
-        expect(stub.callCount).to.equal(0);
+      if (process.env.NODE_ENV === 'production') {
+        const message = messageGenerator('fake-code', detailsObj);
+        expect(message).to.equal(`fake-code :: ${detailsString}`);
       } else {
-        expect(stub.callCount).to.equal(1);
+        expect(() => {
+          messageGenerator('fake-code', detailsObj);
+        }).to.throw();
       }
     });
 
-    it('should return the code if the code is valid, requires specific details but nothing given', function() {
-      const stub = sandbox.stub(console, 'warn');
-
-      const message = messageGenerator('invalid-type');
-      expect(message).to.equal(`invalid-type`);
-
-      if (process.env.NODE_ENV === 'prod') {
-        expect(stub.callCount).to.equal(0);
+    it('should throw an error if the code is valid but no required details are defined', function() {
+      if (process.env.NODE_ENV === 'production') {
+        const message = messageGenerator('invalid-type');
+        expect(message).to.equal(`invalid-type`);
       } else {
-        expect(stub.callCount).to.equal(1);
+        expect(() => {
+          messageGenerator('invalid-type');
+        }).to.throw();
       }
     });
 
-    it('should return the code if the code is valid but requires specific details', function() {
-      const stub = sandbox.stub(console, 'warn');
-
-      const message = messageGenerator('invalid-type', detailsObj);
-      expect(message).to.equal(`invalid-type :: ${detailsString}`);
-
-      if (process.env.NODE_ENV === 'prod') {
-        expect(stub.callCount).to.equal(0);
+    it('should throw an error if the code is valid but the arguments are missing details', function() {
+      if (process.env.NODE_ENV === 'production') {
+        const message = messageGenerator('invalid-type', detailsObj);
+        expect(message).to.equal(`invalid-type :: ${detailsString}`);
       } else {
-        expect(stub.callCount).to.equal(1);
+        expect(() => {
+          messageGenerator('invalid-type', {random: 'details'});
+        }).to.throw();
       }
     });
 
@@ -91,7 +84,7 @@ constants.BUILD_TYPES.forEach((buildType) => {
       };
 
       const message = messageGenerator('invalid-type', invalidTypeDetails);
-      if (process.env.NODE_ENV === 'prod') {
+      if (process.env.NODE_ENV === 'production') {
         expect(message).to.equal(`invalid-type :: ${JSON.stringify([invalidTypeDetails])}`);
       } else {
         expect(message.indexOf('invalid-type')).to.equal(-1);

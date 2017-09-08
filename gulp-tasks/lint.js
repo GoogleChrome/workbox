@@ -1,6 +1,6 @@
 const gulp = require('gulp');
 const spawn = require('./utils/spawn-promise-wrapper');
-const logHelper = require('./utils/log-helper');
+const logHelper = require('../infra/utils/log-helper');
 
 // Use npm run lint to ensure we are using local eslint
 gulp.task('lint', () => {

@@ -3,9 +3,9 @@ const glob = require('glob');
 const fs = require('fs-extra');
 const archiver = require('archiver');
 
-const logHelper = require('./log-helper');
 const spawnPromiseWrapper = require('./spawn-promise-wrapper');
 const constants = require('./constants');
+const logHelper = require('../../infra/utils/log-helper');
 
 const doesDirectoryExist = async (directoryPath) => {
   let stats = null;

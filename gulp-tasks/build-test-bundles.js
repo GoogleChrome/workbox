@@ -11,9 +11,9 @@ const oneLine = require('common-tags').oneLine;
 
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
-const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
 const rollupHelper = require('./utils/rollup-helper');
+const logHelper = require('../infra/utils/log-helper');
 
 const buildTestBundle = (packagePath, runningEnv, buildType) => {
   const testPath = path.join('test', pkgPathToName(packagePath));
@@ -86,7 +86,7 @@ gulp.task('build-test-bundles:clean',
 );
 
 // This will create one version of the tests for each buildType.
-// i.e. we'll have a browser build for no NODE_ENV and one for 'prod'
+// i.e. we'll have a browser build for no NODE_ENV and one for 'production'
 // NODE_ENV and the same for sw and node tests.
 const bundleBuilds = [];
 constants.BUILD_TYPES.forEach((buildType) => {

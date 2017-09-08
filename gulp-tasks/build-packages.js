@@ -11,9 +11,9 @@ const buffer = require('vinyl-buffer');
 
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
-const logHelper = require('./utils/log-helper');
 const pkgPathToName = require('./utils/pkg-path-to-name');
 const rollupHelper = require('./utils/rollup-helper');
+const logHelper = require('../infra/utils/log-helper');
 
 /*
  * To test sourcemaps are valid and working, use:
@@ -85,7 +85,7 @@ const buildPackage = (packagePath, buildType) => {
 
   const namespace =
     `${constants.NAMESPACE_PREFIX}.${pkgJson.workbox.browserNamespace}`;
-  const outputFilename = `${packageName}.${buildType}.js`;
+  const outputFilename = `${packageName}.${buildType.slice(0, 4)}.js`;
   const outputDirectory = path.join(packagePath,
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
 
@@ -108,7 +108,8 @@ const buildPackage = (packagePath, buildType) => {
     pureExternalModules: externalAndPure,
     plugins: rollupHelper.getDefaultPlugins(buildType),
     onwarn: (warning) => {
-      if (buildType === 'prod' && warning.code === 'UNUSED_EXTERNAL_IMPORT') {
+      if (buildType === 'production' &&
+        warning.code === 'UNUSED_EXTERNAL_IMPORT') {
         // This can occur when using rollup-plugin-replace.
         logHelper.warn(`[${warning.code}] ${warning.message}`);
         return;
@@ -152,7 +153,7 @@ gulp.task('build-packages:clean', gulp.series(
 ));
 
 // This will create one version of the tests for each buildType.
-// i.e. we'll have a browser build for no NODE_ENV and one for 'prod'
+// i.e. we'll have a browser build for no NODE_ENV and one for 'production'
 // NODE_ENV and the same for sw and node tests.
 const packageBuilds = constants.BUILD_TYPES.map((buildType) => {
   return packageRunnner('build-package', buildPackage, buildType);
