@@ -60,7 +60,8 @@ class SWCli {
       .then(() => {
         process.exit(0);
       })
-      .catch(() => {
+      .catch((error) => {
+        cliLogHelper.error(error);
         process.exit(1);
       });
     } else {
@@ -83,8 +84,7 @@ class SWCli {
       case 'inject:manifest':
         return this._injectManifest(flags);
       default:
-        cliLogHelper.error(`Invalid command given '${command}'`);
-        return Promise.reject();
+        return Promise.reject(`Invalid command: '${command}'`);
     }
   }
 
