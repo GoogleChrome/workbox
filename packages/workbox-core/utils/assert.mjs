@@ -10,6 +10,12 @@ const isSwEnv = (moduleName) => {
   }
 };
 
+/*
+ * This method throws if the supplied value is not an array.
+ * The destructed values are required to produce a meaningful error for users.
+ * The destructed and restructured object is so it's clear what is
+ * needed.
+ */
 const isArray = (value, {moduleName, className, funcName, paramName}) => {
   if (!Array.isArray(value)) {
     throw new WorkboxError('not-an-array', {
