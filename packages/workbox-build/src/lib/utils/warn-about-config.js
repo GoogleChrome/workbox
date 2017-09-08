@@ -16,7 +16,8 @@ module.exports = (blacklist, fullConfig, methodName) => {
     .filter((configKey) => blacklist.indexOf(configKey) !== -1);
 
   if (invalidConfigKeys.length > 0) {
-    logHelper.warn(`The configuration options '${invalidConfig.join(',')}' ` +
-      `will be ignored in the context of Workbox's ${methodName} mode.`);
+    logHelper.warn(`The configuration options ` +
+      `'${invalidConfigKeys.join(',')}' will be ignored in the context of ` +
+      `Workbox's ${methodName} mode.`);
   }
 };
