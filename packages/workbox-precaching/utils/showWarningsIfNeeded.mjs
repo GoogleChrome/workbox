@@ -23,11 +23,6 @@ export default (userEntries) => {
     `\n\n`
   );
 
-  let pluralString = `${urlOnlyEntries.length} precache entries`;
-  if (urlOnlyEntries.length === 1) {
-    pluralString = `1 precache entry`;
-  }
-
   _private.logger.log(
     `'workbox-precaching' ensures assets are only downloaded when needed, ` +
     `saving user's data and speeding up the install time of new service ` +
