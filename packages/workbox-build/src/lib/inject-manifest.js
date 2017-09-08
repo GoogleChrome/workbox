@@ -68,7 +68,7 @@ const injectManifest = (input) => {
       throw new Error(errors['multiple-injection-points-found']);
     }
 
-    warnAboutConfig(INVALID_CONFIG_OPTIONS, input);
+    warnAboutConfig(INVALID_CONFIG_OPTIONS, input, 'injectManifest');
 
     const entriesString = JSON.stringify(manifestEntries, null, 2);
     swFileContents = swFileContents

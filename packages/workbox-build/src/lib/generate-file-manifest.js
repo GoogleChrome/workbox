@@ -49,7 +49,7 @@ const generateFileManifest = (input) => {
       new Error(errors['invalid-generate-file-manifest-arg']));
   }
 
-  warnAboutConfig(INVALID_CONFIG_OPTIONS, input);
+  warnAboutConfig(INVALID_CONFIG_OPTIONS, input, 'generateFileManifest');
 
   return getFileManifestEntries(input)
   .then((fileEntries) => {

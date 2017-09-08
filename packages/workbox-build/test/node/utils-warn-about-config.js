@@ -20,12 +20,12 @@ describe(`src/lib/utils/warn-about-config.js`, function() {
   });
 
   it(`should call logHelper.warn() when there's a config option that matches the blacklist`, function() {
-    warnAboutConfig(['optionOne'], CONFIG);
+    warnAboutConfig(['optionOne'], CONFIG, 'testing');
     expect(warnSpy.called).to.be.true;
   });
 
   it(`should not call logHelper.warn() when none of the config options match the blacklist`, function() {
-    warnAboutConfig(['optionThree'], CONFIG);
+    warnAboutConfig(['optionThree'], CONFIG, 'testing');
     expect(warnSpy.called).to.be.false;
   });
 });

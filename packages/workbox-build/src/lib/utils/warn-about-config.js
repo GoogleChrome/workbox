@@ -8,13 +8,15 @@ const logHelper = require('../log-helper');
  *
  * @param {Array<String>} blacklist The names of invalid configuration options.
  * @param {Object<String,String>} fullConfig The configuration options to check.
+ * @param {String} methodName The type of build that's being attempted
+ * (injectManifest, etc.).
  */
-module.exports = (blacklist, fullConfig) => {
-  const invalidConfig = Object.keys(fullConfig)
+module.exports = (blacklist, fullConfig, methodName) => {
+  const invalidConfigKeys = Object.keys(fullConfig)
     .filter((configKey) => blacklist.indexOf(configKey) !== -1);
 
-  if (invalidConfig.length > 0) {
-    logHelper.warn(`These Workbox configuration options are not valid for ` +
-      `the current mode, and have been ignored: ${invalidConfig}`);
+  if (invalidConfigKeys.length > 0) {
+    logHelper.warn(`The configuration options '${invalidConfig.join(',')}' ` +
+      `will be ignored in the context of Workbox's ${methodName} mode.`);
   }
 };

@@ -69,7 +69,7 @@ const generateSW = function(input) {
       new Error(errors['invalid-runtime-caching']));
   }
 
-  warnAboutConfig(INVALID_CONFIG_OPTIONS, input);
+  warnAboutConfig(INVALID_CONFIG_OPTIONS, input, 'generateSW');
 
   const globDirectory = input.globDirectory;
   input.globIgnores = input.globIgnores || constants.defaultGlobIgnores;
