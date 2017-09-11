@@ -251,4 +251,30 @@ describe(`PrecacheController`, function() {
       });
     });
   });
+
+  describe('install()', function() {
+    it('should be fine when calling with empty precache list', async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
+      return precacheController.install();
+    });
+
+    it('should precacge new assets', async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
+      precacheController.addToCacheList([
+        '/index.1234.html',
+        { url: '/example.1234.css' },
+        { url: '/scripts/index.js', revision: '1234'},
+      ]);
+
+      await precacheController.install();
+
+      // TODO Check cache entries
+
+      // TODO Check indexedDB entries
+
+      // TODO Check log output
+    });
+  })
 });

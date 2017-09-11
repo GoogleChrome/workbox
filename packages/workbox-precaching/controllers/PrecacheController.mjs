@@ -97,4 +97,95 @@ export default class PrecacheController {
       });
     }
   }
+
+  async install() {
+    if (this._entriesToCacheMap.size === 0) {
+      return [];
+    }
+
+    const cachePromises = [];
+    this._entriesToCacheMap.forEach((precacheEntry) => {
+      cachePromises.push(this._cacheEntry(precacheEntry));
+    });
+
+    // Wait for all requests to be cached.
+    await Promise.all(cachePromises);
+
+    if (process.env.NODE_ENV !== 'production') {
+      // TODO: Log details of number of updated / non-updated assets
+      /** const updatedCacheDetails = [];
+      const notUpdatedCacheDetails = [];
+      allCacheDetails.forEach((cacheDetails) => {
+        if (cacheDetails.wasUpdated) {
+          updatedCacheDetails.push({
+            url: cacheDetails.url,
+            revision: cacheDetails.revision,
+          });
+        } else {
+          notUpdatedCacheDetails.push({
+            url: cacheDetails.url,
+            revision: cacheDetails.revision,
+          });
+        }
+      });
+
+      const logData = {};
+      if (updatedCacheDetails.length > 0) {
+        logData['New / Updated Precache URL\'s'] =
+          this._createLogFriendlyString(updatedCacheDetails);
+      }
+
+      if (notUpdatedCacheDetails.length > 0) {
+        logData['Up-to-date Precache URL\'s'] =
+          this._createLogFriendlyString(notUpdatedCacheDetails);
+      }
+
+      logHelper.log({
+        message: `Precache Details: ${updatedCacheDetails.length} requests ` +
+        `were added or updated and ` +
+        `${notUpdatedCacheDetails.length} request are already ` +
+        `cached and up-to-date.`,
+        data: logData,
+      });**/
+    }
+  }
+
+  /**
+   * Requests the entry and saves it to the cache if the response
+   * is valid.
+   *
+   * @private
+   * @param {BaseCacheEntry} precacheEntry The entry to fetch and cache.
+   * @return {Promise<Object>} Returns a promise that resolves once the entry
+   * has been fetched and cached or skipped if no update is needed. The
+   * promise resolved with details of the entry and whether it was
+   * updated or not.
+   */
+  async _cacheEntry(precacheEntry) {
+    if (await this._isAlreadyCached(precacheEntry)) {
+      return false;
+    }
+
+    try {
+      await Promise.resolve();
+      /** await this._requestWrapper.fetchAndCache({
+        request: precacheEntry.getNetworkRequest(),
+        waitOnCache: true,
+        cacheKey: precacheEntry.request,
+        cleanRedirects: true,
+      });
+
+      await this._onEntryCached(precacheEntry);**/
+      return true;
+    } catch (err) {
+      throw new _private.WorkboxError('request-not-cached', {
+        url: precacheEntry.request.url,
+        error: err,
+      });
+    }
+  }
+
+  async _isAlreadyCached(precacheEntry) {
+    return false;
+  }
 }

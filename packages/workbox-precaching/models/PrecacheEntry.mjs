@@ -10,5 +10,6 @@ export default class PrecacheEntry {
     this._originalInput = originalInput;
     this._entryId = entryId;
     this._revision = revision;
+    this._wasCached = false;
   }
 }
