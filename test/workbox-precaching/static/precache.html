@@ -1,0 +1,29 @@
+<html>
+  <head>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <h3>precache.install()</h3>
+  <button class="js-index-unrevisioned">Install</button>
+
+<script src="../../../../packages/workbox-core/builds/browser/workbox-core.dev.js"></script>
+<script>
+  // Make precaching think it's in the SW.
+  workbox.core.default.assert.isSwEnv = () => {}
+</script>
+<script src="../../../../packages/workbox-precaching/builds/browser/workbox-precaching.dev.js"></script>
+<script>
+  const precacheController = new workbox.precaching.PrecacheController();
+  precacheController.addToCacheList([
+    './project/index.html',
+    { url: './project/example.html' },
+    { url: './project/example-2.html', revision: '123' },
+  ]);
+
+  const indexStringBtn = document.querySelector('.js-index-unrevisioned');
+  indexStringBtn.addEventListener('click', () => {
+    precacheController.install();
+  });
+</script>
+</body>
+</html>

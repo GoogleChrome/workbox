@@ -3,6 +3,8 @@ import core from 'workbox-core';
 
 import PrecacheEntry from '../models/PrecacheEntry.mjs';
 import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
+import printInstallDetails from '../utils/printInstallDetails.mjs';
+import cleanRedirect from '../utils/cleanRedirect.mjs';
 
 /**
  * Performs efficient precaching of assets.
@@ -60,7 +62,7 @@ export default class PrecacheController {
           });
         }
 
-        return new PrecacheEntry(input, input, input);
+        return new PrecacheEntry(input, input, input, new Request(input));
       case 'object':
         if (!input || !input.url) {
           throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
@@ -68,7 +70,9 @@ export default class PrecacheController {
           });
         }
 
-        return new PrecacheEntry(input, input.url, input.revision || input.url);
+        const cacheBust = input.revision ? true : false;
+        return new PrecacheEntry(input, input.url, input.revision || input.url,
+          new Request(input.url), cacheBust);
       default:
         throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
           entry: input,
@@ -98,56 +102,39 @@ export default class PrecacheController {
     }
   }
 
+  /**
+   * Call this method from a service work install event to start
+   * precaching assets.
+   *
+   */
   async install() {
-    if (this._entriesToCacheMap.size === 0) {
-      return [];
-    }
+    const installDetails = {
+      updatedEntries: [],
+      notUpdatedEntries: [],
+    };
 
     const cachePromises = [];
     this._entriesToCacheMap.forEach((precacheEntry) => {
-      cachePromises.push(this._cacheEntry(precacheEntry));
+      const promiseChain = this._cacheEntry(precacheEntry)
+      .then((wasUpdated) => {
+        if (wasUpdated) {
+          installDetails.updatedEntries.push(precacheEntry);
+        } else {
+          installDetails.notUpdatedEntries.push(precacheEntry);
+        }
+      });
+
+      cachePromises.push(promiseChain);
     });
 
     // Wait for all requests to be cached.
     await Promise.all(cachePromises);
 
     if (process.env.NODE_ENV !== 'production') {
-      // TODO: Log details of number of updated / non-updated assets
-      /** const updatedCacheDetails = [];
-      const notUpdatedCacheDetails = [];
-      allCacheDetails.forEach((cacheDetails) => {
-        if (cacheDetails.wasUpdated) {
-          updatedCacheDetails.push({
-            url: cacheDetails.url,
-            revision: cacheDetails.revision,
-          });
-        } else {
-          notUpdatedCacheDetails.push({
-            url: cacheDetails.url,
-            revision: cacheDetails.revision,
-          });
-        }
-      });
-
-      const logData = {};
-      if (updatedCacheDetails.length > 0) {
-        logData['New / Updated Precache URL\'s'] =
-          this._createLogFriendlyString(updatedCacheDetails);
-      }
-
-      if (notUpdatedCacheDetails.length > 0) {
-        logData['Up-to-date Precache URL\'s'] =
-          this._createLogFriendlyString(notUpdatedCacheDetails);
-      }
-
-      logHelper.log({
-        message: `Precache Details: ${updatedCacheDetails.length} requests ` +
-        `were added or updated and ` +
-        `${notUpdatedCacheDetails.length} request are already ` +
-        `cached and up-to-date.`,
-        data: logData,
-      });**/
+      printInstallDetails(installDetails);
     }
+
+    return installDetails;
   }
 
   /**
@@ -162,30 +149,24 @@ export default class PrecacheController {
    * updated or not.
    */
   async _cacheEntry(precacheEntry) {
-    if (await this._isAlreadyCached(precacheEntry)) {
+    /** if (await this._isAlreadyCached(precacheEntry)) {
       return false;
+    }**/
+
+    let response = await _private.fetchWrapper.fetch(
+      precacheEntry._networkRequest,
+    );
+
+    if (response.redirected) {
+      response = await cleanRedirect(response);
     }
 
-    try {
-      await Promise.resolve();
-      /** await this._requestWrapper.fetchAndCache({
-        request: precacheEntry.getNetworkRequest(),
-        waitOnCache: true,
-        cacheKey: precacheEntry.request,
-        cleanRedirects: true,
-      });
+    await _private.cacheWrapper.put(precacheEntry._cacheRequest, response);
 
-      await this._onEntryCached(precacheEntry);**/
-      return true;
-    } catch (err) {
-      throw new _private.WorkboxError('request-not-cached', {
-        url: precacheEntry.request.url,
-        error: err,
-      });
-    }
-  }
+    // TODO: Add details to revision details model
+    // await this._revisionDetailsModel.put(
+    //   precacheEntry.entryID, precacheEntry.revision);
 
-  async _isAlreadyCached(precacheEntry) {
-    return false;
+    return true;
   }
 }

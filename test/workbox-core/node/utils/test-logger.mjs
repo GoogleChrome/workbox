@@ -5,7 +5,7 @@ import logger from '../../../../packages/workbox-core/utils/logger.mjs';
 import {LOG_LEVELS} from '../../../../packages/workbox-core/index.mjs';
 import core from '../../../../packages/workbox-core/index.mjs';
 
-describe(`logger`, function() {
+describe(`workbox-core logger`, function() {
   let sandbox;
 
   before(function() {

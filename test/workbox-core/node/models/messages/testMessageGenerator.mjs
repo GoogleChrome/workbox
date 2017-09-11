@@ -5,7 +5,7 @@ import clearRequire from 'clear-require';
 import constants from '../../../../../gulp-tasks/utils/constants.js';
 
 constants.BUILD_TYPES.forEach((buildType) => {
-  describe(`messageGenerator - ${buildType}`, function() {
+  describe(`workbox-core messageGenerator - ${buildType}`, function() {
     const detailsObj = {
       exampleDetail: 'With Value',
     };
