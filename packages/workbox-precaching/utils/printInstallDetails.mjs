@@ -14,16 +14,16 @@ const logGroup = (groupTitle, entries) => {
   _private.logger.groupEnd();
 };
 
-export default async (installDetails) => {
+export default async (updatedEntries, notUpdatedEntries) => {
   let updatedText =
-    `${installDetails.updatedEntries.length} files were updated`;
-  let notUpdatedText = `${installDetails.notUpdatedEntries.length} files ` +
+    `${updatedEntries.length} files were updated`;
+  let notUpdatedText = `${notUpdatedEntries.length} files ` +
     `were up-to-date.`;
   _private.logger.groupCollapsed(
      `During precaching, ${updatedText} and ${notUpdatedText}`);
 
-  logGroup('Updated Entries', installDetails.updatedEntries);
-  logGroup('Up-to-date Entries', installDetails.notUpdatedEntries);
+  logGroup('Updated Entries', updatedEntries);
+  logGroup('Up-to-date Entries', notUpdatedEntries);
 
   _private.logger.groupEnd();
 };

@@ -4,6 +4,7 @@ import makeServiceWorkerEnv from 'service-worker-mock';
 
 import expectError from '../../../../infra/utils/expectError';
 import fetchWrapper from '../../../../packages/workbox-core/utils/fetchWrapper.mjs';
+import '../../../mocks/mock-fetch';
 
 describe(`workbox-core fetchWrapper`, function() {
   let sandbox;

@@ -7,12 +7,12 @@ export default async (response) => {
     Promise.resolve(clonedResponse.body) :
     clonedResponse.blob();
 
-  return bodyPromise.then((body) => {
-    // new Response() is happy when passed either a stream or a Blob.
-    return new Response(body, {
-      headers: clonedResponse.headers,
-      status: clonedResponse.status,
-      statusText: clonedResponse.statusText,
-    });
+  const body = await bodyPromise;
+
+  // new Response() is happy when passed either a stream or a Blob.
+  return new Response(body, {
+    headers: clonedResponse.headers,
+    status: clonedResponse.status,
+    statusText: clonedResponse.statusText,
   });
 };

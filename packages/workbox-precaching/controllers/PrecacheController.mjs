@@ -108,19 +108,17 @@ export default class PrecacheController {
    *
    */
   async install() {
-    const installDetails = {
-      updatedEntries: [],
-      notUpdatedEntries: [],
-    };
+    const updatedEntries = [];
+    const notUpdatedEntries = [];
 
     const cachePromises = [];
     this._entriesToCacheMap.forEach((precacheEntry) => {
       const promiseChain = this._cacheEntry(precacheEntry)
       .then((wasUpdated) => {
         if (wasUpdated) {
-          installDetails.updatedEntries.push(precacheEntry);
+          updatedEntries.push(precacheEntry);
         } else {
-          installDetails.notUpdatedEntries.push(precacheEntry);
+          notUpdatedEntries.push(precacheEntry);
         }
       });
 
@@ -131,10 +129,13 @@ export default class PrecacheController {
     await Promise.all(cachePromises);
 
     if (process.env.NODE_ENV !== 'production') {
-      printInstallDetails(installDetails);
+      printInstallDetails(updatedEntries, notUpdatedEntries);
     }
 
-    return installDetails;
+    return {
+      'updatedEntries': updatedEntries,
+      'notUpdatedEntries': notUpdatedEntries,
+    };
   }
 
   /**
