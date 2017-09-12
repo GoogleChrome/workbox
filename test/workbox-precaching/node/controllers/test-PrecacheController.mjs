@@ -270,7 +270,7 @@ describe(`PrecacheController`, function() {
       return precacheController.install();
     });
 
-    it('should precache new assets using old scholl cache busting via search params', async function() {
+    it('should precache assets using cache busting via search params', async function() {
       // Prevent logs in the mocha output
       sandbox.stub(logger, 'warn');
       sandbox.stub(logger, 'debug');
@@ -291,69 +291,6 @@ describe(`PrecacheController`, function() {
 
       const updateInfo = await precacheController.install();
 
-      // TODO Change to publicly get-able cache name
-      const cache = await caches.open('TODO-CHANGE-ME');
-      const keys = await cache.keys();
-      expect(keys.length).to.equal(cacheList.length);
-
-      for (let i = 0; i < cacheList.length; i++) {
-        console.log('Testing: ', cacheList[i]);
-        // We don't cache bust requests where the revision
-        // is in the URL
-        let expectedUrl = cacheList[i];
-        if (cacheList[i].url) {
-          expectedUrl = cacheList[i].url;
-        }
-
-        // This will be the un-cache busted URL
-        let nonCacheBustedUrl = expectedUrl;
-        let cachedResponse = await cache.match(nonCacheBustedUrl);
-
-        // We only cachebust URL's where the revision is seperate
-        // i.e. the URL itself isn't cachebusted
-        if (cacheList[i].revision) {
-          const link = expectedUrl.indexOf('?') === -1 ? '?' : '&';
-          expectedUrl = `${expectedUrl}${link}_workbox-precaching=${cacheList[i].revision}`;
-        }
-
-        // Make them both full path URLs
-        const cachedResponseUrl = new URL(cachedResponse.url, MOCK_LOCATION).toString();
-        expectedUrl = new URL(expectedUrl, MOCK_LOCATION).toString();
-
-        expect(cachedResponseUrl).to.equal(expectedUrl);
-      }
-
-      // TODO Check indexedDB entries
-
-      expect(logStub.callCount).to.be.gt(0);
-    });
-
-    it(`should precache new assets and use Request.cache = 'reload'`, async function() {
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      const logStub = sandbox.stub(logger, 'log');
-
-      sandbox.stub(global.Request.prototype, 'cache').value('default');
-
-      const fetchSpy = sandbox.spy(global, 'fetch');
-
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-      const precacheController = new PrecacheController();
-      const cacheList = [
-        '/index.1234.html',
-        { url: '/example.1234.css' },
-        { url: '/scripts/index.js', revision: '1234'},
-        { url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
-      ];
-      precacheController.addToCacheList(cacheList);
-
-      // Reset as addToCacheList will log.
-      logStub.reset();
-
-      const updateInfo = await precacheController.install();
-
-      // TODO Change to publicly get-able cache name
       const cache = await caches.open('TODO-CHANGE-ME');
       const keys = await cache.keys();
       expect(keys.length).to.equal(cacheList.length);
@@ -361,33 +298,18 @@ describe(`PrecacheController`, function() {
       for (let i = 0; i < cacheList.length; i++) {
         // We don't cache bust requests where the revision
         // is in the URL
-        let expectedUrl = cacheList[i];
+        let inputUrl = cacheList[i];
         if (cacheList[i].url) {
-          expectedUrl = cacheList[i].url;
+          inputUrl = cacheList[i].url;
         }
 
-        // This will be the un-cache busted URL
-        let nonCacheBustedUrl = expectedUrl;
-        let cachedResponse = await cache.match(nonCacheBustedUrl);
-
-        // Make them both full path URLs
-        const cachedResponseUrl = new URL(cachedResponse.url, MOCK_LOCATION).toString();
-        expectedUrl = new URL(expectedUrl, MOCK_LOCATION).toString();
-
-        expect(cachedResponseUrl).to.equal(expectedUrl);
-
-        // Make sure that entries with revision were cache busted
-        if (cacheList[i].revision) {
-          fetchSpy.args.forEach((callArgs) => {
-            if (callArgs[0].url === cachedResponse.url) {
-              expect(callArgs[0].cache).to.equal('reload');
-            }
-          });
-        }
+        let cachedResponse = await cache.match(inputUrl);
+        expect(cachedResponse).to.exist;
       }
 
       // TODO Check indexedDB entries
 
+      // Make sure we print some debug info.
       expect(logStub.callCount).to.be.gt(0);
     });
 
