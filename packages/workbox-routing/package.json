@@ -1,0 +1,27 @@
+{
+  "name": "workbox-routing",
+  "version": "3.0.0",
+  "license": "Apache-2.0",
+  "author": "Google's Web DevRel Team",
+  "description": "This module efficiently precaches assets.",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox",
+  "keywords": [
+    "workbox",
+    "workboxjs",
+    "service worker",
+    "sw"
+  ],
+  "scripts": {
+    "prepublish": "gulp build-packages --package workbox-routing"
+  },
+  "workbox": {
+    "browserNamespace": "routing"
+  },
+  "main": "build/browser-bundles/workbox-routing.prod.js",
+  "module": "index.mjs",
+  "dependencies": {
+    "workbox-core": "3.0.0"
+  }
+}
