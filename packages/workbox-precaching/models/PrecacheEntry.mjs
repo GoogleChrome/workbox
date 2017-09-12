@@ -27,6 +27,7 @@ export default class PrecacheEntry {
     let url = request.url;
     const requestOptions = {};
 
+    console.log('cache' in Request.prototype);
     if ('cache' in Request.prototype) {
       // Make use of the Request cache mode where we can.
       // Reload skips the HTTP cache for outgoing requests and updates
@@ -40,6 +41,8 @@ export default class PrecacheEntry {
       url = parsedURL.toString();
     }
 
+
+    console.log('CACHE BUSTING>>>>>>>>>>>>>>>>>>>>>>>>>>', url);
     return new Request(url, requestOptions);
   }
 }
