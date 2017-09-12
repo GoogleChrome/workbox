@@ -27,7 +27,7 @@ export const defaultMethod = 'GET';
  * The list of valid HTTP methods associated with requests that could be routed.
  *
  * @private
- * @type {Array.<string>}
+ * @type {Array<string>}
  * @memberof module:workbox-routing
  */
 export const validMethods = [

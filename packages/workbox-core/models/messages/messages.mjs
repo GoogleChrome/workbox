@@ -32,6 +32,22 @@ export default {
       `'${moduleName}.${className}.${funcName}()' must be an array.`;
   },
 
+  'not-of-type': ({paramName, expectedType, moduleName, funcName}) => {
+    if (!paramName || !expectedType || !moduleName || !funcName) {
+      throw new Error(`Unexpected input to 'not-of-type' error.`);
+    }
+    return `The parameter '${paramName}' passed into ` +
+      `'${moduleName}.${funcName}()' must be of type ${expectedType}.`;
+  },
+
+  'not-a-method': ({paramName, expectedMethod, moduleName, funcName}) => {
+    if (!paramName || !expectedMethod || !moduleName || !funcName) {
+      throw new Error(`Unexpected input to 'not-a-method' error.`);
+    }
+    return `${moduleName}.${funcName}() was called with a ${paramName} that ` +
+      `doesn't expose a ${expectedMethod} method.`;
+  },
+
   'add-to-cache-list-unexpected-type': ({entry}) => {
     return `An unexpected entry was passed to ` +
     `'workbox-precaching.PrecacheController.addToCacheList()' The entry ` +

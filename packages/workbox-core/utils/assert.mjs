@@ -27,7 +27,37 @@ const isArray = (value, {moduleName, className, funcName, paramName}) => {
   }
 };
 
+const hasMethod = (object, expectedMethod,
+                   {moduleName, funcName, paramName}) => {
+  const type = typeof object[expectedMethod];
+  if (type !== 'function') {
+    throw new WorkboxError('not-a-method', {paramName, expectedMethod,
+      moduleName, funcName});
+  }
+};
+
+const isType = (object, expectedType,
+                {moduleName, funcName, paramName}) => {
+  if (typeof object !== expectedType) {
+    throw new WorkboxError('not-of-type', {paramName, expectedType,
+      moduleName, funcName});
+  }
+};
+
+const isOneOf = (value, validValues, {paramName}) => {
+  if (!validValues.includes(value)) {
+    throw new WorkboxError('invalid-value', {
+      paramName,
+      value,
+      validValueDescription: `Valid values are ${JSON.stringify(validValues)}.`,
+    });
+  }
+};
+
 export default {
-  isSwEnv,
+  hasMethod,
   isArray,
+  isOneOf,
+  isSwEnv,
+  isType,
 };

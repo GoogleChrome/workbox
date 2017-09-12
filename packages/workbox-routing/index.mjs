@@ -1,12 +1,12 @@
 import core from 'workbox-core';
-import PrecacheController from './controllers/PrecacheController.mjs';
+import Route from './lib/Route.mjs';
 
 if (process.env.NODE_ENV !== 'production') {
-  core.assert.isSwEnv('workbox-precaching');
+  core.assert.isSwEnv('workbox-routing');
 }
 
 export {
-  PrecacheController,
+  Route,
 };
 
 export default {};

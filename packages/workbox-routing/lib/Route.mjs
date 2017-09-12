@@ -13,11 +13,8 @@
  limitations under the License.
 */
 
-import {_private} from 'workbox-core';
 import core from 'workbox-core';
 
-import {isType, isOneOf} from '../../../../lib/assert';
-import normalizeHandler from './normalize-handler';
 import {defaultMethod, validMethods} from './constants.mjs';
 
 /**
@@ -98,7 +95,7 @@ import {defaultMethod, validMethods} from './constants.mjs';
  *
  * @memberof module:workbox-routing
  */
-class Route {
+export default class Route {
   /**
    * Constructor for Route class.
    * @param {Object} input
@@ -122,18 +119,52 @@ class Route {
    * Defaults to `'GET'`.
    */
   constructor({match, handler, method} = {}) {
-    this.handler = normalizeHandler(handler);
+    this.handler = Route._normalizeHandler(handler);
 
-    isType({match}, 'function');
+    if (process.env.NODE_ENV !== 'production') {
+      core.assert.isType(match, 'function', {
+        moduleName: 'workbox-routing',
+        funcName: 'Route',
+        paramName: 'match',
+      });
+    }
     this.match = match;
 
     if (method) {
-      isOneOf({method}, validMethods);
+      if (process.env.NODE_ENV !== 'production') {
+        core.assert.isOneOf(method, validMethods, {paramName: 'method'});
+      }
       this.method = method;
     } else {
       this.method = defaultMethod;
     }
   }
-}
 
-export default Route;
+  /**
+   * @param {function|Object} handler Either a function, or an object with a
+   * 'handle' method.
+   * @return {Object} An object with a handle method.
+   * @private
+   */
+  static _normalizeHandler(handler) {
+    if (typeof handler === 'object') {
+      if (process.env.NODE_ENV !== 'production') {
+        core.assert.hasMethod(handler, 'handle', {
+          moduleName: 'workbox-routing',
+          funcName: 'Route',
+          paramName: 'handler',
+        });
+      }
+      return handler;
+    } else {
+      if (process.env.NODE_ENV !== 'production') {
+        core.assert.isType(handler, 'function', {
+          moduleName: 'workbox-routing',
+          funcName: 'Route',
+          paramName: 'handler',
+        });
+      }
+      return {handle: handler};
+    }
+  }
+}
