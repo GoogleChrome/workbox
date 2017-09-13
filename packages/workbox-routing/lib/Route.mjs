@@ -85,7 +85,7 @@ import {defaultMethod, validMethods} from './constants.mjs';
  *            url.pathname.startsWith('/path/to/');
  *   },
  *   handler: ({event}) => {
- *     // Do something that returns a Promise.<Response>, like:
+ *     // Do something that returns a Promise<Response>, like:
  *     return caches.match(event.request);
  *   },
  * });
@@ -147,7 +147,7 @@ export default class Route {
    * @private
    */
   static _normalizeHandler(handler) {
-    if (typeof handler === 'object') {
+    if (handler && typeof handler === 'object') {
       if (process.env.NODE_ENV !== 'production') {
         core.assert.hasMethod(handler, 'handle', {
           moduleName: 'workbox-routing',

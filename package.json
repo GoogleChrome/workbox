@@ -39,7 +39,7 @@
   "homepage": "https://github.com/GoogleChrome/workbox#readme",
   "devDependencies": {
     "@google-cloud/storage": "^1.2.1",
-    "@std/esm": "^0.9.1",
+    "@std/esm": "^0.5.1",
     "archiver": "^2.0.3",
     "babylon": "^6.18.0",
     "bytes": "^3.0.0",
@@ -74,6 +74,7 @@
     "semver": "^5.4.1",
     "service-worker-mock": "^1.2.2",
     "sinon": "^3.2.1",
+    "text-encoding": "^0.6.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
