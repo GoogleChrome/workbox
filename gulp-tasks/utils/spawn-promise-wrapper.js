@@ -3,6 +3,7 @@ const spawn = require('child_process').spawn;
 module.exports = (command, args, options = {}) => {
   options.stdio = options.stdio || 'inherit';
   return new Promise((resolve, reject) => {
+    console.log(command);
     const process = spawn(command, args, options);
     process.on('error', reject);
     process.on('close', (code) => {
