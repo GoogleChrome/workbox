@@ -1,5 +1,6 @@
 const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
+const path = require('path');
 
 const spawn = require('./utils/spawn-promise-wrapper');
 const logHelper = require('../infra/utils/log-helper');
@@ -13,7 +14,9 @@ const runNodeTests = () => {
     options.push('--grep', global.cliOptions.grep);
   }
   return spawn('npm', ['run', 'test', '--',
-    `./test/${global.packageOrStar}/node/**/*.mjs`,
+    path.join(
+      '.', 'test', global.packageOrStar, 'node', '**', '*.mjs'
+    ),
     ...options,
   ])
   .catch((err) => {

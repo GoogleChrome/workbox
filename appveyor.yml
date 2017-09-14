@@ -1,3 +1,6 @@
+cache:
+  - node_modules
+
 install:
   - ps: Install-Product node Stable
   - npm install
