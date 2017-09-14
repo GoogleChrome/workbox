@@ -13,7 +13,7 @@ const runNodeTests = () => {
     options.push('--grep', global.cliOptions.grep);
   }
   return spawn('npm', ['run', 'test', '--',
-    `"./test/${global.packageOrStar}/node/**/*.mjs"`,
+    `./test/${global.packageOrStar}/node/**/*.mjs`,
     ...options,
   ])
   .catch((err) => {
