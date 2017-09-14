@@ -1,6 +1,6 @@
 import WorkboxError from '../models/WorkboxError.mjs';
 
-const wrappedFetch = async (request, fetchOptions, plugins) => {
+const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   if (typeof request === 'string') {
     request = new Request(request);
   }
@@ -8,12 +8,14 @@ const wrappedFetch = async (request, fetchOptions, plugins) => {
   // TODO Move to assertion
   // assert.isInstance({request}, Request);
 
-  plugins = plugins || [];
-
+  const failedFetchPlugins = plugins.filter((plugin) => {
+    return plugin.fetchDidFail;
+  });
   // If there is a fetchDidFail plugin, we need to save a clone of the
   // original request before it's either modified by a requestWillFetch
   // plugin or before the original request's body is consumed via fetch().
-  const originalRequest = request.clone();
+  const originalRequest = failedFetchPlugins.length > 0 ?
+    request.clone() : null;
 
   try {
     for (let plugin of plugins) {
@@ -30,16 +32,16 @@ const wrappedFetch = async (request, fetchOptions, plugins) => {
     });
   }
 
-  const fetchedRequest = request.clone();
+  const pluginFilteredRequest = request.clone();
 
   try {
     return await fetch(request, fetchOptions);
   } catch (err) {
-    for (let plugin of plugins) {
+    for (let plugin of failedFetchPlugins) {
       if (plugin.fetchDidFail) {
         await plugin.fetchDidFail(
           originalRequest.clone(),
-          fetchedRequest.clone(),
+          pluginFilteredRequest.clone(),
         );
       }
     }

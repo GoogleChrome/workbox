@@ -1,47 +1,35 @@
-const putWrapper = async (request, response, plugins) => {
-  if (!plugins) {
-    plugins = [];
-  }
-
+const putWrapper = async (cacheName, request, response, plugins = []) => {
   let responseToCache = await _isResponseSafeToCache(
     request, response, plugins);
   if (!responseToCache) {
     return;
   }
 
-  const CACHE_NAME = 'TODO-CHANGE-ME';
-  const cache = await caches.open(CACHE_NAME);
+  const cache = await caches.open(cacheName);
 
-  let matchOptions;
-  let oldResponse = await matchWrapper(request, matchOptions);
+  const updatePlugins = plugins.filter((plugin) => {
+    return plugin.cacheDidUpdate;
+  });
+  let oldResponse = updatePlugins.length > 0 ?
+    await matchWrapper(cacheName, request) : null;
 
   // Regardless of whether or not we'll end up invoking
   // cacheDidUpdate, wait until the cache is updated.
   await cache.put(request, responseToCache);
 
-  for (let plugin of plugins) {
+  for (let plugin of updatePlugins) {
     if (plugin.cacheDidUpdate) {
-      await plugin.cacheDidUpdate(CACHE_NAME,
+      await plugin.cacheDidUpdate(cacheName,
         request,
         oldResponse,
         responseToCache,
       );
     }
   }
-
-  /**
-
-  // Only conditionally await the caching completion, giving developers the
-  // option of returning early for, e.g., read-through-caching scenarios.
-  if (waitOnCache) {
-    await cachePutPromise;
-  }**/
 };
 
-const matchWrapper = async (request, matchOptions, plugins) => {
-  const CACHE_NAME = 'TODO-CHANGE-ME';
-
-  const cache = await caches.open(CACHE_NAME);
+const matchWrapper = async (cacheName, request, matchOptions, plugins) => {
+  const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
   // In the cache of cacheWrapper.put(), we aren't really "using"
   // a response, so calling these plugins makes no sense,

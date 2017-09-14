@@ -162,7 +162,8 @@ export default class PrecacheController {
       response = await cleanRedirect(response);
     }
 
-    await _private.cacheWrapper.put(precacheEntry._cacheRequest, response);
+    await _private.cacheWrapper.put('TODO-CHANGE-ME',
+      precacheEntry._cacheRequest, response);
 
     // TODO: Add details to revision details model
     // await this._revisionDetailsModel.put(
