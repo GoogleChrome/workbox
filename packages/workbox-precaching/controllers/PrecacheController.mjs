@@ -3,6 +3,8 @@ import core from 'workbox-core';
 
 import PrecacheEntry from '../models/PrecacheEntry.mjs';
 import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
+import printInstallDetails from '../utils/printInstallDetails.mjs';
+import cleanRedirect from '../utils/cleanRedirect.mjs';
 
 /**
  * Performs efficient precaching of assets.
@@ -53,22 +55,26 @@ export default class PrecacheController {
    */
   _parseEntry(input) {
     switch (typeof input) {
-      case 'string':
+      case 'string': {
         if (input.length === 0) {
           throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
             entry: input,
           });
         }
 
-        return new PrecacheEntry(input, input, input);
-      case 'object':
+        return new PrecacheEntry(input, input, input, new Request(input));
+      }
+      case 'object': {
         if (!input || !input.url) {
           throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
             entry: input,
           });
         }
 
-        return new PrecacheEntry(input, input.url, input.revision || input.url);
+        const cacheBust = input.revision ? true : false;
+        return new PrecacheEntry(input, input.url, input.revision || input.url,
+          new Request(input.url), cacheBust);
+      }
       default:
         throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
           entry: input,
@@ -96,5 +102,71 @@ export default class PrecacheController {
         secondEntry: entryToAdd._originalInput,
       });
     }
+  }
+
+  /**
+   * Call this method from a service work install event to start
+   * precaching assets.
+   *
+   */
+  async install() {
+    const updatedEntries = [];
+    const notUpdatedEntries = [];
+
+    const cachePromises = [];
+    this._entriesToCacheMap.forEach((precacheEntry) => {
+      const promiseChain = this._cacheEntry(precacheEntry)
+      .then((wasUpdated) => {
+        if (wasUpdated) {
+          updatedEntries.push(precacheEntry);
+        } else {
+          notUpdatedEntries.push(precacheEntry);
+        }
+      });
+
+      cachePromises.push(promiseChain);
+    });
+
+    // Wait for all requests to be cached.
+    await Promise.all(cachePromises);
+
+    if (process.env.NODE_ENV !== 'production') {
+      printInstallDetails(updatedEntries, notUpdatedEntries);
+    }
+
+    return {
+      'updatedEntries': updatedEntries,
+      'notUpdatedEntries': notUpdatedEntries,
+    };
+  }
+
+  /**
+   * Requests the entry and saves it to the cache if the response
+   * is valid.
+   *
+   * @private
+   * @param {BaseCacheEntry} precacheEntry The entry to fetch and cache.
+   * @return {Promise<Object>} Returns a promise that resolves once the entry
+   * has been fetched and cached or skipped if no update is needed. The
+   * promise resolved with details of the entry and whether it was
+   * updated or not.
+   */
+  async _cacheEntry(precacheEntry) {
+    // TODO: Check if it's already cached.
+
+    let response = await _private.fetchWrapper.fetch(
+      precacheEntry._networkRequest,
+    );
+
+    if (response.redirected) {
+      response = await cleanRedirect(response);
+    }
+
+    await _private.cacheWrapper.put('TODO-CHANGE-ME',
+      precacheEntry._cacheRequest, response);
+
+    // TODO: Add details to revision details model
+
+    return true;
   }
 }

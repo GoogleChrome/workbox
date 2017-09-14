@@ -52,4 +52,14 @@ export default {
       `is unable to determine cache the asset correctly. Please remove one ` +
       `of the entries.`;
   },
+
+  'plugin-error-request-will-fetch': ({thrownError}) => {
+    if (!thrownError) {
+      throw new Error(`Unexpected input to ` +
+        `'plugin-error-request-will-fetch', error.`);
+    }
+
+    return `An error was thrown by a plugins 'requestWillFetch()' method. ` +
+      `The thrown error message was: '${thrownError.message}'.`;
+  },
 };

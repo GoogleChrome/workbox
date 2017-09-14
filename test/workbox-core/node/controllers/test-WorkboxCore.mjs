@@ -6,7 +6,7 @@ import constants from '../../../../gulp-tasks/utils/constants.js';
 import generateVariantTests from '../../../../infra/utils/generate-variant-tests';
 import WorkboxError from '../../../../packages/workbox-core/models/WorkboxError.mjs';
 
-describe(`WorkboxCore`, function() {
+describe(`workbox-core WorkboxCore`, function() {
   beforeEach(function() {
     clearRequire.all();
   });
