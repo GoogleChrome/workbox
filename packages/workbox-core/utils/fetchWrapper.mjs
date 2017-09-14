@@ -57,7 +57,7 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
       if (plugin.fetchDidFail) {
         await plugin.fetchDidFail({
           originalRequest: originalRequest.clone(),
-          pluginFilteredRequest: pluginFilteredRequest.clone(),
+          request: pluginFilteredRequest.clone(),
         });
       }
     }

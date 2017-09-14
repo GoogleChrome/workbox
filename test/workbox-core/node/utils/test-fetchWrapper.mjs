@@ -128,9 +128,9 @@ describe(`workbox-core fetchWrapper`, function() {
       });
 
       const secondPlugin = {
-        fetchDidFail: ({originalRequest, pluginFilteredRequest}) => {
+        fetchDidFail: ({originalRequest, request}) => {
           expect(originalRequest.url).to.equal('/test/failingRequest/0');
-          expect(pluginFilteredRequest.url).to.equal('/test/failingRequest/1');
+          expect(request.url).to.equal('/test/failingRequest/1');
         },
       };
       const spyTwo = sandbox.spy(secondPlugin, 'fetchDidFail');
@@ -139,11 +139,11 @@ describe(`workbox-core fetchWrapper`, function() {
         requestWillFetch: ({request}) => {
           return new Request('/test/failingRequest/1');
         },
-        fetchDidFail: ({originalRequest, pluginFilteredRequest}) => {
+        fetchDidFail: ({originalRequest, request}) => {
           // This should be called first
           expect(spyTwo.callCount).to.equal(0);
           expect(originalRequest.url).to.equal('/test/failingRequest/0');
-          expect(pluginFilteredRequest.url).to.equal('/test/failingRequest/1');
+          expect(request.url).to.equal('/test/failingRequest/1');
         },
       };
       const spyOne = sandbox.spy(firstPlugin, 'fetchDidFail');
