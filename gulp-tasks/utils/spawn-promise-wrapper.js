@@ -1,5 +1,4 @@
 const spawn = require('child_process').spawn;
-const logHelper = require('../../infra/utils/log-helper');
 
 module.exports = (command, args, options = {}) => {
   options.stdio = options.stdio || 'inherit';
