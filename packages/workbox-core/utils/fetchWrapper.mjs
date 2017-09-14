@@ -1,5 +1,15 @@
 import WorkboxError from '../models/WorkboxError.mjs';
 
+/**
+ * Wrapper around the fetch API.
+ *
+ * Will call requestWillFetch on available plugins.
+ *
+ * @param {Request|String} request
+ * @param {Object} fetchOptions
+ * @param {Array<Object>} [plugins]
+ * @return {Promise<Response>}
+ */
 const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   if (typeof request === 'string') {
     request = new Request(request);
@@ -11,6 +21,7 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   const failedFetchPlugins = plugins.filter((plugin) => {
     return plugin.fetchDidFail;
   });
+
   // If there is a fetchDidFail plugin, we need to save a clone of the
   // original request before it's either modified by a requestWillFetch
   // plugin or before the original request's body is consumed via fetch().
@@ -20,7 +31,9 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   try {
     for (let plugin of plugins) {
       if (plugin.requestWillFetch) {
-        request = await plugin.requestWillFetch(request.clone());
+        request = await plugin.requestWillFetch({
+          request: request.clone(),
+        });
 
         // TODO Move to assertion
         // isInstance({request}, Request);
@@ -32,6 +45,9 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
     });
   }
 
+  // The request can be altered by plugins with `requestWillFetch` making
+  // the original request (Most likely from a `fetch` event) to be different
+  // to the Request we make. Pass both to `fetchDidFail` to aid debugging.
   const pluginFilteredRequest = request.clone();
 
   try {
@@ -39,10 +55,10 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   } catch (err) {
     for (let plugin of failedFetchPlugins) {
       if (plugin.fetchDidFail) {
-        await plugin.fetchDidFail(
-          originalRequest.clone(),
-          pluginFilteredRequest.clone(),
-        );
+        await plugin.fetchDidFail({
+          originalRequest: originalRequest.clone(),
+          pluginFilteredRequest: pluginFilteredRequest.clone(),
+        });
       }
     }
 

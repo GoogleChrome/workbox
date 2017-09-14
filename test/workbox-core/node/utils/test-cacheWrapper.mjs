@@ -86,10 +86,18 @@ describe(`workbox-core cacheWrapper`, function() {
         secondPlugin,
       ]);
 
-      expect(spyOne.callCount).to.equal(1);
-      sinon.assert.calledWithExactly(spyOne, 'TODO-CHANGE-ME', putRequest, null, putResponse);
-      expect(spyTwo.callCount).to.equal(1);
-      sinon.assert.calledWithExactly(spyTwo, 'TODO-CHANGE-ME', putRequest, null, putResponse);
+      [spyOne, spyTwo].forEach((pluginSpy) => {
+        expect(pluginSpy.callCount).to.equal(1);
+        expect(pluginSpy.args[0][0]).to.deep.equal({
+          cacheName: 'TODO-CHANGE-ME',
+        request: putRequest,
+        oldResponse: null,
+        newResponse: putResponse,
+        });
+
+        // Reset so the spies are clean for next step in the test.
+        pluginSpy.reset();
+      });
 
       const putResponseUpdate = new Response('Response for /test/string number 2');
       await cacheWrapper.put('TODO-CHANGE-ME', putRequest, putResponseUpdate, [
@@ -100,10 +108,15 @@ describe(`workbox-core cacheWrapper`, function() {
         secondPlugin,
       ]);
 
-      expect(spyOne.callCount).to.equal(2);
-      sinon.assert.calledWithExactly(spyOne, 'TODO-CHANGE-ME', putRequest, putResponse, putResponseUpdate);
-      expect(spyTwo.callCount).to.equal(2);
-      sinon.assert.calledWithExactly(spyTwo, 'TODO-CHANGE-ME', putRequest, putResponse, putResponseUpdate);
+      [spyOne, spyTwo].forEach((pluginSpy) => {
+        expect(pluginSpy.callCount).to.equal(1);
+        expect(pluginSpy.args[0][0]).to.deep.equal({
+          cacheName: 'TODO-CHANGE-ME',
+          request: putRequest,
+          oldResponse: putResponse,
+          newResponse: putResponseUpdate,
+        });
+      });
     });
 
     it(`should call cacheWillUpdate`, async function() {
@@ -135,9 +148,15 @@ describe(`workbox-core cacheWrapper`, function() {
       ]);
 
       expect(spyOne.callCount).to.equal(1);
-      sinon.assert.calledWithExactly(spyOne, putRequest, putResponse);
+      expect(spyOne.args[0][0]).to.deep.equal({
+        request: putRequest,
+        response: putResponse,
+      });
       expect(spyTwo.callCount).to.equal(1);
-      sinon.assert.calledWithExactly(spyTwo, putRequest, firstPluginResponse);
+      expect(spyTwo.args[0][0]).to.deep.equal({
+        request: putRequest,
+        response: firstPluginResponse,
+      });
     });
   });
 });

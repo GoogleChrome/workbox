@@ -1,3 +1,13 @@
+/**
+ * Wrapper around cache.put().
+ *
+ * Will call `cacheDidUpdate` on plugins if the cache was updated.
+ * @param {String} cacheName
+ * @param {Request} request
+ * @param {Response} response
+ * @param {Array<Object>} [plugins]
+ * @return {Promise}
+ */
 const putWrapper = async (cacheName, request, response, plugins = []) => {
   let responseToCache = await _isResponseSafeToCache(
     request, response, plugins);
@@ -19,16 +29,27 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
 
   for (let plugin of updatePlugins) {
     if (plugin.cacheDidUpdate) {
-      await plugin.cacheDidUpdate(cacheName,
+      await plugin.cacheDidUpdate({
+        cacheName,
         request,
         oldResponse,
-        responseToCache,
-      );
+        newResponse: responseToCache,
+      });
     }
   }
 };
 
-const matchWrapper = async (cacheName, request, matchOptions, plugins) => {
+/**
+ * This is a wrapper around cache.match().
+ *
+ * @param {String} cacheName Name of the cache to match against.
+ * @param {Request} request The Request that will be used to look up cache
+ * entries.
+ * @param {Object} matchOptions Options passed to cache.match().
+ * @param {Array<Object>} [plugins] Array of plugins.
+ * @return {Response} A cached response if available.
+ */
+const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
   const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
   // In the cache of cacheWrapper.put(), we aren't really "using"
@@ -49,13 +70,23 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins) => {
   return cachedResponse;
 };
 
+/**
+ * This method will call cacheWillUpdate on the available plugins (or use
+ * response.ok) to determine if the Response is safe and valid to cache.
+ * @param {Request} request
+ * @param {Response} response
+ * @param {Array<Objects>} plugins
+ */
 const _isResponseSafeToCache = async (request, response, plugins) => {
   let responseToCache = response;
   let pluginsUsed = false;
   for (let plugin of plugins) {
     if (plugin.cacheWillUpdate) {
       pluginsUsed = true;
-      responseToCache = await plugin.cacheWillUpdate(request, responseToCache);
+      responseToCache = await plugin.cacheWillUpdate({
+        request,
+        response: responseToCache,
+      });
     }
   }
 

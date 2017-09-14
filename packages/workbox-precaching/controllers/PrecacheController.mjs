@@ -55,7 +55,7 @@ export default class PrecacheController {
    */
   _parseEntry(input) {
     switch (typeof input) {
-      case 'string':
+      case 'string': {
         if (input.length === 0) {
           throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
             entry: input,
@@ -63,7 +63,8 @@ export default class PrecacheController {
         }
 
         return new PrecacheEntry(input, input, input, new Request(input));
-      case 'object':
+      }
+      case 'object': {
         if (!input || !input.url) {
           throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
             entry: input,
@@ -73,6 +74,7 @@ export default class PrecacheController {
         const cacheBust = input.revision ? true : false;
         return new PrecacheEntry(input, input.url, input.revision || input.url,
           new Request(input.url), cacheBust);
+      }
       default:
         throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
           entry: input,
@@ -150,9 +152,7 @@ export default class PrecacheController {
    * updated or not.
    */
   async _cacheEntry(precacheEntry) {
-    /** if (await this._isAlreadyCached(precacheEntry)) {
-      return false;
-    }**/
+    // TODO: Check if it's already cached.
 
     let response = await _private.fetchWrapper.fetch(
       precacheEntry._networkRequest,
@@ -166,8 +166,6 @@ export default class PrecacheController {
       precacheEntry._cacheRequest, response);
 
     // TODO: Add details to revision details model
-    // await this._revisionDetailsModel.put(
-    //   precacheEntry.entryID, precacheEntry.revision);
 
     return true;
   }
