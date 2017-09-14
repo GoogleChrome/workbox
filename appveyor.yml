@@ -1,6 +1,7 @@
 install:
   - ps: Install-Product node Stable
   - npm install
+  - npm install gulpjs/gulp-cli -g
 
 test_script:
   - node --version
