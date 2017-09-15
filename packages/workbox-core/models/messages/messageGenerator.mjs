@@ -1,5 +1,4 @@
 import messages from './messages.mjs';
-import logger from '../../utils/logger.mjs';
 
 const fallback = (code, ...args) => {
   let msg = code;

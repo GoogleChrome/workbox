@@ -10,6 +10,7 @@ const lernaBinPath = path.join(
 
 module.exports = {
   bootstrap: (...args) => {
-    return spawnPromiseWrapper(lernaBinPath, ['bootstrap', ...args]);
+    // Have to run with node in front for Windows.
+    return spawnPromiseWrapper('node', [lernaBinPath, 'bootstrap', ...args]);
   },
 };

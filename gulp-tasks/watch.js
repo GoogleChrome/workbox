@@ -8,7 +8,7 @@ gulp.task('watch', gulp.series(
         'packages/**/*.mjs',
         '!packages/**/builds/**/*',
         '!packages/**/node_modules/**/*',
-      ], gulp.series('build').on('error', () => {}),
-    );
+      ], gulp.series('build'),
+    ).on('error', () => {});
   }
 ));

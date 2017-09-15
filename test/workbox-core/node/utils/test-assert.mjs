@@ -2,7 +2,7 @@ import expectError from '../../../../infra/utils/expectError';
 
 import assert from '../../../../packages/workbox-core/utils/assert';
 
-describe(`_assert`, function() {
+describe(`workbox-core  assert`, function() {
   describe(`isSwEnv`, function() {
     class FakeSWGlobalScope {}
 

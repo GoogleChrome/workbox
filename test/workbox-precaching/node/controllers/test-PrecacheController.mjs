@@ -1,20 +1,26 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 import clearRequire from 'clear-require';
+import makeServiceWorkerEnv from 'service-worker-mock';
 
 import expectError from '../../../../infra/utils/expectError';
 import generateTestVariants from '../../../../infra/utils/generate-variant-tests'
-
-import makeServiceWorkerEnv from 'service-worker-mock';
+import '../../../mocks/mock-fetch';
 
 const PRECACHE_MANAGER_PATH = '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
+const MOCK_LOCATION = 'https://example.com';
 
 describe(`PrecacheController`, function() {
   const sandbox = sinon.sandbox.create();
   let logger;
 
   before(function() {
-    Object.assign(global, makeServiceWorkerEnv());
+    const swEnv = makeServiceWorkerEnv();
+
+    // This is needed to ensure new URL('/', location), works.
+    swEnv.location = MOCK_LOCATION;
+
+    Object.assign(global, swEnv);
   });
 
   beforeEach(async function() {
@@ -251,4 +257,105 @@ describe(`PrecacheController`, function() {
       });
     });
   });
+
+  describe('install()', function() {
+    it('should be fine when calling with empty precache list', async function() {
+      // Prevent logs in the mocha output
+      sandbox.stub(logger, 'warn');
+      sandbox.stub(logger, 'debug');
+      sandbox.stub(logger, 'log');
+
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
+      return precacheController.install();
+    });
+
+    it('should precache assets using cache busting via search params', async function() {
+      // Prevent logs in the mocha output
+      sandbox.stub(logger, 'warn');
+      sandbox.stub(logger, 'debug');
+      const logStub = sandbox.stub(logger, 'log');
+
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        '/index.1234.html',
+        { url: '/example.1234.css' },
+        { url: '/scripts/index.js', revision: '1234'},
+        { url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      // Reset as addToCacheList will log.
+      logStub.reset();
+
+      const updateInfo = await precacheController.install();
+
+      const cache = await caches.open('TODO-CHANGE-ME');
+      const keys = await cache.keys();
+      expect(keys.length).to.equal(cacheList.length);
+
+      for (let i = 0; i < cacheList.length; i++) {
+        // We don't cache bust requests where the revision
+        // is in the URL
+        let inputUrl = cacheList[i];
+        if (cacheList[i].url) {
+          inputUrl = cacheList[i].url;
+        }
+
+        let cachedResponse = await cache.match(inputUrl);
+        expect(cachedResponse).to.exist;
+      }
+
+      // TODO Check indexedDB entries
+
+      // Make sure we print some debug info.
+      expect(logStub.callCount).to.be.gt(0);
+    });
+
+    it('should not log install details on production', async function() {
+      process.env.NODE_ENV = 'production';
+
+      // Prevent logs in the mocha output
+      sandbox.stub(logger, 'warn');
+      sandbox.stub(logger, 'debug');
+      const logStub = sandbox.stub(logger, 'log');
+
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
+      precacheController.addToCacheList([
+        '/index.1234.html',
+        { url: '/example.1234.css' },
+        { url: '/scripts/index.js', revision: '1234'},
+      ]);
+
+      await precacheController.install();
+
+      expect(logStub.callCount).to.equal(0);
+    });
+
+    it(`should clean redirected precache entries`, async function() {
+      // Prevent logs in the mocha output
+      sandbox.stub(logger, 'warn');
+      sandbox.stub(logger, 'debug');
+      sandbox.stub(logger, 'log');
+
+      const fetchStub = sandbox.stub(global, 'fetch');
+      fetchStub.callsFake(() => {
+        const response = new Response('Redirected Response');
+        response.redirected = true;
+        return response;
+      });
+
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
+      precacheController.addToCacheList([
+        '/index.1234.html',
+        { url: '/example.1234.css' },
+        { url: '/scripts/index.js', revision: '1234'},
+      ]);
+
+      await precacheController.install();
+    });
+  })
 });
