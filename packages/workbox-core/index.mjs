@@ -35,6 +35,20 @@ class WorkboxCore {
   }
 
   /**
+   * You can alter the default cache names by changing
+   * the cache name details.
+   *
+   * Pass in an object containing any of the following properties,
+   * `prefix`, `suffix`, `precache` and `runtime`.
+   *
+   * Cache names are generated as `<prefix>-<precache or runtime>-<suffix>`.
+   * @param {Object} details
+   */
+  setCacheNameDetails(details) {
+    _private.cacheNameProvider.updateDetails(details);
+  }
+
+  /**
    * A setter for the logLevel allowing the developer to define
    * which messages should be printed to the console.
    * @param {number} newLevel the new logLevel to use.

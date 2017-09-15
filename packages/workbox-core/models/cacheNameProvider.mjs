@@ -10,6 +10,12 @@ const _createCacheName = (cacheName) => {
     .join('-');
 };
 
+export const updateDetails = (details) => {
+  Object.keys(_cacheNameDetails).forEach((key) => {
+    _cacheNameDetails[key] = details[key] || _cacheNameDetails[key];
+  });
+};
+
 export const getPrecacheName = (userCacheName) => {
   return userCacheName || _createCacheName(_cacheNameDetails.precache);
 };
