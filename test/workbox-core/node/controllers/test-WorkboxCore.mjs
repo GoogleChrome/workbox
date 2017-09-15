@@ -1,5 +1,6 @@
 import {expect} from 'chai';
 import clearRequire from 'clear-require';
+import makeServiceWorkerEnv from 'service-worker-mock';
 
 import expectError from '../../../../infra/utils/expectError';
 import constants from '../../../../gulp-tasks/utils/constants.js';
@@ -7,6 +8,11 @@ import generateVariantTests from '../../../../infra/utils/generate-variant-tests
 import WorkboxError from '../../../../packages/workbox-core/models/WorkboxError.mjs';
 
 describe(`workbox-core WorkboxCore`, function() {
+  before(function() {
+    const swEnv = makeServiceWorkerEnv();
+    Object.assign(global, swEnv);
+  });
+
   beforeEach(function() {
     clearRequire.all();
   });
@@ -93,6 +99,72 @@ describe(`workbox-core WorkboxCore`, function() {
       return expectError(() => {
         core.logLevel = variant;
       }, 'invalid-type');
+    });
+  });
+
+  describe('core.cacheNames', function() {
+    it('should return expected defaults', async function() {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+
+      // Scope be default is '/' from 'service-worker-mock'
+      expect(core.cacheNames.precache).to.equal(`workbox-precache-/`);
+      expect(core.cacheNames.runtime).to.equal(`workbox-runtime-/`);
+    });
+
+    it('should allow customising the prefix', async function() {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+      core.setCacheNameDetails({prefix: 'test-prefix'});
+
+      // Scope be default is '/' from 'service-worker-mock'
+      expect(core.cacheNames.precache).to.equal(`test-prefix-precache-/`);
+      expect(core.cacheNames.runtime).to.equal(`test-prefix-runtime-/`);
+    });
+
+    it('should allow customising the suffic', async function() {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+      core.setCacheNameDetails({suffix: 'test-suffix'});
+
+      // Scope be default is '/' from 'service-worker-mock'
+      expect(core.cacheNames.precache).to.equal(`workbox-precache-test-suffix`);
+      expect(core.cacheNames.runtime).to.equal(`workbox-runtime-test-suffix`);
+    });
+
+    it('should allow customising the precache name', async function() {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+      core.setCacheNameDetails({precache: 'test-precache'});
+
+      // Scope be default is '/' from 'service-worker-mock'
+      expect(core.cacheNames.precache).to.equal(`workbox-test-precache-/`);
+      expect(core.cacheNames.runtime).to.equal(`workbox-runtime-/`);
+    });
+
+    it('should allow customising the precache name', async function() {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+      core.setCacheNameDetails({runtime: 'test-runtime'});
+
+      // Scope be default is '/' from 'service-worker-mock'
+      expect(core.cacheNames.precache).to.equal(`workbox-precache-/`);
+      expect(core.cacheNames.runtime).to.equal(`workbox-test-runtime-/`);
+    });
+
+    it('should allow customising all', async function() {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+      core.setCacheNameDetails({
+        prefix: 'test-prefix',
+        suffix: 'test-suffix',
+        precache: 'test-precache',
+        runtime: 'test-runtime',
+      });
+
+      // Scope be default is '/' from 'service-worker-mock'
+      expect(core.cacheNames.precache).to.equal(`test-prefix-test-precache-test-suffix`);
+      expect(core.cacheNames.runtime).to.equal(`test-prefix-test-runtime-test-suffix`);
     });
   });
 });

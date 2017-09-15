@@ -22,6 +22,19 @@ class WorkboxCore {
   }
 
   /**
+   * This method returns the cache names used by Workbox. `cacheNames.precache`
+   * is used for the precached assets and `cacheNames.runtime` for everything
+   * else.
+   * @return {Object} An object with `precache` and `runtime` properies.
+   */
+  get cacheNames() {
+    return {
+      precache: _private.cacheNameProvider.getPrecacheName(),
+      runtime: _private.cacheNameProvider.getRuntimeName(),
+    };
+  }
+
+  /**
    * A setter for the logLevel allowing the developer to define
    * which messages should be printed to the console.
    * @param {number} newLevel the new logLevel to use.
