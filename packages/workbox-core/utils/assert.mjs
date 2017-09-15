@@ -28,19 +28,19 @@ const isArray = (value, {moduleName, className, funcName, paramName}) => {
 };
 
 const hasMethod = (object, expectedMethod,
-                   {moduleName, funcName, paramName}) => {
+                   {moduleName, className, funcName, paramName}) => {
   const type = typeof object[expectedMethod];
   if (type !== 'function') {
-    throw new WorkboxError('not-a-method', {paramName, expectedMethod,
-      moduleName, funcName});
+    throw new WorkboxError('missing-a-method', {paramName, expectedMethod,
+      moduleName, className, funcName});
   }
 };
 
 const isType = (object, expectedType,
-                {moduleName, funcName, paramName}) => {
+                {moduleName, className, funcName, paramName}) => {
   if (typeof object !== expectedType) {
-    throw new WorkboxError('not-of-type', {paramName, expectedType,
-      moduleName, funcName});
+    throw new WorkboxError('incorrect-type', {paramName, expectedType,
+      moduleName, className, funcName});
   }
 };
 

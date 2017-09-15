@@ -32,20 +32,24 @@ export default {
       `'${moduleName}.${className}.${funcName}()' must be an array.`;
   },
 
-  'not-of-type': ({paramName, expectedType, moduleName, funcName}) => {
-    if (!paramName || !expectedType || !moduleName || !funcName) {
+  'incorrect-type': ({expectedType, paramName, moduleName, className,
+                   funcName}) => {
+    if (!expectedType || !paramName || !moduleName || !className || !funcName) {
       throw new Error(`Unexpected input to 'not-of-type' error.`);
     }
     return `The parameter '${paramName}' passed into ` +
-      `'${moduleName}.${funcName}()' must be of type ${expectedType}.`;
+      `'${moduleName}.${className}.${funcName}()' must be of type ` +
+      `${expectedType}.`;
   },
 
-  'not-a-method': ({paramName, expectedMethod, moduleName, funcName}) => {
-    if (!paramName || !expectedMethod || !moduleName || !funcName) {
+  'missing-a-method': ({expectedMethod, paramName, moduleName, className,
+                    funcName}) => {
+    if (!expectedMethod || !paramName || !moduleName || !className
+        || !funcName) {
       throw new Error(`Unexpected input to 'not-a-method' error.`);
     }
-    return `${moduleName}.${funcName}() was called with a ${paramName} that ` +
-      `doesn't expose a ${expectedMethod} method.`;
+    return `${moduleName}.${className}.${funcName}() expected the ` +
+      `'${paramName}' parameter to expose a '${expectedMethod}' method.`;
   },
 
   'add-to-cache-list-unexpected-type': ({entry}) => {

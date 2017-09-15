@@ -16,6 +16,7 @@
 import core from 'workbox-core';
 
 import {defaultMethod, validMethods} from './constants.mjs';
+import normalizeHandler from './normalizeHandler.mjs';
 
 /**
  * This is the definition of the `match` callback passed into the
@@ -31,12 +32,14 @@ import {defaultMethod, validMethods} from './constants.mjs';
  * [Route Constructor]{@link module:workbox-routing.Route}).
  *
  * @callback Route~matchCallback
- * @param {Object} input
- * @param {URL} input.url The request's URL.
- * @param {FetchEvent} input.event The event that triggered the `fetch` handler.
+ * @param {Object} context
+ * @param {URL} context.url The request's URL.
+ * @param {FetchEvent} context.event The event that triggered the `fetch`
+ * handler.
  * @return {Object|null} To signify a match, return a truthy value, otherwise
  * return null if the route shouldn't match. If you return an Object with
- * contents it will be passed to the `handler` in the `Route` constructor.
+ * contents, it will be passed to the Route's
+ * [handler]{@link module:workbox-routing.Route~handlerCallback}.
  * @memberof module:workbox-routing
  */
 
@@ -48,63 +51,33 @@ import {defaultMethod, validMethods} from './constants.mjs';
  * a `Route` and should return a Promise that resolves with a `Response`.
  *
  * @callback Route~handlerCallback
- * @param {Object} input
- * @param {URL} input.url The request's URL.
- * @param {FetchEvent} input.event The event that triggered the `fetch` handler.
- * @param {Object} [input.params] Parameters returned
- * the Route's [match callback]{@link
-  *   module:workbox-routing.Route~matchCallback} function. This will be
- * undefined if nothing was returned.
+ * @param {Object} context
+ * @param {URL} context.url The request's URL.
+ * @param {FetchEvent} context.event The event that triggered the `fetch`
+ * handler.
+ * @param {Object} [context.params] Parameters returned by the Route's
+ * [match callback]{@link module:workbox-routing.Route~matchCallback} function.
+ * This will be undefined if nothing was returned.
  * @return {Promise<Response>} The response that will fulfill the request.
  * @memberof module:workbox-routing
  */
 
 /**
- * A `Route` allows you to tell a service worker that it should handle
- * certain network requests using a specific response strategy.
- *
- * A consists or a matcher and a handler. A matcher needs to determine if a
- * route should be used for a request. A handler should handle the request
- * if it does match a Router.
- *
- * Instead of implementing your own handlers, you can use one of the
- * pre-defined runtime caching strategies from the
- * {@link module:workbox-runtime-caching|workbox-runtime-caching} module.
- *
- * There are also pre-defined Route's provided by this library:
- * {@link module:workbox-routing.RegExpRoute|RegExpRoute}
- * and {@link module:workbox-routing.ExpressRoute|ExpressRoute} subclasses
- * which provide a convenient wrapper with a nicer interface for using regular
- * expressions or Express-style routes as the `match` criteria.
- *
- * @example
- * // Any navigate requests for URLs that start with /path/to/ will match.
- * const route = new workbox.routing.Route({
- *   match: ({url, event}) => {
- *     return event.request.mode === 'navigate' &&
- *            url.pathname.startsWith('/path/to/');
- *   },
- *   handler: ({event}) => {
- *     // Do something that returns a Promise<Response>, like:
- *     return caches.match(event.request);
- *   },
- * });
- *
- * const router = new workbox.routing.Router();
- * router.registerRoute({route});
+ * A `Route` consists or a matcher and a handler. A matcher needs to determine
+ * if a route should be used for a request. A handler returns a response
+ * to the request if there's a match.
  *
  * @memberof module:workbox-routing
  */
 export default class Route {
   /**
    * Constructor for Route class.
-   * @param {Object} input
-   * @param {function} input.match The function that determines whether the
+   * @param {function} match The function that determines whether the
    * route matches a given `fetch` event.
    *
    * See [matchCallback]{@link module:workbox-routing.Route~matchCallback} for
    * full details on this function.
-   * @param {function|module:workbox-runtime-caching.Handler} input.handler
+   * @param {function|module:workbox-runtime-caching.Handler} handler
    * This parameter can be either a function or an object which is a subclass
    * of `Handler`.
    *
@@ -113,58 +86,25 @@ export default class Route {
    *
    * See [handlerCallback]{@link module:workbox-routing.Route~handlerCallback}
    * for full details on using a callback function as the `handler`.
-   * @param {string} [input.method] Only match requests that use this
-   * HTTP method.
-   *
-   * Defaults to `'GET'`.
+   * @param {string} [method='GET'] Only match requests that use this HTTP
+   * method.
    */
-  constructor({match, handler, method} = {}) {
-    this.handler = Route._normalizeHandler(handler);
-
+  constructor(match, handler, method) {
     if (process.env.NODE_ENV !== 'production') {
       core.assert.isType(match, 'function', {
         moduleName: 'workbox-routing',
-        funcName: 'Route',
+        className: 'Route',
+        funcName: 'constructor',
         paramName: 'match',
       });
-    }
-    this.match = match;
 
-    if (method) {
-      if (process.env.NODE_ENV !== 'production') {
+      if (method) {
         core.assert.isOneOf(method, validMethods, {paramName: 'method'});
       }
-      this.method = method;
-    } else {
-      this.method = defaultMethod;
     }
-  }
 
-  /**
-   * @param {function|Object} handler Either a function, or an object with a
-   * 'handle' method.
-   * @return {Object} An object with a handle method.
-   * @private
-   */
-  static _normalizeHandler(handler) {
-    if (handler && typeof handler === 'object') {
-      if (process.env.NODE_ENV !== 'production') {
-        core.assert.hasMethod(handler, 'handle', {
-          moduleName: 'workbox-routing',
-          funcName: 'Route',
-          paramName: 'handler',
-        });
-      }
-      return handler;
-    } else {
-      if (process.env.NODE_ENV !== 'production') {
-        core.assert.isType(handler, 'function', {
-          moduleName: 'workbox-routing',
-          funcName: 'Route',
-          paramName: 'handler',
-        });
-      }
-      return {handle: handler};
-    }
+    this._handler = normalizeHandler(handler);
+    this._match = match;
+    this._method = method || defaultMethod;
   }
 }

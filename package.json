@@ -74,7 +74,6 @@
     "semver": "^5.4.1",
     "service-worker-mock": "^1.2.2",
     "sinon": "^3.2.1",
-    "text-encoding": "^0.6.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   }
