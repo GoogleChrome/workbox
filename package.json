@@ -48,7 +48,7 @@
     "clear-require": "^2.0.0",
     "common-tags": "^1.4.0",
     "coveralls": "^2.13.1",
-    "eslint": "^4.3.0",
+    "eslint": "^4.6.1",
     "eslint-config-google": "^0.9.1",
     "fs-extra": "^4.0.1",
     "github": "^9.2.0",

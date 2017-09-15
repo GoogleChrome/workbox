@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
 
 const spawn = require('./utils/spawn-promise-wrapper');
+const getNpmCmd = require('./utils/get-npm-cmd');
 const logHelper = require('../infra/utils/log-helper');
 
 const runNodeTests = () => {
@@ -12,7 +13,7 @@ const runNodeTests = () => {
   if (global.cliOptions.grep) {
     options.push('--grep', global.cliOptions.grep);
   }
-  return spawn('npm', ['run', 'test', '--',
+  return spawn(getNpmCmd(), ['run', 'test', '--',
     `./test/${global.packageOrStar}/node/**/*.mjs`,
     ...options,
   ])
