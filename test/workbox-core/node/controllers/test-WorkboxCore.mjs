@@ -166,5 +166,94 @@ describe(`workbox-core WorkboxCore`, function() {
       expect(core.cacheNames.precache).to.equal(`test-prefix-test-precache-test-suffix`);
       expect(core.cacheNames.runtime).to.equal(`test-prefix-test-runtime-test-suffix`);
     });
+
+    it('should allow setting prefix and suffix to empty string', async function() {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+      core.setCacheNameDetails({
+        prefix: '',
+        suffix: '',
+        precache: 'test-precache',
+        runtime: 'test-runtime',
+      });
+
+      // Scope be default is '/' from 'service-worker-mock'
+      expect(core.cacheNames.precache).to.equal(`test-precache`);
+      expect(core.cacheNames.runtime).to.equal(`test-runtime`);
+    });
+
+    it('should not allow precache to be an empty string', async function() {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+      expectError(() => {
+        core.setCacheNameDetails({
+          precache: '',
+        });
+      }, '');
+    });
+
+    it('should not allow runtime to be an empty string', async function() {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+      expectError(() => {
+        core.setCacheNameDetails({
+          runtime: '',
+        });
+      }, '');
+    });
+
+    const badValues = [
+      undefined,
+      null,
+      {},
+      [],
+      true,
+      false,
+    ];
+    generateVariantTests(`should handle bad prefix values`, badValues, async (variant) => {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+
+      return expectError(() => {
+        core.setCacheNameDetails({
+        prefix: variant,
+      });
+      }, 'invalid-type', (err) => {
+        console.log(err);
+      });
+    });
+
+    generateVariantTests(`should handle bad suffix values`, badValues, async (variant) => {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+
+      return expectError(() => {
+        core.setCacheNameDetails({
+          suffix: variant,
+        });
+      }, 'invalid-type');
+    });
+
+    generateVariantTests(`should handle bad precache values`, badValues, async (variant) => {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+
+      return expectError(() => {
+        core.setCacheNameDetails({
+          precache: variant,
+        });
+      }, 'invalid-type');
+    });
+
+    generateVariantTests(`should handle bad runtime values`, badValues, async (variant) => {
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+
+      return expectError(() => {
+        core.setCacheNameDetails({
+          runtime: variant,
+        });
+      }, 'invalid-type');
+    });
   });
 });

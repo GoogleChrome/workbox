@@ -7,12 +7,15 @@ const _cacheNameDetails = {
 
 const _createCacheName = (cacheName) => {
   return [_cacheNameDetails.prefix, cacheName, _cacheNameDetails.suffix]
+    .filter((value) => value.length > 0)
     .join('-');
 };
 
 export const updateDetails = (details) => {
   Object.keys(_cacheNameDetails).forEach((key) => {
-    _cacheNameDetails[key] = details[key] || _cacheNameDetails[key];
+    if (typeof details[key] !== 'undefined') {
+      _cacheNameDetails[key] = details[key];
+    }
   });
 };
 

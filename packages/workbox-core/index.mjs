@@ -45,6 +45,33 @@ class WorkboxCore {
    * @param {Object} details
    */
   setCacheNameDetails(details) {
+    if (process.env.NODE_ENV === 'production') {
+      Object.keys(details).forEach((key) => {
+        // TODO: Convert to Assertion
+        if (typeof details[key] !== 'string') {
+          throw new WorkboxError('invalid-type', {
+            moduleName: `workbox-core`,
+            funcName: `setCacheNameDetails`,
+            paramName: `details.${key}`,
+          });
+        }
+      });
+
+      if ('precache' in details && details.precache.length === 0) {
+        throw new WorkboxError('invalid-cache-name', {
+          cacheNameId: 'precache',
+          value: details.precache,
+        });
+      }
+
+      if ('runtime' in details && details.runtime.length === 0) {
+        throw new WorkboxError('invalid-cache-name', {
+          cacheNameId: 'runtime',
+          value: details.runtime,
+        });
+      }
+    }
+
     _private.cacheNameProvider.updateDetails(details);
   }
 
