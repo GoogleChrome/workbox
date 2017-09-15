@@ -1,7 +1,7 @@
 export default {
   'invalid-type': ({paramName, expectedType, value}) => {
     if (!paramName || !expectedType) {
-      throw new Error(`Unexpected input to 'invlaid-type' error.`);
+      throw new Error(`Unexpected input to 'invalid-type' error.`);
     }
     return `The '${paramName}' parameter was given a value with an ` +
       `unexpected type. Expected Type: '${expectedType}' but received a ` +
@@ -61,5 +61,16 @@ export default {
 
     return `An error was thrown by a plugins 'requestWillFetch()' method. ` +
       `The thrown error message was: '${thrownError.message}'.`;
+  },
+
+  'invalid-cache-name': ({cacheNameId, value}) => {
+    if (!cacheNameId) {
+      throw new Error(
+        `Expected a 'cacheNameId' for error 'invalid-cache-name'`);
+    }
+
+    return `You must provide a name containing at least one character for ` +
+      `setCacheDeatils({${cacheNameId}: '...'}). Received a value of ` +
+      `'${JSON.stringify(value)}'`;
   },
 };

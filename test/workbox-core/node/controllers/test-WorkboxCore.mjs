@@ -15,12 +15,11 @@ describe(`workbox-core WorkboxCore`, function() {
 
   beforeEach(function() {
     clearRequire.all();
+    process.env.NODE_ENV = 'dev';
   });
 
   describe(`core.assert.*`, function() {
     it(`should expose assert in dev build`, async function() {
-      process.env.NODE_ENV = 'dev';
-
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
 
@@ -39,8 +38,6 @@ describe(`workbox-core WorkboxCore`, function() {
 
   describe(`core.logLevel (getter)`, function() {
     it(`should initialise to 'verbose' log level for dev build`, async function() {
-      process.env.NODE_ENV = 'dev';
-
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
       expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.verbose);
@@ -185,21 +182,21 @@ describe(`workbox-core WorkboxCore`, function() {
     it('should not allow precache to be an empty string', async function() {
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
-      expectError(() => {
+      return expectError(() => {
         core.setCacheNameDetails({
           precache: '',
         });
-      }, '');
+      }, 'invalid-cache-name');
     });
 
     it('should not allow runtime to be an empty string', async function() {
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
-      expectError(() => {
+      return expectError(() => {
         core.setCacheNameDetails({
           runtime: '',
         });
-      }, '');
+      }, 'invalid-cache-name');
     });
 
     const badValues = [
@@ -218,9 +215,7 @@ describe(`workbox-core WorkboxCore`, function() {
         core.setCacheNameDetails({
         prefix: variant,
       });
-      }, 'invalid-type', (err) => {
-        console.log(err);
-      });
+      }, 'invalid-type');
     });
 
     generateVariantTests(`should handle bad suffix values`, badValues, async (variant) => {
@@ -254,6 +249,20 @@ describe(`workbox-core WorkboxCore`, function() {
           runtime: variant,
         });
       }, 'invalid-type');
+    });
+
+    generateVariantTests(`should not throw on production builds`, badValues, async (variant) => {
+      process.env.NODE_ENV = 'production';
+
+      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+      const core = coreModule.default;
+
+      core.setCacheNameDetails({
+        prefix: variant,
+        suffix: variant,
+        precache: variant,
+        runtime: variant,
+      });
     });
   });
 });

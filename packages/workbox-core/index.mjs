@@ -45,14 +45,14 @@ class WorkboxCore {
    * @param {Object} details
    */
   setCacheNameDetails(details) {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV !== 'production') {
       Object.keys(details).forEach((key) => {
         // TODO: Convert to Assertion
         if (typeof details[key] !== 'string') {
           throw new WorkboxError('invalid-type', {
-            moduleName: `workbox-core`,
-            funcName: `setCacheNameDetails`,
             paramName: `details.${key}`,
+            expectedType: `string`,
+            value: details[key],
           });
         }
       });
