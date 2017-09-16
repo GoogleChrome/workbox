@@ -13,10 +13,8 @@ describe(`workbox-core fetchWrapper`, function() {
     sandbox = sinon.sandbox.create();
 
     const swEnv = makeServiceWorkerEnv();
-
     // This is needed to ensure new URL('/', location), works.
     swEnv.location = 'https://fetch.wrapper.com';
-
     Object.assign(global, swEnv);
   });
 

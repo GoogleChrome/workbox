@@ -54,12 +54,10 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
     return await fetch(request, fetchOptions);
   } catch (err) {
     for (let plugin of failedFetchPlugins) {
-      if (plugin.fetchDidFail) {
-        await plugin.fetchDidFail({
-          originalRequest: originalRequest.clone(),
-          request: pluginFilteredRequest.clone(),
-        });
-      }
+      await plugin.fetchDidFail({
+        originalRequest: originalRequest.clone(),
+        request: pluginFilteredRequest.clone(),
+      });
     }
 
     throw err;

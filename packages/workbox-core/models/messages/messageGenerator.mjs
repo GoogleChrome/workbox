@@ -14,10 +14,6 @@ const generatorFunction = (code, ...args) => {
     throw new Error(`Unable to find message for code '${code}'.`);
   }
 
-  if (typeof message === 'string') {
-    return message;
-  }
-
   return message(...args);
 };
 
