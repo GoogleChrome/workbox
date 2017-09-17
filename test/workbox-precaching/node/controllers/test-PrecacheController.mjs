@@ -13,6 +13,7 @@ const MOCK_LOCATION = 'https://example.com';
 describe(`PrecacheController`, function() {
   const sandbox = sinon.sandbox.create();
   let logger;
+  let cacheNameProvider;
 
   before(function() {
     const swEnv = makeServiceWorkerEnv();
@@ -28,6 +29,7 @@ describe(`PrecacheController`, function() {
     clearRequire.all();
     const coreModule = await import('../../../../packages/workbox-core/index.mjs');
     logger = coreModule._private.logger;
+    cacheNameProvider = coreModule._private.cacheNameProvider;
   });
 
   afterEach(function() {
@@ -41,6 +43,15 @@ describe(`PrecacheController`, function() {
         new PrecacheController();
       }).to.not.throw();
     });
+
+    it(`should construct with a valid cache name`, async function() {
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      expect(() => {
+        new PrecacheController(`test-cache-name`);
+      }).to.not.throw();
+    });
+
+    // TODO Add tests on bad cachename input
   });
 
   describe(`addToCacheList()`, function() {
@@ -270,7 +281,7 @@ describe(`PrecacheController`, function() {
       return precacheController.install();
     });
 
-    it('should precache assets using cache busting via search params', async function() {
+    it('should precache assets (with cache busting via search params)', async function() {
       // Prevent logs in the mocha output
       sandbox.stub(logger, 'warn');
       sandbox.stub(logger, 'debug');
@@ -290,8 +301,11 @@ describe(`PrecacheController`, function() {
       logStub.reset();
 
       const updateInfo = await precacheController.install();
+      expect(updateInfo.updatedEntries.length).to.equal(cacheList.length);
+      expect(updateInfo.notUpdatedEntries.length).to.equal(0);
 
-      const cache = await caches.open('TODO-CHANGE-ME');
+
+      const cache = await caches.open(cacheNameProvider.getPrecacheName());
       const keys = await cache.keys();
       expect(keys.length).to.equal(cacheList.length);
 
@@ -356,6 +370,33 @@ describe(`PrecacheController`, function() {
       ]);
 
       await precacheController.install();
+    });
+
+    it(`should use the desired cache name`, async function() {
+      // Prevent logs in the mocha output
+      sandbox.stub(logger, 'warn');
+      sandbox.stub(logger, 'debug');
+      sandbox.stub(logger, 'log');
+
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController(`test-cache-name`);
+      
+      const cacheList = [
+        { url: '/scripts/index.js', revision: '1234'},
+        { url: '/index.html', revision: '1234'},
+      ];
+      
+      precacheController.addToCacheList(cacheList);
+      await precacheController.install();
+
+      const cache = await caches.open(`test-cache-name`);
+      const keys = await cache.keys();
+      expect(keys.length).to.equal(cacheList.length);
+
+      for (let i = 0; i < cacheList.length; i++) {
+        let cachedResponse = await cache.match(cacheList[i].url);
+        expect(cachedResponse).to.exist;
+      }
     });
   })
 });
