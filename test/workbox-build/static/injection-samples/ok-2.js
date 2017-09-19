@@ -1,0 +1,3 @@
+/* global workboxSW */
+
+workboxSW.precache([]);
