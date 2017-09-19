@@ -17,7 +17,7 @@ describe(`Test generateSW()`, function() {
 
   let generateSW;
   beforeEach(function() {
-    generateSW = proxyquire('../../src/lib/generate-sw', {
+    generateSW = proxyquire('../../../packages/workbox-build/src/lib/generate-sw', {
       './utils/copy-workbox-sw': (workboxSWPath) => {
         if (workboxSWPath === path.dirname(EXAMPLE_INPUT.swDest)) {
           return Promise.resolve(path.join(workboxSWPath, 'workbox-sw.v0.0.0.js'));
@@ -186,7 +186,7 @@ describe(`Test generateSW()`, function() {
     let args = Object.assign({}, EXAMPLE_INPUT);
     args.globDirectory = '.';
 
-    generateSW = proxyquire('../../src/lib/generate-sw', {
+    generateSW = proxyquire('../../../packages/workbox-build/src/lib/generate-sw', {
       './utils/copy-workbox-sw': (copyPath) => {
         if (copyPath === path.dirname(EXAMPLE_INPUT.swDest)) {
           return Promise.resolve(path.join(copyPath, 'workbox-sw.v0.0.0.js'));
@@ -219,7 +219,7 @@ describe(`Test generateSW()`, function() {
 
   // globDirectory - valid nested folder
   it(`should be able to write service worker to the a directory`, function() {
-    generateSW = proxyquire('../../src/lib/generate-sw', {
+    generateSW = proxyquire('../../../packages/workbox-build/src/lib/generate-sw', {
       './utils/copy-workbox-sw': (workboxSWPath) => {
         if (workboxSWPath === path.dirname(EXAMPLE_INPUT.swDest)) {
           return Promise.resolve(path.join(workboxSWPath, 'workbox-sw.v0.0.0.js'));

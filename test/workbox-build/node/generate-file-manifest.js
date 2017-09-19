@@ -1,6 +1,6 @@
 const proxyquire = require('proxyquire');
 
-const swBuild = require('../../../packages/workbox-build/src/index.js');
+const workboxBuild = require('../../../packages/workbox-build/src/index.js');
 const errors = require('../../../packages/workbox-build/src/lib/errors');
 
 describe(`Test generateFileManifest`, function() {
@@ -22,12 +22,12 @@ describe(`Test generateFileManifest`, function() {
     ];
     return badInputs.reduce((promiseChain, badInput) => {
       return promiseChain.then(() => {
-        return swBuild.generateFileManifest(badInput)
+        return workboxBuild.generateFileManifest(badInput)
         .then(() => {
           throw new Error('Expected to throw error.');
         })
         .catch((err) => {
-          if (err.message !== errors['invalid-generate-file-manifest-arg']) {
+          if (!err.message.startsWith(errors['invalid-generate-file-manifest-arg'])) {
             throw new Error('Unexpected error: ' + err.message);
           }
         });
@@ -46,7 +46,7 @@ describe(`Test generateFileManifest`, function() {
       size: 2,
     }];
     const generateFileManifest = proxyquire(
-      '../../src/lib/generate-file-manifest.js', {
+      '../../../packages/workbox-build/src/lib/generate-file-manifest.js', {
         './get-file-manifest-entries': ({globDirectory, globPatterns, globIgnores}) => {
           if (globIgnores !== EXAMPLE_INPUT.globIgnores) {
             throw new Error('Invalid glob ignores value.');

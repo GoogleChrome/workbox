@@ -1,4 +1,5 @@
-const assert = require('assert-plus');
+'use strict';
+
 const errors = require('./errors');
 const getFileManifestEntries = require('./get-file-manifest-entries');
 const warnAboutConfig = require('./utils/warn-about-config');
@@ -7,7 +8,6 @@ const writeFileManifest = require('./utils/write-file-manifest');
 // A list of config options that are valid in some contexts, but not when
 // using generateFileManifest().
 const INVALID_CONFIG_OPTIONS = ['swSrc'];
-const VALID_FORMATS = ['iife', 'es'];
 
 /**
  * This method will generate a file manifest that can be used in a service
@@ -43,14 +43,18 @@ const VALID_FORMATS = ['iife', 'es'];
  *
  * @memberof module:workbox-build
  */
-const generateFileManifest = async (input) => {
-  assert.object(input);
-  const {format, manifestDest} = input;
-  assert.string(format);
-  assert.string(manifestDest);
+const generateFileManifest = (input) => {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return Promise.reject(
+      new Error(errors['invalid-generate-file-manifest-arg']));
+  }
 
-  const fileEntries = await getFileManifestEntries(input);
-  return writeFileManifest(input.manifestDest, fileEntries, input.format);
+  warnAboutConfig(INVALID_CONFIG_OPTIONS, input, 'generateFileManifest');
+
+  return getFileManifestEntries(input)
+    .then((fileEntries) => {
+      return writeFileManifest(input.manifestDest, fileEntries, input.format);
+    });
 };
 
 module.exports = generateFileManifest;

@@ -7,7 +7,9 @@ const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
 const errors = require('../../../packages/workbox-build/src/lib/errors');
-const workboxBuild = require('../../build/index.js');
+
+const WORKBOX_BUILD_PATH = '../../../packages/workbox-build/src/index.js';
+const workboxBuild = require(WORKBOX_BUILD_PATH);
 
 describe(`Test Injection Manifest`, function() {
   let tmpDirectory;
@@ -98,8 +100,8 @@ describe(`Test Injection Manifest`, function() {
   it(`should log a warning when a blacklisted option is used`, function() {
     const warnSpy = sinon.spy();
     // Clear out the previously cached require()
-    clearRequire('../../build/index.js');
-    const proxiedWorkboxBuild = proxyquire('../../build/index.js', {
+    clearRequire(WORKBOX_BUILD_PATH);
+    const proxiedWorkboxBuild = proxyquire(WORKBOX_BUILD_PATH, {
       '../log-helper': {
         'warn': warnSpy,
         '@global': true,
@@ -118,8 +120,8 @@ describe(`Test Injection Manifest`, function() {
   it(`should not log a warning when a blacklisted option is not used`, function() {
     const warnSpy = sinon.spy();
     // Clear out the previously cached require()
-    clearRequire('../../build/index.js');
-    const proxiedWorkboxBuild = proxyquire('../../build/index.js', {
+    clearRequire(WORKBOX_BUILD_PATH);
+    const proxiedWorkboxBuild = proxyquire(WORKBOX_BUILD_PATH, {
       '../log-helper': {
         'warn': warnSpy,
         '@global': true,

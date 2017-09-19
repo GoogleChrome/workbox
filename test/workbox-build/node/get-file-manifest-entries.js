@@ -1,7 +1,7 @@
 const path = require('path');
 const proxyquire = require('proxyquire');
 
-const swBuild = require('../../../packages/workbox-build/src/index.js');
+const workboxBuild = require('../../../packages/workbox-build/src/index.js');
 const errors = require('../../../packages/workbox-build/src/lib/errors');
 const constants = require('../../../packages/workbox-build/src/lib/constants');
 
@@ -25,7 +25,7 @@ describe(`Test getFileManifestEntries`, function() {
     ];
     return badInputs.reduce((promiseChain, input) => {
       return promiseChain.then(() => {
-        return swBuild.getFileManifestEntries(input)
+        return workboxBuild.getFileManifestEntries(input)
         .then(() => {
           throw new Error('Expected to throw error.');
         }, (err) => {
@@ -50,7 +50,7 @@ describe(`Test getFileManifestEntries`, function() {
       return promiseChain.then(() => {
         let args = Object.assign({}, EXAMPLE_INPUT);
         args.globDirectory = input;
-        return swBuild.getFileManifestEntries(args)
+        return workboxBuild.getFileManifestEntries(args)
         .then(() => {
           throw new Error('Expected to throw error.');
         }, (err) => {
@@ -73,7 +73,7 @@ describe(`Test getFileManifestEntries`, function() {
       return promiseChain.then(() => {
         let args = Object.assign({}, EXAMPLE_INPUT);
         args.globPatterns = input;
-        return swBuild.getFileManifestEntries(args)
+        return workboxBuild.getFileManifestEntries(args)
         .then(() => {
           throw new Error('Expected to throw error.');
         }, (err) => {
@@ -90,7 +90,7 @@ describe(`Test getFileManifestEntries`, function() {
     delete args.globPatterns;
 
     return new Promise((resolve, reject) => {
-      const proxiedGetFileManifestEntries = proxyquire('../../src/lib/get-file-manifest-entries.js', {
+      const proxiedGetFileManifestEntries = proxyquire('../../../packages/workbox-build/src/lib/get-file-manifest-entries.js', {
         './utils/get-file-details': (globDirectory, globPattern, globIgnores) => {
           if (globPattern === constants.defaultGlobPatterns[0]) {
             resolve();
@@ -107,13 +107,12 @@ describe(`Test getFileManifestEntries`, function() {
   for (const parameterVariation of ['globPatterns', 'staticFileGlobs']) {
     it(`should return file entries from example project using ${parameterVariation}`, function() {
       const testInput = {
-        globDirectory: path.join(__dirname, '..', '..', '..',
-          'workbox-cli', 'test', 'static', 'example-project-1'),
+        globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
       };
 
       testInput[parameterVariation] = ['**/*.{html,js,css}'];
 
-      return swBuild.getFileManifestEntries(testInput)
+      return workboxBuild.getFileManifestEntries(testInput)
         .then((output) => {
           const allUrls = output.map((entry) => {
             return entry.url;
@@ -135,15 +134,14 @@ describe(`Test getFileManifestEntries`, function() {
       globPatterns: [
         '**/*.{html,js,css}',
       ],
-      globDirectory: path.join(__dirname, '..', '..', '..',
-        'workbox-cli', 'test', 'static', 'example-project-1'),
+      globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
       modifyUrlPrefix: {
         'styles': 'static/styles',
         'page': 'pages/page',
       },
     };
 
-    return swBuild.getFileManifestEntries(testInput)
+    return workboxBuild.getFileManifestEntries(testInput)
     .then((output) => {
       const allUrls = output.map((entry) => {
         return entry.url;
@@ -164,12 +162,11 @@ describe(`Test getFileManifestEntries`, function() {
       globPatterns: [
         '**/*.{html,js,css,jpg,png}',
       ],
-      globDirectory: path.join(__dirname, '..', '..', '..',
-        'workbox-cli', 'test', 'static', 'example-project-1'),
+      globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
       maximumFileSizeToCacheInBytes: 2000,
     };
 
-    return swBuild.getFileManifestEntries(testInput)
+    return workboxBuild.getFileManifestEntries(testInput)
     .then((output) => {
       const allUrls = output.map((entry) => {
         return entry.url;
@@ -189,15 +186,14 @@ describe(`Test getFileManifestEntries`, function() {
       globPatterns: [
         '**/*.{html,js,css}',
       ],
-      globDirectory: path.join(__dirname, '..', '..', '..',
-        'workbox-cli', 'test', 'static', 'example-project-1'),
+      globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
       templatedUrls: {
         '/template/url1': ['/doesnt-exist/page-1.html', 'index.html'],
         '/template/url2': ['page-2.html', 'index.html'],
       },
     };
 
-    return swBuild.getFileManifestEntries(testInput)
+    return workboxBuild.getFileManifestEntries(testInput)
     .then(() => {
       throw new Error('Should have thrown an error due to bad input.');
     }, (err) => {
@@ -215,8 +211,7 @@ describe(`Test getFileManifestEntries`, function() {
       globPatterns: [
         '**/*.{html,js,css}',
       ],
-      globDirectory: path.join(__dirname, '..', '..', '..',
-        'workbox-cli', 'test', 'static', 'example-project-1'),
+      globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
       templatedUrls: {
         '/template/url1': ['page-1.html', 'index.html'],
         'template/url2': ['page-2.html', 'index.html'],
@@ -224,7 +219,7 @@ describe(`Test getFileManifestEntries`, function() {
       },
     };
 
-    return swBuild.getFileManifestEntries(testInput)
+    return workboxBuild.getFileManifestEntries(testInput)
     .then((output) => {
       const allUrls = output.map((entry) => {
         return entry.url;
@@ -248,8 +243,7 @@ describe(`Test getFileManifestEntries`, function() {
       globPatterns: [
         '**/*.{html,js,css}',
       ],
-      globDirectory: path.join(__dirname, '..', '..', '..',
-        'workbox-cli', 'test', 'static', 'example-project-1'),
+      globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
       dynamicUrlToDependencies: {
         '/template/url1': ['page-1.html', 'index.html'],
         'template/url2': ['page-2.html', 'index.html'],
@@ -257,7 +251,7 @@ describe(`Test getFileManifestEntries`, function() {
       },
     };
 
-    return swBuild.getFileManifestEntries(testInput)
+    return workboxBuild.getFileManifestEntries(testInput)
     .then((output) => {
       const allUrls = output.map((entry) => {
         return entry.url;
@@ -281,12 +275,11 @@ describe(`Test getFileManifestEntries`, function() {
       globPatterns: [
         '**/*.{html,js,css}',
       ],
-      globDirectory: path.join(__dirname, '..', '..', '..',
-        'workbox-cli', 'test', 'static', 'example-project-1'),
+      globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
       dontCacheBustUrlsMatching: /./,
     };
 
-    return swBuild.getFileManifestEntries(testInput)
+    return workboxBuild.getFileManifestEntries(testInput)
     .then((output) => {
       output.should.eql([
         {url: 'index.html'},
@@ -306,13 +299,12 @@ describe(`Test getFileManifestEntries`, function() {
 
     const badInput = {
       globPatterns: ['**/*.{html,js,css}'],
-      globDirectory: path.join(__dirname, '..', '..', '..',
-        'workbox-cli', 'test', 'static', 'example-project-1'),
+      globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
       dynamicUrlToDependencies: templatedUrlsValues,
       templatedUrls: templatedUrlsValues,
     };
 
-    return swBuild.getFileManifestEntries(badInput)
+    return workboxBuild.getFileManifestEntries(badInput)
     .then(() => {
       throw new Error('Expected error to be thrown.');
     }, (err) => {
@@ -328,11 +320,10 @@ describe(`Test getFileManifestEntries`, function() {
     const badInput = {
       globPatterns: globPatternsValue,
       staticFileGlobs: globPatternsValue,
-      globDirectory: path.join(__dirname, '..', '..', '..',
-        'workbox-cli', 'test', 'static', 'example-project-1'),
+      globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
     };
 
-    return swBuild.getFileManifestEntries(badInput)
+    return workboxBuild.getFileManifestEntries(badInput)
     .then(() => {
       throw new Error('Expected error to be thrown.');
     }, (err) => {

@@ -9,7 +9,7 @@ describe(`src/lib/utils/get-file-details.js`, function() {
   const INJECTED_ERROR = new Error('Injected Error');
 
   it(`should handle glob sync error`, function() {
-    const getFileDetails = proxyquire('../../src/lib/utils/get-file-details', {
+    const getFileDetails = proxyquire('../../../packages/workbox-build/src/lib/utils/get-file-details', {
       glob: {
         sync: () => {
           throw INJECTED_ERROR;
@@ -30,7 +30,7 @@ describe(`src/lib/utils/get-file-details.js`, function() {
   });
 
   it(`should throw the correct error when the patters don't match anything`, function() {
-    const getFileDetails = proxyquire('../../src/lib/utils/get-file-details', {
+    const getFileDetails = proxyquire('../../../packages/workbox-build/src/lib/utils/get-file-details', {
       glob: {
         sync: () => [],
       },
@@ -56,7 +56,7 @@ describe(`src/lib/utils/get-file-details.js`, function() {
     const OK_FILE_1 = 'ok.txt';
     const OK_FILE_2 = 'ok-2.txt';
 
-    const getFileDetails = proxyquire('../../src/lib/utils/get-file-details', {
+    const getFileDetails = proxyquire('../../../packages/workbox-build/src/lib/utils/get-file-details', {
       'glob': {
         sync: () => {
           return [
@@ -108,7 +108,7 @@ describe(`src/lib/utils/get-file-details.js`, function() {
       'node_modules/',
     ];
 
-    const getFileDetails = proxyquire('../../src/lib/utils/get-file-details', {
+    const getFileDetails = proxyquire('../../../packages/workbox-build/src/lib/utils/get-file-details', {
       'glob': {
         sync: (pattern, options) => {
           if (options.ignore !== GLOB_IGNORE) {

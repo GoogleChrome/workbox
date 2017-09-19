@@ -9,7 +9,7 @@ describe(`src/lib/utils/get-file-size.js`, function() {
   const INJECTED_ERROR = new Error('Injected Error');
 
   it(`should handle erroring statSync`, function() {
-    const getFileSize = proxyquire('../../src/lib/utils/get-file-size', {
+    const getFileSize = proxyquire('../../../packages/workbox-build/src/lib/utils/get-file-size', {
       fs: {
         statSync: () => {
           throw INJECTED_ERROR;
@@ -30,7 +30,7 @@ describe(`src/lib/utils/get-file-size.js`, function() {
   });
 
   it(`should return null for non-files`, function() {
-    const getFileSize = proxyquire('../../src/lib/utils/get-file-size', {
+    const getFileSize = proxyquire('../../../packages/workbox-build/src/lib/utils/get-file-size', {
       fs: {
         statSync: () => {
           return {
@@ -50,7 +50,7 @@ describe(`src/lib/utils/get-file-size.js`, function() {
 
   it(`should be able to get file details`, function() {
     const injectedSize = 1234;
-    const getFileSize = proxyquire('../../src/lib/utils/get-file-size', {
+    const getFileSize = proxyquire('../../../packages/workbox-build/src/lib/utils/get-file-size', {
       fs: {
         statSync: () => {
           return {
@@ -71,7 +71,7 @@ describe(`src/lib/utils/get-file-size.js`, function() {
 
   it(`should handle unexpected input`, function() {
     // Proxyquire's old version is used if we don't clear it.
-    clearRequire('../../src/lib/utils/get-file-size');
+    clearRequire('../../../packages/workbox-build/src/lib/utils/get-file-size');
     const getFileSize = require('../../../packages/workbox-build/src/lib/utils/get-file-size');
 
     const inputTests = [

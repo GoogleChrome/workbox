@@ -9,7 +9,7 @@ describe(`src/lib/utils/warn-about-config.js`, function() {
   };
 
   const warnSpy = sinon.spy();
-  const warnAboutConfig = proxyquire('../../src/lib/utils/warn-about-config', {
+  const warnAboutConfig = proxyquire('../../../packages/workbox-build/src/lib/utils/warn-about-config', {
     '../log-helper': {
       warn: warnSpy,
     },

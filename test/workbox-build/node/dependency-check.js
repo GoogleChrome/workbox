@@ -4,7 +4,7 @@ const depcheck = require('depcheck');
 describe(`Test Dependencies`, function() {
   it(`should have required dependencies`, function() {
     return new Promise((resolve, reject) => {
-      depcheck(path.join(__dirname, '..', '..'), {
+      depcheck(path.join(__dirname, '..', '..', '..', 'packages', 'workbox-build'), {
       ignoreDirs: [
         'test',
         'build',
@@ -39,7 +39,7 @@ describe(`Test Dependencies`, function() {
     // dependencies have been used from the top level project and NOT from
     // this module itself. So dependencies are checked above and devDependencies
     // can be put in top level.
-    const pkg = require('../../package.json');
+    const pkg = require('../../../packages/workbox-build/package.json');
     if (pkg.devDependencies && Object.keys(pkg.devDependencies) > 0) {
       throw new Error('No devDependencies in this module.');
     }

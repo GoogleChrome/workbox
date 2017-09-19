@@ -9,7 +9,7 @@ describe(`src/lib/utils/get-file-hash.js`, function() {
   const INJECTED_ERROR = new Error('Injected Error');
 
   it(`should handle readFileSync Error`, function() {
-    const getFileHash = proxyquire('../../src/lib/utils/get-file-hash', {
+    const getFileHash = proxyquire('../../../packages/workbox-build/src/lib/utils/get-file-hash', {
       fs: {
         readFileSync: () => {
           throw INJECTED_ERROR;
@@ -30,7 +30,7 @@ describe(`src/lib/utils/get-file-hash.js`, function() {
   });
 
   it(`should return string for valid file`, function() {
-    const getFileHash = proxyquire('../../src/lib/utils/get-file-hash', {
+    const getFileHash = proxyquire('../../../packages/workbox-build/src/lib/utils/get-file-hash', {
       fs: {
         readFileSync: (file) => {
           if (file === 'fake-file.txt') {
@@ -49,7 +49,7 @@ describe(`src/lib/utils/get-file-hash.js`, function() {
 
   it(`should handle unexpected input`, function() {
     // Proxyquire's old version is used if we don't clear it.
-    clearRequire('../../src/lib/utils/get-file-hash');
+    clearRequire('../../../packages/workbox-build/src/lib/utils/get-file-hash');
     const getFileHash = require('../../../packages/workbox-build/src/lib/utils/get-file-hash');
 
     const inputTests = [

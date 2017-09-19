@@ -81,7 +81,7 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
   });
 
   it(`should handle failing mkdirp.sync`, function() {
-    const writeFileManifest = proxyquire('../../src/lib/utils/write-file-manifest', {
+    const writeFileManifest = proxyquire('../../../packages/workbox-build/src/lib/utils/write-file-manifest', {
       mkdirp: (dirname, cb) => {
         cb(INJECTED_ERROR);
       },
@@ -99,7 +99,7 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
   });
 
   it(`should handle fs.readFile error when checking template`, function() {
-    const writeFileManifest = proxyquire('../../src/lib/utils/write-file-manifest', {
+    const writeFileManifest = proxyquire('../../../packages/workbox-build/src/lib/utils/write-file-manifest', {
       mkdirp: (dirname, cb) => {
         cb();
       },
@@ -122,7 +122,7 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
   });
 
   it(`should handle error when populating template`, function() {
-    const writeFileManifest = proxyquire('../../src/lib/utils/write-file-manifest', {
+    const writeFileManifest = proxyquire('../../../packages/workbox-build/src/lib/utils/write-file-manifest', {
       'mkdirp': (dirname, cb) => {
         cb();
       },
@@ -148,7 +148,7 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
   });
 
   it(`should handle error writing file`, function() {
-    const writeFileManifest = proxyquire('../../src/lib/utils/write-file-manifest', {
+    const writeFileManifest = proxyquire('../../../packages/workbox-build/src/lib/utils/write-file-manifest', {
       'mkdirp': (dirname, cb) => {
         cb();
       },

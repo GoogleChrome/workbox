@@ -13,7 +13,7 @@ describe(`lib/write-sw.js`, function() {
   });
 
   it(`should handle failing mkdirp.sync`, function() {
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       mkdirp: {
         sync: () => {
           throw INJECTED_ERROR;
@@ -42,7 +42,7 @@ describe(`lib/write-sw.js`, function() {
   });
 
   it(`should handle fs.readFile error when checking template`, function() {
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       mkdirp: {
         sync: () => {
           return;
@@ -76,7 +76,7 @@ describe(`lib/write-sw.js`, function() {
   });
 
   it(`should handle error when populating template`, function() {
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -113,7 +113,7 @@ describe(`lib/write-sw.js`, function() {
   });
 
   it(`should handle error writing file`, function() {
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -155,7 +155,7 @@ describe(`lib/write-sw.js`, function() {
   });
 
   it(`should handle error writing file due to swDest being a directory`, async function() {
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {sync: () => {}},
       'fs': {
         readFile: (pathname, encoding, cb) => {
@@ -207,7 +207,7 @@ const fileManifest = [
 const workboxSW = new self.WorkboxSW();
 workboxSW.precache(fileManifest);
 `;
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -268,7 +268,7 @@ const workboxSW = new self.WorkboxSW({
 });
 workboxSW.precache(fileManifest);
 `;
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -332,7 +332,7 @@ const workboxSW = new self.WorkboxSW({
 });
 workboxSW.precache(fileManifest);
 `;
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -396,7 +396,7 @@ const workboxSW = new self.WorkboxSW({
 });
 workboxSW.precache(fileManifest);
 `;
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -460,7 +460,7 @@ const workboxSW = new self.WorkboxSW({
 });
 workboxSW.precache(fileManifest);
 `;
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -524,7 +524,7 @@ const workboxSW = new self.WorkboxSW({
 });
 workboxSW.precache(fileManifest);
 `;
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -587,7 +587,7 @@ const workboxSW = new self.WorkboxSW();
 workboxSW.precache(fileManifest);
 workboxSW.router.registerNavigationRoute("/shell");
 `;
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -652,7 +652,7 @@ workboxSW.router.registerNavigationRoute("/shell", {
   whitelist: [/^\\/guide\\//,/^\\/lolz\\//],
 });
 `;
-      const writeSw = proxyquire('../../src/lib/write-sw', {
+      const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
         'mkdirp': {
           sync: () => {
             return;
@@ -745,7 +745,7 @@ workboxSW.router.registerRoute(/\\/articles\\//, workboxSW.strategies.staleWhile
   }
 }), 'GET');
 `;
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -854,7 +854,7 @@ const workboxSW = new self.WorkboxSW({
 });
 workboxSW.precache(fileManifest);
 `;
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;
@@ -916,7 +916,7 @@ const fileManifest = [
 const workboxSW = new self.WorkboxSW();
 workboxSW.precache(fileManifest);
 `;
-    const writeSw = proxyquire('../../src/lib/write-sw', {
+    const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'mkdirp': {
         sync: () => {
           return;

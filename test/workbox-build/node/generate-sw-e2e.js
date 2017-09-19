@@ -1,8 +1,8 @@
 const path = require('path');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
-const testServerGen = require('../../../../utils/test-server-generator.js');
-const validator = require('../../../workbox-cli/test/utils/e2e-sw-validator.js');
+const testServerGen = require('../../../infra/utils/test-server-generator.js');
+const validator = require('../../../infra/utils/e2e-sw-validator.js');
 
 require('chai').should();
 
@@ -40,16 +40,16 @@ describe(`Generate SW End-to-End Tests`, function() {
     process.chdir(tmpDirectory);
 
     fsExtra.copySync(
-      path.join(__dirname, '..', '..', '..', 'workbox-cli', 'test', 'static', 'example-project-1'),
+      path.join(__dirname, '..', 'static', 'example-project-1'),
       tmpDirectory);
 
     const swDest = `build/${Date.now()}-sw.js`;
     const modifyUrlPrefix = {
       '': '../',
     };
-    const swBuild = require('../../build/index.js');
+    const workboxBuild = require('../../../packages/workbox-build/src/index.js');
     return validator.performTest(() => {
-      return swBuild.generateSW({
+      return workboxBuild.generateSW({
         globDirectory: tmpDirectory,
         swDest,
         globPatterns: [`**/*.{${FILE_EXTENSIONS.join(',')}}`],

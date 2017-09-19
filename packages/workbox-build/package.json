@@ -20,7 +20,6 @@
   "bugs": "https://github.com/GoogleChrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
   "dependencies": {
-    "assert-plus": "^1.0.0",
     "chalk": "^2.1.0",
     "common-tags": "^1.4.0",
     "fs-extra": "^4.0.2",

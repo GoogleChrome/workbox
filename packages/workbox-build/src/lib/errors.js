@@ -84,4 +84,6 @@ module.exports = {
     runtimeCaching.`,
   'bad-manifest-transforms': ol`The 'manifestTransforms' value should be an
     array of functions.`,
+  'invalid-generate-file-manifest-arg': ol`The input to generateFileManifest()
+    must be an Object.`,
 };

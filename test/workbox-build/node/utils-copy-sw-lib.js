@@ -9,7 +9,7 @@ describe(`Copy SW Lib`, function() {
   it(`should reject with an error when the copy fails`, function() {
     this.timeout(5 * 1000);
 
-    const copyWorkboxSW = proxyquire('../../src/lib/utils/copy-workbox-sw', {
+    const copyWorkboxSW = proxyquire('../../../packages/workbox-build/src/lib/utils/copy-workbox-sw', {
       'fs-extra': {
         copy: () => Promise.reject(),
       },
@@ -32,7 +32,7 @@ describe(`Copy SW Lib`, function() {
     let jsFileCopied = false;
     let mapFileCopied = false;
 
-    const copyWorkboxSW = proxyquire('../../src/lib/utils/copy-workbox-sw', {
+    const copyWorkboxSW = proxyquire('../../../packages/workbox-build/src/lib/utils/copy-workbox-sw', {
       'fs-extra': {
         copy: (inputFilePath, outputFilePath) => {
           // Make sure the filenames are the same from input and output paths.
