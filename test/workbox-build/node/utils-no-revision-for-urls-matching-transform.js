@@ -1,7 +1,7 @@
-const errors = require('../../src/lib/errors');
+const errors = require('../../../packages/workbox-build/src/lib/errors');
 const expect = require('chai').expect;
 const noRevisionForUrlsMatching =
-  require('../../src/lib/utils/no-revision-for-urls-matching-transform');
+  require('../../../packages/workbox-build/src/lib/utils/no-revision-for-urls-matching-transform');
 
 describe(`Test noRevisionForUrlsMatching Logic`, function() {
   const MANIFEST = [{

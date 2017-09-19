@@ -1,6 +1,6 @@
-const errors = require('../../src/lib/errors');
+const errors = require('../../../packages/workbox-build/src/lib/errors');
 const expect = require('chai').expect;
-const modifyUrlPrefix = require('../../src/lib/utils/modify-url-prefix-transform');
+const modifyUrlPrefix = require('../../../packages/workbox-build/src/lib/utils/modify-url-prefix-transform');
 
 describe(`Test modifyUrlPrefix Logic`, function() {
   /**

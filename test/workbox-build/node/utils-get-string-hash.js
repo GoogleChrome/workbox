@@ -1,4 +1,4 @@
-const getStringHash = require('../../src/lib/utils/get-string-hash');
+const getStringHash = require('../../../packages/workbox-build/src/lib/utils/get-string-hash');
 require('chai').should();
 
 describe(`src/lib/utils/get-string-hash.js`, function() {

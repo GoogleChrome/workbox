@@ -1,6 +1,6 @@
 const proxyquire = require('proxyquire');
 
-const errors = require('../../src/lib/errors.js');
+const errors = require('../../../packages/workbox-build/src/lib/errors.js');
 
 require('chai').should();
 
@@ -9,7 +9,7 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
   const FAKE_PATH = 'fake-path/manifest-name.js';
 
   it(`should handle a bad manifest format`, function() {
-    const writeFileManifest = require('../../src/lib/utils/write-file-manifest');
+    const writeFileManifest = require('../../../packages/workbox-build/src/lib/utils/write-file-manifest');
     return writeFileManifest(FAKE_PATH, [], 'invalid-format')
       .then(() => {
         throw new Error('Expected error to be thrown.');
@@ -31,7 +31,7 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
       null,
       undefined,
     ];
-    const writeFileManifest = require('../../src/lib/utils/write-file-manifest');
+    const writeFileManifest = require('../../../packages/workbox-build/src/lib/utils/write-file-manifest');
     badInputs.reduce((promiseChain, badInput) => {
       return promiseChain.then(() => {
         return writeFileManifest(badInput, [])
@@ -64,7 +64,7 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
       }],
       [{}],
     ];
-    const writeFileManifest = require('../../src/lib/utils/write-file-manifest');
+    const writeFileManifest = require('../../../packages/workbox-build/src/lib/utils/write-file-manifest');
     return badInputs.reduce((promiseChain, badInput) => {
       return promiseChain.then(() => {
         return writeFileManifest('manifest.js', badInput)

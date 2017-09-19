@@ -1,7 +1,7 @@
 const proxyquire = require('proxyquire');
 
-const swBuild = require('../../src/index.js');
-const errors = require('../../src/lib/errors');
+const swBuild = require('../../../packages/workbox-build/src/index.js');
+const errors = require('../../../packages/workbox-build/src/lib/errors');
 
 describe(`Test generateFileManifest`, function() {
   const EXAMPLE_INPUT = {

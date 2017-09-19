@@ -1,7 +1,7 @@
 const proxyquire = require('proxyquire');
 const path = require('path');
 
-const errors = require('../../src/lib/errors');
+const errors = require('../../../packages/workbox-build/src/lib/errors');
 
 describe(`Test generateSW()`, function() {
   const EXAMPLE_INPUT = {

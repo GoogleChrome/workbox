@@ -1,7 +1,7 @@
-const constants = require('../../src/lib/constants');
-const errors = require('../../src/lib/errors');
+const constants = require('../../../packages/workbox-build/src/lib/constants');
+const errors = require('../../../packages/workbox-build/src/lib/errors');
 const expect = require('chai').expect;
-const filterFiles = require('../../src/lib/utils/filter-files');
+const filterFiles = require('../../../packages/workbox-build/src/lib/utils/filter-files');
 
 require('chai').should();
 

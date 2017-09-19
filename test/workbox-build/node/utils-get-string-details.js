@@ -1,4 +1,4 @@
-const getCompositeDetails = require('../../src/lib/utils/get-composite-details');
+const getCompositeDetails = require('../../../packages/workbox-build/src/lib/utils/get-composite-details');
 require('chai').should();
 
 describe(`src/lib/utils/get-composite-details.js`, function() {

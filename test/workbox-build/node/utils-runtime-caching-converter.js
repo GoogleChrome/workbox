@@ -1,7 +1,7 @@
 const chai = require('chai');
-const errors = require('../../src/lib/errors');
+const errors = require('../../../packages/workbox-build/src/lib/errors');
 const runtimeCachingConverter =
-  require('../../src/lib/utils/runtime-caching-converter');
+  require('../../../packages/workbox-build/src/lib/utils/runtime-caching-converter');
 const sinon = require('sinon');
 const vm = require('vm');
 

@@ -1,6 +1,6 @@
 const proxyquire = require('proxyquire');
 const path = require('path');
-const errors = require('../../src/lib/errors.js');
+const errors = require('../../../packages/workbox-build/src/lib/errors.js');
 
 require('chai').should();
 const expect = require('chai').expect;

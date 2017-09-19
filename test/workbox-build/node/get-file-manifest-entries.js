@@ -1,9 +1,9 @@
 const path = require('path');
 const proxyquire = require('proxyquire');
 
-const swBuild = require('../../src/index.js');
-const errors = require('../../src/lib/errors');
-const constants = require('../../src/lib/constants');
+const swBuild = require('../../../packages/workbox-build/src/index.js');
+const errors = require('../../../packages/workbox-build/src/lib/errors');
+const constants = require('../../../packages/workbox-build/src/lib/constants');
 
 require('chai').should();
 

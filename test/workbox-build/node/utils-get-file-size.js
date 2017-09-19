@@ -1,7 +1,7 @@
 const proxyquire = require('proxyquire');
 const clearRequire = require('clear-require');
 
-const errors = require('../../src/lib/errors.js');
+const errors = require('../../../packages/workbox-build/src/lib/errors.js');
 
 require('chai').should();
 
@@ -72,7 +72,7 @@ describe(`src/lib/utils/get-file-size.js`, function() {
   it(`should handle unexpected input`, function() {
     // Proxyquire's old version is used if we don't clear it.
     clearRequire('../../src/lib/utils/get-file-size');
-    const getFileSize = require('../../src/lib/utils/get-file-size');
+    const getFileSize = require('../../../packages/workbox-build/src/lib/utils/get-file-size');
 
     const inputTests = [
       null,

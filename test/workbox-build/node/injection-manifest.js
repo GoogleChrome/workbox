@@ -6,7 +6,7 @@ const path = require('path');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const errors = require('../../src/lib/errors');
+const errors = require('../../../packages/workbox-build/src/lib/errors');
 const workboxBuild = require('../../build/index.js');
 
 describe(`Test Injection Manifest`, function() {

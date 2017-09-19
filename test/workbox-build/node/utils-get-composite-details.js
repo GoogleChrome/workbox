@@ -1,4 +1,4 @@
-const getStringDetails = require('../../src/lib/utils/get-string-details');
+const getStringDetails = require('../../../packages/workbox-build/src/lib/utils/get-string-details');
 require('chai').should();
 
 describe(`src/lib/utils/get-string-details.js`, function() {
