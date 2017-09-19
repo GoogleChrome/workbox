@@ -22,6 +22,60 @@ class WorkboxCore {
   }
 
   /**
+   * This method returns the cache names used by Workbox. `cacheNames.precache`
+   * is used for the precached assets and `cacheNames.runtime` for everything
+   * else.
+   * @return {Object} An object with `precache` and `runtime` properies.
+   */
+  get cacheNames() {
+    return {
+      precache: _private.cacheNameProvider.getPrecacheName(),
+      runtime: _private.cacheNameProvider.getRuntimeName(),
+    };
+  }
+
+  /**
+   * You can alter the default cache names by changing
+   * the cache name details.
+   *
+   * Pass in an object containing any of the following properties,
+   * `prefix`, `suffix`, `precache` and `runtime`.
+   *
+   * Cache names are generated as `<prefix>-<precache or runtime>-<suffix>`.
+   * @param {Object} details
+   */
+  setCacheNameDetails(details) {
+    if (process.env.NODE_ENV !== 'production') {
+      Object.keys(details).forEach((key) => {
+        // TODO: Convert to Assertion
+        if (typeof details[key] !== 'string') {
+          throw new WorkboxError('invalid-type', {
+            paramName: `details.${key}`,
+            expectedType: `string`,
+            value: details[key],
+          });
+        }
+      });
+
+      if ('precache' in details && details.precache.length === 0) {
+        throw new WorkboxError('invalid-cache-name', {
+          cacheNameId: 'precache',
+          value: details.precache,
+        });
+      }
+
+      if ('runtime' in details && details.runtime.length === 0) {
+        throw new WorkboxError('invalid-cache-name', {
+          cacheNameId: 'runtime',
+          value: details.runtime,
+        });
+      }
+    }
+
+    _private.cacheNameProvider.updateDetails(details);
+  }
+
+  /**
    * A setter for the logLevel allowing the developer to define
    * which messages should be printed to the console.
    * @param {number} newLevel the new logLevel to use.

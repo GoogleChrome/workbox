@@ -35,4 +35,26 @@ describe(`workbox-core  assert`, function() {
       assert.isSwEnv('example-module');
     });
   });
+
+  describe(`isArray`, function() {
+    it(`shouldn't throw when given an array`, function() {
+      assert.isArray([], {
+        moduleName: 'module',
+        className: 'class',
+        funcName: 'func',
+        paramName: 'param',
+      });
+    });
+
+    it(`should throw when value isn't an array`, function() {
+      expectError(() => {
+        assert.isArray({}, {
+          moduleName: 'module',
+          className: 'class',
+          funcName: 'func',
+          paramName: 'param',
+        });
+      }, 'not-an-array');
+    });
+  });
 });

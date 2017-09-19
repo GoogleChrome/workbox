@@ -36,8 +36,8 @@ import normalizeHandler from './normalizeHandler.mjs';
  * @param {URL} context.url The request's URL.
  * @param {FetchEvent} context.event The event that triggered the `fetch`
  * handler.
- * @return {Object|null} To signify a match, return a truthy value, otherwise
- * return null if the route shouldn't match. If you return an Object with
+ * @return {Object|null} To signify a match, return anything other than `null`.
+ * Return `null` if the route shouldn't match. If you return an Object with
  * contents, it will be passed to the Route's
  * [handler]{@link module:workbox-routing.Route~handlerCallback}.
  * @memberof module:workbox-routing

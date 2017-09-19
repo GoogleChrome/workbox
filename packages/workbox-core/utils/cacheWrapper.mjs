@@ -28,14 +28,12 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
   await cache.put(request, responseToCache);
 
   for (let plugin of updatePlugins) {
-    if (plugin.cacheDidUpdate) {
-      await plugin.cacheDidUpdate({
-        cacheName,
-        request,
-        oldResponse,
-        newResponse: responseToCache,
-      });
-    }
+    await plugin.cacheDidUpdate({
+      cacheName,
+      request,
+      oldResponse,
+      newResponse: responseToCache,
+    });
   }
 };
 
