@@ -1,102 +1,66 @@
-'use strict';
-
-const mkdirp = require('mkdirp');
+const assert = require('assert');
+const fse = require('fs-extra');
 const path = require('path');
-const fs = require('fs');
 const template = require('lodash.template');
 
 const errors = require('../errors');
 
-const defaultFormat = 'iife';
-const formatsToTemplates = {
+const DEFAULT_FORMAT = 'iife';
+const FORMATS_TO_TEMPLATES = {
   iife: 'file-manifest.js.tmpl',
   es: 'file-manifest-es2015.tmpl',
 };
 
-const writeFileManifest = (manifestFilePath, manifestEntries, format) => {
-  if (!manifestFilePath || typeof manifestFilePath !== 'string' ||
-    manifestFilePath.length === 0) {
-    return Promise.reject(new Error(errors['invalid-manifest-path']));
-  }
+const writeFileManifest = async (manifestFilePath, manifestEntries,
+                                 format = DEFAULT_FORMAT) => {
+  assert(manifestFilePath && typeof manifestFilePath === 'string' &&
+    manifestFilePath.length !== 0,
+    errors['invalid-manifest-path']);
 
-  if (!manifestEntries || !(Array.isArray(manifestEntries))) {
-    return Promise.reject(new Error(errors['invalid-manifest-entries']));
-  }
+  assert(Array.isArray(manifestEntries), errors['invalid-manifest-entries']);
 
-  format = format || defaultFormat;
-  if (!(format in formatsToTemplates)) {
-    return Promise.reject(new Error(errors['invalid-manifest-format']));
-  }
+  assert((format in FORMATS_TO_TEMPLATES), errors['invalid-manifest-format']);
 
-  for (let i = 0; i < manifestEntries.length; i++) {
-    const entry = manifestEntries[i];
-
-    if (typeof entry === 'string') {
-      // Revisioned strings are ok.
-      continue;
-    }
-
-    if (typeof entry === 'object') {
-      if (!entry || !entry.url) {
-        return Promise.reject(new Error(errors['invalid-manifest-entries']));
-      }
-    } else {
-      return Promise.reject(new Error(errors['invalid-manifest-entries']));
-    }
-  }
+  assert(manifestEntries.every((entry) => {
+      return typeof entry === 'string' ||
+        (typeof entry === 'object' && entry && entry.url);
+    }),
+    errors['invalid-manifest-entries']);
 
   const templatePath = path.join(__dirname, '..', 'templates',
-    formatsToTemplates[format]);
+    FORMATS_TO_TEMPLATES[format]);
 
-  return new Promise((resolve, reject) => {
-    mkdirp(path.dirname(manifestFilePath), (err) => {
-      if (err) {
-        return reject(
-          new Error(
-            errors['unable-to-make-manifest-directory'] +
-            ` '${err.message}'`
-          )
-        );
-      }
-      resolve();
-    });
-  })
-  .then(() => {
-    return new Promise((resolve, reject) => {
-      fs.readFile(templatePath, 'utf8', (err, data) => {
-        if (err) {
-          return reject(
-            new Error(
-              errors['read-manifest-template-failure'] + ` '${err.message}'`
-            )
-          );
-        }
-        resolve(data);
-      });
-    });
-  })
-  .then((templateString) => {
-    try {
-      return template(templateString)({
-        manifestEntries: manifestEntries,
-      });
-    } catch (err) {
-      throw new Error(errors['populating-manifest-tmpl-failed'] +
-        ` '${err.message}'`);
-    }
-  })
-  .then((populatedTemplate) => {
-    return new Promise((resolve, reject) => {
-      fs.writeFile(manifestFilePath, populatedTemplate, (err) => {
-        if (err) {
-          return reject(new Error(errors['manifest-file-write-failure'] +
-            ` '${err.message}'`));
-        }
+  try {
+    await fse.mkdirp(manifestFilePath);
+  } catch (error) {
+    throw new Error(errors['unable-to-make-manifest-directory'] +
+      ` '${error.message}'`);
+  }
 
-        resolve();
-      });
+  let templateString;
+  try {
+    templateString = fse.readFile(templatePath, 'utf8');
+  } catch (error) {
+    throw new Error(errors['read-manifest-template-failure'] +
+      ` '${error.message}'`);
+  }
+
+  let populatedTemplate;
+  try {
+    populatedTemplate = template(templateString)({
+      manifestEntries: manifestEntries,
     });
-  });
+  } catch (error) {
+    throw new Error(errors['populating-manifest-tmpl-failed'] +
+      ` '${error.message}'`);
+  }
+
+  try {
+    await fse.writeFile(manifestFilePath, populatedTemplate);
+  } catch (error) {
+    throw new Error(errors['manifest-file-write-failure'] +
+      ` '${error.message}'`);
+  }
 };
 
 module.exports = writeFileManifest;

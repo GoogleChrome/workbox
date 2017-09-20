@@ -4,15 +4,8 @@ const expect = require('chai').expect;
 
 describe(`lib/write-sw.js`, function() {
   const INJECTED_ERROR = new Error('Injected Error');
-  const globalStubs = [];
 
-  afterEach(function() {
-    globalStubs.forEach((stub) => {
-      stub.restore();
-    });
-  });
-
-  it(`should handle failing mkdirp.sync`, function() {
+  it(`should handle failing mkdirp`, function() {
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'fs-extra': {
         mkdirp: () => {
@@ -41,7 +34,7 @@ describe(`lib/write-sw.js`, function() {
     });
   });
 
-  it(`should handle fs.readFile error when checking template`, function() {
+  it(`should handle fse.readFile error when checking template`, function() {
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
       'fs-extra': {
         mkdirp: () => {},

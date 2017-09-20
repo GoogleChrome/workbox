@@ -5,7 +5,7 @@ const errors = require('../../../packages/workbox-build/src/lib/errors.js');
 require('chai').should();
 const expect = require('chai').expect;
 
-describe(`Copy workbox-sw File`, function() {
+describe(`src/lib/utils/copy-workbox-sw.js`, function() {
   it(`should reject with an error when the copy fails`, function() {
     this.timeout(5 * 1000);
 

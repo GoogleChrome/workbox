@@ -1,5 +1,3 @@
-'use strict';
-
 const constants = require('../constants');
 const errors = require('../errors');
 const logHelper = require('../log-helper');

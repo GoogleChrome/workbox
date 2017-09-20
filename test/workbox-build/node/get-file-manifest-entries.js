@@ -271,6 +271,7 @@ describe(`Test getFileManifestEntries`, function() {
 
     try {
       await workboxBuild.getFileManifestEntries(badInput);
+      throw new Error('Expected error to be thrown.');
     } catch (error) {
       expect(error.message).to.eql(errors['dynamic-url-deprecated']);
     }
@@ -284,6 +285,7 @@ describe(`Test getFileManifestEntries`, function() {
 
     try {
       await workboxBuild.getFileManifestEntries(badInput);
+      throw new Error('Expected error to be thrown.');
     } catch (error) {
       expect(error.message).to.eql(errors['static-file-globs-deprecated']);
     }

@@ -1,5 +1,3 @@
-'use strict';
-
 const logHelper = require('../log-helper');
 
 /**

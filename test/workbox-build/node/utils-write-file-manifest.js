@@ -8,17 +8,14 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
   const INJECTED_ERROR = new Error('Injected Error');
   const FAKE_PATH = 'fake-path/manifest-name.js';
 
-  it(`should handle a bad manifest format`, function() {
+  it(`should handle a bad manifest format`, async function() {
     const writeFileManifest = require('../../../packages/workbox-build/src/lib/utils/write-file-manifest');
-    return writeFileManifest(FAKE_PATH, [], 'invalid-format')
-      .then(() => {
-        throw new Error('Expected error to be thrown.');
-      })
-      .catch((err) => {
-        if (err.message !== errors['invalid-manifest-format']) {
-          throw new Error('Unexpected error thrown: ' + err.message);
-        }
-      });
+    try {
+      await writeFileManifest(FAKE_PATH, [], 'invalid-format');
+      throw new Error('Expected error to be thrown.');
+    } catch(error) {
+      error.message.should.eql(errors['invalid-manifest-format']);
+    }
   });
 
   it(`should handle bad manifest path`, function() {
@@ -47,7 +44,7 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
     }, Promise.resolve());
   });
 
-  it(`should handle bad manifest entries`, function() {
+  it(`should handle bad manifest entries`, async function() {
     const badInputs = [
       true,
       false,
@@ -65,25 +62,22 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
       [{}],
     ];
     const writeFileManifest = require('../../../packages/workbox-build/src/lib/utils/write-file-manifest');
-    return badInputs.reduce((promiseChain, badInput) => {
-      return promiseChain.then(() => {
-        return writeFileManifest('manifest.js', badInput)
-        .then(() => {
-          throw new Error('Expected error to be thrown.');
-        })
-        .catch((err) => {
-          if (err.message !== errors['invalid-manifest-entries']) {
-            throw new Error('Unexpected error thrown: ' + err.message);
-          }
-        });
-      });
-    }, Promise.resolve());
+    for (const badInput of badInputs) {
+      try {
+        await writeFileManifest('manifest.js', badInput);
+        throw new Error('Expected error to be thrown.');
+      } catch(error) {
+        error.message.should.eql(errors['invalid-manifest-entries']);
+      }
+    }
   });
 
-  it(`should handle failing mkdirp.sync`, function() {
+  it(`should handle failing mkdirp`, function() {
     const writeFileManifest = proxyquire('../../../packages/workbox-build/src/lib/utils/write-file-manifest', {
-      mkdirp: (dirname, cb) => {
-        cb(INJECTED_ERROR);
+      'fs-extra': {
+        mkdirp: () => {
+          throw new Error(INJECTED_ERROR);
+        },
       },
     });
 
@@ -98,14 +92,12 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
     });
   });
 
-  it(`should handle fs.readFile error when checking template`, function() {
+  it(`should handle fse.readFile error when checking template`, function() {
     const writeFileManifest = proxyquire('../../../packages/workbox-build/src/lib/utils/write-file-manifest', {
-      mkdirp: (dirname, cb) => {
-        cb();
-      },
-      fs: {
-        readFile: (pathname, encoding, cb) => {
-          cb(INJECTED_ERROR);
+      'fs-extra': {
+        mkdirp: () => {},
+        readFile: () => {
+          throw new Error(INJECTED_ERROR);
         },
       },
     });
@@ -123,16 +115,12 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
 
   it(`should handle error when populating template`, function() {
     const writeFileManifest = proxyquire('../../../packages/workbox-build/src/lib/utils/write-file-manifest', {
-      'mkdirp': (dirname, cb) => {
-        cb();
-      },
-      'fs': {
-        readFile: (pathname, encoding, cb) => {
-          cb(null, 'Injected Template');
-        },
+      'fs-extra': {
+        mkdirp: () => {},
+        readFile: () => 'Injected Template',
       },
       'lodash.template': () => {
-        throw INJECTED_ERROR;
+        throw new Error(INJECTED_ERROR);
       },
     });
 
@@ -149,22 +137,14 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
 
   it(`should handle error writing file`, function() {
     const writeFileManifest = proxyquire('../../../packages/workbox-build/src/lib/utils/write-file-manifest', {
-      'mkdirp': (dirname, cb) => {
-        cb();
-      },
-      'fs': {
-        readFile: (pathname, encoding, cb) => {
-          cb(null, 'Injected Template');
-        },
-        writeFile: (filepath, stringToWrite, cb) => {
-          cb(INJECTED_ERROR);
+      'fs-extra': {
+        mkdirp: () => {},
+        readFile: () => 'Injected Template',
+        writeFile: () => {
+          throw new Error(INJECTED_ERROR);
         },
       },
-      'lodash.template': () => {
-        return () => {
-          return 'Injected populated template.';
-        };
-      },
+      'lodash.template': () => () => 'Injected populated template.',
     });
 
     return writeFileManifest(FAKE_PATH, [])
