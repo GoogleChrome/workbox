@@ -25,7 +25,6 @@
     "fs-extra": "^4.0.2",
     "glob": "^7.1.2",
     "lodash.template": "^4.4.0",
-    "mkdirp": "^0.5.1",
     "workbox-sw": "^2.0.1"
   }
 }

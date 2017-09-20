@@ -14,8 +14,8 @@ describe(`lib/write-sw.js`, function() {
 
   it(`should handle failing mkdirp.sync`, function() {
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      mkdirp: {
-        sync: () => {
+      'fs-extra': {
+        mkdirp: () => {
           throw INJECTED_ERROR;
         },
       },
@@ -43,14 +43,10 @@ describe(`lib/write-sw.js`, function() {
 
   it(`should handle fs.readFile error when checking template`, function() {
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      mkdirp: {
-        sync: () => {
-          return;
-        },
-      },
-      fs: {
-        readFile: (pathname, encoding, cb) => {
-          cb(INJECTED_ERROR);
+      'fs-extra': {
+        mkdirp: () => {},
+        readFile: () => {
+          throw INJECTED_ERROR;
         },
       },
     });
@@ -77,15 +73,9 @@ describe(`lib/write-sw.js`, function() {
 
   it(`should handle error when populating template`, function() {
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
-        },
-      },
-      'fs': {
-        readFile: (pathname, encoding, cb) => {
-          cb(null, 'Injected Template');
-        },
+      'fs-extra': {
+        mkdirp: () => {},
+        readFile: () => 'Injected Template',
       },
       'lodash.template': () => {
         throw INJECTED_ERROR;
@@ -114,24 +104,14 @@ describe(`lib/write-sw.js`, function() {
 
   it(`should handle error writing file`, function() {
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
+      'fs-extra': {
+        mkdirp: () => {},
+        readFile: () => 'Injected Template',
+        writeFile: () => {
+          throw INJECTED_ERROR;
         },
       },
-      'fs': {
-        readFile: (pathname, encoding, cb) => {
-          cb(null, 'Injected Template');
-        },
-        writeFile: (filepath, stringToWrite, cb) => {
-          cb(INJECTED_ERROR);
-        },
-      },
-      'lodash.template': () => {
-        return () => {
-          return 'Injected populated template.';
-        };
-      },
+      'lodash.template': () => () => 'Injected populated template.',
     });
 
     return writeSw(
@@ -156,13 +136,13 @@ describe(`lib/write-sw.js`, function() {
 
   it(`should handle error writing file due to swDest being a directory`, async function() {
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {sync: () => {}},
-      'fs': {
-        readFile: (pathname, encoding, cb) => {
-          cb(null, 'Injected Template');
-        },
-        writeFile: (filepath, stringToWrite, cb) => {
-          cb({code: 'EISDIR'});
+      'fs-extra': {
+        mkdirp: () => {},
+        readFile: () => 'Injected Template',
+        writeFile: () => {
+          const error = new Error();
+          error.code = 'EISDIR';
+          throw error;
         },
       },
       'lodash.template': () => () => 'Injected populated template.',
@@ -208,18 +188,10 @@ const workboxSW = new self.WorkboxSW();
 workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
-        },
-      },
-      'fs': {
-        writeFile: (filepath, stringToWrite, cb) => {
-          if (stringToWrite === EXPECTED_RESULT) {
-            cb();
-          } else {
-            cb(new Error('Unexpected result from fs.'));
-          }
+      'fs-extra': {
+        mkdirp: () => {},
+        writeFile: (filePath, stringToWrite) => {
+          expect(stringToWrite).to.eql(EXPECTED_RESULT);
         },
       },
     });
@@ -269,19 +241,10 @@ const workboxSW = new self.WorkboxSW({
 workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
-        },
-      },
-      'fs': {
-        writeFile: (filepath, stringToWrite, cb) => {
-          if (stringToWrite === EXPECTED_RESULT) {
-            cb();
-          } else {
-            stringToWrite.should.equal(EXPECTED_RESULT);
-            cb(new Error('Unexpected result from fs.'));
-          }
+      'fs-extra': {
+        mkdirp: () => {},
+        writeFile: (filePath, stringToWrite) => {
+          expect(stringToWrite).to.eql(EXPECTED_RESULT);
         },
       },
     });
@@ -333,19 +296,10 @@ const workboxSW = new self.WorkboxSW({
 workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
-        },
-      },
-      'fs': {
-        writeFile: (filepath, stringToWrite, cb) => {
-          if (stringToWrite === EXPECTED_RESULT) {
-            cb();
-          } else {
-            stringToWrite.should.equal(EXPECTED_RESULT);
-            cb(new Error('Unexpected result from fs.'));
-          }
+      'fs-extra': {
+        mkdirp: () => {},
+        writeFile: (filePath, stringToWrite) => {
+          expect(stringToWrite).to.eql(EXPECTED_RESULT);
         },
       },
     });
@@ -397,19 +351,10 @@ const workboxSW = new self.WorkboxSW({
 workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
-        },
-      },
-      'fs': {
-        writeFile: (filepath, stringToWrite, cb) => {
-          if (stringToWrite === EXPECTED_RESULT) {
-            cb();
-          } else {
-            stringToWrite.should.equal(EXPECTED_RESULT);
-            cb(new Error('Unexpected result from fs.'));
-          }
+      'fs-extra': {
+        mkdirp: () => {},
+        writeFile: (filePath, stringToWrite) => {
+          expect(stringToWrite).to.eql(EXPECTED_RESULT);
         },
       },
     });
@@ -461,19 +406,10 @@ const workboxSW = new self.WorkboxSW({
 workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
-        },
-      },
-      'fs': {
-        writeFile: (filepath, stringToWrite, cb) => {
-          if (stringToWrite === EXPECTED_RESULT) {
-            cb();
-          } else {
-            stringToWrite.should.equal(EXPECTED_RESULT);
-            cb(new Error('Unexpected result from fs.'));
-          }
+      'fs-extra': {
+        mkdirp: () => {},
+        writeFile: (filePath, stringToWrite) => {
+          expect(stringToWrite).to.eql(EXPECTED_RESULT);
         },
       },
     });
@@ -525,19 +461,10 @@ const workboxSW = new self.WorkboxSW({
 workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
-        },
-      },
-      'fs': {
-        writeFile: (filepath, stringToWrite, cb) => {
-          if (stringToWrite === EXPECTED_RESULT) {
-            cb();
-          } else {
-            stringToWrite.should.equal(EXPECTED_RESULT);
-            cb(new Error('Unexpected result from fs.'));
-          }
+      'fs-extra': {
+        mkdirp: () => {},
+        writeFile: (filePath, stringToWrite) => {
+          expect(stringToWrite).to.eql(EXPECTED_RESULT);
         },
       },
     });
@@ -588,19 +515,10 @@ workboxSW.precache(fileManifest);
 workboxSW.router.registerNavigationRoute("/shell");
 `;
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
-        },
-      },
-      'fs': {
-        writeFile: (filepath, stringToWrite, cb) => {
-          if (stringToWrite === EXPECTED_RESULT) {
-            cb();
-          } else {
-            stringToWrite.should.equal(EXPECTED_RESULT);
-            cb(new Error('Unexpected result from fs.'));
-          }
+      'fs-extra': {
+        mkdirp: () => {},
+        writeFile: (filePath, stringToWrite) => {
+          expect(stringToWrite).to.eql(EXPECTED_RESULT);
         },
       },
     });
@@ -653,19 +571,10 @@ workboxSW.router.registerNavigationRoute("/shell", {
 });
 `;
       const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-        'mkdirp': {
-          sync: () => {
-            return;
-          },
-        },
-        'fs': {
-          writeFile: (filepath, stringToWrite, cb) => {
-            if (stringToWrite === EXPECTED_RESULT) {
-              cb();
-            } else {
-              stringToWrite.should.equal(EXPECTED_RESULT);
-              cb(new Error('Unexpected result from fs.'));
-            }
+        'fs-extra': {
+          mkdirp: () => {},
+          writeFile: (filePath, stringToWrite) => {
+            expect(stringToWrite).to.eql(EXPECTED_RESULT);
           },
         },
       });
@@ -746,19 +655,10 @@ workboxSW.router.registerRoute(/\\/articles\\//, workboxSW.strategies.staleWhile
 }), 'GET');
 `;
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
-        },
-      },
-      'fs': {
-        writeFile: (filepath, stringToWrite, cb) => {
-          if (stringToWrite === EXPECTED_RESULT) {
-            cb();
-          } else {
-            stringToWrite.should.equal(EXPECTED_RESULT);
-            cb(new Error('Unexpected result from fs.'));
-          }
+      'fs-extra': {
+        mkdirp: () => {},
+        writeFile: (filePath, stringToWrite) => {
+          expect(stringToWrite).to.eql(EXPECTED_RESULT);
         },
       },
     });
@@ -822,7 +722,7 @@ workboxSW.router.registerRoute(/\\/articles\\//, workboxSW.strategies.staleWhile
       });
   });
 
-  it(`should be able to generate sw for template with navigateFallback and whitelist`, function() {
+  it(`should be able to generate sw for template with ignoreUrlParametersMatching`, function() {
       const EXPECTED_RESULT = `importScripts('workbox-sw.min.js');
 
 /**
@@ -855,19 +755,10 @@ const workboxSW = new self.WorkboxSW({
 workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
-        },
-      },
-      'fs': {
-        writeFile: (filepath, stringToWrite, cb) => {
-          if (stringToWrite === EXPECTED_RESULT) {
-            cb();
-          } else {
-            stringToWrite.should.equal(EXPECTED_RESULT);
-            cb(new Error('Unexpected result from fs.'));
-          }
+      'fs-extra': {
+        mkdirp: () => {},
+        writeFile: (filePath, stringToWrite) => {
+          expect(stringToWrite).to.eql(EXPECTED_RESULT);
         },
       },
     });
@@ -917,19 +808,10 @@ const workboxSW = new self.WorkboxSW();
 workboxSW.precache(fileManifest);
 `;
     const writeSw = proxyquire('../../../packages/workbox-build/src/lib/write-sw', {
-      'mkdirp': {
-        sync: () => {
-          return;
-        },
-      },
-      'fs': {
-        writeFile: (filepath, stringToWrite, cb) => {
-          if (stringToWrite === EXPECTED_RESULT) {
-            cb();
-          } else {
-            stringToWrite.should.equal(EXPECTED_RESULT);
-            cb(new Error('Unexpected result from fs.'));
-          }
+      'fs-extra': {
+        mkdirp: () => {},
+        writeFile: (filePath, stringToWrite) => {
+          expect(stringToWrite).to.eql(EXPECTED_RESULT);
         },
       },
     });
