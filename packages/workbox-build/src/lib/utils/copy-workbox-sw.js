@@ -15,7 +15,7 @@ module.exports = async (outputDirectory) => {
     ]);
 
     return workboxSWDestPath;
-  } catch(error) {
+  } catch (error) {
     throw Error(`${errors['unable-to-copy-workbox-sw']} ${error}`);
   }
 };

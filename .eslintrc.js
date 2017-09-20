@@ -21,18 +21,20 @@ module.exports = {
       mocha: true,
     },
     rules: {
-      'valid-jsdoc': 0,
-      'require-jsdoc': 0,
       'max-len': 0,
+      'no-console': 0,
+      'require-jsdoc': 0,
+      'valid-jsdoc': 0,
+      'no-invalid-this': 0,
     },
   }, {
     files: [
       'packages/workbox-core/src/utils/LogHelper.js',
       'test/workbox-core/bundle/node/utils/test-LogHelper.js',
-      'infra/utils/log-helper.js',
-      'infra/tools/analyse-properties.js',
+      'infra/**/*.js',
     ],
     rules: {
+      'max-len': 0,
       'no-console': 0,
     },
   }, {
@@ -51,5 +53,13 @@ module.exports = {
     env: {
       'mocha': true
     }
+  }, {
+    files: [
+      'test/workbox-build/static/**/*.js',
+    ],
+    rules: {
+      'no-unused-vars': 0,
+      'no-undef': 0,
+    },
   }],
 };

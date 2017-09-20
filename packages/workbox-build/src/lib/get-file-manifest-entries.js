@@ -55,7 +55,7 @@ const getFileManifestEntries = async (input) => {
     (typeof templatedUrls === 'object' && !Array.isArray(templatedUrls)),
     errors['invalid-templated-urls']);
 
-  assert(globIgnores.every(pattern => typeof pattern === 'string'),
+  assert(globIgnores.every((pattern) => typeof pattern === 'string'),
     errors['invalid-glob-ignores']);
 
   const fileSet = new Set();

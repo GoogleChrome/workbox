@@ -13,7 +13,7 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
     try {
       await writeFileManifest(FAKE_PATH, [], 'invalid-format');
       throw new Error('Expected error to be thrown.');
-    } catch(error) {
+    } catch (error) {
       error.message.should.eql(errors['invalid-manifest-format']);
     }
   });
@@ -66,7 +66,7 @@ describe(`src/lib/utils/write-file-manifest.js`, function() {
       try {
         await writeFileManifest('manifest.js', badInput);
         throw new Error('Expected error to be thrown.');
-      } catch(error) {
+      } catch (error) {
         error.message.should.eql(errors['invalid-manifest-entries']);
       }
     }

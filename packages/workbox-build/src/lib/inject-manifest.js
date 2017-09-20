@@ -70,10 +70,10 @@ const injectManifest = async (input) => {
     await fse.mkdirp(path.dirname(input.swDest));
   } catch (error) {
     throw new Error(errors['unable-to-make-injection-directory'] +
-      ` '${err.message}'`);
+      ` '${error.message}'`);
   }
 
-  await fse.writeFile(input.swDest, swFileContents);
+  return fse.writeFile(input.swDest, swFileContents);
 };
 
 module.exports = injectManifest;

@@ -14,7 +14,7 @@ const runNodeTests = () => {
     options.push('--grep', global.cliOptions.grep);
   }
   return spawn(getNpmCmd(), ['run', 'test', '--',
-    `./test/${global.packageOrStar}/node/**/*.mjs`,
+    `./test/${global.packageOrStar}/node/**/*.{js,mjs}`,
     ...options,
   ])
   .catch((err) => {
