@@ -20,11 +20,16 @@
   "bugs": "https://github.com/GoogleChrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
   "dependencies": {
+    "babel-runtime": "^6.26.0",
     "chalk": "^2.1.0",
     "common-tags": "^1.4.0",
     "fs-extra": "^4.0.2",
     "glob": "^7.1.2",
     "lodash.template": "^4.4.0",
     "workbox-sw": "^2.0.1"
+  },
+  "main": "builds/index.js",
+  "scripts": {
+    "prepublish": "gulp build-packages --package workbox-build"
   }
 }

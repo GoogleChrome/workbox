@@ -43,7 +43,7 @@ const INVALID_CONFIG_OPTIONS = ['swSrc'];
  *
  * @memberof module:workbox-build
  */
-const generateFileManifest = async (input) => {
+async function generateFileManifest(input) {
   assert(input && typeof input === 'object' && !Array.isArray(input),
     errors['invalid-generate-file-manifest-arg']);
 
@@ -51,6 +51,6 @@ const generateFileManifest = async (input) => {
 
   const fileEntries = await getFileManifestEntries(input);
   return writeFileManifest(input.manifestDest, fileEntries, input.format);
-};
+}
 
 module.exports = generateFileManifest;

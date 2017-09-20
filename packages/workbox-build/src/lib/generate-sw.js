@@ -38,7 +38,7 @@ const INVALID_CONFIG_OPTIONS = ['swSrc'];
  *
  * @memberof module:workbox-build
  */
-const generateSW = async (input) => {
+async function generateSW(input) {
   assert(input && typeof input === 'object' && !Array.isArray(input),
     errors['invalid-generate-sw-input']);
 
@@ -87,6 +87,6 @@ const generateSW = async (input) => {
     globDirectory,
     input
   );
-};
+}
 
 module.exports = generateSW;

@@ -46,7 +46,7 @@ const INVALID_CONFIG_OPTIONS = [
  *
  * @memberof module:workbox-build
  */
-const injectManifest = async (input) => {
+async function injectManifest(input) {
   assert(input && typeof input === 'object' && !Array.isArray(input),
     errors['invalid-inject-manifest-arg']);
 
@@ -74,6 +74,6 @@ const injectManifest = async (input) => {
   }
 
   return fse.writeFile(input.swDest, swFileContents);
-};
+}
 
 module.exports = injectManifest;

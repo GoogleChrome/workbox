@@ -23,4 +23,11 @@ module.exports = {
 
   // This is the environments that we should use for NODE_ENV.
   BUILD_TYPES: ['dev', 'production'],
+
+  // Used to identify whether a given package should be built as a Node or
+  // Browser bundle.
+  PROJECT_TYPES: {
+    NODE: 'NODE',
+    BROWSER: 'BROWSER',
+  },
 };

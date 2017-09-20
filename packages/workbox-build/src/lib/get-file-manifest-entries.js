@@ -25,7 +25,7 @@ const constants = require('./constants');
  * which will include a url and revision parameter.
  * @memberof module:workbox-build
  */
-const getFileManifestEntries = async (input) => {
+async function getFileManifestEntries(input) {
   assert(input && typeof input === 'object' && !Array.isArray(input),
     errors['invalid-get-manifest-entries-input']);
 
@@ -103,6 +103,6 @@ const getFileManifestEntries = async (input) => {
   }
 
   return filterFiles(fileDetails, input);
-};
+}
 
 module.exports = getFileManifestEntries;

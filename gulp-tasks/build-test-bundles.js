@@ -81,9 +81,14 @@ const cleanBundleFile = (packagePath) => {
   return fs.remove(outputDirectory);
 };
 
-gulp.task('build-test-bundles:clean',
-  gulp.series(packageRunnner('build-test-bundles:clean', cleanBundleFile))
-);
+gulp.task('build-test-bundles:clean', () => {
+  const cleanupTasks = packageRunnner('build-test-bundles:clean', {
+    [constants.PROJECT_TYPES.BROWSER]: cleanBundleFile,
+  });
+  if (cleanupTasks && cleanupTasks.length > 0) {
+    return gulp.series(cleanupTasks);
+  }
+});
 
 // This will create one version of the tests for each buildType.
 // i.e. we'll have a browser build for no NODE_ENV and one for 'production'
@@ -91,20 +96,30 @@ gulp.task('build-test-bundles:clean',
 const bundleBuilds = [];
 constants.BUILD_TYPES.forEach((buildType) => {
   bundleBuilds.push(
-    packageRunnner('build-test-bundles:build', buildTestBundle,
+    packageRunnner('build-test-bundles:build', {
+      [constants.PROJECT_TYPES.BROWSER]: buildTestBundle,
+    },
     'browser', buildType)
   );
   bundleBuilds.push(
-    packageRunnner('build-test-bundles:build', buildTestBundle,
+    packageRunnner('build-test-bundles:build', {
+      [constants.PROJECT_TYPES.BROWSER]: buildTestBundle,
+    },
     'sw', buildType)
   );
   bundleBuilds.push(
-    packageRunnner('build-test-bundles:build', buildTestBundle,
+    packageRunnner('build-test-bundles:build', {
+      [constants.PROJECT_TYPES.BROWSER]: buildTestBundle,
+    },
     'node', buildType)
   );
 });
 
-gulp.task('build-test-bundles:build', gulp.parallel(bundleBuilds));
+gulp.task('build-test-bundles:build', () => {
+  if (bundleBuilds.length > 0) {
+    return gulp.parallel(bundleBuilds);
+  }
+});
 
 gulp.task('build-test-bundles', gulp.series(
   'build-test-bundles:clean',

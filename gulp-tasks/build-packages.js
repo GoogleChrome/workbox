@@ -1,13 +1,14 @@
-const gulp = require('gulp');
-const path = require('path');
+const babel = require('gulp-babel');
+const buffer = require('vinyl-buffer');
 const fs = require('fs-extra');
+const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
-const rollupStream = require('rollup-stream');
+const path = require('path');
+const rename = require('gulp-rename');
 const rollup = require('rollup');
+const rollupStream = require('rollup-stream');
 const source = require('vinyl-source-stream');
 const sourcemaps = require('gulp-sourcemaps');
-const rename = require('gulp-rename');
-const buffer = require('vinyl-buffer');
 
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
@@ -66,7 +67,7 @@ const globals = (moduleId) => {
 // referenced as globals.
 const externalAndPure = (moduleId) => (moduleId.indexOf('workbox-') === 0);
 
-const buildPackage = (packagePath, buildType) => {
+const buildBrowserPackage = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
   const moduleIndexPath = path.join(packagePath, `index.mjs`);
 
@@ -142,22 +143,59 @@ const buildPackage = (packagePath, buildType) => {
   .pipe(gulp.dest(outputDirectory));
 };
 
+const buildNodePackage = (packagePath) => {
+  const packageName = pkgPathToName(packagePath);
+  const outputDirectory = path.join(packagePath,
+    constants.PACKAGE_BUILD_DIRNAME);
+
+  logHelper.log(oneLine`
+    Building Node Package for
+    ${logHelper.highlight(packageName)}.
+  `);
+
+  return gulp.src(`${packagePath}/src/**`).pipe(babel({
+    only: /\.js$/,
+    presets: [
+      ['env', {
+        targets: {
+          // Change this when our minimum required node version changes.
+          node: '4.0',
+        },
+      }],
+    ],
+    plugins: [
+      'transform-runtime'
+    ],
+  })).pipe(gulp.dest(outputDirectory));
+};
+
 const cleanPackages = (packagePath) => {
   const outputDirectory = path.join(packagePath,
-    constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
+    constants.PACKAGE_BUILD_DIRNAME);
   return fs.remove(outputDirectory);
 };
 
 gulp.task('build-packages:clean', gulp.series(
-  packageRunnner('build-packages:clean', cleanPackages)
+  packageRunnner('build-packages:clean', {
+    [constants.PROJECT_TYPES.NODE]: cleanPackages,
+    [constants.PROJECT_TYPES.BROWSER]: cleanPackages,
+  })
 ));
 
-// This will create one version of the tests for each buildType.
-// i.e. we'll have a browser build for no NODE_ENV and one for 'production'
-// NODE_ENV and the same for sw and node tests.
-const packageBuilds = constants.BUILD_TYPES.map((buildType) => {
-  return packageRunnner('build-package', buildPackage, buildType);
-});
+const packageBuilds = [
+  // Create a build for Node projects, using the buildNodePackage configuration.
+  packageRunnner('build-package', {
+    [constants.PROJECT_TYPES.NODE]: buildNodePackage,
+  }),
+
+  // Create multiple builds for Browser projects, one for each buildType,
+  // using the buildBrocessPackage configuration.
+  constants.BUILD_TYPES.map((buildType) => {
+    return packageRunnner('build-package', {
+      [constants.PROJECT_TYPES.BROWSER]: buildBrowserPackage,
+    }, buildType);
+  }),
+].filter((buildList) => buildList.every((build) => build));
 
 gulp.task('build-packages:build', gulp.series(packageBuilds));
 
