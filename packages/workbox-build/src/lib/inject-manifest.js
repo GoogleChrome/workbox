@@ -1,7 +1,5 @@
-'use strict';
-
-const fs = require('fs');
-const mkdirp = require('mkdirp');
+const assert = require('assert');
+const fse = require('fs-extra');
 const path = require('path');
 
 const getFileManifestEntries = require('./get-file-manifest-entries');
@@ -48,49 +46,34 @@ const INVALID_CONFIG_OPTIONS = [
  *
  * @memberof module:workbox-build
  */
-const injectManifest = (input) => {
-  if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    return Promise.reject(
-      new Error(errors['invalid-inject-manifest-arg']));
-  }
+const injectManifest = async (input) => {
+  assert(input && typeof input === 'object' && !Array.isArray(input),
+    errors['invalid-inject-manifest-arg']);
 
   const injectionPointRegex = /(\.precache\()\s*\[\s*\]\s*(\))/g;
 
-  return getFileManifestEntries(input)
-  .then((manifestEntries) => {
-    let swFileContents = fs.readFileSync(input.swSrc, 'utf8');
-    const injectionResults = swFileContents.match(injectionPointRegex);
-    if (!injectionResults) {
-      throw new Error(errors['injection-point-not-found']);
-    }
+  const manifestEntries = await getFileManifestEntries(input);
+  let swFileContents = await fse.readFile(input.swSrc, 'utf8');
 
-    if (injectionResults.length > 1) {
-      throw new Error(errors['multiple-injection-points-found']);
-    }
+  const injectionResults = swFileContents.match(injectionPointRegex);
+  assert(injectionResults, errors['injection-point-not-found']);
+  assert(injectionResults.length === 1,
+    errors['multiple-injection-points-found']);
 
-    warnAboutConfig(INVALID_CONFIG_OPTIONS, input, 'injectManifest');
+  warnAboutConfig(INVALID_CONFIG_OPTIONS, input, 'injectManifest');
 
-    const entriesString = JSON.stringify(manifestEntries, null, 2);
-    swFileContents = swFileContents
-      .replace(injectionPointRegex, `$1${entriesString}$2`);
+  const entriesString = JSON.stringify(manifestEntries, null, 2);
+  swFileContents = swFileContents.replace(
+    injectionPointRegex, `$1${entriesString}$2`);
 
-    return new Promise((resolve, reject) => {
-      mkdirp(path.dirname(input.swDest), (err) => {
-        if (err) {
-          return reject(
-            new Error(
-              errors['unable-to-make-injection-directory'] +
-              ` '${err.message}'`
-            )
-          );
-        }
-        resolve();
-      });
-    })
-    .then(() => {
-      fs.writeFileSync(input.swDest, swFileContents);
-    });
-  });
+  try {
+    await fse.mkdirp(path.dirname(input.swDest));
+  } catch (error) {
+    throw new Error(errors['unable-to-make-injection-directory'] +
+      ` '${err.message}'`);
+  }
+
+  await fse.writeFile(input.swDest, swFileContents);
 };
 
 module.exports = injectManifest;
