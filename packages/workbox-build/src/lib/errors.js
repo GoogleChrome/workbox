@@ -51,8 +51,8 @@ module.exports = {
     that maps URLs to either a string, or to an array of glob patterns.`,
   'templated-url-matches-glob': ol`One of the 'templatedUrls' URLs is already
     being tracked via 'globPatterns': `,
-  'invalid-glob-ignores': ol`The 'globIgnore' parameter must be an array of glob
-    pattern strings.`,
+  'invalid-glob-ignores': ol`The 'globIgnores' parameter must be an array of
+    glob pattern strings.`,
   'manifest-entry-bad-url': ol`The generated manifest contains an entry without
     a URL string. This is likely an error with workbox-build.`,
   'modify-url-prefix-bad-prefixes': ol`The 'modifyUrlPrefix' parameter must be
@@ -73,11 +73,10 @@ module.exports = {
     'templatedUrls'.`,
   'invalid-runtime-caching': ol`The 'runtimeCaching' parameter must an an
     array of objects with at least a 'urlPattern' and 'handler'.`,
-  'both-glob-patterns-static-file-globs': ol`Both 'globPatterns' and
-    'staticFileGlobs' are set. Please fully migrate to 'globPatterns'.`,
-  'both-templated-urls-dynamic-urls': ol`Both 'templatedUrls' and
-    'dynamicUrlToDependencies' are set. Please fully migrate to
-    'templatedUrls'.`,
+  'static-file-globs-deprecated': ol`'staticFileGlobs' is deprecated.
+    Please use 'globPatterns' instead.`,
+  'dynamic-url-deprecated': ol`'dynamicUrlToDependencies' is deprecated.
+    Please use 'templatedUrls' instead.`,
   'urlPattern-is-required': ol`The 'urlPattern' option is required when using
     'runtimeCaching'.`,
   'handler-is-required': ol`The 'handler' option is required when using

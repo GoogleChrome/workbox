@@ -1,11 +1,10 @@
+const expect = require('chai').expect;
 const path = require('path');
 const proxyquire = require('proxyquire');
 
 const workboxBuild = require('../../../packages/workbox-build/src/index.js');
 const errors = require('../../../packages/workbox-build/src/lib/errors');
 const constants = require('../../../packages/workbox-build/src/lib/constants');
-
-require('chai').should();
 
 describe(`Test getFileManifestEntries`, function() {
   const EXAMPLE_INPUT = {
@@ -104,30 +103,27 @@ describe(`Test getFileManifestEntries`, function() {
     });
   });
 
-  for (const parameterVariation of ['globPatterns', 'staticFileGlobs']) {
-    it(`should return file entries from example project using ${parameterVariation}`, function() {
-      const testInput = {
-        globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
-      };
+  it(`should return file entries from example project using globPatterns`, function() {
+    const testInput = {
+      globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
+      globPatterns: ['**/*.{html,js,css}'],
+    };
 
-      testInput[parameterVariation] = ['**/*.{html,js,css}'];
-
-      return workboxBuild.getFileManifestEntries(testInput)
-        .then((output) => {
-          const allUrls = output.map((entry) => {
-            return entry.url;
-          });
-          allUrls.should.deep.equal([
-            'index.html',
-            'page-1.html',
-            'page-2.html',
-            'styles/stylesheet-1.css',
-            'styles/stylesheet-2.css',
-            'webpackEntry.js',
-          ]);
+    return workboxBuild.getFileManifestEntries(testInput)
+      .then((output) => {
+        const allUrls = output.map((entry) => {
+          return entry.url;
         });
-    });
-  }
+        expect(allUrls).to.deep.equal([
+          'index.html',
+          'page-1.html',
+          'page-2.html',
+          'styles/stylesheet-1.css',
+          'styles/stylesheet-2.css',
+          'webpackEntry.js',
+        ]);
+      });
+  });
 
   it(`should return file entries from example project with prefix`, function() {
     const testInput = {
@@ -146,7 +142,7 @@ describe(`Test getFileManifestEntries`, function() {
       const allUrls = output.map((entry) => {
         return entry.url;
       });
-      allUrls.should.deep.equal([
+      expect(allUrls).to.deep.equal([
         'index.html',
         'pages/page-1.html',
         'pages/page-2.html',
@@ -171,7 +167,7 @@ describe(`Test getFileManifestEntries`, function() {
       const allUrls = output.map((entry) => {
         return entry.url;
       });
-      allUrls.should.deep.equal([
+      expect(allUrls).to.deep.equal([
         'page-1.html',
         'page-2.html',
         'styles/stylesheet-1.css',
@@ -200,9 +196,9 @@ describe(`Test getFileManifestEntries`, function() {
       // This error is made up of several pieces that are useful to the
       // developer. These checks ensure the relevant message is should with
       // relevant details called out.
-      err.message.indexOf(errors['bad-template-urls-asset']).should.not.equal(-1);
-      err.message.indexOf('/template/url1').should.not.equal(-1);
-      err.message.indexOf('/doesnt-exist/page-1.html').should.not.equal(-1);
+      expect(err.message.indexOf(errors['bad-template-urls-asset'])).to.not.equal(-1);
+      expect(err.message.indexOf('/template/url1')).to.not.equal(-1);
+      expect(err.message.indexOf('/doesnt-exist/page-1.html')).to.not.equal(-1);
     });
   });
 
@@ -224,39 +220,7 @@ describe(`Test getFileManifestEntries`, function() {
       const allUrls = output.map((entry) => {
         return entry.url;
       });
-      allUrls.should.deep.equal([
-        'index.html',
-        'page-1.html',
-        'page-2.html',
-        'styles/stylesheet-1.css',
-        'styles/stylesheet-2.css',
-        'webpackEntry.js',
-        '/template/url1',
-        'template/url2',
-        '/template/url3',
-      ]);
-    });
-  });
-
-  it(`should return file entries from example project with dynamicUrlToDependencies`, function() {
-    const testInput = {
-      globPatterns: [
-        '**/*.{html,js,css}',
-      ],
-      globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
-      dynamicUrlToDependencies: {
-        '/template/url1': ['page-1.html', 'index.html'],
-        'template/url2': ['page-2.html', 'index.html'],
-        '/template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
-      },
-    };
-
-    return workboxBuild.getFileManifestEntries(testInput)
-    .then((output) => {
-      const allUrls = output.map((entry) => {
-        return entry.url;
-      });
-      allUrls.should.deep.equal([
+      expect(allUrls).to.deep.equal([
         'index.html',
         'page-1.html',
         'page-2.html',
@@ -281,7 +245,7 @@ describe(`Test getFileManifestEntries`, function() {
 
     return workboxBuild.getFileManifestEntries(testInput)
     .then((output) => {
-      output.should.eql([
+      expect(output).to.eql([
         {url: 'index.html'},
         {url: 'page-1.html'},
         {url: 'page-2.html'},
@@ -292,44 +256,36 @@ describe(`Test getFileManifestEntries`, function() {
     });
   });
 
-  it(`should throw an error when both templatedUrls and dynamicUrlsToDependencies are used`, function() {
-    const templatedUrlsValues = {
-      '/template/url1': ['page-1.html', 'index.html'],
-    };
-
+  it(`should throw an error when dynamicUrlToDependencies is used`, async function() {
     const badInput = {
-      globPatterns: ['**/*.{html,js,css}'],
+      globPatterns: [
+        '**/*.{html,js,css}',
+      ],
       globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
-      dynamicUrlToDependencies: templatedUrlsValues,
-      templatedUrls: templatedUrlsValues,
+      dynamicUrlToDependencies: {
+        '/template/url1': ['page-1.html', 'index.html'],
+        'template/url2': ['page-2.html', 'index.html'],
+        '/template/url3': '<html><head></head><body><p>Just in case</p></body></html>',
+      },
     };
 
-    return workboxBuild.getFileManifestEntries(badInput)
-    .then(() => {
-      throw new Error('Expected error to be thrown.');
-    }, (err) => {
-      if (err.message !== errors['both-templated-urls-dynamic-urls']) {
-        throw new Error('Unexpected error: ' + err.message);
-      }
-    });
+    try {
+      await workboxBuild.getFileManifestEntries(badInput);
+    } catch (error) {
+      expect(error.message).to.eql(errors['dynamic-url-deprecated']);
+    }
   });
 
-  it(`should throw an error when both globPatterns and staticFileGlobs are used`, function() {
-    const globPatternsValue = ['**/*.{html,js,css}'];
-
+  it(`should throw an error when staticFileGlobs is used`, async function() {
     const badInput = {
-      globPatterns: globPatternsValue,
-      staticFileGlobs: globPatternsValue,
+      staticFileGlobs: ['**/*.{html,js,css}'],
       globDirectory: path.join(__dirname, '..', 'static', 'example-project-1'),
     };
 
-    return workboxBuild.getFileManifestEntries(badInput)
-    .then(() => {
-      throw new Error('Expected error to be thrown.');
-    }, (err) => {
-      if (err.message !== errors['both-glob-patterns-static-file-globs']) {
-        throw new Error('Unexpected error: ' + err.message);
-      }
-    });
+    try {
+      await workboxBuild.getFileManifestEntries(badInput);
+    } catch (error) {
+      expect(error.message).to.eql(errors['static-file-globs-deprecated']);
+    }
   });
 });

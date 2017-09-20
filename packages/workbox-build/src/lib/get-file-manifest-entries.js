@@ -1,4 +1,4 @@
-'use strict';
+const assert = require('assert');
 
 const errors = require('./errors');
 const filterFiles = require('./utils/filter-files');
@@ -25,65 +25,38 @@ const constants = require('./constants');
  * which will include a url and revision parameter.
  * @memberof module:workbox-build
  */
-const getFileManifestEntries = (input) => {
-  if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    return Promise.reject(
-      new Error(errors['invalid-get-manifest-entries-input']));
-  }
+const getFileManifestEntries = async (input) => {
+  assert(input && typeof input === 'object' && !Array.isArray(input),
+    errors['invalid-get-manifest-entries-input']);
 
-  // staticFileGlobs is to ease workbox to sw-precache migration.
-  if (input.globPatterns && input.staticFileGlobs) {
-    return Promise.reject(
-      new Error(errors['both-glob-patterns-static-file-globs']));
-  }
+  // staticFileGlobs has been deprecated.
+  assert(!input.staticFileGlobs, errors['static-file-globs-deprecated']);
 
-  let globPatterns = input.globPatterns || input.staticFileGlobs;
-  if (typeof input.globPatterns === 'undefined' &&
-    typeof input.staticFileGlobs === 'undefined') {
-    globPatterns = constants.defaultGlobPatterns;
-  }
+  // dynamicUrlToDependencies has been deprecated.
+  assert(!input.dynamicUrlToDependencies, errors['dynamic-url-deprecated']);
 
+  const globPatterns = typeof input.globPatterns !== 'undefined' ?
+    input.globPatterns : constants.defaultGlobPatterns;
   const globIgnores = input.globIgnores || constants.defaultGlobIgnores;
   const globDirectory = input.globDirectory;
+  const templatedUrls = input.templatedUrls;
 
-  // dynamicUrlToDependencies is to ease workbox to sw-precache migration.
-  if (input.templatedUrls && input.dynamicUrlToDependencies) {
-    return Promise.reject(
-      new Error(errors['both-templated-urls-dynamic-urls']));
-  }
-  const templatedUrls = input.templatedUrls || input.dynamicUrlToDependencies;
+  assert(typeof globDirectory === 'string' && globDirectory.length !== 0,
+    errors['invalid-glob-directory']);
 
-  if (typeof globDirectory !== 'string' || globDirectory.length === 0) {
-    return Promise.reject(
-      new Error(errors['invalid-glob-directory']));
-  }
+  assert(globPatterns && Array.isArray(globPatterns),
+    errors['invalid-static-file-globs']);
 
-  if (!globPatterns || !Array.isArray(globPatterns)) {
-    return Promise.reject(
-      new Error(errors['invalid-static-file-globs']));
-  }
-
-  if (!globIgnores || !Array.isArray(globIgnores)) {
-    return Promise.reject(
-      new Error(errors['invalid-glob-ignores']));
-  }
+  assert(globIgnores && Array.isArray(globIgnores),
+    errors['invalid-glob-ignores']);
 
   // templatedUrls is optional.
-  if (templatedUrls && (
-      typeof templatedUrls !== 'object' || Array.isArray(templatedUrls))) {
-      return Promise.reject(new Error(errors['invalid-templated-urls']));
-  }
+  assert(!templatedUrls ||
+    (typeof templatedUrls === 'object' && !Array.isArray(templatedUrls)),
+    errors['invalid-templated-urls']);
 
-  let validIgnores = true;
-  globIgnores.forEach((pattern) => {
-    if (typeof pattern !== 'string') {
-      validIgnores = false;
-    }
-  });
-  if (!validIgnores) {
-    return Promise.reject(
-      new Error(errors['invalid-glob-ignores']));
-  }
+  assert(globIgnores.every(pattern => typeof pattern === 'string'),
+    errors['invalid-glob-ignores']);
 
   const fileSet = new Set();
 
@@ -101,44 +74,35 @@ const getFileManifestEntries = (input) => {
     return accumulated;
   }, []);
 
-  // templatedUrls is optional.
   if (templatedUrls) {
     for (let url of Object.keys(templatedUrls)) {
-      if (fileSet.has(url)) {
-        return Promise.reject(
-          new Error(errors['templated-url-matches-glob']));
-      }
+      assert(!fileSet.has(url), errors['templated-url-matches-glob']);
 
       const dependencies = templatedUrls[url];
       if (Array.isArray(dependencies)) {
-        try {
-          const dependencyDetails = dependencies.reduce((previous, pattern) => {
-            try {
-              const globbedFileDetails = getFileDetails(
-                globDirectory, pattern, globIgnores);
-              return previous.concat(globbedFileDetails);
-            } catch (err) {
-              const debugObj = {};
-              debugObj[url] = dependencies;
-              throw new Error(`${errors['bad-template-urls-asset']} ` +
-                  `'${pattern}' in templateUrl '${JSON.stringify(debugObj)}' ` +
-                  `could not be found.`);
-            }
-          }, []);
-          fileDetails.push(getCompositeDetails(url, dependencyDetails));
-        } catch (err) {
-          return Promise.reject(err);
-        }
+        const dependencyDetails = dependencies.reduce((previous, pattern) => {
+          try {
+            const globbedFileDetails = getFileDetails(
+              globDirectory, pattern, globIgnores);
+            return previous.concat(globbedFileDetails);
+          } catch (err) {
+            const debugObj = {};
+            debugObj[url] = dependencies;
+            throw new Error(`${errors['bad-template-urls-asset']} ` +
+              `'${pattern}' in templateUrl '${JSON.stringify(debugObj)}' ` +
+              `could not be found.`);
+          }
+        }, []);
+        fileDetails.push(getCompositeDetails(url, dependencyDetails));
       } else if (typeof dependencies === 'string') {
         fileDetails.push(getStringDetails(url, dependencies));
       } else {
-        return Promise.reject(
-          new Error(errors['invalid-templated-urls']));
+        throw new Error(errors['invalid-templated-urls']);
       }
     }
   }
 
-  return Promise.resolve(filterFiles(fileDetails, input));
+  return filterFiles(fileDetails, input);
 };
 
 module.exports = getFileManifestEntries;
