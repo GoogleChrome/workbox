@@ -1,4 +1,4 @@
-'use strict';
+const assert = require('assert');
 
 const errors = require('./errors');
 const getFileManifestEntries = require('./get-file-manifest-entries');
@@ -43,18 +43,14 @@ const INVALID_CONFIG_OPTIONS = ['swSrc'];
  *
  * @memberof module:workbox-build
  */
-const generateFileManifest = (input) => {
-  if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    return Promise.reject(
-      new Error(errors['invalid-generate-file-manifest-arg']));
-  }
+const generateFileManifest = async (input) => {
+  assert(input && typeof input === 'object' && !Array.isArray(input),
+    errors['invalid-generate-file-manifest-arg']);
 
   warnAboutConfig(INVALID_CONFIG_OPTIONS, input, 'generateFileManifest');
 
-  return getFileManifestEntries(input)
-    .then((fileEntries) => {
-      return writeFileManifest(input.manifestDest, fileEntries, input.format);
-    });
+  const fileEntries = await getFileManifestEntries(input);
+  return writeFileManifest(input.manifestDest, fileEntries, input.format);
 };
 
 module.exports = generateFileManifest;

@@ -27,7 +27,7 @@ describe(`Test generateFileManifest`, function() {
           throw new Error('Expected to throw error.');
         })
         .catch((err) => {
-          if (!err.message.startsWith(errors['invalid-generate-file-manifest-arg'])) {
+          if (err.message !== (errors['invalid-generate-file-manifest-arg'])) {
             throw new Error('Unexpected error: ' + err.message);
           }
         });

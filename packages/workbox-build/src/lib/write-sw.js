@@ -1,5 +1,3 @@
-'use strict';
-
 const errors = require('./errors');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
@@ -7,8 +5,8 @@ const path = require('path');
 const runtimeCachingConverter = require('./utils/runtime-caching-converter');
 const template = require('lodash.template');
 
-module.exports =
-  (swDest, manifestEntries, workboxSWImportPath, globDirectory, options) => {
+module.exports = (swDest, manifestEntries, pathToWorkboxSWFileRelativeToDest,
+                  globDirectory, options) => {
   options = options || {};
   try {
     mkdirp.sync(path.dirname(swDest));
@@ -69,7 +67,7 @@ module.exports =
       }
       return template(templateString)({
         manifestEntries: manifestEntries,
-        workboxSWImportPath,
+        workboxSWImportPath: pathToWorkboxSWFileRelativeToDest,
         navigateFallback: options.navigateFallback,
         navigateFallbackWhitelist: options.navigateFallbackWhitelist,
         workboxSWOptionsString,

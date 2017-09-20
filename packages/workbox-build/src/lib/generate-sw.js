@@ -1,5 +1,4 @@
-'use strict';
-
+const assert = require('assert');
 const path = require('path');
 
 const constants = require('./constants');
@@ -39,68 +38,55 @@ const INVALID_CONFIG_OPTIONS = ['swSrc'];
  *
  * @memberof module:workbox-build
  */
-const generateSW = function(input) {
-  if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    return Promise.reject(new Error(errors['invalid-generate-sw-input']));
-  }
+const generateSW = async (input) => {
+  assert(input && typeof input === 'object' && !Array.isArray(input),
+    errors['invalid-generate-sw-input']);
 
   // Type check input so that defaults can be used if appropriate.
   if (typeof input.globIgnores === 'string') {
     input.globIgnores = [input.globIgnores];
   }
-  if (input.globIgnores && !(Array.isArray(input.globIgnores))) {
-    return Promise.reject(
-      new Error(errors['invalid-glob-ignores']));
-  }
 
-  if (typeof input.globDirectory !== 'string' ||
-    input.globDirectory.length === 0) {
-    return Promise.reject(
-      new Error(errors['invalid-glob-directory']));
-  }
+  assert(!input.globIgnores || Array.isArray(input.globIgnores),
+    errors['invalid-glob-ignores']);
 
-  if (typeof input.swDest !== 'string' || input.swDest.length === 0) {
-    return Promise.reject(
-      new Error(errors['invalid-sw-dest']));
-  }
+  assert(typeof input.globDirectory === 'string' &&
+    input.globDirectory.length !== 0,
+    errors['invalid-glob-directory']);
 
-  if (input.runtimeCaching && !(Array.isArray(input.runtimeCaching))) {
-    return Promise.reject(
-      new Error(errors['invalid-runtime-caching']));
-  }
+  assert(typeof input.swDest === 'string' && input.swDest.length !== 0,
+    errors['invalid-sw-dest']);
+
+  assert(!input.runtimeCaching || Array.isArray(input.runtimeCaching),
+    errors['invalid-runtime-caching']);
 
   warnAboutConfig(INVALID_CONFIG_OPTIONS, input, 'generateSW');
 
   const globDirectory = input.globDirectory;
   input.globIgnores = input.globIgnores || constants.defaultGlobIgnores;
+
   const swDest = input.swDest;
+  const destDirectory = path.dirname(swDest);
+  const pathToWorkboxSWFile = await copyWorkboxSW(destDirectory);
 
-  let workboxSWImportPath;
-  let destDirectory = path.dirname(swDest);
-  return copyWorkboxSW(destDirectory)
-  .then((libPath) => {
-    // If sw file is in build/sw.js, the workboxSW file will be
-    // build/workboxSW.***.js. So the sw.js file should import workboxSW.***.js
-    // (i.e. not include build/).
-    workboxSWImportPath = path.relative(destDirectory, libPath);
+  // If sw file is in build/sw.js, the workboxSW file will be
+  // build/workboxSW.***.js. So the sw.js file should import workboxSW.***.js
+  // (i.e. not include build/).
+  const pathToWorkboxSWFileRelativeToDest = path.relative(destDirectory,
+    pathToWorkboxSWFile);
 
-    // we will be globbing in the globDirectory, so we need to ignore relative
-    // to that path.
-    input.globIgnores.push(path.relative(globDirectory, libPath));
-    input.globIgnores.push(path.relative(globDirectory, swDest));
-  })
-  .then(() => {
-    return getFileManifestEntries(input);
-  })
-  .then((manifestEntries) => {
-    return writeServiceWorker(
-      swDest,
-      manifestEntries,
-      workboxSWImportPath,
-      globDirectory,
-      input
-    );
-  });
+  input.globIgnores.push(path.relative(globDirectory, pathToWorkboxSWFile));
+  input.globIgnores.push(path.relative(globDirectory, swDest));
+
+  const manifestEntries = await getFileManifestEntries(input);
+
+  return writeServiceWorker(
+    swDest,
+    manifestEntries,
+    pathToWorkboxSWFileRelativeToDest,
+    globDirectory,
+    input
+  );
 };
 
 module.exports = generateSW;
