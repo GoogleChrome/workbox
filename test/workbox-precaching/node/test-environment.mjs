@@ -5,7 +5,7 @@ import clearRequire from 'clear-require';
 import expectError from '../../../infra/utils/expectError';
 import constants from '../../../gulp-tasks/utils/constants.js';
 
-describe(`WorkboxPrecaching`, function() {
+describe(`[workbox-precaching] WorkboxPrecaching`, function() {
   let sandbox;
 
   before(function() {

@@ -10,7 +10,7 @@ import '../../../mocks/mock-fetch';
 const PRECACHE_MANAGER_PATH = '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
 const MOCK_LOCATION = 'https://example.com';
 
-describe(`PrecacheController`, function() {
+describe(`[workbox-precaching] PrecacheController`, function() {
   const sandbox = sinon.sandbox.create();
   let logger;
   let cacheNameProvider;

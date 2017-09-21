@@ -8,7 +8,7 @@ import '../../../mocks/mock-fetch';
 const PRECACHE_ENTRY_PATH = '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 const MOCK_LOCATION = 'https://example.com';
 
-describe('workbox-precaching PrecacheEntry', function() {
+describe('[workbox-precaching] PrecacheEntry', function() {
   const sandbox = sinon.sandbox.create();
 
   before(function() {
