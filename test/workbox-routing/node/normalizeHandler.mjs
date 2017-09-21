@@ -1,8 +1,11 @@
+import makeServiceWorkerEnv from 'service-worker-mock';
 import {expect} from 'chai';
 
 import expectError from '../../../infra/utils/expectError.js';
 
 (async () => {
+  Object.assign(global, makeServiceWorkerEnv());
+
   const normalizeHandler = (await import('../../../packages/workbox-routing/lib/normalizeHandler.mjs')).default;
 
   const handler = {

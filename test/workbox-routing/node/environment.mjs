@@ -1,23 +1,28 @@
 import clearRequire from 'clear-require';
+import makeServiceWorkerEnv from 'service-worker-mock';
 import sinon from 'sinon';
 import {expect} from 'chai';
 
 import expectError from '../../../infra/utils/expectError';
 
 describe(`workbox-routing`, function() {
-  const sandbox = sinon.sandbox.create();
-  const initialNodeEnv = process.env.NODE_ENV;
-
-  beforeEach(function() {
-    clearRequire.all();
-  });
-
-  afterEach(function() {
-    sandbox.restore();
-    process.env.NODE_ENV = initialNodeEnv;
-  });
-
   describe(`Service worker environment tests`, function() {
+    const sandbox = sinon.sandbox.create();
+    const initialNodeEnv = process.env.NODE_ENV;
+
+    before(function() {
+      Object.assign(global, makeServiceWorkerEnv());
+    });
+
+    beforeEach(function() {
+      clearRequire.all();
+    });
+
+    afterEach(function() {
+      sandbox.restore();
+      process.env.NODE_ENV = initialNodeEnv;
+    });
+
     it(`should throw in dev builds when loaded outside of a service worker`, async function() {
       process.env.NODE_ENV = 'dev';
 
