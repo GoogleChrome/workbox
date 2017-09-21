@@ -16,8 +16,17 @@ import expectError from '../../../infra/utils/expectError.js';
   const invalidHandlerObject = {};
   const invalidHandlerString = 'INVALID';
 
-  describe(`workbox-routing`, function() {
-    describe(`_normalizeHandler`, function() {
+  describe(`workbox-routing: _normalizeHandler`, function() {
+    const initialNodeEnv = process.env.NODE_ENV;
+    after(function() {
+      process.env.NODE_ENV = initialNodeEnv;
+    });
+
+    describe(`(NODE_ENV = development)`, function() {
+      before(function() {
+        process.env.NODE_ENV = 'development';
+      });
+
       it(`should properly normalize an object that exposes a handle method`, async function() {
         const normalizedHandler = normalizeHandler(handler);
         expect(normalizedHandler).to.have.property('handle');
@@ -52,6 +61,22 @@ import expectError from '../../../infra/utils/expectError.js';
             expect(error.details).to.have.property('paramName').that.equals('handler');
           }
         );
+      });
+    });
+
+    describe(`(NODE_ENV = production)`, function() {
+      before(function() {
+        process.env.NODE_ENV = 'production';
+      });
+
+      it(`should properly normalize an object that exposes a handle method`, async function() {
+        const normalizedHandler = normalizeHandler(handler);
+        expect(normalizedHandler).to.have.property('handle');
+      });
+
+      it(`should properly normalize a function`, async function() {
+        const normalizedHandler = normalizeHandler(functionHandler);
+        expect(normalizedHandler).to.have.property('handle');
       });
     });
   });

@@ -17,8 +17,17 @@ import expectError from '../../../infra/utils/expectError.js';
   const invalidHandlerObject = {};
   const invalidMethod = 'INVALID';
 
-  describe(`workbox-routing.Route`, function() {
-    describe(`constructor`, function() {
+  describe(`workbox-routing: Route`, function() {
+    const initialNodeEnv = process.env.NODE_ENV;
+    after(function() {
+      process.env.NODE_ENV = initialNodeEnv;
+    });
+
+    describe(`(NODE_ENV = development)`, function() {
+      before(function() {
+        process.env.NODE_ENV = 'development';
+      });
+
       it(`should throw when called without any parameters`, async function() {
         await expectError(
           () => new Route(),
@@ -82,6 +91,30 @@ import expectError from '../../../infra/utils/expectError.js';
           'invalid-value',
           (error) => expect(error.details).to.have.property('paramName').that.equals('method')
         );
+      });
+
+      it(`should use the method provided when called with a valid method`, function() {
+        const route = new Route(match, handler, method);
+        expect(route._method).to.equal(method);
+      });
+
+      it(`should use a default of GET when called without a method`, function() {
+        const route = new Route(match, handler);
+        expect(route._method).to.equal('GET');
+      });
+    });
+
+    describe(`(NODE_ENV = production)`, function() {
+      before(function() {
+        process.env.NODE_ENV = 'production';
+      });
+
+      it(`should not throw when called with valid handler.handle and match parameters`, function() {
+        expect(() => new Route(match, handler)).not.to.throw();
+      });
+
+      it(`should not throw when called with a valid function handler and match parameters`, function() {
+        expect(() => new Route(match, functionHandler)).not.to.throw();
       });
 
       it(`should use the method provided when called with a valid method`, function() {
