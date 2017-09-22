@@ -157,9 +157,13 @@ function generateBuildConfigs({formatToPath, baseDir, moduleName,
   });
 
   const babelPlugin = babel({
-    presets: [['babili', {
-      comments: false,
-    }]],
+    presets: [['env', {
+      targets: {
+        browsers: ['chrome >= 51'],
+      },
+      modules: false,
+    }], ['minify']],
+    plugins: ['external-helpers'],
   });
 
   for (let format of Object.keys(formatToPath)) {
