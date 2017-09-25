@@ -53,7 +53,7 @@ export default class PrecacheController {
 
   /**
    * This method returns a precache entry.
-   * @param {String|Object} input
+   * @param {string|Object} input
    * @return {PrecacheEntry}
    */
   _parseEntry(input) {
