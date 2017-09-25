@@ -6,7 +6,7 @@ export default class PrecacheEntry {
  * @param {string} entryId
  * @param {string} revision
  * @param {Request} request
- * @param {Boolean} cacheBust
+ * @param {boolean} cacheBust
  */
   constructor(originalInput, entryId, revision, request, cacheBust) {
     this._originalInput = originalInput;

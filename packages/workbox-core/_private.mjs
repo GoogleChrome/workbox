@@ -3,7 +3,7 @@ import WorkboxError from './models/WorkboxError.mjs';
 import fetchWrapper from './utils/fetchWrapper.mjs';
 import cacheWrapper from './utils/cacheWrapper.mjs';
 import * as cacheNameProvider from './models/cacheNameProvider.mjs';
-import indexDBHelper from './utils/indexDBHelper.mjs';
+import indexedDBHelper from './utils/indexedDBHelper.mjs';
 
 export {
   logger,
@@ -11,5 +11,5 @@ export {
   cacheWrapper,
   WorkboxError,
   cacheNameProvider,
-  indexDBHelper,
+  indexedDBHelper,
 };

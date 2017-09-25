@@ -4,7 +4,7 @@
 class DBWrapper {
   /**
    * Wraps a provided Database.
-   * @param {IndexedDB} idb 
+   * @param {IndexedDB} idb
    */
   constructor(idb, storename) {
     this._db = idb;
@@ -14,64 +14,58 @@ class DBWrapper {
   /**
    * Get a value for a given ID.
    * @param {Object} key
-   * @return {Promise<String>}
+   * @return {Promise<string>}
    */
   get(key) {
     return new Promise((resolve, reject) => {
-      const transaction = this._db.transaction(this._storename, 'readwrite');
+      const transaction = this._db.transaction(this._storename, 'readonly');
 
-      transaction.onerror = function(event) {
+      transaction.onerror = () => {
         // Don't forget to handle errors!
         reject(transaction.error);
       };
 
       const getRequest = transaction.objectStore(this._storename).get(key);
-      getRequest.onsuccess = (event) => {
-        resolve(getRequest.result);
-      };
+      getRequest.onsuccess = () => resolve(getRequest.result);
     });
   }
 
   /**
    * Put a value in the database for a given id.
-   * @param {Object} key 
-   * @param {Object} value 
+   * @param {Object} key
+   * @param {Object} value
    * @return {Promise}
    */
   put(key, value) {
     return new Promise((resolve, reject) => {
       const transaction = this._db.transaction(this._storename, 'readwrite');
 
-      transaction.onerror = function(event) {
+      transaction.onerror = () => {
         // Don't forget to handle errors!
         reject(transaction.error);
       };
 
       const request = transaction.objectStore(this._storename).put(value, key);
-      request.onsuccess = (event) => {
-        resolve();
-      };
+      request.onsuccess = () => resolve();
     });
   }
 
   /**
    * Delete a value in the database with a given id.
    * @param {Object} key
-   * @return {Promise} 
+   * @return {Promise}
    */
   delete(key) {
     return new Promise((resolve, reject) => {
       const transaction = this._db.transaction(this._storename, 'readwrite');
 
-      transaction.onerror = function(event) {
+      transaction.onerror = () => {
         // Don't forget to handle errors!
         reject(transaction.error);
       };
 
       const request = transaction.objectStore(this._storename).delete(key);
-      request.onsuccess = (event) => {
-        resolve();
-      };
+      request.onsuccess = () => resolve();
     });
   }
 }
@@ -80,7 +74,7 @@ class DBWrapper {
  * This class will be used to create a generic IndexedDB class for Workbox
  * to use, removing the annoying parts of the API.
  */
-class IndexDBHelper {
+class IndexedDBHelper {
   /**
    * You should never construct this directly.
    */
@@ -90,38 +84,38 @@ class IndexDBHelper {
 
   /**
    * Get an opened IndexedDB.
-   * @param {String} name 
-   * @param {Number} version 
-   * @param {String} storename 
+   * @param {string} name
+   * @param {Number} version
+   * @param {string} storename
    * @param {Object} objectStoreOptions
-   * @return {Promise<IndexedDBObjectStore>}
+   * @return {Promise<IDBObjectStore>}
    */
-  getDB(name, version, storename, objectStoreOptions) {
+  async getDB(name, version, storename, objectStoreOptions) {
     if (this._opendedDBs[name]) {
-      return Promise.resolve(this._opendedDBs[name]);
+      return this._opendedDBs[name];
     }
 
-    return new Promise((resolve, reject) => {
+    const db = await new Promise((resolve, reject) => {
       const openRequest = indexedDB.open(name, version);
-      openRequest.onupgradeneeded = function(event) {
+      openRequest.onupgradeneeded = (event) => {
         const db = event.target.result;
 
         // Create an objectStore for this database
         db.createObjectStore(storename, objectStoreOptions);
       };
-      openRequest.onerror = function(event) {
+      openRequest.onerror = () => {
         // Do something with request.errorCode!
-        reject();
+        reject(openRequest.error);
       };
-      openRequest.onsuccess = function(event) {
+
+      openRequest.onsuccess = (event) => {
         resolve(event.target.result);
       };
-    })
-    .then((db) => {
-      this._opendedDBs[name] = new DBWrapper(db, storename);
-      return this._opendedDBs[name];
     });
+
+    this._opendedDBs[name] = new DBWrapper(db, storename);
+    return this._opendedDBs[name];
   }
 }
 
-export default new IndexDBHelper();
+export default new IndexedDBHelper();

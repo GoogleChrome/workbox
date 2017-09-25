@@ -12,7 +12,7 @@ import cleanRedirect from '../utils/cleanRedirect.mjs';
 export default class PrecacheController {
   /**
    * Create a new PrecacheController Instance
-   * @param {String} cacheName;
+   * @param {string} cacheName;
    */
   constructor(cacheName) {
     this._cacheName = _private.cacheNameProvider.getPrecacheName(cacheName);

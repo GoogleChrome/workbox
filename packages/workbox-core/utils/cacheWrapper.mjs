@@ -2,7 +2,7 @@
  * Wrapper around cache.put().
  *
  * Will call `cacheDidUpdate` on plugins if the cache was updated.
- * @param {String} cacheName
+ * @param {string} cacheName
  * @param {Request} request
  * @param {Response} response
  * @param {Array<Object>} [plugins]
@@ -40,7 +40,7 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
 /**
  * This is a wrapper around cache.match().
  *
- * @param {String} cacheName Name of the cache to match against.
+ * @param {string} cacheName Name of the cache to match against.
  * @param {Request} request The Request that will be used to look up cache
  * entries.
  * @param {Object} matchOptions Options passed to cache.match().

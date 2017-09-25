@@ -9,7 +9,7 @@ const VERSION = 1;
 export default class PrecachedDetailsModel {
   /**
    * Construct a new model for a specific cache.
-   * @param {String} cacheName 
+   * @param {string} cacheName
    */
   constructor(cacheName) {
     this._cacheName = _private.cacheNameProvider.getPrecacheName(cacheName);
@@ -17,9 +17,9 @@ export default class PrecachedDetailsModel {
 
   /**
    * Check if an entry is already cached. Returns false if
-   * the entry isn't cached or the revisioned has changed.
-   * @param {PrecacheEntry} precacheEntry 
-   * @return {Boolean}
+   * the entry isn't cached or the revision has changed.
+   * @param {PrecacheEntry} precacheEntry
+   * @return {boolean}
    */
   async isEntryCached(precacheEntry) {
     const revisionDetails = await this._getRevision(precacheEntry._entryId);
@@ -29,7 +29,7 @@ export default class PrecachedDetailsModel {
 
     const openCache = await caches.open(this._cacheName);
     const cachedResponse = await openCache.match(precacheEntry._request);
-    return cachedResponse ? true : false;
+    return !!cachedResponse;
   }
 
   /**
@@ -38,34 +38,31 @@ export default class PrecachedDetailsModel {
    * @return {Promise<String>}
    */
   async _getRevision(entryId) {
-    return this._getDb()
-    .then((db) => {
-      return db.get(entryId);
-    })
-    .then((data) => {
-      return data ? data.revision : null;
-    });
+    const db = await this._getDb();
+    const data = await db.get(entryId);
+    return data ? data.revision : null;
   }
 
   /**
    * Add an entry to the details model.
-   * @param {PrecacheEntry} precacheEntry 
+   * @param {PrecacheEntry} precacheEntry
    * @return {Promise}
    */
-  addEntry(precacheEntry) {
-    return this._getDb()
-    .then((db) => {
-      return db.put(precacheEntry._entryId, {
-        revision: precacheEntry._revision,
-      });
+  async addEntry(precacheEntry) {
+    const db = await this._getDb();
+    return db.put(precacheEntry._entryId, {
+      revision: precacheEntry._revision,
     });
   }
 
-  deleteEntry(precacheEntry) {
-    return this._getDb()
-    .then((db) => {
-      return db.delete(precacheEntry._entryId);
-    });
+  /**
+   * Delete entry from details model;
+   * @param precacheEntry
+   * @return {Promise}
+   */
+  async deleteEntry(precacheEntry) {
+    const db = await this._getDb();
+    return db.delete(precacheEntry._entryId);
   }
 
   /**
@@ -73,7 +70,7 @@ export default class PrecachedDetailsModel {
    * @return{Promise<DBWrapper>}
    */
   _getDb() {
-    return _private.indexDBHelper.getDB(
+    return _private.indexedDBHelper.getDB(
       `workbox-precaching`, VERSION, `precached-details-models`);
   }
 }
