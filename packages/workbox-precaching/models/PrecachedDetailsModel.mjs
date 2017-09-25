@@ -35,7 +35,7 @@ export default class PrecachedDetailsModel {
   /**
    * Get the current revision details.
    * @param {Object} entryId
-   * @return {Promise<String>}
+   * @return {Promise<string>}
    */
   async _getRevision(entryId) {
     const db = await this._getDb();
