@@ -57,7 +57,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.1",
     "gzip-size": "^4.0.0",
-    "lerna": "^2.1.2",
+    "lerna": "^2.2.0",
     "mocha": "^3.5.3",
     "nyc": "^11.2.1",
     "path-extra": "^4.2.1",
