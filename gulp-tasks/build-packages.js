@@ -164,7 +164,7 @@ const buildNodePackage = (packagePath) => {
       }],
     ],
     plugins: [
-      'transform-runtime'
+      'transform-runtime',
     ],
   })).pipe(gulp.dest(outputDirectory));
 };
