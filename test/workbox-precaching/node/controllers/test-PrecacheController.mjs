@@ -4,7 +4,7 @@ import clearRequire from 'clear-require';
 import makeServiceWorkerEnv from 'service-worker-mock';
 
 import expectError from '../../../../infra/utils/expectError';
-import generateTestVariants from '../../../../infra/utils/generate-variant-tests'
+import generateTestVariants from '../../../../infra/utils/generate-variant-tests';
 import '../../../mocks/mock-fetch';
 
 const PRECACHE_MANAGER_PATH = '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
@@ -62,7 +62,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       123,
       '',
       null,
-      undefined
+      undefined,
     ];
     generateTestVariants(`should throw when passing in non-array values`, badTopLevelInputs, async (variant) => {
       const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
@@ -101,11 +101,11 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         '/scripts/controllers/hello.js',
       ],
       'url only object entries': [
-        { url: '/' },
-        { url: '/hello.html' },
-        { url: '/styles/hello.css' },
-        { url: '/scripts/controllers/hello.js' },
-      ]
+        {url: '/'},
+        {url: '/hello.html'},
+        {url: '/styles/hello.css'},
+        {url: '/scripts/controllers/hello.js'},
+      ],
     };
 
     Object.keys(unrevisionedEntryGroups).map((groupName) => {
@@ -202,10 +202,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const precacheController = new PrecacheController();
 
       const inputObjects = [
-        { url: '/', revision: '123' },
-        { url: '/hello.html', revision: '123' },
-        { url: '/styles/hello.css', revision: '123' },
-        { url: '/scripts/controllers/hello.js', revision: '123' },
+        {url: '/', revision: '123'},
+        {url: '/hello.html', revision: '123'},
+        {url: '/styles/hello.css', revision: '123'},
+        {url: '/scripts/controllers/hello.js', revision: '123'},
       ];
       precacheController.addToCacheList(inputObjects);
 
@@ -226,7 +226,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const logStub = sandbox.stub(logger, 'log');
 
       const precacheController = new PrecacheController();
-      precacheController.addToCacheList([{ url: '/example.html', revision: '123' }]);
+      precacheController.addToCacheList([{url: '/example.html', revision: '123'}]);
 
       expect(warnStub.callCount).to.equal(0);
       expect(debugStub.callCount).to.equal(0);
@@ -237,7 +237,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheController = new PrecacheController();
 
-      const singleObject = { url: '/duplicate.html', revision: '123' };
+      const singleObject = {url: '/duplicate.html', revision: '123'};
       const inputObjects = [
         singleObject,
         singleObject,
@@ -253,8 +253,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
     it(`should throw on conflicting entries with different revisions`, async function() {
       const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-      const firstEntry = { url: '/duplicate.html', revision: '123' };
-      const secondEntry = { url: '/duplicate.html', revision: '456' };
+      const firstEntry = {url: '/duplicate.html', revision: '123'};
+      const secondEntry = {url: '/duplicate.html', revision: '456'};
       return expectError(() => {
         const precacheController = new PrecacheController();
         const inputObjects = [
@@ -291,9 +291,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const precacheController = new PrecacheController();
       const cacheList = [
         '/index.1234.html',
-        { url: '/example.1234.css' },
-        { url: '/scripts/index.js', revision: '1234'},
-        { url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
+        {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
       ];
       precacheController.addToCacheList(cacheList);
 
@@ -339,8 +339,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const precacheController = new PrecacheController();
       precacheController.addToCacheList([
         '/index.1234.html',
-        { url: '/example.1234.css' },
-        { url: '/scripts/index.js', revision: '1234'},
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
       ]);
 
       await precacheController.install();
@@ -365,8 +365,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const precacheController = new PrecacheController();
       precacheController.addToCacheList([
         '/index.1234.html',
-        { url: '/example.1234.css' },
-        { url: '/scripts/index.js', revision: '1234'},
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
       ]);
 
       await precacheController.install();
@@ -380,12 +380,12 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheController = new PrecacheController(`test-cache-name`);
-      
+
       const cacheList = [
-        { url: '/scripts/index.js', revision: '1234'},
-        { url: '/index.html', revision: '1234'},
+        {url: '/scripts/index.js', revision: '1234'},
+        {url: '/index.html', revision: '1234'},
       ];
-      
+
       precacheController.addToCacheList(cacheList);
       await precacheController.install();
 
@@ -398,5 +398,5 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         expect(cachedResponse).to.exist;
       }
     });
-  })
+  });
 });

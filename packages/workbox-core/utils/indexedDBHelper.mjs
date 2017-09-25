@@ -5,6 +5,7 @@ class DBWrapper {
   /**
    * Wraps a provided Database.
    * @param {IndexedDB} idb
+   * @param {string} storename
    */
   constructor(idb, storename) {
     this._db = idb;

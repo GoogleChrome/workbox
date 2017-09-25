@@ -57,7 +57,7 @@ export default class PrecachedDetailsModel {
 
   /**
    * Delete entry from details model;
-   * @param precacheEntry
+   * @param {PrecacheEntry} precacheEntry
    * @return {Promise}
    */
   async deleteEntry(precacheEntry) {

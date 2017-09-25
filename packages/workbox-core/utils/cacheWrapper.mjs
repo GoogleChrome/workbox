@@ -6,7 +6,6 @@
  * @param {Request} request
  * @param {Response} response
  * @param {Array<Object>} [plugins]
- * @return {Promise}
  */
 const putWrapper = async (cacheName, request, response, plugins = []) => {
   let responseToCache = await _isResponseSafeToCache(
@@ -74,6 +73,7 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
  * @param {Request} request
  * @param {Response} response
  * @param {Array<Objects>} plugins
+ * @return {Promise<Response>}
  */
 const _isResponseSafeToCache = async (request, response, plugins) => {
   let responseToCache = response;

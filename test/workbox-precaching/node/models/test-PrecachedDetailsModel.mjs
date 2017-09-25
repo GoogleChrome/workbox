@@ -23,7 +23,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
   beforeEach(function() {
     reset();
   });
-  
+
   describe('constructor', function() {
     it(`should construct with no input`, async function() {
       const moduleExports = await import(MODULE_PATH);
@@ -77,7 +77,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     it(`should return false for entry with revision but not in cache`, async function() {
       const moduleExports = await import(MODULE_PATH);
       const PrecachedDetailsModel = moduleExports.default;
-      
+
       const model = new PrecachedDetailsModel();
 
       await model.addEntry({
@@ -85,7 +85,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
         _revision: '1234',
         _request: new Request('/'),
       });
-      
+
       const isCached = await model.isEntryCached({
         _entryId: `/`,
         _revision: `1234`,
@@ -97,15 +97,15 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     it(`should return true if entry with revision and in cache`, async function() {
       const moduleExports = await import(MODULE_PATH);
       const PrecachedDetailsModel = moduleExports.default;
-      
+
       const model = new PrecachedDetailsModel();
-      
+
       await model.addEntry({
         _entryId: '/',
         _revision: '1234',
         _request: new Request('/'),
       });
-      
+
       const cacheName = corePrivate.cacheNameProvider.getPrecacheName();
       const openCache = await caches.open(cacheName);
       openCache.put('/', new Response('Hello'));
@@ -125,7 +125,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     it(`should be able to delete an entry`, async function() {
       const moduleExports = await import(MODULE_PATH);
       const PrecachedDetailsModel = moduleExports.default;
-      
+
       const model = new PrecachedDetailsModel();
       await model.deleteEntry({
         _entryId: '/',
