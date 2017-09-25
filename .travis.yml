@@ -14,6 +14,7 @@ env:
   - BROWSER_PACKAGE="workbox-build"
   - BROWSER_PACKAGE="workbox-core"
   - BROWSER_PACKAGE="workbox-precaching"
+  - BROWSER_PACKAGE="workbox-routing"
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
