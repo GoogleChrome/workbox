@@ -12,8 +12,10 @@ import cleanRedirect from '../utils/cleanRedirect.mjs';
 export default class PrecacheController {
   /**
    * Create a new PrecacheController Instance
+   * @param {string} cacheName;
    */
-  constructor() {
+  constructor(cacheName) {
+    this._cacheName = _private.cacheNameProvider.getPrecacheName(cacheName);
     this._entriesToCacheMap = new Map();
     if (process.env.NODE_ENV !== 'production') {
       this.checkEntryRevisioning = true;
@@ -51,7 +53,8 @@ export default class PrecacheController {
 
   /**
    * This method returns a precache entry.
-   * @param input
+   * @param {string|Object} input
+   * @return {PrecacheEntry}
    */
   _parseEntry(input) {
     switch (typeof input) {
@@ -107,7 +110,7 @@ export default class PrecacheController {
   /**
    * Call this method from a service work install event to start
    * precaching assets.
-   *
+   * @return {Promise<Object>}
    */
   async install() {
     const updatedEntries = [];
@@ -162,7 +165,7 @@ export default class PrecacheController {
       response = await cleanRedirect(response);
     }
 
-    await _private.cacheWrapper.put('TODO-CHANGE-ME',
+    await _private.cacheWrapper.put(this._cacheName,
       precacheEntry._cacheRequest, response);
 
     // TODO: Add details to revision details model

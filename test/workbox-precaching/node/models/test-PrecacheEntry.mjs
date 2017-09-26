@@ -8,7 +8,7 @@ import '../../../mocks/mock-fetch';
 const PRECACHE_ENTRY_PATH = '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 const MOCK_LOCATION = 'https://example.com';
 
-describe('workbox-precaching PrecacheEntry', function() {
+describe('[workbox-precaching] PrecacheEntry', function() {
   const sandbox = sinon.sandbox.create();
 
   before(function() {
@@ -33,14 +33,14 @@ describe('workbox-precaching PrecacheEntry', function() {
     it(`should use search param if 'cache' option is not supported`, async function() {
       const PrecacheEntryModule = await import(PRECACHE_ENTRY_PATH);
       const PrecacheEntry = PrecacheEntryModule.default;
-      const entry = new PrecacheEntry('example', '/url', '1234',new Request('/url'), true);
+      const entry = new PrecacheEntry('example', '/url', '1234', new Request('/url'), true);
       expect(entry._networkRequest.url).to.equal(`${MOCK_LOCATION}/url?_workbox-precaching=1234`);
     });
 
     it(`should use search param if 'cache' option is not supported and keep previous search params`, async function() {
       const PrecacheEntryModule = await import(PRECACHE_ENTRY_PATH);
       const PrecacheEntry = PrecacheEntryModule.default;
-      const entry = new PrecacheEntry('example', '/url', '1234',new Request('/url?foo=bar'), true);
+      const entry = new PrecacheEntry('example', '/url', '1234', new Request('/url?foo=bar'), true);
       expect(entry._networkRequest.url).to.equal(`${MOCK_LOCATION}/url?foo=bar&_workbox-precaching=1234`);
     });
 

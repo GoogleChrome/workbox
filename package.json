@@ -6,7 +6,7 @@
   "scripts": {
     "local-lerna": "lerna",
     "test": "nyc --require @std/esm --reporter=lcov --reporter=text mocha",
-    "lint": "eslint '.' --ignore-path .gitignore",
+    "lint": "eslint \"**/*.{js,mjs}\" --ignore-path .gitignore",
     "bot": "pr-bot",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
@@ -41,6 +41,7 @@
     "@google-cloud/storage": "^1.2.1",
     "@std/esm": "^0.5.1",
     "archiver": "^2.0.3",
+    "babel-eslint": "^8.0.0",
     "babylon": "^6.18.0",
     "bytes": "^3.0.0",
     "chai": "^4.1.2",
@@ -74,9 +75,11 @@
     "rollup-stream": "^1.24.1",
     "semver": "^5.4.1",
     "service-worker-mock": "^1.2.2",
+    "shelving-mock-indexeddb": "^1.0.4",
     "sinon": "^3.2.1",
     "uglify-es": "^3.1.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
-  }
+  },
+  "dependencies": {}
 }

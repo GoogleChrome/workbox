@@ -12,7 +12,7 @@ import messageGenerator from './messages/messageGenerator.mjs';
 export default class WorkboxError extends Error {
   /**
    *
-   * @param {String} errorCode The error code that
+   * @param {string} errorCode The error code that
    * identifies this particular error.
    * @param {Object=} details Any relevant arguments
    * that will help developers identify issues should

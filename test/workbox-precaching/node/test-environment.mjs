@@ -3,9 +3,8 @@ import sinon from 'sinon';
 import clearRequire from 'clear-require';
 
 import expectError from '../../../infra/utils/expectError';
-import constants from '../../../gulp-tasks/utils/constants.js';
 
-describe(`WorkboxPrecaching`, function() {
+describe(`[workbox-precaching] WorkboxPrecaching`, function() {
   let sandbox;
 
   before(function() {
@@ -43,7 +42,7 @@ describe(`WorkboxPrecaching`, function() {
     it(`should not throw in production builds`, async function() {
       process.env.NODE_ENV = 'production';
 
-      await import('../../../packages/workbox-precaching/index.mjs')
+      await import('../../../packages/workbox-precaching/index.mjs');
     });
   });
 });
