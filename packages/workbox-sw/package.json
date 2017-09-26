@@ -21,8 +21,8 @@
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-sw",
-  "main": "build/importScripts/workbox-sw.prod.v2.0.2-rc1-2.0.2-rc1.0.js",
-  "module": "build/modules/workbox-sw.prod.v2.0.2-rc1-2.0.2-rc1.0.mjs",
+  "main": "build/importScripts/workbox-sw.prod.v2.0.2.js",
+  "module": "build/modules/workbox-sw.prod.v2.0.2.mjs",
   "devDependencies": {
     "workbox-broadcast-cache-update": "^2.0.2",
     "workbox-cache-expiration": "^2.0.2",
