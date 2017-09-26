@@ -164,6 +164,10 @@ const buildNodePackage = (packagePath) => {
       }],
     ],
     plugins: [
+      // This ensures that the helpers used by Babel to accompany transpilation
+      // are only included in our Rollup bundles once, even if they're used
+      // in multiple source files.
+      // See https://github.com/rollup/rollup-plugin-babel#helpers
       'transform-runtime',
     ],
   })).pipe(gulp.dest(outputDirectory));
