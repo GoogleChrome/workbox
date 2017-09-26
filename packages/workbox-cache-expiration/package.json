@@ -1,6 +1,6 @@
 {
   "name": "workbox-cache-expiration",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A service worker helper library that expires cached responses based on age or maximum number of entries.",
   "keywords": [
     "workbox",
@@ -21,9 +21,9 @@
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-cache-expiration",
-  "main": "build/importScripts/workbox-cache-expiration.prod.v2.0.2.js",
-  "module": "build/modules/workbox-cache-expiration.prod.v2.0.2.mjs",
+  "main": "build/importScripts/workbox-cache-expiration.prod.v2.0.3.js",
+  "module": "build/modules/workbox-cache-expiration.prod.v2.0.3.mjs",
   "devDependencies": {
-    "workbox-runtime-caching": "^2.0.2"
+    "workbox-runtime-caching": "^2.0.3"
   }
 }

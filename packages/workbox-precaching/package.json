@@ -1,6 +1,6 @@
 {
   "name": "workbox-precaching",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A lower-level server worker library to precache a manifest of URLs.",
   "keywords": [
     "workbox",
@@ -24,9 +24,9 @@
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-precaching",
   "devDependencies": {
-    "workbox-routing": "^2.0.2",
-    "workbox-runtime-caching": "^2.0.2"
+    "workbox-routing": "^2.0.3",
+    "workbox-runtime-caching": "^2.0.3"
   },
-  "main": "build/importScripts/workbox-precaching.prod.v2.0.2.js",
-  "module": "build/modules/workbox-precaching.prod.v2.0.2.mjs"
+  "main": "build/importScripts/workbox-precaching.prod.v2.0.3.js",
+  "module": "build/modules/workbox-precaching.prod.v2.0.3.mjs"
 }

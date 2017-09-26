@@ -1,6 +1,6 @@
 {
   "name": "workbox-range-requests",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "This library creates a new Response, given a source Response and a Range header value.",
   "keywords": [
     "workbox",
@@ -23,6 +23,6 @@
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-range-requests",
-  "main": "build/importScripts/workbox-range-requests.prod.v2.0.2.js",
-  "module": "build/modules/workbox-range-requests.prod.v2.0.2.mjs"
+  "main": "build/importScripts/workbox-range-requests.prod.v2.0.3.js",
+  "module": "build/modules/workbox-range-requests.prod.v2.0.3.mjs"
 }
