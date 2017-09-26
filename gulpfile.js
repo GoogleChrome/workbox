@@ -38,7 +38,6 @@ global.cliOptions = options;
 // requires is important
 const gulpTaskFiles = [
   'build-packages',
-  'build-test-bundles',
   'build',
   'lint',
   'test',

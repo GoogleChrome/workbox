@@ -2,17 +2,33 @@ const path = require('path');
 const glob = require('glob');
 const oneLine = require('common-tags').oneLine;
 
-const constants = require('./constants');
 const pkgPathToName = require('./pkg-path-to-name');
 
-const getProjectType = (pathToPackageJson) => {
-  const pkgInfo = require(pathToPackageJson);
-  // Let's assume that if engines.node is set in the project's package.json then
-  // it's a Node project.
-  return pkgInfo.engines && pkgInfo.engines.node ?
-    constants.PROJECT_TYPES.NODE :
-    constants.PROJECT_TYPES.BROWSER;
-};
+/**
+ * @param {string} [typeFilter] If provided, only return packages whose
+ * workbox.packageType field matches this value.
+ * @return Array<string> Paths to package.json files for the matching packages.
+ */
+function getPackages(typeFilter) {
+  return glob.sync(
+    `packages/${global.packageOrStar}/package.json`, {
+      absolute: true,
+    }
+  ).filter((pathToPackageJson) => {
+    const pkgInfo = require(pathToPackageJson);
+    const packageType = pkgInfo.workbox.packageType;
+    if (!packageType) {
+      throw Error(oneLine`Unable to determine package type. Please add
+      workbox.packageType metadata to ${pathToPackageJson}`);
+    }
+
+    return typeFilter ?
+      // If typeFilter is specified, check to see if we care about this package.
+      typeFilter === packageType :
+      // Otherwise, just return true, so all packages are included.
+      true;
+  });
+}
 
 /*
  * This methods only purpose is to call a function with
@@ -35,20 +51,20 @@ const getProjectType = (pathToPackageJson) => {
  * ```javascript
  * gulp.task('build',
  *   gulp.series(
- *     packageRunner(displayName, functionForEachProjectType, arg1, arg2)
+ *     packageRunner(displayName, packagePaths, func, arg1, arg2)
  *   )
  * );
  * ```
  *
  * Package runner will return an array of functions that
- * will call `functionForEachProjectType` where the first argument
+ * will call `func` where the first argument
  * is the absolute path to a package,
  * like `/user/matt/workbox/packages/workbox-core` and
  * the remaining arguments will be whatever is passed to
  * packageRunner, in the above sample this would be
- * `someArg` and `someMoreArgs`.
+ * `arg1` and `arg2`.
  *
- * In the example above, `someFunc` would be written as:
+ * In the example above, `func` would be written as:
  *
  * ```javascript
  * function functionForEachProjectType(packagePath, arg1, arg2) {
@@ -68,8 +84,8 @@ const getProjectType = (pathToPackageJson) => {
  * `gulp.parallel`.
  *
  * ```javascript
- * gulp.series(packageRunner(displayName, functionForEachProjectType))
- * gulp.parallel(packageRunner(displayName, functionForEachProjectType))
+ * gulp.series(packageRunner(displayName, packagePaths, func))
+ * gulp.parallel(packageRunner(displayName, packagePaths, func))
  * ```
  *
  * If you need to call the runner with multiple functions
@@ -80,29 +96,25 @@ const getProjectType = (pathToPackageJson) => {
  *
  * ```javascript
  * gulp.parallel(
- *   packageRunner(displayName, functionForEachProjectType, true),
- *   packageRunner(displayName, functionForEachProjectType, false),
+ *   packageRunner(displayName, packagePaths, func, true),
+ *   packageRunner(displayName, packagePaths, func, false),
  * )
  * ```
  *
  * If we run the above, it would call the appropriate
- * `functionForEachProjectType` for all packages in workbox twice, once with
+ * `func` for all packages in workbox twice, once with
  * argument `true` and once with `false`. `gulp.parallel` will run all of these
- * calls to `functionForEachProjectType` in parallel.
+ * calls to `func` in parallel.
+ *
+ * @param {string} displayName A friendly name to log.
+ * @param Array<string> packagePaths Paths to package.json files corresponding
+ * to all the packages we want to run func against.
+ * @param {function} func The function that we want to run for each package.
+ * @param {*} args Any arguments that should be passed in to the func.
+ * @return Array<function> All of the function wrappers.
  */
-module.exports = (displayName, funcsForProjectTypes, ...args) => {
-  const packagePaths = glob.sync(
-    `packages/${global.packageOrStar}/package.json`, {
-      absolute: true,
-    }
-  );
-
+function wrapFunction(displayName, packagePaths, func, ...args) {
   return packagePaths.map((packagePath) => {
-    const projectType = getProjectType(packagePath);
-    const func = funcsForProjectTypes[projectType];
-    if (!func) {
-      return;
-    }
     const packageRootPath = path.dirname(packagePath);
 
     const wrappedFunc = () => func(packageRootPath, ...args);
@@ -111,5 +123,10 @@ module.exports = (displayName, funcsForProjectTypes, ...args) => {
       (${pkgPathToName(packageRootPath)})
       ${args.length === 0 ? '' : JSON.stringify(args)}`;
     return wrappedFunc;
-  }).filter((func) => typeof func === 'function');
+  });
+}
+
+module.exports = {
+  getPackages,
+  wrapFunction,
 };

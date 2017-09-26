@@ -1,246 +1,59 @@
-const babel = require('gulp-babel');
-const buffer = require('vinyl-buffer');
-const fs = require('fs-extra');
+const eventStream = require('event-stream');
+const fse = require('fs-extra');
 const gulp = require('gulp');
-const oneLine = require('common-tags').oneLine;
 const path = require('path');
-const rename = require('gulp-rename');
-const rollup = require('rollup');
-const rollupStream = require('rollup-stream');
-const source = require('vinyl-source-stream');
-const sourcemaps = require('gulp-sourcemaps');
 
+const buildBrowserPackage = require('./utils/build-browser-package');
+const buildNodePackage = require('./utils/build-node-package');
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
-const pkgPathToName = require('./utils/pkg-path-to-name');
-const rollupHelper = require('./utils/rollup-helper');
-const logHelper = require('../infra/utils/log-helper');
 
-/*
- * To test sourcemaps are valid and working, use:
- * http://paulirish.github.io/source-map-visualization/#custom-choose
- */
-
-const ERROR_NO_MODULE_INDEX = `Could not find the modules index.mjs file: `;
-const ERROR_NO_NAMSPACE = oneLine`
-  You must define a 'browserNamespace' parameter in the 'package.json'.
-  Exmaple: 'workbox-precaching' would have a browserNamespace param of
-  'precaching' in 'package.json'. This will be appended to
-  '${constants.NAMESPACE_PREFIX}' meaning developers would use
-  '${constants.NAMESPACE_PREFIX}.precaching' in their
-  JavaScript. Please fix for:
-`;
-
-// This makes Rollup assume workbox-* will be added to the global
-// scope and replace references with the core namespace
-const globals = (moduleId) => {
-  const splitModuleId = moduleId.split('/');
-  if (splitModuleId[0].indexOf('workbox-') !== 0) {
-    throw new Error(`Unknown global module ID: ${moduleId}`);
-  }
-
-  const packageName = splitModuleId.shift();
-  if (splitModuleId.length > 0) {
-    throw new Error(oneLine`
-    All imports of workbox-* modules must be done from the top level export.
-    (i.e. import * from 'workbox-*') This ensures that the browser
-    namespacing works correctly. Please remove '${splitModuleId.join('/')}'
-    from the import '${moduleId}'.
-  `);
-  }
-
-  // Get a package's browserNamespace so we know where it will be
-  // on the global scope (i.e. workbox.<name space>)
-  const packagePath = path.join(__dirname, '..', 'packages', packageName);
-  try {
-    const pkg = require(path.join(packagePath, 'package.json'));
-    return `${constants.NAMESPACE_PREFIX}.${pkg.workbox.browserNamespace}`;
-  } catch (err) {
-    logHelper.error(`Unable to get browserNamespace for package: ` +
-      `'${packageName}'`);
-    logHelper.error(err);
-    throw err;
-  }
-};
-
-// This ensures all workbox-* modules are treated as external and are
-// referenced as globals.
-const externalAndPure = (moduleId) => (moduleId.indexOf('workbox-') === 0);
-
-const buildBrowserPackage = (packagePath, buildType) => {
-  const packageName = pkgPathToName(packagePath);
-  const moduleIndexPath = path.join(packagePath, `index.mjs`);
-
-  // First check if the bundle file exists, if it doesn't
-  // there is nothing to build
-  if (!fs.pathExistsSync(moduleIndexPath)) {
-    logHelper.error(ERROR_NO_MODULE_INDEX + packageName);
-    return Promise.reject(ERROR_NO_MODULE_INDEX + packageName);
-  }
-
-  const pkgJson = require(path.join(packagePath, 'package.json'));
-  if (!pkgJson.workbox || !pkgJson.workbox.browserNamespace) {
-    logHelper.error(ERROR_NO_NAMSPACE + ' ' + packageName);
-    return Promise.reject(ERROR_NO_NAMSPACE + ' ' + packageName);
-  }
-
-  const namespace =
-    `${constants.NAMESPACE_PREFIX}.${pkgJson.workbox.browserNamespace}`;
-  const outputFilename = `${packageName}.${buildType.slice(0, 4)}.js`;
-  const outputDirectory = path.join(packagePath,
-    constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
-
-  logHelper.log(oneLine`
-    Building Browser Bundle for
-    ${logHelper.highlight(packageName)}.
-  `);
-  logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
-  logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
-
-  return rollupStream({
-    input: moduleIndexPath,
-    rollup,
-    format: 'iife',
-    exports: 'named',
-    name: namespace,
-    sourcemap: true,
-    globals,
-    external: externalAndPure,
-    pureExternalModules: externalAndPure,
-    plugins: rollupHelper.getDefaultPlugins(buildType),
-    onwarn: (warning) => {
-      if (buildType === 'production' &&
-        warning.code === 'UNUSED_EXTERNAL_IMPORT') {
-        // This can occur when using rollup-plugin-replace.
-        logHelper.warn(`[${warning.code}] ${warning.message}`);
-        return;
-      }
-
-      // The final builds should have no warnings.
-      throw new Error(`Unhandled Rollup Warning: [${warning.code}] ` +
-        `'${warning.message}'`);
-    },
-  })
-  .on('error', (err) => {
-    const args = [];
-    Object.keys(err).forEach((key) => {
-      args.push(`${key}: ${err[key]}`);
-    });
-    logHelper.error(err, `\n\n${args.join('\n')}`);
-    throw err;
-  })
-  // We must give the generated stream the same name as the entry file
-  // for the sourcemaps to work correctly
-  .pipe(source(moduleIndexPath))
-  // gulp-sourcemaps don't work with streams so we need
-  .pipe(buffer())
-  // This tells gulp-sourcemaps to load the inline sourcemap
-  .pipe(sourcemaps.init({loadMaps: true}))
-  // This renames the output file
-  .pipe(rename(outputFilename))
-  // This writes the sourcemap alongside the final build file
-  .pipe(sourcemaps.write('.'))
-  .pipe(gulp.dest(outputDirectory));
-};
-
-const buildNodePackage = (packagePath) => {
-  const packageName = pkgPathToName(packagePath);
+const cleanPackage = (packagePath) => {
   const outputDirectory = path.join(packagePath,
     constants.PACKAGE_BUILD_DIRNAME);
-
-  logHelper.log(oneLine`
-    Building Node Package for
-    ${logHelper.highlight(packageName)}.
-  `);
-
-  return gulp.src(`${packagePath}/src/**`).pipe(babel({
-    only: /\.js$/,
-    presets: [
-      ['env', {
-        targets: {
-          // Change this when our minimum required node version changes.
-          node: '4.0',
-        },
-      }],
-    ],
-    plugins: [
-      // This ensures that the helpers used by Babel to accompany transpilation
-      // are only included in our Rollup bundles once, even if they're used
-      // in multiple source files.
-      // See https://github.com/rollup/rollup-plugin-babel#helpers
-      'transform-runtime',
-    ],
-  })).pipe(gulp.dest(outputDirectory));
-};
-
-const cleanPackages = (packagePath) => {
-  const outputDirectory = path.join(packagePath,
-    constants.PACKAGE_BUILD_DIRNAME);
-  return fs.remove(outputDirectory);
+  return fse.remove(outputDirectory);
 };
 
 gulp.task('build-packages:clean', gulp.series(
-  packageRunnner('build-packages:clean', {
-    [constants.PROJECT_TYPES.NODE]: cleanPackages,
-    [constants.PROJECT_TYPES.BROWSER]: cleanPackages,
-  })
+    packageRunnner.wrapFunction(
+      'Cleaning Package',
+      packageRunnner.getPackages(),
+      cleanPackage
+    )
 ));
 
-const packageBuilds = [
-  // Create a build for Node projects, using the buildNodePackage configuration.
-  packageRunnner('build-package', {
-    [constants.PROJECT_TYPES.NODE]: buildNodePackage,
-  }),
+gulp.task('build-packages:build', (done) => {
+  const buildStreams = [];
 
-  // Create multiple builds for Browser projects, one for each buildType,
-  // using the buildBrocessPackage configuration.
-  constants.BUILD_TYPES.map((buildType) => {
-    return packageRunnner('build-package', {
-      [constants.PROJECT_TYPES.BROWSER]: buildBrowserPackage,
-    }, buildType);
-  }),
-].filter((buildList) => buildList.every((build) => build));
+  const nodePackages = packageRunnner.getPackages('node');
+  if (nodePackages.length > 0) {
+    buildStreams.push(...packageRunnner.wrapFunction(
+      'Building Node Package',
+      nodePackages,
+      buildNodePackage
+    ));
+  }
 
-gulp.task('build-packages:build', gulp.series(packageBuilds));
-
-/*
- * This function will take an object and generate a friend export
- * object.
- * For example, { hello: world, example: { foo: foo } } will output:
- * "{
- *   hello: world,
- *   example: {
- *     foo,
- *   },
- * }"
- * @param {*} exportObject This is the object that needs to be converted
- * to a string.
- * @param {*} levels This value is just used for indenting the code to
- * ensure the final output is human readable and easy to understand.
- */
-const convertExportObject = (exportObject, levels = 0) => {
-  let outputStrings = [];
-  const keys = Object.keys(exportObject);
-  keys.forEach((key) => {
-    const value = exportObject[key];
-    if (typeof(value) === 'string') {
-      if (key === value) {
-        outputStrings.push(`${value}`);
-      } else {
-        outputStrings.push(`${key}: ${value}`);
-      }
-    } else {
-      const valueString = convertExportObject(value, levels + 1);
-      outputStrings.push(`${key}: ${valueString}`);
+  const browserPackages = packageRunnner.getPackages('browser');
+  if (browserPackages.length > 0) {
+    for (const buildType of constants.BUILD_TYPES) {
+      buildStreams.push(...packageRunnner.wrapFunction(
+        'Building Browser Package',
+        browserPackages,
+        buildBrowserPackage,
+        buildType
+      ));
     }
-  });
-  const padding = '  '.repeat(levels + 1);
-  const closePadding = '  '.repeat(levels);
-  const joinString = `,\n${padding}`;
-  return `{\n${padding}${outputStrings.join(joinString)}\n${closePadding}}`;
-};
+  }
 
-gulp.task('build-packages', gulp.series([
+  // Our various builds all return gulp streams. Kick them off and merge the
+  // result into a single stream that will emit 'end' when they have completed.
+  // Use that to signal the overall task completion.
+  return eventStream.merge(buildStreams.map((func) => func()))
+    .on('end', done);
+});
+
+gulp.task('build-packages', gulp.series(
   'build-packages:clean',
-  'build-packages:build',
-]));
+  'build-packages:build'
+));

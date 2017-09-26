@@ -31,5 +31,8 @@
   "main": "builds/index.js",
   "scripts": {
     "prepublish": "gulp build-packages --package workbox-build"
+  },
+  "workbox": {
+    "packageType": "node"
   }
 }
