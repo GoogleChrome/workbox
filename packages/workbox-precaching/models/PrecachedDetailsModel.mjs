@@ -35,7 +35,7 @@ export default class PrecachedDetailsModel {
   /**
    * Get the current revision details.
    * @param {Object} entryId
-   * @return {Promise<string>}
+   * @return {Promise<string|null>}
    */
   async _getRevision(entryId) {
     const db = await this._getDb();
@@ -50,7 +50,7 @@ export default class PrecachedDetailsModel {
    */
   async addEntry(precacheEntry) {
     const db = await this._getDb();
-    return db.put(precacheEntry._entryId, {
+    await db.put(precacheEntry._entryId, {
       revision: precacheEntry._revision,
     });
   }
@@ -62,7 +62,7 @@ export default class PrecachedDetailsModel {
    */
   async deleteEntry(precacheEntry) {
     const db = await this._getDb();
-    return db.delete(precacheEntry._entryId);
+    await db.delete(precacheEntry._entryId);
   }
 
   /**

@@ -4,7 +4,7 @@
 class DBWrapper {
   /**
    * Wraps a provided Database.
-   * @param {IndexedDB} idb
+   * @param {IDBDatabase} idb
    * @param {string} storename
    */
   constructor(idb, storename) {
@@ -86,18 +86,17 @@ class IndexedDBHelper {
   /**
    * Get an opened IndexedDB.
    * @param {string} name
-   * @param {Number} version
    * @param {string} storename
    * @param {Object} objectStoreOptions
    * @return {Promise<IDBObjectStore>}
    */
-  async getDB(name, version, storename, objectStoreOptions) {
+  async getDB(name, storename, objectStoreOptions) {
     if (this._opendedDBs[name]) {
       return this._opendedDBs[name];
     }
 
     const db = await new Promise((resolve, reject) => {
-      const openRequest = indexedDB.open(name, version);
+      const openRequest = indexedDB.open(name, 1);
       openRequest.onupgradeneeded = (event) => {
         const db = event.target.result;
 

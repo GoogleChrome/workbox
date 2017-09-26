@@ -72,7 +72,7 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
  * response.ok) to determine if the Response is safe and valid to cache.
  * @param {Request} request
  * @param {Response} response
- * @param {Array<Objects>} plugins
+ * @param {Array<Object>} plugins
  * @return {Promise<Response>}
  */
 const _isResponseSafeToCache = async (request, response, plugins) => {
