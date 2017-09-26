@@ -46,7 +46,6 @@ export default class PrecachedDetailsModel {
   /**
    * Add an entry to the details model.
    * @param {PrecacheEntry} precacheEntry
-   * @return {Promise}
    */
   async addEntry(precacheEntry) {
     const db = await this._getDb();
@@ -58,7 +57,6 @@ export default class PrecachedDetailsModel {
   /**
    * Delete entry from details model;
    * @param {PrecacheEntry} precacheEntry
-   * @return {Promise}
    */
   async deleteEntry(precacheEntry) {
     const db = await this._getDb();
