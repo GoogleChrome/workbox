@@ -1,7 +1,5 @@
 import {_private} from 'workbox-core';
 
-const VERSION = 1;
-
 /**
  * This model will track the relevant information of entries that
  * are cached and their matching revision details.
@@ -69,6 +67,6 @@ export default class PrecachedDetailsModel {
    */
   _getDb() {
     return _private.indexedDBHelper.getDB(
-      `workbox-precaching`, VERSION, `precached-details-models`);
+      `workbox-precaching`, `precached-details-models`);
   }
 }
