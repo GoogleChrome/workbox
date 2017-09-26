@@ -24,10 +24,8 @@ const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, swDes
   });
 
   if (fileManifestOutput.length !== expectedFiles.length) {
-    console.error('File Manifest: ', fileManifestOutput);
-    console.error('Globbed Files: ', expectedFiles);
-
-    throw new Error('File manifest and glob lengths are different.');
+    const details = {fileManifestOutput, expectedFiles};
+    throw new Error(`File manifest and glob lengths are different. Details: ${JSON.stringify(details)}`);
   }
 
   fileManifestOutput.forEach((fileManifestEntryDetails) => {
@@ -42,15 +40,13 @@ const validateFiles = (fileManifestOutput, exampleProject, fileExtensions, swDes
       let filePath = path.join(exampleProject, correctedURL);
       fs.statSync(filePath);
     } catch (err) {
-      console.error(err);
-      throw new Error(`The path '${fileManifestEntryDetails.url}' from the manifest doesn't seem valid.`);
+      throw new Error(`The path '${fileManifestEntryDetails.url}' from the manifest doesn't seem valid: ${err}`);
     }
 
     const expectedFileIndex = expectedFiles.indexOf(correctedURL);
     if (expectedFileIndex === -1) {
-      console.log('MANIFEST FILES: ', fileManifestOutput);
-      console.log('EXPECTED FILES: ', expectedFiles);
-      throw new Error(`Unexpected file in manifest (1): '${fileManifestEntryDetails.url}'`);
+      const details = {fileManifestOutput, expectedFiles};
+      throw new Error(`Unexpected file in manifest (1): '${fileManifestEntryDetails.url}'. Details: ${JSON.stringify(details)}`);
     }
 
     expectedFiles.splice(expectedFileIndex, 1);
@@ -91,10 +87,7 @@ const fakeRunAndGetManifest = (swDest) => {
 const fakeRunAndCompare = (generateSWCb, swDest, exampleProject, fileExtensions, modifyUrlPrefix) => {
   return generateSWCb()
   .then(() => {
-    console.log(`         Smoke testing first build of service worker @ '${swDest}'`);
     const manifest = fakeRunAndGetManifest(swDest);
-
-    console.log(`         Verifying the precached assets are as expected`);
     validateFiles(manifest, exampleProject, fileExtensions, swDest, modifyUrlPrefix);
   })
   .then(() => {
@@ -102,10 +95,7 @@ const fakeRunAndCompare = (generateSWCb, swDest, exampleProject, fileExtensions,
     return generateSWCb();
   })
   .then(() => {
-    console.log(`         Smoke testing second build of service worker @ '${swDest}'`);
     const manifest = fakeRunAndGetManifest(swDest);
-
-    console.log(`         Verifying the precached assets are as expected`);
     validateFiles(manifest, exampleProject, fileExtensions, swDest, modifyUrlPrefix);
 
     return manifest;

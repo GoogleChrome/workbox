@@ -30,11 +30,18 @@ module.exports = {
     files: [
       'packages/workbox-core/src/utils/LogHelper.js',
       'test/workbox-core/bundle/node/utils/test-LogHelper.js',
+      'infra/utils/cli-test-helper.js',
+      'infra/utils/log-helper.js',
+    ],
+    rules: {
+      'no-console': 0,
+    },
+  }, {
+    files: [
       'infra/**/*.js',
     ],
     rules: {
       'max-len': 0,
-      'no-console': 0,
     },
   }, {
     files: [

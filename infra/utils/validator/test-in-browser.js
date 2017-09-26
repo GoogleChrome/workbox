@@ -1,12 +1,13 @@
+const fs = require('fs');
+const logHelper = require('../log-helper');
+const path = require('path');
 const querystring = require('querystring');
 const seleniumAssistant = require('selenium-assistant');
-const fs = require('fs');
-const path = require('path');
 const url = require('url');
 
 const getSeleniumBrowser = () => {
   if (process.platform !== 'win32') {
-    console.log('Running in local Chrome stable.');
+    logHelper.log('Running in local Chrome stable.');
     return Promise.resolve(
       seleniumAssistant.getLocalBrowser('chrome', 'stable')
     );
@@ -14,11 +15,11 @@ const getSeleniumBrowser = () => {
 
   if (!process.env['SAUCELABS_USERNAME'] ||
     !process.env['SAUCELABS_ACCESS_KEY']) {
-    console.warn('Skipping SauceLabs tests due to no credentials in environment');
+    logHelper.warn('Skipping SauceLabs tests due to no credentials in environment');
     return Promise.resolve(null);
   }
 
-  console.log('Running in a windows Windows Environment, using SauceLabs.');
+  logHelper.log('Running in a windows Windows Environment, using SauceLabs.');
 
   const SAUCELABS_USERNAME = process.env['SAUCELABS_USERNAME'];
   const SAUCELABS_ACCESS_KEY = process.env['SAUCELABS_ACCESS_KEY'];
@@ -40,9 +41,9 @@ const testInBrowser = (baseTestUrl, fileManifestOutput, swDest, exampleProject, 
 
     const performCleanup = (err) => {
       if (err) {
-        console.error(err);
+        logHelper.error(err);
       }
-      console.log('Performing cleanup of selenium browser...');
+      logHelper.log('Performing cleanup of selenium browser...');
       return seleniumAssistant.stopSaucelabsConnect()
       .then(() => {
         if (!globalDriver) {
@@ -61,18 +62,18 @@ const testInBrowser = (baseTestUrl, fileManifestOutput, swDest, exampleProject, 
       });
     };
 
-    console.log('Getting selenium driver....');
+    logHelper.log('Getting selenium driver....');
     return assistantBrowser.getSeleniumDriver()
     .then((browserDriver) => {
       globalDriver = browserDriver;
     })
     .then(() => {
       const urlFriendlyDest = querystring.escape(swDest);
-      console.log(`Opening URL in browser: ${baseTestUrl}/index.html?sw=${urlFriendlyDest}`);
+      logHelper.log(`Opening URL in browser: ${baseTestUrl}/index.html?sw=${urlFriendlyDest}`);
       return globalDriver.get(`${baseTestUrl}/index.html?sw=${urlFriendlyDest}`);
     })
     .then(() => {
-      console.log('Waiting for browser to have window.__testresult set....');
+      logHelper.log('Waiting for browser to have window.__testresult set....');
       return globalDriver.wait(() => {
         return globalDriver.executeScript(() => {
           return typeof window.__testresult !== 'undefined';
@@ -80,13 +81,13 @@ const testInBrowser = (baseTestUrl, fileManifestOutput, swDest, exampleProject, 
       });
     })
     .then(() => {
-      console.log('Getting window.__testresult from browser....');
+      logHelper.log('Getting window.__testresult from browser....');
       return globalDriver.executeScript(() => {
         return window.__testresult;
       });
     })
     .then((testResult) => {
-      console.log('Retrieved test results from the browser...');
+      logHelper.log('Retrieved test results from the browser...');
       if (!testResult.entries) {
           throw new Error(`Bad test results from mocha: '${JSON.stringify(testResult)}'`);
         }
@@ -114,9 +115,9 @@ const testInBrowser = (baseTestUrl, fileManifestOutput, swDest, exampleProject, 
           }
           const expectedFileIndex = pathnames.indexOf(`/${correctedURL}`);
           if (expectedFileIndex === -1) {
-            console.log(pathnames);
-            console.log(entries);
-            console.log('Problem file: ', details.url);
+            logHelper.log(pathnames);
+            logHelper.log(entries);
+            logHelper.log('Problem file: ', details.url);
             throw new Error(`Unexpected file in manifest (2): '${details.url}'`);
           }
 
