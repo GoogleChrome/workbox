@@ -91,8 +91,9 @@ class IndexedDBHelper {
    * @return {Promise<IDBObjectStore>}
    */
   async getDB(name, storename, objectStoreOptions) {
-    if (this._opendedDBs[name]) {
-      return this._opendedDBs[name];
+    const id = `${name}::${storename}`;
+    if (this._opendedDBs[id]) {
+      return this._opendedDBs[id];
     }
 
     const db = await new Promise((resolve, reject) => {
@@ -113,8 +114,8 @@ class IndexedDBHelper {
       };
     });
 
-    this._opendedDBs[name] = new DBWrapper(db, storename);
-    return this._opendedDBs[name];
+    this._opendedDBs[id] = new DBWrapper(db, storename);
+    return this._opendedDBs[id];
   }
 }
 
