@@ -15,18 +15,15 @@ describe(`Test Dependencies`, function() {
       ],
     }, (unusedDeps) => {
       if (unusedDeps.dependencies.length > 0) {
-        console.log(unusedDeps.dependencies);
-        return reject(new Error('Unused dependencies defined in package.json'));
+        return reject(new Error(`Unused dependencies defined in package.json: ${JSON.stringify(unusedDeps.dependencies)}`));
       }
 
       if (unusedDeps.devDependencies.length > 0) {
-        console.log(unusedDeps.dependencies);
-        return reject(new Error('Unused devDependencies defined in package.json'));
+        return reject(new Error(`Unused dependencies defined in package.json: ${JSON.stringify(unusedDeps.devDependencies)}`));
       }
 
       if (Object.keys(unusedDeps.missing).length > 0) {
-        console.log(unusedDeps.missing);
-        return reject(new Error('Dependencies missing from package.json'));
+        return reject(new Error(`Dependencies missing from package.json: ${JSON.stringify(unusedDeps.missing)}`));
       }
 
       resolve();

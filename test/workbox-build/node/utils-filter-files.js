@@ -40,8 +40,7 @@ describe(`src/lib/utils/filter-files.js`, function() {
         }
       });
       if (!matchingGoodFile) {
-        console.warn(manifestEntry);
-        throw new Error('Unable to find matching file for manifest entry: ');
+        throw new Error(`Unable to find matching file for manifest entry: ${manifestEntry}`);
       }
 
       manifestEntry.url.should.equal(`${matchingGoodFile.file}`);

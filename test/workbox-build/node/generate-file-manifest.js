@@ -80,9 +80,11 @@ describe(`Test generateFileManifest`, function() {
           }
 
           if (manifestFilePath !== EXAMPLE_INPUT.manifestDest) {
-            console.log('manifestFilePath: ', manifestFilePath);
-            console.log('EXAMPLE_INPUT.manifestDest: ', EXAMPLE_INPUT.manifestDest);
-            throw new Error('Unexpected manifest File Path');
+            const details = {
+              manifestFilePath,
+              'EXAMPLE_INPUT.manifestDest': EXAMPLE_INPUT.manifestDest,
+            };
+            throw new Error(`Unexpected manifest file path: ${JSON.stringify(details)}`);
           }
 
           return Promise.resolve();

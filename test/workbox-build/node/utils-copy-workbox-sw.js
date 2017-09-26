@@ -64,9 +64,8 @@ describe(`src/lib/utils/copy-workbox-sw.js`, function() {
         `fake-path${pathSep}workbox-sw\.prod\.v\\d+\.\\d+\.\\d+\.js`);
       /* eslint-enable no-useless-escape */
       if (!workboxSWPath.match(regexPattern)) {
-        console.log('Regular expression: ' + regexPattern);
-        throw new Error('Unexpected result from copying workboxSW: ' +
-          workboxSWPath);
+        const details = {regexPattern, workboxSWPath};
+        throw new Error(`Unexpected result from copying workboxSW. Details: ${JSON.stringify(details)}`);
       }
 
       expect(jsFileCopied).to.equal(true);

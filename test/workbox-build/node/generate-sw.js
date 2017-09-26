@@ -118,8 +118,7 @@ describe(`Test generateSW()`, function() {
         args.globPatterns = input;
         return generateSW(args)
         .then(() => {
-          console.log('Input did not cause error: ', input);
-          throw new Error('Expected to throw error.');
+          throw new Error(`The input ${input} was expected to cause an error, but it didn't.`);
         })
         .catch((err) => {
           if (err.message !== errors['invalid-static-file-globs']) {
@@ -167,8 +166,7 @@ describe(`Test generateSW()`, function() {
         args.globIgnores = input;
         return generateSW(args)
         .then(() => {
-          console.log('Input did not cause error: ', input);
-          throw new Error('Expected to throw error.');
+          throw new Error(`The input ${input} was expected to cause an error, but it didn't.`);
         })
         .catch((err) => {
           if (err.message !== errors['invalid-glob-ignores']) {

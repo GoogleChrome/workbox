@@ -53,9 +53,8 @@ describe(`Test Injection Manifest`, function() {
       .then(() => {
         const fileOutput = fs.readFileSync(swDest).toString();
         if (fileOutput.indexOf(expectedString) === -1) {
-          console.log('DocName: ' + docName);
-          console.log('fileOutput: ' + fileOutput);
-          throw new Error('Could not find the expected output from injection of manifest.');
+          const details = {docName, fileOutput};
+          throw new Error(`Could not find the expected output from injection of manifest. Details: ${JSON.stringify(details)}`);
         }
       });
     });
@@ -73,8 +72,7 @@ describe(`Test Injection Manifest`, function() {
     })
     .catch((err) => {
       if (err.message !== errors['injection-point-not-found']) {
-        console.log(err);
-        throw new Error('Unexpected error thrown.');
+        throw new Error(`Unexpected error thrown: ${err}`);
       }
     });
   });
@@ -91,8 +89,7 @@ describe(`Test Injection Manifest`, function() {
     })
     .catch((err) => {
       if (err.message !== errors['multiple-injection-points-found']) {
-        console.log(err);
-        throw new Error('Unexpected error thrown.');
+        throw new Error(`Unexpected error thrown: ${err}`);
       }
     });
   });
