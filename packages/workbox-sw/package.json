@@ -1,6 +1,6 @@
 {
   "name": "workbox-sw",
-  "version": "2.0.2-rc1",
+  "version": "2.0.2",
   "description": "A service worker library to make managing fetch requests and caching as easy as possible.",
   "keywords": [
     "workbox",
@@ -24,11 +24,11 @@
   "main": "build/importScripts/workbox-sw.prod.v2.0.2-rc1-2.0.2-rc1.0.js",
   "module": "build/modules/workbox-sw.prod.v2.0.2-rc1-2.0.2-rc1.0.mjs",
   "devDependencies": {
-    "workbox-broadcast-cache-update": "^2.0.2-rc1",
-    "workbox-cache-expiration": "^2.0.2-rc1",
-    "workbox-cacheable-response": "^2.0.2-rc1",
-    "workbox-precaching": "^2.0.2-rc1",
-    "workbox-routing": "^2.0.2-rc1",
-    "workbox-runtime-caching": "^2.0.2-rc1"
+    "workbox-broadcast-cache-update": "^2.0.2",
+    "workbox-cache-expiration": "^2.0.2",
+    "workbox-cacheable-response": "^2.0.2",
+    "workbox-precaching": "^2.0.2",
+    "workbox-routing": "^2.0.2",
+    "workbox-runtime-caching": "^2.0.2"
   }
 }

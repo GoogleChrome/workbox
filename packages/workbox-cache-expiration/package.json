@@ -1,6 +1,6 @@
 {
   "name": "workbox-cache-expiration",
-  "version": "2.0.2-rc1",
+  "version": "2.0.2",
   "description": "A service worker helper library that expires cached responses based on age or maximum number of entries.",
   "keywords": [
     "workbox",
@@ -24,6 +24,6 @@
   "main": "build/importScripts/workbox-cache-expiration.prod.v2.0.2-rc1-2.0.2-rc1.0.js",
   "module": "build/modules/workbox-cache-expiration.prod.v2.0.2-rc1-2.0.2-rc1.0.mjs",
   "devDependencies": {
-    "workbox-runtime-caching": "^2.0.2-rc1"
+    "workbox-runtime-caching": "^2.0.2"
   }
 }
