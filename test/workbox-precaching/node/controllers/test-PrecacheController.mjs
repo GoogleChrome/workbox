@@ -326,8 +326,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         expect(cachedResponse).to.exist;
       }
 
-      // TODO Check indexedDB entries
-
       // Make sure we print some debug info.
       expect(logStub.callCount).to.be.gt(0);
     });
@@ -446,8 +444,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         expect(cachedResponse).to.exist;
       }
 
-      // TODO Check indexedDB entries
-
       // Make sure we print some debug info.
       expect(logStub.callCount).to.be.gt(0);
 
@@ -486,8 +482,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         let cachedResponse = await cache.match(inputUrl);
         expect(cachedResponse).to.exist;
       }
-
-      // TODO Check indexedDB entries
 
       // Make sure we print some debug info.
       expect(logStub.callCount).to.be.gt(0);
