@@ -1,0 +1,38 @@
+{
+  "name": "workbox-build",
+  "version": "3.0.0",
+  "description": "A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.",
+  "keywords": [
+    "workbox",
+    "workboxjs",
+    "service worker",
+    "caching",
+    "fetch requests",
+    "offline",
+    "file manifest"
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/GoogleChrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox",
+  "dependencies": {
+    "babel-runtime": "^6.26.0",
+    "chalk": "^2.1.0",
+    "common-tags": "^1.4.0",
+    "fs-extra": "^4.0.2",
+    "glob": "^7.1.2",
+    "lodash.template": "^4.4.0",
+    "workbox-sw": "^2.0.1"
+  },
+  "main": "builds/index.js",
+  "scripts": {
+    "prepublish": "gulp build-packages --package workbox-build"
+  },
+  "workbox": {
+    "packageType": "node"
+  }
+}

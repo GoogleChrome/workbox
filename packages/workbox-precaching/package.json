@@ -17,7 +17,8 @@
     "prepublish": "gulp build-packages --package workbox-precaching"
   },
   "workbox": {
-    "browserNamespace": "precaching"
+    "browserNamespace": "precaching",
+    "packageType": "browser"
   },
   "main": "build/browser-bundles/workbox-precaching.prod.js",
   "module": "index.mjs",

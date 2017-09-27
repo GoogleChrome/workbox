@@ -11,6 +11,7 @@ node_js:
   - 'stable'
 
 env:
+  - BROWSER_PACKAGE="workbox-build"
   - BROWSER_PACKAGE="workbox-core"
   - BROWSER_PACKAGE="workbox-precaching"
   - BROWSER_PACKAGE="workbox-routing"

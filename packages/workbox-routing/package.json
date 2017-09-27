@@ -19,7 +19,8 @@
     "prepublish": "gulp build-packages --package workbox-routing"
   },
   "workbox": {
-    "browserNamespace": "routing"
+    "browserNamespace": "routing",
+    "packageType": "browser"
   },
   "main": "build/browser-bundles/workbox-routing.prod.js",
   "module": "index.mjs",
