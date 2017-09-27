@@ -153,8 +153,8 @@ export default class PrecacheController {
    * @param {BaseCacheEntry} precacheEntry The entry to fetch and cache.
    * @return {Promise<boolean>} Returns a promise that resolves once the entry
    * has been fetched and cached or skipped if no update is needed. The
-   * promise resolved with details of the entry and whether it was
-   * updated or not.
+   * promise resolves with true if the entry was cached / updated and
+   * false if the entry is already cached and up-to-date.
    */
   async _cacheEntry(precacheEntry) {
     if (await this._precacheEntriesModel.isEntryCached(precacheEntry)) {
