@@ -37,6 +37,8 @@ global.cliOptions = options;
 // Forward referencing means the order of gulp-task
 // requires is important
 const gulpTaskFiles = [
+  'build-node-packages',
+  'build-browser-packages',
   'build-packages',
   'build',
   'lint',

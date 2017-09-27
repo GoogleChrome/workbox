@@ -5,8 +5,8 @@ const oneLine = require('common-tags').oneLine;
 const pkgPathToName = require('./pkg-path-to-name');
 
 /**
- * @param {string} [typeFilter] If provided, only return packages whose
- * workbox.packageType field matches this value.
+ * @param {string} typeFilter The type of packages to return: 'node', 'browser',
+ * or 'all'.
  * @return Array<string> Paths to package.json files for the matching packages.
  */
 function getPackages(typeFilter) {
@@ -22,11 +22,7 @@ function getPackages(typeFilter) {
       workbox.packageType metadata to ${pathToPackageJson}`);
     }
 
-    return typeFilter ?
-      // If typeFilter is specified, check to see if we care about this package.
-      typeFilter === packageType :
-      // Otherwise, just return true, so all packages are included.
-      true;
+    return typeFilter === 'all' || typeFilter === packageType;
   });
 }
 
@@ -35,8 +31,7 @@ function getPackages(typeFilter) {
  * the package path that needs to be acted upon.
  *
  * The specific function might vary depending on whether a give project targets
- * Node or the browser, so `functionForEachProjectType` maps each of those
- * project types to the appropriate function.
+ * Node or the browser, so you can specify 'browser', 'node', or 'all'.
  *
  * If we ran gulp as `gulp build` we would want the
  * 'build' task to run against all packages.
@@ -51,7 +46,7 @@ function getPackages(typeFilter) {
  * ```javascript
  * gulp.task('build',
  *   gulp.series(
- *     packageRunner(displayName, packagePaths, func, arg1, arg2)
+ *     packageRunner(displayName, 'all', func, arg1, arg2)
  *   )
  * );
  * ```
@@ -84,8 +79,8 @@ function getPackages(typeFilter) {
  * `gulp.parallel`.
  *
  * ```javascript
- * gulp.series(packageRunner(displayName, packagePaths, func))
- * gulp.parallel(packageRunner(displayName, packagePaths, func))
+ * gulp.series(packageRunner(displayName, 'all', func))
+ * gulp.parallel(packageRunner(displayName, 'all', func))
  * ```
  *
  * If you need to call the runner with multiple functions
@@ -96,8 +91,8 @@ function getPackages(typeFilter) {
  *
  * ```javascript
  * gulp.parallel(
- *   packageRunner(displayName, packagePaths, func, true),
- *   packageRunner(displayName, packagePaths, func, false),
+ *   packageRunner(displayName, 'browser', func, true),
+ *   packageRunner(displayName, 'browser', func, false),
  * )
  * ```
  *
@@ -107,13 +102,14 @@ function getPackages(typeFilter) {
  * calls to `func` in parallel.
  *
  * @param {string} displayName A friendly name to log.
- * @param Array<string> packagePaths Paths to package.json files corresponding
- * to all the packages we want to run func against.
+ * @param Array<string> The type of package we want to run func against:
+ * 'node', 'browser', or 'all'.
  * @param {function} func The function that we want to run for each package.
  * @param {*} args Any arguments that should be passed in to the func.
  * @return Array<function> All of the function wrappers.
  */
-function wrapFunction(displayName, packagePaths, func, ...args) {
+module.exports = (displayName, packageType, func, ...args) => {
+  const packagePaths = getPackages(packageType);
   return packagePaths.map((packagePath) => {
     const packageRootPath = path.dirname(packagePath);
 
@@ -124,9 +120,4 @@ function wrapFunction(displayName, packagePaths, func, ...args) {
       ${args.length === 0 ? '' : JSON.stringify(args)}`;
     return wrappedFunc;
   });
-}
-
-module.exports = {
-  getPackages,
-  wrapFunction,
 };
