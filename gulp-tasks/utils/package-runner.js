@@ -110,6 +110,13 @@ function getPackages(typeFilter) {
  */
 module.exports = (displayName, packageType, func, ...args) => {
   const packagePaths = getPackages(packageType);
+  // We need to return a single no-op rather than an empty array, or else gulp
+  // will throw 'One or more tasks should be combined using series or parallel'.
+  if (packagePaths.length === 0) {
+    const noOp = (done) => done();
+    noOp.displayName = displayName;
+    return [noOp];
+  }
   return packagePaths.map((packagePath) => {
     const packageRootPath = path.dirname(packagePath);
 
