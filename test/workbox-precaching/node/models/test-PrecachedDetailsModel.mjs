@@ -2,7 +2,10 @@ import {expect} from 'chai';
 import {IDBFactory, IDBKeyRange, reset} from 'shelving-mock-indexeddb';
 import makeServiceWorkerEnv from 'service-worker-mock';
 
+import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
+
 const MODULE_PATH = `../../../../packages/workbox-precaching/models/PrecachedDetailsModel.mjs`;
+const MOCK_LOCATION = 'https://example.com';
 
 describe('[workbox-precaching] PrecachedDetailsModel', function() {
   let corePrivate;
@@ -13,7 +16,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
     const swEnv = makeServiceWorkerEnv();
     // This is needed to ensure new URL('/', location), works.
-    // swEnv.location = MOCK_LOCATION;
+    swEnv.location = MOCK_LOCATION;
     Object.assign(global, swEnv);
 
     const coreModule = await import('../../../../packages/workbox-core/index.mjs');
@@ -49,10 +52,11 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       const moduleExports = await import(MODULE_PATH);
       const PrecachedDetailsModel = moduleExports.default;
       const model = new PrecachedDetailsModel();
-      const isCached = await model.isEntryCached({
-        _entryId: `/`,
-        _revision: `4321`,
-      });
+      const isCached = await model.isEntryCached(
+        new PrecacheEntry(
+          {}, '/', '1234', new Request('/'), true
+        )
+      );
       expect(isCached).to.equal(false);
     });
 
@@ -62,15 +66,17 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
       const model = new PrecachedDetailsModel();
 
-      await model.addEntry({
-        _entryId: '/',
-        _revision: '1234',
-      });
+      await model.addEntry(
+        new PrecacheEntry(
+          {}, '/', '1234', new Request('/'), true
+        )
+      );
 
-      const isCached = await model.isEntryCached({
-        _entryId: `/`,
-        _revision: `4321`,
-      });
+      const isCached = await model.isEntryCached(
+        new PrecacheEntry(
+          {}, '/', '4321', new Request('/'), true
+        )
+      );
       expect(isCached).to.equal(false);
     });
 
@@ -79,18 +85,13 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       const PrecachedDetailsModel = moduleExports.default;
 
       const model = new PrecachedDetailsModel();
+      const entry = new PrecacheEntry(
+        {}, '/', '1234', new Request('/'), true
+      );
 
-      await model.addEntry({
-        _entryId: '/',
-        _revision: '1234',
-        _request: new Request('/'),
-      });
+      await model.addEntry(entry);
+      const isCached = await model.isEntryCached(entry);
 
-      const isCached = await model.isEntryCached({
-        _entryId: `/`,
-        _revision: `1234`,
-        _request: new Request('/'),
-      });
       expect(isCached).to.equal(false);
     });
 
@@ -99,22 +100,17 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       const PrecachedDetailsModel = moduleExports.default;
 
       const model = new PrecachedDetailsModel();
-
-      await model.addEntry({
-        _entryId: '/',
-        _revision: '1234',
-        _request: new Request('/'),
-      });
+      const entry = new PrecacheEntry(
+        {}, '/', '1234', new Request('/'), true
+      );
 
       const cacheName = corePrivate.cacheNameProvider.getPrecacheName();
       const openCache = await caches.open(cacheName);
       openCache.put('/', new Response('Hello'));
 
-      const isCached = await model.isEntryCached({
-        _entryId: `/`,
-        _revision: `1234`,
-        _request: new Request('/'),
-      });
+      await model.addEntry(entry);
+
+      const isCached = await model.isEntryCached(entry);
       expect(isCached).to.equal(true);
     });
   });
@@ -126,10 +122,12 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       const moduleExports = await import(MODULE_PATH);
       const PrecachedDetailsModel = moduleExports.default;
 
+      const entry = new PrecacheEntry(
+        {}, '/', '1234', new Request('/'), true
+      );
+
       const model = new PrecachedDetailsModel();
-      await model.deleteEntry({
-        _entryId: '/',
-      });
+      await model.deleteEntry(entry);
     });
   });
 });

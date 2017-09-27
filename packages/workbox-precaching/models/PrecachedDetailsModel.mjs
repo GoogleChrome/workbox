@@ -26,7 +26,7 @@ export default class PrecachedDetailsModel {
     }
 
     const openCache = await caches.open(this._cacheName);
-    const cachedResponse = await openCache.match(precacheEntry._request);
+    const cachedResponse = await openCache.match(precacheEntry._cacheRequest);
     return !!cachedResponse;
   }
 

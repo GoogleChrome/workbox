@@ -2,6 +2,7 @@ import {_private} from 'workbox-core';
 import core from 'workbox-core';
 
 import PrecacheEntry from '../models/PrecacheEntry.mjs';
+import PrecachedDetailsModel from '../models/PrecachedDetailsModel.mjs';
 import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
 import printInstallDetails from '../utils/printInstallDetails.mjs';
 import cleanRedirect from '../utils/cleanRedirect.mjs';
@@ -17,6 +18,7 @@ export default class PrecacheController {
   constructor(cacheName) {
     this._cacheName = _private.cacheNameProvider.getPrecacheName(cacheName);
     this._entriesToCacheMap = new Map();
+    this._precacheEntriesModel = new PrecachedDetailsModel(this._cacheName);
     if (process.env.NODE_ENV !== 'production') {
       this.checkEntryRevisioning = true;
     }
@@ -149,13 +151,15 @@ export default class PrecacheController {
    *
    * @private
    * @param {BaseCacheEntry} precacheEntry The entry to fetch and cache.
-   * @return {Promise<Object>} Returns a promise that resolves once the entry
+   * @return {Promise<boolean>} Returns a promise that resolves once the entry
    * has been fetched and cached or skipped if no update is needed. The
-   * promise resolved with details of the entry and whether it was
-   * updated or not.
+   * promise resolves with true if the entry was cached / updated and
+   * false if the entry is already cached and up-to-date.
    */
   async _cacheEntry(precacheEntry) {
-    // TODO: Check if it's already cached.
+    if (await this._precacheEntriesModel.isEntryCached(precacheEntry)) {
+      return false;
+    }
 
     let response = await _private.fetchWrapper.fetch(
       precacheEntry._networkRequest,
@@ -168,7 +172,7 @@ export default class PrecacheController {
     await _private.cacheWrapper.put(this._cacheName,
       precacheEntry._cacheRequest, response);
 
-    // TODO: Add details to revision details model
+    await this._precacheEntriesModel.addEntry(precacheEntry);
 
     return true;
   }
