@@ -16,7 +16,7 @@ const cleanPackage = (packagePath) => {
 
 gulp.task('build-packages:clean', gulp.series(
     packageRunnner.wrapFunction(
-      'Cleaning Package',
+      'build-packages:clean',
       packageRunnner.getPackages(),
       cleanPackage
     )
@@ -28,7 +28,7 @@ gulp.task('build-packages:build', (done) => {
   const nodePackages = packageRunnner.getPackages('node');
   if (nodePackages.length > 0) {
     buildStreams.push(...packageRunnner.wrapFunction(
-      'Building Node Package',
+      'build-packages:build',
       nodePackages,
       buildNodePackage
     ));
@@ -38,7 +38,7 @@ gulp.task('build-packages:build', (done) => {
   if (browserPackages.length > 0) {
     for (const buildType of constants.BUILD_TYPES) {
       buildStreams.push(...packageRunnner.wrapFunction(
-        'Building Browser Package',
+        'build-packages:build',
         browserPackages,
         buildBrowserPackage,
         buildType

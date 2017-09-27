@@ -64,43 +64,6 @@ const globals = (moduleId) => {
 // referenced as globals.
 const externalAndPure = (moduleId) => (moduleId.indexOf('workbox-') === 0);
 
-/*
- * This function will take an object and generate a friend export
- * object.
- * For example, { hello: world, example: { foo: foo } } will output:
- * "{
- *   hello: world,
- *   example: {
- *     foo,
- *   },
- * }"
- * @param {*} exportObject This is the object that needs to be converted
- * to a string.
- * @param {*} levels This value is just used for indenting the code to
- * ensure the final output is human readable and easy to understand.
- */
-const convertExportObject = (exportObject, levels = 0) => {
-  let outputStrings = [];
-  const keys = Object.keys(exportObject);
-  keys.forEach((key) => {
-    const value = exportObject[key];
-    if (typeof(value) === 'string') {
-      if (key === value) {
-        outputStrings.push(`${value}`);
-      } else {
-        outputStrings.push(`${key}: ${value}`);
-      }
-    } else {
-      const valueString = convertExportObject(value, levels + 1);
-      outputStrings.push(`${key}: ${valueString}`);
-    }
-  });
-  const padding = '  '.repeat(levels + 1);
-  const closePadding = '  '.repeat(levels);
-  const joinString = `,\n${padding}`;
-  return `{\n${padding}${outputStrings.join(joinString)}\n${closePadding}}`;
-};
-
 module.exports = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
   const moduleIndexPath = path.join(packagePath, `index.mjs`);
