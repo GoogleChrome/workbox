@@ -2,6 +2,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 import clearRequire from 'clear-require';
 import makeServiceWorkerEnv from 'service-worker-mock';
+import {IDBFactory, IDBKeyRange, reset} from 'shelving-mock-indexeddb';
 
 import expectError from '../../../../infra/utils/expectError';
 import generateTestVariants from '../../../../infra/utils/generate-variant-tests';
@@ -16,6 +17,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
   let cacheNameProvider;
 
   before(function() {
+    global.indexedDB = new IDBFactory();
+    global.IDBKeyRange = IDBKeyRange;
+
     const swEnv = makeServiceWorkerEnv();
 
     // This is needed to ensure new URL('/', location), works.
@@ -30,6 +34,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     const coreModule = await import('../../../../packages/workbox-core/index.mjs');
     logger = coreModule._private.logger;
     cacheNameProvider = coreModule._private.cacheNameProvider;
+    reset();
   });
 
   afterEach(function() {
@@ -397,6 +402,95 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         let cachedResponse = await cache.match(cacheList[i].url);
         expect(cachedResponse).to.exist;
       }
+    });
+
+    it('should only precache assets that have changed', async function() {
+      // Prevent logs in the mocha output
+      sandbox.stub(logger, 'warn');
+      sandbox.stub(logger, 'debug');
+      const logStub = sandbox.stub(logger, 'log');
+
+      /*
+      First precache some entries
+      */
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheControllerOne = new PrecacheController();
+      const cacheListOne = [
+        '/index.1234.html',
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
+        {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+      ];
+      precacheControllerOne.addToCacheList(cacheListOne);
+
+      // Reset as addToCacheList will log.
+      logStub.reset();
+
+      const updateInfo = await precacheControllerOne.install();
+      expect(updateInfo.updatedEntries.length).to.equal(cacheListOne.length);
+      expect(updateInfo.notUpdatedEntries.length).to.equal(0);
+
+      const cache = await caches.open(cacheNameProvider.getPrecacheName());
+      const keysOne = await cache.keys();
+      expect(keysOne.length).to.equal(cacheListOne.length);
+
+      for (let i = 0; i < cacheListOne.length; i++) {
+        // We don't cache bust requests where the revision
+        // is in the URL
+        let inputUrl = cacheListOne[i];
+        if (cacheListOne[i].url) {
+          inputUrl = cacheListOne[i].url;
+        }
+
+        let cachedResponse = await cache.match(inputUrl);
+        expect(cachedResponse).to.exist;
+      }
+
+      // TODO Check indexedDB entries
+
+      // Make sure we print some debug info.
+      expect(logStub.callCount).to.be.gt(0);
+
+      /*
+      THEN precache the same URLs but two with different revisions
+      */
+      const precacheControllerTwo = new PrecacheController();
+      const cacheListTwo = [
+        '/index.4321.html',
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
+        {url: '/scripts/stress.js?test=search&foo=bar', revision: '4321'},
+      ];
+      precacheControllerTwo.addToCacheList(cacheListTwo);
+
+      // Reset as addToCacheList will log.
+      logStub.reset();
+
+      const updateInfoTwo = await precacheControllerTwo.install();
+      expect(updateInfoTwo.updatedEntries.length).to.equal(2);
+      expect(updateInfoTwo.notUpdatedEntries.length).to.equal(2);
+
+      const keysTwo = await cache.keys();
+      // +1 allows cache keys 'index.1234.html' and 'index.4321.html'
+      // which chould be cleaned by activate
+      expect(keysTwo.length).to.equal(cacheListTwo.length + 1);
+
+      for (let i = 0; i < cacheListTwo.length; i++) {
+        // We don't cache bust requests where the revision
+        // is in the URL
+        let inputUrl = cacheListTwo[i];
+        if (cacheListTwo[i].url) {
+          inputUrl = cacheListTwo[i].url;
+        }
+
+        let cachedResponse = await cache.match(inputUrl);
+        expect(cachedResponse).to.exist;
+      }
+
+      // TODO Check indexedDB entries
+
+      // Make sure we print some debug info.
+      expect(logStub.callCount).to.be.gt(0);
     });
   });
 });
