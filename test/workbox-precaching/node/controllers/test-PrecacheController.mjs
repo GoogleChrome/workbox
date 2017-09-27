@@ -314,17 +314,11 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const keys = await cache.keys();
       expect(keys.length).to.equal(cacheList.length);
 
-      for (let i = 0; i < cacheList.length; i++) {
-        // We don't cache bust requests where the revision
-        // is in the URL
-        let inputUrl = cacheList[i];
-        if (cacheList[i].url) {
-          inputUrl = cacheList[i].url;
-        }
-
-        let cachedResponse = await cache.match(inputUrl);
+      const urls = cacheList.map((entry) => entry.url || entry);
+      await Promise.all(urls.map(async (url) => {
+        const cachedResponse = await cache.match(url);
         expect(cachedResponse).to.exist;
-      }
+      }));
 
       // Make sure we print some debug info.
       expect(logStub.callCount).to.be.gt(0);
@@ -432,17 +426,11 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const keysOne = await cache.keys();
       expect(keysOne.length).to.equal(cacheListOne.length);
 
-      for (let i = 0; i < cacheListOne.length; i++) {
-        // We don't cache bust requests where the revision
-        // is in the URL
-        let inputUrl = cacheListOne[i];
-        if (cacheListOne[i].url) {
-          inputUrl = cacheListOne[i].url;
-        }
-
-        let cachedResponse = await cache.match(inputUrl);
+      const urlsOne = cacheListOne.map((entry) => entry.url || entry);
+      await Promise.all(urlsOne.map(async (url) => {
+        const cachedResponse = await cache.match(url);
         expect(cachedResponse).to.exist;
-      }
+      }));
 
       // Make sure we print some debug info.
       expect(logStub.callCount).to.be.gt(0);
@@ -467,21 +455,18 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(updateInfoTwo.notUpdatedEntries.length).to.equal(2);
 
       const keysTwo = await cache.keys();
-      // +1 allows cache keys 'index.1234.html' and 'index.4321.html'
-      // which chould be cleaned by activate
+      // Precaching can't determine that 'index.1234.html' and 'index.4321.html'
+      // represent the same URL, so the cache ould contain both at this point
+      // since they are technically different URL's
+      // It would be in the activate event that 'index.1234.html' would
+      // be removed from the cache and indexedDB.
       expect(keysTwo.length).to.equal(cacheListTwo.length + 1);
 
-      for (let i = 0; i < cacheListTwo.length; i++) {
-        // We don't cache bust requests where the revision
-        // is in the URL
-        let inputUrl = cacheListTwo[i];
-        if (cacheListTwo[i].url) {
-          inputUrl = cacheListTwo[i].url;
-        }
-
-        let cachedResponse = await cache.match(inputUrl);
+      const urlsTwo = cacheListTwo.map((entry) => entry.url || entry);
+      await Promise.all(urlsTwo.map(async (url) => {
+        const cachedResponse = await cache.match(url);
         expect(cachedResponse).to.exist;
-      }
+      }));
 
       // Make sure we print some debug info.
       expect(logStub.callCount).to.be.gt(0);
