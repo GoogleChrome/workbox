@@ -1,0 +1,29 @@
+import {_private} from 'workbox-core';
+
+const logGroup = (groupTitle, urls) => {
+  _private.logger.groupCollapsed(groupTitle);
+
+  urls.forEach((url) => {
+    _private.logger.log(url);
+  });
+
+  _private.logger.groupEnd();
+};
+
+export default async (deletedCacheUrls, deletedRevisionUrls) => {
+  if (deletedCacheUrls.length === 0 && deletedRevisionUrls.length === 0) {
+    return;
+  }
+
+  let cacheDeleteText =
+    `${deletedCacheUrls.length} cached requests were deleted`;
+  let revisionDeleteText = `${deletedRevisionUrls.length} revision details ` +
+    `were deleted from IndexedDB.`;
+  _private.logger.groupCollapsed(
+     `During precaching cleanup, ${cacheDeleteText} and ${revisionDeleteText}`);
+
+  logGroup('Deleted Cache Requests', deletedCacheUrls);
+  logGroup('Deleted Revision Details', deletedRevisionUrls);
+
+  _private.logger.groupEnd();
+};

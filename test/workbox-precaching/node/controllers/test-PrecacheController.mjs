@@ -32,8 +32,15 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     process.env.NODE_ENV = 'dev';
     clearRequire.all();
     const coreModule = await import('../../../../packages/workbox-core/index.mjs');
+
     logger = coreModule._private.logger;
     cacheNameProvider = coreModule._private.cacheNameProvider;
+
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames.map((cacheName) => {
+      return caches.delete(cacheName);
+    }));
+
     reset();
   });
 
@@ -401,6 +408,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       sandbox.stub(logger, 'warn');
       sandbox.stub(logger, 'debug');
       const logStub = sandbox.stub(logger, 'log');
+      const cache = await caches.open(cacheNameProvider.getPrecacheName());
 
       /*
       First precache some entries
@@ -422,7 +430,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(updateInfo.updatedEntries.length).to.equal(cacheListOne.length);
       expect(updateInfo.notUpdatedEntries.length).to.equal(0);
 
-      const cache = await caches.open(cacheNameProvider.getPrecacheName());
       const keysOne = await cache.keys();
       expect(keysOne.length).to.equal(cacheListOne.length);
 
@@ -470,6 +477,133 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       // Make sure we print some debug info.
       expect(logStub.callCount).to.be.gt(0);
+    });
+  });
+
+  describe(`cleanup()`, function() {
+    it(`should remove out of date entries`, async function() {
+      // Prevent logs in the mocha output
+      sandbox.stub(logger, 'warn');
+      sandbox.stub(logger, 'debug');
+      const logStub = sandbox.stub(logger, 'log');
+
+      const cache = await caches.open(cacheNameProvider.getPrecacheName());
+
+      /*
+      First precache some entries
+      */
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheControllerOne = new PrecacheController();
+      const cacheListOne = [
+        '/index.1234.html',
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
+        {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+      ];
+      precacheControllerOne.addToCacheList(cacheListOne);
+      await precacheControllerOne.install();
+
+      // Reset as addToCacheList and install will log.
+      logStub.reset();
+
+      const cleanupDetailsOne = await precacheControllerOne.cleanup();
+      expect(cleanupDetailsOne.deletedCacheRequests.length).to.equal(0);
+      expect(cleanupDetailsOne.deletedRevisionDetails.length).to.equal(0);
+
+      // Make sure we print some debug info.
+      expect(logStub.callCount).to.equal(0);
+
+      /*
+      THEN precache the same URLs but two with different revisions
+      */
+      const precacheControllerTwo = new PrecacheController();
+      const cacheListTwo = [
+        '/index.4321.html',
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
+        {url: '/scripts/stress.js?test=search&foo=bar', revision: '4321'},
+      ];
+      precacheControllerTwo.addToCacheList(cacheListTwo);
+      await precacheControllerTwo.install();
+
+      // Reset as addToCacheList and install will log.
+      logStub.reset();
+
+      const cleanupDetailsTwo = await precacheControllerTwo.cleanup();
+      expect(cleanupDetailsTwo.deletedCacheRequests.length).to.equal(1);
+      expect(cleanupDetailsTwo.deletedCacheRequests[0]).to.equal('/index.1234.html');
+      expect(cleanupDetailsTwo.deletedRevisionDetails.length).to.equal(1);
+      expect(cleanupDetailsTwo.deletedCacheRequests[0]).to.equal('/index.1234.html');
+
+      const keysTwo = await cache.keys();
+      // Precaching can't determine that 'index.1234.html' and 'index.4321.html'
+      // represent the same URL, so the cache ould contain both at this point
+      // since they are technically different URL's
+      // It would be in the activate event that 'index.1234.html' would
+      // be removed from the cache and indexedDB.
+      expect(keysTwo.length).to.equal(cacheListTwo.length);
+
+      const urlsTwo = cacheListTwo.map((entry) => entry.url || entry);
+      await Promise.all(urlsTwo.map(async (url) => {
+        const cachedResponse = await cache.match(url);
+        expect(cachedResponse).to.exist;
+      }));
+
+      // Make sure we print some debug info.
+      expect(logStub.callCount).to.be.gt(0);
+    });
+
+    it(`shouldn't open / create a cache when performing cleanup`, async function() {
+      // Prevent logs in the mocha output
+      sandbox.stub(logger, 'warn');
+      sandbox.stub(logger, 'debug');
+      sandbox.stub(logger, 'log');
+
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheController = new PrecacheController();
+      await precacheController.cleanup();
+
+      const hasCache = await caches.has(cacheNameProvider.getPrecacheName());
+      expect(hasCache).to.equal(false);
+    });
+
+    it(`shouldn't log anything on prod`, async function() {
+      process.env.NODE_ENV = 'production';
+
+      // Prevent logs in the mocha output
+      sandbox.stub(logger, 'warn');
+      sandbox.stub(logger, 'debug');
+      const logStub = sandbox.stub(logger, 'log');
+
+      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      const precacheControllerOne = new PrecacheController();
+      const cacheListOne = [
+        '/index.1234.html',
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
+        {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+      ];
+      precacheControllerOne.addToCacheList(cacheListOne);
+      await precacheControllerOne.install();
+      await precacheControllerOne.cleanup();
+
+      const precacheControllerTwo = new PrecacheController();
+      const cacheListTwo = [
+        '/index.4321.html',
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
+        {url: '/scripts/stress.js?test=search&foo=bar', revision: '4321'},
+      ];
+      precacheControllerTwo.addToCacheList(cacheListTwo);
+      await precacheControllerTwo.install();
+
+      // Reset as addToCacheList and install will log.
+      logStub.reset();
+
+      await precacheControllerTwo.cleanup();
+
+      // Make sure we didn't print any debug info.
+      expect(logStub.callCount).to.equal(0);
     });
   });
 });

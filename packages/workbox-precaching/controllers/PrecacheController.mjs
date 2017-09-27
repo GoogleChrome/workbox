@@ -5,6 +5,7 @@ import PrecacheEntry from '../models/PrecacheEntry.mjs';
 import PrecachedDetailsModel from '../models/PrecachedDetailsModel.mjs';
 import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
 import printInstallDetails from '../utils/printInstallDetails.mjs';
+import printCleanupDetails from '../utils/printCleanupDetails.mjs';
 import cleanRedirect from '../utils/cleanRedirect.mjs';
 
 /**
@@ -175,5 +176,86 @@ export default class PrecacheController {
     await this._precacheEntriesModel.addEntry(precacheEntry);
 
     return true;
+  }
+
+  /**
+   * Compare the URL's and determines which assets are no longer required
+   * in the cache.
+   *
+   * This should be called in the service worker activate event.
+   *
+   * @return {Promise<object>} Resolves with an object containing details
+   * of the deleted cache requests and precache revision details.
+   */
+  async cleanup() {
+    const expectedCacheUrls = [];
+    this._entriesToCacheMap.forEach((entry) => {
+      expectedCacheUrls.push(entry._cacheRequest.url);
+    });
+
+    const results = await Promise.all([
+      this._cleanupCache(expectedCacheUrls),
+      this._cleanupDetailsModel(expectedCacheUrls),
+    ]);
+
+    if (process.env.NODE_ENV !== 'production') {
+      printCleanupDetails(results[0], results[1]);
+    }
+
+    return {
+      deletedCacheRequests: results[0],
+      deletedRevisionDetails: results[1],
+    };
+  }
+
+  /**
+   * Goes through all the cache entries and removed any that are
+   * outdated.
+   * @param {Array<string>} expectedCacheUrls Array of URLs that are
+   * expected to be cached.
+   * @return {Promise<Array<string>>} Resolves to an array of URLs
+   * of cached requests that were deleted.
+   */
+  async _cleanupCache(expectedCacheUrls) {
+    if (!await caches.has(this._cacheName)) {
+      // Cache doesn't exist, so nothing to delete
+      return [];
+    }
+
+    const cache = await caches.open(this._cacheName);
+    const cachedKeys = await cache.keys();
+
+    const cacheURLsToDelete = cachedKeys.filter((cachedUrl) => {
+      return !expectedCacheUrls.includes(cachedUrl);
+    });
+
+    await Promise.all(
+      cacheURLsToDelete.map((cacheUrl) => cache.delete(cacheUrl))
+    );
+
+    return cacheURLsToDelete;
+  }
+
+  /**
+   * @param {Array<string>} expectedCacheUrls Array of URLs that are
+   * expected to be cached.
+   * @return {Promise<Array<string>>} Resolves to an array of URLs removed
+   * from indexedDB.
+   */
+  async _cleanupDetailsModel(expectedCacheUrls) {
+    const revisionedEntries = await this._precacheEntriesModel.getAllEntries();
+    const allDetailUrls = Object.keys(revisionedEntries);
+
+    const detailsToDelete = allDetailUrls.filter((detailsUrl) => {
+      return !expectedCacheUrls.includes(detailsUrl);
+    });
+
+    await Promise.all(
+      detailsToDelete.map(
+        (detailsId) => this._precacheEntriesModel.deleteEntry(detailsId)
+      )
+    );
+
+    return detailsToDelete;
   }
 }
