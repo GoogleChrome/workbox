@@ -15,6 +15,7 @@ module.exports = {
   },
   rules: {
   },
+  parser: 'babel-eslint',
   overrides: [{
     files: ['test/**/*.{js,mjs}'],
     env: {
@@ -28,7 +29,7 @@ module.exports = {
     },
   }, {
     files: [
-      'packages/workbox-core/src/utils/LogHelper.js',
+      'packages/workbox-core/utils/logger.mjs',
       'test/workbox-core/bundle/node/utils/test-LogHelper.js',
       'infra/utils/cli-test-helper.js',
       'infra/utils/log-helper.js',

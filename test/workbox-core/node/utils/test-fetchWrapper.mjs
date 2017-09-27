@@ -53,7 +53,7 @@ describe(`workbox-core fetchWrapper`, function() {
         headers: {
           'Custom': 'Header',
         },
-        body: 'Example Body'
+        body: 'Example Body',
       };
       await fetchWrapper.fetch('/test/fetchOptions', exampleOptions);
 

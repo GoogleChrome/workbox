@@ -3,9 +3,7 @@ import clearRequire from 'clear-require';
 import makeServiceWorkerEnv from 'service-worker-mock';
 
 import expectError from '../../../../infra/utils/expectError';
-import constants from '../../../../gulp-tasks/utils/constants.js';
 import generateVariantTests from '../../../../infra/utils/generate-variant-tests';
-import WorkboxError from '../../../../packages/workbox-core/models/WorkboxError.mjs';
 
 describe(`workbox-core WorkboxCore`, function() {
   before(function() {

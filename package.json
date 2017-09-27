@@ -6,7 +6,7 @@
   "scripts": {
     "local-lerna": "lerna",
     "test": "nyc --require @std/esm --reporter=lcov --reporter=text mocha",
-    "lint": "eslint '.' --ignore-path .gitignore",
+    "lint": "eslint \"**/*.{js,mjs}\" --ignore-path .gitignore",
     "bot": "pr-bot",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
@@ -18,7 +18,8 @@
       "packages/**/*"
     ],
     "extension": [
-      ".mjs"
+      ".mjs",
+      ".js"
     ]
   },
   "pre-push": [
@@ -42,6 +43,7 @@
     "@std/esm": "^0.5.1",
     "archiver": "^2.0.3",
     "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.0",
     "babylon": "^6.18.0",
@@ -88,9 +90,11 @@
     "serve-index": "^1.9.0",
     "serve-static": "^1.12.4",
     "service-worker-mock": "^1.2.2",
+    "shelving-mock-indexeddb": "^1.0.4",
     "sinon": "^3.2.1",
     "uglify-es": "^3.1.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
-  }
+  },
+  "dependencies": {}
 }

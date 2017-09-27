@@ -1,3 +1,6 @@
+/**
+ * Used as a consistent way of referencing a URL to precache.
+ */
 export default class PrecacheEntry {
 /**
  * This class ensures all cache list entries are consistent and
@@ -6,14 +9,14 @@ export default class PrecacheEntry {
  * @param {string} entryId
  * @param {string} revision
  * @param {Request} request
- * @param {Boolean} cacheBust
+ * @param {boolean} shouldCacheBust
  */
-  constructor(originalInput, entryId, revision, request, cacheBust) {
+  constructor(originalInput, entryId, revision, request, shouldCacheBust) {
     this._originalInput = originalInput;
     this._entryId = entryId;
     this._revision = revision;
     this._cacheRequest = request;
-    this._networkRequest = cacheBust ?
+    this._networkRequest = shouldCacheBust ?
       this._cacheBustRequest(request) : request;
   }
 
