@@ -37,7 +37,7 @@ export default class PrecacheEntry {
     } else {
       const parsedURL = new URL(url, location);
 
-      // This is done to get a small minification win
+      // This is done so the minifier can mangle 'global.encodeURIComponent'
       const _encodeURIComponent = encodeURIComponent;
 
       parsedURL.search += (parsedURL.search ? '&' : '') +

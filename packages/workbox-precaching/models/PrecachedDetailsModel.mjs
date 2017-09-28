@@ -1,6 +1,7 @@
 import {_private} from 'workbox-core';
 
-const REVISON_FIELD = 'revision';
+// Allows minifier to mangle this name
+const REVISON_IDB_FIELD = 'revision';
 
 /**
  * This model will track the relevant information of entries that
@@ -48,7 +49,7 @@ export default class PrecachedDetailsModel {
   async _getRevision(entryId) {
     const db = await this._getDb();
     const data = await db.get(entryId);
-    return data ? data[REVISON_FIELD] : null;
+    return data ? data[REVISON_IDB_FIELD] : null;
   }
 
   /**
@@ -58,7 +59,7 @@ export default class PrecachedDetailsModel {
   async _addEntry(precacheEntry) {
     const db = await this._getDb();
     await db.put(precacheEntry._entryId, {
-      [REVISON_FIELD]: precacheEntry._revision,
+      [REVISON_IDB_FIELD]: precacheEntry._revision,
     });
   }
 
