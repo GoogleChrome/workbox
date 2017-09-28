@@ -1,5 +1,3 @@
-const constants = require('../constants');
-const errors = require('../errors');
 const logHelper = require('../log-helper');
 const modifyUrlPrefixTranform = require('./modify-url-prefix-transform');
 const noRevisionForUrlsMatchingTransform =
@@ -49,12 +47,11 @@ const noRevisionForUrlsMatchingTransform =
  * @memberof module:workbox-build
  */
 
-module.exports = (fileDetails, options) => {
-  const maximumFileSize = options.maximumFileSizeToCacheInBytes ||
-    constants.maximumFileSize;
+module.exports = ({fileDetails, maximumFileSizeToCacheInBytes, modifyUrlPrefix,
+                    dontCacheBustUrlsMatching, manifestTransforms}) => {
   const filteredFileDetails = fileDetails.filter((fileDetails) => {
     // Remove oversized files.
-    if (fileDetails.size > maximumFileSize) {
+    if (fileDetails.size > maximumFileSizeToCacheInBytes) {
       logHelper.warn(`Skipping file '${fileDetails.file}' due to size. ` +
         `[Max size supported is ${maximumFileSize}, this file is ` +
         `${fileDetails.size}]`);
@@ -73,29 +70,22 @@ module.exports = (fileDetails, options) => {
     };
   });
 
-  let manifestTransforms = [];
+  let transformsToApply = [];
 
-  if (options.modifyUrlPrefix) {
-    manifestTransforms.push(modifyUrlPrefixTranform(options.modifyUrlPrefix));
+  if (modifyUrlPrefix) {
+    transformsToApply.push(modifyUrlPrefixTranform(modifyUrlPrefix));
   }
 
-  if (options.dontCacheBustUrlsMatching) {
-    manifestTransforms.push(
-      noRevisionForUrlsMatchingTransform(options.dontCacheBustUrlsMatching));
+  if (dontCacheBustUrlsMatching) {
+    transformsToApply.push(
+      noRevisionForUrlsMatchingTransform(dontCacheBustUrlsMatching));
   }
 
-  if (options.manifestTransforms) {
-    if (Array.isArray(options.manifestTransforms)) {
-      manifestTransforms = manifestTransforms.concat(
-        options.manifestTransforms
-      );
-    } else {
-      throw new Error(errors['bad-manifest-transforms']);
-    }
-  }
+  // Any additional manifestTransforms that were passed will be applied last.
+  transformsToApply.concat(manifestTransforms || []);
 
   // Apply the transformations sequentially, and return the result.
-  return manifestTransforms.reduce(
+  return transformsToApply.reduce(
     (previousManifest, transform) => transform(previousManifest),
     normalizedManifest);
 };

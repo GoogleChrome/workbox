@@ -60,11 +60,9 @@ module.exports = {
   'invalid-inject-manifest-arg': ol`The input to 'injectManifest()' must be an
     object.`,
   'injection-point-not-found': ol`Unable to find a place to inject the manifest.
-    Please ensure that you have 'workboxSW.precache([])' somewhere in your
-    service worker file.`,
-  'multiple-injection-points-found': ol`There can only be one injection point
-    in your service worker. Please ensure you only have one instance of
-    'workboxSW.precache([])' in your service worker file.`,
+    Please ensure that your 'swSrc' file contains a match for the RegExp:`,
+  'multiple-injection-points': ol`Please ensure that your 'swSrc' file contains
+    only one match for the RegExp:`,
   'populating-sw-tmpl-failed': ol`Unable to generate service worker from
     template.`,
   'useless-glob-pattern': ol`One of the glob patterns doesn't match any files.
@@ -85,4 +83,5 @@ module.exports = {
     array of functions.`,
   'invalid-generate-file-manifest-arg': ol`The input to generateFileManifest()
     must be an Object.`,
+  'invalid-sw-src': `The 'swSrc' file can't be read.`,
 };

@@ -1,11 +1,11 @@
 const fse = require('fs-extra');
 const path = require('path');
 
-const errors = require('../errors');
+const errors = require('./errors');
 
-module.exports = async (outputDirectory) => {
+module.exports = async (destDirectory) => {
   const workboxSWSrcPath = require.resolve('workbox-sw');
-  const workboxSWDestPath = path.join(outputDirectory,
+  const workboxSWDestPath = path.join(destDirectory,
     path.basename(workboxSWSrcPath));
 
   try {

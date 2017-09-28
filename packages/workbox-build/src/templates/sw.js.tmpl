@@ -1,4 +1,4 @@
-importScripts('<%= workboxSWImportPath %>');
+importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
 
 /**
  * DO NOT EDIT THE FILE MANIFEST ENTRY
@@ -19,7 +19,7 @@ importScripts('<%= workboxSWImportPath %>');
  */
 const fileManifest = <%= JSON.stringify(manifestEntries, null, 2) %>;
 
-const workboxSW = new self.WorkboxSW(<%= workboxSWOptionsString %>);
+const workboxSW = new self.WorkboxSW(<%= workboxOptionsString %>);
 workboxSW.precache(fileManifest);
 <% if(navigateFallback) { %>workboxSW.router.registerNavigationRoute("<%= navigateFallback %>"<% if(navigateFallbackWhitelist) { %>, {
   whitelist: [<%= navigateFallbackWhitelist %>],
