@@ -54,7 +54,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       const model = new PrecachedDetailsModel();
       const isCached = await model._isEntryCached(
         new PrecacheEntry(
-          {}, '/', '1234', new Request('/'), true
+          {}, '/', '1234', true
         )
       );
       expect(isCached).to.equal(false);
@@ -68,13 +68,13 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
       await model._addEntry(
         new PrecacheEntry(
-          {}, '/', '1234', new Request('/'), true
+          {}, '/', '1234', true
         )
       );
 
       const isCached = await model._isEntryCached(
         new PrecacheEntry(
-          {}, '/', '4321', new Request('/'), true
+          {}, '/', '4321', true
         )
       );
       expect(isCached).to.equal(false);
@@ -86,7 +86,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
       const model = new PrecachedDetailsModel();
       const entry = new PrecacheEntry(
-        {}, '/', '1234', new Request('/'), true
+        {}, '/', '1234', true
       );
 
       await model._addEntry(entry);
@@ -101,7 +101,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
       const model = new PrecachedDetailsModel();
       const entry = new PrecacheEntry(
-        {}, '/', '1234', new Request('/'), true
+        {}, '/', '1234', true
       );
 
       const cacheName = corePrivate.cacheNames.getPrecacheName();
