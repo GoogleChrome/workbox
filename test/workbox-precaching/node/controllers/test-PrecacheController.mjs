@@ -14,7 +14,7 @@ const MOCK_LOCATION = 'https://example.com';
 describe(`[workbox-precaching] PrecacheController`, function() {
   const sandbox = sinon.sandbox.create();
   let logger;
-  let cacheNameProvider;
+  let cacheNames;
 
   before(function() {
     global.indexedDB = new IDBFactory();
@@ -34,10 +34,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     const coreModule = await import('../../../../packages/workbox-core/index.mjs');
 
     logger = coreModule._private.logger;
-    cacheNameProvider = coreModule._private.cacheNameProvider;
+    cacheNames = coreModule._private.cacheNames;
 
-    const cacheNames = await caches.keys();
-    await Promise.all(cacheNames.map((cacheName) => {
+    let usedCacheNames = await caches.keys();
+    await Promise.all(usedCacheNames.map((cacheName) => {
       return caches.delete(cacheName);
     }));
 
@@ -256,7 +256,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(updateInfo.notUpdatedEntries.length).to.equal(0);
 
 
-      const cache = await caches.open(cacheNameProvider.getPrecacheName());
+      const cache = await caches.open(cacheNames.getPrecacheName());
       const keys = await cache.keys();
       expect(keys.length).to.equal(cacheList.length);
 
@@ -347,7 +347,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       sandbox.stub(logger, 'warn');
       sandbox.stub(logger, 'debug');
       const logStub = sandbox.stub(logger, 'log');
-      const cache = await caches.open(cacheNameProvider.getPrecacheName());
+      const cache = await caches.open(cacheNames.getPrecacheName());
 
       /*
       First precache some entries
@@ -429,7 +429,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       sandbox.stub(logger, 'debug');
       const logStub = sandbox.stub(logger, 'log');
 
-      const cache = await caches.open(cacheNameProvider.getPrecacheName());
+      const cache = await caches.open(cacheNames.getPrecacheName());
 
       /*
       First precache some entries
@@ -505,7 +505,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const precacheController = new PrecacheController();
       await precacheController.cleanup();
 
-      const hasCache = await caches.has(cacheNameProvider.getPrecacheName());
+      const hasCache = await caches.has(cacheNames.getPrecacheName());
       expect(hasCache).to.equal(false);
     });
 

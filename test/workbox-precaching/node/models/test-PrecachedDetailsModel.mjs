@@ -45,14 +45,14 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     // TODO Bad cache name input
   });
 
-  describe(`isEntryCached()`, function() {
+  describe(`_isEntryCached()`, function() {
     // TODO Test bad inputs
 
     it(`should return false for non-existant entry`, async function() {
       const moduleExports = await import(MODULE_PATH);
       const PrecachedDetailsModel = moduleExports.default;
       const model = new PrecachedDetailsModel();
-      const isCached = await model.isEntryCached(
+      const isCached = await model._isEntryCached(
         new PrecacheEntry(
           {}, '/', '1234', new Request('/'), true
         )
@@ -66,13 +66,13 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
       const model = new PrecachedDetailsModel();
 
-      await model.addEntry(
+      await model._addEntry(
         new PrecacheEntry(
           {}, '/', '1234', new Request('/'), true
         )
       );
 
-      const isCached = await model.isEntryCached(
+      const isCached = await model._isEntryCached(
         new PrecacheEntry(
           {}, '/', '4321', new Request('/'), true
         )
@@ -89,8 +89,8 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
         {}, '/', '1234', new Request('/'), true
       );
 
-      await model.addEntry(entry);
-      const isCached = await model.isEntryCached(entry);
+      await model._addEntry(entry);
+      const isCached = await model._isEntryCached(entry);
 
       expect(isCached).to.equal(false);
     });
@@ -104,18 +104,18 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
         {}, '/', '1234', new Request('/'), true
       );
 
-      const cacheName = corePrivate.cacheNameProvider.getPrecacheName();
+      const cacheName = corePrivate.cacheNames.getPrecacheName();
       const openCache = await caches.open(cacheName);
       openCache.put('/', new Response('Hello'));
 
-      await model.addEntry(entry);
+      await model._addEntry(entry);
 
-      const isCached = await model.isEntryCached(entry);
+      const isCached = await model._isEntryCached(entry);
       expect(isCached).to.equal(true);
     });
   });
 
-  describe('deleteEntry()', function() {
+  describe('_deleteEntry()', function() {
     // TODO add bad input tests
 
     it(`should be able to delete an entry`, async function() {
@@ -123,7 +123,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       const PrecachedDetailsModel = moduleExports.default;
 
       const model = new PrecachedDetailsModel();
-      await model.deleteEntry('/');
+      await model._deleteEntry('/');
     });
   });
 });
