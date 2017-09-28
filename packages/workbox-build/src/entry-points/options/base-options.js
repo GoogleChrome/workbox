@@ -5,7 +5,6 @@ const SCHEMA = joi.object().keys({
   clientsClaim: joi.boolean(),
   directoryIndex: joi.string(),
   dontCacheBustUrlsMatching: joi.object().type(RegExp),
-  globDirectory: joi.string().required(),
   globIgnores: joi.array().items(joi.string()).default([
     'node_modules/**/*',
   ]),
@@ -17,7 +16,6 @@ const SCHEMA = joi.object().keys({
   maximumFileSizeToCacheInBytes: joi.number().min(1).default(2 * 1024 * 1024),
   modifyUrlPrefix: joi.object(),
   skipWaiting: joi.boolean(),
-  swDest: joi.string().required(),
   templatedUrls: [joi.string(), joi.array().items(joi.string())],
 });
 

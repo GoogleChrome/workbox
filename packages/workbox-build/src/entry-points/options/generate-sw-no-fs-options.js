@@ -3,13 +3,14 @@ const joi = require('joi');
 const BaseOptions = require('./base-options');
 
 /**
- * Options specific to the generate-sw entry point.
+ * Options specific to the generate-sw-no-fs entry point.
  */
-class GenerateSWOptions extends BaseOptions {
+class GenerateSWNoFSOptions extends BaseOptions {
   constructor(options) {
     // Add in some additional constraints.
     const schema = BaseOptions.schema.keys({
-      globDirectory: joi.string().required(),
+      globDirectory: joi.string(),
+      importScripts: joi.array().items(joi.string()).required(),
       navigateFallback: joi.string(),
       navigateFallbackWhitelist: joi.array().items(joi.object().type(RegExp)),
       runtimeCaching: joi.array().items(joi.object().keys({
@@ -17,11 +18,11 @@ class GenerateSWOptions extends BaseOptions {
         handler: [joi.func(), joi.string()],
         options: joi.object(),
       }).requiredKeys('urlPattern', 'handler')),
-      swDest: joi.string().required(),
+      swTemplate: joi.string().required(),
     });
 
     super(options, schema);
   }
 }
 
-module.exports = GenerateSWOptions;
+module.exports = GenerateSWNoFSOptions;

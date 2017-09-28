@@ -26,16 +26,22 @@ module.exports = async ({
   swDest,
   templatedUrls,
 }) => {
+  if (!globDirectory) {
+    return [];
+  }
+
   const fileSet = new Set();
 
-  // Ensure that we ignore the SW file we're eventually writing to disk.
-  const swDestIgnore = `**/${path.basename(swDest)}`;
+  if (swDest) {
+    // Ensure that we ignore the SW file we're eventually writing to disk.
+    globIgnores.push(`**/${path.basename(swDest)}`);
+  }
 
   const fileDetails = globPatterns.reduce((accumulated, globPattern) => {
     const globbedFileDetails = getFileDetails({
       globDirectory,
       globPattern,
-      globIgnores: globIgnores.concat(swDestIgnore),
+      globIgnores,
     });
 
     globbedFileDetails.forEach((fileDetails) => {

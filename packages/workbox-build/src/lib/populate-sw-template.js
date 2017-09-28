@@ -1,11 +1,9 @@
-const fse = require('fs-extra');
-const path = require('path');
 const template = require('lodash.template');
 
 const errors = require('./errors');
 const runtimeCachingConverter = require('./utils/runtime-caching-converter');
 
-module.exports = async ({
+module.exports = ({
   cacheId,
   clientsClaim,
   directoryIndex,
@@ -17,24 +15,8 @@ module.exports = async ({
   navigateFallbackWhitelist,
   runtimeCaching,
   skipWaiting,
-  swDest,
+  swTemplate,
 }) => {
-  try {
-    await fse.mkdirp(path.dirname(swDest));
-  } catch (error) {
-    throw new Error(`${errors['unable-to-make-sw-directory']}. ` +
-      `'${error.message}'`);
-  }
-
-  const templatePath = path.join(__dirname, '..', 'templates', 'sw.js.tmpl');
-  let templateString;
-  try {
-    templateString = await fse.readFile(templatePath, 'utf8');
-  } catch (error) {
-    throw new Error(`${errors['read-sw-template-failure']}. ` +
-      `'${error.message}'`);
-  }
-
   // These are all options that can be passed in to the WorkboxSW constructor.
   const workboxOptions = {
     cacheId,
@@ -48,15 +30,18 @@ module.exports = async ({
       [] :
       undefined,
   };
-  const workboxOptionsString = JSON.stringify(workboxOptions, null, 2).replace(
-    `"ignoreUrlParametersMatching": []`,
-    `"ignoreUrlParametersMatching": [` +
-      `${ignoreUrlParametersMatching.join(', ')}]`
-  );
 
-  let populatedTemplate;
+  let workboxOptionsString = JSON.stringify(workboxOptions, null, 2);
+  if (ignoreUrlParametersMatching) {
+    workboxOptionsString = workboxOptionsString.replace(
+      `"ignoreUrlParametersMatching": []`,
+      `"ignoreUrlParametersMatching": [` +
+      `${ignoreUrlParametersMatching.join(', ')}]`
+    );
+  }
+
   try {
-    populatedTemplate = template(templateString)({
+    return template(swTemplate)({
       importScripts,
       manifestEntries,
       navigateFallback,
@@ -67,15 +52,5 @@ module.exports = async ({
   } catch (error) {
     throw new Error(
       `${errors['populating-sw-tmpl-failed']}. '${error.message}'`);
-  }
-
-  try {
-    await fse.writeFile(swDest, populatedTemplate);
-  } catch (error) {
-    if (error.code === 'EISDIR') {
-      // See https://github.com/GoogleChrome/workbox/issues/612
-      throw new Error(errors['sw-write-failure-directory']);
-    }
-    throw new Error(`${errors['sw-write-failure']}. '${error.message}'`);
   }
 };

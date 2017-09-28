@@ -3,8 +3,8 @@ const path = require('path');
 const GenerateSWOptions = require('./options/generate-sw-options');
 const copyWorkboxSW = require('../lib/copy-workbox-sw');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
-const writeServiceWorkerUsingTemplate =
-  require('../lib/write-sw-using-template');
+const writeServiceWorkerUsingDefaultTemplate =
+  require('../lib/write-sw-using-default-template');
 
 /**
  * @memberof module:workbox-build
@@ -29,7 +29,7 @@ async function generateSW(input) {
   ].map((file) => `**/${file}`).concat(options.globIgnores);
   const manifestEntries = await getFileManifestEntries(options);
 
-  return writeServiceWorkerUsingTemplate({
+  return writeServiceWorkerUsingDefaultTemplate({
     manifestEntries,
     importScripts: [pathToWorkboxSWFileRelativeToDest],
     ...options,
