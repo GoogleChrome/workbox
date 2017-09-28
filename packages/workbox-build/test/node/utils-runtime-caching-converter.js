@@ -10,6 +10,7 @@ const expect = chai.expect;
 /**
  * Validates the method calls for a given set of runtimeCachingOptions.
  *
+ * @private
  * @param {Array<Object>} runtimeCachingOptions
  * @param {Array<String>} convertedOptions
  */

@@ -36,6 +36,7 @@ const askForExtensionsToCache =
 /**
  * This class is a wrapper to make test easier. This is used by
  * ./bin/index.js to pass in the args when the CLI is used.
+ * @private
  */
 class SWCli {
   /**
