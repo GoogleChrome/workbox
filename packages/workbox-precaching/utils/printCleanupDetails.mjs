@@ -15,10 +15,10 @@ export default async (deletedCacheUrls, deletedRevisionUrls) => {
     return;
   }
 
-  let cacheDeleteText =
+  const cacheDeleteText =
     `${deletedCacheUrls.length} cached requests were deleted`;
-  let revisionDeleteText = `${deletedRevisionUrls.length} revision details ` +
-    `were deleted from IndexedDB.`;
+    const revisionDeleteText = `${deletedRevisionUrls.length} revision ` +
+    `details were deleted from IndexedDB.`;
   _private.logger.groupCollapsed(
      `During precaching cleanup, ${cacheDeleteText} and ${revisionDeleteText}`);
 

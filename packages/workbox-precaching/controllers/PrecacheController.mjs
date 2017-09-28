@@ -179,12 +179,12 @@ export default class PrecacheController {
   }
 
   /**
-   * Compare the URL's and determines which assets are no longer required
+   * Compare the URLs and determines which assets are no longer required
    * in the cache.
    *
    * This should be called in the service worker activate event.
    *
-   * @return {Promise<object>} Resolves with an object containing details
+   * @return {Promise<Object>} Resolves with an object containing details
    * of the deleted cache requests and precache revision details.
    */
   async cleanup() {
@@ -193,23 +193,23 @@ export default class PrecacheController {
       expectedCacheUrls.push(entry._cacheRequest.url);
     });
 
-    const results = await Promise.all([
+    const [deletedCacheRequests, deletedRevisionDetails] = await Promise.all([
       this._cleanupCache(expectedCacheUrls),
       this._cleanupDetailsModel(expectedCacheUrls),
     ]);
 
     if (process.env.NODE_ENV !== 'production') {
-      printCleanupDetails(results[0], results[1]);
+      printCleanupDetails(deletedCacheRequests, deletedRevisionDetails);
     }
 
     return {
-      deletedCacheRequests: results[0],
-      deletedRevisionDetails: results[1],
+      deletedCacheRequests,
+      deletedRevisionDetails,
     };
   }
 
   /**
-   * Goes through all the cache entries and removed any that are
+   * Goes through all the cache entries and removes any that are
    * outdated.
    * @param {Array<string>} expectedCacheUrls Array of URLs that are
    * expected to be cached.
@@ -246,7 +246,7 @@ export default class PrecacheController {
     const allDetailUrls = Object.keys(revisionedEntries);
 
     const detailsToDelete = allDetailUrls.filter((detailsUrl) => {
-      let fullUrl = new URL(detailsUrl, location).toString();
+      const fullUrl = new URL(detailsUrl, location).toString();
       return !expectedCacheUrls.includes(fullUrl);
     });
 

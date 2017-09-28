@@ -403,7 +403,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const keysTwo = await cache.keys();
       // Precaching can't determine that 'index.1234.html' and 'index.4321.html'
       // represent the same URL, so the cache ould contain both at this point
-      // since they are technically different URL's
+      // since they are technically different URLs
       // It would be in the activate event that 'index.1234.html' would
       // be removed from the cache and indexedDB.
       expect(keysTwo.length).to.equal(cacheListTwo.length + 1);
@@ -480,7 +480,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const keysTwo = await cache.keys();
       // Precaching can't determine that 'index.1234.html' and 'index.4321.html'
       // represent the same URL, so the cache ould contain both at this point
-      // since they are technically different URL's
+      // since they are technically different URLs
       // It would be in the activate event that 'index.1234.html' would
       // be removed from the cache and indexedDB.
       expect(keysTwo.length).to.equal(cacheListTwo.length);

@@ -43,7 +43,7 @@ class DBWrapper {
         // Don't forget to handle errors!
         reject(transaction.error);
       };
-      transaction.oncomplete = function(evt) {
+      transaction.oncomplete = () => {
         resolve(items);
       };
 
