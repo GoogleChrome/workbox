@@ -3,26 +3,53 @@
   <meta charset="UTF-8">
 </head>
 <body>
-  <h3>precache.install()</h3>
-  <button class="js-index-unrevisioned">Install</button>
+  <h3>precache.install() &amp; precache.cleanup()</h3>
+  <button class="js-index-install">Install</button>
+  <button class="js-index-cleanup">Cleanup</button>
 
+<script>
+  // Make sure there is scope available for core.
+  self.registration = {
+    scope: 'injected-scope',
+  };
+</script>
 <script src="../../../../packages/workbox-core/builds/browser/workbox-core.dev.js"></script>
 <script>
   // Make precaching think it's in the SW.
   workbox.core.default.assert.isSwEnv = () => {}
 </script>
 <script src="../../../../packages/workbox-precaching/builds/browser/workbox-precaching.dev.js"></script>
-<script>
-  const precacheController = new workbox.precaching.PrecacheController();
-  precacheController.addToCacheList([
-    './project/index.html',
-    { url: './project/example.html' },
-    { url: './project/example-2.html', revision: '123' },
-  ]);
 
-  const indexStringBtn = document.querySelector('.js-index-unrevisioned');
-  indexStringBtn.addEventListener('click', () => {
+<script>
+  let lastInstallValues = [];
+  let flipFile = 'example-a.html';
+  const installBtn = document.querySelector('.js-index-install');
+  installBtn.addEventListener('click', () => {
+    const precacheController = new workbox.precaching.PrecacheController();
+
+    lastInstallValues = [
+      './project/index.html',
+      `./project/${flipFile}`,
+      { url: './project/example.html' },
+      { url: './project/example-2.html', revision: '123' },
+      { url: './project/example-timestamp.html', revision: Date.now() },
+    ];
+    precacheController.addToCacheList(lastInstallValues);
+
     precacheController.install();
+
+    if (flipFile === 'example-a.html') {
+      flipFile = 'example-b.html';
+    } else {
+      flipFile = 'example-a.html';
+    }
+  });
+
+  const cleanupBtn = document.querySelector('.js-index-cleanup');
+  cleanupBtn.addEventListener('click', () => {
+    const precacheController = new workbox.precaching.PrecacheController();
+    precacheController.addToCacheList(lastInstallValues);
+    precacheController.cleanup();
   });
 </script>
 </body>

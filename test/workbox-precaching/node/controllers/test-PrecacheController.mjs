@@ -127,10 +127,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
         const precacheController = new PrecacheController();
 
-        const warnStub = sandbox.stub(logger, 'warn');
-        const debugStub = sandbox.stub(logger, 'debug');
-        const logStub = sandbox.stub(logger, 'log');
-
         precacheController.addToCacheList(inputGroup);
 
         expect(precacheController._entriesToCacheMap.size).to.equal(inputGroup.length);
@@ -142,43 +138,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
           expect(entry._entryId).to.equal(urlValue);
           expect(entry._revision).to.equal(urlValue);
         });
-
-        // Should warn developers on non-production builds.
-        expect(warnStub.callCount).to.be.gt(0);
-        expect(debugStub.callCount).to.be.gt(0);
-        expect(logStub.callCount).to.be.gt(0);
-      });
-
-      it(`should not warn developers on non-production builds with ${groupName} if 'checkEntryRevisioning' is set to false`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-        const precacheController = new PrecacheController();
-
-        const warnStub = sandbox.stub(logger, 'warn');
-        const debugStub = sandbox.stub(logger, 'debug');
-        const logStub = sandbox.stub(logger, 'log');
-
-        precacheController.checkEntryRevisioning = false;
-        precacheController.addToCacheList(inputGroup);
-
-        expect(warnStub.callCount).to.equal(0);
-        expect(debugStub.callCount).to.equal(0);
-        expect(logStub.callCount).to.equal(0);
-      });
-
-      it(`should not warn developers on production builds with string entries`, async function() {
-        process.env.NODE_ENV = 'production';
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-        const precacheController = new PrecacheController();
-
-        const warnStub = sandbox.stub(logger, 'warn');
-        const debugStub = sandbox.stub(logger, 'debug');
-        const logStub = sandbox.stub(logger, 'log');
-
-        precacheController.addToCacheList(['/example.html']);
-
-        expect(warnStub.callCount).to.equal(0);
-        expect(debugStub.callCount).to.equal(0);
-        expect(logStub.callCount).to.equal(0);
       });
 
       it(`should remove duplicate ${groupName}`, async function() {
@@ -189,11 +148,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
           ...inputGroup,
           ...inputGroup,
         ];
-
-        // Prevent logs in the mocha output
-        sandbox.stub(logger, 'warn');
-        sandbox.stub(logger, 'debug');
-        sandbox.stub(logger, 'log');
 
         precacheController.addToCacheList(inputUrls);
 
@@ -228,21 +182,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         expect(entry._entryId).to.equal(inputObject.url);
         expect(entry._revision).to.equal(inputObject.revision);
       });
-    });
-
-    it(`should not warn developers with url + revision objects.`, async function() {
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-
-      const warnStub = sandbox.stub(logger, 'warn');
-      const debugStub = sandbox.stub(logger, 'debug');
-      const logStub = sandbox.stub(logger, 'log');
-
-      const precacheController = new PrecacheController();
-      precacheController.addToCacheList([{url: '/example.html', revision: '123'}]);
-
-      expect(warnStub.callCount).to.equal(0);
-      expect(debugStub.callCount).to.equal(0);
-      expect(logStub.callCount).to.equal(0);
     });
 
     it(`should remove duplicate url + revision object entries`, async function() {
@@ -481,7 +420,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
   });
 
   describe(`cleanup()`, function() {
-    it(`should remove out of date entries`, async function() {
+    // TODO: This requires service worker mocks to be fixed.
+    // https://github.com/pinterest/service-workers/issues/40
+    // https://github.com/pinterest/service-workers/issues/38
+    it.skip(`should remove out of date entries`, async function() {
       // Prevent logs in the mocha output
       sandbox.stub(logger, 'warn');
       sandbox.stub(logger, 'debug');

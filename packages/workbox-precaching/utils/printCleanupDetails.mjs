@@ -23,7 +23,7 @@ export default async (deletedCacheUrls, deletedRevisionUrls) => {
      `During precaching cleanup, ${cacheDeleteText} and ${revisionDeleteText}`);
 
   logGroup('Deleted Cache Requests', deletedCacheUrls);
-  logGroup('Deleted Revision Details', deletedRevisionUrls);
+  logGroup('Revision Details Deleted from DB', deletedRevisionUrls);
 
   _private.logger.groupEnd();
 };

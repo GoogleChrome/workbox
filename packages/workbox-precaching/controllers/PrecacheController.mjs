@@ -21,7 +21,7 @@ export default class PrecacheController {
     this._entriesToCacheMap = new Map();
     this._precacheEntriesModel = new PrecachedDetailsModel(this._cacheName);
     if (process.env.NODE_ENV !== 'production') {
-      this.checkEntryRevisioning = true;
+      this._checkEntryRevisioning = true;
     }
   }
 
@@ -46,12 +46,6 @@ export default class PrecacheController {
         this._parseEntry(userEntry)
       );
     });
-
-    if (process.env.NODE_ENV !== 'production') {
-      if (this.checkEntryRevisioning === true) {
-        showWarningsIfNeeded(userEntries);
-      }
-    }
   }
 
   /**
@@ -116,6 +110,12 @@ export default class PrecacheController {
    * @return {Promise<Object>}
    */
   async install() {
+    if (process.env.NODE_ENV !== 'production') {
+      if (this._checkEntryRevisioning === true) {
+        showWarningsIfNeeded(this._entriesToCacheMap);
+      }
+    }
+
     const updatedEntries = [];
     const notUpdatedEntries = [];
 
@@ -223,10 +223,9 @@ export default class PrecacheController {
     }
 
     const cache = await caches.open(this._cacheName);
-    const cachedKeys = await cache.keys();
-
-    const cacheURLsToDelete = cachedKeys.filter((cachedUrl) => {
-      return !expectedCacheUrls.includes(cachedUrl);
+    const cachedRequests = await cache.keys();
+    const cacheURLsToDelete = cachedRequests.filter((cachedRequest) => {
+      return !expectedCacheUrls.includes(cachedRequest.url);
     });
 
     await Promise.all(
@@ -247,7 +246,8 @@ export default class PrecacheController {
     const allDetailUrls = Object.keys(revisionedEntries);
 
     const detailsToDelete = allDetailUrls.filter((detailsUrl) => {
-      return !expectedCacheUrls.includes(detailsUrl);
+      let fullUrl = new URL(detailsUrl, location).toString();
+      return !expectedCacheUrls.includes(fullUrl);
     });
 
     await Promise.all(
@@ -256,6 +256,11 @@ export default class PrecacheController {
       )
     );
 
-    return detailsToDelete;
+    return detailsToDelete.map((detailsId) => {
+      return {
+        id: detailsId,
+        value: revisionedEntries[detailsId],
+      };
+    });
   }
 }
