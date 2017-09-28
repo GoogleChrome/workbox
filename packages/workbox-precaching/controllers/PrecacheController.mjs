@@ -5,6 +5,7 @@ import PrecacheEntry from '../models/PrecacheEntry.mjs';
 import PrecachedDetailsModel from '../models/PrecachedDetailsModel.mjs';
 import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
 import printInstallDetails from '../utils/printInstallDetails.mjs';
+import printCleanupDetails from '../utils/printCleanupDetails.mjs';
 import cleanRedirect from '../utils/cleanRedirect.mjs';
 
 /**
@@ -20,7 +21,7 @@ export default class PrecacheController {
     this._entriesToCacheMap = new Map();
     this._precacheEntriesModel = new PrecachedDetailsModel(this._cacheName);
     if (process.env.NODE_ENV !== 'production') {
-      this.checkEntryRevisioning = true;
+      this._checkEntryRevisioning = true;
     }
   }
 
@@ -45,12 +46,6 @@ export default class PrecacheController {
         this._parseEntry(userEntry)
       );
     });
-
-    if (process.env.NODE_ENV !== 'production') {
-      if (this.checkEntryRevisioning === true) {
-        showWarningsIfNeeded(userEntries);
-      }
-    }
   }
 
   /**
@@ -115,6 +110,12 @@ export default class PrecacheController {
    * @return {Promise<Object>}
    */
   async install() {
+    if (process.env.NODE_ENV !== 'production') {
+      if (this._checkEntryRevisioning === true) {
+        showWarningsIfNeeded(this._entriesToCacheMap);
+      }
+    }
+
     const updatedEntries = [];
     const notUpdatedEntries = [];
 
@@ -175,5 +176,91 @@ export default class PrecacheController {
     await this._precacheEntriesModel.addEntry(precacheEntry);
 
     return true;
+  }
+
+  /**
+   * Compare the URLs and determines which assets are no longer required
+   * in the cache.
+   *
+   * This should be called in the service worker activate event.
+   *
+   * @return {Promise<Object>} Resolves with an object containing details
+   * of the deleted cache requests and precache revision details.
+   */
+  async cleanup() {
+    const expectedCacheUrls = [];
+    this._entriesToCacheMap.forEach((entry) => {
+      expectedCacheUrls.push(entry._cacheRequest.url);
+    });
+
+    const [deletedCacheRequests, deletedRevisionDetails] = await Promise.all([
+      this._cleanupCache(expectedCacheUrls),
+      this._cleanupDetailsModel(expectedCacheUrls),
+    ]);
+
+    if (process.env.NODE_ENV !== 'production') {
+      printCleanupDetails(deletedCacheRequests, deletedRevisionDetails);
+    }
+
+    return {
+      deletedCacheRequests,
+      deletedRevisionDetails,
+    };
+  }
+
+  /**
+   * Goes through all the cache entries and removes any that are
+   * outdated.
+   * @param {Array<string>} expectedCacheUrls Array of URLs that are
+   * expected to be cached.
+   * @return {Promise<Array<string>>} Resolves to an array of URLs
+   * of cached requests that were deleted.
+   */
+  async _cleanupCache(expectedCacheUrls) {
+    if (!await caches.has(this._cacheName)) {
+      // Cache doesn't exist, so nothing to delete
+      return [];
+    }
+
+    const cache = await caches.open(this._cacheName);
+    const cachedRequests = await cache.keys();
+    const cacheURLsToDelete = cachedRequests.filter((cachedRequest) => {
+      return !expectedCacheUrls.includes(cachedRequest.url);
+    });
+
+    await Promise.all(
+      cacheURLsToDelete.map((cacheUrl) => cache.delete(cacheUrl))
+    );
+
+    return cacheURLsToDelete;
+  }
+
+  /**
+   * @param {Array<string>} expectedCacheUrls Array of URLs that are
+   * expected to be cached.
+   * @return {Promise<Array<string>>} Resolves to an array of URLs removed
+   * from indexedDB.
+   */
+  async _cleanupDetailsModel(expectedCacheUrls) {
+    const revisionedEntries = await this._precacheEntriesModel.getAllEntries();
+    const allDetailUrls = Object.keys(revisionedEntries);
+
+    const detailsToDelete = allDetailUrls.filter((detailsUrl) => {
+      const fullUrl = new URL(detailsUrl, location).toString();
+      return !expectedCacheUrls.includes(fullUrl);
+    });
+
+    await Promise.all(
+      detailsToDelete.map(
+        (detailsId) => this._precacheEntriesModel.deleteEntry(detailsId)
+      )
+    );
+
+    return detailsToDelete.map((detailsId) => {
+      return {
+        id: detailsId,
+        value: revisionedEntries[detailsId],
+      };
+    });
   }
 }

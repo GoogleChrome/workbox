@@ -31,6 +31,14 @@ export default class PrecachedDetailsModel {
   }
 
   /**
+   * @return {Promise<Array>}
+   */
+  async getAllEntries() {
+    const db = await this._getDb();
+    return await db.getAll();
+  }
+
+  /**
    * Get the current revision details.
    * @param {Object} entryId
    * @return {Promise<string|null>}
@@ -54,11 +62,11 @@ export default class PrecachedDetailsModel {
 
   /**
    * Delete entry from details model;
-   * @param {PrecacheEntry} precacheEntry
+   * @param {string} entryId
    */
-  async deleteEntry(precacheEntry) {
+  async deleteEntry(entryId) {
     const db = await this._getDb();
-    await db.delete(precacheEntry._entryId);
+    await db.delete(entryId);
   }
 
   /**

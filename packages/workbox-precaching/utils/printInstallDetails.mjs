@@ -15,9 +15,9 @@ const logGroup = (groupTitle, entries) => {
 };
 
 export default async (updatedEntries, notUpdatedEntries) => {
-  let updatedText =
+  const updatedText =
     `${updatedEntries.length} files were updated`;
-  let notUpdatedText = `${notUpdatedEntries.length} files ` +
+  const notUpdatedText = `${notUpdatedEntries.length} files ` +
     `were up-to-date.`;
   _private.logger.groupCollapsed(
      `During precaching, ${updatedText} and ${notUpdatedText}`);

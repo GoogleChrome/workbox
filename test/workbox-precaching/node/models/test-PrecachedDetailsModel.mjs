@@ -122,12 +122,8 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       const moduleExports = await import(MODULE_PATH);
       const PrecachedDetailsModel = moduleExports.default;
 
-      const entry = new PrecacheEntry(
-        {}, '/', '1234', new Request('/'), true
-      );
-
       const model = new PrecachedDetailsModel();
-      await model.deleteEntry(entry);
+      await model.deleteEntry('/');
     });
   });
 });

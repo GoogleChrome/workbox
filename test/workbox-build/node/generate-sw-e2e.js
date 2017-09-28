@@ -4,6 +4,11 @@ const fsExtra = require('fs-extra');
 const testServerGen = require('../../../infra/utils/test-server-generator.js');
 const validator = require('../../../infra/utils/e2e-sw-validator.js');
 
+// Don't run on windows - it falls over.
+if (process.platform === 'win32') {
+  return;
+}
+
 require('chai').should();
 
 describe(`Generate SW End-to-End Tests`, function() {
