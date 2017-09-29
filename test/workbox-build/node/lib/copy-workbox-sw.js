@@ -18,7 +18,7 @@ describe(`lib/copy-workbox-sw.js`, function() {
 
     try {
       await copyWorkboxSW(DEST_DIRECTORY, BUILD_TYPE);
-      throw Error('Unexpected success.');
+      throw new Error('Unexpected success.');
     } catch (error) {
       expect(error.message).to.have.string(errors['unable-to-copy-workbox-sw']);
     }

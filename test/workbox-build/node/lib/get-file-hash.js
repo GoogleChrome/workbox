@@ -19,7 +19,7 @@ describe(`lib/get-file-hash.js`, function() {
 
     try {
       getFileHash(FILE);
-      throw Error('Unexpected success.');
+      throw new Error('Unexpected success.');
     } catch (error) {
       expect(error.message).to.have.string(errors['unable-to-get-file-hash']);
     }

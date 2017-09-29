@@ -28,7 +28,7 @@ describe(`lib/get-file-details.js`, function() {
         globDirectory: GLOB_DIRECTORY,
         globPattern: GLOB_PATTERN,
       });
-      throw Error('Unexpected success.');
+      throw new Error('Unexpected success.');
     } catch (error) {
       expect(error.message).to.have.string(errors['unable-to-glob-files']);
     }
@@ -46,7 +46,7 @@ describe(`lib/get-file-details.js`, function() {
         globDirectory: GLOB_DIRECTORY,
         globPattern: GLOB_PATTERN,
       });
-      throw Error('Unexpected success.');
+      throw new Error('Unexpected success.');
     } catch (error) {
       expect(error.message).to.have.string(errors['useless-glob-pattern']);
     }

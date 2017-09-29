@@ -1,11 +1,9 @@
-const chai = require('chai');
-const errors = require('../../../packages/workbox-build/src/lib/errors');
-const runtimeCachingConverter =
-  require('../../../packages/workbox-build/src/lib/utils/runtime-caching-converter');
+const expect = require('chai').expect;
 const sinon = require('sinon');
 const vm = require('vm');
 
-const expect = chai.expect;
+const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const runtimeCachingConverter = require('../../../../packages/workbox-build/src/lib/runtime-caching-converter');
 
 /**
  * Validates the method calls for a given set of runtimeCachingOptions.

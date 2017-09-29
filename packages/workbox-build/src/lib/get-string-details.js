@@ -1,9 +1,9 @@
-const getStringhash = require('./get-string-hash');
+const getStringHash = require('./get-string-hash');
 
 module.exports = (url, string) => {
   return {
     file: url,
-    hash: getStringhash(string),
+    hash: getStringHash(string),
     size: string.length,
   };
 };
