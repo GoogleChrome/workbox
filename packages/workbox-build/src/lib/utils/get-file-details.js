@@ -5,11 +5,7 @@ const errors = require('../errors');
 const getFileSize = require('./get-file-size');
 const getFileHash = require('./get-file-hash');
 
-module.exports = ({
-  globDirectory,
-  globIgnores,
-  globPattern,
-}) => {
+module.exports = ({globDirectory, globIgnores, globPattern}) => {
   let globbedFiles;
   try {
     globbedFiles = glob.sync(globPattern, {
