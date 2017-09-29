@@ -4,7 +4,8 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "local-lerna": "lerna"
+    "local-lerna": "lerna",
+    "docs": "rm -rf ./docs/ && jsdoc --version && jsdoc -c jsdoc.conf -d ./docs/"
   },
   "version": "0.0.0",
   "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
@@ -47,6 +48,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-spawn-mocha": "^3.1.0",
     "handlebars": "^4.0.6",
+    "jsdoc": "^3.5.5",
     "jsdoc-strip-async-await": "^0.1.0",
     "lerna": "2.0.0-rc.5",
     "minimist": "^1.2.0",
