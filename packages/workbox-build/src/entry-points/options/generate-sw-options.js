@@ -12,7 +12,12 @@ class GenerateSWOptions extends BaseOptions {
   constructor(options) {
     // Add in some additional constraints.
     const schema = BaseOptions.schema.keys({
+      cacheId: joi.string(),
+      clientsClaim: joi.boolean(),
+      directoryIndex: joi.string(),
       globDirectory: joi.string().required(),
+      handleFetch: joi.boolean(),
+      ignoreUrlParametersMatching: joi.array().items(joi.object().type(RegExp)),
       importScripts: joi.array().items(joi.string()),
       importWorkboxFromCDN: joi.boolean().default(true),
       navigateFallback: joi.string(),
@@ -22,6 +27,7 @@ class GenerateSWOptions extends BaseOptions {
         handler: [joi.func(), joi.string()],
         options: joi.object(),
       }).requiredKeys('urlPattern', 'handler')),
+      skipWaiting: joi.boolean(),
       swDest: joi.string().required(),
     });
 

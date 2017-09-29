@@ -1,9 +1,6 @@
 const joi = require('joi');
 
 const SCHEMA = joi.object().keys({
-  cacheId: joi.string(),
-  clientsClaim: joi.boolean(),
-  directoryIndex: joi.string(),
   dontCacheBustUrlsMatching: joi.object().type(RegExp),
   globIgnores: joi.array().items(joi.string()).default([
     'node_modules/**/*',
@@ -11,11 +8,9 @@ const SCHEMA = joi.object().keys({
   globPatterns: joi.array().items(joi.string()).default([
     '**/*.{js,css,html}',
   ]),
-  ignoreUrlParametersMatching: joi.array().items(joi.object().type(RegExp)),
   manifestTransforms: joi.array().items(joi.func()),
   maximumFileSizeToCacheInBytes: joi.number().min(1).default(2 * 1024 * 1024),
   modifyUrlPrefix: joi.object(),
-  skipWaiting: joi.boolean(),
   templatedUrls: [joi.string(), joi.array().items(joi.string())],
 });
 

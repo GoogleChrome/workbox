@@ -38,7 +38,7 @@ async function generateSW(input) {
     // importScripts may or may not already be an array containing other URLs.
     options.importScripts = (options.importScripts || []).concat(CDN_URL);
   } else {
-    // If we're not importing the Workbox script from
+    // If we're not importing the Workbox script from the CDN, copy it over.
     const pathToWorkboxSWFile = await copyWorkboxSW(destDirectory);
 
     // If we're writing our SW file to build/sw.js, the workbox-sw file will be
