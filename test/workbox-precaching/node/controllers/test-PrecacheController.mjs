@@ -12,8 +12,6 @@ const {logger, cacheNames} = _private;
 
 describe(`[workbox-precaching] PrecacheController`, function() {
   const sandbox = sinon.sandbox.create();
-  let logger;
-  let cacheNames;
 
   before(function() {
     global.indexedDB = new IDBFactory();
@@ -22,10 +20,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
   beforeEach(async function() {
     clearRequire.all();
-    const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-
-    logger = coreModule._private.logger;
-    cacheNames = coreModule._private.cacheNames;
 
     let usedCacheNames = await caches.keys();
     await Promise.all(usedCacheNames.map((cacheName) => {
@@ -95,8 +89,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       {},
     ];
     generateTestVariants(`should throw when passing in invalid inputs in the array in dev`, badNestedInputs, async function(variant) {
-      const precacheController = new PrecacheController();
+      if (process.env.NODE_ENV == 'production') return this.skip();
 
+      const precacheController = new PrecacheController();
       return expectError(() => {
         precacheController.addToCacheList([variant]);
       }, 'add-to-cache-list-unexpected-type', (err) => {
@@ -311,10 +306,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
 
     it('should only precache assets that have changed', async function() {
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      const logStub = sandbox.stub(logger, 'log');
       const cache = await caches.open(cacheNames.getPrecacheName());
 
       /*
@@ -395,11 +386,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     // https://github.com/pinterest/service-workers/issues/40
     // https://github.com/pinterest/service-workers/issues/38
     it.skip(`should remove out of date entries`, async function() {
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      const logStub = sandbox.stub(logger, 'log');
-
       const cache = await caches.open(cacheNames.getPrecacheName());
 
       /*

@@ -13,11 +13,9 @@ node_js:
 env:
   - BROWSER_PACKAGE="workbox-build"
   - BROWSER_PACKAGE="workbox-core"
-  - BROWSER_PACKAGE="workbox-core" NODE_ENV=production
   - BROWSER_PACKAGE="workbox-precaching"
-  - BROWSER_PACKAGE="workbox-precaching" NODE_ENV=production
   - BROWSER_PACKAGE="workbox-routing"
-  - BROWSER_PACKAGE="workbox-routing" NODE_ENV=production
+
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:

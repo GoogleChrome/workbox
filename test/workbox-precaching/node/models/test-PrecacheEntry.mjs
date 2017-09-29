@@ -12,12 +12,12 @@ describe('[workbox-precaching] PrecacheEntry', function() {
 
   describe('constructor', function() {
     it(`should use search param if 'cache' option is not supported`, async function() {
-      const entry = new PrecacheEntry('example', '/url', '1234', new Request('/url'), true);
+      const entry = new PrecacheEntry('example', '/url', '1234', true);
       expect(entry._networkRequest.url).to.equal(`${self.location}/url?_workbox-precaching=1234`);
     });
 
     it(`should use search param if 'cache' option is not supported and keep previous search params`, async function() {
-      const entry = new PrecacheEntry('example', '/url', '1234', new Request('/url?foo=bar'), true);
+      const entry = new PrecacheEntry('example', '/url?foo=bar', '1234', true);
       expect(entry._networkRequest.url).to.equal(`${self.location}/url?foo=bar&_workbox-precaching=1234`);
     });
 
