@@ -90,6 +90,7 @@
     "rollup-stream": "^1.24.1",
     "selenium-assistant": "^5.1.1",
     "semver": "^5.4.1",
+    "serve-index": "^1.9.1",
     "service-worker-mock": "^1.2.2",
     "shelving-mock-indexeddb": "^1.0.4",
     "sinon": "^3.2.1",
