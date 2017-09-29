@@ -1,7 +1,7 @@
 const template = require('lodash.template');
 
 const errors = require('./errors');
-const runtimeCachingConverter = require('./utils/runtime-caching-converter');
+const runtimeCachingConverter = require('./runtime-caching-converter');
 
 module.exports = ({
   cacheId,

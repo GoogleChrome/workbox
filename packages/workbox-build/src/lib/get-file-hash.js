@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const getStringHash = require('./get-string-hash');
-const errors = require('../errors');
+const errors = require('./errors');
 
 module.exports = (file) => {
   try {

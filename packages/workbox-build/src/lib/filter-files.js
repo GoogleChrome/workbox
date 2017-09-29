@@ -1,4 +1,3 @@
-const logHelper = require('../log-helper');
 const modifyUrlPrefixTranform = require('./modify-url-prefix-transform');
 const noRevisionForUrlsMatchingTransform =
   require('./no-revision-for-urls-matching-transform');
@@ -51,14 +50,7 @@ module.exports = ({fileDetails, maximumFileSizeToCacheInBytes, modifyUrlPrefix,
                     dontCacheBustUrlsMatching, manifestTransforms}) => {
   const filteredFileDetails = fileDetails.filter((fileDetails) => {
     // Remove oversized files.
-    if (fileDetails.size > maximumFileSizeToCacheInBytes) {
-      logHelper.warn(`Skipping file '${fileDetails.file}' due to size. ` +
-        `[Max size supported is ${maximumFileSizeToCacheInBytes}, this file ` +
-        `is ${fileDetails.size}]`);
-      return false;
-    }
-
-    return true;
+    return fileDetails.size <= maximumFileSizeToCacheInBytes;
   });
 
   // Take the array of fileDetail objects and convert it into an array of

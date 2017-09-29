@@ -1,4 +1,4 @@
-const errors = require('../errors');
+const errors = require('./errors');
 
 /**
  * Escaping user input to be treated as a literal string within a regular

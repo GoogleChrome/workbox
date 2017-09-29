@@ -61,10 +61,9 @@ async function generateSW(input) {
 
   const {count, size, manifestEntries} = await getFileManifestEntries(options);
 
-  await writeServiceWorkerUsingDefaultTemplate({
+  await writeServiceWorkerUsingDefaultTemplate(Object.assign({
     manifestEntries,
-    ...options,
-  });
+  }, options));
 
   return {count, size};
 }

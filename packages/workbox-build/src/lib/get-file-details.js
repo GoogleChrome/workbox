@@ -1,7 +1,7 @@
 const glob = require('glob');
 const path = require('path');
 
-const errors = require('../errors');
+const errors = require('./errors');
 const getFileSize = require('./get-file-size');
 const getFileHash = require('./get-file-hash');
 

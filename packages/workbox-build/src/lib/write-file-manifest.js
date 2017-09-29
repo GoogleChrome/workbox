@@ -3,7 +3,7 @@ const fse = require('fs-extra');
 const path = require('path');
 const template = require('lodash.template');
 
-const errors = require('../errors');
+const errors = require('./errors');
 
 const DEFAULT_FORMAT = 'iife';
 const FORMATS_TO_TEMPLATES = {

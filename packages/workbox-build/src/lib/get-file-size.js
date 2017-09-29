@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const errors = require('../errors');
+const errors = require('./errors');
 
 module.exports = (file) => {
   try {

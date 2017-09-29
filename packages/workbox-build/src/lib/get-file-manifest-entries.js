@@ -2,10 +2,10 @@ const assert = require('assert');
 const path = require('path');
 
 const errors = require('./errors');
-const filterFiles = require('./utils/filter-files');
-const getCompositeDetails = require('./utils/get-composite-details');
-const getFileDetails = require('./utils/get-file-details');
-const getStringDetails = require('./utils/get-string-details');
+const filterFiles = require('./filter-files');
+const getCompositeDetails = require('./get-composite-details');
+const getFileDetails = require('./get-file-details');
+const getStringDetails = require('./get-string-details');
 
 /**
  * @typedef {Object} ManifestEntry

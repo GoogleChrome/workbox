@@ -24,10 +24,9 @@ async function generateSWNoFS(input) {
 
   const {manifestEntries} = await getFileManifestEntries(options);
 
-  return populateSWTemplate({
+  return populateSWTemplate(Object.assign({
     manifestEntries,
-    ...options,
-  });
+  }, options));
 }
 
 module.exports = generateSWNoFS;

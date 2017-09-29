@@ -1,4 +1,4 @@
-const errors = require('../errors');
+const errors = require('./errors');
 
 /**
  * Given a set of options that configures `sw-toolbox`'s behavior, convert it
