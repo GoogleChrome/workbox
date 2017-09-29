@@ -1,4 +1,8 @@
 /**
+ * @callback VariantCallback
+ * @param {Object} variant
+ */
+/**
  * This is a helper function that will auto-generate mocha unit tests
  * for various inputs.
  *
@@ -7,7 +11,7 @@
  * idenfity the failing test.
  * @param {Array<Object>} variants This should be all the variations of the
  * test you wish to generate.
- * @param {function} func This is the function that will be called, with a
+ * @param {VariantCallback} func This is the function that will be called, with a
  * variant as the only argument. This function should perform the desired test.
  */
 const generateVariantTests = (itTitle, variants, func) => {
