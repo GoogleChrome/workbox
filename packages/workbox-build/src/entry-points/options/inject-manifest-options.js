@@ -6,6 +6,9 @@ const BaseOptions = require('./base-options');
  * Options specific to the inject-manifest entry point.
  */
 class InjectManifestOptions extends BaseOptions {
+  /**
+   * @param {Object} options
+   */
   constructor(options) {
     // Add in some additional constraints.
     const schema = BaseOptions.schema.keys({

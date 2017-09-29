@@ -53,8 +53,8 @@ module.exports = ({fileDetails, maximumFileSizeToCacheInBytes, modifyUrlPrefix,
     // Remove oversized files.
     if (fileDetails.size > maximumFileSizeToCacheInBytes) {
       logHelper.warn(`Skipping file '${fileDetails.file}' due to size. ` +
-        `[Max size supported is ${maximumFileSize}, this file is ` +
-        `${fileDetails.size}]`);
+        `[Max size supported is ${maximumFileSizeToCacheInBytes}, this file ` +
+        `is ${fileDetails.size}]`);
       return false;
     }
 
@@ -67,6 +67,7 @@ module.exports = ({fileDetails, maximumFileSizeToCacheInBytes, modifyUrlPrefix,
     return {
       url: fileDetails.file.replace(/\\/g, '/'),
       revision: fileDetails.hash,
+      size: fileDetails.size,
     };
   });
 
@@ -84,8 +85,23 @@ module.exports = ({fileDetails, maximumFileSizeToCacheInBytes, modifyUrlPrefix,
   // Any additional manifestTransforms that were passed will be applied last.
   transformsToApply.concat(manifestTransforms || []);
 
-  // Apply the transformations sequentially, and return the result.
-  return transformsToApply.reduce(
+  // Apply the transformations sequentially.
+  const transformedManifest = transformsToApply.reduce(
     (previousManifest, transform) => transform(previousManifest),
     normalizedManifest);
+
+  // Generate some metadata about the manifest before we clear out the size
+  // properties from each entry.
+  const count = transformedManifest.length;
+  let size = 0;
+  for (const manifestEntry of transformedManifest) {
+    size += manifestEntry.size;
+    delete manifestEntry.size;
+  }
+
+  return {
+    count,
+    size,
+    manifestEntries: transformedManifest,
+  };
 };

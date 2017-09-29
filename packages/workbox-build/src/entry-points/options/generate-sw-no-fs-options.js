@@ -6,11 +6,15 @@ const BaseOptions = require('./base-options');
  * Options specific to the generate-sw-no-fs entry point.
  */
 class GenerateSWNoFSOptions extends BaseOptions {
+  /**
+   * @param {Object} options
+   */
   constructor(options) {
     // Add in some additional constraints.
     const schema = BaseOptions.schema.keys({
       globDirectory: joi.string(),
-      importScripts: joi.array().items(joi.string()).required(),
+      importScripts: joi.array().items(joi.string()),
+      importWorkboxFromCDN: joi.boolean().default(true),
       navigateFallback: joi.string(),
       navigateFallbackWhitelist: joi.array().items(joi.object().type(RegExp)),
       runtimeCaching: joi.array().items(joi.object().keys({
