@@ -70,6 +70,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.1",
     "gzip-size": "^4.0.0",
+    "jsdoc": "^3.5.5",
     "lerna": "^2.2.0",
     "mocha": "^3.5.3",
     "nyc": "^11.2.1",
