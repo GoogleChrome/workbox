@@ -4,7 +4,6 @@ const gulp = require('gulp');
 const browserSync = require('browser-sync').create();
 
 const spawn = require('./utils/spawn-promise-wrapper');
-const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
 
 const DOCS_DIRECTORY = path.join(__dirname, '..', 'docs');

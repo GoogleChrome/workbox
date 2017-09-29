@@ -81,7 +81,11 @@ class Route {
    * @param {module:workbox-routing.Route~matchCallback} match
    * A callback function that determines whether the route matches a given
    * `fetch` event.
-   * @param {module:workbox-routing.Route~handlerCallback|module:workbox-runtime-caching.Handler}
+   * @param
+   * {
+   *   module:workbox-routing.Route~handlerCallback |
+   *   module:workbox-runtime-caching.Handler
+   * }
    * handler This parameter can be either a callback function or an object
    * which implements the `Handler` interface.
    * @param {string} [method='GET'] Restrict the route to only match requests

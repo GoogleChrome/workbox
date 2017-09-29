@@ -22,7 +22,4 @@ module.exports = {
 
   // This is the environments that we should use for NODE_ENV.
   BUILD_TYPES: ['dev', 'production'],
-  PORT: {
-    docs: 5295,
-  },
 };
