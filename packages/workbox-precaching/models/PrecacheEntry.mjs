@@ -27,9 +27,10 @@ export default class PrecacheEntry {
    * This method will either use Request.cache option OR append a cache
    * busting parameter to the URL.
    *
-   * @private
    * @param {Request} request The request to cache bust
    * @return {Request} A cachebusted Request
+   * 
+   * @private
    */
   _cacheBustRequest(request) {
     let url = request.url;

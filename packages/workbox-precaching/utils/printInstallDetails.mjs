@@ -1,9 +1,10 @@
 import {_private} from 'workbox-core';
 
 /**
- * @private
  * @param {string} groupTitle
  * @param {Array<PrecacheEntry>} entries
+ * 
+ * @private
  */
 const logGroup = (groupTitle, entries) => {
   if (entries.length === 0) {

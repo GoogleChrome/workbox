@@ -4,10 +4,11 @@ const errors = require('../errors');
  * Given a set of options that configures `sw-toolbox`'s behavior, convert it
  * into a string that would configure equivalent `workbox-sw` behavior.
  *
- * @private
  * @param {Object} options See
  *        https://googlechrome.github.io/sw-toolbox/api.html#options
  * @return {string} A JSON string representing the equivalent options.
+ * 
+ * @private
  */
 function getOptionsString(options) {
   const cacheOptions = options.cache || {};

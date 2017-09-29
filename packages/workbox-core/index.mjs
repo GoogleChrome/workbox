@@ -7,8 +7,8 @@ import * as _private from './_private.mjs';
  * This class is never expose publicly. Inidividual methods are exposed
  * using jsdoc alias commands.
  *
- * @memberof module:workbox-core
  * @private
+ * @memberof module:workbox-core
  */
 class WorkboxCore {
   /**
@@ -101,8 +101,9 @@ class WorkboxCore {
    * Getters and Setters aren't well supported by JSDOCs.
    * The getter is documented for both get/set methods.
    *
-   * @private
    * @param {number} newLevel the new logLevel to use.
+   * 
+   * @private
    */
   set logLevel(newLevel) {
     // TODO: Switch to Assertion class
@@ -147,8 +148,9 @@ export {_private};
 /**
  * Get an object containing the supported set of log levels.
  *
- * @alias module:workbox-core.LOG_LEVELS
  * @returns {Object}
+ * 
+  * @alias module:workbox-core.LOG_LEVELS
  */
 export {LOG_LEVELS};
 

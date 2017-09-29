@@ -6,11 +6,12 @@ const errors = require('../errors');
  *
  * From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
  *
- * @private
  * @param  {string} string The string to be used as part of a regular
  *                         expression
  * @return {string}        A string that is safe to use in a regular
  *                         expression.
+ * 
+ * @private
  */
 const escapeRegExp = (string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
