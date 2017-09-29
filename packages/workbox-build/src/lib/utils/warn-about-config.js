@@ -4,9 +4,9 @@ const logHelper = require('../log-helper');
  * A helper to find and log any configuration options that were set which are
  * not valid for a given usage mode.
  *
- * @param {Array<String>} blacklist The names of invalid configuration options.
- * @param {Object<String,String>} fullConfig The configuration options to check.
- * @param {String} methodName The type of build that's being attempted
+ * @param {Array<string>} blacklist The names of invalid configuration options.
+ * @param {Object<string,string>} fullConfig The configuration options to check.
+ * @param {string} methodName The type of build that's being attempted
  * (injectManifest, etc.).
  */
 module.exports = (blacklist, fullConfig, methodName) => {

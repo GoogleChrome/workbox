@@ -6,7 +6,7 @@ const errors = require('../errors');
  *
  * @param {Object} options See
  *        https://googlechrome.github.io/sw-toolbox/api.html#options
- * @return {String} A JSON string representing the equivalent options.
+ * @return {string} A JSON string representing the equivalent options.
  */
 function getOptionsString(options) {
   const cacheOptions = options.cache || {};

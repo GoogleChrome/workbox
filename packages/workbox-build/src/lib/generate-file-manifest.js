@@ -14,7 +14,7 @@ const INVALID_CONFIG_OPTIONS = ['swSrc'];
  * worker to precache assets.
  *
  * @param {module:workbox-build.Configuration} input
- * @param {String} [input.format] There are some options for how the file
+ * @param {string} [input.format] There are some options for how the file
  * manifest is formatted in the final output. The format can be one of the
  * following values:
  * - **'iife'** - Output the manifest as an
@@ -22,7 +22,7 @@ const INVALID_CONFIG_OPTIONS = ['swSrc'];
  * - **'es'** - Output as an ES2015 module.
  *
  * Default value is 'iife'.
- * @param {String} input.manifestDest The file path and name where the file
+ * @param {string} input.manifestDest The file path and name where the file
  * manifest should be written (i.e. `./build/precache-manifest.js`).
  * @return {Promise} Resolves once the manifest file has been created.
  *
