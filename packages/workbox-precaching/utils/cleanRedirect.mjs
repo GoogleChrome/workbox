@@ -10,9 +10,8 @@ export default async (response) => {
   const body = await bodyPromise;
 
   // new Response() is happy when passed either a stream or a Blob.
-  return new Response(body, {
-    headers: clonedResponse.headers,
-    status: clonedResponse.status,
-    statusText: clonedResponse.statusText,
-  });
+  return new Response(body, ['headers', 'status', 'statusText'].map((key) => {
+      return clonedResponse[key];
+    })
+  );
 };

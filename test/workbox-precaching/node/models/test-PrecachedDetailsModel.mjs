@@ -28,14 +28,14 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     // TODO Bad cache name input
   });
 
-  describe(`isEntryCached()`, function() {
+  describe(`_isEntryCached()`, function() {
     // TODO Test bad inputs
 
     it(`should return false for non-existant entry`, async function() {
       const model = new PrecachedDetailsModel();
-      const isCached = await model.isEntryCached(
+      const isCached = await model._isEntryCached(
         new PrecacheEntry(
-          {}, '/', '1234', new Request('/'), true
+          {}, '/', '1234', true
         )
       );
       expect(isCached).to.equal(false);
@@ -44,15 +44,15 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     it(`should return false for entry with different revision`, async function() {
       const model = new PrecachedDetailsModel();
 
-      await model.addEntry(
+      await model._addEntry(
         new PrecacheEntry(
-          {}, '/', '1234', new Request('/'), true
+          {}, '/', '1234', true
         )
       );
 
-      const isCached = await model.isEntryCached(
+      const isCached = await model._isEntryCached(
         new PrecacheEntry(
-          {}, '/', '4321', new Request('/'), true
+          {}, '/', '4321', true
         )
       );
       expect(isCached).to.equal(false);
@@ -61,11 +61,11 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     it(`should return false for entry with revision but not in cache`, async function() {
       const model = new PrecachedDetailsModel();
       const entry = new PrecacheEntry(
-        {}, '/', '1234', new Request('/'), true
+        {}, '/', '1234', true
       );
 
-      await model.addEntry(entry);
-      const isCached = await model.isEntryCached(entry);
+      await model._addEntry(entry);
+      const isCached = await model._isEntryCached(entry);
 
       expect(isCached).to.equal(false);
     });
@@ -73,26 +73,26 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     it(`should return true if entry with revision and in cache`, async function() {
       const model = new PrecachedDetailsModel();
       const entry = new PrecacheEntry(
-        {}, '/', '1234', new Request('/'), true
+        {}, '/', '1234', true
       );
 
-      const cacheName = _private.cacheNameProvider.getPrecacheName();
+      const cacheName = _private.cacheNames.getPrecacheName();
       const openCache = await caches.open(cacheName);
       openCache.put('/', new Response('Hello'));
 
-      await model.addEntry(entry);
+      await model._addEntry(entry);
 
-      const isCached = await model.isEntryCached(entry);
+      const isCached = await model._isEntryCached(entry);
       expect(isCached).to.equal(true);
     });
   });
 
-  describe('deleteEntry()', function() {
+  describe('_deleteEntry()', function() {
     // TODO add bad input tests
 
     it(`should be able to delete an entry`, async function() {
       const model = new PrecachedDetailsModel();
-      await model.deleteEntry('/');
+      await model._deleteEntry('/');
     });
   });
 });

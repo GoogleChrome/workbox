@@ -1,5 +1,8 @@
 import {_private} from 'workbox-core';
 
+// Allows minifier to mangle this name
+const REVISON_IDB_FIELD = 'revision';
+
 /**
  * This model will track the relevant information of entries that
  * are cached and their matching revision details.
@@ -10,7 +13,7 @@ export default class PrecachedDetailsModel {
    * @param {string} cacheName
    */
   constructor(cacheName) {
-    this._cacheName = _private.cacheNameProvider.getPrecacheName(cacheName);
+    this._cacheName = _private.cacheNames.getPrecacheName(cacheName);
   }
 
   /**
@@ -19,7 +22,7 @@ export default class PrecachedDetailsModel {
    * @param {PrecacheEntry} precacheEntry
    * @return {boolean}
    */
-  async isEntryCached(precacheEntry) {
+  async _isEntryCached(precacheEntry) {
     const revisionDetails = await this._getRevision(precacheEntry._entryId);
     if (revisionDetails !== precacheEntry._revision) {
       return false;
@@ -33,7 +36,7 @@ export default class PrecachedDetailsModel {
   /**
    * @return {Promise<Array>}
    */
-  async getAllEntries() {
+  async _getAllEntries() {
     const db = await this._getDb();
     return await db.getAll();
   }
@@ -46,17 +49,17 @@ export default class PrecachedDetailsModel {
   async _getRevision(entryId) {
     const db = await this._getDb();
     const data = await db.get(entryId);
-    return data ? data.revision : null;
+    return data ? data[REVISON_IDB_FIELD] : null;
   }
 
   /**
    * Add an entry to the details model.
    * @param {PrecacheEntry} precacheEntry
    */
-  async addEntry(precacheEntry) {
+  async _addEntry(precacheEntry) {
     const db = await this._getDb();
     await db.put(precacheEntry._entryId, {
-      revision: precacheEntry._revision,
+      [REVISON_IDB_FIELD]: precacheEntry._revision,
     });
   }
 
@@ -64,7 +67,7 @@ export default class PrecachedDetailsModel {
    * Delete entry from details model;
    * @param {string} entryId
    */
-  async deleteEntry(entryId) {
+  async _deleteEntry(entryId) {
     const db = await this._getDb();
     await db.delete(entryId);
   }

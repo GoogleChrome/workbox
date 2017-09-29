@@ -8,10 +8,12 @@ import generateTestVariants from '../../../../infra/utils/generate-variant-tests
 import {_private} from '../../../../packages/workbox-core/index.mjs';
 import PrecacheController from '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
 
-const {logger, cacheNameProvider} = _private;
+const {logger, cacheNames} = _private;
 
 describe(`[workbox-precaching] PrecacheController`, function() {
   const sandbox = sinon.sandbox.create();
+  let logger;
+  let cacheNames;
 
   before(function() {
     global.indexedDB = new IDBFactory();
@@ -20,9 +22,13 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
   beforeEach(async function() {
     clearRequire.all();
+    const coreModule = await import('../../../../packages/workbox-core/index.mjs');
 
-    const cacheNames = await caches.keys();
-    await Promise.all(cacheNames.map((cacheName) => {
+    logger = coreModule._private.logger;
+    cacheNames = coreModule._private.cacheNames;
+
+    let usedCacheNames = await caches.keys();
+    await Promise.all(usedCacheNames.map((cacheName) => {
       return caches.delete(cacheName);
     }));
 
@@ -233,7 +239,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(updateInfo.updatedEntries.length).to.equal(cacheList.length);
       expect(updateInfo.notUpdatedEntries.length).to.equal(0);
 
-      const cache = await caches.open(cacheNameProvider.getPrecacheName());
+
+      const cache = await caches.open(cacheNames.getPrecacheName());
       const keys = await cache.keys();
       expect(keys.length).to.equal(cacheList.length);
 
@@ -304,7 +311,11 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
 
     it('should only precache assets that have changed', async function() {
-      const cache = await caches.open(cacheNameProvider.getPrecacheName());
+      // Prevent logs in the mocha output
+      sandbox.stub(logger, 'warn');
+      sandbox.stub(logger, 'debug');
+      const logStub = sandbox.stub(logger, 'log');
+      const cache = await caches.open(cacheNames.getPrecacheName());
 
       /*
       First precache some entries
@@ -384,7 +395,12 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     // https://github.com/pinterest/service-workers/issues/40
     // https://github.com/pinterest/service-workers/issues/38
     it.skip(`should remove out of date entries`, async function() {
-      const cache = await caches.open(cacheNameProvider.getPrecacheName());
+      // Prevent logs in the mocha output
+      sandbox.stub(logger, 'warn');
+      sandbox.stub(logger, 'debug');
+      const logStub = sandbox.stub(logger, 'log');
+
+      const cache = await caches.open(cacheNames.getPrecacheName());
 
       /*
       First precache some entries
@@ -453,7 +469,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const precacheController = new PrecacheController();
       await precacheController.cleanup();
 
-      const hasCache = await caches.has(cacheNameProvider.getPrecacheName());
+      const hasCache = await caches.has(cacheNames.getPrecacheName());
       expect(hasCache).to.equal(false);
     });
 

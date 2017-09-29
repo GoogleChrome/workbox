@@ -36,7 +36,7 @@ describe('[workbox-precaching] PrecacheEntry', function() {
       }
       sinon.stub(global, 'Request').value(FakeRequest);
 
-      const entry = new PrecacheEntry('example', '/url', '1234', new Request('/url'), true);
+      const entry = new PrecacheEntry('example', '/url', '1234', true);
       expect(entry._networkRequest.url).to.equal(`/url`);
       expect(entry._networkRequest.cache).to.equal(`reload`);
     });
