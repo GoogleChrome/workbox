@@ -2,7 +2,6 @@ import core from 'workbox-core';
 import PrecacheController from './controllers/PrecacheController.mjs';
 
 /**
- * 
  * @module workbox-precaching
  */
 

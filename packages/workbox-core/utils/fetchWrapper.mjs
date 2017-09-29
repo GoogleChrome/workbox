@@ -9,6 +9,9 @@ import WorkboxError from '../models/WorkboxError.mjs';
  * @param {Object} fetchOptions
  * @param {Array<Object>} [plugins]
  * @return {Promise<Response>}
+ *
+ * @private
+ * @memberof module:workbox-core
  */
 const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   if (typeof request === 'string') {

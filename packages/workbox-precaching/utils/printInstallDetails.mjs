@@ -1,5 +1,10 @@
 import {_private} from 'workbox-core';
 
+/**
+ * @private
+ * @param {string} groupTitle
+ * @param {Array<PrecacheEntry>} entries
+ */
 const logGroup = (groupTitle, entries) => {
   if (entries.length === 0) {
     return;
@@ -14,6 +19,13 @@ const logGroup = (groupTitle, entries) => {
   _private.logger.groupEnd();
 };
 
+/**
+ * @param {Array<Object>} updatedEntries
+ * @param {Array<Object>} notUpdatedEntries
+ *
+ * @private
+ * @memberof module:workbox-precachig
+ */
 export default async (updatedEntries, notUpdatedEntries) => {
   const updatedText =
     `${updatedEntries.length} files were updated`;

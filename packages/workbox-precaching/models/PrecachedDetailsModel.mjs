@@ -6,10 +6,15 @@ const REVISON_IDB_FIELD = 'revision';
 /**
  * This model will track the relevant information of entries that
  * are cached and their matching revision details.
+ *
+ * @private
+ * @memberof module:workbox-precaching
  */
-export default class PrecachedDetailsModel {
+class PrecachedDetailsModel {
   /**
    * Construct a new model for a specific cache.
+   *
+   * @private
    * @param {string} cacheName
    */
   constructor(cacheName) {
@@ -19,6 +24,7 @@ export default class PrecachedDetailsModel {
   /**
    * Check if an entry is already cached. Returns false if
    * the entry isn't cached or the revision has changed.
+   *
    * @param {PrecacheEntry} precacheEntry
    * @return {boolean}
    */
@@ -43,6 +49,7 @@ export default class PrecachedDetailsModel {
 
   /**
    * Get the current revision details.
+   *
    * @param {Object} entryId
    * @return {Promise<string|null>}
    */
@@ -54,6 +61,7 @@ export default class PrecachedDetailsModel {
 
   /**
    * Add an entry to the details model.
+   *
    * @param {PrecacheEntry} precacheEntry
    */
   async _addEntry(precacheEntry) {
@@ -64,7 +72,8 @@ export default class PrecachedDetailsModel {
   }
 
   /**
-   * Delete entry from details model;
+   * Delete entry from details model.
+   *
    * @param {string} entryId
    */
   async _deleteEntry(entryId) {
@@ -74,6 +83,7 @@ export default class PrecachedDetailsModel {
 
   /**
    * Get db for this model.
+   *
    * @return{Promise<DBWrapper>}
    */
   _getDb() {
@@ -81,3 +91,5 @@ export default class PrecachedDetailsModel {
       `workbox-precaching`, `precached-details-models`);
   }
 }
+
+export default PrecachedDetailsModel;
