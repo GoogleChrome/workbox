@@ -1,5 +1,4 @@
 import expectError from '../../../../infra/utils/expectError';
-
 import assert from '../../../../packages/workbox-core/utils/assert';
 
 describe(`workbox-core  assert`, function() {
@@ -47,7 +46,7 @@ describe(`workbox-core  assert`, function() {
     });
 
     it(`should throw when value isn't an array`, function() {
-      expectError(() => {
+      return expectError(() => {
         assert.isArray({}, {
           moduleName: 'module',
           className: 'class',

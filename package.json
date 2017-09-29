@@ -5,7 +5,7 @@
   },
   "scripts": {
     "local-lerna": "lerna",
-    "test": "nyc --require @std/esm --reporter=lcov --reporter=text mocha",
+    "test": "nyc --require @std/esm --require ./infra/utils/sw-env --reporter=lcov --reporter=text mocha",
     "lint": "eslint \"**/*.{js,mjs}\" --ignore-path .gitignore",
     "bot": "pr-bot",
     "coveralls": "cat ./coverage/lcov.info | coveralls"
