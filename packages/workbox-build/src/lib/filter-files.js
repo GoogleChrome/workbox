@@ -1,3 +1,4 @@
+const maximumSizeTransform = require('./maximum-size-transform');
 const modifyUrlPrefixTranform = require('./modify-url-prefix-transform');
 const noRevisionForUrlsMatchingTransform =
   require('./no-revision-for-urls-matching-transform');
@@ -46,16 +47,16 @@ const noRevisionForUrlsMatchingTransform =
  * @memberof module:workbox-build
  */
 
-module.exports = ({fileDetails, maximumFileSizeToCacheInBytes, modifyUrlPrefix,
-                    dontCacheBustUrlsMatching, manifestTransforms}) => {
-  const filteredFileDetails = fileDetails.filter((fileDetails) => {
-    // Remove oversized files.
-    return fileDetails.size <= maximumFileSizeToCacheInBytes;
-  });
-
+module.exports = ({
+  dontCacheBustUrlsMatching,
+  fileDetails,
+  manifestTransforms,
+  maximumFileSizeToCacheInBytes,
+  modifyUrlPrefix,
+}) => {
   // Take the array of fileDetail objects and convert it into an array of
-  // {url, revision} objects, with path.sep replaced with /.
-  const normalizedManifest = filteredFileDetails.map((fileDetails) => {
+  // {url, revision, size} objects, with \ replaced with /.
+  const normalizedManifest = fileDetails.map((fileDetails) => {
     return {
       url: fileDetails.file.replace(/\\/g, '/'),
       revision: fileDetails.hash,
@@ -64,6 +65,10 @@ module.exports = ({fileDetails, maximumFileSizeToCacheInBytes, modifyUrlPrefix,
   });
 
   let transformsToApply = [];
+
+  if (maximumFileSizeToCacheInBytes) {
+    transformsToApply.push(maximumSizeTransform(maximumFileSizeToCacheInBytes));
+  }
 
   if (modifyUrlPrefix) {
     transformsToApply.push(modifyUrlPrefixTranform(modifyUrlPrefix));
@@ -75,7 +80,7 @@ module.exports = ({fileDetails, maximumFileSizeToCacheInBytes, modifyUrlPrefix,
   }
 
   // Any additional manifestTransforms that were passed will be applied last.
-  transformsToApply.concat(manifestTransforms || []);
+  transformsToApply = transformsToApply.concat(manifestTransforms || []);
 
   // Apply the transformations sequentially.
   const transformedManifest = transformsToApply.reduce(

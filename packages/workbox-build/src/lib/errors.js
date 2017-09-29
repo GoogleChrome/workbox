@@ -79,8 +79,6 @@ module.exports = {
     'runtimeCaching'.`,
   'handler-is-required': ol`The 'handler' option is required when using
     runtimeCaching.`,
-  'bad-manifest-transforms': ol`The 'manifestTransforms' value should be an
-    array of functions.`,
   'invalid-generate-file-manifest-arg': ol`The input to generateFileManifest()
     must be an Object.`,
   'invalid-sw-src': `The 'swSrc' file can't be read.`,
