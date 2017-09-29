@@ -17,9 +17,9 @@ export default class PrecacheController {
    * @param {string} cacheName;
    */
   constructor(cacheName) {
-    this._cacheName = _private.cacheNameProvider.getPrecacheName(cacheName);
+    this._cacheName = _private.cacheNames.getPrecacheName(cacheName);
     this._entriesToCacheMap = new Map();
-    this._precacheEntriesModel = new PrecachedDetailsModel(this._cacheName);
+    this._precacheDetailsModel = new PrecachedDetailsModel(this._cacheName);
     if (process.env.NODE_ENV !== 'production') {
       this._checkEntryRevisioning = true;
     }
@@ -56,24 +56,31 @@ export default class PrecacheController {
   _parseEntry(input) {
     switch (typeof input) {
       case 'string': {
-        if (input.length === 0) {
-          throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
-            entry: input,
-          });
+        if (process.env.NODE_ENV !== 'production') {
+          if (input.length === 0) {
+            throw new _private.WorkboxError(
+              'add-to-cache-list-unexpected-type', {
+                entry: input,
+              }
+            );
+          }
         }
 
-        return new PrecacheEntry(input, input, input, new Request(input));
+        return new PrecacheEntry(input, input, input);
       }
       case 'object': {
-        if (!input || !input.url) {
-          throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
-            entry: input,
-          });
+        if (process.env.NODE_ENV !== 'production') {
+          if (!input || !input.url) {
+            throw new _private.WorkboxError(
+              'add-to-cache-list-unexpected-type', {
+                entry: input,
+              }
+            );
+          }
         }
 
-        const cacheBust = input.revision ? true : false;
-        return new PrecacheEntry(input, input.url, input.revision || input.url,
-          new Request(input.url), cacheBust);
+        return new PrecacheEntry(
+          input, input.url, input.revision || input.url, !!input.revision);
       }
       default:
         throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
@@ -158,7 +165,7 @@ export default class PrecacheController {
    * false if the entry is already cached and up-to-date.
    */
   async _cacheEntry(precacheEntry) {
-    if (await this._precacheEntriesModel.isEntryCached(precacheEntry)) {
+    if (await this._precacheDetailsModel._isEntryCached(precacheEntry)) {
       return false;
     }
 
@@ -173,7 +180,7 @@ export default class PrecacheController {
     await _private.cacheWrapper.put(this._cacheName,
       precacheEntry._cacheRequest, response);
 
-    await this._precacheEntriesModel.addEntry(precacheEntry);
+    await this._precacheDetailsModel._addEntry(precacheEntry);
 
     return true;
   }
@@ -242,7 +249,7 @@ export default class PrecacheController {
    * from indexedDB.
    */
   async _cleanupDetailsModel(expectedCacheUrls) {
-    const revisionedEntries = await this._precacheEntriesModel.getAllEntries();
+    const revisionedEntries = await this._precacheDetailsModel._getAllEntries();
     const allDetailUrls = Object.keys(revisionedEntries);
 
     const detailsToDelete = allDetailUrls.filter((detailsUrl) => {
@@ -252,7 +259,7 @@ export default class PrecacheController {
 
     await Promise.all(
       detailsToDelete.map(
-        (detailsId) => this._precacheEntriesModel.deleteEntry(detailsId)
+        (detailsId) => this._precacheDetailsModel._deleteEntry(detailsId)
       )
     );
 

@@ -6,18 +6,18 @@ export default class PrecacheEntry {
  * This class ensures all cache list entries are consistent and
  * adds cache busting if required.
  * @param {*} originalInput
- * @param {string} entryId
+ * @param {string} url
  * @param {string} revision
- * @param {Request} request
  * @param {boolean} shouldCacheBust
  */
-  constructor(originalInput, entryId, revision, request, shouldCacheBust) {
+  constructor(originalInput, url, revision, shouldCacheBust) {
     this._originalInput = originalInput;
-    this._entryId = entryId;
+    this._entryId = url;
     this._revision = revision;
-    this._cacheRequest = request;
+    const requestAsCacheKey = new Request(url);
+    this._cacheRequest = requestAsCacheKey;
     this._networkRequest = shouldCacheBust ?
-      this._cacheBustRequest(request) : request;
+      this._cacheBustRequest(requestAsCacheKey) : requestAsCacheKey;
   }
 
   /**
@@ -36,9 +36,13 @@ export default class PrecacheEntry {
       requestOptions.cache = 'reload';
     } else {
       const parsedURL = new URL(url, location);
+
+      // This is done so the minifier can mangle 'global.encodeURIComponent'
+      const _encodeURIComponent = encodeURIComponent;
+
       parsedURL.search += (parsedURL.search ? '&' : '') +
-        encodeURIComponent(`_workbox-precaching`) + '=' +
-        encodeURIComponent(this._revision);
+        _encodeURIComponent(`_workbox-precaching`) + '=' +
+        _encodeURIComponent(this._revision);
       url = parsedURL.toString();
     }
 
