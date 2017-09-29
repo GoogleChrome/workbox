@@ -26,34 +26,35 @@ module.exports = async ({
   swDest,
   templatedUrls,
 }) => {
-  if (!globDirectory) {
-    return [];
-  }
-
+  // Initialize to an empty array so that we can still pass something to
+  // filterFiles() and get a normalized output.
+  let fileDetails = [];
   const fileSet = new Set();
 
-  if (swDest) {
-    // Ensure that we ignore the SW file we're eventually writing to disk.
-    globIgnores.push(`**/${path.basename(swDest)}`);
+  if (globDirectory) {
+    if (swDest) {
+      // Ensure that we ignore the SW file we're eventually writing to disk.
+      globIgnores.push(`**/${path.basename(swDest)}`);
+    }
+
+    fileDetails = globPatterns.reduce((accumulated, globPattern) => {
+      const globbedFileDetails = getFileDetails({
+        globDirectory,
+        globPattern,
+        globIgnores,
+      });
+
+      globbedFileDetails.forEach((fileDetails) => {
+        if (fileSet.has(fileDetails.file)) {
+          return;
+        }
+
+        fileSet.add(fileDetails.file);
+        accumulated.push(fileDetails);
+      });
+      return accumulated;
+    }, []);
   }
-
-  const fileDetails = globPatterns.reduce((accumulated, globPattern) => {
-    const globbedFileDetails = getFileDetails({
-      globDirectory,
-      globPattern,
-      globIgnores,
-    });
-
-    globbedFileDetails.forEach((fileDetails) => {
-      if (fileSet.has(fileDetails.file)) {
-        return;
-      }
-
-      fileSet.add(fileDetails.file);
-      accumulated.push(fileDetails);
-    });
-    return accumulated;
-  }, []);
 
   if (templatedUrls) {
     for (let url of Object.keys(templatedUrls)) {

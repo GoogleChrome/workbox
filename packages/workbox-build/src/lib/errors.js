@@ -32,7 +32,7 @@ module.exports = {
   'unable-to-copy-workbox-sw': ol`workbox-sw is needed by the service worker
     and could not be copied over to your new site.`,
   'invalid-generate-sw-input': ol`The input to generateSW() must be an object.`,
-  'invalid-glob-directory': ol`The supplied globDirectory must be  a path as a
+  'invalid-glob-directory': ol`The supplied globDirectory must be a path as a
     string.`,
   'invalid-dont-cache-bust': ol`The supplied 'dontCacheBustUrlsMatching'
     parameter must be a RegExp.`,
