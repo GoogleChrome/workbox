@@ -1,5 +1,4 @@
 const expect = require('chai').expect;
-const path = require('path');
 const proxyquire = require('proxyquire');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
