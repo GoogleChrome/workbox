@@ -1,11 +1,9 @@
-const errors = require('../../../packages/workbox-build/src/lib/errors');
 const expect = require('chai').expect;
-const modifyUrlPrefix = require('../../../packages/workbox-build/src/lib/utils/modify-url-prefix-transform');
+
+const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const modifyUrlPrefix = require('../../../../packages/workbox-build/src/lib/modify-url-prefix-transform');
 
 describe(`Test modifyUrlPrefix Logic`, function() {
-  /**
-   * @return {Array<ManifestEntry>} A fresh manifest.
-   */
   function getManifest() {
     return [{
       url: '/first-match/12345/hello',
