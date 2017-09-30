@@ -43,7 +43,7 @@ class BaseOptions {
     });
 
     if (error) {
-      throw Error(error);
+      throw error;
     }
 
     Object.assign(this, value);
