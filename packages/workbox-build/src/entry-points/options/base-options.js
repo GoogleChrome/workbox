@@ -8,10 +8,13 @@ const SCHEMA = joi.object().keys({
   globPatterns: joi.array().items(joi.string()).default([
     '**/*.{js,css,html}',
   ]),
-  manifestTransforms: joi.array().items(joi.func()),
+  manifestTransforms: joi.array().items(joi.func().arity(1)),
   maximumFileSizeToCacheInBytes: joi.number().min(1).default(2 * 1024 * 1024),
   modifyUrlPrefix: joi.object(),
-  templatedUrls: [joi.string(), joi.array().items(joi.string())],
+  // templatedUrls is an object where any property name is valid, and the values
+  // can be either a string or an array of strings.
+  templatedUrls: joi.object().pattern(/./,
+    [joi.string(), joi.array().items(joi.string())]),
 });
 
 /**

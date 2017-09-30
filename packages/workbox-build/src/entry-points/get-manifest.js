@@ -7,7 +7,7 @@ const getFileManifestEntries = require('../lib/get-file-manifest-entries');
  * based on the options you provide.
  *
  * @param {Object} input
- * @return {Promise<{manifestEntries: Array.<ManifestEntry>,
+ * @return {Promise<{manifestEntries: Array<ManifestEntry>,
  * count: Number, size: Number}>} A promise that resolves once the precache
  * manifest is determined. The `size` property contains the aggregate size of
  * all the precached entries, in bytes, the `count` property contains the total

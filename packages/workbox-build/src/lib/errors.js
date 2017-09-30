@@ -67,7 +67,7 @@ module.exports = {
     template.`,
   'useless-glob-pattern': ol`One of the glob patterns doesn't match any files.
     Please remove or fix the following: `,
-  'bad-template-urls-asset': ol`There was an issue reading one of the provided
+  'bad-template-urls-asset': ol`There was an issue using one of the provided
     'templatedUrls'.`,
   'invalid-runtime-caching': ol`The 'runtimeCaching' parameter must an an
     array of objects with at least a 'urlPattern' and 'handler'.`,

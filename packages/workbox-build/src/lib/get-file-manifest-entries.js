@@ -62,20 +62,23 @@ module.exports = async ({
 
       const dependencies = templatedUrls[url];
       if (Array.isArray(dependencies)) {
-        const dependencyDetails = dependencies.reduce((previous, pattern) => {
+        const details = dependencies.reduce((previous, globPattern) => {
           try {
-            const globbedFileDetails = getFileDetails(
-              globDirectory, pattern, globIgnores);
+            const globbedFileDetails = getFileDetails({
+              globDirectory,
+              globPattern,
+              globIgnores,
+            });
             return previous.concat(globbedFileDetails);
-          } catch (err) {
+          } catch (error) {
             const debugObj = {};
             debugObj[url] = dependencies;
             throw new Error(`${errors['bad-template-urls-asset']} ` +
-              `'${pattern}' in templateUrl '${JSON.stringify(debugObj)}' ` +
-              `could not be found.`);
+              `'${globPattern}' from '${JSON.stringify(debugObj)}':\n` +
+              error);
           }
         }, []);
-        fileDetails.push(getCompositeDetails(url, dependencyDetails));
+        fileDetails.push(getCompositeDetails(url, details));
       } else if (typeof dependencies === 'string') {
         fileDetails.push(getStringDetails(url, dependencies));
       }
