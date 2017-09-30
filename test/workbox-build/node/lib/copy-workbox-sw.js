@@ -41,8 +41,6 @@ describe(`lib/copy-workbox-sw.js`, function() {
 
     expect(dir).to.eql(DEST_DIRECTORY);
     expect(base).to.have.string(BUILD_TYPE);
-    expect(copiedFiles).to.have.lengthOf(2);
-    expect(copiedFiles).to.include(workboxSWDestPath);
-    expect(copiedFiles).to.include(`${workboxSWDestPath}.map`);
+    expect(copiedFiles).to.eql([workboxSWDestPath, `${workboxSWDestPath}.map`]);
   });
 });
