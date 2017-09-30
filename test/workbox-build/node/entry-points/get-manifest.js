@@ -235,22 +235,25 @@ describe(`entry-points/get-manifest.js (End to End)`, function() {
     });
 
     it(`should use defaults when all the required parameters, and 'manifestTransforms' are present`, async function() {
-      const suffix = 'suffix';
-      const transform = (manifestEntries) => manifestEntries.filter((entry) => {
+      const transform1 = (entries) => entries.filter((entry) => {
         return entry.url.includes('1');
+      });
+      const transform2 = (entries) => entries.filter((entry) => {
+        entry.url = `/prefix/${entry.url}`;
+        return entry;
       });
 
       const options = Object.assign({
-        manifestTransforms: [transform],
+        manifestTransforms: [transform1, transform2],
       }, BASE_OPTIONS);
 
       const {count, size, manifestEntries} = await getManifest(options);
 
       expect(manifestEntries).to.deep.equal([{
-        url: 'page-1.html',
+        url: '/prefix/page-1.html',
         revision: '544658ab25ee8762dc241e8b1c5ed96d',
       }, {
-        url: 'styles/stylesheet-1.css',
+        url: '/prefix/styles/stylesheet-1.css',
         revision: '934823cbc67ccf0d67aa2a2eeb798f12',
       }]);
       expect(count).to.eql(2);
