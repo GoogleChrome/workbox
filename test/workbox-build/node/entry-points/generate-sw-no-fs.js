@@ -1,8 +1,6 @@
 const expect = require('chai').expect;
 const fse = require('fs-extra');
-const os = require('os');
 const path = require('path');
-const tempy = require('tempy');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 const generateSWNoFS = require('../../../../packages/workbox-build/src/entry-points/generate-sw-no-fs');
@@ -153,7 +151,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       const importScripts = DEFAULT_IMPORT_SCRIPTS.concat('manifest.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         importScripts,
-        globDirectory: path.join(__dirname, '..', '..', 'static', 'example-project-1'),
+        globDirectory: GLOB_DIR,
       });
 
       let swCode = await generateSWNoFS(options);

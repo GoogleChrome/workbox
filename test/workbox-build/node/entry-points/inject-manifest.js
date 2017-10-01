@@ -1,5 +1,4 @@
 const expect = require('chai').expect;
-const os = require('os');
 const path = require('path');
 const tempy = require('tempy');
 
