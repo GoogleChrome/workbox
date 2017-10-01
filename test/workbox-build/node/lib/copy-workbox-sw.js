@@ -6,7 +6,7 @@ const errors = require('../../../../packages/workbox-build/src/lib/errors');
 
 describe(`lib/copy-workbox-sw.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/copy-workbox-sw';
-  const DEST_DIRECTORY = '/test';
+  const DEST_DIRECTORY = path.join(path.sep, 'test-dir');
   const BUILD_TYPE = 'test';
 
   it(`should reject with an error when the copy fails`, async function() {
