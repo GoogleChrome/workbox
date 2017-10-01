@@ -16,8 +16,12 @@ module.exports = async ({swFile, swCode, expectedMethodCalls}) => {
   const importScripts = sinon.stub();
   const methodsToSpies = {
     importScripts,
+    // To make testing registerRoute() easier, return the name of the strategy.
+    cacheFirst: sinon.stub().returns('cacheFirst'),
     constructor: sinon.spy(),
     precache: sinon.spy(),
+    registerNavigationRoute: sinon.spy(),
+    registerRoute: sinon.spy(),
   };
 
   class WorkboxSW {
@@ -28,12 +32,16 @@ module.exports = async ({swFile, swCode, expectedMethodCalls}) => {
     precache(...args) {
       methodsToSpies.precache(...args);
     }
-
-    // Used in the custom-injection-point test.
-    customPrecache(...args) {
-      methodsToSpies.customPrecache(...args);
-    }
   }
+
+  WorkboxSW.prototype.router = {
+    registerNavigationRoute: methodsToSpies.registerNavigationRoute,
+    registerRoute: methodsToSpies.registerRoute,
+  };
+
+  WorkboxSW.prototype.strategies = {
+    cacheFirst: methodsToSpies.cacheFirst,
+  };
 
   const context = Object.assign({
     WorkboxSW,

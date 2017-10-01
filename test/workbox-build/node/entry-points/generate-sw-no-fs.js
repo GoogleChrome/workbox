@@ -18,6 +18,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
     swTemplate: SW_TEMPLATE,
   };
   const REQUIRED_PARAMS = [
+    'importScripts',
     'swTemplate',
   ];
   const SUPPORTED_PARAMS = [
@@ -30,8 +31,6 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
     'globPatterns',
     'handleFetch',
     'ignoreUrlParametersMatching',
-    'importScripts',
-    'importWorkboxFromCDN',
     'injectionPointRegexp',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
@@ -43,6 +42,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
     'templatedUrls',
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
+    'importWorkboxFromCDN',
     'injectionPointRegexp',
     'swDest',
     'swSrc',
@@ -192,7 +192,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
     });
 
     it(`should use defaults when all the required parameters are present, with additional WorkboxSW() configuration`, async function() {
-      const additionalOptions = {
+      const workboxSWOptions = {
         cacheId: 'test',
         clientsClaim: true,
         directoryIndex: 'test.html',
@@ -200,29 +200,164 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
         ignoreUrlParametersMatching: [/test1/, /test2/],
         skipWaiting: true,
       };
-      const options = Object.assign({}, BASE_OPTIONS, additionalOptions);
+      const options = Object.assign({}, BASE_OPTIONS, workboxSWOptions);
 
       const swCode = await generateSWNoFS(options);
 
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
-        constructor: [[additionalOptions]],
+        constructor: [[workboxSWOptions]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         precache: [[[]]],
       }});
     });
 
-    it(`should use defaults when all the required parameters are present, with 'importWorkboxFromCDN' instead of 'importScripts'`, async function() {
+    it(`should use defaults when all the required parameters are present, with 'navigateFallback'`, async function() {
+      const navigateFallback = 'test.html';
       const options = Object.assign({}, BASE_OPTIONS, {
-        importScripts: undefined,
-        importWorkboxFromCDN: true,
+        navigateFallback,
       });
 
       const swCode = await generateSWNoFS(options);
 
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         constructor: [[{}]],
-        importScripts: [],
+        importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         precache: [[[]]],
+        registerNavigationRoute: [[navigateFallback]],
+      }});
+    });
+
+    it(`should use defaults when all the required parameters are present, with 'navigateFallback' and 'navigateFallbackWhitelist'`, async function() {
+      const navigateFallback = 'test.html';
+      const navigateFallbackWhitelist = [/test1/, /test2/];
+      const options = Object.assign({}, BASE_OPTIONS, {
+        navigateFallback,
+        navigateFallbackWhitelist,
+      });
+
+      const swCode = await generateSWNoFS(options);
+
+      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+        constructor: [[{}]],
+        importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
+        precache: [[[]]],
+        registerNavigationRoute: [[navigateFallback, {
+          whitelist: navigateFallbackWhitelist,
+        }]],
+      }});
+    });
+  });
+
+  describe(`should behave as expected for various configurations of 'runtimeCaching'`, function() {
+    const DEFAULT_METHOD = 'GET';
+    const STRING_URL_PATTERN = 'test';
+    const REGEXP_URL_PATTERN = /test/;
+    const STRING_HANDLER = 'cacheFirst';
+
+    it(`should reject when 'urlPattern' is missing from 'runtimeCaching'`, async function() {
+      const handler = STRING_HANDLER;
+      const options = Object.assign({}, BASE_OPTIONS, {
+        runtimeCaching: [{handler}],
+      });
+
+      try {
+        await generateSWNoFS(options);
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.name).to.eql('ValidationError');
+        expect(error.details[0].context.key).to.eql('urlPattern');
+      }
+    });
+
+    it(`should reject when 'handler' is missing from 'runtimeCaching'`, async function() {
+      const urlPattern = REGEXP_URL_PATTERN;
+      const options = Object.assign({}, BASE_OPTIONS, {
+        runtimeCaching: [{urlPattern}],
+      });
+
+      try {
+        await generateSWNoFS(options);
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.name).to.eql('ValidationError');
+        expect(error.details[0].context.key).to.eql('handler');
+      }
+    });
+
+    it(`should reject when 'handler' is not a valid strategy name`, async function() {
+      const urlPattern = REGEXP_URL_PATTERN;
+      const options = Object.assign({}, BASE_OPTIONS, {
+        runtimeCaching: [{
+          urlPattern,
+          handler: 'invalid',
+        }],
+      });
+
+      try {
+        await generateSWNoFS(options);
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.name).to.eql('ValidationError');
+        expect(error.details[0].context.key).to.eql('handler');
+      }
+    });
+
+    it(`should should support a single string 'urlPattern' and a string 'handler'`, async function() {
+      const runtimeCaching = [{
+        urlPattern: STRING_URL_PATTERN,
+        handler: STRING_HANDLER,
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
+
+      const swCode = await generateSWNoFS(options);
+      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+        [STRING_HANDLER]: [[{}]],
+        constructor: [[{}]],
+        importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
+        precache: [[[]]],
+        registerRoute: [[STRING_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+      }});
+    });
+
+    it(`should should support a single RegExp 'urlPattern' and a string 'handler'`, async function() {
+      const runtimeCaching = [{
+        urlPattern: REGEXP_URL_PATTERN,
+        handler: STRING_HANDLER,
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
+
+      const swCode = await generateSWNoFS(options);
+
+      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+        [STRING_HANDLER]: [[{}]],
+        constructor: [[{}]],
+        importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
+        precache: [[[]]],
+        registerRoute: [[REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+      }});
+    });
+
+    it(`should should support a multiple entries in 'runtimeCaching'`, async function() {
+      const runtimeCaching = [{
+        urlPattern: REGEXP_URL_PATTERN,
+        handler: STRING_HANDLER,
+      }, {
+        urlPattern: STRING_URL_PATTERN,
+        handler: STRING_HANDLER,
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
+
+      const swCode = await generateSWNoFS(options);
+
+      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+        [STRING_HANDLER]: [[{}], [{}]],
+        constructor: [[{}]],
+        importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
+        precache: [[[]]],
+        registerRoute: [
+          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
+          [STRING_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
+        ],
       }});
     });
   });
