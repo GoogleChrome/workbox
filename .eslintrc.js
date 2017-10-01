@@ -14,7 +14,11 @@ module.exports = {
     'google': false,
   },
   rules: {
+    "jsdoc/check-types": 2,
   },
+  plugins: [
+      'jsdoc',
+  ],
   parser: 'babel-eslint',
   overrides: [{
     files: ['test/**/*.{js,mjs}'],

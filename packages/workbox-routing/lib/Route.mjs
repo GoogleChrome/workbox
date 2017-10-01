@@ -72,14 +72,14 @@ import normalizeHandler from './normalizeHandler.mjs';
 export default class Route {
   /**
    * Constructor for Route class.
-   * @param {function} match The function that determines whether the
+   * @param {Route~matchCallback} match The function that determines whether the
    * route matches a given `fetch` event.
    *
    * See [matchCallback]{@link module:workbox-routing.Route~matchCallback} for
    * full details on this function.
-   * @param {function|module:workbox-runtime-caching.Handler} handler
-   * This parameter can be either a function or an object which is a subclass
-   * of `Handler`.
+   * @param {Route~handlerCallback|module:workbox-runtime-caching.Handler}
+   * handler This parameter can be either a function or an object which is a
+   * subclass of `Handler`.
    *
    * Either option should result in a `Response` that the `Route` can use to
    * handle the `fetch` event.

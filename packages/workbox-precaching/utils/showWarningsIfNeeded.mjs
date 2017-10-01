@@ -1,8 +1,13 @@
 import {_private} from 'workbox-core';
 
-export default (userEntries) => {
-  const urlOnlyEntries = userEntries.filter(
-    (entry) => (typeof entry === 'string' || !entry.revision)
+export default (entriesMap) => {
+  const urlOnlyEntries = [];
+  entriesMap.forEach(
+    (entry) => {
+      if (typeof entry === 'string' || !entry.revision) {
+        urlOnlyEntries.push(entry._originalInput);
+      }
+    }
   );
 
   if (urlOnlyEntries.length === 0) {

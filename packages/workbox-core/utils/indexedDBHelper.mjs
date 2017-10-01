@@ -32,6 +32,36 @@ class DBWrapper {
   }
 
   /**
+   * @return {Promise}
+   */
+  getAll() {
+    return new Promise((resolve, reject) => {
+      const items = {};
+
+      const transaction = this._db.transaction(this._storename, 'readonly');
+      transaction.onerror = () => {
+        // Don't forget to handle errors!
+        reject(transaction.error);
+      };
+      transaction.oncomplete = () => {
+        resolve(items);
+      };
+
+      const objectStore = transaction.objectStore(this._storename);
+      const cursorRequest = objectStore.openCursor();
+      cursorRequest.onsuccess = (evt) => {
+        const cursor = evt.target.result;
+        if (!cursor) {
+          return;
+        }
+
+        items[cursor.key] = cursor.value;
+        cursor.continue();
+      };
+    });
+  }
+
+  /**
    * Put a value in the database for a given id.
    * @param {Object} key
    * @param {Object} value

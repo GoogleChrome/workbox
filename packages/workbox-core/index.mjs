@@ -29,8 +29,8 @@ class WorkboxCore {
    */
   get cacheNames() {
     return {
-      precache: _private.cacheNameProvider.getPrecacheName(),
-      runtime: _private.cacheNameProvider.getRuntimeName(),
+      precache: _private.cacheNames.getPrecacheName(),
+      runtime: _private.cacheNames.getRuntimeName(),
     };
   }
 
@@ -72,7 +72,7 @@ class WorkboxCore {
       }
     }
 
-    _private.cacheNameProvider.updateDetails(details);
+    _private.cacheNames.updateDetails(details);
   }
 
   /**
