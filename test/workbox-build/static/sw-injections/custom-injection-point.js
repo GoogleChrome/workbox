@@ -1,4 +1,2 @@
-/* global workbox */
-
 const workboxSW = new WorkboxSW();
-workboxSW.customPrecache([]);
+workboxSW.precache(/* manifestEntries */);

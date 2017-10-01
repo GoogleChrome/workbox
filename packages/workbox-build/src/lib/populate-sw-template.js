@@ -51,6 +51,6 @@ module.exports = ({
     }).trim() + '\n';
   } catch (error) {
     throw new Error(
-      `${errors['populating-sw-tmpl-failed']}. '${error.message}'`);
+      `${errors['populating-sw-tmpl-failed']} '${error.message}'`);
   }
 };

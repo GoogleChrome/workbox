@@ -1,5 +1,6 @@
+<% if (importScripts) { %>
 importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
-
+<% } %>
 /**
  * This service worker file needs to be registered by your web application.
  * Please see https://developers.google.com/web/fundamentals/primers/service-workers/registration
@@ -24,7 +25,7 @@ importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
  */
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
 <% } %>
-const workboxSW = new self.WorkboxSW(<%= workboxOptionsString %>);
+const workboxSW = new WorkboxSW(<%= workboxOptionsString %>);
 workboxSW.precache(self.__precacheManifest);
 <% if(navigateFallback) { %>workboxSW.router.registerNavigationRoute("<%= navigateFallback %>"<% if(navigateFallbackWhitelist) { %>, {
   whitelist: [<%= navigateFallbackWhitelist %>],

@@ -146,7 +146,7 @@ describe(`entry-points/inject-manifest.js (End to End)`, function() {
 
       expect(count).to.eql(6);
       expect(size).to.eql(2421);
-      await validateServiceWorkerRuntime(swDest, {
+      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         constructor: [[]],
         precache: [[[{
           url: 'index.html',
@@ -167,7 +167,7 @@ describe(`entry-points/inject-manifest.js (End to End)`, function() {
           url: 'webpackEntry.js',
           revision: 'd41d8cd98f00b204e9800998ecf8427e',
         }]]],
-      });
+      }});
     });
 
     it(`should use defaults when all the required parameters are present, when workboxSW.precache() is called twice`, async function() {
@@ -181,7 +181,7 @@ describe(`entry-points/inject-manifest.js (End to End)`, function() {
 
       expect(count).to.eql(6);
       expect(size).to.eql(2421);
-      await validateServiceWorkerRuntime(swDest, {
+      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         constructor: [[]],
         importScripts: [['./sample-import.js']],
         precache: [[[{
@@ -206,14 +206,14 @@ describe(`entry-points/inject-manifest.js (End to End)`, function() {
           '/extra-assets/example.1234.css',
           '/extra-assets/example-2.1234.js',
         ]]],
-      });
+      }});
     });
 
     it(`should use defaults when all the required parameters are present, when a custom 'injectionPointRegexp' is used`, async function() {
       const swDest = tempy.file();
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
-        injectionPointRegexp: /(\.customPrecache\()\s*\[\s*\]\s*(\))/,
+        injectionPointRegexp: /(\.precache\()\/\* manifestEntries \*\/(\))/,
         swSrc: path.join(SW_SRC_DIR, 'custom-injection-point.js'),
       });
 
@@ -221,10 +221,9 @@ describe(`entry-points/inject-manifest.js (End to End)`, function() {
 
       expect(count).to.eql(6);
       expect(size).to.eql(2421);
-      await validateServiceWorkerRuntime(swDest, {
+      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         constructor: [[]],
-        precache: [],
-        customPrecache: [[[{
+        precache: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
         }, {
@@ -243,7 +242,7 @@ describe(`entry-points/inject-manifest.js (End to End)`, function() {
           url: 'webpackEntry.js',
           revision: 'd41d8cd98f00b204e9800998ecf8427e',
         }]]],
-      });
+      }});
     });
   });
 });

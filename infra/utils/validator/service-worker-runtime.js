@@ -1,18 +1,23 @@
+const assert = require('assert');
 const expect = require('chai').expect;
 const fse = require('fs-extra');
 const makeServiceWorkerEnv = require('service-worker-mock');
 const sinon = require('sinon');
 const vm = require('vm');
 
-module.exports = async (swFile, expectedWorkboxMethodCalls) => {
-  const swFileContents = await fse.readFile(swFile, 'utf8');
+module.exports = async ({swFile, swCode, expectedMethodCalls}) => {
+  assert((swFile || swCode) && !(swFile && swCode),
+    `Set swFile or swCode, but not both.`);
+
+  if (swFile) {
+    swCode = await fse.readFile(swFile, 'utf8');
+  }
 
   const importScripts = sinon.stub();
   const methodsToSpies = {
     importScripts,
     constructor: sinon.spy(),
     precache: sinon.spy(),
-    customPrecache: sinon.spy(),
   };
 
   class WorkboxSW {
@@ -34,11 +39,11 @@ module.exports = async (swFile, expectedWorkboxMethodCalls) => {
     WorkboxSW,
     importScripts,
   }, makeServiceWorkerEnv());
-  vm.runInNewContext(swFileContents, context);
+  vm.runInNewContext(swCode, context);
 
-  for (const method of Object.keys(expectedWorkboxMethodCalls)) {
+  for (const method of Object.keys(expectedMethodCalls)) {
     const spy = methodsToSpies[method];
-    expect(spy.args).to.deep.equal(expectedWorkboxMethodCalls[method],
+    expect(spy.args).to.deep.equal(expectedMethodCalls[method],
       `while testing method calls for ${method}`);
   }
 };
