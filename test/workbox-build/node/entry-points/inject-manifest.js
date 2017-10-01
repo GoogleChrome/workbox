@@ -9,10 +9,10 @@ const validateServiceWorkerRuntime = require('../../../../infra/utils/validator/
 
 describe(`entry-points/inject-manifest.js (End to End)`, function() {
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
-  const SW_SRC_DIR = path.join(__dirname, '..', '..', 'static', 'injection-samples');
+  const SW_SRC_DIR = path.join(__dirname, '..', '..', 'static', 'sw-injections');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
-    swDest: os.tmpdir(),
+    swDest: tempy.file(),
     swSrc: path.join(SW_SRC_DIR, 'basic.js'),
   };
   const REQUIRED_PARAMS = [
