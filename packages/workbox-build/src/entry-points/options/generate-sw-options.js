@@ -31,7 +31,18 @@ class GenerateSWOptions extends BaseOptions {
           'networkOnly',
           'staleWhileRevalidate'
         )],
-        options: joi.object(),
+        options: joi.object().keys({
+          cacheName: joi.string(),
+          plugins: joi.array().items(joi.object()),
+          cacheExpiration: joi.object().keys({
+            maxEntries: joi.number().min(1),
+            maxAgeSeconds: joi.number().min(1),
+          }).or('maxEntries', 'maxAgeSeconds'),
+          cacheableResponse: joi.object().keys({
+            statuses: joi.array().items(joi.number().min(0).max(599)),
+            headers: joi.object(),
+          }).or('statuses', 'headers'),
+        }),
       }).requiredKeys('urlPattern', 'handler')),
       skipWaiting: joi.boolean(),
       swDest: joi.string().required(),

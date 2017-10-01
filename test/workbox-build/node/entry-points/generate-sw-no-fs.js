@@ -302,7 +302,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       }
     });
 
-    it(`should should support a single string 'urlPattern' and a string 'handler'`, async function() {
+    it(`should support a single string 'urlPattern' and a string 'handler'`, async function() {
       const runtimeCaching = [{
         urlPattern: STRING_URL_PATTERN,
         handler: STRING_HANDLER,
@@ -319,7 +319,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       }});
     });
 
-    it(`should should support a single RegExp 'urlPattern' and a string 'handler'`, async function() {
+    it(`should support a single RegExp 'urlPattern' and a string 'handler'`, async function() {
       const runtimeCaching = [{
         urlPattern: REGEXP_URL_PATTERN,
         handler: STRING_HANDLER,
@@ -337,7 +337,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       }});
     });
 
-    it(`should should support a multiple entries in 'runtimeCaching'`, async function() {
+    it(`should support multiple entries in 'runtimeCaching'`, async function() {
       const runtimeCaching = [{
         urlPattern: REGEXP_URL_PATTERN,
         handler: STRING_HANDLER,
@@ -351,6 +351,98 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
 
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         [STRING_HANDLER]: [[{}], [{}]],
+        constructor: [[{}]],
+        importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
+        precache: [[[]]],
+        registerRoute: [
+          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
+          [STRING_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
+        ],
+      }});
+    });
+
+    it(`should reject when one of the 'runtimeCaching' entries has invalid 'options'`, async function() {
+      const runtimeCaching = [{
+        urlPattern: REGEXP_URL_PATTERN,
+        handler: STRING_HANDLER,
+        options: null,
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
+
+      try {
+        await generateSWNoFS(options);
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.name).to.eql('ValidationError');
+        expect(error.details[0].context.key).to.eql('options');
+      }
+    });
+
+    it(`should support setting all of the supported 'options' for a single 'runtimeCaching' entry`, async function() {
+      const runtimeCachingOptions = {
+        cacheName: 'test-cache-name',
+        plugins: [{}, {}],
+        cacheExpiration: {
+          maxEntries: 1,
+          maxAgeSeconds: 1,
+        },
+        cacheableResponse: {
+          headers: {
+            'X-Test': 'test',
+          },
+          statuses: [0, 200],
+        },
+      };
+      const runtimeCaching = [{
+        urlPattern: REGEXP_URL_PATTERN,
+        handler: STRING_HANDLER,
+        options: runtimeCachingOptions,
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
+
+      const swCode = await generateSWNoFS(options);
+
+      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+        [STRING_HANDLER]: [[runtimeCachingOptions]],
+        constructor: [[{}]],
+        importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
+        precache: [[[]]],
+        registerRoute: [[REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+      }});
+    });
+
+    it(`should support setting individual 'options' each, for multiple 'runtimeCaching' entries`, async function() {
+      const firstRuntimeCachingOptions = {
+        cacheName: 'first-cache-name',
+        cacheExpiration: {
+          maxEntries: 1,
+          maxAgeSeconds: 1,
+        },
+      };
+      const secondRuntimeCachingOptions = {
+        cacheName: 'second-cache-name',
+        cacheableResponse: {
+          headers: {
+            'X-Test': 'test',
+          },
+          statuses: [0, 200],
+        },
+      };
+      const runtimeCaching = [{
+        urlPattern: REGEXP_URL_PATTERN,
+        handler: STRING_HANDLER,
+        options: firstRuntimeCachingOptions,
+      }, {
+        urlPattern: STRING_URL_PATTERN,
+        handler: STRING_HANDLER,
+        options: secondRuntimeCachingOptions,
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
+
+      const swCode = await generateSWNoFS(options);
+
+      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+        [STRING_HANDLER]: [[firstRuntimeCachingOptions], [secondRuntimeCachingOptions]],
         constructor: [[{}]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         precache: [[[]]],
