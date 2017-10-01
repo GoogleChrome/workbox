@@ -12,6 +12,7 @@ module.exports = async (swFile, expectedWorkboxMethodCalls) => {
     importScripts,
     constructor: sinon.spy(),
     precache: sinon.spy(),
+    customPrecache: sinon.spy(),
   };
 
   class WorkboxSW {
@@ -21,6 +22,11 @@ module.exports = async (swFile, expectedWorkboxMethodCalls) => {
 
     precache(...args) {
       methodsToSpies.precache(...args);
+    }
+
+    // Used in the custom-injection-point test.
+    customPrecache(...args) {
+      methodsToSpies.customPrecache(...args);
     }
   }
 
