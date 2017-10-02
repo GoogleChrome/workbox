@@ -18,7 +18,7 @@ envDescribe(`[workbox-precaching] PrecacheController`, function() {
 
   beforeEach(async function() {
     clearRequire.all();
-    
+
     const coreModule = await import('../../../../packages/workbox-core/index.mjs');
 
     logger = coreModule._private.logger;

@@ -63,6 +63,9 @@ module.exports = {
     ],
     env: {
       'mocha': true
+    },
+    rules: {
+      'no-invalid-this': 0,
     }
   }, {
     files: [

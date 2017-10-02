@@ -16,7 +16,7 @@ describe(`workbox-core  assert`, function() {
   describe(`isSwEnv`, function() {
     it(`should throw if ServiceWorkerGlobalScope is not defined`, function() {
       sandbox.stub(global, 'ServiceWorkerGlobalScope').value(undefined);
-      
+
       return expectError(() => assert.isSwEnv('example-module'), 'not-in-sw');
     });
 
