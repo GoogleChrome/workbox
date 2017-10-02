@@ -1,10 +1,6 @@
-import clearRequire from 'clear-require';
-import makeServiceWorkerEnv from 'service-worker-mock';
 import {expect} from 'chai';
-
 import expectError from '../../../infra/utils/expectError.js';
-
-Object.assign(global, makeServiceWorkerEnv());
+import Route from '../../../packages/workbox-routing/lib/Route.mjs';
 
 const match = () => {};
 const handler = {
@@ -17,127 +13,121 @@ const invalidHandlerObject = {};
 const invalidMethod = 'INVALID';
 
 describe(`workbox-routing: Route`, function() {
-  const initialNodeEnv = process.env.NODE_ENV;
-  after(function() {
-    process.env.NODE_ENV = initialNodeEnv;
+  it(`should throw when called without any parameters in dev`, async function() {
+    if (process.env.NODE_ENV == 'production') return this.skip();
+
+    await expectError(
+      () => new Route(),
+      'incorrect-type',
+      (error) => {
+        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+        expect(error.details).to.have.property('className').that.equals('Route');
+        expect(error.details).to.have.property('funcName').that.equals('constructor');
+      }
+    );
   });
 
-  describe(`(NODE_ENV = development)`, function() {
-    let Route;
+  it(`should throw when called without a valid handler parameter in dev`, async function() {
+    if (process.env.NODE_ENV == 'production') return this.skip();
 
-    before(async function() {
-      process.env.NODE_ENV = 'development';
+    await expectError(
+      () => new Route(match),
+      'incorrect-type',
+      (error) => {
+        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+        expect(error.details).to.have.property('className').that.equals('Route');
+        expect(error.details).to.have.property('funcName').that.equals('constructor');
+        expect(error.details).to.have.property('paramName').that.equals('handler');
+      }
+    );
 
-      clearRequire.all();
-
-      const RouteModule = await import('../../../packages/workbox-routing/lib/Route.mjs');
-      Route = RouteModule.default;
-    });
-
-    it(`should throw when called without any parameters`, async function() {
-      await expectError(
-        () => new Route(),
-        'incorrect-type',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-          expect(error.details).to.have.property('className').that.equals('Route');
-          expect(error.details).to.have.property('funcName').that.equals('constructor');
-        }
-      );
-    });
-
-    it(`should throw when called without a valid handler parameter`, async function() {
-      await expectError(
-        () => new Route(match),
-        'incorrect-type',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-          expect(error.details).to.have.property('className').that.equals('Route');
-          expect(error.details).to.have.property('funcName').that.equals('constructor');
-          expect(error.details).to.have.property('paramName').that.equals('handler');
-        }
-      );
-
-      await expectError(
-        () => new Route(match, invalidHandlerObject),
-        'missing-a-method',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-          expect(error.details).to.have.property('className').that.equals('Route');
-          expect(error.details).to.have.property('funcName').that.equals('constructor');
-          expect(error.details).to.have.property('paramName').that.equals('handler');
-        }
-      );
-    });
-
-    it(`should throw when called without a valid match parameter`, async function() {
-      await expectError(
-        () => new Route(null, handler),
-        'incorrect-type',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-          expect(error.details).to.have.property('className').that.equals('Route');
-          expect(error.details).to.have.property('funcName').that.equals('constructor');
-          expect(error.details).to.have.property('paramName').that.equals('match');
-        }
-      );
-    });
-
-    it(`should not throw when called with valid handler.handle and match parameters`, function() {
-      expect(() => new Route(match, handler)).not.to.throw();
-    });
-
-    it(`should not throw when called with a valid function handler and match parameters`, function() {
-      expect(() => new Route(match, functionHandler)).not.to.throw();
-    });
-
-    it(`should throw when called with an invalid method`, async function() {
-      await expectError(
-        () => new Route(match, handler, invalidMethod),
-        'invalid-value',
-        (error) => expect(error.details).to.have.property('paramName').that.equals('method')
-      );
-    });
-
-    it(`should use the method provided when called with a valid method`, function() {
-      const route = new Route(match, handler, method);
-      expect(route._method).to.equal(method);
-    });
-
-    it(`should use a default of GET when called without a method`, function() {
-      const route = new Route(match, handler);
-      expect(route._method).to.equal('GET');
-    });
+    await expectError(
+      () => new Route(match, invalidHandlerObject),
+      'missing-a-method',
+      (error) => {
+        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+        expect(error.details).to.have.property('className').that.equals('Route');
+        expect(error.details).to.have.property('funcName').that.equals('constructor');
+        expect(error.details).to.have.property('paramName').that.equals('handler');
+      }
+    );
   });
 
-  describe(`(NODE_ENV = production)`, function() {
-    let Route;
+  it(`should throw when called without a valid match parameter in dev`, async function() {
+    if (process.env.NODE_ENV == 'production') return this.skip();
 
-    before(async function() {
-      process.env.NODE_ENV = 'production';
+    await expectError(
+      () => new Route(null, handler),
+      'incorrect-type',
+      (error) => {
+        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+        expect(error.details).to.have.property('className').that.equals('Route');
+        expect(error.details).to.have.property('funcName').that.equals('constructor');
+        expect(error.details).to.have.property('paramName').that.equals('match');
+      }
+    );
+  });
 
-      clearRequire.all();
+  it(`should not throw when called with valid handler.handle and match parameters in dev`, function() {
+    if (process.env.NODE_ENV == 'production') return this.skip();
 
-      const RouteModule = await import('../../../packages/workbox-routing/lib/Route.mjs');
-      Route = RouteModule.default;
-    });
+    expect(() => new Route(match, handler)).not.to.throw();
+  });
 
-    it(`should not throw when called with valid handler.handle and match parameters`, function() {
-      expect(() => new Route(match, handler)).not.to.throw();
-    });
+  it(`should not throw when called with a valid function handler and match parameters in dev`, function() {
+    if (process.env.NODE_ENV == 'production') return this.skip();
 
-    it(`should not throw when called with a valid function handler and match parameters`, function() {
-      expect(() => new Route(match, functionHandler)).not.to.throw();
-    });
+    expect(() => new Route(match, functionHandler)).not.to.throw();
+  });
 
-    it(`should use the method provided when called with a valid method`, function() {
-      const route = new Route(match, handler, method);
-      expect(route._method).to.equal(method);
-    });
+  it(`should throw when called with an invalid method in dev`, async function() {
+    if (process.env.NODE_ENV == 'production') return this.skip();
 
-    it(`should use a default of GET when called without a method`, function() {
-      const route = new Route(match, handler);
-      expect(route._method).to.equal('GET');
-    });
+    await expectError(
+      () => new Route(match, handler, invalidMethod),
+      'invalid-value',
+      (error) => expect(error.details).to.have.property('paramName').that.equals('method')
+    );
+  });
+
+  it(`should use the method provided when called with a valid method in dev`, function() {
+    if (process.env.NODE_ENV == 'production') return this.skip();
+
+    const route = new Route(match, handler, method);
+    expect(route._method).to.equal(method);
+  });
+
+  it(`should use a default of GET when called without a method in dev`, function() {
+    if (process.env.NODE_ENV == 'production') return this.skip();
+
+    const route = new Route(match, handler);
+    expect(route._method).to.equal('GET');
+  });
+
+
+  it(`should not throw when called with valid handler.handle and match parameters in production`, function() {
+    if (process.env.NODE_ENV != 'production') return this.skip();
+
+    expect(() => new Route(match, handler)).not.to.throw();
+  });
+
+  it(`should not throw when called with a valid function handler and match parameters in production`, function() {
+    if (process.env.NODE_ENV != 'production') return this.skip();
+
+    expect(() => new Route(match, functionHandler)).not.to.throw();
+  });
+
+  it(`should use the method provided when called with a valid method in production`, function() {
+    if (process.env.NODE_ENV != 'production') return this.skip();
+
+    const route = new Route(match, handler, method);
+    expect(route._method).to.equal(method);
+  });
+
+  it(`should use a default of GET when called without a method in production`, function() {
+    if (process.env.NODE_ENV != 'production') return this.skip();
+
+    const route = new Route(match, handler);
+    expect(route._method).to.equal('GET');
   });
 });

@@ -1,25 +1,15 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
-import makeServiceWorkerEnv from 'service-worker-mock';
-
 import LOG_LEVELS from '../../../../packages/workbox-core/models/LogLevels.mjs';
+import core from '../../../../packages/workbox-core/index.mjs';
+import logger from '../../../../packages/workbox-core/utils/logger.mjs';
+
 
 describe(`workbox-core logger`, function() {
   let sandbox;
-  let core;
-  let logger;
 
   before(async function() {
     sandbox = sinon.sandbox.create();
-
-    const swEnv = makeServiceWorkerEnv();
-    Object.assign(global, swEnv);
-
-    const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-    core = coreModule.default;
-
-    const loggerModule = await import('../../../../packages/workbox-core/utils/logger.mjs');
-    logger = loggerModule.default;
   });
 
   beforeEach(function() {
