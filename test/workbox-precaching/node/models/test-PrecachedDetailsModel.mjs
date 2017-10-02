@@ -1,24 +1,14 @@
 import {expect} from 'chai';
-import {IDBFactory, IDBKeyRange, reset} from 'shelving-mock-indexeddb';
-import makeServiceWorkerEnv from 'service-worker-mock';
+import {reset} from 'shelving-mock-indexeddb';
 
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 
 const MODULE_PATH = `../../../../packages/workbox-precaching/models/PrecachedDetailsModel.mjs`;
-const MOCK_LOCATION = 'https://example.com';
 
 describe('[workbox-precaching] PrecachedDetailsModel', function() {
   let corePrivate;
 
   before(async function() {
-    global.indexedDB = new IDBFactory();
-    global.IDBKeyRange = IDBKeyRange;
-
-    const swEnv = makeServiceWorkerEnv();
-    // This is needed to ensure new URL('/', location), works.
-    swEnv.location = MOCK_LOCATION;
-    Object.assign(global, swEnv);
-
     const coreModule = await import('../../../../packages/workbox-core/index.mjs');
     corePrivate = coreModule._private;
   });

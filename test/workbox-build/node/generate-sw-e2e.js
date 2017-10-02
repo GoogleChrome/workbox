@@ -1,8 +1,8 @@
 const path = require('path');
 const fs = require('fs');
 const fsExtra = require('fs-extra');
-const testServerGen = require('../../../infra/utils/test-server-generator.js');
-const validator = require('../../../infra/utils/e2e-sw-validator.js');
+const testServerGen = require('../../../infra/testing/test-server-generator.js');
+const validator = require('../../../infra/testing/e2e-sw-validator.js');
 
 // Don't run on windows - it falls over.
 if (process.platform === 'win32') {

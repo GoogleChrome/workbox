@@ -1,10 +1,7 @@
 import clearRequire from 'clear-require';
-import makeServiceWorkerEnv from 'service-worker-mock';
 import {expect} from 'chai';
 
-import expectError from '../../../infra/utils/expectError.js';
-
-Object.assign(global, makeServiceWorkerEnv());
+import expectError from '../../../infra/testing/expectError.js';
 
 const handler = {
   handle: () => {},

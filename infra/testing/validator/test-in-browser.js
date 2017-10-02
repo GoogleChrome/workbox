@@ -1,9 +1,10 @@
 const fs = require('fs');
-const logHelper = require('../log-helper');
 const path = require('path');
 const querystring = require('querystring');
 const seleniumAssistant = require('selenium-assistant');
 const url = require('url');
+
+const logHelper = require('../../utils/log-helper');
 
 const getSeleniumBrowser = () => {
   if (process.platform !== 'win32') {

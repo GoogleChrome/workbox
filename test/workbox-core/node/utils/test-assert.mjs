@@ -1,36 +1,33 @@
-import expectError from '../../../../infra/utils/expectError';
+import sinon from 'sinon';
+import expectError from '../../../../infra/testing/expectError';
 
 import assert from '../../../../packages/workbox-core/utils/assert';
 
 describe(`workbox-core  assert`, function() {
+  let sandbox;
+  beforeEach(function() {
+    sandbox = sinon.sandbox.create();
+  });
+
+  afterEach(function() {
+    sandbox.restore();
+  });
+
   describe(`isSwEnv`, function() {
-    class FakeSWGlobalScope {}
-
-    beforeEach(function() {
-      delete global.ServiceWorkerGlobalScope;
-      delete global.self;
-    });
-
-    afterEach(function() {
-      delete global.ServiceWorkerGlobalScope;
-      delete global.self;
-    });
-
     it(`should throw if ServiceWorkerGlobalScope is not defined`, function() {
+      sandbox.stub(global, 'ServiceWorkerGlobalScope').value(undefined);
+
       return expectError(() => assert.isSwEnv('example-module'), 'not-in-sw');
     });
 
     it(`should return false if self is not an instance of ServiceWorkerGlobalScope`, function() {
-      global.ServiceWorkerGlobalScope = FakeSWGlobalScope;
-      global.self = {};
+      sandbox.stub(global, 'self').value({});
 
       return expectError(() => assert.isSwEnv('example-module'), 'not-in-sw');
     });
 
     it(`should return true if self is an instance of ServiceWorkerGlobalScope`, function() {
-      class Test {}
-      global.ServiceWorkerGlobalScope = Test;
-      global.self = new Test();
+      sandbox.stub(global, 'self').value(new ServiceWorkerGlobalScope());
 
       assert.isSwEnv('example-module');
     });
