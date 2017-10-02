@@ -1,4 +1,11 @@
-export default async (response) => {
+/**
+ * @param {Response} response
+ * @return {Response}
+ *
+ * @private
+ * @memberof module:workbox-precachig
+ */
+const cleanRedirect = async (response) => {
   const clonedResponse = response.clone();
 
   // Not all browsers support the Response.body stream, so fall back
@@ -15,3 +22,5 @@ export default async (response) => {
     })
   );
 };
+
+export default cleanRedirect;

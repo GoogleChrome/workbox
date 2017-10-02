@@ -19,17 +19,17 @@ import {defaultMethod, validMethods} from './constants.mjs';
 import normalizeHandler from './normalizeHandler.mjs';
 
 /**
- * This is the definition of the `match` callback passed into the
- * `Route` constructor.
+ * The `match` callback is used to determine if a new service worker `fetch`
+ * event should be handled this `Route`. Returning a truthy value means
+ * this `Route` will handle and respond to this `fetch` event.
  *
- * This callback is used to determine if a new `fetch` event can be served
- * by this `Route`. Returning a truthy value indicates that this `Route` can
- * handle this `fetch` event. Return `null` if this shouldn't match against
- * the `fetch` event.
+ * Return `null` if this Route shouldn't match against the `fetch` event.
  *
- * If you do return a truthy value, the object will be passed to the
- * Route's `handler` (see the
- * [Route Constructor]{@link module:workbox-routing.Route}).
+ * Any truthy value returned by this callback will be passed to the
+ * Route's `handler` callback.
+ *
+ * This callback is passed into the
+ * [Route Constructor]{@link module:workbox-routing.Route}.
  *
  * @callback Route~matchCallback
  * @param {Object} context
@@ -40,15 +40,20 @@ import normalizeHandler from './normalizeHandler.mjs';
  * Return `null` if the route shouldn't match. If you return an Object with
  * contents, it will be passed to the Route's
  * [handler]{@link module:workbox-routing.Route~handlerCallback}.
+ *
  * @memberof module:workbox-routing
  */
 
 /**
- * This is the definition of the `handler` callback that can be passed into the
- * `Route` constructor.
+ * The `handler` callback is called when a new service worker `fetch` event
+ * has been matched by a `Route`. This callback should return a Promise that
+ * resolves with a `Response`.
  *
- * The `handler` callback is called when a request has been matched by
- * a `Route` and should return a Promise that resolves with a `Response`.
+ * If a value is returned by the `match` callback it will be passed in
+ * as the `params` argument of this callback.
+ *
+ * This callback is passed into the
+ * [Route Constructor]{@link module:workbox-routing.Route}.
  *
  * @callback Route~handlerCallback
  * @param {Object} context
@@ -59,6 +64,7 @@ import normalizeHandler from './normalizeHandler.mjs';
  * [match callback]{@link module:workbox-routing.Route~matchCallback} function.
  * This will be undefined if nothing was returned.
  * @return {Promise<Response>} The response that will fulfill the request.
+ *
  * @memberof module:workbox-routing
  */
 
@@ -69,25 +75,19 @@ import normalizeHandler from './normalizeHandler.mjs';
  *
  * @memberof module:workbox-routing
  */
-export default class Route {
+class Route {
   /**
    * Constructor for Route class.
-   * @param {Route~matchCallback} match The function that determines whether the
-   * route matches a given `fetch` event.
-   *
-   * See [matchCallback]{@link module:workbox-routing.Route~matchCallback} for
-   * full details on this function.
-   * @param {Route~handlerCallback|module:workbox-runtime-caching.Handler}
-   * handler This parameter can be either a function or an object which is a
-   * subclass of `Handler`.
-   *
-   * Either option should result in a `Response` that the `Route` can use to
-   * handle the `fetch` event.
-   *
-   * See [handlerCallback]{@link module:workbox-routing.Route~handlerCallback}
-   * for full details on using a callback function as the `handler`.
-   * @param {string} [method='GET'] Only match requests that use this HTTP
-   * method.
+   * @param {module:workbox-routing.Route~matchCallback} match
+   * A callback function that determines whether the route matches a given
+   * `fetch` event.
+   * @param {
+   *   module:workbox-routing.Route~handlerCallback |
+   *   module:workbox-runtime-caching.Handler
+   * } handler This parameter can be either a callback function or an object
+   * which implements the `Handler` interface.
+   * @param {string} [method='GET'] Restrict the route to only match requests
+   * that use this HTTP method.
    */
   constructor(match, handler, method) {
     if (process.env.NODE_ENV !== 'production') {
@@ -108,3 +108,5 @@ export default class Route {
     this._method = method || defaultMethod;
   }
 }
+
+export default Route;

@@ -6,6 +6,7 @@ const chalk = require('chalk');
  * Log helper is just a wrapper around the console to print slightly
  * nicer / colored messages and could be extended to filter based on log
  * level.
+ * 
  * @private
  */
 class LogHelper {

@@ -17,8 +17,9 @@
  * The default HTTP method, 'GET', used when there's no specific method
  * configured for a route.
  *
- * @private
  * @type {string}
+ *
+ * @private
  * @memberof module:workbox-routing
  */
 export const defaultMethod = 'GET';
@@ -26,8 +27,9 @@ export const defaultMethod = 'GET';
 /**
  * The list of valid HTTP methods associated with requests that could be routed.
  *
- * @private
  * @type {Array<string>}
+ *
+ * @private
  * @memberof module:workbox-routing
  */
 export const validMethods = [

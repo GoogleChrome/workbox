@@ -1,6 +1,10 @@
 import core from 'workbox-core';
 import Route from './lib/Route.mjs';
 
+/**
+ * @module workbox-routing
+ */
+
 if (process.env.NODE_ENV !== 'production') {
   core.assert.isSwEnv('workbox-routing');
 }

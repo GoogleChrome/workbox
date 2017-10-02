@@ -1,5 +1,8 @@
 /**
  * This is a wrapper that makes it easier to use IDB.
+ *
+ * @private
+ * @memberof module:workbox-core
  */
 class DBWrapper {
   /**
@@ -104,6 +107,9 @@ class DBWrapper {
 /**
  * This class will be used to create a generic IndexedDB class for Workbox
  * to use, removing the annoying parts of the API.
+ *
+ * @private
+ * @memberof module:workbox-core
  */
 class IndexedDBHelper {
   /**

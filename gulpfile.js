@@ -48,6 +48,7 @@ const gulpTaskFiles = [
   'publish-cdn',
   'publish',
   'watch',
+  'docs',
 ];
 
 gulpTaskFiles.forEach((gulpTaskFile) => {
