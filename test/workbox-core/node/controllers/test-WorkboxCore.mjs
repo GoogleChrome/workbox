@@ -1,16 +1,10 @@
 import {expect} from 'chai';
 import clearRequire from 'clear-require';
-import makeServiceWorkerEnv from 'service-worker-mock';
 
-import expectError from '../../../../infra/utils/expectError';
-import generateVariantTests from '../../../../infra/utils/generate-variant-tests';
+import expectError from '../../../../infra/testing/expectError';
+import generateVariantTests from '../../../../infra/testing/generate-variant-tests';
 
 describe(`workbox-core WorkboxCore`, function() {
-  before(function() {
-    const swEnv = makeServiceWorkerEnv();
-    Object.assign(global, swEnv);
-  });
-
   beforeEach(function() {
     clearRequire.all();
     process.env.NODE_ENV = 'dev';
@@ -102,7 +96,7 @@ describe(`workbox-core WorkboxCore`, function() {
       const coreModule = await import('../../../../packages/workbox-core/index.mjs');
       const core = coreModule.default;
 
-      // Scope be default is '/' from 'service-worker-mock'
+      // Scope be default is '/' from mocks
       expect(core.cacheNames.precache).to.equal(`workbox-precache-/`);
       expect(core.cacheNames.runtime).to.equal(`workbox-runtime-/`);
     });
@@ -112,7 +106,7 @@ describe(`workbox-core WorkboxCore`, function() {
       const core = coreModule.default;
       core.setCacheNameDetails({prefix: 'test-prefix'});
 
-      // Scope be default is '/' from 'service-worker-mock'
+      // Scope be default is '/' from mocks
       expect(core.cacheNames.precache).to.equal(`test-prefix-precache-/`);
       expect(core.cacheNames.runtime).to.equal(`test-prefix-runtime-/`);
     });
@@ -122,7 +116,7 @@ describe(`workbox-core WorkboxCore`, function() {
       const core = coreModule.default;
       core.setCacheNameDetails({suffix: 'test-suffix'});
 
-      // Scope be default is '/' from 'service-worker-mock'
+      // Scope be default is '/' from mocks
       expect(core.cacheNames.precache).to.equal(`workbox-precache-test-suffix`);
       expect(core.cacheNames.runtime).to.equal(`workbox-runtime-test-suffix`);
     });
@@ -132,7 +126,7 @@ describe(`workbox-core WorkboxCore`, function() {
       const core = coreModule.default;
       core.setCacheNameDetails({precache: 'test-precache'});
 
-      // Scope be default is '/' from 'service-worker-mock'
+      // Scope be default is '/' from mocks
       expect(core.cacheNames.precache).to.equal(`workbox-test-precache-/`);
       expect(core.cacheNames.runtime).to.equal(`workbox-runtime-/`);
     });
@@ -142,7 +136,7 @@ describe(`workbox-core WorkboxCore`, function() {
       const core = coreModule.default;
       core.setCacheNameDetails({runtime: 'test-runtime'});
 
-      // Scope be default is '/' from 'service-worker-mock'
+      // Scope be default is '/' from mocks
       expect(core.cacheNames.precache).to.equal(`workbox-precache-/`);
       expect(core.cacheNames.runtime).to.equal(`workbox-test-runtime-/`);
     });
@@ -157,7 +151,6 @@ describe(`workbox-core WorkboxCore`, function() {
         runtime: 'test-runtime',
       });
 
-      // Scope be default is '/' from 'service-worker-mock'
       expect(core.cacheNames.precache).to.equal(`test-prefix-test-precache-test-suffix`);
       expect(core.cacheNames.runtime).to.equal(`test-prefix-test-runtime-test-suffix`);
     });
@@ -172,7 +165,6 @@ describe(`workbox-core WorkboxCore`, function() {
         runtime: 'test-runtime',
       });
 
-      // Scope be default is '/' from 'service-worker-mock'
       expect(core.cacheNames.precache).to.equal(`test-precache`);
       expect(core.cacheNames.runtime).to.equal(`test-runtime`);
     });

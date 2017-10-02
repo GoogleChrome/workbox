@@ -1,21 +1,14 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
-import makeServiceWorkerEnv from 'service-worker-mock';
 
-import expectError from '../../../../infra/utils/expectError';
+import expectError from '../../../../infra/testing/expectError';
 import fetchWrapper from '../../../../packages/workbox-core/utils/fetchWrapper.mjs';
-import '../../../mocks/mock-fetch';
 
 describe(`workbox-core fetchWrapper`, function() {
   let sandbox;
 
   before(function() {
     sandbox = sinon.sandbox.create();
-
-    const swEnv = makeServiceWorkerEnv();
-    // This is needed to ensure new URL('/', location), works.
-    swEnv.location = 'https://fetch.wrapper.com';
-    Object.assign(global, swEnv);
   });
 
   afterEach(function() {

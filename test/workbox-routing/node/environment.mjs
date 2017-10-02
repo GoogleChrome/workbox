@@ -1,17 +1,12 @@
 import clearRequire from 'clear-require';
-import makeServiceWorkerEnv from 'service-worker-mock';
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import expectError from '../../../infra/utils/expectError';
+import expectError from '../../../infra/testing/expectError';
 
 describe(`workbox-routing: SW environment`, function() {
   const sandbox = sinon.sandbox.create();
   const initialNodeEnv = process.env.NODE_ENV;
-
-  before(function() {
-    Object.assign(global, makeServiceWorkerEnv());
-  });
 
   beforeEach(function() {
     clearRequire.all();
