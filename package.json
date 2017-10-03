@@ -5,10 +5,11 @@
   },
   "scripts": {
     "local-lerna": "lerna",
-    "test": "nyc --require @std/esm --require ./infra/utils/sw-env --reporter=lcov --reporter=text mocha",
+    "test": "nyc --clean false --require @std/esm --require ./infra/utils/sw-env --silent mocha",
+    "coverage-report": "nyc report --reporter lcov --reporter text",
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint \"**/*.{js,mjs}\" --ignore-path .gitignore",
-    "bot": "pr-bot",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "bot": "pr-bot"
   },
   "@std/esm": {
     "cjs": true

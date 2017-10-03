@@ -1,8 +1,10 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
+
 import expectError from '../../../../infra/utils/expectError';
+import '../../../../infra/utils/mock-fetch';
+
 import fetchWrapper from '../../../../packages/workbox-core/utils/fetchWrapper.mjs';
-import '../../../mocks/mock-fetch';
 
 describe(`workbox-core fetchWrapper`, function() {
   let sandbox;
