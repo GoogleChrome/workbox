@@ -5,7 +5,7 @@ import WorkboxError from '../models/WorkboxError.mjs';
  *
  * Will call requestWillFetch on available plugins.
  *
- * @param {Request|String} request
+ * @param {Request|string} request
  * @param {Object} fetchOptions
  * @param {Array<Object>} [plugins]
  * @return {Promise<Response>}

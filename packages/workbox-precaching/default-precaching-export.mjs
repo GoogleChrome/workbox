@@ -5,8 +5,12 @@ let listenersAdded = false;
 
 const addListeners = () => {
   listenersAdded = true;
-  self.addEventListener('install', () => precacheController.install());
-  self.addEventListener('activate', () => precacheController.cleanup());
+  self.addEventListener('install', (event) => {
+    event.waitUntil(precacheController.install());
+  });
+  self.addEventListener('activate', (event) => {
+    event.waitUntil(precacheController.cleanup());
+  });
 };
 
 /**
