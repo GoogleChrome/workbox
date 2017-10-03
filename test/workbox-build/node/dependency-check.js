@@ -12,6 +12,7 @@ describe(`[workbox-build] Test Dependencies`, function() {
       ],
       ignoreMatches: [
         'workbox-sw',
+        'babel-runtime',
       ],
     }, (unusedDeps) => {
       if (unusedDeps.dependencies.length > 0) {

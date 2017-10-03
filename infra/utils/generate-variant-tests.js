@@ -20,7 +20,9 @@ const generateVariantTests = (itTitle, variants, func) => {
     // to work with Mocha's binding for tests.
     it(`${itTitle}. Variant: '${JSON.stringify(variant)}'`,
       function() {
-        return func(variant);
+        // Use .call to get the correct `this` binding needed by mocha.
+        // eslint-disable-next-line no-invalid-this
+        return func.call(this, variant);
       }
     );
   });

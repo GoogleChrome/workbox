@@ -1,40 +1,25 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 import clearRequire from 'clear-require';
-import makeServiceWorkerEnv from 'service-worker-mock';
 import {IDBFactory, IDBKeyRange, reset} from 'shelving-mock-indexeddb';
-
+import '../../../mocks/mock-fetch';
 import expectError from '../../../../infra/utils/expectError';
 import generateTestVariants from '../../../../infra/utils/generate-variant-tests';
-import '../../../mocks/mock-fetch';
+import {_private} from '../../../../packages/workbox-core/index.mjs';
+import PrecacheController from '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
 
-const PRECACHE_MANAGER_PATH = '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
-const MOCK_LOCATION = 'https://example.com';
+const {logger, cacheNames} = _private;
 
 describe(`[workbox-precaching] PrecacheController`, function() {
   const sandbox = sinon.sandbox.create();
-  let logger;
-  let cacheNames;
 
   before(function() {
     global.indexedDB = new IDBFactory();
     global.IDBKeyRange = IDBKeyRange;
-
-    const swEnv = makeServiceWorkerEnv();
-
-    // This is needed to ensure new URL('/', location), works.
-    swEnv.location = MOCK_LOCATION;
-
-    Object.assign(global, swEnv);
   });
 
   beforeEach(async function() {
-    process.env.NODE_ENV = 'dev';
     clearRequire.all();
-    const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-
-    logger = coreModule._private.logger;
-    cacheNames = coreModule._private.cacheNames;
 
     let usedCacheNames = await caches.keys();
     await Promise.all(usedCacheNames.map((cacheName) => {
@@ -42,6 +27,16 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     }));
 
     reset();
+
+    // Run this in the `beforeEach` hook as well as the afterEach hook due to
+    // a mocha bug where `afterEach` hooks aren't run for skipped tests.
+    // https://github.com/mochajs/mocha/issues/2546
+    sandbox.restore();
+
+    // Prevent logs in the mocha output.
+    sandbox.stub(logger, 'warn');
+    sandbox.stub(logger, 'debug');
+    sandbox.stub(logger, 'log');
   });
 
   afterEach(function() {
@@ -50,14 +45,12 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
   describe(`constructor`, function() {
     it(`should construct without any inputs`, async function() {
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       expect(() => {
         new PrecacheController();
       }).to.not.throw();
     });
 
     it(`should construct with a valid cache name`, async function() {
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       expect(() => {
         new PrecacheController(`test-cache-name`);
       }).to.not.throw();
@@ -76,8 +69,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       null,
       undefined,
     ];
-    generateTestVariants(`should throw when passing in non-array values`, badTopLevelInputs, async (variant) => {
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+    generateTestVariants(`should throw when passing in non-array values in dev`, badTopLevelInputs, async function(variant) {
+      if (process.env.NODE_ENV == 'production') return this.skip();
+
       const precacheController = new PrecacheController();
       return expectError(() => {
         precacheController.addToCacheList(variant);
@@ -94,10 +88,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       '',
       {},
     ];
-    generateTestVariants(`should throw when passing in invalid inputs in the array.`, badNestedInputs, async (variant) => {
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
-      const precacheController = new PrecacheController();
+    generateTestVariants(`should throw when passing in invalid inputs in the array in dev`, badNestedInputs, async function(variant) {
+      if (process.env.NODE_ENV == 'production') return this.skip();
 
+      const precacheController = new PrecacheController();
       return expectError(() => {
         precacheController.addToCacheList([variant]);
       }, 'add-to-cache-list-unexpected-type', (err) => {
@@ -123,8 +117,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     Object.keys(unrevisionedEntryGroups).map((groupName) => {
       const inputGroup = unrevisionedEntryGroups[groupName];
 
-      it(`should add ${groupName} to cache list`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
+      it(`should add ${groupName} to cache list in dev`, async function() {
+        if (process.env.NODE_ENV == 'production') return this.skip();
+
         const precacheController = new PrecacheController();
 
         precacheController.addToCacheList(inputGroup);
@@ -141,7 +136,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       });
 
       it(`should remove duplicate ${groupName}`, async function() {
-        const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
         const precacheController = new PrecacheController();
 
         const inputUrls = [
@@ -164,7 +158,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
 
     it(`should add url + revision objects to cache list`, async function() {
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheController = new PrecacheController();
 
       const inputObjects = [
@@ -185,7 +178,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
 
     it(`should remove duplicate url + revision object entries`, async function() {
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheController = new PrecacheController();
 
       const singleObject = {url: '/duplicate.html', revision: '123'};
@@ -203,7 +195,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
 
     it(`should throw on conflicting entries with different revisions`, async function() {
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const firstEntry = {url: '/duplicate.html', revision: '123'};
       const secondEntry = {url: '/duplicate.html', revision: '456'};
       return expectError(() => {
@@ -222,23 +213,11 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
   describe('install()', function() {
     it('should be fine when calling with empty precache list', async function() {
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      sandbox.stub(logger, 'log');
-
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheController = new PrecacheController();
       return precacheController.install();
     });
 
     it('should precache assets (with cache busting via search params)', async function() {
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      const logStub = sandbox.stub(logger, 'log');
-
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheController = new PrecacheController();
       const cacheList = [
         '/index.1234.html',
@@ -249,7 +228,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheController.addToCacheList(cacheList);
 
       // Reset as addToCacheList will log.
-      logStub.reset();
+      logger.log.reset();
 
       const updateInfo = await precacheController.install();
       expect(updateInfo.updatedEntries.length).to.equal(cacheList.length);
@@ -266,19 +245,15 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         expect(cachedResponse).to.exist;
       }));
 
-      // Make sure we print some debug info.
-      expect(logStub.callCount).to.be.gt(0);
+      if (process.env.NODE_ENV != 'production') {
+        // Make sure we print some debug info.
+        expect(logger.log.callCount).to.be.gt(0);
+      }
     });
 
-    it('should not log install details on production', async function() {
-      process.env.NODE_ENV = 'production';
+    it('should not log install details in production', async function() {
+      if (process.env.NODE_ENV != 'production') return this.skip();
 
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      const logStub = sandbox.stub(logger, 'log');
-
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheController = new PrecacheController();
       precacheController.addToCacheList([
         '/index.1234.html',
@@ -288,15 +263,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       await precacheController.install();
 
-      expect(logStub.callCount).to.equal(0);
+      expect(logger.log.callCount).to.equal(0);
     });
 
     it(`should clean redirected precache entries`, async function() {
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      sandbox.stub(logger, 'log');
-
       const fetchStub = sandbox.stub(global, 'fetch');
       fetchStub.callsFake(() => {
         const response = new Response('Redirected Response');
@@ -304,7 +274,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         return response;
       });
 
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheController = new PrecacheController();
       precacheController.addToCacheList([
         '/index.1234.html',
@@ -316,12 +285,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
 
     it(`should use the desired cache name`, async function() {
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      sandbox.stub(logger, 'log');
-
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheController = new PrecacheController(`test-cache-name`);
 
       const cacheList = [
@@ -343,16 +306,11 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
 
     it('should only precache assets that have changed', async function() {
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      const logStub = sandbox.stub(logger, 'log');
       const cache = await caches.open(cacheNames.getPrecacheName());
 
       /*
       First precache some entries
       */
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheControllerOne = new PrecacheController();
       const cacheListOne = [
         '/index.1234.html',
@@ -363,7 +321,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheControllerOne.addToCacheList(cacheListOne);
 
       // Reset as addToCacheList will log.
-      logStub.reset();
+      logger.log.reset();
 
       const updateInfo = await precacheControllerOne.install();
       expect(updateInfo.updatedEntries.length).to.equal(cacheListOne.length);
@@ -378,8 +336,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         expect(cachedResponse).to.exist;
       }));
 
-      // Make sure we print some debug info.
-      expect(logStub.callCount).to.be.gt(0);
+      if (process.env.NODE_ENV != 'production') {
+        // Make sure we print some debug info.
+        expect(logger.log.callCount).to.be.gt(0);
+      }
 
       /*
       THEN precache the same URLs but two with different revisions
@@ -394,7 +354,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheControllerTwo.addToCacheList(cacheListTwo);
 
       // Reset as addToCacheList will log.
-      logStub.reset();
+      logger.log.reset();
 
       const updateInfoTwo = await precacheControllerTwo.install();
       expect(updateInfoTwo.updatedEntries.length).to.equal(2);
@@ -414,8 +374,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         expect(cachedResponse).to.exist;
       }));
 
-      // Make sure we print some debug info.
-      expect(logStub.callCount).to.be.gt(0);
+      if (process.env.NODE_ENV != 'production') {
+        // Make sure we print some debug info.
+        expect(logger.log.callCount).to.be.gt(0);
+      }
     });
   });
 
@@ -424,17 +386,11 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     // https://github.com/pinterest/service-workers/issues/40
     // https://github.com/pinterest/service-workers/issues/38
     it.skip(`should remove out of date entries`, async function() {
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      const logStub = sandbox.stub(logger, 'log');
-
       const cache = await caches.open(cacheNames.getPrecacheName());
 
       /*
       First precache some entries
       */
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheControllerOne = new PrecacheController();
       const cacheListOne = [
         '/index.1234.html',
@@ -446,14 +402,14 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerOne.install();
 
       // Reset as addToCacheList and install will log.
-      logStub.reset();
+      logger.log.reset();
 
       const cleanupDetailsOne = await precacheControllerOne.cleanup();
       expect(cleanupDetailsOne.deletedCacheRequests.length).to.equal(0);
       expect(cleanupDetailsOne.deletedRevisionDetails.length).to.equal(0);
 
       // Make sure we print some debug info.
-      expect(logStub.callCount).to.equal(0);
+      expect(logger.log.callCount).to.equal(0);
 
       /*
       THEN precache the same URLs but two with different revisions
@@ -469,7 +425,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerTwo.install();
 
       // Reset as addToCacheList and install will log.
-      logStub.reset();
+      logger.log.reset();
 
       const cleanupDetailsTwo = await precacheControllerTwo.cleanup();
       expect(cleanupDetailsTwo.deletedCacheRequests.length).to.equal(1);
@@ -492,16 +448,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       }));
 
       // Make sure we print some debug info.
-      expect(logStub.callCount).to.be.gt(0);
+      expect(logger.log.callCount).to.be.gt(0);
     });
 
     it(`shouldn't open / create a cache when performing cleanup`, async function() {
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      sandbox.stub(logger, 'log');
-
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheController = new PrecacheController();
       await precacheController.cleanup();
 
@@ -509,15 +459,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(hasCache).to.equal(false);
     });
 
-    it(`shouldn't log anything on prod`, async function() {
-      process.env.NODE_ENV = 'production';
+    it(`shouldn't log anything in production`, async function() {
+      if (process.env.NODE_ENV != 'production') return this.skip();
 
-      // Prevent logs in the mocha output
-      sandbox.stub(logger, 'warn');
-      sandbox.stub(logger, 'debug');
-      const logStub = sandbox.stub(logger, 'log');
-
-      const PrecacheController = (await import(PRECACHE_MANAGER_PATH)).default;
       const precacheControllerOne = new PrecacheController();
       const cacheListOne = [
         '/index.1234.html',
@@ -540,12 +484,12 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerTwo.install();
 
       // Reset as addToCacheList and install will log.
-      logStub.reset();
+      logger.log.reset();
 
       await precacheControllerTwo.cleanup();
 
       // Make sure we didn't print any debug info.
-      expect(logStub.callCount).to.equal(0);
+      expect(logger.log.callCount).to.equal(0);
     });
   });
 });

@@ -28,7 +28,7 @@
     "lodash.template": "^4.4.0",
     "workbox-sw": "^2.0.1"
   },
-  "main": "builds/index.js",
+  "main": "build/index.js",
   "scripts": {
     "prepublish": "gulp build-packages --package workbox-build"
   },

@@ -44,6 +44,7 @@ const noRevisionForUrlsMatchingTransform =
  * prior to the current transformation.
  * @return {Array<ManifestEntry>} The array of entries with the transformation
  * applied.
+ *
  * @memberof module:workbox-build
  */
 

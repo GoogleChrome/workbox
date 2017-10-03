@@ -1,5 +1,16 @@
 import {_private} from 'workbox-core';
 
+/**
+ * This method will print out a warning if a precache entry doesn't have
+ * a `revision` value.
+ *
+ * This is common if the asset if revisioned in the url like `index.1234.css`.
+ *
+ * @param {Map} entriesMap
+ *
+ * @private
+ * @memberof module:workbox-preaching
+ */
 export default (entriesMap) => {
   const urlOnlyEntries = [];
   entriesMap.forEach(

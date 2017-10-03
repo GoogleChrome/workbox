@@ -1,5 +1,8 @@
 /**
  * Used as a consistent way of referencing a URL to precache.
+ *
+ * @private
+ * @memberof module:workbox-precaching
  */
 export default class PrecacheEntry {
 /**
@@ -23,8 +26,11 @@ export default class PrecacheEntry {
   /**
    * This method will either use Request.cache option OR append a cache
    * busting parameter to the URL.
+   *
    * @param {Request} request The request to cache bust
    * @return {Request} A cachebusted Request
+   * 
+   * @private
    */
   _cacheBustRequest(request) {
     let url = request.url;

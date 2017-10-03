@@ -6,6 +6,9 @@
  * @param {Request} request
  * @param {Response} response
  * @param {Array<Object>} [plugins]
+ *
+ * @private
+ * @memberof module:workbox-core
  */
 const putWrapper = async (cacheName, request, response, plugins = []) => {
   let responseToCache = await _isResponseSafeToCache(
@@ -45,6 +48,9 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
  * @param {Object} matchOptions Options passed to cache.match().
  * @param {Array<Object>} [plugins] Array of plugins.
  * @return {Response} A cached response if available.
+ *
+ * @private
+ * @memberof module:workbox-core
  */
 const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
   const cache = await caches.open(cacheName);
@@ -74,6 +80,9 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
  * @param {Response} response
  * @param {Array<Object>} plugins
  * @return {Promise<Response>}
+ *
+ * @private
+ * @memberof module:workbox-core
  */
 const _isResponseSafeToCache = async (request, response, plugins) => {
   let responseToCache = response;

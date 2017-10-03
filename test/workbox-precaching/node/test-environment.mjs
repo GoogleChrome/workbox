@@ -1,7 +1,6 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 import clearRequire from 'clear-require';
-
 import expectError from '../../../infra/utils/expectError';
 
 describe(`[workbox-precaching] WorkboxPrecaching`, function() {
@@ -20,8 +19,8 @@ describe(`[workbox-precaching] WorkboxPrecaching`, function() {
   });
 
   describe(`Used in a window`, function() {
-    it(`should throw in dev builds when loaded outside of a service worker`, async function() {
-      process.env.NODE_ENV = 'dev';
+    it(`should throw when loaded outside of a service worker in dev`, async function() {
+      if (process.env.NODE_ENV == 'production') return this.skip();
 
       return expectError(async () => {
         await import('../../../packages/workbox-precaching/index.mjs');
@@ -30,8 +29,8 @@ describe(`[workbox-precaching] WorkboxPrecaching`, function() {
       });
     });
 
-    it(`should not throw in dev builds when in SW`, async function() {
-      process.env.NODE_ENV = 'dev';
+    it(`should not throw when in SW in dev`, async function() {
+      if (process.env.NODE_ENV == 'production') return this.skip();
 
       const coreModule = await import('../../../packages/workbox-core/index.mjs');
       sandbox.stub(coreModule.default.assert, 'isSwEnv').callsFake(() => true);
@@ -39,8 +38,8 @@ describe(`[workbox-precaching] WorkboxPrecaching`, function() {
       await import('../../../packages/workbox-precaching/index.mjs');
     });
 
-    it(`should not throw in production builds`, async function() {
-      process.env.NODE_ENV = 'production';
+    it(`should not throw in production`, async function() {
+      if (process.env.NODE_ENV != 'production') return this.skip();
 
       await import('../../../packages/workbox-precaching/index.mjs');
     });

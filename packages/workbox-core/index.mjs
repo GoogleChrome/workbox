@@ -4,10 +4,16 @@ import LOG_LEVELS from './models/LogLevels.mjs';
 import * as _private from './_private.mjs';
 
 /**
- * WorkboxCore shares code across Workbox modules.
+ * This class is never expose publicly. Inidividual methods are exposed
+ * using jsdoc alias commands.
+ *
+ * @private
+ * @memberof module:workbox-core
  */
 class WorkboxCore {
   /**
+   * You should not instantiate this object directly.
+   *
    * @private
    */
   constructor() {
@@ -22,10 +28,13 @@ class WorkboxCore {
   }
 
   /**
-   * This method returns the cache names used by Workbox. `cacheNames.precache`
-   * is used for the precached assets and `cacheNames.runtime` for everything
-   * else.
-   * @return {Object} An object with `precache` and `runtime` properies.
+   * Getter for the cache names used by Workbox.
+   *
+   * `cacheNames.precache` is used for precached assets and
+   * `cacheNames.runtime` for everything else.
+   *
+   * @alias module:workbox-core.cacheNames
+   * @return {Object} An object with `precache` and `runtime` cache names.
    */
   get cacheNames() {
     return {
@@ -38,10 +47,12 @@ class WorkboxCore {
    * You can alter the default cache names by changing
    * the cache name details.
    *
-   * Pass in an object containing any of the following properties,
+   * Pass in an object containing any or all of the following properties,
    * `prefix`, `suffix`, `precache` and `runtime`.
    *
    * Cache names are generated as `<prefix>-<precache or runtime>-<suffix>`.
+   *
+   * @alias module:workbox-core.setCacheNameDetails
    * @param {Object} details
    */
   setCacheNameDetails(details) {
@@ -76,9 +87,23 @@ class WorkboxCore {
   }
 
   /**
-   * A setter for the logLevel allowing the developer to define
-   * which messages should be printed to the console.
+   * Change which messages are printed to the console by setting the this to
+   * a value from [LOG_LEVELS]{@link module:workbox-core.LOG_LEVELS}.
+   *
+   * @alias module:workbox-core.logLevel
+   * @return {number}.
+   */
+  get logLevel() {
+    return this._logLevel;
+  }
+
+  /**
+   * Getters and Setters aren't well supported by JSDOCs.
+   * The getter is documented for both get/set methods.
+   *
    * @param {number} newLevel the new logLevel to use.
+   * 
+   * @private
    */
   set logLevel(newLevel) {
     // TODO: Switch to Assertion class
@@ -102,17 +127,31 @@ class WorkboxCore {
 
     this._logLevel = newLevel;
   }
-
-  /**
-   * @return {number} The current log level.
-   */
-  get logLevel() {
-    return this._logLevel;
-  }
 }
 
-export {
-  _private,
-  LOG_LEVELS,
-};
+/**
+ * To use any of the Workbox service worker libraries you will need
+ * to include `workbox-core` as it sets the default values for all modules
+ * (like cache names) while also providing shared code across the modules.
+ *
+ * @module workbox-core
+ */
+
+/**
+ * Utilities that are shared with other Workbox modules.
+ *
+ * @private
+ * @alias module:workbox-core._private
+ */
+export {_private};
+
+/**
+ * Get an object containing the supported set of log levels.
+ *
+ * @returns {Object}
+ * 
+  * @alias module:workbox-core.LOG_LEVELS
+ */
+export {LOG_LEVELS};
+
 export default new WorkboxCore();

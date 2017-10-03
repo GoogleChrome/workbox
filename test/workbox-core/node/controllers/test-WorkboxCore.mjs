@@ -1,60 +1,40 @@
 import {expect} from 'chai';
-import clearRequire from 'clear-require';
-import makeServiceWorkerEnv from 'service-worker-mock';
-
 import expectError from '../../../../infra/utils/expectError';
 import generateVariantTests from '../../../../infra/utils/generate-variant-tests';
+import core from '../../../../packages/workbox-core/index.mjs';
+import * as coreModule from '../../../../packages/workbox-core/index.mjs';
 
 describe(`workbox-core WorkboxCore`, function() {
-  before(function() {
-    const swEnv = makeServiceWorkerEnv();
-    Object.assign(global, swEnv);
-  });
-
-  beforeEach(function() {
-    clearRequire.all();
-    process.env.NODE_ENV = 'dev';
-  });
-
   describe(`core.assert.*`, function() {
-    it(`should expose assert in dev build`, async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    it(`should expose assert in dev`, async function() {
+      if (process.env.NODE_ENV == 'production') return this.skip();
 
       expect(core.assert).to.exist;
     });
 
     it(`should NOT expose assert in prod build`, async function() {
-      process.env.NODE_ENV = 'production';
-
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+      if (process.env.NODE_ENV != 'production') return this.skip();
 
       expect(core.assert).to.not.exist;
     });
   });
 
   describe(`core.logLevel (getter)`, function() {
-    it(`should initialise to 'verbose' log level for dev build`, async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    it(`should initialise to 'verbose' log level in dev`, function() {
+      if (process.env.NODE_ENV == 'production') return this.skip();
+
       expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.verbose);
     });
 
-    it(`should initialise to 'warn' log level for production build`, async function() {
-      process.env.NODE_ENV = 'production';
+    it(`should initialise to 'warn' log level in prod`, function() {
+      if (process.env.NODE_ENV != 'production') return this.skip();
 
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
       expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.warn);
     });
   });
 
   describe(`core.logLevel (set)`, function() {
-    it(`should allow valid log levels`, async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
-
+    it(`should allow valid log levels`, function() {
       expect(() => {
         const logLevelNames = Object.keys(coreModule.LOG_LEVELS);
         logLevelNames.forEach((logLevelName) => {
@@ -63,19 +43,13 @@ describe(`workbox-core WorkboxCore`, function() {
       }).to.not.throw();
     });
 
-    it(`should not allow log level less than verbose`, async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
-
+    it(`should not allow log level less than verbose`, function() {
       return expectError(() => {
         core.logLevel = coreModule.LOG_LEVELS.verbose - 1;
       }, 'invalid-value');
     });
 
-    it(`should not allow log level greater than silent`, async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
-
+    it(`should not allow log level greater than silent`, function() {
       return expectError(() => {
         core.logLevel = coreModule.LOG_LEVELS.silent + 1;
       }, 'invalid-value');
@@ -87,10 +61,7 @@ describe(`workbox-core WorkboxCore`, function() {
       '',
       [],
       {},
-    ], async (variant) => {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
-
+    ], (variant) => {
       return expectError(() => {
         core.logLevel = variant;
       }, 'invalid-type');
@@ -98,28 +69,32 @@ describe(`workbox-core WorkboxCore`, function() {
   });
 
   describe('core.cacheNames', function() {
-    it('should return expected defaults', async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    afterEach(function() {
+      // TODO(gauntface): there should be a way to get access to the current
+      // (or default) prefix and suffix values so they can be restored here.
+      core.setCacheNameDetails({
+        prefix: 'workbox',
+        suffix: self.registration.scope,
+        precache: 'precache',
+        runtime: 'runtime',
+      });
+    });
 
+    it('should return expected defaults', function() {
       // Scope be default is '/' from 'service-worker-mock'
       expect(core.cacheNames.precache).to.equal(`workbox-precache-/`);
       expect(core.cacheNames.runtime).to.equal(`workbox-runtime-/`);
     });
 
-    it('should allow customising the prefix', async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    it('should allow customising the prefix', function() {
       core.setCacheNameDetails({prefix: 'test-prefix'});
 
-      // Scope be default is '/' from 'service-worker-mock'
+      // Scope by default is '/' from 'service-worker-mock'
       expect(core.cacheNames.precache).to.equal(`test-prefix-precache-/`);
       expect(core.cacheNames.runtime).to.equal(`test-prefix-runtime-/`);
     });
 
-    it('should allow customising the suffic', async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    it('should allow customising the suffic', function() {
       core.setCacheNameDetails({suffix: 'test-suffix'});
 
       // Scope be default is '/' from 'service-worker-mock'
@@ -127,9 +102,8 @@ describe(`workbox-core WorkboxCore`, function() {
       expect(core.cacheNames.runtime).to.equal(`workbox-runtime-test-suffix`);
     });
 
-    it('should allow customising the precache name', async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+
+    it('should allow customising the precache name', function() {
       core.setCacheNameDetails({precache: 'test-precache'});
 
       // Scope be default is '/' from 'service-worker-mock'
@@ -137,9 +111,7 @@ describe(`workbox-core WorkboxCore`, function() {
       expect(core.cacheNames.runtime).to.equal(`workbox-runtime-/`);
     });
 
-    it('should allow customising the precache name', async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    it('should allow customising the precache name', function() {
       core.setCacheNameDetails({runtime: 'test-runtime'});
 
       // Scope be default is '/' from 'service-worker-mock'
@@ -147,9 +119,7 @@ describe(`workbox-core WorkboxCore`, function() {
       expect(core.cacheNames.runtime).to.equal(`workbox-test-runtime-/`);
     });
 
-    it('should allow customising all', async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    it('should allow customising all', function() {
       core.setCacheNameDetails({
         prefix: 'test-prefix',
         suffix: 'test-suffix',
@@ -162,9 +132,7 @@ describe(`workbox-core WorkboxCore`, function() {
       expect(core.cacheNames.runtime).to.equal(`test-prefix-test-runtime-test-suffix`);
     });
 
-    it('should allow setting prefix and suffix to empty string', async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    it('should allow setting prefix and suffix to empty string', function() {
       core.setCacheNameDetails({
         prefix: '',
         suffix: '',
@@ -177,9 +145,9 @@ describe(`workbox-core WorkboxCore`, function() {
       expect(core.cacheNames.runtime).to.equal(`test-runtime`);
     });
 
-    it('should not allow precache to be an empty string', async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    it('should not allow precache to be an empty string in dev', function() {
+      if (process.env.NODE_ENV == 'production') return this.skip();
+
       return expectError(() => {
         core.setCacheNameDetails({
           precache: '',
@@ -187,9 +155,10 @@ describe(`workbox-core WorkboxCore`, function() {
       }, 'invalid-cache-name');
     });
 
-    it('should not allow runtime to be an empty string', async function() {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+
+    it('should not allow runtime to be an empty string in dev', function() {
+      if (process.env.NODE_ENV == 'production') return this.skip();
+
       return expectError(() => {
         core.setCacheNameDetails({
           runtime: '',
@@ -205,20 +174,18 @@ describe(`workbox-core WorkboxCore`, function() {
       true,
       false,
     ];
-    generateVariantTests(`should handle bad prefix values`, badValues, async (variant) => {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    generateVariantTests(`should handle bad prefix values in dev`, badValues, function(variant) {
+      if (process.env.NODE_ENV == 'production') return this.skip();
 
       return expectError(() => {
         core.setCacheNameDetails({
-        prefix: variant,
-      });
+          prefix: variant,
+        });
       }, 'invalid-type');
     });
 
-    generateVariantTests(`should handle bad suffix values`, badValues, async (variant) => {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    generateVariantTests(`should handle bad suffix values in dev`, badValues, function(variant) {
+      if (process.env.NODE_ENV == 'production') return this.skip();
 
       return expectError(() => {
         core.setCacheNameDetails({
@@ -227,9 +194,8 @@ describe(`workbox-core WorkboxCore`, function() {
       }, 'invalid-type');
     });
 
-    generateVariantTests(`should handle bad precache values`, badValues, async (variant) => {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    generateVariantTests(`should handle bad precache values in dev`, badValues, function(variant) {
+      if (process.env.NODE_ENV == 'production') return this.skip();
 
       return expectError(() => {
         core.setCacheNameDetails({
@@ -238,9 +204,8 @@ describe(`workbox-core WorkboxCore`, function() {
       }, 'invalid-type');
     });
 
-    generateVariantTests(`should handle bad runtime values`, badValues, async (variant) => {
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    generateVariantTests(`should handle bad runtime values in dev`, badValues, function(variant) {
+      if (process.env.NODE_ENV == 'production') return this.skip();
 
       return expectError(() => {
         core.setCacheNameDetails({
@@ -249,11 +214,8 @@ describe(`workbox-core WorkboxCore`, function() {
       }, 'invalid-type');
     });
 
-    generateVariantTests(`should not throw on production builds`, badValues, async (variant) => {
-      process.env.NODE_ENV = 'production';
-
-      const coreModule = await import('../../../../packages/workbox-core/index.mjs');
-      const core = coreModule.default;
+    generateVariantTests(`should not throw in prod`, badValues, function(variant) {
+      if (process.env.NODE_ENV != 'production') return this.skip();
 
       core.setCacheNameDetails({
         prefix: variant,

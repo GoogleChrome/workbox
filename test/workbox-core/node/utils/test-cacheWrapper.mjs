@@ -1,6 +1,5 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
-import makeServiceWorkerEnv from 'service-worker-mock';
 
 // import expectError from '../../../../infra/utils/expectError';
 import cacheWrapper from '../../../../packages/workbox-core/utils/cacheWrapper.mjs';
@@ -10,9 +9,6 @@ describe(`workbox-core cacheWrapper`, function() {
 
   before(function() {
     sandbox = sinon.sandbox.create();
-
-    const swEnv = makeServiceWorkerEnv();
-    Object.assign(global, swEnv);
   });
 
   afterEach(function() {

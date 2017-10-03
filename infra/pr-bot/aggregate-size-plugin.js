@@ -6,6 +6,8 @@ const PluginInterface = require('pr-bot').PluginInterface;
 const gzipSize = require('gzip-size');
 const bytes = require('bytes');
 
+const constants = require('../../gulp-tasks/utils/constants');
+
 // 10 KB max size
 const MAX_SIZE = 10 * 1000;
 
@@ -26,7 +28,7 @@ class AggregateSizePlugin extends PluginInterface {
     ];
     const globPattern = path.posix.join(
       afterPath, 'packages', `{${packagesToAggregate.join(',')}}`,
-      'builds', 'browser', '*.prod.js',
+      constants.PACKAGE_BUILD_DIRNAME, 'browser', '*.prod.js',
     );
     const files = glob.sync(globPattern);
     let totalSize = 0;

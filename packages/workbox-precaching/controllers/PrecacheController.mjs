@@ -10,11 +10,14 @@ import cleanRedirect from '../utils/cleanRedirect.mjs';
 
 /**
  * Performs efficient precaching of assets.
+ *
+ * @memberof module:workbox-precaching
  */
-export default class PrecacheController {
+class PrecacheController {
   /**
-   * Create a new PrecacheController Instance
-   * @param {string} cacheName;
+   * Create a new PrecacheController.
+   *
+   * @param {string} cacheName
    */
   constructor(cacheName) {
     this._cacheName = _private.cacheNames.getPrecacheName(cacheName);
@@ -28,6 +31,7 @@ export default class PrecacheController {
   /**
    * This method will add items to the precache list, removing duplicates
    * and ensuring the information is valid.
+   *
    * @param {Array<Object|String>} userEntries Array of entries to
    * precache.
    */
@@ -50,6 +54,8 @@ export default class PrecacheController {
 
   /**
    * This method returns a precache entry.
+   *
+   * @private
    * @param {string|Object} input
    * @return {PrecacheEntry}
    */
@@ -91,6 +97,8 @@ export default class PrecacheController {
 
   /**
    * Adds an entry to the precache list, accounting for possible duplicates.
+   *
+   * @private
    * @param {PrecacheEntry} entryToAdd
    */
   _addEntryToCacheList(entryToAdd) {
@@ -114,6 +122,7 @@ export default class PrecacheController {
   /**
    * Call this method from a service work install event to start
    * precaching assets.
+   *
    * @return {Promise<Object>}
    */
   async install() {
@@ -218,6 +227,8 @@ export default class PrecacheController {
   /**
    * Goes through all the cache entries and removes any that are
    * outdated.
+   *
+   * @private
    * @param {Array<string>} expectedCacheUrls Array of URLs that are
    * expected to be cached.
    * @return {Promise<Array<string>>} Resolves to an array of URLs
@@ -243,6 +254,9 @@ export default class PrecacheController {
   }
 
   /**
+   * Goes through all entries in indexedDB and removes any that are outdated.
+   *
+   * @private
    * @param {Array<string>} expectedCacheUrls Array of URLs that are
    * expected to be cached.
    * @return {Promise<Array<string>>} Resolves to an array of URLs removed
@@ -271,3 +285,5 @@ export default class PrecacheController {
     });
   }
 }
+
+export default PrecacheController;
