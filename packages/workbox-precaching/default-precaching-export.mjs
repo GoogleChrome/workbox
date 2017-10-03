@@ -11,8 +11,7 @@ const addListeners = () => {
 
 /**
  * This method will add items to the precache list, removing duplicates
- * and ensuring the information is valid and add a Route to `workbox-routing`
- * to ensure precached assets are served using a CacheFirst strategy.
+ * and ensuring the information is valid.
  *
  * @param {Array<Object|string>} entries Array of entries to precache.
  *
@@ -25,8 +24,6 @@ const precache = (entries) => {
     addListeners();
   }
 };
-
-// TODO: Add a way to route these assets
 
 export default {
   precache,
