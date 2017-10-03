@@ -1,6 +1,8 @@
 const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
 const glob = require('glob');
+const fse = require('fs-extra');
+const path = require('path');
 
 const spawn = require('./utils/spawn-promise-wrapper');
 const getNpmCmd = require('./utils/get-npm-cmd');
@@ -49,9 +51,19 @@ gulp.task('test:node:dev', gulp.series(
   () => runNodeTestsWithEnv('dev'),
 ));
 
+gulp.task('test:node:clean', () => {
+  return fse.remove(path.join(__dirname, '..', '.nyc_output'));
+});
+
+gulp.task('test:node:coverage', () => {
+  return spawn(getNpmCmd(), ['run', 'coverage-report']);
+});
+
 gulp.task('test:node', gulp.series(
+  'test:node:clean',
   'test:node:dev',
   'test:node:prod',
+  'test:node:coverage',
 ));
 
 gulp.task('test', gulp.series(
