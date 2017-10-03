@@ -72,5 +72,12 @@ module.exports = {
       'no-unused-vars': 0,
       'no-undef': 0,
     },
+  }, {
+    files: [
+      'packages/workbox-build/src/templates/**/*.js',
+    ],
+    rules: {
+      'max-len': 0,
+    },
   }],
 };

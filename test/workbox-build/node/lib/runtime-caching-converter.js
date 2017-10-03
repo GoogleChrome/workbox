@@ -75,7 +75,7 @@ function validate(runtimeCachingOptions, convertedOptions) {
   });
 }
 
-describe(`src/lib/utils/runtime-caching-converter.js`, function() {
+describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function() {
   it(`should throw when urlPattern isn't set`, function() {
     const runtimeCachingOptions = [{
       handler: 'cacheFirst',

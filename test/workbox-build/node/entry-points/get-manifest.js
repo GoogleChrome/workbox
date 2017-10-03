@@ -3,7 +3,7 @@ const path = require('path');
 
 const getManifest = require('../../../../packages/workbox-build/src/entry-points/get-manifest');
 
-describe(`entry-points/get-manifest.js (End to End)`, function() {
+describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function() {
   const SRC_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: SRC_DIR,
@@ -33,10 +33,9 @@ describe(`entry-points/get-manifest.js (End to End)`, function() {
     'skipWaiting',
     'swSrc',
     'swDest',
-    'swTemplate',
   ];
 
-  describe('required parameters', function() {
+  describe('[workbox-build] required parameters', function() {
     for (const requiredParam of REQUIRED_PARAMS) {
       it(`should reject with a ValidationError when '${requiredParam}' is missing`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
@@ -53,7 +52,7 @@ describe(`entry-points/get-manifest.js (End to End)`, function() {
     }
   });
 
-  describe('unsupported parameters', function() {
+  describe('[workbox-build] unsupported parameters', function() {
     for (const unsupportedParam of UNSUPPORTED_PARAMS) {
       it(`should reject with a ValidationError when '${unsupportedParam}' is present`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
@@ -70,7 +69,7 @@ describe(`entry-points/get-manifest.js (End to End)`, function() {
     }
   });
 
-  describe('invalid parameter values', function() {
+  describe('[workbox-build] invalid parameter values', function() {
     for (const param of SUPPORTED_PARAMS) {
       it(`should reject with a ValidationError when '${param}' is null`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
@@ -87,7 +86,7 @@ describe(`entry-points/get-manifest.js (End to End)`, function() {
     }
   });
 
-  describe('should generate a valid manifest when properly configured', function() {
+  describe('[workbox-build] should generate a valid manifest when properly configured', function() {
     it(`should use defaults when all the required parameters are present`, async function() {
       const options = Object.assign({}, BASE_OPTIONS);
 
@@ -235,9 +234,11 @@ describe(`entry-points/get-manifest.js (End to End)`, function() {
     });
 
     it(`should use defaults when all the required parameters, and 'manifestTransforms' are present`, async function() {
+      // This filters out all entries unless the url property includes the string '1'.
       const transform1 = (entries) => entries.filter((entry) => {
         return entry.url.includes('1');
       });
+      // This modifies all entries to prefix the url property with the string '/prefix/'.
       const transform2 = (entries) => entries.filter((entry) => {
         entry.url = `/prefix/${entry.url}`;
         return entry;

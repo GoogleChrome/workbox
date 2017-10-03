@@ -1,4 +1,5 @@
 const template = require('lodash.template');
+const swTemplate = require('../templates/sw-template');
 
 const errors = require('./errors');
 const runtimeCachingConverter = require('./runtime-caching-converter');
@@ -15,7 +16,6 @@ module.exports = ({
   navigateFallbackWhitelist,
   runtimeCaching,
   skipWaiting,
-  swTemplate,
 }) => {
   // These are all options that can be passed in to the WorkboxSW constructor.
   const workboxOptions = {

@@ -1,23 +1,17 @@
 const expect = require('chai').expect;
-const fse = require('fs-extra');
 const path = require('path');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
-const generateSWNoFS = require('../../../../packages/workbox-build/src/entry-points/generate-sw-no-fs');
+const generateSWString = require('../../../../packages/workbox-build/src/entry-points/generate-sw-string');
 const validateServiceWorkerRuntime = require('../../../../infra/utils/validator/service-worker-runtime');
 
-describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
-  const pathToSWTemplate = path.join(__dirname, '..', '..', '..', '..', 'packages', 'workbox-build', 'src', 'templates', 'sw.js.tmpl');
+describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, function() {
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
-  const SW_TEMPLATE = fse.readFileSync(pathToSWTemplate, 'utf8');
   const DEFAULT_IMPORT_SCRIPTS = ['workbox.js'];
   const BASE_OPTIONS = {
     importScripts: DEFAULT_IMPORT_SCRIPTS,
-    swTemplate: SW_TEMPLATE,
   };
   const REQUIRED_PARAMS = [
     'importScripts',
-    'swTemplate',
   ];
   const SUPPORTED_PARAMS = [
     'cacheId',
@@ -46,14 +40,14 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
     'swSrc',
   ];
 
-  describe('required parameters', function() {
+  describe('[workbox-build] required parameters', function() {
     for (const requiredParam of REQUIRED_PARAMS) {
       it(`should reject with a ValidationError when '${requiredParam}' is missing`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
         delete options[requiredParam];
 
         try {
-          await generateSWNoFS(options);
+          await generateSWString(options);
           throw new Error('Unexpected success.');
         } catch (error) {
           expect(error.name).to.eql('ValidationError');
@@ -63,14 +57,14 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
     }
   });
 
-  describe('unsupported parameters', function() {
+  describe('[workbox-build] unsupported parameters', function() {
     for (const unsupportedParam of UNSUPPORTED_PARAMS) {
       it(`should reject with a ValidationError when '${unsupportedParam}' is present`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
         options[unsupportedParam] = unsupportedParam;
 
         try {
-          await generateSWNoFS(options);
+          await generateSWString(options);
           throw new Error('Unexpected success.');
         } catch (error) {
           expect(error.name).to.eql('ValidationError');
@@ -80,14 +74,14 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
     }
   });
 
-  describe('invalid parameter values', function() {
+  describe('[workbox-build] invalid parameter values', function() {
     for (const param of SUPPORTED_PARAMS) {
       it(`should reject with a ValidationError when '${param}' is null`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
         options[param] = null;
 
         try {
-          await generateSWNoFS(options);
+          await generateSWString(options);
           throw new Error('Unexpected success.');
         } catch (error) {
           expect(error.name).to.eql('ValidationError');
@@ -97,26 +91,11 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
     }
   });
 
-  describe(`should handle various runtime errors`, function() {
-    it(`should throw the expected error when 'swTemplate' contains unknown variables`, async function() {
-      const options = Object.assign({}, BASE_OPTIONS, {
-        swTemplate: 'INVALID <%= variable %>',
-      });
-
-      try {
-        await generateSWNoFS(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.have.string(errors['populating-sw-tmpl-failed']);
-      }
-    });
-  });
-
-  describe(`should return a string with the expected service worker code when properly configured`, function() {
+  describe(`[workbox-build] behavior without 'runtimeCaching'`, function() {
     it(`should use defaults when all the required parameters are present`, async function() {
       const options = Object.assign({}, BASE_OPTIONS);
 
-      const swCode = await generateSWNoFS(options);
+      const swCode = await generateSWString(options);
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         constructor: [[{}]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
@@ -130,7 +109,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
         importScripts,
       });
 
-      let swCode = await generateSWNoFS(options);
+      let swCode = await generateSWString(options);
 
       // Rather than emulate importScripts() logic in the validator, we're just
       // going to inject some additional code at the start of the generated
@@ -154,7 +133,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
         globDirectory: GLOB_DIR,
       });
 
-      let swCode = await generateSWNoFS(options);
+      let swCode = await generateSWString(options);
 
       // Rather than emulate importScripts() logic in the validator, we're just
       // going to inject some additional code at the start of the generated
@@ -200,7 +179,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       };
       const options = Object.assign({}, BASE_OPTIONS, workboxSWOptions);
 
-      const swCode = await generateSWNoFS(options);
+      const swCode = await generateSWString(options);
 
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         constructor: [[workboxSWOptions]],
@@ -215,7 +194,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
         navigateFallback,
       });
 
-      const swCode = await generateSWNoFS(options);
+      const swCode = await generateSWString(options);
 
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         constructor: [[{}]],
@@ -233,7 +212,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
         navigateFallbackWhitelist,
       });
 
-      const swCode = await generateSWNoFS(options);
+      const swCode = await generateSWString(options);
 
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         constructor: [[{}]],
@@ -246,7 +225,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
     });
   });
 
-  describe(`should behave as expected for various configurations of 'runtimeCaching'`, function() {
+  describe(`[workbox-build] behavior with 'runtimeCaching'`, function() {
     const DEFAULT_METHOD = 'GET';
     const STRING_URL_PATTERN = 'test';
     const REGEXP_URL_PATTERN = /test/;
@@ -259,7 +238,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       });
 
       try {
-        await generateSWNoFS(options);
+        await generateSWString(options);
         throw new Error('Unexpected success.');
       } catch (error) {
         expect(error.name).to.eql('ValidationError');
@@ -274,7 +253,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       });
 
       try {
-        await generateSWNoFS(options);
+        await generateSWString(options);
         throw new Error('Unexpected success.');
       } catch (error) {
         expect(error.name).to.eql('ValidationError');
@@ -292,7 +271,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       });
 
       try {
-        await generateSWNoFS(options);
+        await generateSWString(options);
         throw new Error('Unexpected success.');
       } catch (error) {
         expect(error.name).to.eql('ValidationError');
@@ -307,7 +286,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const swCode = await generateSWNoFS(options);
+      const swCode = await generateSWString(options);
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         [STRING_HANDLER]: [[{}]],
         constructor: [[{}]],
@@ -324,7 +303,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const swCode = await generateSWNoFS(options);
+      const swCode = await generateSWString(options);
 
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         [STRING_HANDLER]: [[{}]],
@@ -345,7 +324,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const swCode = await generateSWNoFS(options);
+      const swCode = await generateSWString(options);
 
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         [STRING_HANDLER]: [[{}], [{}]],
@@ -368,7 +347,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
       try {
-        await generateSWNoFS(options);
+        await generateSWString(options);
         throw new Error('Unexpected success.');
       } catch (error) {
         expect(error.name).to.eql('ValidationError');
@@ -398,7 +377,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const swCode = await generateSWNoFS(options);
+      const swCode = await generateSWString(options);
 
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         [STRING_HANDLER]: [[runtimeCachingOptions]],
@@ -437,7 +416,7 @@ describe(`entry-points/generate-sw-no-fs.js (End to End)`, function() {
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const swCode = await generateSWNoFS(options);
+      const swCode = await generateSWString(options);
 
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         [STRING_HANDLER]: [[firstRuntimeCachingOptions], [secondRuntimeCachingOptions]],

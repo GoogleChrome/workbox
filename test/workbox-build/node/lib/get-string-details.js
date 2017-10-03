@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 
 const getStringDetails = require('../../../../packages/workbox-build/src/lib/get-string-details');
 
-describe(`lib/get-string-details.js`, function() {
+describe(`[workbox-build] lib/get-string-details.js`, function() {
   it(`should return the expected details`, function() {
     const inputToExpectedDetails = new Map([
       [['/url-one', 'first-one'], {

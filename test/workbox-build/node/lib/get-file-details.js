@@ -4,7 +4,7 @@ const proxyquire = require('proxyquire');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 
-describe(`lib/get-file-details.js`, function() {
+describe(`[workbox-build] lib/get-file-details.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/get-file-details';
   const GLOB_DIRECTORY = './';
   const GLOB_PATTERN = 'file*';

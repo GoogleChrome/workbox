@@ -3,7 +3,7 @@ const expect = require('chai').expect;
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 const modifyUrlPrefix = require('../../../../packages/workbox-build/src/lib/modify-url-prefix-transform');
 
-describe(`lib/modify-url-prefix-transform.js`, function() {
+describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
   function getManifest() {
     return [{
       url: '/first-match/12345/hello',

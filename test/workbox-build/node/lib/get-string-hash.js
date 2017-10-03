@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 
 const getStringHash = require('../../../../packages/workbox-build/src/lib/get-string-hash');
 
-describe(`lib/get-string-hash.js`, function() {
+describe(`[workbox-build] lib/get-string-hash.js`, function() {
   it(`should return the expected hashes`, function() {
     const stringsToHashes = new Map([
       ['abc', '900150983cd24fb0d6963f7d28e17f72'],

@@ -33,6 +33,8 @@ async function generateSW(input) {
   const options = new GenerateSWOptions(input);
 
   const destDirectory = path.dirname(options.swDest);
+  // This will cause the dev build of WorkboxSW (either from the CDN or locally
+  // copying it) to be used if NODE_ENV starts with 'dev'.
   const buildType = (process.env.NODE_ENV &&
     process.env.NODE_ENV.startsWith('dev')) ? 'dev' : 'prod';
 

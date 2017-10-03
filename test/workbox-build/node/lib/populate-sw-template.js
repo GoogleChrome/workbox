@@ -4,7 +4,7 @@ const sinon = require('sinon');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 
-describe(`lib/populate-sw-template.js`, function() {
+describe(`[workbox-build] lib/populate-sw-template.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/populate-sw-template';
 
   it(`should throw an error if templating fails`, function() {
@@ -32,11 +32,10 @@ describe(`lib/populate-sw-template.js`, function() {
     const populateSWTemplate = proxyquire(MODULE_PATH, {
       'lodash.template': outerStub,
       './runtime-caching-converter': () => runtimeCachingPlaceholder,
+      '../templates/sw-template': swTemplate,
     });
 
-    populateSWTemplate({
-      swTemplate,
-    });
+    populateSWTemplate({});
 
     expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
     expect(innerStub.alwaysCalledWith({
@@ -65,11 +64,16 @@ describe(`lib/populate-sw-template.js`, function() {
     const swTemplate = 'template';
     const workboxOptionsString = '{\n  "cacheId": "test-cache-id",\n  "skipWaiting": true,\n  "handleFetch": true,\n  "clientsClaim": true,\n  "directoryIndex": "index.html",\n  "ignoreUrlParametersMatching": [/a/, /b/]\n}';
 
-    const innerStub = sinon.stub().returns('');
-    const outerStub = sinon.stub().returns(innerStub);
+    // There are two stages in templating: creating the active template function
+    // from an initial string, and passing variables to that template function
+    // to get back a final, populated template string.
+    // We need to stub out both of those steps to test the full flow.
+    const templatePopulationStub = sinon.stub().returns('');
+    const templateCreationStub = sinon.stub().returns(templatePopulationStub);
     const populateSWTemplate = proxyquire(MODULE_PATH, {
-      'lodash.template': outerStub,
+      'lodash.template': templateCreationStub,
       './runtime-caching-converter': () => runtimeCachingPlaceholder,
+      '../templates/sw-template': swTemplate,
     });
 
     populateSWTemplate({
@@ -84,11 +88,10 @@ describe(`lib/populate-sw-template.js`, function() {
       navigateFallbackWhitelist,
       runtimeCaching,
       skipWaiting,
-      swTemplate,
     });
 
-    expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
-    expect(innerStub.alwaysCalledWith({
+    expect(templateCreationStub.alwaysCalledWith(swTemplate)).to.be.true;
+    expect(templatePopulationStub.alwaysCalledWith({
       importScripts,
       manifestEntries,
       navigateFallback,

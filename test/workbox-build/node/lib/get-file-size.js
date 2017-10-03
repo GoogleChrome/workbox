@@ -3,7 +3,7 @@ const proxyquire = require('proxyquire');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors.js');
 
-describe(`lib/get-file-size.js`, function() {
+describe(`[workbox-build] lib/get-file-size.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/get-file-size';
   const FILE = 'file.txt';
 

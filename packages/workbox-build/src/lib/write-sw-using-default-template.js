@@ -25,15 +25,6 @@ module.exports = async ({
       `'${error.message}'`);
   }
 
-  const templatePath = path.join(__dirname, '..', 'templates', 'sw.js.tmpl');
-  let swTemplate;
-  try {
-    swTemplate = await fse.readFile(templatePath, 'utf8');
-  } catch (error) {
-    throw new Error(`${errors['read-sw-template-failure']}. ` +
-      `'${error.message}'`);
-  }
-
   const populatedTemplate = populateSWTemplate({
     cacheId,
     clientsClaim,
@@ -46,7 +37,6 @@ module.exports = async ({
     navigateFallbackWhitelist,
     runtimeCaching,
     skipWaiting,
-    swTemplate,
   });
 
   try {

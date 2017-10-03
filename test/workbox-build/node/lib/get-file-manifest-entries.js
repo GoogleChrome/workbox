@@ -3,7 +3,7 @@ const proxyquire = require('proxyquire');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 
-describe(`Test getFileManifestEntries`, function() {
+describe(`[workbox-build] Test getFileManifestEntries`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/get-file-manifest-entries';
   const GLOB_DIRECTORY = './';
   const GLOB_PATTERNS = ['invalid*'];

@@ -3,7 +3,7 @@ const expect = require('chai').expect;
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 const noRevisionForUrlsMatching = require('../../../../packages/workbox-build/src/lib/no-revision-for-urls-matching-transform');
 
-describe(`lib/no-revision-for-urls-matching-transform.js`, function() {
+describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, function() {
   const MANIFEST = [{
     url: '/first-match/12345/hello',
     revision: '1234abcd',

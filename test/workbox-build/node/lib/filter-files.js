@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 
 const filterFiles = require('../../../../packages/workbox-build/src/lib/filter-files');
 
-describe(`lib/filter-files.js`, function() {
+describe(`[workbox-build] lib/filter-files.js`, function() {
   const MAXIMUM_FILE_SIZE = 1234;
   const ENTRY1 = {
     file: 'file1.txt',

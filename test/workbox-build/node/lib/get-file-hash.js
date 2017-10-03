@@ -3,7 +3,7 @@ const proxyquire = require('proxyquire');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 
-describe(`lib/get-file-hash.js`, function() {
+describe(`[workbox-build] lib/get-file-hash.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/get-file-hash';
   const FILE = 'file.txt';
 

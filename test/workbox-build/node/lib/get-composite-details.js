@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 
 const getCompositeDetails = require('../../../../packages/workbox-build/src/lib/get-composite-details');
 
-describe(`lib/get-composite-details.js`, function() {
+describe(`[workbox-build] lib/get-composite-details.js`, function() {
   const URL = '/test';
 
   const ENTRY1 = {

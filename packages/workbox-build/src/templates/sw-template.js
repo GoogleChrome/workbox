@@ -1,4 +1,4 @@
-<% if (importScripts) { %>
+module.exports = `<% if (importScripts) { %>
 importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
 <% } %>
 /**
@@ -30,4 +30,4 @@ workboxSW.precache(self.__precacheManifest);
 <% if(navigateFallback) { %>workboxSW.router.registerNavigationRoute("<%= navigateFallback %>"<% if(navigateFallbackWhitelist) { %>, {
   whitelist: [<%= navigateFallbackWhitelist %>],
 }<% } %>);<% } %><% if (runtimeCaching && runtimeCaching.length > 0) { runtimeCaching.forEach((runtimeCachingString) => {%><%= runtimeCachingString %>
-<% }); } %>
+<% }); } %>`;

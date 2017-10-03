@@ -5,7 +5,7 @@ const sinon = require('sinon');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 
-describe(`lib/write-sw-using-default-template.js`, function() {
+describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/write-sw-using-default-template';
 
   it(`should reject with an error when fs-extra.mkdirp() fails`, async function() {
@@ -26,25 +26,6 @@ describe(`lib/write-sw-using-default-template.js`, function() {
     }
   });
 
-  it(`should reject with an error when fs-extra.readFile() fails`, async function() {
-    const writeSWUsingDefaultTemplate = proxyquire(MODULE_PATH, {
-      'path': {
-        dirname: () => 'ignored',
-      },
-      'fs-extra': {
-        mkdirp: () => Promise.resolve(),
-        readFile: () => Promise.reject(new Error()),
-      },
-    });
-
-    try {
-      await writeSWUsingDefaultTemplate({});
-      throw new Error('Unexpected success.');
-    } catch (error) {
-      expect(error.message).to.have.string(errors['read-sw-template-failure']);
-    }
-  });
-
   it(`should reject with an error when fs-extra.writeFile() fails`, async function() {
     const writeSWUsingDefaultTemplate = proxyquire(MODULE_PATH, {
       'path': {
@@ -52,7 +33,6 @@ describe(`lib/write-sw-using-default-template.js`, function() {
       },
       'fs-extra': {
         mkdirp: () => Promise.resolve(),
-        readFile: () => Promise.resolve(),
         writeFile: () => Promise.reject(new Error()),
       },
     });

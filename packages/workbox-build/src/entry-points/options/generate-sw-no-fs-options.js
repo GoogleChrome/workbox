@@ -44,7 +44,6 @@ class GenerateSWNoFSOptions extends BaseOptions {
         }),
       }).requiredKeys('urlPattern', 'handler')),
       skipWaiting: joi.boolean(),
-      swTemplate: joi.string().required(),
     });
 
     super(options, schema);

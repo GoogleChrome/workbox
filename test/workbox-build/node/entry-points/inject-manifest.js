@@ -6,7 +6,7 @@ const errors = require('../../../../packages/workbox-build/src/lib/errors');
 const injectManifest = require('../../../../packages/workbox-build/src/entry-points/inject-manifest');
 const validateServiceWorkerRuntime = require('../../../../infra/utils/validator/service-worker-runtime');
 
-describe(`entry-points/inject-manifest.js (End to End)`, function() {
+describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, function() {
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const SW_SRC_DIR = path.join(__dirname, '..', '..', 'static', 'sw-injections');
   const BASE_OPTIONS = {
@@ -41,10 +41,9 @@ describe(`entry-points/inject-manifest.js (End to End)`, function() {
     'navigateFallbackWhitelist',
     'runtimeCaching',
     'skipWaiting',
-    'swTemplate',
   ];
 
-  describe('required parameters', function() {
+  describe('[workbox-build] required parameters', function() {
     for (const requiredParam of REQUIRED_PARAMS) {
       it(`should reject with a ValidationError when '${requiredParam}' is missing`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
@@ -61,7 +60,7 @@ describe(`entry-points/inject-manifest.js (End to End)`, function() {
     }
   });
 
-  describe('unsupported parameters', function() {
+  describe('[workbox-build] unsupported parameters', function() {
     for (const unsupportedParam of UNSUPPORTED_PARAMS) {
       it(`should reject with a ValidationError when '${unsupportedParam}' is present`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
@@ -78,7 +77,7 @@ describe(`entry-points/inject-manifest.js (End to End)`, function() {
     }
   });
 
-  describe('invalid parameter values', function() {
+  describe('[workbox-build] invalid parameter values', function() {
     for (const param of SUPPORTED_PARAMS) {
       it(`should reject with a ValidationError when '${param}' is null`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
@@ -95,7 +94,7 @@ describe(`entry-points/inject-manifest.js (End to End)`, function() {
     }
   });
 
-  describe(`should handle various runtime errors`, function() {
+  describe(`[workbox-build] runtime errors`, function() {
     it(`should throw the expected error when 'swSrc' is invalid`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
         swSrc: 'DOES_NOT_EXIST',
@@ -136,7 +135,7 @@ describe(`entry-points/inject-manifest.js (End to End)`, function() {
     });
   });
 
-  describe(`should write a service worker file with the expected manifest when properly configured`, function() {
+  describe(`[workbox-build] writing a service worker file`, function() {
     it(`should use defaults when all the required parameters are present`, async function() {
       const swDest = tempy.file();
       const options = Object.assign({}, BASE_OPTIONS, {swDest});

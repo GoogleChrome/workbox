@@ -1,5 +1,5 @@
 const generateSW = require('./entry-points/generate-sw');
-const generateSWNoFS = require('./entry-points/generate-sw-no-fs');
+const generateSWString = require('./entry-points/generate-sw-string');
 const getManifest = require('./entry-points/get-manifest');
 const injectManifest = require('./entry-points/inject-manifest');
 
@@ -16,7 +16,7 @@ const injectManifest = require('./entry-points/inject-manifest');
  * [generateSW()]{@link module:workbox-build.generateSW}.
  * 1. Generate a complete service worker with precaching and some basic
  * configurable options, without writing the results to disk. See
- * [generateSWNoFS()]{@link module:workbox-build.generateSWNoFS}.
+ * [generateSWString()]{@link module:workbox-build.generateSWString}.
  * 1. Inject a manifest into an existing service worker. This allows you
  * to control your own service worker while still taking advantage of
  * [workboxSW.precache()]{@link module:workbox-sw.WorkboxSW#precache} logic.
@@ -375,7 +375,7 @@ const injectManifest = require('./entry-points/inject-manifest');
 
 module.exports = {
   generateSW,
-  generateSWNoFS,
+  generateSWString,
   getManifest,
   injectManifest,
 };
