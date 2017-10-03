@@ -10,9 +10,9 @@ const logHelper = require('../infra/utils/log-helper');
 
 const runNodeTestSuite = async (testPath, nodeEnv) => {
   logHelper.log(oneLine`
-  Running Node test on ${logHelper.highlight(testPath)}
-  with NODE_ENV '${nodeEnv}'
-`);
+    Running Node test on ${logHelper.highlight(testPath)}
+    with NODE_ENV '${nodeEnv}'
+  `);
 
   const options = [];
   if (global.cliOptions.grep) {
