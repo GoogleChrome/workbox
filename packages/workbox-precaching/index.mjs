@@ -1,5 +1,6 @@
 import core from 'workbox-core';
 import PrecacheController from './controllers/PrecacheController.mjs';
+import defaultPrecachingExport from './default-precaching-export.mjs';
 
 /**
  * @module workbox-precaching
@@ -13,4 +14,4 @@ export {
   PrecacheController,
 };
 
-export default {};
+export default defaultPrecachingExport;
