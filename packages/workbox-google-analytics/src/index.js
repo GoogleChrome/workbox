@@ -67,7 +67,6 @@ import replayQueuedRequests from './lib/replay-queued-requests.js';
  */
 
 /**
- * @alias workbox.googleAnalytics.initialize
  * @param {Object=}   config
  * @param {Object=}   config.parameterOverrides
  *                    [Measurement Protocol parameters](https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters),

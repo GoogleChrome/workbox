@@ -43,6 +43,8 @@ import handleRangeRequest from './handle-range-request.js';
  *   ({event}) => event.request.headers.has('range'),
  *   cacheFirstRangeHandler
  * );
+ *
+ * @memberof workbox-range-requests
  */
 class CachedRangeResponsePlugin {
   /**

@@ -49,6 +49,7 @@ const noRevisionForUrlsMatchingTransform =
  * @return {Array<ManifestEntry>} The array of entries with the transformation
  * applied.
  * @memberof module:workbox-build
+ * @private
  */
 
 module.exports = (fileDetails, options) => {

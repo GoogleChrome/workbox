@@ -31,6 +31,8 @@ class LogHelper {
    * @param {string} msg Message to print to the console
    * @param {Object} [runtimeInfo] Any information available at runtime that
    * should be printed to the console.
+   *
+   * @private
    */
   warn(msg, runtimeInfo) {
     let loggedMsg = chalk.yellow(msg);
@@ -44,6 +46,8 @@ class LogHelper {
    * Print an error message to the console (Colored red).
    * @param {string} msg Message to print to the console
    * @param {Error} [err] An optional error to print to the console.
+   *
+   * @private
    */
   error(msg, err) {
     console.error(chalk.red(msg));
@@ -56,6 +60,8 @@ class LogHelper {
   /**
    * Print an info message to the console (Colored dim).
    * @param {string} msg Message to print to the console
+   *
+   * @private
    */
   log(msg) {
     console.log(chalk.dim(msg));

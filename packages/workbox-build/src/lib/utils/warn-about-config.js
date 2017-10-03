@@ -10,6 +10,8 @@ const logHelper = require('../log-helper');
  * @param {Object<String,String>} fullConfig The configuration options to check.
  * @param {String} methodName The type of build that's being attempted
  * (injectManifest, etc.).
+ *
+ * @private
  */
 module.exports = (blacklist, fullConfig, methodName) => {
   const invalidConfigKeys = Object.keys(fullConfig)
