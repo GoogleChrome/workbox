@@ -5,6 +5,8 @@ import {hasMethod, isType} from '../../../../lib/assert';
  * handler to normalize.
  * @return {Object} An object with a `handle` property representing the handler
  * function.
+ *
+ * @private
  */
 export default function normalizeHandler(handler) {
   if (typeof handler === 'object') {

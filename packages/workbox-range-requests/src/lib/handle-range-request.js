@@ -140,7 +140,7 @@ export function calculateEffectiveBoundaries({blob, start, end} = {}) {
  * `Range:` header, or a `416 Range Not Satisfiable` response if the
  * conditions of the `Range:` header can't be met.
  */
-export default async function handleRangeRequest({request, response} = {}) {
+async function handleRangeRequest({request, response} = {}) {
   try {
     isInstance({request}, Request);
     isInstance({response}, Response);
@@ -190,3 +190,5 @@ export default async function handleRangeRequest({request, response} = {}) {
     });
   }
 }
+
+export default handleRangeRequest;

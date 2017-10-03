@@ -343,7 +343,6 @@ const injectManifest = require('./lib/inject-manifest');
  *
  * @memberof module:workbox-build
  */
-
 module.exports = {
   generateSW,
   generateFileManifest,

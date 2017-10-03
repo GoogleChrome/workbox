@@ -36,6 +36,7 @@ const askForExtensionsToCache =
 /**
  * This class is a wrapper to make test easier. This is used by
  * ./bin/index.js to pass in the args when the CLI is used.
+ *
  * @private
  */
 class SWCli {
@@ -43,10 +44,11 @@ class SWCli {
    * This is a helper method that allows the test framework to call argv with
    * arguments without worrying about running as an actual CLI.
    *
-   * @private
    * @param {Object} meowOutput The value passed in via process.argv.
    * @return {Promise} Promise is returned so testing framework knows when
    * handling the request has finished.
+   *
+   * @private
    */
   argv(meowOutput) {
     updateNotifier({pkg: meowOutput.pkg}).notify();
@@ -77,6 +79,8 @@ class SWCli {
    * @param {object} args The arguments given to this command.
    * @param {object} flags The flags supplied with the command line.
    * @return {Promise} A promise for the provided task.
+   *
+   * @private
    */
   handleCommand(command, args, flags) {
     switch (command) {
@@ -94,6 +98,8 @@ class SWCli {
    * @param {Object} flags The flags supplied as part of the CLI input.
    * @return {Promise} The promise returned here will be used to exit the
    * node process cleanly or not.
+   *
+   * @private
    */
   _generateSW(flags) {
     let config = {};
@@ -151,6 +157,8 @@ class SWCli {
    * @param  {object} config The config options.
    * @param  {object} requiredFields The required fields to ask questions for.
    * @return {Promise<object>} Promise resolves to the config object.
+   *
+   * @private
    */
   _askGenerateQuestions(config, requiredFields) {
     return Promise.resolve()
@@ -212,6 +220,8 @@ class SWCli {
    * and inject the manifest into the destination service worker.
    * @param  {object} flags Flags from command line.
    * @return {Promise} Resolves on
+   *
+   * @private
    */
   _injectManifest(flags) {
     let config = {};

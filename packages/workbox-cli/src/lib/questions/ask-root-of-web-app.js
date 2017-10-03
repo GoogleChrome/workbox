@@ -13,6 +13,8 @@ const errors = require('../errors');
  * directories in the current path.
  * @return {Promise<string>} Promise that resolves with the name of the root
  * directory if given.
+ *
+ * @private
  */
 module.exports = () => {
   const manualEntryChoice = 'Manually Enter Path';
