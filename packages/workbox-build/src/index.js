@@ -145,7 +145,7 @@ const injectManifest = require('./entry-points/inject-manifest');
  *
  * E.g. `['**\/ignored.html']`
  *
- * @property {Object<String,Array|String>} [templatedUrls]
+ * @property {Object<String,Array|string>} [templatedUrls]
  * If a URL is rendered generated based on some server-side logic, its contents
  * may depend on multiple files or on some other unique string value.
  *

@@ -4,6 +4,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
+    "local-jsdoc": "jsdoc",
     "local-lerna": "lerna",
     "test": "nyc --clean false --require @std/esm --require ./infra/utils/sw-env --silent mocha",
     "coverage-report": "nyc report --reporter lcov --reporter text",

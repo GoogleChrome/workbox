@@ -32,20 +32,20 @@ class PrecacheController {
    * This method will add items to the precache list, removing duplicates
    * and ensuring the information is valid.
    *
-   * @param {Array<Object|String>} userEntries Array of entries to
+   * @param {Array<Object|string>} entries Array of entries to
    * precache.
    */
-  addToCacheList(userEntries) {
+  addToCacheList(entries) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isArray(userEntries, {
+      core.assert.isArray(entries, {
         moduleName: 'workbox-precaching',
         className: 'PrecacheController',
         funcName: 'addToCacheList',
-        paramName: 'userEntries',
+        paramName: 'entries',
       });
     }
 
-    userEntries.map((userEntry) => {
+    entries.map((userEntry) => {
       this._addEntryToCacheList(
         this._parseEntry(userEntry)
       );

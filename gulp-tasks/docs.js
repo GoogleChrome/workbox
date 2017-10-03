@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const gulp = require('gulp');
+const getNpmCmd = require('./utils/get-npm-cmd');
 const browserSync = require('browser-sync').create();
 
 const spawn = require('./utils/spawn-promise-wrapper');
@@ -16,7 +17,8 @@ gulp.task('docs:build', gulp.series([
   'docs:clean',
   () => {
     logHelper.log(`Building docs...`);
-    return spawn('jsdoc', [
+    return spawn(getNpmCmd(), [
+      'run', 'local-jsdoc', '--',
       '-c', path.join(__dirname, '..', 'jsdoc.conf'),
       '-d', DOCS_DIRECTORY,
     ])
