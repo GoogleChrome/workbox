@@ -1,7 +1,7 @@
 const path = require('path');
 const depcheck = require('depcheck');
 
-describe(`Test Dependencies`, function() {
+describe(`[workbox-build] Test Dependencies`, function() {
   it(`should have required dependencies`, function() {
     return new Promise((resolve, reject) => {
       depcheck(path.join(__dirname, '..', '..', '..', 'packages', 'workbox-build'), {

@@ -1,11 +1,11 @@
 const assert = require('assert');
+const path = require('path');
 
 const errors = require('./errors');
-const filterFiles = require('./utils/filter-files');
-const getCompositeDetails = require('./utils/get-composite-details');
-const getFileDetails = require('./utils/get-file-details');
-const getStringDetails = require('./utils/get-string-details');
-const constants = require('./constants');
+const filterFiles = require('./filter-files');
+const getCompositeDetails = require('./get-composite-details');
+const getFileDetails = require('./get-file-details');
+const getStringDetails = require('./get-string-details');
 
 /**
  * @typedef {Object} ManifestEntry
@@ -16,65 +16,46 @@ const constants = require('./constants');
  * @memberof module:workbox-build
  */
 
-/**
- * To get a list of files and revision details that can be used to ultimately
- * precache assets in a service worker.
- *
- * @param {module:workbox-build.Configuration} input
- * @return {Promise<Array<ManifestEntry>>}
- * An array of {@link module:workbox-build#ManifestEntry|ManifestEntries}
- * which will include a url and revision parameter.
- *
- * @memberof module:workbox-build
- */
-async function getFileManifestEntries(input) {
-  assert(input && typeof input === 'object' && !Array.isArray(input),
-    errors['invalid-get-manifest-entries-input']);
-
-  // staticFileGlobs has been deprecated.
-  assert(!input.staticFileGlobs, errors['static-file-globs-deprecated']);
-
-  // dynamicUrlToDependencies has been deprecated.
-  assert(!input.dynamicUrlToDependencies, errors['dynamic-url-deprecated']);
-
-  const globPatterns = typeof input.globPatterns !== 'undefined' ?
-    input.globPatterns : constants.defaultGlobPatterns;
-  const globIgnores = input.globIgnores || constants.defaultGlobIgnores;
-  const globDirectory = input.globDirectory;
-  const templatedUrls = input.templatedUrls;
-
-  assert(typeof globDirectory === 'string' && globDirectory.length !== 0,
-    errors['invalid-glob-directory']);
-
-  assert(globPatterns && Array.isArray(globPatterns),
-    errors['invalid-static-file-globs']);
-
-  assert(globIgnores && Array.isArray(globIgnores),
-    errors['invalid-glob-ignores']);
-
-  // templatedUrls is optional.
-  assert(!templatedUrls ||
-    (typeof templatedUrls === 'object' && !Array.isArray(templatedUrls)),
-    errors['invalid-templated-urls']);
-
-  assert(globIgnores.every((pattern) => typeof pattern === 'string'),
-    errors['invalid-glob-ignores']);
-
+module.exports = async ({
+  dontCacheBustUrlsMatching,
+  globDirectory,
+  globIgnores,
+  globPatterns,
+  manifestTransforms,
+  maximumFileSizeToCacheInBytes,
+  modifyUrlPrefix,
+  swDest,
+  templatedUrls,
+}) => {
+  // Initialize to an empty array so that we can still pass something to
+  // filterFiles() and get a normalized output.
+  let fileDetails = [];
   const fileSet = new Set();
 
-  const fileDetails = globPatterns.reduce((accumulated, globPattern) => {
-    const globbedFileDetails = getFileDetails(
-      globDirectory, globPattern, globIgnores);
-    globbedFileDetails.forEach((fileDetails) => {
-      if (fileSet.has(fileDetails.file)) {
-        return;
-      }
+  if (globDirectory) {
+    if (swDest) {
+      // Ensure that we ignore the SW file we're eventually writing to disk.
+      globIgnores.push(`**/${path.basename(swDest)}`);
+    }
 
-      fileSet.add(fileDetails.file);
-      accumulated.push(fileDetails);
-    });
-    return accumulated;
-  }, []);
+    fileDetails = globPatterns.reduce((accumulated, globPattern) => {
+      const globbedFileDetails = getFileDetails({
+        globDirectory,
+        globPattern,
+        globIgnores,
+      });
+
+      globbedFileDetails.forEach((fileDetails) => {
+        if (fileSet.has(fileDetails.file)) {
+          return;
+        }
+
+        fileSet.add(fileDetails.file);
+        accumulated.push(fileDetails);
+      });
+      return accumulated;
+    }, []);
+  }
 
   if (templatedUrls) {
     for (let url of Object.keys(templatedUrls)) {
@@ -82,29 +63,29 @@ async function getFileManifestEntries(input) {
 
       const dependencies = templatedUrls[url];
       if (Array.isArray(dependencies)) {
-        const dependencyDetails = dependencies.reduce((previous, pattern) => {
+        const details = dependencies.reduce((previous, globPattern) => {
           try {
-            const globbedFileDetails = getFileDetails(
-              globDirectory, pattern, globIgnores);
+            const globbedFileDetails = getFileDetails({
+              globDirectory,
+              globPattern,
+              globIgnores,
+            });
             return previous.concat(globbedFileDetails);
-          } catch (err) {
+          } catch (error) {
             const debugObj = {};
             debugObj[url] = dependencies;
             throw new Error(`${errors['bad-template-urls-asset']} ` +
-              `'${pattern}' in templateUrl '${JSON.stringify(debugObj)}' ` +
-              `could not be found.`);
+              `'${globPattern}' from '${JSON.stringify(debugObj)}':\n` +
+              error);
           }
         }, []);
-        fileDetails.push(getCompositeDetails(url, dependencyDetails));
+        fileDetails.push(getCompositeDetails(url, details));
       } else if (typeof dependencies === 'string') {
         fileDetails.push(getStringDetails(url, dependencies));
-      } else {
-        throw new Error(errors['invalid-templated-urls']);
       }
     }
   }
 
-  return filterFiles(fileDetails, input);
-}
-
-module.exports = getFileManifestEntries;
+  return filterFiles({fileDetails, maximumFileSizeToCacheInBytes,
+    modifyUrlPrefix, dontCacheBustUrlsMatching, manifestTransforms});
+};
