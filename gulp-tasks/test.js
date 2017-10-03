@@ -35,12 +35,11 @@ const runNodeTestSuite = async (testPath, nodeEnv) => {
   }
 };
 
-const runNodeTestsWithEnv = (nodeEnv) => {
+const runNodeTestsWithEnv = async (nodeEnv) => {
   const packagesToTest = glob.sync(`test/${global.packageOrStar}`);
-  return packagesToTest.reduce(async (promiseChain, packageToTest) => {
-    await promiseChain;
-    return runNodeTestSuite(packageToTest, nodeEnv);
-  }, Promise.resolve());
+  for (const packageToTest of packagesToTest) {
+    await runNodeTestSuite(packageToTest, nodeEnv);
+  }
 };
 
 gulp.task('test:node:prod', gulp.series(
