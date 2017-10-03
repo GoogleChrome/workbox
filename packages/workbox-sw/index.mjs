@@ -19,24 +19,30 @@ class WorkboxSW {
    */
   constructor(options) {
     this._options = Object.assign({
-      debug: location.hostname === 'localhost',
+      debug: self.location.hostname === 'localhost',
       pathPrefix: null,
     }, options);
   }
 
   /**
-   * Force a service worker to become active, instead of waiting, and
-   * to claim any available clients.
+   * Force a service worker to become active, instead of waiting. This is
+   * normally used in conjunction with `clientsClaim()`.
    */
-  skipAndClaim() {
+  skipWaiting() {
     self.addEventListener('install', (event) => {
       event.waitUntil(self.skipWaiting());
     });
+  }
 
+  /**
+   * Claim any currently available clients once the service worker
+   * becomes active. This is normally used in conjunction with `skipWaiting()`.
+   */
+  clientsClaim() {
     self.addEventListener('activate', (event) => {
       event.waitUntil(self.clientsClaim());
     });
   }
 }
 
-export default WorkboxSW;
+export {WorkboxSW};

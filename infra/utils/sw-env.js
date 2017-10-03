@@ -21,4 +21,7 @@ swEnv.location = 'https://example.com';
 class FakeSWGlobalScope {}
 swEnv.ServiceWorkerGlobalScope = FakeSWGlobalScope;
 
+swEnv.skipWaiting = () => Promise.resolve();
+swEnv.clientsClaim = () => Promise.resolve();
+
 Object.assign(global, swEnv);
