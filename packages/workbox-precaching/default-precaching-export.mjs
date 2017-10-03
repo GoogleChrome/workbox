@@ -7,8 +7,6 @@ const addListeners = () => {
   listenersAdded = true;
   self.addEventListener('install', () => precacheController.install());
   self.addEventListener('activate', () => precacheController.cleanup());
-
-  // TODO: Add Routing once workbox-routing is in.
 };
 
 /**
@@ -18,9 +16,9 @@ const addListeners = () => {
  *
  * @param {Array<Object|string>} entries Array of entries to precache.
  *
- * @alias module:workbox-precaching.precacheAndRoute
+ * @alias module:workbox-precaching.precache
  */
-const precacheAndRoute = (entries) => {
+const precache = (entries) => {
   precacheController.addToCacheList(entries);
 
   if (entries.length > 0 && !listenersAdded) {
@@ -28,6 +26,8 @@ const precacheAndRoute = (entries) => {
   }
 };
 
+// TODO: Add a way to route these assets
+
 export default {
-  precacheAndRoute,
+  precache,
 };
