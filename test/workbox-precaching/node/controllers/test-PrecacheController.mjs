@@ -2,9 +2,11 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 import clearRequire from 'clear-require';
 import {IDBFactory, IDBKeyRange, reset} from 'shelving-mock-indexeddb';
-import '../../../mocks/mock-fetch';
+
+import '../../../../infra/utils/mock-fetch';
 import expectError from '../../../../infra/utils/expectError';
 import generateTestVariants from '../../../../infra/utils/generate-variant-tests';
+
 import {_private} from '../../../../packages/workbox-core/index.mjs';
 import PrecacheController from '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
 

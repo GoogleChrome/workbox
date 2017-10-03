@@ -1,5 +1,5 @@
 global.fetch = async (request) => {
-  const response = new Response('Response from test/mocks/mock-fetch.js', {
+  const response = new Response('Response from mock-fetch.js', {
     status: 200,
     statusText: 'ok.',
   });
