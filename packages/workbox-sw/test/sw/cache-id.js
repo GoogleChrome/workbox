@@ -68,7 +68,7 @@ describe(`Cache ID`, function() {
     // about; it's not possible to spy on the method calls and check parameters,
     // since they're called during the WorkboxSW constructor and are called on
     // object instances that don't exist prior to the constructor.
-    const precacheRoute = workboxSW.router._routes.get('GET')[0];
+    const precacheRoute = workboxSW._precacheRouter._routes.get('GET')[0];
     const actualCacheName = precacheRoute.handler.requestWrapper.cacheName;
 
     expect(actualCacheName.startsWith(expectedCachePrefix)).to.be.true;
