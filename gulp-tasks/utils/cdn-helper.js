@@ -42,13 +42,9 @@ class CDNHelper {
 
   async tagExists(tagName) {
     const gcs = this.getGCS();
-    console.log('Hello.', BUCKET_NAME);
     const bucket = gcs.bucket(BUCKET_NAME);
-    console.log('Hello 2.');
     const file = bucket.file(`${tagName}`);
-    console.log('Hello 3.');
     const exists = await file.exists();
-    console.log('Hello 4.');
     return exists[0];
   }
 
