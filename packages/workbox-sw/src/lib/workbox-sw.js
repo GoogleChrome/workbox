@@ -128,11 +128,20 @@ class WorkboxSW {
       cacheId,
     });
 
+    // Create a Router instance that's used by the `Route` for precached assets.
+    // See https://github.com/GoogleChrome/workbox/issues/839
+    this._precacheRouter = new Router(
+      this._revisionedCacheManager.getCacheName(),
+    );
+
     this._router = new Router(
       this._revisionedCacheManager.getCacheName(),
     );
 
     if (handleFetch) {
+      // Give precedence to the _precacheRouter by registering its `fetch`
+      // handler first.
+      this._precacheRouter.addFetchListener();
       this._router.addFetchListener();
     }
 
@@ -339,7 +348,7 @@ class WorkboxSW {
       return false;
     };
 
-    this.router.registerRoute(capture, cacheFirstHandler);
+    this._precacheRouter.registerRoute(capture, cacheFirstHandler);
   }
 
   /**
