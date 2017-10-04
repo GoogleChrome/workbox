@@ -27,7 +27,6 @@ const handleCDNUpload = async (tagName, gitBranch) => {
 gulp.task('publish-cdn:generate-from-tags', async () => {
   // Get all of the tags in the repo.
   const tags = await githubHelper.getTags();
-
   const missingTags = await findMissingCDNTags(tags);
 
   if (missingTags.length === 0) {
@@ -53,12 +52,7 @@ gulp.task('publish-cdn:temp-v3', async () => {
   }
 });
 
-// This gives the google-cloud/storage module a change to complain
-// before any of the pubslish bundle work kicks in.
-gulp.task('publish-cdn:init', () => cdnUploadHelper.init());
-
 gulp.task('publish-cdn', gulp.series(
-  'publish-cdn:init',
   'publish-cdn:generate-from-tags',
   'publish-cdn:temp-v3',
 ));
