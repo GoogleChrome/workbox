@@ -47,18 +47,13 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     it('should add event listener and call skipWaiting', function(done) {
       const skipWaitingSpy = sandbox.spy(self, 'skipWaiting');
 
-      const fakeEvent = {
-        waitUntil: (promiseChain) => {
-          promiseChain.then(() => {
-            expect(skipWaitingSpy.callCount).to.equal(1);
-            done();
-          });
-        },
-      };
-
       sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
         expect(eventName).to.equal('install');
-        cb(fakeEvent);
+
+        cb();
+
+        expect(skipWaitingSpy.callCount).to.equal(1);
+        done();
       });
 
       const wb = new WorkboxSW();
@@ -70,18 +65,13 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     it('should add event listener and call clientsClaim', function(done) {
       const clientsClaimSpy = sandbox.spy(self.clients, 'claim');
 
-      const fakeEvent = {
-        waitUntil: (promiseChain) => {
-          promiseChain.then(() => {
-            expect(clientsClaimSpy.callCount).to.equal(1);
-            done();
-          });
-        },
-      };
-
       sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
         expect(eventName).to.equal('activate');
-        cb(fakeEvent);
+
+        cb();
+
+        expect(clientsClaimSpy.callCount).to.equal(1);
+        done();
       });
 
       const wb = new WorkboxSW();

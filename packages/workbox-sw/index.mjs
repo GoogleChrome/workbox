@@ -29,9 +29,7 @@ class WorkboxSW {
    * normally used in conjunction with `clientsClaim()`.
    */
   skipWaiting() {
-    self.addEventListener('install', (event) => {
-      event.waitUntil(self.skipWaiting());
-    });
+    self.addEventListener('install', () => self.skipWaiting());
   }
 
   /**
@@ -39,9 +37,7 @@ class WorkboxSW {
    * becomes active. This is normally used in conjunction with `skipWaiting()`.
    */
   clientsClaim() {
-    self.addEventListener('activate', (event) => {
-      event.waitUntil(self.clients.claim());
-    });
+    self.addEventListener('activate', () => self.clients.claim());
   }
 }
 
