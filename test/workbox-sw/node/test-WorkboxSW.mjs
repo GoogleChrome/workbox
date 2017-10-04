@@ -68,7 +68,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
   describe(`clientsClaim`, function() {
     it('should add event listener and call clientsClaim', function(done) {
-      const clientsClaimSpy = sandbox.spy(self, 'clientsClaim');
+      const clientsClaimSpy = sandbox.spy(self.clients, 'claim');
 
       const fakeEvent = {
         waitUntil: (promiseChain) => {

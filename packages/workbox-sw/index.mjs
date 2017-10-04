@@ -40,7 +40,7 @@ class WorkboxSW {
    */
   clientsClaim() {
     self.addEventListener('activate', (event) => {
-      event.waitUntil(self.clientsClaim());
+      event.waitUntil(self.clients.claim());
     });
   }
 }
