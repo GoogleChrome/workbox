@@ -132,12 +132,12 @@ class WorkboxSW {
       this._revisionedCacheManager.getCacheName(),
     );
 
+   this._registerInstallActivateEvents(skipWaiting, clientsClaim);
+   this._registerDefaultRoutes(ignoreUrlParametersMatching, directoryIndex);
+   
     if (handleFetch) {
       this._router.addFetchListener();
     }
-
-    this._registerInstallActivateEvents(skipWaiting, clientsClaim);
-    this._registerDefaultRoutes(ignoreUrlParametersMatching, directoryIndex);
   }
 
   /**
