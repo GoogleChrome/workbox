@@ -134,7 +134,7 @@ class WorkboxSW {
 
    this._registerInstallActivateEvents(skipWaiting, clientsClaim);
    this._registerDefaultRoutes(ignoreUrlParametersMatching, directoryIndex);
-   
+
     if (handleFetch) {
       this._router.addFetchListener();
     }
