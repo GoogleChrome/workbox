@@ -1,0 +1,30 @@
+{
+  "name": "workbox-background-sync",
+  "version": "3.0.0",
+  "license": "Apache-2.0",
+  "author": "Google's Web DevRel Team",
+  "description": "Queues failed requests and uses the Background Sync API to replay them when the network is available",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox",
+  "keywords": [
+    "workbox",
+    "workboxjs",
+    "service worker",
+    "sw",
+    "background",
+    "sync"
+  ],
+  "scripts": {
+    "prepublish": "gulp build-packages --package workbox-background-sync"
+  },
+  "workbox": {
+    "browserNamespace": "backgroundSync",
+    "packageType": "browser"
+  },
+  "main": "build/browser-bundles/workbox-background-sync.prod.js",
+  "module": "index.mjs",
+  "dependencies": {
+    "workbox-core": "3.0.0"
+  }
+}
