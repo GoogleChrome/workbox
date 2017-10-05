@@ -6,16 +6,9 @@ const path = require('path');
 const clearRequire = require('clear-require');
 
 // const spawn = require('./utils/spawn-promise-wrapper');
-// const getNpmCmd = require('./utils/get-npm-cmd');
+const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
 const testServer = require('../infra/testing/test-server');
-
-// await spawn(getNpmCmd(), ['run', 'test', '--',
-// `${testPath}/**/*.{js,mjs}`,
-// '--retries', 3,
-// '--timeout', 3*60*1000,
-// ...options,
-// ]);
 
 const runFile = (filePath) => {
   // https://github.com/mochajs/mocha/issues/995
@@ -84,7 +77,7 @@ const runIntegrationForBrowser = async (browser) => {
       glob.sync(`test/${global.packageOrStar}/integration`);
 
     for (const packageToTest of packagesToTest) {
-      for (const nodeEnv of ['dev', 'production']) {
+      for (const nodeEnv of constants.BUILD_TYPES) {
         await runIntegrationTestSuite(
           packageToTest, nodeEnv, browser.getPrettyName(), webdriver);
       }
