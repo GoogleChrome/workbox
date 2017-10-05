@@ -103,9 +103,10 @@ class Route {
       }
     }
 
-    this._handler = normalizeHandler(handler);
-    this._match = match;
-    this._method = method || defaultMethod;
+    const normalizedHandler = normalizeHandler(handler);
+    this.handle = normalizedHandler.handle.bind(normalizedHandler);
+    this.match = match;
+    this.method = method || defaultMethod;
   }
 }
 

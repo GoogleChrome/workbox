@@ -42,6 +42,17 @@ export default {
       `${expectedType}.`;
   },
 
+  'incorrect-class': ({expectedClass, paramName, moduleName, className,
+                       funcName}) => {
+    if (!expectedClass || !paramName || !moduleName || !className ||
+      !funcName) {
+      throw new Error(`Unexpected input to 'not-of-type' error.`);
+    }
+    return `The parameter '${paramName}' passed into ` +
+      `'${moduleName}.${className}.${funcName}()' must be an instance of ` +
+      `class ${expectedClass}.`;
+  },
+
   'missing-a-method': ({expectedMethod, paramName, moduleName, className,
                     funcName}) => {
     if (!expectedMethod || !paramName || !moduleName || !className
@@ -92,5 +103,26 @@ export default {
     return `You must provide a name containing at least one character for ` +
       `setCacheDeatils({${cacheNameId}: '...'}). Received a value of ` +
       `'${JSON.stringify(value)}'`;
+  },
+
+  'unregister-routes-no-routes-found-for-method': ({method}) => {
+    if (!method) {
+      throw new Error(`Expected a 'method' for error ` +
+        `'unregister-routes-no-routes-found-for-method'`);
+    }
+
+    return `One of the routes you're trying to unregister was not previously ` +
+      `registered. It has a method of ${method}, and there are no routes ` +
+      `registered with that method.`;
+  },
+
+  'unregister-routes-route-not-registered': ({route}) => {
+    if (!route) {
+      throw new Error(`Expected a 'route' for error ` +
+        `'unregister-routes-route-not-registered'`);
+    }
+
+    return `One of the routes you're trying to unregister, ${route}, was not ` +
+      `previously registered.`;
   },
 };
