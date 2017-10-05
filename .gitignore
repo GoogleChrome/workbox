@@ -9,7 +9,7 @@ tmp-*
 !packages/workbox-cli/test/static/example-project-1/node_modules
 coverage/
 generated-release-files/
-workbox-cdn-service-account.json
+workbox-*.json
 .esm-cache/
 .nyc_output/
 docs

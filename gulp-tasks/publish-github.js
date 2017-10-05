@@ -64,14 +64,19 @@ gulp.task('publish-github:generate-from-tags', async () => {
 });
 
 // TODO: Delete this task when v3 is about to launch.
+// This is just to publish v3 branch as v3.0.0-alpha
 gulp.task('publish-github:temp-v3', async () => {
   const tagName = 'v3.0.0-alpha';
   const gitBranch = 'v3';
 
   const taggedReleases = await githubHelper.getTaggedReleases();
-  const tagsToBuild = await filterTagsWithReleaseBundles([
-    taggedReleases[tagName],
-  ]);
+  const tagsToBuild = await filterTagsWithReleaseBundles({
+    [tagName]: taggedReleases[tagName],
+  });
+
+  if (tagsToBuild.length === 0) {
+    logHelper.log(`The demo Github release 'v3.0.0-alpha' is already drafted.`);
+  }
 
   for (let tagName of tagsToBuild) {
     // Override the git branch here since we aren't actually
