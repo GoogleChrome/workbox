@@ -42,6 +42,8 @@ const gulpTaskFiles = [
   'build-packages',
   'build',
   'lint',
+  'test-node',
+  'test-integration',
   'test',
   'analyze-properties',
   'publish-github',
