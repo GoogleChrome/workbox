@@ -1,9 +1,7 @@
 const gulp = require('gulp');
 const path = require('path');
-const oneLine = require('common-tags').oneLine;
 
-const constants = require('./utils/constants');
-const publishHelpers = require('./utils/github-publish-helpers');
+const publishHelpers = require('./utils/publish-helpers');
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
 
@@ -34,51 +32,10 @@ const publishReleaseOnGithub =
 };
 
 const handleGithubRelease = async (tagName, gitBranch, releaseInfo) => {
-  logHelper.log(`Releasing ${logHelper.highlight(tagName)}.`);
+  logHelper.log(`Creating Github release ${logHelper.highlight(tagName)}.`);
 
-  const tempReleasePath = path.join(
-    __dirname, '..', constants.GENERATED_RELEASE_FILES_DIRNAME);
-  const tagBuildPath = path.join(tempReleasePath, tagName);
-  const sourceCodePath = path.join(tagBuildPath, 'source-code');
-
-  logHelper.log(oneLine`
-    Download Git Commit ${logHelper.highlight(gitBranch)}.
-  `);
-  await publishHelpers.downloadGitCommit(gitBranch, sourceCodePath);
-
-  logHelper.log(oneLine`
-    Building Commit
-    ${logHelper.highlight(path.relative(process.cwd(), sourceCodePath))}.
-  `);
-  await publishHelpers.buildGitCommit(sourceCodePath);
-
-  const buildFilesPath = path.join(tagBuildPath, 'build-files');
-  logHelper.log(oneLine`
-    Group Build Files into
-    ${logHelper.highlight(path.relative(process.cwd(), buildFilesPath))}.
-  `);
-  await publishHelpers.groupBuildFiles(tagName, sourceCodePath, buildFilesPath);
-
-  const archiveFilesPath = path.join(tagBuildPath, 'archives');
-  const archiveFilename = `workbox-${tagName}`;
-
-  const tarPath = path.join(archiveFilesPath, `${archiveFilename}.tar.gz`);
-  logHelper.log(oneLine`
-    Creating .tar.gz
-    ${logHelper.highlight(path.relative(process.cwd(), tarPath))}.
-  `);
-  await publishHelpers.createArchive(buildFilesPath, tarPath, 'tar', {
-    gzip: true,
-  });
-
-  const zipPath = path.join(archiveFilesPath, `${archiveFilename}.zip`);
-  logHelper.log(oneLine`
-    Creating .zip
-    ${logHelper.highlight(path.relative(process.cwd(), zipPath))}.
-  `);
-  await publishHelpers.createArchive(buildFilesPath, zipPath, 'zip', {
-    zlib: {level: 9},
-  });
+  const {tarPath, zipPath} =
+    await publishHelpers.createBundles(tagName, gitBranch);
 
   return publishReleaseOnGithub(tagName, releaseInfo, tarPath, zipPath);
 };

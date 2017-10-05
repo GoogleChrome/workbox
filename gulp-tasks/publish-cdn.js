@@ -1,8 +1,8 @@
 const gulp = require('gulp');
-const cdnUploadHelper = require('./utils/cdn-helper');
+const path = require('path');
 
-// const generateReleaseFiles = require('./utils/generate-release-files');
-// const generateReleaseFiles = {};
+const cdnUploadHelper = require('./utils/cdn-helper');
+const publishHelpers = require('./utils/publish-helpers');
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
 
@@ -18,12 +18,21 @@ const findMissingCDNTags = async (tagsData) => {
 };
 
 const handleCDNUpload = async (tagName, gitBranch) => {
-  // First attempt to generate the files. If this fails, we won't have
-  // generated an empty Github release.
+  const buildFilesDir =
+    await publishHelpers.groupBuildFiles(tagName, gitBranch);
 
-  // const releaseFileDetails = await generateReleaseFiles(tagName, gitBranch);
-  // logHelper.log(`Uploading '${tagName}' to CDN.`);
-  // await cdnUploadHelper.upload(tagName, releaseFileDetails.buildFilesPath);
+  logHelper.log(`Uploading '${tagName}' to CDN.`);
+  const publishUrls = await cdnUploadHelper.upload(tagName, buildFilesDir);
+
+  logHelper.log(`The following URLs are now avaiable:`);
+  publishUrls.forEach((url) => {
+    // Only print out the js files just for cleaner logs.
+    if (path.extname(url) === '.map') {
+      return;
+    }
+
+    logHelper.log(`    ${url}`);
+  });
 };
 
 gulp.task('publish-cdn:generate-from-tags', async () => {
