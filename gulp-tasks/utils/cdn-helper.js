@@ -4,10 +4,12 @@ const fs = require('fs-extra');
 const oneLine = require('common-tags').oneLine;
 const storage = require('@google-cloud/storage');
 
+const logHelper = require('../../infra/utils/log-helper');
+
 const PROJECT_ID = 'workbox-bab1f';
 const BUCKET_NAME = 'workbox-cdn';
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, '..', '..',
-  `workbox-03bfbbb402fa.json`);
+  `workbox-e30357132c2f.json`);
 
 const ERROR_SERVICE_ACCOUNT = oneLine`
   Unable to find the service account file that is required to upload
@@ -42,10 +44,15 @@ class CDNHelper {
 
   async tagExists(tagName) {
     const gcs = this.getGCS();
-    const bucket = gcs.bucket(BUCKET_NAME);
-    const file = bucket.file(`${tagName}`);
-    const exists = await file.exists();
-    return exists[0];
+    try {
+      const bucket = gcs.bucket(BUCKET_NAME);
+      const file = bucket.file(`${tagName}`);
+      const exists = await file.exists();
+      return exists[0];
+    } catch (err) {
+      logHelper.error(err);
+      throw err;
+    }
   }
 
   async upload(tagName, directoryToUpload) {

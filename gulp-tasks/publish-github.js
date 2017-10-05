@@ -1,38 +1,86 @@
 const gulp = require('gulp');
 const path = require('path');
+const oneLine = require('common-tags').oneLine;
 
-
-const generateReleaseFiles = require('./utils/generate-release-files');
+const constants = require('./utils/constants');
+const publishHelpers = require('./utils/github-publish-helpers');
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
 
-const handleGithubRelease = async (tagName, gitBranch, release) => {
-  // First attempt to generate the files. If this fails, we won't have
-  // generated an empty Github release.
-  const releaseFileDetails = await generateReleaseFiles(tagName, gitBranch);
-
-  if (!release) {
+const publishReleaseOnGithub =
+  async (tagName, releaseInfo, tarPath, zipPath) => {
+  if (!releaseInfo) {
     const releaseData = await githubHelper.createRelease({
       tag_name: tagName,
       draft: true,
       name: `Workbox ${tagName}`,
     });
-    release = releaseData.data;
+    releaseInfo = releaseData.data;
   }
 
   await githubHelper.uploadAsset({
-    id: release.id,
-    filePath: releaseFileDetails.tarPath,
-    name: path.basename(releaseFileDetails.tarPath),
-    label: path.basename(releaseFileDetails.tarPath),
+    id: releaseInfo.id,
+    filePath: tarPath,
+    name: path.basename(tarPath),
+    label: path.basename(tarPath),
   });
 
   await githubHelper.uploadAsset({
-    id: release.id,
-    filePath: releaseFileDetails.zipPath,
-    name: path.basename(releaseFileDetails.zipPath),
-    label: path.basename(releaseFileDetails.zipPath),
+    id: releaseInfo.id,
+    filePath: zipPath,
+    name: path.basename(zipPath),
+    label: path.basename(zipPath),
   });
+};
+
+const handleGithubRelease = async (tagName, gitBranch, releaseInfo) => {
+  logHelper.log(`Releasing ${logHelper.highlight(tagName)}.`);
+
+  const tempReleasePath = path.join(
+    __dirname, '..', constants.GENERATED_RELEASE_FILES_DIRNAME);
+  const tagBuildPath = path.join(tempReleasePath, tagName);
+  const sourceCodePath = path.join(tagBuildPath, 'source-code');
+
+  logHelper.log(oneLine`
+    Download Git Commit ${logHelper.highlight(gitBranch)}.
+  `);
+  await publishHelpers.downloadGitCommit(gitBranch, sourceCodePath);
+
+  logHelper.log(oneLine`
+    Building Commit
+    ${logHelper.highlight(path.relative(process.cwd(), sourceCodePath))}.
+  `);
+  await publishHelpers.buildGitCommit(sourceCodePath);
+
+  const buildFilesPath = path.join(tagBuildPath, 'build-files');
+  logHelper.log(oneLine`
+    Group Build Files into
+    ${logHelper.highlight(path.relative(process.cwd(), buildFilesPath))}.
+  `);
+  await publishHelpers.groupBuildFiles(tagName, sourceCodePath, buildFilesPath);
+
+  const archiveFilesPath = path.join(tagBuildPath, 'archives');
+  const archiveFilename = `workbox-${tagName}`;
+
+  const tarPath = path.join(archiveFilesPath, `${archiveFilename}.tar.gz`);
+  logHelper.log(oneLine`
+    Creating .tar.gz
+    ${logHelper.highlight(path.relative(process.cwd(), tarPath))}.
+  `);
+  await publishHelpers.createArchive(buildFilesPath, tarPath, 'tar', {
+    gzip: true,
+  });
+
+  const zipPath = path.join(archiveFilesPath, `${archiveFilename}.zip`);
+  logHelper.log(oneLine`
+    Creating .zip
+    ${logHelper.highlight(path.relative(process.cwd(), zipPath))}.
+  `);
+  await publishHelpers.createArchive(buildFilesPath, zipPath, 'zip', {
+    zlib: {level: 9},
+  });
+
+  return publishReleaseOnGithub(tagName, releaseInfo, tarPath, zipPath);
 };
 
 const filterTagsWithReleaseBundles = (taggedReleases) => {
@@ -73,10 +121,6 @@ gulp.task('publish-github:temp-v3', async () => {
   const tagsToBuild = await filterTagsWithReleaseBundles({
     [tagName]: taggedReleases[tagName],
   });
-
-  if (tagsToBuild.length === 0) {
-    logHelper.log(`The demo Github release 'v3.0.0-alpha' is already drafted.`);
-  }
 
   for (let tagName of tagsToBuild) {
     // Override the git branch here since we aren't actually

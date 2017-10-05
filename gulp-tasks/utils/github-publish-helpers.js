@@ -1,10 +1,10 @@
+const fs = require('fs-extra');
 const path = require('path');
 const glob = require('glob');
-const fs = require('fs-extra');
 const archiver = require('archiver');
 const oneLine = require('common-tags').oneLine;
 
-const spawnPromiseWrapper = require('./spawn-promise-wrapper');
+const spawn = require('./spawn-promise-wrapper');
 const constants = require('./constants');
 const logHelper = require('../../infra/utils/log-helper');
 
@@ -27,7 +27,7 @@ const downloadGitCommit = async (gitBranch, sourceCodePath) => {
 
   logHelper.log(`Clone Git repo for branch: '${gitBranch}'.`);
 
-  await spawnPromiseWrapper('git', [
+  await spawn('git', [
     'clone',
     '--branch', gitBranch,
     '--depth', '1',
@@ -36,36 +36,20 @@ const downloadGitCommit = async (gitBranch, sourceCodePath) => {
   ]);
 };
 
-const buildProject = async (sourceCodePath) => {
-  await spawnPromiseWrapper('npm', ['install'], {
+const buildGitCommit = async (sourceCodePath) => {
+  await spawn('npm', ['install'], {
     cwd: sourceCodePath,
   });
 
-  await spawnPromiseWrapper('gulp', ['build'], {
+  await spawn('gulp', ['build'], {
     cwd: sourceCodePath,
-  });
-};
-
-const createArchive = (bundleDirectory, outputFilePath, format, options) => {
-  return new Promise((resolve, reject) => {
-    const writeStream = fs.createWriteStream(outputFilePath);
-    writeStream.on('close', () => resolve(outputFilePath));
-
-    const archive = archiver(format, options);
-    archive.on('error', (err) => {
-      reject(err);
-    });
-    archive.pipe(writeStream);
-    // Adds the directory contents to the zip.
-    archive.directory(bundleDirectory, false);
-    archive.finalize();
   });
 };
 
 /*
- * This function will create a directory with the same name at the
+ * This function will create a directory with the same name as the
  * .tar.gz file it generates. This way when the file is extracted
- * the folder structure will have the sam
+ * the folder structure will be the same.
  */
 const groupBuildFiles = async (tagName, sourceCodePath, outputDir) => {
   const pattern = path.posix.join(
@@ -111,8 +95,11 @@ module.exports = async (tagName, gitBranch) => {
   `);
   await groupBuildFiles(tagName, sourceCodePath, buildFilesPath);
 
-  fs.ensureDirSync(archiveFilesPath);
+  return new Promise((resolve, reject) => {
+    const writeStream = fs.createWriteStream(outputFilePath);
+    writeStream.on('close', () => resolve(outputFilePath));
 
+<<<<<<< HEAD:gulp-tasks/utils/generate-release-files.js
   const archiveFilename = `workbox-${tagName}`;
   const tarPath = path.join(archiveFilesPath, `${archiveFilename}.tar.gz`);
   const zipPath = path.join(archiveFilesPath, `${archiveFilename}.zip`);
@@ -128,10 +115,22 @@ module.exports = async (tagName, gitBranch) => {
     ${logHelper.highlight(path.relative(process.cwd(), zipPath))}
   `);
   await createArchive(buildFilesPath, zipPath, 'zip', {zlib: {level: 9}});
+=======
+    const archive = archiver(format, options);
+    archive.on('error', (err) => {
+      reject(err);
+    });
+    archive.pipe(writeStream);
+    // Adds the directory contents to the zip.
+    archive.directory(bundleDirectory, false);
+    archive.finalize();
+  });
+};
+>>>>>>> 0b91f719... Small set of tweaks to make it clearer what publishing is doing at each stage:gulp-tasks/utils/github-publish-helpers.js
 
-  return {
-    buildFilesPath,
-    tarPath,
-    zipPath,
-  };
+module.exports = {
+  downloadGitCommit,
+  buildGitCommit,
+  groupBuildFiles,
+  createArchive,
 };

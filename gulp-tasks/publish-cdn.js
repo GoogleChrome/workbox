@@ -1,7 +1,8 @@
 const gulp = require('gulp');
 const cdnUploadHelper = require('./utils/cdn-helper');
 
-const generateReleaseFiles = require('./utils/generate-release-files');
+// const generateReleaseFiles = require('./utils/generate-release-files');
+// const generateReleaseFiles = {};
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
 
@@ -19,12 +20,17 @@ const findMissingCDNTags = async (tagsData) => {
 const handleCDNUpload = async (tagName, gitBranch) => {
   // First attempt to generate the files. If this fails, we won't have
   // generated an empty Github release.
-  const releaseFileDetails = await generateReleaseFiles(tagName, gitBranch);
-  logHelper.log(`Uploading '${tagName}' to CDN.`);
-  await cdnUploadHelper.upload(tagName, releaseFileDetails.buildFilesPath);
+
+  // const releaseFileDetails = await generateReleaseFiles(tagName, gitBranch);
+  // logHelper.log(`Uploading '${tagName}' to CDN.`);
+  // await cdnUploadHelper.upload(tagName, releaseFileDetails.buildFilesPath);
 };
 
 gulp.task('publish-cdn:generate-from-tags', async () => {
+  // This gives the google-cloud/storage module a change to complain
+  // before any of the publish bundle work kicks in.
+  await cdnUploadHelper.init();
+
   // Get all of the tags in the repo.
   const tags = await githubHelper.getTags();
   const missingTags = await findMissingCDNTags(tags);
@@ -41,6 +47,10 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
 });
 
 gulp.task('publish-cdn:temp-v3', async () => {
+  // This gives the google-cloud/storage module a change to complain
+  // before any of the publish bundle work kicks in.
+  await cdnUploadHelper.init();
+
   const tagName = 'v3.0.0-alpha';
   const gitBranch = 'v3';
 
