@@ -5,18 +5,17 @@ const seleniumAssistant = require('selenium-assistant');
 const path = require('path');
 const clearRequire = require('clear-require');
 
-// const spawn = require('./utils/spawn-promise-wrapper');
 const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
 const testServer = require('../infra/testing/test-server');
 
 const runFile = (filePath) => {
-  // https://github.com/mochajs/mocha/issues/995
+  // Mocha can't be run multiple times, which we need for NODE_ENV.
+  // More info: https://github.com/mochajs/mocha/issues/995
   clearRequire.all();
   const Mocha = require('mocha');
 
   return new Promise((resolve, reject) => {
-    // Instantiate a Mocha instance.
     const mocha = new Mocha({
       retries: 2,
       timeout: 3 * 60 * 1000,
@@ -91,6 +90,11 @@ const runIntegrationForBrowser = async (browser) => {
 };
 
 gulp.task('test-integration', async () => {
+  if (process.platform === 'win32') {
+    logHelper.warn(`Skipping integration tests on Windows.`);
+    return;
+  }
+
   await testServer.start();
 
   try {
@@ -104,6 +108,6 @@ gulp.task('test-integration', async () => {
     throw err;
   }
 
-  // TODO Saucelabs browsers for - 1 browser
-  // TODO Saucelabs browsers for - 2 browser
+  // TODO Saucelabs browsers for latest - 1 browser
+  // TODO Saucelabs browsers for latest - 2 browser
 });
