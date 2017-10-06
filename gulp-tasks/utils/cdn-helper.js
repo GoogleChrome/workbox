@@ -83,10 +83,6 @@ class CDNHelper {
         public: true,
       });
 
-      // const file = bucket.file(destination);
-      // const response = await file.makePublic();
-      // console.log(response);
-
       publicUrls.push(
         `${STORAGE_ORIGIN}/${BUCKET_NAME}/${destination}`
       );
