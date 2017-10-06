@@ -8,7 +8,24 @@ const logHelper = require('../utils/log-helper');
 const app = express();
 
 app.get('/__WORKBOX/:moduleName', (req, res) => {
-  res.send(`Hello ${req.params.moduleName}!`);
+  const moduleName = req.params.moduleName;
+  const modulePath = path.join(__dirname, '..', '..', 'packages', moduleName);
+  const pkg = require(
+    path.join(modulePath, 'package.json')
+  );
+  const libraryPath = path.dirname(path.join(modulePath, pkg.main));
+  let libraryFileName = path.basename(pkg.main);
+  switch (process.env.NODE_ENV) {
+    case 'dev':
+      libraryFileName = libraryFileName.replace('.prod.', '.dev.');
+      break;
+    case 'production':
+      // NOOP.
+      break;
+    default:
+      res.status(404).send(`Unknown process.env.NODE_ENV.`);
+  }
+  res.sendFile(path.join(libraryPath, libraryFileName));
 });
 
 let server = null;
