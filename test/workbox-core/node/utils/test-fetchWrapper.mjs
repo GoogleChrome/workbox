@@ -1,8 +1,7 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import expectError from '../../../../infra/utils/expectError';
-import '../../../../infra/utils/mock-fetch';
+import expectError from '../../../../infra/testing/expectError';
 
 import fetchWrapper from '../../../../packages/workbox-core/utils/fetchWrapper.mjs';
 

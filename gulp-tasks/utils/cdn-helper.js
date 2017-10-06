@@ -4,15 +4,14 @@ const fs = require('fs-extra');
 const oneLine = require('common-tags').oneLine;
 const storage = require('@google-cloud/storage');
 
+const logHelper = require('../../infra/utils/log-helper');
+
 const PROJECT_ID = 'workbox-bab1f';
 const BUCKET_NAME = 'workbox-cdn';
+const STORAGE_ORIGIN = 'https://storage.googleapis.com';
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, '..', '..',
-  `workbox-cdn-service-account.json`);
+  `workbox-9d39634504ad.json`);
 
-const ERROR_GCS_INIT = oneLine`
-  Google Cloud Storage instance not initialised.
-  Call init() before any other function.
-`;
 const ERROR_SERVICE_ACCOUNT = oneLine`
   Unable to find the service account file that is required to upload
   to the CDN.
@@ -27,32 +26,43 @@ class CDNHelper {
     this._gcs = null;
   }
 
+  _getReleaseTagPath(tagName) {
+    return `releases/${tagName}`;
+  }
+
   getGCS() {
     if (!this._gcs) {
-      throw new Error(ERROR_GCS_INIT);
+      try {
+        fs.access(SERVICE_ACCOUNT_PATH);
+      } catch (err) {
+        throw new Error(ERROR_SERVICE_ACCOUNT);
+      }
+
+      this._gcs = storage({
+        projectId: PROJECT_ID,
+        keyFilename: SERVICE_ACCOUNT_PATH,
+      });
     }
 
     return this._gcs;
   }
 
-  async init() {
-    const access = fs.access(SERVICE_ACCOUNT_PATH);
-    if (!access) {
-      throw new Error(ERROR_SERVICE_ACCOUNT);
-    }
-
-    this._gcs = storage({
-      projectId: PROJECT_ID,
-      keyFilename: SERVICE_ACCOUNT_PATH,
-    });
-  }
-
   async tagExists(tagName) {
     const gcs = this.getGCS();
-    const bucket = gcs.bucket(BUCKET_NAME);
-    const file = bucket.file(`${tagName}`);
-    const exists = await file.exists();
-    return exists[0];
+    try {
+      const bucket = gcs.bucket(BUCKET_NAME);
+      // bucket.file('some/path/').exists() doesn't seem to work
+      // for nested directories. Instead we are checking if there are
+      // files in the expected release directory.
+      const response = await bucket.getFiles({
+        prefix: `${this._getReleaseTagPath(tagName)}/`,
+      });
+      const files = response[0];
+      return files.length > 0;
+    } catch (err) {
+      logHelper.error(err);
+      throw err;
+    }
   }
 
   async upload(tagName, directoryToUpload) {
@@ -63,13 +73,21 @@ class CDNHelper {
       absolute: true,
     });
 
+    const publicUrls = [];
     const bucket = gcs.bucket(BUCKET_NAME);
     for (let filePath of filePaths) {
+      const destination =
+        `${this._getReleaseTagPath(tagName)}/${path.basename(filePath)}`;
       await bucket.upload(filePath, {
-        destination: `${tagName}/${path.basename(filePath)}`,
+        destination,
         public: true,
       });
+
+      publicUrls.push(
+        `${STORAGE_ORIGIN}/${BUCKET_NAME}/${destination}`
+      );
     }
+    return publicUrls;
   }
 }
 

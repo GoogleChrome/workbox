@@ -1,17 +1,12 @@
 import {expect} from 'chai';
-import {IDBFactory, IDBKeyRange, reset} from 'shelving-mock-indexeddb';
+import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import {_private} from '../../../../packages/workbox-core/index.mjs';
 import PrecachedDetailsModel from '../../../../packages/workbox-precaching/models/PrecachedDetailsModel.mjs';
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 
 describe('[workbox-precaching] PrecachedDetailsModel', function() {
-  before(async function() {
-    global.indexedDB = new IDBFactory();
-    global.IDBKeyRange = IDBKeyRange;
-  });
-
   beforeEach(function() {
-    reset();
+    iDBReset();
   });
 
   describe('constructor', function() {

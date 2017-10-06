@@ -2,7 +2,7 @@ import clearRequire from 'clear-require';
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import expectError from '../../../infra/utils/expectError';
+import expectError from '../../../infra/testing/expectError';
 
 describe(`[workbox-routing] SW environment`, function() {
   const MODULE_PATH = '../../../packages/workbox-routing/index.mjs';

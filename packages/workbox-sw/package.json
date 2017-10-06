@@ -1,9 +1,9 @@
 {
-  "name": "workbox-core",
+  "name": "workbox-sw",
   "version": "3.0.0",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
-  "description": "This module is used by a number of the other workboxjs.org modules to share common code.",
+  "description": "This module makes it easy to get started with the Workbox service worker libraries.",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
@@ -14,13 +14,15 @@
     "sw"
   ],
   "scripts": {
-    "prepublish": "gulp build-packages --package workbox-core"
+    "prepublish": "gulp build-packages --package workbox-sw"
   },
   "workbox": {
-    "browserNamespace": "core",
+    "browserNamespace": "sw",
     "packageType": "browser"
   },
-  "main": "index.mjs",
+  "main": "build/browser-bundles/workbox-sw.prod.js",
   "module": "index.mjs",
-  "browser": "build/browser/workbox-core.prod.js"
+  "dependencies": {
+    "workbox-core": "3.0.0"
+  }
 }

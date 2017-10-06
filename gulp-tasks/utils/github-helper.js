@@ -31,6 +31,7 @@ module.exports = {
   },
 
   getTaggedReleases: async () => {
+    authenticate();
     const releasesData = await github.repos.getReleases({
       owner: constants.GITHUB_OWNER,
       repo: constants.GITHUB_REPO,
@@ -44,6 +45,7 @@ module.exports = {
         releasesByTags[tagName] = release;
       }
     });
+
     return releasesByTags;
   },
 
