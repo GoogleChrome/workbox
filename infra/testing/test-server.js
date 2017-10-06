@@ -11,7 +11,7 @@ app.get(/\/__WORKBOX\/buildFile\/(workbox-[A-z]*)(\.(?:dev|prod)\.(.*))*/, (req,
   const moduleName = req.params[0];
   const fileExtension = req.params[2];
 
-  const modulePath = path.join(__dirname, '..', '..', 'packages', moduleName);
+  const modulePath = path.posix.join(__dirname, '..', '..', 'packages', moduleName);
   const pkg = require(
     path.join(modulePath, 'package.json')
   );
