@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const logHelper = require('./log-helper');
+const logHelper = require('../utils/log-helper');
 
 module.exports = async (func, errorName, finalCb) => {
   let caughtError = null;

@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import expectError from '../../../../infra/utils/expectError';
+import expectError from '../../../../infra/testing/expectError';
 import assert from '../../../../packages/workbox-core/utils/assert';
 
 describe(`workbox-core  assert`, function() {

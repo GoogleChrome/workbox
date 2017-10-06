@@ -35,7 +35,7 @@ module.exports = {
     files: [
       'packages/workbox-core/utils/logger.mjs',
       'test/workbox-core/bundle/node/utils/test-LogHelper.js',
-      'infra/utils/cli-test-helper.js',
+      'infra/testing/cli-test-helper.js',
       'infra/utils/log-helper.js',
     ],
     rules: {
@@ -59,7 +59,7 @@ module.exports = {
     },
   }, {
     files: [
-      'infra/utils/generate-variant-tests.js',
+      'infra/testing/generate-variant-tests.js',
     ],
     env: {
       'mocha': true

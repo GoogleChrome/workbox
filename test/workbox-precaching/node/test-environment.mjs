@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 import clearRequire from 'clear-require';
-import expectError from '../../../infra/utils/expectError';
+import expectError from '../../../infra/testing/expectError';
 
 describe(`[workbox-precaching] WorkboxPrecaching`, function() {
   let sandbox;

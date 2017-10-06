@@ -1,8 +1,6 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import '../../../../infra/utils/mock-fetch';
-
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 
 describe('[workbox-precaching] PrecacheEntry', function() {

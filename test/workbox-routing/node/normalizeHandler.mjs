@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import expectError from '../../../infra/utils/expectError.js';
+import expectError from '../../../infra/testing/expectError.js';
 import normalizeHandler from '../../../packages/workbox-routing/lib/normalizeHandler.mjs';
 
 const handler = {

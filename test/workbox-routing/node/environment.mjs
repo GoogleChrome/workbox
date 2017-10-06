@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 import clearRequire from 'clear-require';
-import expectError from '../../../infra/utils/expectError';
+import expectError from '../../../infra/testing/expectError';
 
 describe(`workbox-routing: SW environment`, function() {
   const sandbox = sinon.sandbox.create();

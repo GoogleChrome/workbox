@@ -1,6 +1,6 @@
 import {expect} from 'chai';
-import expectError from '../../../../infra/utils/expectError';
-import generateVariantTests from '../../../../infra/utils/generate-variant-tests';
+import expectError from '../../../../infra/testing/expectError';
+import generateVariantTests from '../../../../infra/testing/generate-variant-tests';
 import core from '../../../../packages/workbox-core/index.mjs';
 import * as coreModule from '../../../../packages/workbox-core/index.mjs';
 
