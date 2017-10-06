@@ -234,7 +234,7 @@ describe(`[workbox-routing] Router`, function() {
   });
 
   describe(`handling requests`, function() {
-    it(`should return a promise from the Route's handler when there's a matching route`, async function() {
+    it(`should return a response from the Route's handler when there's a matching route`, async function() {
       const router = new Router();
       const route = new Route(
         () => true,
@@ -250,7 +250,7 @@ describe(`[workbox-routing] Router`, function() {
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
-    it(`should return a promise from the default handler when there's no matching route`, async function() {
+    it(`should return a response from the default handler when there's no matching route`, async function() {
       const router = new Router();
       const route = new Route(
         () => false,
@@ -267,7 +267,7 @@ describe(`[workbox-routing] Router`, function() {
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
-    it(`should return a promise from the catch handler when the matching route's handler rejects`, async function() {
+    it(`should return a response from the catch handler when the matching route's handler rejects`, async function() {
       const router = new Router();
       const route = new Route(
         () => true,
@@ -282,6 +282,21 @@ describe(`[workbox-routing] Router`, function() {
       const responseBody = await response.text();
 
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
+    });
+
+    it(`should not return a response when there's no matching route and no default handler`, async function() {
+      const router = new Router();
+      const route = new Route(
+        () => false,
+        () => new Response(),
+      );
+      router.registerRoute(route);
+
+      // route.match() always returns false, so the Request details don't matter.
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
+      const response = await router.handleRequest(event);
+
+      expect(response).not.to.exist;
     });
   });
 });
