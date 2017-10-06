@@ -9,10 +9,15 @@ gulp.task('publish:clean', () => {
     constants.GENERATED_RELEASE_FILES_DIRNAME));
 });
 
-gulp.task('publish', gulp.series([
-  'build',
-  'test',
+gulp.task('publish:cdn+git', gulp.series([
   'publish:clean',
   'publish-github',
   'publish-cdn',
+]));
+
+gulp.task('publish', gulp.series([
+  'test',
+  // TODO: Publish lerna here (this will push the git tag that everything else)
+  // will lend off of
+  'publish:cdn+git',
 ]));

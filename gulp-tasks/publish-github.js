@@ -1,38 +1,43 @@
 const gulp = require('gulp');
 const path = require('path');
 
-
-const generateReleaseFiles = require('./utils/generate-release-files');
+const publishHelpers = require('./utils/publish-helpers');
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
 
-const handleGithubRelease = async (tagName, gitBranch, release) => {
-  // First attempt to generate the files. If this fails, we won't have
-  // generated an empty Github release.
-  const releaseFileDetails = await generateReleaseFiles(tagName, gitBranch);
-
-  if (!release) {
+const publishReleaseOnGithub =
+  async (tagName, releaseInfo, tarPath, zipPath) => {
+  if (!releaseInfo) {
     const releaseData = await githubHelper.createRelease({
       tag_name: tagName,
       draft: true,
       name: `Workbox ${tagName}`,
     });
-    release = releaseData.data;
+    releaseInfo = releaseData.data;
   }
 
   await githubHelper.uploadAsset({
-    id: release.id,
-    filePath: releaseFileDetails.tarPath,
-    name: path.basename(releaseFileDetails.tarPath),
-    label: path.basename(releaseFileDetails.tarPath),
+    id: releaseInfo.id,
+    filePath: tarPath,
+    name: path.basename(tarPath),
+    label: path.basename(tarPath),
   });
 
   await githubHelper.uploadAsset({
-    id: release.id,
-    filePath: releaseFileDetails.zipPath,
-    name: path.basename(releaseFileDetails.zipPath),
-    label: path.basename(releaseFileDetails.zipPath),
+    id: releaseInfo.id,
+    filePath: zipPath,
+    name: path.basename(zipPath),
+    label: path.basename(zipPath),
   });
+};
+
+const handleGithubRelease = async (tagName, gitBranch, releaseInfo) => {
+  logHelper.log(`Creating Github release ${logHelper.highlight(tagName)}.`);
+
+  const {tarPath, zipPath} =
+    await publishHelpers.createBundles(tagName, gitBranch);
+
+  return publishReleaseOnGithub(tagName, releaseInfo, tarPath, zipPath);
 };
 
 const filterTagsWithReleaseBundles = (taggedReleases) => {
@@ -73,10 +78,6 @@ gulp.task('publish-github:temp-v3', async () => {
   const tagsToBuild = await filterTagsWithReleaseBundles({
     [tagName]: taggedReleases[tagName],
   });
-
-  if (tagsToBuild.length === 0) {
-    logHelper.log(`The demo Github release 'v3.0.0-alpha' is already drafted.`);
-  }
 
   for (let tagName of tagsToBuild) {
     // Override the git branch here since we aren't actually
