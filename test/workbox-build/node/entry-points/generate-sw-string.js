@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const path = require('path');
 
 const generateSWString = require('../../../../packages/workbox-build/src/entry-points/generate-sw-string');
-const validateServiceWorkerRuntime = require('../../../../infra/utils/validator/service-worker-runtime');
+const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, function() {
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');

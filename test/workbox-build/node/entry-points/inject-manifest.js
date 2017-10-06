@@ -4,7 +4,7 @@ const tempy = require('tempy');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 const injectManifest = require('../../../../packages/workbox-build/src/entry-points/inject-manifest');
-const validateServiceWorkerRuntime = require('../../../../infra/utils/validator/service-worker-runtime');
+const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, function() {
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');

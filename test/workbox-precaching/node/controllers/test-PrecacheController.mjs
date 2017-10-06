@@ -1,11 +1,10 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 import clearRequire from 'clear-require';
-import {IDBFactory, IDBKeyRange, reset} from 'shelving-mock-indexeddb';
+import {reset as iDBReset} from 'shelving-mock-indexeddb';
 
-import '../../../../infra/utils/mock-fetch';
-import expectError from '../../../../infra/utils/expectError';
-import generateTestVariants from '../../../../infra/utils/generate-variant-tests';
+import expectError from '../../../../infra/testing/expectError';
+import generateTestVariants from '../../../../infra/testing/generate-variant-tests';
 
 import {_private} from '../../../../packages/workbox-core/index.mjs';
 import PrecacheController from '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
@@ -15,11 +14,6 @@ const {logger, cacheNames} = _private;
 describe(`[workbox-precaching] PrecacheController`, function() {
   const sandbox = sinon.sandbox.create();
 
-  before(function() {
-    global.indexedDB = new IDBFactory();
-    global.IDBKeyRange = IDBKeyRange;
-  });
-
   beforeEach(async function() {
     clearRequire.all();
 
@@ -28,7 +22,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       return caches.delete(cacheName);
     }));
 
-    reset();
+    iDBReset();
 
     // Run this in the `beforeEach` hook as well as the afterEach hook due to
     // a mocha bug where `afterEach` hooks aren't run for skipped tests.

@@ -11,7 +11,13 @@
  limitations under the License.
  */
 
+const mockFetch = require('./mock-fetch');
+const {IDBFactory, IDBKeyRange} = require('shelving-mock-indexeddb');
 const makeServiceWorkerEnv = require('service-worker-mock');
+
+global.fetch = mockFetch;
+global.indexedDB = new IDBFactory();
+global.IDBKeyRange = IDBKeyRange;
 
 const swEnv = makeServiceWorkerEnv();
 
