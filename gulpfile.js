@@ -45,6 +45,7 @@ const gulpTaskFiles = [
   'test-node',
   'test-integration',
   'test',
+  'test-server',
   'analyze-properties',
   'publish-github',
   'publish-cdn',
