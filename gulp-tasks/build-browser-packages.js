@@ -5,10 +5,10 @@ const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
 
 gulp.task('build-browser-packages', gulp.series(
-  constants.BUILD_TYPES.map((buildType) => packageRunnner(
+  Object.keys(constants.BUILD_TYPES).map((buildKey) => packageRunnner(
     'build-browser-packages',
     'browser',
     buildBrowserPackage,
-    buildType
+    constants.BUILD_TYPES[buildKey],
   ))
 ));

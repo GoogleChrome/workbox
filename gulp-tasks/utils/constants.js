@@ -21,5 +21,8 @@ module.exports = {
   NAMESPACE_PREFIX: 'workbox',
 
   // This is the environments that we should use for NODE_ENV.
-  BUILD_TYPES: ['dev', 'production'],
+  BUILD_TYPES: {
+    dev: 'dev',
+    prod: 'production',
+  },
 };

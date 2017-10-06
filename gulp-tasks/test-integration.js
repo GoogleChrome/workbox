@@ -78,7 +78,8 @@ const runIntegrationForBrowser = async (browser) => {
       glob.sync(`test/${global.packageOrStar}/integration`);
 
     for (const packageToTest of packagesToTest) {
-      for (const nodeEnv of constants.BUILD_TYPES) {
+      for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
+        const nodeEnv = constants.BUILD_TYPES[buildKey];
         await runIntegrationTestSuite(
           packageToTest, nodeEnv, browser.getPrettyName(), webdriver);
       }

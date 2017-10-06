@@ -59,7 +59,7 @@ module.exports = {
     },
   }, {
     files: [
-      'infra/testing/generate-variant-tests.js',
+      'infra/testing/**/*',
     ],
     env: {
       'mocha': true
@@ -78,6 +78,13 @@ module.exports = {
     ],
     rules: {
       'max-len': 0,
+    },
+  }, {
+    files: [
+      'infra/testing/env-it.js',
+    ],
+    rules: {
+      'no-invalid-this': 0,
     },
   }],
 };
