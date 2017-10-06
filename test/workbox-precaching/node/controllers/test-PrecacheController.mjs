@@ -29,13 +29,14 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     // https://github.com/mochajs/mocha/issues/2546
     sandbox.restore();
 
-    // Prevent logs in the mocha output.
-    sandbox.stub(logger, 'warn');
-    sandbox.stub(logger, 'debug');
     sandbox.stub(logger, 'log');
+    sandbox.stub(logger, 'debug');
+    sandbox.stub(logger, 'warn');
+    sandbox.stub(logger, 'groupCollapsed');
+    sandbox.stub(logger, 'groupEnd');
   });
 
-  afterEach(function() {
+  after(function() {
     sandbox.restore();
   });
 

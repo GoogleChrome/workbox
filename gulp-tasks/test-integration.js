@@ -24,8 +24,10 @@ const runFile = (filePath) => {
     mocha.addFile(filePath);
 
     // Run the tests.
-    mocha.run(function(failures) {
-      logHelper.log(failures);
+    mocha.run(function(failureCount) {
+      if (failureCount > 0) {
+        return reject(`${failureCount} tests failed.`);
+      }
       resolve();
     });
   });
@@ -100,7 +102,16 @@ gulp.task('test-integration', async () => {
   try {
     const localBrowsers = seleniumAssistant.getLocalBrowsers();
     for (let localBrowser of localBrowsers) {
-      await runIntegrationForBrowser(localBrowser);
+      switch (localBrowser.getId()) {
+        case 'chrome':
+        case 'firefox':
+          await runIntegrationForBrowser(localBrowser);
+          break;
+        default:
+          logHelper.warn(oneLine`
+            Skipping integration tests for ${localBrowser.getPrettyName()}.
+          `);
+      }
     }
     await testServer.stop();
   } catch (err) {
