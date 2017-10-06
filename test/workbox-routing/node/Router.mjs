@@ -13,6 +13,7 @@ describe(`[workbox-routing] Router`, function() {
   const MATCH = () => {};
   const HANDLER = () => {};
   const METHOD = 'POST';
+  const EXPECTED_RESPONSE_BODY = 'test body';
 
   beforeEach(async function() {
     clearRequire.all();
@@ -51,7 +52,7 @@ describe(`[workbox-routing] Router`, function() {
       expect(spy.firstCall.args[1]).to.be.a('function');
     });
 
-    it(`should return false and not a fetch listener the second time addFetchListener() is called`, function() {
+    it(`should return false and not add a fetch listener the second time addFetchListener() is called`, function() {
       const spy = sandbox.spy(self, 'addEventListener');
 
       const router = new Router();
@@ -65,7 +66,7 @@ describe(`[workbox-routing] Router`, function() {
   });
 
   describe(`registering and unregistering routes`, function() {
-    it(`should throw in dev when register is called with objects that don't match the expected interface`, async function() {
+    it(`should throw in dev when registerRoute is called with a parameter that doesn't match the expected interface`, async function() {
       if (process.env.NODE_ENV === 'production') return this.skip();
 
       const router = new Router();
@@ -76,8 +77,8 @@ describe(`[workbox-routing] Router`, function() {
         (error) => {
           expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
           expect(error.details).to.have.property('className').that.eql('Router');
-          expect(error.details).to.have.property('funcName').that.eql('registerRoutes');
-          expect(error.details).to.have.property('paramName').that.eql('routes');
+          expect(error.details).to.have.property('funcName').that.eql('registerRoute');
+          expect(error.details).to.have.property('paramName').that.eql('route');
         }
       );
 
@@ -87,13 +88,52 @@ describe(`[workbox-routing] Router`, function() {
         (error) => {
           expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
           expect(error.details).to.have.property('className').that.eql('Router');
-          expect(error.details).to.have.property('funcName').that.eql('registerRoutes');
-          expect(error.details).to.have.property('paramName').that.eql('routes');
+          expect(error.details).to.have.property('funcName').that.eql('registerRoute');
+          expect(error.details).to.have.property('paramName').that.eql('route');
         }
       );
 
       await expectError(
         () => router.registerRoute({match: MATCH, method: METHOD}),
+        'incorrect-type',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+          expect(error.details).to.have.property('className').that.eql('Router');
+          expect(error.details).to.have.property('funcName').that.eql('registerRoute');
+          expect(error.details).to.have.property('paramName').that.eql('route');
+        }
+      );
+
+      await expectError(
+        () => router.registerRoute({match: MATCH, method: METHOD, handler: {}}),
+        'missing-a-method',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+          expect(error.details).to.have.property('className').that.eql('Router');
+          expect(error.details).to.have.property('funcName').that.eql('registerRoute');
+          expect(error.details).to.have.property('paramName').that.eql('route');
+        }
+      );
+
+      await expectError(
+        () => router.registerRoute({match: MATCH, handle: HANDLER}),
+        'incorrect-type',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+          expect(error.details).to.have.property('className').that.eql('Router');
+          expect(error.details).to.have.property('funcName').that.eql('registerRoute');
+          expect(error.details).to.have.property('paramName').that.eql('route');
+        }
+      );
+    });
+
+    it(`should throw in dev when registerRoutes is called with a parameter that doesn't match the expected interface`, async function() {
+      if (process.env.NODE_ENV === 'production') return this.skip();
+
+      const router = new Router();
+
+      await expectError(
+        () => router.registerRoutes([{}]),
         'missing-a-method',
         (error) => {
           expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
@@ -103,9 +143,41 @@ describe(`[workbox-routing] Router`, function() {
         }
       );
 
+      await expectError(
+        () => router.registerRoutes([{handle: HANDLER, method: METHOD}]),
+        'missing-a-method',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+          expect(error.details).to.have.property('className').that.eql('Router');
+          expect(error.details).to.have.property('funcName').that.eql('registerRoutes');
+          expect(error.details).to.have.property('paramName').that.eql('routes');
+        }
+      );
 
       await expectError(
-        () => router.registerRoute({match: MATCH, handle: HANDLER}),
+        () => router.registerRoutes([{match: MATCH, method: METHOD}]),
+        'incorrect-type',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+          expect(error.details).to.have.property('className').that.eql('Router');
+          expect(error.details).to.have.property('funcName').that.eql('registerRoutes');
+          expect(error.details).to.have.property('paramName').that.eql('routes');
+        }
+      );
+
+      await expectError(
+        () => router.registerRoutes([{match: MATCH, method: METHOD, handler: {}}]),
+        'missing-a-method',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+          expect(error.details).to.have.property('className').that.eql('Router');
+          expect(error.details).to.have.property('funcName').that.eql('registerRoutes');
+          expect(error.details).to.have.property('paramName').that.eql('routes');
+        }
+      );
+
+      await expectError(
+        () => router.registerRoutes([{match: MATCH, handle: HANDLER}]),
         'incorrect-type',
         (error) => {
           expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
@@ -124,8 +196,12 @@ describe(`[workbox-routing] Router`, function() {
       const getRoute2 = new Route(MATCH, HANDLER, 'GET');
       const putRoute1 = new Route(MATCH, HANDLER, 'PUT');
       const putRoute2 = new Route(MATCH, HANDLER, 'PUT');
-      // We support passing in objects that match the expected interface.
-      const postRoute = {match: MATCH, handle: HANDLER, method: 'POST'};
+      // We support passing in Objects that match the expected interface in addition to Routes.
+      const postRoute = {
+        match: MATCH,
+        handler: {handle: HANDLER},
+        method: 'POST',
+      };
 
       router.registerRoute(getRoute1);
       router.registerRoutes([getRoute2, putRoute1, putRoute2, postRoute]);
@@ -138,6 +214,74 @@ describe(`[workbox-routing] Router`, function() {
 
       expect(router._routes.get('GET')).to.have.members([getRoute1]);
       expect(router._routes.get('PUT')).to.have.members([putRoute1]);
+    });
+  });
+
+  describe(`setting default and catch handlers`, function() {
+    it(`should update the expected internal state when setDefaultHandler() is called`, function() {
+      const router = new Router();
+      router.setDefaultHandler(HANDLER);
+
+      expect(router.defaultHandler).to.eql({handle: HANDLER});
+    });
+
+    it(`should update the expected internal state when setCatchHandler() is called`, function() {
+      const router = new Router();
+      router.setCatchHandler(HANDLER);
+
+      expect(router.catchHandler).to.deep.eql({handle: HANDLER});
+    });
+  });
+
+  describe(`handling requests`, function() {
+    it(`should return a promise from the Route's handler when there's a matching route`, async function() {
+      const router = new Router();
+      const route = new Route(
+        () => true,
+        () => new Response(EXPECTED_RESPONSE_BODY),
+      );
+      router.registerRoute(route);
+
+      // route.match() always returns true, so the Request details don't matter.
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
+      const response = await router.handleRequest(event);
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
+    });
+
+    it(`should return a promise from the default handler when there's no matching route`, async function() {
+      const router = new Router();
+      const route = new Route(
+        () => false,
+        () => new Response(),
+      );
+      router.registerRoute(route);
+      router.setDefaultHandler(() => new Response(EXPECTED_RESPONSE_BODY));
+
+      // route.match() always returns false, so the Request details don't matter.
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
+      const response = await router.handleRequest(event);
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
+    });
+
+    it(`should return a promise from the catch handler when the matching route's handler rejects`, async function() {
+      const router = new Router();
+      const route = new Route(
+        () => true,
+        () => Promise.reject(),
+      );
+      router.registerRoute(route);
+      router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
+
+      // route.match() always returns false, so the Request details don't matter.
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
+      const response = await router.handleRequest(event);
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
   });
 });

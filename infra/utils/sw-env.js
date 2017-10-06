@@ -18,6 +18,17 @@ const swEnv = makeServiceWorkerEnv();
 // This is needed to ensure new URL('/', location), works.
 swEnv.location = 'https://example.com';
 
+// See https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent/FetchEvent
+class FetchEvent {
+  constructor(type, init) {
+    this.type = type;
+    this.request = init.request;
+    this.clientId = init.clientId;
+    this.isReload = init.isReload;
+  }
+}
+swEnv.FetchEvent = FetchEvent;
+
 class FakeSWGlobalScope {}
 swEnv.ServiceWorkerGlobalScope = FakeSWGlobalScope;
 

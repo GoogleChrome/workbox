@@ -103,8 +103,7 @@ class Route {
       }
     }
 
-    const normalizedHandler = normalizeHandler(handler);
-    this.handle = normalizedHandler.handle.bind(normalizedHandler);
+    this.handler = normalizeHandler(handler);
     this.match = match;
     this.method = method || defaultMethod;
   }

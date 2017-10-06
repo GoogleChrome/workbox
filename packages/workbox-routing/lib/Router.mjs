@@ -217,7 +217,14 @@ class Router {
           paramName: 'routes',
         });
 
-        core.assert.hasMethod(route, 'handle', {
+        core.assert.isType(route.handler, 'object', {
+          moduleName: 'workbox-routing',
+          className: 'Router',
+          funcName: 'registerRoutes',
+          paramName: 'routes',
+        });
+
+        core.assert.hasMethod(route.handler, 'handle', {
           moduleName: 'workbox-routing',
           className: 'Router',
           funcName: 'registerRoutes',
@@ -248,6 +255,36 @@ class Router {
    * @param {module:workbox-routing.Route} route The route to register.
    */
   registerRoute(route) {
+    if (process.env.NODE_ENV !== 'production') {
+      core.assert.hasMethod(route, 'match', {
+        moduleName: 'workbox-routing',
+        className: 'Router',
+        funcName: 'registerRoute',
+        paramName: 'route',
+      });
+
+      core.assert.isType(route.handler, 'object', {
+        moduleName: 'workbox-routing',
+        className: 'Router',
+        funcName: 'registerRoute',
+        paramName: 'route',
+      });
+
+      core.assert.hasMethod(route.handler, 'handle', {
+        moduleName: 'workbox-routing',
+        className: 'Router',
+        funcName: 'registerRoute',
+        paramName: 'route',
+      });
+
+      core.assert.isType(route.method, 'string', {
+        moduleName: 'workbox-routing',
+        className: 'Router',
+        funcName: 'registerRoute',
+        paramName: 'route',
+      });
+    }
+
     this.registerRoutes([route]);
   }
 
