@@ -15,7 +15,7 @@ export default (entriesMap) => {
   const urlOnlyEntries = [];
   entriesMap.forEach(
     (entry) => {
-      if (typeof entry === 'string' || !entry.revision) {
+      if (typeof entry === 'string' || !entry._revision) {
         urlOnlyEntries.push(entry._originalInput);
       }
     }

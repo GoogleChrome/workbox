@@ -20,6 +20,7 @@
     "browserNamespace": "core",
     "packageType": "browser"
   },
-  "main": "build/browser-bundles/workbox-core.prod.js",
-  "module": "index.mjs"
+  "main": "index.mjs",
+  "module": "index.mjs",
+  "browser": "build/browser/workbox-core.prod.js"
 }
