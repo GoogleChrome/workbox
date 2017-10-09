@@ -6,7 +6,11 @@
   "scripts": {
     "local-jsdoc": "jsdoc",
     "local-lerna": "lerna",
+<<<<<<< HEAD
     "test": "nyc --clean false --require @std/esm --require ./infra/testing/sw-env --silent mocha",
+=======
+    "test": "nyc --require ./infra/utils/sw-env --require @std/esm --clean false --silent mocha",
+>>>>>>> f1d964e... Bumping std esm
     "coverage-report": "nyc report --reporter lcov --reporter text",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint \"**/*.{js,mjs}\" --ignore-path .gitignore",
