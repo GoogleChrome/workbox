@@ -27,6 +27,10 @@ const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 async function injectManifest(input) {
   const options = new InjectManifestOptions(input);
 
+  if (path.normalize(input.swSrc) === path.normalize(input.swDest)) {
+    throw new Error(errors['same-src-and-dest']);
+  }
+
   const globalRegexp = new RegExp(options.injectionPointRegexp, 'g');
 
   const {count, size, manifestEntries} = await getFileManifestEntries(options);
