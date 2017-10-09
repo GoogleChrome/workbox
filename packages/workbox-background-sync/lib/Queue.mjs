@@ -14,7 +14,7 @@
 */
 
 import {_private} from 'workbox-core';
-import serializeRequest from './serialize-request.mjs';
+import StorableRequest from './StorableRequest.mjs';
 
 
 const {indexedDBHelper, WorkboxError} = _private;
@@ -24,24 +24,23 @@ const names = new Set();
 const DB_NAME = 'workbox-background-sync';
 const TAG_PREFIX = 'workbox-background-sync';
 const OBJECT_STORE_NAME = 'requests';
+const MAX_RETENTION_TIME = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 
 /**
- * Use the instance of this class to push the failed requests into the queue.
+ * A class to manage storing failed requests in IndexedDB and retrying them
+ * later. All parts of the storing and replaying process are observable via
+ * callbacks.
  *
  * @example
- * When you want to push the requests manually
- * let bgQueue = new workbox.backgroundSync.Queue();
- * self.addEventListener('fetch', function(e) {
- *   if (!e.request.url.startsWith('https://jsonplaceholder.typicode.com')) {
- *     return;
- *   }
+ * // Manually detecting failed requests and added them to the queue.
+ * const bgQueue = new workbox.backgroundSync.Queue('myQueue');
+ * self.addEventListener('fetch', function(event) {
+ *   if (!event.request.url.startsWith('https://example.com')) return;
  *
- *   const clone = e.request.clone();
- *   e.respondWith(fetch(e.request).catch((err) => {
- *     bgQueue.pushIntoQueue({
- *       request: clone,
- *     });
+ *   const clone = event.request.clone();
+ *   event.respondWith(fetch(event.request).catch((err) => {
+ *     bgQueue.addRequest(clone);
  *     throw err;
  *   }));
  * });
@@ -50,43 +49,63 @@ const OBJECT_STORE_NAME = 'requests';
  */
 export default class Queue {
   /**
-   * Creates an instance of Queue with the given name and config options
+   * Creates an instance of Queue with the given options
    *
-   * @param {string} name
-   * @param {Object} [input]
-   * @param {number} [input.maxRetentionTime = 5 days] Time for which a queued
-   *     request will live in the queue(irrespective of failed/success of
-   *     replay).
-   * @param {Object} [input.callbacks] Callbacks for successfull/failed
-   *     replay of a request as well as modifying before enqueue/dequeue-ing.
-   * @param {Fuction} [input.callbacks.replayDidSucceed] Invoked with params
-   *     (hash:string, response:Response) after a request is successfully
-   *     replayed.
-   * @param {Fuction<string>} [input.callbacks.replayDidFail] Invoked with
-   *     param (hash:string) after a replay attempt has failed.
-   * @param {Fuction<Object>} [input.callbacks.requestWillEnqueue] Invoked with
-   *     param (reqData:Object) before a failed request is saved to the queue.
-   *     Use this to modify the saved data.
-   * @param {Fuction<Object>} [input.callbacks.requestWillDequeue] Invoked with
-   *     param (reqData:Object) before a failed request is retrieved from the
-   *     queue. Use this to modify the data before the request is replayed.
-   * XXX@param {BroadcastChannel=} [input.broadcastChannel] BroadcastChannel
-   *     which will be used to publish messages when the request will be queued.
+   * @param {string} name The unique name for this queue. This name must be
+   *     unique as it's used to register sync events and store requests
+   *     in IndexedDB specific to this instance. An error will be thrown if
+   *     a duplicate name is detected.
+   * @param {Object} [opts]
+   * @param {number} [opts.maxRetentionTime = 7 days] The amount of time (in
+   *     ms) a request may be retried. After this amount of time has passed,
+   *     the request will be deleted and not retried.
+   * @param {Object} [opts.callbacks] Callbacks to observe the lifecycle of
+   *     queued requests. Use these to respond to or modify the requests
+   *     during the replay process.
+   * @param {function(StorableRequest):undefined} requestWillQueue
+   *     Invoked immediately before the request is stored to IndexedDB. Use
+   *     this callback to modify request data at store time.
+   * @param {function(StorableRequest):undefined} requestWillReplay
+   *     Invoked immediately before the request is re-fetched. Use this
+   *     callback to modify request data at fetch time.
+   * @param {function(StorableRequest):undefined} requestDidReplay
+   *     Invoked immediately after the request has successfully re-fetched.
+   * @param {function(StorableRequest):undefined} replayDidFail
+   *     Invoked if the replay attempt failed.
+   * @param {function(Array<StorableRequest>):undefined} allRequestsDidReplay
+   *     Invoked after all requests in the queue have successfully replayed.
    */
   constructor(name, {
-    // broadcastChannel,
-    callbacks,
-    // maxRetentionTime = maxAge,
+    maxRetentionTime = MAX_RETENTION_TIME,
+    callbacks = {},
   } = {}) {
     // Ensure the store name is not already being used
     if (names.has(name)) {
       throw new WorkboxError('duplicate-queue-name', {name});
+    } else {
+      names.add(name);
     }
-    names.add(name);
+
     this._name = name;
+    this._callbacks = callbacks;
+    this._maxRetentionTime = maxRetentionTime;
 
     this._addSyncListener();
   }
+
+  /**
+   * Returns an object containing the `fetchDidFail` lifecycle method. This
+   * object can be used as a RequestWrapper plugin to automatically add
+   * failed requests to the background sync queue to be retried later.
+   *
+   * @return {Object}
+   */
+  createPlugin() {
+    return {
+      fetchDidFail: ({request}) => this.addRequest(request),
+    };
+  }
+
 
   /**
    * Stores the passed request into IndexedDB. The database used is
@@ -96,14 +115,14 @@ export default class Queue {
    * @param {Request} request The request object to store.
    */
   async addRequest(request) {
-    const requestData = await serializeRequest(request);
-    const db = await this._getDb();
+    const storableRequest = await StorableRequest.fromRequest(request);
 
+    this._runCallback('requestWillQueue', storableRequest);
+
+    const db = await this._getDb();
     await db.add({
       queueName: this._name,
-      url: request.url,
-      timestamp: Date.now(),
-      requestData,
+      storableRequest: storableRequest.toObject(),
     });
 
     // Schedule this, but don't await it as we don't want to block subsequent
@@ -116,25 +135,48 @@ export default class Queue {
    * If the retry fails, they're re-added to the queue.
    */
   async replayRequests() {
-    const requestsInQueue = await this.getRequestsInQueue();
+    const storableRequestsInQueue = await this._getStorableRequestsInQueue();
+    const successfullyReplayedRequests = [];
+    let allReplaysSuccessful = true;
 
-    for (const [key, value] of requestsInQueue) {
-      await this._replayRequest(key, value);
+    for (const [key, storableRequest] of storableRequestsInQueue) {
+      const replaySuccessful = await this._replayRequest(key, storableRequest);
+      if (replaySuccessful) {
+        successfullyReplayedRequests.push(storableRequest);
+      } else {
+        allReplaysSuccessful = false;
+      }
+    }
+
+    if (allReplaysSuccessful) {
+      this._runCallback('allRequestsDidReplay');
     }
   }
 
   /**
    * Gets all requests in the object store matching this queue's name.
+   *
+   * @private
    * @return {Promise<Array>}
    */
-  async getRequestsInQueue() {
+  async _getStorableRequestsInQueue() {
     const db = await this._getDb();
+    const storableRequests = [];
 
-    return [...(await db.getAll()).entries()]
-        .filter(([key, value]) => value.queueName == this._name);
+    for (const [key, entry] of (await db.getAll()).entries()) {
+      if (entry.queueName == this._name) {
+        storableRequests.push(
+            [key, new StorableRequest(entry.storableRequest)]);
+      }
+    }
+
+    return storableRequests;
   }
 
   /**
+   * Gets a reference to the IndexedDB object store for queued requests.
+   *
+   * @private
    * @return {Promise<DBWrapper>}
    */
   _getDb() {
@@ -143,22 +185,59 @@ export default class Queue {
   }
 
   /**
+   * Replays a single request by attempt to re-fetch it. If the re-fetch is
+   * successful
+   *
+   * @private
    * @param {string} key The IndexedDB object store key.
-   * @param {{url: string, requestData: Object}} param2
-   *   - url: The request URL.
-   *   - requestData: The serialized request data.
-   * // @return {Promise}
+   * @param {StorableRequest} storableRequest
+   * @return {Promise<boolean>}
    */
-  async _replayRequest(key, {url, requestData}) {
-    const request = new Request(url, requestData);
-    try {
-      await fetch(request);
+  async _replayRequest(key, storableRequest) {
+    // Don't retry entries that are too old.
+    if (Date.now() - storableRequest.timestamp > this._maxRetentionTime) {
+      return this._removeRequest(key);
+    }
 
-      // If the fetch succeeds, remove the item from IndexedDB.
-      const db = await this._getDb();
-      await db.delete(key);
+    const request = storableRequest.toRequest();
+    try {
+      this._runCallback('requestWillReplay', storableRequest);
+      await fetch(request);
+      this._runCallback('requestDidReplay', storableRequest);
+
+      // TODO(philipwalton): in the unlikely event that the delete fails,
+      // this request may be replayed again. Do we want to warn in this case?
+      await this._removeRequest(key);
+
+      return true;
     } catch (err) {
-      // Do nothing
+      this._runCallback('replayDidFail', storableRequest);
+
+      return false;
+    }
+  }
+
+  /**
+   * Removes a request from IndexedDB for the specified key.
+   *
+   * @private
+   * @param {string} key
+   */
+  async _removeRequest(key) {
+    const db = await this._getDb();
+    await db.delete(key);
+  }
+
+  /**
+   * Runs the passed callback if it exists.
+   *
+   * @private
+   * @param {string} name The name of the callback on this._callbacks.
+   * @param {...*} args The arguments to invoke the callback with.
+   */
+  _runCallback(name, ...args) {
+    if (typeof this._callbacks[name] == 'function') {
+      this._callbacks[name].apply(null, args);
     }
   }
 
@@ -166,6 +245,7 @@ export default class Queue {
    * In sync-supporting browsers, this adds a listener for the sync event.
    * In non-sync-supporting browsers, this will retry the queue on service
    * worker startup.
+   *
    * @private
    */
   _addSyncListener() {
@@ -176,6 +256,7 @@ export default class Queue {
 
   /**
    * Registers a sync event with a tag unique to this instance.
+   *
    * @private
    */
   async _registerSync() {
@@ -191,7 +272,9 @@ export default class Queue {
   }
 
   /**
-   * @private 
+   * Returns a promise that resolves once the service worker is active.
+   *
+   * @private
    * @return {Promise}
    */
   _waitUntilActive() {

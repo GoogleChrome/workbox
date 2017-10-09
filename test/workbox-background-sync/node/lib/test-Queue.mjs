@@ -130,22 +130,24 @@ describe(`backgroundSync.Queue`, function() {
 
       const queue = new Queue('foo');
       const requestUrl = 'https://example.com';
-      const requestData = {
+      const requestInit = {
         method: 'POST',
         body: 'testing...',
         headers: {'x-foo': 'bar'},
         mode: 'cors',
       };
-      const request = new Request(requestUrl, requestData);
+      const request = new Request(requestUrl, requestInit);
 
       await queue.addRequest(request);
 
       expect(DBWrapper.prototype.add.calledOnce).to.be.true;
       expect(DBWrapper.prototype.add.calledWith({
         queueName: 'foo',
-        url: requestUrl,
-        timestamp: sinon.match.number,
-        requestData: sinon.match(requestData),
+        storableRequest: sinon.match({
+          url: requestUrl,
+          timestamp: sinon.match.number,
+          requestInit: sinon.match(requestInit),
+        }),
       })).to.be.true;
     });
 
@@ -158,13 +160,13 @@ describe(`backgroundSync.Queue`, function() {
 
       const queue = new Queue('foo');
       const requestUrl = 'https://example.com';
-      const requestData = {
+      const requestInit = {
         method: 'POST',
         body: 'testing...',
         headers: {'x-foo': 'bar'},
         mode: 'cors',
       };
-      const request = new Request(requestUrl, requestData);
+      const request = new Request(requestUrl, requestInit);
 
       await queue.addRequest(request);
 
@@ -181,13 +183,13 @@ describe(`backgroundSync.Queue`, function() {
 
       const queue = new Queue('foo');
       const requestUrl = 'https://example.com';
-      const requestData = {
+      const requestInit = {
         method: 'POST',
         body: 'testing...',
         headers: {'x-foo': 'bar'},
         mode: 'cors',
       };
-      const request = new Request(requestUrl, requestData);
+      const request = new Request(requestUrl, requestInit);
 
       // This shouldn't error, even though activation hasn't happened yet.
       await queue.addRequest(request);
@@ -274,7 +276,7 @@ describe(`backgroundSync.Queue`, function() {
           'workbox-background-sync', 'requests', {autoIncrement: true});
 
       const itemsInObjectStore = [...await db.getAll()]
-          .map(([key, value]) => value.url);
+          .map(([key, value]) => value.storableRequest.url);
 
       expect(itemsInObjectStore.length).to.equal(2);
       expect(itemsInObjectStore[0]).to.equal('/two');
@@ -306,7 +308,7 @@ describe(`backgroundSync.Queue`, function() {
           'workbox-background-sync', 'requests', {autoIncrement: true});
 
       const itemsInObjectStore = [...await db.getAll()]
-          .map(([key, value]) => value.url);
+          .map(([key, value]) => value.storableRequest.url);
 
       expect(itemsInObjectStore.length).to.equal(2);
       expect(itemsInObjectStore[0]).to.equal('/two');

@@ -25,6 +25,7 @@ global.indexedDB = new IDBFactory();
 global.IDBKeyRange = IDBKeyRange;
 
 // Stub missing/broken Headers API methods in `service-worker-mock`.
+// https://fetch.spec.whatwg.org/#headers-class
 class Headers {
   constructor(obj = {}) {
     this.obj = obj;
@@ -41,6 +42,7 @@ class Headers {
 global.Headers = Headers;
 
 // Stub missing/broken Request API methods in `service-worker-mock`.
+// https://fetch.spec.whatwg.org/#request-class
 class Request {
   constructor(url, options = {}) {
     if (url instanceof Request) {
