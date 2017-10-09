@@ -55,12 +55,17 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
 
     it(`should load workbox-core on construction`, function() {
-      sandbox.stub(WorkboxSW.prototype, 'loadModule');
+      sandbox.stub(global, 'importScripts');
+      sandbox.spy(WorkboxSW.prototype, 'loadModule');
 
-      const wb = new WorkboxSW();
+      // TODO Switch to contstants.BUILD_TYPES.prod
+      const wb = new WorkboxSW({
+        debug: process.env.NODE_ENV !== 'production',
+      });
 
       expect(wb.loadModule.callCount).to.equal(1);
-      expect(wb.loadModule.args[0]).to.deep.equal(['workbox-core']);
+      expect(global.importScripts.callCount).to.equal(1);
+      expect(global.importScripts.args[0]).to.deep.equal([`https://storage.googleapis.com/workbox-cdn/releases/WORKBOX_VERSION_TAG/workbox-core.${process.env.NODE_ENV.slice(0, 4)}.js`]);
     });
 
     it(`should not load workbox-core if disableModulesImports is true`, function() {
