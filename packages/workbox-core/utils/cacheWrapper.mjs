@@ -2,6 +2,7 @@
  * Wrapper around cache.put().
  *
  * Will call `cacheDidUpdate` on plugins if the cache was updated.
+ *
  * @param {string} cacheName
  * @param {Request} request
  * @param {Response} response
@@ -76,6 +77,7 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
 /**
  * This method will call cacheWillUpdate on the available plugins (or use
  * response.ok) to determine if the Response is safe and valid to cache.
+ *
  * @param {Request} request
  * @param {Response} response
  * @param {Array<Object>} plugins

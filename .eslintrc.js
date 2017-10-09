@@ -15,6 +15,7 @@ module.exports = {
   },
   rules: {
     "jsdoc/check-types": 2,
+    "jsdoc/newline-after-description": 2,
   },
   plugins: [
       'jsdoc',
@@ -34,6 +35,7 @@ module.exports = {
   }, {
     files: [
       'packages/workbox-core/utils/logger.mjs',
+      'packages/workbox-sw/index.mjs',
       'test/workbox-core/bundle/node/utils/test-LogHelper.js',
       'infra/testing/cli-test-helper.js',
       'infra/utils/log-helper.js',
@@ -78,6 +80,14 @@ module.exports = {
     ],
     rules: {
       'max-len': 0,
+    },
+  }
+  , {
+    files: [
+      'packages/workbox-sw/**/*',
+    ],
+    globals: {
+      'workbox': false,
     },
   }, {
     files: [

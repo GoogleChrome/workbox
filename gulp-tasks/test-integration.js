@@ -89,6 +89,12 @@ gulp.task('test-integration', async () => {
     return;
   }
 
+  const packagesToTest =
+    glob.sync(`test/${global.packageOrStar}/integration`);
+  if (packagesToTest.length === 0) {
+    return;
+  }
+
   await testServer.start();
 
   try {

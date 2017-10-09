@@ -9,7 +9,13 @@ const logHelper = require('../infra/utils/log-helper');
 const findMissingCDNTags = async (tagsData) => {
   const missingTags = [];
   for (let tagData of tagsData) {
-    const exists = await cdnUploadHelper.tagExists(tagData.name);
+    let exists = await cdnUploadHelper.tagExists(tagData.name);
+    // TODO: Remove this override for the v3.0.0-alpha
+    if (tagData.name === 'v3.0.0-alpha') {
+      logHelper.warn(`Forcing update to CDN for v3.0.0-alpha`);
+      exists = false;
+    }
+
     if (!exists) {
       missingTags.push(tagData);
     }
@@ -36,10 +42,6 @@ const handleCDNUpload = async (tagName, gitBranch) => {
 };
 
 gulp.task('publish-cdn:generate-from-tags', async () => {
-  // This gives the google-cloud/storage module a change to complain
-  // before any of the publish bundle work kicks in.
-  await cdnUploadHelper.init();
-
   // Get all of the tags in the repo.
   const tags = await githubHelper.getTags();
   const missingTags = await findMissingCDNTags(tags);
@@ -56,10 +58,6 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
 });
 
 gulp.task('publish-cdn:temp-v3', async () => {
-  // This gives the google-cloud/storage module a change to complain
-  // before any of the publish bundle work kicks in.
-  await cdnUploadHelper.init();
-
   const tagName = 'v3.0.0-alpha';
   const gitBranch = 'v3';
 

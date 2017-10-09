@@ -18,6 +18,7 @@ const makeServiceWorkerEnv = require('service-worker-mock');
 global.fetch = mockFetch;
 global.indexedDB = new IDBFactory();
 global.IDBKeyRange = IDBKeyRange;
+global.importScripts = () => {};
 
 const swEnv = makeServiceWorkerEnv();
 
