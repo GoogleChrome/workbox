@@ -31,13 +31,19 @@ class Headers {
     this.obj = obj;
   }
 
-  get() {
-    return '';
+  get(key) {
+    return this.obj[key];
+  }
+
+  set(key, value) {
+    this.obj[key] = value;
   }
 
   entries() {
     return Object.entries(this.obj);
   }
+
+  // TODO: implement append() and [Symbol.iterator]()
 }
 global.Headers = Headers;
 

@@ -72,12 +72,15 @@ export default class StorableRequest {
    * @param {string} param1.url
    * @param {Object} param1.requestInit
    *     See: https://fetch.spec.whatwg.org/#requestinit
+   * @param {number} param1.timestamp The time the request was created,
+   *     defaulting to the current time if not specified.
    */
-  constructor({url, requestInit}) {
+  constructor({url, requestInit, timestamp = Date.now()}) {
     this.url = url;
     this.requestInit = requestInit;
 
-    this._timestamp = Date.now();
+    // "Private"
+    this._timestamp = timestamp;
   }
 
   /**
