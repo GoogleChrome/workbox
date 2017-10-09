@@ -80,7 +80,14 @@ class WorkboxSW {
       );
     }
 
-    importScripts(this._getImportPath(moduleName));
+    let modulePath = this._getImportPath(moduleName);
+    try {
+      importScripts(modulePath);
+    } catch (err) {
+      console.error(
+        `Unable to import module '${moduleName}' with path '${modulePath}'.`);
+      throw err;
+    }
   }
 
   /**

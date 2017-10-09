@@ -178,6 +178,26 @@ describe(`[workbox-sw] WorkboxSW`, function() {
         wb.loadModule('should-throw');
       }).to.throw(`disableModuleImports`);
     });
+
+    it(`should print error message when importScripts fails`, function() {
+      const errorMessage = 'Injected error.';
+      sandbox.stub(global, 'importScripts').callsFake(() => {
+        throw new Error(errorMessage);
+      });
+      sandbox.stub(console, 'error').callsFake((errMsg) => {
+        expect(errMsg.indexOf('workbox-core')).to.not.equal(-1);
+        expect(errMsg.indexOf(
+          'https://storage.googleapis.com/workbox-cdn/releases/WORKBOX_VERSION_TAG/workbox-core.prod.js'
+        )).to.not.equal(-1);
+      });
+
+      try {
+        new WorkboxSW();
+        throw new Error('No error thrown.');
+      } catch (err) {
+        expect(err.message).to.equal(errorMessage);
+      }
+    });
   });
 
   describe(`get core`, function() {
