@@ -106,7 +106,7 @@ module.exports = (packagePath, buildType) => {
     pureExternalModules: externalAndPure,
     plugins: rollupHelper.getDefaultPlugins(buildType),
     onwarn: (warning) => {
-      if (buildType === 'production' &&
+      if (buildType === constants.BUILD_TYPES.prod &&
         warning.code === 'UNUSED_EXTERNAL_IMPORT') {
         // This can occur when using rollup-plugin-replace.
         logHelper.warn(`[${warning.code}] ${warning.message}`);

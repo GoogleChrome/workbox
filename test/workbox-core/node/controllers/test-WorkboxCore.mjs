@@ -1,34 +1,28 @@
 import {expect} from 'chai';
 import expectError from '../../../../infra/testing/expectError';
 import generateVariantTests from '../../../../infra/testing/generate-variant-tests';
+import {devOnly, prodOnly} from '../../../../infra/testing/env-it.js';
+import constants from '../../../../gulp-tasks/utils/constants.js';
 import core from '../../../../packages/workbox-core/index.mjs';
 import * as coreModule from '../../../../packages/workbox-core/index.mjs';
 
 describe(`workbox-core WorkboxCore`, function() {
   describe(`core.assert.*`, function() {
-    it(`should expose assert in dev`, async function() {
-      if (process.env.NODE_ENV == 'production') return this.skip();
-
+    devOnly.it(`should expose assert in dev`, async function() {
       expect(core.assert).to.exist;
     });
 
-    it(`should NOT expose assert in prod build`, async function() {
-      if (process.env.NODE_ENV != 'production') return this.skip();
-
+    prodOnly.it(`should NOT expose assert in prod build`, async function() {
       expect(core.assert).to.not.exist;
     });
   });
 
   describe(`core.logLevel (getter)`, function() {
-    it(`should initialise to 'verbose' log level in dev`, function() {
-      if (process.env.NODE_ENV == 'production') return this.skip();
-
+    devOnly.it(`should initialise to 'verbose' log level in dev`, function() {
       expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.verbose);
     });
 
-    it(`should initialise to 'warn' log level in prod`, function() {
-      if (process.env.NODE_ENV != 'production') return this.skip();
-
+    prodOnly.it(`should initialise to 'warn' log level in prod`, function() {
       expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.warn);
     });
   });
@@ -145,9 +139,7 @@ describe(`workbox-core WorkboxCore`, function() {
       expect(core.cacheNames.runtime).to.equal(`test-runtime`);
     });
 
-    it('should not allow precache to be an empty string in dev', function() {
-      if (process.env.NODE_ENV == 'production') return this.skip();
-
+    devOnly.it('should not allow precache to be an empty string in dev', function() {
       return expectError(() => {
         core.setCacheNameDetails({
           precache: '',
@@ -156,9 +148,7 @@ describe(`workbox-core WorkboxCore`, function() {
     });
 
 
-    it('should not allow runtime to be an empty string in dev', function() {
-      if (process.env.NODE_ENV == 'production') return this.skip();
-
+    devOnly.it('should not allow runtime to be an empty string in dev', function() {
       return expectError(() => {
         core.setCacheNameDetails({
           runtime: '',
@@ -175,7 +165,7 @@ describe(`workbox-core WorkboxCore`, function() {
       false,
     ];
     generateVariantTests(`should handle bad prefix values in dev`, badValues, function(variant) {
-      if (process.env.NODE_ENV == 'production') return this.skip();
+      if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) return this.skip();
 
       return expectError(() => {
         core.setCacheNameDetails({
@@ -185,7 +175,7 @@ describe(`workbox-core WorkboxCore`, function() {
     });
 
     generateVariantTests(`should handle bad suffix values in dev`, badValues, function(variant) {
-      if (process.env.NODE_ENV == 'production') return this.skip();
+      if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) return this.skip();
 
       return expectError(() => {
         core.setCacheNameDetails({
@@ -195,7 +185,7 @@ describe(`workbox-core WorkboxCore`, function() {
     });
 
     generateVariantTests(`should handle bad precache values in dev`, badValues, function(variant) {
-      if (process.env.NODE_ENV == 'production') return this.skip();
+      if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) return this.skip();
 
       return expectError(() => {
         core.setCacheNameDetails({
@@ -205,7 +195,7 @@ describe(`workbox-core WorkboxCore`, function() {
     });
 
     generateVariantTests(`should handle bad runtime values in dev`, badValues, function(variant) {
-      if (process.env.NODE_ENV == 'production') return this.skip();
+      if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) return this.skip();
 
       return expectError(() => {
         core.setCacheNameDetails({
@@ -215,7 +205,7 @@ describe(`workbox-core WorkboxCore`, function() {
     });
 
     generateVariantTests(`should not throw in prod`, badValues, function(variant) {
-      if (process.env.NODE_ENV != 'production') return this.skip();
+      if (process.env.NODE_ENV !== constants.BUILD_TYPES.prod) return this.skip();
 
       core.setCacheNameDetails({
         prefix: variant,

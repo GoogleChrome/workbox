@@ -102,7 +102,7 @@ class WorkboxCore {
    * The getter is documented for both get/set methods.
    *
    * @param {number} newLevel the new logLevel to use.
-   * 
+   *
    * @private
    */
   set logLevel(newLevel) {
@@ -149,7 +149,7 @@ export {_private};
  * Get an object containing the supported set of log levels.
  *
  * @returns {Object}
- * 
+ *
   * @alias module:workbox-core.LOG_LEVELS
  */
 export {LOG_LEVELS};

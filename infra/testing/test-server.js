@@ -3,6 +3,7 @@ const oneLine = require('common-tags').oneLine;
 const path = require('path');
 const serveIndex = require('serve-index');
 
+const constants = require('../../gulp-tasks/utils/constants');
 const logHelper = require('../utils/log-helper');
 
 const app = express();
@@ -20,10 +21,10 @@ app.get(/\/__WORKBOX\/buildFile\/(workbox-[A-z]*)(\.(?:dev|prod)\.(.*))*/, (req,
   const libraryPath = path.dirname(path.join(modulePath, browserFile));
   let libraryFileName = path.basename(browserFile);
   switch (process.env.NODE_ENV) {
-    case 'dev':
+    case constants.BUILD_TYPES.dev:
       libraryFileName = libraryFileName.replace('.prod.', '.dev.');
       break;
-    case 'production':
+    case constants.BUILD_TYPES.prod:
       // NOOP.
       break;
     default:

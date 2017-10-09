@@ -1,5 +1,6 @@
 const gulp = require('gulp');
 
+const constants = require('./utils/constants');
 const testServer = require('../infra/testing/test-server');
 
 const handleExit = () => {
@@ -23,11 +24,11 @@ const startServer = () => {
 };
 
 gulp.task('test-server:prod', () => {
-  process.env.NODE_ENV = 'production';
+  process.env.NODE_ENV = constants.BUILD_TYPES.prod;
   startServer();
 });
 
 gulp.task('test-server', () => {
-  process.env.NODE_ENV = 'dev';
+  process.env.NODE_ENV = constants.BUILD_TYPES.dev;
   startServer();
 });
