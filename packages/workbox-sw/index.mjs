@@ -95,19 +95,23 @@ class WorkboxSW {
       return this._options.modulePathCb(moduleName, this._options.debug);
     }
 
-    let pathParts = [CDN_PATH];
-
     // TODO: This needs to be dynamic some how.
-    const version = 'v3.0.0-alpha';
+    let pathParts = [CDN_PATH, 'v3.0.0-alpha'];
+
     const fileName = `${moduleName}.${this._env}.js`;
 
     const pathPrefix = this._options.modulePathPrefix;
     if (pathPrefix) {
       // Split to avoid issues with developers ending / not ending with slash
       pathParts = pathPrefix.split('/');
+
+      // We don't need a slash at the end as we will be adding
+      // a filename regardless
+      if (pathParts[pathParts.length - 1] === '') {
+        pathParts.splice(pathParts.length - 1, 1);
+      }
     }
 
-    pathParts.push(version);
     pathParts.push(fileName);
 
     return pathParts.join('/');

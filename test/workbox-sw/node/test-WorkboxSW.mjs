@@ -1,6 +1,8 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
+import generateTestVariants from '../../../infra/testing/generate-variant-tests';
+
 import WorkboxSW from '../../../packages/workbox-sw/index.mjs';
 
 describe(`[workbox-sw] WorkboxSW`, function() {
@@ -8,10 +10,12 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
   beforeEach(function() {
     sandbox.restore();
+    delete global.workbox;
   });
 
   after(function() {
     sandbox.restore();
+    delete global.workbox;
   });
 
   describe(`constructor`, function() {
@@ -68,6 +72,60 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
       expect(wb.loadModule.callCount).to.equal(0);
     });
+
+    it(`should use module cb to load workbox-core if a function is provided`, function() {
+      sandbox.stub(global, 'importScripts');
+      const callbackSpy = sandbox.spy((moduleName, debug) => {
+        return `/custom-path/${moduleName}/${debug}`;
+      });
+
+      new WorkboxSW({
+        debug: true,
+        modulePathCb: callbackSpy,
+      });
+
+      expect(callbackSpy.callCount).to.equal(1);
+      expect(callbackSpy.args[0]).to.deep.equal(['workbox-core', true]);
+      expect(global.importScripts.args[0]).to.deep.equal(['/custom-path/workbox-core/true']);
+    });
+
+    const modulePathVariations = [
+      {
+        prefix: '/',
+        expectedImport: '/workbox-core.dev.js',
+      }, {
+        prefix: '/custom-path',
+        expectedImport: '/custom-path/workbox-core.dev.js',
+      }, {
+        prefix: '/custom-path/',
+        expectedImport: '/custom-path/workbox-core.dev.js',
+      }, {
+        prefix: 'custom-path/',
+        expectedImport: 'custom-path/workbox-core.dev.js',
+      }, {
+        prefix: 'custom-path',
+        expectedImport: 'custom-path/workbox-core.dev.js',
+      }, {
+        prefix: 'custom-path/with/directories/',
+        expectedImport: 'custom-path/with/directories/workbox-core.dev.js',
+      }, {
+        prefix: 'custom-path/with/directories',
+        expectedImport: 'custom-path/with/directories/workbox-core.dev.js',
+      }, {
+        prefix: '/custom-path/with/directories',
+        expectedImport: '/custom-path/with/directories/workbox-core.dev.js',
+      },
+    ];
+    generateTestVariants(`should import using modulePathPrefix`, modulePathVariations, async function(variant) {
+      sandbox.stub(global, 'importScripts');
+
+      new WorkboxSW({
+        debug: true,
+        modulePathPrefix: variant.prefix,
+      });
+
+      expect(global.importScripts.args[0]).to.deep.equal([variant.expectedImport]);
+    });
   });
 
   describe(`skipWaiting`, function() {
@@ -103,6 +161,51 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
       const wb = new WorkboxSW();
       wb.clientsClaim();
+    });
+  });
+
+  describe(`loadModule()`, function() {
+    it(`should throw when loading module while disableModuleImports is true`, function() {
+      const wb = new WorkboxSW({
+        disableModuleImports: true,
+      });
+      expect(() => {
+        wb.loadModule('should-throw');
+      }).to.throw(`disableModuleImports`);
+    });
+  });
+
+  describe(`get core`, function() {
+    it(`should return core.default`, function() {
+      const fakeWorkbox = {
+        core: {
+          default: {},
+        },
+      };
+      sandbox.stub(WorkboxSW.prototype, 'loadModule').callsFake(() => {
+        global.workbox = fakeWorkbox;
+      });
+
+      const wb = new WorkboxSW();
+      expect(wb.core).to.equal(fakeWorkbox.core.default);
+    });
+  });
+
+  describe(`get precaching`, function() {
+    it(`should return precaching.default`, function() {
+      const fakeWorkbox = {
+        precaching: {
+          default: {},
+        },
+      };
+      sandbox.stub(WorkboxSW.prototype, 'loadModule').callsFake((moduleName) => {
+        if (moduleName === 'workbox-precaching') {
+          global.workbox = fakeWorkbox;
+        }
+      });
+
+      const wb = new WorkboxSW();
+      expect(wb.precaching).to.equal(fakeWorkbox.precaching.default);
     });
   });
 });
