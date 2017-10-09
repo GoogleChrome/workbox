@@ -19,6 +19,8 @@ module.exports = {
             reserved: [
               // Chai will break unless we reserve this private variable.
               '_obj',
+              // We need this to be exported correctly.
+              '_private',
             ],
             // mangle > properties > regex will allow uglify-es to minify
             // private variable and names that start with a single underscore
