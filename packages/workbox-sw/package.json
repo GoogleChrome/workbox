@@ -17,7 +17,9 @@
     "prepublish": "gulp build-packages --package workbox-sw"
   },
   "workbox": {
-    "browserNamespace": "sw",
+    "browserNamespace": "WorkboxSW",
+    "disableNamespacePrefix": "true",
+    "disabledNamedExports": "true",
     "packageType": "browser"
   },
   "main": "build/browser-bundles/workbox-sw.prod.js",

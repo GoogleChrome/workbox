@@ -1,12 +1,16 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import {WorkboxSW} from '../../../packages/workbox-sw/index.mjs';
+import WorkboxSW from '../../../packages/workbox-sw/index.mjs';
 
 describe(`[workbox-sw] WorkboxSW`, function() {
   let sandbox = sinon.sandbox.create();
 
-  afterEach(function() {
+  beforeEach(function() {
+    sandbox.restore();
+  });
+
+  after(function() {
     sandbox.restore();
   });
 
@@ -15,7 +19,9 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       const wb = new WorkboxSW();
       expect(wb._options).to.deep.equal({
         debug: false,
-        pathPrefix: null,
+        modulePathPrefix: null,
+        modulePathCb: null,
+        disableModuleImports: false,
       });
     });
 
@@ -27,18 +33,25 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       const wb = new WorkboxSW();
       expect(wb._options).to.deep.equal({
         debug: true,
-        pathPrefix: null,
+        modulePathPrefix: null,
+        modulePathCb: null,
+        disableModuleImports: false,
       });
     });
 
-    it(`should use provided options when provided`, function() {
+    it(`should use provided options`, function() {
+      const cb = () => {};
       const wb = new WorkboxSW({
         debug: true,
-        pathPrefix: 'http://custom-cdn.example.com/workbox-modules/v1.0.0/',
+        modulePathPrefix: 'http://custom-cdn.example.com/workbox-modules/v1.0.0/',
+        modulePathCb: cb,
+        disableModuleImports: true,
       });
       expect(wb._options).to.deep.equal({
         debug: true,
-        pathPrefix: 'http://custom-cdn.example.com/workbox-modules/v1.0.0/',
+        modulePathPrefix: 'http://custom-cdn.example.com/workbox-modules/v1.0.0/',
+        modulePathCb: cb,
+        disableModuleImports: true,
       });
     });
   });

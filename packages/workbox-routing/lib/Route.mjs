@@ -78,6 +78,7 @@ import normalizeHandler from './normalizeHandler.mjs';
 class Route {
   /**
    * Constructor for Route class.
+   *
    * @param {module:workbox-routing.Route~matchCallback} match
    * A callback function that determines whether the route matches a given
    * `fetch` event.

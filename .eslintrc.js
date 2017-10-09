@@ -15,6 +15,7 @@ module.exports = {
   },
   rules: {
     "jsdoc/check-types": 2,
+    "jsdoc/newline-after-description": 2,
   },
   plugins: [
       'jsdoc',
@@ -78,6 +79,14 @@ module.exports = {
     ],
     rules: {
       'max-len': 0,
+    },
+  }
+  , {
+    files: [
+      'packages/workbox-sw/**/*',
+    ],
+    globals: {
+      'workbox': false,
     },
   }],
 };

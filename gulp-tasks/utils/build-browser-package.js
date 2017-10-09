@@ -81,8 +81,14 @@ module.exports = (packagePath, buildType) => {
     return Promise.reject(ERROR_NO_NAMSPACE + ' ' + packageName);
   }
 
+  let prefix = `${constants.NAMESPACE_PREFIX}.`;
+  if (pkgJson.workbox.disableNamespacePrefix) {
+    prefix = '';
+  }
+
+  const exports = pkgJson.workbox.disabledNamedExports ? 'default' : 'named';
   const namespace =
-    `${constants.NAMESPACE_PREFIX}.${pkgJson.workbox.browserNamespace}`;
+    `${prefix}${pkgJson.workbox.browserNamespace}`;
   const outputFilename = `${packageName}.${buildType.slice(0, 4)}.js`;
   const outputDirectory = path.join(packagePath,
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
@@ -91,6 +97,7 @@ module.exports = (packagePath, buildType) => {
     Building Browser Bundle for
     ${logHelper.highlight(packageName)}.
   `);
+  logHelper.log(`    Exports: ${logHelper.highlight(exports)}`);
   logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
@@ -98,7 +105,7 @@ module.exports = (packagePath, buildType) => {
     input: moduleIndexPath,
     rollup,
     format: 'iife',
-    exports: 'named',
+    exports,
     name: namespace,
     sourcemap: true,
     globals,
