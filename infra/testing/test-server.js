@@ -9,6 +9,10 @@ const logHelper = require('../utils/log-helper');
 const app = express();
 
 app.get(/\/__WORKBOX\/buildFile\/(workbox-[A-z]*)(\.(?:dev|prod)\.(.*))*/, (req, res) => {
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+
   const moduleName = req.params[0];
   const fileExtension = req.params[2];
 

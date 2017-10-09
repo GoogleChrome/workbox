@@ -34,11 +34,11 @@ const runFile = (filePath) => {
 };
 
 const runIntegrationTestSuite =
-async (testPath, nodeEnv, browserName, webdriver) => {
+async (testPath, nodeEnv, seleniumBrowser) => {
   logHelper.log(oneLine`
     Running Integration test on ${logHelper.highlight(testPath)}
     with NODE_ENV '${nodeEnv}'
-    and browser '${logHelper.highlight(browserName)}'
+    and browser '${logHelper.highlight(seleniumBrowser.getPrettyName())}'
   `);
 
   const options = [];
@@ -49,12 +49,12 @@ async (testPath, nodeEnv, browserName, webdriver) => {
 
   process.env.NODE_ENV = nodeEnv;
 
-  global.__workbox = {
-    webdriver,
-    serverAddr: testServer.getAddress(),
-  };
-
   try {
+    global.__workbox = {
+      seleniumBrowser,
+      serverAddr: testServer.getAddress(),
+    };
+
     await runFile(path.join(
       __dirname, '..', 'test', 'workbox-precaching', 'integration',
       'precache-and-update.js'
@@ -71,24 +71,15 @@ async (testPath, nodeEnv, browserName, webdriver) => {
 };
 
 const runIntegrationForBrowser = async (browser) => {
-  const webdriver = await browser.getSeleniumDriver();
+  const packagesToTest =
+    glob.sync(`test/${global.packageOrStar}/integration`);
 
-  try {
-    const packagesToTest =
-      glob.sync(`test/${global.packageOrStar}/integration`);
-
-    for (const packageToTest of packagesToTest) {
-      for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
-        const nodeEnv = constants.BUILD_TYPES[buildKey];
-        await runIntegrationTestSuite(
-          packageToTest, nodeEnv, browser.getPrettyName(), webdriver);
-      }
+  for (const packageToTest of packagesToTest) {
+    for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
+      const nodeEnv = constants.BUILD_TYPES[buildKey];
+      await runIntegrationTestSuite(
+        packageToTest, nodeEnv, browser);
     }
-
-    await seleniumAssistant.killWebDriver(webdriver);
-  } catch (err) {
-    await seleniumAssistant.killWebDriver(webdriver);
-    throw err;
   }
 };
 
