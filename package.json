@@ -94,7 +94,7 @@
     "semver": "^5.4.1",
     "serve-index": "^1.9.1",
     "serve-static": "^1.13.1",
-    "service-worker-mock": "^1.2.2",
+    "service-worker-mock": "^1.5.0",
     "shelving-mock-indexeddb": "^1.0.4",
     "sinon": "^3.2.1",
     "tempy": "^0.2.1",

@@ -105,7 +105,7 @@ class Route {
 
     this.handler = normalizeHandler(handler);
     this.match = match;
-    this.method = method || defaultMethod;
+    this._method = method || defaultMethod;
   }
 }
 

@@ -19,18 +19,15 @@ import {_private} from 'workbox-core';
 import normalizeHandler from './normalizeHandler.mjs';
 
 /**
- * The Router takes one or more [Routes]{@link Route} and allows you to apply
- * that routing logic to determine the appropriate way of handling requests
- * inside of a service worker.
+ * The Router takes one or more [Routes]{@link Route} and passes each fetch
+ * event through it's routing logic to determine the appropriate way to respond
+ * with a Request.
  *
- * It also allows you to define a "default" handler that applies to any requests
- * that don't explicitly match a `Route`, and a "catch" handler that responds
- * to any requests that throw an exception while being routed.
+ * If no route matches a given a request, the Router will use a "default"
+ * handler if one is defined.
  *
- * You can use the `handleRequest()` method to pass a `FetchEvent` through the
- * router and ultimately get a "routed response" back.
- * If you'd like this to be handled automatically for you, calling
- * `addFetchListener()` will cause the `Router` to respond to `fetch` events.
+ * Should any of the Route's throw an error, you can define a "catch" handler to
+ * gracefully deal with these issues and respond with a Request.
  *
  * If a request matches multiple routes, precedence will be given to the
  * **earliest** registered route.
@@ -49,34 +46,8 @@ class Router {
   }
 
   /**
-   * This will register a `fetch` event listener on your behalf which will check
-   * the incoming request to see if there's a matching route, and only respond
-   * if there is a match.
-   *
-   * @return {boolean} Returns `true` if this is the first time the method is
-   * called and the listener was registered. Returns `false` if called again,
-   * as the listener will only be registered once.
-   */
-  addFetchListener() {
-    if (!this._isListenerRegistered) {
-      this._isListenerRegistered = true;
-      self.addEventListener('fetch', (event) => {
-        const responsePromise = this.handleRequest(event);
-        if (responsePromise) {
-          event.respondWith(responsePromise);
-        }
-      });
-      return true;
-    } else {
-      _private.logger.warn(
-        `addFetchListener() has already been called for this Router.`);
-      return false;
-    }
-  }
-
-  /**
-   * This can be used to apply the routing rules to generate a response for a
-   * given request inside your own `fetch` event handler.
+   * Apply the routing rules to a FetchEvent object to get a Response from an
+   * appropriate handler.
    *
    * @param {FetchEvent} event The event passed in to a `fetch` handler.
    * @return {Promise<Response>|undefined} Returns a promise for a response,
@@ -95,8 +66,10 @@ class Router {
 
     const url = new URL(event.request.url);
     if (!url.protocol.startsWith('http')) {
-      _private.logger.log(`The URL '${url}' does not start with 'http', so ` +
-        `it can't be handled.`);
+      if (process.env.NODE_ENV !== 'production') {
+        _private.logger.log(`The URL '${url}' does not start with 'http', so ` +
+          `it can't be handled.`);
+      }
       return;
     }
 
@@ -170,14 +143,13 @@ class Router {
    * network as if there were no service worker present.
    *
    * @param {function|module:workbox-runtime-caching.Handler} handler
-   * This parameter can be either a function or an object which is a subclass
-   * of `Handler`.
+   * This parameter can be either a function or an object with a `handle`
+   * function. See the
+   * [Handler interface]{@link module:workbox-routing.Route~handlerCallback}
+   * for details.
    *
-   * Either option should result in a `Response` that the `Route` can use to
-   * handle the `fetch` event.
-   *
-   * See [handlerCallback]{@link module:workbox-routing.Route~handlerCallback}
-   * for full details on using a callback function as the `handler`.
+   * Either option should result in a `Response` object, which will be used to
+   * respond to the `fetch` event.
    */
   setDefaultHandler(handler) {
     this.defaultHandler = normalizeHandler(handler);
@@ -188,69 +160,20 @@ class Router {
    * will be called and given a chance to provide a response.
    *
    * @param {function|module:workbox-runtime-caching.Handler} handler
-   * This parameter can be either a function or an object which is a subclass
-   * of `Handler`.
+   * This parameter can be either a function or an object with a `handle`
+   * function. See the
+   * [Handler interface]{@link module:workbox-routing.Route~handlerCallback}
+   * for details.
    *
    * Either option should result in a `Response` that the `Route` can use to
    * handle the `fetch` event.
-   *
-   * See [handlerCallback]{@link module:workbox-routing.Route~handlerCallback}
-   * for full details on using a callback function as the `handler`.
    */
   setCatchHandler(handler) {
     this.catchHandler = normalizeHandler(handler);
   }
 
   /**
-   * Registers an array of routes with the router.
-   *
-   * @param {Array<module:workbox-routing.Route>} routes An array of routes to
-   * register.
-   */
-  registerRoutes(routes) {
-    for (const route of routes) {
-      if (process.env.NODE_ENV !== 'production') {
-        core.assert.hasMethod(route, 'match', {
-          moduleName: 'workbox-routing',
-          className: 'Router',
-          funcName: 'registerRoutes',
-          paramName: 'routes',
-        });
-
-        core.assert.isType(route.handler, 'object', {
-          moduleName: 'workbox-routing',
-          className: 'Router',
-          funcName: 'registerRoutes',
-          paramName: 'routes',
-        });
-
-        core.assert.hasMethod(route.handler, 'handle', {
-          moduleName: 'workbox-routing',
-          className: 'Router',
-          funcName: 'registerRoutes',
-          paramName: 'routes',
-        });
-
-        core.assert.isType(route.method, 'string', {
-          moduleName: 'workbox-routing',
-          className: 'Router',
-          funcName: 'registerRoutes',
-          paramName: 'routes',
-        });
-      }
-
-      if (!this._routes.has(route.method)) {
-        this._routes.set(route.method, []);
-      }
-
-      // Give precedence to all of the earlier routes by adding this additional
-      // route to the end of the array.
-      this._routes.get(route.method).push(route);
-    }
-  }
-
-  /**
-   * Registers a single route with the router.
+   * Registers a route with the router.
    *
    * @param {module:workbox-routing.Route} route The route to register.
    */
@@ -277,7 +200,7 @@ class Router {
         paramName: 'route',
       });
 
-      core.assert.isType(route.method, 'string', {
+      core.assert.isType(route._method, 'string', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
@@ -285,43 +208,40 @@ class Router {
       });
     }
 
-    this.registerRoutes([route]);
-  }
-
-  /**
-   * Unregisters an array of routes with the router.
-   *
-   * @param {Array<module:workbox-routing.Route>} routes An array of
-   * routes to unregister.
-   */
-  unregisterRoutes(routes) {
-    for (let route of routes) {
-      if (!this._routes.has(route.method)) {
-        throw new _private.WorkboxError(
-          'unregister-routes-no-routes-found-for-method', {
-            method: route.method,
-          }
-        );
-      }
-
-      const routeIndex = this._routes.get(route.method).indexOf(route);
-      if (routeIndex > -1) {
-        this._routes.get(route.method).splice(routeIndex, 1);
-      } else {
-        throw new _private.WorkboxError(
-          'unregister-routes-route-not-registered', {route}
-        );
-      }
+    if (!this._routes.has(route._method)) {
+      this._routes.set(route._method, []);
     }
+
+    // Give precedence to all of the earlier routes by adding this additional
+    // route to the end of the array.
+    this._routes.get(route._method).push(route);
   }
 
   /**
-   * Unregisters a single route with the router.
+   * Unregisters a route with the router.
    *
    * @param {module:workbox-routing.Route} route The route to unregister.
    */
   unregisterRoute(route) {
-    this.unregisterRoutes([route]);
+    if (!this._routes.has(route._method)) {
+      throw new _private.WorkboxError(
+        'unregister-route-but-not-found-with-method', {
+          route,
+          method: route._method,
+        }
+      );
+    }
+
+    const routeIndex = this._routes.get(route._method).indexOf(route);
+    if (routeIndex > -1) {
+      this._routes.get(route._method).splice(routeIndex, 1);
+    } else {
+      throw new _private.WorkboxError(
+        'unregister-route-route-not-registered', {
+          route,
+        }
+      );
+    }
   }
 }
 
