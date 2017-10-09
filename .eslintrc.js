@@ -88,6 +88,7 @@ module.exports = {
     ],
     globals: {
       'workbox': false,
+    },
   }, {
     files: [
       'infra/testing/env-it.js',
