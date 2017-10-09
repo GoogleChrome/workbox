@@ -45,7 +45,7 @@ import WorkboxSW from './lib/workbox-sw';
  *
  * // Register runtime routes like so.
  * workboxSW.router.registerRoute(
- *   '/example/', workboxSW.staleWhileRevalidate());
+ *   '/example/', workboxSW.strategies.staleWhileRevalidate());
  * workboxSW.router.registerRoute(
  *   /\/images\/(.*\/)?.*\.(png|jpg|jpeg|gif)/,
  *   workboxSW.strategies.cacheFirst());
