@@ -106,4 +106,5 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
 
 export default {
   put: putWrapper,
+  match: matchWrapper,
 };
