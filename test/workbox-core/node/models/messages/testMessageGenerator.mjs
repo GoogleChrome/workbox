@@ -1,8 +1,8 @@
 import {expect} from 'chai';
-import sinon from 'sinon';
-import clearRequire from 'clear-require';
 
 import constants from '../../../../../gulp-tasks/utils/constants.js';
+
+import messageGenerator from '../../../../../packages/workbox-core/models/messages/messageGenerator.mjs';
 
 constants.BUILD_TYPES.forEach((buildType) => {
   describe(`workbox-core messageGenerator - ${buildType}`, function() {
@@ -10,24 +10,6 @@ constants.BUILD_TYPES.forEach((buildType) => {
       exampleDetail: 'With Value',
     };
     const detailsString = `${JSON.stringify([detailsObj])}`;
-
-    const MSG_GEN_PATH = '../../../../../packages/workbox-core/models/messages/messageGenerator.mjs';
-    let sandbox;
-    let messageGenerator;
-
-    before(async function() {
-      sandbox = sinon.sandbox.create();
-      process.env.NODE_ENV = buildType;
-
-      clearRequire.all();
-
-      const messageGenModule = await import(MSG_GEN_PATH);
-      messageGenerator = messageGenModule.default;
-    });
-
-    afterEach(function() {
-      sandbox.restore();
-    });
 
     it('should handle unknown codes', function() {
       if (process.env.NODE_ENV === 'production') {
