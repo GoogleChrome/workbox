@@ -46,7 +46,7 @@
   "homepage": "https://github.com/GoogleChrome/workbox#readme",
   "devDependencies": {
     "@google-cloud/storage": "^1.2.1",
-    "@std/esm": "^0.11.2",
+    "@std/esm": "^0.11.3",
     "archiver": "^2.0.3",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.0",
