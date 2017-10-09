@@ -31,12 +31,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       });
 
       const wb = new WorkboxSW();
-      expect(wb._options).to.deep.equal({
-        debug: true,
-        modulePathPrefix: null,
-        modulePathCb: null,
-        disableModuleImports: false,
-      });
+      expect(wb._options.debug).to.deep.equal(true);
     });
 
     it(`should use provided options`, function() {
@@ -53,6 +48,25 @@ describe(`[workbox-sw] WorkboxSW`, function() {
         modulePathCb: cb,
         disableModuleImports: true,
       });
+    });
+
+    it(`should load workbox-core on construction`, function() {
+      sandbox.stub(WorkboxSW.prototype, 'loadModule');
+
+      const wb = new WorkboxSW();
+
+      expect(wb.loadModule.callCount).to.equal(1);
+      expect(wb.loadModule.args[0]).to.deep.equal(['workbox-core']);
+    });
+
+    it(`should not load workbox-core if disableModulesImports is true`, function() {
+      sandbox.stub(WorkboxSW.prototype, 'loadModule');
+
+      const wb = new WorkboxSW({
+        disableModuleImports: true,
+      });
+
+      expect(wb.loadModule.callCount).to.equal(0);
     });
   });
 
