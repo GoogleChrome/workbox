@@ -75,7 +75,7 @@ class WorkboxSW {
       // This can't be a WorkboxError as we can't rely on workbox-core being
       // loaded.
       throw new Error(
-        `Attempted to load module while disableModuleImports is true.`
+        `Attempted to load '${moduleName}' while disableModuleImports is true.`
       );
     }
 
