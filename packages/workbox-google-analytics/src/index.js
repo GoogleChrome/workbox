@@ -56,7 +56,7 @@ import replayQueuedRequests from './lib/replay-queued-requests.js';
  * // might be useful is if you wanted to track the amount of time that elapsed
  * // between when the hit was attempted and when it was successfully replayed.
  * workbox.googleAnalytics.initialize({
- *   hitFilter: searchParams =>
+ *   hitFilter: searchParams => {
  *     // Sets the `qt` param as a custom metric.
  *     const qt = searchParams.get('qt');
  *     searchParams.set('cm1', qt);
