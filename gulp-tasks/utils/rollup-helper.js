@@ -3,6 +3,8 @@ const minify = require('uglify-es').minify;
 const replace = require('rollup-plugin-replace');
 const lernaPkg = require('../../lerna.json');
 
+const constants = require('./constants');
+
 module.exports = {
   // Every use of rollup should have minification and the replace
   // plugin set up and used to ensure as consist set of tests
@@ -10,7 +12,7 @@ module.exports = {
   getDefaultPlugins: (buildType) => {
     const plugins = [];
 
-    let minifyBuild = buildType === 'production';
+    let minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {
       const uglifyOptions = {
         mangle: {
@@ -18,6 +20,8 @@ module.exports = {
             reserved: [
               // Chai will break unless we reserve this private variable.
               '_obj',
+              // We need this to be exported correctly.
+              '_private',
             ],
             // mangle > properties > regex will allow uglify-es to minify
             // private variable and names that start with a single underscore

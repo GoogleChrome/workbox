@@ -61,7 +61,7 @@ module.exports = {
     },
   }, {
     files: [
-      'infra/testing/generate-variant-tests.js',
+      'infra/testing/**/*',
     ],
     env: {
       'mocha': true
@@ -88,6 +88,12 @@ module.exports = {
     ],
     globals: {
       'workbox': false,
+  }, {
+    files: [
+      'infra/testing/env-it.js',
+    ],
+    rules: {
+      'no-invalid-this': 0,
     },
   }],
 };

@@ -6,6 +6,7 @@ const path = require('path');
 
 const spawn = require('./utils/spawn-promise-wrapper');
 const getNpmCmd = require('./utils/get-npm-cmd');
+const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
 
 const runNodeTestSuite = async (testPath, nodeEnv) => {
@@ -43,11 +44,11 @@ const runNodeTestsWithEnv = async (nodeEnv) => {
 };
 
 gulp.task('test-node:prod', gulp.series(
-  () => runNodeTestsWithEnv('production'),
+  () => runNodeTestsWithEnv(constants.BUILD_TYPES.prod),
 ));
 
 gulp.task('test-node:dev', gulp.series(
-  () => runNodeTestsWithEnv('dev'),
+  () => runNodeTestsWithEnv(constants.BUILD_TYPES.dev),
 ));
 
 gulp.task('test-node:clean', () => {
