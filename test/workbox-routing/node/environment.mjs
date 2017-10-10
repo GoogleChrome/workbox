@@ -1,41 +1,46 @@
+import clearRequire from 'clear-require';
 import sinon from 'sinon';
 import {expect} from 'chai';
-import clearRequire from 'clear-require';
+
 import expectError from '../../../infra/testing/expectError';
 
-describe(`workbox-routing: SW environment`, function() {
+describe(`[workbox-routing] SW environment`, function() {
+  const MODULE_PATH = '../../../packages/workbox-routing/index.mjs';
   const sandbox = sinon.sandbox.create();
 
-  afterEach(function() {
-    sandbox.restore();
+  beforeEach(function() {
     clearRequire.all();
   });
 
-  it(`should throw when loaded outside of a service worker in dev`, function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+  afterEach(function() {
+    sandbox.restore();
+  });
+
+  it(`should throw when loaded outside of a service worker in dev`, async function() {
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     class Foo {}
     sandbox.stub(global, 'ServiceWorkerGlobalScope').value(Foo);
-
-    return expectError(
-      async () => await import('../../../packages/workbox-routing/index.mjs'),
-      'not-in-sw',
-      (error) => expect(error.details).to.have.property('moduleName').that.equals('workbox-routing')
-    );
+    
+    await expectError(async () => {
+      await import(MODULE_PATH);
+    }, 'not-in-sw', (err) => {
+      expect(err.details).to.have.property('moduleName').that.equal('workbox-routing');
+    });
   });
 
-  it(`should not throw when loaded in a service worker in dev`, async function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+  it(`should not throw when in SW in dev`, async function() {
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
-    const core = await import('../../../packages/workbox-core/index.mjs');
-    sandbox.stub(core.default.assert, 'isSwEnv').callsFake(() => true);
+    const coreModule = await import('../../../packages/workbox-core/index.mjs');
+    sandbox.stub(coreModule.default.assert, 'isSwEnv').callsFake(() => true);
 
-    await import('../../../packages/workbox-routing/index.mjs');
+    await import(MODULE_PATH);
   });
 
-  it(`should not throw when loaded outside of a service worker in production`, async function() {
-    if (process.env.NODE_ENV != 'production') return this.skip();
+  it(`should not throw in production`, async function() {
+    if (process.env.NODE_ENV !== 'production') return this.skip();
 
-    await import('../../../packages/workbox-routing/index.mjs');
+    await import(MODULE_PATH);
   });
 });

@@ -44,6 +44,14 @@ const isType = (object, expectedType,
   }
 };
 
+const isInstance = (object, expectedClass,
+                    {moduleName, className, funcName, paramName}) => {
+  if (!(object instanceof expectedClass)) {
+    throw new WorkboxError('incorrect-class', {paramName, expectedClass,
+      moduleName, className, funcName});
+  }
+};
+
 const isOneOf = (value, validValues, {paramName}) => {
   if (!validValues.includes(value)) {
     throw new WorkboxError('invalid-value', {
@@ -57,6 +65,7 @@ const isOneOf = (value, validValues, {paramName}) => {
 export default {
   hasMethod,
   isArray,
+  isInstance,
   isOneOf,
   isSwEnv,
   isType,

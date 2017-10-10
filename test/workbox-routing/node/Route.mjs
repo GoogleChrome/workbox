@@ -14,7 +14,7 @@ const invalidMethod = 'INVALID';
 
 describe(`workbox-routing: Route`, function() {
   it(`should throw when called without any parameters in dev`, async function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     await expectError(
       () => new Route(),
@@ -28,7 +28,7 @@ describe(`workbox-routing: Route`, function() {
   });
 
   it(`should throw when called without a valid handler parameter in dev`, async function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     await expectError(
       () => new Route(match),
@@ -54,7 +54,7 @@ describe(`workbox-routing: Route`, function() {
   });
 
   it(`should throw when called without a valid match parameter in dev`, async function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     await expectError(
       () => new Route(null, handler),
@@ -69,19 +69,19 @@ describe(`workbox-routing: Route`, function() {
   });
 
   it(`should not throw when called with valid handler.handle and match parameters in dev`, function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     expect(() => new Route(match, handler)).not.to.throw();
   });
 
   it(`should not throw when called with a valid function handler and match parameters in dev`, function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     expect(() => new Route(match, functionHandler)).not.to.throw();
   });
 
   it(`should throw when called with an invalid method in dev`, async function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     await expectError(
       () => new Route(match, handler, invalidMethod),
@@ -91,14 +91,14 @@ describe(`workbox-routing: Route`, function() {
   });
 
   it(`should use the method provided when called with a valid method in dev`, function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     const route = new Route(match, handler, method);
     expect(route._method).to.equal(method);
   });
 
   it(`should use a default of GET when called without a method in dev`, function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     const route = new Route(match, handler);
     expect(route._method).to.equal('GET');
@@ -106,26 +106,26 @@ describe(`workbox-routing: Route`, function() {
 
 
   it(`should not throw when called with valid handler.handle and match parameters in production`, function() {
-    if (process.env.NODE_ENV != 'production') return this.skip();
+    if (process.env.NODE_ENV !== 'production') return this.skip();
 
     expect(() => new Route(match, handler)).not.to.throw();
   });
 
   it(`should not throw when called with a valid function handler and match parameters in production`, function() {
-    if (process.env.NODE_ENV != 'production') return this.skip();
+    if (process.env.NODE_ENV !== 'production') return this.skip();
 
     expect(() => new Route(match, functionHandler)).not.to.throw();
   });
 
   it(`should use the method provided when called with a valid method in production`, function() {
-    if (process.env.NODE_ENV != 'production') return this.skip();
+    if (process.env.NODE_ENV !== 'production') return this.skip();
 
     const route = new Route(match, handler, method);
     expect(route._method).to.equal(method);
   });
 
   it(`should use a default of GET when called without a method in production`, function() {
-    if (process.env.NODE_ENV != 'production') return this.skip();
+    if (process.env.NODE_ENV !== 'production') return this.skip();
 
     const route = new Route(match, handler);
     expect(route._method).to.equal('GET');
