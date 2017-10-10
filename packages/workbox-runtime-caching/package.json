@@ -16,7 +16,8 @@
     "routing"
   ],
   "scripts": {
-    "version": "gulp build-packages --package workbox-runtime-caching"
+    "version": "gulp build-packages --package workbox-runtime-caching",
+    "prepare": "gulp build-packages --package workbox-runtime-caching"
   },
   "workbox": {
     "browserNamespace": "strategies",

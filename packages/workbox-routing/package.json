@@ -16,7 +16,8 @@
     "routing"
   ],
   "scripts": {
-    "version": "gulp build-packages --package workbox-routing"
+    "version": "gulp build-packages --package workbox-routing",
+    "prepare": "gulp build-packages --package workbox-routing"
   },
   "workbox": {
     "browserNamespace": "routing",

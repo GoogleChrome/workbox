@@ -30,7 +30,8 @@
   },
   "main": "build/index.js",
   "scripts": {
-    "version": "gulp build-packages --package workbox-build"
+    "version": "gulp build-packages --package workbox-build",
+    "prepare": "gulp build-packages --package workbox-build"
   },
   "workbox": {
     "packageType": "node"
