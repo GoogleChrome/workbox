@@ -1,7 +1,6 @@
 const uglifyPlugin = require('rollup-plugin-uglify');
 const minify = require('uglify-es').minify;
 const replace = require('rollup-plugin-replace');
-const lernaPkg = require('../../lerna.json');
 
 const constants = require('./constants');
 
@@ -40,16 +39,12 @@ module.exports = {
       );
     }
 
-    const replaceOptions = {
-      'WORKBOX_VERSION_TAG': lernaPkg.version,
-    };
-
     if (buildType) {
-      replaceOptions['process.env.NODE_ENV'] = JSON.stringify(buildType);
+      // Replace allows us to input NODE_ENV and strip code accordingly
+      plugins.push(replace({
+        'process.env.NODE_ENV': JSON.stringify(buildType),
+      }));
     }
-
-    // Replace allows us to input NODE_ENV and strip code accordingly
-    plugins.push(replace(replaceOptions));
 
     return plugins;
   },

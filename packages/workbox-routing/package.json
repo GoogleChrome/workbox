@@ -22,8 +22,9 @@
     "browserNamespace": "routing",
     "packageType": "browser"
   },
-  "main": "build/browser-bundles/workbox-routing.prod.js",
-  "module": "index.mjs",
+  "main": "build/module/index.mjs",
+  "module": "build/module/index.mjs",
+  "browser": "build/browser/workbox-routing.prod.js",
   "dependencies": {
     "workbox-core": "^3.0.0-alpha.2"
   }

@@ -70,6 +70,7 @@
     "glob": "^7.1.2",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-babel": "^7.0.0",
+    "gulp-header": "^1.8.9",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.1",
     "gzip-size": "^4.0.0",
@@ -102,5 +103,7 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "gulp-debug": "^3.1.0"
+  }
 }

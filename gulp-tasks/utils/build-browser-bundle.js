@@ -1,5 +1,5 @@
 const buffer = require('vinyl-buffer');
-const fs = require('fs');
+const fs = require('fs-extra');
 const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
 const path = require('path');
@@ -10,10 +10,10 @@ const source = require('vinyl-source-stream');
 const sourcemaps = require('gulp-sourcemaps');
 
 const constants = require('./constants');
-const logHelper = require('../../infra/utils/log-helper');
 const pkgPathToName = require('./pkg-path-to-name');
 const rollupHelper = require('./rollup-helper');
-
+const logHelper = require('../../infra/utils/log-helper');
+const versioning = require('../../infra/utils/versioning');
 /*
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose
@@ -111,6 +111,7 @@ module.exports = (packagePath, buildType) => {
     globals,
     external: externalAndPure,
     pureExternalModules: externalAndPure,
+    footer: versioning(packageName),
     plugins: rollupHelper.getDefaultPlugins(buildType),
     onwarn: (warning) => {
       if (buildType === constants.BUILD_TYPES.prod &&
@@ -122,27 +123,27 @@ module.exports = (packagePath, buildType) => {
 
       // The final builds should have no warnings.
       throw new Error(`Unhandled Rollup Warning: [${warning.code}] ` +
-        `'${warning.message}'`);
+        `${warning.message}`);
     },
   })
-    .on('error', (err) => {
-      const args = [];
-      Object.keys(err).forEach((key) => {
-        args.push(`${key}: ${err[key]}`);
-      });
-      logHelper.error(err, `\n\n${args.join('\n')}`);
-      throw err;
-    })
-    // We must give the generated stream the same name as the entry file
-    // for the sourcemaps to work correctly
-    .pipe(source(moduleIndexPath))
-    // gulp-sourcemaps don't work with streams so we need
-    .pipe(buffer())
-    // This tells gulp-sourcemaps to load the inline sourcemap
-    .pipe(sourcemaps.init({loadMaps: true}))
-    // This renames the output file
-    .pipe(rename(outputFilename))
-    // This writes the sourcemap alongside the final build file
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest(outputDirectory));
+  .on('error', (err) => {
+    const args = [];
+    Object.keys(err).forEach((key) => {
+      args.push(`${key}: ${err[key]}`);
+    });
+    logHelper.error(err, `\n\n${args.join('\n')}`);
+    throw err;
+  })
+  // We must give the generated stream the same name as the entry file
+  // for the sourcemaps to work correctly
+  .pipe(source(moduleIndexPath))
+  // gulp-sourcemaps don't work with streams so we need
+  .pipe(buffer())
+  // This tells gulp-sourcemaps to load the inline sourcemap
+  .pipe(sourcemaps.init({loadMaps: true}))
+  // This renames the output file
+  .pipe(rename(outputFilename))
+  // This writes the sourcemap alongside the final build file
+  .pipe(sourcemaps.write('.'))
+  .pipe(gulp.dest(outputDirectory));
 };
