@@ -16,7 +16,7 @@
 import {expect} from 'chai';
 import clearRequire from 'clear-require';
 import sinon from 'sinon';
-import expectError from '../../../../infra/utils/expectError';
+import expectError from '../../../../infra/testing/expectError';
 import indexedDBHelper, {DBWrapper} from
     '../../../../packages/workbox-core/utils/indexedDBHelper.mjs';
 
