@@ -18,7 +18,7 @@ module.exports = {
     "jsdoc/newline-after-description": 2,
   },
   plugins: [
-      'jsdoc',
+    'jsdoc',
   ],
   parser: 'babel-eslint',
   overrides: [{
@@ -96,5 +96,15 @@ module.exports = {
     rules: {
       'no-invalid-this': 0,
     },
+  }, {
+    files: [
+      'packages/**/*.{mjs,js}',
+    ],
+    plugins: [
+      'header',
+    ],
+    rules: {
+      'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google Inc.'}]
+    }
   }],
 };
