@@ -10,6 +10,12 @@ const findMissingCDNTags = async (tagsData) => {
   const missingTags = [];
   for (let tagData of tagsData) {
     let exists = await cdnUploadHelper.tagExists(tagData.name);
+
+    // TODO (gauntface) Remove when we are closer to launch.
+    if (tagData.name === 'v3.0.0-alpha') {
+      exists = false;
+    }
+
     if (!exists) {
       missingTags.push(tagData);
     }
@@ -52,11 +58,7 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
 });
 
 gulp.task('publish-cdn:lerna-prerelease', async () => {
-  // We can use this to publish BUT we should only really publish on the v3
-  // branch since that's what this is what will be pulled and uploaded to CDN
-  // regardless of the current branch.
-  const lernaPkg = require('../lerna.json');
-  const tagName = lernaPkg.version;
+  const tagName = 'v3.0.0-alpha';
   const gitBranch = 'v3';
 
   const missingTags = await findMissingCDNTags([{name: tagName}]);
