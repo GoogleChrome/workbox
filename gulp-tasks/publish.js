@@ -16,7 +16,7 @@ gulp.task('publish:cdn+git', gulp.series([
 ]));
 
 gulp.task('publish', gulp.series([
-  // 'test',
+  'test',
   'publish-lerna',
   'publish:cdn+git',
 ]));
