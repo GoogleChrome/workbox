@@ -33,10 +33,10 @@ class CacheFirst {
    * @param {string} options.cacheName Cache name to store and retrieve
    * requests. Defaults to cache names provided by `workbox-core`.
    */
-  constructor({cacheName, plugins} = {}) {
+  constructor(options = {}) {
     this._cacheName =
-      _private.cacheNames.getRuntimeName(cacheName);
-      this._plugins = plugins;
+      _private.cacheNames.getRuntimeName(options.cacheName);
+      this._plugins = options.plugins || [];
   }
 
   /**
@@ -67,11 +67,12 @@ class CacheFirst {
     );
 
     // Keep the service worker while we put the request to the cache
+    const responseClone = response.clone();
     event.waitUntil(
       _private.cacheWrapper.put(
         this._cacheName,
         event.request,
-        response.clone(),
+        responseClone,
         this._plugins
       )
     );
