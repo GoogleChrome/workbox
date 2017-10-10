@@ -65,7 +65,6 @@ describe(`[all] Test package.json`, function() {
         'browser',
       ];
 
-      const lernaPkg = require('../../../lerna.json');
       propertiesToCheck.forEach((propertyName) => {
         const fullPath = path.join(path.dirname(packagePath), pkg[propertyName]);
         const fileContents = fs.readFileSync(fullPath).toString();
@@ -75,9 +74,8 @@ describe(`[all] Test package.json`, function() {
         }
 
         const metadata = results[1].split(':');
-        expect(metadata[0]).to.equal(lernaPkg.version);
-        expect(metadata[1]).to.equal(pkg.name);
-        expect(metadata[2]).to.equal(pkg.version);
+        expect(metadata[0]).to.equal(pkg.name);
+        expect(metadata[1]).to.equal(pkg.version);
       });
     });
   });
