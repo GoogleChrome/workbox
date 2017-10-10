@@ -32,6 +32,8 @@ class CacheFirst {
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
    * requests. Defaults to cache names provided by `workbox-core`.
+   * @param {string} options.plugins Workbox plugins you may want to use in
+   * conjunction with this caching strategy.
    */
   constructor(options = {}) {
     this._cacheName =
