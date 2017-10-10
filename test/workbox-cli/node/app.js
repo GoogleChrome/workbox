@@ -1,4 +1,5 @@
 const expect = require('chai').expect;
+const path = require('path');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
@@ -6,7 +7,7 @@ const errors = require('../../../packages/workbox-cli/src/lib/errors');
 
 describe(`[workbox-cli] app.js`, function() {
   const MODULE_PATH = '../../../packages/workbox-cli/src/app';
-  const PROXIED_CONFIG_FILE = '/will/be/proxied';
+  const PROXIED_CONFIG_FILE = path.resolve(process.cwd(), '/will/be/proxied');
   const PROXIED_ERROR = new Error('proxied error message');
   const PROXIED_CONFIG = {};
   const INVALID_CONFIG_FILE = '/does/not/exist';
@@ -85,7 +86,7 @@ describe(`[workbox-cli] app.js`, function() {
       ];
 
       for (const config of badConfigs) {
-        it(`should should reject with a validation error when workbox-build.${command}(${JSON.stringify(config)}) is called`, async function() {
+        it(`should reject with a validation error when workbox-build.${command}(${JSON.stringify(config)}) is called`, async function() {
           const app = proxyquire(MODULE_PATH, {
             './lib/read-config': (configFile) => {
               expect(configFile).to.eql(PROXIED_CONFIG_FILE);
@@ -102,7 +103,7 @@ describe(`[workbox-cli] app.js`, function() {
         });
       }
 
-      it(`should should reject with a generic runtime error when the workbox-build.${command}() rejects for any other reason`, async function() {
+      it(`should reject with a generic runtime error when the workbox-build.${command}() rejects for any other reason`, async function() {
         const app = proxyquire(MODULE_PATH, {
           './lib/read-config': (configFile) => {
             expect(configFile).to.eql(PROXIED_CONFIG_FILE);
