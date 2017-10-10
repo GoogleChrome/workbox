@@ -17,7 +17,6 @@ gulp.task('publish:cdn+git', gulp.series([
 
 gulp.task('publish', gulp.series([
   'test',
-  // TODO: Publish lerna here (this will push the git tag that everything else)
-  // will lend off of
+  'publish-lerna',
   'publish:cdn+git',
 ]));
