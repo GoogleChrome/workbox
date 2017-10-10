@@ -7,6 +7,7 @@
 class DBWrapper {
   /**
    * Wraps a provided Database.
+   *
    * @param {IDBDatabase} idb
    * @param {string} storename
    */
@@ -17,6 +18,7 @@ class DBWrapper {
 
   /**
    * Get a value for a given ID.
+   *
    * @param {Object} key
    * @return {Promise<string>}
    */
@@ -66,6 +68,7 @@ class DBWrapper {
 
   /**
    * Put a value in the database for a given id.
+   *
    * @param {Object} key
    * @param {Object} value
    * @return {Promise}
@@ -86,6 +89,7 @@ class DBWrapper {
 
   /**
    * Delete a value in the database with a given id.
+   *
    * @param {Object} key
    * @return {Promise}
    */
@@ -121,6 +125,7 @@ class IndexedDBHelper {
 
   /**
    * Get an opened IndexedDB.
+   *
    * @param {string} name
    * @param {string} storename
    * @param {Object} objectStoreOptions

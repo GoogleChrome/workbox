@@ -30,6 +30,7 @@ class BaseOptions {
 
   /**
    * Performs validation and assigns default values for all the options.
+   *
    * @param {Object} [options] The options to initialize this class with;
    * will be validated based on the set of supported options.
    * @param {Object} [schema] The schema to use when validating options.

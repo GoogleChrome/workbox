@@ -1,6 +1,6 @@
 {
   "name": "workbox-sw",
-  "version": "3.0.0",
+  "version": "3.0.0-alpha",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This module makes it easy to get started with the Workbox service worker libraries.",
@@ -17,12 +17,11 @@
     "prepublish": "gulp build-packages --package workbox-sw"
   },
   "workbox": {
-    "browserNamespace": "sw",
+    "browserNamespace": "WorkboxSW",
+    "disableNamespacePrefix": "true",
+    "disabledNamedExports": "true",
     "packageType": "browser"
   },
   "main": "build/browser-bundles/workbox-sw.prod.js",
-  "module": "index.mjs",
-  "dependencies": {
-    "workbox-core": "3.0.0"
-  }
+  "module": "index.mjs"
 }

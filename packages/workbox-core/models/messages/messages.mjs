@@ -42,6 +42,17 @@ export default {
       `${expectedType}.`;
   },
 
+  'incorrect-class': ({expectedClass, paramName, moduleName, className,
+                       funcName}) => {
+    if (!expectedClass || !paramName || !moduleName || !className ||
+      !funcName) {
+      throw new Error(`Unexpected input to 'incorrect-class' error.`);
+    }
+    return `The parameter '${paramName}' passed into ` +
+      `'${moduleName}.${className}.${funcName}()' must be an instance of ` +
+      `class ${expectedClass}.`;
+  },
+
   'missing-a-method': ({expectedMethod, paramName, moduleName, className,
                     funcName}) => {
     if (!expectedMethod || !paramName || !moduleName || !className
@@ -92,5 +103,20 @@ export default {
     return `You must provide a name containing at least one character for ` +
       `setCacheDeatils({${cacheNameId}: '...'}). Received a value of ` +
       `'${JSON.stringify(value)}'`;
+  },
+
+  'unregister-route-but-not-found-with-method': ({method}) => {
+    if (!method) {
+      throw new Error(`Unexpected input to ` +
+        `'unregister-route-but-not-found-with-method' error.`);
+    }
+
+    return `The route you're trying to unregister was not  previously ` +
+      `registered for the method type '${method}'.`;
+  },
+
+  'unregister-route-route-not-registered': () => {
+    return `The route you're trying to unregister was not previously ` +
+      `registered.`;
   },
 };

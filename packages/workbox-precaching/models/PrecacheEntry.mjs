@@ -8,6 +8,7 @@ export default class PrecacheEntry {
 /**
  * This class ensures all cache list entries are consistent and
  * adds cache busting if required.
+ *
  * @param {*} originalInput
  * @param {string} url
  * @param {string} revision
@@ -29,7 +30,7 @@ export default class PrecacheEntry {
    *
    * @param {Request} request The request to cache bust
    * @return {Request} A cachebusted Request
-   * 
+   *
    * @private
    */
   _cacheBustRequest(request) {
