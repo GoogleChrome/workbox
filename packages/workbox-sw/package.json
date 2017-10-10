@@ -14,8 +14,9 @@
     "sw"
   ],
   "scripts": {
-    "version": "gulp build-packages --package workbox-sw",
-    "prepare": "gulp build-packages --package workbox-sw"
+    "build": "gulp build-packages --package workbox-sw",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
   "workbox": {
     "browserNamespace": "WorkboxSW",

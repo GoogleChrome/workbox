@@ -14,8 +14,9 @@
     "sw"
   ],
   "scripts": {
-    "version": "gulp build-packages --package workbox-precaching",
-    "prepare": "gulp build-packages --package workbox-precaching"
+    "build": "gulp build-packages --package workbox-precaching",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
   "workbox": {
     "browserNamespace": "precaching",

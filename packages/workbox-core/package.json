@@ -14,8 +14,9 @@
     "sw"
   ],
   "scripts": {
-    "version": "gulp build-packages --package workbox-core",
-    "prepare": "gulp build-packages --package workbox-core"
+    "build": "gulp build-packages --package workbox-core",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
   "workbox": {
     "browserNamespace": "core",
