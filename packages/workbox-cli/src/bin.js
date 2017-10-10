@@ -19,7 +19,7 @@
 const meow = require('meow');
 const updateNotifier = require('update-notifier');
 
-const app = require('./index.js');
+const app = require('./app.js');
 const helpText = require('./lib/help-text');
 const logger = require('./lib/logger');
 
