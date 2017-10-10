@@ -1,5 +1,3 @@
-#! /usr/bin/env node
-
 /**
  * Copyright 2017 Google Inc.
  *
@@ -16,22 +14,14 @@
  * limitations under the License.
 **/
 
-const meow = require('meow');
-const updateNotifier = require('update-notifier');
+const ol = require('common-tags').oneLine;
 
-const app = require('./app.js');
-const helpText = require('./lib/help-text');
-const logger = require('./lib/logger');
-
-(async () => {
-  const params = meow(helpText);
-  updateNotifier({pkg: params.pkg}).notify();
-
-  try {
-    await app(...params.input);
-  } catch (error) {
-    logger.error(`\n${error.message}`);
-    logger.debug(`\nFor more info, use the --help flag.`);
-    process.exit(1);
-  }
-})();
+module.exports = {
+  'missing-command-param': `Please provide a command.`,
+  'missing-config-file-param': `Please provide a configuration file.`,
+  'invalid-common-js-module': ol`Please pass in a valid CommonJS module that
+    exports your configuration.`,
+  'config-validation-failed': `Your configuration is invalid:`,
+  'workbox-build-runtime-error': `Service worker generation failed:`,
+  'unknown-command': `Unknown command:`,
+};

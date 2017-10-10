@@ -19,13 +19,13 @@ const path = require('path');
 const prettyBytes = require('pretty-bytes');
 const workboxBuild = require('workbox-build');
 
+const errors = require('./lib/errors');
+const readConfig = require('./lib/read-config');
 const logger = require('./lib/logger');
 
-module.exports = async (params) => {
-  const [command, configFile] = params.input;
-
-  assert(command, `Please provide a command.`);
-  assert(configFile, `Please provide a configuration file.`);
+module.exports = async (command, configFile) => {
+  assert(command, errors['missing-command-param']);
+  assert(configFile, errors['missing-config-file-param']);
 
   if (command === 'wizard') {
     // TODO: Port over wizard code.
@@ -34,28 +34,25 @@ module.exports = async (params) => {
     const configPath = path.resolve(process.cwd(), configFile);
     let config;
     try {
-      config = require(configPath);
+      config = readConfig(configPath);
     } catch (error) {
-      // TODO: Switch to custom Error subclass.
-      throw new Error(`${error}\n Please pass in a valid CommonJS module ` +
-        `that exports your configuration.`);
+      throw new Error(`${error}\n${errors['invalid-common-js-module']}`);
     }
 
     try {
       const {size, count} = await workboxBuild[command](config);
-      logger.log(`The service worker was written to ${config.swDest}`);
-      logger.debug(`${count} files will be precached, totalling ` +
-        `${prettyBytes(size)}.`);
+      logger.log(`The service worker was written to ${config.swDest}\n` +
+        `${count} files will be precached, totalling ${prettyBytes(size)}.`);
     } catch (error) {
       // See https://github.com/hapijs/joi/blob/v11.3.4/API.md#errors
       if (typeof error.annotate === 'function') {
-        // TODO: Switch to custom Error subclass.
-        throw new Error(`Your configuration is invalid:\n${error.annotate()}`);
+        throw new Error(errors['config-validation-failed'] + `\n` +
+          error.annotate());
       }
-      throw error;
+      throw new Error(errors['workbox-build-runtime-error'] + `\n` +
+        error);
     }
   } else {
-    // TODO: Switch to custom Error subclass.
-    throw new Error(`Unknown command: ${command}`);
+    throw new Error(errors['unknown-command'] + ` ` + command);
   }
 };

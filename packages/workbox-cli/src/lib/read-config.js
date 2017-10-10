@@ -1,5 +1,3 @@
-#! /usr/bin/env node
-
 /**
  * Copyright 2017 Google Inc.
  *
@@ -16,22 +14,8 @@
  * limitations under the License.
 **/
 
-const meow = require('meow');
-const updateNotifier = require('update-notifier');
-
-const app = require('./app.js');
-const helpText = require('./lib/help-text');
-const logger = require('./lib/logger');
-
-(async () => {
-  const params = meow(helpText);
-  updateNotifier({pkg: params.pkg}).notify();
-
-  try {
-    await app(...params.input);
-  } catch (error) {
-    logger.error(`\n${error.message}`);
-    logger.debug(`\nFor more info, use the --help flag.`);
-    process.exit(1);
-  }
-})();
+// A really light wrapper on top of Node's require() to make it easier to stub
+// out reading the configuration during tests.
+module.exports = (configFile) => {
+  return require(configFile);
+};
