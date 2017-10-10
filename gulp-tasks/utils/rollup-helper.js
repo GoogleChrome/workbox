@@ -43,7 +43,7 @@ module.exports = {
     const replaceOptions = {
       // This value is REQUIRED by workbox-sw to know the version to use on the
       // CDN
-      'WORKBOX_SW_VERSION_TAG': lernaPkg.version,
+      'WORKBOX_SW_VERSION_TAG': `v${lernaPkg.version}`,
     };
 
     if (buildType) {
