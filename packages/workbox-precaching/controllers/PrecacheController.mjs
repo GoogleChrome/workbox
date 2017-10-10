@@ -281,7 +281,7 @@ class PrecacheController {
    */
   async _cleanupDetailsModel(expectedCacheUrls) {
     const revisionedEntries = await this._precacheDetailsModel._getAllEntries();
-    const allDetailUrls = Object.keys(revisionedEntries);
+    const allDetailUrls = [...revisionedEntries.keys()];
 
     const detailsToDelete = allDetailUrls.filter((detailsUrl) => {
       const fullUrl = new URL(detailsUrl, location).toString();
