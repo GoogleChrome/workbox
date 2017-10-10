@@ -221,7 +221,6 @@ describe(`backgroundSync.Queue`, function() {
     });
 
     it(`should invoke the requestWillQueue callback`, async function() {
-      const requestWillQueue = sinon.spy();
       const queue = new Queue('foo', {
         callbacks: {
           requestWillQueue: (storableRequest) => {
@@ -337,7 +336,7 @@ describe(`backgroundSync.Queue`, function() {
       sandbox.spy(self, 'fetch');
       const clock = sinon.useFakeTimers({
         now: Date.now(),
-        toFake: ['Date']
+        toFake: ['Date'],
       });
 
       const queue = new Queue('foo', {
@@ -404,7 +403,7 @@ describe(`backgroundSync.Queue`, function() {
       sandbox.stub(self.registration, 'sync').value({
         register: sinon.stub().resolves(),
       });
-      sandbox.stub(self, 'fetch').onCall(1).rejects()
+      sandbox.stub(self, 'fetch').onCall(1).rejects();
 
       const queue = new Queue('foo');
 
@@ -511,7 +510,7 @@ describe(`backgroundSync.Queue`, function() {
 
       const requestWillReplay = (storableRequest) => {
         storableRequest.url += '?q=foo';
-      }
+      };
 
       const queue = new Queue('foo', {
         callbacks: {requestWillReplay},

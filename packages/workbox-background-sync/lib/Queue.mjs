@@ -62,17 +62,22 @@ export default class Queue {
    * @param {Object} [param2.callbacks] Callbacks to observe the lifecycle of
    *     queued requests. Use these to respond to or modify the requests
    *     during the replay process.
-   * @param {function(StorableRequest):undefined} [param2.callbacks.requestWillQueue]
+   * @param {function(StorableRequest):undefined}
+   *     [param2.callbacks.requestWillQueue]
    *     Invoked immediately before the request is stored to IndexedDB. Use
    *     this callback to modify request data at store time.
-   * @param {function(StorableRequest):undefined} [param2.callbacks.requestWillReplay]
+   * @param {function(StorableRequest):undefined}
+   *     [param2.callbacks.requestWillReplay]
    *     Invoked immediately before the request is re-fetched. Use this
    *     callback to modify request data at fetch time.
-   * @param {function(StorableRequest):undefined} [param2.callbacks.requestDidReplay]
+   * @param {function(StorableRequest):undefined}
+   *     [param2.callbacks.requestDidReplay]
    *     Invoked immediately after the request has successfully re-fetched.
-   * @param {function(StorableRequest):undefined} [param2.callbacks.replayDidFail]
+   * @param {function(StorableRequest):undefined}
+   *     [param2.callbacks.replayDidFail]
    *     Invoked if the replay attempt failed.
-   * @param {function(Array<StorableRequest>):undefined} [param2.callbacks.allRequestsDidReplay]
+   * @param {function(Array<StorableRequest>):undefined}
+   *     [param2.callbacks.allRequestsDidReplay]
    *     Invoked after all requests in the queue have successfully replayed.
    */
   constructor(name, {
@@ -136,8 +141,6 @@ export default class Queue {
    * `allRequestsDidReplay` callback is invoked (which implies the queue is
    * now empty). If any of the requests fail, a new sync registration is
    * created to retry again later.
-   *
-   * @return {Promise<undefined>}
    */
   async replayRequests() {
     const storableRequestsInQueue = await this._getStorableRequestsInQueue();
