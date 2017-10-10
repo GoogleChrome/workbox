@@ -22,7 +22,7 @@
     "disabledNamedExports": "true",
     "packageType": "browser"
   },
-  "main": "build/module/workbox-sw.prod.js",
+  "main": "build/module/index.mjs",
   "module": "build/module/index.mjs",
   "browser": "build/browser/workbox-sw.prod.js"
 }

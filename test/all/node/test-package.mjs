@@ -1,6 +1,7 @@
 import glob from 'glob';
 import path from 'path';
 import fs from 'fs-extra';
+import {expect} from 'chai';
 
 import constants from '../../../gulp-tasks/utils/constants';
 
@@ -29,7 +30,7 @@ describe(`[all] Test package.json`, function() {
               throw new Error(`The property '${propertyName}' for '${path.relative(process.cwd(), packagePath)}' isn't referencing a file in the '${constants.PACKAGE_BUILD_DIRNAME}' directory: '${pkg[propertyName]}'`);
             }
 
-            const fullPath = path.join(path.dirname(packagePath, pkg[propertyName]));
+            const fullPath = path.join(path.dirname(packagePath), pkg[propertyName]);
             if (!fs.existsSync(fullPath)) {
               throw new Error(`${path.relative(process.cwd(), packagePath)} has an invalid '${propertyName}' property: '${pkg[propertyName]}'`);
             }
@@ -42,6 +43,42 @@ describe(`[all] Test package.json`, function() {
         default:
           throw new Error(`Unknown package.json workbox.packageType: '${pkg.workbox.packageType}' in ${path.relative(process.cwd(), packagePath)}`);
       }
+    });
+  });
+
+  it(`should contain the file version`, function() {
+    const versionRegex = /['|"]workbox:((?:[^:'"]*|:)*)['|"]/;
+    const packageFiles = glob.sync('packages/**/package.json', {
+      ignore: ['packages/*/node_modules/**/*'],
+      cwd: path.join(__dirname, '..', '..', '..'),
+      absolute: true,
+    });
+    packageFiles.forEach((packagePath) => {
+      const pkg = require(packagePath);
+      if (pkg.workbox.packageType !== 'browser') {
+        return;
+      }
+
+      const propertiesToCheck = [
+        'main',
+        'module',
+        'browser',
+      ];
+
+      const lernaPkg = require('../../../lerna.json');
+      propertiesToCheck.forEach((propertyName) => {
+        const fullPath = path.join(path.dirname(packagePath), pkg[propertyName]);
+        const fileContents = fs.readFileSync(fullPath).toString();
+        const results = versionRegex.exec(fileContents);
+        if (!results) {
+          throw new Error(`Unable to find the workbox version in '${path.relative(process.cwd(), fullPath)}'`);
+        }
+
+        const metadata = results[1].split(':');
+        expect(metadata[0]).to.equal(lernaPkg.version);
+        expect(metadata[1]).to.equal(pkg.name);
+        expect(metadata[2]).to.equal(pkg.version);
+      });
     });
   });
 });

@@ -1,7 +1,6 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import logger from '../../../../packages/workbox-core/utils/logger.mjs';
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 import showWarningsIfNeeded from '../../../../packages/workbox-precaching/utils/showWarningsIfNeeded.mjs';
 
@@ -11,11 +10,11 @@ describe(`[workbox-precaching] showWarningsIfNeeded`, function() {
   beforeEach(function() {
     sandbox.restore();
 
-    sandbox.stub(logger, 'log');
-    sandbox.stub(logger, 'debug');
-    sandbox.stub(logger, 'warn');
-    sandbox.stub(logger, 'groupCollapsed');
-    sandbox.stub(logger, 'groupEnd');
+    sandbox.stub(console, 'log');
+    sandbox.stub(console, 'debug');
+    sandbox.stub(console, 'warn');
+    sandbox.stub(console, 'groupCollapsed');
+    sandbox.stub(console, 'groupEnd');
   });
 
   after(function() {
@@ -30,7 +29,7 @@ describe(`[workbox-precaching] showWarningsIfNeeded`, function() {
 
     showWarningsIfNeeded(entriesMap);
 
-    expect(logger.log.callCount).to.equal(0);
+    expect(console.log.callCount).to.equal(0);
   });
 
   it(`should print if any of the entries have no revision`, function() {
@@ -41,6 +40,6 @@ describe(`[workbox-precaching] showWarningsIfNeeded`, function() {
 
     showWarningsIfNeeded(entriesMap);
 
-    expect(logger.log.callCount).to.be.gt(0);
+    expect(console.log.callCount).to.be.gt(0);
   });
 });

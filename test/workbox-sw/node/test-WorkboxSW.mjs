@@ -2,6 +2,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
+import constants from '../../../gulp-tasks/utils/constants';
 
 import WorkboxSW from '../../../packages/workbox-sw/index.mjs';
 
@@ -60,7 +61,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
       // TODO Switch to contstants.BUILD_TYPES.prod
       const wb = new WorkboxSW({
-        debug: process.env.NODE_ENV !== 'production',
+        debug: process.env.NODE_ENV !== constants.BUILD_TYPES.prod,
       });
 
       expect(wb.loadModule.callCount).to.equal(1);

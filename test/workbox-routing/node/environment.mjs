@@ -14,6 +14,9 @@ describe(`workbox-routing: SW environment`, function() {
   it(`should throw when loaded outside of a service worker in dev`, function() {
     if (process.env.NODE_ENV == 'production') return this.skip();
 
+    class Foo {}
+    sandbox.stub(global, 'ServiceWorkerGlobalScope').value(Foo);
+
     return expectError(
       async () => await import('../../../packages/workbox-routing/index.mjs'),
       'not-in-sw',
