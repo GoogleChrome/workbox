@@ -20,5 +20,5 @@ module.exports = {
   debug: (...args) => console.log(chalk.gray(...args)),
   log: (...args) => console.log(...args),
   warn: (...args) => console.warn(chalk.red(...args)),
-  error: (...args) => console.error(chalk.bold(chalk.red(...args))),
+  error: (...args) => console.error(chalk.red.bold(...args)),
 };
