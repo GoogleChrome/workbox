@@ -15,8 +15,11 @@
 **/
 
 const assert = require('assert');
+const path = require('path');
 const prettyBytes = require('pretty-bytes');
 const workboxBuild = require('workbox-build');
+
+const logger = require('./lib/logger');
 
 module.exports = async (params) => {
   const [command, configFile] = params.input;
@@ -27,13 +30,32 @@ module.exports = async (params) => {
   if (command === 'wizard') {
     // TODO: Port over wizard code.
   } else if (command === 'generateSW' || command === 'injectManifest') {
-    const config = require(configFile);
-    const {size, count} = await workboxBuild[command](config);
+    // TODO: Confirm that this works with Windows paths.
+    const configPath = path.resolve(process.cwd(), configFile);
+    let config;
+    try {
+      config = require(configPath);
+    } catch (error) {
+      // TODO: Switch to custom Error subclass.
+      throw new Error(`${error}\n Please pass in a valid CommonJS module ` +
+        `that exports your configuration.`);
+    }
 
-    console.log(`The service worker was written to ${config.swDest}`);
-    console.log(`${count} files will be precached, totalling ` +
-      `${prettyBytes(size)}.`);
+    try {
+      const {size, count} = await workboxBuild[command](config);
+      logger.log(`The service worker was written to ${config.swDest}`);
+      logger.debug(`${count} files will be precached, totalling ` +
+        `${prettyBytes(size)}.`);
+    } catch (error) {
+      // See https://github.com/hapijs/joi/blob/v11.3.4/API.md#errors
+      if (typeof error.annotate === 'function') {
+        // TODO: Switch to custom Error subclass.
+        throw new Error(`Your configuration is invalid:\n${error.annotate()}`);
+      }
+      throw error;
+    }
   } else {
+    // TODO: Switch to custom Error subclass.
     throw new Error(`Unknown command: ${command}`);
   }
 };

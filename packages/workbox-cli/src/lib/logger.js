@@ -1,5 +1,3 @@
-#! /usr/bin/env node
-
 /**
  * Copyright 2017 Google Inc.
  *
@@ -16,22 +14,11 @@
  * limitations under the License.
 **/
 
-const meow = require('meow');
-const updateNotifier = require('update-notifier');
+const chalk = require('chalk');
 
-const app = require('./index.js');
-const helpText = require('./lib/help-text');
-const logger = require('./lib/logger');
-
-(async () => {
-  const params = meow(helpText);
-  updateNotifier({pkg: params.pkg}).notify();
-
-  try {
-    await app(params);
-  } catch (error) {
-    logger.error(`\n${error.message}`);
-    logger.debug(`\nFor more info, use the --help flag.`);
-    process.exit(1);
-  }
-})();
+module.exports = {
+  debug: (...args) => console.log(chalk.gray(...args)),
+  log: (...args) => console.log(...args),
+  warn: (...args) => console.warn(chalk.red(...args)),
+  error: (...args) => console.error(chalk.bold(chalk.red(...args))),
+};

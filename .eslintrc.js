@@ -39,7 +39,7 @@ module.exports = {
       'test/workbox-core/bundle/node/utils/test-LogHelper.js',
       'infra/testing/cli-test-helper.js',
       'infra/utils/log-helper.js',
-      'packages/workbox-cli/src/*.js',
+      'packages/workbox-cli/src/lib/logger.js',
     ],
     rules: {
       'no-console': 0,
