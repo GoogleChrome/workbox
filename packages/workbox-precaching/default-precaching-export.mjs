@@ -29,13 +29,6 @@ const precache = (entries) => {
   }
 };
 
-const getPrecacheRoute = () => {
-  return {
-    handle: () => {},
-    match: () => {},
-  };
-};
-
 export default {
   precache,
 };
