@@ -82,4 +82,6 @@ module.exports = {
   'invalid-generate-file-manifest-arg': ol`The input to generateFileManifest()
     must be an Object.`,
   'invalid-sw-src': `The 'swSrc' file can't be read.`,
+  'same-src-and-dest': ol`'swSrc' and 'swDest' should not be set to the same ` +
+    `file. Please use a different file path for 'swDest'.`,
 };
