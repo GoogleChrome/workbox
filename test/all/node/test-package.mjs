@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import {expect} from 'chai';
 
 import constants from '../../../gulp-tasks/utils/constants';
+import pkgPathToName from '../../../gulp-tasks/utils/pkg-path-to-name';
 
 describe(`[all] Test package.json`, function() {
   it(`should expose correct main, browser and module fields`, function() {
@@ -48,7 +49,7 @@ describe(`[all] Test package.json`, function() {
 
   it(`should contain the file version`, function() {
     const versionRegex = /['|"]workbox:((?:[^:'"]*|:)*)['|"]/;
-    const packageFiles = glob.sync('packages/**/package.json', {
+    const packageFiles = glob.sync('packages/*/package.json', {
       ignore: ['packages/*/node_modules/**/*'],
       cwd: path.join(__dirname, '..', '..', '..'),
       absolute: true,
@@ -59,18 +60,16 @@ describe(`[all] Test package.json`, function() {
         return;
       }
 
-      const propertiesToCheck = [
-        'main',
-        'module',
-        'browser',
-      ];
-
-      propertiesToCheck.forEach((propertyName) => {
-        const fullPath = path.join(path.dirname(packagePath), pkg[propertyName]);
-        const fileContents = fs.readFileSync(fullPath).toString();
+      const packageName = pkgPathToName(path.dirname(packagePath));
+      const packageFiles = glob.sync(`packages/${packageName}/${constants.PACKAGE_BUILD_DIRNAME}/**/*.{js,mjs}`, {
+        cwd: path.join(__dirname, '..', '..', '..'),
+        absolute: true,
+      });
+      packageFiles.forEach((filePath) => {
+        const fileContents = fs.readFileSync(filePath).toString();
         const results = versionRegex.exec(fileContents);
         if (!results) {
-          throw new Error(`Unable to find the workbox version in '${path.relative(process.cwd(), fullPath)}'`);
+          throw new Error(`Unable to find the workbox version in '${path.relative(process.cwd(), filePath)}'`);
         }
 
         const metadata = results[1].split(':');

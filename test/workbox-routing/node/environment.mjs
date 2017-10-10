@@ -21,7 +21,7 @@ describe(`[workbox-routing] SW environment`, function() {
 
     class Foo {}
     sandbox.stub(global, 'ServiceWorkerGlobalScope').value(Foo);
-    
+
     await expectError(async () => {
       await import(MODULE_PATH);
     }, 'not-in-sw', (err) => {

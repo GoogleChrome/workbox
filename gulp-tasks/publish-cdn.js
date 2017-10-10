@@ -52,8 +52,10 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
 });
 
 gulp.task('publish-cdn:lerna-prerelease', async () => {
+  // We can use this to publish BUT we should only really publish on the v3
+  // branch since that's what this is what will be pulled and uploaded to CDN
+  // regardless of the current branch.
   const lernaPkg = require('../lerna.json');
-
   const tagName = lernaPkg.version;
   const gitBranch = 'v3';
 
