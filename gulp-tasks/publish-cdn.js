@@ -57,7 +57,7 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
   }
 });
 
-gulp.task('publish-cdn:lerna-prerelease', async () => {
+gulp.task('publish-cdn:temp-v3', async () => {
   const tagName = 'v3.0.0-alpha';
   const gitBranch = 'v3';
 
@@ -72,5 +72,5 @@ gulp.task('publish-cdn:lerna-prerelease', async () => {
 
 gulp.task('publish-cdn', gulp.series(
   'publish-cdn:generate-from-tags',
-  'publish-cdn:lerna-prerelease',
+  'publish-cdn:temp-v3',
 ));
