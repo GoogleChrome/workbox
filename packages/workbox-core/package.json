@@ -1,6 +1,6 @@
 {
   "name": "workbox-core",
-  "version": "3.0.0-alpha.12",
+  "version": "3.0.0-alpha.15",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This module is used by a number of the other workboxjs.org modules to share common code.",
@@ -14,7 +14,7 @@
     "sw"
   ],
   "scripts": {
-    "prepublish": "gulp build-packages --package workbox-core"
+    "version": "gulp build-packages --package workbox-core"
   },
   "workbox": {
     "browserNamespace": "core",

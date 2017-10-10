@@ -1,6 +1,6 @@
 {
   "name": "workbox-precaching",
-  "version": "3.0.0-alpha.12",
+  "version": "3.0.0-alpha.15",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This module efficiently precaches assets.",
@@ -14,7 +14,7 @@
     "sw"
   ],
   "scripts": {
-    "prepublish": "gulp build-packages --package workbox-precaching"
+    "version": "gulp build-packages --package workbox-precaching"
   },
   "workbox": {
     "browserNamespace": "precaching",
@@ -24,6 +24,6 @@
   "module": "build/module/index.mjs",
   "browser": "build/browser/workbox-precaching.prod.js",
   "dependencies": {
-    "workbox-core": "^3.0.0-alpha.12"
+    "workbox-core": "^3.0.0-alpha.15"
   }
 }
