@@ -55,24 +55,24 @@ export default class Queue {
    *     unique as it's used to register sync events and store requests
    *     in IndexedDB specific to this instance. An error will be thrown if
    *     a duplicate name is detected.
-   * @param {Object} [opts]
-   * @param {number} [opts.maxRetentionTime = 7 days] The amount of time (in
+   * @param {Object} [param2]
+   * @param {number} [param2.maxRetentionTime = 7 days] The amount of time (in
    *     ms) a request may be retried. After this amount of time has passed,
    *     the request will be deleted and not retried.
-   * @param {Object} [opts.callbacks] Callbacks to observe the lifecycle of
+   * @param {Object} [param2.callbacks] Callbacks to observe the lifecycle of
    *     queued requests. Use these to respond to or modify the requests
    *     during the replay process.
-   * @param {function(StorableRequest):undefined} requestWillQueue
+   * @param {function(StorableRequest):undefined} [param2.callbacks.requestWillQueue]
    *     Invoked immediately before the request is stored to IndexedDB. Use
    *     this callback to modify request data at store time.
-   * @param {function(StorableRequest):undefined} requestWillReplay
+   * @param {function(StorableRequest):undefined} [param2.callbacks.requestWillReplay]
    *     Invoked immediately before the request is re-fetched. Use this
    *     callback to modify request data at fetch time.
-   * @param {function(StorableRequest):undefined} requestDidReplay
+   * @param {function(StorableRequest):undefined} [param2.callbacks.requestDidReplay]
    *     Invoked immediately after the request has successfully re-fetched.
-   * @param {function(StorableRequest):undefined} replayDidFail
+   * @param {function(StorableRequest):undefined} [param2.callbacks.replayDidFail]
    *     Invoked if the replay attempt failed.
-   * @param {function(Array<StorableRequest>):undefined} allRequestsDidReplay
+   * @param {function(Array<StorableRequest>):undefined} [param2.callbacks.allRequestsDidReplay]
    *     Invoked after all requests in the queue have successfully replayed.
    */
   constructor(name, {
@@ -131,11 +131,20 @@ export default class Queue {
   }
 
   /**
-   * Retrieves all stored requests in IndexedDB and retries them.
-   * If the retry fails, they're re-added to the queue.
+   * Retrieves all stored requests in IndexedDB and retries them. If the
+   * queue contained requests that were successfully replayed, the
+   * `allRequestsDidReplay` callback is invoked (which implies the queue is
+   * now empty). If any of the requests fail, a new sync registration is
+   * created to retry again later.
+   *
+   * @return {Promise<undefined>}
    */
   async replayRequests() {
     const storableRequestsInQueue = await this._getStorableRequestsInQueue();
+
+    // If nothing is in the queue, return immediately and run no callbacks.
+    if (!storableRequestsInQueue.length) return;
+
     const successfullyReplayedRequests = [];
     let allReplaysSuccessful = true;
 
@@ -149,7 +158,9 @@ export default class Queue {
     }
 
     if (allReplaysSuccessful) {
-      this._runCallback('allRequestsDidReplay');
+      this._runCallback('allRequestsDidReplay', successfullyReplayedRequests);
+    } else {
+      this._registerSync();
     }
   }
 
@@ -165,8 +176,16 @@ export default class Queue {
 
     for (const [key, entry] of (await db.getAll()).entries()) {
       if (entry.queueName == this._name) {
-        storableRequests.push(
-            [key, new StorableRequest(entry.storableRequest)]);
+        // Requests older than `maxRetentionTime` should be ignored.
+        const storableRequest = new StorableRequest(entry.storableRequest);
+
+        if (Date.now() - storableRequest.timestamp > this._maxRetentionTime) {
+          // No need to await this since it can happen in parallel.
+          this._removeRequest(key);
+          continue;
+        }
+
+        storableRequests.push([key, storableRequest]);
       }
     }
 
@@ -194,15 +213,9 @@ export default class Queue {
    * @return {Promise<boolean>}
    */
   async _replayRequest(key, storableRequest) {
-    // Don't retry entries that are too old.
-    if (Date.now() - storableRequest.timestamp > this._maxRetentionTime) {
-      return this._removeRequest(key);
-    }
-
-    const request = storableRequest.toRequest();
     try {
       this._runCallback('requestWillReplay', storableRequest);
-      await fetch(request);
+      await fetch(storableRequest.toRequest());
       this._runCallback('requestDidReplay', storableRequest);
 
       // TODO(philipwalton): in the unlikely event that the delete fails,
@@ -252,6 +265,12 @@ export default class Queue {
     self.addEventListener('sync', (event) => {
       event.waitUntil(this.replayRequests());
     });
+
+    // If the browser doesn't support background sync, retry
+    // every time the service worker starts up as a fallback.
+    if (!('sync' in registration)) {
+      this.replayRequests();
+    }
   }
 
   /**
@@ -266,8 +285,7 @@ export default class Queue {
     } catch (err) {
       // This means the registration failed for some reason, either because
       // the browser doesn't supported it or because the user has disabled it.
-      // In either case, fallback to retrying on SW startup.
-      // TODO(philipwalton): implement fallback.
+      // In either case, do nothing.
     }
   }
 

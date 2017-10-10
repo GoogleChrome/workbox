@@ -31,21 +31,6 @@ let Queue;
  */
 const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
-/**
- * Invokes a test function until it returns true.
-
- * @param {Function}
- * @return {Promise}
- */
-const waitUntil = async (test) => {
-  if (test() === true) {
-    return Promise.resolve();
-  } else {
-    await sleep(100);
-    return waitUntil(test);
-  }
-};
-
 
 const clearObjectStore = async () => {
   const db = await indexedDBHelper.getDB(
@@ -107,7 +92,7 @@ describe(`backgroundSync.Queue`, function() {
     it(`should add a sync event listener that replays the queue when the ` +
         `event is dispatched`, async function() {
       sandbox.spy(self, 'addEventListener');
-      sandbox.spy(Queue.prototype, 'replayRequests');
+      sandbox.stub(Queue.prototype, 'replayRequests');
 
       new Queue('foo');
 
@@ -119,6 +104,35 @@ describe(`backgroundSync.Queue`, function() {
       }));
 
       expect(Queue.prototype.replayRequests.calledOnce).to.be.true;
+    });
+
+    it(`should try to replay the queue on SW startup in browsers that ` +
+        `don't support the sync event`, async function() {
+      // Delete the SyncManager interface to mock a non-supporting browser.
+      const originalSyncManager = registration.sync;
+      delete registration.sync;
+
+      sandbox.stub(Queue.prototype, 'replayRequests');
+
+      new Queue('foo');
+
+      expect(Queue.prototype.replayRequests.calledOnce).to.be.true;
+
+      registration.sync = originalSyncManager;
+    });
+  });
+
+  describe(`createPlugin`, function() {
+    it(`should return an object implementing the fetchDidFail plugin ` +
+        `method that adds the failed request to the queue`, async function() {
+      sandbox.stub(Queue.prototype, 'addRequest');
+      const queue = new Queue('foo');
+      const plugin = queue.createPlugin();
+
+      plugin.fetchDidFail({request: new Request('/')});
+      expect(Queue.prototype.addRequest.calledOnce).to.be.true;
+      expect(Queue.prototype.addRequest.calledWith(
+          sinon.match.instanceOf(Request))).to.be.true;
     });
   });
 
@@ -178,7 +192,7 @@ describe(`backgroundSync.Queue`, function() {
     it(`should delay registration until the SW is active`, async function() {
       sandbox.stub(self.registration, 'active').value(undefined);
       sandbox.stub(self.registration, 'sync').value({
-        register: sinon.stub().resolves(),
+        register: sinon.spy(),
       });
 
       const queue = new Queue('foo');
@@ -196,7 +210,7 @@ describe(`backgroundSync.Queue`, function() {
 
       // Allow time to ensure async registration didn't happen.
       await sleep(100);
-      expect(self.registration.sync.register.calledOnce).to.be.false;
+      expect(self.registration.sync.register.called).to.be.false;
 
       self.dispatchEvent(new ExtendableEvent('activate'));
 
@@ -204,6 +218,47 @@ describe(`backgroundSync.Queue`, function() {
       await sleep(100);
       expect(self.registration.sync.register.calledWith(
           'workbox-background-sync:foo')).to.be.true;
+    });
+
+    it(`should invoke the requestWillQueue callback`, async function() {
+      const requestWillQueue = sinon.spy();
+      const queue = new Queue('foo', {
+        callbacks: {
+          requestWillQueue: (storableRequest) => {
+            storableRequest.url += '?q=foo';
+          },
+        },
+      });
+
+      const request = new Request('/');
+      await queue.addRequest(request);
+
+      const db = await indexedDBHelper.getDB(
+          'workbox-background-sync', 'requests', {autoIncrement: true});
+
+      const itemsInObjectStore = [...await db.getAll()]
+          .map(([key, value]) => value.storableRequest.url);
+
+      expect(itemsInObjectStore.length).to.equal(1);
+      expect(itemsInObjectStore[0]).to.equal('/?q=foo');
+    });
+
+    it(`should support modifying the stored request via callbacks`,
+        async function() {
+      const requestWillQueue = sinon.spy();
+      const queue = new Queue('foo', {
+        callbacks: {requestWillQueue},
+      });
+
+      const request = new Request('/');
+      await queue.addRequest(request);
+
+      expect(requestWillQueue.calledOnce).to.be.true;
+      expect(requestWillQueue.calledWith(sinon.match({
+        url: '/',
+        timestamp: sinon.match.number,
+        requestInit: sinon.match.object,
+      }))).to.be.true;
     });
   });
 
@@ -222,10 +277,8 @@ describe(`backgroundSync.Queue`, function() {
       await queue2.addRequest(new Request('/four'));
       await queue1.addRequest(new Request('/five'));
 
-      queue1.replayRequests();
-
-      // Wait until the requests have been replayed.
-      await waitUntil(() => self.fetch.callCount == 3);
+      await queue1.replayRequests();
+      expect(self.fetch.callCount).to.equal(3);
 
       expect(self.fetch.getCall(0).calledWith(sinon.match({
         url: '/one',
@@ -239,10 +292,8 @@ describe(`backgroundSync.Queue`, function() {
         url: '/five',
       }))).to.be.true;
 
-      queue2.replayRequests();
-
-      // Wait until the requests have been replayed.
-      await waitUntil(() => self.fetch.callCount == 5);
+      await queue2.replayRequests();
+      expect(self.fetch.callCount).to.equal(5);
 
       expect(self.fetch.getCall(3).calledWith(sinon.match({
         url: '/two',
@@ -267,10 +318,8 @@ describe(`backgroundSync.Queue`, function() {
       await queue2.addRequest(new Request('/four'));
       await queue1.addRequest(new Request('/five'));
 
-      queue1.replayRequests();
-
-      // Wait until the requests have been replayed.
-      await waitUntil(() => self.fetch.callCount == 3);
+      await queue1.replayRequests();
+      expect(self.fetch.callCount).to.equal(3);
 
       const db = await indexedDBHelper.getDB(
           'workbox-background-sync', 'requests', {autoIncrement: true});
@@ -281,6 +330,43 @@ describe(`backgroundSync.Queue`, function() {
       expect(itemsInObjectStore.length).to.equal(2);
       expect(itemsInObjectStore[0]).to.equal('/two');
       expect(itemsInObjectStore[1]).to.equal('/four');
+    });
+
+    it(`should ignore (and remove) requests if maxRetentionTime has passed`,
+        async function() {
+      sandbox.spy(self, 'fetch');
+      const clock = sinon.useFakeTimers({
+        now: Date.now(),
+        toFake: ['Date']
+      });
+
+      const queue = new Queue('foo', {
+        maxRetentionTime: 1000,
+      });
+
+      await queue.addRequest(new Request('/one'));
+      await queue.addRequest(new Request('/two'));
+
+      clock.tick(2000);
+
+      await queue.addRequest(new Request('/three'));
+      await queue.replayRequests();
+
+      expect(self.fetch.calledOnce).to.be.true;
+      expect(self.fetch.calledWith(sinon.match({
+        url: '/three',
+      }))).to.be.true;
+
+      const db = await indexedDBHelper.getDB(
+          'workbox-background-sync', 'requests', {autoIncrement: true});
+
+      const itemsInObjectStore = [...await db.getAll()]
+          .map(([key, value]) => value.storableRequest.url);
+
+      // Assert that the two requests not replayed were deleted.
+      expect(itemsInObjectStore.length).to.equal(0);
+
+      clock.restore();
     });
 
     it(`should keep a request in the queue if re-fetching fails`,
@@ -299,10 +385,7 @@ describe(`backgroundSync.Queue`, function() {
       await queue.addRequest(new Request('/four'));
       await queue.addRequest(new Request('/five'));
 
-      queue.replayRequests(); // The second request should fail.
-
-      // Wait until the requests have been replayed.
-      await waitUntil(() => self.fetch.callCount == 5);
+      await queue.replayRequests(); // The second request should fail.
 
       const db = await indexedDBHelper.getDB(
           'workbox-background-sync', 'requests', {autoIncrement: true});
@@ -313,6 +396,138 @@ describe(`backgroundSync.Queue`, function() {
       expect(itemsInObjectStore.length).to.equal(2);
       expect(itemsInObjectStore[0]).to.equal('/two');
       expect(itemsInObjectStore[1]).to.equal('/four');
+    });
+
+    it(`should re-register for a sync event if re-fetching fails`,
+        async function() {
+      sandbox.stub(self.registration, 'active').value({});
+      sandbox.stub(self.registration, 'sync').value({
+        register: sinon.stub().resolves(),
+      });
+      sandbox.stub(self, 'fetch').onCall(1).rejects()
+
+      const queue = new Queue('foo');
+
+      // Add requests for both queues to ensure only the requests from
+      // the matching queue are replayed.
+      await queue.addRequest(new Request('/one'));
+      await queue.addRequest(new Request('/two'));
+
+      self.registration.sync.register.reset();
+      await queue.replayRequests(); // The second request should fail.
+
+      expect(self.registration.sync.register.calledOnce).to.be.true;
+      expect(self.registration.sync.register.calledWith(
+          'workbox-background-sync:foo')).to.be.true;
+    });
+
+    it(`should invoke all replay callbacks`, async function() {
+      const requestWillReplay = sinon.spy();
+      const requestDidReplay = sinon.spy();
+      const replayDidFail = sinon.spy();
+      const allRequestsDidReplay = sinon.spy();
+
+      const queue = new Queue('foo', {
+        callbacks: {
+          requestWillReplay,
+          requestDidReplay,
+          replayDidFail,
+          allRequestsDidReplay,
+        },
+      });
+
+      await queue.addRequest(new Request('/one'));
+      await queue.addRequest(new Request('/two'));
+      await queue.replayRequests();
+
+      expect(requestWillReplay.calledTwice).to.be.true;
+      expect(requestWillReplay.getCall(0).calledWith(sinon.match({
+        url: '/one',
+        timestamp: sinon.match.number,
+        requestInit: sinon.match.object,
+      }))).to.be.true;
+      expect(requestWillReplay.getCall(1).calledWith(sinon.match({
+        url: '/two',
+        timestamp: sinon.match.number,
+        requestInit: sinon.match.object,
+      }))).to.be.true;
+
+      expect(requestDidReplay.calledTwice).to.be.true;
+      expect(requestDidReplay.getCall(0).calledWith(sinon.match({
+        url: '/one',
+        timestamp: sinon.match.number,
+        requestInit: sinon.match.object,
+      }))).to.be.true;
+      expect(requestDidReplay.getCall(1).calledWith(sinon.match({
+        url: '/two',
+        timestamp: sinon.match.number,
+        requestInit: sinon.match.object,
+      }))).to.be.true;
+
+      expect(allRequestsDidReplay.calledOnce).to.be.true;
+      expect(allRequestsDidReplay.calledWith(sinon.match([
+        sinon.match({
+          url: '/one',
+          timestamp: sinon.match.number,
+          requestInit: sinon.match.object,
+        }),
+        sinon.match({
+          url: '/two',
+          timestamp: sinon.match.number,
+          requestInit: sinon.match.object,
+        }),
+      ]))).to.be.true;
+
+      requestWillReplay.reset();
+      requestDidReplay.reset();
+      replayDidFail.reset();
+      allRequestsDidReplay.reset();
+
+      sandbox.stub(self, 'fetch').onCall(1).rejects();
+
+      await queue.addRequest(new Request('/three'));
+      await queue.addRequest(new Request('/four'));
+      await queue.replayRequests();
+
+      expect(requestWillReplay.calledTwice).to.be.true;
+
+      expect(requestDidReplay.calledOnce).to.be.true;
+      expect(requestDidReplay.getCall(0).calledWith(sinon.match({
+        url: '/three',
+        timestamp: sinon.match.number,
+        requestInit: sinon.match.object,
+      }))).to.be.true;
+
+      expect(replayDidFail.calledOnce).to.be.true;
+      expect(replayDidFail.getCall(0).calledWith(sinon.match({
+        url: '/four',
+        timestamp: sinon.match.number,
+        requestInit: sinon.match.object,
+      }))).to.be.true;
+    });
+
+    it(`should support modifying the request via callbacks`, async function() {
+      sandbox.spy(self, 'fetch');
+
+      const requestWillReplay = (storableRequest) => {
+        storableRequest.url += '?q=foo';
+      }
+
+      const queue = new Queue('foo', {
+        callbacks: {requestWillReplay},
+      });
+
+      await queue.addRequest(new Request('/one'));
+      await queue.addRequest(new Request('/two'));
+      await queue.replayRequests();
+
+      expect(self.fetch.calledTwice).to.be.true;
+      expect(self.fetch.getCall(0).calledWith(sinon.match({
+        url: '/one?q=foo',
+      }))).to.be.true;
+      expect(self.fetch.getCall(1).calledWith(sinon.match({
+        url: '/two?q=foo',
+      }))).to.be.true;
     });
   });
 });

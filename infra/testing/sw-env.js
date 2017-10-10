@@ -145,9 +145,22 @@ global.__removeAllEventListeners = () => {
   listenerMap = new Map();
 };
 
+// SyncManager
+// https://wicg.github.io/BackgroundSync/spec/#sync-manager-interface
+class SyncManager {
+  constructor() {
+    this._tagList = new Set();
+  }
+  async register(tagName) {
+    this._tagList.add(tagName);
+    return Promise.resolve();
+  }
+  async getTags() {
+    return Promise.resolve([...this._tagList]);
+  }
+}
+global.registration.sync = new SyncManager();
 
-// Stub missing/broken ServiceWorkerRegistration API methods in `service-worker-mock`.
-global.registration.sync = {register: () => {}};
 
 // This is needed to ensure new URL('/', location), works.
 global.location = 'https://example.com';
