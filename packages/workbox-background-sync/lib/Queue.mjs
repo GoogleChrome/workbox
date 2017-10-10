@@ -63,7 +63,7 @@ export default class Queue {
    *     queued requests. Use these to respond to or modify the requests
    *     during the replay process.
    * @param {function(StorableRequest):undefined}
-   *     [param2.callbacks.requestWillQueue]
+   *     [param2.callbacks.requestWillEnqueue]
    *     Invoked immediately before the request is stored to IndexedDB. Use
    *     this callback to modify request data at store time.
    * @param {function(StorableRequest):undefined}
@@ -122,7 +122,7 @@ export default class Queue {
   async addRequest(request) {
     const storableRequest = await StorableRequest.fromRequest(request);
 
-    this._runCallback('requestWillQueue', storableRequest);
+    this._runCallback('requestWillEnqueue', storableRequest);
 
     const db = await this._getDb();
     await db.add({
@@ -152,12 +152,26 @@ export default class Queue {
     let allReplaysSuccessful = true;
 
     for (const [key, storableRequest] of storableRequestsInQueue) {
-      const replaySuccessful = await this._replayRequest(key, storableRequest);
-      if (replaySuccessful) {
-        successfullyReplayedRequests.push(storableRequest);
-      } else {
+      this._runCallback('requestWillReplay', storableRequest);
+
+      const request = storableRequest.toRequest();
+      let response;
+
+      try {
+        response = await fetch(request);
+      } catch (error) {
+        this._runCallback('replayDidFail', {error, request});
         allReplaysSuccessful = false;
+        continue;
       }
+
+      this._runCallback('requestDidReplay', {request, response});
+      successfullyReplayedRequests.push({request, response});
+
+      // Remove the request from IndexedDB asynchronously (don't await).
+      // TODO(philipwalton): in the unlikely event that the delete fails,
+      // this request may be replayed again. Do we want to handle this case?
+      this._removeRequest(key);
     }
 
     if (allReplaysSuccessful) {
@@ -204,33 +218,6 @@ export default class Queue {
   _getDb() {
     return indexedDBHelper.getDB(
         DB_NAME, OBJECT_STORE_NAME, {autoIncrement: true});
-  }
-
-  /**
-   * Replays a single request by attempt to re-fetch it. If the re-fetch is
-   * successful
-   *
-   * @private
-   * @param {string} key The IndexedDB object store key.
-   * @param {StorableRequest} storableRequest
-   * @return {Promise<boolean>}
-   */
-  async _replayRequest(key, storableRequest) {
-    try {
-      this._runCallback('requestWillReplay', storableRequest);
-      await fetch(storableRequest.toRequest());
-      this._runCallback('requestDidReplay', storableRequest);
-
-      // TODO(philipwalton): in the unlikely event that the delete fails,
-      // this request may be replayed again. Do we want to warn in this case?
-      await this._removeRequest(key);
-
-      return true;
-    } catch (err) {
-      this._runCallback('replayDidFail', storableRequest);
-
-      return false;
-    }
   }
 
   /**

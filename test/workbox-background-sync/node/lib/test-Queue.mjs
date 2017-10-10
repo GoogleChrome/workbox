@@ -220,10 +220,10 @@ describe(`backgroundSync.Queue`, function() {
           'workbox-background-sync:foo')).to.be.true;
     });
 
-    it(`should invoke the requestWillQueue callback`, async function() {
+    it(`should invoke the requestWillEnqueue callback`, async function() {
       const queue = new Queue('foo', {
         callbacks: {
-          requestWillQueue: (storableRequest) => {
+          requestWillEnqueue: (storableRequest) => {
             storableRequest.url += '?q=foo';
           },
         },
@@ -242,18 +242,18 @@ describe(`backgroundSync.Queue`, function() {
       expect(itemsInObjectStore[0]).to.equal('/?q=foo');
     });
 
-    it(`should support modifying the stored request via callbacks`,
+    it(`should support modifying the stored request via requestWillEnqueue`,
         async function() {
-      const requestWillQueue = sinon.spy();
+      const requestWillEnqueue = sinon.spy();
       const queue = new Queue('foo', {
-        callbacks: {requestWillQueue},
+        callbacks: {requestWillEnqueue},
       });
 
       const request = new Request('/');
       await queue.addRequest(request);
 
-      expect(requestWillQueue.calledOnce).to.be.true;
-      expect(requestWillQueue.calledWith(sinon.match({
+      expect(requestWillEnqueue.calledOnce).to.be.true;
+      expect(requestWillEnqueue.calledWith(sinon.match({
         url: '/',
         timestamp: sinon.match.number,
         requestInit: sinon.match.object,
@@ -371,20 +371,18 @@ describe(`backgroundSync.Queue`, function() {
     it(`should keep a request in the queue if re-fetching fails`,
         async function() {
       sandbox.stub(self, 'fetch')
-          .onCall(1).rejects()
-          .onCall(3).rejects();
+          .onCall(1).rejects(new Error())
+          .onCall(3).rejects(new Error())
+          .callThrough();
 
       const queue = new Queue('foo');
 
-      // Add requests for both queues to ensure only the requests from
-      // the matching queue are replayed.
       await queue.addRequest(new Request('/one'));
       await queue.addRequest(new Request('/two'));
       await queue.addRequest(new Request('/three'));
       await queue.addRequest(new Request('/four'));
       await queue.addRequest(new Request('/five'));
-
-      await queue.replayRequests(); // The second request should fail.
+      await queue.replayRequests(); // The 2nd and 4th requests should fail.
 
       const db = await indexedDBHelper.getDB(
           'workbox-background-sync', 'requests', {autoIncrement: true});
@@ -403,7 +401,9 @@ describe(`backgroundSync.Queue`, function() {
       sandbox.stub(self.registration, 'sync').value({
         register: sinon.stub().resolves(),
       });
-      sandbox.stub(self, 'fetch').onCall(1).rejects();
+      sandbox.stub(self, 'fetch')
+          .onCall(1).rejects(new Error())
+          .callThrough();
 
       const queue = new Queue('foo');
 
@@ -453,27 +453,27 @@ describe(`backgroundSync.Queue`, function() {
 
       expect(requestDidReplay.calledTwice).to.be.true;
       expect(requestDidReplay.getCall(0).calledWith(sinon.match({
-        url: '/one',
-        timestamp: sinon.match.number,
-        requestInit: sinon.match.object,
+        request: sinon.match.instanceOf(Request).and(
+            sinon.match({url: '/one'})),
+        response: sinon.match.instanceOf(Response),
       }))).to.be.true;
       expect(requestDidReplay.getCall(1).calledWith(sinon.match({
-        url: '/two',
-        timestamp: sinon.match.number,
-        requestInit: sinon.match.object,
+        request: sinon.match.instanceOf(Request).and(
+            sinon.match({url: '/two'})),
+        response: sinon.match.instanceOf(Response),
       }))).to.be.true;
 
       expect(allRequestsDidReplay.calledOnce).to.be.true;
       expect(allRequestsDidReplay.calledWith(sinon.match([
         sinon.match({
-          url: '/one',
-          timestamp: sinon.match.number,
-          requestInit: sinon.match.object,
+          request: sinon.match.instanceOf(Request).and(
+              sinon.match({url: '/one'})),
+          response: sinon.match.instanceOf(Response),
         }),
         sinon.match({
-          url: '/two',
-          timestamp: sinon.match.number,
-          requestInit: sinon.match.object,
+          request: sinon.match.instanceOf(Request).and(
+              sinon.match({url: '/two'})),
+          response: sinon.match.instanceOf(Response),
         }),
       ]))).to.be.true;
 
@@ -482,7 +482,9 @@ describe(`backgroundSync.Queue`, function() {
       replayDidFail.reset();
       allRequestsDidReplay.reset();
 
-      sandbox.stub(self, 'fetch').onCall(1).rejects();
+      sandbox.stub(self, 'fetch')
+          .onCall(1).rejects(new Error())
+          .callThrough();
 
       await queue.addRequest(new Request('/three'));
       await queue.addRequest(new Request('/four'));
@@ -492,20 +494,21 @@ describe(`backgroundSync.Queue`, function() {
 
       expect(requestDidReplay.calledOnce).to.be.true;
       expect(requestDidReplay.getCall(0).calledWith(sinon.match({
-        url: '/three',
-        timestamp: sinon.match.number,
-        requestInit: sinon.match.object,
+        request: sinon.match.instanceOf(Request).and(
+            sinon.match({url: '/three'})),
+        response: sinon.match.instanceOf(Response),
       }))).to.be.true;
 
       expect(replayDidFail.calledOnce).to.be.true;
       expect(replayDidFail.getCall(0).calledWith(sinon.match({
-        url: '/four',
-        timestamp: sinon.match.number,
-        requestInit: sinon.match.object,
+        request: sinon.match.instanceOf(Request).and(
+            sinon.match({url: '/four'})),
+        error: sinon.match.instanceOf(Error),
       }))).to.be.true;
     });
 
-    it(`should support modifying the request via callbacks`, async function() {
+    it(`should support modifying the request via the requestWillReplay`,
+        async function() {
       sandbox.spy(self, 'fetch');
 
       const requestWillReplay = (storableRequest) => {
