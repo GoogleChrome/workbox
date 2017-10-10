@@ -39,29 +39,29 @@ describe(`[workbox-routing] Router`, function() {
 
   describe(`registerRoute()`, function() {
     const invalidMatches = [{}, true, false, 123, '123', [123], null, undefined];
-    generateTestVariants(`should throw in dev when route.match is not a function`, invalidMatches, async function(variant) {
+    generateTestVariants(`should throw in dev when route._match is not a function`, invalidMatches, async function(variant) {
       if (process.env.NODE_ENV == 'production') return this.skip();
 
       const router = new Router();
       await expectError(
-        () => router.registerRoute({handler: HANDLER, _method: METHOD, match: variant}),
+        () => router.registerRoute({_handler: HANDLER, _method: METHOD, _match: variant}),
         'missing-a-method',
         (error) => {
           expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
           expect(error.details).to.have.property('className').that.eql('Router');
           expect(error.details).to.have.property('funcName').that.eql('registerRoute');
           expect(error.details).to.have.property('paramName').that.eql('route');
-          expect(error.details).to.have.property('expectedMethod').that.eql('match');
+          expect(error.details).to.have.property('expectedMethod').that.eql('_match');
         });
     });
 
     const invalidHandlers = [() => {}, true, false, 123, '123', undefined];
-    generateTestVariants(`should throw in dev when route.handler is not an object`, invalidHandlers, async function(variant) {
+    generateTestVariants(`should throw in dev when route._handler is not an object`, invalidHandlers, async function(variant) {
       if (process.env.NODE_ENV == 'production') return this.skip();
 
       const router = new Router();
       await expectError(
-        () => router.registerRoute({match: MATCH, _method: METHOD, handler: variant}),
+        () => router.registerRoute({_match: MATCH, _method: METHOD, _handler: variant}),
         'incorrect-type',
         (error) => {
           expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
@@ -79,7 +79,7 @@ describe(`[workbox-routing] Router`, function() {
 
       const router = new Router();
       await expectError(
-        () => router.registerRoute({match: MATCH, handler: HANDLER, _method: variant}),
+        () => router.registerRoute({_match: MATCH, _handler: HANDLER, _method: variant}),
         'incorrect-type',
         (error) => {
           expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
@@ -91,12 +91,12 @@ describe(`[workbox-routing] Router`, function() {
       );
     });
 
-    it(`should throw in dev when route.handler.handle is not a function`, async function() {
+    it(`should throw in dev when route._handler.handle is not a function`, async function() {
       if (process.env.NODE_ENV === 'production') return this.skip();
 
       const router = new Router();
       await expectError(
-        () => router.registerRoute({match: MATCH, _method: METHOD, handler: {}}),
+        () => router.registerRoute({_match: MATCH, _method: METHOD, _handler: {}}),
         'missing-a-method',
         (error) => {
           expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
@@ -118,8 +118,8 @@ describe(`[workbox-routing] Router`, function() {
       const putRoute2 = new Route(MATCH, HANDLER, 'PUT');
       // We support passing in Objects that match the expected interface in addition to Routes.
       const postRoute = {
-        match: MATCH,
-        handler: HANDLER,
+        _match: MATCH,
+        _handler: HANDLER,
         _method: 'POST',
       };
 
@@ -144,8 +144,8 @@ describe(`[workbox-routing] Router`, function() {
       const putRoute2 = new Route(MATCH, HANDLER, 'PUT');
       // We support passing in Objects that match the expected interface in addition to Routes.
       const postRoute = {
-        match: MATCH,
-        handler: HANDLER,
+        _match: MATCH,
+        _handler: HANDLER,
         _method: 'POST',
       };
 
@@ -173,7 +173,6 @@ describe(`[workbox-routing] Router`, function() {
         () => router.unregisterRoute(putRoute),
         'unregister-route-but-not-found-with-method',
         (error) => {
-          expect(error.details).to.have.property('route').that.eql(putRoute);
           expect(error.details).to.have.property('method').that.eql('PUT');
         }
       );
@@ -189,10 +188,7 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(getRoute1);
       expectError(
         () => router.unregisterRoute(getRoute2),
-        'unregister-route-route-not-registered',
-        (error) => {
-          expect(error.details).to.have.property('route').that.eql(getRoute2);
-        }
+        'unregister-route-route-not-registered'
       );
     });
   });
@@ -202,7 +198,7 @@ describe(`[workbox-routing] Router`, function() {
       const router = new Router();
       router.setDefaultHandler(HANDLER);
 
-      expect(router.defaultHandler).to.eql(HANDLER);
+      expect(router._defaultHandler).to.eql(HANDLER);
     });
 
     it(`should return a response from the default handler when there's no matching route`, async function() {
@@ -214,7 +210,7 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
       router.setDefaultHandler(() => new Response(EXPECTED_RESPONSE_BODY));
 
-      // route.match() always returns false, so the Request details don't matter.
+      // route._match() always returns false, so the Request details don't matter.
       const event = new FetchEvent(new Request(self.location));
       const response = await router.handleRequest(event);
       const responseBody = await response.text();
@@ -228,7 +224,7 @@ describe(`[workbox-routing] Router`, function() {
       const router = new Router();
       router.setCatchHandler(HANDLER);
 
-      expect(router.catchHandler).to.deep.eql(HANDLER);
+      expect(router._catchHandler).to.deep.eql(HANDLER);
     });
 
     it(`should return a response from the catch handler when the matching route's handler rejects`, async function() {
@@ -240,7 +236,7 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
 
-      // route.match() always returns false, so the Request details don't matter.
+      // route._match() always returns false, so the Request details don't matter.
       const event = new FetchEvent(new Request(self.location));
       const response = await router.handleRequest(event);
       const responseBody = await response.text();
@@ -258,7 +254,7 @@ describe(`[workbox-routing] Router`, function() {
       );
       router.registerRoute(route);
 
-      // route.match() always returns true, so the Request details don't matter.
+      // route._match() always returns true, so the Request details don't matter.
       const event = new FetchEvent(new Request(self.location));
       const response = await router.handleRequest(event);
       const responseBody = await response.text();
@@ -281,7 +277,7 @@ describe(`[workbox-routing] Router`, function() {
       );
       router.registerRoute(route2);
 
-      // route.match() always returns true, so the Request details don't matter.
+      // route._match() always returns true, so the Request details don't matter.
       const event = new FetchEvent(new Request(self.location));
       const response = await router.handleRequest(event);
       const responseBody = await response.text();
@@ -297,7 +293,7 @@ describe(`[workbox-routing] Router`, function() {
       );
       router.registerRoute(route);
 
-      // route.match() always returns false, so the Request details don't matter.
+      // route._match() always returns false, so the Request details don't matter.
       const event = new FetchEvent(new Request(self.location));
       const response = router.handleRequest(event);
 

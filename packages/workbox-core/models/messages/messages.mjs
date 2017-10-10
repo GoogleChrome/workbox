@@ -105,23 +105,18 @@ export default {
       `'${JSON.stringify(value)}'`;
   },
 
-  'unregister-route-but-not-found-with-method': ({route, method}) => {
-    if (!method || !route) {
+  'unregister-route-but-not-found-with-method': ({method}) => {
+    if (!method) {
       throw new Error(`Unexpected input to ` +
         `'unregister-route-but-not-found-with-method' error.`);
     }
 
-    return `The route you're trying to unregister, ${route}, was not ` +
-      `previously registered for the method type '${method}'.`;
+    return `The route you're trying to unregister was not  previously ` +
+      `registered for the method type '${method}'.`;
   },
 
-  'unregister-route-route-not-registered': ({route}) => {
-    if (!route) {
-      throw new Error(`Expected a 'route' for error ` +
-        `'unregister-route-route-not-registered'`);
-    }
-
-    return `The route you're trying to unregister, ${route}, was not ` +
-      `previously registered.`;
+  'unregister-route-route-not-registered': () => {
+    return `The route you're trying to unregister was not previously ` +
+      `registered.`;
   },
 };

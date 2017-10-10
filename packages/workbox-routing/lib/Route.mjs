@@ -103,8 +103,8 @@ class Route {
       }
     }
 
-    this.handler = normalizeHandler(handler);
-    this.match = match;
+    this._handler = normalizeHandler(handler);
+    this._match = match;
     this._method = method || defaultMethod;
   }
 }
