@@ -36,18 +36,21 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
 
   const cache = await caches.open(cacheName);
 
-  const updatePlugins = plugins.filter((plugin) => {
-    return plugin.cacheDidUpdate;
-  });
-  let oldResponse = updatePlugins.length > 0 ?
+  const cacheDidUpdateName = 'cacheDidUpdate';
+  const updateCbs = plugins.filter((plugin) => {
+    return plugin[cacheDidUpdateName];
+  })
+  .map((plugin) => plugin[cacheDidUpdateName]);
+
+  let oldResponse = updateCbs.length > 0 ?
     await matchWrapper(cacheName, request) : null;
 
   // Regardless of whether or not we'll end up invoking
   // cacheDidUpdate, wait until the cache is updated.
   await cache.put(request, responseToCache);
 
-  for (let plugin of updatePlugins) {
-    await plugin.cacheDidUpdate({
+  for (let cb of updateCbs) {
+    await cb({
       cacheName,
       request,
       oldResponse,
@@ -73,8 +76,9 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
   const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
   for (let plugin of plugins) {
-    if (plugin.cachedResponseWillBeUsed) {
-      cachedResponse = await plugin.cachedResponseWillBeUsed({
+    const cb = plugin.cachedResponseWillBeUsed;
+    if (cb) {
+      cachedResponse = await cb({
         cacheName,
         request,
         matchOptions,
@@ -101,9 +105,10 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
   let responseToCache = response;
   let pluginsUsed = false;
   for (let plugin of plugins) {
-    if (plugin.cacheWillUpdate) {
+    const cb = plugin.cacheWillUpdate;
+    if (cb) {
       pluginsUsed = true;
-      responseToCache = await plugin.cacheWillUpdate({
+      responseToCache = await cb({
         request,
         response: responseToCache,
       });

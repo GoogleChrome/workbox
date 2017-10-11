@@ -27,25 +27,25 @@ describe(`workbox-core WorkboxCore`, function() {
     });
   });
 
-  describe(`core.logLevel (set)`, function() {
+  describe(`core.setLogLevel`, function() {
     it(`should allow valid log levels`, function() {
       expect(() => {
         const logLevelNames = Object.keys(coreModule.LOG_LEVELS);
         logLevelNames.forEach((logLevelName) => {
-          core.logLevel = coreModule.LOG_LEVELS[logLevelName];
+          core.setLogLevel(coreModule.LOG_LEVELS[logLevelName]);
         });
       }).to.not.throw();
     });
 
     it(`should not allow log level less than verbose`, function() {
       return expectError(() => {
-        core.logLevel = coreModule.LOG_LEVELS.verbose - 1;
+        core.setLogLevel(coreModule.LOG_LEVELS.verbose - 1);
       }, 'invalid-value');
     });
 
     it(`should not allow log level greater than silent`, function() {
       return expectError(() => {
-        core.logLevel = coreModule.LOG_LEVELS.silent + 1;
+        core.setLogLevel(coreModule.LOG_LEVELS.silent + 1);
       }, 'invalid-value');
     });
 
@@ -61,7 +61,7 @@ describe(`workbox-core WorkboxCore`, function() {
       }
 
       return expectError(() => {
-        core.logLevel = variant;
+        core.setLogLevel(variant);
       }, 'incorrect-type');
     });
   });
