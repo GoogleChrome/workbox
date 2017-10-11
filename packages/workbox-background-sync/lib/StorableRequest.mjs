@@ -65,8 +65,8 @@ export default class StorableRequest {
 
   /**
    * Accepts a URL and RequestInit dictionary that can be used to create a
-   * new Request object. A timestamp is also set in the event that when this
-   * object was created is relevant after it's stored.
+   * new Request object. A timestamp is also generated so consumers can
+   * reference when the object was created.
    *
    * @param {Object} param1
    * @param {string} param1.url

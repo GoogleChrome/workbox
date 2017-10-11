@@ -16,7 +16,9 @@
     "sync"
   ],
   "scripts": {
-    "prepublish": "gulp build-packages --package workbox-background-sync"
+    "build": "gulp build-packages --package workbox-background-sync",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
   "workbox": {
     "browserNamespace": "backgroundSync",

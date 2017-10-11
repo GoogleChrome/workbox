@@ -40,6 +40,8 @@ describe(`backgroundSync.Queue`, function() {
 
   beforeEach(async function() {
     sandbox.restore();
+
+    // Clear Queue so the name map gets reset on re-import.
     clearRequire.match(RegExp('workbox-background-sync/lib/Queue.mjs'));
 
     clearObjectStore();
@@ -56,6 +58,8 @@ describe(`backgroundSync.Queue`, function() {
 
   after(async function() {
     sandbox.restore();
+
+    // Clear Queue so the name map gets reset on re-import.
     clearRequire.match(RegExp('workbox-background-sync/lib/Queue.mjs'));
 
     clearObjectStore();
@@ -295,7 +299,7 @@ describe(`backgroundSync.Queue`, function() {
     it(`should ignore (and remove) requests if maxRetentionTime has passed`,
         async function() {
       sandbox.spy(self, 'fetch');
-      const clock = sinon.useFakeTimers({
+      const clock = sandbox.useFakeTimers({
         now: Date.now(),
         toFake: ['Date'],
       });
@@ -325,8 +329,6 @@ describe(`backgroundSync.Queue`, function() {
 
       // Assert that the two requests not replayed were deleted.
       expect(itemsInObjectStore.length).to.equal(0);
-
-      clock.restore();
     });
 
     it(`should keep a request in the queue if re-fetching fails`,

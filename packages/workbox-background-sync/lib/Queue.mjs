@@ -115,9 +115,7 @@ export default class Queue {
       storableRequest: storableRequest.toObject(),
     });
 
-    // Schedule this, but don't await it as we don't want to block subsequent
-    // calls if the service worker isn't yet activated.
-    this._registerSync();
+    await this._registerSync();
   }
 
   /**
@@ -129,10 +127,6 @@ export default class Queue {
    */
   async replayRequests() {
     const storableRequestsInQueue = await this._getStorableRequestsInQueue();
-
-    // If nothing is in the queue, return immediately and run no callbacks.
-    if (!storableRequestsInQueue.length) return;
-
     const successfullyReplayedRequests = [];
     let allReplaysSuccessful = true;
 
@@ -143,7 +137,8 @@ export default class Queue {
       let response;
 
       try {
-        response = await fetch(request);
+        // Clone the request before fetching so callbacks get an unused one.
+        response = await fetch(request.clone());
       } catch (error) {
         this._runCallback('replayDidFail', {error, request});
         allReplaysSuccessful = false;
@@ -162,7 +157,7 @@ export default class Queue {
     if (allReplaysSuccessful) {
       this._runCallback('allRequestsDidReplay', successfullyReplayedRequests);
     } else {
-      this._registerSync();
+      await this._registerSync();
     }
   }
 
@@ -226,7 +221,7 @@ export default class Queue {
    * @param {...*} args The arguments to invoke the callback with.
    */
   _runCallback(name, ...args) {
-    if (typeof this._callbacks[name] == 'function') {
+    if (typeof this._callbacks[name] === 'function') {
       this._callbacks[name].apply(null, args);
     }
   }
