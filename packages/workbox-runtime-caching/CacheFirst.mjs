@@ -56,6 +56,7 @@ class CacheFirst {
     const cachedResponse = await _private.cacheWrapper.match(
       this._cacheName,
       event.request,
+      null,
       this._plugins
     );
 

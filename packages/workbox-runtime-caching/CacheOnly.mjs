@@ -48,7 +48,7 @@ class CacheOnly {
    * @return {Promise.<Response>} The response from the cache or null.
    */
   async handle(event) {
-    if (process.env.NODE_ENV) {
+    if (process.env.NODE_ENV !== 'production') {
       // TODO Move to core.assert
       // isInstance({event}, FetchEvent);
     }
@@ -56,6 +56,7 @@ class CacheOnly {
     return _private.cacheWrapper.match(
       this._cacheName,
       event.request,
+      null,
       this._plugins
     );
   }
