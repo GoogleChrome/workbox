@@ -14,6 +14,7 @@
 */
 
 import {_private} from 'workbox-core';
+import CacheOkAndOpaquePlugin from './plugins/CacheOkAndOpaquePlugin.mjs';
 
 /**
  * An implementation of a [stale-while-revalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
@@ -47,39 +48,56 @@ class StaleWhileRevalidate {
       let isUsingCacheWillUpdate =
         options.plugins.some((plugin) => !!plugin.cacheWillUpdate);
       this._plugins = isUsingCacheWillUpdate ?
-        options.plugins : [defaultPlugin, ...options.plugins];
+        options.plugins : [new CacheOkAndOpaquePlugin(), ...options.plugins];
     } else {
       // No plugins passed in, use the default plugin.
-      this._plugins = [defaultPlugin];
+      this._plugins = [new CacheOkAndOpaquePlugin()];
     }
   }
 
-/**
- * The handle method will be called by the
- * {@link module:workbox-routing.Route|Route} class when a route matches a
- * request.
- *
- * @param {Object} input
- * @param {FetchEvent} input.event The event that triggered the service
- *        worker's fetch handler.
- * @return {Promise.<Response>} The response from the cache, if present, or
- *          from the network if not.
- */
-async handle({event} = {}) {
-  isInstance({event}, FetchEvent);
+  /**
+   * The handle method will be called by the
+   * {@link module:workbox-routing.Route|Route} class when a route matches a
+   * request.
+   *
+   * @param {FetchEvent} event The event that triggered the service
+   *        worker's fetch handler.
+   * @return {Promise.<Response>} The response from the cache, if present, or
+   *          from the network if not.
+   */
+  async handle(event) {
+    if (process.env.NODE_ENV !== 'production') {
+      // TODO: Switch to core.assert
+      // core.assert.isInstance({event}, FetchEvent);
+    }
 
-  const fetchAndCacheResponse = this.requestWrapper.fetchAndCache({
-    request: event.request,
-    waitOnCache: this.waitOnCache,
-    cacheResponsePlugin: this._cacheablePlugin,
-  }).catch(() => Response.error());
+    const fetchAndCachePromise = _private.fetchWrapper.fetch(
+      event.request,
+      null,
+      this._plugins
+    )
+    .then(async (response) => {
+      await _private.cacheWrapper.put(
+        this._cacheName,
+        event.request,
+        response.clone(),
+        this._plugins
+      );
 
-  const cachedResponse = await this.requestWrapper.match({
-    request: event.request,
-  });
+      return response;
+    });
 
-  return cachedResponse || await fetchAndCacheResponse;
-}
+    const cachedResponse = await _private.cacheWrapper.match(
+      this._cacheName,
+      event.request,
+      null,
+      this._plugins
+    );
+
+    event.waitUntil(fetchAndCachePromise);
+
+    return cachedResponse || await fetchAndCachePromise;
+  }
 }
 
 export default StaleWhileRevalidate;
