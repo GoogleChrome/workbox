@@ -26,3 +26,4 @@ const swEnv = makeServiceWorkerEnv();
 swEnv.location = 'https://example.com';
 
 Object.assign(global, swEnv);
+console.log();
