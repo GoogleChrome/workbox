@@ -22,7 +22,7 @@
  */
 
 const CDN_PATH = `https://storage.googleapis.com/workbox-cdn/releases`;
-const VERSION = `WORKBOX_VERSION_TAG`;
+const VERSION = `WORKBOX_SW_VERSION_TAG`;
 
 /**
  * This class can be used to make it easy to use the various parts of

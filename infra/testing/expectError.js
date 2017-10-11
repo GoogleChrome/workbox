@@ -15,6 +15,7 @@ module.exports = async (func, errorName, finalCb) => {
   if (!caughtError) {
     throw new Error('Expected error to be thrown but function ran correctly.');
   }
+
   if (caughtError.constructor.name !== 'WorkboxError') {
     logHelper.warn(`Unexpected error thrown.`, caughtError);
   }

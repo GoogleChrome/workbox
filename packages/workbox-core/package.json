@@ -1,6 +1,6 @@
 {
   "name": "workbox-core",
-  "version": "3.0.0",
+  "version": "3.0.0-alpha.15",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This module is used by a number of the other workboxjs.org modules to share common code.",
@@ -14,13 +14,15 @@
     "sw"
   ],
   "scripts": {
-    "prepublish": "gulp build-packages --package workbox-core"
+    "build": "gulp build-packages --package workbox-core",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
   "workbox": {
     "browserNamespace": "core",
     "packageType": "browser"
   },
-  "main": "index.mjs",
-  "module": "index.mjs",
+  "main": "build/module/index.mjs",
+  "module": "build/module/index.mjs",
   "browser": "build/browser/workbox-core.prod.js"
 }

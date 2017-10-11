@@ -78,11 +78,16 @@ class CDNHelper {
     for (let filePath of filePaths) {
       const destination =
         `${this._getReleaseTagPath(tagName)}/${path.basename(filePath)}`;
-      await bucket.upload(filePath, {
-        destination,
-        public: true,
-      });
 
+      try {
+        await bucket.upload(filePath, {
+          destination,
+          public: true,
+        });
+      } catch (err) {
+        logHelper.error(`Failed to upload file to GCS bucket: '${filePath}'`);
+        throw err;
+      }
       publicUrls.push(
         `${STORAGE_ORIGIN}/${BUCKET_NAME}/${destination}`
       );

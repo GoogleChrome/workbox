@@ -1,6 +1,6 @@
 {
   "name": "workbox-build",
-  "version": "3.0.0",
+  "version": "3.0.0-alpha.15",
   "description": "A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
@@ -30,7 +30,9 @@
   },
   "main": "build/index.js",
   "scripts": {
-    "prepublish": "gulp build-packages --package workbox-build"
+    "build": "gulp build-packages --package workbox-build",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
   "workbox": {
     "packageType": "node"

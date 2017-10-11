@@ -71,11 +71,12 @@
     "glob": "^7.1.2",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-babel": "^7.0.0",
+    "gulp-header": "^1.8.9",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.1",
     "gzip-size": "^4.0.0",
     "jsdoc": "^3.5.5",
-    "lerna": "^2.2.0",
+    "lerna": "^2.4.0",
     "mocha": "^3.5.3",
     "nyc": "^11.2.1",
     "path-extra": "^4.2.1",
@@ -102,6 +103,5 @@
     "uglify-es": "^3.1.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
-  },
-  "dependencies": {}
+  }
 }

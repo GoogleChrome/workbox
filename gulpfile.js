@@ -49,6 +49,7 @@ const gulpTaskFiles = [
   'analyze-properties',
   'publish-github',
   'publish-cdn',
+  'publish-lerna',
   'publish',
   'watch',
   'docs',

@@ -25,7 +25,4 @@ const swEnv = makeServiceWorkerEnv();
 // This is needed to ensure new URL('/', location), works.
 swEnv.location = 'https://example.com';
 
-class FakeSWGlobalScope {}
-swEnv.ServiceWorkerGlobalScope = FakeSWGlobalScope;
-
 Object.assign(global, swEnv);

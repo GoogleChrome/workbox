@@ -36,9 +36,10 @@ module.exports = {
     files: [
       'packages/workbox-core/utils/logger.mjs',
       'packages/workbox-sw/index.mjs',
-      'test/workbox-core/bundle/node/utils/test-LogHelper.js',
       'infra/testing/cli-test-helper.js',
       'infra/utils/log-helper.js',
+      'test/workbox-precaching/node/controllers/test-PrecacheController.mjs',
+      'test/workbox-precaching/node/utils/test-showWarningsIfNeeded.mjs',
     ],
     rules: {
       'no-console': 0,

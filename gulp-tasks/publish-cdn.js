@@ -10,9 +10,9 @@ const findMissingCDNTags = async (tagsData) => {
   const missingTags = [];
   for (let tagData of tagsData) {
     let exists = await cdnUploadHelper.tagExists(tagData.name);
-    // TODO: Remove this override for the v3.0.0-alpha
+
+    // TODO (gauntface) Remove when we are closer to launch.
     if (tagData.name === 'v3.0.0-alpha') {
-      logHelper.warn(`Forcing update to CDN for v3.0.0-alpha`);
       exists = false;
     }
 
@@ -62,6 +62,7 @@ gulp.task('publish-cdn:temp-v3', async () => {
   const gitBranch = 'v3';
 
   const missingTags = await findMissingCDNTags([{name: tagName}]);
+  logHelper.log(missingTags);
   for (let tagData of missingTags) {
     // Override the git branch here since we aren't actually
     // using a tagged release.

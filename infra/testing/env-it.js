@@ -8,7 +8,7 @@ module.exports = {
           return this.skip();
         }
 
-        cb();
+        return cb();
       });
     },
   },

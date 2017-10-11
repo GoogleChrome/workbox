@@ -1,6 +1,6 @@
 {
   "name": "workbox-routing",
-  "version": "3.0.0",
+  "version": "3.0.0-alpha.15",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "A service worker helper library to route request URLs to handlers.",
@@ -16,15 +16,18 @@
     "routing"
   ],
   "scripts": {
-    "prepublish": "gulp build-packages --package workbox-routing"
+    "build": "gulp build-packages --package workbox-routing",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
   "workbox": {
     "browserNamespace": "routing",
     "packageType": "browser"
   },
-  "main": "build/browser-bundles/workbox-routing.prod.js",
-  "module": "index.mjs",
+  "main": "build/module/index.mjs",
+  "module": "build/module/index.mjs",
+  "browser": "build/browser/workbox-routing.prod.js",
   "dependencies": {
-    "workbox-core": "3.0.0"
+    "workbox-core": "^3.0.0-alpha.15"
   }
 }

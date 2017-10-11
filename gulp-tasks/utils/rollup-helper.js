@@ -41,7 +41,9 @@ module.exports = {
     }
 
     const replaceOptions = {
-      'WORKBOX_VERSION_TAG': lernaPkg.version,
+      // This value is REQUIRED by workbox-sw to know the version to use on the
+      // CDN
+      'WORKBOX_SW_VERSION_TAG': `v${lernaPkg.version}`,
     };
 
     if (buildType) {

@@ -2,6 +2,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
+import constants from '../../../gulp-tasks/utils/constants';
 
 import WorkboxSW from '../../../packages/workbox-sw/index.mjs';
 
@@ -60,12 +61,12 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
       // TODO Switch to contstants.BUILD_TYPES.prod
       const wb = new WorkboxSW({
-        debug: process.env.NODE_ENV !== 'production',
+        debug: process.env.NODE_ENV !== constants.BUILD_TYPES.prod,
       });
 
       expect(wb.loadModule.callCount).to.equal(1);
       expect(global.importScripts.callCount).to.equal(1);
-      expect(global.importScripts.args[0]).to.deep.equal([`https://storage.googleapis.com/workbox-cdn/releases/WORKBOX_VERSION_TAG/workbox-core.${process.env.NODE_ENV.slice(0, 4)}.js`]);
+      expect(global.importScripts.args[0]).to.deep.equal([`https://storage.googleapis.com/workbox-cdn/releases/WORKBOX_SW_VERSION_TAG/workbox-core.${process.env.NODE_ENV.slice(0, 4)}.js`]);
     });
 
     it(`should not load workbox-core if disableModulesImports is true`, function() {
@@ -187,7 +188,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       sandbox.stub(console, 'error').callsFake((errMsg) => {
         expect(errMsg.indexOf('workbox-core')).to.not.equal(-1);
         expect(errMsg.indexOf(
-          'https://storage.googleapis.com/workbox-cdn/releases/WORKBOX_VERSION_TAG/workbox-core.prod.js'
+          'https://storage.googleapis.com/workbox-cdn/releases/WORKBOX_SW_VERSION_TAG/workbox-core.prod.js'
         )).to.not.equal(-1);
       });
 
