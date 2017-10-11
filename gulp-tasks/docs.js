@@ -13,15 +13,18 @@ gulp.task('docs:clean', () => {
   return fs.remove(DOCS_DIRECTORY);
 });
 
-gulp.task('docs:build', gulp.series([
-  'docs:clean',
-  () => {
+const getJSDocFunc = (debug) => {
+  return () => {
     logHelper.log(`Building docs...`);
-    return spawn(getNpmCmd(), [
+    const params = [
       'run', 'local-jsdoc', '--',
       '-c', path.join(__dirname, '..', 'jsdoc.conf'),
       '-d', DOCS_DIRECTORY,
-    ])
+    ];
+    if (debug) {
+      params.push('--debug');
+    }
+    return spawn(getNpmCmd(), params)
     .then(() => {
       logHelper.log(`Docs built successfully`);
       browserSync.reload();
@@ -30,7 +33,17 @@ gulp.task('docs:build', gulp.series([
       logHelper.error(`Docs failed to build: `, err);
       throw err;
     });
-  },
+  };
+};
+
+gulp.task('docs:build-debug', gulp.series([
+  'docs:clean',
+  getJSDocFunc(true),
+]));
+
+gulp.task('docs:build', gulp.series([
+  'docs:clean',
+  getJSDocFunc(false),
 ]));
 
 gulp.task('docs:watch', () => {
