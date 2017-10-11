@@ -54,17 +54,12 @@ class NetworkFirst {
       _private.cacheNames.getRuntimeName(options.cacheName);
 
     if (options.plugins) {
-      let isUsingCacheWillUpdate = false;
-      for (let plugin of options.plugins) {
-        if (plugin.cacheWillUpdate) {
-          isUsingCacheWillUpdate = true;
-          break;
-        }
-      }
+      let isUsingCacheWillUpdate =
+        options.plugins.some((plugin) => !!plugin.cacheWillUpdate);
       this._plugins = isUsingCacheWillUpdate ?
         options.plugins : [defaultPlugin, ...options.plugins];
     } else {
-      // No plugins passed in so just use default plug.
+      // No plugins passed in, use the default plugin.
       this._plugins = [defaultPlugin];
     }
 
