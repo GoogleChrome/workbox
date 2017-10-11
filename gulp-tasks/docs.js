@@ -24,7 +24,9 @@ const getJSDocFunc = (debug) => {
     if (debug) {
       params.push('--debug');
     }
-    return spawn(getNpmCmd(), params)
+    return spawn(getNpmCmd(), params, {
+      cwd: path.join(__dirname, '..'),
+    })
     .then(() => {
       logHelper.log(`Docs built successfully`);
       browserSync.reload();

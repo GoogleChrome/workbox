@@ -15,15 +15,6 @@
 */
 
 export default {
-  'invalid-type': ({paramName, expectedType, value}) => {
-    if (!paramName || !expectedType) {
-      throw new Error(`Unexpected input to 'invalid-type' error.`);
-    }
-    return `The '${paramName}' parameter was given a value with an ` +
-      `unexpected type. Expected Type: '${expectedType}' but received a ` +
-      `value of ${JSON.stringify(value)}.`;
-  },
-
   'invalid-value': ({paramName, validValueDescription, value}) => {
     if (!paramName || !validValueDescription) {
       throw new Error(`Unexpected input to 'invalid-value' error.`);
@@ -51,7 +42,7 @@ export default {
   'incorrect-type': ({expectedType, paramName, moduleName, className,
                    funcName}) => {
     if (!expectedType || !paramName || !moduleName || !className || !funcName) {
-      throw new Error(`Unexpected input to 'not-of-type' error.`);
+      throw new Error(`Unexpected input to 'incorrect-type' error.`);
     }
     return `The parameter '${paramName}' passed into ` +
       `'${moduleName}.${className}.${funcName}()' must be of type ` +

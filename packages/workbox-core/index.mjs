@@ -74,14 +74,12 @@ class WorkboxCore {
   setCacheNameDetails(details) {
     if (process.env.NODE_ENV !== 'production') {
       Object.keys(details).forEach((key) => {
-        // TODO: Convert to Assertion
-        if (typeof details[key] !== 'string') {
-          throw new WorkboxError('invalid-type', {
-            paramName: `details.${key}`,
-            expectedType: `string`,
-            value: details[key],
-          });
-        }
+        this.assert.isType(details[key], 'string', {
+          moduleName: 'workbox-core',
+          className: 'WorkboxCore',
+          funcName: 'setCacheNameDetails',
+          paramName: `details.${key}`,
+        });
       });
 
       if ('precache' in details && details.precache.length === 0) {
@@ -122,12 +120,12 @@ class WorkboxCore {
    * @private
    */
   set logLevel(newLevel) {
-    // TODO: Switch to Assertion class
-    if (typeof newLevel !== 'number') {
-      throw new WorkboxError('invalid-type', {
-        paramName: 'logLevel',
-        expectedType: 'number',
-        value: newLevel,
+    if (process.env.NODE_ENV !== 'production') {
+      this.assert.isType(newLevel, 'number', {
+        moduleName: 'workbox-core',
+        className: 'WorkboxCore',
+        funcName: 'logLevel [setter]',
+        paramName: `logLevel`,
       });
     }
 

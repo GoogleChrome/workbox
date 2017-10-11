@@ -55,10 +55,14 @@ describe(`workbox-core WorkboxCore`, function() {
       '',
       [],
       {},
-    ], (variant) => {
+    ], function(variant) {
+      if (process.env.NODE_ENV !== constants.BUILD_TYPES.dev) {
+        return this.skip();
+      }
+
       return expectError(() => {
         core.logLevel = variant;
-      }, 'invalid-type');
+      }, 'incorrect-type');
     });
   });
 
@@ -171,7 +175,7 @@ describe(`workbox-core WorkboxCore`, function() {
         core.setCacheNameDetails({
           prefix: variant,
         });
-      }, 'invalid-type');
+      }, 'incorrect-type');
     });
 
     generateVariantTests(`should handle bad suffix values in dev`, badValues, function(variant) {
@@ -181,7 +185,7 @@ describe(`workbox-core WorkboxCore`, function() {
         core.setCacheNameDetails({
           suffix: variant,
         });
-      }, 'invalid-type');
+      }, 'incorrect-type');
     });
 
     generateVariantTests(`should handle bad precache values in dev`, badValues, function(variant) {
@@ -191,7 +195,7 @@ describe(`workbox-core WorkboxCore`, function() {
         core.setCacheNameDetails({
           precache: variant,
         });
-      }, 'invalid-type');
+      }, 'incorrect-type');
     });
 
     generateVariantTests(`should handle bad runtime values in dev`, badValues, function(variant) {
@@ -201,7 +205,7 @@ describe(`workbox-core WorkboxCore`, function() {
         core.setCacheNameDetails({
           runtime: variant,
         });
-      }, 'invalid-type');
+      }, 'incorrect-type');
     });
 
     generateVariantTests(`should not throw in prod`, badValues, function(variant) {
