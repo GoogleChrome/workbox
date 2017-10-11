@@ -64,7 +64,7 @@ export default class PrecacheEntry {
       const _encodeURIComponent = encodeURIComponent;
 
       parsedURL.search += (parsedURL.search ? '&' : '') +
-        _encodeURIComponent(`_workbox-precaching`) + '=' +
+        _encodeURIComponent(`_workbox-cache-bust`) + '=' +
         _encodeURIComponent(this._revision);
       url = parsedURL.toString();
     }
