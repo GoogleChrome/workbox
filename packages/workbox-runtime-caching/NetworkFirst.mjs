@@ -129,7 +129,16 @@ class NetworkFirst {
       );
 
       return response;
-    }, () => this._respondFromCache(event.request));
+    },
+    // This catches any errors from the fetchWrapper.fetch() method and ONLY
+    // that method. This means that in the fetchWrapper.fetch().then() we
+    // can handle a null Response (caused by plugins intercepting the Response)
+    // and fallback to the cache while also falling back to cache *if* the
+    // method throws an error.
+    // NOTE: If this was a .catch(), it would call _responseFromCache inside the
+    // .then(), which could fail and throw, which would be caught and a second
+    // _responseFromCache call will be made.
+    () => this._respondFromCache(event.request));
 
     promises.push(networkPromise);
 
