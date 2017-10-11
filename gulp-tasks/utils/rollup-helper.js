@@ -40,10 +40,12 @@ module.exports = {
       );
     }
 
+    // This is what the build should be
+    /** const replaceOptions = {
+      'WORKBOX_VERSION_TAG': lernaPkg.version,
+    };**/
     const replaceOptions = {
-      // This value is REQUIRED by workbox-sw to know the version to use on the
-      // CDN
-      'WORKBOX_SW_VERSION_TAG': `v${lernaPkg.version}`,
+      'WORKBOX_VERSION_TAG': 'v3.0.0-alpha',
     };
 
     if (buildType) {
