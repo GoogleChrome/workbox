@@ -1,0 +1,108 @@
+/*
+ Copyright 2016 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+import sinon from 'sinon';
+import {expect} from 'chai';
+
+import {_private} from '../../../packages/workbox-core/index.mjs';
+
+import NetworkOnly from '../../../packages/workbox-runtime-caching/NetworkOnly.mjs';
+
+describe(`[workbox-runtime-caching] NetworkOnly`, function() {
+  let sandbox = sinon.sandbox.create();
+
+  beforeEach(async function() {
+    let usedCacheNames = await caches.keys();
+    await Promise.all(usedCacheNames.map((cacheName) => {
+      return caches.delete(cacheName);
+    }));
+
+    sandbox.restore();
+  });
+
+  after(async function() {
+    let usedCacheNames = await caches.keys();
+    await Promise.all(usedCacheNames.map((cacheName) => {
+      return caches.delete(cacheName);
+    }));
+
+    sandbox.restore();
+  });
+
+  it(`should return a response without adding anything to the cache when the network request is successful`, async function() {
+    const request = new Request('http://example.io/test/');
+    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
+    const event = new FetchEvent(request);
+
+    const networkOnly = new NetworkOnly();
+
+    const handleResponse = await networkOnly.handle(event);
+    expect(handleResponse).to.be.instanceOf(Response);
+
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const keys = await cache.keys();
+    expect(keys).to.be.empty;
+  });
+
+  it(`should reject when the network request fails`, async function() {
+    const request = new Request('http://example.io/test/');
+    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
+    const event = new FetchEvent(request);
+
+    sandbox.stub(global, 'fetch').callsFake(() => {
+      return Promise.reject(new Error(`Injected Error`));
+    });
+
+    const networkOnly = new NetworkOnly();
+    // This promise should reject, so call done() passing in an error string
+    // if it resolves, and done() without an error if it rejects.
+    try {
+      await networkOnly.handle(event);
+      throw new Error('Expected error to be thrown.');
+    } catch (err) {
+      expect(err.message).to.equal('Injected Error');
+    }
+  });
+
+  it(`should use plugins response`, async function() {
+    const request = new Request('http://example.io/test/');
+    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
+    const event = new FetchEvent(request);
+
+    const pluginRequest = new Request('http://something-else.io/test/');
+
+    sandbox.stub(global, 'fetch').callsFake((req) => {
+      expect(req).to.equal(pluginRequest);
+      return Promise.resolve(new Response('Injected Response'));
+    });
+
+    const networkOnly = new NetworkOnly({
+      plugins: [
+        {
+          requestWillFetch: () => {
+            return pluginRequest;
+          },
+        },
+      ],
+    });
+
+    const handleResponse = await networkOnly.handle(event);
+    expect(handleResponse).to.be.instanceOf(Response);
+
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const keys = await cache.keys();
+    expect(keys).to.be.empty;
+  });
+});
