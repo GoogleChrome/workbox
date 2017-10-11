@@ -21,8 +21,7 @@
  * @module workbox-sw
  */
 
-const CDN_PATH = `https://storage.googleapis.com/workbox-cdn/releases`;
-const VERSION = `WORKBOX_SW_VERSION_TAG`;
+const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
 
 /**
  * This class can be used to make it easy to use the various parts of
@@ -120,7 +119,7 @@ class WorkboxSW {
     }
 
     // TODO: This needs to be dynamic some how.
-    let pathParts = [CDN_PATH, VERSION];
+    let pathParts = [CDN_PATH];
 
     const fileName = `${moduleName}.${this._env}.js`;
 
