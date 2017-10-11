@@ -7,24 +7,22 @@ const packageRunnner = require('./utils/package-runner');
 
 // This is needed for workbox-build
 gulp.task('build-node-packages:update-cdn-details', function() {
-  const cdnDetails = JSON.parse(
-    fs.readFileSync(path.join(
-      __dirname, '..', 'cdn-details.json'
-    )).toString()
-  );
+  const cdnDetails = fs.readJSONSync(path.join(
+    __dirname, '..', 'cdn-details.json'
+  ));
 
-  const lernaPkg = JSON.parse(
-    fs.readFileSync(path.join(
-      __dirname, '..', 'lerna.json'
-    )).toString()
-  );
+  const lernaPkg = fs.readJSONSync(path.join(
+    __dirname, '..', 'lerna.json'
+  ));
 
   cdnDetails.latestVersion = lernaPkg.version;
 
   const workboxBuildPath = path.join(
     __dirname, '..', 'packages', 'workbox-build', 'src', 'cdn-details.json'
   );
-  return fs.writeFile(workboxBuildPath, JSON.stringify(cdnDetails, null, 2));
+  return fs.writeJsonSync(workboxBuildPath, cdnDetails, {
+    spaces: 2,
+  });
 });
 
 gulp.task('build-node-packages', gulp.series(

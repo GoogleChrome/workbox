@@ -54,9 +54,9 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
 });
 
 gulp.task('publish-cdn:temp-v3', async () => {
-  const lernaPkg = JSON.parse(fs.readFileSync(
+  const lernaPkg = fs.readJSONSync(
     path.join(__dirname, '..', 'lerna.json'),
-  ));
+  );
   const tagName = lernaPkg.version;
   const gitBranch = 'v3';
 
