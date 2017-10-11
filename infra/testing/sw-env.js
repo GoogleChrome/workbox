@@ -63,18 +63,26 @@ class Request {
     this.mode = options.mode || 'same-origin'; // FF defaults to cors
     this.headers = new Headers(options.headers);
 
-    this.bodyUsed = !!options.body;
-    if (this.bodyUsed) {
-      this.body = options.body;
-    }
+    // TODO(philipwalton): support non-text bodies.
+    this.body = options.body || '';
   }
 
   clone() {
-    return new Request(this.url, this);
+    if (this.bodyUsed) {
+      throw new TypeError(`Failed to execute 'clone' on 'Request': ` +
+          `Request body is already used`);
+    } else {
+      return new Request(this.url, this);
+    }
   }
 
-  text() {
-    return Promise.resolve(`${this.body || ''}`);
+  async text() {
+    if (this.bodyUsed) {
+      throw new TypeError('Already read');
+    } else {
+      this.bodyUsed = true;
+      return `${this.body || ''}`;
+    }
   }
 }
 global.Request = Request;

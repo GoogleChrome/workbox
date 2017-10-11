@@ -68,7 +68,7 @@ export default class StorableRequest {
    * new Request object. A timestamp is also set in the event that when this
    * object was created is relevant after it's stored.
    *
-   * @param {StorableRequest|Object} param1
+   * @param {Object} param1
    * @param {string} param1.url
    * @param {Object} param1.requestInit
    *     See: https://fetch.spec.whatwg.org/#requestinit

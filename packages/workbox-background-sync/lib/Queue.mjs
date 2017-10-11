@@ -31,21 +31,6 @@ const MAX_RETENTION_TIME = 1000 * 60 * 60 * 24 * 7; // 7 days
  * A class to manage storing failed requests in IndexedDB and retrying them
  * later. All parts of the storing and replaying process are observable via
  * callbacks.
- *
- * @example
- * // Manually detecting failed requests and added them to the queue.
- * const bgQueue = new workbox.backgroundSync.Queue('myQueue');
- * self.addEventListener('fetch', function(event) {
- *   if (!event.request.url.startsWith('https://example.com')) return;
- *
- *   const clone = event.request.clone();
- *   event.respondWith(fetch(event.request).catch((err) => {
- *     bgQueue.addRequest(clone);
- *     throw err;
- *   }));
- * });
- *
- * @memberof module:workbox-background-sync
  */
 export default class Queue {
   /**
@@ -58,7 +43,7 @@ export default class Queue {
    * @param {Object} [param2]
    * @param {number} [param2.maxRetentionTime = 7 days] The amount of time (in
    *     ms) a request may be retried. After this amount of time has passed,
-   *     the request will be deleted and not retried.
+   *     the request will be deleted from the queue.
    * @param {Object} [param2.callbacks] Callbacks to observe the lifecycle of
    *     queued requests. Use these to respond to or modify the requests
    *     during the replay process.
@@ -190,18 +175,20 @@ export default class Queue {
   async _getStorableRequestsInQueue() {
     const db = await this._getDb();
     const storableRequests = [];
+    const currentTime = Date.now();
 
     for (const [key, entry] of (await db.getAll()).entries()) {
       if (entry.queueName == this._name) {
-        // Requests older than `maxRetentionTime` should be ignored.
-        const storableRequest = new StorableRequest(entry.storableRequest);
+        const retentionTime = currentTime - entry.storableRequest.timestamp;
 
-        if (Date.now() - storableRequest.timestamp > this._maxRetentionTime) {
+        // Requests older than `maxRetentionTime` should be ignored.
+        if (retentionTime > this._maxRetentionTime) {
           // No need to await this since it can happen in parallel.
           this._removeRequest(key);
           continue;
         }
 
+        const storableRequest = new StorableRequest(entry.storableRequest);
         storableRequests.push([key, storableRequest]);
       }
     }
@@ -252,13 +239,13 @@ export default class Queue {
    * @private
    */
   _addSyncListener() {
-    self.addEventListener('sync', (event) => {
-      event.waitUntil(this.replayRequests());
-    });
-
-    // If the browser doesn't support background sync, retry
-    // every time the service worker starts up as a fallback.
-    if (!('sync' in registration)) {
+    if ('sync' in registration) {
+      self.addEventListener('sync', (event) => {
+        event.waitUntil(this.replayRequests());
+      });
+    } else {
+      // If the browser doesn't support background sync, retry
+      // every time the service worker starts up as a fallback.
       this.replayRequests();
     }
   }
@@ -270,28 +257,11 @@ export default class Queue {
    */
   async _registerSync() {
     try {
-      await this._waitUntilActive();
       await registration.sync.register(`${TAG_PREFIX}:${this._name}`);
     } catch (err) {
       // This means the registration failed for some reason, either because
       // the browser doesn't supported it or because the user has disabled it.
       // In either case, do nothing.
-    }
-  }
-
-  /**
-   * Returns a promise that resolves once the service worker is active.
-   *
-   * @private
-   * @return {Promise}
-   */
-  _waitUntilActive() {
-    if (self.registration.active) {
-      return Promise.resolve();
-    } else {
-      return new Promise((resolve) => {
-        self.addEventListener('activate', (event) => resolve());
-      });
     }
   }
 }

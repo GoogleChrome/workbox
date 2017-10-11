@@ -23,14 +23,6 @@ import indexedDBHelper, {DBWrapper} from
 
 let Queue;
 
-/**
- * Suspends execution in an async function for the specified amount of time.
- *
- * @param {number} time
- * @return {Promise}
- */
-const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
-
 
 const clearObjectStore = async () => {
   const db = await indexedDBHelper.getDB(
@@ -185,37 +177,6 @@ describe(`backgroundSync.Queue`, function() {
       await queue.addRequest(request);
 
       expect(self.registration.sync.register.calledOnce).to.be.true;
-      expect(self.registration.sync.register.calledWith(
-          'workbox-background-sync:foo')).to.be.true;
-    });
-
-    it(`should delay registration until the SW is active`, async function() {
-      sandbox.stub(self.registration, 'active').value(undefined);
-      sandbox.stub(self.registration, 'sync').value({
-        register: sinon.spy(),
-      });
-
-      const queue = new Queue('foo');
-      const requestUrl = 'https://example.com';
-      const requestInit = {
-        method: 'POST',
-        body: 'testing...',
-        headers: {'x-foo': 'bar'},
-        mode: 'cors',
-      };
-      const request = new Request(requestUrl, requestInit);
-
-      // This shouldn't error, even though activation hasn't happened yet.
-      await queue.addRequest(request);
-
-      // Allow time to ensure async registration didn't happen.
-      await sleep(100);
-      expect(self.registration.sync.register.called).to.be.false;
-
-      self.dispatchEvent(new ExtendableEvent('activate'));
-
-      // Allow time to let registration happen async.
-      await sleep(100);
       expect(self.registration.sync.register.calledWith(
           'workbox-background-sync:foo')).to.be.true;
     });
