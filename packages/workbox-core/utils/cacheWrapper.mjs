@@ -72,21 +72,16 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
 const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
   const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
-  // In the cache of cacheWrapper.put(), we aren't really "using"
-  // a response, so calling these plugins makes no sense,
-  // But further more, the "using" aspect should be managed
-  // by the actual use case, not the cache wrapper
-  /** for (let plugin of plugins) {
+  for (let plugin of plugins) {
     if (plugin.cachedResponseWillBeUsed) {
       cachedResponse = await plugin.cachedResponseWillBeUsed({
+        cacheName,
         request,
-        cache,
-        cachedResponse,
         matchOptions,
-        cacheName: CACHE_NAME,
+        cachedResponse,
       });
     }
-  }**/
+  }
   return cachedResponse;
 };
 

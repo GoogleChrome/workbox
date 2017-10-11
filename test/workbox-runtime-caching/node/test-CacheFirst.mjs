@@ -46,9 +46,10 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
     const event = new FetchEvent(request);
 
+    const fetchResponse = new Response('Hello Test.');
     sandbox.stub(global, 'fetch').callsFake((req) => {
       expect(req).to.equal(request);
-      return Promise.resolve(new Response('Hello Test.'));
+      return Promise.resolve(fetchResponse);
     });
     let cachePromise;
     sandbox.stub(event, 'waitUntil').callsFake((promise) => {
@@ -63,7 +64,8 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
     const firstCachedResponse = await cache.match(request);
 
-    await compareResponses(firstHandleResponse, firstCachedResponse, true);
+    await compareResponses(firstCachedResponse, fetchResponse, true);
+    await compareResponses(firstHandleResponse, fetchResponse, true);
 
     const secondHandleResponse = await cacheFirst.handle(event);
 
@@ -165,5 +167,69 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     const firstCachedResponse = await cache.match(request);
 
     await compareResponses(firstHandleResponse, firstCachedResponse, true);
+  });
+
+  it(`should return the plugin cache response`, async function() {
+    const request = new Request('http://example.io/test/');
+    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
+    const event = new FetchEvent(request);
+
+    const injectedResponse = new Response('response body');
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    await cache.put(request, injectedResponse.clone());
+
+    const pluginResponse = new Response('plugin response');
+    const cacheFirst = new CacheFirst({
+      plugins: [
+        {
+          cachedResponseWillBeUsed: () => {
+            return pluginResponse;
+          },
+        },
+      ],
+    });
+    const firstHandleResponse = await cacheFirst.handle(event);
+
+    await compareResponses(firstHandleResponse, pluginResponse, true);
+  });
+
+  it(`should fallback to fetch if the plugin.cacheResponseWillBeUsed returns null`, async function() {
+    const request = new Request('http://example.io/test/');
+    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
+    const event = new FetchEvent(request);
+
+    const fetchResponse = new Response('Hello Test.');
+    sandbox.stub(global, 'fetch').callsFake((req) => {
+      expect(req).to.equal(request);
+      return Promise.resolve(fetchResponse);
+    });
+    let cachePromise;
+    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
+      cachePromise = promise;
+    });
+
+    const injectedResponse = new Response('response body');
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    await cache.put(request, injectedResponse.clone());
+
+    const cacheFirst = new CacheFirst({
+      plugins: [
+        {
+          cachedResponseWillBeUsed: () => {
+            return null;
+          },
+        },
+      ],
+    });
+    const firstHandleResponse = await cacheFirst.handle(event);
+
+    // Wait until cache.put is finished.
+    await cachePromise;
+
+    // The cache should be overriden
+    const firstCachedResponse = await cache.match(request);
+
+    await compareResponses(firstCachedResponse, fetchResponse, true);
+    await compareResponses(firstHandleResponse, fetchResponse, true);
   });
 });

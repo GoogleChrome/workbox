@@ -16,18 +16,15 @@
 import {_private} from 'workbox-core';
 
 /**
- * An implementation of a [cache-first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network)
+ * An implementation of a [cache-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only)
  * request strategy.
  *
- * A cache first strategy is useful for assets that are revisioned since it
- * assets can be cached for long periods of time, saving the users data.
- *
- * @param {FetchEvent} event The request to handle.
- * @return {Promise<Response>}
+ * This class is useful if you want to take advantage of Workbox cache naming
+ * and / or plugins.
  *
  * @memberof module:workbox-runtime-caching
  */
-class CacheFirst {
+class CacheOnly {
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
@@ -38,50 +35,31 @@ class CacheFirst {
   constructor(options = {}) {
     this._cacheName =
       _private.cacheNames.getRuntimeName(options.cacheName);
-      this._plugins = options.plugins || [];
+    this._plugins = options.plugins || [];
   }
 
   /**
-   * Handle the provided fetch event.
+   * The handle method will be called by the
+   * {@link module:workbox-routing.Route|Route} class when a route matches a
+   * request.
    *
-   * @param {FetchEvent} event
-   * @return {Promise<Response>}
+   * @param {FetchEvent} event The event that triggered the service
+   *        worker's fetch handler.
+   * @return {Promise.<Response>} The response from the cache or null.
    */
   async handle(event) {
     if (process.env.NODE_ENV !== 'production') {
-      // TODO: Switch to core.assert
-      // core.assert.isInstance({event}, FetchEvent);
+      // TODO Move to core.assert
+      // isInstance({event}, FetchEvent);
     }
 
-    const cachedResponse = await _private.cacheWrapper.match(
+    return _private.cacheWrapper.match(
       this._cacheName,
       event.request,
       null,
       this._plugins
     );
-
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
-    const response = await _private.fetchWrapper.fetch(
-      event.request,
-      this._plugins
-    );
-
-    // Keep the service worker while we put the request to the cache
-    const responseClone = response.clone();
-    event.waitUntil(
-      _private.cacheWrapper.put(
-        this._cacheName,
-        event.request,
-        responseClone,
-        this._plugins
-      )
-    );
-
-    return response;
   }
 }
 
-export default CacheFirst;
+export default CacheOnly;
