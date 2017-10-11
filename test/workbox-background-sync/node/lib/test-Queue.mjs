@@ -156,7 +156,7 @@ describe(`backgroundSync.Queue`, function() {
         storableRequest: sinon.match({
           url: requestUrl,
           timestamp: sinon.match.number,
-          requestInit: sinon.match(requestInit),
+          requestInit: sinon.match.object,
         }),
       })).to.be.true;
     });

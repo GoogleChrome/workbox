@@ -15,7 +15,6 @@
 
 const serializableProperties = [
   'method',
-  'body',
   'referrer',
   'referrerPolicy',
   'mode',
@@ -43,9 +42,11 @@ export default class StorableRequest {
   static async fromRequest(request) {
     const requestInit = {headers: {}};
 
-    // Set the body, if used.
-    if (request.bodyUsed) {
-      requestInit.body = await request.text();
+    // Set the body if present.
+    if (request.method != 'GET') {
+      // Use blob to support non-text request bodies,
+      // and clone first in case the caller still needs the request.
+      requestInit.body = await request.clone().blob();
     }
 
     // Convert the headers from an iterable to an object.

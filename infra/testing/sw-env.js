@@ -60,11 +60,11 @@ class Request {
 
     this.url = url;
     this.method = options.method || 'GET';
-    this.mode = options.mode || 'same-origin'; // FF defaults to cors
+    this.mode = options.mode || 'cors';
     this.headers = new Headers(options.headers);
 
     // TODO(philipwalton): support non-text bodies.
-    this.body = options.body || '';
+    this._body = new Blob([options.body]);
   }
 
   clone() {
@@ -72,7 +72,16 @@ class Request {
       throw new TypeError(`Failed to execute 'clone' on 'Request': ` +
           `Request body is already used`);
     } else {
-      return new Request(this.url, this);
+      return new Request(this.url, Object.assign({body: this._body}, this));
+    }
+  }
+
+  async blob() {
+    if (this.bodyUsed) {
+      throw new TypeError('Already read');
+    } else {
+      this.bodyUsed = true;
+      return new Blob([this._body]);
     }
   }
 
@@ -81,7 +90,8 @@ class Request {
       throw new TypeError('Already read');
     } else {
       this.bodyUsed = true;
-      return `${this.body || ''}`;
+      // Limitionation: this assumes the stored Blob is text-based.
+      return this._body._text;
     }
   }
 }
@@ -167,6 +177,45 @@ class SyncManager {
 }
 global.registration.sync = new SyncManager();
 
+// Blob
+// https://w3c.github.io/FileAPI/#dom-blob-blob
+class Blob {
+  constructor(blobParts, options = {}) {
+    if (typeof blobParts === 'undefined') {
+      blobParts = [];
+    }
+    if (!Array.isArray(blobParts)) {
+      throw new TypeError(`Failed to construct 'Blob': ` +
+          `The provided value cannot be converted to a sequence.`);
+    }
+
+    this._parts = blobParts;
+    this._type = options.type || '';
+  }
+
+  get size() {
+    let size = 0;
+    for (const part of this._parts) {
+      size += part.length || part.size;
+    }
+    return size;
+  }
+
+  get type() {
+    return this._type;
+  }
+
+  // Warning: non-standard, but used in other mocks for simplicity.
+  // TODO(philipwalton): implement/use FileReader to get the Blob text.
+  get _text() {
+    let text = '';
+    for (const part of this._parts) {
+      text += typeof part === 'string' ? part : part._text;
+    }
+    return text;
+  }
+}
+global.Blob = Blob;
 
 // This is needed to ensure new URL('/', location), works.
 global.location = 'https://example.com';

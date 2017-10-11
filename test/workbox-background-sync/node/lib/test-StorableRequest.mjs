@@ -36,7 +36,8 @@ describe(`StorableRequest`, function() {
 
       expect(storableRequest.url).to.equal('/foo');
       expect(storableRequest.requestInit.method).to.equal('POST');
-      expect(storableRequest.requestInit.body).to.equal('it worked!');
+      expect(storableRequest.requestInit.body).to.be.instanceOf(Blob);
+      expect(storableRequest.requestInit.body.size).to.equal(10);
       expect(storableRequest.requestInit.mode).to.equal('no-cors');
       expect(storableRequest.requestInit.headers['x-foo']).to.equal('bar');
       expect(storableRequest.requestInit.headers['x-qux']).to.equal('baz');
@@ -105,7 +106,8 @@ describe(`StorableRequest`, function() {
       expect(Object.getPrototypeOf(requestObj)).to.equal(Object.prototype);
       expect(requestObj.url).to.equal('/foo');
       expect(requestObj.requestInit.method).to.equal('POST');
-      expect(requestObj.requestInit.body).to.equal('it worked!');
+      expect(requestObj.requestInit.body).to.be.instanceOf(Blob);
+      expect(requestObj.requestInit.body.size).to.equal(10);
       expect(requestObj.requestInit.mode).to.equal('no-cors');
       expect(requestObj.requestInit.headers['x-foo']).to.equal('bar');
       expect(requestObj.requestInit.headers['x-qux']).to.equal('baz');
@@ -133,7 +135,7 @@ describe(`StorableRequest`, function() {
       expect(Object.getPrototypeOf(request)).to.equal(Request.prototype);
       expect(request.url).to.equal('/foo');
       expect(request.method).to.equal('POST');
-      expect(await request.text()).to.equal('it worked!');
+      expect(await request.blob()).to.be.instanceOf(Blob);
       expect(request.mode).to.equal('no-cors');
       expect(request.headers.get('x-foo')).to.equal('bar');
       expect(request.headers.get('x-qux')).to.equal('baz');

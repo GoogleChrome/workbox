@@ -105,7 +105,7 @@ export default class Queue {
    * @param {Request} request The request object to store.
    */
   async addRequest(request) {
-    const storableRequest = await StorableRequest.fromRequest(request);
+    const storableRequest = await StorableRequest.fromRequest(request.clone());
 
     this._runCallback('requestWillEnqueue', storableRequest);
 
