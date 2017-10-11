@@ -45,7 +45,7 @@ module.exports = {
       'WORKBOX_VERSION_TAG': lernaPkg.version,
     };**/
     const replaceOptions = {
-      'WORKBOX_VERSION_TAG': 'v3.0.0-alpha',
+      'WORKBOX_SW_VERSION_TAG': 'v3.0.0-alpha',
     };
 
     if (buildType) {
