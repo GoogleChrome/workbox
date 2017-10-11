@@ -51,7 +51,7 @@ export default async (updatedEntries, notUpdatedEntries) => {
     `Precached ${updatedCount} file${updatedCount === 1 ? '' : 's'}.`;
   if (notUpdatedCount > 0) {
     printText += ` ${notUpdatedCount} ` +
-      `file${notUpdatedCount === 1 ? ' was' : 's were'} cached and up-to-date.`;
+      `file${notUpdatedCount === 1 ? ' was' : 's were'} already cached.`;
   }
   _private.logger.groupCollapsed(printText);
   if (updatedCount > 0 && notUpdatedCount === 0) {
@@ -60,8 +60,11 @@ export default async (updatedEntries, notUpdatedEntries) => {
       _private.logger.log(entry._originalInput);
     });
   } else {
-    logGroup(`${updatedCount} entries updated and cached`, updatedEntries);
-    logGroup(`${notUpdatedCount} entried already cached and up-to-date`,
+    logGroup(
+      `Number of entries cached: ${updatedCount}`,
+      updatedEntries);
+    logGroup(
+      `Number of entries already cached: ${notUpdatedCount}`,
       notUpdatedEntries);
   }
 

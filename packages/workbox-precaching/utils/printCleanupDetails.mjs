@@ -39,11 +39,18 @@ export default async (deletedCacheRequests, deletedRevisionDetails) => {
     return;
   }
 
+  const cacheDeleteCount = deletedCacheRequests.length;
+  const revisionDeleteCount = deletedRevisionDetails.length;
+
   const cacheDeleteText =
-    `${deletedCacheRequests.length} cached requests were deleted`;
-    const revisionDeleteText = `${deletedRevisionDetails.length} revision ` +
-    `details were deleted from IndexedDB.`;
-  _private.logger.groupCollapsed(
+    `${cacheDeleteCount} cached ` +
+    `request${cacheDeleteCount === 1 ? ' was' : 's were'} deleted`;
+  const revisionDeleteText =
+    `${revisionDeleteCount} ` +
+    `${revisionDeleteCount === 1 ? 'entry' : 'entries'} ` +
+    `${revisionDeleteCount === 1 ? 'was' : 'were'} deleted from IndexedDB.`;
+
+    _private.logger.groupCollapsed(
      `During precaching cleanup, ${cacheDeleteText} and ${revisionDeleteText}`);
 
   logGroup('Deleted Cache Requests', deletedCacheRequests);
