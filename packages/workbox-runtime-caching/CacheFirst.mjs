@@ -66,6 +66,7 @@ class CacheFirst {
 
     const response = await _private.fetchWrapper.fetch(
       event.request,
+      null,
       this._plugins
     );
 
