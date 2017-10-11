@@ -1,7 +1,6 @@
 const uglifyPlugin = require('rollup-plugin-uglify');
 const minify = require('uglify-es').minify;
 const replace = require('rollup-plugin-replace');
-const lernaPkg = require('../../lerna.json');
 
 const constants = require('./constants');
 
@@ -41,6 +40,7 @@ module.exports = {
     }
 
     // This is what the build should be
+    // TODO read lernaPkg from file to ensure latest version.
     /** const replaceOptions = {
       'WORKBOX_VERSION_TAG': lernaPkg.version,
     };**/
