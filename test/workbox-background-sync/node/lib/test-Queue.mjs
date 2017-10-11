@@ -136,7 +136,6 @@ describe(`backgroundSync.Queue`, function() {
     it(`should serialize the request and store it in IndexedDB`,
         async function() {
       sandbox.spy(DBWrapper.prototype, 'add');
-      sandbox.stub(self.registration, 'active').value({});
 
       const queue = new Queue('foo');
       const requestUrl = 'https://example.com';
@@ -163,7 +162,6 @@ describe(`backgroundSync.Queue`, function() {
 
     it(`should register to receive sync events for a unique tag`,
         async function() {
-      sandbox.stub(self.registration, 'active').value({});
       sandbox.stub(self.registration, 'sync').value({
         register: sinon.stub().resolves(),
       });
@@ -360,7 +358,6 @@ describe(`backgroundSync.Queue`, function() {
 
     it(`should re-register for a sync event if re-fetching fails`,
         async function() {
-      sandbox.stub(self.registration, 'active').value({});
       sandbox.stub(self.registration, 'sync').value({
         register: sinon.stub().resolves(),
       });
