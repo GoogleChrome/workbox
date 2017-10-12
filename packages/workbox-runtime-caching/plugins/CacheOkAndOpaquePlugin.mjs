@@ -13,14 +13,7 @@
  limitations under the License.
 */
 
-/**
- * Returns a plugin to allow caching response.ok and opaque responses.
- *
- * @return {Object}
- *
- * @private
- */
-class CacheOkAndOpaquePlugin {
+export default {
   /**
    * Return return a response (i.e. allow caching) if the
    * response is ok (i.e. 200) or is opaque.
@@ -30,12 +23,10 @@ class CacheOkAndOpaquePlugin {
    * @param {Response} input.response
    * @return {Response|null}
    */
-  cacheWillUpdate({request, response}) {
+  cacheWillUpdate: ({request, response}) => {
     if (response.ok || response.status === 0) {
       return response;
     }
     return null;
-  }
-}
-
-export default CacheOkAndOpaquePlugin;
+  },
+};

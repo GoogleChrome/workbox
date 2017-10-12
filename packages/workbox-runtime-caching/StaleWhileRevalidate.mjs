@@ -14,20 +14,21 @@
 */
 
 import {_private} from 'workbox-core';
-import CacheOkAndOpaquePlugin from './plugins/CacheOkAndOpaquePlugin.mjs';
+import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 
 /**
- * An implementation of a [stale-while-revalidate](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate)
+ * An implementation of a
+ * [stale-while-revalidate]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate}
  * request strategy.
  *
  * Resources are requested from both the cache and the network in parallel, then
  * responds with the cached version. The cache is updated with the response
  * from the network.
  *
- * By default, `NetworkFirst` will cache responses with a 200 status code as
- * well as [opaque responses](http://stackoverflow.com/q/39109789), which are
- * cross-origin responses which don't support
- * [CORS]((https://enable-cors.org/)).
+ * By default, this strategy will cache responses with a 200 status code as
+ * well as [opaque responses]{@link http://stackoverflow.com/q/39109789}.
+ * Opaque responses are are cross-origin requests where the response doesn't
+ * support [CORS]{@link https://enable-cors.org/}.
  *
  * @memberof module:workbox-runtime-caching
  */
@@ -48,10 +49,10 @@ class StaleWhileRevalidate {
       let isUsingCacheWillUpdate =
         options.plugins.some((plugin) => !!plugin.cacheWillUpdate);
       this._plugins = isUsingCacheWillUpdate ?
-        options.plugins : [new CacheOkAndOpaquePlugin(), ...options.plugins];
+        options.plugins : [cacheOkAndOpaquePlugin, ...options.plugins];
     } else {
       // No plugins passed in, use the default plugin.
-      this._plugins = [new CacheOkAndOpaquePlugin()];
+      this._plugins = [cacheOkAndOpaquePlugin];
     }
   }
 
