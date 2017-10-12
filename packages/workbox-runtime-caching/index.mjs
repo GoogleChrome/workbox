@@ -14,10 +14,21 @@
   limitations under the License.
 */
 
+/**
+ * There are common caching strategies that most service workers will need
+ * and use. This module provides simple implementations of these strategies.
+ *
+ * @module workbox-runtime-caching
+ */
+
 import CacheFirst from './CacheFirst.mjs';
 import CacheOnly from './CacheOnly.mjs';
+import NetworkFirst from './NetworkFirst.mjs';
+import NetworkOnly from './NetworkOnly.mjs';
 
 export {
   CacheFirst,
   CacheOnly,
+  NetworkFirst,
+  NetworkOnly,
 };

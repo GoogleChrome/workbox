@@ -19,13 +19,14 @@ import core from 'workbox-core';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 
 /**
- * An implementation of a [network first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache)
+ * An implementation of a
+ * [network first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache}
  * request strategy.
  *
- * By default, `NetworkFirst` will cache responses with a 200 status code as
- * well as [opaque responses](http://stackoverflow.com/q/39109789), which are
- * cross-origin responses which don't support
- * [CORS]((https://enable-cors.org/)).
+ * By default, this strategy will cache responses with a 200 status code as
+ * well as [opaque responses]{@link http://stackoverflow.com/q/39109789}.
+ * Opaque responses are are cross-origin requests where the response doesn't
+ * support [CORS]{@link https://enable-cors.org/}.
  *
  * @memberof module:workbox-runtime-caching
  */
@@ -36,10 +37,11 @@ class NetworkFirst {
    * requests. Defaults to cache names provided by `workbox-core`.
    * @param {string} options.plugins Workbox plugins you may want to use in
    * conjunction with this caching strategy.
-   * @param {number} options.networkTimeoutSeconds If set, any requests that
-   * fail to respond within this timeout will be treated as a failed network
-   * request and the request will fallback to the cache. This option is meant
-   * to combat "[lie-fi](https://developers.google.com/web/fundamentals/performance/poor-connectivity/#lie-fi)"
+   * @param {number} options.networkTimeoutSeconds If set, any network requests
+   * that fail to respond within the timeout will fallback to the cache.
+   *
+   * This option can be used to combat
+   * "[lie-fi]{@link https://developers.google.com/web/fundamentals/performance/poor-connectivity/#lie-fi}"
    * scenarios.
    */
   constructor(options = {}) {
@@ -70,15 +72,20 @@ class NetworkFirst {
   }
 
   /**
-   * Handle the provided fetch event.
+   * This method will be called by the Workbox
+   * [Router]{@link module:workbox-routing.Router} to handle a fetch event.
    *
-   * @param {FetchEvent} event
+   * @param {FetchEvent} event The fetch event to handle.
    * @return {Promise<Response>}
    */
   async handle(event) {
     if (process.env.NODE_ENV !== 'production') {
-      // TODO: Switch to core.assert
-      // core.assert.isInstance({event}, FetchEvent);
+      core.assert.isInstance(event, FetchEvent, {
+        moduleName: 'workbox-runtime-caching',
+        className: 'CacheFirst',
+        funcName: 'handle',
+        paramName: 'event',
+      });
     }
 
     const promises = [];
