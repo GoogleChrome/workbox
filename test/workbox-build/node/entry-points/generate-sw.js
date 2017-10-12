@@ -10,7 +10,7 @@ const validateServiceWorkerRuntime = require('../../../../infra/testing/validato
 
 describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() {
   const BUILD_TYPE = (process.env.NODE_ENV && process.env.NODE_ENV.startsWith('dev')) ? 'dev' : 'prod';
-  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw', BUILD_TYPE)
+  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw', BUILD_TYPE);
   const LOCAL_WORKBOX_SW_FILENAME = useBuildType(
     path.basename(require.resolve('../../../../packages/workbox-build/node_modules/workbox-sw/')),
     BUILD_TYPE
