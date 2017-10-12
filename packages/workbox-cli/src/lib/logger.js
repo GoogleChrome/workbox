@@ -19,6 +19,6 @@ const chalk = require('chalk');
 module.exports = {
   debug: (...args) => console.log(chalk.gray(...args)),
   log: (...args) => console.log(...args),
-  warn: (...args) => console.warn(chalk.red(...args)),
+  warn: (...args) => console.warn(chalk.yellow(...args)),
   error: (...args) => console.error(chalk.red.bold(...args)),
 };

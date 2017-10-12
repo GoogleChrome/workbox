@@ -1,5 +1,3 @@
-#! /usr/bin/env node
-
 /**
  * Copyright 2017 Google Inc.
  *
@@ -14,25 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-**/
+ **/
 
-const meow = require('meow');
-const updateNotifier = require('update-notifier');
+module.exports = (error, moduleName) => {
+  const frames = error.stack.split(`\n`);
+  let startFrame = null;
+  let lastFrame = 0;
+  frames.forEach((frame, index) => {
+    if (startFrame === null && frame.includes(`    at `)) {
+      startFrame = index;
+    }
 
-const app = require('./app.js');
-const cleanupStackTrace = require('./lib/cleanup-stack-trace.js');
-const helpText = require('./lib/help-text');
-const logger = require('./lib/logger');
-
-(async () => {
-  const params = meow(helpText);
-  updateNotifier({pkg: params.pkg}).notify();
-
-  try {
-    await app(...params.input);
-  } catch (error) {
-    logger.error(`\n${error.message}`);
-    logger.debug(`${cleanupStackTrace(error, 'app.js')}\n`);
-    process.exit(1);
-  }
-})();
+    if (frame.includes(`${moduleName}:`)) {
+      lastFrame = index;
+    }
+  });
+  return frames.slice(startFrame, lastFrame + 1).join(`\n`);
+};

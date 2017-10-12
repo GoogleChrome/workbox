@@ -3,11 +3,16 @@ const sinon = require('sinon');
 
 const logger = require('../../../../packages/workbox-cli/src/lib/logger');
 
-describe(`[workbox-cli] lib/copy-workbox-sw.js`, function() {
+describe(`[workbox-cli] lib/logger.js`, function() {
   const sandbox = sinon.sandbox.create();
-  // Instead of using before/after hooks, the sandbox is explicitly restored
-  // inside of the test cases. This ensures that the mocha/chai output doesn't
-  // go through the stubbed methods.
+
+  beforeEach(function() {
+    sandbox.restore();
+  });
+
+  after(function() {
+    sandbox.restore();
+  });
 
   it(`should call console.log() when logger.debug() is used`, function() {
     const stub = sandbox.stub(console, 'log');

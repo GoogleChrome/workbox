@@ -15,28 +15,30 @@
 **/
 
 module.exports = `Usage:
-$ workbox command path/to/workbox-config.js
+$ workbox <command> [options]
   
-Arguments:
-  command  Can be one of:
-           - wizard: Runs the configuration wizard, which will generate a config
-             file based on your local build environment.
-           - generateSW: Creates a new service worker file based on the
-             options in the config file. See https://goo.gl/zQz4By
-           - injectManifest: Takes an existing service worker file as a
-             starting point and creates a service worker file with precaching
-             manifest "injected", based on the options in the config file.
-             See https://goo.gl/yB6KZL
-
-  path/to/workbox-config.js  In 'wizard' mode, this will be used as the
-                             destination for saving your configuration.
-                             In 'generateSW' or 'injectManifest' mode, it should
-                             be an existing file, in CommonJS module format.
-                             The exported object's properties should follow
-                             https://goo.gl/YYPcyY
+Commands:
+  wizard
+    Runs the configuration wizard, which will generate a
+    config file based on answers to questions.
+  
+  generateSW <path/to/config.js>
+    Creates a new service worker file based on the options
+    in the config file. See https://goo.gl/zQz4By
+  
+  injectManifest <path/to/config.js>
+    Takes an existing service worker file and creates a
+    copy of it with a precaching manifest "injected" into
+    it. The precaching manifest is generated based on the
+    options in the config file. See https://goo.gl/yB6KZL
+    
+Config file:
+  In 'generateSW' or 'injectManifest' mode, the config file should be a
+  JavaScript file, in CommonJS module format.
+  The exported object's properties should follow https://goo.gl/YYPcyY
 
 Examples:
-  $ workbox wizard new-workbox-config.js
+  $ workbox wizard
   $ workbox generateSW workbox-config.js
-  $ workbox injectManifest config/workbox-config.js
+  $ workbox injectManifest configs/workbox-dev-config.js
 `;

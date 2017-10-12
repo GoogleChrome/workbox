@@ -27,32 +27,42 @@ module.exports = async (command, configFile) => {
   assert(command, errors['missing-command-param']);
   assert(configFile, errors['missing-config-file-param']);
 
-  if (command === 'wizard') {
-    // TODO: Port over wizard code.
-  } else if (command === 'generateSW' || command === 'injectManifest') {
-    // TODO: Confirm that this works with Windows paths.
-    const configPath = path.resolve(process.cwd(), configFile);
-    let config;
-    try {
-      config = readConfig(configPath);
-    } catch (error) {
-      throw new Error(`${error}\n${errors['invalid-common-js-module']}`);
+  switch (command) {
+    case 'wizard': {
+      // TODO: Port over wizard code.
+      break;
     }
 
-    try {
-      const {size, count} = await workboxBuild[command](config);
-      logger.log(`The service worker was written to ${config.swDest}\n` +
-        `${count} files will be precached, totalling ${prettyBytes(size)}.`);
-    } catch (error) {
-      // See https://github.com/hapijs/joi/blob/v11.3.4/API.md#errors
-      if (typeof error.annotate === 'function') {
-        throw new Error(errors['config-validation-failed'] + `\n` +
-          error.annotate());
+    case 'generateSW':
+    case 'injectManifest': {
+      // TODO: Confirm that this works with Windows paths.
+      const configPath = path.resolve(process.cwd(), configFile);
+      let config;
+      try {
+        config = readConfig(configPath);
+      } catch (error) {
+        logger.error(errors['invalid-common-js-module']);
+        throw error;
       }
-      throw new Error(errors['workbox-build-runtime-error'] + `\n` +
-        error);
+
+      try {
+        const {size, count} = await workboxBuild[command](config);
+        logger.log(`The service worker was written to ${config.swDest}\n` +
+          `${count} files will be precached, totalling ${prettyBytes(size)}.`);
+      } catch (error) {
+        // See https://github.com/hapijs/joi/blob/v11.3.4/API.md#errors
+        if (typeof error.annotate === 'function') {
+          throw new Error(
+            `${errors['config-validation-failed']}\n${error.annotate()}`);
+        }
+        logger.error(errors['workbox-build-runtime-error']);
+        throw error;
+      }
+      break;
     }
-  } else {
-    throw new Error(errors['unknown-command'] + ` ` + command);
+
+    default: {
+      throw new Error(errors['unknown-command'] + ` ` + command);
+    }
   }
 };
