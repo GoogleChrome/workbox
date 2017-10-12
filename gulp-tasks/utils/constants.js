@@ -4,6 +4,7 @@ module.exports = {
   // test runs.
   PACKAGE_BUILD_DIRNAME: 'build',
   BROWSER_BUILD_DIRNAME: 'browser',
+  MODULE_BUILD_DIRNAME: 'module',
   GENERATED_RELEASE_FILES_DIRNAME: 'generated-release-files',
 
   // This is used in the publish-bundle step to avoid doing anything

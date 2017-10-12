@@ -18,7 +18,7 @@ module.exports = {
     "jsdoc/newline-after-description": 2,
   },
   plugins: [
-      'jsdoc',
+    'jsdoc',
   ],
   parser: 'babel-eslint',
   overrides: [{
@@ -36,10 +36,11 @@ module.exports = {
     files: [
       'packages/workbox-core/utils/logger.mjs',
       'packages/workbox-sw/index.mjs',
-      'test/workbox-core/bundle/node/utils/test-LogHelper.js',
       'infra/testing/cli-test-helper.js',
       'infra/utils/log-helper.js',
       'packages/workbox-cli/src/lib/logger.js',
+      'test/workbox-precaching/node/controllers/test-PrecacheController.mjs',
+      'test/workbox-precaching/node/utils/test-showWarningsIfNeeded.mjs',
     ],
     rules: {
       'no-console': 0,
@@ -97,5 +98,15 @@ module.exports = {
     rules: {
       'no-invalid-this': 0,
     },
+  }, {
+    files: [
+      'packages/**/*.{mjs,js}',
+    ],
+    plugins: [
+      'header',
+    ],
+    rules: {
+      'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google Inc.'}]
+    }
   }],
 };

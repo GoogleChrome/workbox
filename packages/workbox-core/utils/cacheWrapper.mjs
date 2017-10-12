@@ -1,3 +1,19 @@
+/*
+  Copyright 2017 Google Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/
+
 /**
  * Wrapper around cache.put().
  *
@@ -56,21 +72,16 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
 const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
   const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
-  // In the cache of cacheWrapper.put(), we aren't really "using"
-  // a response, so calling these plugins makes no sense,
-  // But further more, the "using" aspect should be managed
-  // by the actual use case, not the cache wrapper
-  /** for (let plugin of plugins) {
+  for (let plugin of plugins) {
     if (plugin.cachedResponseWillBeUsed) {
       cachedResponse = await plugin.cachedResponseWillBeUsed({
+        cacheName,
         request,
-        cache,
-        cachedResponse,
         matchOptions,
-        cacheName: CACHE_NAME,
+        cachedResponse,
       });
     }
-  }**/
+  }
   return cachedResponse;
 };
 

@@ -20,9 +20,12 @@ describe(`[workbox-precaching] WorkboxPrecaching`, function() {
   });
 
   describe(`Used in a window`, function() {
-    devOnly.it(`should throw when loaded outside of a service worker in dev`, async function() {
-      return expectError(async () => {
-        await import('../../../packages/workbox-precaching/index.mjs');
+    devOnly.it(`should throw when loaded outside of a service worker in dev`, function() {
+      class Foo {}
+      sandbox.stub(global, 'ServiceWorkerGlobalScope').value(Foo);
+
+      return expectError(() => {
+        return import('../../../packages/workbox-precaching/index.mjs');
       }, 'not-in-sw', (err) => {
         expect(err.details).to.have.property('moduleName').that.equal('workbox-precaching');
       });
