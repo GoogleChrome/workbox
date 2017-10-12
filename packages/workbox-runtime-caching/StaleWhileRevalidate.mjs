@@ -16,7 +16,7 @@
 import {_private} from 'workbox-core';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 
-import '_version.mjs';
+import './_version.mjs';
 
 /**
  * An implementation of a
