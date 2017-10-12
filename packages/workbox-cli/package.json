@@ -1,0 +1,42 @@
+{
+  "name": "workbox-cli",
+  "version": "3.0.0-alpha.17",
+  "description": "workbox-cli is the command line interface for the workbox-build module.",
+  "keywords": [
+    "workbox",
+    "workboxjs",
+    "service worker",
+    "caching",
+    "fetch requests",
+    "offline",
+    "cli"
+  ],
+  "bin": {
+    "workbox": "build/bin.js"
+  },
+  "files": [
+    "build"
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "scripts": {
+    "prepublish": "gulp build-packages --package workbox-cli"
+  },
+  "author": "Google's Web DevRel Team",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-cli",
+  "dependencies": {
+    "chalk": "^2.1.0",
+    "common-tags": "^1.4.0",
+    "meow": "^3.7.0",
+    "pretty-bytes": "^4.0.2",
+    "update-notifier": "^2.3.0",
+    "workbox-build": "^3.0.0-alpha.17"
+  },
+  "workbox": {
+    "packageType": "node"
+  }
+}
