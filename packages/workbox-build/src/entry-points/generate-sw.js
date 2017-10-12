@@ -17,15 +17,11 @@
 const path = require('path');
 
 const GenerateSWOptions = require('./options/generate-sw-options');
+const cdnUtils = require('../lib/cdn-utils');
 const copyWorkboxSW = require('../lib/copy-workbox-sw');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
-const useBuildType = require('../lib/use-build-type');
 const writeServiceWorkerUsingDefaultTemplate =
   require('../lib/write-sw-using-default-template');
-
-// TODO: Change to official CDN URL.
-const CDN_URL = `https://unpkg.com/workbox-sw@2.0.3/build/importScripts/` +
-  `workbox-sw.prod.v2.0.3.js`;
 
 /**
  * This method creates a list of URLs to precache, referred to as a "precache
@@ -55,7 +51,7 @@ async function generateSW(input) {
     process.env.NODE_ENV.startsWith('dev')) ? 'dev' : 'prod';
 
   if (options.importWorkboxFromCDN) {
-    const cdnUrl = useBuildType(CDN_URL, buildType);
+    const cdnUrl = cdnUtils.getModuleUrl('workbox-sw', buildType);
     // importScripts may or may not already be an array containing other URLs.
     options.importScripts = (options.importScripts || []).concat(cdnUrl);
   } else {
