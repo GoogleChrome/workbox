@@ -20,7 +20,15 @@ import LOG_LEVELS from './models/LogLevels.mjs';
 import * as _private from './_private.mjs';
 
 /**
- * This class is never expose publicly. Inidividual methods are exposed
+ * All of the Workbox service worker libraries use workbox-core for shared
+ * code as well as setting default values that need to be shared (like cache
+ * names).
+ *
+ * @module workbox-core
+ */
+
+/**
+ * This class is never exposed publicly. Inidividual methods are exposed
  * using jsdoc alias commands.
  *
  * @private
@@ -44,7 +52,7 @@ class WorkboxCore {
   }
 
   /**
-   * Getter for the cache names used by Workbox.
+   * Get the current cache names used by Workbox.
    *
    * `cacheNames.precache` is used for precached assets and
    * `cacheNames.runtime` for everything else.
@@ -63,25 +71,28 @@ class WorkboxCore {
    * You can alter the default cache names by changing
    * the cache name details.
    *
-   * Pass in an object containing any or all of the following properties,
-   * `prefix`, `suffix`, `precache` and `runtime`.
-   *
    * Cache names are generated as `<prefix>-<precache or runtime>-<suffix>`.
    *
    * @alias module:workbox-core.setCacheNameDetails
    * @param {Object} details
+   * @param {Object} details.prefix The string to add to the beginning of
+   * the precache and runtime cache names.
+   * @param {Object} details.suffix The string to add to the end of
+   * the precache and runtime cache names.
+   * @param {Object} details.precache The cache name to use for precache caching
+   * (added between the prefix and suffix).
+   * @param {Object} details.runtime The cache name to use for runtime caching
+   * (added between the prefix and suffix).
    */
   setCacheNameDetails(details) {
     if (process.env.NODE_ENV !== 'production') {
       Object.keys(details).forEach((key) => {
-        // TODO: Convert to Assertion
-        if (typeof details[key] !== 'string') {
-          throw new WorkboxError('invalid-type', {
-            paramName: `details.${key}`,
-            expectedType: `string`,
-            value: details[key],
-          });
-        }
+        this.assert.isType(details[key], 'string', {
+          moduleName: 'workbox-core',
+          className: 'WorkboxCore',
+          funcName: 'setCacheNameDetails',
+          paramName: `details.${key}`,
+        });
       });
 
       if ('precache' in details && details.precache.length === 0) {
@@ -103,8 +114,7 @@ class WorkboxCore {
   }
 
   /**
-   * Change which messages are printed to the console by setting the this to
-   * a value from [LOG_LEVELS]{@link module:workbox-core.LOG_LEVELS}.
+   * Get the current log level.
    *
    * @alias module:workbox-core.logLevel
    * @return {number}.
@@ -114,20 +124,20 @@ class WorkboxCore {
   }
 
   /**
-   * Getters and Setters aren't well supported by JSDOCs.
-   * The getter is documented for both get/set methods.
+   * Set the current log level passing in one of the values from
+   * [LOG_LEVELS]{@link module:workbox-core.LOG_LEVELS}.
    *
-   * @param {number} newLevel the new logLevel to use.
+   * @param {number} newLevel The new log level to use.
    *
-   * @private
+   * @alias module:workbox-core.setLogLevel
    */
-  set logLevel(newLevel) {
-    // TODO: Switch to Assertion class
-    if (typeof newLevel !== 'number') {
-      throw new WorkboxError('invalid-type', {
-        paramName: 'logLevel',
-        expectedType: 'number',
-        value: newLevel,
+  setLogLevel(newLevel) {
+    if (process.env.NODE_ENV !== 'production') {
+      this.assert.isType(newLevel, 'number', {
+        moduleName: 'workbox-core',
+        className: 'WorkboxCore',
+        funcName: 'logLevel [setter]',
+        paramName: `logLevel`,
       });
     }
 
@@ -146,14 +156,6 @@ class WorkboxCore {
 }
 
 /**
- * To use any of the Workbox service worker libraries you will need
- * to include `workbox-core` as it sets the default values for all modules
- * (like cache names) while also providing shared code across the modules.
- *
- * @module workbox-core
- */
-
-/**
  * Utilities that are shared with other Workbox modules.
  *
  * @private
@@ -161,13 +163,6 @@ class WorkboxCore {
  */
 export {_private};
 
-/**
- * Get an object containing the supported set of log levels.
- *
- * @returns {Object}
- *
-  * @alias module:workbox-core.LOG_LEVELS
- */
 export {LOG_LEVELS};
 
 export default new WorkboxCore();

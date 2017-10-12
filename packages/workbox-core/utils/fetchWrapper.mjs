@@ -15,7 +15,6 @@
 */
 
 import WorkboxError from '../models/WorkboxError.mjs';
-
 /**
  * Wrapper around the fetch API.
  *
@@ -37,20 +36,23 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   // TODO Move to assertion
   // assert.isInstance({request}, Request);
 
-  const failedFetchPlugins = plugins.filter((plugin) => {
-    return plugin.fetchDidFail;
-  });
+  const fetchDidFailName = 'fetchDidFail';
+  const failedFetchCbs = plugins.filter((plugin) => {
+    return plugin[fetchDidFailName];
+  })
+  .map((plugin) => plugin[fetchDidFailName]);
 
   // If there is a fetchDidFail plugin, we need to save a clone of the
   // original request before it's either modified by a requestWillFetch
   // plugin or before the original request's body is consumed via fetch().
-  const originalRequest = failedFetchPlugins.length > 0 ?
+  const originalRequest = failedFetchCbs.length > 0 ?
     request.clone() : null;
 
   try {
     for (let plugin of plugins) {
-      if (plugin.requestWillFetch) {
-        request = await plugin.requestWillFetch({
+      const cb = plugin.requestWillFetch;
+      if (cb) {
+        request = await cb({
           request: request.clone(),
         });
 
@@ -72,8 +74,8 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   try {
     return await fetch(request, fetchOptions);
   } catch (err) {
-    for (let plugin of failedFetchPlugins) {
-      await plugin.fetchDidFail({
+    for (let cb of failedFetchCbs) {
+      await cb({
         originalRequest: originalRequest.clone(),
         request: pluginFilteredRequest.clone(),
       });

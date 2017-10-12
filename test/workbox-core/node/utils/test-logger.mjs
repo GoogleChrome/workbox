@@ -14,7 +14,7 @@ describe(`workbox-core logger`, function() {
 
   beforeEach(function() {
     // Reset between runs
-    core.logLevel = LOG_LEVELS.verbose;
+    core.setLogLevel(LOG_LEVELS.verbose);
   });
 
   afterEach(function() {
@@ -83,7 +83,7 @@ describe(`workbox-core logger`, function() {
         it(`should behave correctly with ${logLevelName} log level`, function() {
           const stub = sandbox.stub(console, logDetail.name);
 
-          core.logLevel = LOG_LEVELS[logLevelName];
+          core.setLogLevel(LOG_LEVELS[logLevelName]);
           const args = ['test'];
           logger[logDetail.name](...args);
 
@@ -117,7 +117,7 @@ describe(`workbox-core logger`, function() {
       it(`should behave correctly with ${logLevelName} log level`, function() {
         const stub = sandbox.stub(console, 'groupEnd');
 
-        core.logLevel = LOG_LEVELS[logLevelName];
+        core.setLogLevel(LOG_LEVELS[logLevelName]);
         logger.groupEnd();
 
         // Restore to avoid upsetting mocha logs.

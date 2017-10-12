@@ -14,6 +14,13 @@
   limitations under the License.
 */
 
+/**
+ * The available log levels in Workbox: verbose, debug, warn, error and silent.
+ *
+ * @returns {Object}
+ *
+ * @alias module:workbox-core.LOG_LEVELS
+ */
 export default {
   verbose: 0,
   debug: 1,

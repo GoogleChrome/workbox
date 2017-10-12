@@ -35,40 +35,40 @@ describe(`[workbox-core] messageGenerator`, function() {
 
   it('should throw an error if the code is valid but no required details are defined', function() {
     if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) {
-      const message = messageGenerator('invalid-type');
-      expect(message).to.equal(`invalid-type`);
+      const message = messageGenerator('incorrect-type');
+      expect(message).to.equal(`incorrect-type`);
     } else {
       expect(() => {
-        messageGenerator('invalid-type');
+        messageGenerator('incorrect-type');
       }).to.throw();
     }
   });
 
   it('should throw an error if the code is valid but the arguments are missing details', function() {
     if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) {
-      const message = messageGenerator('invalid-type', detailsObj);
-      expect(message).to.equal(`invalid-type :: ${detailsString}`);
+      const message = messageGenerator('incorrect-type', detailsObj);
+      expect(message).to.equal(`incorrect-type :: ${detailsString}`);
     } else {
       expect(() => {
-        messageGenerator('invalid-type', {random: 'details'});
+        messageGenerator('incorrect-type', {random: 'details'});
       }).to.throw();
     }
   });
 
   it('should return the message if the code and details are valid', function() {
     const invalidTypeDetails = {
+      moduleName: 'test',
+      className: 'test',
+      funcName: 'test',
       paramName: 'Param',
       expectedType: 'Type',
-      value: {
-        example: 'Value',
-      },
     };
 
-    const message = messageGenerator('invalid-type', invalidTypeDetails);
+    const message = messageGenerator('incorrect-type', invalidTypeDetails);
     if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) {
-      expect(message).to.equal(`invalid-type :: ${JSON.stringify([invalidTypeDetails])}`);
+      expect(message).to.equal(`incorrect-type :: ${JSON.stringify([invalidTypeDetails])}`);
     } else {
-      expect(message.indexOf('invalid-type')).to.equal(-1);
+      expect(message.indexOf('incorrect-type')).to.equal(-1);
     }
   });
 });
