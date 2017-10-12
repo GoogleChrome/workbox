@@ -15,7 +15,7 @@
 */
 
 import {_private} from 'workbox-core';
-import core from 'worbox-core';
+import core from 'workbox-core';
 
 /**
  * The `CacheExpiration` class allows you define an expiration and / or
@@ -35,9 +35,12 @@ class CacheExpirationManager {
    * it's treated as stale and removed.
    */
   constructor(cacheName, config) {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV !== 'production') {
       core.assert.isType(cacheName, 'string', {
-
+        moduleName: 'workbox-cache-expiration',
+        className: 'CacheExpirationManager',
+        funcName: 'constructor',
+        paramName: 'cacheName',
       });
 
       if (!(config.maxEntries || config.maxAgeSeconds)) {
@@ -45,16 +48,20 @@ class CacheExpirationManager {
       }
 
       if (config.maxEntries) {
-        // TODO add in assertion details.
         core.assert.isType(config.maxEntries, 'number', {
-
+          moduleName: 'workbox-cache-expiration',
+          className: 'CacheExpirationManager',
+          funcName: 'constructor',
+          paramName: 'config.maxEntries',
         });
       }
 
       if (config.maxAgeSeconds) {
-        // TODO add in assertion details.
-        core.assert.isType(config.maxEntries, 'number', {
-
+        core.assert.isType(config.maxAgeSeconds, 'number', {
+          moduleName: 'workbox-cache-expiration',
+          className: 'CacheExpirationManager',
+          funcName: 'constructor',
+          paramName: 'config.maxAgeSeconds',
         });
       }
     }
@@ -132,9 +139,11 @@ class CacheExpirationManager {
    */
   async _findOldEntries(timestamp) {
     if (process.env.NODE_ENV !== 'production') {
-      // TODO Add assertion fields
       core.assert.isType(timestamp, 'number', {
-
+        moduleName: 'workbox-cache-expiration',
+        className: 'CacheExpirationManager',
+        funcName: '_findOldEntries',
+        paramName: 'timestamp',
       });
     }
 
@@ -144,8 +153,20 @@ class CacheExpirationManager {
 
     const expireOlderThan = timestamp - (this._maxAgeSeconds * 1000);
     const urls = [];
-    const db = await this._getDB();
-    const tx = db.transaction(this._cacheName, 'readonly');
+    const db = await this._getDb();
+
+
+    _private.logger.log(db);
+    _private.logger.log(expireOlderThan);
+
+    const allEntries = await db.getAll();
+    Object.keys(allEntries).forEach((key) => {
+      if (allEntries[key].timestamp < expireOlderThan) {
+        urls.push(allEntries[key].url);
+      }
+    });
+
+    /** const tx = db.transaction(this._cacheName, 'readonly');
     const store = tx.objectStore(this._cacheName);
     const timestampIndex = store.index('timestamp');
 
@@ -161,7 +182,7 @@ class CacheExpirationManager {
       cursor.continue();
     });
 
-    await tx.complete;
+    await tx.complete;**/
     return urls;
   }
 

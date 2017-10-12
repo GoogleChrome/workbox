@@ -19,10 +19,13 @@
     "prepare": "npm run build"
   },
   "workbox": {
-    "browserNamespace": "core",
+    "browserNamespace": "expiration",
     "packageType": "browser"
   },
   "main": "build/module/index.mjs",
   "module": "build/module/index.mjs",
-  "browser": "build/browser/workbox-cache-expiration.prod.js"
+  "browser": "build/browser/workbox-cache-expiration.prod.js",
+  "dependencies": {
+    "workbox-core": "^3.0.0-alpha.17"
+  }
 }
