@@ -15,6 +15,7 @@
 */
 
 import {_private} from 'workbox-core';
+import core from 'worbox-core';
 
 /**
  * The `CacheExpiration` class allows you define an expiration and / or
@@ -35,24 +36,24 @@ class CacheExpirationManager {
    */
   constructor(cacheName, config) {
     if (process.env.NODE_ENV === 'production') {
-      assert.isType(cacheName, 'string', {
+      core.assert.isType(cacheName, 'string', {
 
       });
 
       if (!(config.maxEntries || config.maxAgeSeconds)) {
-        throw new WorkboxError('max-entries-or-age-required'));
+        // throw new WorkboxError('max-entries-or-age-required'));
       }
 
       if (config.maxEntries) {
         // TODO add in assertion details.
-        assert.isType(config.maxEntries, 'number', {
+        core.assert.isType(config.maxEntries, 'number', {
 
         });
       }
 
       if (config.maxAgeSeconds) {
         // TODO add in assertion details.
-        assert.isType(config.maxEntries, 'number', {
+        core.assert.isType(config.maxEntries, 'number', {
 
         });
       }
@@ -69,7 +70,10 @@ class CacheExpirationManager {
     // this._timestampForNextRun = null;
   }
 
-  expireEntries() {
+  /**
+   * Expires entries for the given cache and given criteria.
+   */
+  async expireEntries() {
     // Since there's a single shared IDB instance that's queried to find entries
     // to expire, this method doesn't need to run multiple times simultaneously.
     // Use this._expirationMutex as a concurrency lock, and save the last value
@@ -81,19 +85,13 @@ class CacheExpirationManager {
     // }
     // this._expirationMutex = true;
 
-    if (process.env.NODE_ENV !== 'production') {
-      // TODO Add assert values
-      assert.isType(cacheName, 'string', {
-
-      });
-    }
-
     const now = Date.now();
 
     // First, expire old entries, if maxAgeSeconds is set.
     const oldEntries = await this._findOldEntries(now);
 
     // Once that's done, check for the maximum size.
+    const extraEntries = [];
     /**  const extraEntries = this._maxEntries ?
       await this._findExtraEntries() :
       [];**/
@@ -109,7 +107,7 @@ class CacheExpirationManager {
     if (process.env.NODE_ENV) {
       _private.logger.groupCollapsed(
         `Expired ${urls.length}entries have been removed from the cache.`);
-      _private.logger.debug(`Cache name:`, cacheName);
+      _private.logger.debug(`Cache name:`, this._cacheName);
       _private.logger.debug(`URLS:`, urls);
       _private.logger.groupEnd();
     }
@@ -127,14 +125,17 @@ class CacheExpirationManager {
   /**
    * Expires entries based on the the maximum age.
    *
-   * @param {Number} timestamp A timestamp.
-   * @return {Array<string>} A list of the URLs that were expired.
+   * @param {number} timestamp A timestamp.
+   * @return {Promise<Array<string>>} A list of the URLs that were expired.
    *
    * @private
    */
   async _findOldEntries(timestamp) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(timestamp, 'number');
+      // TODO Add assertion fields
+      core.assert.isType(timestamp, 'number', {
+
+      });
     }
 
     if (!this._maxAgeSeconds) {
@@ -143,18 +144,18 @@ class CacheExpirationManager {
 
     const expireOlderThan = timestamp - (this._maxAgeSeconds * 1000);
     const urls = [];
-    const db = await this._getDB({cacheName});
-    const tx = db.transaction(cacheName, 'readonly');
-    const store = tx.objectStore(cacheName);
-    const timestampIndex = store.index(timestampPropertyName);
+    const db = await this._getDB();
+    const tx = db.transaction(this._cacheName, 'readonly');
+    const store = tx.objectStore(this._cacheName);
+    const timestampIndex = store.index('timestamp');
 
     timestampIndex.iterateCursor((cursor) => {
       if (!cursor) {
         return;
       }
 
-      if (cursor.value[timestampPropertyName] < expireOlderThan) {
-        urls.push(cursor.value[urlPropertyName]);
+      if (cursor.value['timestamp'] < expireOlderThan) {
+        urls.push(cursor.value['url']);
       }
 
       cursor.continue();
@@ -167,12 +168,17 @@ class CacheExpirationManager {
   /**
    * Get db for this model.
    *
+   * @param {string} cacheName
    * @return{Promise<DBWrapper>}
+   *
+   * @private
    */
   _getDb() {
     return _private.indexedDBHelper.getDB(
-      `workbox-cache-expiration`, `expiration-details-model`);
+      `workbox-cache-expiration`,
+      `expiration-details-model-${this._cacheName}`,
+    );
   }
 }
 
-export default CacheExpiration;
+export default CacheExpirationManager;
