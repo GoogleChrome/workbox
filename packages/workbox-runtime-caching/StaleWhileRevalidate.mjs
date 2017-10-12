@@ -16,6 +16,8 @@
 import {_private} from 'workbox-core';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 
+import '_version.mjs';
+
 /**
  * An implementation of a
  * [stale-while-revalidate]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate}
