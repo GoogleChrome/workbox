@@ -70,32 +70,13 @@ class CacheExpirationManager {
 
     this._maxEntries = config.maxEntries;
     this._maxAgeSeconds = config.maxAgeSeconds;
-
     this._timestampModel = new CacheTimestampsModel(cacheName);
-
-    // This is used to ensure there's one asynchronous expiration operation
-    // running at a time.
-    // this._expirationMutex = false;
-    // If another expiration request comes in, the timestamp is saved here and
-    // re-run after.
-    // this._timestampForNextRun = null;
   }
 
   /**
    * Expires entries for the given cache and given criteria.
    */
   async expireEntries() {
-    // Since there's a single shared IDB instance that's queried to find entries
-    // to expire, this method doesn't need to run multiple times simultaneously.
-    // Use this._expirationMutex as a concurrency lock, and save the last value
-    // that it's been called with in this._timestampForNextRun as a signal
-    // to run it again once complete.
-    // if (this._expirationMutex) {
-    //   this._timestampForNextRun = now;
-    //   return;
-    // }
-    // this._expirationMutex = true;
-
     const now = Date.now();
 
     // First, expire old entries, if maxAgeSeconds is set.
@@ -108,8 +89,8 @@ class CacheExpirationManager {
     // convert back into an array.
     const urls = [...new Set(oldEntries.concat(extraEntries))];
     await Promise.all([
-      // this._deleteFromCache(urls),
-      // this._deleteFromIDB(urls),
+      this._deleteFromCache(urls),
+      this._deleteFromIDB(urls),
     ]);
 
     if (process.env.NODE_ENV) {
@@ -119,15 +100,6 @@ class CacheExpirationManager {
       _private.logger.debug(`URLS:`, urls);
       _private.logger.groupEnd();
     }
-
-    // If this method has been called while it was already running, then call
-    // it again now that the asynchronous operations are complete, using the
-    // most recent timestamp that was passed in.
-    // if (this._timestampForNextRun) {
-    //   const savedTimestamp = this._timestampForNextRun;
-    //   this._timestampForNextRun = null;
-    //   return this.expireEntries({cacheName, now: savedTimestamp});
-    // }
   }
 
   /**
@@ -152,34 +124,9 @@ class CacheExpirationManager {
       return [];
     }
 
-    const expireOlderThan = timestamp - (this._maxAgeSeconds * 1000);
-    const urls = [];
-    _private.logger.log(expireOlderThan);
+    // TODO (gauntface) find old entries
 
-    /** Object.keys(allEntries).forEach((key) => {
-      if (allEntries[key].timestamp < expireOlderThan) {
-        urls.push(allEntries[key].url);
-      }
-    });**/
-
-    /** const tx = db.transaction(this._cacheName, 'readonly');
-    const store = tx.objectStore(this._cacheName);
-    const timestampIndex = store.index('timestamp');
-
-    timestampIndex.iterateCursor((cursor) => {
-      if (!cursor) {
-        return;
-      }
-
-      if (cursor.value['timestamp'] < expireOlderThan) {
-        urls.push(cursor.value['url']);
-      }
-
-      cursor.continue();
-    });
-
-    await tx.complete;**/
-    return urls;
+    return [];
   }
 
   /**
@@ -189,6 +136,24 @@ class CacheExpirationManager {
    */
   async _findExtraEntries() {
     return [];
+  }
+
+  /**
+   * @return {Promise}
+   *
+   * @private
+   */
+  _deleteFromCache() {
+    return Promise.resolve();
+  }
+
+  /**
+   * @return {Promise}
+   *
+   * @private
+   */
+  _deleteFromIDB() {
+    return Promise.resolve();
   }
 }
 
