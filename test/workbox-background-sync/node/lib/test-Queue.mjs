@@ -382,16 +382,12 @@ describe(`backgroundSync.Queue`, function() {
 
     it(`should invoke all replay callbacks`, async function() {
       const requestWillReplay = sinon.spy();
-      const requestDidReplay = sinon.spy();
-      const replayDidFail = sinon.spy();
-      const allRequestsDidReplay = sinon.spy();
+      const queueDidReplay = sinon.spy();
 
       const queue = new Queue('foo', {
         callbacks: {
           requestWillReplay,
-          requestDidReplay,
-          replayDidFail,
-          allRequestsDidReplay,
+          queueDidReplay,
         },
       });
 
@@ -411,20 +407,8 @@ describe(`backgroundSync.Queue`, function() {
         requestInit: sinon.match.object,
       }))).to.be.true;
 
-      expect(requestDidReplay.calledTwice).to.be.true;
-      expect(requestDidReplay.getCall(0).calledWith(sinon.match({
-        request: sinon.match.instanceOf(Request).and(
-            sinon.match({url: '/one'})),
-        response: sinon.match.instanceOf(Response),
-      }))).to.be.true;
-      expect(requestDidReplay.getCall(1).calledWith(sinon.match({
-        request: sinon.match.instanceOf(Request).and(
-            sinon.match({url: '/two'})),
-        response: sinon.match.instanceOf(Response),
-      }))).to.be.true;
-
-      expect(allRequestsDidReplay.calledOnce).to.be.true;
-      expect(allRequestsDidReplay.calledWith(sinon.match([
+      expect(queueDidReplay.calledOnce).to.be.true;
+      expect(queueDidReplay.calledWith(sinon.match([
         sinon.match({
           request: sinon.match.instanceOf(Request).and(
               sinon.match({url: '/one'})),
@@ -438,9 +422,7 @@ describe(`backgroundSync.Queue`, function() {
       ]))).to.be.true;
 
       requestWillReplay.reset();
-      requestDidReplay.reset();
-      replayDidFail.reset();
-      allRequestsDidReplay.reset();
+      queueDidReplay.reset();
 
       sandbox.stub(self, 'fetch')
           .onCall(1).rejects(new Error())
@@ -452,19 +434,19 @@ describe(`backgroundSync.Queue`, function() {
 
       expect(requestWillReplay.calledTwice).to.be.true;
 
-      expect(requestDidReplay.calledOnce).to.be.true;
-      expect(requestDidReplay.getCall(0).calledWith(sinon.match({
-        request: sinon.match.instanceOf(Request).and(
-            sinon.match({url: '/three'})),
-        response: sinon.match.instanceOf(Response),
-      }))).to.be.true;
-
-      expect(replayDidFail.calledOnce).to.be.true;
-      expect(replayDidFail.getCall(0).calledWith(sinon.match({
-        request: sinon.match.instanceOf(Request).and(
-            sinon.match({url: '/four'})),
-        error: sinon.match.instanceOf(Error),
-      }))).to.be.true;
+      expect(queueDidReplay.calledOnce).to.be.true;
+      expect(queueDidReplay.calledWith(sinon.match([
+        sinon.match({
+          request: sinon.match.instanceOf(Request).and(
+              sinon.match({url: '/three'})),
+          response: sinon.match.instanceOf(Response),
+        }),
+        sinon.match({
+          request: sinon.match.instanceOf(Request).and(
+              sinon.match({url: '/four'})),
+          error: sinon.match.instanceOf(Error),
+        }),
+      ]))).to.be.true;
     });
 
     it(`should support modifying the request via the requestWillReplay`,

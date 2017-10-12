@@ -55,14 +55,8 @@ export default class Queue {
    *     [param2.callbacks.requestWillReplay]
    *     Invoked immediately before the request is re-fetched. Use this
    *     callback to modify request data at fetch time.
-   * @param {function(StorableRequest):undefined}
-   *     [param2.callbacks.requestDidReplay]
-   *     Invoked immediately after the request has successfully re-fetched.
-   * @param {function(StorableRequest):undefined}
-   *     [param2.callbacks.replayDidFail]
-   *     Invoked if the replay attempt failed.
    * @param {function(Array<StorableRequest>):undefined}
-   *     [param2.callbacks.allRequestsDidReplay]
+   *     [param2.callbacks.queueDidReplay]
    *     Invoked after all requests in the queue have successfully replayed.
    */
   constructor(name, {
@@ -121,42 +115,40 @@ export default class Queue {
   /**
    * Retrieves all stored requests in IndexedDB and retries them. If the
    * queue contained requests that were successfully replayed, the
-   * `allRequestsDidReplay` callback is invoked (which implies the queue is
+   * `queueDidReplay` callback is invoked (which implies the queue is
    * now empty). If any of the requests fail, a new sync registration is
    * created to retry again later.
    */
   async replayRequests() {
     const storableRequestsInQueue = await this._getStorableRequestsInQueue();
-    const successfullyReplayedRequests = [];
+    const replayedRequests = [];
     let allReplaysSuccessful = true;
 
     for (const [key, storableRequest] of storableRequestsInQueue) {
       this._runCallback('requestWillReplay', storableRequest);
 
-      const request = storableRequest.toRequest();
-      let response;
+      const replay = {request: storableRequest.toRequest()};
 
       try {
         // Clone the request before fetching so callbacks get an unused one.
-        response = await fetch(request.clone());
-      } catch (error) {
-        this._runCallback('replayDidFail', {error, request});
+        replay.response = await fetch(replay.request.clone());
+
+        // Remove the request from IndexedDB asynchronously (don't await).
+        // TODO(philipwalton): in the unlikely event that the delete fails,
+        // this request may be replayed again. Do we want to handle this case?
+        this._removeRequest(key);
+      } catch (err) {
         allReplaysSuccessful = false;
-        continue;
+        replay.error = err;
       }
 
-      this._runCallback('requestDidReplay', {request, response});
-      successfullyReplayedRequests.push({request, response});
-
-      // Remove the request from IndexedDB asynchronously (don't await).
-      // TODO(philipwalton): in the unlikely event that the delete fails,
-      // this request may be replayed again. Do we want to handle this case?
-      this._removeRequest(key);
+      replayedRequests.push(replay);
     }
 
-    if (allReplaysSuccessful) {
-      this._runCallback('allRequestsDidReplay', successfullyReplayedRequests);
-    } else {
+    this._runCallback('queueDidReplay', replayedRequests);
+
+    // If any requests failed, register for another sync.
+    if (!allReplaysSuccessful) {
       await this._registerSync();
     }
   }
