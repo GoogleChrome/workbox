@@ -19,12 +19,12 @@ gulp.task('lerna-bootstrap', () => {
 // This is needed for workbox-build but is also used by the rollup-helper
 // to add CDN details to workbox-sw.
 // Make sure this runs **before** lerna-bootstrap.
-gulp.task('build:update-cdn-details', function() {
-  const cdnDetails = fs.readJSONSync(path.join(
+gulp.task('build:update-cdn-details', async function() {
+  const cdnDetails = await fs.readJSON(path.join(
     __dirname, '..', 'cdn-details.json'
   ));
 
-  const lernaPkg = fs.readJSONSync(path.join(
+  const lernaPkg = await fs.readJSON(path.join(
     __dirname, '..', 'lerna.json'
   ));
 
@@ -33,7 +33,8 @@ gulp.task('build:update-cdn-details', function() {
   const workboxBuildPath = path.join(
     __dirname, '..', 'packages', 'workbox-build', 'src', 'cdn-details.json'
   );
-  return fs.writeJsonSync(workboxBuildPath, cdnDetails, {
+
+  await fs.writeJson(workboxBuildPath, cdnDetails, {
     spaces: 2,
   });
 });
