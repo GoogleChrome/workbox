@@ -16,14 +16,7 @@
 import {_private} from 'workbox-core';
 import core from 'workbox-core';
 
-const defaultPlugin = {
-  cacheWillUpdate: ({request, response}) => {
-    if (response.ok || response.status === 0) {
-      return response;
-    }
-    return null;
-  },
-};
+import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 
 /**
  * An implementation of a [network first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache)
@@ -57,10 +50,10 @@ class NetworkFirst {
       let isUsingCacheWillUpdate =
         options.plugins.some((plugin) => !!plugin.cacheWillUpdate);
       this._plugins = isUsingCacheWillUpdate ?
-        options.plugins : [defaultPlugin, ...options.plugins];
+        options.plugins : [cacheOkAndOpaquePlugin, ...options.plugins];
     } else {
       // No plugins passed in, use the default plugin.
-      this._plugins = [defaultPlugin];
+      this._plugins = [cacheOkAndOpaquePlugin];
     }
 
     this._networkTimeoutSeconds = options.networkTimeoutSeconds;

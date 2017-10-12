@@ -46,8 +46,8 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
     const request = new Request('http://example.io/test/');
     // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
     const event = new FetchEvent(request);
-    const cacheOnly = new CacheOnly();
 
+    const cacheOnly = new CacheOnly();
     const handleResponse = await cacheOnly.handle(event);
 
     expect(handleResponse).not.to.exist;
