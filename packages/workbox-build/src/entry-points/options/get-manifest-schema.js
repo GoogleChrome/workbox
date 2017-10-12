@@ -14,21 +14,11 @@
   limitations under the License.
 */
 
-/**
- * There are common caching strategies that most service workers will need
- * and use. This module provides simple implementations of these strategies.
- *
- * @module workbox-runtime-caching
- */
+const joi = require('joi');
 
-import CacheFirst from './CacheFirst.mjs';
-import CacheOnly from './CacheOnly.mjs';
-import NetworkFirst from './NetworkFirst.mjs';
-import NetworkOnly from './NetworkOnly.mjs';
+const baseSchema = require('./base-schema');
 
-export {
-  CacheFirst,
-  CacheOnly,
-  NetworkFirst,
-  NetworkOnly,
-};
+// Define some additional constraints.
+module.exports = baseSchema.keys({
+  globDirectory: joi.string().required(),
+});

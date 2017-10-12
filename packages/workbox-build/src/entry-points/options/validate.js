@@ -14,25 +14,18 @@
   limitations under the License.
 */
 
-const joi = require('joi');
+module.exports = (options, schema) => {
+  const {value, error} = schema.validate(options, {
+    language: {
+      object: {
+        allowUnknown: 'is not a supported parameter.',
+      },
+    },
+  });
 
-const BaseOptions = require('./base-options');
-
-/**
- * Options specific to the get-manifest entry point.
- */
-class GetManifestOptions extends BaseOptions {
-  /**
-   * @param {Object} options
-   */
-  constructor(options) {
-    // Add in some additional constraints.
-    const schema = BaseOptions.schema.keys({
-      globDirectory: joi.string().required(),
-    });
-
-    super(options, schema);
+  if (error) {
+    throw error;
   }
-}
 
-module.exports = GetManifestOptions;
+  return value;
+};

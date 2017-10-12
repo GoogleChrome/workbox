@@ -18,9 +18,10 @@ const assert = require('assert');
 const fse = require('fs-extra');
 const path = require('path');
 
-const InjectManifestOptions = require('./options/inject-manifest-options');
 const errors = require('../lib/errors');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
+const injectManifestSchema = require('./options/inject-manifest-schema');
+const validate = require('./options/validate');
 
 /**
  * This method creates a list of URLs to precache, referred to as a "precache
@@ -41,7 +42,7 @@ const getFileManifestEntries = require('../lib/get-file-manifest-entries');
  * @memberof module:workbox-build
  */
 async function injectManifest(input) {
-  const options = new InjectManifestOptions(input);
+  const options = validate(input, injectManifestSchema);
 
   if (path.normalize(input.swSrc) === path.normalize(input.swDest)) {
     throw new Error(errors['same-src-and-dest']);
