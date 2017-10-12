@@ -15,6 +15,7 @@
 */
 
 import Router from './lib/Router.mjs';
+import './_version.mjs';
 
 const router = new Router();
 // By default, register a fetch event listener that will respond to a request

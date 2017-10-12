@@ -16,6 +16,7 @@
 
 import core from '../index.mjs';
 import LOG_LEVELS from '../models/LogLevels.mjs';
+import '../_version.mjs';
 
 const GREY = `#7f8c8d`;
 const GREEN = `#2ecc71`;

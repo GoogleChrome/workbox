@@ -15,6 +15,7 @@
 */
 
 import {_private} from 'workbox-core';
+import '../_version.mjs';
 
 /**
  * This method will print out a warning if a precache entry doesn't have

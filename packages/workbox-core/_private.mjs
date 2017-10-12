@@ -20,6 +20,7 @@ import fetchWrapper from './utils/fetchWrapper.mjs';
 import cacheWrapper from './utils/cacheWrapper.mjs';
 import * as cacheNames from './models/cacheNames.mjs';
 import indexedDBHelper from './utils/indexedDBHelper.mjs';
+import './_version.mjs';
 
 export {
   logger,

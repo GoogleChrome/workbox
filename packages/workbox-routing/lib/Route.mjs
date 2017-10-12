@@ -17,6 +17,7 @@ import core from 'workbox-core';
 
 import {defaultMethod, validMethods} from './constants.mjs';
 import normalizeHandler from './normalizeHandler.mjs';
+import '../_version.mjs';
 
 /**
  * The `match` callback is used to determine if a new service worker `fetch`

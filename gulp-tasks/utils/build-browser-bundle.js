@@ -13,7 +13,6 @@ const constants = require('./constants');
 const pkgPathToName = require('./pkg-path-to-name');
 const rollupHelper = require('./rollup-helper');
 const logHelper = require('../../infra/utils/log-helper');
-const versioning = require('../../infra/utils/versioning');
 /*
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose
@@ -111,7 +110,6 @@ module.exports = (packagePath, buildType) => {
     globals,
     external: externalAndPure,
     pureExternalModules: externalAndPure,
-    footer: versioning(packageName),
     plugins: rollupHelper.getDefaultPlugins(buildType),
     onwarn: (warning) => {
       if (buildType === constants.BUILD_TYPES.prod &&

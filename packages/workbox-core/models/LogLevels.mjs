@@ -14,6 +14,8 @@
   limitations under the License.
 */
 
+import '../_version.mjs';
+
 /**
  * The available log levels in Workbox: verbose, debug, warn, error and silent.
  *

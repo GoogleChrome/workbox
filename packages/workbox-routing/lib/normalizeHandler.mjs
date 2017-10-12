@@ -14,6 +14,7 @@
 */
 
 import core from 'workbox-core';
+import '../_version.mjs';
 
 /**
  * @param {function|Object} handler Either a function, or an object with a

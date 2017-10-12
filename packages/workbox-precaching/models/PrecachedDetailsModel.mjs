@@ -15,6 +15,7 @@
 */
 
 import {_private} from 'workbox-core';
+import '../_version.mjs';
 
 // Allows minifier to mangle this name
 const REVISON_IDB_FIELD = 'revision';

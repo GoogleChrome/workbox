@@ -15,6 +15,7 @@
 */
 
 import {_private} from 'workbox-core';
+import '../_version.mjs';
 
 const logGroup = (groupTitle, urls) => {
   _private.logger.groupCollapsed(groupTitle);

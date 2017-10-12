@@ -14,6 +14,8 @@
   limitations under the License.
 */
 
+import '../_version.mjs';
+
 /**
  * This is a wrapper that makes it easier to use IDB.
  *

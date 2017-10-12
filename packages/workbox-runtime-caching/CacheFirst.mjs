@@ -15,6 +15,7 @@
 
 import {_private} from 'workbox-core';
 import core from 'workbox-core';
+import './_version.mjs';
 
 /**
  * An implementation of a [cache-first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network}

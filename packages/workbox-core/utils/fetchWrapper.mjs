@@ -15,6 +15,8 @@
 */
 
 import WorkboxError from '../models/WorkboxError.mjs';
+import '../_version.mjs';
+
 /**
  * Wrapper around the fetch API.
  *

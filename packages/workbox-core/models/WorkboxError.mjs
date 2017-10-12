@@ -15,6 +15,7 @@
 */
 
 import messageGenerator from './messages/messageGenerator.mjs';
+import '../_version.mjs';
 
 /**
  * Workbox errors should be thrown with this class.

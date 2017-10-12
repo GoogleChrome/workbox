@@ -15,6 +15,7 @@
 */
 
 import WorkboxError from '../models/WorkboxError.mjs';
+import '../_version.mjs';
 
 /*
  * This method returns true if the current context is a service worker.
