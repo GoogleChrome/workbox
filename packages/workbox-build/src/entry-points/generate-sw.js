@@ -16,10 +16,11 @@
 
 const path = require('path');
 
-const GenerateSWOptions = require('./options/generate-sw-options');
 const copyWorkboxSW = require('../lib/copy-workbox-sw');
+const generateSWSchema = require('./options/generate-sw-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const useBuildType = require('../lib/use-build-type');
+const validate = require('./options/validate');
 const writeServiceWorkerUsingDefaultTemplate =
   require('../lib/write-sw-using-default-template');
 
@@ -46,7 +47,7 @@ const CDN_URL = `https://unpkg.com/workbox-sw@2.0.3/build/importScripts/` +
  * @memberof module:workbox-build
  */
 async function generateSW(input) {
-  const options = new GenerateSWOptions(input);
+  const options = validate(input, generateSWSchema);
 
   const destDirectory = path.dirname(options.swDest);
   // This will cause the dev build of WorkboxSW (either from the CDN or locally

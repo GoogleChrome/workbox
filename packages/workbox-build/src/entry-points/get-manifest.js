@@ -14,8 +14,9 @@
   limitations under the License.
 */
 
-const GetManifestOptions = require('./options/get-manifest-options');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
+const getManifestSchema = require('./options/get-manifest-schema');
+const validate = require('./options/validate');
 
 /**
  * This method returns a list of URLs to precache, referred to as a "precache
@@ -33,7 +34,7 @@ const getFileManifestEntries = require('../lib/get-file-manifest-entries');
  * @memberof module:workbox-build
  */
 async function getManifest(input) {
-  const options = new GetManifestOptions(input);
+  const options = validate(input, getManifestSchema);
 
   const {manifestEntries, count, size} = await getFileManifestEntries(options);
   return {manifestEntries, count, size};
