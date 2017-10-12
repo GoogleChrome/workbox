@@ -49,7 +49,11 @@ class WorkboxCore {
     }
 
     // Give our version strings something to hang off of.
-    self.workbox.v = {};
+    try {
+      self.workbox.v = {};
+    } catch (err) {
+      // NOOP
+    }
 
     this._logLevel = (process.env.NODE_ENV === 'production') ?
       LOG_LEVELS.warn : LOG_LEVELS.verbose;
