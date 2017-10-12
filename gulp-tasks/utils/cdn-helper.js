@@ -4,11 +4,10 @@ const fs = require('fs-extra');
 const oneLine = require('common-tags').oneLine;
 const storage = require('@google-cloud/storage');
 
+const cdnDetails = require('../../cdn-details.json');
 const logHelper = require('../../infra/utils/log-helper');
 
 const PROJECT_ID = 'workbox-bab1f';
-const BUCKET_NAME = 'workbox-cdn';
-const STORAGE_ORIGIN = 'https://storage.googleapis.com';
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, '..', '..',
   `workbox-9d39634504ad.json`);
 
@@ -27,7 +26,7 @@ class CDNHelper {
   }
 
   _getReleaseTagPath(tagName) {
-    return `releases/${tagName}`;
+    return `${cdnDetails.releasesDir}/${tagName}`;
   }
 
   getGCS() {
@@ -50,7 +49,7 @@ class CDNHelper {
   async tagExists(tagName) {
     const gcs = this.getGCS();
     try {
-      const bucket = gcs.bucket(BUCKET_NAME);
+      const bucket = gcs.bucket(cdnDetails.bucketName);
       // bucket.file('some/path/').exists() doesn't seem to work
       // for nested directories. Instead we are checking if there are
       // files in the expected release directory.
@@ -74,7 +73,7 @@ class CDNHelper {
     });
 
     const publicUrls = [];
-    const bucket = gcs.bucket(BUCKET_NAME);
+    const bucket = gcs.bucket(cdnDetails.bucketName);
     for (let filePath of filePaths) {
       const destination =
         `${this._getReleaseTagPath(tagName)}/${path.basename(filePath)}`;
@@ -89,7 +88,7 @@ class CDNHelper {
         throw err;
       }
       publicUrls.push(
-        `${STORAGE_ORIGIN}/${BUCKET_NAME}/${destination}`
+        `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`
       );
     }
     return publicUrls;

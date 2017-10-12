@@ -66,7 +66,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
       expect(wb.loadModule.callCount).to.equal(1);
       expect(global.importScripts.callCount).to.equal(1);
-      expect(global.importScripts.args[0]).to.deep.equal([`https://storage.googleapis.com/workbox-cdn/releases/WORKBOX_SW_VERSION_TAG/workbox-core.${process.env.NODE_ENV.slice(0, 4)}.js`]);
+      expect(global.importScripts.args[0]).to.deep.equal([`WORKBOX_CDN_ROOT_URL/workbox-core.${process.env.NODE_ENV.slice(0, 4)}.js`]);
     });
 
     it(`should not load workbox-core if disableModulesImports is true`, function() {
@@ -188,7 +188,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       sandbox.stub(console, 'error').callsFake((errMsg) => {
         expect(errMsg.indexOf('workbox-core')).to.not.equal(-1);
         expect(errMsg.indexOf(
-          'https://storage.googleapis.com/workbox-cdn/releases/WORKBOX_SW_VERSION_TAG/workbox-core.prod.js'
+          'WORKBOX_CDN_ROOT_URL/workbox-core.prod.js'
         )).to.not.equal(-1);
       });
 
