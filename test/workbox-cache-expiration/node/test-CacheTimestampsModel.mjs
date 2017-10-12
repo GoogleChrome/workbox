@@ -13,6 +13,8 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
     it(`should set the timestamp for new entry`, async function() {
       const model = new CacheTimestampsModel('test-cache');
       await model.setTimestamp('/', Date.now());
+
+      // TODO Check IDB Entry exists
     });
   });
 });
