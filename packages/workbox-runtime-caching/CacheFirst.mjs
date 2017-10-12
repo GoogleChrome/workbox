@@ -14,16 +14,14 @@
 */
 
 import {_private} from 'workbox-core';
+import core from 'workbox-core';
 
 /**
- * An implementation of a [cache-first](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network)
+ * An implementation of a [cache-first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network}
  * request strategy.
  *
- * A cache first strategy is useful for assets that are revisioned since it
- * assets can be cached for long periods of time, saving the users data.
- *
- * @param {FetchEvent} event The request to handle.
- * @return {Promise<Response>}
+ * A cache first strategy is useful for assets that are revisioned since they
+ * can be cached for long periods of time, saving the users data.
  *
  * @memberof module:workbox-runtime-caching
  */
@@ -42,15 +40,20 @@ class CacheFirst {
   }
 
   /**
-   * Handle the provided fetch event.
+   * This method will be called by the Workbox
+   * [Router]{@link module:workbox-routing.Router} to handle a fetch event.
    *
-   * @param {FetchEvent} event
+   * @param {FetchEvent} event The fetch event to handle.
    * @return {Promise<Response>}
    */
   async handle(event) {
     if (process.env.NODE_ENV !== 'production') {
-      // TODO: Switch to core.assert
-      // core.assert.isInstance({event}, FetchEvent);
+      core.assert.isInstance(event, FetchEvent, {
+        moduleName: 'workbox-runtime-caching',
+        className: 'CacheFirst',
+        funcName: 'handle',
+        paramName: 'event',
+      });
     }
 
     const cachedResponse = await _private.cacheWrapper.match(
