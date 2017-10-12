@@ -14,6 +14,8 @@
   limitations under the License.
 */
 
+import '../_version.mjs';
+
 /**
  * Used as a consistent way of referencing a URL to precache.
  *

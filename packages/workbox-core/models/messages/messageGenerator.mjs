@@ -15,6 +15,7 @@
 */
 
 import messages from './messages.mjs';
+import '../../_version.mjs';
 
 const fallback = (code, ...args) => {
   let msg = code;

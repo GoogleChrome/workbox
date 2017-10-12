@@ -22,8 +22,8 @@
     "browserNamespace": "precaching",
     "packageType": "browser"
   },
-  "main": "build/module/index.mjs",
-  "module": "build/module/index.mjs",
+  "main": "index.mjs",
+  "module": "index.mjs",
   "browser": "build/browser/workbox-precaching.prod.js",
   "dependencies": {
     "workbox-core": "^3.0.0-alpha.17"

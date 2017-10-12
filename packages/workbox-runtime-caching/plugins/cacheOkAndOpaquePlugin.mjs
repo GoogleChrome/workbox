@@ -13,6 +13,8 @@
  limitations under the License.
 */
 
+import '../_version.mjs';
+
 export default {
   /**
    * Return return a response (i.e. allow caching) if the

@@ -23,6 +23,7 @@ import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
 import printInstallDetails from '../utils/printInstallDetails.mjs';
 import printCleanupDetails from '../utils/printCleanupDetails.mjs';
 import cleanRedirect from '../utils/cleanRedirect.mjs';
+import '../_version.mjs';
 
 /**
  * Performs efficient precaching of assets.

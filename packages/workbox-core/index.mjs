@@ -18,6 +18,7 @@ import assert from './utils/assert.mjs';
 import WorkboxError from './models/WorkboxError.mjs';
 import LOG_LEVELS from './models/LogLevels.mjs';
 import * as _private from './_private.mjs';
+import './_version.mjs';
 
 /**
  * All of the Workbox service worker libraries use workbox-core for shared
@@ -45,6 +46,13 @@ class WorkboxCore {
     // Remove the imports otherwise.
     if (process.env.NODE_ENV !== 'production') {
       this.assert = assert;
+    }
+
+    // Give our version strings something to hang off of.
+    try {
+      self.workbox.v = {};
+    } catch (err) {
+      // NOOP
     }
 
     this._logLevel = (process.env.NODE_ENV === 'production') ?

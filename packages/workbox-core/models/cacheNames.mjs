@@ -14,6 +14,8 @@
   limitations under the License.
 */
 
+import '../_version.mjs';
+
 const _cacheNameDetails = {
   prefix: 'workbox',
   suffix: self.registration.scope,

@@ -1,4 +1,5 @@
 import {expect} from 'chai';
+
 import expectError from '../../../../infra/testing/expectError';
 import generateVariantTests from '../../../../infra/testing/generate-variant-tests';
 import {devOnly, prodOnly} from '../../../../infra/testing/env-it.js';

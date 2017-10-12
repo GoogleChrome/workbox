@@ -14,6 +14,8 @@
   limitations under the License.
 */
 
+import '../../_version.mjs';
+
 export default {
   'invalid-value': ({paramName, validValueDescription, value}) => {
     if (!paramName || !validValueDescription) {

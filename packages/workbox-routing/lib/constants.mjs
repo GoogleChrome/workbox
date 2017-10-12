@@ -13,6 +13,8 @@
  limitations under the License.
 */
 
+import '../_version.mjs';
+
 /**
  * The default HTTP method, 'GET', used when there's no specific method
  * configured for a route.

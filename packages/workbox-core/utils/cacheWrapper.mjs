@@ -14,6 +14,8 @@
   limitations under the License.
 */
 
+import '../_version.mjs';
+
 /**
  * Wrapper around cache.put().
  *

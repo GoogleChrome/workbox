@@ -24,6 +24,6 @@ gulp.task('build-browser-packages:version-module', gulp.series(
 ));
 
 gulp.task('build-browser-packages', gulp.series(
+  'build-browser-packages:version-module',
   'build-browser-packages:browser-bundle',
-  'build-browser-packages:version-module'
 ));
