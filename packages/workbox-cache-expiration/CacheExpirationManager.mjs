@@ -17,6 +17,8 @@
 import {_private} from 'workbox-core';
 import core from 'workbox-core';
 
+import CacheTimestampsModel from './models/CacheTimestampsModel.mjs';
+
 /**
  * The `CacheExpiration` class allows you define an expiration and / or
  * limit on the number of responses stored in a
@@ -44,7 +46,7 @@ class CacheExpirationManager {
       });
 
       if (!(config.maxEntries || config.maxAgeSeconds)) {
-        // throw new WorkboxError('max-entries-or-age-required'));
+        throw new _private.WorkboxError('max-entries-or-age-required');
       }
 
       if (config.maxEntries) {
@@ -68,6 +70,8 @@ class CacheExpirationManager {
 
     this._maxEntries = config.maxEntries;
     this._maxAgeSeconds = config.maxAgeSeconds;
+
+    this._timestampModel = new CacheTimestampsModel(cacheName);
 
     // This is used to ensure there's one asynchronous expiration operation
     // running at a time.
@@ -98,10 +102,7 @@ class CacheExpirationManager {
     const oldEntries = await this._findOldEntries(now);
 
     // Once that's done, check for the maximum size.
-    const extraEntries = [];
-    /**  const extraEntries = this._maxEntries ?
-      await this._findExtraEntries() :
-      [];**/
+    const extraEntries = await this._findExtraEntries();
 
     // Use a Set to remove any duplicates following the concatenation, then
     // convert back into an array.
@@ -153,18 +154,13 @@ class CacheExpirationManager {
 
     const expireOlderThan = timestamp - (this._maxAgeSeconds * 1000);
     const urls = [];
-    const db = await this._getDb();
-
-
-    _private.logger.log(db);
     _private.logger.log(expireOlderThan);
 
-    const allEntries = await db.getAll();
-    Object.keys(allEntries).forEach((key) => {
+    /** Object.keys(allEntries).forEach((key) => {
       if (allEntries[key].timestamp < expireOlderThan) {
         urls.push(allEntries[key].url);
       }
-    });
+    });**/
 
     /** const tx = db.transaction(this._cacheName, 'readonly');
     const store = tx.objectStore(this._cacheName);
@@ -187,18 +183,12 @@ class CacheExpirationManager {
   }
 
   /**
-   * Get db for this model.
-   *
-   * @param {string} cacheName
-   * @return{Promise<DBWrapper>}
+   * @return {Promise<Array>}
    *
    * @private
    */
-  _getDb() {
-    return _private.indexedDBHelper.getDB(
-      `workbox-cache-expiration`,
-      `expiration-details-model-${this._cacheName}`,
-    );
+  async _findExtraEntries() {
+    return [];
   }
 }
 

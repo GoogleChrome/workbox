@@ -24,7 +24,7 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
   });
 
   describe('_findOldEntries()', function() {
-    it(`should return expired entries`, async function() {
+    it(`should return no expired entries for empty indexedDB`, async function() {
       const expirationManager = new CacheExpirationManager('test-cache', {maxAgeSeconds: 10});
       const oldEntries = await expirationManager._findOldEntries(Date.now());
       expect(oldEntries).to.deep.equal([]);

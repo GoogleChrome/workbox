@@ -27,41 +27,42 @@ class DBWrapper {
    * Wraps a provided Database.
    *
    * @param {IDBDatabase} idb
-   * @param {string} storename
    */
-  constructor(idb, storename) {
+  constructor(idb) {
     this._db = idb;
-    this._storename = storename;
   }
 
   /**
    * Get a value for a given ID.
    *
+   * @param {string} storename
    * @param {Object} key
    * @return {Promise<string>}
    */
-  get(key) {
+  get(storename, key) {
     return new Promise((resolve, reject) => {
-      const transaction = this._db.transaction(this._storename, 'readonly');
+      const transaction = this._db.transaction(storename, 'readonly');
 
       transaction.onerror = () => {
         // Don't forget to handle errors!
         reject(transaction.error);
       };
 
-      const getRequest = transaction.objectStore(this._storename).get(key);
+      const getRequest = transaction.objectStore(storename).get(key);
       getRequest.onsuccess = () => resolve(getRequest.result);
     });
   }
 
+  // TODO (gauntface) https://github.com/jakearchibald/idb/blob/master/lib/idb.js#L259-L282
   /**
+   * @param {string} storename
    * @return {Promise}
    */
-  getAll() {
+  getAll(storename) {
     return new Promise((resolve, reject) => {
       const items = {};
 
-      const transaction = this._db.transaction(this._storename, 'readonly');
+      const transaction = this._db.transaction(storename, 'readonly');
       transaction.onerror = () => {
         // Don't forget to handle errors!
         reject(transaction.error);
@@ -70,7 +71,7 @@ class DBWrapper {
         resolve(items);
       };
 
-      const objectStore = transaction.objectStore(this._storename);
+      const objectStore = transaction.objectStore(storename);
       const cursorRequest = objectStore.openCursor();
       cursorRequest.onsuccess = (evt) => {
         const cursor = evt.target.result;
@@ -87,20 +88,21 @@ class DBWrapper {
   /**
    * Put a value in the database for a given id.
    *
-   * @param {Object} key
+   * @param {string} storename
    * @param {Object} value
+   * @param {Object} key
    * @return {Promise}
    */
-  put(key, value) {
+  put(storename, value, key) {
     return new Promise((resolve, reject) => {
-      const transaction = this._db.transaction(this._storename, 'readwrite');
+      const transaction = this._db.transaction(storename, 'readwrite');
 
       transaction.onerror = () => {
         // Don't forget to handle errors!
         reject(transaction.error);
       };
 
-      const request = transaction.objectStore(this._storename).put(value, key);
+      const request = transaction.objectStore(storename).put(value, key);
       request.onsuccess = () => resolve();
     });
   }
@@ -108,19 +110,20 @@ class DBWrapper {
   /**
    * Delete a value in the database with a given id.
    *
+   * @param {string} storename
    * @param {Object} key
    * @return {Promise}
    */
-  delete(key) {
+  delete(storename, key) {
     return new Promise((resolve, reject) => {
-      const transaction = this._db.transaction(this._storename, 'readwrite');
+      const transaction = this._db.transaction(storename, 'readwrite');
 
       transaction.onerror = () => {
         // Don't forget to handle errors!
         reject(transaction.error);
       };
 
-      const request = transaction.objectStore(this._storename).delete(key);
+      const request = transaction.objectStore(storename).delete(key);
       request.onsuccess = () => resolve();
     });
   }
@@ -144,24 +147,23 @@ class IndexedDBHelper {
   /**
    * Get an opened IndexedDB.
    *
-   * @param {string} name
-   * @param {string} storename
-   * @param {Object} objectStoreOptions
+   * @param {string} dbName
+   * @param {number} version
+   * @param {Object} upgradeCb
    * @return {Promise<IDBObjectStore>}
    */
-  async getDB(name, storename, objectStoreOptions) {
-    const id = `${name}::${storename}`;
-    if (this._opendedDBs[id]) {
-      return this._opendedDBs[id];
+  async getDB(dbName, version, upgradeCb) {
+    if (this._opendedDBs[dbName]) {
+      return this._opendedDBs[dbName];
     }
 
     const db = await new Promise((resolve, reject) => {
-      const openRequest = indexedDB.open(name, 1);
+      const openRequest = indexedDB.open(dbName, 1);
       openRequest.onupgradeneeded = (event) => {
         const db = event.target.result;
 
         // Create an objectStore for this database
-        db.createObjectStore(storename, objectStoreOptions);
+        upgradeCb(db);
       };
       openRequest.onerror = () => {
         // Do something with request.errorCode!
@@ -173,8 +175,8 @@ class IndexedDBHelper {
       };
     });
 
-    this._opendedDBs[id] = new DBWrapper(db, storename);
-    return this._opendedDBs[id];
+    this._opendedDBs[dbName] = new DBWrapper(db);
+    return this._opendedDBs[dbName];
   }
 }
 
