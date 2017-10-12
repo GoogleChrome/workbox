@@ -25,7 +25,6 @@ const logger = require('./lib/logger');
 
 module.exports = async (command, configFile) => {
   assert(command, errors['missing-command-param']);
-  assert(configFile, errors['missing-config-file-param']);
 
   switch (command) {
     case 'wizard': {
@@ -35,6 +34,8 @@ module.exports = async (command, configFile) => {
 
     case 'generateSW':
     case 'injectManifest': {
+      assert(configFile, errors['missing-config-file-param']);
+
       // TODO: Confirm that this works with Windows paths.
       const configPath = path.resolve(process.cwd(), configFile);
       let config;
