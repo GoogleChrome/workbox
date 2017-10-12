@@ -14,9 +14,10 @@
   limitations under the License.
 */
 
-const GenerateSWStringOptions = require('./options/generate-sw-no-fs-options');
+const generateSWStringSchema = require('./options/generate-sw-string-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const populateSWTemplate = require('../lib/populate-sw-template');
+const validate = require('./options/validate');
 
 /**
  * This method generates a service worker based on the configuration options
@@ -29,7 +30,7 @@ const populateSWTemplate = require('../lib/populate-sw-template');
  * @memberof module:workbox-build
  */
 async function generateSWString(input) {
-  const options = new GenerateSWStringOptions(input);
+  const options = validate(input, generateSWStringSchema);
 
   const {manifestEntries} = await getFileManifestEntries(options);
 
