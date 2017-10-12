@@ -31,8 +31,14 @@ const logger = require('./lib/logger');
   try {
     await app(...params.input);
   } catch (error) {
-    logger.error(`\n${error.message}`);
-    logger.debug(`${cleanupStackTrace(error, 'app.js')}\n`);
+    // Show the full error and stack trace if we're run with --debug.
+    if (params.flags.debug) {
+      logger.error(`\n${error.stack}`);
+    } else {
+      logger.error(`\n${error.message}`);
+      logger.debug(`${cleanupStackTrace(error, 'app.js')}\n`);
+    }
+
     process.exit(1);
   }
 })();
