@@ -13,7 +13,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
 
     // Allow async functions 10s to complete
     webdriver = await global.__workbox.seleniumBrowser.getSeleniumDriver();
-    webdriver.manage().timeouts().setScriptTimeout(30 * 1000);
+    webdriver.manage().timeouts().setScriptTimeout(10 * 1000);
   });
 
   after(async function() {
