@@ -16,12 +16,14 @@
 
 const path = require('path');
 
-const GenerateSWOptions = require('./options/generate-sw-options');
 const cdnUtils = require('../lib/cdn-utils');
 const copyWorkboxSW = require('../lib/copy-workbox-sw');
+const generateSWSchema = require('./options/generate-sw-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
+const validate = require('./options/validate');
 const writeServiceWorkerUsingDefaultTemplate =
   require('../lib/write-sw-using-default-template');
+
 
 /**
  * This method creates a list of URLs to precache, referred to as a "precache
@@ -42,7 +44,7 @@ const writeServiceWorkerUsingDefaultTemplate =
  * @memberof module:workbox-build
  */
 async function generateSW(input) {
-  const options = new GenerateSWOptions(input);
+  const options = validate(input, generateSWSchema);
 
   const destDirectory = path.dirname(options.swDest);
   // This will cause the dev build of WorkboxSW (either from the CDN or locally

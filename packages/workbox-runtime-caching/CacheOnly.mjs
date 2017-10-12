@@ -14,13 +14,14 @@
 */
 
 import {_private} from 'workbox-core';
+import core from 'workbox-core';
 
 /**
- * An implementation of a [cache-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only)
+ * An implementation of a
+ * [cache-only]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only}
  * request strategy.
  *
- * This class is useful if you want to take advantage of Workbox cache naming
- * and / or plugins.
+ * This class is useful if you want to take advantage of the Workbox plugins.
  *
  * @memberof module:workbox-runtime-caching
  */
@@ -39,18 +40,20 @@ class CacheOnly {
   }
 
   /**
-   * The handle method will be called by the
-   * {@link module:workbox-routing.Route|Route} class when a route matches a
-   * request.
+   * This method will be called by the Workbox
+   * [Router]{@link module:workbox-routing.Router} to handle a fetch event.
    *
-   * @param {FetchEvent} event The event that triggered the service
-   *        worker's fetch handler.
-   * @return {Promise.<Response>} The response from the cache or null.
+   * @param {FetchEvent} event The fetch event to handle.
+   * @return {Promise<Response>}
    */
   async handle(event) {
     if (process.env.NODE_ENV !== 'production') {
-      // TODO Move to core.assert
-      // isInstance({event}, FetchEvent);
+      core.assert.isInstance(event, FetchEvent, {
+        moduleName: 'workbox-runtime-caching',
+        className: 'CacheFirst',
+        funcName: 'handle',
+        paramName: 'event',
+      });
     }
 
     return _private.cacheWrapper.match(

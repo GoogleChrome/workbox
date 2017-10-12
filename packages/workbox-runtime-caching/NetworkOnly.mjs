@@ -17,11 +17,11 @@ import {_private} from 'workbox-core';
 import core from 'workbox-core';
 
 /**
- * An implementation of a [network-only](https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only)
+ * An implementation of a
+ * [network-only]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only}
  * request strategy.
  *
- * This class is useful if you want to take advantage of Workbox cache naming
- * and / or plugins.
+ * This class is useful if you want to take advantage of the Workbox plugins.
  *
  * @memberof module:workbox-runtime-caching
  */
@@ -40,13 +40,11 @@ class NetworkOnly {
   }
 
   /**
-   * The handle method will be called by the
-   * {@link module:workbox-routing.Route|Route} class when a route matches a
-   * request.
+   * This method will be called by the Workbox
+   * [Router]{@link module:workbox-routing.Router} to handle a fetch event.
    *
-   * @param {FetchEvent} event The event that triggered the service
-   *        worker's fetch handler.
-   * @return {Promise.<Response>} The response from the network.
+   * @param {FetchEvent} event The fetch event to handle.
+   * @return {Promise<Response>}
    */
   handle(event) {
     if (process.env.NODE_ENV !== 'production') {
