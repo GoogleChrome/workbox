@@ -20,6 +20,7 @@ const commonGenerateSchema = require('./common-generate-schema');
 
 // Define some additional constraints.
 module.exports = commonGenerateSchema.keys({
+  globDirectory: joi.string().required(),
   importScripts: joi.array().items(joi.string()),
   importWorkboxFromCDN: joi.boolean().default(true),
   swDest: joi.string().required(),

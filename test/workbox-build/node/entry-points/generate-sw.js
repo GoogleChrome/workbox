@@ -29,7 +29,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     'clientsClaim',
     'directoryIndex',
     'dontCacheBustUrlsMatching',
-    'globDirectory',
     'globIgnores',
     'globPatterns',
     'handleFetch',
