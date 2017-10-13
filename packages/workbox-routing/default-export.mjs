@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import Router from './lib/Router.mjs';
+import Router from './Router.mjs';
 import './_version.mjs';
 
 const router = new Router();
