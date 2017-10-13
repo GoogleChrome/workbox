@@ -70,6 +70,7 @@ gulp.task('publish-github:generate-from-tags', async () => {
 
 // TODO: Delete this task when v3 is about to launch.
 // This is just to publish v3 branch as v3.0.0-alpha
+//
 gulp.task('publish-github:temp-v3', async () => {
   const tagName = 'v3.0.0-alpha';
   const gitBranch = 'v3';
