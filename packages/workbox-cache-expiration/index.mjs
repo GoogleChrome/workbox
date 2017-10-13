@@ -15,6 +15,7 @@
 */
 
 import CacheExpirationManager from './CacheExpirationManager.mjs';
+import './_version.mjs';
 
 export {
   CacheExpirationManager,

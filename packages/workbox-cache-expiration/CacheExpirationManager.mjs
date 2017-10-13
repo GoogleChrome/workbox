@@ -18,6 +18,7 @@ import {_private} from 'workbox-core';
 import core from 'workbox-core';
 
 import CacheTimestampsModel from './models/CacheTimestampsModel.mjs';
+import './_version.mjs';
 
 /**
  * The `CacheExpiration` class allows you define an expiration and / or

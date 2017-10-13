@@ -15,6 +15,7 @@
 */
 
 import {_private} from 'workbox-core';
+import '../_version.mjs';
 
 const URL_KEY = 'url';
 const TIMESTAMP_KEY = 'timestamp';
