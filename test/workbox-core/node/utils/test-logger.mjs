@@ -14,7 +14,7 @@ describe(`workbox-core logger`, function() {
 
   beforeEach(function() {
     // Reset between runs
-    core.setLogLevel(LOG_LEVELS.log);
+    core.setLogLevel(LOG_LEVELS.debug);
   });
 
   afterEach(function() {
@@ -36,11 +36,11 @@ describe(`workbox-core logger`, function() {
   const groupLogLevel = LOG_LEVELS.error;
   const logDetails = [
     {
-      name: 'log',
-      level: LOG_LEVELS.log,
-    }, {
       name: 'debug',
       level: LOG_LEVELS.debug,
+    }, {
+      name: 'log',
+      level: LOG_LEVELS.log,
     }, {
       name: 'warn',
       level: LOG_LEVELS.warn,

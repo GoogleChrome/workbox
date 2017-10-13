@@ -40,7 +40,7 @@ describe(`workbox-core WorkboxCore`, function() {
 
     it(`should not allow log level less than log`, function() {
       return expectError(() => {
-        core.setLogLevel(coreModule.LOG_LEVELS.log - 1);
+        core.setLogLevel(coreModule.LOG_LEVELS.debug - 1);
       }, 'invalid-value');
     });
 
