@@ -13,6 +13,8 @@
  limitations under the License.
 */
 
+import '../_version.mjs';
+
 export const DB_NAME = 'workbox-background-sync';
 export const OBJECT_STORE_NAME = 'requests';
 export const INDEXED_PROP = 'queueName';

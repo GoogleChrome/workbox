@@ -15,7 +15,7 @@
 
 import StorableRequest from './StorableRequest.mjs';
 import {DB_NAME, OBJECT_STORE_NAME, INDEXED_PROP} from './constants.mjs';
-
+import '../_version.mjs';
 
 /**
  * A class to manage storing requests from a Queue in IndexedbDB,

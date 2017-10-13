@@ -14,6 +14,7 @@
 */
 
 import Queue from './lib/Queue.mjs';
+import './_version.mjs';
 
 export {
   Queue,

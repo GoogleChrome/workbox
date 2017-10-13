@@ -17,6 +17,7 @@ import {_private} from 'workbox-core';
 import {TAG_PREFIX, MAX_RETENTION_TIME} from './constants.mjs';
 import QueueStore from './QueueStore.mjs';
 import StorableRequest from './StorableRequest.mjs';
+import '../_version.mjs';
 
 
 const {WorkboxError} = _private;

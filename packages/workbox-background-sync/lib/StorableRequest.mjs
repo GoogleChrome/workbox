@@ -13,6 +13,8 @@
  limitations under the License.
 */
 
+import '../_version.mjs';
+
 const serializableProperties = [
   'method',
   'referrer',
