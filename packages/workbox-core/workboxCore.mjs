@@ -18,6 +18,7 @@ import assert from './utils/assert.mjs';
 import WorkboxError from './models/WorkboxError.mjs';
 import LOG_LEVELS from './models/LogLevels.mjs';
 import {cacheNames} from './_private.mjs';
+import './_version.mjs';
 
 /**
  * This class is never exposed publicly. Inidividual methods are exposed
