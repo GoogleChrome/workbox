@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import expectError from '../../../infra/testing/expectError.js';
-import Route from '../../../packages/workbox-routing/lib/Route.mjs';
+import Route from '../../../packages/workbox-routing/Route.mjs';
 
 const match = () => {};
 const handler = {

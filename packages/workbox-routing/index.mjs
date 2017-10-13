@@ -15,8 +15,8 @@
 */
 
 import core from 'workbox-core';
-import Route from './lib/Route.mjs';
-import Router from './lib/Router.mjs';
+import Route from './Route.mjs';
+import Router from './Router.mjs';
 import defaultExport from './default-export.mjs';
 import './_version.mjs';
 

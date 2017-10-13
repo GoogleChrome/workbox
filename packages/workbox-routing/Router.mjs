@@ -16,8 +16,8 @@
 import core from 'workbox-core';
 import {_private} from 'workbox-core';
 
-import normalizeHandler from './normalizeHandler.mjs';
-import '../_version.mjs';
+import normalizeHandler from './lib/normalizeHandler.mjs';
+import './_version.mjs';
 
 /**
  * The Router takes one or more [Routes]{@link Route} and passes each fetch
