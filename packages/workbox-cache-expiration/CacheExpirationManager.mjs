@@ -93,7 +93,7 @@ class CacheExpirationManager {
       this._deleteFromIDB(urls),
     ]);
 
-    if (process.env.NODE_ENV) {
+    if (process.env.NODE_ENV !== 'production') {
       _private.logger.groupCollapsed(
         `Expired ${urls.length}entries have been removed from the cache.`);
       _private.logger.debug(`Cache name:`, this._cacheName);
