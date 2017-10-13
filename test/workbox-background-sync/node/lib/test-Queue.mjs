@@ -17,23 +17,46 @@ import {expect} from 'chai';
 import clearRequire from 'clear-require';
 import sinon from 'sinon';
 import expectError from '../../../../infra/testing/expectError';
-import indexedDBHelper, {DBWrapper} from
-    '../../../../packages/workbox-core/utils/indexedDBHelper.mjs';
+import {OBJECT_STORE_NAME} from
+    '../../../../packages/workbox-background-sync/lib/constants.mjs';
+import QueueStore from
+    '../../../../packages/workbox-background-sync/lib/QueueStore.mjs';
 
 
 let Queue;
 
-
 const clearObjectStore = async () => {
-  const db = await indexedDBHelper.getDB(
-      'workbox-background-sync', 'requests', {autoIncrement: true});
+  // Get a reference to the DB by invoking _getDb on a mock instance.
+  const db = await QueueStore.prototype._getDb.call({});
 
-  const items = await db.getAll();
-  for (const [key] of items.entries()) {
-    await db.delete(key);
-  }
+  await new Promise((resolve, reject) => {
+    const txn = db.transaction(OBJECT_STORE_NAME, 'readwrite');
+    txn.onerror = () => reject(txn.error);
+    txn.oncomplete = () => resolve();
+    txn.objectStore(OBJECT_STORE_NAME).clear();
+  });
 };
 
+const getObjectStoreEntries = async () => {
+  // Get a reference to the DB by invoking _getDb on a mock instance.
+  const db = await QueueStore.prototype._getDb.call({});
+
+  const entries = await new Promise((resolve, reject) => {
+    const entries = [];
+    const txn = db.transaction(OBJECT_STORE_NAME, 'readwrite');
+    txn.onerror = () => reject(txn.error);
+    txn.objectStore(OBJECT_STORE_NAME).openCursor().onsuccess = (event) => {
+      const cursor = event.target.result;
+      if (cursor) {
+        entries.push({key: cursor.key, value: cursor.value});
+        cursor.continue();
+      } else {
+        resolve(entries);
+      }
+    };
+  });
+  return entries;
+};
 
 describe(`backgroundSync.Queue`, function() {
   const sandbox = sinon.sandbox.create();
@@ -135,8 +158,7 @@ describe(`backgroundSync.Queue`, function() {
   describe(`addRequest`, function() {
     it(`should serialize the request and store it in IndexedDB`,
         async function() {
-      sandbox.spy(DBWrapper.prototype, 'add');
-
+      const now = Date.now();
       const queue = new Queue('foo');
       const requestUrl = 'https://example.com';
       const requestInit = {
@@ -149,15 +171,16 @@ describe(`backgroundSync.Queue`, function() {
 
       await queue.addRequest(request);
 
-      expect(DBWrapper.prototype.add.calledOnce).to.be.true;
-      expect(DBWrapper.prototype.add.calledWith({
-        queueName: 'foo',
-        storableRequest: sinon.match({
-          url: requestUrl,
-          timestamp: sinon.match.number,
-          requestInit: sinon.match.object,
-        }),
-      })).to.be.true;
+      const entries = await getObjectStoreEntries();
+      expect(entries).to.have.lengthOf(1);
+      expect(entries[0].value.storableRequest.url).to.equal(requestUrl);
+      expect(entries[0].value.storableRequest.timestamp).to.be.at.least(now);
+      expect(entries[0].value.storableRequest.requestInit).to.have.keys([
+        'method',
+        'body',
+        'headers',
+        'mode',
+      ]);
     });
 
     it(`should register to receive sync events for a unique tag`,
@@ -195,14 +218,9 @@ describe(`backgroundSync.Queue`, function() {
       const request = new Request('/');
       await queue.addRequest(request);
 
-      const db = await indexedDBHelper.getDB(
-          'workbox-background-sync', 'requests', {autoIncrement: true});
-
-      const itemsInObjectStore = [...await db.getAll()]
-          .map(([key, value]) => value.storableRequest.url);
-
-      expect(itemsInObjectStore.length).to.equal(1);
-      expect(itemsInObjectStore[0]).to.equal('/?q=foo');
+      const entries = await getObjectStoreEntries();
+      expect(entries).to.have.lengthOf(1);
+      expect(entries[0].value.storableRequest.url).to.equal('/?q=foo');
     });
 
     it(`should support modifying the stored request via requestWillEnqueue`,
@@ -240,6 +258,7 @@ describe(`backgroundSync.Queue`, function() {
       await queue1.addRequest(new Request('/five'));
 
       await queue1.replayRequests();
+
       expect(self.fetch.callCount).to.equal(3);
 
       expect(self.fetch.getCall(0).calledWith(sinon.match({
@@ -283,15 +302,10 @@ describe(`backgroundSync.Queue`, function() {
       await queue1.replayRequests();
       expect(self.fetch.callCount).to.equal(3);
 
-      const db = await indexedDBHelper.getDB(
-          'workbox-background-sync', 'requests', {autoIncrement: true});
-
-      const itemsInObjectStore = [...await db.getAll()]
-          .map(([key, value]) => value.storableRequest.url);
-
-      expect(itemsInObjectStore.length).to.equal(2);
-      expect(itemsInObjectStore[0]).to.equal('/two');
-      expect(itemsInObjectStore[1]).to.equal('/four');
+      const entries = await getObjectStoreEntries();
+      expect(entries.length).to.equal(2);
+      expect(entries[0].value.storableRequest.url).to.equal('/two');
+      expect(entries[1].value.storableRequest.url).to.equal('/four');
     });
 
     it(`should ignore (and remove) requests if maxRetentionTime has passed`,
@@ -319,14 +333,9 @@ describe(`backgroundSync.Queue`, function() {
         url: '/three',
       }))).to.be.true;
 
-      const db = await indexedDBHelper.getDB(
-          'workbox-background-sync', 'requests', {autoIncrement: true});
-
-      const itemsInObjectStore = [...await db.getAll()]
-          .map(([key, value]) => value.storableRequest.url);
-
+      const entries = await getObjectStoreEntries();
       // Assert that the two requests not replayed were deleted.
-      expect(itemsInObjectStore.length).to.equal(0);
+      expect(entries.length).to.equal(0);
     });
 
     it(`should keep a request in the queue if re-fetching fails`,
@@ -345,15 +354,11 @@ describe(`backgroundSync.Queue`, function() {
       await queue.addRequest(new Request('/five'));
       await queue.replayRequests(); // The 2nd and 4th requests should fail.
 
-      const db = await indexedDBHelper.getDB(
-          'workbox-background-sync', 'requests', {autoIncrement: true});
 
-      const itemsInObjectStore = [...await db.getAll()]
-          .map(([key, value]) => value.storableRequest.url);
-
-      expect(itemsInObjectStore.length).to.equal(2);
-      expect(itemsInObjectStore[0]).to.equal('/two');
-      expect(itemsInObjectStore[1]).to.equal('/four');
+      const entries = await getObjectStoreEntries();
+      expect(entries.length).to.equal(2);
+      expect(entries[0].value.storableRequest.url).to.equal('/two');
+      expect(entries[1].value.storableRequest.url).to.equal('/four');
     });
 
     it(`should re-register for a sync event if re-fetching fails`,

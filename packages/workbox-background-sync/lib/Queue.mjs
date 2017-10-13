@@ -14,17 +14,13 @@
 */
 
 import {_private} from 'workbox-core';
+import {TAG_PREFIX, MAX_RETENTION_TIME} from './constants.mjs';
+import QueueStore from './QueueStore.mjs';
 import StorableRequest from './StorableRequest.mjs';
 
 
-const {indexedDBHelper, WorkboxError} = _private;
-const names = new Set();
-
-
-const DB_NAME = 'workbox-background-sync';
-const TAG_PREFIX = 'workbox-background-sync';
-const OBJECT_STORE_NAME = 'requests';
-const MAX_RETENTION_TIME = 1000 * 60 * 60 * 24 * 7; // 7 days
+const {WorkboxError} = _private;
+const queueNames = new Set();
 
 
 /**
@@ -41,9 +37,6 @@ export default class Queue {
    *     in IndexedDB specific to this instance. An error will be thrown if
    *     a duplicate name is detected.
    * @param {Object} [param2]
-   * @param {number} [param2.maxRetentionTime = 7 days] The amount of time (in
-   *     ms) a request may be retried. After this amount of time has passed,
-   *     the request will be deleted from the queue.
    * @param {Object} [param2.callbacks] Callbacks to observe the lifecycle of
    *     queued requests. Use these to respond to or modify the requests
    *     during the replay process.
@@ -58,23 +51,34 @@ export default class Queue {
    * @param {function(Array<StorableRequest>):undefined}
    *     [param2.callbacks.queueDidReplay]
    *     Invoked after all requests in the queue have successfully replayed.
+   * @param {number} [param2.maxRetentionTime = 7 days] The amount of time (in
+   *     ms) a request may be retried. After this amount of time has passed,
+   *     the request will be deleted from the queue.
    */
   constructor(name, {
-    maxRetentionTime = MAX_RETENTION_TIME,
     callbacks = {},
+    maxRetentionTime = MAX_RETENTION_TIME,
   } = {}) {
     // Ensure the store name is not already being used
-    if (names.has(name)) {
+    if (queueNames.has(name)) {
       throw new WorkboxError('duplicate-queue-name', {name});
     } else {
-      names.add(name);
+      queueNames.add(name);
     }
 
     this._name = name;
     this._callbacks = callbacks;
     this._maxRetentionTime = maxRetentionTime;
+    this._queueStore = new QueueStore(this);
 
     this._addSyncListener();
+  }
+
+  /**
+   * @return {string}
+   */
+  get name() {
+    return this._name;
   }
 
   /**
@@ -103,12 +107,7 @@ export default class Queue {
 
     this._runCallback('requestWillEnqueue', storableRequest);
 
-    const db = await this._getDb();
-    await db.add({
-      queueName: this._name,
-      storableRequest: storableRequest.toObject(),
-    });
-
+    await this._queueStore.addEntry(storableRequest);
     await this._registerSync();
   }
 
@@ -120,11 +119,17 @@ export default class Queue {
    * created to retry again later.
    */
   async replayRequests() {
-    const storableRequestsInQueue = await this._getStorableRequestsInQueue();
+    const now = Date.now();
     const replayedRequests = [];
-    let allReplaysSuccessful = true;
+    const failedRequests = [];
 
-    for (const [key, storableRequest] of storableRequestsInQueue) {
+    let storableRequest;
+    while (storableRequest = await this._queueStore.getAndRemoveOldestEntry()) {
+      // Ignore requests older than maxRetentionTime.
+      if (now - storableRequest.timestamp > this._maxRetentionTime) {
+        continue;
+      }
+
       this._runCallback('requestWillReplay', storableRequest);
 
       const replay = {request: storableRequest.toRequest()};
@@ -132,77 +137,25 @@ export default class Queue {
       try {
         // Clone the request before fetching so callbacks get an unused one.
         replay.response = await fetch(replay.request.clone());
-
-        // Remove the request from IndexedDB asynchronously (don't await).
-        // TODO(philipwalton): in the unlikely event that the delete fails,
-        // this request may be replayed again. Do we want to handle this case?
-        this._removeRequest(key);
       } catch (err) {
-        allReplaysSuccessful = false;
         replay.error = err;
+        failedRequests.push(storableRequest);
       }
 
       replayedRequests.push(replay);
     }
 
-    this._runCallback('queueDidReplay', replayedRequests);
+    // If any requests failed, put the failed requests back in the queue
+    // and register for another sync.
+    if (failedRequests.length) {
+      await Promise.all(failedRequests.map((storableRequest) => {
+        return this._queueStore.addEntry(storableRequest);
+      }));
 
-    // If any requests failed, register for another sync.
-    if (!allReplaysSuccessful) {
       await this._registerSync();
     }
-  }
 
-  /**
-   * Gets all requests in the object store matching this queue's name.
-   *
-   * @private
-   * @return {Promise<Array>}
-   */
-  async _getStorableRequestsInQueue() {
-    const db = await this._getDb();
-    const storableRequests = [];
-    const currentTime = Date.now();
-
-    for (const [key, entry] of (await db.getAll()).entries()) {
-      if (entry.queueName == this._name) {
-        const retentionTime = currentTime - entry.storableRequest.timestamp;
-
-        // Requests older than `maxRetentionTime` should be ignored.
-        if (retentionTime > this._maxRetentionTime) {
-          // No need to await this since it can happen in parallel.
-          this._removeRequest(key);
-          continue;
-        }
-
-        const storableRequest = new StorableRequest(entry.storableRequest);
-        storableRequests.push([key, storableRequest]);
-      }
-    }
-
-    return storableRequests;
-  }
-
-  /**
-   * Gets a reference to the IndexedDB object store for queued requests.
-   *
-   * @private
-   * @return {Promise<DBWrapper>}
-   */
-  _getDb() {
-    return indexedDBHelper.getDB(
-        DB_NAME, OBJECT_STORE_NAME, {autoIncrement: true});
-  }
-
-  /**
-   * Removes a request from IndexedDB for the specified key.
-   *
-   * @private
-   * @param {string} key
-   */
-  async _removeRequest(key) {
-    const db = await this._getDb();
-    await db.delete(key);
+    this._runCallback('queueDidReplay', replayedRequests);
   }
 
   /**
