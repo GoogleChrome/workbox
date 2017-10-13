@@ -4,6 +4,7 @@ import {reset as iDBReset} from 'shelving-mock-indexeddb';
 
 import expectError from '../../../../infra/testing/expectError';
 import generateTestVariants from '../../../../infra/testing/generate-variant-tests';
+import {prodOnly, devOnly} from '../../../../infra/testing/env-it';
 
 import {_private} from '../../../../packages/workbox-core/index.mjs';
 import PrecacheController from '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
@@ -111,9 +112,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     Object.keys(unrevisionedEntryGroups).map((groupName) => {
       const inputGroup = unrevisionedEntryGroups[groupName];
 
-      it(`should add ${groupName} to cache list in dev`, async function() {
-        if (process.env.NODE_ENV == 'production') return this.skip();
-
+      devOnly.it(`should add ${groupName} to cache list in dev`, async function() {
         const precacheController = new PrecacheController();
 
         precacheController.addToCacheList(inputGroup);
@@ -245,9 +244,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       }
     });
 
-    it('should not log install details in production', async function() {
-      if (process.env.NODE_ENV != 'production') return this.skip();
-
+    prodOnly.it('should not log install details in production', async function() {
       const precacheController = new PrecacheController();
       precacheController.addToCacheList([
         '/index.1234.html',
@@ -453,9 +450,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(hasCache).to.equal(false);
     });
 
-    it(`shouldn't log anything in production`, async function() {
-      if (process.env.NODE_ENV != 'production') return this.skip();
-
+    prodOnly.it(`shouldn't log anything in production`, async function() {
       const precacheControllerOne = new PrecacheController();
       const cacheListOne = [
         '/index.1234.html',
