@@ -19,8 +19,8 @@ describe(`workbox-core WorkboxCore`, function() {
   });
 
   describe(`core.logLevel (getter)`, function() {
-    devOnly.it(`should initialise to 'verbose' log level in dev`, function() {
-      expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.verbose);
+    devOnly.it(`should initialise to 'log' log level in dev`, function() {
+      expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.log);
     });
 
     prodOnly.it(`should initialise to 'warn' log level in prod`, function() {
@@ -38,9 +38,9 @@ describe(`workbox-core WorkboxCore`, function() {
       }).to.not.throw();
     });
 
-    it(`should not allow log level less than verbose`, function() {
+    it(`should not allow log level less than log`, function() {
       return expectError(() => {
-        core.setLogLevel(coreModule.LOG_LEVELS.verbose - 1);
+        core.setLogLevel(coreModule.LOG_LEVELS.log - 1);
       }, 'invalid-value');
     });
 

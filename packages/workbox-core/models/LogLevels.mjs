@@ -17,15 +17,15 @@
 import '../_version.mjs';
 
 /**
- * The available log levels in Workbox: verbose, debug, warn, error and silent.
+ * The available log levels in Workbox: debug, log, warn, error and silent.
  *
  * @returns {Object}
  *
  * @alias module:workbox-core.LOG_LEVELS
  */
 export default {
-  verbose: 0,
-  debug: 1,
+  debug: 0,
+  log: 1,
   warn: 2,
   error: 3,
   silent: 4,
