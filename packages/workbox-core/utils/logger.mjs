@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import core from '../index.mjs';
+import core from '../workboxCore.mjs';
 import LOG_LEVELS from '../models/LogLevels.mjs';
 import '../_version.mjs';
 
@@ -23,6 +23,8 @@ const GREEN = `#2ecc71`;
 const YELLOW = `#f39c12`;
 const RED = `#c0392b`;
 const BLUE = `#3498db`;
+
+console.log(core);
 
 const shouldPrint = (minLevel) => (core.logLevel <= minLevel);
 
