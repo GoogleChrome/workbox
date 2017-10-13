@@ -71,7 +71,14 @@ class WorkboxSW {
         target.loadModule(moduleName);
         // Add the key to the target (i.e. instance of WorkboxSW)
         // so the next access doesn't attempt to load the module again.
-        target[key] = workbox[key].default;
+        if (workbox[key].default) {
+          // Most cases developers will only want the default export
+          target[key] = workbox[key].default;
+        } else {
+          // For modules with no default export, make all classes hang off
+          // of WorkboxSW.
+          target[key] = workbox[key];
+        }
         return target[key];
       },
     });
