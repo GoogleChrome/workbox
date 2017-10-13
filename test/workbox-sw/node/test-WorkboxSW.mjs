@@ -12,6 +12,15 @@ describe(`[workbox-sw] WorkboxSW`, function() {
   beforeEach(function() {
     sandbox.restore();
     delete global.workbox;
+
+    sandbox.stub(global, 'importScripts').callsFake((url) => {
+      if (url.includes('workbox-')) {
+        global.workbox = global.workbox || {};
+        if (url.includes('workbox-core')) {
+          global.workbox.core = global.workbox.core || {};
+        }
+      }
+    });
   });
 
   after(function() {
@@ -56,7 +65,6 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
 
     it(`should load workbox-core on construction`, function() {
-      sandbox.stub(global, 'importScripts');
       sandbox.spy(WorkboxSW.prototype, 'loadModule');
 
       // TODO Switch to contstants.BUILD_TYPES.prod
@@ -80,7 +88,6 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
 
     it(`should use module cb to load workbox-core if a function is provided`, function() {
-      sandbox.stub(global, 'importScripts');
       const callbackSpy = sandbox.spy((moduleName, debug) => {
         return `/custom-path/${moduleName}/${debug}`;
       });
@@ -123,8 +130,6 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       },
     ];
     generateTestVariants(`should import using modulePathPrefix`, modulePathVariations, async function(variant) {
-      sandbox.stub(global, 'importScripts');
-
       new WorkboxSW({
         debug: true,
         modulePathPrefix: variant.prefix,
@@ -182,6 +187,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
     it(`should print error message when importScripts fails`, function() {
       const errorMessage = 'Injected error.';
+      global.importScripts.restore();
       sandbox.stub(global, 'importScripts').callsFake(() => {
         throw new Error(errorMessage);
       });

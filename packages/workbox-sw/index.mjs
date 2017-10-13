@@ -24,9 +24,13 @@ import './_version.mjs';
  */
 
 const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
-const MODULE_NAME_MAPPING = {
+const MODULE_KEY_TO_NAME_MAPPING = {
   'expiration': 'cache-expiration',
   'strategies': 'runtime-caching',
+};
+const MODULE_NAME_TO_KEY_MAPPING = {
+  'cache-expiration': 'expiration',
+  'runtime-caching': 'strategies',
 };
 
 /**
@@ -52,9 +56,6 @@ class WorkboxSW {
 
     if (!this._options.disableModuleImports) {
       this.loadModule('workbox-core');
-      // Add the key to WorkboxSW so the next access doesn't attempt to
-      // load the module again.
-      this.core = workbox.core.default;
     }
 
     return new Proxy(this, {
@@ -64,21 +65,11 @@ class WorkboxSW {
         }
 
         let moduleName = `workbox-${key}`;
-        if (MODULE_NAME_MAPPING[key]) {
-           moduleName = MODULE_NAME_MAPPING[key];
+        if (MODULE_KEY_TO_NAME_MAPPING[key]) {
+           moduleName = MODULE_KEY_TO_NAME_MAPPING[key];
         }
 
         target.loadModule(moduleName);
-        // Add the key to the target (i.e. instance of WorkboxSW)
-        // so the next access doesn't attempt to load the module again.
-        if (workbox[key].default) {
-          // Most cases developers will only want the default export
-          target[key] = workbox[key].default;
-        } else {
-          // For modules with no default export, make all classes hang off
-          // of WorkboxSW.
-          target[key] = workbox[key];
-        }
         return target[key];
       },
     });
@@ -117,9 +108,25 @@ class WorkboxSW {
     let modulePath = this._getImportPath(moduleName);
     try {
       importScripts(modulePath);
+
+      let key = MODULE_NAME_TO_KEY_MAPPING[moduleName];
+      if (!key) {
+        key = moduleName.replace('workbox-', '');
+      }
+
+      // Add the key to the target (i.e. instance of WorkboxSW)
+      // so the next access doesn't attempt to load the module again.
+      if (workbox[key].default) {
+        // Most cases developers will only want the default export
+        this[key] = workbox[key].default;
+      } else {
+        // For modules with no default export, make all classes hang off
+        // of WorkboxSW.
+        this[key] = workbox[key];
+      }
     } catch (err) {
       console.error(
-        `Unable to import module '${moduleName}' with path '${modulePath}'.`);
+        `Unable to import module '${moduleName}' from '${modulePath}'.`);
       throw err;
     }
   }
