@@ -1,9 +1,11 @@
 const gulp = require('gulp');
 const path = require('path');
+const fs = require('fs-extra');
 
 const publishHelpers = require('./utils/publish-helpers');
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
+const constants = require('./utils/constants');
 
 const publishReleaseOnGithub =
   async (tagName, releaseInfo, tarPath, zipPath) => {
@@ -71,6 +73,11 @@ gulp.task('publish-github:generate-from-tags', async () => {
 // TODO: Delete this task when v3 is about to launch.
 // This is just to publish v3 branch as v3.0.0-alpha
 gulp.task('publish-github:temp-v3', async () => {
+  // Let's force this to always be fresh - in case we run it outside of
+  // gulp publish
+  await fs.remove(
+    path.join(__dirname, '..', constants.GENERATED_RELEASE_FILES_DIRNAME));
+
   const tagName = 'v3.0.0-alpha';
   const gitBranch = 'v3';
 
