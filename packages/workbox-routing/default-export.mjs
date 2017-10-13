@@ -18,6 +18,7 @@ import Router from './lib/Router.mjs';
 import './_version.mjs';
 
 const router = new Router();
+
 // By default, register a fetch event listener that will respond to a request
 // only if there's a matching route.
 self.addEventListener('fetch', (event) => {
@@ -26,5 +27,40 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(responsePromise);
   }
 });
+
+/**
+ * [See Router.handleRequest()]{@link module:workbox-routing.Router#handleRequest}
+ *
+ * @function
+ * @name module:workbox-routing.handleRequest
+ */
+
+/**
+ * [See Router.setDefaultHandler()]{@link module:workbox-routing.Router#setDefaultHandler}
+ *
+ * @function
+ * @name module:workbox-routing.setDefaultHandler
+ */
+
+/**
+ * [See Router.setCatchHandler()]{@link module:workbox-routing.Router#setCatchHandler}
+ *
+ * @function
+ * @name module:workbox-routing.setCatchHandler
+ */
+
+/**
+ * [See Router.registerRoute()]{@link module:workbox-routing.Router#registerRoute}
+ *
+ * @function
+ * @name module:workbox-routing.registerRoute
+ */
+
+/**
+ * [See Router.unregisterRoute()]{@link module:workbox-routing.Router#unregisterRoute}
+ *
+ * @function
+ * @name module:workbox-routing.unregisterRoute
+ */
 
 export default router;
