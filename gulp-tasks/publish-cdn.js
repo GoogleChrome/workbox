@@ -13,7 +13,7 @@ const findMissingCDNTags = async (tagsData) => {
   for (let tagData of tagsData) {
     let exists = await cdnUploadHelper.tagExists(tagData.name);
 
-    if (tagData.name.indexOf('3.0.0-alpha') !== -1) {
+    if (tagData.name.includes('3.0.0-alpha')) {
       exists = false;
     }
 
@@ -61,10 +61,10 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
 gulp.task('publish-cdn:temp-v3', async () => {
   // Let's force this to always be fresh - in case we run it outside of
   // gulp publish
-  fs.removeSync(
+  await fs.remove(
     path.join(__dirname, '..', constants.GENERATED_RELEASE_FILES_DIRNAME));
 
-  const lernaPkg = fs.readJSONSync(
+  const lernaPkg = await fs.readJSON(
     path.join(__dirname, '..', 'lerna.json'),
   );
   const tagName = lernaPkg.version;
