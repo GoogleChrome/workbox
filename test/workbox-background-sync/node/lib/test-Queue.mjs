@@ -21,6 +21,8 @@ import {OBJECT_STORE_NAME} from
     '../../../../packages/workbox-background-sync/lib/constants.mjs';
 import QueueStore from
     '../../../../packages/workbox-background-sync/lib/QueueStore.mjs';
+import {resetEventListeners} from
+    '../../../../infra/testing/sw-env-mocks/event-listeners.js';
 
 
 let Queue;
@@ -70,7 +72,7 @@ describe(`backgroundSync.Queue`, function() {
     clearObjectStore();
 
     // Remove any lingering event listeners
-    global.__removeAllEventListeners();
+    resetEventListeners();
 
     // Re-import Queue each time so the name map gets reset.
     const imprt = await import(
@@ -88,7 +90,7 @@ describe(`backgroundSync.Queue`, function() {
     clearObjectStore();
 
     // Remove any lingering event listeners
-    global.__removeAllEventListeners();
+    resetEventListeners();
   });
 
   describe(`constructor`, function() {
