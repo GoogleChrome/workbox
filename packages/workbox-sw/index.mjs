@@ -49,22 +49,36 @@ class WorkboxSW {
     if (!this._options.disableModuleImports) {
       this.loadModule('workbox-core');
     }
+
+    this._setupProxy();
   }
 
   /**
-   * Get workbox-core.
+   * This method adds a proxy to the WorkboxSW object.
+   *
+   * @private
    */
-  get core() {
-    return workbox.core.default;
-  }
+  _setupProxy() {
+    const moduleNameMapping = {
+      'expiration': 'cache-expiration',
+      'strategies': 'runtime-caching',
+    };
 
-  /**
-   * Get workbox-precaching.
-   */
-  get precaching() {
-    this.loadModule('workbox-precaching');
+    const handler = {
+      get(target, key) {
+        let moduleName = `workbox-${key}`;
+        if (moduleNameMapping[key]) {
+           moduleName = moduleNameMapping[key];
+        }
+        console.info(`importing: '${moduleName}'`);
 
-    return workbox.precaching.default;
+        this.loadModule(moduleName);
+
+        return workbox[key].default;
+      },
+    };
+
+    new Proxy(this, handler);
   }
 
   /**
