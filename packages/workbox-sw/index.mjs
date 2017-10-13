@@ -70,8 +70,6 @@ class WorkboxSW {
   /**
    * Force a service worker to become active, instead of waiting. This is
    * normally used in conjunction with `clientsClaim()`.
-   *
-   *
    */
   skipWaiting() {
     self.addEventListener('install', () => self.skipWaiting());
