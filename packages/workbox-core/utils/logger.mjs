@@ -24,8 +24,6 @@ const YELLOW = `#f39c12`;
 const RED = `#c0392b`;
 const BLUE = `#3498db`;
 
-console.log(core);
-
 const shouldPrint = (minLevel) => (core.logLevel <= minLevel);
 
 const _print = function(logFunction, logArgs, minLevel, levelColor) {
