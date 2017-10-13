@@ -111,6 +111,7 @@ const _getPrecachedUrl = (url, options) => {
  */
 const addRoute = (options) => {
   if (fetchListenersAdded) {
+    // TODO Throw error here.
     return;
   }
 
