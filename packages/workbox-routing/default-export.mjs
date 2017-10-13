@@ -29,35 +29,40 @@ self.addEventListener('fetch', (event) => {
 });
 
 /**
- * [See Router.handleRequest()]{@link module:workbox-routing.Router#handleRequest}
+ * [See Router.handleRequest()]{@link
+ * module:workbox-routing.Router#handleRequest}
  *
  * @function
  * @name module:workbox-routing.handleRequest
  */
 
 /**
- * [See Router.setDefaultHandler()]{@link module:workbox-routing.Router#setDefaultHandler}
+ * [See Router.setDefaultHandler()]{@link
+ * module:workbox-routing.Router#setDefaultHandler}
  *
  * @function
  * @name module:workbox-routing.setDefaultHandler
  */
 
 /**
- * [See Router.setCatchHandler()]{@link module:workbox-routing.Router#setCatchHandler}
+ * [See Router.setCatchHandler()]{@link
+ * module:workbox-routing.Router#setCatchHandler}
  *
  * @function
  * @name module:workbox-routing.setCatchHandler
  */
 
 /**
- * [See Router.registerRoute()]{@link module:workbox-routing.Router#registerRoute}
+ * [See Router.registerRoute()]{@link
+ * module:workbox-routing.Router#registerRoute}
  *
  * @function
  * @name module:workbox-routing.registerRoute
  */
 
 /**
- * [See Router.unregisterRoute()]{@link module:workbox-routing.Router#unregisterRoute}
+ * [See Router.unregisterRoute()]{@link
+ * module:workbox-routing.Router#unregisterRoute}
  *
  * @function
  * @name module:workbox-routing.unregisterRoute
