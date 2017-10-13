@@ -63,7 +63,7 @@ const getObjectStoreEntries = async () => {
 describe(`[workbox-background-sync] QueueStore`, function() {
   beforeEach(async function() {
     // Clear Queue so the name map gets reset on re-import.
-    clearRequire.match(RegExp('workbox-background-sync/lib/Queue.mjs'));
+    clearRequire('../../../../packages/workbox-background-sync/lib/Queue.mjs');
 
     clearObjectStore();
 
@@ -72,6 +72,13 @@ describe(`[workbox-background-sync] QueueStore`, function() {
         '../../../../packages/workbox-background-sync/lib/Queue.mjs');
 
     Queue = imprt.default;
+  });
+
+  after(async function() {
+    // Clear Queue so the name map gets reset on re-import.
+    clearRequire('../../../../packages/workbox-background-sync/lib/Queue.mjs');
+
+    clearObjectStore();
   });
 
   describe(`constructor`, function() {

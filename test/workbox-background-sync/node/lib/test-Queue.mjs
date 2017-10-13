@@ -67,7 +67,7 @@ describe(`[workbox-background-sync] Queue`, function() {
     sandbox.restore();
 
     // Clear Queue so the name map gets reset on re-import.
-    clearRequire.match(RegExp('workbox-background-sync/lib/Queue.mjs'));
+    clearRequire('../../../../packages/workbox-background-sync/lib/Queue.mjs');
 
     clearObjectStore();
 
@@ -85,7 +85,7 @@ describe(`[workbox-background-sync] Queue`, function() {
     sandbox.restore();
 
     // Clear Queue so the name map gets reset on re-import.
-    clearRequire.match(RegExp('workbox-background-sync/lib/Queue.mjs'));
+    clearRequire('../../../../packages/workbox-background-sync/lib/Queue.mjs');
 
     clearObjectStore();
 
