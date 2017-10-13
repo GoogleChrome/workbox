@@ -75,7 +75,7 @@ gulp.task('publish-github:generate-from-tags', async () => {
 gulp.task('publish-github:temp-v3', async () => {
   // Let's force this to always be fresh - in case we run it outside of
   // gulp publish
-  fs.removeSync(
+  await fs.remove(
     path.join(__dirname, '..', constants.GENERATED_RELEASE_FILES_DIRNAME));
 
   const tagName = 'v3.0.0-alpha';
