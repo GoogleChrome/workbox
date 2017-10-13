@@ -7,7 +7,10 @@ const wb = new self.WorkboxSW({
   },
 });
 
-wb.core.setLogLevel(self.workbox.core.LOG_LEVELS.log);
+wb.skipWaiting();
+wb.clientsClaim();
+
+wb.core.setLogLevel(self.workbox.core.LOG_LEVELS.debug);
 
 wb.precaching.precache([
   'example.css',

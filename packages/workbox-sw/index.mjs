@@ -24,6 +24,10 @@ import './_version.mjs';
  */
 
 const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
+const MODULE_NAME_MAPPING = {
+  'expiration': 'cache-expiration',
+  'strategies': 'runtime-caching',
+};
 
 /**
  * This class can be used to make it easy to use the various parts of
@@ -48,37 +52,29 @@ class WorkboxSW {
 
     if (!this._options.disableModuleImports) {
       this.loadModule('workbox-core');
+      // Add the key to WorkboxSW so the next access doesn't attempt to
+      // load the module again.
+      this.core = workbox.core.default;
     }
 
-    this._setupProxy();
-  }
-
-  /**
-   * This method adds a proxy to the WorkboxSW object.
-   *
-   * @private
-   */
-  _setupProxy() {
-    const moduleNameMapping = {
-      'expiration': 'cache-expiration',
-      'strategies': 'runtime-caching',
-    };
-
-    const handler = {
+    return new Proxy(this, {
       get(target, key) {
-        let moduleName = `workbox-${key}`;
-        if (moduleNameMapping[key]) {
-           moduleName = moduleNameMapping[key];
+        if (target[key]) {
+          return target[key];
         }
-        console.info(`importing: '${moduleName}'`);
 
-        this.loadModule(moduleName);
+        let moduleName = `workbox-${key}`;
+        if (MODULE_NAME_MAPPING[key]) {
+           moduleName = MODULE_NAME_MAPPING[key];
+        }
 
-        return workbox[key].default;
+        target.loadModule(moduleName);
+        // Add the key to the target (i.e. instance of WorkboxSW)
+        // so the next access doesn't attempt to load the module again.
+        target[key] = workbox[key].default;
+        return target[key];
       },
-    };
-
-    new Proxy(this, handler);
+    });
   }
 
   /**
