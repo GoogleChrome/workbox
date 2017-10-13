@@ -25,12 +25,12 @@ import './_version.mjs';
 
 const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
 const MODULE_KEY_TO_NAME_MAPPING = {
-  'expiration': 'cache-expiration',
-  'strategies': 'runtime-caching',
+  'expiration': 'workbox-cache-expiration',
+  'strategies': 'workbox-runtime-caching',
 };
 const MODULE_NAME_TO_KEY_MAPPING = {
-  'cache-expiration': 'expiration',
-  'runtime-caching': 'strategies',
+  'workbox-cache-expiration': 'expiration',
+  'workbox-runtime-caching': 'strategies',
 };
 
 /**
@@ -97,21 +97,38 @@ class WorkboxSW {
    * @param {string} moduleName
    */
   loadModule(moduleName) {
-    if (this._options.disableModuleImports) {
-      // This can't be a WorkboxError as we can't rely on workbox-core being
-      // loaded.
-      throw new Error(
-        `Attempted to load '${moduleName}' while disableModuleImports is true.`
-      );
+    if (!this._options.disableModuleImports) {
+      let modulePath = this._getImportPath(moduleName);
+      try {
+        importScripts(modulePath);
+      } catch (err) {
+        // We can't rely on workbox-core being loaded so using console
+        console.error(
+          `Unable to import module '${moduleName}' from '${modulePath}'.`);
+        throw err;
+      }
     }
 
-    let modulePath = this._getImportPath(moduleName);
-    try {
-      importScripts(modulePath);
+    this._patchWorkboxValueToSW(moduleName);
+  }
 
-      let key = MODULE_NAME_TO_KEY_MAPPING[moduleName];
-      if (!key) {
-        key = moduleName.replace('workbox-', '');
+  /**
+   * This method will patch the globa workbox namespace value onto WorkboxSW.
+   *
+   * @param {string} moduleName
+   */
+  _patchWorkboxValueToSW(moduleName) {
+    let key = MODULE_NAME_TO_KEY_MAPPING[moduleName];
+    if (!key) {
+      key = moduleName.replace('workbox-', '');
+    }
+
+    try {
+      if (!workbox) {
+        throw new Error(`The namespace 'workbox' isn't defined.`);
+      }
+      if (!workbox[key]) {
+        throw new Error(`The namespace 'workbox.${key}' isn't defined.`);
       }
 
       // Add the key to the target (i.e. instance of WorkboxSW)
@@ -125,8 +142,11 @@ class WorkboxSW {
         this[key] = workbox[key];
       }
     } catch (err) {
+      // We can't rely on workbox-core being loaded so using console
       console.error(
-        `Unable to import module '${moduleName}' from '${modulePath}'.`);
+        `Unable to initialise '${moduleName}'. This occurs when an invalid ` +
+        `module name is used or 'disableModuleImports' is set to true and ` +
+        `the module isn't manually imported into the service worker.`);
       throw err;
     }
   }
