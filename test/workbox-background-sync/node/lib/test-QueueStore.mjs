@@ -60,7 +60,7 @@ const getObjectStoreEntries = async () => {
 };
 
 
-describe(`QueueStore`, function() {
+describe(`[workbox-background-sync] QueueStore`, function() {
   beforeEach(async function() {
     // Clear Queue so the name map gets reset on re-import.
     clearRequire.match(RegExp('workbox-background-sync/lib/Queue.mjs'));

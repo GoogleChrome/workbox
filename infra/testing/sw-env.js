@@ -12,7 +12,7 @@
  */
 
 const serviceWorkerMock = require('service-worker-mock');
-const {IDBFactory, IDBKeyRange} = new require('shelving-mock-indexeddb');
+const {IDBFactory, IDBKeyRange} = require('shelving-mock-indexeddb');
 const Blob = require('./sw-env-mocks/Blob');
 const Event = require('./sw-env-mocks/Event');
 const {addEventListener, dispatchEvent} = require('./sw-env-mocks/event-listeners');

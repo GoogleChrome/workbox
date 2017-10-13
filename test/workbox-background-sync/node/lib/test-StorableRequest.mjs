@@ -19,7 +19,7 @@ import StorableRequest from
     '../../../../packages/workbox-background-sync/lib/StorableRequest.mjs';
 
 
-describe(`StorableRequest`, function() {
+describe(`[workbox-background-sync] StorableRequest`, function() {
   describe(`static fromRequest`, function() {
     it(`should convert a Request to a StorableRequest instance`, async function() {
       const request = new Request('/foo', {

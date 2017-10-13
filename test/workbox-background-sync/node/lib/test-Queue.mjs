@@ -60,7 +60,7 @@ const getObjectStoreEntries = async () => {
   return entries;
 };
 
-describe(`backgroundSync.Queue`, function() {
+describe(`[workbox-background-sync] Queue`, function() {
   const sandbox = sinon.sandbox.create();
 
   beforeEach(async function() {
