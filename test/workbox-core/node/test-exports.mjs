@@ -16,8 +16,8 @@ describe('workbox-core Exports', function() {
     it(`should expose the expected LOG_LEVELS`, async function() {
       const coreModule = await import('../../../packages/workbox-core/index.mjs');
       expect(Object.keys(coreModule.LOG_LEVELS)).to.deep.equal([
-        'verbose',
         'debug',
+        'log',
         'warn',
         'error',
         'silent',

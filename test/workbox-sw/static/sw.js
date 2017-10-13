@@ -7,7 +7,7 @@ const wb = new self.WorkboxSW({
   },
 });
 
-wb.core.setLogLevel(self.workbox.core.LOG_LEVELS.verbose);
+wb.core.setLogLevel(self.workbox.core.LOG_LEVELS.log);
 
 wb.precaching.precache([
   'example.css',
