@@ -65,6 +65,10 @@ class Router {
     }
 
     const url = new URL(event.request.url);
+    if (process.env.NODE_ENV !== 'production') {
+      _private.logger.debug(`Routing request for '${url.pathname}'.`);
+    }
+
     if (!url.protocol.startsWith('http')) {
       if (process.env.NODE_ENV !== 'production') {
         _private.logger.warn(`The URL '${url}' does not start with 'http', ` +
@@ -74,10 +78,19 @@ class Router {
     }
 
     let {handler, params} = this._findHandlerAndParams(event, url);
+    if (process.env.NODE_ENV !== 'production') {
+      // TODO Display the params returned.
+      _private.logger.debug(`Found a route that can handle ` +
+        `'${url.pathname}'.`);
+    }
 
     // If we don't have a handler because there was no matching route, then
     // fall back to defaultHandler if that's defined.
     if (!handler && this._defaultHandler) {
+      if (process.env.NODE_ENV !== 'production') {
+        _private.logger.debug(`No route found for '${url.pathname}', ` +
+          `so using the default handler.`);
+      }
       handler = this._defaultHandler;
     }
 
@@ -85,10 +98,16 @@ class Router {
       let responsePromise = handler.handle({url, event, params});
       if (this._catchHandler) {
         responsePromise = responsePromise.catch((error) => {
+          if (process.env.NODE_ENV !== 'production') {
+            _private.logger.debug(`An error was thrown by the handler for ` +
+              `'${url.pathname}', so using the catch handler.`);
+          }
           return this._catchHandler.handle({url, event, error});
         });
       }
       return responsePromise;
+    } else {
+      _private.logger.debug(`No route found for '${url.pathname}'.`);
     }
   }
 
@@ -181,32 +200,39 @@ class Router {
    */
   registerRoute(route) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.hasMethod(route, '_match', {
+      core.assert.isType(route, 'object', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route',
       });
 
-      core.assert.isType(route._handler, 'object', {
+      core.assert.hasMethod(route, 'match', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
-        paramName: 'route',
+        paramName: 'route.match',
       });
 
-      core.assert.hasMethod(route._handler, 'handle', {
+      core.assert.isType(route.handler, 'object', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
-        paramName: 'route',
+        paramName: 'route.handler',
       });
 
-      core.assert.isType(route._method, 'string', {
+      core.assert.hasMethod(route.handler, 'handle', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
-        paramName: 'route',
+        paramName: 'route.handler',
+      });
+
+      core.assert.isType(route.method, 'string', {
+        moduleName: 'workbox-routing',
+        className: 'Router',
+        funcName: 'registerRoute',
+        paramName: 'route.method',
       });
     }
 
