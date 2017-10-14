@@ -301,6 +301,16 @@ class PrecacheController {
       };
     });
   }
+
+  /**
+   * Returns an array of fully qualified URL's that will be precached.
+   *
+   * @return {Array<string>} An array of URLs.
+   */
+  async getCachedUrls() {
+    return Array.from(this._entriesToCacheMap.keys())
+    .map((url) => new URL(url, location).href);
+  }
 }
 
 export default PrecacheController;

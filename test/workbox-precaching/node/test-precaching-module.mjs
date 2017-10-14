@@ -29,7 +29,11 @@ describe(`[workbox-precaching] Module`, function() {
   describe('default export', function() {
     it(`should expose known methods`, function() {
       const defaultExport = precachingModule.default;
-      expect(Object.keys(defaultExport)).to.deep.equal(['precache']);
+      expect(Object.keys(defaultExport)).to.deep.equal([
+        'precache',
+        'addRoute',
+        'precacheAndRoute',
+      ]);
     });
 
     describe(`precache()`, function() {
@@ -46,6 +50,14 @@ describe(`[workbox-precaching] Module`, function() {
           },
         ]);
       });
+    });
+
+    describe(`addRoute()`, function() {
+      // TODO @gauntface write tests for this
+    });
+
+    describe(`precacheAndRoute()`, function() {
+      // TODO @gauntface write tests for this
     });
   });
 });
