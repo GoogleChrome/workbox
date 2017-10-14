@@ -23,10 +23,9 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "workbox-build": "^2.0.1",
-    "workbox-sw": "^2.0.1"
+    "workbox-build": "^2.0.1"
   },
-  "author": "Google's Web DevRel Team",
+  "author": "Will Farley <a.will.farley@gmail.com> (http://www.willfarley.org/)",
   "license": "Apache-2.0",
   "repository": "googlechrome/sw-helpers",
   "bugs": "https://github.com/GoogleChrome/workbox/issues",
