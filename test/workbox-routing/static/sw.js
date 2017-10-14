@@ -1,10 +1,6 @@
 importScripts('../../../../packages/workbox-core/build/browser/workbox-core.dev.js');
 importScripts('../../../../packages/workbox-routing/build/browser/workbox-routing.dev.js');
 
-self.workbox.core.default.setLogLevel(
-  self.workbox.core.LOG_LEVELS.debug
-);
-
 const routing = self.workbox.routing.default;
 const Route = self.workbox.routing.Route;
 

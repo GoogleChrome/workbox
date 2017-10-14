@@ -247,14 +247,14 @@ class Router {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
-        paramName: 'route.match',
+        paramName: 'route',
       });
 
       core.assert.isType(route.handler, 'object', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
-        paramName: 'route.handler',
+        paramName: 'route',
       });
 
       core.assert.hasMethod(route.handler, 'handle', {

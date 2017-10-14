@@ -40,7 +40,7 @@ describe(`[workbox-routing] Router`, function() {
   describe(`registerRoute()`, function() {
     const invalidMatches = [{}, true, false, 123, '123', [123], null, undefined];
     generateTestVariants(`should throw in dev when route.match is not a function`, invalidMatches, async function(variant) {
-      if (process.env.NODE_ENV == 'production') return this.skip();
+      if (process.env.NODE_ENV === 'production') return this.skip();
 
       const router = new Router();
       await expectError(
@@ -85,7 +85,7 @@ describe(`[workbox-routing] Router`, function() {
           expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
           expect(error.details).to.have.property('className').that.eql('Router');
           expect(error.details).to.have.property('funcName').that.eql('registerRoute');
-          expect(error.details).to.have.property('paramName').that.eql('route');
+          expect(error.details).to.have.property('paramName').that.eql('route.method');
           expect(error.details).to.have.property('expectedType').that.eql('string');
         }
       );
@@ -102,7 +102,7 @@ describe(`[workbox-routing] Router`, function() {
           expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
           expect(error.details).to.have.property('className').that.eql('Router');
           expect(error.details).to.have.property('funcName').that.eql('registerRoute');
-          expect(error.details).to.have.property('paramName').that.eql('route');
+          expect(error.details).to.have.property('paramName').that.eql('route.handler');
           expect(error.details).to.have.property('expectedMethod').that.eql('handle');
         }
       );
