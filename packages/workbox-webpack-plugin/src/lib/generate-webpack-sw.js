@@ -9,12 +9,12 @@ const generateSW = ({
   workboxSWFilename,
   manifestFilename,
   manifestVarName,
-}) => new Promise((resolve, reject) => resolve(`
+}) => Promise.resolve(`
 ${importScripts({workboxSWFilename, manifestFilename})}
 
 const workboxSW = new self.WorkboxSW();
 workboxSW.precache(self.${manifestVarName});
-`));
+`);
 
 const generateOrCopySW = (config, swSrc) => new Promise((resolve, reject) => {
   if (!swSrc) {
