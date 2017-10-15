@@ -24,14 +24,18 @@ import './_version.mjs';
  */
 
 const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
-const MODULE_KEY_TO_NAME_MAPPING = {
-  'expiration': 'workbox-cache-expiration',
-  'strategies': 'workbox-runtime-caching',
-};
+
+// TODO Make this list be generated during build time using the package.json's.
+// workbox namespace value.
 const MODULE_NAME_TO_KEY_MAPPING = {
   'workbox-cache-expiration': 'expiration',
   'workbox-runtime-caching': 'strategies',
 };
+const MODULE_KEY_TO_NAME_MAPPING = {};
+for (const moduleName of Object.keys(MODULE_NAME_TO_KEY_MAPPING)) {
+  const namespace = MODULE_NAME_TO_KEY_MAPPING[moduleName];
+  MODULE_KEY_TO_NAME_MAPPING[namespace] = moduleName;
+}
 
 /**
  * This class can be used to make it easy to use the various parts of
@@ -102,6 +106,8 @@ class WorkboxSW {
       try {
         importScripts(modulePath);
       } catch (err) {
+        // TODO Add context of this error if using the CDN vs the local file.
+
         // We can't rely on workbox-core being loaded so using console
         console.error(
           `Unable to import module '${moduleName}' from '${modulePath}'.`);
