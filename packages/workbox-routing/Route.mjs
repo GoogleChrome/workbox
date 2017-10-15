@@ -105,9 +105,11 @@ class Route {
       }
     }
 
-    this._handler = normalizeHandler(handler);
-    this._match = match;
-    this._method = method || defaultMethod;
+    // These values are referenced directly by Router so cannot be
+    // altered by minifification.
+    this.handler = normalizeHandler(handler);
+    this.match = match;
+    this.method = method || defaultMethod;
   }
 }
 

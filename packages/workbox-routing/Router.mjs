@@ -14,7 +14,7 @@
 */
 
 import core from 'workbox-core';
-import {_private} from 'workbox-core';
+import {_private, LOG_LEVELS} from 'workbox-core';
 
 import normalizeHandler from './lib/normalizeHandler.mjs';
 import './_version.mjs';
@@ -64,27 +64,88 @@ class Router {
       });
     }
 
+    let handler = null;
+    let params = null;
     const url = new URL(event.request.url);
+    let urlToLog = url.origin === location.origin ? url.pathname : url.href;
+    let debugMessages = [];
+
     if (!url.protocol.startsWith('http')) {
       if (process.env.NODE_ENV !== 'production') {
-        _private.logger.warn(`The URL '${url}' does not start with 'http', ` +
-          `so it can't be handled.`);
+        debugMessages.push(
+          `The URL does not start with 'http', so it can't be handled.`);
       }
-      return;
-    }
+    } else {
+      const result = this._findHandlerAndParams(event, url);
+      handler = result.handler;
+      params = result.params;
+      const route = result.route;
+      if (process.env.NODE_ENV !== 'production') {
+        if (handler) {
+          debugMessages.push([
+            `Matching route:`, route,
+          ]);
 
-    let {handler, params} = this._findHandlerAndParams(event, url);
+          if (params) {
+            debugMessages.push([
+              `Passing the following params to the Routes handler:`, params,
+            ]);
+          }
+        }
+      }
 
-    // If we don't have a handler because there was no matching route, then
-    // fall back to defaultHandler if that's defined.
-    if (!handler && this._defaultHandler) {
-      handler = this._defaultHandler;
+      // If we don't have a handler because there was no matching route, then
+      // fall back to defaultHandler if that's defined.
+      if (!handler && this._defaultHandler) {
+        if (process.env.NODE_ENV !== 'production') {
+          debugMessages.push(`Failed to find a matching route, so falling ` +
+            `back to the default handler.`);
+        }
+        handler = this._defaultHandler;
+      }
+
+      if (process.env.NODE_ENV !== 'production') {
+        if (!handler) {
+          // No handler so Workbox will do nothing. If logs is set of debug
+          // i.e. verbose, we should print out this information.
+          _private.logger.debug(`No route found for: ${urlToLog}`);
+        } else {
+          // We have a handler, meaning Workbox is handling the route. print to
+          // log.
+          if (core.logLevel <= LOG_LEVELS.log) {
+            _private.logger.groupCollapsed(
+              `Router is responding to: ${urlToLog}`);
+
+            // The Request object contains a great deal of information,
+            // hide it under a group in case developers wants to see it.
+            _private.logger.groupCollapsed(
+              `    View full request details here.`);
+            console.log(event.request); // eslint-disable-line no-console
+            _private.logger.groupEnd();
+
+            debugMessages.forEach((msg) => {
+              if (Array.isArray(msg)) {
+                _private.logger.log(...msg);
+              } else {
+                _private.logger.log(msg);
+              }
+            });
+            _private.logger.groupEnd();
+          }
+        }
+      }
     }
 
     if (handler) {
       let responsePromise = handler.handle({url, event, params});
       if (this._catchHandler) {
         responsePromise = responsePromise.catch((error) => {
+          if (process.env.NODE_ENV !== 'production') {
+            // Still include URL here as it will be async from the console group
+            // and may not make sense without the URL
+            _private.logger.debug(`An error was thrown by the handler for ` +
+              `'${urlToLog}', so using the catch handler.`);
+          }
           return this._catchHandler.handle({url, event, error});
         });
       }
@@ -106,15 +167,8 @@ class Router {
   _findHandlerAndParams(event, url) {
     const routes = this._routes.get(event.request.method) || [];
     for (const route of routes) {
-      let matchResult = route._match({url, event});
+      let matchResult = route.match({url, event});
       if (matchResult) {
-        if (process.env.NODE_ENV !== 'production') {
-          _private.logger.log(`The router found a matching route.`, {
-            route,
-            request: event.request,
-          });
-        }
-
         if (Array.isArray(matchResult) && matchResult.length === 0) {
           // Instead of passing an empty array in as params, use undefined.
           matchResult = undefined;
@@ -127,8 +181,9 @@ class Router {
         // Break out of the loop and return the appropriate values as soon as
         // we have a match.
         return {
+          route,
           params: matchResult,
-          handler: route._handler,
+          handler: route.handler,
         };
       }
     }
@@ -181,42 +236,49 @@ class Router {
    */
   registerRoute(route) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.hasMethod(route, '_match', {
+      core.assert.isType(route, 'object', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route',
       });
 
-      core.assert.isType(route._handler, 'object', {
+      core.assert.hasMethod(route, 'match', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route',
       });
 
-      core.assert.hasMethod(route._handler, 'handle', {
+      core.assert.isType(route.handler, 'object', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route',
       });
 
-      core.assert.isType(route._method, 'string', {
+      core.assert.hasMethod(route.handler, 'handle', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
-        paramName: 'route',
+        paramName: 'route.handler',
+      });
+
+      core.assert.isType(route.method, 'string', {
+        moduleName: 'workbox-routing',
+        className: 'Router',
+        funcName: 'registerRoute',
+        paramName: 'route.method',
       });
     }
 
-    if (!this._routes.has(route._method)) {
-      this._routes.set(route._method, []);
+    if (!this._routes.has(route.method)) {
+      this._routes.set(route.method, []);
     }
 
     // Give precedence to all of the earlier routes by adding this additional
     // route to the end of the array.
-    this._routes.get(route._method).push(route);
+    this._routes.get(route.method).push(route);
   }
 
   /**
@@ -225,17 +287,17 @@ class Router {
    * @param {module:workbox-routing.Route} route The route to unregister.
    */
   unregisterRoute(route) {
-    if (!this._routes.has(route._method)) {
+    if (!this._routes.has(route.method)) {
       throw new _private.WorkboxError(
         'unregister-route-but-not-found-with-method', {
-          method: route._method,
+          method: route.method,
         }
       );
     }
 
-    const routeIndex = this._routes.get(route._method).indexOf(route);
+    const routeIndex = this._routes.get(route.method).indexOf(route);
     if (routeIndex > -1) {
-      this._routes.get(route._method).splice(routeIndex, 1);
+      this._routes.get(route.method).splice(routeIndex, 1);
     } else {
       throw new _private.WorkboxError('unregister-route-route-not-registered');
     }
