@@ -25,6 +25,7 @@ import CacheFirst from './CacheFirst.mjs';
 import CacheOnly from './CacheOnly.mjs';
 import NetworkFirst from './NetworkFirst.mjs';
 import NetworkOnly from './NetworkOnly.mjs';
+import StaleWhileRevalidate from './StaleWhileRevalidate.mjs';
 import './_version.mjs';
 
 export {
@@ -32,4 +33,5 @@ export {
   CacheOnly,
   NetworkFirst,
   NetworkOnly,
+  StaleWhileRevalidate,
 };
