@@ -16,7 +16,7 @@
 import core from 'workbox-core';
 import {_private} from 'workbox-core';
 
-import '../_version.mjs';
+import './_version.mjs';
 import Route from './Route.mjs';
 
 /**
