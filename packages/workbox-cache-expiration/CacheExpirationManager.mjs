@@ -100,7 +100,7 @@ class CacheExpirationManager {
     if (process.env.NODE_ENV !== 'production') {
       // TODO break apart entries deleted due to expiration vs size restraints
       _private.logger.groupCollapsed(
-        `Expired ${allUrls.length}entries have been removed from the cache.`);
+        `Expired ${allUrls.length} entries have been removed from the cache.`);
       _private.logger.debug(`Cache name:`, this._cacheName);
       _private.logger.debug(`URLS:`, allUrls);
       _private.logger.groupEnd();
@@ -163,7 +163,7 @@ class CacheExpirationManager {
    * @private
    */
   async _deleteFromIDB(urls) {
-    for (let url of urls) {
+    for (const url of urls) {
       await this._timestampModel.deleteUrl(url);
     }
   }
