@@ -13,7 +13,12 @@
     "file manifest"
   ],
   "scripts": {
-    "prepublish": "gulp build --project workbox-webpack-plugin"
+    "build": "gulp build-packages --package workbox-webpack-plugin",
+    "version": "npm run build",
+    "prepare": "npm run build"
+  },
+  "workbox": {
+    "packageType": "node"
   },
   "main": "build/index.js",
   "files": [
@@ -23,7 +28,7 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
-    "workbox-build": "^2.0.1"
+    "workbox-build": "^3.0.0-alpha.17"
   },
   "author": "Will Farley <a.will.farley@gmail.com> (http://www.willfarley.org/)",
   "license": "Apache-2.0",
