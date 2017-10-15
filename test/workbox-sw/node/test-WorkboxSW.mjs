@@ -6,12 +6,48 @@ import constants from '../../../gulp-tasks/utils/constants';
 
 import WorkboxSW from '../../../packages/workbox-sw/index.mjs';
 
+const fakeWorkbox = {
+  core: {
+    default: {
+      msg: 'workbox-core',
+    },
+  },
+  precaching: {
+    default: {
+      msg: 'workbox-precaching',
+    },
+  },
+  strategies: {
+    example1: {
+      msg: 'workbox-strategies-1',
+    },
+    example2: {
+      msg: 'workbox-strategies-2',
+    },
+  },
+};
+
 describe(`[workbox-sw] WorkboxSW`, function() {
   let sandbox = sinon.sandbox.create();
 
   beforeEach(function() {
     sandbox.restore();
     delete global.workbox;
+
+    sandbox.stub(global, 'importScripts').callsFake((url) => {
+      if (url.includes('workbox-')) {
+        global.workbox = global.workbox || {};
+        if (url.includes('workbox-core')) {
+          global.workbox.core = global.workbox.core || fakeWorkbox.core;
+        }
+        if (url.includes('workbox-precaching')) {
+          global.workbox.precaching = global.workbox.precaching || fakeWorkbox.precaching;
+        }
+        if (url.includes('workbox-runtime-caching')) {
+          global.workbox.strategies = global.workbox.strategies || fakeWorkbox.strategies;
+        }
+      }
+    });
   });
 
   after(function() {
@@ -56,7 +92,6 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
 
     it(`should load workbox-core on construction`, function() {
-      sandbox.stub(global, 'importScripts');
       sandbox.spy(WorkboxSW.prototype, 'loadModule');
 
       // TODO Switch to contstants.BUILD_TYPES.prod
@@ -69,18 +104,18 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       expect(global.importScripts.args[0]).to.deep.equal([`WORKBOX_CDN_ROOT_URL/workbox-core.${process.env.NODE_ENV.slice(0, 4)}.js`]);
     });
 
-    it(`should not load workbox-core if disableModulesImports is true`, function() {
-      sandbox.stub(WorkboxSW.prototype, 'loadModule');
+    it(`should not call importScripts if disableModulesImports is true`, function() {
+      global.workbox = fakeWorkbox;
 
       const wb = new WorkboxSW({
         disableModuleImports: true,
       });
 
-      expect(wb.loadModule.callCount).to.equal(0);
+      expect(global.importScripts.callCount).to.equal(0);
+      expect(wb.core).to.equal(fakeWorkbox.core.default);
     });
 
     it(`should use module cb to load workbox-core if a function is provided`, function() {
-      sandbox.stub(global, 'importScripts');
       const callbackSpy = sandbox.spy((moduleName, debug) => {
         return `/custom-path/${moduleName}/${debug}`;
       });
@@ -123,8 +158,6 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       },
     ];
     generateTestVariants(`should import using modulePathPrefix`, modulePathVariations, async function(variant) {
-      sandbox.stub(global, 'importScripts');
-
       new WorkboxSW({
         debug: true,
         modulePathPrefix: variant.prefix,
@@ -172,16 +205,20 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
   describe(`loadModule()`, function() {
     it(`should throw when loading module while disableModuleImports is true`, function() {
+      global.workbox = fakeWorkbox;
+
       const wb = new WorkboxSW({
         disableModuleImports: true,
       });
       expect(() => {
         wb.loadModule('should-throw');
-      }).to.throw(`disableModuleImports`);
+      }).to.throw(`The namespace 'workbox.should-throw' isn't defined.`);
+      expect(global.importScripts.callCount).to.equal(0);
     });
 
     it(`should print error message when importScripts fails`, function() {
       const errorMessage = 'Injected error.';
+      global.importScripts.restore();
       sandbox.stub(global, 'importScripts').callsFake(() => {
         throw new Error(errorMessage);
       });
@@ -203,15 +240,6 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
   describe(`get core`, function() {
     it(`should return core.default`, function() {
-      const fakeWorkbox = {
-        core: {
-          default: {},
-        },
-      };
-      sandbox.stub(WorkboxSW.prototype, 'loadModule').callsFake(() => {
-        global.workbox = fakeWorkbox;
-      });
-
       const wb = new WorkboxSW();
       expect(wb.core).to.equal(fakeWorkbox.core.default);
     });
@@ -219,19 +247,15 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
   describe(`get precaching`, function() {
     it(`should return precaching.default`, function() {
-      const fakeWorkbox = {
-        precaching: {
-          default: {},
-        },
-      };
-      sandbox.stub(WorkboxSW.prototype, 'loadModule').callsFake((moduleName) => {
-        if (moduleName === 'workbox-precaching') {
-          global.workbox = fakeWorkbox;
-        }
-      });
-
       const wb = new WorkboxSW();
       expect(wb.precaching).to.equal(fakeWorkbox.precaching.default);
+    });
+  });
+
+  describe(`get strategies`, function() {
+    it(`should return all of strategies`, function() {
+      const wb = new WorkboxSW();
+      expect(wb.strategies).to.equal(fakeWorkbox.strategies);
     });
   });
 });

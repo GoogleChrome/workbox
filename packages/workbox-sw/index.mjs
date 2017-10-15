@@ -25,6 +25,18 @@ import './_version.mjs';
 
 const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
 
+// TODO Make this list be generated during build time using the package.json's.
+// workbox namespace value.
+const MODULE_NAME_TO_KEY_MAPPING = {
+  'workbox-cache-expiration': 'expiration',
+  'workbox-runtime-caching': 'strategies',
+};
+const MODULE_KEY_TO_NAME_MAPPING = {};
+for (const moduleName of Object.keys(MODULE_NAME_TO_KEY_MAPPING)) {
+  const namespace = MODULE_NAME_TO_KEY_MAPPING[moduleName];
+  MODULE_KEY_TO_NAME_MAPPING[namespace] = moduleName;
+}
+
 /**
  * This class can be used to make it easy to use the various parts of
  * Workbox.
@@ -49,22 +61,22 @@ class WorkboxSW {
     if (!this._options.disableModuleImports) {
       this.loadModule('workbox-core');
     }
-  }
 
-  /**
-   * Get workbox-core.
-   */
-  get core() {
-    return workbox.core.default;
-  }
+    return new Proxy(this, {
+      get(target, key) {
+        if (target[key]) {
+          return target[key];
+        }
 
-  /**
-   * Get workbox-precaching.
-   */
-  get precaching() {
-    this.loadModule('workbox-precaching');
+        let moduleName = `workbox-${key}`;
+        if (MODULE_KEY_TO_NAME_MAPPING[key]) {
+           moduleName = MODULE_KEY_TO_NAME_MAPPING[key];
+        }
 
-    return workbox.precaching.default;
+        target.loadModule(moduleName);
+        return target[key];
+      },
+    });
   }
 
   /**
@@ -89,20 +101,58 @@ class WorkboxSW {
    * @param {string} moduleName
    */
   loadModule(moduleName) {
-    if (this._options.disableModuleImports) {
-      // This can't be a WorkboxError as we can't rely on workbox-core being
-      // loaded.
-      throw new Error(
-        `Attempted to load '${moduleName}' while disableModuleImports is true.`
-      );
+    if (!this._options.disableModuleImports) {
+      let modulePath = this._getImportPath(moduleName);
+      try {
+        importScripts(modulePath);
+      } catch (err) {
+        // TODO Add context of this error if using the CDN vs the local file.
+
+        // We can't rely on workbox-core being loaded so using console
+        console.error(
+          `Unable to import module '${moduleName}' from '${modulePath}'.`);
+        throw err;
+      }
     }
 
-    let modulePath = this._getImportPath(moduleName);
+    this._patchWorkboxValueToSW(moduleName);
+  }
+
+  /**
+   * This method will patch the globa workbox namespace value onto WorkboxSW.
+   *
+   * @param {string} moduleName
+   */
+  _patchWorkboxValueToSW(moduleName) {
+    let key = MODULE_NAME_TO_KEY_MAPPING[moduleName];
+    if (!key) {
+      key = moduleName.replace('workbox-', '');
+    }
+
     try {
-      importScripts(modulePath);
+      if (!workbox) {
+        throw new Error(`The namespace 'workbox' isn't defined.`);
+      }
+      if (!workbox[key]) {
+        throw new Error(`The namespace 'workbox.${key}' isn't defined.`);
+      }
+
+      // Add the key to the target (i.e. instance of WorkboxSW)
+      // so the next access doesn't attempt to load the module again.
+      if (workbox[key].default) {
+        // Most cases developers will only want the default export
+        this[key] = workbox[key].default;
+      } else {
+        // For modules with no default export, make all classes hang off
+        // of WorkboxSW.
+        this[key] = workbox[key];
+      }
     } catch (err) {
+      // We can't rely on workbox-core being loaded so using console
       console.error(
-        `Unable to import module '${moduleName}' with path '${modulePath}'.`);
+        `Unable to initialise '${moduleName}'. This occurs when an invalid ` +
+        `module name is used or 'disableModuleImports' is set to true and ` +
+        `the module isn't manually imported into the service worker.`);
       throw err;
     }
   }
