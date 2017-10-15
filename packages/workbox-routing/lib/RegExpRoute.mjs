@@ -23,53 +23,36 @@ import Route from './Route.mjs';
  * RegExpRoute is a helper class to make defining regular expression based
  * [Routes]{@link module:workbox-routing.Route} easy.
  *
- * The matching for regular expressions is slightly different depending on
- * whether the request URL is
- * [same-origin](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy),
- * or cross-origin. Here's why:
+ * Please note that this only needs to match any part of the URL for same-origin
+ * requests. For requests against third-party servers, you must define a RegExp
+ * that matches the start of the URL.
  *
- * It's common to use a broad pattern like `new RegExp('/styles/')` to match
- * all URLs served from a `/styles/` directory on your site.
+ * For example,
  *
- * If we used this in a service worker deployed on `https://example.com`,
- * this `RegExp` would trigger a match for
- * <code>https://example.com<strong>/styles/main.css</strong></code>, as
- * intended.
+ * ```
+ * // Matches all local styles
+ * new RegExpRoute(new RegExp('/styles/'), ...);
+ * ```
  *
- * However, it's unlikely that we'd intend for this to trigger matches for
- * <code>https://third-party-origin.com<strong>/styles/example.css</strong></code>.
+ * while
  *
- * To overcome this common issue, `RegExpRoute` will only trigger a match for a
- * cross-origin request if the `RegExp` provided matches at the *start* of the
- * cross-origin URL. For same-origin requests, the match can be
- * *anywhere* within the URL. In both cases, the `RegExp` only needs to match
- * some portion of the URL, not the full URL.
- *
- * If you *do* want a `RegExpRoute` to trigger matches for some cross-origin
- * requests, then going back to our styles example, you could use
- * `new RegExp('https://third-party-origin\.com/styles/')`, which will trigger
- * a match for URLs like
- * <code><strong>https://third-party-origin.com/styles/example.css</strong></code>.
- *
- * If you want to use a single `RegExpRoute` that triggers a match for both
- * same- and cross-origin requests, then use a `RegExp` that includes a wildcard
- * that will match the start of any URL, like new `RegExp('.+/styles/')`.
+ * ```js
+*  // Matches third-party styles
+ * new RegexpRoute(new RegExp('https://example\.com/styles/'), ...);
+ * ```
  *
  * @memberof module:workbox-routing
  * @extends Route
  */
 class RegExpRoute extends Route {
   /**
-   * Constructor for `RegExpRoute`.
+   * If the `RegExp` associated with this route contains
+   * [capture groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references),
+   * then the array of captured values will be passed to `handler` as `params`.
    *
    * @param {RegExp} regExp The regular expression to match against URLs.
-   * If the `RegExp` contains [capture groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references),
-   * then the array of captured values will be passed to `handler` as `params`.
-   * @param {
-   *   module:workbox-routing.Route~handlerCallback |
-   *   module:workbox-runtime-caching.Handler
-   * } handler This parameter can be either a callback function or an object
-   * which implements the `Handler` interface.
+   * @param {module:workbox-routing.Route~handlerCallback} handler The callback
+   * function that will provide the response for matching requests.
    * @param {string} [method='GET'] Restrict the route to only match requests
    * that use this HTTP method.
    */

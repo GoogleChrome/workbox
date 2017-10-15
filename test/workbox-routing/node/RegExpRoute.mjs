@@ -12,7 +12,10 @@ describe(`[workbox-routing] RegExpRoute`, function() {
   const HANDLER = {handle: () => {}};
 
   const sandbox = sinon.sandbox.create();
-  sandbox.stub(global, 'location').value(SAME_ORIGIN_URL);
+  beforeEach(function() {
+    sandbox.restore();
+    sandbox.stub(global, 'location').value(SAME_ORIGIN_URL);
+  });
   after(function() {
     sandbox.restore();
   });
