@@ -45,7 +45,7 @@ export default class StorableRequest {
     const requestInit = {headers: {}};
 
     // Set the body if present.
-    if (request.method != 'GET') {
+    if (request.method !== 'GET') {
       // Use blob to support non-text request bodies,
       // and clone first in case the caller still needs the request.
       requestInit.body = await request.clone().blob();
@@ -58,7 +58,7 @@ export default class StorableRequest {
 
     // Add all other serializable request properties
     for (const prop of serializableProperties) {
-      if (request[prop] != null) {
+      if (request[prop] !== undefined) {
         requestInit[prop] = request[prop];
       }
     }
