@@ -1,29 +1,31 @@
+/*
+  Copyright 2017 Google Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/
+
+const {generateSWString} = require('workbox-build');
 const {readFile} = require('./utils/read-file');
 
-const importScripts = ({
-  workboxSWFilename,
-  manifestFilename,
-}) => `importScripts('${workboxSWFilename}', '${manifestFilename}');`;
-
-const generateSW = ({
-  workboxSWFilename,
-  manifestFilename,
-  manifestVarName,
-}) => Promise.resolve(`
-${importScripts({workboxSWFilename, manifestFilename})}
-
-const workboxSW = new self.WorkboxSW();
-workboxSW.precache(self.${manifestVarName});
-`);
-
-const generateOrCopySW = (config, swSrc) => new Promise((resolve, reject) => {
+module.exports = (config, swSrc) => new Promise((resolve, reject) => {
   if (!swSrc) {
-    return generateSW(config).then((serviceWorker) => resolve(serviceWorker));
+    // use workbox-build to generate the service worker
+    return resolve(generateSWString(config));
   } else {
     return readFile(swSrc).then((serviceWorkerSource) =>
-      resolve(`${importScripts(config)}\n${serviceWorkerSource}`)
+      // prepend the exsiting service worker with workbox-sw and file-manifest
+      resolve(`importScripts(${config.importScripts.map((script) =>
+        `'${script}'`)});\n${serviceWorkerSource}`)
     );
   }
 });
-
-module.exports = generateOrCopySW;
