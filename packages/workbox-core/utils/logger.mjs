@@ -40,8 +40,8 @@ const _print = function(logFunction, logArgs, minLevel, levelColor) {
   logFunction(...logPrefix, ...logArgs);
 };
 
-const log = (...args) => _print(console.log, args, LOG_LEVELS.verbose, GREY);
-const debug = (...args) => _print(console.debug, args, LOG_LEVELS.debug, GREEN);
+const debug = (...args) => _print(console.debug, args, LOG_LEVELS.debug, GREY);
+const log = (...args) => _print(console.log, args, LOG_LEVELS.log, GREEN);
 const warn = (...args) => _print(console.warn, args, LOG_LEVELS.warn, YELLOW);
 const error = (...args) => _print(console.error, args, LOG_LEVELS.error, RED);
 

@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import expectError from '../../../infra/testing/expectError.js';
-import Route from '../../../packages/workbox-routing/lib/Route.mjs';
+import Route from '../../../packages/workbox-routing/Route.mjs';
 
 const match = () => {};
 const handler = {
@@ -94,14 +94,14 @@ describe(`workbox-routing: Route`, function() {
     if (process.env.NODE_ENV === 'production') return this.skip();
 
     const route = new Route(match, handler, method);
-    expect(route._method).to.equal(method);
+    expect(route.method).to.equal(method);
   });
 
   it(`should use a default of GET when called without a method in dev`, function() {
     if (process.env.NODE_ENV === 'production') return this.skip();
 
     const route = new Route(match, handler);
-    expect(route._method).to.equal('GET');
+    expect(route.method).to.equal('GET');
   });
 
 
@@ -121,13 +121,13 @@ describe(`workbox-routing: Route`, function() {
     if (process.env.NODE_ENV !== 'production') return this.skip();
 
     const route = new Route(match, handler, method);
-    expect(route._method).to.equal(method);
+    expect(route.method).to.equal(method);
   });
 
   it(`should use a default of GET when called without a method in production`, function() {
     if (process.env.NODE_ENV !== 'production') return this.skip();
 
     const route = new Route(match, handler);
-    expect(route._method).to.equal('GET');
+    expect(route.method).to.equal('GET');
   });
 });

@@ -48,7 +48,7 @@ class WorkboxCore {
     }
 
     this._logLevel = (process.env.NODE_ENV === 'production') ?
-      LOG_LEVELS.warn : LOG_LEVELS.verbose;
+      LOG_LEVELS.warn : LOG_LEVELS.log;
   }
 
   /**
@@ -142,11 +142,11 @@ class WorkboxCore {
     }
 
     if (newLevel > LOG_LEVELS.silent ||
-      newLevel < LOG_LEVELS.verbose) {
+      newLevel < LOG_LEVELS.debug) {
       throw new WorkboxError('invalid-value', {
         paramName: 'logLevel',
         validValueDescription: `Please use a value from LOG_LEVELS, i.e ` +
-          `'logLevel = workbox.core.LOG_LEVELS.verbose'.`,
+          `'logLevel = workbox.core.LOG_LEVELS.debug'.`,
         value: newLevel,
       });
     }

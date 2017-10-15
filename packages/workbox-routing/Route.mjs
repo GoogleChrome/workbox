@@ -15,9 +15,9 @@
 
 import core from 'workbox-core';
 
-import {defaultMethod, validMethods} from './constants.mjs';
-import normalizeHandler from './normalizeHandler.mjs';
-import '../_version.mjs';
+import {defaultMethod, validMethods} from './lib/constants.mjs';
+import normalizeHandler from './lib/normalizeHandler.mjs';
+import './_version.mjs';
 
 /**
  * The `match` callback is used to determine if a new service worker `fetch`
@@ -105,9 +105,11 @@ class Route {
       }
     }
 
-    this._handler = normalizeHandler(handler);
-    this._match = match;
-    this._method = method || defaultMethod;
+    // These values are referenced directly by Router so cannot be
+    // altered by minifification.
+    this.handler = normalizeHandler(handler);
+    this.match = match;
+    this.method = method || defaultMethod;
   }
 }
 

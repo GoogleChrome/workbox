@@ -6,11 +6,16 @@ const cdnUploadHelper = require('./utils/cdn-helper');
 const publishHelpers = require('./utils/publish-helpers');
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
+const constants = require('./utils/constants');
 
 const findMissingCDNTags = async (tagsData) => {
   const missingTags = [];
   for (let tagData of tagsData) {
     let exists = await cdnUploadHelper.tagExists(tagData.name);
+
+    if (tagData.name.includes('3.0.0-alpha')) {
+      exists = false;
+    }
 
     if (!exists) {
       missingTags.push(tagData);
@@ -54,7 +59,12 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
 });
 
 gulp.task('publish-cdn:temp-v3', async () => {
-  const lernaPkg = fs.readJSONSync(
+  // Let's force this to always be fresh - in case we run it outside of
+  // gulp publish
+  await fs.remove(
+    path.join(__dirname, '..', constants.GENERATED_RELEASE_FILES_DIRNAME));
+
+  const lernaPkg = await fs.readJSON(
     path.join(__dirname, '..', 'lerna.json'),
   );
   const tagName = lernaPkg.version;

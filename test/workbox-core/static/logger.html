@@ -8,8 +8,8 @@
   </p>
   <h1>Current Log Level: "<span class="js-current-level"></span>"</h1>
   <h3>logger.*()</h3>
-  <button class="js-log">logger.log()</button>
   <button class="js-debug">logger.debug()</button>
+  <button class="js-log">logger.log()</button>
   <button class="js-warn">logger.warn()</button>
   <button class="js-error">logger.error()</button>
   <button class="js-group">logger.groupCollapsed()</button>
@@ -28,10 +28,10 @@
   const currentLevel = document.querySelector('.js-current-level');
   switch(workbox.core.default.logLevel) {
     case 0:
-      currentLevel.textContent = 'Info';
+      currentLevel.textContent = 'Debug';
       break;
     case 1:
-      currentLevel.textContent = 'Debug';
+      currentLevel.textContent = 'Log';
       break;
     case 2:
       currentLevel.textContent = 'Warn';
@@ -103,15 +103,15 @@
     logger.groupCollapsed(`I'm the title for logger.groupCollapsed()`);
 
     const innerLog = [`I'm inside the group`, {cool: true}];
-    logger.log(...innerLog);
     logger.debug(...innerLog);
+    logger.log(...innerLog);
     logger.warn(...innerLog);
     logger.error(...innerLog);
 
     logger.groupCollapsed(`I'm the title for a nested logger.groupCollapsed() call`);
     const nestedLog = [`I'm doubly inside`, {superCool: true}];
-    logger.log(...nestedLog);
     logger.debug(...nestedLog);
+    logger.log(...nestedLog);
     logger.warn(...nestedLog);
     logger.error(...nestedLog);
     logger.groupEnd();

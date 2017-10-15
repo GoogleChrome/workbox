@@ -14,19 +14,9 @@
   limitations under the License.
 */
 
-import '../_version.mjs';
+import CacheExpirationManager from './CacheExpirationManager.mjs';
+import './_version.mjs';
 
-/**
- * The available log levels in Workbox: debug, log, warn, error and silent.
- *
- * @returns {Object}
- *
- * @alias module:workbox-core.LOG_LEVELS
- */
-export default {
-  debug: 0,
-  log: 1,
-  warn: 2,
-  error: 3,
-  silent: 4,
+export {
+  CacheExpirationManager,
 };
