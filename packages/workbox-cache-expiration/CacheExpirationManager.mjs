@@ -76,6 +76,9 @@ class CacheExpirationManager {
 
   /**
    * Expires entries for the given cache and given criteria.
+   *
+   * @return {Promise<Array<string>>} Returns an array of URLs that were
+   * removed.
    */
   async expireEntries() {
     const now = Date.now();
@@ -88,46 +91,52 @@ class CacheExpirationManager {
 
     // Use a Set to remove any duplicates following the concatenation, then
     // convert back into an array.
-    const urls = [...new Set(oldEntries.concat(extraEntries))];
+    const allUrls = [...new Set(oldEntries.concat(extraEntries))];
     await Promise.all([
-      this._deleteFromCache(urls),
-      this._deleteFromIDB(urls),
+      this._deleteFromCache(allUrls),
+      this._deleteFromIDB(allUrls),
     ]);
 
     if (process.env.NODE_ENV !== 'production') {
+      // TODO break apart entries deleted due to expiration vs size restraints
       _private.logger.groupCollapsed(
-        `Expired ${urls.length}entries have been removed from the cache.`);
+        `Expired ${allUrls.length} entries have been removed from the cache.`);
       _private.logger.debug(`Cache name:`, this._cacheName);
-      _private.logger.debug(`URLS:`, urls);
+      _private.logger.debug(`URLS:`, allUrls);
       _private.logger.groupEnd();
     }
+
+    return allUrls;
   }
 
   /**
    * Expires entries based on the the maximum age.
    *
-   * @param {number} timestamp A timestamp.
+   * @param {number} expireFromTimestamp A timestamp.
    * @return {Promise<Array<string>>} A list of the URLs that were expired.
    *
    * @private
    */
-  async _findOldEntries(timestamp) {
+  async _findOldEntries(expireFromTimestamp) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isType(timestamp, 'number', {
+      core.assert.isType(expireFromTimestamp, 'number', {
         moduleName: 'workbox-cache-expiration',
         className: 'CacheExpirationManager',
         funcName: '_findOldEntries',
-        paramName: 'timestamp',
+        paramName: 'expireFromTimestamp',
       });
     }
 
     if (!this._maxAgeSeconds) {
       return [];
     }
+    const expireOlderThan = expireFromTimestamp - (this._maxAgeSeconds * 1000);
+    const timestamps = await this._timestampModel.getAllTimestamps();
+    const expiredUrls = Object.keys(timestamps).filter((key) => {
+      return timestamps[key].timestamp < expireOlderThan;
+    });
 
-    // TODO (gauntface) find old entries
-
-    return [];
+    return expiredUrls;
   }
 
   /**
@@ -149,12 +158,14 @@ class CacheExpirationManager {
   }
 
   /**
-   * @return {Promise}
+   * @param {Array<string>} urls Array of URLs to delete from IDB
    *
    * @private
    */
-  _deleteFromIDB() {
-    return Promise.resolve();
+  async _deleteFromIDB(urls) {
+    for (const url of urls) {
+      await this._timestampModel.deleteUrl(url);
+    }
   }
 }
 

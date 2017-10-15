@@ -50,6 +50,24 @@ class CacheTimestampsModel {
   }
 
   /**
+   * Get all of the timestamps in the indexedDB.
+   *
+   * @return {Array<Objects>}
+   */
+  async getAllTimestamps() {
+    const db = await this._getDb();
+    return db.getAll(this._storeName);
+  }
+
+  /**
+   * @param {string} url
+   */
+  async deleteUrl(url) {
+    const db = await this._getDb();
+    await db.delete(this._storeName, url);
+  }
+
+  /**
    * @return {Promise<DBWrapper>}
    */
   async _getDb() {
