@@ -14,7 +14,6 @@
   limitations under the License.
 */
 
-import core from '../workboxCore.mjs';
 import LOG_LEVELS from '../models/LogLevels.mjs';
 import '../_version.mjs';
 
@@ -24,7 +23,13 @@ const YELLOW = `#f39c12`;
 const RED = `#c0392b`;
 const BLUE = `#3498db`;
 
-const shouldPrint = (minLevel) => (core.logLevel <= minLevel);
+let logLevel = (process.env.NODE_ENV === 'production') ?
+  LOG_LEVELS.warn : LOG_LEVELS.log;
+
+const shouldPrint = (minLevel) => (logLevel <= minLevel);
+
+const setLoggerLevel = (newLogLevel) => logLevel = newLogLevel;
+const getLoggerLevel = () => logLevel;
 
 const _print = function(logFunction, logArgs, minLevel, levelColor) {
   if (!shouldPrint(minLevel)) {
@@ -54,5 +59,6 @@ const groupEnd = () => {
     console.groupEnd();
   }
 };
-
+export {setLoggerLevel};
+export {getLoggerLevel};
 export default {log, debug, warn, error, groupCollapsed, groupEnd};

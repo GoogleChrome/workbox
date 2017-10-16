@@ -27,28 +27,6 @@ import './_version.mjs';
  * @module workbox-core
  */
 
-// A WorkboxCore instance must be exported before we can use the logger.
-// This is so it can get the current log level.
-if (process.env.NODE_ENV !== 'production') {
-  const padding = '   ';
-  _private.logger.groupCollapsed('Welcome to Workbox!');
-  /* eslint-disable no-console */
-  console.log(
-    `📖 Read the guides and documentation\n` +
-    `${padding}https://developers.google.com/web/tools/workbox/`
-  );
-  console.log(
-    `❓ Use the [workbox] tag on StackOverflow to ask questions\n` +
-    `${padding}https://stackoverflow.com/questions/ask?tags=workbox`
-  );
-  console.log(
-    `🐛 Found a bug? Report it on GitHub\n` +
-    `${padding}https://github.com/GoogleChrome/workbox/issues/new`
-  );
-  /* eslint-enable no-console */
-  _private.logger.groupEnd();
-}
-
 /**
  * Utilities that are shared with other Workbox modules.
  *

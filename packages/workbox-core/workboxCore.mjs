@@ -17,7 +17,8 @@
 import assert from './utils/assert.mjs';
 import WorkboxError from './models/WorkboxError.mjs';
 import LOG_LEVELS from './models/LogLevels.mjs';
-import {cacheNames} from './_private.mjs';
+import {cacheNames, logger} from './_private.mjs';
+import {setLoggerLevel, getLoggerLevel} from './utils/logger.mjs';
 import './_version.mjs';
 
 /**
@@ -47,8 +48,27 @@ class WorkboxCore {
       // NOOP
     }
 
-    this._logLevel = (process.env.NODE_ENV === 'production') ?
-      LOG_LEVELS.warn : LOG_LEVELS.log;
+    // A WorkboxCore instance must be exported before we can use the logger.
+    // This is so it can get the current log level.
+    if (process.env.NODE_ENV !== 'production') {
+      const padding = '   ';
+      logger.groupCollapsed('Welcome to Workbox!');
+      /* eslint-disable no-console */
+      console.log(
+        `📖 Read the guides and documentation\n` +
+        `${padding}https://developers.google.com/web/tools/workbox/`
+      );
+      console.log(
+        `❓ Use the [workbox] tag on StackOverflow to ask questions\n` +
+        `${padding}https://stackoverflow.com/questions/ask?tags=workbox`
+      );
+      console.log(
+        `🐛 Found a bug? Report it on GitHub\n` +
+        `${padding}https://github.com/GoogleChrome/workbox/issues/new`
+      );
+      /* eslint-enable no-console */
+      logger.groupEnd();
+    }
   }
 
   /**
@@ -120,7 +140,7 @@ class WorkboxCore {
    * @return {number}.
    */
   get logLevel() {
-    return this._logLevel;
+    return getLoggerLevel();
   }
 
   /**
@@ -151,7 +171,7 @@ class WorkboxCore {
       });
     }
 
-    this._logLevel = newLevel;
+    setLoggerLevel(newLevel);
   }
 }
 

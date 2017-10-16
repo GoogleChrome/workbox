@@ -9,7 +9,7 @@ const bytes = require('bytes');
 const constants = require('../../gulp-tasks/utils/constants');
 
 // 10 KB max size
-const MAX_SIZE = 10 * 1000;
+const MAX_SIZE = 15 * 1000;
 
 class AggregateSizePlugin extends PluginInterface {
   constructor() {
