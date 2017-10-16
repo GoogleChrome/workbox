@@ -157,6 +157,10 @@ class CacheExpirationManager {
 
     const timestamps = await this._timestampModel.getAllTimestamps();
     while (timestamps.length > this._maxEntries) {
+      if (timestamps.length === 0) {
+        break;
+      }
+
       const lastUsed = timestamps.shift();
       extraUrls.push(lastUsed.url);
     }
