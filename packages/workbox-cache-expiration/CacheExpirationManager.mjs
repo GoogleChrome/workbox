@@ -130,10 +130,14 @@ class CacheExpirationManager {
     if (!this._maxAgeSeconds) {
       return [];
     }
+
     const expireOlderThan = expireFromTimestamp - (this._maxAgeSeconds * 1000);
     const timestamps = await this._timestampModel.getAllTimestamps();
-    const expiredUrls = Object.keys(timestamps).filter((key) => {
-      return timestamps[key].timestamp < expireOlderThan;
+    const expiredUrls = [];
+    timestamps.forEach((timestampDetails) => {
+      if (timestampDetails.timestamp < expireOlderThan) {
+        expiredUrls.push(timestampDetails.url);
+      }
     });
 
     return expiredUrls;
@@ -145,7 +149,23 @@ class CacheExpirationManager {
    * @private
    */
   async _findExtraEntries() {
-    return [];
+    const extraUrls = [];
+
+    if (!this._maxEntries) {
+      return [];
+    }
+
+    const timestamps = await this._timestampModel.getAllTimestamps();
+    while (timestamps.length > this._maxEntries) {
+      if (timestamps.length === 0) {
+        break;
+      }
+
+      const lastUsed = timestamps.shift();
+      extraUrls.push(lastUsed.url);
+    }
+
+    return extraUrls;
   }
 
   /**

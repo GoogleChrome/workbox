@@ -1,5 +1,6 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
+import {reset as iDBReset} from 'shelving-mock-indexeddb';
 
 import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/models/CacheTimestampsModel.mjs';
 import CacheExpirationManager from '../../../packages/workbox-cache-expiration/CacheExpirationManager.mjs';
@@ -9,10 +10,12 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
 
   beforeEach(function() {
     sandbox.restore();
+    iDBReset();
   });
 
   after(function() {
     sandbox.restore();
+    iDBReset();
   });
 
   describe(`constructor`, function() {
@@ -37,13 +40,13 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
 
   describe('_findOldEntries()', function() {
     it(`should return no expired entries for empty indexedDB`, async function() {
-      const expirationManager = new CacheExpirationManager('test-cache', {maxAgeSeconds: 10});
+      const expirationManager = new CacheExpirationManager('find-expired-entries-empty', {maxAgeSeconds: 10});
       const oldEntries = await expirationManager._findOldEntries(Date.now());
       expect(oldEntries).to.deep.equal([]);
     });
 
     it(`should return only the expired entries`, async function() {
-      const cacheName = 'test-cache';
+      const cacheName = 'find-expired-entries';
       const maxAgeSeconds = 10;
       const currentTimestamp = Date.now();
       const timestampModel = new CacheTimestampsModel(cacheName);
@@ -60,13 +63,54 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
     });
   });
 
+  describe('_findExtraEntries()', function() {
+    it(`should return no extra entries for empty indexedDB`, async function() {
+      const expirationManager = new CacheExpirationManager('find-extra-entries-empty', {maxAgeSeconds: 10});
+      const extraEntries = await expirationManager._findExtraEntries();
+      expect(extraEntries).to.deep.equal([]);
+    });
+
+    it(`should return only the extra entries`, async function() {
+      const cacheName = 'find-extra-entries';
+      const maxEntries = 1;
+      const earliestTimestamp = Date.now();
+      const secondEarlistTimestamp = earliestTimestamp + 1000;
+      const latestTimestamp = earliestTimestamp + 2000;
+      const timestampModel = new CacheTimestampsModel(cacheName);
+
+      const expirationManager = new CacheExpirationManager(cacheName, {maxEntries});
+
+      // No entries added, should be empty
+      let extraUrls = await expirationManager._findExtraEntries();
+      expect(extraUrls).to.deep.equal([]);
+
+      timestampModel.setTimestamp('/second-earliest', secondEarlistTimestamp);
+
+      // Added one entry, max is one, return empty array
+      extraUrls = await expirationManager._findExtraEntries();
+      expect(extraUrls).to.deep.equal([]);
+
+      timestampModel.setTimestamp('/latest', latestTimestamp);
+
+      // Added two entries, max is one, return one entry
+      extraUrls = await expirationManager._findExtraEntries();
+      expect(extraUrls).to.deep.equal(['/second-earliest']);
+
+      timestampModel.setTimestamp('/earliest', earliestTimestamp);
+
+      // Added three entries, max is one, return two entries
+      extraUrls = await expirationManager._findExtraEntries();
+      expect(extraUrls).to.deep.equal(['/earliest', '/second-earliest']);
+    });
+  });
+
   describe(`expireEntries()`, function() {
     it(`should expire and delete expired entries`, async function() {
       const clock = sandbox.useFakeTimers({
         toFake: ['Date'],
       });
 
-      const cacheName = 'test-cache';
+      const cacheName = 'expire-and-delete';
       const maxAgeSeconds = 10;
       const currentTimestamp = Date.now();
 
@@ -86,7 +130,7 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
 
       // Check IDB is empty
       const timestamps = await timestampModel.getAllTimestamps();
-      expect(timestamps).to.deep.equal({});
+      expect(timestamps).to.deep.equal([]);
 
       // TODO Check cache is empty
     });
