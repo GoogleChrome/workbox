@@ -16,7 +16,6 @@
 
 /**
  * The variable name that workbox-sw expects manifest entries to be assigned.
- * TODO: rename to generate-manifest-with-webpack.js
  * @type {String}
  */
 const PRECACHE_MANIFEST_VAR = '__precacheManifest';

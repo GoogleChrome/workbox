@@ -25,7 +25,6 @@ const {readFile} = require('./utils/read-file');
  * TODO:
  *    allow users to specify a webpack entry name to use as a service worker
  *    instead of just swSrc
- *    rename this to generate-or-copy-sw
  *
  * @function generateOrCopySW
  * @param {module:workbox-build.generateSWString} config
