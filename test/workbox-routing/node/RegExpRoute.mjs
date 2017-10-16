@@ -46,11 +46,11 @@ describe(`[workbox-routing] RegExpRoute`, function() {
     const regExp = new RegExp(PATH);
 
     const route = new RegExpRoute(regExp, HANDLER);
-    expect(route._match({url: matchingUrl})).to.be.ok;
-    expect(route._match({url: nonMatchingUrl})).not.to.be.ok;
+    expect(route.match({url: matchingUrl})).to.be.ok;
+    expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
     // This route will not match because while the RegExp matches, the match
     // doesn't occur at the start of the cross-origin URL.
-    expect(route._match({url: crossOriginUrl})).not.to.be.ok;
+    expect(route.match({url: crossOriginUrl})).not.to.be.ok;
   });
 
   it(`should properly match cross-origin URLs with wildcards`, function() {
@@ -58,8 +58,8 @@ describe(`[workbox-routing] RegExpRoute`, function() {
     const matchingUrl2 = new URL('https://code.getmdl.io/1.2.1/material.indigo-pink.min.css');
 
     const route = new RegExpRoute(/.*\.(?:googleapis|getmdl)\.(?:com|io)\/.*/, HANDLER);
-    expect(route._match({url: matchingUrl})).to.be.ok;
-    expect(route._match({url: matchingUrl2})).to.be.ok;
+    expect(route.match({url: matchingUrl})).to.be.ok;
+    expect(route.match({url: matchingUrl2})).to.be.ok;
   });
 
   it(`should properly match cross-origin URLs without wildcards`, function() {
@@ -68,8 +68,8 @@ describe(`[workbox-routing] RegExpRoute`, function() {
     const crossOriginRegExp = new RegExp(matchingUrl.href);
 
     const route = new RegExpRoute(crossOriginRegExp, HANDLER);
-    expect(route._match({url: matchingUrl})).to.be.ok;
-    expect(route._match({url: nonMatchingUrl})).not.to.be.ok;
+    expect(route.match({url: matchingUrl})).to.be.ok;
+    expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
   });
 
   it(`should properly match URLs with capture groups`, function() {
@@ -82,11 +82,11 @@ describe(`[workbox-routing] RegExpRoute`, function() {
 
     const route = new RegExpRoute(captureGroupRegExp, HANDLER);
 
-    const match = route._match({url: captureGroupMatchingUrl});
+    const match = route.match({url: captureGroupMatchingUrl});
     expect(match.length).to.equal(2);
     expect(match[0]).to.equal(value1);
     expect(match[1]).to.equal(value2);
 
-    expect(route._match({url: captureGroupNonMatchingUrl})).not.to.be.ok;
+    expect(route.match({url: captureGroupNonMatchingUrl})).not.to.be.ok;
   });
 });

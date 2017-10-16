@@ -35,6 +35,7 @@ describe(`[workbox-routing] Module Interface`, function() {
   describe('named exports', function() {
     it(`should export the expected interface`, function() {
       expect(routingModule).to.have.keys([
+        'RegExpRoute',
         'Route',
         'Router',
         'default',
