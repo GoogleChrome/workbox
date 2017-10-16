@@ -44,7 +44,7 @@ class CacheTimestampsModel {
   async setTimestamp(url, timestamp) {
     const db = await this._getDb();
     return db.put(this._storeName, {
-      [URL_KEY]: url,
+      [URL_KEY]: new URL(url, location).href,
       [TIMESTAMP_KEY]: timestamp,
     });
   }
@@ -67,7 +67,7 @@ class CacheTimestampsModel {
    */
   async deleteUrl(url) {
     const db = await this._getDb();
-    await db.delete(this._storeName, url);
+    await db.delete(this._storeName, new URL(url, location).href);
   }
 
   /**
