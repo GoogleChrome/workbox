@@ -17,6 +17,23 @@
 const {generateSWString} = require('workbox-build');
 const {readFile} = require('./utils/read-file');
 
+/**
+ * Generate a service worker using {@link module:workbox-build.generateSWString}
+ * or append `importScripts('workbox-sw.<version>.js', 'file-manifest.js')` to
+ * an existing service worker if `swSrc` is specified
+ *
+ * TODO:
+ *    allow users to specify a webpack entry name to use as a service worker
+ *    instead of just swSrc
+ *    rename this to generate-or-copy-sw
+ *
+ * @function generateOrCopySW
+ * @param {module:workbox-build.generateSWString} config
+ * @param {string} swSrc path to existing service worker
+ * @return {Promise<string>} generated service worker string
+ *
+ * @memberof module:workbox-webpack-plugin
+ */
 module.exports = (config, swSrc) => new Promise((resolve, reject) => {
   if (!swSrc) {
     // use workbox-build to generate the service worker
