@@ -56,7 +56,10 @@ class CacheTimestampsModel {
    */
   async getAllTimestamps() {
     const db = await this._getDb();
-    return db.getAll(this._storeName);
+    const timestampObject = await db.getAll(this._storeName, TIMESTAMP_KEY);
+    return Object.keys(timestampObject).map((timestampKey) => {
+      return timestampObject[timestampKey];
+    });
   }
 
   /**

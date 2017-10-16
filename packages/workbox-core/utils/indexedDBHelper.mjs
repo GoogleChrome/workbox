@@ -53,12 +53,12 @@ class DBWrapper {
     });
   }
 
-  // TODO (gauntface) https://github.com/jakearchibald/idb/blob/master/lib/idb.js#L259-L282
   /**
    * @param {string} storename
+   * @param {string} [indexName]
    * @return {Promise}
    */
-  getAll(storename) {
+  getAll(storename, indexName) {
     return new Promise((resolve, reject) => {
       const items = {};
 
@@ -72,7 +72,8 @@ class DBWrapper {
       };
 
       const objectStore = transaction.objectStore(storename);
-      const cursorRequest = objectStore.openCursor();
+      const storeToUse = indexName ? objectStore.index(indexName) : objectStore;
+      const cursorRequest = storeToUse.openCursor();
       cursorRequest.onsuccess = (evt) => {
         const cursor = evt.target.result;
         if (!cursor) {
@@ -153,10 +154,6 @@ class IndexedDBHelper {
    * @return {Promise<IDBObjectStore>}
    */
   async getDB(dbName, version, upgradeCb) {
-    if (this._opendedDBs[dbName]) {
-      return this._opendedDBs[dbName];
-    }
-
     const db = await new Promise((resolve, reject) => {
       const openRequest = indexedDB.open(dbName, 1);
       openRequest.onupgradeneeded = (event) => {
