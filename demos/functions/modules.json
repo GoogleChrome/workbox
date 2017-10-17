@@ -1,0 +1,69 @@
+[
+  {
+    "name": "workbox-background-sync",
+    "hasDocs": false,
+    "hasDemo": false
+  },
+  {
+    "name": "workbox-broadcast-cache-update",
+    "hasDocs": false,
+    "hasDemo": false
+  },
+  {
+    "name": "workbox-build",
+    "hasDocs": true,
+    "hasDemo": false
+  },
+  {
+    "name": "workbox-cache-expiration",
+    "hasDocs": false,
+    "hasDemo": false
+  },
+  {
+    "name": "workbox-cacheable-response",
+    "hasDocs": false,
+    "hasDemo": false
+  },
+  {
+    "name": "workbox-core",
+    "guide": "https://docs.google.com/a/google.com/document/d/1hrxNhKLN_mvRPjQbepArP3W4mAx1PxIGb37NCU_WA6w/edit?usp=sharing",
+    "hasDocs": true,
+    "hasDemo": true
+  },
+  {
+    "name": "workbox-google-analytics",
+    "hasDocs": false,
+    "hasDemo": false
+  },
+  {
+    "name": "workbox-precaching",
+    "guide": "https://docs.google.com/a/google.com/document/d/1lM_fVQZpohD8N1QLuxobmrYrq9lOJh4jYF3MJhNrMvs/edit?usp=sharing",
+    "hasDocs": true,
+    "hasDemo": true
+  },
+  {
+    "name": "workbox-range-requests",
+    "hasDocs": false,
+    "hasDemo": false
+  },
+  {
+    "name": "workbox-routing",
+    "hasDocs": true,
+    "hasDemo": true
+  },
+  {
+    "name": "workbox-runtime-caching",
+    "hasDocs": true,
+    "hasDemo": true
+  },
+  {
+    "name": "workbox-sw",
+    "hasDocs": true,
+    "hasDemo": false
+  },
+  {
+    "name": "workbox-webpack-plugin",
+    "hasDocs": false,
+    "hasDemo": false
+  }
+]

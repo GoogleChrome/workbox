@@ -1,0 +1,23 @@
+{{#each modules}}
+  <section id="{{name}}">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <h2>{{name}}</h2>
+        <p>
+          {{#if hasDemo}}
+          <a class="btn btn-outline-primary" href="/demo/{{name}}/">Demo</a>
+          {{/if}}
+          {{#if guide}}
+          <a class="btn btn-outline-primary" href="{{guide}}">Module Guide</a>
+          {{/if}}
+          {{#if hasDocs}}
+          <a class="btn btn-outline-primary" href="/reference-docs/module-{{name}}" target="_blank">Reference Docs</a>
+          {{/if}}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{{/each}}
+

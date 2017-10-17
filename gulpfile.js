@@ -53,6 +53,7 @@ const gulpTaskFiles = [
   'publish',
   'watch',
   'docs',
+  'demos',
 ];
 
 gulpTaskFiles.forEach((gulpTaskFile) => {
