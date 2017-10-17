@@ -13,7 +13,9 @@ workboxModules = workboxModules.map((singleModule) => {
   try {
     fs.accessSync(docPath);
     exists = true;
-  } catch(err) {}
+  } catch (err) {
+    // NOOP
+  }
 
   singleModule.hasDocs = exists;
   return singleModule;
@@ -29,7 +31,9 @@ workboxModules = workboxModules.map((singleModule) => {
   try {
     fs.accessSync(docPath);
     exists = true;
-  } catch(err) {}
+  } catch (err) {
+    // NOOP
+  }
 
   singleModule.hasDemo = exists;
   return singleModule;

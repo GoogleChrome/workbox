@@ -11,7 +11,8 @@ module.exports = {
     sourceType: 'module',
   },
   globals: {
-    google: false,
+    workbox: false,
+    WorkboxSW: false,
     SyncEvent: false,
   },
   rules: {
