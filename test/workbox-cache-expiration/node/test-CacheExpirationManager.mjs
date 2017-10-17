@@ -215,4 +215,27 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
       }]);
     });
   });
+
+  describe(`isURLExpired()`, function() {
+    it(`should return boolean`, async function() {
+      const clock = sandbox.useFakeTimers({
+        toFake: ['Date'],
+      });
+
+      const cacheName = 'update-timestamp';
+      const maxAgeSeconds = 10;
+      const currentTimestamp = Date.now();
+      const timestampModel = new CacheTimestampsModel(cacheName);
+      timestampModel.setTimestamp('/', currentTimestamp);
+
+      const expirationManager = new CacheExpirationManager(cacheName, {maxAgeSeconds});
+      let isExpired = await expirationManager.isURLExpired('/');
+      expect(isExpired).to.equal(false);
+
+      clock.tick(maxAgeSeconds * 1000 + 1);
+
+      isExpired = await expirationManager.isURLExpired('/');
+      expect(isExpired).to.equal(true);
+    });
+  });
 });

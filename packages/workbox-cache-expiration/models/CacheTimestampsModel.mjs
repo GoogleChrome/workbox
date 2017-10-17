@@ -63,6 +63,18 @@ class CacheTimestampsModel {
   }
 
   /**
+   * Returns the timestamp stored for a given URL.
+   *
+   * @param {string} url
+   * @return {number}
+   */
+  async getTimestamp(url) {
+    const db = await this._getDb();
+    const timestampObject = await db.get(this._storeName, url);
+    return timestampObject.timestamp;
+  }
+
+  /**
    * @param {string} url
    */
   async deleteUrl(url) {

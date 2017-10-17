@@ -215,6 +215,24 @@ class CacheExpirationManager {
 
     await this._timestampModel.setTimestamp(urlObject.href, Date.now());
   }
+
+  /**
+   * Can be used to check if a URL has expired or not before it's used.
+   *
+   * Note: This method will not remove the cached entry, call
+   * `expireEntries()` to remove indexedDB and Cache entries.
+   *
+   * @param {string} url
+   * @return {boolean}
+   */
+  async isURLExpired(url) {
+    const urlObject = new URL(url, location);
+    urlObject.hash = '';
+
+    const timestamp = await this._timestampModel.getTimestamp(urlObject.href);
+    const expireOlderThan = Date.now() - (this._maxAgeSeconds * 1000);
+    return (timestamp < expireOlderThan);
+  }
 }
 
 export default CacheExpirationManager;
