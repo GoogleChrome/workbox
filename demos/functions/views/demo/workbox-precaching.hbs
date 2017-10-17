@@ -1,0 +1,35 @@
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <ol>
+          <li>Open DevTools</li>
+          <li>Go to the Console</li>
+          <li>Click this button:<br /><button class="install-sw-1 btn btn-outline-primary">Install Service Worker</button></li>
+          <li>Checkout the logs for info on what was precached.</li>
+          <li>Explore Cache and indexedDB in the "Application" tab in DevTools. <i>Note: You may need to right-click and refresh.</i></li>
+          <li>Click this button:<br /><button class="install-sw-2 btn btn-outline-primary">Install New Service Worker</button></li>
+          <li>Check logs, cache and indexedDB to highlight the new, updated and deleted entry.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const firstBtn = document.querySelector('.install-sw-1');
+  const secondBtn = document.querySelector('.install-sw-2');
+
+  firstBtn.addEventListener('click', () => {
+    navigator.serviceWorker.register('/demo/workbox-precaching/sw-1.js');
+  });
+  secondBtn.addEventListener('click', () => {
+    navigator.serviceWorker.register('/demo/workbox-precaching/sw-1.js')
+    .then((reg) => {
+      return reg.unregister();
+    })
+    .then(() => {
+      navigator.serviceWorker.register('/demo/workbox-precaching/sw-2.js');
+    });
+  });
+</script>

@@ -1,0 +1,101 @@
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <ol>
+          <li>Open DevTools</li>
+          <li>Go to the Console</li>
+          <li>Click this button:<br /><button class="install-sw btn btn-outline-primary">Install Service Worker</button></li>
+          <li>Click any of the buttons below and view the logs:
+            <ul>
+              <li>
+                <p>This will attempt to get a request from an empty cache.</p>
+                <p><button class="cache-only-empty-cache btn btn-outline-primary">Cache Only Request (To Empty Cache)</button></p>
+              </li>
+              <li><p><button class="cache-only-populated-cache btn btn-outline-primary">Cache Only Request (To Populated Cache)</button></p></li>
+              <li><p><button class="cache-first btn btn-outline-primary">Cache First Request (Try it Several Times)</button></p></li>
+              <li><p><button class="network-only btn btn-outline-primary">Network Only Request</button></p></li>
+              <li><p><button class="network-first-valid btn btn-outline-primary">Network First Request (Valid URL)</button></p></li>
+              <li><p><button class="network-first-failing btn btn-outline-primary">Network First Request (Failing URL)</button></p></li>
+              <li><p><button class="stale-while-revalidate btn btn-outline-primary">Stale While Revalidate Request</button></p></li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const installBtn = document.querySelector('.install-sw');
+  installBtn.addEventListener('click', () => {
+    navigator.serviceWorker.register('/demo/workbox-runtime-caching/sw.js');
+  });
+
+  const cacheOnlyEmpty = document.querySelector('.cache-only-empty-cache');
+  cacheOnlyEmpty.addEventListener('click', () => {
+    fetch('cache-only-empty-cache').catch(() => {});
+  });
+
+  const cacheOnlyPopulated = document.querySelector('.cache-only-populated-cache');
+  cacheOnlyPopulated.addEventListener('click', () => {
+    fetch('cache-only-populated-cache')
+    .then((response) => {
+      return response.text();
+    })
+    .then((responseText) => {
+      console.log(`Response received: '${responseText.trim()}'`);
+    });
+  });
+
+  const cacheFirst = document.querySelector('.cache-first');
+  cacheFirst.addEventListener('click', () => {
+    fetch('cache-first')
+    .then((response) => {
+      return response.text();
+    })
+    .then((responseText) => {
+      console.log(`Response received: '${responseText.trim()}'`);
+    });
+  });
+
+  const networkOnly = document.querySelector('.network-only');
+  networkOnly.addEventListener('click', () => {
+    fetch('network-only')
+    .then((response) => {
+      return response.text();
+    })
+    .then((responseText) => {
+      console.log(`Response received: '${responseText.trim()}'`);
+    });
+  });
+
+  const networkFirstValid = document.querySelector('.network-first-valid');
+  networkFirstValid.addEventListener('click', () => {
+    fetch('network-first')
+    .then((response) => {
+      return response.text();
+    })
+    .then((responseText) => {
+      console.log(`Response received: '${responseText.trim()}'`);
+    });
+  });
+
+  const networkFirstFailing = document.querySelector('.network-first-failing');
+  networkFirstFailing.addEventListener('click', () => {
+    fetch('network-first-404')
+    .catch(() => {});
+  });
+
+  const staleWhileRevalidate = document.querySelector('.stale-while-revalidate');
+  staleWhileRevalidate.addEventListener('click', () => {
+    fetch('stale-while-revalidate')
+    .then((response) => {
+      return response.text();
+    })
+    .then((responseText) => {
+      console.log(`Response received: '${responseText.trim()}'`);
+    });
+  });
+
+</script>
