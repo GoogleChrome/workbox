@@ -25,7 +25,7 @@ importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
 /**
  * DO NOT EDIT __precacheManifest MANUALLY!
  *
- * The workboxSW.precache() method does the following:
+ * The workboxSW.precacheAndRoute() method does the following:
  * 1. Cache URLs in the manifest to a local cache.
  * 2. When a network request is made for any of these URLs the response
  *    will ALWAYS comes from the cache, NEVER the network.
@@ -42,7 +42,9 @@ importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
 <% } %>
 const workboxSW = new WorkboxSW(<%= workboxOptionsString %>);
-workboxSW.precache(self.__precacheManifest);
+
+workboxSW.precaching.precacheAndRoute(self.__precacheManifest);
+
 <% if(navigateFallback) { %>workboxSW.router.registerNavigationRoute("<%= navigateFallback %>"<% if(navigateFallbackWhitelist) { %>, {
   whitelist: [<%= navigateFallbackWhitelist %>],
 }<% } %>);<% } %><% if (runtimeCaching && runtimeCaching.length > 0) { runtimeCaching.forEach((runtimeCachingString) => {%><%= runtimeCachingString %>
