@@ -20,6 +20,8 @@ import '../_version.mjs';
 /**
  * A class to manage storing requests from a Queue in IndexedbDB,
  * indexed by their queue name for easier access.
+ *
+ * @private
  */
 export default class QueueStore {
   /**

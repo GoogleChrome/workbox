@@ -13,15 +13,30 @@
  limitations under the License.
 */
 
-import Queue from './lib/Queue.mjs';
-import QueuePlugin from './lib/QueuePlugin.mjs';
-import './_version.mjs';
+import '../_version.mjs';
 
 /**
- * @module workbox-background-sync
+ * A class implementing the `fetchDidFail` lifecycle callback. This makes it
+ * easier to add failed requests to a background sync Queue.
+ *
+ * @memberof module:workbox-background-sync
  */
+class QueuePlugin {
+  /**
+   * @param {Queue} queue The Queue instance to add failed requests to.
+   */
+  constructor(queue) {
+    this._queue = queue;
+  }
 
-export {
-  Queue,
-  QueuePlugin,
-};
+  /**
+   * @param {Object} options
+   * @param {Request} options.request
+   * @private
+   */
+  fetchDidFail({request}) {
+    this._queue.addRequest(request);
+  }
+}
+
+export default QueuePlugin;

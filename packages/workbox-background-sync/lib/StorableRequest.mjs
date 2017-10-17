@@ -32,6 +32,8 @@ const serializableProperties = [
 /**
  * A class to make it easier to serialize and de-serialize requests so they
  * can be stored in IndexedDB.
+ *
+ * @private
  */
 export default class StorableRequest {
   /**

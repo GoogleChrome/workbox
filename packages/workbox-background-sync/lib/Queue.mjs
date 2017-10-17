@@ -28,8 +28,10 @@ const queueNames = new Set();
  * A class to manage storing failed requests in IndexedDB and retrying them
  * later. All parts of the storing and replaying process are observable via
  * callbacks.
+ *
+ * @memberof module:workbox-background-sync
  */
-export default class Queue {
+class Queue {
   /**
    * Creates an instance of Queue with the given options
    *
@@ -37,22 +39,22 @@ export default class Queue {
    *     unique as it's used to register sync events and store requests
    *     in IndexedDB specific to this instance. An error will be thrown if
    *     a duplicate name is detected.
-   * @param {Object} [param2]
-   * @param {Object} [param2.callbacks] Callbacks to observe the lifecycle of
+   * @param {Object} [options]
+   * @param {Object} [options.callbacks] Callbacks to observe the lifecycle of
    *     queued requests. Use these to respond to or modify the requests
    *     during the replay process.
    * @param {function(StorableRequest):undefined}
-   *     [param2.callbacks.requestWillEnqueue]
+   *     [options.callbacks.requestWillEnqueue]
    *     Invoked immediately before the request is stored to IndexedDB. Use
    *     this callback to modify request data at store time.
    * @param {function(StorableRequest):undefined}
-   *     [param2.callbacks.requestWillReplay]
+   *     [options.callbacks.requestWillReplay]
    *     Invoked immediately before the request is re-fetched. Use this
    *     callback to modify request data at fetch time.
    * @param {function(Array<StorableRequest>):undefined}
-   *     [param2.callbacks.queueDidReplay]
+   *     [options.callbacks.queueDidReplay]
    *     Invoked after all requests in the queue have successfully replayed.
-   * @param {number} [param2.maxRetentionTime = 7 days] The amount of time (in
+   * @param {number} [options.maxRetentionTime = 7 days] The amount of time (in
    *     ms) a request may be retried. After this amount of time has passed,
    *     the request will be deleted from the queue.
    */
@@ -81,20 +83,6 @@ export default class Queue {
   get name() {
     return this._name;
   }
-
-  /**
-   * Returns an object containing the `fetchDidFail` lifecycle method. This
-   * object can be used as a RequestWrapper plugin to automatically add
-   * failed requests to the background sync queue to be retried later.
-   *
-   * @return {Object}
-   */
-  createPlugin() {
-    return {
-      fetchDidFail: ({request}) => this.addRequest(request),
-    };
-  }
-
 
   /**
    * Stores the passed request into IndexedDB. The database used is
@@ -206,3 +194,5 @@ export default class Queue {
     }
   }
 }
+
+export default Queue;

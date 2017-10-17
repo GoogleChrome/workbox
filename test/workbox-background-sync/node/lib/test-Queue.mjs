@@ -143,20 +143,6 @@ describe(`[workbox-background-sync] Queue`, function() {
     });
   });
 
-  describe(`createPlugin`, function() {
-    it(`should return an object implementing the fetchDidFail plugin ` +
-        `method that adds the failed request to the queue`, async function() {
-      sandbox.stub(Queue.prototype, 'addRequest');
-      const queue = new Queue('foo');
-      const plugin = queue.createPlugin();
-
-      plugin.fetchDidFail({request: new Request('/')});
-      expect(Queue.prototype.addRequest.calledOnce).to.be.true;
-      expect(Queue.prototype.addRequest.calledWith(
-          sinon.match.instanceOf(Request))).to.be.true;
-    });
-  });
-
   describe(`addRequest`, function() {
     it(`should serialize the request and store it in IndexedDB`,
         async function() {
