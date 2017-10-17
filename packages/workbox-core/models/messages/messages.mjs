@@ -128,4 +128,8 @@ export default {
     return `The route you're trying to unregister was not previously ` +
       `registered.`;
   },
+  'duplicate-queue-name': ({name}) => {
+    return `The Queue name '${name}' is already being used. ` +
+        `All instances of backgroundSync.Queue must be given unique names.`;
+  },
 };

@@ -11,7 +11,8 @@ module.exports = {
     sourceType: 'module',
   },
   globals: {
-    'google': false,
+    google: false,
+    SyncEvent: false,
   },
   rules: {
     "jsdoc/check-types": 2,

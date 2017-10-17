@@ -11,18 +11,34 @@
  limitations under the License.
  */
 
-const mockFetch = require('./mock-fetch');
+const serviceWorkerMock = require('service-worker-mock');
 const {IDBFactory, IDBKeyRange} = require('shelving-mock-indexeddb');
-const makeServiceWorkerEnv = require('service-worker-mock');
+const Blob = require('./sw-env-mocks/Blob');
+const Event = require('./sw-env-mocks/Event');
+const {addEventListener, dispatchEvent} = require('./sw-env-mocks/event-listeners');
+const ExtendableEvent = require('./sw-env-mocks/ExtendableEvent');
+const fetch = require('./sw-env-mocks/fetch');
+const Headers = require('./sw-env-mocks/Headers');
+const Request = require('./sw-env-mocks/Request');
+const SyncEvent = require('./sw-env-mocks/SyncEvent');
+const SyncManager = require('./sw-env-mocks/SyncManager');
 
-global.fetch = mockFetch;
+// Assign all properties of `self` to `global`;
+Object.assign(global, serviceWorkerMock());
+global.self = global;
+
+// Add/fix globals not in 'service-worker-mock'.
+global.addEventListener = addEventListener;
+global.Blob = Blob;
+global.dispatchEvent = dispatchEvent;
+global.Event = Event;
+global.ExtendableEvent = ExtendableEvent;
+global.fetch = fetch;
+global.Headers = Headers;
 global.indexedDB = new IDBFactory();
 global.IDBKeyRange = IDBKeyRange;
 global.importScripts = () => {};
-
-const swEnv = makeServiceWorkerEnv();
-
-// This is needed to ensure new URL('/', location), works.
-swEnv.location = 'https://example.com';
-
-Object.assign(global, swEnv);
+global.location = 'https://example.com';
+global.registration.sync = new SyncManager();
+global.Request = Request;
+global.SyncEvent = SyncEvent;

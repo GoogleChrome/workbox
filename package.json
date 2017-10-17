@@ -96,7 +96,7 @@
     "serve-index": "^1.9.1",
     "serve-static": "^1.13.1",
     "service-worker-mock": "^1.5.0",
-    "shelving-mock-indexeddb": "^1.0.4",
+    "shelving-mock-indexeddb": "philipwalton/shelving-mock-indexeddb#clone-fix",
     "sinon": "^3.2.1",
     "tempy": "^0.2.1",
     "uglify-es": "^3.1.0",
