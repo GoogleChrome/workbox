@@ -111,7 +111,6 @@ class CacheExpirationPlugin {
    */
   async cacheDidUpdate({cacheName, newResponse, url} = {}) {
     if (process.env.NODE_ENV !== 'production') {
-      // TODO Check info
       core.assert.isType(cacheName, 'string', {
         moduleName: 'workbox-cache-expiration',
         className: 'CacheExpirationPlugin',
