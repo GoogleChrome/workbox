@@ -71,6 +71,7 @@ class CacheExpirationManager {
 
     this._maxEntries = config.maxEntries;
     this._maxAgeSeconds = config.maxAgeSeconds;
+    this._cacheName = cacheName;
     this._timestampModel = new CacheTimestampsModel(cacheName);
   }
 
@@ -92,6 +93,7 @@ class CacheExpirationManager {
     // Use a Set to remove any duplicates following the concatenation, then
     // convert back into an array.
     const allUrls = [...new Set(oldEntries.concat(extraEntries))];
+
     await Promise.all([
       this._deleteFromCache(allUrls),
       this._deleteFromIDB(allUrls),
@@ -169,12 +171,15 @@ class CacheExpirationManager {
   }
 
   /**
-   * @return {Promise}
+   * @param {Array<string>} urls Array of URLs to delete from cache.
    *
    * @private
    */
-  _deleteFromCache() {
-    return Promise.resolve();
+  async _deleteFromCache(urls) {
+    const cache = await caches.open(this._cacheName);
+    for (const url of urls) {
+      await cache.delete(url);
+    }
   }
 
   /**
@@ -186,6 +191,47 @@ class CacheExpirationManager {
     for (const url of urls) {
       await this._timestampModel.deleteUrl(url);
     }
+  }
+
+  /**
+   * Update the timestamp for the given URL. This ensures the when
+   * removing entries based on maximum entries, most recently used
+   * is accurate or when expiring, the timestamp is up-to-date.
+   *
+   * @param {string} url
+   */
+  async updateTimestamp(url) {
+    if (process.env.NODE_ENV !== 'production') {
+      core.assert.isType(url, 'string', {
+        moduleName: 'workbox-cache-expiration',
+        className: 'CacheExpirationManager',
+        funcName: 'updateTimestamp',
+        paramName: 'url',
+      });
+    }
+
+    const urlObject = new URL(url, location);
+    urlObject.hash = '';
+
+    await this._timestampModel.setTimestamp(urlObject.href, Date.now());
+  }
+
+  /**
+   * Can be used to check if a URL has expired or not before it's used.
+   *
+   * Note: This method will not remove the cached entry, call
+   * `expireEntries()` to remove indexedDB and Cache entries.
+   *
+   * @param {string} url
+   * @return {boolean}
+   */
+  async isURLExpired(url) {
+    const urlObject = new URL(url, location);
+    urlObject.hash = '';
+
+    const timestamp = await this._timestampModel.getTimestamp(urlObject.href);
+    const expireOlderThan = Date.now() - (this._maxAgeSeconds * 1000);
+    return (timestamp < expireOlderThan);
   }
 }
 

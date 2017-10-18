@@ -30,9 +30,9 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
       const db = await indexedDBHelper.getDB(`workbox-cache-expiration`, 1);
       const timestamps = await db.getAll('test-cache');
 
-      expect(timestamps['/']).to.exist;
-      expect(timestamps['/']).to.deep.equal({
-        url: '/',
+      expect(timestamps['https://example.com/']).to.exist;
+      expect(timestamps['https://example.com/']).to.deep.equal({
+        url: 'https://example.com/',
         timestamp,
       });
     });

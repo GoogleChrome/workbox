@@ -59,7 +59,7 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
 
       // The plus one is to ensure it expires
       expiredUrls = await expirationManager._findOldEntries(currentTimestamp + maxAgeSeconds * 1000 + 1);
-      expect(expiredUrls).to.deep.equal(['/']);
+      expect(expiredUrls).to.deep.equal(['https://example.com/']);
     });
   });
 
@@ -94,13 +94,13 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
 
       // Added two entries, max is one, return one entry
       extraUrls = await expirationManager._findExtraEntries();
-      expect(extraUrls).to.deep.equal(['/second-earliest']);
+      expect(extraUrls).to.deep.equal(['https://example.com/second-earliest']);
 
       timestampModel.setTimestamp('/earliest', earliestTimestamp);
 
       // Added three entries, max is one, return two entries
       extraUrls = await expirationManager._findExtraEntries();
-      expect(extraUrls).to.deep.equal(['/earliest', '/second-earliest']);
+      expect(extraUrls).to.deep.equal(['https://example.com/earliest', 'https://example.com/second-earliest']);
     });
   });
 
@@ -113,9 +113,11 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
       const cacheName = 'expire-and-delete';
       const maxAgeSeconds = 10;
       const currentTimestamp = Date.now();
+      const cache = await caches.open(cacheName);
 
       const timestampModel = new CacheTimestampsModel(cacheName);
       timestampModel.setTimestamp('/', currentTimestamp);
+      cache.put('https://example.com/', new Response('Injected request'));
 
       const expirationManager = new CacheExpirationManager(cacheName, {maxAgeSeconds});
 
@@ -126,13 +128,114 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
 
       // The plus one is to ensure it expires
       expiredUrls = await expirationManager.expireEntries();
-      expect(expiredUrls).to.deep.equal(['/']);
+      expect(expiredUrls).to.deep.equal(['https://example.com/']);
 
       // Check IDB is empty
       const timestamps = await timestampModel.getAllTimestamps();
       expect(timestamps).to.deep.equal([]);
 
-      // TODO Check cache is empty
+      // Check cache is empty
+      const cachedRequests = await cache.keys();
+      expect(cachedRequests).to.deep.equal([]);
+    });
+
+    it(`should expire and delete entries beyond maximum entries`, async function() {
+      const cacheName = 'max-and-delete';
+      const maxEntries = 1;
+      const currentTimestamp = Date.now();
+      const cache = await caches.open(cacheName);
+
+      const timestampModel = new CacheTimestampsModel(cacheName);
+      timestampModel.setTimestamp('/first', currentTimestamp);
+      cache.put('https://example.com/first', new Response('Injected request'));
+
+      const expirationManager = new CacheExpirationManager(cacheName, {maxEntries});
+
+      let expiredUrls = await expirationManager.expireEntries();
+      expect(expiredUrls).to.deep.equal([]);
+
+      // Add entry and ensure it is removed
+      timestampModel.setTimestamp('/second', currentTimestamp - 1000);
+      cache.put('https://example.com/second', new Response('Injected request'));
+
+      expiredUrls = await expirationManager.expireEntries();
+      expect(expiredUrls).to.deep.equal(['https://example.com/second']);
+
+      // Check IDB is has /first
+      let timestamps = await timestampModel.getAllTimestamps();
+      expect(timestamps).to.deep.equal([{
+        url: 'https://example.com/first',
+        timestamp: currentTimestamp,
+      }]);
+
+      // Check cache has /first
+      let cachedRequests = await cache.keys();
+      expect(cachedRequests.map((req) => req.url)).to.deep.equal(['https://example.com/first']);
+
+      timestampModel.setTimestamp('/third', currentTimestamp + 1000);
+      cache.put('https://example.com/third', new Response('Injected request'));
+
+      expiredUrls = await expirationManager.expireEntries();
+      expect(expiredUrls).to.deep.equal(['https://example.com/first']);
+
+      // Check IDB is has /third
+      timestamps = await timestampModel.getAllTimestamps();
+      expect(timestamps).to.deep.equal([{
+        url: 'https://example.com/third',
+        timestamp: currentTimestamp + 1000,
+      }]);
+
+      // Check cache has /third
+      cachedRequests = await cache.keys();
+      expect(cachedRequests.map((req) => req.url)).to.deep.equal(['https://example.com/third']);
+    });
+  });
+
+  describe(`updateTimestamp()`, function() {
+    it(`should update the timestamp for a url`, async function() {
+      const clock = sandbox.useFakeTimers({
+        toFake: ['Date'],
+      });
+
+      const cacheName = 'update-timestamp';
+      const maxAgeSeconds = 10;
+      const currentTimestamp = Date.now();
+      const timestampModel = new CacheTimestampsModel(cacheName);
+      timestampModel.setTimestamp('/', currentTimestamp);
+
+      clock.tick(1000);
+
+      const expirationManager = new CacheExpirationManager(cacheName, {maxAgeSeconds});
+      expirationManager.updateTimestamp('/');
+
+      const timestamps = await timestampModel.getAllTimestamps();
+      expect(timestamps).to.deep.equal([{
+        url: 'https://example.com/',
+        timestamp: currentTimestamp + 1000,
+      }]);
+    });
+  });
+
+  describe(`isURLExpired()`, function() {
+    it(`should return boolean`, async function() {
+      const clock = sandbox.useFakeTimers({
+        toFake: ['Date'],
+      });
+
+      const cacheName = 'update-timestamp';
+      const maxAgeSeconds = 10;
+      const currentTimestamp = Date.now();
+      const timestampModel = new CacheTimestampsModel(cacheName);
+      timestampModel.setTimestamp('/', currentTimestamp);
+
+      const expirationManager = new CacheExpirationManager(cacheName, {maxAgeSeconds});
+      let isExpired = await expirationManager.isURLExpired('/');
+      expect(isExpired).to.equal(false);
+
+      clock.tick(maxAgeSeconds * 1000 + 1);
+
+      isExpired = await expirationManager.isURLExpired('/');
+      expect(isExpired).to.equal(true);
     });
   });
 });
