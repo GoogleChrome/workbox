@@ -83,7 +83,7 @@ class NetworkFirst {
     if (process.env.NODE_ENV !== 'production') {
       core.assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
-        className: 'CacheFirst',
+        className: 'NetworkFirst',
         funcName: 'handle',
         paramName: 'event',
       });
