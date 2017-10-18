@@ -2,10 +2,12 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 
-import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/models/CacheTimestampsModel.mjs';
-import CacheExpirationManager from '../../../packages/workbox-cache-expiration/CacheExpirationManager.mjs';
+import expectError from '../../../infra/testing/expectError';
 
-describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
+import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/models/CacheTimestampsModel.mjs';
+import CacheExpiration from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
+
+describe(`[workbox-cache-expiration] CacheExpiration`, function() {
   let sandbox = sinon.sandbox.create();
 
   beforeEach(function() {
@@ -20,17 +22,17 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
 
   describe(`constructor`, function() {
     it(`should be able to constructor with cache name and maxEntries`, function() {
-      const expirationManager = new CacheExpirationManager('test-cache', {maxEntries: 10});
+      const expirationManager = new CacheExpiration('test-cache', {maxEntries: 10});
       expect(expirationManager._maxEntries).to.equal(10);
     });
 
     it(`should be able to constructor with cache name and maxAgeSeconds`, function() {
-      const expirationManager = new CacheExpirationManager('test-cache', {maxAgeSeconds: 10});
+      const expirationManager = new CacheExpiration('test-cache', {maxAgeSeconds: 10});
       expect(expirationManager._maxAgeSeconds).to.equal(10);
     });
 
     it(`should be able to constructor with cache name and maxAgeSeconds`, function() {
-      const expirationManager = new CacheExpirationManager('test-cache', {maxEntries: 1, maxAgeSeconds: 2});
+      const expirationManager = new CacheExpiration('test-cache', {maxEntries: 1, maxAgeSeconds: 2});
       expect(expirationManager._maxEntries).to.equal(1);
       expect(expirationManager._maxAgeSeconds).to.equal(2);
     });
@@ -40,7 +42,7 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
 
   describe('_findOldEntries()', function() {
     it(`should return no expired entries for empty indexedDB`, async function() {
-      const expirationManager = new CacheExpirationManager('find-expired-entries-empty', {maxAgeSeconds: 10});
+      const expirationManager = new CacheExpiration('find-expired-entries-empty', {maxAgeSeconds: 10});
       const oldEntries = await expirationManager._findOldEntries(Date.now());
       expect(oldEntries).to.deep.equal([]);
     });
@@ -52,7 +54,7 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
       const timestampModel = new CacheTimestampsModel(cacheName);
       timestampModel.setTimestamp('/', currentTimestamp);
 
-      const expirationManager = new CacheExpirationManager(cacheName, {maxAgeSeconds});
+      const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
 
       let expiredUrls = await expirationManager._findOldEntries(currentTimestamp);
       expect(expiredUrls).to.deep.equal([]);
@@ -65,7 +67,7 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
 
   describe('_findExtraEntries()', function() {
     it(`should return no extra entries for empty indexedDB`, async function() {
-      const expirationManager = new CacheExpirationManager('find-extra-entries-empty', {maxAgeSeconds: 10});
+      const expirationManager = new CacheExpiration('find-extra-entries-empty', {maxAgeSeconds: 10});
       const extraEntries = await expirationManager._findExtraEntries();
       expect(extraEntries).to.deep.equal([]);
     });
@@ -78,7 +80,7 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
       const latestTimestamp = earliestTimestamp + 2000;
       const timestampModel = new CacheTimestampsModel(cacheName);
 
-      const expirationManager = new CacheExpirationManager(cacheName, {maxEntries});
+      const expirationManager = new CacheExpiration(cacheName, {maxEntries});
 
       // No entries added, should be empty
       let extraUrls = await expirationManager._findExtraEntries();
@@ -119,7 +121,7 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
       timestampModel.setTimestamp('/', currentTimestamp);
       cache.put('https://example.com/', new Response('Injected request'));
 
-      const expirationManager = new CacheExpirationManager(cacheName, {maxAgeSeconds});
+      const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
 
       let expiredUrls = await expirationManager.expireEntries();
       expect(expiredUrls).to.deep.equal([]);
@@ -149,7 +151,7 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
       timestampModel.setTimestamp('/first', currentTimestamp);
       cache.put('https://example.com/first', new Response('Injected request'));
 
-      const expirationManager = new CacheExpirationManager(cacheName, {maxEntries});
+      const expirationManager = new CacheExpiration(cacheName, {maxEntries});
 
       let expiredUrls = await expirationManager.expireEntries();
       expect(expiredUrls).to.deep.equal([]);
@@ -205,7 +207,7 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
 
       clock.tick(1000);
 
-      const expirationManager = new CacheExpirationManager(cacheName, {maxAgeSeconds});
+      const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
       expirationManager.updateTimestamp('/');
 
       const timestamps = await timestampModel.getAllTimestamps();
@@ -217,6 +219,13 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
   });
 
   describe(`isURLExpired()`, function() {
+    it(`should throw when called without maxAgeSeconds`, function() {
+      const expirationManager = new CacheExpiration('test-cache', {maxEntries: 1});
+      return expectError(() => {
+        return expirationManager.isURLExpired();
+      }, 'expired-test-without-max-age');
+    });
+
     it(`should return boolean`, async function() {
       const clock = sandbox.useFakeTimers({
         toFake: ['Date'],
@@ -228,7 +237,7 @@ describe(`[workbox-cache-expiration] CacheExpirationManager`, function() {
       const timestampModel = new CacheTimestampsModel(cacheName);
       timestampModel.setTimestamp('/', currentTimestamp);
 
-      const expirationManager = new CacheExpirationManager(cacheName, {maxAgeSeconds});
+      const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
       let isExpired = await expirationManager.isURLExpired('/');
       expect(isExpired).to.equal(false);
 

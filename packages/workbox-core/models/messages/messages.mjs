@@ -132,4 +132,8 @@ export default {
     return `The Queue name '${name}' is already being used. ` +
         `All instances of backgroundSync.Queue must be given unique names.`;
   },
+  'expired-test-without-max-age': ({methodName, paramName}) => {
+    return `The '${methodName}()' method can only be used when the ` +
+      `'${paramName}' is used in the constructor.`;
+  },
 };
