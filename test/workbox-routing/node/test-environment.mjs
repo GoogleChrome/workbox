@@ -19,14 +19,16 @@ describe(`[workbox-routing] SW environment`, function() {
   it(`should throw when loaded outside of a service worker in dev`, async function() {
     if (process.env.NODE_ENV === 'production') return this.skip();
 
-    class Foo {}
-    sandbox.stub(global, 'ServiceWorkerGlobalScope').value(Foo);
+    const originalServiceWorkerGlobalScope = global.ServiceWorkerGlobalScope;
+    delete global.ServiceWorkerGlobalScope;
 
     await expectError(async () => {
       await import(MODULE_PATH);
     }, 'not-in-sw', (err) => {
       expect(err.details).to.have.property('moduleName').that.equal('workbox-routing');
     });
+
+    global.ServiceWorkerGlobalScope = originalServiceWorkerGlobalScope;
   });
 
   it(`should not throw when in SW in dev`, async function() {

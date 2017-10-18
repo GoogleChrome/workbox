@@ -13,9 +13,13 @@ describe(`workbox-core  assert`, function() {
       sandbox.restore();
     });
 
-    it(`should throw if ServiceWorkerGlobalScope is not defined`, function() {
-      sandbox.stub(global, 'ServiceWorkerGlobalScope').value(undefined);
-      return expectError(() => assert.isSwEnv('example-module'), 'not-in-sw');
+    it(`should throw if ServiceWorkerGlobalScope is not defined`, async function() {
+      const originalServiceWorkerGlobalScope = global.ServiceWorkerGlobalScope;
+      delete global.ServiceWorkerGlobalScope;
+
+      await expectError(() => assert.isSwEnv('example-module'), 'not-in-sw');
+
+      global.ServiceWorkerGlobalScope = originalServiceWorkerGlobalScope;
     });
 
     it(`should return false if self is not an instance of ServiceWorkerGlobalScope`, function() {

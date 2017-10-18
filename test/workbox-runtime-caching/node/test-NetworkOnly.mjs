@@ -43,8 +43,7 @@ describe(`[workbox-runtime-caching] NetworkOnly`, function() {
 
   it(`should return a response without adding anything to the cache when the network request is successful`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const networkOnly = new NetworkOnly();
 
@@ -58,8 +57,7 @@ describe(`[workbox-runtime-caching] NetworkOnly`, function() {
 
   it(`should reject when the network request fails`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     sandbox.stub(global, 'fetch').callsFake(() => {
       return Promise.reject(new Error(`Injected Error`));
@@ -78,8 +76,7 @@ describe(`[workbox-runtime-caching] NetworkOnly`, function() {
 
   it(`should use plugins response`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const pluginRequest = new Request('http://something-else.io/test/');
 

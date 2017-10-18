@@ -21,9 +21,8 @@ import '../_version.mjs';
  * This method returns true if the current context is a service worker.
  */
 const isSwEnv = (moduleName) => {
-  if (!(typeof ServiceWorkerGlobalScope !== 'undefined' &&
-    self instanceof ServiceWorkerGlobalScope)) {
-      throw new WorkboxError('not-in-sw', {moduleName});
+  if (!('ServiceWorkerGlobalScope' in self)) {
+    throw new WorkboxError('not-in-sw', {moduleName});
   }
 };
 

@@ -43,8 +43,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
 
   it(`should be able to fetch and cache a request to default cache`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const fetchResponse = new Response('Hello Test.');
     sandbox.stub(global, 'fetch').callsFake((req) => {
@@ -81,8 +80,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
   it(`should be able to cache a non-existant request to custom cache`, async function() {
     const cacheName = 'test-cache-name';
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     sandbox.stub(global, 'fetch').callsFake((req) => {
       expect(req).to.equal(request);
@@ -108,8 +106,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
 
   it(`should not cache an opaque response by default`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     sandbox.stub(global, 'fetch').callsFake((req) => {
       expect(req).to.equal(request);
@@ -136,8 +133,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
 
   it(`should cache an opaque response when a cacheWillUpdate plugin returns true`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     sandbox.stub(global, 'fetch').callsFake((req) => {
       expect(req).to.equal(request);
@@ -171,8 +167,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
 
   it(`should return the plugin cache response`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
@@ -195,8 +190,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
 
   it(`should fallback to fetch if the plugin.cacheResponseWillBeUsed returns null`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const fetchResponse = new Response('Hello Test.');
     sandbox.stub(global, 'fetch').callsFake((req) => {
