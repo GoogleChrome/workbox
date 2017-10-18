@@ -50,6 +50,7 @@ const gulpTaskFiles = [
   'publish-github',
   'publish-cdn',
   'publish-lerna',
+  'publish-demos',
   'publish',
   'watch',
   'docs',

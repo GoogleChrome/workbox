@@ -1,0 +1,76 @@
+// TODO Swap for workbox-sw
+importScripts('{{CDN_URL}}/workbox-core.dev.js');
+importScripts('{{CDN_URL}}/workbox-runtime-caching.dev.js');
+
+// TODO Skip Waiting
+// TODO Clients Claim
+
+const EMPTY_CACHE = 'cache-only-empty';
+const POPULATED_CACHE = 'cache-only-populated';
+
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
+
+  event.waitUntil(
+    caches.open(POPULATED_CACHE)
+    .then((cache) => {
+      return cache.put(
+        new Request('/demo/workbox-runtime-caching/cache-only-populated-cache'),
+        new Response('Hello from the populated cache.'),
+      );
+    })
+  );
+});
+self.addEventListener('activate', () => self.clients.claim());
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.includes('/demo/workbox-runtime-caching/cache-only-empty-cache.txt')) {
+    const cacheOnly = new workbox.strategies.CacheOnly({
+      cacheName: EMPTY_CACHE
+    });
+    event.respondWith(cacheOnly.handle(event));
+  }
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.includes('/demo/workbox-runtime-caching/cache-only-populated-cache')) {
+    const cacheOnly = new workbox.strategies.CacheOnly({
+      cacheName: POPULATED_CACHE
+    });
+    event.respondWith(cacheOnly.handle(event));
+  }
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.includes('/demo/workbox-runtime-caching/cache-first.txt')) {
+    const cacheFirst = new workbox.strategies.CacheFirst({
+      cacheName: 'cache-first'
+    });
+    event.respondWith(cacheFirst.handle(event));
+  }
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.includes('/demo/workbox-runtime-caching/network-only.txt')) {
+    const networkOnly = new workbox.strategies.NetworkOnly();
+    event.respondWith(networkOnly.handle(event));
+  }
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.includes('/demo/workbox-runtime-caching/network-first.txt')) {
+    const networkFirst = new workbox.strategies.NetworkFirst({
+      cacheName: 'network-first'
+    });
+    event.respondWith(networkFirst.handle(event));
+  }
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.includes('/demo/workbox-runtime-caching/stale-while-revalidate.txt')) {
+    const staleWhileRevalidate = new workbox.strategies.StaleWhileRevalidate({
+      cacheName: 'staleWhileRevalidate'
+    });
+    event.respondWith(staleWhileRevalidate.handle(event));
+  }
+});

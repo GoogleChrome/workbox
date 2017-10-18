@@ -11,7 +11,7 @@
   },
   {
     "name": "workbox-build",
-    "hasDocs": true,
+    "hasDocs": false,
     "hasDemo": false
   },
   {
@@ -26,8 +26,7 @@
   },
   {
     "name": "workbox-core",
-    "guide": "https://docs.google.com/a/google.com/document/d/1hrxNhKLN_mvRPjQbepArP3W4mAx1PxIGb37NCU_WA6w/edit?usp=sharing",
-    "hasDocs": true,
+    "hasDocs": false,
     "hasDemo": true
   },
   {
@@ -37,8 +36,7 @@
   },
   {
     "name": "workbox-precaching",
-    "guide": "https://docs.google.com/a/google.com/document/d/1lM_fVQZpohD8N1QLuxobmrYrq9lOJh4jYF3MJhNrMvs/edit?usp=sharing",
-    "hasDocs": true,
+    "hasDocs": false,
     "hasDemo": true
   },
   {
@@ -48,17 +46,17 @@
   },
   {
     "name": "workbox-routing",
-    "hasDocs": true,
+    "hasDocs": false,
     "hasDemo": true
   },
   {
     "name": "workbox-runtime-caching",
-    "hasDocs": true,
+    "hasDocs": false,
     "hasDemo": true
   },
   {
     "name": "workbox-sw",
-    "hasDocs": true,
+    "hasDocs": false,
     "hasDemo": false
   },
   {

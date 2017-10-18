@@ -10,7 +10,9 @@
     "coverage-report": "nyc report --reporter lcov --reporter text",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint \"**/*.{js,mjs}\" --ignore-path .gitignore",
-    "bot": "pr-bot"
+    "bot": "pr-bot",
+    "demos-serve": "firebase serve --only hosting,functions --project workbox-demos",
+    "demos-deploy": "firebase deploy --project workbox-demos"
   },
   "@std/esm": {
     "cjs": true

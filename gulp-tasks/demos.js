@@ -1,11 +1,11 @@
 const gulp = require('gulp');
 
+const getNpmCmd = require('./utils/get-npm-cmd');
 const spawn = require('./utils/spawn-promise-wrapper');
 
 gulp.task('demos:serve', () => {
-  return spawn('firebase', [
-    'serve',
-    '--only', 'hosting,functions',
+  return spawn(getNpmCmd(), [
+    'run', 'demos-serve',
   ]);
 });
 

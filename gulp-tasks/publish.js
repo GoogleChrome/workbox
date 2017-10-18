@@ -19,4 +19,5 @@ gulp.task('publish', gulp.series([
   'test',
   'publish-lerna',
   'publish:cdn+git',
+  'publish-demos',
 ]));
