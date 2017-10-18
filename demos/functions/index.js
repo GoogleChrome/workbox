@@ -3,8 +3,7 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const fs = require('fs-extra');
-
-const CDN_URL = 'https://storage.googleapis.com/workbox-cdn/releases/3.0.0-alpha.17';
+const cdnDetails = require('./cdn-details.json');
 
 const workboxModules = [
   'workbox-background-sync',
@@ -65,7 +64,7 @@ app.get('/demo/:moduleName/:swfile', function(req, res, next) {
   res.header('Content-Type', 'application/javascript');
   res.render(`demo/${req.params.moduleName}/${swTemplate}`, {
     title: `${req.params.moduleName} Demo`,
-    CDN_URL,
+    CDN_URL: cdnDetails.latestUrl,
     layout: false,
   });
 });
