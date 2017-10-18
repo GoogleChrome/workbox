@@ -21,8 +21,7 @@ describe(`[workbox-routing] Router`, function() {
     // https://github.com/mochajs/mocha/issues/2546
     sandbox.restore();
     // Prevent logs in the mocha output.
-    sandbox.stub(logger, 'warn');
-    sandbox.stub(logger, 'log');
+    sandbox.stub(logger);
   });
 
   after(function() {
@@ -211,8 +210,9 @@ describe(`[workbox-routing] Router`, function() {
       router.setDefaultHandler(() => new Response(EXPECTED_RESPONSE_BODY));
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent(new Request(self.location));
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
       const response = await router.handleRequest(event);
+
       const responseBody = await response.text();
 
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
@@ -237,7 +237,7 @@ describe(`[workbox-routing] Router`, function() {
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent(new Request(self.location));
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
       const response = await router.handleRequest(event);
       const responseBody = await response.text();
 
@@ -255,7 +255,7 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
 
       // route.match() always returns true, so the Request details don't matter.
-      const event = new FetchEvent(new Request(self.location));
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
       const response = await router.handleRequest(event);
       const responseBody = await response.text();
 
@@ -278,7 +278,7 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route2);
 
       // route.match() always returns true, so the Request details don't matter.
-      const event = new FetchEvent(new Request(self.location));
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
       const response = await router.handleRequest(event);
       const responseBody = await response.text();
 
@@ -294,7 +294,7 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent(new Request(self.location));
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
       const response = router.handleRequest(event);
 
       expect(response).not.to.exist;

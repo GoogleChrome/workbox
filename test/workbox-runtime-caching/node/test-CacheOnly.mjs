@@ -44,8 +44,7 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
 
   it(`should not return a response when the cache isn't populated`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const cacheOnly = new CacheOnly();
     const handleResponse = await cacheOnly.handle(event);
@@ -55,8 +54,7 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
 
   it(`should return the cached response when the cache is populated`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
@@ -69,8 +67,7 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
 
   it(`should return no cached response from custom cache name`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
@@ -83,8 +80,7 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
 
   it(`should return cached response from custom cache name`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName('test-cache-name'));
@@ -97,8 +93,7 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
 
   it(`should return the cached response from plugin.cachedResponseWillBeUsed`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
