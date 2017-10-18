@@ -47,7 +47,7 @@ describe(`[workbox-runtime-caching] NetworkOnly`, function() {
 
     const networkOnly = new NetworkOnly();
 
-    const handleResponse = await networkOnly.handle(event);
+    const handleResponse = await networkOnly.handle({event});
     expect(handleResponse).to.be.instanceOf(Response);
 
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
@@ -67,7 +67,7 @@ describe(`[workbox-runtime-caching] NetworkOnly`, function() {
     // This promise should reject, so call done() passing in an error string
     // if it resolves, and done() without an error if it rejects.
     try {
-      await networkOnly.handle(event);
+      await networkOnly.handle({event});
       throw new Error('Expected error to be thrown.');
     } catch (err) {
       expect(err.message).to.equal('Injected Error');
@@ -95,7 +95,7 @@ describe(`[workbox-runtime-caching] NetworkOnly`, function() {
       ],
     });
 
-    const handleResponse = await networkOnly.handle(event);
+    const handleResponse = await networkOnly.handle({event});
     expect(handleResponse).to.be.instanceOf(Response);
 
     const cache = await caches.open(_private.cacheNames.getRuntimeName());

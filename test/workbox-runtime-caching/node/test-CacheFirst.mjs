@@ -56,7 +56,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     });
 
     const cacheFirst = new CacheFirst();
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;
@@ -66,7 +66,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     await compareResponses(firstCachedResponse, fetchResponse, true);
     await compareResponses(firstHandleResponse, fetchResponse, true);
 
-    const secondHandleResponse = await cacheFirst.handle(event);
+    const secondHandleResponse = await cacheFirst.handle({event});
 
     // Reset spy state so we can check fetch wasn't called.
     global.fetch.reset();
@@ -94,7 +94,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     const cacheFirst = new CacheFirst({
       cacheName,
     });
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;
@@ -120,7 +120,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     });
 
     const cacheFirst = new CacheFirst();
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;
@@ -155,7 +155,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
         },
       ],
     });
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;
@@ -183,7 +183,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
         },
       ],
     });
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     await compareResponses(firstHandleResponse, pluginResponse, true);
   });
@@ -215,7 +215,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
         },
       ],
     });
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;

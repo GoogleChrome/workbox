@@ -51,7 +51,7 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
     });
 
     const staleWhileRevalidate = new StaleWhileRevalidate();
-    const handleResponse = await staleWhileRevalidate.handle(event);
+    const handleResponse = await staleWhileRevalidate.handle({event});
 
     await cachePromise;
 
@@ -81,7 +81,7 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
     await cache.put(request, firstCachedResponse);
 
     const staleWhileRevalidate = new StaleWhileRevalidate();
-    const handleResponse = await staleWhileRevalidate.handle(event);
+    const handleResponse = await staleWhileRevalidate.handle({event});
 
     await waitUntilPromise;
     expect(fetchThrewInWaitUntil).to.equal(true);
@@ -104,7 +104,7 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
 
     const staleWhileRevalidate = new StaleWhileRevalidate();
 
-    const handleResponse = await staleWhileRevalidate.handle(event);
+    const handleResponse = await staleWhileRevalidate.handle({event});
 
     await waitUntilPromise;
     await compareResponses(firstCachedResponse, handleResponse, true);
@@ -126,7 +126,7 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
     });
 
     const staleWhileRevalidate = new StaleWhileRevalidate();
-    const handleResponse = await staleWhileRevalidate.handle(event);
+    const handleResponse = await staleWhileRevalidate.handle({event});
 
     await waitUntilPromise;
 

@@ -45,10 +45,14 @@ class NetworkOnly {
    * This method will be called by the Workbox
    * [Router]{@link module:workbox-routing.Router} to handle a fetch event.
    *
-   * @param {FetchEvent} event The fetch event to handle.
+   * @param {Object} input
+   * @param {FetchEvent} input.event The fetch event to handle.
+   * @param {URL} input.url The URL of the request.
+   * @param {Object} input.params Any params returned by `Routes` match
+   * callback.
    * @return {Promise<Response>}
    */
-  handle(event) {
+  async handle({url, event, params}) {
     if (process.env.NODE_ENV !== 'production') {
       core.assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
