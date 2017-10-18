@@ -69,6 +69,8 @@ class CacheExpiration {
       }
     }
 
+    this._isRunning = false;
+    this._rerunRequested = false;
     this._maxEntries = config.maxEntries;
     this._maxAgeSeconds = config.maxAgeSeconds;
     this._cacheName = cacheName;
@@ -82,6 +84,12 @@ class CacheExpiration {
    * removed.
    */
   async expireEntries() {
+    if (this._isRunning) {
+      this._rerunRequested = true;
+      return;
+    }
+    this._isRunning = true;
+
     const now = Date.now();
 
     // First, expire old entries, if maxAgeSeconds is set.
@@ -106,6 +114,11 @@ class CacheExpiration {
       _private.logger.debug(`Cache name:`, this._cacheName);
       _private.logger.debug(`URLS:`, allUrls);
       _private.logger.groupEnd();
+    }
+
+    this._isRunning = false;
+    if (this._rerunRequested) {
+      this.expireEntries();
     }
 
     return allUrls;
