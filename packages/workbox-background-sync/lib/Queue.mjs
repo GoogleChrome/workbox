@@ -94,7 +94,7 @@ class Queue {
   async addRequest(request) {
     const storableRequest = await StorableRequest.fromRequest(request.clone());
 
-    this._runCallback('requestWillEnqueue', storableRequest);
+    await this._runCallback('requestWillEnqueue', storableRequest);
 
     await this._queueStore.addEntry(storableRequest);
     await this._registerSync();
@@ -119,7 +119,7 @@ class Queue {
         continue;
       }
 
-      this._runCallback('requestWillReplay', storableRequest);
+      await this._runCallback('requestWillReplay', storableRequest);
 
       const replay = {request: storableRequest.toRequest()};
 
@@ -144,7 +144,7 @@ class Queue {
       await this._registerSync();
     }
 
-    this._runCallback('queueDidReplay', replayedRequests);
+    await this._runCallback('queueDidReplay', replayedRequests);
   }
 
   /**
@@ -154,9 +154,9 @@ class Queue {
    * @param {string} name The name of the callback on this._callbacks.
    * @param {...*} args The arguments to invoke the callback with.
    */
-  _runCallback(name, ...args) {
+  async _runCallback(name, ...args) {
     if (typeof this._callbacks[name] === 'function') {
-      this._callbacks[name].apply(null, args);
+      await this._callbacks[name].apply(null, args);
     }
   }
 
@@ -192,6 +192,17 @@ class Queue {
       // the browser doesn't supported it or because the user has disabled it.
       // In either case, do nothing.
     }
+  }
+
+  /**
+   * Returns the set of queue names. This is primarily used to reset the list
+   * of queue names in tests.
+   *
+   * @private
+   * @return {Set}
+   */
+  static get _queueNames() {
+    return queueNames;
   }
 }
 

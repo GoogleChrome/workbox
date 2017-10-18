@@ -32,7 +32,7 @@ class Blob {
   get size() {
     let size = 0;
     for (const part of this._parts) {
-      size += part.length || part.size;
+      size += part instanceof Blob ? part.size : String(part).length;
     }
     return size;
   }
@@ -42,11 +42,10 @@ class Blob {
   }
 
   // Warning: non-standard, but used in other mocks for simplicity.
-  // TODO(philipwalton): implement/use FileReader to get the Blob text.
   get _text() {
     let text = '';
     for (const part of this._parts) {
-      text += typeof part === 'string' ? part : part._text;
+      text += part instanceof Blob ? part._text : String(part);
     }
     return text;
   }

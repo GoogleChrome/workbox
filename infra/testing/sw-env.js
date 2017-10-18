@@ -13,12 +13,14 @@
 
 const serviceWorkerMock = require('service-worker-mock');
 const {IDBFactory, IDBKeyRange} = require('shelving-mock-indexeddb');
+const URLSearchParams = require('url-search-params');
 const Blob = require('./sw-env-mocks/Blob');
 const Event = require('./sw-env-mocks/Event');
 const {addEventListener, dispatchEvent} = require('./sw-env-mocks/event-listeners');
 const ExtendableEvent = require('./sw-env-mocks/ExtendableEvent');
 const fetch = require('./sw-env-mocks/fetch');
 const FetchEvent = require('./sw-env-mocks/FetchEvent');
+const FileReader = require('./sw-env-mocks/FileReader');
 const Headers = require('./sw-env-mocks/Headers');
 const Request = require('./sw-env-mocks/Request');
 const SyncEvent = require('./sw-env-mocks/SyncEvent');
@@ -38,6 +40,7 @@ global.Event = Event;
 global.ExtendableEvent = ExtendableEvent;
 global.fetch = fetch;
 global.FetchEvent = FetchEvent;
+global.FileReader = FileReader;
 global.Headers = Headers;
 global.indexedDB = new IDBFactory();
 global.IDBKeyRange = IDBKeyRange;
@@ -46,3 +49,4 @@ global.location = 'https://example.com';
 global.registration.sync = new SyncManager();
 global.Request = Request;
 global.SyncEvent = SyncEvent;
+global.URLSearchParams = URLSearchParams;
