@@ -14,9 +14,12 @@
   limitations under the License.
 */
 
-import CacheExpirationManager from './CacheExpirationManager.mjs';
+import CacheExpiration from './CacheExpiration.mjs';
+import CacheExpirationPlugin from './CacheExpirationPlugin.mjs';
+
 import './_version.mjs';
 
 export {
-  CacheExpirationManager,
+  CacheExpiration,
+  CacheExpirationPlugin,
 };

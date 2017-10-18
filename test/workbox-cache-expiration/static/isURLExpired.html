@@ -16,9 +16,9 @@
 <script src="../../../../packages/workbox-core/build/browser/workbox-core.dev.js"></script>
 <script src="../../../../packages/workbox-cache-expiration/build/browser/workbox-cache-expiration.dev.js"></script>
 <script>
-  const CacheExpirationManager = workbox.expiration.CacheExpirationManager;
+  const CacheExpiration = workbox.expiration.CacheExpiration;
 
-  const expirationManager = new CacheExpirationManager('cache-name', {
+  const expirationManager = new CacheExpiration('cache-name', {
     maxAgeSeconds: 2
   });
   expirationManager.updateTimestamp('/', Date.now());

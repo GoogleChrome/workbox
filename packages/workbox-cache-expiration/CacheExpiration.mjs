@@ -25,7 +25,7 @@ import './_version.mjs';
  * limit on the number of responses stored in a
  * [`Cache`](https://developer.mozilla.org/en-US/docs/Web/API/Cache).
  */
-class CacheExpirationManager {
+class CacheExpiration {
   /**
    * To construct a new CacheExpiration instance you must provide at least
    * one of the `config` properties.
@@ -41,7 +41,7 @@ class CacheExpirationManager {
     if (process.env.NODE_ENV !== 'production') {
       core.assert.isType(cacheName, 'string', {
         moduleName: 'workbox-cache-expiration',
-        className: 'CacheExpirationManager',
+        className: 'CacheExpiration',
         funcName: 'constructor',
         paramName: 'cacheName',
       });
@@ -53,7 +53,7 @@ class CacheExpirationManager {
       if (config.maxEntries) {
         core.assert.isType(config.maxEntries, 'number', {
           moduleName: 'workbox-cache-expiration',
-          className: 'CacheExpirationManager',
+          className: 'CacheExpiration',
           funcName: 'constructor',
           paramName: 'config.maxEntries',
         });
@@ -62,13 +62,15 @@ class CacheExpirationManager {
       if (config.maxAgeSeconds) {
         core.assert.isType(config.maxAgeSeconds, 'number', {
           moduleName: 'workbox-cache-expiration',
-          className: 'CacheExpirationManager',
+          className: 'CacheExpiration',
           funcName: 'constructor',
           paramName: 'config.maxAgeSeconds',
         });
       }
     }
 
+    this._isRunning = false;
+    this._rerunRequested = false;
     this._maxEntries = config.maxEntries;
     this._maxAgeSeconds = config.maxAgeSeconds;
     this._cacheName = cacheName;
@@ -82,6 +84,12 @@ class CacheExpirationManager {
    * removed.
    */
   async expireEntries() {
+    if (this._isRunning) {
+      this._rerunRequested = true;
+      return;
+    }
+    this._isRunning = true;
+
     const now = Date.now();
 
     // First, expire old entries, if maxAgeSeconds is set.
@@ -108,6 +116,11 @@ class CacheExpirationManager {
       _private.logger.groupEnd();
     }
 
+    this._isRunning = false;
+    if (this._rerunRequested) {
+      this.expireEntries();
+    }
+
     return allUrls;
   }
 
@@ -123,7 +136,7 @@ class CacheExpirationManager {
     if (process.env.NODE_ENV !== 'production') {
       core.assert.isType(expireFromTimestamp, 'number', {
         moduleName: 'workbox-cache-expiration',
-        className: 'CacheExpirationManager',
+        className: 'CacheExpiration',
         funcName: '_findOldEntries',
         paramName: 'expireFromTimestamp',
       });
@@ -204,7 +217,7 @@ class CacheExpirationManager {
     if (process.env.NODE_ENV !== 'production') {
       core.assert.isType(url, 'string', {
         moduleName: 'workbox-cache-expiration',
-        className: 'CacheExpirationManager',
+        className: 'CacheExpiration',
         funcName: 'updateTimestamp',
         paramName: 'url',
       });
@@ -219,6 +232,8 @@ class CacheExpirationManager {
   /**
    * Can be used to check if a URL has expired or not before it's used.
    *
+   * This requires a look up from IndexedDB, so can be slow.
+   *
    * Note: This method will not remove the cached entry, call
    * `expireEntries()` to remove indexedDB and Cache entries.
    *
@@ -226,6 +241,12 @@ class CacheExpirationManager {
    * @return {boolean}
    */
   async isURLExpired(url) {
+    if (!this._maxAgeSeconds) {
+      throw new _private.WorkboxError(`expired-test-without-max-age`, {
+        methodName: 'isURLExpired',
+        paramName: 'maxAgeSeconds',
+      });
+    }
     const urlObject = new URL(url, location);
     urlObject.hash = '';
 
@@ -235,4 +256,4 @@ class CacheExpirationManager {
   }
 }
 
-export default CacheExpirationManager;
+export default CacheExpiration;
