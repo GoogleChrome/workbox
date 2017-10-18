@@ -47,7 +47,7 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const cacheOnly = new CacheOnly();
-    const handleResponse = await cacheOnly.handle(event);
+    const handleResponse = await cacheOnly.handle({event});
 
     expect(handleResponse).not.to.exist;
   });
@@ -61,7 +61,7 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly();
-    const handleResponse = await cacheOnly.handle(event);
+    const handleResponse = await cacheOnly.handle({event});
     await compareResponses(injectedResponse, handleResponse, true);
   });
 
@@ -74,7 +74,7 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
-    const handleResponse = await cacheOnly.handle(event);
+    const handleResponse = await cacheOnly.handle({event});
     expect(handleResponse).not.to.exist;
   });
 
@@ -87,7 +87,7 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
-    const handleResponse = await cacheOnly.handle(event);
+    const handleResponse = await cacheOnly.handle({event});
     await compareResponses(injectedResponse, handleResponse, true);
   });
 
@@ -109,7 +109,7 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
         },
       ],
     });
-    const handleResponse = await cacheOnly.handle(event);
+    const handleResponse = await cacheOnly.handle({event});
     await compareResponses(pluginResponse, handleResponse, true);
   });
 });

@@ -58,7 +58,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
     });
 
     const networkFirst = new NetworkFirst();
-    const handleResponse = await networkFirst.handle(event);
+    const handleResponse = await networkFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;
@@ -78,17 +78,17 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const networkFirst = new NetworkFirst();
-    const emptyCacheResponse = await networkFirst.handle(event);
+    const emptyCacheResponse = await networkFirst.handle({event});
     expect(emptyCacheResponse).to.not.exist;
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
-    const cachedResponse = await networkFirst.handle(event);
+    const cachedResponse = await networkFirst.handle({event});
     await compareResponses(cachedResponse, injectedResponse, true);
 
-    const secondCachedResponse = await networkFirst.handle(event);
+    const secondCachedResponse = await networkFirst.handle({event});
     await compareResponses(cachedResponse, secondCachedResponse, true);
   });
 
@@ -109,7 +109,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
       networkTimeoutSeconds: TEST_TIMEOUT_SECS,
     });
 
-    let handlePromise = networkFirst.handle(event);
+    let handlePromise = networkFirst.handle({event});
     clock.tick(TEST_TIMEOUT_SECS * 1.5 * 1000);
     const emptyCacheResponse = await handlePromise;
     expect(emptyCacheResponse).to.not.exist;
@@ -118,7 +118,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
-    handlePromise = networkFirst.handle(event);
+    handlePromise = networkFirst.handle({event});
     clock.tick(TEST_TIMEOUT_SECS * 1.5 * 1000);
     const populatedCacheResponse = await handlePromise;
     await compareResponses(populatedCacheResponse, injectedResponse, true);
@@ -154,7 +154,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
 
     const networkFirst = new NetworkFirst();
 
-    const handleResponse = await networkFirst.handle(event);
+    const handleResponse = await networkFirst.handle({event});
     // wait for cache.put
     await cachePromise;
     await compareResponses(injectedResponse, handleResponse, false);
@@ -182,7 +182,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
     });
 
     const networkFirst = new NetworkFirst();
-    const handleResponse = await networkFirst.handle(event);
+    const handleResponse = await networkFirst.handle({event});
     expect(handleResponse.status).to.eql(0);
 
     await cachePromise;
@@ -218,7 +218,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
         },
       ],
     });
-    const handleResponse = await networkFirst.handle(event);
+    const handleResponse = await networkFirst.handle({event});
     expect(handleResponse.status).to.eql(0);
 
     await cachePromise;
