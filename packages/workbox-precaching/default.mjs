@@ -64,20 +64,22 @@ const removeIgnoreUrlParams = (url, ignoreUrlParametersMatching) => {
  * @private
  */
 const _getPrecachedUrl = (url, options) => {
+  const urlObject = new URL(url, location);
+
   // If we precache '/some-url' but the URL referenced from the browser
   // is '/some-url#1234', the comparison won't work unless we normalise
   // the URLS.
   // See https://github.com/GoogleChrome/workbox/issues/488.
-  url.hash = '';
+  urlObject.hash = '';
 
   const cachedUrls = precacheController.getCachedUrls();
-  if (cachedUrls.indexOf(url.href) !== -1) {
+  if (cachedUrls.indexOf(urlObject.href) !== -1) {
     // It's a perfect match
-    return url.href;
+    return urlObject.href;
   }
 
   let strippedUrl = removeIgnoreUrlParams(
-    url.href, options.ignoreUrlParametersMatching
+    urlObject.href, options.ignoreUrlParametersMatching
   );
   if (cachedUrls.indexOf(strippedUrl.href) !== -1) {
     return strippedUrl.href;
