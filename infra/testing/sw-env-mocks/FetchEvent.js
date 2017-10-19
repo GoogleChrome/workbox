@@ -13,9 +13,6 @@
  limitations under the License.
 */
 
-
-const ExtendableEvent = require('./ExtendableEvent');
-
 // FetchEvent
 // https://www.w3.org/TR/service-workers-1/#fetch-event-section
 class FetchEvent extends ExtendableEvent {

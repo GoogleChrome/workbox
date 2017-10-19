@@ -12,37 +12,38 @@
  */
 
 const serviceWorkerMock = require('service-worker-mock');
+
+// Assign first so other classes can inherit the globals
+// Assign all properties of `self` to `global`;
+Object.assign(global, serviceWorkerMock());
+// Ensure `self` and `global` are the same object so stubbing works on either.
+global.self = global;
+
 const {IDBFactory, IDBKeyRange} = require('shelving-mock-indexeddb');
 const Blob = require('./sw-env-mocks/Blob');
 const Event = require('./sw-env-mocks/Event');
 const {addEventListener, dispatchEvent} = require('./sw-env-mocks/event-listeners');
-const ExtendableEvent = require('./sw-env-mocks/ExtendableEvent');
 const fetch = require('./sw-env-mocks/fetch');
 const FetchEvent = require('./sw-env-mocks/FetchEvent');
-const Headers = require('./sw-env-mocks/Headers');
 const Request = require('./sw-env-mocks/Request');
 const SyncEvent = require('./sw-env-mocks/SyncEvent');
 const SyncManager = require('./sw-env-mocks/SyncManager');
-
-// Assign all properties of `self` to `global`;
-Object.assign(global, serviceWorkerMock());
-
-// Ensure `self` and `global` are the same object so stubbing works on either.
-global.self = global;
 
 // Add/fix globals not in 'service-worker-mock'.
 global.addEventListener = addEventListener;
 global.Blob = Blob;
 global.dispatchEvent = dispatchEvent;
 global.Event = Event;
-global.ExtendableEvent = ExtendableEvent;
 global.fetch = fetch;
-global.FetchEvent = FetchEvent;
-global.Headers = Headers;
 global.indexedDB = new IDBFactory();
 global.IDBKeyRange = IDBKeyRange;
 global.importScripts = () => {};
 global.location = 'https://example.com';
 global.registration.sync = new SyncManager();
-global.Request = Request;
 global.SyncEvent = SyncEvent;
+
+// Because we override Request, we can use the serivce-worker-mock because it
+// checks for type of Request, that will no longer match in our tests.
+// We need to use Request until https://github.com/pinterest/service-workers/issues/65
+global.Request = Request;
+global.FetchEvent = FetchEvent;

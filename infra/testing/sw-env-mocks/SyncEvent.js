@@ -13,7 +13,6 @@
  limitations under the License.
 */
 
-
 const ExtendableEvent = require('./ExtendableEvent');
 
 // SyncEvent
