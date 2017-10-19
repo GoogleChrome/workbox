@@ -40,9 +40,6 @@ class PrecacheController {
     this._cacheName = _private.cacheNames.getPrecacheName(cacheName);
     this._entriesToCacheMap = new Map();
     this._precacheDetailsModel = new PrecachedDetailsModel(this._cacheName);
-    if (process.env.NODE_ENV !== 'production') {
-      this._checkEntryRevisioning = true;
-    }
   }
 
   /**
@@ -144,9 +141,7 @@ class PrecacheController {
    */
   async install() {
     if (process.env.NODE_ENV !== 'production') {
-      if (this._checkEntryRevisioning === true) {
-        showWarningsIfNeeded(this._entriesToCacheMap);
-      }
+      showWarningsIfNeeded(this._entriesToCacheMap);
     }
 
     const updatedEntries = [];
@@ -307,7 +302,7 @@ class PrecacheController {
    *
    * @return {Array<string>} An array of URLs.
    */
-  async getCachedUrls() {
+  getCachedUrls() {
     return Array.from(this._entriesToCacheMap.keys())
     .map((url) => new URL(url, location).href);
   }

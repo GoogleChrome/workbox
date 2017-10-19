@@ -1,21 +1,15 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import constants from '../../../../gulp-tasks/utils/constants';
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 import showWarningsIfNeeded from '../../../../packages/workbox-precaching/utils/showWarningsIfNeeded.mjs';
+import logger from '../../../../packages/workbox-core/utils/logger.mjs';
 
 describe(`[workbox-precaching] showWarningsIfNeeded`, function() {
   let sandbox = sinon.sandbox.create();
 
   beforeEach(function() {
     sandbox.restore();
-
-    sandbox.stub(console, 'log');
-    sandbox.stub(console, 'debug');
-    sandbox.stub(console, 'warn');
-    sandbox.stub(console, 'groupCollapsed');
-    sandbox.stub(console, 'groupEnd');
   });
 
   after(function() {
@@ -30,7 +24,7 @@ describe(`[workbox-precaching] showWarningsIfNeeded`, function() {
 
     showWarningsIfNeeded(entriesMap);
 
-    expect(console.log.callCount).to.equal(0);
+    expect(logger.log.callCount).to.equal(0);
   });
 
   it(`should print as the entry has no revision`, function() {
@@ -41,10 +35,6 @@ describe(`[workbox-precaching] showWarningsIfNeeded`, function() {
 
     showWarningsIfNeeded(entriesMap);
 
-    if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) {
-      expect(console.log.callCount).to.equal(0);
-    } else {
-      expect(console.log.callCount).to.be.gt(0);
-    }
+    expect(logger.log.callCount).to.be.gt(0);
   });
 });

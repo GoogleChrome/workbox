@@ -40,7 +40,7 @@ const logGroup = (groupTitle, entries) => {
  * @private
  * @memberof module:workbox-precachig
  */
-export default async (updatedEntries, notUpdatedEntries) => {
+export default (updatedEntries, notUpdatedEntries) => {
   // Goal is to print the message:
   //    Precached X files.
   // Or:

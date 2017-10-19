@@ -6,7 +6,7 @@
   "scripts": {
     "local-jsdoc": "jsdoc",
     "local-lerna": "lerna",
-    "test": "nyc --clean false --require @std/esm --require ./infra/testing/sw-env --silent mocha",
+    "test": "nyc --clean false --require @std/esm --require ./infra/testing/sw-env --silent mocha ./infra/testing/auto-stub-logger.mjs",
     "coverage-report": "nyc report --reporter lcov --reporter text",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "lint": "eslint \"**/*.{js,mjs}\" --ignore-path .gitignore",

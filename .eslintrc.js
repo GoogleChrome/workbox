@@ -41,8 +41,6 @@ module.exports = {
       'infra/testing/cli-test-helper.js',
       'infra/utils/log-helper.js',
       'packages/workbox-cli/src/lib/logger.js',
-      'test/workbox-precaching/node/controllers/test-PrecacheController.mjs',
-      'test/workbox-precaching/node/utils/test-showWarningsIfNeeded.mjs',
     ],
     rules: {
       'no-console': 0,
