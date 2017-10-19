@@ -31,8 +31,13 @@ const shouldPrint = (minLevel) => (logLevel <= minLevel);
 const setLoggerLevel = (newLogLevel) => logLevel = newLogLevel;
 const getLoggerLevel = () => logLevel;
 
-const _print = function(logFunction, logArgs, minLevel, levelColor) {
+const _print = function(logFunction, minLevel, logArgs, levelColor) {
   if (!shouldPrint(minLevel)) {
+    return;
+  }
+
+  if (!levelColor) {
+    logFunction(...logArgs);
     return;
   }
 
@@ -45,20 +50,57 @@ const _print = function(logFunction, logArgs, minLevel, levelColor) {
   logFunction(...logPrefix, ...logArgs);
 };
 
-const debug = (...args) => _print(console.debug, args, LOG_LEVELS.debug, GREY);
-const log = (...args) => _print(console.log, args, LOG_LEVELS.log, GREEN);
-const warn = (...args) => _print(console.warn, args, LOG_LEVELS.warn, YELLOW);
-const error = (...args) => _print(console.error, args, LOG_LEVELS.error, RED);
-
 // We always want groups to be logged unless logLevel is silent.
 const groupLevel = LOG_LEVELS.error;
-const groupCollapsed =
-  (...args) => _print(console.groupCollapsed, args, groupLevel, BLUE);
+
 const groupEnd = () => {
   if (shouldPrint(groupLevel)) {
     console.groupEnd();
   }
 };
+
+const defaultExport = {
+  groupEnd,
+  unprefixed: {
+    groupEnd,
+  },
+};
+const configs = {
+  debug: {
+    func: console.debug,
+    level: LOG_LEVELS.debug,
+    color: GREY,
+  },
+  log: {
+    func: console.log,
+    level: LOG_LEVELS.log,
+    color: GREEN,
+  },
+  warn: {
+    func: console.warn,
+    level: LOG_LEVELS.warn,
+    color: YELLOW,
+  },
+  error: {
+    func: console.error,
+    level: LOG_LEVELS.error,
+    color: RED,
+  },
+  groupCollapsed: {
+    func: console.groupCollapsed,
+    level: groupLevel,
+    color: BLUE,
+  },
+};
+Object.keys(configs).forEach((keyName) => {
+  const logConfig = configs[keyName];
+  defaultExport[keyName] =
+    (...args) => _print(logConfig.func, logConfig.level, args, logConfig.color);
+  defaultExport.unprefixed[keyName] =
+    (...args) => _print(logConfig.func, logConfig.level, args);
+});
+
 export {setLoggerLevel};
 export {getLoggerLevel};
-export default {log, debug, warn, error, groupCollapsed, groupEnd};
+
+export default defaultExport;
