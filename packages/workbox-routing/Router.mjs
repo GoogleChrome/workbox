@@ -119,7 +119,7 @@ class Router {
           // hide it under a group in case developers wants to see it.
           _private.logger.groupCollapsed(
             `    View full request details here.`);
-          _private.logger.unprefixed.log(event.request); // eslint-disable-line no-console
+          _private.logger.unprefixed.log(event.request);
           _private.logger.groupEnd();
 
           debugMessages.forEach((msg) => {
