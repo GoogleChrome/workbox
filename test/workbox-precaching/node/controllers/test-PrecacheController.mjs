@@ -481,4 +481,25 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(console.log.callCount).to.equal(0);
     });
   });
+
+  describe(`getCachedUrls()`, function() {
+    it(`should return the cached URLs`, function() {
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        '/index.1234.html',
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
+        {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      const urls = precacheController.getCachedUrls();
+      expect(urls).to.deep.equal([
+        new URL('/index.1234.html', location).toString(),
+        new URL('/example.1234.css', location).toString(),
+        new URL('/scripts/index.js', location).toString(),
+        new URL('/scripts/stress.js?test=search&foo=bar', location).toString(),
+      ]);
+    });
+  });
 });

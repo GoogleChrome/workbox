@@ -56,7 +56,15 @@ gulp.task('test-node:clean', () => {
 });
 
 gulp.task('test-node:coverage', () => {
-  return spawn(getNpmCmd(), ['run', 'coverage-report']);
+  const runOptions = ['run', 'coverage-report'];
+  if (global.packageOrStar !== '*') {
+    runOptions.push('--');
+    runOptions.push('--include');
+    runOptions.push(
+      path.posix.join('packages', global.packageOrStar, '**', '*')
+    );
+  }
+  return spawn(getNpmCmd(), runOptions);
 });
 
 gulp.task('test-node', gulp.series(

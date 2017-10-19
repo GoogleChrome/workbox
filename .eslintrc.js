@@ -43,6 +43,7 @@ module.exports = {
       'packages/workbox-cli/src/lib/logger.js',
       'test/workbox-precaching/node/controllers/test-PrecacheController.mjs',
       'test/workbox-precaching/node/utils/test-showWarningsIfNeeded.mjs',
+      'test/workbox-precaching/node/utils/test-printCleanupDetails.mjs',
     ],
     rules: {
       'no-console': 0,
