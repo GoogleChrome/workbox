@@ -2,6 +2,7 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 
 import {devOnly} from '../../../../infra/testing/env-it';
+import logger from '../../../../packages/workbox-core/utils/logger.mjs';
 import printCleanupDetails from '../../../../packages/workbox-precaching/utils/printCleanupDetails.mjs';
 
 describe(`[workbox-precaching] printCleanupDetails`, function() {
@@ -10,11 +11,11 @@ describe(`[workbox-precaching] printCleanupDetails`, function() {
   beforeEach(function() {
     sandbox.restore();
 
-    sandbox.spy(console, 'log');
-    sandbox.stub(console, 'debug');
-    sandbox.stub(console, 'warn');
-    sandbox.stub(console, 'groupCollapsed');
-    sandbox.stub(console, 'groupEnd');
+    sandbox.stub(logger, 'log');
+    sandbox.stub(logger, 'debug');
+    sandbox.stub(logger, 'warn');
+    sandbox.stub(logger, 'groupCollapsed');
+    sandbox.stub(logger, 'groupEnd');
   });
 
   after(function() {
@@ -24,18 +25,18 @@ describe(`[workbox-precaching] printCleanupDetails`, function() {
   it(`shouldn't print if nothing was deleted`, function() {
     printCleanupDetails([], []);
 
-    expect(console.log.callCount).to.equal(0);
+    expect(logger.log.callCount).to.equal(0);
   });
 
   devOnly.it(`should print at least one entry was delete`, function() {
     printCleanupDetails(['/'], ['/']);
 
-    expect(console.log.callCount).to.be.gt(0);
+    expect(logger.log.callCount).to.be.gt(0);
   });
 
   devOnly.it(`should print strings with multiple entries`, function() {
     printCleanupDetails(['/', '/2'], ['/', '/2']);
 
-    expect(console.log.callCount).to.be.gt(0);
+    expect(logger.log.callCount).to.be.gt(0);
   });
 });

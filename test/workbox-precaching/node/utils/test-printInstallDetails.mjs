@@ -2,6 +2,7 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 
 import {devOnly} from '../../../../infra/testing/env-it';
+import logger from '../../../../packages/workbox-core/utils/logger.mjs';
 import printInstallDetails from '../../../../packages/workbox-precaching/utils/printInstallDetails.mjs';
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 
@@ -11,11 +12,11 @@ describe(`[workbox-precaching] printInstallDetails`, function() {
   beforeEach(function() {
     sandbox.restore();
 
-    sandbox.spy(console, 'log');
-    sandbox.stub(console, 'debug');
-    sandbox.stub(console, 'warn');
-    sandbox.stub(console, 'groupCollapsed');
-    sandbox.stub(console, 'groupEnd');
+    sandbox.stub(logger, 'log');
+    sandbox.stub(logger, 'debug');
+    sandbox.stub(logger, 'warn');
+    sandbox.stub(logger, 'groupCollapsed');
+    sandbox.stub(logger, 'groupEnd');
   });
 
   after(function() {
@@ -26,6 +27,6 @@ describe(`[workbox-precaching] printInstallDetails`, function() {
     const precacheEntry = new PrecacheEntry({url: '/'}, '/', '/', false);
     printInstallDetails([], [precacheEntry]);
 
-    expect(console.log.callCount).to.equal(1);
+    expect(logger.log.callCount).to.equal(1);
   });
 });

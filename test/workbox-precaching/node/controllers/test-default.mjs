@@ -12,7 +12,6 @@ describe(`[workbox-precaching] default export`, function() {
   beforeEach(async function() {
     sandbox.restore();
 
-    // console.log('CLEARNING <-----------------------------');
     clearRequire('../../../../packages/workbox-precaching/default.mjs');
 
     const module = await import('../../../../packages/workbox-precaching/default.mjs');
