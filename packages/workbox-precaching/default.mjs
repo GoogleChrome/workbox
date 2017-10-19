@@ -24,32 +24,33 @@ let fetchListenersAdded = false;
 const cacheName = _private.cacheNames.getPrecacheName();
 const precacheController = new PrecacheController(cacheName);
 
-/**
- * This method will add items to the precache list, removing duplicates
- * and ensuring the information is valid.
- *
- * @param {Array<Object|string>} entries Array of entries to precache.
- *
- * @alias module:workbox-precaching.precache
- */
-const precache = (entries) => {
-  precacheController.addToCacheList(entries);
+const _removeIgnoreUrlParams = (origUrlObject, ignoreUrlParametersMatching) => {
+  // Exclude initial '?'
+  const searchString = origUrlObject.search.slice(1);
 
-  if (installActivateListenersAdded || entries.length <= 0) {
-    return;
-  }
-
-  installActivateListenersAdded = true;
-  self.addEventListener('install', (event) => {
-    event.waitUntil(precacheController.install());
+  // Split into an array of 'key=value' strings
+  const keyValueStrings = searchString.split('&');
+  const keyValuePairs = keyValueStrings.map((keyValueString) => {
+    // Split each 'key=value' string into a [key, value] array
+    return keyValueString.split('=');
   });
-  self.addEventListener('activate', (event) => {
-    event.waitUntil(precacheController.cleanup());
+  const filteredKeyValuesPairs = keyValuePairs.filter((keyValuePair) => {
+    return ignoreUrlParametersMatching
+      .every((ignoredRegex) => {
+        // Return true iff the key doesn't match any of the regexes.
+        return !ignoredRegex.test(keyValuePair[0]);
+      });
   });
-};
+  const filteredStrings = filteredKeyValuesPairs.map((keyValuePair) => {
+    // Join each [key, value] array into a 'key=value' string
+    return keyValuePair.join('=');
+  });
 
-const removeIgnoreUrlParams = (url, ignoreUrlParametersMatching) => {
-
+  // Join the array of 'key=value' strings into a string with '&' in
+  // between each
+  const urlClone = new URL(origUrlObject);
+  urlClone.search = filteredStrings.join('&');
+  return urlClone;
 };
 
 /**
@@ -63,7 +64,10 @@ const removeIgnoreUrlParams = (url, ignoreUrlParametersMatching) => {
  *
  * @private
  */
-const _getPrecachedUrl = (url, options) => {
+const _getPrecachedUrl = (url, {
+  ignoreUrlParametersMatching = [/^utm_/],
+  directoryIndex = 'index.html',
+} = {}) => {
   const urlObject = new URL(url, location);
 
   // If we precache '/some-url' but the URL referenced from the browser
@@ -78,21 +82,47 @@ const _getPrecachedUrl = (url, options) => {
     return urlObject.href;
   }
 
-  let strippedUrl = removeIgnoreUrlParams(
-    urlObject.href, options.ignoreUrlParametersMatching
+  let strippedUrl = _removeIgnoreUrlParams(
+    urlObject, ignoreUrlParametersMatching
   );
   if (cachedUrls.indexOf(strippedUrl.href) !== -1) {
     return strippedUrl.href;
   }
 
-  if (options.directoryIndex && strippedUrl.pathname.endsWith('/')) {
-    strippedUrl.pathname += options.directoryIndex;
+  if (directoryIndex && strippedUrl.pathname.endsWith('/')) {
+    strippedUrl.pathname += directoryIndex;
     if (cachedUrls.indexOf(strippedUrl.href) !== -1) {
       return strippedUrl.href;
     }
   }
 
   return null;
+};
+
+const moduleExports = {};
+
+/**
+ * This method will add items to the precache list, removing duplicates
+ * and ensuring the information is valid.
+ *
+ * @param {Array<Object|string>} entries Array of entries to precache.
+ *
+ * @alias module:workbox-precaching.precache
+ */
+moduleExports.precache = (entries) => {
+  precacheController.addToCacheList(entries);
+
+  if (installActivateListenersAdded || entries.length <= 0) {
+    return;
+  }
+
+  installActivateListenersAdded = true;
+  self.addEventListener('install', (event) => {
+    event.waitUntil(precacheController.install());
+  });
+  self.addEventListener('activate', (event) => {
+    event.waitUntil(precacheController.cleanup());
+  });
 };
 
 /**
@@ -111,7 +141,7 @@ const _getPrecachedUrl = (url, options) => {
  *
  * @alias module:workbox-precaching.addRoute
  */
-const addRoute = (options) => {
+moduleExports.addRoute = (options) => {
   if (fetchListenersAdded) {
     // TODO Throw error here.
     return;
@@ -143,13 +173,9 @@ const addRoute = (options) => {
  *
  * @alias module:workbox-precaching.precacheAndRoute
  */
-const precacheAndRoute = (entries, options) => {
-  precache(entries);
-  addRoute(options);
+moduleExports.precacheAndRoute = (entries, options) => {
+  moduleExports.precache(entries);
+  moduleExports.addRoute(options);
 };
 
-export default {
-  precache,
-  addRoute,
-  precacheAndRoute,
-};
+export default moduleExports;

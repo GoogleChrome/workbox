@@ -124,5 +124,199 @@ describe(`[workbox-precaching] default export`, function() {
       const result = fetchCb(unprecachedFetchEvent);
       expect(typeof result).to.equal('undefined');
     });
+
+    it(`should add a fetch listener that matches precached urls with ignored params`, async function() {
+      let fetchCb;
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        if (eventName === 'fetch') {
+          fetchCb = cb;
+        }
+      });
+
+      const SEARCH_1 = 'paramsTest1=1';
+      const SEARCH_2 = 'paramsTest2=2';
+      const SEARCH_IGNORE = 'ignoreMe=ignore';
+
+      const cachedResponse = new Response('Injected Response');
+      const cache = await caches.open(core.cacheNames.precache);
+      cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
+
+      precaching.addRoute({
+        ignoreUrlParametersMatching: [/ignoreMe/],
+      });
+      precaching.precache([`/?${SEARCH_1}&${SEARCH_2}`]);
+
+      const fetchEvent = new FetchEvent('fetch', {
+        request: new Request(`/?${SEARCH_IGNORE}&${SEARCH_1}&${SEARCH_2}`),
+      });
+      let fetchPromise;
+      fetchEvent.respondWith = (promise) => {
+        fetchPromise = promise;
+      };
+      fetchCb(fetchEvent);
+
+      const response = await fetchPromise;
+      expect(response).to.exist;
+      expect(response).to.equal(cachedResponse);
+    });
+
+    // Should we sort the search params to ensure that matches are consistent
+    it.skip(`should match search params out of order`, async function() {
+      let fetchCb;
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        if (eventName === 'fetch') {
+          fetchCb = cb;
+        }
+      });
+
+      const SEARCH_1 = 'paramsTest1=1';
+      const SEARCH_2 = 'paramsTest2=2';
+      const SEARCH_IGNORE = 'ignoreMe=ignore';
+
+      const cachedResponse = new Response('Injected Response');
+      const cache = await caches.open(core.cacheNames.precache);
+      cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
+
+      precaching.addRoute({
+        ignoreUrlParametersMatching: [/ignoreMe/],
+      });
+      precaching.precache([`/?${SEARCH_1}&${SEARCH_2}`]);
+
+      const fetchEvent = new FetchEvent('fetch', {
+        request: new Request(`/?${SEARCH_2}&${SEARCH_IGNORE}&${SEARCH_1}`),
+      });
+      let fetchPromise;
+      fetchEvent.respondWith = (promise) => {
+        fetchPromise = promise;
+      };
+      fetchCb(fetchEvent);
+
+      const response = await fetchPromise;
+      expect(response).to.exist;
+      expect(response).to.equal(cachedResponse);
+    });
+
+    it(`should use the directoryIndex if the original request fails`, async function() {
+      let fetchCb;
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        if (eventName === 'fetch') {
+          fetchCb = cb;
+        }
+      });
+
+      const DIRECTORY_INDEX = 'test-index.html';
+
+      const cachedResponse = new Response('Injected Response');
+      const cache = await caches.open(core.cacheNames.precache);
+      cache.put(new URL(`/${DIRECTORY_INDEX}`, location).href, cachedResponse);
+
+      precaching.addRoute({
+        directoryIndex: DIRECTORY_INDEX,
+      });
+      precaching.precache([`/${DIRECTORY_INDEX}`]);
+
+      const fetchEvent = new FetchEvent('fetch', {
+        request: new Request(`/`),
+      });
+      let fetchPromise;
+      fetchEvent.respondWith = (promise) => {
+        fetchPromise = promise;
+      };
+      fetchCb(fetchEvent);
+
+      const response = await fetchPromise;
+      expect(response).to.exist;
+      expect(response).to.equal(cachedResponse);
+    });
+
+    it(`should use the default directoryIndex of 'index.html'`, async function() {
+      let fetchCb;
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        if (eventName === 'fetch') {
+          fetchCb = cb;
+        }
+      });
+
+      const DIRECTORY_INDEX = 'index.html';
+
+      const cachedResponse = new Response('Injected Response');
+      const cache = await caches.open(core.cacheNames.precache);
+      cache.put(new URL(`/${DIRECTORY_INDEX}`, location).href, cachedResponse);
+
+      precaching.addRoute();
+      precaching.precache([`/${DIRECTORY_INDEX}`]);
+
+      const fetchEvent = new FetchEvent('fetch', {
+        request: new Request(`/`),
+      });
+      let fetchPromise;
+      fetchEvent.respondWith = (promise) => {
+        fetchPromise = promise;
+      };
+      fetchCb(fetchEvent);
+
+      const response = await fetchPromise;
+      expect(response).to.exist;
+      expect(response).to.equal(cachedResponse);
+    });
+
+    it(`should return null if there is no match (event with directoryIndex) 'index.html'`, async function() {
+      let fetchCb;
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        if (eventName === 'fetch') {
+          fetchCb = cb;
+        }
+      });
+
+      const cachedResponse = new Response('Injected Response');
+      const cache = await caches.open(core.cacheNames.precache);
+      cache.put(new URL(`/something-else.html`, location).href, cachedResponse);
+
+      precaching.addRoute();
+      precaching.precache([`/something-else.html`]);
+
+      const fetchEvent = new FetchEvent('fetch', {
+        request: new Request(`/`),
+      });
+      let fetchPromise;
+      fetchEvent.respondWith = (promise) => {
+        fetchPromise = promise;
+      };
+      fetchCb(fetchEvent);
+
+      const response = await fetchPromise;
+      expect(response).to.not.exist;
+    });
+  });
+
+  describe(`precacheAndRoute()`, function() {
+    it(`should call precache() and addRoute() without args`, function() {
+      sandbox.stub(precaching, 'precache');
+      sandbox.stub(precaching, 'addRoute');
+
+      precaching.precacheAndRoute();
+
+      expect(precaching.precache.callCount).to.equal(1);
+      expect(precaching.precache.args[0]).to.deep.equal([undefined]);
+      expect(precaching.addRoute.callCount).to.equal(1);
+      expect(precaching.addRoute.args[0]).to.deep.equal([undefined]);
+    });
+
+    it(`should call precache() and addRoute() with args`, function() {
+      sandbox.stub(precaching, 'precache');
+      sandbox.stub(precaching, 'addRoute');
+
+      const precacheArgs = ['/'];
+      const routeOptions = {
+        ignoreUrlParametersMatching: [/utm_/],
+        directoryIndex: 'example.html',
+      };
+      precaching.precacheAndRoute(precacheArgs, routeOptions);
+
+      expect(precaching.precache.callCount).to.equal(1);
+      expect(precaching.precache.args[0][0]).to.equal(precacheArgs);
+      expect(precaching.addRoute.callCount).to.equal(1);
+      expect(precaching.addRoute.args[0][0]).to.equal(routeOptions);
+    });
   });
 });
