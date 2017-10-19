@@ -44,5 +44,6 @@ global.SyncEvent = SyncEvent;
 
 // Because we override Request, we can use the serivce-worker-mock because it
 // checks for type of Request, that will no longer match in our tests.
+// We need to use Request until https://github.com/pinterest/service-workers/issues/65
 global.Request = Request;
 global.FetchEvent = FetchEvent;
