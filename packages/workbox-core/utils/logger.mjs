@@ -31,13 +31,18 @@ const shouldPrint = (minLevel) => (logLevel <= minLevel);
 const setLoggerLevel = (newLogLevel) => logLevel = newLogLevel;
 const getLoggerLevel = () => logLevel;
 
-const _print = function(logFunction, minLevel, logArgs, levelColor) {
-  if (!shouldPrint(minLevel)) {
+// We always want groups to be logged unless logLevel is silent.
+const groupLevel = LOG_LEVELS.error;
+
+const _print = function(keyName, logArgs, levelColor) {
+  const logLevel = keyName.indexOf('group') === 0 ?
+    groupLevel : LOG_LEVELS[keyName];
+  if (!shouldPrint(logLevel)) {
     return;
   }
 
   if (!levelColor) {
-    logFunction(...logArgs);
+    console[keyName](...logArgs);
     return;
   }
 
@@ -46,12 +51,8 @@ const _print = function(logFunction, minLevel, logArgs, levelColor) {
     `background: ${levelColor}; color: white; padding: 2px 0.5em; ` +
       `border-radius: 0.5em;`,
   ];
-
-  logFunction(...logPrefix, ...logArgs);
+  console[keyName](...logPrefix, ...logArgs);
 };
-
-// We always want groups to be logged unless logLevel is silent.
-const groupLevel = LOG_LEVELS.error;
 
 const groupEnd = () => {
   if (shouldPrint(groupLevel)) {
@@ -65,40 +66,24 @@ const defaultExport = {
     groupEnd,
   },
 };
-const configs = {
-  debug: {
-    func: console.debug,
-    level: LOG_LEVELS.debug,
-    color: GREY,
-  },
-  log: {
-    func: console.log,
-    level: LOG_LEVELS.log,
-    color: GREEN,
-  },
-  warn: {
-    func: console.warn,
-    level: LOG_LEVELS.warn,
-    color: YELLOW,
-  },
-  error: {
-    func: console.error,
-    level: LOG_LEVELS.error,
-    color: RED,
-  },
-  groupCollapsed: {
-    func: console.groupCollapsed,
-    level: groupLevel,
-    color: BLUE,
-  },
-};
-Object.keys(configs).forEach((keyName) => {
-  const logConfig = configs[keyName];
+
+const setupLogs = (keyName, color) => {
   defaultExport[keyName] =
-    (...args) => _print(logConfig.func, logConfig.level, args, logConfig.color);
+    (...args) => _print(keyName, args, color);
   defaultExport.unprefixed[keyName] =
-    (...args) => _print(logConfig.func, logConfig.level, args);
-});
+    (...args) => _print(keyName, args);
+};
+
+const levelToColor = {
+  debug: GREY,
+  log: GREEN,
+  warn: YELLOW,
+  error: RED,
+  groupCollapsed: BLUE,
+};
+Object.keys(levelToColor).forEach(
+  (keyName) => setupLogs(keyName, levelToColor[keyName])
+);
 
 export {setLoggerLevel};
 export {getLoggerLevel};

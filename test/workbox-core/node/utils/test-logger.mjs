@@ -18,22 +18,30 @@ describe(`workbox-core logger`, function() {
         logger[key].restore();
       }
     });
+
+    Object.keys(logger.unprefixed).forEach((key) => {
+      if (logger.unprefixed[key].restore) {
+        logger.unprefixed[key].restore();
+      }
+    });
   });
 
   afterEach(function() {
     sandbox.restore();
   });
 
-  const validateStub = (stub, expectedArgs) => {
+  const validateStub = (stub, expectedArgs, isPrefixed) => {
     expect(stub.callCount).to.equal(1);
 
     const calledArgs = stub.args[0];
-    const prefix = calledArgs.splice(0, 2);
+    // 'workbox' is our prefix and '%c' enables styling in the console.
+    if (isPrefixed) {
+      const prefix = calledArgs.splice(0, 2);
+
+      expect(prefix[0]).to.equal('%cworkbox');
+    }
 
     expect(calledArgs).to.deep.equal(expectedArgs);
-
-    // 'workbox' is our prefix and '%c' enables styling in the console.
-    expect(prefix[0]).to.equal('%cworkbox');
   };
 
   const groupLogLevel = LOG_LEVELS.error;
@@ -66,7 +74,7 @@ describe(`workbox-core logger`, function() {
         // Restore to avoid upsetting mocha logs.
         sandbox.restore();
 
-        validateStub(stub, []);
+        validateStub(stub, [], true);
       });
 
       it(`should work several inputs`, function() {
@@ -78,7 +86,7 @@ describe(`workbox-core logger`, function() {
         // Restore to avoid upsetting mocha logs.
         sandbox.restore();
 
-        validateStub(stub, args);
+        validateStub(stub, args, true);
       });
 
       const logLevels = Object.keys(LOG_LEVELS);
@@ -94,7 +102,52 @@ describe(`workbox-core logger`, function() {
           sandbox.restore();
 
           if (logDetail.level >= LOG_LEVELS[logLevelName] && logLevelName !== 'silent') {
-            validateStub(stub, args);
+            validateStub(stub, args, true);
+          } else {
+            expect(stub.callCount).to.equal(0);
+          }
+        });
+      });
+    });
+
+    describe(`.unprefixed.${logDetail.name}()`, function() {
+      it('should work without input', function() {
+        const stub = sandbox.stub(console, logDetail.name);
+
+        logger.unprefixed[logDetail.name]();
+
+        // Restore to avoid upsetting mocha logs.
+        sandbox.restore();
+
+        validateStub(stub, [], false);
+      });
+
+      it(`should work several inputs`, function() {
+        const stub = sandbox.stub(console, logDetail.name);
+
+        const args = ['', 'test', null, undefined, [], {}];
+        logger.unprefixed[logDetail.name](...args);
+
+        // Restore to avoid upsetting mocha logs.
+        sandbox.restore();
+
+        validateStub(stub, args, false);
+      });
+
+      const logLevels = Object.keys(LOG_LEVELS);
+      logLevels.forEach((logLevelName) => {
+        it(`should behave correctly with ${logLevelName} log level`, function() {
+          const stub = sandbox.stub(console, logDetail.name);
+
+          core.setLogLevel(LOG_LEVELS[logLevelName]);
+          const args = ['test'];
+          logger.unprefixed[logDetail.name](...args);
+
+          // Restore to avoid upsetting mocha logs.
+          sandbox.restore();
+
+          if (logDetail.level >= LOG_LEVELS[logLevelName] && logLevelName !== 'silent') {
+            validateStub(stub, args, false);
           } else {
             expect(stub.callCount).to.equal(0);
           }

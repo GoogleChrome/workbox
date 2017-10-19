@@ -25,6 +25,8 @@
 <script>
   const logger = workbox.core._private.logger;
 
+  workbox.core.default.setLogLevel(workbox.core.LOG_LEVELS.debug);
+
   const currentLevel = document.querySelector('.js-current-level');
   switch(workbox.core.default.logLevel) {
     case 0:
