@@ -80,7 +80,7 @@ const createRequestWillReplayCallback = (config) => {
       }
     }
 
-    if (typeof config.hitFilter == 'function') {
+    if (typeof config.hitFilter === 'function') {
       config.hitFilter.call(null, params);
     }
 
@@ -101,8 +101,8 @@ const createRequestWillReplayCallback = (config) => {
  * @return {Array<Route>} The created routes.
  */
 const createCollectRoutes = (queue) => {
-  const match = ({url}) => url.hostname == GOOGLE_ANALYTICS_HOST &&
-      url.pathname == COLLECT_PATH;
+  const match = ({url}) => url.hostname === GOOGLE_ANALYTICS_HOST &&
+      url.pathname === COLLECT_PATH;
 
   const handler = new NetworkOnly({
     plugins: [new QueuePlugin(queue)],
@@ -121,8 +121,8 @@ const createCollectRoutes = (queue) => {
  * @return {Route} The created route.
  */
 const createAnalyticsJsRoute = () => {
-  const match = ({url}) => url.hostname == GOOGLE_ANALYTICS_HOST &&
-      url.pathname == ANALYTICS_JS_PATH;
+  const match = ({url}) => url.hostname === GOOGLE_ANALYTICS_HOST &&
+      url.pathname === ANALYTICS_JS_PATH;
   const handler = new NetworkFirst({cacheName: CACHE_NAME});
 
   return new Route(match, handler, 'GET');

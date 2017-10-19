@@ -174,7 +174,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
       }),
     }));
 
-    await waitUntil(() => Queue.prototype.addRequest.callCount == 2);
+    await waitUntil(() => Queue.prototype.addRequest.callCount === 2);
 
     const [call1Args, call2Args] = Queue.prototype.addRequest.args;
     expect(call1Args[0].url).to.equal(`https://` +
@@ -204,7 +204,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
       }),
     }));
 
-    await waitUntil(() => Queue.prototype.addRequest.callCount == 2);
+    await waitUntil(() => Queue.prototype.addRequest.callCount === 2);
 
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
@@ -259,7 +259,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
       }),
     }));
 
-    await waitUntil(() => Queue.prototype.addRequest.callCount == 2);
+    await waitUntil(() => Queue.prototype.addRequest.callCount === 2);
 
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
@@ -290,7 +290,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     googleAnalytics.initialize({
       hitFilter: (params) => {
-        if (params.get('foo') == '1') {
+        if (params.get('foo') === '1') {
           params.set('foo', 'bar');
         }
       },
@@ -311,7 +311,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
       }),
     }));
 
-    await waitUntil(() => Queue.prototype.addRequest.callCount == 2);
+    await waitUntil(() => Queue.prototype.addRequest.callCount === 2);
 
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
