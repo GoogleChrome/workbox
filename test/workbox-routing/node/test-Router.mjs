@@ -9,7 +9,6 @@ import {_private} from '../../../packages/workbox-core/index.mjs';
 
 describe(`[workbox-routing] Router`, function() {
   const sandbox = sinon.sandbox.create();
-  const {logger} = _private;
   const MATCH = () => {};
   const HANDLER = {handle: () => {}};
   const METHOD = 'POST';
@@ -20,8 +19,6 @@ describe(`[workbox-routing] Router`, function() {
     // a mocha bug where `afterEach` hooks aren't run for skipped tests.
     // https://github.com/mochajs/mocha/issues/2546
     sandbox.restore();
-    // Prevent logs in the mocha output.
-    sandbox.stub(logger);
   });
 
   after(function() {
