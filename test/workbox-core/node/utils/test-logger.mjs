@@ -6,15 +6,18 @@ import logger from '../../../../packages/workbox-core/utils/logger.mjs';
 
 
 describe(`workbox-core logger`, function() {
-  let sandbox;
-
-  before(async function() {
-    sandbox = sinon.sandbox.create();
-  });
+  const sandbox = sinon.sandbox.create();
 
   beforeEach(function() {
     // Reset between runs
     core.setLogLevel(LOG_LEVELS.debug);
+
+    // Undo the logger stubs setup in infra/testing/auto-stub-logger.mjs
+    Object.keys(logger).forEach((key) => {
+      if (logger[key].restore) {
+        logger[key].restore();
+      }
+    });
   });
 
   afterEach(function() {
