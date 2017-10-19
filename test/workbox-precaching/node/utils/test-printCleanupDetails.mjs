@@ -10,12 +10,6 @@ describe(`[workbox-precaching] printCleanupDetails`, function() {
 
   beforeEach(function() {
     sandbox.restore();
-
-    sandbox.stub(logger, 'log');
-    sandbox.stub(logger, 'debug');
-    sandbox.stub(logger, 'warn');
-    sandbox.stub(logger, 'groupCollapsed');
-    sandbox.stub(logger, 'groupEnd');
   });
 
   after(function() {

@@ -27,12 +27,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     // a mocha bug where `afterEach` hooks aren't run for skipped tests.
     // https://github.com/mochajs/mocha/issues/2546
     sandbox.restore();
-
-    sandbox.stub(logger, 'log');
-    sandbox.stub(logger, 'debug');
-    sandbox.stub(logger, 'warn');
-    sandbox.stub(logger, 'groupCollapsed');
-    sandbox.stub(logger, 'groupEnd');
   });
 
   after(function() {
