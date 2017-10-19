@@ -1,0 +1,38 @@
+{
+  "name": "workbox-webpack-plugin",
+  "version": "2.0.1",
+  "description": "A plugin for your Webpack build process, helping you generate a manifest of local files that workbox-sw should precache.",
+  "keywords": [
+    "workbox",
+    "workboxjs",
+    "webpack",
+    "service worker",
+    "caching",
+    "fetch requests",
+    "offline",
+    "file manifest"
+  ],
+  "scripts": {
+    "build": "gulp build-packages --package workbox-webpack-plugin",
+    "version": "npm run build",
+    "prepare": "npm run build"
+  },
+  "workbox": {
+    "packageType": "node"
+  },
+  "main": "build/index.js",
+  "files": [
+    "build"
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "dependencies": {
+    "workbox-build": "^3.0.0-alpha.17"
+  },
+  "author": "Will Farley <a.will.farley@gmail.com> (http://www.willfarley.org/)",
+  "license": "Apache-2.0",
+  "repository": "googlechrome/sw-helpers",
+  "bugs": "https://github.com/GoogleChrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-webpack-plugin"
+}
