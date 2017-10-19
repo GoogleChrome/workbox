@@ -43,6 +43,8 @@ const waitUntil = async (test) => {
   }
 };
 
+// The TestError class is used in these tests to distinguish between expected
+// unhandled promise rejections and unexpected ones.
 class TestError extends Error {}
 const catchUnhandledPromiseRejections = (err) => {
   if (!(err instanceof TestError)) {
