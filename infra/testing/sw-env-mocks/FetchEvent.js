@@ -33,7 +33,7 @@ class FetchEvent extends ExtendableEvent {
   }
 
   respondWith(promise) {
-    // TODO
+    this._extendLifetimePromises.add(promise);
   }
 }
 
