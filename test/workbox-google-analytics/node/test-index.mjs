@@ -60,7 +60,6 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   beforeEach(async function() {
     await reset();
-    sandbox.stub(_private.logger);
   });
 
   after(async function() {
