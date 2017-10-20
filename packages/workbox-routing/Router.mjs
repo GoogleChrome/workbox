@@ -14,7 +14,7 @@
 */
 
 import core from 'workbox-core';
-import {_private, LOG_LEVELS} from 'workbox-core';
+import {_private} from 'workbox-core';
 
 import normalizeHandler from './lib/normalizeHandler.mjs';
 import './_version.mjs';
@@ -112,26 +112,24 @@ class Router {
         } else {
           // We have a handler, meaning Workbox is handling the route. print to
           // log.
-          if (core.logLevel <= LOG_LEVELS.log) {
-            _private.logger.groupCollapsed(
-              `Router is responding to: ${urlToLog}`);
+          _private.logger.groupCollapsed(
+            `Router is responding to: ${urlToLog}`);
 
-            // The Request object contains a great deal of information,
-            // hide it under a group in case developers wants to see it.
-            _private.logger.groupCollapsed(
-              `    View full request details here.`);
-            console.log(event.request); // eslint-disable-line no-console
-            _private.logger.groupEnd();
+          // The Request object contains a great deal of information,
+          // hide it under a group in case developers wants to see it.
+          _private.logger.groupCollapsed(
+            `    View full request details here.`);
+          _private.logger.unprefixed.log(event.request);
+          _private.logger.groupEnd();
 
-            debugMessages.forEach((msg) => {
-              if (Array.isArray(msg)) {
-                _private.logger.log(...msg);
-              } else {
-                _private.logger.log(msg);
-              }
-            });
-            _private.logger.groupEnd();
-          }
+          debugMessages.forEach((msg) => {
+            if (Array.isArray(msg)) {
+              _private.logger.unprefixed.log(...msg);
+            } else {
+              _private.logger.unprefixed.log(msg);
+            }
+          });
+          _private.logger.groupEnd();
         }
       }
     }
