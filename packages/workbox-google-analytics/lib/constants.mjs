@@ -15,7 +15,6 @@
 
 import '../_version.mjs';
 
-export const CACHE_NAME = 'workbox-google-analytics';
 export const QUEUE_NAME = 'workbox-google-analytics';
 export const MAX_RETENTION_TIME = 1000 * 60 * 60 * 48; // Two days
 export const GOOGLE_ANALYTICS_HOST = 'www.google-analytics.com';

@@ -15,7 +15,7 @@
 
 import {expect} from 'chai';
 import sinon from 'sinon';
-import {resetEventListeners} from '../../../infra/testing/sw-env-mocks/event-listeners.js';
+import {eventsDoneWaiting, resetEventListeners} from '../../../infra/testing/sw-env-mocks/event-listeners.js';
 import {OBJECT_STORE_NAME} from '../../../packages/workbox-background-sync/lib/constants.mjs';
 import Queue from '../../../packages/workbox-background-sync/lib/Queue.mjs';
 import QueueStore from '../../../packages/workbox-background-sync/lib/QueueStore.mjs';
@@ -32,25 +32,6 @@ import {
 
 const PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
-const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
-
-const waitUntil = async (test) => {
-  if (test() === true) {
-    return Promise.resolve();
-  } else {
-    await sleep(100);
-    return waitUntil(test);
-  }
-};
-
-// The TestError class is used in these tests to distinguish between expected
-// unhandled promise rejections and unexpected ones.
-class TestError extends Error {}
-const catchUnhandledPromiseRejections = (err) => {
-  if (!(err instanceof TestError)) {
-    throw err;
-  }
-};
 
 const clearObjectStore = async () => {
   // Get a reference to the DB by invoking _getDb on a mock instance.
@@ -67,22 +48,23 @@ const clearObjectStore = async () => {
 
 describe(`[workbox-google-analytics] initialize`, function() {
   const sandbox = sinon.sandbox.create();
-  const reset = () => {
+  const reset = async () => {
     Queue._queueNames.clear();
     clearObjectStore();
     resetEventListeners();
     sandbox.restore();
-  };
-  process.on('unhandledRejection', catchUnhandledPromiseRejections);
 
-  beforeEach(function() {
-    reset();
+    const cacheNames = await caches.keys();
+    await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+  };
+
+  beforeEach(async function() {
+    await reset();
     sandbox.stub(_private.logger);
   });
 
-  after(function() {
-    process.removeListener('unhandledRejection', catchUnhandledPromiseRejections);
-    reset();
+  after(async function() {
+    await reset();
   });
 
   it(`should register a handler to cache the analytics.js script`, function() {
@@ -98,6 +80,49 @@ describe(`[workbox-google-analytics] initialize`, function() {
     }));
 
     expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
+  });
+
+  it(`should accept an optional cache name`, async function() {
+    googleAnalytics.initialize({cacheName: 'foobar'});
+
+    const analyticsJsRequest = new Request(
+        `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
+      mode: 'no-cors',
+    });
+
+    self.dispatchEvent(new FetchEvent('fetch', {request: analyticsJsRequest}));
+
+    await eventsDoneWaiting();
+
+    const cacheNames = await caches.keys();
+    expect(cacheNames).to.have.lengthOf(1);
+    expect(cacheNames[0]).to.equal('foobar');
+
+    const cache = await caches.open('foobar');
+    const cachedResponse = await cache.match(analyticsJsRequest);
+    expect(cachedResponse).to.be.instanceOf(Response);
+  });
+
+  it(`should use the default cache name when not specified`, async function() {
+    googleAnalytics.initialize();
+
+    const analyticsJsRequest = new Request(
+        `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
+      mode: 'no-cors',
+    });
+
+    self.dispatchEvent(new FetchEvent('fetch', {request: analyticsJsRequest}));
+
+    await eventsDoneWaiting();
+
+    const defaultCacheName = _private.cacheNames.getGoogleAnalyticsName();
+    const cacheNames = await caches.keys();
+    expect(cacheNames).to.have.lengthOf(1);
+    expect(cacheNames[0]).to.equal(defaultCacheName);
+
+    const cache = await caches.open(defaultCacheName);
+    const cachedResponse = await cache.match(analyticsJsRequest);
+    expect(cachedResponse).to.be.instanceOf(Response);
   });
 
   it(`should register GET/POST routes for /collect`, function() {
@@ -156,7 +181,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
   });
 
   it(`should add failed hits to a background sync queue`, async function() {
-    sandbox.stub(self, 'fetch').rejects(new TestError());
+    sandbox.stub(self, 'fetch').rejects();
     sandbox.spy(Queue.prototype, 'addRequest');
 
     googleAnalytics.initialize();
@@ -176,7 +201,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
       }),
     }));
 
-    await waitUntil(() => Queue.prototype.addRequest.callCount === 2);
+    await eventsDoneWaiting();
 
     const [call1Args, call2Args] = Queue.prototype.addRequest.args;
     expect(call1Args[0].url).to.equal(`https://` +
@@ -186,7 +211,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
   });
 
   it(`should add the qt param to replayed hits`, async function() {
-    sandbox.stub(self, 'fetch').rejects(new TestError());
+    sandbox.stub(self, 'fetch').rejects();
     sandbox.spy(Queue.prototype, 'addRequest');
 
     googleAnalytics.initialize();
@@ -206,7 +231,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
       }),
     }));
 
-    await waitUntil(() => Queue.prototype.addRequest.callCount === 2);
+    await eventsDoneWaiting();
 
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
@@ -236,7 +261,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
   });
 
   it(`should add parameterOverrides to replayed hits`, async function() {
-    sandbox.stub(self, 'fetch').rejects(new TestError());
+    sandbox.stub(self, 'fetch').rejects();
     sandbox.spy(Queue.prototype, 'addRequest');
 
     googleAnalytics.initialize({
@@ -261,7 +286,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
       }),
     }));
 
-    await waitUntil(() => Queue.prototype.addRequest.callCount === 2);
+    await eventsDoneWaiting();
 
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
@@ -287,7 +312,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
   });
 
   it(`should apply the hitFilter to replayed hits`, async function() {
-    sandbox.stub(self, 'fetch').rejects(new TestError());
+    sandbox.stub(self, 'fetch').rejects();
     sandbox.spy(Queue.prototype, 'addRequest');
 
     googleAnalytics.initialize({
@@ -313,7 +338,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
       }),
     }));
 
-    await waitUntil(() => Queue.prototype.addRequest.callCount === 2);
+    await eventsDoneWaiting();
 
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));

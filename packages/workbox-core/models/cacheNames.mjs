@@ -19,6 +19,7 @@ import '../_version.mjs';
 const _cacheNameDetails = {
   prefix: 'workbox',
   suffix: self.registration.scope,
+  googleAnalytics: 'googleAnalytics',
   precache: 'precache',
   runtime: 'runtime',
 };
@@ -35,6 +36,10 @@ export const updateDetails = (details) => {
       _cacheNameDetails[key] = details[key];
     }
   });
+};
+
+export const getGoogleAnalyticsName = (userCacheName) => {
+  return userCacheName || _createCacheName(_cacheNameDetails.runtime);
 };
 
 export const getPrecacheName = (userCacheName) => {

@@ -19,10 +19,10 @@
  */
 
 import {Queue, QueuePlugin} from 'workbox-background-sync';
+import {_private} from 'workbox-core';
 import {Route, Router} from 'workbox-routing';
 import {NetworkFirst, NetworkOnly} from 'workbox-runtime-caching';
 import {
-  CACHE_NAME,
   QUEUE_NAME,
   MAX_RETENTION_TIME,
   GOOGLE_ANALYTICS_HOST,
@@ -118,39 +118,45 @@ const createCollectRoutes = (queue) => {
  * Creates a route with a network first strategy for the analytics.js script.
  *
  * @private
+ * @param {string} cacheName
  * @return {Route} The created route.
  */
-const createAnalyticsJsRoute = () => {
+const createAnalyticsJsRoute = (cacheName) => {
   const match = ({url}) => url.hostname === GOOGLE_ANALYTICS_HOST &&
       url.pathname === ANALYTICS_JS_PATH;
-  const handler = new NetworkFirst({cacheName: CACHE_NAME});
+  const handler = new NetworkFirst({cacheName});
 
   return new Route(match, handler, 'GET');
 };
 
 /**
- * @param {Object=} [config]
- * @param {Object} [config.parameterOverrides]
+ * @param {Object=} [options]
+ * @param {Object} [options.cacheName] The cache name to store and retrieve
+ *     analytics.js. Defaults to the cache names provided by `workbox-core`.
+ * @param {Object} [options.parameterOverrides]
  *     [Measurement Protocol parameters](https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters),
  *     expressed as key/value pairs, to be added to replayed Google Analytics
  *     requests. This can be used to, e.g., set a custom dimension indicating
  *     that the request was replayed.
- * @param {Function} [config.hitFilter] A function that allows you to modify
+ * @param {Function} [options.hitFilter] A function that allows you to modify
  *     the hit parameters prior to replaying
  *     the hit. The function is invoked with the original hit's URLSearchParams
  *     object as its only argument.
  * @memberof module:workbox-google-analytics
  */
-const initialize = (config = {}) => {
+const initialize = (options = {}) => {
+  const cacheName = _private.cacheNames.getGoogleAnalyticsName(
+      options.cacheName);
+
   const queue = new Queue(QUEUE_NAME, {
     maxRetentionTime: MAX_RETENTION_TIME,
     callbacks: {
-      requestWillReplay: createRequestWillReplayCallback(config),
+      requestWillReplay: createRequestWillReplayCallback(options),
     },
   });
 
   const routes = [
-    createAnalyticsJsRoute(),
+    createAnalyticsJsRoute(cacheName),
     ...createCollectRoutes(queue),
   ];
 
