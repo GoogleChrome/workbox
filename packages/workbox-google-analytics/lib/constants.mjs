@@ -15,29 +15,8 @@
 
 import '../_version.mjs';
 
-/**
- * A class implementing the `fetchDidFail` lifecycle callback. This makes it
- * easier to add failed requests to a background sync Queue.
- *
- * @memberof module:workbox-background-sync
- */
-class QueuePlugin {
-  /**
-   * @param {Queue} queue The Queue instance to add failed requests to.
-   */
-  constructor(queue) {
-    this._queue = queue;
-    this.fetchDidFail = this.fetchDidFail.bind(this);
-  }
-
-  /**
-   * @param {Object} options
-   * @param {Request} options.request
-   * @private
-   */
-  fetchDidFail({request}) {
-    this._queue.addRequest(request);
-  }
-}
-
-export default QueuePlugin;
+export const QUEUE_NAME = 'workbox-google-analytics';
+export const MAX_RETENTION_TIME = 1000 * 60 * 60 * 48; // Two days
+export const GOOGLE_ANALYTICS_HOST = 'www.google-analytics.com';
+export const ANALYTICS_JS_PATH = '/analytics.js';
+export const COLLECT_PATH = '/collect';

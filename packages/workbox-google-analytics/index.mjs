@@ -1,0 +1,178 @@
+/*
+ Copyright 2017 Google Inc. All Rights Reserved.
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+
+/**
+ * @module workbox-google-analytics
+ */
+
+import {Queue, QueuePlugin} from 'workbox-background-sync';
+import {_private} from 'workbox-core';
+import {Route, Router} from 'workbox-routing';
+import {NetworkFirst, NetworkOnly} from 'workbox-runtime-caching';
+import {
+  QUEUE_NAME,
+  MAX_RETENTION_TIME,
+  GOOGLE_ANALYTICS_HOST,
+  ANALYTICS_JS_PATH,
+  COLLECT_PATH,
+} from './lib/constants.mjs';
+import './_version.mjs';
+
+/**
+ * Promisifies the FileReader API to await a text response from a Blob.
+ *
+ * @private
+ * @param {Blob} blob
+ * @return {Promise<string>}
+ */
+const getTextFromBlob = (blob) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(blob);
+  });
+};
+
+/**
+ * Creates the requestWillDequeue callback to be used with the background
+ * sync queue plugin. The callback takes the failed request and adds the
+ * `qt` param based on the current time, as well as applies any other
+ * user-defined hit modifications.
+ *
+ * @private
+ * @param {Object} config See workbox.googleAnalytics.initialize.
+ * @return {Function} The requestWillDequeu callback function.
+ */
+const createRequestWillReplayCallback = (config) => {
+  return async ({url, timestamp, requestInit}) => {
+    // Measurement protocol requests can set their payload parameters in either
+    // the URL query string (for GET requests) or the POST body.
+    let params;
+    if (requestInit.body) {
+      const payload = await getTextFromBlob(requestInit.body);
+      params = new URLSearchParams(payload);
+    } else {
+      params = new URL(url).searchParams;
+    }
+
+    // Set the qt param prior to apply the hitFilter or parameterOverrides.
+    const queueTime = Date.now() - timestamp;
+    params.set('qt', queueTime);
+
+    if (config.parameterOverrides) {
+      for (const param of Object.keys(config.parameterOverrides)) {
+        const value = config.parameterOverrides[param];
+        params.set(param, value);
+      }
+    }
+
+    if (typeof config.hitFilter === 'function') {
+      config.hitFilter.call(null, params);
+    }
+
+    requestInit.body = params.toString();
+    requestInit.method = 'POST';
+    requestInit.mode = 'cors';
+    requestInit.credentials = 'omit';
+    requestInit.headers = '[["Content-Type", "text/plain"]]';
+    requestInit.url = `https://${GOOGLE_ANALYTICS_HOST}/${COLLECT_PATH}`;
+  };
+};
+
+/**
+ * Creates GET and POST routes to catch failed Measurement Protocol hits.
+ *
+ * @private
+ * @param {Queue} queue
+ * @return {Array<Route>} The created routes.
+ */
+const createCollectRoutes = (queue) => {
+  const match = ({url}) => url.hostname === GOOGLE_ANALYTICS_HOST &&
+      url.pathname === COLLECT_PATH;
+
+  const handler = new NetworkOnly({
+    plugins: [new QueuePlugin(queue)],
+  });
+
+  return [
+    new Route(match, handler, 'GET'),
+    new Route(match, handler, 'POST'),
+  ];
+};
+
+/**
+ * Creates a route with a network first strategy for the analytics.js script.
+ *
+ * @private
+ * @param {string} cacheName
+ * @return {Route} The created route.
+ */
+const createAnalyticsJsRoute = (cacheName) => {
+  const match = ({url}) => url.hostname === GOOGLE_ANALYTICS_HOST &&
+      url.pathname === ANALYTICS_JS_PATH;
+  const handler = new NetworkFirst({cacheName});
+
+  return new Route(match, handler, 'GET');
+};
+
+/**
+ * @param {Object=} [options]
+ * @param {Object} [options.cacheName] The cache name to store and retrieve
+ *     analytics.js. Defaults to the cache names provided by `workbox-core`.
+ * @param {Object} [options.parameterOverrides]
+ *     [Measurement Protocol parameters](https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters),
+ *     expressed as key/value pairs, to be added to replayed Google Analytics
+ *     requests. This can be used to, e.g., set a custom dimension indicating
+ *     that the request was replayed.
+ * @param {Function} [options.hitFilter] A function that allows you to modify
+ *     the hit parameters prior to replaying
+ *     the hit. The function is invoked with the original hit's URLSearchParams
+ *     object as its only argument.
+ * @memberof module:workbox-google-analytics
+ */
+const initialize = (options = {}) => {
+  const cacheName = _private.cacheNames.getGoogleAnalyticsName(
+      options.cacheName);
+
+  const queue = new Queue(QUEUE_NAME, {
+    maxRetentionTime: MAX_RETENTION_TIME,
+    callbacks: {
+      requestWillReplay: createRequestWillReplayCallback(options),
+    },
+  });
+
+  const routes = [
+    createAnalyticsJsRoute(cacheName),
+    ...createCollectRoutes(queue),
+  ];
+
+  const router = new Router();
+  for (const route of routes) {
+    router.registerRoute(route);
+  }
+
+  self.addEventListener('fetch', (evt) => {
+    const responsePromise = router.handleRequest(evt);
+    if (responsePromise) {
+      evt.respondWith(responsePromise);
+    }
+  });
+};
+
+export {
+  initialize,
+};

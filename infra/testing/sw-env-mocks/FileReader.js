@@ -14,26 +14,18 @@
 */
 
 
-const Event = require('./Event');
-const {_allExtendableEvents} = require('./event-listeners');
-
-
-// ExtendableEvent
-// https://www.w3.org/TR/service-workers-1/#extendable-event
-class ExtendableEvent extends Event {
-  constructor(...args) {
-    super(...args);
-
-    // https://www.w3.org/TR/service-workers-1/#dfn-extend-lifetime-promises
-    this._extendLifetimePromises = new Set();
-
-    // Used to keep track of all ExtendableEvent instances.
-    _allExtendableEvents.add(this);
-  }
-
-  waitUntil(promise) {
-    this._extendLifetimePromises.add(promise);
+// FileReader
+// https://w3c.github.io/FileAPI/#APIASynch
+class FileReader {
+  readAsText(blob /* , label */) {
+    try {
+      this.result = blob._text;
+      this.onloadend();
+    } catch (err) {
+      this.error = err;
+      this.onerror();
+    }
   }
 }
 
-module.exports = ExtendableEvent;
+module.exports = FileReader;

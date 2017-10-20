@@ -72,14 +72,16 @@ class WorkboxCore {
   /**
    * Get the current cache names used by Workbox.
    *
-   * `cacheNames.precache` is used for precached assets and
-   * `cacheNames.runtime` for everything else.
+   * `cacheNames.precache` is used for precached assets,
+   * `cacheNames.googleAnalytics` is used for the analytics.js script, and
+   * `cacheNames.runtime` is used for everything else.
    *
    * @alias module:workbox-core.cacheNames
    * @return {Object} An object with `precache` and `runtime` cache names.
    */
   get cacheNames() {
     return {
+      googleAnalytics: cacheNames.getGoogleAnalyticsName(),
       precache: cacheNames.getPrecacheName(),
       runtime: cacheNames.getRuntimeName(),
     };

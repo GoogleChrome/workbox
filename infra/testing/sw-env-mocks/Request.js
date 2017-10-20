@@ -35,8 +35,7 @@ class Request {
     this.mode = options.mode || 'cors';
     this.headers = new Headers(options.headers);
 
-    // TODO(philipwalton): support non-text bodies.
-    this._body = new Blob([options.body]);
+    this._body = new Blob('body' in options ? [options.body] : []);
   }
 
   clone() {
@@ -53,7 +52,7 @@ class Request {
       throw new TypeError('Already read');
     } else {
       this.bodyUsed = true;
-      return new Blob([this._body]);
+      return this._body;
     }
   }
 
