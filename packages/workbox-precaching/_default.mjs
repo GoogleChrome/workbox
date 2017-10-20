@@ -194,7 +194,6 @@ moduleExports.precacheAndRoute = (entries, options) => {
  */
 moduleExports.suppressWarnings = (suppress) => {
   suppressWarnings = suppress;
-  console.log('Function Called: ', suppressWarnings);
 };
 
 export default moduleExports;
