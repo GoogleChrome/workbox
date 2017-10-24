@@ -8,11 +8,11 @@ const rollup = require('rollup');
 const rollupStream = require('rollup-stream');
 const source = require('vinyl-source-stream');
 const sourcemaps = require('gulp-sourcemaps');
-
 const constants = require('./constants');
 const pkgPathToName = require('./pkg-path-to-name');
 const rollupHelper = require('./rollup-helper');
 const logHelper = require('../../infra/utils/log-helper');
+
 /*
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose

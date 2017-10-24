@@ -69,12 +69,12 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
   });
 
-  describe(`config`, function() {
+  describe(`setConfig`, function() {
     it(`should override default config options`, function() {
       const cb = () => {};
       self.workbox = new WorkboxSW();
 
-      self.workbox.config({
+      self.workbox.setConfig({
         debug: true,
         modulePathPrefix: 'http://custom-cdn.example.com/workbox-modules/v1.0.0/',
         modulePathCb: cb,
@@ -90,7 +90,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       self.workbox = new WorkboxSW();
 
       expect(() => {
-        self.workbox.config({
+        self.workbox.setConfig({
           modulePathPrefix: 'http://custom-cdn.example.com/workbox-modules/v1.0.0/',
         });
       }).not.to.throw();
@@ -99,7 +99,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       self.workbox.core;
 
       expect(() => {
-        self.workbox.config({
+        self.workbox.setConfig({
           modulePathPrefix: 'http://custom-cdn.example.com/workbox-modules/v2.0.0/',
         });
       }).to.throw();
@@ -171,7 +171,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       });
 
       self.workbox = new WorkboxSW();
-      self.workbox.config({
+      self.workbox.setConfig({
         debug: true,
         modulePathCb: callbackSpy,
       });
@@ -214,7 +214,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     generateTestVariants(`should import using modulePathPrefix`, modulePathVariations, async function(variant) {
       self.workbox = new WorkboxSW();
 
-      self.workbox.config({
+      self.workbox.setConfig({
         debug: true,
         modulePathPrefix: variant.prefix,
       });

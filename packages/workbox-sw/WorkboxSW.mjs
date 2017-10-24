@@ -79,7 +79,7 @@ class WorkboxSW {
    *
    * @param {Object=} [options]
    */
-  config(options = {}) {
+  setConfig(options = {}) {
     if (!this._modulesLoaded) {
       Object.assign(this._options, options);
       this._env = this._options.debug ? 'dev' : 'prod';
