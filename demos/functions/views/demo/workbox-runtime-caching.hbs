@@ -34,7 +34,7 @@
 
   const cacheOnlyEmpty = document.querySelector('.cache-only-empty-cache');
   cacheOnlyEmpty.addEventListener('click', () => {
-    fetch('cache-only-empty-cache').catch(() => {});
+    fetch('cache-only-empty-cache.txt').catch(() => {});
   });
 
   const cacheOnlyPopulated = document.querySelector('.cache-only-populated-cache');
@@ -50,7 +50,7 @@
 
   const cacheFirst = document.querySelector('.cache-first');
   cacheFirst.addEventListener('click', () => {
-    fetch('cache-first')
+    fetch('cache-first.txt')
     .then((response) => {
       return response.text();
     })
@@ -61,7 +61,7 @@
 
   const networkOnly = document.querySelector('.network-only');
   networkOnly.addEventListener('click', () => {
-    fetch('network-only')
+    fetch('network-only.txt')
     .then((response) => {
       return response.text();
     })
@@ -72,7 +72,7 @@
 
   const networkFirstValid = document.querySelector('.network-first-valid');
   networkFirstValid.addEventListener('click', () => {
-    fetch('network-first')
+    fetch('network-first.txt')
     .then((response) => {
       return response.text();
     })
@@ -83,13 +83,13 @@
 
   const networkFirstFailing = document.querySelector('.network-first-failing');
   networkFirstFailing.addEventListener('click', () => {
-    fetch('network-first-404')
+    fetch('network-first-404.txt')
     .catch(() => {});
   });
 
   const staleWhileRevalidate = document.querySelector('.stale-while-revalidate');
   staleWhileRevalidate.addEventListener('click', () => {
-    fetch('stale-while-revalidate')
+    fetch('stale-while-revalidate.txt')
     .then((response) => {
       return response.text();
     })

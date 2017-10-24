@@ -24,7 +24,7 @@
     navigator.serviceWorker.register('/demo/workbox-precaching/sw-1.js');
   });
   secondBtn.addEventListener('click', () => {
-    navigator.serviceWorker.register('/demo/workbox-precaching/sw-1.js')
+    navigator.serviceWorker.getRegistration()
     .then((reg) => {
       return reg.unregister();
     })
