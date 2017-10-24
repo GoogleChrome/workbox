@@ -29,7 +29,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
   beforeEach(function() {
     sandbox.restore();
-    self.workbox = {};
+    delete self.workbox;
 
     sandbox.stub(self, 'importScripts').callsFake((url) => {
       if (url.includes('workbox-core')) {
