@@ -36,7 +36,7 @@ module.exports = {
     },
   }, {
     files: [
-      'packages/workbox-core/utils/logger.mjs',
+      'packages/workbox-core/_private/logger.mjs',
       'packages/workbox-sw/index.mjs',
       'infra/testing/cli-test-helper.js',
       'infra/utils/log-helper.js',
