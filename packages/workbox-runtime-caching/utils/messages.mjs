@@ -19,7 +19,7 @@ const getFriendlyURL = (url) => {
     return urlObj.pathname;
   }
   return urlObj.href;
-}
+};
 
 export default {
   cacheHit: (cacheName) => `Found a cached response in '${cacheName}'.`,
