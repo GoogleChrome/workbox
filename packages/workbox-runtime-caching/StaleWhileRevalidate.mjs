@@ -104,25 +104,6 @@ class StaleWhileRevalidate {
 
     event.waitUntil(fetchAndCachePromise);
 
-    if (process.env.NODE_ENV !== 'production') {
-      const urlObj = new URL(event.request.url);
-      const urlToDisplay = urlObj.origin === location.origin ?
-        urlObj.pathname : urlObj.href;
-      _private.logger.groupCollapsed(`Using CacheOnly to repond to ` +
-        `'${urlToDisplay}'`);
-      logMessages.forEach((msg) => {
-        _private.logger.unprefixed.log(msg);
-      });
-
-      if (response) {
-        _private.logger.groupCollapsed(`View the final response here.`);
-        _private.logger.unprefixed.log(response);
-        _private.logger.groupEnd();
-      }
-
-      _private.logger.groupEnd();
-    }
-
     return cachedResponse || await fetchAndCachePromise;
   }
 }
