@@ -14,6 +14,7 @@
 */
 
 import {_private} from 'workbox-core';
+import '../_version.mjs';
 
 const getFriendlyURL = (url) => {
   const urlObj = new URL(url, location);

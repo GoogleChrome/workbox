@@ -14,6 +14,8 @@
   limitations under the License.
 */
 
+import '../_version.mjs';
+
 export default (url) => {
   const urlObj = new URL(url, location);
   if (urlObj.origin === location.origin) {
