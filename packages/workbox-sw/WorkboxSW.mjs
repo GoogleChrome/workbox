@@ -43,9 +43,7 @@ const MODULE_KEY_TO_NAME_MAPPING = {
  */
 class WorkboxSW {
   /**
-   * You can specify whether to treat as a debug
-   * build and whether to use a CDN or a specific path when importing other
-   * workbox-modules
+   * Creates a proxy that automatically loads workbox namespaces on demand.
    */
   constructor() {
     this.v = {};
@@ -75,7 +73,9 @@ class WorkboxSW {
   }
 
   /**
-   * Updates the configuration options.
+   * Updates the configuration options. You can specify whether to treat as a
+   * debug build and whether to use a CDN or a specific path when importing
+   * other workbox-modules
    *
    * @param {Object=} [options]
    */
