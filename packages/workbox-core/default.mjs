@@ -15,10 +15,11 @@
 */
 
 import assert from './utils/assert.mjs';
-import WorkboxError from './models/WorkboxError.mjs';
 import LOG_LEVELS from './models/LogLevels.mjs';
-import {cacheNames, logger} from './_private.mjs';
-import {setLoggerLevel, getLoggerLevel} from './utils/logger.mjs';
+import WorkboxError from './_private/WorkboxError.mjs';
+import * as cacheNames from './_private/cacheNames.mjs';
+import logger from './_private/logger.mjs';
+import {setLoggerLevel, getLoggerLevel} from './_private/logger.mjs';
 import './_version.mjs';
 
 /**

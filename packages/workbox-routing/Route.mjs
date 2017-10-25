@@ -15,8 +15,8 @@
 
 import core from 'workbox-core';
 
-import {defaultMethod, validMethods} from './lib/constants.mjs';
-import normalizeHandler from './lib/normalizeHandler.mjs';
+import {defaultMethod, validMethods} from './utils/constants.mjs';
+import normalizeHandler from './utils/normalizeHandler.mjs';
 import './_version.mjs';
 
 /**

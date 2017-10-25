@@ -14,19 +14,12 @@
   limitations under the License.
 */
 
-import logger from './utils/logger.mjs';
-import WorkboxError from './models/WorkboxError.mjs';
-import fetchWrapper from './utils/fetchWrapper.mjs';
-import cacheWrapper from './utils/cacheWrapper.mjs';
-import * as cacheNames from './models/cacheNames.mjs';
-import indexedDBHelper from './utils/indexedDBHelper.mjs';
+import defaultExport from './default.mjs';
+import LOG_LEVELS from './models/LogLevels.mjs';
 import './_version.mjs';
 
-export {
-  logger,
-  fetchWrapper,
-  cacheWrapper,
-  WorkboxError,
-  cacheNames,
-  indexedDBHelper,
-};
+ const finalExports = Object.assign(defaultExport, {
+   LOG_LEVELS,
+ });
+
+export default finalExports;

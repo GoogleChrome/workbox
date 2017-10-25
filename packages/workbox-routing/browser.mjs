@@ -14,25 +14,16 @@
   limitations under the License.
 */
 
+import RegExpRoute from './RegExpRoute.mjs';
+import Route from './Route.mjs';
+import Router from './Router.mjs';
 import defaultExport from './default.mjs';
-import LOG_LEVELS from './models/LogLevels.mjs';
 import './_version.mjs';
 
-/**
- * All of the Workbox service worker libraries use workbox-core for shared
- * code as well as setting default values that need to be shared (like cache
- * names).
- *
- * @module workbox-core
- */
+const finalExport = Object.assign(defaultExport, {
+  RegExpRoute,
+  Route,
+  Router,
+});
 
-/**
- * Utilities that are shared with other Workbox modules.
- *
- * @private
- * @alias module:workbox-core._private
- */
-
-export {LOG_LEVELS};
-
-export default defaultExport;
+export default finalExport;

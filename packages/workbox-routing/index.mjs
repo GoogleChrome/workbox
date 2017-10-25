@@ -14,20 +14,15 @@
   limitations under the License.
 */
 
-import core from 'workbox-core';
 import RegExpRoute from './RegExpRoute.mjs';
 import Route from './Route.mjs';
 import Router from './Router.mjs';
-import defaultExport from './default-export.mjs';
+import defaultExport from './default.mjs';
 import './_version.mjs';
 
 /**
  * @module workbox-routing
  */
-
-if (process.env.NODE_ENV !== 'production') {
-  core.assert.isSwEnv('workbox-routing');
-}
 
 export {
   RegExpRoute,

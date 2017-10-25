@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import messageGenerator from './messages/messageGenerator.mjs';
+import messageGenerator from '../models/messages/messageGenerator.mjs';
 import '../_version.mjs';
 
 /**

@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import WorkboxError from '../models/WorkboxError.mjs';
+import WorkboxError from '../_private/WorkboxError.mjs';
 import '../_version.mjs';
 
 /*

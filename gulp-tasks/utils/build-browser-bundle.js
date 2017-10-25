@@ -17,7 +17,7 @@ const logHelper = require('../../infra/utils/log-helper');
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose
  */
-const ERROR_NO_MODULE_INDEX = `Could not find the modules index.mjs file: `;
+const ERROR_NO_MODULE_BROWSER = `Could not find the modules browser.mjs file: `;
 const ERROR_NO_NAMSPACE = oneLine`
   You must define a 'browserNamespace' parameter in the 'package.json'.
   Exmaple: 'workbox-precaching' would have a browserNamespace param of
@@ -65,13 +65,13 @@ const externalAndPure = (moduleId) => (moduleId.indexOf('workbox-') === 0);
 
 module.exports = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
-  const moduleIndexPath = path.join(packagePath, `index.mjs`);
+  const moduleBrowserPath = path.join(packagePath, `browser.mjs`);
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
-  if (!fs.existsSync(moduleIndexPath)) {
-    logHelper.error(ERROR_NO_MODULE_INDEX + packageName);
-    return Promise.reject(ERROR_NO_MODULE_INDEX + packageName);
+  if (!fs.existsSync(moduleBrowserPath)) {
+    logHelper.error(ERROR_NO_MODULE_BROWSER + packageName);
+    return Promise.reject(ERROR_NO_MODULE_BROWSER + packageName);
   }
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
@@ -85,7 +85,6 @@ module.exports = (packagePath, buildType) => {
     prefix = '';
   }
 
-  const exports = pkgJson.workbox.disabledNamedExports ? 'default' : 'named';
   const namespace =
     `${prefix}${pkgJson.workbox.browserNamespace}`;
   const outputFilename = `${packageName}.${buildType.slice(0, 4)}.js`;
@@ -101,10 +100,9 @@ module.exports = (packagePath, buildType) => {
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
   return rollupStream({
-    input: moduleIndexPath,
+    input: moduleBrowserPath,
     rollup,
     format: 'iife',
-    exports,
     name: namespace,
     sourcemap: true,
     globals,
@@ -134,7 +132,7 @@ module.exports = (packagePath, buildType) => {
   })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
-  .pipe(source(moduleIndexPath))
+  .pipe(source(moduleBrowserPath))
   // gulp-sourcemaps don't work with streams so we need
   .pipe(buffer())
   // This tells gulp-sourcemaps to load the inline sourcemap

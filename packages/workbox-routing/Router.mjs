@@ -16,7 +16,7 @@
 import core from 'workbox-core';
 import {_private} from 'workbox-core';
 
-import normalizeHandler from './lib/normalizeHandler.mjs';
+import normalizeHandler from './utils/normalizeHandler.mjs';
 import './_version.mjs';
 
 /**
