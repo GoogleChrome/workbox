@@ -21,6 +21,7 @@ import fetchWrapper from './_private/fetchWrapper.mjs';
 import indexedDBHelper from './_private/indexedDBHelper.mjs';
 import logger from './_private/logger.mjs';
 import WorkboxError from './_private/WorkboxError.mjs';
+import './_version.mjs';
 
 export {
   assert,
