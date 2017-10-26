@@ -14,17 +14,12 @@
   limitations under the License.
 */
 
-import assert from 'workbox-core/_private/assert.mjs';
 import defaultExport from './_default.mjs';
 import './_version.mjs';
 
 /**
  * @module workbox-routing
  */
-
-if (process.env.NODE_ENV !== 'production') {
-  assert.isSwEnv('workbox-routing');
-}
 
 export * from './_public.mjs';
 export default defaultExport;
