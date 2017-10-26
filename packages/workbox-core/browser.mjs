@@ -16,10 +16,28 @@
 
 import defaultExport from './default.mjs';
 import LOG_LEVELS from './models/LogLevels.mjs';
+import assert from './_private/assert.mjs';
+import * as cacheNames from './_private/cacheNames.mjs';
+import cacheWrapper from './_private/cacheWrapper.mjs';
+import fetchWrapper from './_private/fetchWrapper.mjs';
+import indexedDBHelper from './_private/indexedDBHelper.mjs';
+import logger from './_private/logger.mjs';
+import WorkboxError from './_private/WorkboxError.mjs';
 import './_version.mjs';
 
- const finalExports = Object.assign(defaultExport, {
-   LOG_LEVELS,
- });
+const _private = {
+  assert,
+  cacheNames,
+  cacheWrapper,
+  fetchWrapper,
+  indexedDBHelper,
+  logger,
+  WorkboxError,
+};
+
+const finalExports = Object.assign(defaultExport, {
+  LOG_LEVELS,
+  _private,
+});
 
 export default finalExports;

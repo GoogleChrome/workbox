@@ -14,7 +14,6 @@
   limitations under the License.
 */
 
-import assert from './utils/assert.mjs';
 import LOG_LEVELS from './models/LogLevels.mjs';
 import WorkboxError from './_private/WorkboxError.mjs';
 import * as cacheNames from './_private/cacheNames.mjs';
@@ -36,12 +35,6 @@ class WorkboxCore {
    * @private
    */
   constructor() {
-    // Only expose assert if the build is not production, allowing Rollup to
-    // Remove the imports otherwise.
-    if (process.env.NODE_ENV !== 'production') {
-      this.assert = assert;
-    }
-
     // Give our version strings something to hang off of.
     try {
       self.workbox.v = {};

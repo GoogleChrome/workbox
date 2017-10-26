@@ -36,21 +36,53 @@ const globals = (moduleId) => {
   }
 
   const packageName = splitModuleId.shift();
-  if (splitModuleId.length > 0) {
-    throw new Error(oneLine`
-    All imports of workbox-* modules must be done from the top level export.
-    (i.e. import * from 'workbox-*') This ensures that the browser
-    namespacing works correctly. Please remove '${splitModuleId.join('/')}'
-    from the import '${moduleId}'.
-  `);
+  const packagePath = path.join(__dirname, '..', '..', 'packages', packageName);
+  const namespacePath = splitModuleId.map((modulePiece) => {
+    // The browser namespace will need the file extension removed
+    return path.basename(modulePiece, path.extname(modulePiece));
+  }).join('.');
+  switch (splitModuleId.length) {
+    case 0: {
+      // Tried to pull in default export of module - this isn't allowed.
+      // A specific file must be referenced
+      throw new Error(oneLine`
+        You cannot use a module directly - you must specify a file, this is to
+        encourage best practice for tree shaking (i.e. only pulling in what you
+        use). Please fix '${moduleId}'
+      `);
+    }
+    case 1: {
+      // Pulling in a specific file is allowed as long as the exprts have
+      // that value.
+      break;
+    }
+    case 2: {
+      const folderName = splitModuleId.shift();
+      if (folderName !== '_private') {
+        // Throw - only _private is allowed
+        throw new Error(oneLine`
+          You are only allowed to import from the '_private' directory,
+          otherwise you must use top level imports.
+        `);
+      }
+      break;
+    }
+    default:
+      throw new Error(oneLine`
+        All imports must point to a top level public file or a file
+        in _private.
+      `);
   }
 
   // Get a package's browserNamespace so we know where it will be
   // on the global scope (i.e. workbox.<name space>)
-  const packagePath = path.join(__dirname, '..', '..', 'packages', packageName);
   try {
     const pkg = require(path.join(packagePath, 'package.json'));
-    return `${constants.NAMESPACE_PREFIX}.${pkg.workbox.browserNamespace}`;
+    return [
+      constants.NAMESPACE_PREFIX,
+      pkg.workbox.browserNamespace,
+      namespacePath,
+    ].join('.');
   } catch (err) {
     logHelper.error(`Unable to get browserNamespace for package: ` +
       `'${packageName}'`);
@@ -95,7 +127,6 @@ module.exports = (packagePath, buildType) => {
     Building Browser Bundle for
     ${logHelper.highlight(packageName)}.
   `);
-  logHelper.log(`    Exports: ${logHelper.highlight(exports)}`);
   logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 

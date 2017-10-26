@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import core from 'workbox-core';
+import assert from 'workbox-core/_private/assert.mjs';
 
 import {defaultMethod, validMethods} from './utils/constants.mjs';
 import normalizeHandler from './utils/normalizeHandler.mjs';
@@ -93,7 +93,7 @@ class Route {
    */
   constructor(match, handler, method) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isType(match, 'function', {
+      assert.isType(match, 'function', {
         moduleName: 'workbox-routing',
         className: 'Route',
         funcName: 'constructor',
@@ -101,7 +101,7 @@ class Route {
       });
 
       if (method) {
-        core.assert.isOneOf(method, validMethods, {paramName: 'method'});
+        assert.isOneOf(method, validMethods, {paramName: 'method'});
       }
     }
 
