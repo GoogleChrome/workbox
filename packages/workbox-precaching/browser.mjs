@@ -14,29 +14,10 @@
   limitations under the License.
 */
 
-import defaultExport from './default.mjs';
-import LOG_LEVELS from './models/LogLevels.mjs';
-import * as _private from './_private.mjs';
+import * as publicAPI from './_public.mjs';
+import defaultExport from './_default.mjs';
 import './_version.mjs';
 
-/**
- * All of the Workbox service worker libraries use workbox-core for shared
- * code as well as setting default values that need to be shared (like cache
- * names).
- *
- * @module workbox-core
- */
+const finalExport = Object.assign(defaultExport, publicAPI);
 
-/**
- * Utilities that are shared with other Workbox modules.
- *
- * @private
- * @alias module:workbox-core._private
- */
-
-export {
-  LOG_LEVELS,
-  _private,
-};
-
-export default defaultExport;
+export default finalExport;

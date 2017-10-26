@@ -41,37 +41,23 @@ const globals = (moduleId) => {
     // The browser namespace will need the file extension removed
     return path.basename(modulePiece, path.extname(modulePiece));
   }).join('.');
-  switch (splitModuleId.length) {
-    case 0: {
-      // Tried to pull in default export of module - this isn't allowed.
+
+  if (splitModuleId.length === 0 || splitModuleId.length > 2) {
+    // Tried to pull in default export of module - this isn't allowed.
       // A specific file must be referenced
       throw new Error(oneLine`
-        You cannot use a module directly - you must specify a file, this is to
-        encourage best practice for tree shaking (i.e. only pulling in what you
-        use). Please fix '${moduleId}'
-      `);
-    }
-    case 1: {
-      // Pulling in a specific file is allowed as long as the exprts have
-      // that value.
-      break;
-    }
-    case 2: {
-      const folderName = splitModuleId.shift();
-      if (folderName !== '_private') {
-        // Throw - only _private is allowed
-        throw new Error(oneLine`
-          You are only allowed to import from the '_private' directory,
-          otherwise you must use top level imports.
-        `);
-      }
-      break;
-    }
-    default:
-      throw new Error(oneLine`
-        All imports must point to a top level public file or a file
-        in _private.
-      `);
+      You cannot use a module directly - you must specify a file, this is to
+      encourage best practice for tree shaking (i.e. only pulling in what you
+      use). Please fix '${moduleId}'
+    `);
+  }
+
+  if (splitModuleId.length === 2 && splitModuleId[0] !== '_private') {
+    // Throw - only _private is allowed
+    throw new Error(oneLine`
+      You are only allowed to import from the '_private' directory,
+      otherwise you must use top level imports.
+    `);
   }
 
   // Get a package's browserNamespace so we know where it will be

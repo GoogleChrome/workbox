@@ -14,29 +14,20 @@
   limitations under the License.
 */
 
-import defaultExport from './default.mjs';
-import LOG_LEVELS from './models/LogLevels.mjs';
-import * as _private from './_private.mjs';
-import './_version.mjs';
-
-/**
- * All of the Workbox service worker libraries use workbox-core for shared
- * code as well as setting default values that need to be shared (like cache
- * names).
- *
- * @module workbox-core
- */
-
-/**
- * Utilities that are shared with other Workbox modules.
- *
- * @private
- * @alias module:workbox-core._private
- */
+import assert from './_private/assert.mjs';
+import * as cacheNames from './_private/cacheNames.mjs';
+import cacheWrapper from './_private/cacheWrapper.mjs';
+import fetchWrapper from './_private/fetchWrapper.mjs';
+import indexedDBHelper from './_private/indexedDBHelper.mjs';
+import logger from './_private/logger.mjs';
+import WorkboxError from './_private/WorkboxError.mjs';
 
 export {
-  LOG_LEVELS,
-  _private,
+  assert,
+  cacheNames,
+  cacheWrapper,
+  fetchWrapper,
+  indexedDBHelper,
+  logger,
+  WorkboxError,
 };
-
-export default defaultExport;
