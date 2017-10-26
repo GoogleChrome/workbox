@@ -4,8 +4,6 @@ lerna-debug.log
 node_modules
 npm-debug.log
 packages/**/LICENSE
-packages/*/index.mjs
-packages/*/browser.mjs
 temp
 tmp-*
 !packages/workbox-cli/test/static/example-project-1/node_modules
