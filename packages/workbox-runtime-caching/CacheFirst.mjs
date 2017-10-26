@@ -13,8 +13,10 @@
  limitations under the License.
 */
 
-import {_private} from 'workbox-core';
-import core from 'workbox-core';
+import {getRuntimeName} from 'workbox-core/_private/cacheNames.mjs';
+import cacheWrapper from 'workbox-core/_private/cacheWrapper.mjs';
+import fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
+import assert from 'workbox-core/_private/assert.mjs';
 import './_version.mjs';
 
 /**
@@ -35,8 +37,7 @@ class CacheFirst {
    * conjunction with this caching strategy.
    */
   constructor(options = {}) {
-    this._cacheName =
-      _private.cacheNames.getRuntimeName(options.cacheName);
+    this._cacheName = getRuntimeName(options.cacheName);
       this._plugins = options.plugins || [];
   }
 
@@ -53,7 +54,7 @@ class CacheFirst {
    */
   async handle({url, event, params}) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isInstance(event, FetchEvent, {
+      assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
         className: 'CacheFirst',
         funcName: 'handle',
@@ -61,7 +62,7 @@ class CacheFirst {
       });
     }
 
-    const cachedResponse = await _private.cacheWrapper.match(
+    const cachedResponse = await cacheWrapper.match(
       this._cacheName,
       event.request,
       null,
@@ -72,7 +73,7 @@ class CacheFirst {
       return cachedResponse;
     }
 
-    const response = await _private.fetchWrapper.fetch(
+    const response = await fetchWrapper.fetch(
       event.request,
       null,
       this._plugins
@@ -81,7 +82,7 @@ class CacheFirst {
     // Keep the service worker while we put the request to the cache
     const responseClone = response.clone();
     event.waitUntil(
-      _private.cacheWrapper.put(
+      cacheWrapper.put(
         this._cacheName,
         event.request,
         responseClone,

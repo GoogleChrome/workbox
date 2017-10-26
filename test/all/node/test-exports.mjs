@@ -59,7 +59,9 @@ describe(`[all] Test Exports of Each Module`, function() {
       if (
         packageJSONPath.indexOf('workbox-routing') === -1 &&
         packageJSONPath.indexOf('workbox-precaching') === -1 &&
-        packageJSONPath.indexOf('workbox-core') === -1
+        packageJSONPath.indexOf('workbox-core') === -1 &&
+        packageJSONPath.indexOf('workbox-runtime-caching') === -1 &&
+        packageJSONPath.indexOf('workbox-background-sync') === -1
       ) {
         continue;
       }
@@ -73,3 +75,5 @@ describe(`[all] Test Exports of Each Module`, function() {
     }
   });
 });
+
+// TODO Test public tests

@@ -13,8 +13,9 @@
  limitations under the License.
 */
 
-import {_private} from 'workbox-core';
-import core from 'workbox-core';
+import {getRuntimeName} from 'workbox-core/_private/cacheNames.mjs';
+import fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
+import assert from 'workbox-core/_private/assert.mjs';
 
 import './_version.mjs';
 
@@ -36,8 +37,7 @@ class NetworkOnly {
    * conjunction with this caching strategy.
    */
   constructor(options = {}) {
-    this._cacheName =
-      _private.cacheNames.getRuntimeName(options.cacheName);
+    this._cacheName = getRuntimeName(options.cacheName);
     this._plugins = options.plugins || [];
   }
 
@@ -54,7 +54,7 @@ class NetworkOnly {
    */
   async handle({url, event, params}) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isInstance(event, FetchEvent, {
+      assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
         className: 'NetworkOnly',
         funcName: 'handle',
@@ -62,7 +62,7 @@ class NetworkOnly {
       });
     }
 
-    return _private.fetchWrapper.fetch(
+    return fetchWrapper.fetch(
       event.request,
       null,
       this._plugins

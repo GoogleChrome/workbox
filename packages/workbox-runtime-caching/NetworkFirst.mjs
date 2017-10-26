@@ -13,8 +13,10 @@
  limitations under the License.
 */
 
-import {_private} from 'workbox-core';
-import core from 'workbox-core';
+import {getRuntimeName} from 'workbox-core/_private/cacheNames.mjs';
+import cacheWrapper from 'workbox-core/_private/cacheWrapper.mjs';
+import fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
+import assert from 'workbox-core/_private/assert.mjs';
 
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
@@ -46,8 +48,7 @@ class NetworkFirst {
    * scenarios.
    */
   constructor(options = {}) {
-    this._cacheName =
-      _private.cacheNames.getRuntimeName(options.cacheName);
+    this._cacheName = getRuntimeName(options.cacheName);
 
     if (options.plugins) {
       let isUsingCacheWillUpdate =
@@ -62,7 +63,7 @@ class NetworkFirst {
     this._networkTimeoutSeconds = options.networkTimeoutSeconds;
     if (process.env.NODE_ENV !== 'production') {
       if (this._networkTimeoutSeconds) {
-        core.assert.isType(this._networkTimeoutSeconds, 'number', {
+        assert.isType(this._networkTimeoutSeconds, 'number', {
           moduleName: 'workbox-runtime-caching',
           className: 'NetworkFirst',
           funcName: 'constructor',
@@ -85,7 +86,7 @@ class NetworkFirst {
    */
   async handle({url, event, params}) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isInstance(event, FetchEvent, {
+      assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
         className: 'NetworkFirst',
         funcName: 'handle',
@@ -109,7 +110,7 @@ class NetworkFirst {
       }));
     }
 
-    const networkPromise = _private.fetchWrapper.fetch(
+    const networkPromise = fetchWrapper.fetch(
       event.request,
       this._plugins
     )
@@ -125,7 +126,7 @@ class NetworkFirst {
       // Keep the service worker alive while we put the request in the cache
       const responseClone = response.clone();
       event.waitUntil(
-        _private.cacheWrapper.put(
+        cacheWrapper.put(
           this._cacheName,
           event.request,
           responseClone,
@@ -159,7 +160,7 @@ class NetworkFirst {
    * @private
    */
   _respondFromCache(request) {
-    return _private.cacheWrapper.match(
+    return cacheWrapper.match(
       this._cacheName,
       request,
       null,

@@ -13,10 +13,10 @@
  limitations under the License.
 */
 
-import './_version.mjs';
+import Queue from './Queue.mjs';
+import QueuePlugin from './QueuePlugin.mjs';
 
-/**
- * @module workbox-background-sync
- */
-
-export * from './_public.mjs';
+export {
+  Queue,
+  QueuePlugin,
+};
