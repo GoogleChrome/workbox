@@ -14,16 +14,11 @@
   limitations under the License.
 */
 
-import RegExpRoute from './RegExpRoute.mjs';
-import Route from './Route.mjs';
-import Router from './Router.mjs';
-import defaultExport from './default.mjs';
+
+import * as publicAPI from './_public.mjs';
+import defaultExport from './_default.mjs';
 import './_version.mjs';
 
-const finalExport = Object.assign(defaultExport, {
-  RegExpRoute,
-  Route,
-  Router,
-});
+const finalExport = Object.assign(defaultExport, publicAPI);
 
 export default finalExport;

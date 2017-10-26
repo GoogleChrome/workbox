@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import expectError from '../../../infra/testing/expectError.js';
-import normalizeHandler from '../../../packages/workbox-routing/lib/normalizeHandler.mjs';
+import normalizeHandler from '../../../packages/workbox-routing/utils/normalizeHandler.mjs';
 
 const handler = {
   handle: () => {},

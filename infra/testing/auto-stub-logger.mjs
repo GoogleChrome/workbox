@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import logger from '../../packages/workbox-core/utils/logger.mjs';
+import logger from '../../packages/workbox-core/_private/logger.mjs';
 
 const sandbox = sinon.sandbox.create();
 
