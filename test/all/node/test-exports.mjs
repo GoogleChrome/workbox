@@ -9,7 +9,7 @@ describe(`[all] Test Exports of Each Module`, function() {
     }
     privateFiles.forEach((privateFilePath) => {
       const expectedExportName = path.basename(privateFilePath, path.extname(privateFilePath));
-      if (!allExports._private[expectedExportName]) {
+      if (!(expectedExportName in allExports._private)) {
         throw new Error(`Unable to find export for workbox.*._private.${expectedExportName}`);
       }
     });
