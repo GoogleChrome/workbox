@@ -14,7 +14,7 @@
 */
 
 import {getRuntimeName} from 'workbox-core/_private/cacheNames.mjs';
-import cacheWrapper from 'workbox-core/_private/cacheWrapper.mjs';
+import * as cacheWrapper from 'workbox-core/_private/cacheWrapper.mjs';
 import * as fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
 
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';

@@ -19,7 +19,7 @@ import {OBJECT_STORE_NAME} from
     '../../../../packages/workbox-background-sync/utils/constants.mjs';
 import {QueueStore} from
     '../../../../packages/workbox-background-sync/models/QueueStore.mjs';
-import {StorableRequest} from
+import StorableRequest from
     '../../../../packages/workbox-background-sync/models/StorableRequest.mjs';
 
 
