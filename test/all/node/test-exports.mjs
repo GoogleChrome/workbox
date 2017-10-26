@@ -42,12 +42,34 @@ describe(`[all] Test Exports of Each Module`, function() {
   });
 
   it(`should expose all of the private modules on browser bundle`, async function() {
-    const packagePath = path.join(__dirname, '..', '..', '..', 'packages', 'workbox-core');
-    const browserExports = await import(path.join(packagePath, 'browser.mjs'));
+    const packageFiles = glob.sync('packages/*/package.json', {
+      ignore: ['packages/*/node_modules/**/*'],
+      cwd: path.join(__dirname, '..', '..', '..'),
+      absolute: true,
+    });
+    // Find the version in each file.
+    for (let packageJSONPath of packageFiles) {
+      // skip non-browser modules
+      const pkg = require(packageJSONPath);
+      if (pkg.workbox.packageType !== 'browser') {
+        continue;
+      }
 
-    // @std/esm will include the 'default' property regardless of the module.
-    // We want EVERYTHING to be on the default export as Rollup will remove
-    // this on the final build.
-    testPrivateExports(packagePath, browserExports.default, 'browser.mjs');
+      // TODO Remove this after all modules moved over
+      if (
+        packageJSONPath.indexOf('workbox-routing') === -1 &&
+        packageJSONPath.indexOf('workbox-precaching') === -1 &&
+        packageJSONPath.indexOf('workbox-core') === -1
+      ) {
+        continue;
+      }
+
+      const packagePath = path.dirname(packageJSONPath);
+      const browserExports = await import(path.join(packagePath, 'browser.mjs'));
+      // @std/esm will include the 'default' property regardless of the module.
+      // We want EVERYTHING to be on the default export as Rollup will remove
+      // this on the final build.
+      testPrivateExports(packagePath, browserExports.default, 'browser.mjs');
+    }
   });
 });

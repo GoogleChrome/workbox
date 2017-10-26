@@ -14,13 +14,8 @@
   limitations under the License.
 */
 
-import defaultPrecachingExport from './_default.mjs';
-import './_version.mjs';
+import PrecacheController from './controllers/PrecacheController.mjs';
 
-/**
- * @module workbox-precaching
- */
-
-export * from './_public.mjs';
-
-export default defaultPrecachingExport;
+export {
+  PrecacheController,
+};

@@ -14,7 +14,8 @@
   limitations under the License.
 */
 
-import {_private} from 'workbox-core';
+import indexedDBHelper from 'workbox-core/_private/indexedDBHelper.mjs';
+import {getPrecacheName} from 'workbox-core/_private/cacheNames.mjs';
 import '../_version.mjs';
 
 // Allows minifier to mangle this name
@@ -35,7 +36,7 @@ class PrecachedDetailsModel {
    * @param {string} cacheName
    */
   constructor(cacheName) {
-    this._cacheName = _private.cacheNames.getPrecacheName(cacheName);
+    this._cacheName = getPrecacheName(cacheName);
   }
 
   /**
@@ -108,7 +109,7 @@ class PrecachedDetailsModel {
    * @return{Promise<DBWrapper>}
    */
   _getDb() {
-    return _private.indexedDBHelper.getDB(`workbox-precaching`, 1, (db) => {
+    return indexedDBHelper.getDB(`workbox-precaching`, 1, (db) => {
       db.createObjectStore(DB_STORE_NAME);
     });
   }
