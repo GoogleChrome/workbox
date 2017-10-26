@@ -18,6 +18,7 @@ import LOG_LEVELS from './models/LogLevels.mjs';
 import WorkboxError from './_private/WorkboxError.mjs';
 import * as cacheNames from './_private/cacheNames.mjs';
 import logger from './_private/logger.mjs';
+import assert from './_private/assert.mjs';
 import {setLoggerLevel, getLoggerLevel} from './_private/logger.mjs';
 import './_version.mjs';
 
@@ -101,7 +102,7 @@ class WorkboxCore {
   setCacheNameDetails(details) {
     if (process.env.NODE_ENV !== 'production') {
       Object.keys(details).forEach((key) => {
-        this.assert.isType(details[key], 'string', {
+        assert.isType(details[key], 'string', {
           moduleName: 'workbox-core',
           className: 'WorkboxCore',
           funcName: 'setCacheNameDetails',
@@ -147,7 +148,7 @@ class WorkboxCore {
    */
   setLogLevel(newLevel) {
     if (process.env.NODE_ENV !== 'production') {
-      this.assert.isType(newLevel, 'number', {
+      assert.isType(newLevel, 'number', {
         moduleName: 'workbox-core',
         className: 'WorkboxCore',
         funcName: 'logLevel [setter]',

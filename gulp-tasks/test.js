@@ -1,8 +1,8 @@
 const gulp = require('gulp');
 
 gulp.task('test', gulp.series(
-  'build',
   'test-node',
+  'build',
   'test-integration',
-  'lint'
+  'lint',
 ));

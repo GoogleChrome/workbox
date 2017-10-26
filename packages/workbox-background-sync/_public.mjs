@@ -15,6 +15,7 @@
 
 import Queue from './Queue.mjs';
 import QueuePlugin from './QueuePlugin.mjs';
+import './_version.mjs';
 
 export {
   Queue,

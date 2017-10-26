@@ -55,17 +55,6 @@ describe(`[all] Test Exports of Each Module`, function() {
         continue;
       }
 
-      // TODO Remove this after all modules moved over
-      if (
-        packageJSONPath.indexOf('workbox-routing') === -1 &&
-        packageJSONPath.indexOf('workbox-precaching') === -1 &&
-        packageJSONPath.indexOf('workbox-core') === -1 &&
-        packageJSONPath.indexOf('workbox-runtime-caching') === -1 &&
-        packageJSONPath.indexOf('workbox-background-sync') === -1
-      ) {
-        continue;
-      }
-
       const packagePath = path.dirname(packageJSONPath);
       const browserExports = await import(path.join(packagePath, 'browser.mjs'));
       // @std/esm will include the 'default' property regardless of the module.

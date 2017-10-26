@@ -15,6 +15,7 @@
 */
 
 import PrecacheController from './controllers/PrecacheController.mjs';
+import './_version.mjs';
 
 export {
   PrecacheController,

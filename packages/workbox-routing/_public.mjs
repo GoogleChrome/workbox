@@ -17,6 +17,7 @@
 import RegExpRoute from './RegExpRoute.mjs';
 import Route from './Route.mjs';
 import Router from './Router.mjs';
+import './_version.mjs';
 
 export {
   RegExpRoute,

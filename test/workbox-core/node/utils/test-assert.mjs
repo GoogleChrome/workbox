@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import expectError from '../../../../infra/testing/expectError';
-import assert from '../../../../packages/workbox-core/utils/assert';
+import assert from '../../../../packages/workbox-core/_private/assert';
 
 describe(`workbox-core  assert`, function() {
   describe(`isSwEnv`, function() {
