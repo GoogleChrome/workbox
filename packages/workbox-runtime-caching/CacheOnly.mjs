@@ -14,8 +14,8 @@
 */
 
 import {getRuntimeName} from 'workbox-core/_private/cacheNames.mjs';
-import cacheWrapper from 'workbox-core/_private/cacheWrapper.mjs';
-import assert from 'workbox-core/_private/assert.mjs';
+import {cacheMatch} from 'workbox-core/_private/cacheWrapper.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
 import './_version.mjs';
 
 /**
@@ -61,7 +61,7 @@ class CacheOnly {
       });
     }
 
-    return cacheWrapper.match(
+    return cacheMatch(
       this._cacheName,
       event.request,
       null,
@@ -70,4 +70,4 @@ class CacheOnly {
   }
 }
 
-export default CacheOnly;
+export {CacheOnly};

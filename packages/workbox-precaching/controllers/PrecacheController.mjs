@@ -15,10 +15,10 @@
 */
 
 import {getPrecacheName} from 'workbox-core/_private/cacheNames.mjs';
-import WorkboxError from 'workbox-core/_private/WorkboxError.mjs';
-import fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
-import cacheWrapper from 'workbox-core/_private/cacheWrapper.mjs';
-import assert from 'workbox-core/_private/assert.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import * as fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
+import {put as cachePut} from 'workbox-core/_private/cacheWrapper.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
 
 import PrecacheEntry from '../models/PrecacheEntry.mjs';
 import PrecachedDetailsModel from '../models/PrecachedDetailsModel.mjs';
@@ -201,7 +201,7 @@ class PrecacheController {
       response = await cleanRedirect(response);
     }
 
-    await cacheWrapper.put(this._cacheName,
+    await cachePut(this._cacheName,
       precacheEntry._cacheRequest, response);
 
     await this._precacheDetailsModel._addEntry(precacheEntry);

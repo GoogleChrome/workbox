@@ -13,13 +13,13 @@
  limitations under the License.
 */
 
-import Queue from 'workbox-background-sync/Queue.mjs';
-import QueuePlugin from 'workbox-background-sync/QueuePlugin.mjs';
+import {Queue} from 'workbox-background-sync/Queue.mjs';
+import {QueuePlugin} from 'workbox-background-sync/QueuePlugin.mjs';
 import {getGoogleAnalyticsName} from 'workbox-core/_private/cacheNames.mjs';
-import Router from 'workbox-routing/Router.mjs';
-import Route from 'workbox-routing/Route.mjs';
-import NetworkOnly from 'workbox-runtime-caching/NetworkOnly.mjs';
-import NetworkFirst from 'workbox-runtime-caching/NetworkFirst.mjs';
+import {Router} from 'workbox-routing/Router.mjs';
+import {Route} from 'workbox-routing/Route.mjs';
+import {NetworkOnly} from 'workbox-runtime-caching/NetworkOnly.mjs';
+import {NetworkFirst} from 'workbox-runtime-caching/NetworkFirst.mjs';
 import {
   QUEUE_NAME,
   MAX_RETENTION_TIME,

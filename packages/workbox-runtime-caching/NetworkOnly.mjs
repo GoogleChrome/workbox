@@ -14,8 +14,8 @@
 */
 
 import {getRuntimeName} from 'workbox-core/_private/cacheNames.mjs';
-import fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
-import assert from 'workbox-core/_private/assert.mjs';
+import * as fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
 
 import './_version.mjs';
 
@@ -70,4 +70,4 @@ class NetworkOnly {
   }
 }
 
-export default NetworkOnly;
+export {NetworkOnly};

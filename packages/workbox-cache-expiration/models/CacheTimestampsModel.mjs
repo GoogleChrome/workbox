@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import indexedDBHelper from 'workbox-core/_private/indexedDBHelper.mjs';
+import {indexedDBHelper} from 'workbox-core/_private/indexedDBHelper.mjs';
 import '../_version.mjs';
 
 const URL_KEY = 'url';

@@ -15,7 +15,7 @@
 
 import {getRuntimeName} from 'workbox-core/_private/cacheNames.mjs';
 import cacheWrapper from 'workbox-core/_private/cacheWrapper.mjs';
-import fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
+import * as fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
 
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
@@ -106,4 +106,4 @@ class StaleWhileRevalidate {
   }
 }
 
-export default StaleWhileRevalidate;
+export {StaleWhileRevalidate};

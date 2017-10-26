@@ -19,7 +19,7 @@ import sinon from 'sinon';
 import expectError from '../../../../infra/testing/expectError';
 import {OBJECT_STORE_NAME} from
     '../../../../packages/workbox-background-sync/utils/constants.mjs';
-import QueueStore from
+import {QueueStore} from
     '../../../../packages/workbox-background-sync/models/QueueStore.mjs';
 import {resetEventListeners} from
     '../../../../infra/testing/sw-env-mocks/event-listeners.js';
@@ -78,7 +78,7 @@ describe(`[workbox-background-sync] Queue`, function() {
     const imprt = await import(
         '../../../../packages/workbox-background-sync/Queue.mjs');
 
-    Queue = imprt.default;
+    Queue = imprt.Queue;
   });
 
   after(async function() {

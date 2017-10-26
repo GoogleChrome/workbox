@@ -17,9 +17,9 @@ import {expect} from 'chai';
 import clearRequire from 'clear-require';
 import {OBJECT_STORE_NAME} from
     '../../../../packages/workbox-background-sync/utils/constants.mjs';
-import QueueStore from
+import {QueueStore} from
     '../../../../packages/workbox-background-sync/models/QueueStore.mjs';
-import StorableRequest from
+import {StorableRequest} from
     '../../../../packages/workbox-background-sync/models/StorableRequest.mjs';
 
 
@@ -71,7 +71,7 @@ describe(`[workbox-background-sync] QueueStore`, function() {
     const imprt = await import(
         '../../../../packages/workbox-background-sync/Queue.mjs');
 
-    Queue = imprt.default;
+    Queue = imprt.Queue;
   });
 
   after(async function() {

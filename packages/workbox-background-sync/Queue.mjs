@@ -13,8 +13,8 @@
  limitations under the License.
 */
 
-import WorkboxError from 'workbox-core/_private/WorkboxError.mjs';
-import QueueStore from './models/QueueStore.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {QueueStore} from './models/QueueStore.mjs';
 import StorableRequest from './models/StorableRequest.mjs';
 import {TAG_PREFIX, MAX_RETENTION_TIME} from './utils/constants.mjs';
 import './_version.mjs';
@@ -204,4 +204,4 @@ class Queue {
   }
 }
 
-export default Queue;
+export {Queue};

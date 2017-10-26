@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import indexedDBHelper from 'workbox-core/_private/indexedDBHelper.mjs';
+import {indexedDBHelper} from 'workbox-core/_private/indexedDBHelper.mjs';
 import {getPrecacheName} from 'workbox-core/_private/cacheNames.mjs';
 import '../_version.mjs';
 

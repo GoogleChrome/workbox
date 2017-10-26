@@ -23,7 +23,7 @@ import '../_version.mjs';
  *
  * @private
  */
-export default class QueueStore {
+export class QueueStore {
   /**
    * Associates this instance with a Queue instance, so entries added can be
    * identified by their queue name.

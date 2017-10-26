@@ -26,7 +26,7 @@ import '../_version.mjs';
  *
  * @private
  */
-export default class WorkboxError extends Error {
+export class WorkboxError extends Error {
   /**
    *
    * @param {string} errorCode The error code that

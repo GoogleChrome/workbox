@@ -14,9 +14,9 @@
 */
 
 import {getRuntimeName} from 'workbox-core/_private/cacheNames.mjs';
-import cacheWrapper from 'workbox-core/_private/cacheWrapper.mjs';
-import fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
-import assert from 'workbox-core/_private/assert.mjs';
+import * as cacheWrapper from 'workbox-core/_private/cacheWrapper.mjs';
+import * as fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
 
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
@@ -169,4 +169,4 @@ class NetworkFirst {
   }
 }
 
-export default NetworkFirst;
+export {NetworkFirst};

@@ -40,4 +40,4 @@ class QueuePlugin {
   }
 }
 
-export default QueuePlugin;
+export {QueuePlugin};

@@ -13,9 +13,9 @@
  limitations under the License.
 */
 
-import assert from 'workbox-core/_private/assert.mjs';
-import logger from 'workbox-core/_private/logger.mjs';
-import WorkboxError from 'workbox-core/_private/WorkboxError.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
 import normalizeHandler from './utils/normalizeHandler.mjs';
 import './_version.mjs';
@@ -303,4 +303,4 @@ class Router {
   }
 }
 
-export default Router;
+export {Router};

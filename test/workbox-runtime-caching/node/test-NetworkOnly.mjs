@@ -18,7 +18,7 @@ import {expect} from 'chai';
 
 import {_private} from '../../../packages/workbox-core/index.mjs';
 
-import NetworkOnly from '../../../packages/workbox-runtime-caching/NetworkOnly.mjs';
+import {NetworkOnly} from '../../../packages/workbox-runtime-caching/NetworkOnly.mjs';
 
 describe(`[workbox-runtime-caching] NetworkOnly`, function() {
   let sandbox = sinon.sandbox.create();
