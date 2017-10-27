@@ -17,7 +17,7 @@ const runFile = (filePath) => {
 
   return new Promise((resolve, reject) => {
     const mocha = new Mocha({
-      retries: 2,
+      retries: process.env.TRAVIS ? 2 : 0,
       timeout: 3 * 60 * 1000,
     });
 
@@ -52,12 +52,13 @@ async (testPath, nodeEnv, seleniumBrowser) => {
   try {
     global.__workbox = {
       seleniumBrowser,
-      serverAddr: testServer.getAddress(),
+      server: testServer,
     };
 
     const testFiles = glob.sync(
       path.posix.join(__dirname, '..', testPath, '*.js'));
     for (let testFile of testFiles) {
+      testServer.reset();
       await runFile(testFile);
     }
 
