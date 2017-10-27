@@ -55,6 +55,10 @@ class CacheFirst {
    * @return {Promise<Response>}
    */
   async handle({url, event, params}) {
+    console.log('HELLO<--------------', event);
+
+    const logMessages = [];
+    let error;
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -64,33 +68,78 @@ class CacheFirst {
       });
     }
 
-    const cachedResponse = await cacheWrapper.match(
+    let response = await cacheWrapper.match(
       this._cacheName,
       event.request,
       null,
       this._plugins
     );
 
-    if (cachedResponse) {
-      return cachedResponse;
+    console.log('HELLO<-------------- 3');
+
+    if (process.env.NODE_ENV !== 'production') {
+      if (response) {
+        logMessages.push(`Cached response found.`);
+        logMessages.push(response);
+      } else {
+        logMessages.push(`No cached response found, requesting from network.`);
+      }
     }
 
-    const response = await fetchWrapper.fetch(
-      event.request,
-      null,
-      this._plugins
-    );
+    console.log('HELLO<-------------- 4');
 
-    // Keep the service worker while we put the request to the cache
-    const responseClone = response.clone();
-    event.waitUntil(
-      cacheWrapper.put(
-        this._cacheName,
-        event.request,
-        responseClone,
-        this._plugins
-      )
-    );
+    if (!response) {
+      try {
+        console.log('HELLO<-------------- 5');
+        response = await fetchWrapper.fetch(
+          event.request,
+          null,
+          this._plugins
+        );
+
+        // Keep the service worker while we put the request to the cache
+        const responseClone = response.clone();
+        event.waitUntil(
+          _private.cacheWrapper.put(
+            this._cacheName,
+            event.request,
+            responseClone,
+            this._plugins
+          )
+        );
+
+        console.log('HELLO<-------------- 6');
+      } catch (err) {
+        if (process.env.NODE_ENV !== 'production') {
+          logMessages.push(`Failed to get response from network.`, err);
+        }
+        error = err;
+      }
+    }
+
+    console.log('HELLO<-------------- 7');
+
+    if (process.env.NODE_ENV !== 'production') {
+      const urlObj = new URL(event.request.url);
+      const urlToDisplay = urlObj.origin === location.origin ?
+        urlObj.pathname : urlObj.href;
+      _private.logger.groupCollapsed(`Using CacheFirst to repond to ` +
+        `'${urlToDisplay}'`);
+      logMessages.forEach((msg) => {
+        _private.logger.unprefixed.log(msg);
+      });
+      _private.logger.end();
+    }
+
+    console.log('HELLO<-------------- 8');
+
+    if (error) {
+      // Don't swallow error as we'll want it to throw and enable catch
+      // handlers in router.
+      throw error;
+    }
+
+    console.log('HELLO<-------------- 9');
 
     return response;
   }
