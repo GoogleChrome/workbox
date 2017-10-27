@@ -59,8 +59,8 @@ export default (entriesMap) => {
   // TODO (gauntface) Before launch swap for d.g.c/web URL and use
   // logger.unprefixed.warn for these messages.
   logger.warn(`You can learn more about why this might be a ` +
-    `problem here: https://docs.google.com/a/google.com/document/d/` +
-    `1lM_fVQZpohD8N1QLuxobmrYrq9lOJh4jYF3MJhNrMvs/edit?usp=sharing`);
+    `problem here: https://docs.google.com/document/d/1i83D4x_1Jz2JT3BCRjO` +
+    `18m-vdL9uG7ksscqZ_E0XjO0/edit?usp=sharing`);
 
   logger.groupEnd();
 };
