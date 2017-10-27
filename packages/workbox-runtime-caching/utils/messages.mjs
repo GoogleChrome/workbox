@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import {_private} from 'workbox-core';
+import {logger} from 'workbox-core/_private.mjs';
 import '../_version.mjs';
 
 const getFriendlyURL = (url) => {
@@ -29,9 +29,9 @@ export default {
     `to  '${getFriendlyURL(event.request.url)}'`,
   printFinalResponse: (response) => {
     if (response) {
-      _private.logger.groupCollapsed(`View the final response here.`);
-      _private.logger.unprefixed.log(response);
-      _private.logger.groupEnd();
+      logger.groupCollapsed(`View the final response here.`);
+      logger.unprefixed.log(response);
+      logger.groupEnd();
     }
   },
 };

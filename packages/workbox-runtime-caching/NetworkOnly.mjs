@@ -17,6 +17,7 @@ import {
   cacheNames,
   fetchWrapper,
   assert,
+  logger,
 } from 'workbox-core/_private.mjs';
 import messages from './utils/messages.mjs';
 import './_version.mjs';
@@ -63,7 +64,7 @@ class NetworkOnly {
         paramName: 'event',
       });
 
-      _private.logger.groupCollapsed(
+      logger.groupCollapsed(
         messages.strategyStart('NetworkOnly', event));
     }
 
@@ -81,7 +82,7 @@ class NetworkOnly {
 
     if (process.env.NODE_ENV !== 'production') {
       messages.printFinalResponse(response);
-      _private.logger.groupEnd();
+      logger.groupEnd();
     }
 
     // If there was an error thrown, re-throw it to ensure the Routers
