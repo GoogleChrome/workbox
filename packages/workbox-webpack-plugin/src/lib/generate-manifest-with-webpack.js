@@ -26,7 +26,7 @@ const PRECACHE_MANIFEST_VAR = '__precacheManifest';
  *
  * @function generateManifestWithWebpack
  * @param {Array<module:workbox-build.ManifestEntry>} manifestEntries
- * @return {string} service worker manifest file string
+ * @return {Promise<string>} service worker manifest file string
  *
  * @memberof module:workbox-webpack-plugin
  */

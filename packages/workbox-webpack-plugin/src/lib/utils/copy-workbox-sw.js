@@ -19,22 +19,25 @@ const {readFile} = require('./read-file');
 const errors = require('workbox-build/src/lib/errors');
 const useBuildType = require('workbox-build/src/lib/use-build-type');
 
-module.exports = (readFileFn) => {
+module.exports = async () => {
   // TODO: this should also support importing workbox-sw from a CDN
   const buildType = (process.env.NODE_ENV &&
     process.env.NODE_ENV.startsWith('dev')) ? 'dev' : 'prod';
   const defaultWorkboxSourcePath = require.resolve('workbox-sw');
   const workboxSWSrcPath = useBuildType(defaultWorkboxSourcePath, buildType);
-  return Promise.all([
+
+  try {
+    const [workboxSW, workboxSWMap] = await Promise.all([
       readFile(workboxSWSrcPath),
       readFile(`${workboxSWSrcPath}.map`),
-    ])
-    .then(([workboxSW, workboxSWMap]) => ({
+    ]);
+
+    return {
       workboxSW,
       workboxSWMap,
       workboxSWName: path.basename(workboxSWSrcPath),
-    }))
-    .catch((error) => {
-      throw Error(`${errors['unable-to-copy-workbox-sw']} ${error}`);
-    });
+    };
+  } catch (error) {
+    throw Error(`${errors['unable-to-copy-workbox-sw']} ${error}`);
+  }
 };
