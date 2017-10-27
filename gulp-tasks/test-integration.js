@@ -55,10 +55,11 @@ async (testPath, nodeEnv, seleniumBrowser) => {
       serverAddr: testServer.getAddress(),
     };
 
-    await runFile(path.join(
-      __dirname, '..', 'test', 'workbox-precaching', 'integration',
-      'precache-and-update.js'
-    ));
+    const testFiles = glob.sync(
+      path.posix.join(__dirname, '..', testPath, '*.js'));
+    for (let testFile of testFiles) {
+      await runFile(testFile);
+    }
 
     process.env.NODE_ENV = originalNodeEnv;
   } catch (err) {

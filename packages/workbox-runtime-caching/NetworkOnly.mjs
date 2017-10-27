@@ -13,9 +13,9 @@
  limitations under the License.
 */
 
-import {getRuntimeName} from 'workbox-core/_private/cacheNames.mjs';
-import * as fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
+import {cacheNames} from 'workbox-core/_private.mjs';
+import {fetchWrapper} from 'workbox-core/_private.mjs';
+import {assert} from 'workbox-core/_private.mjs';
 
 import './_version.mjs';
 
@@ -37,7 +37,7 @@ class NetworkOnly {
    * conjunction with this caching strategy.
    */
   constructor(options = {}) {
-    this._cacheName = getRuntimeName(options.cacheName);
+    this._cacheName = cacheNames.getRuntimeName(options.cacheName);
     this._plugins = options.plugins || [];
   }
 

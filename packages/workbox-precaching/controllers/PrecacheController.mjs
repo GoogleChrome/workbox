@@ -14,11 +14,11 @@
   limitations under the License.
 */
 
-import {getPrecacheName} from 'workbox-core/_private/cacheNames.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import * as fetchWrapper from 'workbox-core/_private/fetchWrapper.mjs';
-import {put as cachePut} from 'workbox-core/_private/cacheWrapper.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
+import {cacheNames} from 'workbox-core/_private.mjs';
+import {WorkboxError} from 'workbox-core/_private.mjs';
+import {fetchWrapper} from 'workbox-core/_private.mjs';
+import {cacheWrapper} from 'workbox-core/_private.mjs';
+import {assert} from 'workbox-core/_private.mjs';
 
 import PrecacheEntry from '../models/PrecacheEntry.mjs';
 import PrecachedDetailsModel from '../models/PrecachedDetailsModel.mjs';
@@ -40,7 +40,7 @@ class PrecacheController {
    * @param {string} cacheName
    */
   constructor(cacheName) {
-    this._cacheName = getPrecacheName(cacheName);
+    this._cacheName = cacheNames.getPrecacheName(cacheName);
     this._entriesToCacheMap = new Map();
     this._precacheDetailsModel = new PrecachedDetailsModel(this._cacheName);
   }
@@ -201,7 +201,7 @@ class PrecacheController {
       response = await cleanRedirect(response);
     }
 
-    await cachePut(this._cacheName,
+    await cacheWrapper.put(this._cacheName,
       precacheEntry._cacheRequest, response);
 
     await this._precacheDetailsModel._addEntry(precacheEntry);

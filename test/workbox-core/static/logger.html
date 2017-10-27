@@ -25,10 +25,10 @@
 <script>
   const logger = workbox.core._private.logger;
 
-  workbox.core.default.setLogLevel(workbox.core.LOG_LEVELS.debug);
+  workbox.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
 
   const currentLevel = document.querySelector('.js-current-level');
-  switch(workbox.core.default.logLevel) {
+  switch(workbox.core.logLevel) {
     case 0:
       currentLevel.textContent = 'Debug';
       break;
@@ -42,7 +42,7 @@
       currentLevel.textContent = 'Error';
       break;
     default:
-      throw new Error('Unexpected log level: ' + workbox.core.default.logLevel);
+      throw new Error('Unexpected log level: ' + workbox.core.logLevel);
   }
 
   const SIMPLE_OUTPUT_TESTS = [

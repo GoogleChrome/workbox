@@ -13,11 +13,11 @@
  limitations under the License.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
+import {assert} from 'workbox-core/_private.mjs';
+import {logger} from 'workbox-core/_private.mjs';
 
-import './_version.mjs';
 import {Route} from './Route.mjs';
+import './_version.mjs';
 
 /**
  * RegExpRoute is a helper class to make defining regular expression based

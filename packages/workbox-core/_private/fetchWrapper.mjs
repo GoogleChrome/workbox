@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import {WorkboxError} from './WorkboxError.mjs';
+import WorkboxError from './WorkboxError.mjs';
 import '../_version.mjs';
 
 /**
@@ -87,4 +87,6 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   }
 };
 
-export {wrappedFetch as fetch};
+export default {
+  fetch: wrappedFetch,
+};

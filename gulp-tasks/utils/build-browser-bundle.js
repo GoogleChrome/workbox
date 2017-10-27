@@ -42,21 +42,13 @@ const globals = (moduleId) => {
     return path.basename(modulePiece, path.extname(modulePiece));
   }).join('.');
 
-  if (splitModuleId.length === 0 || splitModuleId.length > 2) {
+  if (splitModuleId.length === 0 || splitModuleId.length > 1) {
     // Tried to pull in default export of module - this isn't allowed.
       // A specific file must be referenced
       throw new Error(oneLine`
-      You cannot use a module directly - you must specify a file, this is to
-      encourage best practice for tree shaking (i.e. only pulling in what you
-      use). Please fix '${moduleId}'
-    `);
-  }
-
-  if (splitModuleId.length === 2 && splitModuleId[0] !== '_private') {
-    // Throw - only _private is allowed
-    throw new Error(oneLine`
-      You are only allowed to import from the '_private' directory,
-      otherwise you must use top level imports.
+      You cannot use a module directly - you must specify a public top-level
+      file, this is to force a best practice for tree shaking (i.e. only
+      pulling in what you use). Please fix the import: '${moduleId}'
     `);
   }
 

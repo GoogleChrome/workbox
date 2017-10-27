@@ -13,9 +13,9 @@
  limitations under the License.
 */
 
-import {getRuntimeName} from 'workbox-core/_private/cacheNames.mjs';
-import {match as cacheMatch} from 'workbox-core/_private/cacheWrapper.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
+import {cacheNames} from 'workbox-core/_private.mjs';
+import {cacheWrapper} from 'workbox-core/_private.mjs';
+import {assert} from 'workbox-core/_private.mjs';
 import './_version.mjs';
 
 /**
@@ -36,7 +36,7 @@ class CacheOnly {
    * conjunction with this caching strategy.
    */
   constructor(options = {}) {
-    this._cacheName = getRuntimeName(options.cacheName);
+    this._cacheName = cacheNames.getRuntimeName(options.cacheName);
     this._plugins = options.plugins || [];
   }
 
@@ -61,7 +61,7 @@ class CacheOnly {
       });
     }
 
-    return cacheMatch(
+    return cacheWrapper.match(
       this._cacheName,
       event.request,
       null,

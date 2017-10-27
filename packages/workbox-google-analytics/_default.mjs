@@ -15,7 +15,7 @@
 
 import {Queue} from 'workbox-background-sync/Queue.mjs';
 import {QueuePlugin} from 'workbox-background-sync/QueuePlugin.mjs';
-import {getGoogleAnalyticsName} from 'workbox-core/_private/cacheNames.mjs';
+import {cacheNames} from 'workbox-core/_private.mjs';
 import {Router} from 'workbox-routing/Router.mjs';
 import {Route} from 'workbox-routing/Route.mjs';
 import {NetworkOnly} from 'workbox-runtime-caching/NetworkOnly.mjs';
@@ -143,7 +143,7 @@ const createAnalyticsJsRoute = (cacheName) => {
  * @memberof module:workbox-google-analytics
  */
 const initialize = (options = {}) => {
-  const cacheName = getGoogleAnalyticsName(
+  const cacheName = cacheNames.getGoogleAnalyticsName(
       options.cacheName);
 
   const queue = new Queue(QUEUE_NAME, {

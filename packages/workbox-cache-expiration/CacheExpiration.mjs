@@ -14,9 +14,9 @@
   limitations under the License.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private.mjs';
+import {assert} from 'workbox-core/_private.mjs';
+import {logger} from 'workbox-core/_private.mjs';
 
 import CacheTimestampsModel from './models/CacheTimestampsModel.mjs';
 import './_version.mjs';

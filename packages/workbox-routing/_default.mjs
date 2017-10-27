@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
+import {assert} from 'workbox-core/_private.mjs';
 import {Router} from './Router.mjs';
 import './_version.mjs';
 

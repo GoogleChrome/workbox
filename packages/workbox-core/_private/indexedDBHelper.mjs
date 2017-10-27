@@ -177,5 +177,4 @@ class IndexedDBHelper {
   }
 }
 
-const singleton = new IndexedDBHelper();
-export {singleton as indexedDBHelper};
+export default new IndexedDBHelper();
