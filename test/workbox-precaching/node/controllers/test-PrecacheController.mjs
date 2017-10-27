@@ -7,7 +7,7 @@ import generateTestVariants from '../../../../infra/testing/generate-variant-tes
 import {prodOnly, devOnly} from '../../../../infra/testing/env-it';
 
 import {_private} from '../../../../packages/workbox-core/index.mjs';
-import logger from '../../../../packages/workbox-core/utils/logger.mjs';
+import logger from '../../../../packages/workbox-core/_private/logger.mjs';
 import PrecacheController from '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
 
 const {cacheNames} = _private;

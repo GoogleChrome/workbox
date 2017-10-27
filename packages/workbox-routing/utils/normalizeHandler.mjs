@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import core from 'workbox-core';
+import {assert} from 'workbox-core/_private.mjs';
 import '../_version.mjs';
 
 /**
@@ -24,7 +24,7 @@ import '../_version.mjs';
 export default (handler) => {
   if (handler && typeof handler === 'object') {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.hasMethod(handler, 'handle', {
+      assert.hasMethod(handler, 'handle', {
         moduleName: 'workbox-routing',
         className: 'Route',
         funcName: 'constructor',
@@ -34,7 +34,7 @@ export default (handler) => {
     return handler;
   } else {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isType(handler, 'function', {
+      assert.isType(handler, 'function', {
         moduleName: 'workbox-routing',
         className: 'Route',
         funcName: 'constructor',

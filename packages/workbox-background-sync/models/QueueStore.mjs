@@ -14,7 +14,7 @@
 */
 
 import StorableRequest from './StorableRequest.mjs';
-import {DB_NAME, OBJECT_STORE_NAME, INDEXED_PROP} from './constants.mjs';
+import {DB_NAME, OBJECT_STORE_NAME, INDEXED_PROP} from '../utils/constants.mjs';
 import '../_version.mjs';
 
 /**
@@ -23,7 +23,7 @@ import '../_version.mjs';
  *
  * @private
  */
-export default class QueueStore {
+export class QueueStore {
   /**
    * Associates this instance with a Queue instance, so entries added can be
    * identified by their queue name.

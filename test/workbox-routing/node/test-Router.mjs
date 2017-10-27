@@ -1,8 +1,8 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import Route from '../../../packages/workbox-routing/Route.mjs';
-import Router from '../../../packages/workbox-routing/Router.mjs';
+import {Route} from '../../../packages/workbox-routing/Route.mjs';
+import {Router} from '../../../packages/workbox-routing/Router.mjs';
 import expectError from '../../../infra/testing/expectError';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 

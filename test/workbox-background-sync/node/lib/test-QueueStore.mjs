@@ -16,11 +16,11 @@
 import {expect} from 'chai';
 import clearRequire from 'clear-require';
 import {OBJECT_STORE_NAME} from
-    '../../../../packages/workbox-background-sync/lib/constants.mjs';
-import QueueStore from
-    '../../../../packages/workbox-background-sync/lib/QueueStore.mjs';
+    '../../../../packages/workbox-background-sync/utils/constants.mjs';
+import {QueueStore} from
+    '../../../../packages/workbox-background-sync/models/QueueStore.mjs';
 import StorableRequest from
-    '../../../../packages/workbox-background-sync/lib/StorableRequest.mjs';
+    '../../../../packages/workbox-background-sync/models/StorableRequest.mjs';
 
 
 let Queue;
@@ -63,20 +63,20 @@ const getObjectStoreEntries = async () => {
 describe(`[workbox-background-sync] QueueStore`, function() {
   beforeEach(async function() {
     // Clear Queue so the name map gets reset on re-import.
-    clearRequire('../../../../packages/workbox-background-sync/lib/Queue.mjs');
+    clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
 
     clearObjectStore();
 
     // Re-import Queue each time so the name map gets reset.
     const imprt = await import(
-        '../../../../packages/workbox-background-sync/lib/Queue.mjs');
+        '../../../../packages/workbox-background-sync/Queue.mjs');
 
-    Queue = imprt.default;
+    Queue = imprt.Queue;
   });
 
   after(async function() {
     // Clear Queue so the name map gets reset on re-import.
-    clearRequire('../../../../packages/workbox-background-sync/lib/Queue.mjs');
+    clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
 
     clearObjectStore();
   });

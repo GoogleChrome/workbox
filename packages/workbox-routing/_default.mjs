@@ -14,8 +14,13 @@
   limitations under the License.
 */
 
-import Router from './Router.mjs';
+import {assert} from 'workbox-core/_private.mjs';
+import {Router} from './Router.mjs';
 import './_version.mjs';
+
+if (process.env.NODE_ENV !== 'production') {
+  assert.isSwEnv('workbox-routing');
+}
 
 const router = new Router();
 

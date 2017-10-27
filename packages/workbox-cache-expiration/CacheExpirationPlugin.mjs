@@ -11,8 +11,7 @@
  limitations under the License.
 */
 
-import {_private} from 'workbox-core';
-import core from 'workbox-core';
+import {WorkboxError, assert} from 'workbox-core/_private.mjs';
 
 import CacheExpiration from './CacheExpiration.mjs';
 import './_version.mjs';
@@ -31,11 +30,11 @@ class CacheExpirationPlugin {
   constructor(config) {
     if (process.env.NODE_ENV !== 'production') {
       if (!(config.maxEntries || config.maxAgeSeconds)) {
-        throw new _private.WorkboxError('max-entries-or-age-required');
+        throw new WorkboxError('max-entries-or-age-required');
       }
 
       if (config.maxEntries) {
-        core.assert.isType(config.maxEntries, 'number', {
+        assert.isType(config.maxEntries, 'number', {
           moduleName: 'workbox-cache-expiration',
           className: 'CacheExpirationPlugin',
           funcName: 'constructor',
@@ -44,7 +43,7 @@ class CacheExpirationPlugin {
       }
 
       if (config.maxAgeSeconds) {
-        core.assert.isType(config.maxAgeSeconds, 'number', {
+        assert.isType(config.maxAgeSeconds, 'number', {
           moduleName: 'workbox-cache-expiration',
           className: 'CacheExpirationPlugin',
           funcName: 'constructor',
@@ -112,13 +111,13 @@ class CacheExpirationPlugin {
    */
   async cacheDidUpdate({cacheName, newResponse, url} = {}) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isType(cacheName, 'string', {
+      assert.isType(cacheName, 'string', {
         moduleName: 'workbox-cache-expiration',
         className: 'CacheExpirationPlugin',
         funcName: 'cacheDidUpdate',
         paramName: 'cacheName',
       });
-      core.assert.isInstance(newResponse, Response, {
+      assert.isInstance(newResponse, Response, {
         moduleName: 'workbox-cache-expiration',
         className: 'CacheExpirationPlugin',
         funcName: 'cacheDidUpdate',
@@ -157,7 +156,7 @@ class CacheExpirationPlugin {
     // maxAgeSeconds is set.
     if (cachedResponse && this._maxAgeSeconds) {
       if (process.env.NODE_ENV !== 'production') {
-        core.assert.isInstance(cachedResponse, Response, {
+        assert.isInstance(cachedResponse, Response, {
           moduleName: 'workbox-cache-expiration',
           className: 'CacheExpirationPlugin',
           funcName: 'isResponseFresh',

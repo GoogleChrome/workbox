@@ -8,16 +8,6 @@ import core from '../../../../packages/workbox-core/index.mjs';
 import * as coreModule from '../../../../packages/workbox-core/index.mjs';
 
 describe(`workbox-core WorkboxCore`, function() {
-  describe(`core.assert.*`, function() {
-    devOnly.it(`should expose assert in dev`, async function() {
-      expect(core.assert).to.exist;
-    });
-
-    prodOnly.it(`should NOT expose assert in prod build`, async function() {
-      expect(core.assert).to.not.exist;
-    });
-  });
-
   describe(`core.logLevel (getter)`, function() {
     devOnly.it(`should initialise to 'log' log level in dev`, function() {
       expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.log);

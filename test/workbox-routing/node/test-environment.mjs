@@ -2,6 +2,8 @@ import clearRequire from 'clear-require';
 import sinon from 'sinon';
 import {expect} from 'chai';
 
+import assert from '../../../packages/workbox-core/_private/assert.mjs';
+import {devOnly} from '../../../infra/testing/env-it';
 import expectError from '../../../infra/testing/expectError';
 
 describe(`[workbox-routing] SW environment`, function() {
@@ -16,9 +18,7 @@ describe(`[workbox-routing] SW environment`, function() {
     sandbox.restore();
   });
 
-  it(`should throw when loaded outside of a service worker in dev`, async function() {
-    if (process.env.NODE_ENV === 'production') return this.skip();
-
+  devOnly.it(`should throw when loaded outside of a service worker in dev`, async function() {
     const originalServiceWorkerGlobalScope = global.ServiceWorkerGlobalScope;
     delete global.ServiceWorkerGlobalScope;
 
@@ -31,18 +31,13 @@ describe(`[workbox-routing] SW environment`, function() {
     global.ServiceWorkerGlobalScope = originalServiceWorkerGlobalScope;
   });
 
-  it(`should not throw when in SW in dev`, async function() {
-    if (process.env.NODE_ENV === 'production') return this.skip();
-
-    const coreModule = await import('../../../packages/workbox-core/index.mjs');
-    sandbox.stub(coreModule.default.assert, 'isSwEnv').callsFake(() => true);
+  devOnly.it(`should not throw when in SW in dev`, async function() {
+    sandbox.stub(assert, 'isSwEnv').callsFake(() => true);
 
     await import(MODULE_PATH);
   });
 
-  it(`should not throw in production`, async function() {
-    if (process.env.NODE_ENV !== 'production') return this.skip();
-
+  devOnly.it(`should not throw in production`, async function() {
     await import(MODULE_PATH);
   });
 });

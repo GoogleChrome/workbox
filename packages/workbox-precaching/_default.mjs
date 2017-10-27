@@ -14,14 +14,18 @@
   limitations under the License.
 */
 
-import {_private} from 'workbox-core';
+import {assert, cacheNames} from 'workbox-core/_private.mjs';
 import PrecacheController from './controllers/PrecacheController.mjs';
 import './_version.mjs';
+
+if (process.env.NODE_ENV !== 'production') {
+  assert.isSwEnv('workbox-precaching');
+}
 
 let installActivateListenersAdded = false;
 let fetchListenersAdded = false;
 
-const cacheName = _private.cacheNames.getPrecacheName();
+const cacheName = cacheNames.getPrecacheName();
 const precacheController = new PrecacheController(cacheName);
 
 const _removeIgnoreUrlParams = (origUrlObject, ignoreUrlParametersMatching) => {

@@ -14,19 +14,22 @@
   limitations under the License.
 */
 
-import logger from './utils/logger.mjs';
-import WorkboxError from './models/WorkboxError.mjs';
-import fetchWrapper from './utils/fetchWrapper.mjs';
-import cacheWrapper from './utils/cacheWrapper.mjs';
-import * as cacheNames from './models/cacheNames.mjs';
-import indexedDBHelper from './utils/indexedDBHelper.mjs';
+// We either expose defaults or we expose every named export.
+import assert from './_private/assert.mjs';
+import cacheWrapper from './_private/cacheWrapper.mjs';
+import fetchWrapper from './_private/fetchWrapper.mjs';
+import indexedDBHelper from './_private/indexedDBHelper.mjs';
+import logger from './_private/logger.mjs';
+import WorkboxError from './_private/WorkboxError.mjs';
+import * as cacheNames from './_private/cacheNames.mjs';
 import './_version.mjs';
 
 export {
   logger,
-  fetchWrapper,
-  cacheWrapper,
-  WorkboxError,
+  assert,
   cacheNames,
+  cacheWrapper,
+  fetchWrapper,
   indexedDBHelper,
+  WorkboxError,
 };

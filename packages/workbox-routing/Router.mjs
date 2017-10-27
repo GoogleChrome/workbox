@@ -13,10 +13,9 @@
  limitations under the License.
 */
 
-import core from 'workbox-core';
-import {_private} from 'workbox-core';
+import {assert, logger, WorkboxError} from 'workbox-core/_private.mjs';
 
-import normalizeHandler from './lib/normalizeHandler.mjs';
+import normalizeHandler from './utils/normalizeHandler.mjs';
 import './_version.mjs';
 
 /**
@@ -56,7 +55,7 @@ class Router {
    */
   handleRequest(event) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isInstance(event, FetchEvent, {
+      assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'handleRequest',
@@ -108,28 +107,28 @@ class Router {
         if (!handler) {
           // No handler so Workbox will do nothing. If logs is set of debug
           // i.e. verbose, we should print out this information.
-          _private.logger.debug(`No route found for: ${urlToLog}`);
+          logger.debug(`No route found for: ${urlToLog}`);
         } else {
           // We have a handler, meaning Workbox is handling the route. print to
           // log.
-          _private.logger.groupCollapsed(
+          logger.groupCollapsed(
             `Router is responding to: ${urlToLog}`);
 
           // The Request object contains a great deal of information,
           // hide it under a group in case developers wants to see it.
-          _private.logger.groupCollapsed(
+          logger.groupCollapsed(
             `    View full request details here.`);
-          _private.logger.unprefixed.log(event.request);
-          _private.logger.groupEnd();
+          logger.unprefixed.log(event.request);
+          logger.groupEnd();
 
           debugMessages.forEach((msg) => {
             if (Array.isArray(msg)) {
-              _private.logger.unprefixed.log(...msg);
+              logger.unprefixed.log(...msg);
             } else {
-              _private.logger.unprefixed.log(msg);
+              logger.unprefixed.log(msg);
             }
           });
-          _private.logger.groupEnd();
+          logger.groupEnd();
         }
       }
     }
@@ -141,7 +140,7 @@ class Router {
           if (process.env.NODE_ENV !== 'production') {
             // Still include URL here as it will be async from the console group
             // and may not make sense without the URL
-            _private.logger.debug(`An error was thrown by the handler for ` +
+            logger.debug(`An error was thrown by the handler for ` +
               `'${urlToLog}', so using the catch handler.`);
           }
           return this._catchHandler.handle({url, event, error});
@@ -234,35 +233,35 @@ class Router {
    */
   registerRoute(route) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isType(route, 'object', {
+      assert.isType(route, 'object', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route',
       });
 
-      core.assert.hasMethod(route, 'match', {
+      assert.hasMethod(route, 'match', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route',
       });
 
-      core.assert.isType(route.handler, 'object', {
+      assert.isType(route.handler, 'object', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route',
       });
 
-      core.assert.hasMethod(route.handler, 'handle', {
+      assert.hasMethod(route.handler, 'handle', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route.handler',
       });
 
-      core.assert.isType(route.method, 'string', {
+      assert.isType(route.method, 'string', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
@@ -286,7 +285,7 @@ class Router {
    */
   unregisterRoute(route) {
     if (!this._routes.has(route.method)) {
-      throw new _private.WorkboxError(
+      throw new WorkboxError(
         'unregister-route-but-not-found-with-method', {
           method: route.method,
         }
@@ -297,9 +296,9 @@ class Router {
     if (routeIndex > -1) {
       this._routes.get(route.method).splice(routeIndex, 1);
     } else {
-      throw new _private.WorkboxError('unregister-route-route-not-registered');
+      throw new WorkboxError('unregister-route-route-not-registered');
     }
   }
 }
 
-export default Router;
+export {Router};

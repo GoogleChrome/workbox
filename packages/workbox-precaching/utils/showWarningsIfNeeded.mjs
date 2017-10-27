@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import {_private} from 'workbox-core';
+import {logger} from 'workbox-core/_private.mjs';
 import '../_version.mjs';
 
 /**
@@ -43,20 +43,20 @@ export default (entriesMap) => {
     return;
   }
 
-  _private.logger.groupCollapsed('Are your precached assets revisioned?');
+  logger.groupCollapsed('Are your precached assets revisioned?');
 
   const urlsList = urlOnlyEntries.map((urlOnlyEntry) => {
     return `    - ${JSON.stringify(urlOnlyEntry)}`;
   }).join(`\n`);
 
-  _private.logger.warn(
+  logger.warn(
     `The following precache entries might not be revisioned:\n` +
     `\n` +
     urlsList +
     `\n\n`
   );
 
-  _private.logger.log(
+  logger.log(
     `'workbox-precaching' ensures assets are only downloaded when needed, ` +
     `saving user's data and speeding up the install time of new service ` +
     `workers.\n` +
@@ -81,8 +81,8 @@ export default (entriesMap) => {
   );
 
   // TODO Add link to docs here.....
-  _private.logger.debug(`You can learn more about this issue and possible ` +
+  logger.debug(`You can learn more about this issue and possible ` +
     `solutions here...`);
 
-  _private.logger.groupEnd();
+  logger.groupEnd();
 };

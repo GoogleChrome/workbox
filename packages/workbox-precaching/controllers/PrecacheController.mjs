@@ -14,9 +14,13 @@
   limitations under the License.
 */
 
-import {_private} from 'workbox-core';
-import core from 'workbox-core';
-
+import {
+  cacheNames,
+  WorkboxError,
+  fetchWrapper,
+  cacheWrapper,
+  assert,
+} from 'workbox-core/_private.mjs';
 import PrecacheEntry from '../models/PrecacheEntry.mjs';
 import PrecachedDetailsModel from '../models/PrecachedDetailsModel.mjs';
 import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
@@ -37,7 +41,7 @@ class PrecacheController {
    * @param {string} cacheName
    */
   constructor(cacheName) {
-    this._cacheName = _private.cacheNames.getPrecacheName(cacheName);
+    this._cacheName = cacheNames.getPrecacheName(cacheName);
     this._entriesToCacheMap = new Map();
     this._precacheDetailsModel = new PrecachedDetailsModel(this._cacheName);
   }
@@ -51,7 +55,7 @@ class PrecacheController {
    */
   addToCacheList(entries) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isArray(entries, {
+      assert.isArray(entries, {
         moduleName: 'workbox-precaching',
         className: 'PrecacheController',
         funcName: 'addToCacheList',
@@ -78,7 +82,7 @@ class PrecacheController {
       case 'string': {
         if (process.env.NODE_ENV !== 'production') {
           if (input.length === 0) {
-            throw new _private.WorkboxError(
+            throw new WorkboxError(
               'add-to-cache-list-unexpected-type', {
                 entry: input,
               }
@@ -91,7 +95,7 @@ class PrecacheController {
       case 'object': {
         if (process.env.NODE_ENV !== 'production') {
           if (!input || !input.url) {
-            throw new _private.WorkboxError(
+            throw new WorkboxError(
               'add-to-cache-list-unexpected-type', {
                 entry: input,
               }
@@ -103,7 +107,7 @@ class PrecacheController {
           input, input.url, input.revision || input.url, !!input.revision);
       }
       default:
-        throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
+        throw new WorkboxError('add-to-cache-list-unexpected-type', {
           entry: input,
         });
     }
@@ -126,7 +130,7 @@ class PrecacheController {
     // Duplicates are fine, but make sure the revision information
     // is the same.
     if (existingEntry._revision !== entryToAdd._revision) {
-      throw new _private.WorkboxError('add-to-cache-list-conflicting-entries', {
+      throw new WorkboxError('add-to-cache-list-conflicting-entries', {
         firstEntry: existingEntry._originalInput,
         secondEntry: entryToAdd._originalInput,
       });
@@ -190,7 +194,7 @@ class PrecacheController {
       return false;
     }
 
-    let response = await _private.fetchWrapper.fetch(
+    let response = await fetchWrapper.fetch(
       precacheEntry._networkRequest,
     );
 
@@ -198,7 +202,7 @@ class PrecacheController {
       response = await cleanRedirect(response);
     }
 
-    await _private.cacheWrapper.put(this._cacheName,
+    await cacheWrapper.put(this._cacheName,
       precacheEntry._cacheRequest, response);
 
     await this._precacheDetailsModel._addEntry(precacheEntry);

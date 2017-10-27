@@ -13,7 +13,11 @@
  limitations under the License.
 */
 
-import {_private} from 'workbox-core';
+import {
+  cacheNames,
+  cacheWrapper,
+  fetchWrapper,
+} from 'workbox-core/_private.mjs';
 
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
@@ -43,8 +47,7 @@ class StaleWhileRevalidate {
    * conjunction with this caching strategy.
    */
   constructor(options = {}) {
-    this._cacheName =
-      _private.cacheNames.getRuntimeName(options.cacheName);
+    this._cacheName = cacheNames.getRuntimeName(options.cacheName);
       this._plugins = options.plugins || [];
 
     if (options.plugins) {
@@ -76,13 +79,13 @@ class StaleWhileRevalidate {
       // core.assert.isInstance({event}, FetchEvent);
     }
 
-    const fetchAndCachePromise = _private.fetchWrapper.fetch(
+    const fetchAndCachePromise = fetchWrapper.fetch(
       event.request,
       null,
       this._plugins
     )
     .then(async (response) => {
-      await _private.cacheWrapper.put(
+      await cacheWrapper.put(
         this._cacheName,
         event.request,
         response.clone(),
@@ -92,7 +95,7 @@ class StaleWhileRevalidate {
       return response;
     });
 
-    const cachedResponse = await _private.cacheWrapper.match(
+    const cachedResponse = await cacheWrapper.match(
       this._cacheName,
       event.request,
       null,
@@ -105,4 +108,4 @@ class StaleWhileRevalidate {
   }
 }
 
-export default StaleWhileRevalidate;
+export {StaleWhileRevalidate};

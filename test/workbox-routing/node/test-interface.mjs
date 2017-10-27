@@ -2,6 +2,8 @@ import clearRequire from 'clear-require';
 import sinon from 'sinon';
 import {expect} from 'chai';
 
+import assert from '../../../packages/workbox-core/_private/assert.mjs';
+
 describe(`[workbox-routing] Module Interface`, function() {
   let routingModule;
   const sandbox = sinon.sandbox.create();
@@ -12,8 +14,6 @@ describe(`[workbox-routing] Module Interface`, function() {
     // Won't be needed after https://github.com/pinterest/service-workers/pull/44
     // is fixed
     if (process.env.NODE_ENV !== 'production') {
-      let coreModule = await import('../../../packages/workbox-core/index.mjs');
-      const assert = coreModule.default.assert;
       sandbox.stub(assert, 'isSwEnv').callsFake(() => true);
     }
 

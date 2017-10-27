@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import '../_version.mjs';
+import './_version.mjs';
 
 /**
  * A class implementing the `fetchDidFail` lifecycle callback. This makes it
@@ -40,4 +40,4 @@ class QueuePlugin {
   }
 }
 
-export default QueuePlugin;
+export {QueuePlugin};

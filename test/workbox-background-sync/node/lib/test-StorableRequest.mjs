@@ -16,7 +16,7 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 import StorableRequest from
-    '../../../../packages/workbox-background-sync/lib/StorableRequest.mjs';
+    '../../../../packages/workbox-background-sync/models/StorableRequest.mjs';
 
 
 describe(`[workbox-background-sync] StorableRequest`, function() {

@@ -13,8 +13,7 @@
  limitations under the License.
 */
 
-import {_private} from 'workbox-core';
-import core from 'workbox-core';
+import {cacheNames, cacheWrapper, assert} from 'workbox-core/_private.mjs';
 import './_version.mjs';
 
 /**
@@ -35,8 +34,7 @@ class CacheOnly {
    * conjunction with this caching strategy.
    */
   constructor(options = {}) {
-    this._cacheName =
-      _private.cacheNames.getRuntimeName(options.cacheName);
+    this._cacheName = cacheNames.getRuntimeName(options.cacheName);
     this._plugins = options.plugins || [];
   }
 
@@ -53,7 +51,7 @@ class CacheOnly {
    */
   async handle({url, event, params}) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isInstance(event, FetchEvent, {
+      assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
         className: 'CacheOnly',
         funcName: 'handle',
@@ -61,7 +59,7 @@ class CacheOnly {
       });
     }
 
-    return _private.cacheWrapper.match(
+    return cacheWrapper.match(
       this._cacheName,
       event.request,
       null,
@@ -70,4 +68,4 @@ class CacheOnly {
   }
 }
 
-export default CacheOnly;
+export {CacheOnly};

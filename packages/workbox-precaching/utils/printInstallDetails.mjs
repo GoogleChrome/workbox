@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import {_private} from 'workbox-core';
+import {logger} from 'workbox-core/_private.mjs';
 import '../_version.mjs';
 
 /**
@@ -24,13 +24,13 @@ import '../_version.mjs';
  * @private
  */
 const logGroup = (groupTitle, entries) => {
-  _private.logger.groupCollapsed(groupTitle);
+  logger.groupCollapsed(groupTitle);
 
   entries.forEach((entry) => {
-    _private.logger.log(entry._originalInput);
+    logger.log(entry._originalInput);
   });
 
-  _private.logger.groupEnd();
+  logger.groupEnd();
 };
 
 /**
@@ -54,11 +54,11 @@ export default (updatedEntries, notUpdatedEntries) => {
     printText += ` ${notUpdatedCount} ` +
       `file${notUpdatedCount === 1 ? ' was' : 's were'} already cached.`;
   }
-  _private.logger.groupCollapsed(printText);
+  logger.groupCollapsed(printText);
   if (updatedCount > 0 && notUpdatedCount === 0) {
     // Don't nest groups, just show the precached entries.
     updatedEntries.forEach((entry) => {
-      _private.logger.log(entry._originalInput);
+      logger.log(entry._originalInput);
     });
   } else {
     logGroup(
@@ -69,5 +69,5 @@ export default (updatedEntries, notUpdatedEntries) => {
       notUpdatedEntries);
   }
 
-  _private.logger.groupEnd();
+  logger.groupEnd();
 };

@@ -13,11 +13,10 @@
  limitations under the License.
 */
 
-import core from 'workbox-core';
-import {_private} from 'workbox-core';
+import {assert, logger} from 'workbox-core/_private.mjs';
 
+import {Route} from './Route.mjs';
 import './_version.mjs';
-import Route from './Route.mjs';
 
 /**
  * RegExpRoute is a helper class to make defining regular expression based
@@ -58,7 +57,7 @@ class RegExpRoute extends Route {
    */
   constructor(regExp, handler, method) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isInstance(regExp, RegExp, {
+      assert.isInstance(regExp, RegExp, {
         moduleName: 'workbox-routing',
         className: 'RegExpRoute',
         funcName: 'constructor',
@@ -80,7 +79,7 @@ class RegExpRoute extends Route {
       // behind this behavior.
       if ((url.origin !== location.origin) && (result.index !== 0)) {
         if (process.env.NODE_ENV !== 'production') {
-          _private.logger.debug(`Skipping route, because while ${regExp} matched
+          logger.debug(`Skipping route, because while ${regExp} matched
             ${url}, the request is cross-origin and the match did not occur at
             the start of the URL.`);
         }
@@ -99,4 +98,4 @@ class RegExpRoute extends Route {
   }
 }
 
-export default RegExpRoute;
+export {RegExpRoute};

@@ -14,20 +14,13 @@
   limitations under the License.
 */
 
-import core from 'workbox-core';
-import PrecacheController from './controllers/PrecacheController.mjs';
-import defaultPrecachingExport from './default.mjs';
+import defaultPrecachingExport from './_default.mjs';
 import './_version.mjs';
+
 /**
  * @module workbox-precaching
  */
 
-if (process.env.NODE_ENV !== 'production') {
-  core.assert.isSwEnv('workbox-precaching');
-}
-
-export {
-  PrecacheController,
-};
+export * from './_public.mjs';
 
 export default defaultPrecachingExport;

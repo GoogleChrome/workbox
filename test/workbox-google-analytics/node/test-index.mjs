@@ -16,9 +16,9 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 import {eventsDoneWaiting, resetEventListeners} from '../../../infra/testing/sw-env-mocks/event-listeners.js';
-import {OBJECT_STORE_NAME} from '../../../packages/workbox-background-sync/lib/constants.mjs';
-import Queue from '../../../packages/workbox-background-sync/lib/Queue.mjs';
-import QueueStore from '../../../packages/workbox-background-sync/lib/QueueStore.mjs';
+import {OBJECT_STORE_NAME} from '../../../packages/workbox-background-sync/utils/constants.mjs';
+import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
+import {QueueStore} from '../../../packages/workbox-background-sync/models/QueueStore.mjs';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {NetworkFirst, NetworkOnly} from '../../../packages/workbox-runtime-caching/index.mjs';
 import * as googleAnalytics from '../../../packages/workbox-google-analytics/index.mjs';
@@ -27,7 +27,7 @@ import {
   GOOGLE_ANALYTICS_HOST,
   ANALYTICS_JS_PATH,
   COLLECT_PATH,
-} from '../../../packages/workbox-google-analytics/lib/constants.mjs';
+} from '../../../packages/workbox-google-analytics/utils/constants.mjs';
 
 
 const PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';

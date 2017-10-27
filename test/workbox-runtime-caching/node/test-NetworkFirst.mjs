@@ -20,7 +20,7 @@ import {devOnly} from '../../../infra/testing/env-it';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
 
-import NetworkFirst from '../../../packages/workbox-runtime-caching/NetworkFirst.mjs';
+import {NetworkFirst} from '../../../packages/workbox-runtime-caching/NetworkFirst.mjs';
 
 describe(`[workbox-runtime-caching] NetworkFirst`, function() {
   let sandbox = sinon.sandbox.create();

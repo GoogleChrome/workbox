@@ -18,7 +18,7 @@ import {expect} from 'chai';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
 
-import CacheFirst from '../../../packages/workbox-runtime-caching/CacheFirst.mjs';
+import {CacheFirst} from '../../../packages/workbox-runtime-caching/CacheFirst.mjs';
 
 describe(`[workbox-runtime-caching] CacheFirst`, function() {
   let sandbox = sinon.sandbox.create();

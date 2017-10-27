@@ -13,14 +13,12 @@
  limitations under the License.
 */
 
-import {_private} from 'workbox-core';
-import {TAG_PREFIX, MAX_RETENTION_TIME} from './constants.mjs';
-import QueueStore from './QueueStore.mjs';
-import StorableRequest from './StorableRequest.mjs';
-import '../_version.mjs';
+import {WorkboxError} from 'workbox-core/_private.mjs';
+import {QueueStore} from './models/QueueStore.mjs';
+import StorableRequest from './models/StorableRequest.mjs';
+import {TAG_PREFIX, MAX_RETENTION_TIME} from './utils/constants.mjs';
+import './_version.mjs';
 
-
-const {WorkboxError} = _private;
 const queueNames = new Set();
 
 
@@ -206,4 +204,4 @@ class Queue {
   }
 }
 
-export default Queue;
+export {Queue};

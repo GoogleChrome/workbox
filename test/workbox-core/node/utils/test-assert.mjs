@@ -1,8 +1,16 @@
 import sinon from 'sinon';
+import {expect} from 'chai';
 import expectError from '../../../../infra/testing/expectError';
-import assert from '../../../../packages/workbox-core/utils/assert';
+import {devOnly, prodOnly} from '../../../../infra/testing/env-it';
+import assert from '../../../../packages/workbox-core/_private/assert';
 
 describe(`workbox-core  assert`, function() {
+  describe(`Production Environment`, function() {
+    prodOnly.it(`should return null`, function() {
+      expect(assert).to.equal(null);
+    });
+  });
+
   describe(`isSwEnv`, function() {
     let sandbox;
     before(function() {
@@ -13,7 +21,7 @@ describe(`workbox-core  assert`, function() {
       sandbox.restore();
     });
 
-    it(`should throw if ServiceWorkerGlobalScope is not defined`, async function() {
+    devOnly.it(`should throw if ServiceWorkerGlobalScope is not defined`, async function() {
       const originalServiceWorkerGlobalScope = global.ServiceWorkerGlobalScope;
       delete global.ServiceWorkerGlobalScope;
 
@@ -22,20 +30,20 @@ describe(`workbox-core  assert`, function() {
       global.ServiceWorkerGlobalScope = originalServiceWorkerGlobalScope;
     });
 
-    it(`should return false if self is not an instance of ServiceWorkerGlobalScope`, function() {
+    devOnly.it(`should return false if self is not an instance of ServiceWorkerGlobalScope`, function() {
       sandbox.stub(global, 'self').value({});
 
       return expectError(() => assert.isSwEnv('example-module'), 'not-in-sw');
     });
 
-    it(`should not throw is self is an instance of ServiceWorkerGlobalScope`, function() {
+    devOnly.it(`should not throw is self is an instance of ServiceWorkerGlobalScope`, function() {
       sandbox.stub(global, 'self').value(new ServiceWorkerGlobalScope());
       assert.isSwEnv('example-module');
     });
   });
 
   describe(`isArray`, function() {
-    it(`shouldn't throw when given an array`, function() {
+    devOnly.it(`shouldn't throw when given an array`, function() {
       assert.isArray([], {
         moduleName: 'module',
         className: 'class',
@@ -44,7 +52,7 @@ describe(`workbox-core  assert`, function() {
       });
     });
 
-    it(`should throw when value isn't an array`, function() {
+    devOnly.it(`should throw when value isn't an array`, function() {
       return expectError(() => {
         assert.isArray({}, {
           moduleName: 'module',

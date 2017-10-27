@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import {_private} from 'workbox-core';
+import {indexedDBHelper} from 'workbox-core/_private.mjs';
 import '../_version.mjs';
 
 const URL_KEY = 'url';
@@ -90,7 +90,7 @@ class CacheTimestampsModel {
       return this._db;
     }
 
-    this._db = await _private.indexedDBHelper.getDB(
+    this._db = await indexedDBHelper.getDB(
       `workbox-cache-expiration`,
       1,
       (db) => {

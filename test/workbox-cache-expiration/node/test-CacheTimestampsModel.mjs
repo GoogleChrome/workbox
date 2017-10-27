@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 
 import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/models/CacheTimestampsModel.mjs';
-import indexedDBHelper from '../../../packages/workbox-core/utils/indexedDBHelper.mjs';
+import indexedDBHelper from '../../../packages/workbox-core/_private/indexedDBHelper.mjs';
 
 describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
   beforeEach(function() {

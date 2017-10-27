@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import WorkboxError from '../models/WorkboxError.mjs';
+import WorkboxError from '../_private/WorkboxError.mjs';
 import '../_version.mjs';
 
 /*
@@ -78,7 +78,7 @@ const isOneOf = (value, validValues, {paramName}) => {
   }
 };
 
-export default {
+const finalExports = process.env.NODE_ENV === 'production' ? null : {
   hasMethod,
   isArray,
   isInstance,
@@ -86,3 +86,5 @@ export default {
   isSwEnv,
   isType,
 };
+
+export default finalExports;
