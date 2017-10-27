@@ -20,7 +20,7 @@ describe(`workbox-core fetchWrapper`, function() {
     // TODO Add Error Case Tests (I.e. bad input)
 
     it(`should work with string`, async function() {
-      const stub = sandbox.stub(global, 'fetch');
+      const stub = sandbox.stub(global, 'fetch').callsFake(() => new Response());
 
       await fetchWrapper.fetch('/test/string');
 
@@ -30,7 +30,7 @@ describe(`workbox-core fetchWrapper`, function() {
     });
 
     it(`should work with Request`, async function() {
-      const stub = sandbox.stub(global, 'fetch');
+      const stub = sandbox.stub(global, 'fetch').callsFake(() => new Response());
 
       await fetchWrapper.fetch(new Request('/test/request'));
 
@@ -40,7 +40,7 @@ describe(`workbox-core fetchWrapper`, function() {
     });
 
     it(`should use fetchOptions`, async function() {
-      const stub = sandbox.stub(global, 'fetch');
+      const stub = sandbox.stub(global, 'fetch').callsFake(() => new Response());
 
       const exampleOptions = {
         method: 'Post',
@@ -59,7 +59,7 @@ describe(`workbox-core fetchWrapper`, function() {
     });
 
     it(`should call requestWillFetch method in plugins and use the returned request`, async function() {
-      const fetchStub = sandbox.stub(global, 'fetch');
+      const fetchStub = sandbox.stub(global, 'fetch').callsFake(() => new Response());
       const firstPlugin = {
         requestWillFetch: (request) => {
           return new Request('/test/requestWillFetch/1');
@@ -92,7 +92,7 @@ describe(`workbox-core fetchWrapper`, function() {
     });
 
     it(`should throw a meaningful error on bad requestWillFetch plugin`, async function() {
-      const fetchStub = sandbox.stub(global, 'fetch');
+      const fetchStub = sandbox.stub(global, 'fetch').callsFake(() => new Response());
       const errorPlugin = {
         requestWillFetch: (request) => {
           throw new Error('Injected Error from Test.');
@@ -114,8 +114,7 @@ describe(`workbox-core fetchWrapper`, function() {
     });
 
     it(`should call fetchDidFail method in plugins`, async function() {
-      const fetchStub = sandbox.stub(global, 'fetch');
-      fetchStub.callsFake(() => {
+      sandbox.stub(global, 'fetch').callsFake(() => {
         return Promise.reject(new Error('Injected Error.'));
       });
 
@@ -155,9 +154,9 @@ describe(`workbox-core fetchWrapper`, function() {
 
       expect(spyOne.callCount).equal(1);
       expect(spyTwo.callCount).equal(1);
-      expect(fetchStub.callCount).to.equal(1);
+      expect(global.fetch.callCount).to.equal(1);
 
-      const fetchRequest = fetchStub.args[0][0];
+      const fetchRequest = global.fetch.args[0][0];
       expect(fetchRequest.url).to.equal('/test/failingRequest/1');
     });
   });

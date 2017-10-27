@@ -17,8 +17,9 @@ import {
   cacheNames,
   fetchWrapper,
   assert,
+  logger,
 } from 'workbox-core/_private.mjs';
-
+import messages from './utils/messages.mjs';
 import './_version.mjs';
 
 /**
@@ -62,13 +63,35 @@ class NetworkOnly {
         funcName: 'handle',
         paramName: 'event',
       });
+
+      logger.groupCollapsed(
+        messages.strategyStart('NetworkOnly', event));
     }
 
-    return fetchWrapper.fetch(
-      event.request,
-      null,
-      this._plugins
-    );
+    let error;
+    let response;
+    try {
+      response = await fetchWrapper.fetch(
+        event.request,
+        null,
+        this._plugins
+      );
+    } catch (err) {
+      error = err;
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      messages.printFinalResponse(response);
+      logger.groupEnd();
+    }
+
+    // If there was an error thrown, re-throw it to ensure the Routers
+    // catch handler is triggered.
+    if (error) {
+      throw error;
+    }
+
+    return response;
   }
 }
 

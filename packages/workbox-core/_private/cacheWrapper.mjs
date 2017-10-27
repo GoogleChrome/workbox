@@ -14,6 +14,8 @@
   limitations under the License.
 */
 
+import logger from './logger.mjs';
+import getFriendlyURL from '../utils/getFriendlyURL.mjs';
 import '../_version.mjs';
 
 /**
@@ -32,6 +34,9 @@ import '../_version.mjs';
 const putWrapper = async (cacheName, request, response, plugins = []) => {
   let responseToCache = await _isResponseSafeToCache(
     request, response, plugins);
+
+  // TODO If response is not safe to cache - print info to log.
+
   if (!responseToCache) {
     return;
   }
@@ -46,6 +51,11 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
 
   let oldResponse = updateCbs.length > 0 ?
     await matchWrapper(cacheName, request) : null;
+
+  if (process.env.NODE_ENV !== 'production') {
+    logger.log(`Updating the '${cacheName}' cache with a new Response for ` +
+      `${getFriendlyURL(request.url)}.`);
+  }
 
   // Regardless of whether or not we'll end up invoking
   // cacheDidUpdate, wait until the cache is updated.
@@ -77,6 +87,13 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
 const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
   const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
+  if (process.env.NODE_ENV !== 'production') {
+    if (cachedResponse) {
+      logger.log(`Found a cached response in '${cacheName}'.`);
+    } else {
+      logger.log(`No cached response found in '${cacheName}'.`);
+    }
+  }
   for (let plugin of plugins) {
     const cb = plugin.cachedResponseWillBeUsed;
     if (cb) {

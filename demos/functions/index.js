@@ -3,6 +3,7 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const fs = require('fs-extra');
+
 const cdnDetails = require('./cdn-details.json');
 
 const workboxModules = [
@@ -61,10 +62,15 @@ app.get('/demo/:moduleName/:swfile', function(req, res, next) {
     path.extname(req.params.swfile)
   );
 
+  let cdnUrl = cdnDetails.latestUrl;
+  if (process.env.WORKBOX_DEMO_ENV === 'local') {
+    cdnUrl = `/local-builds`;
+  }
+
   res.header('Content-Type', 'application/javascript');
   res.render(`demo/${req.params.moduleName}/${swTemplate}`, {
     title: `${req.params.moduleName} Demo`,
-    CDN_URL: cdnDetails.latestUrl,
+    CDN_URL: cdnUrl,
     layout: false,
   });
 });

@@ -5,6 +5,7 @@ const fs = require('fs-extra');
 const cdnUtils = require('../packages/workbox-build/src/lib/cdn-utils');
 const getNpmCmd = require('./utils/get-npm-cmd');
 const spawn = require('./utils/spawn-promise-wrapper');
+const constants = require('./utils/constants');
 
 gulp.task('publish-demos:updateCDNDetails', () => {
   const details = {
@@ -22,7 +23,14 @@ gulp.task('publish-demos:deploy', () => {
   });
 });
 
+gulp.task('publish-demos:clean', () => {
+  return fs.remove(
+    path.join(__dirname, '..', 'demos', constants.LOCAL_BUILDS_DIR)
+  );
+});
+
 gulp.task('publish-demos', gulp.series([
+  'publish-demos:clean',
   'publish-demos:updateCDNDetails',
   'publish-demos:deploy',
 ]));
