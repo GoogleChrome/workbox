@@ -50,39 +50,16 @@ export default (entriesMap) => {
   }).join(`\n`);
 
   logger.warn(
-    `The following precache entries might not be revisioned:\n` +
-    `\n` +
+    `The following precache entries might not be revisioned:` +
+    `\n\n` +
     urlsList +
     `\n\n`
   );
 
-  logger.log(
-    `'workbox-precaching' ensures assets are only downloaded when needed, ` +
-    `saving user's data and speeding up the install time of new service ` +
-    `workers.\n` +
-    `\n` +
-    `To do this, 'workbox-precaching' needs assets to by revisioned so it ` +
-    `can detect when a file has changed. Without revisioning, your users ` +
-    `may not get the latest files, causing problems when you a new ` +
-    `service worker is deployed.\n` +
-    `\n` +
-    `For example, the following entries have URLs without revisioning:\n` +
-    `\n` +
-    `        '/styles/example.css'\n` +
-    `        { url: '/index.html' }\n` +
-    `\n` +
-    `Compare this to URLs which are revisioned:\n` +
-    `\n` +
-    `        '/styles/example.1234.css'\n` +
-    `        { url: '/index.1234.html' }\n` +
-    `\n` +
-    `If your URLs aren't revisioned, please remove them from ` +
-    `precaching to make sure your users don't end up in a broken state.\n`
-  );
-
-  // TODO Add link to docs here.....
-  logger.debug(`You can learn more about this issue and possible ` +
-    `solutions here...`);
+  // TODO (gauntface) Before launch swap for d.g.c/web URL
+  logger.unprefixed.warn(`You can learn more about why this might be a ` +
+    `problem here: https://docs.google.com/document/d/1i83D4x_1Jz2JT3BCRjO` +
+    `18m-vdL9uG7ksscqZ_E0XjO0/edit?usp=sharing`);
 
   logger.groupEnd();
 };

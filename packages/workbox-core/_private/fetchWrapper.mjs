@@ -15,6 +15,8 @@
 */
 
 import WorkboxError from './WorkboxError.mjs';
+import logger from './logger.mjs';
+import getFriendlyURL from '../utils/getFriendlyURL.mjs';
 import '../_version.mjs';
 
 /**
@@ -73,9 +75,22 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   // to the Request we make. Pass both to `fetchDidFail` to aid debugging.
   const pluginFilteredRequest = request.clone();
 
+  // TODO Log when the plugin filtered URL is different from the input request
+
   try {
-    return await fetch(request, fetchOptions);
+    const response = await fetch(request, fetchOptions);
+    if (process.env.NODE_ENV !== 'production') {
+      logger.log(`Network request for `+
+      `'${getFriendlyURL(request.url)}' returned a response with ` +
+      `status '${response.status}'.`);
+    }
+    return response;
   } catch (err) {
+    if (process.env.NODE_ENV !== 'production') {
+      logger.error(`Network request for `+
+      `'${getFriendlyURL(request.url)}' threw an error.`, err);
+    }
+
     for (let cb of failedFetchCbs) {
       await cb({
         originalRequest: originalRequest.clone(),

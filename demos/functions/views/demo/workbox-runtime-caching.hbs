@@ -42,9 +42,6 @@
     fetch('cache-only-populated-cache')
     .then((response) => {
       return response.text();
-    })
-    .then((responseText) => {
-      console.log(`Response received: '${responseText.trim()}'`);
     });
   });
 
@@ -53,9 +50,6 @@
     fetch('cache-first.txt')
     .then((response) => {
       return response.text();
-    })
-    .then((responseText) => {
-      console.log(`Response received: '${responseText.trim()}'`);
     });
   });
 
@@ -64,9 +58,6 @@
     fetch('network-only.txt')
     .then((response) => {
       return response.text();
-    })
-    .then((responseText) => {
-      console.log(`Response received: '${responseText.trim()}'`);
     });
   });
 
@@ -75,9 +66,6 @@
     fetch('network-first.txt')
     .then((response) => {
       return response.text();
-    })
-    .then((responseText) => {
-      console.log(`Response received: '${responseText.trim()}'`);
     });
   });
 
@@ -92,9 +80,6 @@
     fetch('stale-while-revalidate.txt')
     .then((response) => {
       return response.text();
-    })
-    .then((responseText) => {
-      console.log(`Response received: '${responseText.trim()}'`);
     });
   });
 

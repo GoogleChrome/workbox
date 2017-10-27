@@ -17,8 +17,11 @@ import {
   cacheNames,
   cacheWrapper,
   fetchWrapper,
+  logger,
+  assert,
 } from 'workbox-core/_private.mjs';
 
+import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
 
@@ -75,36 +78,63 @@ class StaleWhileRevalidate {
    */
   async handle({url, event, params}) {
     if (process.env.NODE_ENV !== 'production') {
-      // TODO: Switch to core.assert
-      // core.assert.isInstance({event}, FetchEvent);
+      assert.isInstance(event, FetchEvent, {
+        moduleName: 'workbox-runtime-caching',
+        className: 'StaleWhileRevalidate',
+        funcName: 'handle',
+        paramName: 'event',
+      });
+
+      logger.groupCollapsed(
+        messages.strategyStart('StaleWhileRevalidate', event));
     }
 
-    const fetchAndCachePromise = fetchWrapper.fetch(
-      event.request,
-      null,
-      this._plugins
-    )
-    .then(async (response) => {
-      await cacheWrapper.put(
-        this._cacheName,
-        event.request,
-        response.clone(),
-        this._plugins
-      );
+    const fetchAndCachePromise = this._getFromNetwork(event);
 
-      return response;
-    });
-
-    const cachedResponse = await cacheWrapper.match(
+    let response = await cacheWrapper.match(
       this._cacheName,
       event.request,
       null,
       this._plugins
     );
 
-    event.waitUntil(fetchAndCachePromise);
+    if (response) {
+      event.waitUntil(fetchAndCachePromise);
+    } else {
+      response = await fetchAndCachePromise;
+    }
 
-    return cachedResponse || await fetchAndCachePromise;
+    if (process.env.NODE_ENV !== 'production') {
+      messages.printFinalResponse(response);
+      logger.groupEnd();
+    }
+
+    return response;
+  }
+
+  /**
+   * @param {FetchEvent} event
+   * @return {Promise<Response>}
+   */
+  async _getFromNetwork(event) {
+    const response = await fetchWrapper.fetch(
+      event.request,
+      null,
+      this._plugins
+    );
+
+    if (response) {
+      event.waitUntil(
+        cacheWrapper.put(
+          this._cacheName,
+          event.request,
+          response.clone(),
+          this._plugins
+        )
+      );
+    }
+
+    return response;
   }
 }
 
