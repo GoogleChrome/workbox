@@ -13,9 +13,7 @@
  limitations under the License.
 */
 
-import {assert} from 'workbox-core/_private.mjs';
-import {logger} from 'workbox-core/_private.mjs';
-import {WorkboxError} from 'workbox-core/_private.mjs';
+import {assert, logger, WorkboxError} from 'workbox-core/_private.mjs';
 
 import normalizeHandler from './utils/normalizeHandler.mjs';
 import './_version.mjs';

@@ -44,8 +44,8 @@ const globals = (moduleId) => {
 
   if (splitModuleId.length === 0 || splitModuleId.length > 1) {
     // Tried to pull in default export of module - this isn't allowed.
-      // A specific file must be referenced
-      throw new Error(oneLine`
+    // A specific file must be referenced
+    throw new Error(oneLine`
       You cannot use a module directly - you must specify a public top-level
       file, this is to force a best practice for tree shaking (i.e. only
       pulling in what you use). Please fix the import: '${moduleId}'

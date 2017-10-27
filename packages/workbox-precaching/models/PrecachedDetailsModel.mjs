@@ -14,8 +14,7 @@
   limitations under the License.
 */
 
-import {indexedDBHelper} from 'workbox-core/_private.mjs';
-import {cacheNames} from 'workbox-core/_private.mjs';
+import {indexedDBHelper, cacheNames} from 'workbox-core/_private.mjs';
 import '../_version.mjs';
 
 // Allows minifier to mangle this name

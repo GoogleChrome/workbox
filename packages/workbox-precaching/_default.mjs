@@ -14,8 +14,7 @@
   limitations under the License.
 */
 
-import {assert} from 'workbox-core/_private.mjs';
-import {cacheNames} from 'workbox-core/_private.mjs';
+import {assert, cacheNames} from 'workbox-core/_private.mjs';
 import PrecacheController from './controllers/PrecacheController.mjs';
 import './_version.mjs';
 

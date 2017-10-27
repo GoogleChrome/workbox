@@ -14,12 +14,13 @@
   limitations under the License.
 */
 
-import {cacheNames} from 'workbox-core/_private.mjs';
-import {WorkboxError} from 'workbox-core/_private.mjs';
-import {fetchWrapper} from 'workbox-core/_private.mjs';
-import {cacheWrapper} from 'workbox-core/_private.mjs';
-import {assert} from 'workbox-core/_private.mjs';
-
+import {
+  cacheNames,
+  WorkboxError,
+  fetchWrapper,
+  cacheWrapper,
+  assert,
+} from 'workbox-core/_private.mjs';
 import PrecacheEntry from '../models/PrecacheEntry.mjs';
 import PrecachedDetailsModel from '../models/PrecachedDetailsModel.mjs';
 import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
