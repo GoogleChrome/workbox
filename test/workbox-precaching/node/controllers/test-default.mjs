@@ -35,6 +35,10 @@ describe(`[workbox-precaching] default export`, function() {
     });
 
     it(`should call install and cleanup on install and activate`, async function() {
+      let eventCallbacks = {};
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        eventCallbacks[eventName] = cb;
+      });
       sandbox.spy(PrecacheController.prototype, 'install');
       sandbox.spy(PrecacheController.prototype, 'cleanup');
 
@@ -47,7 +51,7 @@ describe(`[workbox-precaching] default export`, function() {
       installEvent.waitUntil = (promise) => {
         controllerInstallPromise = promise;
       };
-      self.dispatchEvent(installEvent);
+      eventCallbacks['install'](installEvent);
 
       await controllerInstallPromise;
       expect(PrecacheController.prototype.install.callCount).to.equal(1);
@@ -57,7 +61,7 @@ describe(`[workbox-precaching] default export`, function() {
       activateEvent.waitUntil = (promise) => {
         controllerActivatePromise = promise;
       };
-      self.dispatchEvent(activateEvent);
+      eventCallbacks['activate'](installEvent);
 
       await controllerActivatePromise;
       expect(PrecacheController.prototype.cleanup.callCount).to.equal(1);
@@ -316,6 +320,34 @@ describe(`[workbox-precaching] default export`, function() {
       expect(precaching.precache.args[0][0]).to.equal(precacheArgs);
       expect(precaching.addRoute.callCount).to.equal(1);
       expect(precaching.addRoute.args[0][0]).to.equal(routeOptions);
+    });
+  });
+
+  describe(`suppressWarnings()`, function() {
+    it(`should suppress warnings during install`, async function() {
+      let eventCallbacks = {};
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        eventCallbacks[eventName] = cb;
+      });
+      sandbox.spy(PrecacheController.prototype, 'install');
+
+      const precacheArgs = ['/'];
+
+      precaching.precache(precacheArgs);
+      precaching.suppressWarnings(true);
+
+      const installEvent = new ExtendableEvent('install');
+      let installPromise;
+      installEvent.waitUntil = (promise) => {
+        installPromise = promise;
+      };
+      eventCallbacks['install'](installEvent);
+
+      await installPromise;
+
+      expect(PrecacheController.prototype.install.args[0][0]).to.deep.equal({
+        suppressWarnings: true,
+      });
     });
   });
 });

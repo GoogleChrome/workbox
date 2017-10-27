@@ -35,6 +35,6 @@ describe(`[workbox-precaching] showWarningsIfNeeded`, function() {
 
     showWarningsIfNeeded(entriesMap);
 
-    expect(logger.log.callCount).to.be.gt(0);
+    expect(logger.warn.callCount).to.be.gt(0);
   });
 });
