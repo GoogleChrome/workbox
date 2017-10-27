@@ -21,7 +21,6 @@ import {
   logger,
 } from 'workbox-core/_private.mjs';
 
-import printMessages from './utils/printMessages.mjs';
 import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
@@ -90,8 +89,6 @@ class NetworkFirst {
    * @return {Promise<Response>}
    */
   async handle({url, event, params}) {
-    const logMessages = [];
-
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -99,116 +96,96 @@ class NetworkFirst {
         funcName: 'handle',
         paramName: 'event',
       });
+
+      logger.groupCollapsed(
+        messages.strategyStart('NetworkFirst', event));
     }
 
     const promises = [];
     let timeoutId;
 
     if (this._networkTimeoutSeconds) {
-      promises.push(new Promise((resolve) => {
-        const onNetworkTimeout = async () => {
-          if (process.env.NODE_ENV !== 'production') {
-            logMessages.push(`Timing out the network response at ` +
-              `${this._networkTimeoutSeconds} seconds.`);
-          }
-
-          const cachedResponse =
-            await this._respondFromCache(event.request);
-          if (process.env.NODE_ENV !== 'production') {
-            if (cachedResponse) {
-              logMessages.push(messages.cacheHit(this._cacheName));
-            } else {
-              logMessages.push(messages.cacheMiss(this._cacheName));
-            }
-          }
-          resolve(cachedResponse);
-        };
-
-        timeoutId = setTimeout(
-          onNetworkTimeout,
-          this._networkTimeoutSeconds * 1000,
-        );
-      }));
+      const {id, promise} = this._getTimeoutPromise(event);
+      timeoutId = id;
+      promises.push(promise);
     }
 
-    const networkPromise = fetchWrapper.fetch(
-      event.request,
-      this._plugins
-    )
-    .then(async (response) => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-
-      if (process.env.NODE_ENV !== 'production') {
-        if (response) {
-          if (process.env.NODE_ENV !== 'production') {
-            logMessages.push(messages.networkRequestReturned(event, response));
-          }
-        } else {
-          logMessages.push(messages.networkRequestInvalid(event));
-        }
-      }
-
-      if (!response) {
-        const cachedResponse = await this._respondFromCache(event.request);
-        if (process.env.NODE_ENV !== 'production') {
-          if (cachedResponse) {
-            logMessages.push(messages.cacheHit(this._cacheName));
-          } else {
-            logMessages.push(messages.cacheMiss(this._cacheName));
-          }
-        }
-        response = cachedResponse;
-      } else {
-        if (process.env.NODE_ENV !== 'production') {
-          logMessages.push(messages.addingToCache(this._cacheName));
-        }
-
-        // Keep the service worker alive while we put the request in the cache
-        const responseClone = response.clone();
-        event.waitUntil(
-          cacheWrapper.put(
-            this._cacheName,
-            event.request,
-            responseClone,
-            this._plugins
-          )
-        );
-      }
-
-      return response;
-    },
-    // This catches any errors from the fetchWrapper.fetch() method and ONLY
-    // that method. This means that in the fetchWrapper.fetch().then() we
-    // can handle a null Response (caused by plugins intercepting the Response)
-    // and fallback to the cache while also falling back to cache *if* the
-    // method throws an error.
-    // NOTE: If this was a .catch(), it would call _responseFromCache inside the
-    // .then(), which could fail and throw, which would be caught and a second
-    // _responseFromCache call will be made.
-    async (err) => {
-      if (process.env.NODE_ENV !== 'production') {
-        logMessages.push(messages.networkRequestError(event, err));
-      }
-      const cachedResponse = await this._respondFromCache(event.request);
-      if (process.env.NODE_ENV !== 'production') {
-        if (cachedResponse) {
-          logMessages.push(messages.cacheHit(this._cacheName));
-        } else {
-          logMessages.push(messages.cacheMiss(this._cacheName));
-        }
-      }
-      return cachedResponse;
-    });
-
+    const networkPromise = this._getNetworkPromise(timeoutId, event);
     promises.push(networkPromise);
 
     const response = await Promise.race(promises);
 
     if (process.env.NODE_ENV !== 'production') {
-      printMessages('NetworkFirst', event, logMessages, response);
+      messages.printFinalResponse(response);
+      logger.groupEnd();
     }
+
+    return response;
+  }
+
+  /**
+   * @param {FetchEvent} event
+   * @return {Promise<Response>}
+   */
+  _getTimeoutPromise(event) {
+    let timeoutId;
+    const timeoutPromise = new Promise((resolve) => {
+      const onNetworkTimeout = async () => {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.log(`Timing out the network response at ` +
+            `${this._networkTimeoutSeconds} seconds.`);
+        }
+
+        resolve(await this._respondFromCache(event.request));
+      };
+
+      timeoutId = setTimeout(
+        onNetworkTimeout,
+        this._networkTimeoutSeconds * 1000,
+      );
+    });
+
+    return {
+      promise: timeoutPromise,
+      id: timeoutId,
+    };
+  }
+
+  /**
+   * @param {number} timeoutId
+   * @param {FetchEvent} event
+   * @return {Promise<Response>}
+   */
+  async _getNetworkPromise(timeoutId, event) {
+    let error;
+    let response;
+    try {
+      response = await fetchWrapper.fetch(
+        event.request,
+        this._plugins
+      );
+    } catch (err) {
+      error = err;
+    }
+
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    if (error || !response) {
+      return this._respondFromCache(event.request);
+    }
+
+    // Keep the service worker alive while we put the request in the cache
+    const responseClone = response.clone();
+    event.waitUntil(
+      cacheWrapper.put(
+        this._cacheName,
+        event.request,
+        responseClone,
+        this._plugins
+      )
+    );
 
     return response;
   }

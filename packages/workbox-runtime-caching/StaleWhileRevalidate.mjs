@@ -17,9 +17,10 @@ import {
   cacheNames,
   cacheWrapper,
   fetchWrapper,
+  logger,
+  assert,
 } from 'workbox-core/_private.mjs';
 
-import printMessages from './utils/printMessages.mjs';
 import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
@@ -76,69 +77,61 @@ class StaleWhileRevalidate {
    * @return {Promise<Response>}
    */
   async handle({url, event, params}) {
-    const logMessages = [];
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isInstance(event, FetchEvent, {
+      assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
         className: 'StaleWhileRevalidate',
         funcName: 'handle',
         paramName: 'event',
       });
+
+      logger.groupCollapsed(
+        messages.strategyStart('StaleWhileRevalidate', event));
     }
 
-    const fetchAndCachePromise = fetchWrapper.fetch(
-      event.request,
-      null,
-      this._plugins
-    )
-    .then(async (response) => {
-      if (process.env.NODE_ENV !== 'production') {
-        if (response) {
-          if (process.env.NODE_ENV !== 'production') {
-            logMessages.push(messages.networkRequestReturned(event, response));
-          }
-        } else {
-          logMessages.push(messages.networkRequestInvalid(event));
-        }
-      }
+    const fetchAndCachePromise = this._getFromNetwork(event);
 
-      if (response) {
-        if (process.env.NODE_ENV !== 'production') {
-          logMessages.push(messages.addingToCache(this._cacheName));
-        }
-
-        await cacheWrapper.put(
-          this._cacheName,
-          event.request,
-          response.clone(),
-          this._plugins
-        );
-      }
-
-      return response;
-    });
-
-    const cachedResponse = await cacheWrapper.match(
+    let response = await cacheWrapper.match(
       this._cacheName,
       event.request,
       null,
       this._plugins
     );
 
-    if (process.env.NODE_ENV !== 'production') {
-      if (cachedResponse) {
-        logMessages.push(messages.cacheHit(this._cacheName));
-      } else {
-        logMessages.push(messages.cacheMiss(this._cacheName));
-      }
+    if (response) {
+      event.waitUntil(fetchAndCachePromise);
+    } else {
+      response = await fetchAndCachePromise;
     }
 
-    event.waitUntil(fetchAndCachePromise);
-
-    const response = cachedResponse || await fetchAndCachePromise;
-
     if (process.env.NODE_ENV !== 'production') {
-      printMessages('NetworkFirst', event, logMessages, response);
+      messages.printFinalResponse(response);
+      logger.groupEnd();
+    }
+
+    return response;
+  }
+
+  /**
+   * @param {FetchEvent} event
+   * @return {Promise<Response>}
+   */
+  async _getFromNetwork(event) {
+    const response = await fetchWrapper.fetch(
+      event.request,
+      null,
+      this._plugins
+    );
+
+    if (response) {
+      event.waitUntil(
+        cacheWrapper.put(
+          this._cacheName,
+          event.request,
+          response.clone(),
+          this._plugins
+        )
+      );
     }
 
     return response;

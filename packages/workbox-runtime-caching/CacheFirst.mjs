@@ -18,8 +18,8 @@ import {
   cacheWrapper,
   fetchWrapper,
   assert,
+  logger,
 } from 'workbox-core/_private.mjs';
-import printMessages from './utils/printMessages.mjs';
 import messages from './utils/messages.mjs';
 import './_version.mjs';
 
@@ -57,8 +57,6 @@ class CacheFirst {
    * @return {Promise<Response>}
    */
   async handle({url, event, params}) {
-    const logMessages = [];
-    let error;
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -66,6 +64,9 @@ class CacheFirst {
         funcName: 'handle',
         paramName: 'event',
       });
+
+      logger.groupCollapsed(
+        messages.strategyStart('CacheFirst', event));
     }
 
     let response = await cacheWrapper.match(
@@ -75,60 +76,18 @@ class CacheFirst {
       this._plugins
     );
 
-    if (process.env.NODE_ENV !== 'production') {
-      if (response) {
-        logMessages.push(messages.cacheHit(this._cacheName));
-      } else {
-        logMessages.push(messages.cacheMiss(this._cacheName));
-      }
-    }
-
+    let error;
     if (!response) {
-      if (process.env.NODE_ENV) {
-        logMessages.push(messages.makingNetworkRequest(event));
-      }
-
       try {
-        response = await fetchWrapper.fetch(
-          event.request,
-          null,
-          this._plugins
-        );
-
-        if (process.env.NODE_ENV !== 'production') {
-          if (response) {
-            logMessages.push(messages.networkRequestReturned(event, response));
-          } else {
-            logMessages.push(messages.networkRequestInvalid(event));
-          }
-        }
+        response = await this._getFromNetwork(event);
       } catch (err) {
-        if (process.env.NODE_ENV !== 'production') {
-          logMessages.push(messages.networkRequestError(event, err));
-        }
         error = err;
       }
-
-      if (response) {
-        if (process.env.NODE_ENV !== 'production') {
-          logMessages.push(messages.addingToCache(this._cacheName));
-        }
-
-        // Keep the service worker while we put the request to the cache
-        const responseClone = response.clone();
-        event.waitUntil(
-          cacheWrapper.put(
-            this._cacheName,
-            event.request,
-            responseClone,
-            this._plugins
-          )
-        );
-      }
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      printMessages('CacheFirst', event, logMessages, response);
+      messages.printFinalResponse(response);
+      logger.groupEnd();
     }
 
     if (error) {
@@ -136,6 +95,35 @@ class CacheFirst {
       // handlers in router.
       throw error;
     }
+
+    return response;
+  }
+
+  /**
+   * Handles the network and cache part of CacheFirst.
+   *
+   * @param {FetchEvent} event
+   * @return {Promise<Response>}
+   *
+   * @private
+   */
+  async _getFromNetwork(event) {
+    const response = await fetchWrapper.fetch(
+      event.request,
+      null,
+      this._plugins
+    );
+
+    // Keep the service worker while we put the request to the cache
+    const responseClone = response.clone();
+    event.waitUntil(
+      cacheWrapper.put(
+        this._cacheName,
+        event.request,
+        responseClone,
+        this._plugins
+      )
+    );
 
     return response;
   }

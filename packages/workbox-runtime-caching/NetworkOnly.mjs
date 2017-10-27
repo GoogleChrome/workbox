@@ -19,7 +19,6 @@ import {
   assert,
 } from 'workbox-core/_private.mjs';
 import messages from './utils/messages.mjs';
-import printMessages from './utils/printMessages.mjs';
 import './_version.mjs';
 
 /**
@@ -56,7 +55,6 @@ class NetworkOnly {
    * @return {Promise<Response>}
    */
   async handle({url, event, params}) {
-    const logMessages = [];
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -64,6 +62,9 @@ class NetworkOnly {
         funcName: 'handle',
         paramName: 'event',
       });
+
+      _private.logger.groupCollapsed(
+        messages.strategyStart('NetworkOnly', event));
     }
 
     let error;
@@ -74,26 +75,13 @@ class NetworkOnly {
         null,
         this._plugins
       );
-
-      if (process.env.NODE_ENV !== 'production') {
-        if (response) {
-          if (process.env.NODE_ENV !== 'production') {
-            logMessages.push(messages.networkRequestReturned(event, response));
-          }
-        } else {
-          logMessages.push(messages.networkRequestInvalid(event));
-        }
-      }
     } catch (err) {
-      if (process.env.NODE_ENV !== 'production') {
-        logMessages.push(messages.networkRequestError(event, err));
-      }
-
       error = err;
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      printMessages('NetworkOnly', event, logMessages, response);
+      messages.printFinalResponse(response);
+      _private.logger.groupEnd();
     }
 
     // If there was an error thrown, re-throw it to ensure the Routers

@@ -19,7 +19,6 @@ import {
   assert,
   logger,
 } from 'workbox-core/_private.mjs';
-import printMessages from './utils/printMessages.mjs';
 import messages from './utils/messages.mjs';
 import './_version.mjs';
 
@@ -57,8 +56,6 @@ class CacheOnly {
    * @return {Promise<Response>}
    */
   async handle({url, event, params}) {
-    const logMessages = [];
-
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -66,6 +63,9 @@ class CacheOnly {
         funcName: 'handle',
         paramName: 'event',
       });
+
+      logger.groupCollapsed(
+        messages.strategyStart('CacheOnly', event));
     }
 
     const response = await cacheWrapper.match(
@@ -76,13 +76,8 @@ class CacheOnly {
     );
 
     if (process.env.NODE_ENV !== 'production') {
-      if (response) {
-        logMessages.push(messages.cacheHit(this._cacheName));
-      } else {
-        logMessages.push(messages.cacheMiss(this._cacheName));
-      }
-
-      printMessages('CacheOnly', event, logMessages, response);
+      messages.printFinalResponse(response);
+      logger.groupEnd();
     }
 
     return response;

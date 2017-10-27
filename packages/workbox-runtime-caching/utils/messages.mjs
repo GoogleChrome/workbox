@@ -13,6 +13,8 @@
  limitations under the License.
 */
 
+import {_private} from 'workbox-core';
+
 const getFriendlyURL = (url) => {
   const urlObj = new URL(url, location);
   if (urlObj.origin === location.origin) {
@@ -22,20 +24,13 @@ const getFriendlyURL = (url) => {
 };
 
 export default {
-  cacheHit: (cacheName) => `Found a cached response in '${cacheName}'.`,
-  cacheMiss: (cacheName) => `No cached response found in '${cacheName}'.`,
-  makingNetworkRequest: (event) => `Making a network request for `+
-    `'${getFriendlyURL(event.request.url)}'.`,
-  networkRequestError: (event, err) => [`Network request for `+
-    `'${getFriendlyURL(event.request.url)}' threw an error.`, err],
-  networkRequestReturned: (event, response) => `Network request for `+
-    `'${getFriendlyURL(event.request.url)}' returned a response with status ` +
-    `'${response.status}'.`,
-  networkRequestInvalid: (event) => `Unable to get a valid network request ` +
-    `for '${getFriendlyURL(event.request.url)}'.`,
-  // The wording may sound off, but some of the strategies (like NetworkFirst)
-  // will return a 404 response from the network, attempt to put it in the cache
-  // but block the caching via a plugin.
-  addingToCache: (cacheName) => `Attempting to cache the response in ` +
-    `'${cacheName}'.`,
+  strategyStart: (strategyName, event) => `Using ${strategyName} to repond ` +
+    `to  '${getFriendlyURL(event.request.url)}'`,
+  printFinalResponse: (response) => {
+    if (response) {
+      _private.logger.groupCollapsed(`View the final response here.`);
+      _private.logger.unprefixed.log(response);
+      _private.logger.groupEnd();
+    }
+  },
 };
