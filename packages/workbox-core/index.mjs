@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import defaultExport from './default.mjs';
+import defaultExport from './_default.mjs';
 import LOG_LEVELS from './models/LogLevels.mjs';
 import * as _private from './_private.mjs';
 import './_version.mjs';
