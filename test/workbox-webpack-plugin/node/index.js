@@ -13,7 +13,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
   const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');
   const WORKBOX_SW_FILE_NAME = 'workbox-sw.prod.v2.0.1.js';
-  const FILE_MANIFEST_NAME = 'file-manifest.dd0ef7b6cfc3b25fd44d.js';
+  const FILE_MANIFEST_NAME = 'file-manifest.d9b9be4d03e6c18744d9.js';
 
   describe(`[workbox-webpack-plugin] static assets`, function() {
     it(`should work when called without any parameters`, function(done) {
@@ -60,34 +60,34 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           // stable, so we can't just use chai's .eql()
           const expectedEntries = [{
             url: 'workbox-sw.prod.v2.0.1.js',
-            revision: 'dd0ef7b6cfc3b25fd44d',
+            revision: 'd9b9be4d03e6c18744d9',
           }, {
             url: 'workbox-sw.prod.v2.0.1.js.map',
-            revision: 'dd0ef7b6cfc3b25fd44d',
+            revision: 'd9b9be4d03e6c18744d9',
           }, {
             url: 'webpackEntry.js',
-            revision: 'e0f630464dedebf23e31',
+            revision: '8e8e9f093f036bd18dfa',
           }, {
             url: 'images/example-jpeg.jpg',
-            revision: 'dd0ef7b6cfc3b25fd44d',
+            revision: 'd9b9be4d03e6c18744d9',
           }, {
             url: 'index.html',
-            revision: 'dd0ef7b6cfc3b25fd44d',
+            revision: 'd9b9be4d03e6c18744d9',
           }, {
             url: 'images/web-fundamentals-icon192x192.png',
-            revision: 'dd0ef7b6cfc3b25fd44d',
+            revision: 'd9b9be4d03e6c18744d9',
           }, {
             url: 'page-1.html',
-            revision: 'dd0ef7b6cfc3b25fd44d',
+            revision: 'd9b9be4d03e6c18744d9',
           }, {
             url: 'page-2.html',
-            revision: 'dd0ef7b6cfc3b25fd44d',
+            revision: 'd9b9be4d03e6c18744d9',
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: 'dd0ef7b6cfc3b25fd44d',
+            revision: 'd9b9be4d03e6c18744d9',
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: 'dd0ef7b6cfc3b25fd44d',
+            revision: 'd9b9be4d03e6c18744d9',
           }];
           const urlToIndex = new Map(expectedEntries.map((entry, index) => {
             return [entry.url, index];

@@ -1,1 +1,1 @@
-console.log('test');
+// Just a test.
