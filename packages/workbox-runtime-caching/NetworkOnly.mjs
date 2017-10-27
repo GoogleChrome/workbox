@@ -17,9 +17,9 @@ import {
   cacheNames,
   fetchWrapper,
   assert,
-  logger,
 } from 'workbox-core/_private.mjs';
-
+import messages from './utils/messages.mjs';
+import printMessages from './utils/printMessages.mjs';
 import './_version.mjs';
 
 /**
@@ -66,39 +66,40 @@ class NetworkOnly {
       });
     }
 
-    const response = await fetchWrapper.fetch(
-      event.request,
-      null,
-      this._plugins
-    );
+    let error;
+    let response;
+    try {
+      response = await fetchWrapper.fetch(
+        event.request,
+        null,
+        this._plugins
+      );
+
+      if (process.env.NODE_ENV !== 'production') {
+        if (response) {
+          if (process.env.NODE_ENV !== 'production') {
+            logMessages.push(messages.networkRequestReturned(event, response));
+          }
+        } else {
+          logMessages.push(messages.networkRequestInvalid(event));
+        }
+      }
+    } catch (err) {
+      if (process.env.NODE_ENV !== 'production') {
+        logMessages.push(messages.networkRequestError(event, err));
+      }
+
+      error = err;
+    }
 
     if (process.env.NODE_ENV !== 'production') {
-      if (response) {
-        logMessages.push(`A response was retrieved from the network with ` +
-          `status code '${response.status}', this will be returned to the ` +
-          `browser.`);
-      } else {
-        logMessages.push(`A response could not be retrieved from the ` +
-          `network.`);
-      }
+      printMessages('NetworkOnly', event, logMessages, response);
+    }
 
-      const urlObj = new URL(event.request.url);
-      const urlToDisplay = urlObj.origin === location.origin ?
-        urlObj.pathname : urlObj.href;
-      logger.groupCollapsed(`Using NetworkOnly to repond to ` +
-        `'${urlToDisplay}'`);
-
-        logMessages.forEach((msg) => {
-          _private.logger.unprefixed.log(msg);
-        });
-
-      if (response) {
-        logger.groupCollapsed(`View the final response here.`);
-        logger.unprefixed.log(response);
-        logger.groupEnd();
-      }
-
-      logger.groupEnd();
+    // If there was an error thrown, re-throw it to ensure the Routers
+    // catch handler is triggered.
+    if (error) {
+      throw error;
     }
 
     return response;

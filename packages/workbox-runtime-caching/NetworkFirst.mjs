@@ -21,6 +21,8 @@ import {
   logger,
 } from 'workbox-core/_private.mjs';
 
+import printMessages from './utils/printMessages.mjs';
+import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
 
@@ -110,9 +112,15 @@ class NetworkFirst {
               `${this._networkTimeoutSeconds} seconds.`);
           }
 
-          const {cachedResponse, logMessages} =
+          const cachedResponse =
             await this._respondFromCache(event.request);
-          logMessages.push(...logMessages);
+          if (process.env.NODE_ENV !== 'production') {
+            if (cachedResponse) {
+              logMessages.push(messages.cacheHit(this._cacheName));
+            } else {
+              logMessages.push(messages.cacheMiss(this._cacheName));
+            }
+          }
           resolve(cachedResponse);
         };
 
@@ -134,25 +142,29 @@ class NetworkFirst {
 
       if (process.env.NODE_ENV !== 'production') {
         if (response) {
-          logMessages.push(`A response was retrieved from the network with ` +
-            `status code '${response.status}', this will be returned to the ` +
-            `browser.`);
+          if (process.env.NODE_ENV !== 'production') {
+            logMessages.push(messages.networkRequestReturned(event, response));
+          }
         } else {
-          logMessages.push(`A response could not be retrieved from the ` +
-            `network.`);
+          logMessages.push(messages.networkRequestInvalid(event));
         }
       }
 
       if (!response) {
-        const {cachedResponse, logMessages} =
-          await this._respondFromCache(event.request);
-        logMessages.push(...logMessages);
+        const cachedResponse = await this._respondFromCache(event.request);
+        if (process.env.NODE_ENV !== 'production') {
+          if (cachedResponse) {
+            logMessages.push(messages.cacheHit(this._cacheName));
+          } else {
+            logMessages.push(messages.cacheMiss(this._cacheName));
+          }
+        }
         response = cachedResponse;
       } else {
         if (process.env.NODE_ENV !== 'production') {
-          logMessages.push(`Will add the response to the cache ` +
-            `'${this._cacheName}' if it's valid.`);
+          logMessages.push(messages.addingToCache(this._cacheName));
         }
+
         // Keep the service worker alive while we put the request in the cache
         const responseClone = response.clone();
         event.waitUntil(
@@ -177,45 +189,28 @@ class NetworkFirst {
     // _responseFromCache call will be made.
     async (err) => {
       if (process.env.NODE_ENV !== 'production') {
-        logMessages.push([
-          `The network request threw a error, will look for a response ` +
-          `in the cache.`, err]);
+        logMessages.push(messages.networkRequestError(event, err));
       }
-      const {cachedResponse, logMessages} =
-        await this._respondFromCache(event.request);
-      logMessages.push(...logMessages);
+      const cachedResponse = await this._respondFromCache(event.request);
+      if (process.env.NODE_ENV !== 'production') {
+        if (cachedResponse) {
+          logMessages.push(messages.cacheHit(this._cacheName));
+        } else {
+          logMessages.push(messages.cacheMiss(this._cacheName));
+        }
+      }
       return cachedResponse;
     });
 
     promises.push(networkPromise);
 
-    const finalResponse = await Promise.race(promises);
+    const response = await Promise.race(promises);
 
     if (process.env.NODE_ENV !== 'production') {
-      const urlObj = new URL(event.request.url);
-      const urlToDisplay = urlObj.origin === location.origin ?
-        urlObj.pathname : urlObj.href;
-      logger.groupCollapsed(`Using NetworkFirst to repond to ` +
-        `'${urlToDisplay}'`);
-
-        logMessages.forEach((msg) => {
-          if (Array.isArray(msg)) {
-            logger.unprefixed.log(...msg);
-          } else {
-            logger.unprefixed.log(msg);
-          }
-        });
-
-      if (finalResponse) {
-        logger.groupCollapsed(`View the final response here.`);
-        logger.unprefixed.log(finalResponse);
-        logger.groupEnd();
-      }
-
-      logger.groupEnd();
+      printMessages('NetworkFirst', event, logMessages, response);
     }
 
-    return finalResponse;
+    return response;
   }
 
   /**
@@ -226,29 +221,13 @@ class NetworkFirst {
    *
    * @private
    */
-  async _respondFromCache(request) {
-    const logMessages = [];
-    const response = await cacheWrapper.match(
+  _respondFromCache(request) {
+    return cacheWrapper.match(
       this._cacheName,
       request,
       null,
       this._plugins
     );
-
-    if (process.env.NODE_ENV !== 'production') {
-      if (response) {
-        logMessages.push(`Cached response found in '${this._cacheName}'` +
-          `, responding to fetch event with it.`);
-      } else {
-        logMessages.push(`No cached response found in ` +
-          `'${this._cacheName}'.`);
-      }
-    }
-
-    return {
-      response,
-      logMessages,
-    };
   }
 }
 
