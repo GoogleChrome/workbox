@@ -24,6 +24,9 @@
     "extension": [
       ".mjs",
       ".js"
+    ],
+    "exclude": [
+      "packages/workbox-core/models/messages/messages.mjs"
     ]
   },
   "pre-push": [
