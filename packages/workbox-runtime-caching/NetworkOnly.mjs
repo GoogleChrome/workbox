@@ -17,6 +17,7 @@ import {
   cacheNames,
   fetchWrapper,
   assert,
+  logger,
 } from 'workbox-core/_private.mjs';
 
 import './_version.mjs';
@@ -55,6 +56,7 @@ class NetworkOnly {
    * @return {Promise<Response>}
    */
   async handle({url, event, params}) {
+    const logMessages = [];
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -64,11 +66,42 @@ class NetworkOnly {
       });
     }
 
-    return fetchWrapper.fetch(
+    const response = await fetchWrapper.fetch(
       event.request,
       null,
       this._plugins
     );
+
+    if (process.env.NODE_ENV !== 'production') {
+      if (response) {
+        logMessages.push(`A response was retrieved from the network with ` +
+          `status code '${response.status}', this will be returned to the ` +
+          `browser.`);
+      } else {
+        logMessages.push(`A response could not be retrieved from the ` +
+          `network.`);
+      }
+
+      const urlObj = new URL(event.request.url);
+      const urlToDisplay = urlObj.origin === location.origin ?
+        urlObj.pathname : urlObj.href;
+      logger.groupCollapsed(`Using NetworkOnly to repond to ` +
+        `'${urlToDisplay}'`);
+
+        logMessages.forEach((msg) => {
+          _private.logger.unprefixed.log(msg);
+        });
+
+      if (response) {
+        logger.groupCollapsed(`View the final response here.`);
+        logger.unprefixed.log(response);
+        logger.groupEnd();
+      }
+
+      logger.groupEnd();
+    }
+
+    return response;
   }
 }
 

@@ -67,6 +67,15 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.url.includes('/demo/workbox-runtime-caching/network-first-404.txt')) {
+    const networkFirst = new workbox.strategies.NetworkFirst({
+      cacheName: 'network-first'
+    });
+    event.respondWith(networkFirst.handle({event}));
+  }
+});
+
+self.addEventListener('fetch', (event) => {
   if (event.request.url.includes('/demo/workbox-runtime-caching/stale-while-revalidate.txt')) {
     const staleWhileRevalidate = new workbox.strategies.StaleWhileRevalidate({
       cacheName: 'staleWhileRevalidate'

@@ -13,7 +13,12 @@
  limitations under the License.
 */
 
-import {cacheNames, cacheWrapper, assert} from 'workbox-core/_private.mjs';
+import {
+  cacheNames,
+  cacheWrapper,
+  assert,
+  logger,
+} from 'workbox-core/_private.mjs';
 import './_version.mjs';
 
 /**
@@ -50,6 +55,8 @@ class CacheOnly {
    * @return {Promise<Response>}
    */
   async handle({url, event, params}) {
+    const logMessages = [];
+
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -59,12 +66,41 @@ class CacheOnly {
       });
     }
 
-    return cacheWrapper.match(
+    const response = await cacheWrapper.match(
       this._cacheName,
       event.request,
       null,
       this._plugins
     );
+
+    if (process.env.NODE_ENV !== 'production') {
+      if (response) {
+        logMessages.push(`Found a cached response in '${this._cacheName}'`);
+      } else {
+        logMessages.push(`No response found in cache '${this._cacheName}'`);
+      }
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      const urlObj = new URL(event.request.url);
+      const urlToDisplay = urlObj.origin === location.origin ?
+        urlObj.pathname : urlObj.href;
+      logger.groupCollapsed(`Using CacheOnly to repond to ` +
+        `'${urlToDisplay}'`);
+      logMessages.forEach((msg) => {
+        logger.unprefixed.log(msg);
+      });
+
+      if (response) {
+        logger.groupCollapsed(`View the final response here.`);
+        logger.unprefixed.log(response);
+        logger.groupEnd();
+      }
+
+      logger.groupEnd();
+    }
+
+    return response;
   }
 }
 

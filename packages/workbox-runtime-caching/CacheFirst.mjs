@@ -75,10 +75,11 @@ class CacheFirst {
 
     if (process.env.NODE_ENV !== 'production') {
       if (response) {
-        logMessages.push(`Cached response found.`);
-        logMessages.push(response);
+        logMessages.push(`Found a cached response, responding to fetch ` +
+          `event with it.`);
       } else {
-        logMessages.push(`No cached response found, requesting from network.`);
+        logMessages.push(`No cached response found, making a request to ` +
+          `the network.`);
       }
     }
 
@@ -89,6 +90,18 @@ class CacheFirst {
           null,
           this._plugins
         );
+      } catch (err) {
+        if (process.env.NODE_ENV !== 'production') {
+          logMessages.push(`Failed to get response from network.`, err);
+        }
+        error = err;
+      }
+
+      if (response) {
+        if (process.env.NODE_ENV !== 'production') {
+          logMessages.push(`Received response from network, adding to ` +
+            `cache '${this._cacheName}'.`);
+        }
 
         // Keep the service worker while we put the request to the cache
         const responseClone = response.clone();
@@ -100,11 +113,6 @@ class CacheFirst {
             this._plugins
           )
         );
-      } catch (err) {
-        if (process.env.NODE_ENV !== 'production') {
-          logMessages.push(`Failed to get response from network.`, err);
-        }
-        error = err;
       }
     }
 
@@ -117,7 +125,14 @@ class CacheFirst {
       logMessages.forEach((msg) => {
         _private.logger.unprefixed.log(msg);
       });
-      _private.logger.end();
+
+      if (response) {
+        _private.logger.groupCollapsed(`View the final response here.`);
+        _private.logger.unprefixed.log(response);
+        _private.logger.groupEnd();
+      }
+
+      _private.logger.groupEnd();
     }
 
     if (error) {
