@@ -69,6 +69,8 @@ describe(`[workbox-precaching] Precache and Update`, function() {
 
   it(`should load a page with service worker `, async function() {
     const testingURl = `${testServerAddress}/test/workbox-precaching/static/precache-and-update/`;
+    const SW_1_URL = `${testingURl}sw-1.js`;
+    const SW_2_URL = `${testingURl}sw-2.js`;
 
     // Load the page and wait for the first service worker to register and activate.
     await webdriver.get(testingURl);
@@ -79,7 +81,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     });
 
     // Register the first service worker.
-    await activateSW('./sw-1.js');
+    await activateSW(SW_1_URL);
 
     // Check that only the precache cache was created.
     const keys = await webdriver.executeAsyncScript((cb) => {
@@ -130,18 +132,18 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(undefined);
 
     // This is a crude way to fake an updated service worker.
-    const error = await webdriver.executeAsyncScript((cb) => {
+    const error = await webdriver.executeAsyncScript((SW_1_URL, cb) => {
       navigator.serviceWorker.getRegistration()
-      .then((reg) => reg.unregister('sw-1.js'))
+      .then((reg) => reg.unregister(SW_1_URL))
       .then(() => cb())
       .catch((err) => cb(err.message));
-    });
+    }, SW_1_URL);
     if (error) {
       throw error;
     }
 
     // Activate the second service worker
-    await activateSW('./sw-2.js');
+    await activateSW(SW_2_URL);
 
     // Ensure that the new assets were requested and cache busted.
     requestsMade = global.__workbox.server.getRequests();
