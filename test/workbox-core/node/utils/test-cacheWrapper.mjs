@@ -154,4 +154,64 @@ describe(`workbox-core cacheWrapper`, function() {
       });
     });
   });
+
+  describe(`.match()`, function() {
+    it(`should call cachedResponseWillBeUsed`, async function() {
+      const options = {};
+      const matchCacheName = 'MATCH-CACHE-NAME';
+      const matchRequest = new Request('/test/string');
+      const matchResponse = new Response('Response for /test/string');
+
+      const firstPluginResponse = new Response('Response for /test/string/1');
+      const secondPluginResponse = new Response('Response for /test/string/2');
+      const firstPlugin = {
+        cachedResponseWillBeUsed: ({
+          cacheName,
+          request,
+          matchOptions,
+          cachedResponse,
+        }) => {
+          expect(request).to.equal(matchRequest);
+          expect(cacheName).to.equal(matchCacheName);
+          expect(matchOptions).to.equal(options);
+          expect(cachedResponse).to.equal(matchResponse);
+          return firstPluginResponse;
+        },
+      };
+
+      const secondPlugin = {
+        cachedResponseWillBeUsed: ({
+          cacheName,
+          request,
+          matchOptions,
+          cachedResponse,
+        }) => {
+          expect(request).to.equal(matchRequest);
+          expect(cacheName).to.equal(matchCacheName);
+          expect(matchOptions).to.equal(options);
+          expect(cachedResponse).to.equal(firstPluginResponse);
+          return secondPluginResponse;
+        },
+      };
+
+
+      const spyOne = sandbox.spy(firstPlugin, 'cachedResponseWillBeUsed');
+      const spyTwo = sandbox.spy(secondPlugin, 'cachedResponseWillBeUsed');
+
+      const openCache = await caches.open(matchCacheName);
+      await openCache.put(matchRequest, matchResponse);
+
+      const result = await cacheWrapper.match(matchCacheName, matchRequest, options, [
+        firstPlugin,
+        {
+          // Should work without require functions
+        },
+        secondPlugin,
+      ]);
+
+      expect(result).to.equal(secondPluginResponse);
+      expect(spyOne.callCount).to.equal(1);
+      expect(spyTwo.callCount).to.equal(1);
+    });
+  });
 });
