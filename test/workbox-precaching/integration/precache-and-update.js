@@ -79,7 +79,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     });
 
     // Register the first service worker.
-    await activateSW('sw-1.js');
+    await activateSW('./sw-1.js');
 
     // Check that only the precache cache was created.
     const keys = await webdriver.executeAsyncScript((cb) => {
@@ -141,7 +141,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     }
 
     // Activate the second service worker
-    await activateSW('sw-2.js');
+    await activateSW('./sw-2.js');
 
     // Ensure that the new assets were requested and cache busted.
     requestsMade = global.__workbox.server.getRequests();
