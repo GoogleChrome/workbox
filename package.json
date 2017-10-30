@@ -59,6 +59,7 @@
     "clear-require": "^2.0.0",
     "common-tags": "^1.4.0",
     "cookie-parser": "^1.4.3",
+    "copy-webpack-plugin": "^4.2.0",
     "coveralls": "^2.13.1",
     "depcheck": "^0.6.7",
     "eslint": "^4.6.1",
@@ -98,13 +99,14 @@
     "semver": "^5.4.1",
     "serve-index": "^1.9.1",
     "serve-static": "^1.13.1",
-    "service-worker-mock": "^1.5.0",
+    "service-worker-mock": "^1.7.2",
     "shelving-mock-indexeddb": "philipwalton/shelving-mock-indexeddb#clone-fix",
     "sinon": "^3.2.1",
     "tempy": "^0.2.1",
     "uglify-es": "^3.1.0",
     "url-search-params": "^0.10.0",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^1.1.0",
+    "webpack": "^3.8.1"
   }
 }

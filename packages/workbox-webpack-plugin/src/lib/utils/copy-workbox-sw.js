@@ -23,7 +23,9 @@ module.exports = (readFileFn) => {
   // TODO: this should also support importing workbox-sw from a CDN
   const buildType = (process.env.NODE_ENV &&
     process.env.NODE_ENV.startsWith('dev')) ? 'dev' : 'prod';
-  const defaultWorkboxSourcePath = require.resolve('workbox-sw');
+  // workbox-sw is installed as a dependency of workbox-build.
+  const defaultWorkboxSourcePath = require.resolve(
+    'workbox-build/node_modules/workbox-sw');
   const workboxSWSrcPath = useBuildType(defaultWorkboxSourcePath, buildType);
   return Promise.all([
       readFile(workboxSWSrcPath),
