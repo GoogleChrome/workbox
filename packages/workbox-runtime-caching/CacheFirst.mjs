@@ -97,7 +97,8 @@ class CacheFirst {
       }
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        logger.log(`Found a cached response in the '${this._cacheName}' cache.`);
+        logger.log(`Found a cached response in the '${this._cacheName}' ` +
+          `cache.`);
       }
     }
 
