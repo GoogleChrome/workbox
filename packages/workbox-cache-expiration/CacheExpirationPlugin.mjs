@@ -114,6 +114,9 @@ class CacheExpirationPlugin {
       return true;
     }
 
+    // Check if the 'date' header will suffice a quick expiration check.
+    // See https://github.com/GoogleChromeLabs/sw-toolbox/issues/164 for
+    // discussion.
     const dateHeaderTimestamp = this._getDateHeaderTimestamp(cachedResponse);
     if (dateHeaderTimestamp === null) {
       // Unable to parse date, so assume it's fresh.
