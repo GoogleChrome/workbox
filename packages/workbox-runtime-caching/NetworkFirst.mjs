@@ -172,20 +172,37 @@ class NetworkFirst {
       clearTimeout(timeoutId);
     }
 
-    if (error || !response) {
-      return this._respondFromCache(event.request);
+    if (process.env.NODE_ENV !== 'production') {
+      if (response) {
+        logger.log(`Got response from network.`);
+      } else {
+        logger.log(`Unable to get a response from the network. Will respond ` +
+          `with a cached response.`);
+      }
     }
 
-    // Keep the service worker alive while we put the request in the cache
-    const responseClone = response.clone();
-    event.waitUntil(
-      cacheWrapper.put(
-        this._cacheName,
-        event.request,
-        responseClone,
-        this._plugins
-      )
-    );
+    if (error || !response) {
+      response = await this._respondFromCache(event.request);
+      if (process.env.NODE_ENV !== 'production') {
+        if (response) {
+          logger.log(`Found a cached response in the '${this._cacheName}'` +
+            ` cache.`);
+        } else {
+          logger.log(`No response found in the '${this._cacheName}' cache.`);
+        }
+      }
+    } else {
+       // Keep the service worker alive while we put the request in the cache
+      const responseClone = response.clone();
+      event.waitUntil(
+        cacheWrapper.put(
+          this._cacheName,
+          event.request,
+          responseClone,
+          this._plugins
+        )
+      );
+    }
 
     return response;
   }

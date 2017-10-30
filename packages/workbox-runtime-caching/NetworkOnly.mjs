@@ -81,6 +81,11 @@ class NetworkOnly {
     }
 
     if (process.env.NODE_ENV !== 'production') {
+      if (response) {
+        logger.log(`Got response from network.`);
+      } else {
+        logger.log(`Unable to get a response from the network.`);
+      }
       messages.printFinalResponse(response);
       logger.groupEnd();
     }
