@@ -92,25 +92,38 @@ class CacheExpirationPlugin {
    *         fresh, or `null` if the `Response` is older than `maxAgeSeconds`.
    */
   cachedResponseWillBeUsed({cacheName, cachedResponse} = {}) {
-    const dateHeaderTimestamp = this._getDateHeaderTimestamp(cachedResponse);
-    let isExpired = false;
-    if (dateHeaderTimestamp !== null) {
-      // If we have a valid headerTime, then our response is fresh iff the
-      // headerTime plus maxAgeSeconds is greater than the current time.
-      const now = Date.now();
-      isExpired = dateHeaderTimestamp < now - (this._maxAgeSeconds * 1000);
-    }
+    let isFresh = this._isResponseDateFresh(cachedResponse);
 
     // Expire entries to ensure that even if the expiration date has
     // expired, it'll only be used once.
     const cacheExpiration = this._getCacheExpiration(cacheName);
     cacheExpiration.expireEntries();
 
-    if (isExpired) {
-      return null;
+    return isFresh ? cachedResponse : null;
+  }
+
+  /**
+   * @param {Response} cachedResponse
+   * @return {boolean}
+   *
+   * @private
+   */
+  _isResponseDateFresh(cachedResponse) {
+    if (!this._maxAgeSeconds) {
+      // We aren't expiring by age, so return true, it's fresh
+      return true;
     }
 
-    return cachedResponse;
+    const dateHeaderTimestamp = this._getDateHeaderTimestamp(cachedResponse);
+    if (dateHeaderTimestamp === null) {
+      // Unable to parse date, so assume it's fresh.
+      return true;
+    }
+
+    // If we have a valid headerTime, then our response is fresh iff the
+    // headerTime plus maxAgeSeconds is greater than the current time.
+    const now = Date.now();
+    return dateHeaderTimestamp >= now - (this._maxAgeSeconds * 1000);
   }
 
   /**
@@ -126,6 +139,7 @@ class CacheExpirationPlugin {
     const dateHeader = cachedResponse.headers['date'];
     const parsedDate = new Date(dateHeader);
     const headerTime = parsedDate.getTime();
+
     // If the Date header was invalid for some reason, parsedDate.getTime()
     // will return NaN.
     if (isNaN(headerTime)) {
