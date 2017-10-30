@@ -8,6 +8,7 @@ const webpack = require('webpack');
 
 const WorkboxWebpackPlugin = require('../../../packages/workbox-webpack-plugin/src/index');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
+const {prodOnly} = require('../../../infra/testing/env-it');
 
 describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
@@ -16,7 +17,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
   const FILE_MANIFEST_NAME = 'file-manifest.d9b9be4d03e6c18744d9.js';
 
   describe(`[workbox-webpack-plugin] static assets`, function() {
-    it(`should work when called without any parameters`, function(done) {
+    prodOnly.it(`should work when called without any parameters`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
