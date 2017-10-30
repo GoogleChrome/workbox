@@ -19,7 +19,7 @@
     "prepare": "npm run build"
   },
   "workbox": {
-    "browserNamespace": "precaching",
+    "browserNamespace": "workbox.precaching",
     "packageType": "browser"
   },
   "main": "index.mjs",

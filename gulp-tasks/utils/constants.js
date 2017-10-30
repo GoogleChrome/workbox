@@ -17,9 +17,6 @@ module.exports = {
   GITHUB_OWNER: 'GoogleChrome',
   GITHUB_REPO: 'workbox',
 
-  // This is the namespace of the workbox module.
-  NAMESPACE_PREFIX: 'workbox',
-
   // This is the environments that we should use for NODE_ENV.
   BUILD_TYPES: {
     dev: 'dev',

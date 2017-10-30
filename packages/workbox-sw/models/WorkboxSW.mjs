@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import './_version.mjs';
+import '../_version.mjs';
 
 /**
  * This module is a single import that can be used to dynamically import

@@ -19,7 +19,7 @@
     "prepare": "npm run build"
   },
   "workbox": {
-    "browserNamespace": null,
+    "browserNamespace": "workbox",
     "packageType": "browser"
   },
   "main": "index.mjs",

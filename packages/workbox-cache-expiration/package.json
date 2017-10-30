@@ -19,7 +19,7 @@
     "prepare": "npm run build"
   },
   "workbox": {
-    "browserNamespace": "expiration",
+    "browserNamespace": "workbox.expiration",
     "packageType": "browser"
   },
   "main": "index.mjs",
