@@ -1,10 +1,7 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
-
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
-import constants from '../../../gulp-tasks/utils/constants';
-
-import WorkboxSW from '../../../packages/workbox-sw/index.mjs';
+import WorkboxSW from '../../../packages/workbox-sw/models/WorkboxSW.mjs';
 
 const fakeWorkbox = {
   core: {
@@ -32,37 +29,33 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
   beforeEach(function() {
     sandbox.restore();
-    delete global.workbox;
+    delete self.workbox;
 
-    sandbox.stub(global, 'importScripts').callsFake((url) => {
-      if (url.includes('workbox-')) {
-        global.workbox = global.workbox || {};
-        if (url.includes('workbox-core')) {
-          global.workbox.core = global.workbox.core || fakeWorkbox.core;
-        }
-        if (url.includes('workbox-precaching')) {
-          global.workbox.precaching = global.workbox.precaching || fakeWorkbox.precaching;
-        }
-        if (url.includes('workbox-runtime-caching')) {
-          global.workbox.strategies = global.workbox.strategies || fakeWorkbox.strategies;
-        }
+    sandbox.stub(self, 'importScripts').callsFake((url) => {
+      if (url.includes('workbox-core')) {
+        self.workbox.core = fakeWorkbox.core;
+      }
+      if (url.includes('workbox-precaching')) {
+        self.workbox.precaching = fakeWorkbox.precaching;
+      }
+      if (url.includes('workbox-runtime-caching')) {
+        self.workbox.strategies = fakeWorkbox.strategies;
       }
     });
   });
 
   after(function() {
     sandbox.restore();
-    delete global.workbox;
+    delete self.workbox;
   });
 
   describe(`constructor`, function() {
-    it(`should construct with no input and have expected defaults`, function() {
-      const wb = new WorkboxSW();
-      expect(wb._options).to.deep.equal({
+    it(`should construct with expect defaults`, function() {
+      self.workbox = new WorkboxSW();
+      expect(self.workbox._options).to.deep.equal({
         debug: false,
         modulePathPrefix: null,
         modulePathCb: null,
-        disableModuleImports: false,
       });
     });
 
@@ -71,63 +64,124 @@ describe(`[workbox-sw] WorkboxSW`, function() {
         hostname: 'localhost',
       });
 
-      const wb = new WorkboxSW();
-      expect(wb._options.debug).to.deep.equal(true);
+      self.workbox = new WorkboxSW();
+      expect(self.workbox._options.debug).to.deep.equal(true);
     });
+  });
 
-    it(`should use provided options`, function() {
+  describe(`setConfig`, function() {
+    it(`should override default config options`, function() {
       const cb = () => {};
-      const wb = new WorkboxSW({
+      self.workbox = new WorkboxSW();
+
+      self.workbox.setConfig({
         debug: true,
         modulePathPrefix: 'http://custom-cdn.example.com/workbox-modules/v1.0.0/',
         modulePathCb: cb,
-        disableModuleImports: true,
       });
-      expect(wb._options).to.deep.equal({
+      expect(self.workbox._options).to.deep.equal({
         debug: true,
         modulePathPrefix: 'http://custom-cdn.example.com/workbox-modules/v1.0.0/',
         modulePathCb: cb,
-        disableModuleImports: true,
       });
     });
 
-    it(`should load workbox-core on construction`, function() {
-      sandbox.spy(WorkboxSW.prototype, 'loadModule');
+    it(`should throw when invoking config after loading a module`, function() {
+      self.workbox = new WorkboxSW();
 
-      // TODO Switch to contstants.BUILD_TYPES.prod
-      const wb = new WorkboxSW({
-        debug: process.env.NODE_ENV !== constants.BUILD_TYPES.prod,
+      expect(() => {
+        self.workbox.setConfig({
+          modulePathPrefix: 'http://custom-cdn.example.com/workbox-modules/v1.0.0/',
+        });
+      }).not.to.throw();
+
+      // Accessing .core loads workbox-core.
+      self.workbox.core;
+
+      expect(() => {
+        self.workbox.setConfig({
+          modulePathPrefix: 'http://custom-cdn.example.com/workbox-modules/v2.0.0/',
+        });
+      }).to.throw();
+    });
+  });
+
+  describe(`skipWaiting`, function() {
+    it('should add event listener and call skipWaiting', function(done) {
+      const skipWaitingSpy = sandbox.spy(self, 'skipWaiting');
+
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        expect(eventName).to.equal('install');
+
+        cb();
+
+        expect(skipWaitingSpy.callCount).to.equal(1);
+        done();
       });
 
-      expect(wb.loadModule.callCount).to.equal(1);
-      expect(global.importScripts.callCount).to.equal(1);
-      expect(global.importScripts.args[0]).to.deep.equal([`WORKBOX_CDN_ROOT_URL/workbox-core.${process.env.NODE_ENV.slice(0, 4)}.js`]);
+      self.workbox = new WorkboxSW();
+      self.workbox.skipWaiting();
     });
+  });
 
-    it(`should not call importScripts if disableModulesImports is true`, function() {
-      global.workbox = fakeWorkbox;
+  describe(`clientsClaim`, function() {
+    it('should add event listener and call clientsClaim', function(done) {
+      const clientsClaimSpy = sandbox.spy(self.clients, 'claim');
 
-      const wb = new WorkboxSW({
-        disableModuleImports: true,
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        expect(eventName).to.equal('activate');
+
+        cb();
+
+        expect(clientsClaimSpy.callCount).to.equal(1);
+        done();
       });
 
-      expect(global.importScripts.callCount).to.equal(0);
-      expect(wb.core).to.equal(fakeWorkbox.core.default);
+      self.workbox = new WorkboxSW();
+      self.workbox.clientsClaim();
+    });
+  });
+
+  describe(`get`, function() {
+    it(`should print error message when importScripts fails`, function() {
+      const errorMessage = 'Injected error.';
+      self.importScripts.restore();
+      sandbox.stub(self, 'importScripts').throws(new Error(errorMessage));
+      sandbox.stub(console, 'error').callsFake((errMsg) => {
+        expect(errMsg.includes('workbox-core')).to.be.true;
+        expect(errMsg.includes(
+            'WORKBOX_CDN_ROOT_URL/workbox-core.prod.js')).to.be.true;
+      });
+
+      try {
+        self.workbox = new WorkboxSW();
+
+        // Accessing .core loads workbox-core.
+        self.workbox.core;
+
+        throw new Error('No error thrown.');
+      } catch (err) {
+        expect(err.message).to.equal(errorMessage);
+      }
     });
 
-    it(`should use module cb to load workbox-core if a function is provided`, function() {
+    it(`should use modulePathCb to load modules if provided`, function() {
       const callbackSpy = sandbox.spy((moduleName, debug) => {
         return `/custom-path/${moduleName}/${debug}`;
       });
 
-      new WorkboxSW({
+      self.workbox = new WorkboxSW();
+      self.workbox.setConfig({
         debug: true,
         modulePathCb: callbackSpy,
       });
 
+      // Accessing .core loads workbox-core.
+      self.workbox.core;
+
       expect(callbackSpy.callCount).to.equal(1);
       expect(callbackSpy.args[0]).to.deep.equal(['workbox-core', true]);
-      expect(global.importScripts.args[0]).to.deep.equal(['/custom-path/workbox-core/true']);
+      expect(self.importScripts.args[0]).to.deep.equal(['/custom-path/workbox-core/true']);
     });
 
     const modulePathVariations = [
@@ -158,104 +212,38 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       },
     ];
     generateTestVariants(`should import using modulePathPrefix`, modulePathVariations, async function(variant) {
-      new WorkboxSW({
+      self.workbox = new WorkboxSW();
+
+      self.workbox.setConfig({
         debug: true,
         modulePathPrefix: variant.prefix,
       });
 
-      expect(global.importScripts.args[0]).to.deep.equal([variant.expectedImport]);
-    });
-  });
+      // Accessing .core loads workbox-core.
+      self.workbox.core;
 
-  describe(`skipWaiting`, function() {
-    it('should add event listener and call skipWaiting', function(done) {
-      const skipWaitingSpy = sandbox.spy(self, 'skipWaiting');
-
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        expect(eventName).to.equal('install');
-
-        cb();
-
-        expect(skipWaitingSpy.callCount).to.equal(1);
-        done();
-      });
-
-      const wb = new WorkboxSW();
-      wb.skipWaiting();
-    });
-  });
-
-  describe(`clientsClaim`, function() {
-    it('should add event listener and call clientsClaim', function(done) {
-      const clientsClaimSpy = sandbox.spy(self.clients, 'claim');
-
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        expect(eventName).to.equal('activate');
-
-        cb();
-
-        expect(clientsClaimSpy.callCount).to.equal(1);
-        done();
-      });
-
-      const wb = new WorkboxSW();
-      wb.clientsClaim();
-    });
-  });
-
-  describe(`loadModule()`, function() {
-    it(`should throw when loading module while disableModuleImports is true`, function() {
-      global.workbox = fakeWorkbox;
-
-      const wb = new WorkboxSW({
-        disableModuleImports: true,
-      });
-      expect(() => {
-        wb.loadModule('should-throw');
-      }).to.throw(`The namespace 'workbox.should-throw' isn't defined.`);
-      expect(global.importScripts.callCount).to.equal(0);
-    });
-
-    it(`should print error message when importScripts fails`, function() {
-      const errorMessage = 'Injected error.';
-      global.importScripts.restore();
-      sandbox.stub(global, 'importScripts').callsFake(() => {
-        throw new Error(errorMessage);
-      });
-      sandbox.stub(console, 'error').callsFake((errMsg) => {
-        expect(errMsg.indexOf('workbox-core')).to.not.equal(-1);
-        expect(errMsg.indexOf(
-          'WORKBOX_CDN_ROOT_URL/workbox-core.prod.js'
-        )).to.not.equal(-1);
-      });
-
-      try {
-        new WorkboxSW();
-        throw new Error('No error thrown.');
-      } catch (err) {
-        expect(err.message).to.equal(errorMessage);
-      }
+      expect(self.importScripts.args[0]).to.deep.equal([variant.expectedImport]);
     });
   });
 
   describe(`get core`, function() {
     it(`should return core.default`, function() {
-      const wb = new WorkboxSW();
-      expect(wb.core).to.equal(fakeWorkbox.core.default);
+      self.workbox = new WorkboxSW();
+      expect(self.workbox.core).to.equal(fakeWorkbox.core);
     });
   });
 
   describe(`get precaching`, function() {
-    it(`should return precaching.default`, function() {
-      const wb = new WorkboxSW();
-      expect(wb.precaching).to.equal(fakeWorkbox.precaching.default);
+    it(`should return precaching`, function() {
+      self.workbox = new WorkboxSW();
+      expect(self.workbox.precaching).to.equal(fakeWorkbox.precaching);
     });
   });
 
   describe(`get strategies`, function() {
     it(`should return all of strategies`, function() {
-      const wb = new WorkboxSW();
-      expect(wb.strategies).to.equal(fakeWorkbox.strategies);
+      self.workbox = new WorkboxSW();
+      expect(self.workbox.strategies).to.equal(fakeWorkbox.strategies);
     });
   });
 });

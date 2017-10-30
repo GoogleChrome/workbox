@@ -21,7 +21,7 @@
     "prepare": "npm run build"
   },
   "workbox": {
-    "browserNamespace": "routing",
+    "browserNamespace": "workbox.routing",
     "packageType": "browser"
   },
   "main": "index.mjs",
