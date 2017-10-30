@@ -1,0 +1,35 @@
+importScripts('{{CDN_URL}}/workbox-sw.dev.js');
+
+workbox.setConfig({
+  debug: true
+});
+
+const expirationManager = new workbox.expiration.CacheExpiration(
+  'cache-expiration', {
+    maxEntries: 3,
+    maxAgeSeconds: 30,
+  });
+
+const updateEntry = (entryID) => {
+  caches.open('cache-expiration')
+  .then((openCache) => {
+    openCache.put(
+      `example-entry-${entryID}`,
+      new Response(`Hello from entry number ${entryID}`)
+    );
+    expirationManager.updateTimestamp(`example-entry-${entryID}`);
+  });
+};
+
+self.addEventListener('message', function(event) {
+  switch(event.data.command) {
+    case 'update-entry':
+      updateEntry(event.data.id);
+      break;
+    case 'expire-entries':
+      expirationManager.expireEntries();
+      break;
+    default:
+      console.log(`Unknown command received in the service worker: `, event);
+  }
+});
