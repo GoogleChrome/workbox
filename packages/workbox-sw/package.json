@@ -19,9 +19,7 @@
     "prepare": "npm run build"
   },
   "workbox": {
-    "browserNamespace": "WorkboxSW",
-    "disableNamespacePrefix": "true",
-    "disabledNamedExports": "true",
+    "browserNamespace": "workbox",
     "packageType": "browser"
   },
   "main": "index.mjs",

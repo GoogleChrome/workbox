@@ -22,7 +22,7 @@
     "prepare": "npm run build"
   },
   "workbox": {
-    "browserNamespace": "googleAnalytics",
+    "browserNamespace": "workbox.googleAnalytics",
     "packageType": "browser"
   },
   "main": "index.mjs",
