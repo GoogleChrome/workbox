@@ -56,7 +56,7 @@ class DBWrapper {
   /**
    * @param {string} storename
    * @param {string} [indexName]
-   * @return {Promise}
+   * @return {Promise<Object>}
    */
   getAll(storename, indexName) {
     return new Promise((resolve, reject) => {
