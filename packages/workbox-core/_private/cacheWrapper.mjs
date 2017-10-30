@@ -53,7 +53,7 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
     await matchWrapper(cacheName, request) : null;
 
   if (process.env.NODE_ENV !== 'production') {
-    logger.log(`Updating the '${cacheName}' cache with a new Response for ` +
+    logger.debug(`Updating the '${cacheName}' cache with a new Response for ` +
       `${getFriendlyURL(request.url)}.`);
   }
 
@@ -89,9 +89,9 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
   let cachedResponse = await cache.match(request, matchOptions);
   if (process.env.NODE_ENV !== 'production') {
     if (cachedResponse) {
-      logger.log(`Found a cached response in '${cacheName}'.`);
+      logger.debug(`Found a cached response in '${cacheName}'.`);
     } else {
-      logger.log(`No cached response found in '${cacheName}'.`);
+      logger.debug(`No cached response found in '${cacheName}'.`);
     }
   }
   for (let plugin of plugins) {

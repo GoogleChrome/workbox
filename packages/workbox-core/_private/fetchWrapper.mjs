@@ -80,7 +80,7 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   try {
     const response = await fetch(request, fetchOptions);
     if (process.env.NODE_ENV !== 'production') {
-      logger.log(`Network request for `+
+      logger.debug(`Network request for `+
       `'${getFriendlyURL(request.url)}' returned a response with ` +
       `status '${response.status}'.`);
     }
