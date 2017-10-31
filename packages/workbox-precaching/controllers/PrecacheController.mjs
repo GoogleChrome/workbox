@@ -156,7 +156,7 @@ class PrecacheController {
     const entriesToPrecache = [];
     const entriesAlreadyPrecached = [];
 
-    for (let precacheEntry of this._entriesToCacheMap.values()) {
+    for (const precacheEntry of this._entriesToCacheMap.values()) {
       if (await this._precacheDetailsModel._isEntryCached(precacheEntry)) {
         entriesAlreadyPrecached.push(precacheEntry);
       } else {
@@ -178,8 +178,8 @@ class PrecacheController {
     }
 
     return {
-      'updatedEntries': entriesToPrecache,
-      'notUpdatedEntries': entriesAlreadyPrecached,
+      updatedEntries: entriesToPrecache,
+      notUpdatedEntries: entriesAlreadyPrecached,
     };
   }
 
