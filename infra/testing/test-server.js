@@ -84,6 +84,6 @@ module.exports = {
     requestCounts = {};
   },
   getRequests: () => {
-    return Object.assign(requestCounts, {});
+    return Object.assign({}, requestCounts);
   },
 };
