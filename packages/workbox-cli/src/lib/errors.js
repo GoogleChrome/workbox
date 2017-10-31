@@ -24,4 +24,9 @@ module.exports = {
   'config-validation-failed': `Your configuration is invalid:`,
   'workbox-build-runtime-error': `Service worker generation failed:`,
   'unknown-command': `Unknown command:`,
+  'no-file-extensions-found': ol`No files could be found that are suitable for
+    caching.`,
+  'no-file-extensions-selected': `Please select at least one file extension.`,
+  'sw-src-does-not-exist': ol`The source service worker file you provided does
+    not exist. Please provide the path to an existing file.`,
 };
