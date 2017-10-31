@@ -1,5 +1,4 @@
-importScripts('{{CDN_URL}}/workbox-core.dev.js');
-importScripts('{{CDN_URL}}/workbox-cache-expiration.dev.js');
+{{{WORKBOX_SW_IMPORT}}}
 
 const expirationManager = new workbox.expiration.CacheExpiration(
   'cache-expiration', {

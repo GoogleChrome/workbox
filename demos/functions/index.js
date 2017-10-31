@@ -63,14 +63,25 @@ app.get('/demo/:moduleName/:swfile', function(req, res, next) {
   );
 
   let cdnUrl = cdnDetails.latestUrl;
+  let extraConfig = '';
   if (process.env.WORKBOX_DEMO_ENV === 'local') {
     cdnUrl = `/local-builds`;
+    extraConfig = `,
+  modulePathPrefix: '${cdnUrl}'`;
   }
+
+  const swImport = `importScripts('${cdnUrl}/workbox-sw.prod.js');
+
+workbox.setConfig({
+  debug: true${extraConfig}
+});
+`;
 
   res.header('Content-Type', 'application/javascript');
   res.render(`demo/${req.params.moduleName}/${swTemplate}`, {
     title: `${req.params.moduleName} Demo`,
     CDN_URL: cdnUrl,
+    WORKBOX_SW_IMPORT: swImport,
     layout: false,
   });
 });
