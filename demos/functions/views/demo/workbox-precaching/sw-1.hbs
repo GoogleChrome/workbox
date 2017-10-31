@@ -1,10 +1,10 @@
 importScripts('{{CDN_URL}}/workbox-sw.dev.js');
 
-const wb = new WorkboxSW({
-  debug: true,
+workbox.setConfig({
+  debug: true
 });
 
-wb.precaching.precache([
+workbox.precaching.precache([
   {url: '/demo/workbox-precaching', revision: '1'},
   'test-file.txt',
   'hello-world.1234.txt',

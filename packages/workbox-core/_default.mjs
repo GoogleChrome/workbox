@@ -38,7 +38,7 @@ class WorkboxCore {
   constructor() {
     // Give our version strings something to hang off of.
     try {
-      self.workbox.v = {};
+      self.workbox.v = self.workbox.v || {};
     } catch (err) {
       // NOOP
     }

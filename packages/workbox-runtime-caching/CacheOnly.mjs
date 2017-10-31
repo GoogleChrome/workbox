@@ -13,7 +13,13 @@
  limitations under the License.
 */
 
-import {cacheNames, cacheWrapper, assert} from 'workbox-core/_private.mjs';
+import {
+  cacheNames,
+  cacheWrapper,
+  assert,
+  logger,
+} from 'workbox-core/_private.mjs';
+import messages from './utils/messages.mjs';
 import './_version.mjs';
 
 /**
@@ -57,14 +63,24 @@ class CacheOnly {
         funcName: 'handle',
         paramName: 'event',
       });
+
+      logger.groupCollapsed(
+        messages.strategyStart('CacheOnly', event));
     }
 
-    return cacheWrapper.match(
+    const response = await cacheWrapper.match(
       this._cacheName,
       event.request,
       null,
       this._plugins
     );
+
+    if (process.env.NODE_ENV !== 'production') {
+      messages.printFinalResponse(response);
+      logger.groupEnd();
+    }
+
+    return response;
   }
 }
 

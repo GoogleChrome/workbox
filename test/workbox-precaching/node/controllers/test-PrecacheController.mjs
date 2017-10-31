@@ -205,6 +205,21 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       return precacheController.install();
     });
 
+    devOnly.it('should not print warnings if suppressWarnings is passed in', async function() {
+      const precacheController = new PrecacheController();
+      precacheController.addToCacheList(['/']);
+
+      await precacheController.install({
+        suppressWarnings: true,
+      });
+      expect(logger.warn.callCount).to.equal(0);
+
+      await precacheController.install({
+        suppressWarnings: false,
+      });
+      expect(logger.warn.callCount).to.be.gt(0);
+    });
+
     it('should precache assets (with cache busting via search params)', async function() {
       const precacheController = new PrecacheController();
       const cacheList = [

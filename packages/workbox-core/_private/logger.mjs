@@ -23,11 +23,11 @@ const YELLOW = `#f39c12`;
 const RED = `#c0392b`;
 const BLUE = `#3498db`;
 
-let logLevel = (process.env.NODE_ENV === 'production') ?
+const getDefaultLogLevel = () => (process.env.NODE_ENV === 'production') ?
   LOG_LEVELS.warn : LOG_LEVELS.log;
 
+let logLevel = getDefaultLogLevel();
 const shouldPrint = (minLevel) => (logLevel <= minLevel);
-
 const setLoggerLevel = (newLogLevel) => logLevel = newLogLevel;
 const getLoggerLevel = () => logLevel;
 
@@ -85,6 +85,7 @@ Object.keys(levelToColor).forEach(
   (keyName) => setupLogs(keyName, levelToColor[keyName])
 );
 
+export {getDefaultLogLevel};
 export {setLoggerLevel};
 export {getLoggerLevel};
 export default defaultExport;

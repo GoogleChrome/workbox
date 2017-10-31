@@ -1,10 +1,10 @@
 importScripts('{{CDN_URL}}/workbox-sw.dev.js');
 
-const wb = new WorkboxSW({
+workbox.setConfig({
   debug: true
 });
 
-wb.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
+workbox.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
 
 const printLogs = () => {
   // ☠️ You should never so this - this is just so we can show off our logging.

@@ -8,11 +8,11 @@ const rollup = require('rollup');
 const rollupStream = require('rollup-stream');
 const source = require('vinyl-source-stream');
 const sourcemaps = require('gulp-sourcemaps');
-
 const constants = require('./constants');
 const pkgPathToName = require('./pkg-path-to-name');
 const rollupHelper = require('./rollup-helper');
 const logHelper = require('../../infra/utils/log-helper');
+
 /*
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose
@@ -20,11 +20,9 @@ const logHelper = require('../../infra/utils/log-helper');
 const ERROR_NO_MODULE_BROWSER = `Could not find the modules browser.mjs file: `;
 const ERROR_NO_NAMSPACE = oneLine`
   You must define a 'browserNamespace' parameter in the 'package.json'.
-  Exmaple: 'workbox-precaching' would have a browserNamespace param of
-  'precaching' in 'package.json'. This will be appended to
-  '${constants.NAMESPACE_PREFIX}' meaning developers would use
-  '${constants.NAMESPACE_PREFIX}.precaching' in their
-  JavaScript. Please fix for:
+  Example: 'workbox-precaching' would have a browserNamespace param of
+  'workbox.precaching' in 'package.json', meaning developers would use
+  'workbox.precaching' in their JavaScript. Please fix for:
 `;
 
 // This makes Rollup assume workbox-* will be added to the global
@@ -57,7 +55,6 @@ const globals = (moduleId) => {
   try {
     const pkg = require(path.join(packagePath, 'package.json'));
     return [
-      constants.NAMESPACE_PREFIX,
       pkg.workbox.browserNamespace,
       namespacePath,
     ].join('.');
@@ -90,13 +87,7 @@ module.exports = (packagePath, buildType) => {
     return Promise.reject(ERROR_NO_NAMSPACE + ' ' + packageName);
   }
 
-  let prefix = `${constants.NAMESPACE_PREFIX}.`;
-  if (pkgJson.workbox.disableNamespacePrefix) {
-    prefix = '';
-  }
-
-  const namespace =
-    `${prefix}${pkgJson.workbox.browserNamespace}`;
+  const namespace = pkgJson.workbox.browserNamespace;
   const outputFilename = `${packageName}.${buildType.slice(0, 4)}.js`;
   const outputDirectory = path.join(packagePath,
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);

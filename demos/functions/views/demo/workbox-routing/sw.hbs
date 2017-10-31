@@ -1,13 +1,11 @@
 importScripts('{{CDN_URL}}/workbox-sw.dev.js');
 
-const wb = new WorkboxSW({
+workbox.setConfig({
   debug: true
 });
 
 // TODO Skip Waiting
 // TODO Clients Claim
-
-wb.loadModule('workbox-routing');
 
 // Set up a route to alter the demo-img
 const specialImgUrl = new URL('/demo/workbox-routing/demo-img.png', location).toString();
@@ -17,5 +15,5 @@ const specialImgRoute = new workbox.routing.Route(({event}) => {
   return fetch('/demo/workbox-routing/demo-img-intercepted.png');
 });
 
-wb.routing.registerRoute(specialImgRoute);
+workbox.routing.registerRoute(specialImgRoute);
 

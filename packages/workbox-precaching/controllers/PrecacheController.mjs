@@ -141,11 +141,15 @@ class PrecacheController {
    * Call this method from a service work install event to start
    * precaching assets.
    *
+   * @param {Object} options
+   * @param {boolean} options.suppressWarnings Suppress warning messages.
    * @return {Promise<Object>}
    */
-  async install() {
+  async install(options = {}) {
     if (process.env.NODE_ENV !== 'production') {
-      showWarningsIfNeeded(this._entriesToCacheMap);
+      if (options.suppressWarnings !== true) {
+        showWarningsIfNeeded(this._entriesToCacheMap);
+      }
     }
 
     const updatedEntries = [];

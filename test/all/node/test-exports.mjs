@@ -2,6 +2,9 @@ const path = require('path');
 const glob = require('glob');
 
 describe(`[all] Test Exports of Each Module`, function() {
+  // Reading files is slow.
+  this.timeout(5 * 1000);
+
   const testPublicExports = (packagePath, allExports, type) => {
     const publicFiles = glob.sync(path.posix.join(packagePath, '*.mjs'));
     publicFiles.forEach((publicFilePath) => {

@@ -45,7 +45,7 @@ global.Headers = Headers;
 global.indexedDB = new IDBFactory();
 global.IDBKeyRange = IDBKeyRange;
 global.importScripts = () => {};
-global.location = 'https://example.com';
+global.location = new URL('https://example.com');
 global.registration.sync = new SyncManager();
 global.Request = Request;
 global.SyncEvent = SyncEvent;

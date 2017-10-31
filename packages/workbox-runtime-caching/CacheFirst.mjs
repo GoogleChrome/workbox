@@ -18,7 +18,9 @@ import {
   cacheWrapper,
   fetchWrapper,
   assert,
+  logger,
 } from 'workbox-core/_private.mjs';
+import messages from './utils/messages.mjs';
 import './_version.mjs';
 
 /**
@@ -62,19 +64,50 @@ class CacheFirst {
         funcName: 'handle',
         paramName: 'event',
       });
+
+      logger.groupCollapsed(
+        messages.strategyStart('CacheFirst', event));
     }
 
-    const cachedResponse = await cacheWrapper.match(
+    let response = await cacheWrapper.match(
       this._cacheName,
       event.request,
       null,
       this._plugins
     );
 
-    if (cachedResponse) {
-      return cachedResponse;
+    let error;
+    if (!response) {
+      try {
+        response = await this._getFromNetwork(event);
+      } catch (err) {
+        error = err;
+      }
     }
 
+    if (process.env.NODE_ENV !== 'production') {
+      messages.printFinalResponse(response);
+      logger.groupEnd();
+    }
+
+    if (error) {
+      // Don't swallow error as we'll want it to throw and enable catch
+      // handlers in router.
+      throw error;
+    }
+
+    return response;
+  }
+
+  /**
+   * Handles the network and cache part of CacheFirst.
+   *
+   * @param {FetchEvent} event
+   * @return {Promise<Response>}
+   *
+   * @private
+   */
+  async _getFromNetwork(event) {
     const response = await fetchWrapper.fetch(
       event.request,
       null,

@@ -63,4 +63,72 @@ describe(`workbox-core  assert`, function() {
       }, 'not-an-array');
     });
   });
+
+  describe(`hasMethod`, function() {
+    devOnly.it(`should throw when it has no method`, function() {
+      return expectError(() => {
+        assert.hasMethod({}, 'methodName', {
+          moduleName: 'module',
+          className: 'class',
+          funcName: 'func',
+          paramName: 'param',
+        });
+      }, 'missing-a-method');
+    });
+
+    devOnly.it(`should throw when it has no method`, function() {
+      assert.hasMethod({methodName: () => {}}, 'methodName', {
+        moduleName: 'module',
+        className: 'class',
+        funcName: 'func',
+        paramName: 'param',
+      });
+    });
+  });
+
+  describe(`isInstance`, function() {
+    devOnly.it(`should throw when it is not an instance`, function() {
+      class Example {}
+      return expectError(() => {
+        assert.isInstance({}, Example, {
+          moduleName: 'module',
+          className: 'class',
+          funcName: 'func',
+          paramName: 'param',
+        });
+      }, 'incorrect-class');
+    });
+
+    devOnly.it(`should not throw when it is an instance`, function() {
+      class Example {}
+      assert.isInstance(new Example(), Example, {
+        moduleName: 'module',
+        className: 'class',
+        funcName: 'func',
+        paramName: 'param',
+      });
+    });
+  });
+
+  describe(`isOneOf`, function() {
+    devOnly.it(`should throw when it is not an instance`, function() {
+      return expectError(() => {
+        assert.isOneOf('not-ok', ['ok-value'], {
+          moduleName: 'module',
+          className: 'class',
+          funcName: 'func',
+          paramName: 'param',
+        });
+      }, 'invalid-value');
+    });
+
+    devOnly.it(`should throw when it is not an instance`, function() {
+      assert.isOneOf('ok-value', ['ok-value'], {
+        moduleName: 'module',
+        className: 'class',
+        funcName: 'func',
+        paramName: 'param',
+      });
+    });
+  });
 });

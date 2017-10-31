@@ -1,6 +1,6 @@
 {
   "name": "workbox-background-sync",
-  "version": "3.0.0-alpha.17",
+  "version": "3.0.0-alpha.18",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "Queues failed requests and uses the Background Sync API to replay them when the network is available",
@@ -21,13 +21,13 @@
     "prepare": "npm run build"
   },
   "workbox": {
-    "browserNamespace": "backgroundSync",
+    "browserNamespace": "workbox.backgroundSync",
     "packageType": "browser"
   },
   "main": "index.mjs",
   "module": "index.mjs",
   "browser": "build/browser/workbox-background-sync.prod.js",
   "dependencies": {
-    "workbox-core": "3.0.0-alpha.17"
+    "workbox-core": "^3.0.0-alpha.18"
   }
 }

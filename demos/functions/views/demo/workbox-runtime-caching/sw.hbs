@@ -28,7 +28,7 @@ self.addEventListener('fetch', (event) => {
     const cacheOnly = new workbox.strategies.CacheOnly({
       cacheName: EMPTY_CACHE
     });
-    event.respondWith(cacheOnly.handle(event));
+    event.respondWith(cacheOnly.handle({event}));
   }
 });
 
@@ -37,7 +37,7 @@ self.addEventListener('fetch', (event) => {
     const cacheOnly = new workbox.strategies.CacheOnly({
       cacheName: POPULATED_CACHE
     });
-    event.respondWith(cacheOnly.handle(event));
+    event.respondWith(cacheOnly.handle({event}));
   }
 });
 
@@ -46,14 +46,14 @@ self.addEventListener('fetch', (event) => {
     const cacheFirst = new workbox.strategies.CacheFirst({
       cacheName: 'cache-first'
     });
-    event.respondWith(cacheFirst.handle(event));
+    event.respondWith(cacheFirst.handle({event}));
   }
 });
 
 self.addEventListener('fetch', (event) => {
   if (event.request.url.includes('/demo/workbox-runtime-caching/network-only.txt')) {
     const networkOnly = new workbox.strategies.NetworkOnly();
-    event.respondWith(networkOnly.handle(event));
+    event.respondWith(networkOnly.handle({event}));
   }
 });
 
@@ -62,7 +62,16 @@ self.addEventListener('fetch', (event) => {
     const networkFirst = new workbox.strategies.NetworkFirst({
       cacheName: 'network-first'
     });
-    event.respondWith(networkFirst.handle(event));
+    event.respondWith(networkFirst.handle({event}));
+  }
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.includes('/demo/workbox-runtime-caching/network-first-404.txt')) {
+    const networkFirst = new workbox.strategies.NetworkFirst({
+      cacheName: 'network-first'
+    });
+    event.respondWith(networkFirst.handle({event}));
   }
 });
 
@@ -71,6 +80,6 @@ self.addEventListener('fetch', (event) => {
     const staleWhileRevalidate = new workbox.strategies.StaleWhileRevalidate({
       cacheName: 'staleWhileRevalidate'
     });
-    event.respondWith(staleWhileRevalidate.handle(event));
+    event.respondWith(staleWhileRevalidate.handle({event}));
   }
 });
