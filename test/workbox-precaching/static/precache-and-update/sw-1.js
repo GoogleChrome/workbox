@@ -1,7 +1,4 @@
 importScripts('/__WORKBOX/buildFile/workbox-core');
-
-console.log(workbox);
-
 importScripts('/__WORKBOX/buildFile/workbox-precaching');
 
 /* globals workbox */
