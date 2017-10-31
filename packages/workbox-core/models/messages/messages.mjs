@@ -136,4 +136,9 @@ export default {
     return `The '${methodName}()' method can only be used when the ` +
       `'${paramName}' is used in the constructor.`;
   },
+  'unsupported-route-type': ({moduleName, className, funcName, paramName}) => {
+    return `The supplied '${paramName}' parameter was an unsupported type. ` +
+      `Please check the docs for ${moduleName}.${className}.${funcName} for ` +
+      `valid input types.`;
+  },
 };
