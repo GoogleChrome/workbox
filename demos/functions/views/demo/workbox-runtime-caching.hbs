@@ -5,7 +5,6 @@
         <ol>
           <li>Open DevTools</li>
           <li>Go to the Console</li>
-          <li>Click this button:<br /><button class="install-sw btn btn-outline-primary">Install Service Worker</button></li>
           <li>Click any of the buttons below and view the logs:
             <ul>
               <li>
@@ -27,10 +26,7 @@
 </section>
 
 <script>
-  const installBtn = document.querySelector('.install-sw');
-  installBtn.addEventListener('click', () => {
-    navigator.serviceWorker.register('/demo/workbox-runtime-caching/sw.js');
-  });
+  navigator.serviceWorker.register('/demo/workbox-runtime-caching/sw.js');
 
   const cacheOnlyEmpty = document.querySelector('.cache-only-empty-cache');
   cacheOnlyEmpty.addEventListener('click', () => {

@@ -1,4 +1,3 @@
-// TODO Swap for workbox-sw
 importScripts('{{CDN_URL}}/workbox-core.dev.js');
 importScripts('{{CDN_URL}}/workbox-runtime-caching.dev.js');
 
@@ -16,7 +15,7 @@ self.addEventListener('install', (event) => {
     .then((cache) => {
       return cache.put(
         new Request('/demo/workbox-runtime-caching/cache-only-populated-cache'),
-        new Response('Hello from the populated cache.'),
+        new Response('Hello from the populated cache.')
       );
     })
   );

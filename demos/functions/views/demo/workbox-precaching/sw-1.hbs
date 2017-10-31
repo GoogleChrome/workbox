@@ -1,8 +1,5 @@
-importScripts('{{CDN_URL}}/workbox-sw.dev.js');
-
-workbox.setConfig({
-  debug: true
-});
+importScripts('{{CDN_URL}}/workbox-core.dev.js');
+importScripts('{{CDN_URL}}/workbox-precaching.dev.js');
 
 workbox.precaching.precache([
   {url: '/demo/workbox-precaching', revision: '1'},

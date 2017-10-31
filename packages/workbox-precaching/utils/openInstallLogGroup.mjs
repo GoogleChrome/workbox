@@ -23,7 +23,11 @@ import '../_version.mjs';
  *
  * @private
  */
-const logGroup = (groupTitle, entries) => {
+const _nestedGroup = (groupTitle, entries) => {
+  if (entries.length === 0) {
+    return;
+  }
+
   logger.groupCollapsed(groupTitle);
 
   entries.forEach((entry) => {
@@ -34,40 +38,33 @@ const logGroup = (groupTitle, entries) => {
 };
 
 /**
- * @param {Array<Object>} updatedEntries
- * @param {Array<Object>} notUpdatedEntries
+ * @param {Array<Object>} entriesToPrecache
+ * @param {Array<Object>} alreadyPrecachedEntries
  *
  * @private
  * @memberof module:workbox-precachig
  */
-export default (updatedEntries, notUpdatedEntries) => {
+export default (entriesToPrecache, alreadyPrecachedEntries) => {
   // Goal is to print the message:
-  //    Precached X files.
+  //    Precaching X files.
   // Or:
-  //    Precached X files. Y files were cached and up-to-date.
+  //    Precaching X files. Y files were cached and up-to-date.
 
-  const updatedCount = updatedEntries.length;
-  const notUpdatedCount = notUpdatedEntries.length;
+  const precachedCount = entriesToPrecache.length;
+  const alreadyPrecachedCount = alreadyPrecachedEntries.length;
   let printText =
-    `Precached ${updatedCount} file${updatedCount === 1 ? '' : 's'}.`;
-  if (notUpdatedCount > 0) {
-    printText += ` ${notUpdatedCount} ` +
-      `file${notUpdatedCount === 1 ? ' was' : 's were'} already cached.`;
-  }
-  logger.groupCollapsed(printText);
-  if (updatedCount > 0 && notUpdatedCount === 0) {
-    // Don't nest groups, just show the precached entries.
-    updatedEntries.forEach((entry) => {
-      logger.log(entry._originalInput);
-    });
-  } else {
-    logGroup(
-      `Number of entries cached: ${updatedCount}`,
-      updatedEntries);
-    logGroup(
-      `Number of entries already cached: ${notUpdatedCount}`,
-      notUpdatedEntries);
+    `Precaching ${precachedCount} file${precachedCount === 1 ? '' : 's'}.`;
+  if (alreadyPrecachedCount > 0) {
+    printText += ` ${alreadyPrecachedCount} ` +
+      `file${alreadyPrecachedCount === 1 ? ' is' : 's are'} already cached.`;
   }
 
-  logger.groupEnd();
+  logger.groupCollapsed(printText);
+
+  _nestedGroup(
+    `View precached URLs.`,
+    entriesToPrecache);
+  _nestedGroup(
+    `View URLs that were already precached.`,
+    alreadyPrecachedEntries);
 };

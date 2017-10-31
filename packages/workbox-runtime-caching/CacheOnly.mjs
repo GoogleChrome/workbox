@@ -76,7 +76,13 @@ class CacheOnly {
     );
 
     if (process.env.NODE_ENV !== 'production') {
-      messages.printFinalResponse(response);
+      if (response) {
+        logger.log(`Found a cached response in the '${this._cacheName}'` +
+          ` cache.`);
+        messages.printFinalResponse(response);
+      } else {
+        logger.log(`No response found in the '${this._cacheName}' cache.`);
+      }
       logger.groupEnd();
     }
 

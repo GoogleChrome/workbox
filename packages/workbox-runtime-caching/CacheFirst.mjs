@@ -78,10 +78,27 @@ class CacheFirst {
 
     let error;
     if (!response) {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.log(`No response found in the '${this._cacheName}' cache. ` +
+          `Will respond with a network request.`);
+      }
       try {
         response = await this._getFromNetwork(event);
       } catch (err) {
         error = err;
+      }
+
+      if (process.env.NODE_ENV !== 'production') {
+        if (response) {
+          logger.log(`Got response from network.`);
+        } else {
+          logger.log(`Unable to get a response from the network.`);
+        }
+      }
+    } else {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.log(`Found a cached response in the '${this._cacheName}' ` +
+          `cache.`);
       }
     }
 
