@@ -2,19 +2,22 @@ import {expect} from 'chai';
 
 import expectError from '../../../../infra/testing/expectError';
 import generateVariantTests from '../../../../infra/testing/generate-variant-tests';
-import {devOnly, prodOnly} from '../../../../infra/testing/env-it.js';
+import {devOnly} from '../../../../infra/testing/env-it.js';
 import constants from '../../../../gulp-tasks/utils/constants.js';
 import core from '../../../../packages/workbox-core/index.mjs';
 import * as coreModule from '../../../../packages/workbox-core/index.mjs';
 
 describe(`workbox-core WorkboxCore`, function() {
-  describe(`core.logLevel (getter)`, function() {
-    devOnly.it(`should initialise to 'log' log level in dev`, function() {
-      expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.log);
-    });
+  describe(`core.logLevel`, function() {
+    it(`should return the current log level`, function() {
+      expect(typeof core.logLevel).to.equal('number');
 
-    prodOnly.it(`should initialise to 'warn' log level in prod`, function() {
-      expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.warn);
+      // Make sure setting will return expected value after
+      core.setLogLevel(coreModule.LOG_LEVELS.debug);
+      expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.debug);
+
+      core.setLogLevel(coreModule.LOG_LEVELS.silent);
+      expect(core.logLevel).to.equal(coreModule.LOG_LEVELS.silent);
     });
   });
 

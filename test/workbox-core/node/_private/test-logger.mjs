@@ -1,16 +1,16 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
+import {devOnly, prodOnly} from '../../../../infra/testing/env-it.js';
 import LOG_LEVELS from '../../../../packages/workbox-core/models/LogLevels.mjs';
-import core from '../../../../packages/workbox-core/index.mjs';
 import logger from '../../../../packages/workbox-core/_private/logger.mjs';
-
+import {setLoggerLevel, getDefaultLogLevel} from '../../../../packages/workbox-core/_private/logger.mjs';
 
 describe(`workbox-core logger`, function() {
   const sandbox = sinon.sandbox.create();
 
   beforeEach(function() {
     // Reset between runs
-    core.setLogLevel(LOG_LEVELS.debug);
+    setLoggerLevel(LOG_LEVELS.debug);
 
     // Undo the logger stubs setup in infra/testing/auto-stub-logger.mjs
     Object.keys(logger).forEach((key) => {
@@ -64,6 +64,16 @@ describe(`workbox-core logger`, function() {
     },
   ];
 
+  describe(`getLoggerLevel()`, function() {
+    devOnly.it(`should initialise to 'log' log level in dev`, async function() {
+      expect(getDefaultLogLevel()).to.equal(LOG_LEVELS.log);
+    });
+
+    prodOnly.it(`should initialise to 'warn' log level in prod`, async function() {
+      expect(getDefaultLogLevel()).to.equal(LOG_LEVELS.warn);
+    });
+  });
+
   logDetails.forEach((logDetail) => {
     describe(`.${logDetail.name}()`, function() {
       it('should work without input', function() {
@@ -94,7 +104,7 @@ describe(`workbox-core logger`, function() {
         it(`should behave correctly with ${logLevelName} log level`, function() {
           const stub = sandbox.stub(console, logDetail.name);
 
-          core.setLogLevel(LOG_LEVELS[logLevelName]);
+          setLoggerLevel(LOG_LEVELS[logLevelName]);
           const args = ['test'];
           logger[logDetail.name](...args);
 
@@ -139,7 +149,7 @@ describe(`workbox-core logger`, function() {
         it(`should behave correctly with ${logLevelName} log level`, function() {
           const stub = sandbox.stub(console, logDetail.name);
 
-          core.setLogLevel(LOG_LEVELS[logLevelName]);
+          setLoggerLevel(LOG_LEVELS[logLevelName]);
           const args = ['test'];
           logger.unprefixed[logDetail.name](...args);
 
@@ -173,7 +183,7 @@ describe(`workbox-core logger`, function() {
       it(`should behave correctly with ${logLevelName} log level`, function() {
         const stub = sandbox.stub(console, 'groupEnd');
 
-        core.setLogLevel(LOG_LEVELS[logLevelName]);
+        setLoggerLevel(LOG_LEVELS[logLevelName]);
         logger.groupEnd();
 
         // Restore to avoid upsetting mocha logs.
