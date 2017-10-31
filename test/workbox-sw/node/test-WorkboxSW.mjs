@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
-import WorkboxSW from '../../../packages/workbox-sw/models/WorkboxSW.mjs';
+import WorkboxSW from '../../../packages/workbox-sw/controllers/WorkboxSW.mjs';
 
 const fakeWorkbox = {
   core: {
