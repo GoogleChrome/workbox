@@ -17,6 +17,5 @@
 const askQuestions = require('./questions/ask-questions');
 
 module.exports = async () => {
-  const config = await askQuestions();
-  console.log(config);
+  await askQuestions();
 };

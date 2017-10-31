@@ -18,39 +18,9 @@ const inquirer = require('inquirer');
 const fse = require('fs-extra');
 
 const errors = require('../errors');
-const {ignoredDirectories} = require('../constants');
 
 // The key used for the question/answer.
 const name = 'swSrc';
-
-/**
- * @param {string} globDirectory The directory used for the root of globbing.
- * @return {Promise<[string]>} The unique file extensions corresponding to all
- * of the files under globDirectory.
- */
-async function getAllFileExtensions(globDirectory) {
-  const substringsToIgnore = ignoredDirectories.map(
-    (directory) => `${path.sep}${directory}${path.sep}`);
-
-  const allFiles = await nodeDir.promiseFiles(globDirectory, 'file',
-    {shortName: false, recursive: true});
-
-  const filteredFiles = allFiles.filter(
-    (filePath) => substringsToIgnore.every(
-      (substring) => !filePath.includes(substring))
-  );
-
-  const extensions = new Set();
-  for (const file of filteredFiles) {
-    const extension = path.extname(file);
-    if (extension) {
-      // Get rid of the leading . character.
-      extensions.add(extension.replace(/^\./, ''));
-    }
-  }
-
-  return [...extensions];
-}
 
 /**
  * @param {string} globDirectory The directory used for the root of globbing.
@@ -59,10 +29,7 @@ async function getAllFileExtensions(globDirectory) {
 function askQuestion() {
   return inquirer.prompt([{
     name,
-    message: 'Which file types would you like to precache?',
-    type: 'checkbox',
-    choices: fileExtensions,
-    default: fileExtensions,
+    message: 'Do you...',
   }]);
 }
 
