@@ -15,48 +15,23 @@
 
 import {expect} from 'chai';
 import clearRequire from 'clear-require';
-import {OBJECT_STORE_NAME} from
+import {DB_NAME, OBJECT_STORE_NAME} from
     '../../../../packages/workbox-background-sync/utils/constants.mjs';
 import {QueueStore} from
     '../../../../packages/workbox-background-sync/models/QueueStore.mjs';
+import {DBWrapper} from '../../../../packages/workbox-core/_private.mjs';
 import StorableRequest from
     '../../../../packages/workbox-background-sync/models/StorableRequest.mjs';
 
-
 let Queue;
 
-
-const clearObjectStore = async () => {
-  // Get a reference to the DB by invoking _getDb on a mock instance.
-  const db = await QueueStore.prototype._getDb.call({});
-
-  await new Promise((resolve, reject) => {
-    const txn = db.transaction(OBJECT_STORE_NAME, 'readwrite');
-    txn.onerror = () => reject(txn.error);
-    txn.oncomplete = () => resolve();
-    txn.objectStore(OBJECT_STORE_NAME).clear();
-  });
+const deleteDatabase = async () => {
+  const db = await new DBWrapper(DB_NAME, 1).open();
+  await db.deleteDatabase();
 };
 
 const getObjectStoreEntries = async () => {
-  // Get a reference to the DB by invoking _getDb on a mock instance.
-  const db = await QueueStore.prototype._getDb.call({});
-
-  const entries = await new Promise((resolve, reject) => {
-    const entries = [];
-    const txn = db.transaction(OBJECT_STORE_NAME, 'readwrite');
-    txn.onerror = () => reject(txn.error);
-    txn.objectStore(OBJECT_STORE_NAME).openCursor().onsuccess = (event) => {
-      const cursor = event.target.result;
-      if (cursor) {
-        entries.push({key: cursor.key, value: cursor.value});
-        cursor.continue();
-      } else {
-        resolve(entries);
-      }
-    };
-  });
-  return entries;
+  return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);
 };
 
 
@@ -65,7 +40,7 @@ describe(`[workbox-background-sync] QueueStore`, function() {
     // Clear Queue so the name map gets reset on re-import.
     clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
 
-    clearObjectStore();
+    await deleteDatabase();
 
     // Re-import Queue each time so the name map gets reset.
     const imprt = await import(
@@ -78,7 +53,7 @@ describe(`[workbox-background-sync] QueueStore`, function() {
     // Clear Queue so the name map gets reset on re-import.
     clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
 
-    clearObjectStore();
+    await deleteDatabase();
   });
 
   describe(`constructor`, function() {
@@ -105,10 +80,10 @@ describe(`[workbox-background-sync] QueueStore`, function() {
       const entries = await getObjectStoreEntries();
 
       expect(entries).to.have.lengthOf(2);
-      expect(entries[0].value.queueName).to.equal('foo');
-      expect(entries[0].value.storableRequest.url).to.equal('/one');
-      expect(entries[1].value.queueName).to.equal('foo');
-      expect(entries[1].value.storableRequest.url).to.equal('/two');
+      expect(entries[0].queueName).to.equal('foo');
+      expect(entries[0].storableRequest.url).to.equal('/one');
+      expect(entries[1].queueName).to.equal('foo');
+      expect(entries[1].storableRequest.url).to.equal('/two');
     });
   });
 
@@ -131,8 +106,8 @@ describe(`[workbox-background-sync] QueueStore`, function() {
 
       entries = await getObjectStoreEntries();
       expect(entries).to.have.lengthOf(1);
-      expect(entries[0].value.queueName).to.equal('foo');
-      expect(entries[0].value.storableRequest.url).to.equal('/two');
+      expect(entries[0].queueName).to.equal('foo');
+      expect(entries[0].storableRequest.url).to.equal('/two');
     });
 
     it(`should return undefined when no entries exist`, async function() {
