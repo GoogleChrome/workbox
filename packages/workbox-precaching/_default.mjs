@@ -138,11 +138,11 @@ moduleExports.precache = (entries) => {
  * other `fetch` event listeners to respond to the `FetchEvent`.
  *
  * @param {Object} options
- * @param {string} options.directoryIndex The `directoryIndex` will check
- * cache entries for a URLs ending with '/' to see if there is a hit when
+ * @param {string} [options.directoryIndex=index.html] The `directoryIndex` will
+ * check cache entries for a URLs ending with '/' to see if there is a hit when
  * appending the `directoryIndex` value.
- * @param {Array<RegExp>} options.ignoreUrlParametersMatching An array of
- * regex's to remove search params when looking for a cache match.
+ * @param {Array<RegExp>} [options.ignoreUrlParametersMatching=[/^utm_/]] An
+ * array of regex's to remove search params when looking for a cache match.
  *
  * @alias module:workbox-precaching.addRoute
  */
