@@ -42,15 +42,13 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
       const timestamp = Date.now();
 
       const model = new CacheTimestampsModel('test-cache');
-      const db = await model._db.put('test-cache', {url: '/', timestamp});
+      await model._db.put('test-cache', {url: '/', timestamp});
 
       const timestamps = await model.getAllTimestamps();
-      expect(timestamps).to.deep.equal([
-        {
-          url: '/',
-          timestamp: timestamp,
-        },
-      ]);
+      expect(timestamps).to.deep.equal([{
+        url: '/',
+        timestamp: timestamp,
+      }]);
     });
 
     it(`should return timestamps in order or oldest timestamp first`, async function() {

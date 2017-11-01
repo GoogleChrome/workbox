@@ -39,7 +39,7 @@ class PrecachedDetailsModel {
     this._db = new DBWrapper(`workbox-precaching`, 1, {
       onupgradeneeded: (evt) => {
         evt.target.result.createObjectStore(DB_STORE_NAME);
-      }
+      },
     });
   }
 
