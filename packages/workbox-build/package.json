@@ -26,7 +26,11 @@
     "glob": "^7.1.2",
     "joi": "^11.1.1",
     "lodash.template": "^4.4.0",
-    "workbox-sw": "^2.0.1"
+    "workbox-cache-expiration": "^3.0.0-alpha.18",
+    "workbox-precaching": "^3.0.0-alpha.18",
+    "workbox-routing": "^3.0.0-alpha.18",
+    "workbox-runtime-caching": "^3.0.0-alpha.18",
+    "workbox-sw": "^3.0.0-alpha.18"
   },
   "main": "build/index.js",
   "scripts": {

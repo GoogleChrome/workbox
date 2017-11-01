@@ -4,8 +4,8 @@ const proxyquire = require('proxyquire');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 
-describe(`[workbox-build] lib/copy-workbox-sw.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/copy-workbox-sw';
+describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
+  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/copy-workbox-libraries';
   const DEST_DIRECTORY = path.join(path.sep, 'test-dir');
   const BUILD_TYPE = 'test';
 
@@ -20,7 +20,7 @@ describe(`[workbox-build] lib/copy-workbox-sw.js`, function() {
       await copyWorkboxSW(DEST_DIRECTORY, BUILD_TYPE);
       throw new Error('Unexpected success.');
     } catch (error) {
-      expect(error.message).to.have.string(errors['unable-to-copy-workbox-sw']);
+      expect(error.message).to.have.string(errors['unable-to-copy-workbox-libraries']);
     }
   });
 

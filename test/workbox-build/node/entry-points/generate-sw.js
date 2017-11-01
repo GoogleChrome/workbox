@@ -43,7 +43,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     'runtimeCaching',
     'skipWaiting',
     'templatedUrls',
-
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
     'injectionPointRegexp',
