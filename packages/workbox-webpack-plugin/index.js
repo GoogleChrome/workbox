@@ -1,3 +1,5 @@
+'use strict';
+
 const swBuild = require('workbox-build');
 const path = require('path');
 const url = require('url');
@@ -63,7 +65,7 @@ class WorkboxBuildWebpackPlugin {
     }
 
     if (compilation.options.output.publicPath) {
-      const {publicPath} = compilation.options.output;
+      const publicPath = compilation.options.output.publicPath;
       const compiledAssets = [];
       for (let key in compilation.assets) {
         if (Object.prototype.hasOwnProperty.call(compilation.assets, key)) {
