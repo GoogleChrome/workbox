@@ -35,6 +35,7 @@
     "inquirer": "^3.3.0",
     "meow": "^3.7.0",
     "node-dir": "^0.1.17",
+    "ora": "^1.3.0",
     "pretty-bytes": "^4.0.2",
     "update-notifier": "^2.3.0",
     "workbox-build": "^3.0.0-alpha.18"

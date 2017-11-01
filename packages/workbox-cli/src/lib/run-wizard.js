@@ -15,10 +15,10 @@
  **/
 
 const fse = require('fs-extra');
-const logger = require('./logger');
 const ol = require('common-tags').oneLine;
 
 const askQuestions = require('./questions/ask-questions');
+const logger = require('./logger');
 
 module.exports = async () => {
   const config = await askQuestions();

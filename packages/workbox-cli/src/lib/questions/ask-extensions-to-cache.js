@@ -17,6 +17,7 @@
 const assert = require('assert');
 const inquirer = require('inquirer');
 const nodeDir = require('node-dir');
+const ora = require('ora');
 const path = require('path');
 
 const errors = require('../errors');
@@ -59,7 +60,12 @@ async function getAllFileExtensions(globDirectory) {
  * @return {Promise<Object>} The answers from inquirer.
  */
 async function askQuestion(globDirectory) {
+  const spinner = ora({
+    text: `Examining files in ${globDirectory}...`,
+    stream: process.stdout,
+  }).start();
   const fileExtensions = await getAllFileExtensions(globDirectory);
+  spinner.stop();
 
   assert(fileExtensions.length > 0, errors['no-file-extensions-found']);
 
