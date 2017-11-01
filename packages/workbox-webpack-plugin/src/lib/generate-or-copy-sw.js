@@ -27,21 +27,22 @@ const {readFile} = require('./utils/read-file');
  *    instead of just swSrc
  *
  * @function generateOrCopySW
- * @param {module:workbox-build.generateSWString} config
- * @param {string} swSrc path to existing service worker
- * @return {Promise<string>} generated service worker string
+ * @param {Object} config Configuration to pass through to
+ * {@link module:workbox-build.generateSWString}.
+ * @param {string} [swSrc] The path to existing service worker.
+ * @return {Promise<string>} The generated service worker string.
  *
  * @memberof module:workbox-webpack-plugin
  */
-module.exports = (config, swSrc) => new Promise((resolve, reject) => {
+module.exports = async (config, swSrc) => {
   if (!swSrc) {
     // use workbox-build to generate the service worker
-    return resolve(generateSWString(config));
+    return generateSWString(config);
   } else {
-    return readFile(swSrc).then((serviceWorkerSource) =>
-      // prepend the exsiting service worker with workbox-sw and file-manifest
-      resolve(`importScripts(${config.importScripts.map((script) =>
-        `'${script}'`)});\n${serviceWorkerSource}`)
-    );
+    const serviceWorkerSource = await readFile(swSrc);
+    const scripts = config.importScripts
+      .map((script) => `'${script}'`)
+      .join(', ');
+    return `importScripts(${scripts});\n${serviceWorkerSource}`;
   }
-});
+};

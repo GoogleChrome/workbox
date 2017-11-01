@@ -17,21 +17,23 @@
 const resolveWebpackUrl = require('./utils/resolve-webpack-url');
 
 /**
- * A single manifest entry that workbox-sw can precache
+ * A single manifest entry that workbox-sw can precache.
  *
- * @param {string} url Webpack asset url path
+ * @param {string} url webpack asset url path
  * @param {string} [revision] A revision hash for the entry
  * @return {module:workbox-build.ManifestEntry} A single manifest entry
  *
  * @private
  */
-const entry = (url, revision) => (revision
-  ? {url, revision}
-  : {url}
-);
+function getEntry(url, revision) {
+  return revision ? {url, revision} : {url};
+}
 
 /**
- * Filter chunks that have one of the provided names (from config.chunks)
+ * Filter to narrow down the asset list to chunks that:
+ * - have a name.
+ * - if there's a whitelist, the chunk's name is in the whitelist.
+ * - if there's a blacklist, the chunk's name is not in the blacklist.
  *
  * TODO:
  *  Filter files by size:
@@ -40,41 +42,41 @@ const entry = (url, revision) => (revision
  *  but filter for [/\.map$/, /asset-manifest\.json$/] by default:
  *    https://github.com/GoogleChrome/workbox/pull/808#discussion_r140565156
  *
- * @param {Array<Object>} chunks Webpack chunks
- * @param {Array<string>} include Chunk names to include
- * @param {Array<string>} exclude Chunk names to exclude
- * @return {Array<Object>} Filtered array of chunks
+ * @param {Array<Object>} chunks webpack chunks.
+ * @param {Array<string>} [whitelist] Chunk names to include.
+ * @param {Array<string>} [blacklist] Chunk names to exclude.
+ * @return {Array<Object>} Filtered array of chunks.
  *
  * @private
  */
-const filterChunks = (chunks, include, exclude) =>
-  chunks.filter((chunk) =>
-    // chunk has a name
-    Object.prototype.hasOwnProperty.call(chunk, 'name')
-      // did not specify include or chunk in include
-      && (!Array.isArray(include) || !!~include.indexOf(chunk.name))
-      // did not specify exclude or chunk not in exclude
-      && (!Array.isArray(exclude) || !~exclude.indexOf(chunk.name))
-  );
+function filterChunks(chunks, whitelist, blacklist) {
+  return chunks.filter((chunk) => {
+    return 'name' in chunk &&
+      (!whitelist || whitelist.includes(chunk.name)) &&
+      (!blacklist || !blacklist.includes(chunk.name));
+  });
+}
 
 /**
- * Maps webpack asset filenames to their chunk hash
+ * Maps webpack asset filenames to their chunk hash.
  *
  * TODO:
  *   Elaborate on this function description:
  *      https://github.com/GoogleChrome/workbox/pull/808#discussion_r139605066
  *
- * @param {Array<Object>} chunks Webpack chunks
+ * @param {Array<Object>} chunks webpack chunks
  * @return {Object} {filename: hash} map
  *
  * @private
  */
-const mapAssetsToChunkHash = (chunks) =>
-  chunks.reduce((assetMap, chunk) =>
-      Object.assign(
-        assetMap,
-        ...chunk.files.map((f) => ({[f]: chunk.renderedHash}))
-    ), {});
+function mapAssetsToChunkHash(chunks) {
+  return chunks.reduce((assetMap, chunk) => {
+    return Object.assign(
+      assetMap,
+      ...chunk.files.map((f) => ({[f]: chunk.renderedHash}))
+    );
+  }, {});
+}
 
 /**
  * Generate an array of manifest entries using webpack's compilation data
@@ -88,8 +90,8 @@ const mapAssetsToChunkHash = (chunks) =>
  *      https://github.com/GoogleChrome/workbox/pull/808#discussion_r140584483
  *
  * @function getManifestEntriesWithWebpack
- * @param {Object} compiler Webpack compiler
- * @param {Object} compilation Webpack compilation
+ * @param {Object} compiler webpack compiler
+ * @param {Object} compilation webpack compilation
  * @param {module:workbox-webpack-plugin.Configuration} config
  * @return {Array<module:workbox-build.ManifestEntry>}
  *
@@ -99,16 +101,16 @@ module.exports = (compiler, compilation, config) => {
   const {publicPath} = compilation.options.output;
 
   // Array<string> | undefined
-  const includeNames = config.chunks;
-  const excludeNames = config.excludeChunks;
+  const whitelist = config.chunks;
+  const blacklist = config.excludeChunks;
 
   // Array<{files: Array<(filename: string)>, name?: string}>
   let {chunks} = compilation;
 
-  if (includeNames || excludeNames) {
+  if (whitelist || blacklist) {
     // Only include chunks in config.chunks and
     // exclude any chunks in config.excludeChunks
-    chunks = filterChunks(chunks, includeNames, excludeNames);
+    chunks = filterChunks(chunks, whitelist, blacklist);
   }
 
   // Use chunkhash to save a chunk hash to each filename in chunks
@@ -118,20 +120,18 @@ module.exports = (compiler, compilation, config) => {
    * Files that will be used to generate the manifest entries
    *
    * If config.chunks is specifed, we only use files that belong to named chunks
-   * otherwise we use all of webpack's compilation.assets
+   * otherwise we use all of webpack's compilation.assets.
    *
    * @type {Array<string>}
    */
-  const manifestFiles = includeNames
+  const manifestFiles = whitelist
     ? Object.keys(assetsToChunkHash)
     : Object.keys(compilation.assets);
 
-  // create and return the manifest entries
-  return manifestFiles.map((filePath) =>
-    // use chunkhash if available, otherwise use compilation hash
-    entry(
-      resolveWebpackUrl(publicPath, filePath),
-      assetsToChunkHash[filePath] || compilation.hash
-    )
-  );
+  // Create and return the manifest entries.
+  return manifestFiles.map((filePath) => {
+    return getEntry(resolveWebpackUrl(publicPath, filePath),
+      // Use chunkhash if available, otherwise use compilation hash.
+      assetsToChunkHash[filePath] || compilation.hash);
+  });
 };

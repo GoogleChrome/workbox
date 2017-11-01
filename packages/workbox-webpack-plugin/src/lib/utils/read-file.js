@@ -22,18 +22,35 @@
  */
 let readFileFn;
 
-const setReadFile = (fn) => {
+/**
+ * Sets the read file function.
+ *
+ * @private
+ * @param {Function} fn The function to use.
+ */
+function setReadFile(fn) {
   readFileFn = fn;
-};
+}
 
-const readFile = (filePath) => new Promise(
-  (resolve, reject) => readFileFn(filePath, 'utf8', (err, data) => {
-    if (err) reject(err);
-    resolve(data);
-  })
-);
+/**
+ * A wrapper that calls readFileFn and returns a promise for the contents.
+ *
+ * @private
+ * @param {string} filePath The file to read.
+ * @return {Promise<string>} The contents of the file.
+ */
+function readFile(filePath) {
+  return new Promise((resolve, reject) => {
+    readFileFn(filePath, 'utf8', (error, data) => {
+      if (error) {
+        return reject(error);
+      }
+      resolve(data);
+    });
+  });
+}
 
 module.exports = {
-  setReadFile,
   readFile,
+  setReadFile,
 };

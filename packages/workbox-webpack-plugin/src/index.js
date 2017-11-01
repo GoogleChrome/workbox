@@ -23,33 +23,9 @@ const copyWorkboxSW = require('./lib/utils/copy-workbox-sw');
 const {setReadFile} = require('./lib/utils/read-file');
 
 /**
- * Use the instance of this in the plugins array of the webpack config.
- *
- * @example <caption>Zero-configuration</caption>
- * const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
- * .
- * module.exports = {
- *   ...
- *   plugins: [
- *    new WorkboxWebpackPlugin(); // WorkboxWebpackPlugin zero-configuration
- *   ]
- * };
- *
- * @example <caption>Supported webpack options</caption>
- * const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
- * .
- * module.exports = {
- *   ...
- *   plugins: [
- *    new WorkboxWebpackPlugin({
- *      chunks: ['main'],
- *      excludeChunks: ['mutable'],
- *      manifestFilename: 'file-manifest.js',
- *      swSrc: './src/sw.js', // path to an existing service worker
- *      filename: 'service-worker.js', // destination filename
- *     });
- *   ]
- * };
+ * Use the instance of this in the
+ * [`plugins` array](https://webpack.js.org/concepts/plugins/#usage) of a
+ * webpack config.
  *
  * @module workbox-webpack-plugin
  */
@@ -104,9 +80,9 @@ class WorkboxWebpackPlugin {
    */
   apply(compiler) {
     /**
-     * The plugin was instanciated and the webpack compilation has just begun
-     * we configure the workbox-webpack-plugin/utils/read-file module to use
-     * webpack's compilation.inputFileSystem._readFile method for reading files
+     * The plugin was instantiated and the webpack compilation has just begun.
+     * We configure the workbox-webpack-plugin/utils/read-file module to use
+     * webpack's compilation.inputFileSystem._readFile method for reading files.
      *
      * TODO: Determine if this is absolutely necessary. It might be possible to
      * only do this in development (when the file system is a "memory" file
@@ -115,34 +91,39 @@ class WorkboxWebpackPlugin {
      * compiler.plugin('watch-run') for development.
      */
     setReadFile(compiler.inputFileSystem._readFile);
+
     /**
      * During the make phase of the webpack compilation, we use
      * workbox-webpack-plugin/utils/copy-workbox-sw to add a built version of
      * workbox-sw to the webpack compilation assets array.
      */
-    compiler.plugin('make', (compilation, next) => {
-      copyWorkboxSW(compilation.options.output.path)
-      .then(({workboxSW, workboxSWMap, workboxSWName}) => {
-        // Add the workbox-sw file to compilation assets
-        compilation.assets[workboxSWName] = webpackAsset(workboxSW);
-        compilation.assets[`${workboxSWName}.map`] = webpackAsset(workboxSWMap);
-        // The version of workbox-sw is included in it's filename so we need
-        // that information to import it in the generated service worker.
-        this.workboxSWFilename = workboxSWName;
-        next();
-      });
+    compiler.plugin('make', async (compilation, next) => {
+      const {
+        workboxSW,
+        workboxSWMap,
+        workboxSWName,
+      } = await copyWorkboxSW();
+
+      // Add the workbox-sw file to compilation assets.
+      compilation.assets[workboxSWName] = webpackAsset(workboxSW);
+      compilation.assets[`${workboxSWName}.map`] = webpackAsset(workboxSWMap);
+      // The version of workbox-sw is included in it's filename so we need
+      // that information to import it in the generated service worker.
+      this.workboxSWFilename = workboxSWName;
+      next();
     });
+
     /**
-     * During the emit phase of the webpack lifecycle, we:
-     *  1. Get the manifest entries
-     *  2. Use the entries to generate a file-manifest
+     * During the emit phase of the webpack compilation, we:
+     *  1. Get the manifest entries.
+     *  2. Use the entries to generate a file-manifest.
      *  3. Generate a service worker with the file-manifest name and workbox-sw
-     *     filename or copy a service worker from the config.swSrc then prepend
+     *     name, or copy a service worker from the config.swSrc, then prepend
      *     it with the required importScripts(workbox-sw.js, file-manifest.js).
-     *  4. Add both the file-manifest and the service-worker to the webpack
+     *  4. Add both the file-manifest and the service worker to the webpack
      *     assets.
      */
-    compiler.plugin('emit', (compilation, next) => {
+    compiler.plugin('emit', async (compilation, next) => {
       const {
         manifestFilename = `file-manifest.${compilation.hash}.js`,
         swSrc,
@@ -156,7 +137,7 @@ class WorkboxWebpackPlugin {
         manifestFilename,
       ]);
 
-      Promise.all([
+      const [fileManifest, serviceWorker] = await Promise.all([
         // service worker and fileManifest are not (yet) assets when the
         // manifest is generated
         generateManifest(entries),
@@ -166,14 +147,11 @@ class WorkboxWebpackPlugin {
           }),
           swSrc
         ),
-      ])
-      .then(([fileManifest, serviceWorker]) => {
-        // add the manifest to the webpack assets
-        compilation.assets[manifestFilename] = webpackAsset(fileManifest);
-        // add the service worker file
-        compilation.assets[filename] = webpackAsset(serviceWorker);
-        next();
-      });
+      ]);
+
+      compilation.assets[manifestFilename] = webpackAsset(fileManifest);
+      compilation.assets[filename] = webpackAsset(serviceWorker);
+      next();
     });
   }
 }
