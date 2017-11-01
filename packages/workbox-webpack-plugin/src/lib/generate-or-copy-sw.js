@@ -23,7 +23,7 @@ const {readFile} = require('./utils/read-file');
  * an existing service worker if `swSrc` is specified
  *
  * TODO:
- *    allow users to specify a Webpack entry name to use as a service worker
+ *    allow users to specify a webpack entry name to use as a service worker
  *    instead of just swSrc
  *
  * @function generateOrCopySW

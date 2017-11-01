@@ -19,7 +19,7 @@ const resolveWebpackUrl = require('./utils/resolve-webpack-url');
 /**
  * A single manifest entry that workbox-sw can precache.
  *
- * @param {string} url Webpack asset url path
+ * @param {string} url webpack asset url path
  * @param {string} [revision] A revision hash for the entry
  * @return {module:workbox-build.ManifestEntry} A single manifest entry
  *
@@ -42,7 +42,7 @@ function getEntry(url, revision) {
  *  but filter for [/\.map$/, /asset-manifest\.json$/] by default:
  *    https://github.com/GoogleChrome/workbox/pull/808#discussion_r140565156
  *
- * @param {Array<Object>} chunks Webpack chunks.
+ * @param {Array<Object>} chunks webpack chunks.
  * @param {Array<string>} [whitelist] Chunk names to include.
  * @param {Array<string>} [blacklist] Chunk names to exclude.
  * @return {Array<Object>} Filtered array of chunks.
@@ -64,7 +64,7 @@ function filterChunks(chunks, whitelist, blacklist) {
  *   Elaborate on this function description:
  *      https://github.com/GoogleChrome/workbox/pull/808#discussion_r139605066
  *
- * @param {Array<Object>} chunks Webpack chunks
+ * @param {Array<Object>} chunks webpack chunks
  * @return {Object} {filename: hash} map
  *
  * @private
@@ -90,8 +90,8 @@ function mapAssetsToChunkHash(chunks) {
  *      https://github.com/GoogleChrome/workbox/pull/808#discussion_r140584483
  *
  * @function getManifestEntriesWithWebpack
- * @param {Object} compiler Webpack compiler
- * @param {Object} compilation Webpack compilation
+ * @param {Object} compiler webpack compiler
+ * @param {Object} compilation webpack compilation
  * @param {module:workbox-webpack-plugin.Configuration} config
  * @return {Array<module:workbox-build.ManifestEntry>}
  *
@@ -120,7 +120,7 @@ module.exports = (compiler, compilation, config) => {
    * Files that will be used to generate the manifest entries
    *
    * If config.chunks is specifed, we only use files that belong to named chunks
-   * otherwise we use all of Webpack's compilation.assets.
+   * otherwise we use all of webpack's compilation.assets.
    *
    * @type {Array<string>}
    */

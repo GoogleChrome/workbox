@@ -23,33 +23,9 @@ const copyWorkboxSW = require('./lib/utils/copy-workbox-sw');
 const {setReadFile} = require('./lib/utils/read-file');
 
 /**
- * Use the instance of this in the `plugins` array of the Webpack config.
- *
- * @example <caption>Zero-configuration usage:</caption>
- * const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
- * .
- * module.exports = {
- *   ...
- *   plugins: [
- *    new WorkboxWebpackPlugin(); // WorkboxWebpackPlugin zero-configuration
- *   ]
- * };
- *
- * @example <caption>Usage with additional configuration:</caption>
- * const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
- * .
- * module.exports = {
- *   ...
- *   plugins: [
- *    new WorkboxWebpackPlugin({
- *      chunks: ['main'],
- *      excludeChunks: ['mutable'],
- *      manifestFilename: 'file-manifest.js',
- *      swSrc: './src/sw.js', // path to an existing service worker
- *      filename: 'service-worker.js', // destination filename
- *     });
- *   ]
- * };
+ * Use the instance of this in the
+ * [`plugins` array](https://webpack.js.org/concepts/plugins/#usage) of a
+ * webpack config.
  *
  * @module workbox-webpack-plugin
  */
@@ -104,9 +80,9 @@ class WorkboxWebpackPlugin {
    */
   apply(compiler) {
     /**
-     * The plugin was instantiated and the Webpack compilation has just begun.
+     * The plugin was instantiated and the webpack compilation has just begun.
      * We configure the workbox-webpack-plugin/utils/read-file module to use
-     * Webpack's compilation.inputFileSystem._readFile method for reading files.
+     * webpack's compilation.inputFileSystem._readFile method for reading files.
      *
      * TODO: Determine if this is absolutely necessary. It might be possible to
      * only do this in development (when the file system is a "memory" file
@@ -117,7 +93,7 @@ class WorkboxWebpackPlugin {
     setReadFile(compiler.inputFileSystem._readFile);
 
     /**
-     * During the make phase of the Webpack compilation, we use
+     * During the make phase of the webpack compilation, we use
      * workbox-webpack-plugin/utils/copy-workbox-sw to add a built version of
      * workbox-sw to the webpack compilation assets array.
      */
@@ -138,7 +114,7 @@ class WorkboxWebpackPlugin {
     });
 
     /**
-     * During the emit phase of the Webpack compilation, we:
+     * During the emit phase of the webpack compilation, we:
      *  1. Get the manifest entries.
      *  2. Use the entries to generate a file-manifest.
      *  3. Generate a service worker with the file-manifest name and workbox-sw

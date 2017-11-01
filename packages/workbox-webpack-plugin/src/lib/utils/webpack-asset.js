@@ -15,18 +15,18 @@
 */
 
 /**
- * In Webpack jargon: a compilation object represents a build of versioned
+ * In webpack jargon: a compilation object represents a build of versioned
  * `assets`. The `compilation.assets` property of a compilation is a map of
  * filepaths -> asset objects. Each asset object has a property `source()` that
  * returns a string of that asset.
  *
- * `source` and `size` are the only required properties of a Webpack asset.
+ * `source` and `size` are the only required properties of a webpack asset.
  *
  * @typedef {Object} WebpackAsset
  *
  * @property {Function} source Returns a string representation of the asset that
  *           will be written to the file system (or generated in-memory) by
- *           Webpack.
+ *           webpack.
  * @property {Function} size Returns the byte size of the asset `source` value.
  *
  * @memberof module:workbox-webpack-plugin
