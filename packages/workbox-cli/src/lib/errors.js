@@ -29,4 +29,9 @@ module.exports = {
   'no-file-extensions-selected': `Please select at least one file extension.`,
   'sw-src-does-not-exist': ol`The source service worker file you provided does
     not exist. Please provide the path to an existing file.`,
+  'invalid-sw-dest': ol`Please enter a valid path to use for the service worker
+    file that's created.`,
+  'glob-directory-invalid': ol`The path you entered isn't a valid directory.`,
+  'invalid-config-location': ol`Please enter a valid path to use for the saved
+    configuration file.`,
 };

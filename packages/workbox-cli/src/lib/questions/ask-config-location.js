@@ -14,35 +14,33 @@
  * limitations under the License.
  **/
 
+const assert = require('assert');
 const inquirer = require('inquirer');
-const fse = require('fs-extra');
+const ol = require('common-tags').oneLine;
 
 const errors = require('../errors');
 
 // The key used for the question/answer.
-const name = 'swSrc';
+const name = 'configLocation';
 
 /**
- * @param {string} globDirectory The directory used for the root of globbing.
  * @return {Promise<Object>} The answers from inquirer.
  */
 function askQuestion() {
   return inquirer.prompt([{
     name,
-    message: 'Do you...',
+    message: ol`Finally, where would you like to save these configuration
+      options so that they can be used by workbox?`,
+    type: 'input',
+    default: 'workbox-config.js',
   }]);
 }
 
 module.exports = async () => {
-  const swSrc = await askQuestion();
+  const answers = await askQuestion();
+  const configLocation = answers[name].trim();
 
-  if (swSrc) {
-    const stat = await fse.stat(swSrc);
-    if (!stat.isFile()) {
-      throw new Error(errors['sw-src-does-not-exist']);
-    }
-  }
+  assert(configLocation, errors['invalid-config-location']);
 
-  return swSrc;
+  return configLocation;
 };
-

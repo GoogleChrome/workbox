@@ -14,10 +14,13 @@
  * limitations under the License.
  **/
 
+const assert = require('assert');
+const fse = require('fs-extra');
 const inquirer = require('inquirer');
 const nodeDir = require('node-dir');
 
 const {ignoredDirectories} = require('../constants');
+const errors = require('../errors');
 
 // The key used for the question/answer.
 const name = 'globDirectory';
@@ -70,5 +73,14 @@ async function askQuestion() {
 
 module.exports = async () => {
   const answers = await askQuestion();
-  return answers[name];
+  const globDirectory = answers[name];
+
+  try {
+    const stat = await fse.stat(globDirectory);
+    assert(stat.isDirectory());
+  } catch (error) {
+    throw new Error(errors['glob-directory-invalid']);
+  }
+
+  return globDirectory;
 };

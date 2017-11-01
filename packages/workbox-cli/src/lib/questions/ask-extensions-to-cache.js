@@ -14,6 +14,7 @@
  * limitations under the License.
  **/
 
+const assert = require('assert');
 const inquirer = require('inquirer');
 const nodeDir = require('node-dir');
 const path = require('path');
@@ -60,9 +61,7 @@ async function getAllFileExtensions(globDirectory) {
 async function askQuestion(globDirectory) {
   const fileExtensions = await getAllFileExtensions(globDirectory);
 
-  if (fileExtensions.length === 0) {
-    throw new Error(errors['no-file-extensions-found']);
-  }
+  assert(fileExtensions.length > 0, errors['no-file-extensions-found']);
 
   return inquirer.prompt([{
     name,
@@ -76,9 +75,7 @@ async function askQuestion(globDirectory) {
 module.exports = async (globDirectory) => {
   const answers = await askQuestion(globDirectory);
   const extensions = answers[name];
-  if (extensions.length === 0) {
-    throw new Error(errors['no-file-extensions-selected']);
-  }
+  assert(extensions.length > 0, errors['no-file-extensions-selected']);
 
   return [`**/*.{${extensions.join(',')}}`];
 };

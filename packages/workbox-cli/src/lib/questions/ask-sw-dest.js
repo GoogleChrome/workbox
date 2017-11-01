@@ -14,26 +14,33 @@
  * limitations under the License.
  **/
 
-const fse = require('fs-extra');
-const logger = require('./logger');
+const assert = require('assert');
+const inquirer = require('inquirer');
 const ol = require('common-tags').oneLine;
 
-const askQuestions = require('./questions/ask-questions');
+const errors = require('../errors');
+
+// The key used for the question/answer.
+const name = 'swDest';
+
+/**
+ * @return {Promise<Object>} The answers from inquirer.
+ */
+function askQuestion() {
+  return inquirer.prompt([{
+    name,
+    message: ol`Where would you like to save the service worker file created
+      by this configuration?`,
+    type: 'input',
+    default: 'build/sw.js',
+  }]);
+}
 
 module.exports = async () => {
-  const config = await askQuestions();
-  const {configLocation} = config;
-  delete config.configLocation;
+  const answers = await askQuestion();
+  const swDest = answers[name].trim();
 
-  const contents = `module.exports = ${JSON.stringify(config, null, 2)};`;
-  await fse.writeFile(configLocation, contents);
+  assert(swDest, errors['invalid-sw-dest']);
 
-  logger.log(`All done! To build your service worker, run
-
-  workbox generateSW ${configLocation}
-
-as the last step in your web app's build process.`);
-
-  logger.log(ol`You can further customize your service worker by making changes
-    to ${configLocation}. See https://goo.gl/YYPcyY for details.`);
+  return swDest;
 };

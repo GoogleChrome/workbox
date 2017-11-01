@@ -14,18 +14,21 @@
  * limitations under the License.
  **/
 
-const askRootOfWebApp = require('./ask-root-of-web-app');
+const askConfigLocation = require('./ask-config-location');
 const askExtensionsToCache = require('./ask-extensions-to-cache');
-const askSWSrc = require('./ask-sw-src');
+const askRootOfWebApp = require('./ask-root-of-web-app');
+const askSWDest = require('./ask-sw-dest');
 
 module.exports = async () => {
   const globDirectory = await askRootOfWebApp();
   const globPatterns = await askExtensionsToCache(globDirectory);
-  const swSrc = await askSWSrc();
+  const swDest = await askSWDest();
+  const configLocation = await askConfigLocation();
 
   return {
+    configLocation,
     globDirectory,
     globPatterns,
-    swSrc,
+    swDest,
   };
 };
