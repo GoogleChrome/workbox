@@ -139,15 +139,14 @@ class Router {
       logger.groupEnd();
     }
 
-    const responsePromise = handler.handle({url, event, params});
+    let responsePromise = handler.handle({url, event, params});
     if (this._catchHandler) {
-      responsePromise.catch((err) => {
+      responsePromise = responsePromise.catch((err) => {
         if (process.env.NODE_ENV !== 'production') {
           // Still include URL here as it will be async from the console group
           // and may not make sense without the URL
-          logger.debug(`An error was thrown by the handler. Falling back ` +
-            `to the catch handler.`);
-          logger.groupCollapsed(`View thrown error here.`);
+          logger.groupCollapsed(`The Router ${route} threw an error when ` +
+            `handling ${getFriendlyURL(url)}. Falling back to Catch Handler.`);
           logger.unprefixed.error(err);
           logger.groupEnd();
         }
