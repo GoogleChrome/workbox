@@ -15,6 +15,7 @@
 
 import {expect} from 'chai';
 import clearRequire from 'clear-require';
+import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import {DB_NAME, OBJECT_STORE_NAME} from
     '../../../../packages/workbox-background-sync/utils/constants.mjs';
 import {QueueStore} from
@@ -25,11 +26,6 @@ import StorableRequest from
 
 let Queue;
 
-const deleteDatabase = async () => {
-  const db = await new DBWrapper(DB_NAME, 1).open();
-  await db.deleteDatabase();
-};
-
 const getObjectStoreEntries = async () => {
   return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);
 };
@@ -39,8 +35,7 @@ describe(`[workbox-background-sync] QueueStore`, function() {
   beforeEach(async function() {
     // Clear Queue so the name map gets reset on re-import.
     clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
-
-    await deleteDatabase();
+    iDBReset();
 
     // Re-import Queue each time so the name map gets reset.
     const imprt = await import(
@@ -52,8 +47,7 @@ describe(`[workbox-background-sync] QueueStore`, function() {
   after(async function() {
     // Clear Queue so the name map gets reset on re-import.
     clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
-
-    await deleteDatabase();
+    iDBReset();
   });
 
   describe(`constructor`, function() {

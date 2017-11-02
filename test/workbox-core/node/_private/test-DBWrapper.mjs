@@ -1,7 +1,6 @@
+import {reset} from 'shelving-mock-indexeddb';
 import {expect} from 'chai';
 import sinon from 'sinon';
-
-// import {reset as iDBReset} from 'shelving-mock-indexeddb';
 
 import DBWrapper from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 
@@ -95,15 +94,9 @@ const createAndPopulateTestDb = async () => {
 describe(`DBWrapper`, function() {
   const sandbox = sinon.createSandbox();
 
-  before(async function() {
-    // This help when re-running the tests manually after a previous failure
-    // where the database didn't get properly deleted.
-    const db = await new DBWrapper('db', 1).open();
-    await db.deleteDatabase();
-  });
-
   afterEach(async function() {
     sandbox.restore();
+    reset();
   });
 
   describe(`constructor`, function() {
@@ -136,27 +129,21 @@ describe(`DBWrapper`, function() {
 
       await db.open('db', 1);
       expect(db._db).to.be.instanceOf(IDBDatabase);
-
-      await db.deleteDatabase();
     });
 
     it(`returns the instance for easier init + assignment`, async function() {
       const db = await new DBWrapper('db', 1).open();
       expect(db).to.be.instanceOf(DBWrapper);
-
-      await db.deleteDatabase();
     });
 
     it(`runs the onupgradeneeded callback if specified`, async function() {
       const onupgradeneeded = sinon.spy();
-      const db = await new DBWrapper('db', 1, {onupgradeneeded}).open();
+      await new DBWrapper('db', 1, {onupgradeneeded}).open();
 
       expect(onupgradeneeded.callCount).to.equal(1);
       expect(onupgradeneeded.calledWith(sinon.match({
         type: 'upgradeneeded',
       }))).to.be.true;
-
-      await db.deleteDatabase();
     });
 
     it(`sets the onversionchange callback`, async function() {
@@ -164,13 +151,11 @@ describe(`DBWrapper`, function() {
       const db = await new DBWrapper('db', 1, {onversionchange}).open();
 
       expect(db._db.onversionchange).to.equal(db._onversionchange);
-
-      await db.deleteDatabase();
     });
 
     // Note: doesn't work in node
     it.skip(`throws if there's an error opening the connection`, async function() {
-      const db = await new DBWrapper('db', 2).open();
+      await new DBWrapper('db', 2).open();
 
       // Stop the event from bubbling to the global object
       // and firing the global onerror handler.
@@ -179,8 +164,6 @@ describe(`DBWrapper`, function() {
 
       const err = await catchAsyncError(new DBWrapper('db', 1).open());
       expect(err.message).to.match(/version/);
-
-      await db.deleteDatabase();
     });
 
     it(`throws if blocked for more than the timeout period when openning`,
@@ -189,14 +172,12 @@ describe(`DBWrapper`, function() {
       sandbox.stub(DBWrapper.prototype, 'OPEN_TIMEOUT').value(100);
 
       // Open a connection and don't close it on version change.
-      const db = await new DBWrapper('db', 1, {onversionchange: () => {}}).open();
+      await new DBWrapper('db', 1, {onversionchange: () => {}}).open();
 
       // Open a request for a new version with an old version still open.
       // This will be blocked since the older version is still open.
       const err = await catchAsyncError(new DBWrapper('db', 2).open());
       expect(err.message).to.match(/blocked/);
-
-      await db.deleteDatabase();
     });
 
     it(`times out even in cases where the onblocked handler doesn't file`,
@@ -205,7 +186,7 @@ describe(`DBWrapper`, function() {
       sandbox.stub(DBWrapper.prototype, 'OPEN_TIMEOUT').value(100);
 
       // Open a connection and don't close it on version change.
-      const db = await new DBWrapper('db', 1, {onversionchange: () => {}}).open();
+      await new DBWrapper('db', 1, {onversionchange: () => {}}).open();
 
       // Open two requests for newer versions while the old version is open.
       // The first request will received the `blocked` event, but the second
@@ -217,8 +198,6 @@ describe(`DBWrapper`, function() {
       const err2 = await catchAsyncError(new DBWrapper('db', 2).open());
       expect(err1.message).to.match(/blocked/);
       expect(err2.message).to.match(/blocked/);
-
-      await db.deleteDatabase();
     });
   });
 
@@ -235,8 +214,6 @@ describe(`DBWrapper`, function() {
 
       const comment = await db.get('comments', 1); // From autoIncrement-ed key
       expect(comment).to.deep.equal(data.comments[0]);
-
-      await db.deleteDatabase();
     });
 
     it(`returns undefined if no entry is found`, async function() {
@@ -244,8 +221,6 @@ describe(`DBWrapper`, function() {
 
       const user = await db.get('users', 'null@gmail.com');
       expect(user).to.be.undefined;
-
-      await db.deleteDatabase();
     });
   });
 
@@ -267,8 +242,6 @@ describe(`DBWrapper`, function() {
       const commentKey2 = await db.add('comments', data.comments[1]);
       expect(commentKey1).to.equal(1);
       expect(commentKey2).to.equal(2);
-
-      await db.deleteDatabase();
     });
 
     it(`throws if a value already exists for the specified key`,
@@ -276,8 +249,6 @@ describe(`DBWrapper`, function() {
       const db = await createAndPopulateTestDb();
 
       expect(await catchAsyncError(db.add('users', data.users[0]))).to.be.ok;
-
-      await db.deleteDatabase();
     });
   });
 
@@ -299,8 +270,6 @@ describe(`DBWrapper`, function() {
       const commentKey2 = await db.put('comments', data.comments[1]);
       expect(commentKey1).to.equal(1);
       expect(commentKey2).to.equal(2);
-
-      await db.deleteDatabase();
     });
 
     it(`overrides existing values for the specified key`, async function() {
@@ -325,8 +294,6 @@ describe(`DBWrapper`, function() {
 
       const newPostData = await db.get('posts', 1);
       expect(newPostData).to.deep.equal(postData);
-
-      await db.deleteDatabase();
     });
   });
 
@@ -341,8 +308,6 @@ describe(`DBWrapper`, function() {
 
       const usersLeft = await db.getAll('users');
       expect(usersLeft).to.deep.equal(data.users.slice(1));
-
-      await db.deleteDatabase();
     });
   });
 
@@ -358,8 +323,6 @@ describe(`DBWrapper`, function() {
 
       const comments = await db.getAll('comments');
       expect(comments).to.deep.equal(data.comments);
-
-      await db.deleteDatabase();
     });
 
     it(`supports an optional query parameter`, async function() {
@@ -370,8 +333,6 @@ describe(`DBWrapper`, function() {
 
       expect(users1).to.deep.equal(data.users.slice(0, 2));
       expect(users2).to.deep.equal(data.users.slice(2));
-
-      await db.deleteDatabase();
     });
 
     it(`supports an optional count parameter`, async function() {
@@ -382,8 +343,6 @@ describe(`DBWrapper`, function() {
 
       expect(users1).to.deep.equal(data.users.slice(0, 1));
       expect(users2).to.deep.equal(data.users.slice(0, 2));
-
-      await db.deleteDatabase();
     });
 
     it(`uses a getAll polyfill when the native version isn't supported`,
@@ -404,8 +363,6 @@ describe(`DBWrapper`, function() {
       if (originalGetAll) {
         IDBObjectStore.prototype.getAll = originalGetAll;
       }
-
-      await db.deleteDatabase();
     });
   });
 
@@ -421,8 +378,6 @@ describe(`DBWrapper`, function() {
 
       const comments = await db.getAllKeys('comments');
       expect(comments).to.deep.equal([1, 2, 3, 4, 5]);
-
-      await db.deleteDatabase();
     });
 
     it(`supports an optional query parameter`, async function() {
@@ -435,8 +390,6 @@ describe(`DBWrapper`, function() {
           data.users.slice(0, 2).map(({email}) => email));
       expect(users2).to.deep.equal(
           data.users.slice(2).map(({email}) => email));
-
-      await db.deleteDatabase();
     });
 
     it(`supports an optional count parameter`, async function() {
@@ -451,8 +404,6 @@ describe(`DBWrapper`, function() {
           data.users.slice(0, 1).map(({email}) => email));
       expect(users2).to.deep.equal(
           data.users.slice(0, 2).map(({email}) => email));
-
-      await db.deleteDatabase();
     });
 
     it(`uses a getAllKeys polyfill when the native version isn't supported`,
@@ -475,8 +426,6 @@ describe(`DBWrapper`, function() {
       if (originalGetAllKeys) {
         IDBObjectStore.prototype.getAllKeys = originalGetAllKeys;
       }
-
-      await db.deleteDatabase();
     });
   });
 
@@ -492,8 +441,6 @@ describe(`DBWrapper`, function() {
 
       const comments = await db.getAllBy('comments');
       expect(comments).to.deep.equal(data.comments);
-
-      await db.deleteDatabase();
     });
 
     it(`accepts options to customize the results returned`, async function() {
@@ -528,8 +475,6 @@ describe(`DBWrapper`, function() {
       expect(comment.value).to.deep.equal(data.comments[1]);
       expect(comment.key).to.equal(data.comments[1].postId);
       expect(comment.primaryKey).to.equal(2);
-
-      await db.deleteDatabase();
     });
   });
 
@@ -548,8 +493,6 @@ describe(`DBWrapper`, function() {
 
       expect(users).to.deep.equal(data.users.slice(0, 1));
       expect(posts).to.deep.equal(data.posts.slice(0, 1));
-
-      await db.deleteDatabase();
     });
 
     it(`provides a 'complete' function to resolve a transaction with a value`,
@@ -568,8 +511,6 @@ describe(`DBWrapper`, function() {
         };
       });
       expect(comment).to.deep.equal(data.comments[4]);
-
-      await db.deleteDatabase();
     });
 
     it(`provides an 'abort' function to manually abort a transaction`,
@@ -595,8 +536,6 @@ describe(`DBWrapper`, function() {
       expect(posts).to.have.lengthOf(0);
       const comments = await db.getAll('comments');
       expect(comments).to.have.lengthOf(0);
-
-      await db.deleteDatabase();
     });
 
     it(`throws if the transaction fails`, async function() {
@@ -613,8 +552,6 @@ describe(`DBWrapper`, function() {
         stores.users.add(data.users[0]);
       }));
       expect(err).to.have.property('message');
-
-      await db.deleteDatabase();
     });
   });
 
@@ -631,78 +568,6 @@ describe(`DBWrapper`, function() {
       db.close();
 
       expect(IDBDatabase.prototype.close.calledOnce).to.be.true;
-
-      await db.deleteDatabase();
-    });
-  });
-
-  describe(`deleteDatabase`, function() {
-    // TODO(philipwalton): shelving-mock-indexeddb defines deleteDatabase
-    // as an non-writable property, so we can't spy on it, but this passes in
-    // browser tests.
-    it.skip(`deletes a database`, async function() {
-      sandbox.spy(indexedDB, 'deleteDatabase');
-
-      const db = await createTestDb();
-      await db.deleteDatabase();
-
-      expect(indexedDB.deleteDatabase.calledOnce).to.be.true;
-    });
-
-    it.skip(`throws when an error occurs`, async function() {
-      const fakeError = new Error();
-      sandbox.stub(indexedDB, 'deleteDatabase').callsFake(() => {
-        const result = {};
-        // Asynchronously call onerror.
-        setTimeout(() => result.onerror({target: {error: fakeError}}), 0);
-        return result;
-      });
-
-      const db = await createTestDb();
-      const err = await catchAsyncError(db.deleteDatabase());
-      expect(err).to.equal(fakeError);
-    });
-  });
-
-  describe(`static onsuccessAll`, function() {
-    it(`runs a callback once all requests have succeeded`,
-        async function() {
-      const db = await createAndPopulateTestDb();
-
-      // Updates all comments from a particular user.
-      const comments = await db.transaction(['comments'], 'readwrite',
-          (stores, complete) => {
-        const results = [];
-
-        const postIdIndex = stores.comments.index('userEmail');
-        const query = IDBKeyRange.only(data.users[0].email);
-        postIdIndex.openCursor(query).onsuccess = (evt) => {
-          const cursor = evt.target.result;
-          if (cursor) {
-            const {primaryKey, value} = cursor;
-            results.push({primaryKey, value});
-
-            // TODO(philipwalton): this update call breaks in Safari due to
-            // non-unique cursors not iterating properly when there's an
-            // update/delete call:
-            // https://bugs.webkit.org/show_bug.cgi?id=178995
-            // cursor.update(...);
-
-            cursor.continue();
-          } else {
-            // Convert the text of all this user's comments to uppercase.
-            const updateRequests = results.map(({primaryKey, value}) => {
-              value.content = value.content.toUpperCase();
-              return stores.comments.put(value, primaryKey);
-            });
-            DBWrapper.onsuccessAll(updateRequests, complete);
-          }
-        };
-      });
-      // Each request's result is the primary key of the entry updated.
-      expect(comments).to.deep.equal([3, 4, 5]);
-
-      await db.deleteDatabase();
     });
   });
 });

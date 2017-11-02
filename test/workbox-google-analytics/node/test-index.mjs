@@ -15,10 +15,10 @@
 
 import {expect} from 'chai';
 import sinon from 'sinon';
+import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import {eventsDoneWaiting, resetEventListeners} from '../../../infra/testing/sw-env-mocks/event-listeners.js';
-import {DB_NAME} from '../../../packages/workbox-background-sync/utils/constants.mjs';
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
-import {cacheNames, DBWrapper} from '../../../packages/workbox-core/_private.mjs';
+import {cacheNames} from '../../../packages/workbox-core/_private.mjs';
 import {NetworkFirst, NetworkOnly} from '../../../packages/workbox-runtime-caching/index.mjs';
 import * as googleAnalytics from '../../../packages/workbox-google-analytics/index.mjs';
 import {
@@ -28,14 +28,7 @@ import {
   COLLECT_PATH,
 } from '../../../packages/workbox-google-analytics/utils/constants.mjs';
 
-
 const PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
-
-
-const deleteDatabase = async () => {
-  const db = await new DBWrapper(DB_NAME, 1).open();
-  await db.deleteDatabase();
-};
 
 describe(`[workbox-google-analytics] initialize`, function() {
   const sandbox = sinon.sandbox.create();
@@ -43,10 +36,10 @@ describe(`[workbox-google-analytics] initialize`, function() {
     Queue._queueNames.clear();
     resetEventListeners();
     sandbox.restore();
+    iDBReset();
 
     const usedCaches = await caches.keys();
     await Promise.all(usedCaches.map((cacheName) => caches.delete(cacheName)));
-    await deleteDatabase();
   };
 
   beforeEach(async function() {

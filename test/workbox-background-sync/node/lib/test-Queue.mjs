@@ -15,7 +15,11 @@
 
 import {expect} from 'chai';
 import clearRequire from 'clear-require';
+import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import sinon from 'sinon';
+
+// import deleteIDBDatabase from
+//     '../../../../infra/testing/deleteIDBDatabase.mjs';
 import expectError from '../../../../infra/testing/expectError';
 import {DB_NAME, OBJECT_STORE_NAME} from
     '../../../../packages/workbox-background-sync/utils/constants.mjs';
@@ -23,13 +27,7 @@ import {DBWrapper} from '../../../../packages/workbox-core/_private.mjs';
 import {resetEventListeners} from
     '../../../../infra/testing/sw-env-mocks/event-listeners.js';
 
-
 let Queue;
-
-const deleteDatabase = async () => {
-  const db = await new DBWrapper(DB_NAME, 1).open();
-  db.deleteDatabase();
-};
 
 const getObjectStoreEntries = async () => {
   return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);
@@ -44,7 +42,7 @@ describe(`[workbox-background-sync] Queue`, function() {
     // Clear Queue so the name map gets reset on re-import.
     clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
 
-    await deleteDatabase();
+    iDBReset();
 
     // Remove any lingering event listeners
     resetEventListeners();
@@ -62,7 +60,7 @@ describe(`[workbox-background-sync] Queue`, function() {
     // Clear Queue so the name map gets reset on re-import.
     clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
 
-    await deleteDatabase();
+    iDBReset();
 
     // Remove any lingering event listeners
     resetEventListeners();
