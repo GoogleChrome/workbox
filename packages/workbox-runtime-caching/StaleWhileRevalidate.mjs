@@ -102,13 +102,13 @@ class StaleWhileRevalidate {
 
     if (response) {
       if (process.env.NODE_ENV !== 'production') {
-        logs(`Found a cached response in the '${this._cacheName}'` +
+        logs.push(`Found a cached response in the '${this._cacheName}'` +
           ` cache. Will update with the network response in the background.`);
       }
       event.waitUntil(fetchAndCachePromise);
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        logs(`No response found in the '${this._cacheName}' cache. ` +
+        logs.push(`No response found in the '${this._cacheName}' cache. ` +
           `Will wait for the network response.`);
       }
       response = await fetchAndCachePromise;
