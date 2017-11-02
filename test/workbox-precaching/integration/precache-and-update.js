@@ -27,40 +27,16 @@ describe(`[workbox-precaching] Precache and Update`, function() {
   const activateSW = async (swFile) => {
     const error = await webdriver.executeAsyncScript((swFile, cb) => {
       navigator.serviceWorker.register(swFile)
-      .then((registration) => {
-        return new Promise((resolve, reject) => {
-          if (registration.installing === null) {
-            reject(new Error('Service worker is not installing. Did you call ' +
-              'cleanState() to unregister this service?'));
-            return;
+      .then(() => {
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (navigator.serviceWorker.controller.scriptURL.endsWith(swFile)) {
+            cb();
           }
-
-          let serviceWorker = registration.installing;
-
-          // We unregister all service workers after each test - this should
-          // always trigger an install state change
-          let stateChangeListener = function(evt) {
-            if (evt.target.state === 'activated') {
-              serviceWorker.removeEventListener('statechange', stateChangeListener);
-              resolve();
-              return;
-            }
-
-            if (evt.target.state === 'redundant') {
-              serviceWorker.removeEventListener('statechange', stateChangeListener);
-
-              // Must call reject rather than throw error here due to this
-              // being inside the scope of the callback function stateChangeListener
-              reject(new Error('Installing servier worker became redundant'));
-              return;
-            }
-          };
-
-          serviceWorker.addEventListener('statechange', stateChangeListener);
         });
       })
-      .then(() => cb())
-      .catch((err) => cb(err.message));
+      .catch((err) => {
+        cb(err);
+      });
     }, swFile);
     if (error) {
       throw error;
