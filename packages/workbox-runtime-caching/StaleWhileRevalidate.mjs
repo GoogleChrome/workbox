@@ -25,6 +25,10 @@ import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
 
+// TODO: Replace `Workbox plugins` link in the class description with a
+// link to d.g.c.
+// TODO: Replace `plugins` parameter link with link to d.g.c.
+
 /**
  * An implementation of a
  * [stale-while-revalidate]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate}
