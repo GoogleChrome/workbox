@@ -1,6 +1,6 @@
 {
   "name": "workbox-sw",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A service worker library to make managing fetch requests and caching as easy as possible.",
   "keywords": [
     "workbox",
@@ -21,8 +21,8 @@
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-sw",
-  "main": "build/importScripts/workbox-sw.prod.v2.1.0.js",
-  "module": "build/modules/workbox-sw.prod.v2.1.0.mjs",
+  "main": "build/importScripts/workbox-sw.prod.v2.1.1.js",
+  "module": "build/modules/workbox-sw.prod.v2.1.1.mjs",
   "devDependencies": {
     "workbox-broadcast-cache-update": "^2.0.3",
     "workbox-cache-expiration": "^2.0.3",
