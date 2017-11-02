@@ -67,9 +67,6 @@ class CacheOnly {
         funcName: 'handle',
         paramName: 'event',
       });
-
-      logger.groupCollapsed(
-        messages.strategyStart('CacheOnly', event));
     }
 
     const response = await cacheWrapper.match(
@@ -80,6 +77,8 @@ class CacheOnly {
     );
 
     if (process.env.NODE_ENV !== 'production') {
+      logger.groupCollapsed(
+        messages.strategyStart('CacheOnly', event));
       if (response) {
         logger.log(`Found a cached response in the '${this._cacheName}'` +
           ` cache.`);

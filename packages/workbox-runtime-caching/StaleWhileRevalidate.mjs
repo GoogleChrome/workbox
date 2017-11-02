@@ -81,6 +81,7 @@ class StaleWhileRevalidate {
    * @return {Promise<Response>}
    */
   async handle({event}) {
+    const logs = [];
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -88,9 +89,6 @@ class StaleWhileRevalidate {
         funcName: 'handle',
         paramName: 'event',
       });
-
-      logger.groupCollapsed(
-        messages.strategyStart('StaleWhileRevalidate', event));
     }
 
     const fetchAndCachePromise = this._getFromNetwork(event);
@@ -104,19 +102,28 @@ class StaleWhileRevalidate {
 
     if (response) {
       if (process.env.NODE_ENV !== 'production') {
-        logger.log(`Found a cached response in the '${this._cacheName}'` +
+        logs(`Found a cached response in the '${this._cacheName}'` +
           ` cache. Will update with the network response in the background.`);
       }
       event.waitUntil(fetchAndCachePromise);
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        logger.log(`No response found in the '${this._cacheName}' cache. ` +
+        logs(`No response found in the '${this._cacheName}' cache. ` +
           `Will wait for the network response.`);
       }
       response = await fetchAndCachePromise;
     }
 
     if (process.env.NODE_ENV !== 'production') {
+      logger.groupCollapsed(
+        messages.strategyStart('StaleWhileRevalidate', event));
+      for (let log of logs) {
+        if (Array.isArray(log)) {
+          logger.log(...log);
+        } else {
+          logger.log(log);
+        }
+      }
       messages.printFinalResponse(response);
       logger.groupEnd();
     }

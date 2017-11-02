@@ -79,9 +79,11 @@ class RegExpRoute extends Route {
       // behind this behavior.
       if ((url.origin !== location.origin) && (result.index !== 0)) {
         if (process.env.NODE_ENV !== 'production') {
-          logger.debug(`Skipping route, because while ${regExp} matched
-            ${url}, the request is cross-origin and the match did not occur at
-            the start of the URL.`);
+          logger.debug(
+            `The regular expression '${regExp}' only partially matched ` +
+            `against the cross-origin URL '${url}'. RegExpRoute's will only ` +
+            `handle cross-origin requests if they match the entrie URL.`
+          );
         }
 
         return null;

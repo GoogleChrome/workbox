@@ -67,9 +67,6 @@ class NetworkOnly {
         funcName: 'handle',
         paramName: 'event',
       });
-
-      logger.groupCollapsed(
-        messages.strategyStart('NetworkOnly', event));
     }
 
     let error;
@@ -85,6 +82,8 @@ class NetworkOnly {
     }
 
     if (process.env.NODE_ENV !== 'production') {
+      logger.groupCollapsed(
+        messages.strategyStart('NetworkOnly', event));
       if (response) {
         logger.log(`Got response from network.`);
       } else {
