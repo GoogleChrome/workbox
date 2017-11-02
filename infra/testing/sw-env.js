@@ -11,6 +11,7 @@
  limitations under the License.
  */
 
+const sinon = require('sinon');
 const serviceWorkerMock = require('service-worker-mock');
 const {IDBFactory, IDBKeyRange} = require('shelving-mock-indexeddb');
 const URLSearchParams = require('url-search-params');
@@ -50,3 +51,14 @@ global.registration.sync = new SyncManager();
 global.Request = Request;
 global.SyncEvent = SyncEvent;
 global.URLSearchParams = URLSearchParams;
+
+// TODO: Remove when fixed in service-worker-mock:
+// https://github.com/pinterest/service-workers/issues/71
+const origMatch = caches.match;
+sinon.stub(caches, 'match').callsFake(async (req, options) => {
+  if (options && options.cacheName) {
+    const cache = await caches.open(options.cacheName);
+    return cache.match(req);
+  }
+  return origMatch(req, options);
+});

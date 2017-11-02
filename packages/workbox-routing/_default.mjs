@@ -115,6 +115,7 @@ class DefaultRouter extends Router {
    * @param {Array<RegExp>} [options.whitelist=[/./]] If any of these patterns
    * match the URL's pathname and search parameter, the route will handle the
    * request (assuming the blacklist doesn't match).
+   * @return {NavigationRoute} Returns the generated Route.
    */
   registerNavigationRoute(cachedAssetUrl, options = {}) {
     if (process.env.NODE_ENV !== 'production') {
@@ -128,12 +129,14 @@ class DefaultRouter extends Router {
 
     const cacheName = cacheNames.getPrecacheName(options.cacheName);
     const handler = () => caches.match(cachedAssetUrl, {cacheName});
+    const route = new NavigationRoute(handler, {
+      whitelist: options.whitelist,
+      blacklist: options.blacklist,
+    });
     super.registerRoute(
-      new NavigationRoute(handler, {
-        whitelist: options.whitelist,
-        blacklist: options.blacklist,
-      })
+      route
     );
+    return route;
   }
 }
 
