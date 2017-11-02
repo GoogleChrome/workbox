@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import WorkboxSW from './models/WorkboxSW.mjs';
+import WorkboxSW from './controllers/WorkboxSW.mjs';
 import './_version.mjs';
 
 export default new WorkboxSW();
