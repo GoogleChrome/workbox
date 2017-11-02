@@ -55,7 +55,8 @@ async function generateSW(input) {
     // TODO: Update for https://github.com/GoogleChrome/workbox/issues/969.
     const cdnUrl = cdnUtils.getModuleUrl('workbox-sw', 'prod');
     // importScripts may or may not already be an array containing other URLs.
-    options.importScripts = (options.importScripts || []).concat(cdnUrl);
+    // Either way, list cdnUrl first.
+    options.importScripts = [cdnUrl].concat(options.importScripts || []);
   } else {
     // If we're not importing the Workbox scripts from the CDN, then copy
     // over the dev + prod version of all of the core libraries.
@@ -65,11 +66,13 @@ async function generateSW(input) {
     // automatically by virtue of being used with importScripts().
     options.globIgnores = [
       `**/${workboxDirectoryName}/*.js*`,
-    ].concat(options.globIgnores);
+    ].concat(options.globIgnores || []);
 
     // importScripts may or may not already be an array containing other URLs.
-    options.importScripts = (options.importScripts || []).concat(
-      `${workboxDirectoryName}/${WORKBOX_SW_FILENAME}`);
+    // Either way, list WORKBOX_SW_FILENAME first.
+    options.importScripts = [
+      `${workboxDirectoryName}/${WORKBOX_SW_FILENAME}`,
+    ].concat(options.importScripts || []);
   }
 
   const {count, size, manifestEntries} = await getFileManifestEntries(options);

@@ -1,20 +1,16 @@
 const expect = require('chai').expect;
-const fse = require('fs-extra');
+const glob = require('glob');
 const path = require('path');
 const tempy = require('tempy');
 
 const cdnUtils = require('../../../../packages/workbox-build/src/lib/cdn-utils');
 const generateSW = require('../../../../packages/workbox-build/src/entry-points/generate-sw');
-const useBuildType = require('../../../../packages/workbox-build/src/lib/use-build-type');
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() {
   const BUILD_TYPE = (process.env.NODE_ENV && process.env.NODE_ENV.startsWith('dev')) ? 'dev' : 'prod';
   const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw', BUILD_TYPE);
-  const LOCAL_WORKBOX_SW_FILENAME = useBuildType(
-    path.basename(require.resolve('../../../../packages/workbox-build/node_modules/workbox-sw/')),
-    BUILD_TYPE
-  );
+  const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
@@ -143,15 +139,17 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
       const {count, size} = await generateSW(options);
 
-      const pathToWorkboxSWCopy = path.join(path.dirname(swDest), LOCAL_WORKBOX_SW_FILENAME);
-      const stats = await fse.stat(pathToWorkboxSWCopy);
-      expect(stats.isFile()).to.be.true;
+      const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
+        {cwd: path.dirname(swDest)});
+      // This reflects the number of library files that were copied over:
+      // - both prod and dev builds
+      // - source maps for each
+      expect(libraryFiles).to.have.length(20);
 
       expect(count).to.eql(6);
       expect(size).to.eql(2421);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         constructor: [[{}]],
-        importScripts: [[LOCAL_WORKBOX_SW_FILENAME]],
         precache: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -188,7 +186,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2421);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         constructor: [[{}]],
-        importScripts: [[...importScripts, WORKBOX_SW_CDN_URL]],
+        importScripts: [[WORKBOX_SW_CDN_URL, ...importScripts]],
         precache: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
