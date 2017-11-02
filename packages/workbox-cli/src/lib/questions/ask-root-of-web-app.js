@@ -16,8 +16,8 @@
 
 const assert = require('assert');
 const fse = require('fs-extra');
+const glob = require('glob');
 const inquirer = require('inquirer');
-const nodeDir = require('node-dir');
 
 const {ignoredDirectories} = require('../constants');
 const errors = require('../errors');
@@ -32,14 +32,16 @@ const name = 'globDirectory';
  * working directory, with hidden and ignored ones filtered out.
  */
 async function getSubdirectories() {
-  const rootContents = await nodeDir.promiseFiles(process.cwd(), 'dir',
-    {shortName: true, recursive: false});
-
-  return rootContents.filter((subdirectory) => {
-    return !(
-      ignoredDirectories.includes(subdirectory) ||
-      subdirectory.startsWith('.')
-    );
+  return await new Promise((resolve, reject) => {
+    glob('*/', {
+      ignore: ignoredDirectories.map((directory) => `${directory}/`),
+    }, (error, directories) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(directories);
+      }
+    });
   });
 }
 

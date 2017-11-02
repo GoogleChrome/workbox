@@ -91,5 +91,10 @@ module.exports = async (globDirectory) => {
   const extensions = answers[name];
   assert(extensions.length > 0, errors['no-file-extensions-selected']);
 
-  return [`**/*.{${extensions.join(',')}}`];
+  // glob isn't happy with a single option inside of a {} group, so use a
+  // pattern without a {} group when there's only one extension.
+  const extensionsPattern = extensions.length === 1 ?
+    extensions[0] :
+    `{${extensions.join(',')}}`;
+  return [`**/*.${extensionsPattern}`];
 };
