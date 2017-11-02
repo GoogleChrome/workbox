@@ -366,80 +366,17 @@ describe(`DBWrapper`, function() {
     });
   });
 
-  describe(`getAllKeys`, function() {
-    it(`returns the keys of all entries in an object store`, async function() {
-      const db = await createAndPopulateTestDb();
-
-      const users = await db.getAllKeys('users');
-      expect(users).to.deep.equal(data.users.map(({email}) => email));
-
-      const posts = await db.getAllKeys('posts');
-      expect(posts).to.deep.equal([1, 2, 3, 4, 5, 6]);
-
-      const comments = await db.getAllKeys('comments');
-      expect(comments).to.deep.equal([1, 2, 3, 4, 5]);
-    });
-
-    it(`supports an optional query parameter`, async function() {
-      const db = await createAndPopulateTestDb();
-
-      const users1 = await db.getAllKeys('users', IDBKeyRange.bound('a', 'm'));
-      const users2 = await db.getAllKeys('users', IDBKeyRange.bound('n', 'z'));
-
-      expect(users1).to.deep.equal(
-          data.users.slice(0, 2).map(({email}) => email));
-      expect(users2).to.deep.equal(
-          data.users.slice(2).map(({email}) => email));
-    });
-
-    it(`supports an optional count parameter`, async function() {
-      const db = await createAndPopulateTestDb();
-
-      const users1 = await db.getAllKeys(
-          'users', IDBKeyRange.bound('a', 'z'), 1);
-      const users2 = await db.getAllKeys(
-          'users', IDBKeyRange.bound('a', 'z'), 2);
-
-      expect(users1).to.deep.equal(
-          data.users.slice(0, 1).map(({email}) => email));
-      expect(users2).to.deep.equal(
-          data.users.slice(0, 2).map(({email}) => email));
-    });
-
-    it(`uses a getAllKeys polyfill when the native version isn't supported`,
-        async function() {
-      // Fake a browser without getAllKeys support.
-      const originalGetAllKeys = IDBObjectStore.prototype.getAllKeys;
-      delete IDBObjectStore.prototype.getAllKeys;
-
-      const db = await createAndPopulateTestDb();
-
-      const users1 = await db.getAllKeys('users', IDBKeyRange.bound('a', 'm'));
-      const users2 = await db.getAllKeys('users', IDBKeyRange.bound('n', 'z'));
-
-      expect(users1).to.deep.equal(
-          data.users.slice(0, 2).map(({email}) => email));
-      expect(users2).to.deep.equal(
-          data.users.slice(2).map(({email}) => email));
-
-      // Restore getAllKeys.
-      if (originalGetAllKeys) {
-        IDBObjectStore.prototype.getAllKeys = originalGetAllKeys;
-      }
-    });
-  });
-
-  describe(`getAllBy`, function() {
+  describe(`getAllMatching`, function() {
     it(`returns all entries in an object store by default`, async function() {
       const db = await createAndPopulateTestDb();
 
-      const users = await db.getAllBy('users');
+      const users = await db.getAllMatching('users');
       expect(users).to.deep.equal(data.users);
 
-      const posts = await db.getAllBy('posts');
+      const posts = await db.getAllMatching('posts');
       expect(posts).to.deep.equal(data.posts);
 
-      const comments = await db.getAllBy('comments');
+      const comments = await db.getAllMatching('comments');
       expect(comments).to.deep.equal(data.comments);
     });
 
@@ -447,7 +384,7 @@ describe(`DBWrapper`, function() {
       const db = await createAndPopulateTestDb();
 
       // Gets the most recent user added to the store.
-      const [user] = await db.getAllBy('users', {
+      const [user] = await db.getAllMatching('users', {
         count: 1,
         direction: 'prev',
       });
@@ -455,7 +392,7 @@ describe(`DBWrapper`, function() {
       expect(user).to.deep.equal(lastUser);
 
       // Gets all posts by the most recent user
-      const posts = await db.getAllBy('posts', {
+      const posts = await db.getAllMatching('posts', {
         index: 'userEmail',
         query: IDBKeyRange.only(lastUser.email),
       });
@@ -465,7 +402,7 @@ describe(`DBWrapper`, function() {
       expect(posts[2]).to.deep.equal(data.posts[5]);
 
       // Gets the last comment from the first post, including keys
-      const [comment] = await db.getAllBy('comments', {
+      const [comment] = await db.getAllMatching('comments', {
         index: 'postId',
         query: IDBKeyRange.only(1),
         direction: 'prev',

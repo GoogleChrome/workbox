@@ -61,7 +61,7 @@ export class QueueStore {
    * @return {StorableRequest|undefined}
    */
   async getAndRemoveOldestEntry() {
-    const [entry] = await this._db.getAllBy(OBJECT_STORE_NAME, {
+    const [entry] = await this._db.getAllMatching(OBJECT_STORE_NAME, {
       index: INDEXED_PROP,
       query: IDBKeyRange.only(this._queue.name),
       count: 1,

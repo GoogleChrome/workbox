@@ -144,28 +144,7 @@ class DBWrapper {
     if ('getAll' in IDBObjectStore.prototype) {
       return await this._call('getAll', storeName, 'readonly', query, count);
     } else {
-      return await this.getAllBy(storeName, {query, count});
-    }
-  }
-
-  /**
-   * Delegates to the native `getAllKeys()` or polyfills it via the `find()`
-   * method in older browsers.
-   *
-   * @param {string} storeName
-   * @param {*} query
-   * @param {number} count
-   * @return {Array}
-   */
-  async getAllKeys(storeName, query, count) {
-    if ('getAllKeys' in IDBObjectStore.prototype) {
-      return await this._call(
-          'getAllKeys', storeName, 'readonly', query, count);
-    } else {
-      const entries = await this.getAllBy(
-          storeName, {query, count, includeKeys: true});
-
-      return entries.map(({key}) => key);
+      return await this.getAllMatching(storeName, {query, count});
     }
   }
 
@@ -185,7 +164,7 @@ class DBWrapper {
    *     objects in the form {key, primaryKey, value}.
    * @return {Array}
    */
-  async getAllBy(storeName, opts = {}) {
+  async getAllMatching(storeName, opts = {}) {
     return await this.transaction([storeName], 'readonly', (stores, done) => {
       const store = stores[storeName];
       const target = opts.index ? store.index(opts.index) : store;
@@ -290,57 +269,6 @@ class DBWrapper {
    */
   close() {
     if (this._db) this._db.close();
-  }
-
-  /**
-   * Deletes the database.
-   */
-  async deleteDatabase() {
-    this.close();
-    // TODO(philipwalton): add a timeout to handle the blocked case.
-    await new Promise((resolve, reject) => {
-      const request = indexedDB.deleteDatabase(this._name);
-      request.onerror = (evt) => reject(evt.target.error);
-      request.onsuccess = (evt) => resolve();
-    });
-  }
-
-  /**
-   * A helper that makes it easier to run IDBRequests in parallel. This
-   * method takes an array of IDBRequests and runs the callback once all of
-   * them are successful. This method should be used along with the
-   * `transaction()` so any errors are automatically handled.
-   *
-   * @param {Array<IDBRequest>} requests
-   * @param {function(Array<*>):undefined} callback
-   */
-  static onsuccessAll(requests, callback) {
-    let called = false;
-
-    const checkIfDone = () => {
-      if (called) return;
-
-      let successfulRequests = 0;
-      for (const request of requests) {
-        if (request.readyState == 'done') {
-          // Exit early if there's any errors. Errors will bubble to the
-          // transaction, so we don't have to report with them here.
-          if (request.error) return;
-
-          successfulRequests++;
-          if (successfulRequests == requests.length) {
-            callback(requests.map((request) => request.result));
-            called = true;
-            return;
-          }
-        } else {
-          request.addEventListener('success', () => checkIfDone(requests));
-          // Once one is added, no need to add more.
-          break;
-        }
-      }
-    };
-    checkIfDone();
   }
 }
 

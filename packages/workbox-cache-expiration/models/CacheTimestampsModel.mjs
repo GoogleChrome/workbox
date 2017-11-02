@@ -59,7 +59,9 @@ class CacheTimestampsModel {
    * @return {Array<Objects>}
    */
   async getAllTimestamps() {
-    return await this._db.getAllBy(this._storeName, {index: TIMESTAMP_KEY});
+    return await this._db.getAllMatching(this._storeName, {
+      index: TIMESTAMP_KEY,
+    });
   }
 
   /**
