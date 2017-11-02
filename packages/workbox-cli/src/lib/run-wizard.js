@@ -21,9 +21,7 @@ const askQuestions = require('./questions/ask-questions');
 const logger = require('./logger');
 
 module.exports = async () => {
-  const config = await askQuestions();
-  const {configLocation} = config;
-  delete config.configLocation;
+  const {configLocation, config} = await askQuestions();
 
   const contents = `module.exports = ${JSON.stringify(config, null, 2)};`;
   await fse.writeFile(configLocation, contents);

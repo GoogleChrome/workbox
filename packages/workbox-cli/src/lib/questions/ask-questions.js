@@ -24,11 +24,14 @@ module.exports = async () => {
   const globPatterns = await askExtensionsToCache(globDirectory);
   const swDest = await askSWDest();
   const configLocation = await askConfigLocation();
-
-  return {
-    configLocation,
+  const config = {
     globDirectory,
     globPatterns,
     swDest,
+  };
+
+  return {
+    config,
+    configLocation,
   };
 };
