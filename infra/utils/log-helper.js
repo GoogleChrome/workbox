@@ -7,6 +7,10 @@ const prefix = function() {
 module.exports = {
   highlight: chalk.bgCyan,
 
+  debug: (...args) => {
+    console.log(prefix(), chalk.dim(...args));
+  },
+
   log: (...args) => {
     console.log(prefix(), ...args);
   },

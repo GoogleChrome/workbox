@@ -5,11 +5,11 @@ importScripts('/__WORKBOX/buildFile/workbox-precaching');
 
 workbox.precaching.precache([
   {
-    url: 'styles/index.css',
-    revision: '1',
-  }, {
     url: 'index.html',
-    revision: '1',
+    revision: '2',
+  }, {
+    url: 'new-request.txt',
+    revision: '2',
   },
 ]);
 

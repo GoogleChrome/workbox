@@ -41,11 +41,22 @@ app.get(/\/__WORKBOX\/buildFile\/(workbox-[A-z]*)(\.(?:dev|prod)\.(.*))*/, (req,
 });
 
 let server = null;
-
+let requestCounts = {};
 module.exports = {
   start: () => {
     return new Promise((resolve) => {
       const staticPath = path.join(__dirname, '..', '..');
+
+      // This allows test to assess how many requests were made to the server.
+      app.use((req, res, next) => {
+        if (!requestCounts[req.url]) {
+          requestCounts[req.url] = 0;
+        }
+
+        requestCounts[req.url] += 1;
+        next();
+      });
+
       app.use(
         express.static(staticPath),
         serveIndex(staticPath, {'icons': true})
@@ -68,5 +79,11 @@ module.exports = {
   },
   getAddress: () => {
     return 'http://localhost:3004';
+  },
+  reset: () => {
+    requestCounts = {};
+  },
+  getRequests: () => {
+    return Object.assign({}, requestCounts);
   },
 };
