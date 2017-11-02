@@ -14,32 +14,15 @@
   limitations under the License.
 */
 
-import {assert} from 'workbox-core/_private.mjs';
+import {assert, WorkboxError} from 'workbox-core/_private.mjs';
 import {Router} from './Router.mjs';
+import {Route} from './Route.mjs';
+import {RegExpRoute} from './RegExpRoute.mjs';
 import './_version.mjs';
 
 if (process.env.NODE_ENV !== 'production') {
   assert.isSwEnv('workbox-routing');
 }
-
-const router = new Router();
-
-// By default, register a fetch event listener that will respond to a request
-// only if there's a matching route.
-self.addEventListener('fetch', (event) => {
-  const responsePromise = router.handleRequest(event);
-  if (responsePromise) {
-    event.respondWith(responsePromise);
-  }
-});
-
-/**
- * [See Router.handleRequest()]{@link
- * module:workbox-routing.Router#handleRequest}
- *
- * @function
- * @name module:workbox-routing.handleRequest
- */
 
 /**
  * [See Router.setDefaultHandler()]{@link
@@ -58,19 +41,78 @@ self.addEventListener('fetch', (event) => {
  */
 
 /**
- * [See Router.registerRoute()]{@link
- * module:workbox-routing.Router#registerRoute}
- *
- * @function
- * @name module:workbox-routing.registerRoute
- */
-
-/**
  * [See Router.unregisterRoute()]{@link
  * module:workbox-routing.Router#unregisterRoute}
  *
  * @function
  * @name module:workbox-routing.unregisterRoute
  */
+
+/**
+ * @private
+ */
+class DefaultRouter extends Router {
+  /**
+   * This is helper method that will generate and register a Route object
+   * from the provided `capture` and `handler` arguments.
+   *
+   * [See Router.registerRoute() for more info]{@link
+   * module:workbox-routing.Router#registerRoute}.
+   *
+   * @param {RegExp|matchCallback|Route} capture If the capture param
+   * is a `Route`, all other arguments will be ignored.
+   * @param {workbox-route.Route~handlerCallback} handler
+   * @param {string} method
+   * @return {Route} Returns the generated Route.
+   *
+   * @alias module:workbox-routing.registerRoute
+   */
+  registerRoute(capture, handler, method = 'GET') {
+    let route;
+    // TODO Should we allow Express Route?
+    // TODO If so - don't forget to add 'string' to params in jsdoc.
+    /** if (typeof capture === 'string') {
+      if (capture.length === 0) {
+        throw new WorkboxError('empty-express-string', {
+          moduleName: 'workbox-routing',
+          class: 'DefaultRouter',
+          func: 'registerRoute',
+          paramName: 'capture',
+        });
+      }
+      route = new ExpressRoute(capture, handler, method);
+    } **/
+    if (capture instanceof RegExp) {
+      route = new RegExpRoute(capture, handler, method);
+    } else if (typeof capture === 'function') {
+      route = new Route(capture, handler, method);
+    } else if (capture instanceof Route) {
+      route = capture;
+    } else {
+      throw new WorkboxError('unsupported-route-type', {
+        moduleName: 'workbox-routing',
+        className: 'DefaultRouter',
+        funcName: 'registerRoute',
+        paramName: 'capture',
+      });
+    }
+
+    super.registerRoute(route);
+    return route;
+  }
+}
+
+const router = new DefaultRouter();
+
+// By default, register a fetch event listener that will respond to a request
+// only if there's a matching route.
+self.addEventListener('fetch', (event) => {
+  const responsePromise = router.handleRequest(event);
+  if (responsePromise) {
+    event.respondWith(responsePromise);
+  }
+});
+
+// TODO Register Navigation Route
 
 export default router;
