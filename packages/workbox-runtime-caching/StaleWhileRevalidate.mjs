@@ -25,17 +25,22 @@ import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
 
+// TODO: Replace `Workbox plugins` link in the class description with a
+// link to d.g.c.
+// TODO: Replace `plugins` parameter link with link to d.g.c.
+
 /**
  * An implementation of a
  * [stale-while-revalidate]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate}
  * request strategy.
  *
- * Resources are requested from both the cache and the network in parallel, then
- * responds with the cached version. The cache is updated with the response
- * from the network.
+ * Resources are requested from both the cache and the network in parallel.
+ * The strategy will respond with the cached version if available, otherwise
+ * wait for the network response. The cache is updated with the network response
+ * with each successful request.
  *
  * By default, this strategy will cache responses with a 200 status code as
- * well as [opaque responses]{@link http://stackoverflow.com/q/39109789}.
+ * well as [opaque responses]{@link https://docs.google.com/document/d/1nHIjXdmXs9nT6_lcGcsZY5UZ-tL9JxXESlKbzAJdBG4/edit?usp=sharing}.
  * Opaque responses are are cross-origin requests where the response doesn't
  * support [CORS]{@link https://enable-cors.org/}.
  *
@@ -45,9 +50,10 @@ class StaleWhileRevalidate {
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
-   * requests. Defaults to cache names provided by `workbox-core`.
-   * @param {string} options.plugins Workbox plugins you may want to use in
-   * conjunction with this caching strategy.
+   * requests. Defaults to cache names provided by
+   * [workbox-core]{@link module:workbox-core.cacheNames}.
+   * @param {string} options.plugins [Plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}
+   * to use in conjunction with this caching strategy.
    */
   constructor(options = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
@@ -65,18 +71,16 @@ class StaleWhileRevalidate {
   }
 
   /**
-   * The handle method will be called by the
-   * {@link module:workbox-routing.Route|Route} class when a route matches a
-   * request.
+   * This method will perform a request strategy and follows an API that
+   * will work with the
+   * [Workbox Router]{@link module:workbox-routing.Router}.
    *
    * @param {Object} input
-   * @param {FetchEvent} input.event The fetch event to handle.
-   * @param {URL} input.url The URL of the request.
-   * @param {Object} input.params Any params returned by `Routes` match
-   * callback.
+   * @param {FetchEvent} input.event The fetch event to run this strategy
+   * against.
    * @return {Promise<Response>}
    */
-  async handle({url, event, params}) {
+  async handle({event}) {
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -99,12 +103,16 @@ class StaleWhileRevalidate {
     );
 
     if (response) {
-      logger.log(`Found a cached response in the '${this._cacheName}'` +
-        ` cache. Will update with the network response in the background.`);
+      if (process.env.NODE_ENV !== 'production') {
+        logger.log(`Found a cached response in the '${this._cacheName}'` +
+          ` cache. Will update with the network response in the background.`);
+      }
       event.waitUntil(fetchAndCachePromise);
     } else {
-      logger.log(`No response found in the '${this._cacheName}' cache. ` +
-        `Will wait for the network response.`);
+      if (process.env.NODE_ENV !== 'production') {
+        logger.log(`No response found in the '${this._cacheName}' cache. ` +
+          `Will wait for the network response.`);
+      }
       response = await fetchAndCachePromise;
     }
 
@@ -119,6 +127,8 @@ class StaleWhileRevalidate {
   /**
    * @param {FetchEvent} event
    * @return {Promise<Response>}
+   *
+   * @private
    */
   async _getFromNetwork(event) {
     const response = await fetchWrapper.fetch(

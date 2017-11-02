@@ -22,12 +22,16 @@ import {
 import messages from './utils/messages.mjs';
 import './_version.mjs';
 
+// TODO: Replace `Workbox plugins` link in the class description with a
+// link to d.g.c.
+// TODO: Replace `plugins` parameter link with link to d.g.c.
+
 /**
  * An implementation of a
  * [network-only]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only}
  * request strategy.
  *
- * This class is useful if you want to take advantage of the Workbox plugins.
+ * This class is useful if you want to take advantage of any [Workbox plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}.
  *
  * @memberof module:workbox-runtime-caching
  */
@@ -35,9 +39,10 @@ class NetworkOnly {
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
-   * requests. Defaults to cache names provided by `workbox-core`.
-   * @param {string} options.plugins Workbox plugins you may want to use in
-   * conjunction with this caching strategy.
+   * requests. Defaults to cache names provided by
+   * [workbox-core]{@link module:workbox-core.cacheNames}.
+   * @param {string} options.plugins [Plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}
+   * to use in conjunction with this caching strategy.
    */
   constructor(options = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
@@ -45,17 +50,16 @@ class NetworkOnly {
   }
 
   /**
-   * This method will be called by the Workbox
-   * [Router]{@link module:workbox-routing.Router} to handle a fetch event.
+   * This method will perform a request strategy and follows an API that
+   * will work with the
+   * [Workbox Router]{@link module:workbox-routing.Router}.
    *
    * @param {Object} input
-   * @param {FetchEvent} input.event The fetch event to handle.
-   * @param {URL} input.url The URL of the request.
-   * @param {Object} input.params Any params returned by `Routes` match
-   * callback.
+   * @param {FetchEvent} input.event The fetch event to run this strategy
+   * against.
    * @return {Promise<Response>}
    */
-  async handle({url, event, params}) {
+  async handle({event}) {
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',

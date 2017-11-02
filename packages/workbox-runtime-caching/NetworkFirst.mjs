@@ -25,13 +25,16 @@ import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
 
+// TODO: Change opaque responses to d.g.c link
+// TODO: Replace `plugins` parameter link with link to d.g.c.
+
 /**
  * An implementation of a
  * [network first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache}
  * request strategy.
  *
  * By default, this strategy will cache responses with a 200 status code as
- * well as [opaque responses]{@link http://stackoverflow.com/q/39109789}.
+ * well as [opaque responses]{@link https://docs.google.com/document/d/1nHIjXdmXs9nT6_lcGcsZY5UZ-tL9JxXESlKbzAJdBG4/edit?usp=sharing}.
  * Opaque responses are are cross-origin requests where the response doesn't
  * support [CORS]{@link https://enable-cors.org/}.
  *
@@ -41,9 +44,10 @@ class NetworkFirst {
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
-   * requests. Defaults to cache names provided by `workbox-core`.
-   * @param {string} options.plugins Workbox plugins you may want to use in
-   * conjunction with this caching strategy.
+   * requests. Defaults to cache names provided by
+   * [workbox-core]{@link module:workbox-core.cacheNames}.
+   * @param {string} options.plugins [Plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}
+   * to use in conjunction with this caching strategy.
    * @param {number} options.networkTimeoutSeconds If set, any network requests
    * that fail to respond within the timeout will fallback to the cache.
    *
@@ -78,17 +82,16 @@ class NetworkFirst {
   }
 
   /**
-   * This method will be called by the Workbox
-   * [Router]{@link module:workbox-routing.Router} to handle a fetch event.
+   * This method will perform a request strategy and follows an API that
+   * will work with the
+   * [Workbox Router]{@link module:workbox-routing.Router}.
    *
    * @param {Object} input
-   * @param {FetchEvent} input.event The fetch event to handle.
-   * @param {URL} input.url The URL of the request.
-   * @param {Object} input.params Any params returned by `Routes` match
-   * callback.
+   * @param {FetchEvent} input.event The fetch event to run this strategy
+   * against.
    * @return {Promise<Response>}
    */
-  async handle({url, event, params}) {
+  async handle({event}) {
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -126,6 +129,8 @@ class NetworkFirst {
   /**
    * @param {FetchEvent} event
    * @return {Promise<Response>}
+   *
+   * @private
    */
   _getTimeoutPromise(event) {
     let timeoutId;
@@ -155,6 +160,8 @@ class NetworkFirst {
    * @param {number} timeoutId
    * @param {FetchEvent} event
    * @return {Promise<Response>}
+   *
+   * @private
    */
   async _getNetworkPromise(timeoutId, event) {
     let error;
