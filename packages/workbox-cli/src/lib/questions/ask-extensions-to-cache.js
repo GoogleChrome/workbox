@@ -15,8 +15,8 @@
  **/
 
 const assert = require('assert');
+const glob = require('glob');
 const inquirer = require('inquirer');
-const nodeDir = require('node-dir');
 const ora = require('ora');
 const path = require('path');
 
@@ -32,19 +32,24 @@ const name = 'globPatterns';
  * of the files under globDirectory.
  */
 async function getAllFileExtensions(globDirectory) {
-  const substringsToIgnore = ignoredDirectories.map(
-    (directory) => `${path.sep}${directory}${path.sep}`);
-
-  const allFiles = await nodeDir.promiseFiles(globDirectory, 'file',
-    {shortName: false, recursive: true});
-
-  const filteredFiles = allFiles.filter(
-    (filePath) => substringsToIgnore.every(
-      (substring) => !filePath.includes(substring))
-  );
+  const files = await new Promise((resolve, reject) => {
+    // Use a pattern to match any file that contains a '.', since that signifies
+    // the presence of a file extension.
+    glob('**/*.*', {
+      cwd: globDirectory,
+      nodir: true,
+      ignore: ignoredDirectories.map((directory) => `**/${directory}/**`),
+    }, (error, files) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(files);
+      }
+    });
+  });
 
   const extensions = new Set();
-  for (const file of filteredFiles) {
+  for (const file of files) {
     const extension = path.extname(file);
     if (extension) {
       // Get rid of the leading . character.
@@ -60,6 +65,9 @@ async function getAllFileExtensions(globDirectory) {
  * @return {Promise<Object>} The answers from inquirer.
  */
 async function askQuestion(globDirectory) {
+  // We need to get a list of extensions corresponding to files in the directory
+  // to use when asking the next question. That could potentially take some
+  // time, so we show a spinner and explanatory text.
   const spinner = ora({
     text: `Examining files in ${globDirectory}...`,
     stream: process.stdout,

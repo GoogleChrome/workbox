@@ -29,8 +29,7 @@ const name = 'configLocation';
 function askQuestion() {
   return inquirer.prompt([{
     name,
-    message: ol`Finally, where would you like to save these configuration
-      options so that they can be used by workbox?`,
+    message: ol`Where would you like to save these configuration options?`,
     type: 'input',
     default: 'workbox-config.js',
   }]);

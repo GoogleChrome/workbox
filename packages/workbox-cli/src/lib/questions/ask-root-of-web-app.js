@@ -22,6 +22,8 @@ const nodeDir = require('node-dir');
 const {ignoredDirectories} = require('../constants');
 const errors = require('../errors');
 
+const ROOT_PROMPT = 'Please enter the path to the root of your web app:';
+
 // The key used for the question/answer.
 const name = 'globDirectory';
 
@@ -60,12 +62,12 @@ async function askQuestion() {
     }, {
       name,
       when: (answers) => answers[name] === manualEntryChoice,
-      message: `Path to your web app's root:`,
+      message: ROOT_PROMPT,
     }]);
   } else {
     return inquirer.prompt([{
       name,
-      message: `Path to your web app's root:`,
+      message: ROOT_PROMPT,
       default: '.',
     }]);
   }

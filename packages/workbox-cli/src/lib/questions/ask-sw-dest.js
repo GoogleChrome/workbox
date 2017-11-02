@@ -29,8 +29,7 @@ const name = 'swDest';
 function askQuestion() {
   return inquirer.prompt([{
     name,
-    message: ol`Where would you like to save the service worker file created
-      by this configuration?`,
+    message: ol`Where would you like your service worker file to be saved?`,
     type: 'input',
     default: 'build/sw.js',
   }]);
