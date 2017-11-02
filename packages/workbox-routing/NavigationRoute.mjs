@@ -15,6 +15,7 @@
 
 import {assert, logger} from 'workbox-core/_private.mjs';
 import {Route} from './Route.mjs';
+import './_version.mjs';
 
 /**
  * NavigationRoute is a helper class to create a [Route]{@link
