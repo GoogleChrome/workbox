@@ -78,6 +78,23 @@ const isOneOf = (value, validValues, {paramName}) => {
   }
 };
 
+const isArrayOfClass = (value, expectedClass,
+  {moduleName, className, funcName, paramName}) => {
+  const error = new WorkboxError('not-array-of-class', {
+    value, expectedClass,
+    moduleName, className, funcName, paramName,
+  });
+  if (!Array.isArray(value)) {
+    throw error;
+  }
+
+  for (let item of value) {
+    if (!(item instanceof expectedClass)) {
+      throw error;
+    }
+  }
+};
+
 const finalExports = process.env.NODE_ENV === 'production' ? null : {
   hasMethod,
   isArray,
@@ -85,6 +102,7 @@ const finalExports = process.env.NODE_ENV === 'production' ? null : {
   isOneOf,
   isSwEnv,
   isType,
+  isArrayOfClass,
 };
 
 export default finalExports;

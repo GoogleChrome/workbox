@@ -141,4 +141,11 @@ export default {
       `Please check the docs for ${moduleName}.${className}.${funcName} for ` +
       `valid input types.`;
   },
+  'not-array-of-class': ({value, expectedClass,
+    moduleName, className, funcName, paramName}) => {
+    return `The supplied '${paramName}' parameter must be an array of ` +
+      `'${expectedClass}' objects. Received '${JSON.stringify(value)},'. ` +
+      `Please check the call to ${moduleName}.${className}.${funcName}() ` +
+      `to fix the issue.`;
+  },
 };

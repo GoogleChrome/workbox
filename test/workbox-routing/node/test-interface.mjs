@@ -38,6 +38,7 @@ describe(`[workbox-routing] Module Interface`, function() {
         'RegExpRoute',
         'Route',
         'Router',
+        'NavigationRoute',
         'default',
       ]);
     });
