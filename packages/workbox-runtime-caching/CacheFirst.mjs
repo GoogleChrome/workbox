@@ -108,11 +108,7 @@ class CacheFirst {
       logger.groupCollapsed(
         messages.strategyStart('CacheFirst', event));
       for (let log of logs) {
-        if (Array.isArray(log)) {
-          logger.log(...log);
-        } else {
-          logger.log(log);
-        }
+        logger.log(log);
       }
       messages.printFinalResponse(response);
       logger.groupEnd();
