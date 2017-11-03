@@ -24,10 +24,6 @@ const validate = require('./options/validate');
 const writeServiceWorkerUsingDefaultTemplate =
   require('../lib/write-sw-using-default-template');
 
-// TODO: Update for https://github.com/GoogleChrome/workbox/issues/969.
-const WORKBOX_SW_FILENAME = 'workbox-sw.prod.js';
-
-
 /**
  * This method creates a list of URLs to precache, referred to as a "precache
  * manifest", based on the options you provide.
@@ -68,10 +64,14 @@ async function generateSW(input) {
       `**/${workboxDirectoryName}/*.js*`,
     ].concat(options.globIgnores || []);
 
+    const workboxSWPkg = require(`workbox-sw/package.json`);
+    // TODO: This will change to workboxSWPkg.main at some point.
+    const workboxSWFilename = path.basename(workboxSWPkg.browser);
+
     // importScripts may or may not already be an array containing other URLs.
-    // Either way, list WORKBOX_SW_FILENAME first.
+    // Either way, list workboxSWFilename first.
     options.importScripts = [
-      `${workboxDirectoryName}/${WORKBOX_SW_FILENAME}`,
+      `${workboxDirectoryName}/${workboxSWFilename}`,
     ].concat(options.importScripts || []);
   }
 

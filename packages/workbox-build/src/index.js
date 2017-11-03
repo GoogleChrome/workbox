@@ -14,6 +14,7 @@
   limitations under the License.
 */
 
+const copyWorkboxLibraries = require('./lib/copy-workbox-libraries');
 const generateSW = require('./entry-points/generate-sw');
 const generateSWString = require('./entry-points/generate-sw-string');
 const getManifest = require('./entry-points/get-manifest');
@@ -390,6 +391,7 @@ const injectManifest = require('./entry-points/inject-manifest');
  */
 
 module.exports = {
+  copyWorkboxLibraries,
   generateSW,
   generateSWString,
   getManifest,
