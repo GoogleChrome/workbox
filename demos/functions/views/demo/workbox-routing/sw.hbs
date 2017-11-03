@@ -1,8 +1,5 @@
 {{{WORKBOX_SW_IMPORT}}}
 
-// TODO Skip Waiting
-// TODO Clients Claim
-
 // Set up a route to alter the demo-img
 const specialImgUrl = new URL('/demo/workbox-routing/demo-img.png', location).toString();
 const specialImgRoute = new workbox.routing.Route(({event}) => {

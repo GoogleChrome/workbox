@@ -54,17 +54,23 @@ if (process.env.NODE_ENV !== 'production') {
  */
 class DefaultRouter extends Router {
   /**
-   * This is helper method that will generate and register a Route object
-   * from the provided `capture` and `handler` arguments.
+   * Easily register a Regular Expression or function with a caching
+   * strategy to the Router.
    *
-   * [See Router.registerRoute() for more info]{@link
+   * This method will simply generate a Route for you if needed and
+   * call [Router.registerRoute()]{@link
    * module:workbox-routing.Router#registerRoute}.
    *
-   * @param {RegExp|matchCallback|Route} capture If the capture param
-   * is a `Route`, all other arguments will be ignored.
-   * @param {workbox-route.Route~handlerCallback} handler
-   * @param {string} method
-   * @return {Route} Returns the generated Route.
+   * @param {
+   * RegExp|
+   * module:workbox-routing.Route~matchCallback|
+   * module:workbox-routing.Route
+   * } capture
+   * If the capture param is a `Route`, all other arguments will be ignored.
+   * @param {module:workbox-routing.Route~handlerCallback} handler
+   * @param {string} [method='GET']
+   * @return {module:workbox-routing.Route} The generated `Route`(Useful for
+   * unregistering).
    *
    * @alias module:workbox-routing.registerRoute
    */
@@ -107,15 +113,18 @@ class DefaultRouter extends Router {
    * to navigation requests with a cached URL.
    *
    * @param {string} cachedAssetUrl
-   * @param {Object} options
-   * @param {string} options.cacheName Cache name to store and retrieve
-   * requests. Defaults to precache cache name provided by `workbox-core`.
+   * @param {Object} [options]
+   * @param {string} [options.cacheName] Cache name to store and retrieve
+   * requests. Defaults to precache cache name provided by
+   * [workbox-core.cacheNames]{@link module:workbox-core.cacheNames}.
    * @param {Array<RegExp>} [options.blacklist] If any of these patterns match,
    * the route will not handle the request (even if a whitelist entry matches).
    * @param {Array<RegExp>} [options.whitelist=[/./]] If any of these patterns
    * match the URL's pathname and search parameter, the route will handle the
    * request (assuming the blacklist doesn't match).
    * @return {NavigationRoute} Returns the generated Route.
+   *
+   * @alias module:workbox-routing.registerNavigationRoute
    */
   registerNavigationRoute(cachedAssetUrl, options = {}) {
     if (process.env.NODE_ENV !== 'production') {
