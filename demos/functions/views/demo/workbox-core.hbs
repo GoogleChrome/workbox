@@ -7,7 +7,8 @@
           <li>Go to the Console</li>
           <li>Click this button:<br /><button class="install-sw btn btn-outline-primary">Install Service Worker</button></li>
           <li>Checkout the logs for info on Workbox and getting started.</li>
-          <li>Click this button to print out various types of logs:<br /><button class="show-logs btn btn-outline-primary">Show Me Some Messages</button></li>
+          <li>Click this button to print out various types of logs:<br /><button class="show-logs btn btn-outline-primary">Show Me Workbox Logs</button></li>
+          <li>Click this button to print out the Workbox Cache Names:<br /><button class="show-cache-names btn btn-outline-primary">Show Me Workbox Cache Names</button></li>
         </ol>
       </div>
     </div>
@@ -17,6 +18,7 @@
 <script>
   const installSWBtn = document.querySelector('.install-sw');
   const showLogsBtn = document.querySelector('.show-logs');
+  const cacheNamesBtn = document.querySelector('.show-cache-names');
 
   installSWBtn.addEventListener('click', () => {
     navigator.serviceWorker.register('/demo/workbox-core/sw.js');
@@ -26,6 +28,17 @@
     .then((reg) => {
       const message = {
         command: 'printLogs',
+      };
+      const messageChannel = new MessageChannel();
+      reg.active.postMessage(message,
+        [messageChannel.port2]);
+    });
+  });
+  cacheNamesBtn.addEventListener('click', () => {
+    navigator.serviceWorker.register('/demo/workbox-core/sw.js')
+    .then((reg) => {
+      const message = {
+        command: 'printCacheNames',
       };
       const messageChannel = new MessageChannel();
       reg.active.postMessage(message,

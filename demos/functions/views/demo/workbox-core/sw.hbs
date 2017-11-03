@@ -10,10 +10,21 @@ const printLogs = () => {
   workbox.core._private.logger.error(`☠️ Eek, stuff is breaking. p.s. I'm an error.`);
 };
 
+const printCacheNames = () => {
+  workbox.core._private.logger.log(`The caches used by Workbox are...`);
+  const cacheNames = workbox.core.cacheNames;
+  Object.keys(cacheNames).forEach((cacheId) => {
+    console.log(`    ${cacheId}: ${cacheNames[cacheId]}`);
+  });
+};
+
 self.addEventListener('message', function(event) {
   switch(event.data.command) {
     case 'printLogs':
-    printLogs();
+      printLogs();
+      break;
+    case 'printCacheNames':
+      printCacheNames();
       break;
     default:
       console.log(`Unknown command received in the service worker: `, event);
