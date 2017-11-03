@@ -8,8 +8,7 @@ const generateSW = require('../../../../packages/workbox-build/src/entry-points/
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() {
-  const BUILD_TYPE = (process.env.NODE_ENV && process.env.NODE_ENV.startsWith('dev')) ? 'dev' : 'prod';
-  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw', BUILD_TYPE);
+  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw', 'prod');
   const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
