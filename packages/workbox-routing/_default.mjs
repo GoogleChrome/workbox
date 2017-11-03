@@ -115,7 +115,7 @@ class DefaultRouter extends Router {
    * @param {Array<RegExp>} [options.whitelist=[/./]] If any of these patterns
    * match the URL's pathname and search parameter, the route will handle the
    * request (assuming the blacklist doesn't match).
-   * @return {NavigationRoute} Returns the generated Route.
+   * @return {NavigationRoute} Returns the generated Route. travis nudge
    */
   registerNavigationRoute(cachedAssetUrl, options = {}) {
     if (process.env.NODE_ENV !== 'production') {
