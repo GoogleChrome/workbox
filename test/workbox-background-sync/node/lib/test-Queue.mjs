@@ -18,9 +18,9 @@ import clearRequire from 'clear-require';
 import sinon from 'sinon';
 import expectError from '../../../../infra/testing/expectError';
 import {OBJECT_STORE_NAME} from
-    '../../../../packages/workbox-background-sync/lib/constants.mjs';
-import QueueStore from
-    '../../../../packages/workbox-background-sync/lib/QueueStore.mjs';
+    '../../../../packages/workbox-background-sync/utils/constants.mjs';
+import {QueueStore} from
+    '../../../../packages/workbox-background-sync/models/QueueStore.mjs';
 import {resetEventListeners} from
     '../../../../infra/testing/sw-env-mocks/event-listeners.js';
 
@@ -67,7 +67,7 @@ describe(`[workbox-background-sync] Queue`, function() {
     sandbox.restore();
 
     // Clear Queue so the name map gets reset on re-import.
-    clearRequire('../../../../packages/workbox-background-sync/lib/Queue.mjs');
+    clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
 
     clearObjectStore();
 
@@ -76,16 +76,16 @@ describe(`[workbox-background-sync] Queue`, function() {
 
     // Re-import Queue each time so the name map gets reset.
     const imprt = await import(
-        '../../../../packages/workbox-background-sync/lib/Queue.mjs');
+        '../../../../packages/workbox-background-sync/Queue.mjs');
 
-    Queue = imprt.default;
+    Queue = imprt.Queue;
   });
 
   after(async function() {
     sandbox.restore();
 
     // Clear Queue so the name map gets reset on re-import.
-    clearRequire('../../../../packages/workbox-background-sync/lib/Queue.mjs');
+    clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
 
     clearObjectStore();
 

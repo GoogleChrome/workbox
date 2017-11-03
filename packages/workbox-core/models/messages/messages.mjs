@@ -132,4 +132,20 @@ export default {
     return `The Queue name '${name}' is already being used. ` +
         `All instances of backgroundSync.Queue must be given unique names.`;
   },
+  'expired-test-without-max-age': ({methodName, paramName}) => {
+    return `The '${methodName}()' method can only be used when the ` +
+      `'${paramName}' is used in the constructor.`;
+  },
+  'unsupported-route-type': ({moduleName, className, funcName, paramName}) => {
+    return `The supplied '${paramName}' parameter was an unsupported type. ` +
+      `Please check the docs for ${moduleName}.${className}.${funcName} for ` +
+      `valid input types.`;
+  },
+  'not-array-of-class': ({value, expectedClass,
+    moduleName, className, funcName, paramName}) => {
+    return `The supplied '${paramName}' parameter must be an array of ` +
+      `'${expectedClass}' objects. Received '${JSON.stringify(value)},'. ` +
+      `Please check the call to ${moduleName}.${className}.${funcName}() ` +
+      `to fix the issue.`;
+  },
 };

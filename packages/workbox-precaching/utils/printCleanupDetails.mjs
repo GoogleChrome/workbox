@@ -14,17 +14,17 @@
   limitations under the License.
 */
 
-import {_private} from 'workbox-core';
+import {logger} from 'workbox-core/_private.mjs';
 import '../_version.mjs';
 
 const logGroup = (groupTitle, urls) => {
-  _private.logger.groupCollapsed(groupTitle);
+  logger.groupCollapsed(groupTitle);
 
   urls.forEach((url) => {
-    _private.logger.log(url);
+    logger.log(url);
   });
 
-  _private.logger.groupEnd();
+  logger.groupEnd();
 };
 
 /**
@@ -34,7 +34,7 @@ const logGroup = (groupTitle, urls) => {
  * @private
  * @memberof module:workbox-precachig
  */
-export default async (deletedCacheRequests, deletedRevisionDetails) => {
+export default (deletedCacheRequests, deletedRevisionDetails) => {
   if (deletedCacheRequests.length === 0 &&
     deletedRevisionDetails.length === 0) {
     return;
@@ -51,11 +51,11 @@ export default async (deletedCacheRequests, deletedRevisionDetails) => {
     `${revisionDeleteCount === 1 ? 'entry' : 'entries'} ` +
     `${revisionDeleteCount === 1 ? 'was' : 'were'} deleted from IndexedDB.`;
 
-    _private.logger.groupCollapsed(
-     `During precaching cleanup, ${cacheDeleteText} and ${revisionDeleteText}`);
+  logger.groupCollapsed(
+    `During precaching cleanup, ${cacheDeleteText} and ${revisionDeleteText}`);
 
   logGroup('Deleted Cache Requests', deletedCacheRequests);
   logGroup('Revision Details Deleted from DB', deletedRevisionDetails);
 
-  _private.logger.groupEnd();
+  logger.groupEnd();
 };

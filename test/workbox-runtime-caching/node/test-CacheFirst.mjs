@@ -18,7 +18,7 @@ import {expect} from 'chai';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
 
-import CacheFirst from '../../../packages/workbox-runtime-caching/CacheFirst.mjs';
+import {CacheFirst} from '../../../packages/workbox-runtime-caching/CacheFirst.mjs';
 
 describe(`[workbox-runtime-caching] CacheFirst`, function() {
   let sandbox = sinon.sandbox.create();
@@ -43,8 +43,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
 
   it(`should be able to fetch and cache a request to default cache`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const fetchResponse = new Response('Hello Test.');
     sandbox.stub(global, 'fetch').callsFake((req) => {
@@ -57,7 +56,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     });
 
     const cacheFirst = new CacheFirst();
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;
@@ -67,7 +66,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     await compareResponses(firstCachedResponse, fetchResponse, true);
     await compareResponses(firstHandleResponse, fetchResponse, true);
 
-    const secondHandleResponse = await cacheFirst.handle(event);
+    const secondHandleResponse = await cacheFirst.handle({event});
 
     // Reset spy state so we can check fetch wasn't called.
     global.fetch.reset();
@@ -81,8 +80,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
   it(`should be able to cache a non-existant request to custom cache`, async function() {
     const cacheName = 'test-cache-name';
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     sandbox.stub(global, 'fetch').callsFake((req) => {
       expect(req).to.equal(request);
@@ -96,7 +94,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     const cacheFirst = new CacheFirst({
       cacheName,
     });
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;
@@ -108,8 +106,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
 
   it(`should not cache an opaque response by default`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     sandbox.stub(global, 'fetch').callsFake((req) => {
       expect(req).to.equal(request);
@@ -123,7 +120,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     });
 
     const cacheFirst = new CacheFirst();
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;
@@ -136,8 +133,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
 
   it(`should cache an opaque response when a cacheWillUpdate plugin returns true`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     sandbox.stub(global, 'fetch').callsFake((req) => {
       expect(req).to.equal(request);
@@ -159,7 +155,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
         },
       ],
     });
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;
@@ -171,8 +167,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
 
   it(`should return the plugin cache response`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
@@ -188,15 +183,14 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
         },
       ],
     });
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     await compareResponses(firstHandleResponse, pluginResponse, true);
   });
 
   it(`should fallback to fetch if the plugin.cacheResponseWillBeUsed returns null`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const fetchResponse = new Response('Hello Test.');
     sandbox.stub(global, 'fetch').callsFake((req) => {
@@ -221,7 +215,7 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
         },
       ],
     });
-    const firstHandleResponse = await cacheFirst.handle(event);
+    const firstHandleResponse = await cacheFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;

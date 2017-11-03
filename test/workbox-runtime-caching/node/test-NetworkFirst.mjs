@@ -20,7 +20,7 @@ import {devOnly} from '../../../infra/testing/env-it';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
 
-import NetworkFirst from '../../../packages/workbox-runtime-caching/NetworkFirst.mjs';
+import {NetworkFirst} from '../../../packages/workbox-runtime-caching/NetworkFirst.mjs';
 
 describe(`[workbox-runtime-caching] NetworkFirst`, function() {
   let sandbox = sinon.sandbox.create();
@@ -45,8 +45,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
 
   it(`should add the network response to the cache`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const fetchResponse = new Response('Hello Test.');
     sandbox.stub(global, 'fetch').callsFake((req) => {
@@ -59,7 +58,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
     });
 
     const networkFirst = new NetworkFirst();
-    const handleResponse = await networkFirst.handle(event);
+    const handleResponse = await networkFirst.handle({event});
 
     // Wait until cache.put is finished.
     await cachePromise;
@@ -76,29 +75,27 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
     });
 
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const networkFirst = new NetworkFirst();
-    const emptyCacheResponse = await networkFirst.handle(event);
+    const emptyCacheResponse = await networkFirst.handle({event});
     expect(emptyCacheResponse).to.not.exist;
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
-    const cachedResponse = await networkFirst.handle(event);
+    const cachedResponse = await networkFirst.handle({event});
     await compareResponses(cachedResponse, injectedResponse, true);
 
-    const secondCachedResponse = await networkFirst.handle(event);
+    const secondCachedResponse = await networkFirst.handle({event});
     await compareResponses(cachedResponse, secondCachedResponse, true);
   });
 
   it(`should return the cached response if the network request times out`, async function() {
     const clock = sandbox.useFakeTimers();
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const TEST_TIMEOUT_SECS = 5;
 
@@ -112,7 +109,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
       networkTimeoutSeconds: TEST_TIMEOUT_SECS,
     });
 
-    let handlePromise = networkFirst.handle(event);
+    let handlePromise = networkFirst.handle({event});
     clock.tick(TEST_TIMEOUT_SECS * 1.5 * 1000);
     const emptyCacheResponse = await handlePromise;
     expect(emptyCacheResponse).to.not.exist;
@@ -121,7 +118,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
-    handlePromise = networkFirst.handle(event);
+    handlePromise = networkFirst.handle({event});
     clock.tick(TEST_TIMEOUT_SECS * 1.5 * 1000);
     const populatedCacheResponse = await handlePromise;
     await compareResponses(populatedCacheResponse, injectedResponse, true);
@@ -139,8 +136,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
 
   it(`should return the network response and update the cache when the network request succeeds`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const fetchResponse = new Response('Hello Test.');
     sandbox.stub(global, 'fetch').callsFake((req) => {
@@ -158,7 +154,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
 
     const networkFirst = new NetworkFirst();
 
-    const handleResponse = await networkFirst.handle(event);
+    const handleResponse = await networkFirst.handle({event});
     // wait for cache.put
     await cachePromise;
     await compareResponses(injectedResponse, handleResponse, false);
@@ -169,8 +165,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
 
   it(`should update the cache with an the opaque cross-origin network response`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const fetchResponse = new Response('Hello Test.', {
       status: 0,
@@ -187,7 +182,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
     });
 
     const networkFirst = new NetworkFirst();
-    const handleResponse = await networkFirst.handle(event);
+    const handleResponse = await networkFirst.handle({event});
     expect(handleResponse.status).to.eql(0);
 
     await cachePromise;
@@ -198,8 +193,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
 
   it(`should not cache an opaque response if they add a custom plugin`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const fetchResponse = new Response('Hello Test.', {
       status: 0,
@@ -224,7 +218,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
         },
       ],
     });
-    const handleResponse = await networkFirst.handle(event);
+    const handleResponse = await networkFirst.handle({event});
     expect(handleResponse.status).to.eql(0);
 
     await cachePromise;

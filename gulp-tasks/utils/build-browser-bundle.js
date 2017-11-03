@@ -8,23 +8,21 @@ const rollup = require('rollup');
 const rollupStream = require('rollup-stream');
 const source = require('vinyl-source-stream');
 const sourcemaps = require('gulp-sourcemaps');
-
 const constants = require('./constants');
 const pkgPathToName = require('./pkg-path-to-name');
 const rollupHelper = require('./rollup-helper');
 const logHelper = require('../../infra/utils/log-helper');
+
 /*
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose
  */
-const ERROR_NO_MODULE_INDEX = `Could not find the modules index.mjs file: `;
+const ERROR_NO_MODULE_BROWSER = `Could not find the modules browser.mjs file: `;
 const ERROR_NO_NAMSPACE = oneLine`
   You must define a 'browserNamespace' parameter in the 'package.json'.
-  Exmaple: 'workbox-precaching' would have a browserNamespace param of
-  'precaching' in 'package.json'. This will be appended to
-  '${constants.NAMESPACE_PREFIX}' meaning developers would use
-  '${constants.NAMESPACE_PREFIX}.precaching' in their
-  JavaScript. Please fix for:
+  Example: 'workbox-precaching' would have a browserNamespace param of
+  'workbox.precaching' in 'package.json', meaning developers would use
+  'workbox.precaching' in their JavaScript. Please fix for:
 `;
 
 // This makes Rollup assume workbox-* will be added to the global
@@ -36,21 +34,30 @@ const globals = (moduleId) => {
   }
 
   const packageName = splitModuleId.shift();
-  if (splitModuleId.length > 0) {
+  const packagePath = path.join(__dirname, '..', '..', 'packages', packageName);
+  const namespacePath = splitModuleId.map((modulePiece) => {
+    // The browser namespace will need the file extension removed
+    return path.basename(modulePiece, path.extname(modulePiece));
+  }).join('.');
+
+  if (splitModuleId.length === 0 || splitModuleId.length > 1) {
+    // Tried to pull in default export of module - this isn't allowed.
+    // A specific file must be referenced
     throw new Error(oneLine`
-    All imports of workbox-* modules must be done from the top level export.
-    (i.e. import * from 'workbox-*') This ensures that the browser
-    namespacing works correctly. Please remove '${splitModuleId.join('/')}'
-    from the import '${moduleId}'.
-  `);
+      You cannot use a module directly - you must specify a public top-level
+      file, this is to force a best practice for tree shaking (i.e. only
+      pulling in what you use). Please fix the import: '${moduleId}'
+    `);
   }
 
   // Get a package's browserNamespace so we know where it will be
   // on the global scope (i.e. workbox.<name space>)
-  const packagePath = path.join(__dirname, '..', '..', 'packages', packageName);
   try {
     const pkg = require(path.join(packagePath, 'package.json'));
-    return `${constants.NAMESPACE_PREFIX}.${pkg.workbox.browserNamespace}`;
+    return [
+      pkg.workbox.browserNamespace,
+      namespacePath,
+    ].join('.');
   } catch (err) {
     logHelper.error(`Unable to get browserNamespace for package: ` +
       `'${packageName}'`);
@@ -65,13 +72,13 @@ const externalAndPure = (moduleId) => (moduleId.indexOf('workbox-') === 0);
 
 module.exports = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
-  const moduleIndexPath = path.join(packagePath, `index.mjs`);
+  const moduleBrowserPath = path.join(packagePath, `browser.mjs`);
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
-  if (!fs.existsSync(moduleIndexPath)) {
-    logHelper.error(ERROR_NO_MODULE_INDEX + packageName);
-    return Promise.reject(ERROR_NO_MODULE_INDEX + packageName);
+  if (!fs.existsSync(moduleBrowserPath)) {
+    logHelper.error(ERROR_NO_MODULE_BROWSER + packageName);
+    return Promise.reject(ERROR_NO_MODULE_BROWSER + packageName);
   }
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
@@ -80,14 +87,7 @@ module.exports = (packagePath, buildType) => {
     return Promise.reject(ERROR_NO_NAMSPACE + ' ' + packageName);
   }
 
-  let prefix = `${constants.NAMESPACE_PREFIX}.`;
-  if (pkgJson.workbox.disableNamespacePrefix) {
-    prefix = '';
-  }
-
-  const exports = pkgJson.workbox.disabledNamedExports ? 'default' : 'named';
-  const namespace =
-    `${prefix}${pkgJson.workbox.browserNamespace}`;
+  const namespace = pkgJson.workbox.browserNamespace;
   const outputFilename = `${packageName}.${buildType.slice(0, 4)}.js`;
   const outputDirectory = path.join(packagePath,
     constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
@@ -96,15 +96,13 @@ module.exports = (packagePath, buildType) => {
     Building Browser Bundle for
     ${logHelper.highlight(packageName)}.
   `);
-  logHelper.log(`    Exports: ${logHelper.highlight(exports)}`);
   logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
   return rollupStream({
-    input: moduleIndexPath,
+    input: moduleBrowserPath,
     rollup,
     format: 'iife',
-    exports,
     name: namespace,
     sourcemap: true,
     globals,
@@ -134,7 +132,7 @@ module.exports = (packagePath, buildType) => {
   })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
-  .pipe(source(moduleIndexPath))
+  .pipe(source(moduleBrowserPath))
   // gulp-sourcemaps don't work with streams so we need
   .pipe(buffer())
   // This tells gulp-sourcemaps to load the inline sourcemap

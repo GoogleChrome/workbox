@@ -3,7 +3,7 @@ importScripts('/__WORKBOX/buildFile/workbox-precaching');
 
 /* globals workbox */
 
-workbox.precaching.default.precache([
+workbox.precaching.precache([
   {
     url: 'styles/index.css',
     revision: '1',
@@ -12,3 +12,8 @@ workbox.precaching.default.precache([
     revision: '1',
   },
 ]);
+
+workbox.precaching.addRoute();
+
+self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));

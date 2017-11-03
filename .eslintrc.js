@@ -11,7 +11,8 @@ module.exports = {
     sourceType: 'module',
   },
   globals: {
-    google: false,
+    workbox: false,
+    WorkboxSW: false,
     SyncEvent: false,
   },
   rules: {
@@ -35,13 +36,11 @@ module.exports = {
     },
   }, {
     files: [
-      'packages/workbox-core/utils/logger.mjs',
-      'packages/workbox-sw/index.mjs',
+      'packages/workbox-core/_private/logger.mjs',
+      'packages/workbox-sw/_default.mjs',
       'infra/testing/cli-test-helper.js',
       'infra/utils/log-helper.js',
       'packages/workbox-cli/src/lib/logger.js',
-      'test/workbox-precaching/node/controllers/test-PrecacheController.mjs',
-      'test/workbox-precaching/node/utils/test-showWarningsIfNeeded.mjs',
     ],
     rules: {
       'no-console': 0,

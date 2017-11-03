@@ -19,7 +19,7 @@ import {expect} from 'chai';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
 
-import CacheOnly from '../../../packages/workbox-runtime-caching/CacheOnly.mjs';
+import {CacheOnly} from '../../../packages/workbox-runtime-caching/CacheOnly.mjs';
 
 describe(`[workbox-runtime-caching] CacheOnly`, function() {
   let sandbox = sinon.sandbox.create();
@@ -44,61 +44,56 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
 
   it(`should not return a response when the cache isn't populated`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const cacheOnly = new CacheOnly();
-    const handleResponse = await cacheOnly.handle(event);
+    const handleResponse = await cacheOnly.handle({event});
 
     expect(handleResponse).not.to.exist;
   });
 
   it(`should return the cached response when the cache is populated`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly();
-    const handleResponse = await cacheOnly.handle(event);
+    const handleResponse = await cacheOnly.handle({event});
     await compareResponses(injectedResponse, handleResponse, true);
   });
 
   it(`should return no cached response from custom cache name`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
-    const handleResponse = await cacheOnly.handle(event);
+    const handleResponse = await cacheOnly.handle({event});
     expect(handleResponse).not.to.exist;
   });
 
   it(`should return cached response from custom cache name`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName('test-cache-name'));
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
-    const handleResponse = await cacheOnly.handle(event);
+    const handleResponse = await cacheOnly.handle({event});
     await compareResponses(injectedResponse, handleResponse, true);
   });
 
   it(`should return the cached response from plugin.cachedResponseWillBeUsed`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
@@ -114,7 +109,7 @@ describe(`[workbox-runtime-caching] CacheOnly`, function() {
         },
       ],
     });
-    const handleResponse = await cacheOnly.handle(event);
+    const handleResponse = await cacheOnly.handle({event});
     await compareResponses(pluginResponse, handleResponse, true);
   });
 });

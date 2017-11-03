@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import RegExpRoute from '../../../packages/workbox-routing/RegExpRoute.mjs';
+import {RegExpRoute} from '../../../packages/workbox-routing/RegExpRoute.mjs';
 import expectError from '../../../infra/testing/expectError.js';
 import {devOnly} from '../../../infra/testing/env-it.js';
 

@@ -15,15 +15,24 @@
 
 
 const Event = require('./Event');
+const {_allExtendableEvents} = require('./event-listeners');
 
 
-// ExtendibleEvent
+// ExtendableEvent
 // https://www.w3.org/TR/service-workers-1/#extendable-event
 class ExtendableEvent extends Event {
-  waitUntil(/* promise */) {
-    // TODO(philipwalton): keep track of the promises added to each event
-    // and expose them in some way so tests can assert logic doesn't run
-    // after all ExtendableEvents have settled.
+  constructor(...args) {
+    super(...args);
+
+    // https://www.w3.org/TR/service-workers-1/#dfn-extend-lifetime-promises
+    this._extendLifetimePromises = new Set();
+
+    // Used to keep track of all ExtendableEvent instances.
+    _allExtendableEvents.add(this);
+  }
+
+  waitUntil(promise) {
+    this._extendLifetimePromises.add(promise);
   }
 }
 

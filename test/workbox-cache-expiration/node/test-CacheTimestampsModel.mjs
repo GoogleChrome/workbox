@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 
 import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/models/CacheTimestampsModel.mjs';
-import indexedDBHelper from '../../../packages/workbox-core/utils/indexedDBHelper.mjs';
+import indexedDBHelper from '../../../packages/workbox-core/_private/indexedDBHelper.mjs';
 
 describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
   beforeEach(function() {
@@ -30,9 +30,9 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
       const db = await indexedDBHelper.getDB(`workbox-cache-expiration`, 1);
       const timestamps = await db.getAll('test-cache');
 
-      expect(timestamps['/']).to.exist;
-      expect(timestamps['/']).to.deep.equal({
-        url: '/',
+      expect(timestamps['https://example.com/']).to.exist;
+      expect(timestamps['https://example.com/']).to.deep.equal({
+        url: 'https://example.com/',
         timestamp,
       });
     });

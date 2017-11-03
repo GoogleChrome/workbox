@@ -19,7 +19,7 @@ import {expect} from 'chai';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
 
-import StaleWhileRevalidate from '../../../packages/workbox-runtime-caching/StaleWhileRevalidate.mjs';
+import {StaleWhileRevalidate} from '../../../packages/workbox-runtime-caching/StaleWhileRevalidate.mjs';
 
 describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
   let sandbox = sinon.sandbox.create();
@@ -44,15 +44,14 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
 
   it(`should add the initial response to the cache`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
     let cachePromise;
     sandbox.stub(event, 'waitUntil').callsFake((promise) => {
       cachePromise = promise;
     });
 
     const staleWhileRevalidate = new StaleWhileRevalidate();
-    const handleResponse = await staleWhileRevalidate.handle(event);
+    const handleResponse = await staleWhileRevalidate.handle({event});
 
     await cachePromise;
 
@@ -64,8 +63,7 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
 
   it(`should return the cached response and not update the cache when the network request fails`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
     let waitUntilPromise;
     let fetchThrewInWaitUntil = false;
     sandbox.stub(event, 'waitUntil').callsFake((promise) => {
@@ -83,7 +81,7 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
     await cache.put(request, firstCachedResponse);
 
     const staleWhileRevalidate = new StaleWhileRevalidate();
-    const handleResponse = await staleWhileRevalidate.handle(event);
+    const handleResponse = await staleWhileRevalidate.handle({event});
 
     await waitUntilPromise;
     expect(fetchThrewInWaitUntil).to.equal(true);
@@ -95,8 +93,7 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
 
   it(`should return the cached response and update the cache when the network request succeeds`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
     const firstCachedResponse = new Response('response body 1');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
     await cache.put(request, firstCachedResponse);
@@ -107,7 +104,7 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
 
     const staleWhileRevalidate = new StaleWhileRevalidate();
 
-    const handleResponse = await staleWhileRevalidate.handle(event);
+    const handleResponse = await staleWhileRevalidate.handle({event});
 
     await waitUntilPromise;
     await compareResponses(firstCachedResponse, handleResponse, true);
@@ -118,8 +115,7 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
 
   it(`should update the cache with an the opaque cross-origin network response`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
     let waitUntilPromise;
     sandbox.stub(event, 'waitUntil').callsFake((promise) => {
@@ -130,7 +126,7 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
     });
 
     const staleWhileRevalidate = new StaleWhileRevalidate();
-    const handleResponse = await staleWhileRevalidate.handle(event);
+    const handleResponse = await staleWhileRevalidate.handle({event});
 
     await waitUntilPromise;
 

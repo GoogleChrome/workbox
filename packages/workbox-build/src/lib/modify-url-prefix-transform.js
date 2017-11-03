@@ -26,7 +26,7 @@ const errors = require('./errors');
  *                         expression
  * @return {string}        A string that is safe to use in a regular
  *                         expression.
- * 
+ *
  * @private
  */
 const escapeRegExp = (string) => {

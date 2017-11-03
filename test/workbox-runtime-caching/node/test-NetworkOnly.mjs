@@ -18,7 +18,7 @@ import {expect} from 'chai';
 
 import {_private} from '../../../packages/workbox-core/index.mjs';
 
-import NetworkOnly from '../../../packages/workbox-runtime-caching/NetworkOnly.mjs';
+import {NetworkOnly} from '../../../packages/workbox-runtime-caching/NetworkOnly.mjs';
 
 describe(`[workbox-runtime-caching] NetworkOnly`, function() {
   let sandbox = sinon.sandbox.create();
@@ -43,12 +43,11 @@ describe(`[workbox-runtime-caching] NetworkOnly`, function() {
 
   it(`should return a response without adding anything to the cache when the network request is successful`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const networkOnly = new NetworkOnly();
 
-    const handleResponse = await networkOnly.handle(event);
+    const handleResponse = await networkOnly.handle({event});
     expect(handleResponse).to.be.instanceOf(Response);
 
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
@@ -58,8 +57,7 @@ describe(`[workbox-runtime-caching] NetworkOnly`, function() {
 
   it(`should reject when the network request fails`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     sandbox.stub(global, 'fetch').callsFake(() => {
       return Promise.reject(new Error(`Injected Error`));
@@ -69,7 +67,7 @@ describe(`[workbox-runtime-caching] NetworkOnly`, function() {
     // This promise should reject, so call done() passing in an error string
     // if it resolves, and done() without an error if it rejects.
     try {
-      await networkOnly.handle(event);
+      await networkOnly.handle({event});
       throw new Error('Expected error to be thrown.');
     } catch (err) {
       expect(err.message).to.equal('Injected Error');
@@ -78,8 +76,7 @@ describe(`[workbox-runtime-caching] NetworkOnly`, function() {
 
   it(`should use plugins response`, async function() {
     const request = new Request('http://example.io/test/');
-    // Doesn't follow spec: https://github.com/pinterest/service-workers/issues/52
-    const event = new FetchEvent(request);
+    const event = new FetchEvent('fetch', {request});
 
     const pluginRequest = new Request('http://something-else.io/test/');
 
@@ -98,7 +95,7 @@ describe(`[workbox-runtime-caching] NetworkOnly`, function() {
       ],
     });
 
-    const handleResponse = await networkOnly.handle(event);
+    const handleResponse = await networkOnly.handle({event});
     expect(handleResponse).to.be.instanceOf(Response);
 
     const cache = await caches.open(_private.cacheNames.getRuntimeName());

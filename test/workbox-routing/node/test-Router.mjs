@@ -1,15 +1,13 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import Route from '../../../packages/workbox-routing/Route.mjs';
-import Router from '../../../packages/workbox-routing/Router.mjs';
+import {Route} from '../../../packages/workbox-routing/Route.mjs';
+import {Router} from '../../../packages/workbox-routing/Router.mjs';
 import expectError from '../../../infra/testing/expectError';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
-import {_private} from '../../../packages/workbox-core/index.mjs';
 
 describe(`[workbox-routing] Router`, function() {
   const sandbox = sinon.sandbox.create();
-  const {logger} = _private;
   const MATCH = () => {};
   const HANDLER = {handle: () => {}};
   const METHOD = 'POST';
@@ -20,9 +18,6 @@ describe(`[workbox-routing] Router`, function() {
     // a mocha bug where `afterEach` hooks aren't run for skipped tests.
     // https://github.com/mochajs/mocha/issues/2546
     sandbox.restore();
-    // Prevent logs in the mocha output.
-    sandbox.stub(logger, 'warn');
-    sandbox.stub(logger, 'log');
   });
 
   after(function() {
@@ -211,8 +206,9 @@ describe(`[workbox-routing] Router`, function() {
       router.setDefaultHandler(() => new Response(EXPECTED_RESPONSE_BODY));
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent(new Request(self.location));
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
       const response = await router.handleRequest(event);
+
       const responseBody = await response.text();
 
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
@@ -237,7 +233,7 @@ describe(`[workbox-routing] Router`, function() {
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent(new Request(self.location));
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
       const response = await router.handleRequest(event);
       const responseBody = await response.text();
 
@@ -255,7 +251,7 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
 
       // route.match() always returns true, so the Request details don't matter.
-      const event = new FetchEvent(new Request(self.location));
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
       const response = await router.handleRequest(event);
       const responseBody = await response.text();
 
@@ -278,7 +274,7 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route2);
 
       // route.match() always returns true, so the Request details don't matter.
-      const event = new FetchEvent(new Request(self.location));
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
       const response = await router.handleRequest(event);
       const responseBody = await response.text();
 
@@ -294,7 +290,7 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent(new Request(self.location));
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
       const response = router.handleRequest(event);
 
       expect(response).not.to.exist;

@@ -15,9 +15,9 @@
 
 import {expect} from 'chai';
 import sinon from 'sinon';
-import Queue from '../../../../packages/workbox-background-sync/lib/Queue.mjs';
-import QueuePlugin from
-    '../../../../packages/workbox-background-sync/lib/QueuePlugin.mjs';
+import {Queue} from '../../../../packages/workbox-background-sync/Queue.mjs';
+import {QueuePlugin} from
+    '../../../../packages/workbox-background-sync/QueuePlugin.mjs';
 
 describe(`[workbox-background-sync] QueuePlugin`, function() {
   const sandbox = sinon.sandbox.create();

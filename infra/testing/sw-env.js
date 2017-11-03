@@ -11,13 +11,17 @@
  limitations under the License.
  */
 
+const sinon = require('sinon');
 const serviceWorkerMock = require('service-worker-mock');
 const {IDBFactory, IDBKeyRange} = require('shelving-mock-indexeddb');
+const URLSearchParams = require('url-search-params');
 const Blob = require('./sw-env-mocks/Blob');
 const Event = require('./sw-env-mocks/Event');
 const {addEventListener, dispatchEvent} = require('./sw-env-mocks/event-listeners');
 const ExtendableEvent = require('./sw-env-mocks/ExtendableEvent');
 const fetch = require('./sw-env-mocks/fetch');
+const FetchEvent = require('./sw-env-mocks/FetchEvent');
+const FileReader = require('./sw-env-mocks/FileReader');
 const Headers = require('./sw-env-mocks/Headers');
 const Request = require('./sw-env-mocks/Request');
 const SyncEvent = require('./sw-env-mocks/SyncEvent');
@@ -25,6 +29,8 @@ const SyncManager = require('./sw-env-mocks/SyncManager');
 
 // Assign all properties of `self` to `global`;
 Object.assign(global, serviceWorkerMock());
+
+// Ensure `self` and `global` are the same object so stubbing works on either.
 global.self = global;
 
 // Add/fix globals not in 'service-worker-mock'.
@@ -34,11 +40,25 @@ global.dispatchEvent = dispatchEvent;
 global.Event = Event;
 global.ExtendableEvent = ExtendableEvent;
 global.fetch = fetch;
+global.FetchEvent = FetchEvent;
+global.FileReader = FileReader;
 global.Headers = Headers;
 global.indexedDB = new IDBFactory();
 global.IDBKeyRange = IDBKeyRange;
 global.importScripts = () => {};
-global.location = 'https://example.com';
+global.location = new URL('https://example.com');
 global.registration.sync = new SyncManager();
 global.Request = Request;
 global.SyncEvent = SyncEvent;
+global.URLSearchParams = URLSearchParams;
+
+// TODO: Remove when fixed in service-worker-mock:
+// https://github.com/pinterest/service-workers/issues/71
+const origMatch = caches.match;
+sinon.stub(caches, 'match').callsFake(async (req, options) => {
+  if (options && options.cacheName) {
+    const cache = await caches.open(options.cacheName);
+    return cache.match(req);
+  }
+  return origMatch(req, options);
+});

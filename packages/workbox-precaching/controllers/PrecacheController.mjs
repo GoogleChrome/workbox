@@ -14,13 +14,18 @@
   limitations under the License.
 */
 
-import {_private} from 'workbox-core';
-import core from 'workbox-core';
-
+import {
+  cacheNames,
+  WorkboxError,
+  fetchWrapper,
+  cacheWrapper,
+  assert,
+  logger,
+} from 'workbox-core/_private.mjs';
 import PrecacheEntry from '../models/PrecacheEntry.mjs';
 import PrecachedDetailsModel from '../models/PrecachedDetailsModel.mjs';
 import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
-import printInstallDetails from '../utils/printInstallDetails.mjs';
+import openInstallLogGroup from '../utils/openInstallLogGroup.mjs';
 import printCleanupDetails from '../utils/printCleanupDetails.mjs';
 import cleanRedirect from '../utils/cleanRedirect.mjs';
 import '../_version.mjs';
@@ -37,12 +42,9 @@ class PrecacheController {
    * @param {string} cacheName
    */
   constructor(cacheName) {
-    this._cacheName = _private.cacheNames.getPrecacheName(cacheName);
+    this._cacheName = cacheNames.getPrecacheName(cacheName);
     this._entriesToCacheMap = new Map();
     this._precacheDetailsModel = new PrecachedDetailsModel(this._cacheName);
-    if (process.env.NODE_ENV !== 'production') {
-      this._checkEntryRevisioning = true;
-    }
   }
 
   /**
@@ -54,7 +56,7 @@ class PrecacheController {
    */
   addToCacheList(entries) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isArray(entries, {
+      assert.isArray(entries, {
         moduleName: 'workbox-precaching',
         className: 'PrecacheController',
         funcName: 'addToCacheList',
@@ -81,7 +83,7 @@ class PrecacheController {
       case 'string': {
         if (process.env.NODE_ENV !== 'production') {
           if (input.length === 0) {
-            throw new _private.WorkboxError(
+            throw new WorkboxError(
               'add-to-cache-list-unexpected-type', {
                 entry: input,
               }
@@ -94,7 +96,7 @@ class PrecacheController {
       case 'object': {
         if (process.env.NODE_ENV !== 'production') {
           if (!input || !input.url) {
-            throw new _private.WorkboxError(
+            throw new WorkboxError(
               'add-to-cache-list-unexpected-type', {
                 entry: input,
               }
@@ -106,7 +108,7 @@ class PrecacheController {
           input, input.url, input.revision || input.url, !!input.revision);
       }
       default:
-        throw new _private.WorkboxError('add-to-cache-list-unexpected-type', {
+        throw new WorkboxError('add-to-cache-list-unexpected-type', {
           entry: input,
         });
     }
@@ -129,7 +131,7 @@ class PrecacheController {
     // Duplicates are fine, but make sure the revision information
     // is the same.
     if (existingEntry._revision !== entryToAdd._revision) {
-      throw new _private.WorkboxError('add-to-cache-list-conflicting-entries', {
+      throw new WorkboxError('add-to-cache-list-conflicting-entries', {
         firstEntry: existingEntry._originalInput,
         secondEntry: entryToAdd._originalInput,
       });
@@ -140,42 +142,44 @@ class PrecacheController {
    * Call this method from a service work install event to start
    * precaching assets.
    *
+   * @param {Object} options
+   * @param {boolean} options.suppressWarnings Suppress warning messages.
    * @return {Promise<Object>}
    */
-  async install() {
+  async install(options = {}) {
     if (process.env.NODE_ENV !== 'production') {
-      if (this._checkEntryRevisioning === true) {
+      if (options.suppressWarnings !== true) {
         showWarningsIfNeeded(this._entriesToCacheMap);
       }
     }
 
-    const updatedEntries = [];
-    const notUpdatedEntries = [];
+    const entriesToPrecache = [];
+    const entriesAlreadyPrecached = [];
 
-    const cachePromises = [];
-    this._entriesToCacheMap.forEach((precacheEntry) => {
-      const promiseChain = this._cacheEntry(precacheEntry)
-      .then((wasUpdated) => {
-        if (wasUpdated) {
-          updatedEntries.push(precacheEntry);
-        } else {
-          notUpdatedEntries.push(precacheEntry);
-        }
-      });
-
-      cachePromises.push(promiseChain);
-    });
-
-    // Wait for all requests to be cached.
-    await Promise.all(cachePromises);
+    for (const precacheEntry of this._entriesToCacheMap.values()) {
+      if (await this._precacheDetailsModel._isEntryCached(precacheEntry)) {
+        entriesAlreadyPrecached.push(precacheEntry);
+      } else {
+        entriesToPrecache.push(precacheEntry);
+      }
+    }
 
     if (process.env.NODE_ENV !== 'production') {
-      printInstallDetails(updatedEntries, notUpdatedEntries);
+      openInstallLogGroup(entriesToPrecache, entriesAlreadyPrecached);
+    }
+
+    // Wait for all requests to be cached.
+    await Promise.all(entriesToPrecache.map((precacheEntry) => {
+      return this._cacheEntry(precacheEntry);
+    }));
+
+    if (process.env.NODE_ENV !== 'production') {
+      logger.groupEnd();
     }
 
     return {
-      'updatedEntries': updatedEntries,
-      'notUpdatedEntries': notUpdatedEntries,
+      updatedEntries: entriesToPrecache,
+      notUpdatedEntries: entriesAlreadyPrecached,
     };
   }
 
@@ -191,11 +195,7 @@ class PrecacheController {
    * false if the entry is already cached and up-to-date.
    */
   async _cacheEntry(precacheEntry) {
-    if (await this._precacheDetailsModel._isEntryCached(precacheEntry)) {
-      return false;
-    }
-
-    let response = await _private.fetchWrapper.fetch(
+    let response = await fetchWrapper.fetch(
       precacheEntry._networkRequest,
     );
 
@@ -203,7 +203,7 @@ class PrecacheController {
       response = await cleanRedirect(response);
     }
 
-    await _private.cacheWrapper.put(this._cacheName,
+    await cacheWrapper.put(this._cacheName,
       precacheEntry._cacheRequest, response);
 
     await this._precacheDetailsModel._addEntry(precacheEntry);
@@ -307,7 +307,7 @@ class PrecacheController {
    *
    * @return {Array<string>} An array of URLs.
    */
-  async getCachedUrls() {
+  getCachedUrls() {
     return Array.from(this._entriesToCacheMap.keys())
     .map((url) => new URL(url, location).href);
   }

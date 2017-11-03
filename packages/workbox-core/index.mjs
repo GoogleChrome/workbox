@@ -14,9 +14,9 @@
   limitations under the License.
 */
 
-import core from './workboxCore.mjs';
-import * as _private from './_private.mjs';
+import defaultExport from './_default.mjs';
 import LOG_LEVELS from './models/LogLevels.mjs';
+import * as _private from './_private.mjs';
 import './_version.mjs';
 
 /**
@@ -33,8 +33,10 @@ import './_version.mjs';
  * @private
  * @alias module:workbox-core._private
  */
-export {_private};
 
-export {LOG_LEVELS};
+export {
+  LOG_LEVELS,
+  _private,
+};
 
-export default core;
+export default defaultExport;

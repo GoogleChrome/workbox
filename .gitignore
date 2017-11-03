@@ -13,3 +13,5 @@ workbox-*.json
 .esm-cache/
 .nyc_output/
 docs
+local-builds/
+firebase-debug.log

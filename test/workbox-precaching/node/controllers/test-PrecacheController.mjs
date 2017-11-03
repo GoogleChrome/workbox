@@ -7,6 +7,7 @@ import generateTestVariants from '../../../../infra/testing/generate-variant-tes
 import {prodOnly, devOnly} from '../../../../infra/testing/env-it';
 
 import {_private} from '../../../../packages/workbox-core/index.mjs';
+import logger from '../../../../packages/workbox-core/_private/logger.mjs';
 import PrecacheController from '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
 
 const {cacheNames} = _private;
@@ -26,12 +27,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     // a mocha bug where `afterEach` hooks aren't run for skipped tests.
     // https://github.com/mochajs/mocha/issues/2546
     sandbox.restore();
-
-    sandbox.stub(console, 'log');
-    sandbox.stub(console, 'debug');
-    sandbox.stub(console, 'warn');
-    sandbox.stub(console, 'groupCollapsed');
-    sandbox.stub(console, 'groupEnd');
   });
 
   after(function() {
@@ -210,6 +205,21 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       return precacheController.install();
     });
 
+    devOnly.it('should not print warnings if suppressWarnings is passed in', async function() {
+      const precacheController = new PrecacheController();
+      precacheController.addToCacheList(['/']);
+
+      await precacheController.install({
+        suppressWarnings: true,
+      });
+      expect(logger.warn.callCount).to.equal(0);
+
+      await precacheController.install({
+        suppressWarnings: false,
+      });
+      expect(logger.warn.callCount).to.be.gt(0);
+    });
+
     it('should precache assets (with cache busting via search params)', async function() {
       const precacheController = new PrecacheController();
       const cacheList = [
@@ -221,7 +231,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheController.addToCacheList(cacheList);
 
       // Reset as addToCacheList will log.
-      console.log.reset();
+      logger.log.reset();
 
       const updateInfo = await precacheController.install();
       expect(updateInfo.updatedEntries.length).to.equal(cacheList.length);
@@ -240,7 +250,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       if (process.env.NODE_ENV != 'production') {
         // Make sure we print some debug info.
-        expect(console.log.callCount).to.be.gt(0);
+        expect(logger.log.callCount).to.be.gt(0);
       }
     });
 
@@ -254,7 +264,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       await precacheController.install();
 
-      expect(console.log.callCount).to.equal(0);
+      expect(logger.log.callCount).to.equal(0);
     });
 
     it(`should clean redirected precache entries`, async function() {
@@ -312,7 +322,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheControllerOne.addToCacheList(cacheListOne);
 
       // Reset as addToCacheList will log.
-      console.log.reset();
+      logger.log.reset();
 
       const updateInfo = await precacheControllerOne.install();
       expect(updateInfo.updatedEntries.length).to.equal(cacheListOne.length);
@@ -329,7 +339,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       if (process.env.NODE_ENV != 'production') {
         // Make sure we print some debug info.
-        expect(console.log.callCount).to.be.gt(0);
+        expect(logger.log.callCount).to.be.gt(0);
       }
 
       /*
@@ -345,7 +355,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheControllerTwo.addToCacheList(cacheListTwo);
 
       // Reset as addToCacheList will log.
-      console.log.reset();
+      logger.log.reset();
 
       const updateInfoTwo = await precacheControllerTwo.install();
       expect(updateInfoTwo.updatedEntries.length).to.equal(2);
@@ -367,7 +377,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       if (process.env.NODE_ENV != 'production') {
         // Make sure we print some debug info.
-        expect(console.log.callCount).to.be.gt(0);
+        expect(logger.log.callCount).to.be.gt(0);
       }
     });
   });
@@ -393,14 +403,14 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerOne.install();
 
       // Reset as addToCacheList and install will log.
-      console.log.reset();
+      logger.log.reset();
 
       const cleanupDetailsOne = await precacheControllerOne.cleanup();
       expect(cleanupDetailsOne.deletedCacheRequests.length).to.equal(0);
       expect(cleanupDetailsOne.deletedRevisionDetails.length).to.equal(0);
 
       // Make sure we print some debug info.
-      expect(console.log.callCount).to.equal(0);
+      expect(logger.log.callCount).to.equal(0);
 
       /*
       THEN precache the same URLs but two with different revisions
@@ -416,7 +426,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerTwo.install();
 
       // Reset as addToCacheList and install will log.
-      console.log.reset();
+      logger.log.reset();
 
       const cleanupDetailsTwo = await precacheControllerTwo.cleanup();
       expect(cleanupDetailsTwo.deletedCacheRequests.length).to.equal(1);
@@ -439,7 +449,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       }));
 
       // Make sure we print some debug info.
-      expect(console.log.callCount).to.be.gt(0);
+      expect(logger.log.callCount).to.be.gt(0);
     });
 
     it(`shouldn't open / create a cache when performing cleanup`, async function() {
@@ -473,12 +483,33 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerTwo.install();
 
       // Reset as addToCacheList and install will log.
-      console.log.reset();
+      logger.log.reset();
 
       await precacheControllerTwo.cleanup();
 
       // Make sure we didn't print any debug info.
-      expect(console.log.callCount).to.equal(0);
+      expect(logger.log.callCount).to.equal(0);
+    });
+  });
+
+  describe(`getCachedUrls()`, function() {
+    it(`should return the cached URLs`, function() {
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        '/index.1234.html',
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
+        {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      const urls = precacheController.getCachedUrls();
+      expect(urls).to.deep.equal([
+        new URL('/index.1234.html', location).toString(),
+        new URL('/example.1234.css', location).toString(),
+        new URL('/scripts/index.js', location).toString(),
+        new URL('/scripts/stress.js?test=search&foo=bar', location).toString(),
+      ]);
     });
   });
 });

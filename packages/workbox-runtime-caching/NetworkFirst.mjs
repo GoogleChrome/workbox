@@ -13,11 +13,20 @@
  limitations under the License.
 */
 
-import {_private} from 'workbox-core';
-import core from 'workbox-core';
+import {
+  cacheNames,
+  cacheWrapper,
+  fetchWrapper,
+  assert,
+  logger,
+} from 'workbox-core/_private.mjs';
 
+import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
+
+// TODO: Change opaque responses to d.g.c link
+// TODO: Replace `plugins` parameter link with link to d.g.c.
 
 /**
  * An implementation of a
@@ -25,7 +34,7 @@ import './_version.mjs';
  * request strategy.
  *
  * By default, this strategy will cache responses with a 200 status code as
- * well as [opaque responses]{@link http://stackoverflow.com/q/39109789}.
+ * well as [opaque responses]{@link https://docs.google.com/document/d/1nHIjXdmXs9nT6_lcGcsZY5UZ-tL9JxXESlKbzAJdBG4/edit?usp=sharing}.
  * Opaque responses are are cross-origin requests where the response doesn't
  * support [CORS]{@link https://enable-cors.org/}.
  *
@@ -35,9 +44,10 @@ class NetworkFirst {
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
-   * requests. Defaults to cache names provided by `workbox-core`.
-   * @param {string} options.plugins Workbox plugins you may want to use in
-   * conjunction with this caching strategy.
+   * requests. Defaults to cache names provided by
+   * [workbox-core]{@link module:workbox-core.cacheNames}.
+   * @param {string} options.plugins [Plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}
+   * to use in conjunction with this caching strategy.
    * @param {number} options.networkTimeoutSeconds If set, any network requests
    * that fail to respond within the timeout will fallback to the cache.
    *
@@ -46,8 +56,7 @@ class NetworkFirst {
    * scenarios.
    */
   constructor(options = {}) {
-    this._cacheName =
-      _private.cacheNames.getRuntimeName(options.cacheName);
+    this._cacheName = cacheNames.getRuntimeName(options.cacheName);
 
     if (options.plugins) {
       let isUsingCacheWillUpdate =
@@ -62,7 +71,7 @@ class NetworkFirst {
     this._networkTimeoutSeconds = options.networkTimeoutSeconds;
     if (process.env.NODE_ENV !== 'production') {
       if (this._networkTimeoutSeconds) {
-        core.assert.isType(this._networkTimeoutSeconds, 'number', {
+        assert.isType(this._networkTimeoutSeconds, 'number', {
           moduleName: 'workbox-runtime-caching',
           className: 'NetworkFirst',
           funcName: 'constructor',
@@ -73,89 +82,148 @@ class NetworkFirst {
   }
 
   /**
-   * This method will be called by the Workbox
-   * [Router]{@link module:workbox-routing.Router} to handle a fetch event.
+   * This method will perform a request strategy and follows an API that
+   * will work with the
+   * [Workbox Router]{@link module:workbox-routing.Router}.
    *
-   * @param {FetchEvent} event The fetch event to handle.
+   * @param {Object} input
+   * @param {FetchEvent} input.event The fetch event to run this strategy
+   * against.
    * @return {Promise<Response>}
    */
-  async handle(event) {
+  async handle({event}) {
     if (process.env.NODE_ENV !== 'production') {
-      core.assert.isInstance(event, FetchEvent, {
+      assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
-        className: 'CacheFirst',
+        className: 'NetworkFirst',
         funcName: 'handle',
         paramName: 'event',
       });
+
+      logger.groupCollapsed(
+        messages.strategyStart('NetworkFirst', event));
     }
 
     const promises = [];
     let timeoutId;
 
     if (this._networkTimeoutSeconds) {
-      promises.push(new Promise((resolve) => {
-        const onNetworkTimeout = () => {
-          resolve(this._respondFromCache(event.request));
-        };
-
-        timeoutId = setTimeout(
-          onNetworkTimeout,
-          this._networkTimeoutSeconds * 1000,
-        );
-      }));
+      const {id, promise} = this._getTimeoutPromise(event);
+      timeoutId = id;
+      promises.push(promise);
     }
 
-    const networkPromise = _private.fetchWrapper.fetch(
-      event.request,
-      this._plugins
-    )
-    .then((response) => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
+    const networkPromise = this._getNetworkPromise(timeoutId, event);
+    promises.push(networkPromise);
 
-      if (!response) {
-        return this._respondFromCache(event.request);
-      }
+    const response = await Promise.race(promises);
 
-      // Keep the service worker alive while we put the request in the cache
+    if (process.env.NODE_ENV !== 'production') {
+      messages.printFinalResponse(response);
+      logger.groupEnd();
+    }
+
+    return response;
+  }
+
+  /**
+   * @param {FetchEvent} event
+   * @return {Promise<Response>}
+   *
+   * @private
+   */
+  _getTimeoutPromise(event) {
+    let timeoutId;
+    const timeoutPromise = new Promise((resolve) => {
+      const onNetworkTimeout = async () => {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.log(`Timing out the network response at ` +
+            `${this._networkTimeoutSeconds} seconds.`);
+        }
+
+        resolve(await this._respondFromCache(event.request));
+      };
+
+      timeoutId = setTimeout(
+        onNetworkTimeout,
+        this._networkTimeoutSeconds * 1000,
+      );
+    });
+
+    return {
+      promise: timeoutPromise,
+      id: timeoutId,
+    };
+  }
+
+  /**
+   * @param {number} timeoutId
+   * @param {FetchEvent} event
+   * @return {Promise<Response>}
+   *
+   * @private
+   */
+  async _getNetworkPromise(timeoutId, event) {
+    let error;
+    let response;
+    try {
+      response = await fetchWrapper.fetch(
+        event.request,
+        this._plugins
+      );
+    } catch (err) {
+      error = err;
+    }
+
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      if (response) {
+        logger.log(`Got response from network.`);
+      } else {
+        logger.log(`Unable to get a response from the network. Will respond ` +
+          `with a cached response.`);
+      }
+    }
+
+    if (error || !response) {
+      response = await this._respondFromCache(event.request);
+      if (process.env.NODE_ENV !== 'production') {
+        if (response) {
+          logger.log(`Found a cached response in the '${this._cacheName}'` +
+            ` cache.`);
+        } else {
+          logger.log(`No response found in the '${this._cacheName}' cache.`);
+        }
+      }
+    } else {
+       // Keep the service worker alive while we put the request in the cache
       const responseClone = response.clone();
       event.waitUntil(
-        _private.cacheWrapper.put(
+        cacheWrapper.put(
           this._cacheName,
           event.request,
           responseClone,
           this._plugins
         )
       );
+    }
 
-      return response;
-    },
-    // This catches any errors from the fetchWrapper.fetch() method and ONLY
-    // that method. This means that in the fetchWrapper.fetch().then() we
-    // can handle a null Response (caused by plugins intercepting the Response)
-    // and fallback to the cache while also falling back to cache *if* the
-    // method throws an error.
-    // NOTE: If this was a .catch(), it would call _responseFromCache inside the
-    // .then(), which could fail and throw, which would be caught and a second
-    // _responseFromCache call will be made.
-    () => this._respondFromCache(event.request));
-
-    promises.push(networkPromise);
-
-    return Promise.race(promises);
+    return response;
   }
 
   /**
    * Used if the network timeouts or fails to make the request.
    *
    * @param {Request} request The fetchEvent request to match in the cache
-   * @return {Promise<Response>}
+   * @return {Promise<Object>}
    *
    * @private
    */
   _respondFromCache(request) {
-    return _private.cacheWrapper.match(
+    return cacheWrapper.match(
       this._cacheName,
       request,
       null,
@@ -164,4 +232,4 @@ class NetworkFirst {
   }
 }
 
-export default NetworkFirst;
+export {NetworkFirst};
