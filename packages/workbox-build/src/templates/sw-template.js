@@ -18,19 +18,33 @@ module.exports = `<% if (importScripts) { %>
 importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
 <% } %>
 /**
- * This service worker file needs to be registered by your web application.
- * Please see https://developers.google.com/web/fundamentals/primers/service-workers/registration
- */
-<% if(manifestEntries) {%>
-/**
- * DO NOT EDIT __precacheManifest MANUALLY!
+ * Welcome to your Workbox-powered service worker!
  *
+ * Here are some next steps:
+ *
+ * - Your web app needs to register this file.
+ *   See https://goo.gl/DNGzMp
+ *
+ * - Disable HTTP caching for this file.
+ *   See https://goo.gl/rWuKgq
+ *
+ * The rest of the code in this file is auto-generated. Please don't update this
+ * code directly; instead, make changes to your Workbox build configuration
+ * and re-run your build process to regenerate this file with updated code.
+ * See https://goo.gl/YYPcyY
+ */
+
+const workboxSW = new WorkboxSW(<%= workboxOptionsString %>);
+<% if (skipWaiting) { %>workboxSW.skipWaiting();<% } %>
+<% if (clientsClaim) { %>workboxSW.clientsClaim();<% } %>
+<% if (Array.isArray(manifestEntries)) {%>
+/**
  * The workboxSW.precacheAndRoute() method does the following:
  * 1. Cache URLs in the manifest to a local cache.
  * 2. When a network request is made for any of these URLs the response
  *    will ALWAYS comes from the cache, NEVER the network.
  * 3. When the service worker changes ONLY assets with a revision change are
- *    updated, old cache entries are left as is.
+ *    updated. Old cache entries are left as-is.
  *
  * By changing the file manifest manually, your users may end up not receiving
  * new versions of files because the revision hasn't changed.
@@ -41,11 +55,12 @@ importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
  */
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
 <% } %>
-const workboxSW = new WorkboxSW(<%= workboxOptionsString %>);
-
-workboxSW.precaching.precacheAndRoute(self.__precacheManifest);
-
-<% if(navigateFallback) { %>workboxSW.router.registerNavigationRoute("<%= navigateFallback %>"<% if(navigateFallbackWhitelist) { %>, {
-  whitelist: [<%= navigateFallbackWhitelist %>],
-}<% } %>);<% } %><% if (runtimeCaching && runtimeCaching.length > 0) { runtimeCaching.forEach((runtimeCachingString) => {%><%= runtimeCachingString %>
+if (Array.isArray(self.__precacheManifest)) {
+  workboxSW.precaching.precacheAndRoute(self.__precacheManifest);
+}
+<% if (navigateFallback) { %>workboxSW.router.registerNavigationRoute('<%= navigateFallback %>'<% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
+  <% if (navigateFallbackWhitelist) { %>whitelist: [<%= navigateFallbackWhitelist %>],<% } %>
+  <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>
+}<% } %>);<% } %>
+<% if (runtimeCaching && runtimeCaching.length > 0) { runtimeCaching.forEach((runtimeCachingString) => {%><%= runtimeCachingString %>
 <% }); } %>`;

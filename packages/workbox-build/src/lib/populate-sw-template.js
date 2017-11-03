@@ -29,6 +29,7 @@ module.exports = ({
   importScripts,
   manifestEntries,
   navigateFallback,
+  navigateFallbackBlacklist,
   navigateFallbackWhitelist,
   runtimeCaching,
   skipWaiting,
@@ -36,9 +37,7 @@ module.exports = ({
   // These are all options that can be passed in to the WorkboxSW constructor.
   const workboxOptions = {
     cacheId,
-    skipWaiting,
     handleFetch,
-    clientsClaim,
     directoryIndex,
     // An array of RegExp objects can't be serialized by JSON.stringify()'s
     // default behavior, so if it's given, convert it manually.
@@ -58,10 +57,13 @@ module.exports = ({
 
   try {
     return template(swTemplate)({
+      clientsClaim,
       importScripts,
       manifestEntries,
       navigateFallback,
+      navigateFallbackBlacklist,
       navigateFallbackWhitelist,
+      skipWaiting,
       workboxOptionsString,
       runtimeCaching: runtimeCachingConverter(runtimeCaching),
     }).trim() + '\n';
