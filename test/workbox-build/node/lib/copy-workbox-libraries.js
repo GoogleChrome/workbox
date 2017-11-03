@@ -26,7 +26,7 @@ describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
     }
   });
 
-  for (destDir of [ABSOLUTE_DEST_DIRECTORY, RELATIVE_DEST_DIRECTORY]) {
+  for (const destDir of [ABSOLUTE_DEST_DIRECTORY, RELATIVE_DEST_DIRECTORY]) {
     it(`should resolve with the new directory name, using a destDir of ${destDir}`, async function() {
       const copyStub = sinon.stub().resolves();
       const ensureDirStub = sinon.stub().resolves();
