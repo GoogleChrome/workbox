@@ -52,7 +52,7 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       const maxAgeSeconds = 10;
       const currentTimestamp = Date.now();
       const timestampModel = new CacheTimestampsModel(cacheName);
-      timestampModel.setTimestamp('/', currentTimestamp);
+      await timestampModel.setTimestamp('/', currentTimestamp);
 
       const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
 
@@ -86,19 +86,19 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       let extraUrls = await expirationManager._findExtraEntries();
       expect(extraUrls).to.deep.equal([]);
 
-      timestampModel.setTimestamp('/second-earliest', secondEarlistTimestamp);
+      await timestampModel.setTimestamp('/second-earliest', secondEarlistTimestamp);
 
       // Added one entry, max is one, return empty array
       extraUrls = await expirationManager._findExtraEntries();
       expect(extraUrls).to.deep.equal([]);
 
-      timestampModel.setTimestamp('/latest', latestTimestamp);
+      await timestampModel.setTimestamp('/latest', latestTimestamp);
 
       // Added two entries, max is one, return one entry
       extraUrls = await expirationManager._findExtraEntries();
       expect(extraUrls).to.deep.equal(['https://example.com/second-earliest']);
 
-      timestampModel.setTimestamp('/earliest', earliestTimestamp);
+      await timestampModel.setTimestamp('/earliest', earliestTimestamp);
 
       // Added three entries, max is one, return two entries
       extraUrls = await expirationManager._findExtraEntries();
@@ -118,7 +118,7 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       const cache = await caches.open(cacheName);
 
       const timestampModel = new CacheTimestampsModel(cacheName);
-      timestampModel.setTimestamp('/', currentTimestamp);
+      await timestampModel.setTimestamp('/', currentTimestamp);
       cache.put('https://example.com/', new Response('Injected request'));
 
       const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
@@ -148,7 +148,7 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       const cache = await caches.open(cacheName);
 
       const timestampModel = new CacheTimestampsModel(cacheName);
-      timestampModel.setTimestamp('/first', currentTimestamp);
+      await timestampModel.setTimestamp('/first', currentTimestamp);
       cache.put('https://example.com/first', new Response('Injected request'));
 
       const expirationManager = new CacheExpiration(cacheName, {maxEntries});
@@ -157,7 +157,7 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       expect(expiredUrls).to.deep.equal([]);
 
       // Add entry and ensure it is removed
-      timestampModel.setTimestamp('/second', currentTimestamp - 1000);
+      await timestampModel.setTimestamp('/second', currentTimestamp - 1000);
       cache.put('https://example.com/second', new Response('Injected request'));
 
       expiredUrls = await expirationManager.expireEntries();
@@ -174,7 +174,7 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       let cachedRequests = await cache.keys();
       expect(cachedRequests.map((req) => req.url)).to.deep.equal(['https://example.com/first']);
 
-      timestampModel.setTimestamp('/third', currentTimestamp + 1000);
+      await timestampModel.setTimestamp('/third', currentTimestamp + 1000);
       cache.put('https://example.com/third', new Response('Injected request'));
 
       expiredUrls = await expirationManager.expireEntries();
@@ -203,12 +203,12 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       const maxAgeSeconds = 10;
       const currentTimestamp = Date.now();
       const timestampModel = new CacheTimestampsModel(cacheName);
-      timestampModel.setTimestamp('/', currentTimestamp);
+      await timestampModel.setTimestamp('/', currentTimestamp);
 
       clock.tick(1000);
 
       const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
-      expirationManager.updateTimestamp('/');
+      await expirationManager.updateTimestamp('/');
 
       const timestamps = await timestampModel.getAllTimestamps();
       expect(timestamps).to.deep.equal([{
@@ -235,7 +235,7 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       const maxAgeSeconds = 10;
       const currentTimestamp = Date.now();
       const timestampModel = new CacheTimestampsModel(cacheName);
-      timestampModel.setTimestamp('/', currentTimestamp);
+      await timestampModel.setTimestamp('/', currentTimestamp);
 
       const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
       let isExpired = await expirationManager.isURLExpired('/');

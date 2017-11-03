@@ -35,8 +35,8 @@ class QueuePlugin {
    * @param {Request} options.request
    * @private
    */
-  fetchDidFail({request}) {
-    this._queue.addRequest(request);
+  async fetchDidFail({request}) {
+    await this._queue.addRequest(request);
   }
 }
 

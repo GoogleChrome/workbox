@@ -15,49 +15,22 @@
 
 import {expect} from 'chai';
 import clearRequire from 'clear-require';
+import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import sinon from 'sinon';
+
+// import deleteIDBDatabase from
+//     '../../../../infra/testing/deleteIDBDatabase.mjs';
 import expectError from '../../../../infra/testing/expectError';
-import {OBJECT_STORE_NAME} from
+import {DB_NAME, OBJECT_STORE_NAME} from
     '../../../../packages/workbox-background-sync/utils/constants.mjs';
-import {QueueStore} from
-    '../../../../packages/workbox-background-sync/models/QueueStore.mjs';
+import {DBWrapper} from '../../../../packages/workbox-core/_private.mjs';
 import {resetEventListeners} from
     '../../../../infra/testing/sw-env-mocks/event-listeners.js';
 
-
 let Queue;
 
-const clearObjectStore = async () => {
-  // Get a reference to the DB by invoking _getDb on a mock instance.
-  const db = await QueueStore.prototype._getDb.call({});
-
-  await new Promise((resolve, reject) => {
-    const txn = db.transaction(OBJECT_STORE_NAME, 'readwrite');
-    txn.onerror = () => reject(txn.error);
-    txn.oncomplete = () => resolve();
-    txn.objectStore(OBJECT_STORE_NAME).clear();
-  });
-};
-
 const getObjectStoreEntries = async () => {
-  // Get a reference to the DB by invoking _getDb on a mock instance.
-  const db = await QueueStore.prototype._getDb.call({});
-
-  const entries = await new Promise((resolve, reject) => {
-    const entries = [];
-    const txn = db.transaction(OBJECT_STORE_NAME, 'readwrite');
-    txn.onerror = () => reject(txn.error);
-    txn.objectStore(OBJECT_STORE_NAME).openCursor().onsuccess = (event) => {
-      const cursor = event.target.result;
-      if (cursor) {
-        entries.push({key: cursor.key, value: cursor.value});
-        cursor.continue();
-      } else {
-        resolve(entries);
-      }
-    };
-  });
-  return entries;
+  return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);
 };
 
 describe(`[workbox-background-sync] Queue`, function() {
@@ -69,7 +42,7 @@ describe(`[workbox-background-sync] Queue`, function() {
     // Clear Queue so the name map gets reset on re-import.
     clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
 
-    clearObjectStore();
+    iDBReset();
 
     // Remove any lingering event listeners
     resetEventListeners();
@@ -87,7 +60,7 @@ describe(`[workbox-background-sync] Queue`, function() {
     // Clear Queue so the name map gets reset on re-import.
     clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
 
-    clearObjectStore();
+    iDBReset();
 
     // Remove any lingering event listeners
     resetEventListeners();
@@ -161,9 +134,9 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       const entries = await getObjectStoreEntries();
       expect(entries).to.have.lengthOf(1);
-      expect(entries[0].value.storableRequest.url).to.equal(requestUrl);
-      expect(entries[0].value.storableRequest.timestamp).to.be.at.least(now);
-      expect(entries[0].value.storableRequest.requestInit).to.have.keys([
+      expect(entries[0].storableRequest.url).to.equal(requestUrl);
+      expect(entries[0].storableRequest.timestamp).to.be.at.least(now);
+      expect(entries[0].storableRequest.requestInit).to.have.keys([
         'method',
         'body',
         'headers',
@@ -208,7 +181,7 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       const entries = await getObjectStoreEntries();
       expect(entries).to.have.lengthOf(1);
-      expect(entries[0].value.storableRequest.url).to.equal('/?q=foo');
+      expect(entries[0].storableRequest.url).to.equal('/?q=foo');
     });
 
     it(`should support modifying the stored request via requestWillEnqueue`,
@@ -292,8 +265,8 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       const entries = await getObjectStoreEntries();
       expect(entries.length).to.equal(2);
-      expect(entries[0].value.storableRequest.url).to.equal('/two');
-      expect(entries[1].value.storableRequest.url).to.equal('/four');
+      expect(entries[0].storableRequest.url).to.equal('/two');
+      expect(entries[1].storableRequest.url).to.equal('/four');
     });
 
     it(`should ignore (and remove) requests if maxRetentionTime has passed`,
@@ -345,8 +318,8 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       const entries = await getObjectStoreEntries();
       expect(entries.length).to.equal(2);
-      expect(entries[0].value.storableRequest.url).to.equal('/two');
-      expect(entries[1].value.storableRequest.url).to.equal('/four');
+      expect(entries[0].storableRequest.url).to.equal('/two');
+      expect(entries[1].storableRequest.url).to.equal('/four');
     });
 
     it(`should re-register for a sync event if re-fetching fails`,

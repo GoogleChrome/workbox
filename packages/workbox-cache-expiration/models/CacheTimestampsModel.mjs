@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import {indexedDBHelper} from 'workbox-core/_private.mjs';
+import {DBWrapper} from 'workbox-core/_private.mjs';
 import '../_version.mjs';
 
 const URL_KEY = 'url';
@@ -33,17 +33,21 @@ class CacheTimestampsModel {
 
     this._cacheName = cacheName;
     this._storeName = cacheName;
+
+    this._db = new DBWrapper('workbox-cache-expiration', 1, {
+      onupgradeneeded: (evt) => evt.target.result
+          .createObjectStore(this._storeName, {keyPath: URL_KEY})
+          .createIndex(TIMESTAMP_KEY, TIMESTAMP_KEY, {unique: false}),
+    });
   }
 
   /**
    *
    * @param {string} url
    * @param {number} timestamp
-   * @return {Promise}
    */
   async setTimestamp(url, timestamp) {
-    const db = await this._getDb();
-    return db.put(this._storeName, {
+    await this._db.put(this._storeName, {
       [URL_KEY]: new URL(url, location).href,
       [TIMESTAMP_KEY]: timestamp,
     });
@@ -55,10 +59,8 @@ class CacheTimestampsModel {
    * @return {Array<Objects>}
    */
   async getAllTimestamps() {
-    const db = await this._getDb();
-    const timestampObject = await db.getAll(this._storeName, TIMESTAMP_KEY);
-    return Object.keys(timestampObject).map((timestampKey) => {
-      return timestampObject[timestampKey];
+    return await this._db.getAllMatching(this._storeName, {
+      index: TIMESTAMP_KEY,
     });
   }
 
@@ -69,8 +71,7 @@ class CacheTimestampsModel {
    * @return {number}
    */
   async getTimestamp(url) {
-    const db = await this._getDb();
-    const timestampObject = await db.get(this._storeName, url);
+    const timestampObject = await this._db.get(this._storeName, url);
     return timestampObject.timestamp;
   }
 
@@ -78,29 +79,7 @@ class CacheTimestampsModel {
    * @param {string} url
    */
   async deleteUrl(url) {
-    const db = await this._getDb();
-    await db.delete(this._storeName, new URL(url, location).href);
-  }
-
-  /**
-   * @return {Promise<DBWrapper>}
-   */
-  async _getDb() {
-    if (this._db) {
-      return this._db;
-    }
-
-    this._db = await indexedDBHelper.getDB(
-      `workbox-cache-expiration`,
-      1,
-      (db) => {
-        const objectStore = db.createObjectStore(
-          this._storeName, {keyPath: URL_KEY});
-        objectStore.createIndex(TIMESTAMP_KEY, TIMESTAMP_KEY, {unique: false});
-      },
-    );
-
-    return this._db;
+    await this._db.delete(this._storeName, new URL(url, location).href);
   }
 }
 

@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import {indexedDBHelper, cacheNames} from 'workbox-core/_private.mjs';
+import {DBWrapper, cacheNames} from 'workbox-core/_private.mjs';
 import '../_version.mjs';
 
 // Allows minifier to mangle this name
@@ -36,6 +36,11 @@ class PrecachedDetailsModel {
    */
   constructor(cacheName) {
     this._cacheName = cacheNames.getPrecacheName(cacheName);
+    this._db = new DBWrapper(`workbox-precaching`, 1, {
+      onupgradeneeded: (evt) => {
+        evt.target.result.createObjectStore(DB_STORE_NAME);
+      },
+    });
   }
 
   /**
@@ -60,8 +65,7 @@ class PrecachedDetailsModel {
    * @return {Promise<Array>}
    */
   async _getAllEntries() {
-    const db = await this._getDb();
-    return await db.getAll(DB_STORE_NAME);
+    return await this._db.getAll(DB_STORE_NAME);
   }
 
   /**
@@ -71,8 +75,7 @@ class PrecachedDetailsModel {
    * @return {Promise<string|null>}
    */
   async _getRevision(entryId) {
-    const db = await this._getDb();
-    const data = await db.get(DB_STORE_NAME, entryId);
+    const data = await this._db.get(DB_STORE_NAME, entryId);
     return data ? data[REVISON_IDB_FIELD] : null;
   }
 
@@ -82,12 +85,9 @@ class PrecachedDetailsModel {
    * @param {PrecacheEntry} precacheEntry
    */
   async _addEntry(precacheEntry) {
-    const db = await this._getDb();
-    await db.put(
+    await this._db.put(
       DB_STORE_NAME,
-      {
-        [REVISON_IDB_FIELD]: precacheEntry._revision,
-      },
+      {[REVISON_IDB_FIELD]: precacheEntry._revision},
       precacheEntry._entryId
     );
   }
@@ -98,19 +98,7 @@ class PrecachedDetailsModel {
    * @param {string} entryId
    */
   async _deleteEntry(entryId) {
-    const db = await this._getDb();
-    await db.delete(DB_STORE_NAME, entryId);
-  }
-
-  /**
-   * Get db for this model.
-   *
-   * @return{Promise<DBWrapper>}
-   */
-  _getDb() {
-    return indexedDBHelper.getDB(`workbox-precaching`, 1, (db) => {
-      db.createObjectStore(DB_STORE_NAME);
-    });
+    await this._db.delete(DB_STORE_NAME, entryId);
   }
 }
 

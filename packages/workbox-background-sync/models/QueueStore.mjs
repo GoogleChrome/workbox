@@ -13,6 +13,7 @@
  limitations under the License.
 */
 
+import {DBWrapper} from 'workbox-core/_private.mjs';
 import StorableRequest from './StorableRequest.mjs';
 import {DB_NAME, OBJECT_STORE_NAME, INDEXED_PROP} from '../utils/constants.mjs';
 import '../_version.mjs';
@@ -32,6 +33,11 @@ export class QueueStore {
    */
   constructor(queue) {
     this._queue = queue;
+    this._db = new DBWrapper(DB_NAME, 1, {
+      onupgradeneeded: (evt) => evt.target.result
+          .createObjectStore(OBJECT_STORE_NAME, {autoIncrement: true})
+          .createIndex(INDEXED_PROP, INDEXED_PROP, {unique: false}),
+    });
   }
 
   /**
@@ -41,17 +47,9 @@ export class QueueStore {
    * @param {StorableRequest} storableRequest
    */
   async addEntry(storableRequest) {
-    const db = await this._getDb();
-
-    await new Promise((resolve, reject) => {
-      const txn = db.transaction(OBJECT_STORE_NAME, 'readwrite');
-      txn.onerror = () => reject(txn.error);
-      txn.oncomplete = () => resolve();
-
-      txn.objectStore(OBJECT_STORE_NAME).add({
-        queueName: this._queue.name,
-        storableRequest: storableRequest.toObject(),
-      });
+    await this._db.add(OBJECT_STORE_NAME, {
+      queueName: this._queue.name,
+      storableRequest: storableRequest.toObject(),
     });
   }
 
@@ -60,55 +58,19 @@ export class QueueStore {
    * value as a StorableRequest instance. If no entry exists, it returns
    * undefined.
    *
-   * @return {Promise<StorableRequest|undefined>}
+   * @return {StorableRequest|undefined}
    */
   async getAndRemoveOldestEntry() {
-    const db = await this._getDb();
-    const entry = await new Promise((resolve, reject) => {
-      const txn = db.transaction(OBJECT_STORE_NAME, 'readwrite');
-      const objStore = txn.objectStore(OBJECT_STORE_NAME);
-      txn.onerror = () => reject(txn.error);
-
-      const query = IDBKeyRange.only(this._queue.name);
-      const idx = objStore.index(INDEXED_PROP);
-      idx.openCursor(query).onsuccess = (evt) => {
-        const cursor = evt.target.result;
-
-        // If no matching entries exist, resolve with undefined.
-        if (!cursor) return resolve();
-
-        const {primaryKey, value} = cursor;
-        objStore.delete(primaryKey).onsuccess = () => {
-          resolve(new StorableRequest(value.storableRequest));
-        };
-      };
+    const [entry] = await this._db.getAllMatching(OBJECT_STORE_NAME, {
+      index: INDEXED_PROP,
+      query: IDBKeyRange.only(this._queue.name),
+      count: 1,
+      includeKeys: true,
     });
 
-    return entry;
-  }
-
-  /**
-   * Creates a new IndexedDB database (if one does not already exist) or
-   * returns the open references to the existing one.
-   * A promise with the DB reference is returned so this method can be invoked
-   * multiple times safely.
-   *
-   * @return {Promise}
-   */
-  _getDb() {
-    if (this._dbPromise) return this._dbPromise;
-
-    return this._dbPromise = new Promise((resolve, reject) => {
-      const openRequest = indexedDB.open(DB_NAME, 1);
-      openRequest.onupgradeneeded = (event) => {
-        const db = event.target.result;
-        const objStore = db.createObjectStore(
-            OBJECT_STORE_NAME, {autoIncrement: true});
-
-        objStore.createIndex(INDEXED_PROP, INDEXED_PROP, {unique: false});
-      };
-      openRequest.onerror = () => reject(openRequest.error);
-      openRequest.onsuccess = (event) => resolve(event.target.result);
-    });
+    if (entry) {
+      await this._db.delete(OBJECT_STORE_NAME, entry.primaryKey);
+      return new StorableRequest(entry.value.storableRequest);
+    }
   }
 }
