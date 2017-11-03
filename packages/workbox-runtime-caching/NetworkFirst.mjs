@@ -92,6 +92,7 @@ class NetworkFirst {
    * @return {Promise<Response>}
    */
   async handle({event}) {
+    const logs = [];
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -99,26 +100,28 @@ class NetworkFirst {
         funcName: 'handle',
         paramName: 'event',
       });
-
-      logger.groupCollapsed(
-        messages.strategyStart('NetworkFirst', event));
     }
 
     const promises = [];
     let timeoutId;
 
     if (this._networkTimeoutSeconds) {
-      const {id, promise} = this._getTimeoutPromise(event);
+      const {id, promise} = this._getTimeoutPromise(event, logs);
       timeoutId = id;
       promises.push(promise);
     }
 
-    const networkPromise = this._getNetworkPromise(timeoutId, event);
+    const networkPromise = this._getNetworkPromise(timeoutId, event, logs);
     promises.push(networkPromise);
 
     const response = await Promise.race(promises);
 
     if (process.env.NODE_ENV !== 'production') {
+      logger.groupCollapsed(
+        messages.strategyStart('NetworkFirst', event));
+      for (let log of logs) {
+        logger.log(log);
+      }
       messages.printFinalResponse(response);
       logger.groupEnd();
     }
@@ -128,16 +131,17 @@ class NetworkFirst {
 
   /**
    * @param {FetchEvent} event
+   * @param {Array} logs A reference to the logs array
    * @return {Promise<Response>}
    *
    * @private
    */
-  _getTimeoutPromise(event) {
+  _getTimeoutPromise(event, logs) {
     let timeoutId;
     const timeoutPromise = new Promise((resolve) => {
       const onNetworkTimeout = async () => {
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Timing out the network response at ` +
+          logs.push(`Timing out the network response at ` +
             `${this._networkTimeoutSeconds} seconds.`);
         }
 
@@ -159,11 +163,12 @@ class NetworkFirst {
   /**
    * @param {number} timeoutId
    * @param {FetchEvent} event
+   * @param {Array} logs A reference to the logs Array.
    * @return {Promise<Response>}
    *
    * @private
    */
-  async _getNetworkPromise(timeoutId, event) {
+  async _getNetworkPromise(timeoutId, event, logs) {
     let error;
     let response;
     try {
@@ -181,9 +186,9 @@ class NetworkFirst {
 
     if (process.env.NODE_ENV !== 'production') {
       if (response) {
-        logger.log(`Got response from network.`);
+        logs.push(`Got response from network.`);
       } else {
-        logger.log(`Unable to get a response from the network. Will respond ` +
+        logs.push(`Unable to get a response from the network. Will respond ` +
           `with a cached response.`);
       }
     }
@@ -192,10 +197,10 @@ class NetworkFirst {
       response = await this._respondFromCache(event.request);
       if (process.env.NODE_ENV !== 'production') {
         if (response) {
-          logger.log(`Found a cached response in the '${this._cacheName}'` +
+          logs.push(`Found a cached response in the '${this._cacheName}'` +
             ` cache.`);
         } else {
-          logger.log(`No response found in the '${this._cacheName}' cache.`);
+          logs.push(`No response found in the '${this._cacheName}' cache.`);
         }
       }
     } else {

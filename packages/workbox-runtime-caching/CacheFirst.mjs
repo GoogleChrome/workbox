@@ -60,6 +60,7 @@ class CacheFirst {
    * @return {Promise<Response>}
    */
   async handle({event}) {
+    const logs = [];
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-runtime-caching',
@@ -67,9 +68,6 @@ class CacheFirst {
         funcName: 'handle',
         paramName: 'event',
       });
-
-      logger.groupCollapsed(
-        messages.strategyStart('CacheFirst', event));
     }
 
     let response = await cacheWrapper.match(
@@ -82,7 +80,8 @@ class CacheFirst {
     let error;
     if (!response) {
       if (process.env.NODE_ENV !== 'production') {
-        logger.log(`No response found in the '${this._cacheName}' cache. ` +
+        logs.push(
+          `No response found in the '${this._cacheName}' cache. ` +
           `Will respond with a network request.`);
       }
       try {
@@ -93,19 +92,24 @@ class CacheFirst {
 
       if (process.env.NODE_ENV !== 'production') {
         if (response) {
-          logger.log(`Got response from network.`);
+          logs.push(`Got response from network.`);
         } else {
-          logger.log(`Unable to get a response from the network.`);
+          logs.push(`Unable to get a response from the network.`);
         }
       }
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        logger.log(`Found a cached response in the '${this._cacheName}' ` +
-          `cache.`);
+        logs.push(
+          `Found a cached response in the '${this._cacheName}' cache.`);
       }
     }
 
     if (process.env.NODE_ENV !== 'production') {
+      logger.groupCollapsed(
+        messages.strategyStart('CacheFirst', event));
+      for (let log of logs) {
+        logger.log(log);
+      }
       messages.printFinalResponse(response);
       logger.groupEnd();
     }

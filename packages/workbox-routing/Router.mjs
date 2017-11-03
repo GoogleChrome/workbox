@@ -13,7 +13,12 @@
  limitations under the License.
 */
 
-import {assert, logger, WorkboxError} from 'workbox-core/_private.mjs';
+import {
+  assert,
+  logger,
+  WorkboxError,
+  getFriendlyURL,
+} from 'workbox-core/_private.mjs';
 
 import normalizeHandler from './utils/normalizeHandler.mjs';
 import './_version.mjs';
@@ -63,91 +68,93 @@ class Router {
       });
     }
 
-    let handler = null;
-    let params = null;
     const url = new URL(event.request.url);
-    let urlToLog = url.origin === location.origin ? url.pathname : url.href;
-    let debugMessages = [];
-
     if (!url.protocol.startsWith('http')) {
       if (process.env.NODE_ENV !== 'production') {
-        debugMessages.push(
-          `The URL does not start with 'http', so it can't be handled.`);
+        logger.debug(
+          `Workbox Router only supports URLs that start with 'http'.`);
       }
-    } else {
-      const result = this._findHandlerAndParams(event, url);
-      handler = result.handler;
-      params = result.params;
-      const route = result.route;
-      if (process.env.NODE_ENV !== 'production') {
-        if (handler) {
+      return;
+    }
+
+    let handler = null;
+    let params = null;
+    let debugMessages = [];
+
+    const result = this._findHandlerAndParams(event, url);
+    handler = result.handler;
+    params = result.params;
+    const route = result.route;
+    if (process.env.NODE_ENV !== 'production') {
+      if (handler) {
+        debugMessages.push([
+          `Found a route to handle this request:`, route,
+        ]);
+
+        if (params) {
           debugMessages.push([
-            `Matching route:`, route,
+            `Passing the following params to the route's handler:`, params,
           ]);
-
-          if (params) {
-            debugMessages.push([
-              `Passing the following params to the Routes handler:`, params,
-            ]);
-          }
         }
       }
+    }
 
-      // If we don't have a handler because there was no matching route, then
-      // fall back to defaultHandler if that's defined.
-      if (!handler && this._defaultHandler) {
-        if (process.env.NODE_ENV !== 'production') {
-          debugMessages.push(`Failed to find a matching route, so falling ` +
-            `back to the default handler.`);
-        }
-        handler = this._defaultHandler;
-      }
-
+    // If we don't have a handler because there was no matching route, then
+    // fall back to defaultHandler if that's defined.
+    if (!handler && this._defaultHandler) {
       if (process.env.NODE_ENV !== 'production') {
-        if (!handler) {
-          // No handler so Workbox will do nothing. If logs is set of debug
-          // i.e. verbose, we should print out this information.
-          logger.debug(`No route found for: ${urlToLog}`);
+        debugMessages.push(`Failed to find a matching route. Falling ` +
+          `back to the default handler.`);
+      }
+      handler = this._defaultHandler;
+    }
+
+    if (!handler) {
+      if (process.env.NODE_ENV !== 'production') {
+        // No handler so Workbox will do nothing. If logs is set of debug
+        // i.e. verbose, we should print out this information.
+        logger.debug(`No route found for: ${getFriendlyURL(url)}`);
+      }
+      return;
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      // We have a handler, meaning Workbox is going to handle the route.
+      // print the routing details to the console.
+      logger.groupCollapsed(`Router is responding to: ${getFriendlyURL(url)}`);
+      debugMessages.forEach((msg) => {
+        if (Array.isArray(msg)) {
+          logger.log(...msg);
         } else {
-          // We have a handler, meaning Workbox is handling the route. print to
-          // log.
-          logger.groupCollapsed(
-            `Router is responding to: ${urlToLog}`);
+          logger.log(msg);
+        }
+      });
 
-          // The Request object contains a great deal of information,
-          // hide it under a group in case developers wants to see it.
-          logger.groupCollapsed(
-            `    View full request details here.`);
-          logger.unprefixed.log(event.request);
-          logger.groupEnd();
+      // The Request and Response objects contains a great deal of information,
+      // hide it under a group in case developers want to see it.
+      logger.groupCollapsed(`View request details here.`);
+      logger.unprefixed.log(event.request);
+      logger.groupEnd();
 
-          debugMessages.forEach((msg) => {
-            if (Array.isArray(msg)) {
-              logger.unprefixed.log(...msg);
-            } else {
-              logger.unprefixed.log(msg);
-            }
-          });
+      logger.groupEnd();
+    }
+
+    let responsePromise = handler.handle({url, event, params});
+    if (this._catchHandler) {
+      responsePromise = responsePromise.catch((err) => {
+        if (process.env.NODE_ENV !== 'production') {
+          // Still include URL here as it will be async from the console group
+          // and may not make sense without the URL
+          logger.groupCollapsed(`The Router ${route} threw an error when ` +
+            `handling ${getFriendlyURL(url)}. Falling back to Catch Handler.`);
+          logger.unprefixed.error(err);
           logger.groupEnd();
         }
-      }
+        return this._catchHandler.handle({url, event, err});
+      });
     }
 
-    if (handler) {
-      let responsePromise = handler.handle({url, event, params});
-      if (this._catchHandler) {
-        responsePromise = responsePromise.catch((error) => {
-          if (process.env.NODE_ENV !== 'production') {
-            // Still include URL here as it will be async from the console group
-            // and may not make sense without the URL
-            logger.debug(`An error was thrown by the handler for ` +
-              `'${urlToLog}', so using the catch handler.`);
-          }
-          return this._catchHandler.handle({url, event, error});
-        });
-      }
-      return responsePromise;
-    }
+    return responsePromise;
   }
 
   /**
