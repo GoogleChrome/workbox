@@ -68,8 +68,9 @@ class WorkboxCore {
    * Get the current cache names used by Workbox.
    *
    * `cacheNames.precache` is used for precached assets,
-   * `cacheNames.googleAnalytics` is used for the analytics.js script, and
-   * `cacheNames.runtime` is used for everything else.
+   * `cacheNames.googleAnalytics` is used by `workbox-google-analytics` to
+   * store `analytics.js`,
+   * and `cacheNames.runtime` is used for everything else.
    *
    * @alias module:workbox-core.cacheNames
    * @return {Object} An object with `precache` and `runtime` cache names.
@@ -83,10 +84,10 @@ class WorkboxCore {
   }
 
   /**
-   * You can alter the default cache names by changing
-   * the cache name details.
+   * You can alter the default cache names used by the Workbox modules by
+   * changing the cache name details.
    *
-   * Cache names are generated as `<prefix>-<precache or runtime>-<suffix>`.
+   * Cache names are generated as `<prefix>-<Cache Name>-<suffix>`.
    *
    * @alias module:workbox-core.setCacheNameDetails
    * @param {Object} details
@@ -94,10 +95,11 @@ class WorkboxCore {
    * the precache and runtime cache names.
    * @param {Object} details.suffix The string to add to the end of
    * the precache and runtime cache names.
-   * @param {Object} details.precache The cache name to use for precache caching
-   * (added between the prefix and suffix).
-   * @param {Object} details.runtime The cache name to use for runtime caching
-   * (added between the prefix and suffix).
+   * @param {Object} details.precache The cache name to use for precache
+   * caching.
+   * @param {Object} details.runtime The cache name to use for runtime caching.
+   * @param {Object} details.googleAnalytics The cache name to use for
+   * `workbox-google-analytics` caching.
    */
   setCacheNameDetails(details) {
     if (process.env.NODE_ENV !== 'production') {
@@ -120,6 +122,14 @@ class WorkboxCore {
       if ('runtime' in details && details.runtime.length === 0) {
         throw new WorkboxError('invalid-cache-name', {
           cacheNameId: 'runtime',
+          value: details.runtime,
+        });
+      }
+
+      if ('googleAnalytics' in details &&
+        details.googleAnalytics.length === 0) {
+        throw new WorkboxError('invalid-cache-name', {
+          cacheNameId: 'googleAnalytics',
           value: details.runtime,
         });
       }
