@@ -26,30 +26,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 /**
- * [See Router.setDefaultHandler()]{@link
- * module:workbox-routing.Router#setDefaultHandler}
- *
- * @function
- * @name module:workbox-routing.setDefaultHandler
- */
-
-/**
- * [See Router.setCatchHandler()]{@link
- * module:workbox-routing.Router#setCatchHandler}
- *
- * @function
- * @name module:workbox-routing.setCatchHandler
- */
-
-/**
- * [See Router.unregisterRoute()]{@link
- * module:workbox-routing.Router#unregisterRoute}
- *
- * @function
- * @name module:workbox-routing.unregisterRoute
- */
-
-/**
  * @private
  */
 class DefaultRouter extends Router {
@@ -57,7 +33,7 @@ class DefaultRouter extends Router {
    * Easily register a Regular Expression or function with a caching
    * strategy to the Router.
    *
-   * This method will simply generate a Route for you if needed and
+   * This method will generate a Route for you if needed and
    * call [Router.registerRoute()]{@link
    * module:workbox-routing.Router#registerRoute}.
    *
@@ -67,8 +43,10 @@ class DefaultRouter extends Router {
    * module:workbox-routing.Route
    * } capture
    * If the capture param is a `Route`, all other arguments will be ignored.
-   * @param {module:workbox-routing.Route~handlerCallback} handler
-   * @param {string} [method='GET']
+   * @param {module:workbox-routing.Route~handlerCallback} handler A callback
+   * function that returns a Promise resulting in a Response.
+   * @param {string} [method='GET'] The HTTP method to match the Route
+   * against.
    * @return {module:workbox-routing.Route} The generated `Route`(Useful for
    * unregistering).
    *
@@ -109,20 +87,29 @@ class DefaultRouter extends Router {
   }
 
   /**
-   * A helper method that will register a NavigationRoute that will respond
-   * to navigation requests with a cached URL.
+   * Register a route that will return a precached file for a navigation
+   * request. This is useful for the
+   * [application shell pattern]{@link https://developers.google.com/web/fundamentals/architecture/app-shell}.
+   *
+   * This method will generate a
+   * [NavigationRoute]{@link module: workbox-routing.NavigationRoute}
+   * and call
+   * [Router.registerRoute()]{@link module:workbox-routing.Router#registerRoute}
+   * .
    *
    * @param {string} cachedAssetUrl
    * @param {Object} [options]
    * @param {string} [options.cacheName] Cache name to store and retrieve
    * requests. Defaults to precache cache name provided by
    * [workbox-core.cacheNames]{@link module:workbox-core.cacheNames}.
-   * @param {Array<RegExp>} [options.blacklist] If any of these patterns match,
-   * the route will not handle the request (even if a whitelist entry matches).
+   * @param {Array<RegExp>} [options.blacklist=[]] If any of these patterns
+   * match, the route will not handle the request (even if a whitelist entry
+   * matches).
    * @param {Array<RegExp>} [options.whitelist=[/./]] If any of these patterns
    * match the URL's pathname and search parameter, the route will handle the
    * request (assuming the blacklist doesn't match).
-   * @return {NavigationRoute} Returns the generated Route.
+   * @return {module:workbox-routing.NavigationRoute} Returns the generated
+   * Route.
    *
    * @alias module:workbox-routing.registerNavigationRoute
    */
@@ -159,7 +146,5 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(responsePromise);
   }
 });
-
-// TODO Register Navigation Route
 
 export default router;
