@@ -22,6 +22,7 @@ import DBWrapper from './_private/DBWrapper.mjs';
 import logger from './_private/logger.mjs';
 import WorkboxError from './_private/WorkboxError.mjs';
 import * as cacheNames from './_private/cacheNames.mjs';
+import getFriendlyURL from './_private/getFriendlyURL.mjs';
 import './_version.mjs';
 
 export {
@@ -32,4 +33,5 @@ export {
   fetchWrapper,
   WorkboxError,
   DBWrapper,
+  getFriendlyURL,
 };

@@ -15,7 +15,7 @@
 */
 
 import logger from './logger.mjs';
-import getFriendlyURL from '../utils/getFriendlyURL.mjs';
+import getFriendlyURL from '../_private/getFriendlyURL.mjs';
 import '../_version.mjs';
 
 /**
