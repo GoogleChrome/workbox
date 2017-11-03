@@ -68,39 +68,50 @@ class NavigationRoute extends Route {
       });
     }
 
-    const match = ({event, url}) => {
-      if (event.request.mode !== 'navigate') {
-        return false;
-      }
+    super((...args) => this._match(...args), handler);
 
-      const pathnameAndSearch = url.pathname + url.search;
+    this._whitelist = whitelist;
+    this._blacklist = blacklist;
+  }
 
-      if (blacklist.some((regExp) => regExp.test(pathnameAndSearch))) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.debug(`The navigation route is not being used, since the ` +
-            `request URL matches both the whitelist and blacklist.`);
-        }
-        return false;
-      }
-
-      if (whitelist.some((regExp) => regExp.test(pathnameAndSearch))) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.debug(`The navigation route is being used.`);
-        }
-        return true;
-      } else {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.debug(
-            `The navigation route is not being used, since the ` +
-            `URL being navigated to doesn't match the whitelist.`
-          );
-        }
-      }
-
+  /**
+   * Routes match handler.
+   *
+   * @param {Object} input
+   * @param {FetchEvent} input.event
+   * @param {URL} input.url
+   * @return {boolean}
+   */
+  _match({event, url}) {
+    if (event.request.mode !== 'navigate') {
       return false;
-    };
+    }
 
-    super(match, handler);
+    const pathnameAndSearch = url.pathname + url.search;
+
+    if (this._blacklist.some((regExp) => regExp.test(pathnameAndSearch))) {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.debug(`The navigation route is not being used, since the ` +
+          `request URL matches both the whitelist and blacklist.`);
+      }
+      return false;
+    }
+
+    if (this._whitelist.some((regExp) => regExp.test(pathnameAndSearch))) {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.debug(`The navigation route is being used.`);
+      }
+      return true;
+    } else {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.debug(
+          `The navigation route is not being used, since the ` +
+          `URL being navigated to doesn't match the whitelist.`
+        );
+      }
+    }
+
+    return false;
   }
 }
 

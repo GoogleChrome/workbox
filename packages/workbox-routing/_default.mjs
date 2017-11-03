@@ -14,10 +14,11 @@
   limitations under the License.
 */
 
-import {assert, WorkboxError} from 'workbox-core/_private.mjs';
+import {assert, WorkboxError, cacheNames} from 'workbox-core/_private.mjs';
 import {Router} from './Router.mjs';
 import {Route} from './Route.mjs';
 import {RegExpRoute} from './RegExpRoute.mjs';
+import {NavigationRoute} from './NavigationRoute.mjs';
 import './_version.mjs';
 
 if (process.env.NODE_ENV !== 'production') {
@@ -98,6 +99,43 @@ class DefaultRouter extends Router {
     }
 
     super.registerRoute(route);
+    return route;
+  }
+
+  /**
+   * A helper method that will register a NavigationRoute that will respond
+   * to navigation requests with a cached URL.
+   *
+   * @param {string} cachedAssetUrl
+   * @param {Object} options
+   * @param {string} options.cacheName Cache name to store and retrieve
+   * requests. Defaults to precache cache name provided by `workbox-core`.
+   * @param {Array<RegExp>} [options.blacklist] If any of these patterns match,
+   * the route will not handle the request (even if a whitelist entry matches).
+   * @param {Array<RegExp>} [options.whitelist=[/./]] If any of these patterns
+   * match the URL's pathname and search parameter, the route will handle the
+   * request (assuming the blacklist doesn't match).
+   * @return {NavigationRoute} Returns the generated Route.
+   */
+  registerNavigationRoute(cachedAssetUrl, options = {}) {
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isType(cachedAssetUrl, 'string', {
+        moduleName: 'workbox-routing',
+        className: '[default export]',
+        funcName: 'registerNavigationRoute',
+        paramName: 'cachedAssetUrl',
+      });
+    }
+
+    const cacheName = cacheNames.getPrecacheName(options.cacheName);
+    const handler = () => caches.match(cachedAssetUrl, {cacheName});
+    const route = new NavigationRoute(handler, {
+      whitelist: options.whitelist,
+      blacklist: options.blacklist,
+    });
+    super.registerRoute(
+      route
+    );
     return route;
   }
 }
