@@ -14,7 +14,7 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import CacheExpirationPlugin from '../../../packages/workbox-cache-expiration/CacheExpirationPlugin.mjs';
+import {CacheExpirationPlugin} from '../../../packages/workbox-cache-expiration/CacheExpirationPlugin.mjs';
 
 describe(`[workbox-cache-expiration] CacheExpirationPlugin`, function() {
   const sandbox = sinon.sandbox.create();
