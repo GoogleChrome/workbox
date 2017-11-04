@@ -19,6 +19,7 @@ import {NetworkFirst} from './NetworkFirst.mjs';
 import {NetworkOnly} from './NetworkOnly.mjs';
 import {StaleWhileRevalidate} from './StaleWhileRevalidate.mjs';
 import pluginBuilder from './utils/pluginBuilder.mjs';
+import './_version.mjs';
 
 const mapping = {
   cacheFirst: CacheFirst,
