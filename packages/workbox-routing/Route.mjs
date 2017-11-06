@@ -33,7 +33,7 @@ import './_version.mjs';
  * @callback Route~matchCallback
  * @param {Object} context
  * @param {URL} context.url The request's URL.
- * @param {FetchEvent} context.event The service workers `fetch`
+ * @param {FetchEvent} context.event The service worker`s `fetch`
  * event.
  * @return {Object|null} To signify a match, return anything other than `null`.
  * Return `null` if the route shouldn't match.
