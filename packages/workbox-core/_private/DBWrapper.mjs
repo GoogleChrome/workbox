@@ -20,6 +20,8 @@ import '../_version.mjs';
  * A class that wraps common IndexedDB functionality in a promise-based API.
  * It exposes all the underlying power and functionality of IndexedDB, but
  * wraps the most commonly used features in a way that's much simpler to use.
+ *
+ * @private
  */
 class DBWrapper {
   /**
