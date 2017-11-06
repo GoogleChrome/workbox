@@ -5,7 +5,7 @@ import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import expectError from '../../../infra/testing/expectError';
 
 import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/models/CacheTimestampsModel.mjs';
-import CacheExpiration from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
+import {CacheExpiration} from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
 
 describe(`[workbox-cache-expiration] CacheExpiration`, function() {
   let sandbox = sinon.sandbox.create();

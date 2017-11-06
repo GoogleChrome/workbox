@@ -46,7 +46,7 @@ class CacheFirst {
    */
   constructor(options = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
-      this._plugins = options.plugins || [];
+    this._plugins = options.plugins || [];
   }
 
   /**
