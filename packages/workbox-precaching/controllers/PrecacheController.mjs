@@ -48,10 +48,17 @@ class PrecacheController {
   }
 
   /**
+   * @typedef {Object} PrecacheEntry
+   * @property {string} url URL to precache.
+   * @property {string} revision Revision information for the URL.
+   *
+   * @memberof module:workbox-precaching.PrecacheController
+   */
+  /**
    * This method will add items to the precache list, removing duplicates
    * and ensuring the information is valid.
    *
-   * @param {Array<Object|string>} entries Array of entries to
+   * @param {Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>} entries Array of entries to
    * precache.
    */
   addToCacheList(entries) {
@@ -139,18 +146,14 @@ class PrecacheController {
   }
 
   /**
-   * The install results will return the supplied precache assets sorted into
-   * a list of assets that were precached and a list of precached assets that
-   * were already precached.
-   *
-   * The Array contents will be the items you passed into
-   * [addToCacheList]{@link
-   * module:workbox-precaching.PrecacheController#addToCacheList}.
-   *
    * @typedef {Object} InstallResult
-   * @property {Array<string|Object>} updatedEntries List of entries
+   * @property {
+   * Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>
+   * } updatedEntries List of entries
    * supplied for precaching that were precached.
-   * @property {Array<string|Object>} notUpdatedEntries List of entries
+   * @property {
+   * Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>
+   * } notUpdatedEntries List of entries
    * supplied for precaching that were already precached.
    *
    * @memberof module:workbox-precaching.PrecacheController
