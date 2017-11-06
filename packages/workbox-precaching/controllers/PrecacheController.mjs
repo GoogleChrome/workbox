@@ -212,18 +212,31 @@ class PrecacheController {
   }
 
   /**
+   * @typedef {Object} CleanupResult
+   * @property {Array<string>} deletedCacheRequests List of URLs that were
+   * deleted from the precache cache.
+   * @property {Array<string>} deletedRevisionDetails
+   * List of URLs that were deleted from the precache cache.
+   *
+   * @memberof module:workbox-precaching.PrecacheController
+   */
+
+  /**
    * Compare the URLs and determines which assets are no longer required
    * in the cache.
    *
    * This should be called in the service worker activate event.
    *
-   * @return {Promise<Object>} Resolves with an object containing details
-   * of the deleted cache requests and precache revision details.
+   * @return {Promise<
+   * module:workbox-precaching.PrecacheController.CleanupResult>}
+   * Resolves with an object containing details of the deleted cache requests
+   * and precache revision details.
    */
   async cleanup() {
     const expectedCacheUrls = [];
     this._entriesToCacheMap.forEach((entry) => {
-      expectedCacheUrls.push(entry._cacheRequest.url);
+      const fullUrl = new URL(entry._cacheRequest.url, location).toString();
+      expectedCacheUrls.push(fullUrl);
     });
 
     const [deletedCacheRequests, deletedRevisionDetails] = await Promise.all([
@@ -259,15 +272,17 @@ class PrecacheController {
 
     const cache = await caches.open(this._cacheName);
     const cachedRequests = await cache.keys();
-    const cacheURLsToDelete = cachedRequests.filter((cachedRequest) => {
-      return !expectedCacheUrls.includes(cachedRequest.url);
+    const cachedRequestsToDelete = cachedRequests.filter((cachedRequest) => {
+      return !expectedCacheUrls.includes(
+        new URL(cachedRequest.url, location).toString()
+      );
     });
 
     await Promise.all(
-      cacheURLsToDelete.map((cacheUrl) => cache.delete(cacheUrl))
+      cachedRequestsToDelete.map((cacheUrl) => cache.delete(cacheUrl))
     );
 
-    return cacheURLsToDelete;
+    return cachedRequestsToDelete.map((request) => request.url);
   }
 
   /**
@@ -281,10 +296,10 @@ class PrecacheController {
    */
   async _cleanupDetailsModel(expectedCacheUrls) {
     const revisionedEntries = await this._precacheDetailsModel._getAllEntries();
-    const allDetailUrls = Object.keys(revisionedEntries);
 
-    const detailsToDelete = allDetailUrls.filter((detailsUrl) => {
-      const fullUrl = new URL(detailsUrl, location).toString();
+    const detailsToDelete = (Object.keys(revisionedEntries)).filter((entryId) => {
+      const entry = revisionedEntries[entryId];
+      const fullUrl = new URL(entry.url, location).toString();
       return !expectedCacheUrls.includes(fullUrl);
     });
 
@@ -293,12 +308,8 @@ class PrecacheController {
         (detailsId) => this._precacheDetailsModel._deleteEntry(detailsId)
       )
     );
-
     return detailsToDelete.map((detailsId) => {
-      return {
-        id: detailsId,
-        value: revisionedEntries[detailsId],
-      };
+      return revisionedEntries[detailsId].url;
     });
   }
 
