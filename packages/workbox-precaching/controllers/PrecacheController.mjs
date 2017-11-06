@@ -297,11 +297,12 @@ class PrecacheController {
   async _cleanupDetailsModel(expectedCacheUrls) {
     const revisionedEntries = await this._precacheDetailsModel._getAllEntries();
 
-    const detailsToDelete = (Object.keys(revisionedEntries)).filter((entryId) => {
-      const entry = revisionedEntries[entryId];
-      const fullUrl = new URL(entry.url, location).toString();
-      return !expectedCacheUrls.includes(fullUrl);
-    });
+    const detailsToDelete = (Object.keys(revisionedEntries))
+      .filter((entryId) => {
+        const entry = revisionedEntries[entryId];
+        const fullUrl = new URL(entry.url, location).toString();
+        return !expectedCacheUrls.includes(fullUrl);
+      });
 
     await Promise.all(
       detailsToDelete.map(

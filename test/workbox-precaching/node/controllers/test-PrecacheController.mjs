@@ -383,9 +383,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
   });
 
   describe(`cleanup()`, function() {
-    // TODO: This requires service worker mocks to be fixed.
-    // https://github.com/pinterest/service-workers/issues/40
-    // https://github.com/pinterest/service-workers/issues/38
     it(`should remove out of date entries`, async function() {
       const cache = await caches.open(cacheNames.getPrecacheName());
 
