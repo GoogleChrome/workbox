@@ -1,6 +1,6 @@
 {
   "name": "workbox-cli",
-  "version": "3.0.0-alpha.18",
+  "version": "3.0.0-alpha.23",
   "description": "workbox-cli is the command line interface for the workbox-build module.",
   "keywords": [
     "workbox",
@@ -34,7 +34,7 @@
     "meow": "^3.7.0",
     "pretty-bytes": "^4.0.2",
     "update-notifier": "^2.3.0",
-    "workbox-build": "^3.0.0-alpha.18"
+    "workbox-build": "^3.0.0-alpha.23"
   },
   "workbox": {
     "packageType": "node"
