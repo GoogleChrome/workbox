@@ -26,7 +26,7 @@ module.exports = async () => {
   const contents = `module.exports = ${JSON.stringify(config, null, 2)};`;
   await fse.writeFile(configLocation, contents);
 
-  logger.log(`Your config has been saved. To build your service worker, run
+  logger.log(`To build your service worker, run
 
   workbox generateSW ${configLocation}
 
