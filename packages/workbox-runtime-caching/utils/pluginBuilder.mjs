@@ -13,6 +13,7 @@
  limitations under the License.
 */
 
+import {logger} from 'workbox-core/_private.mjs';
 import {CacheExpirationPlugin} from
   'workbox-cache-expiration/CacheExpirationPlugin.mjs';
 import '../_version.mjs';
@@ -28,15 +29,23 @@ const pluginBuilder = (options) => {
     // TODO: Add support for 'cacheableResponse': CacheableResponsePlugin,
   };
 
-  // Iterate over known plugins and add them to Request Wrapper options.
-  const pluginKeys = Object.keys(pluginParamsToClass);
-  pluginKeys.forEach((pluginKey) => {
-    if (options[pluginKey]) {
-      const PluginClass = pluginParamsToClass[pluginKey];
-      const pluginConfig = options[pluginKey];
-      plugins.push(new PluginClass(pluginConfig));
+  for (const [pluginName, config] of Object.entries(options)) {
+    // Special case for the `cacheName` config.
+    if (pluginName === 'cacheName') {
+      continue;
     }
-  });
+
+    const PluginClass = pluginParamsToClass[pluginName];
+    if (PluginClass) {
+      plugins.push(new PluginClass(config));
+    } else {
+      // Nested if statement to ensure rollup can strip this statement
+      if (process.env.NODE_ENV !== 'production') {
+        logger.warn(`Unknown plugin config '${pluginName}' passed in to` +
+          ` 'workbox.strategies'.`);
+      }
+    }
+  }
 
   return plugins.concat(options.plugins || []);
 };
