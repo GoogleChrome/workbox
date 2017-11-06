@@ -64,6 +64,43 @@ describe(`workbox-core  assert`, function() {
     });
   });
 
+  describe(`isArrayOfClass`, function() {
+    devOnly.it(`shouldn't throw when given an array same Class`, function() {
+      class TestClass {}
+      assert.isArrayOfClass([new TestClass(), new TestClass(), new TestClass()], TestClass, {
+        moduleName: 'module',
+        className: 'class',
+        funcName: 'func',
+        paramName: 'param',
+      });
+    });
+
+    devOnly.it(`should throw when value isn't an array of Class`, function() {
+      class TestClass {}
+      class NotTestClass {}
+      return expectError(() => {
+        assert.isArrayOfClass([new TestClass(), new NotTestClass(), new TestClass()], TestClass, {
+          moduleName: 'module',
+          className: 'class',
+          funcName: 'func',
+          paramName: 'param',
+        });
+      }, 'not-array-of-class');
+    });
+
+    devOnly.it(`should throw when value isn't an array`, function() {
+      class TestClass {}
+      return expectError(() => {
+        assert.isArrayOfClass({}, TestClass, {
+          moduleName: 'module',
+          className: 'class',
+          funcName: 'func',
+          paramName: 'param',
+        });
+      }, 'not-array-of-class');
+    });
+  });
+
   describe(`hasMethod`, function() {
     devOnly.it(`should throw when it has no method`, function() {
       return expectError(() => {
