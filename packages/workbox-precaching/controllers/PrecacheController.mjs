@@ -227,8 +227,8 @@ class PrecacheController {
    *
    * This should be called in the service worker activate event.
    *
-   * @return {Promise<
-   * module:workbox-precaching.PrecacheController.CleanupResult>}
+   * @return {
+   * Promise<module:workbox-precaching.PrecacheController.CleanupResult>}
    * Resolves with an object containing details of the deleted cache requests
    * and precache revision details.
    */
