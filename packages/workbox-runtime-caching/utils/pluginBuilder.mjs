@@ -22,13 +22,10 @@ const pluginBuilder = (options) => {
   // TODO: Assert plugins is an array
 
   const pluginParamsToClass = {
+    cacheExpiration: CacheExpirationPlugin,
     // TODO: Add support for 'broadcastCacheUpdate': BroadcastCacheUpdatePlugin,
     // TODO: Add support for 'cacheableResponse': CacheableResponsePlugin,
   };
-
-  if (CacheExpirationPlugin) {
-    pluginParamsToClass.cacheExpiration = CacheExpirationPlugin;
-  }
 
   // Iterate over known plugins and add them to Request Wrapper options.
   const pluginKeys = Object.keys(pluginParamsToClass);
