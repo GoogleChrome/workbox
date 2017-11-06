@@ -139,12 +139,30 @@ class PrecacheController {
   }
 
   /**
+   * The install results will return the supplied precache assets sorted into
+   * a list of assets that were precached and a list of precached assets that
+   * were already precached.
+   *
+   * The Array contents will be the items you passed into
+   * [addToCacheList]{@link
+   * module:workbox-precaching.PrecacheController#addToCacheList}.
+   *
+   * @typedef {Object} InstallResult
+   * @property {Array<string|Object>} updatedEntries List of entries
+   * supplied for precaching that were precached.
+   * @property {Array<string|Object>} notUpdatedEntries List of entries
+   * supplied for precaching that were already precached.
+   *
+   * @memberof module:workbox-precaching.PrecacheController
+   */
+  /**
    * Call this method from a service work install event to start
    * precaching assets.
    *
    * @param {Object} options
    * @param {boolean} options.suppressWarnings Suppress warning messages.
-   * @return {Promise<Object>}
+   * @return {
+   * Promise<module:workbox-precaching.PrecacheController.InstallResult>}
    */
   async install(options = {}) {
     if (process.env.NODE_ENV !== 'production') {
