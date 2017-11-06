@@ -58,7 +58,9 @@ class PrecacheController {
    * This method will add items to the precache list, removing duplicates
    * and ensuring the information is valid.
    *
-   * @param {Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>} entries Array of entries to
+   * @param {
+   * Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>
+   * } entries Array of entries to
    * precache.
    */
   addToCacheList(entries) {
