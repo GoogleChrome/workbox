@@ -17,13 +17,12 @@
 const path = require('path');
 
 const cdnUtils = require('../lib/cdn-utils');
-const copyWorkboxSW = require('../lib/copy-workbox-sw');
+const copyWorkboxLibraries = require('../lib/copy-workbox-libraries');
 const generateSWSchema = require('./options/generate-sw-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const validate = require('./options/validate');
 const writeServiceWorkerUsingDefaultTemplate =
   require('../lib/write-sw-using-default-template');
-
 
 /**
  * This method creates a list of URLs to precache, referred to as a "precache
@@ -47,35 +46,33 @@ async function generateSW(input) {
   const options = validate(input, generateSWSchema);
 
   const destDirectory = path.dirname(options.swDest);
-  // This will cause the dev build of WorkboxSW (either from the CDN or locally
-  // copying it) to be used if NODE_ENV starts with 'dev'.
-  const buildType = (process.env.NODE_ENV &&
-    process.env.NODE_ENV.startsWith('dev')) ? 'dev' : 'prod';
 
   if (options.importWorkboxFromCDN) {
-    const cdnUrl = cdnUtils.getModuleUrl('workbox-sw', buildType);
+    // TODO: Update for https://github.com/GoogleChrome/workbox/issues/969.
+    const cdnUrl = cdnUtils.getModuleUrl('workbox-sw', 'prod');
     // importScripts may or may not already be an array containing other URLs.
-    options.importScripts = (options.importScripts || []).concat(cdnUrl);
+    // Either way, list cdnUrl first.
+    options.importScripts = [cdnUrl].concat(options.importScripts || []);
   } else {
-    // If we're not importing the Workbox script from the CDN, copy it over.
-    const pathToWorkboxSWFile = await copyWorkboxSW(destDirectory, buildType);
+    // If we're not importing the Workbox scripts from the CDN, then copy
+    // over the dev + prod version of all of the core libraries.
+    const workboxDirectoryName = await copyWorkboxLibraries(destDirectory);
 
-    // If we're writing our SW file to build/sw.js, the workbox-sw file will be
-    // build/workbox-sw.js. So the sw.js file should import workboxSW.***.js
-    // (i.e. not include build/).
-    const pathToWorkboxSWFileRelativeToDest = path.relative(destDirectory,
-      pathToWorkboxSWFile);
-
-    // Add a few extra ignore rules to whatever might be specified to avoid
-    // picking up the generated service worker or the workbox-sw files.
+    // The Workbox library files should not be precached, since they're cached
+    // automatically by virtue of being used with importScripts().
     options.globIgnores = [
-      path.basename(pathToWorkboxSWFileRelativeToDest),
-      `${path.basename(pathToWorkboxSWFileRelativeToDest)}.map`,
-    ].map((file) => `**/${file}`).concat(options.globIgnores);
+      `**/${workboxDirectoryName}/*.js*`,
+    ].concat(options.globIgnores || []);
+
+    const workboxSWPkg = require(`workbox-sw/package.json`);
+    // TODO: This will change to workboxSWPkg.main at some point.
+    const workboxSWFilename = path.basename(workboxSWPkg.browser);
 
     // importScripts may or may not already be an array containing other URLs.
-    options.importScripts = (options.importScripts || []).concat(
-      pathToWorkboxSWFileRelativeToDest);
+    // Either way, list workboxSWFilename first.
+    options.importScripts = [
+      `${workboxDirectoryName}/${workboxSWFilename}`,
+    ].concat(options.importScripts || []);
   }
 
   const {count, size, manifestEntries} = await getFileManifestEntries(options);

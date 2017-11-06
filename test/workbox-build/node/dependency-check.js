@@ -11,8 +11,12 @@ describe(`[workbox-build] Test Dependencies`, function() {
         'demo',
       ],
       ignoreMatches: [
-        'workbox-sw',
         'babel-runtime',
+        'workbox-cache-expiration',
+        'workbox-precaching',
+        'workbox-routing',
+        'workbox-runtime-caching',
+        'workbox-sw',
       ],
     }, (unusedDeps) => {
       if (unusedDeps.dependencies.length > 0) {
