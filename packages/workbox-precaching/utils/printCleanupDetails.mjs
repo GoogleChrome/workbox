@@ -28,8 +28,8 @@ const logGroup = (groupTitle, urls) => {
 };
 
 /**
- * @param {Array<Request>} deletedCacheRequests
- * @param {Array<Object>} deletedRevisionDetails
+ * @param {Array<string>} deletedCacheRequests
+ * @param {Array<string>} deletedRevisionDetails
  *
  * @private
  * @memberof module:workbox-precachig

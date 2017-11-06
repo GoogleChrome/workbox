@@ -19,6 +19,7 @@ import '../_version.mjs';
 
 // Allows minifier to mangle this name
 const REVISON_IDB_FIELD = 'revision';
+const URL_IDB_FIELD = 'url';
 const DB_STORE_NAME = 'precached-details-models';
 /**
  * This model will track the relevant information of entries that
@@ -87,7 +88,10 @@ class PrecachedDetailsModel {
   async _addEntry(precacheEntry) {
     await this._db.put(
       DB_STORE_NAME,
-      {[REVISON_IDB_FIELD]: precacheEntry._revision},
+      {
+        [REVISON_IDB_FIELD]: precacheEntry._revision,
+        [URL_IDB_FIELD]: precacheEntry._cacheRequest.url,
+      },
       precacheEntry._entryId
     );
   }
