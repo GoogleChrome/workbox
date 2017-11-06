@@ -107,8 +107,19 @@ const _getPrecachedUrl = (url, {
 const moduleExports = {};
 
 /**
- * This method will add items to the precache list, removing duplicates
- * and ensuring the information is valid.
+ * Add items to the precache list, removing any duplicates and
+ * store the files in the
+ * ["precache cache"]{@link module:workbox-core.cacheNames} when the service
+ * worker installs.
+ *
+ * This method can be called multiple times.
+ *
+ * Please note: This method **will not** serve any of the cached files for you,
+ * it only precaches files. To respond to a network request you call
+ * [addRoute()]{@link module:workbox-precaching.addRoute}.
+ *
+ * If you have a single array of files to precache, you can just call
+ * [precacheAndRoute()]{@link module:workbox-precaching.precacheAndRoute}.
  *
  * @param {Array<Object|string>} entries Array of entries to precache.
  *
@@ -131,11 +142,14 @@ moduleExports.precache = (entries) => {
 };
 
 /**
- * This method will add a fetch listener to the service worker that will
- * respond to `FetchEvents` if they are known to be precached.
+ * Add a `fetch` listener to the service worker that will
+ * respond to
+ * [network requests]{@link https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers#Custom_responses_to_requests}
+ * with precached assets.
  *
- * If they aren't precached, the event will not be responded to, allowing
- * other `fetch` event listeners to respond to the `FetchEvent`.
+ * Requests for assets that aren't precached, the `FetchEvent` will not be
+ * responded to, allowing the event to fall through to other `fetch` event
+ * listeners.
  *
  * @param {Object} options
  * @param {string} [options.directoryIndex=index.html] The `directoryIndex` will
@@ -168,9 +182,12 @@ moduleExports.addRoute = (options) => {
 };
 
 /**
- * This method will add entries for precaching and then add a route. This is
- * a convenience method that will call precache() and addRoute() in a single
- * call.
+ * This method will add entries to the precache list and add a route to
+ * respond to fetch events.
+ *
+ * This is a convenience method that will call
+ * [precache()]{@link module:workbox-precaching.precache} and
+ * [addRoute()]{@link module:workbox-precaching.addRoute} in a single call.
  *
  * @param {Array<Object|string>} entries Array of entries to precache.
  * @param {Object} options See
