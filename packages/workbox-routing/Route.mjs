@@ -21,7 +21,7 @@ import './_version.mjs';
 
 /**
  * The "match" callback is used to determine if a `Route` should handle a
- * service worker `fetch` event. Returning a truthy value means
+ * service worker's `fetch` event. Returning a truthy value means
  * this `Route` will handle and respond to the event.
  *
  * Return `null` if this Route shouldn't match against the `fetch` event.
@@ -43,7 +43,7 @@ import './_version.mjs';
  */
 
 /**
- * The "handler" callback is called when a service worker `fetch` event
+ * The "handler" callback is called when a service worker's `fetch` event
  * has been matched by a `Route`. This callback should return a Promise that
  * resolves with a `Response`.
  *
@@ -54,7 +54,7 @@ import './_version.mjs';
  * @callback Route~handlerCallback
  * @param {Object} context
  * @param {URL} context.url The request's URL.
- * @param {FetchEvent} context.event The service workers `fetch`
+ * @param {FetchEvent} context.event The service worker's `fetch`
  * event.
  * @param {Object} [context.params] Parameters returned by the Route's
  * [match callback]{@link module:workbox-routing.Route~matchCallback} function.
@@ -68,7 +68,8 @@ import './_version.mjs';
  * A `Route` consists of a pair of callback functions, "match" and "handler".
  * The "match" callback determine if a route should be used to "handle" a
  * request by returning a non-falsy value if it can. The "handler" callback
- * is called when there is a match and should return a `Response`.
+ * is called when there is a match and should return a Promise that resolves
+ * to a `Response`.
  *
  * @memberof module:workbox-routing
  */
@@ -80,7 +81,7 @@ class Route {
    * A callback function that determines whether the route matches a given
    * `fetch` event by returning a non-falsy value.
    * @param {module:workbox-routing.Route~handlerCallback} handler A callback
-   * function that returns a Promise resulting in a Response.
+   * function that returns a Promise resolving to a Response.
    * @param {string} [method='GET'] The HTTP method to match the Route
    * against.
    */
