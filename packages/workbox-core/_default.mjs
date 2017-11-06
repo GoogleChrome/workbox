@@ -130,7 +130,7 @@ class WorkboxCore {
         details.googleAnalytics.length === 0) {
         throw new WorkboxError('invalid-cache-name', {
           cacheNameId: 'googleAnalytics',
-          value: details.runtime,
+          value: details.googleAnalytics,
         });
       }
     }

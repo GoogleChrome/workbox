@@ -86,7 +86,7 @@ describe(`workbox-core WorkboxCore`, function() {
       expect(core.cacheNames.runtime).to.equal(`test-prefix-runtime-/`);
     });
 
-    it('should allow customising the suffic', function() {
+    it('should allow customising the suffix', function() {
       core.setCacheNameDetails({suffix: 'test-suffix'});
 
       // Scope be default is '/' from 'service-worker-mock'
@@ -100,15 +100,21 @@ describe(`workbox-core WorkboxCore`, function() {
 
       // Scope be default is '/' from 'service-worker-mock'
       expect(core.cacheNames.precache).to.equal(`workbox-test-precache-/`);
-      expect(core.cacheNames.runtime).to.equal(`workbox-runtime-/`);
     });
 
-    it('should allow customising the precache name', function() {
+    it('should allow customising the runtime name', function() {
       core.setCacheNameDetails({runtime: 'test-runtime'});
 
       // Scope be default is '/' from 'service-worker-mock'
       expect(core.cacheNames.precache).to.equal(`workbox-precache-/`);
       expect(core.cacheNames.runtime).to.equal(`workbox-test-runtime-/`);
+    });
+
+    it('should allow customising the googleAnalytics name', function() {
+      core.setCacheNameDetails({googleAnalytics: 'test-ga'});
+
+      // Scope be default is '/' from 'service-worker-mock'
+      expect(core.cacheNames.googleAnalytics).to.equal(`workbox-test-ga-/`);
     });
 
     it('should allow customising all', function() {
@@ -117,11 +123,13 @@ describe(`workbox-core WorkboxCore`, function() {
         suffix: 'test-suffix',
         precache: 'test-precache',
         runtime: 'test-runtime',
+        googleAnalytics: 'test-ga',
       });
 
       // Scope be default is '/' from 'service-worker-mock'
       expect(core.cacheNames.precache).to.equal(`test-prefix-test-precache-test-suffix`);
       expect(core.cacheNames.runtime).to.equal(`test-prefix-test-runtime-test-suffix`);
+      expect(core.cacheNames.googleAnalytics).to.equal(`test-prefix-test-ga-test-suffix`);
     });
 
     it('should allow setting prefix and suffix to empty string', function() {
@@ -130,11 +138,13 @@ describe(`workbox-core WorkboxCore`, function() {
         suffix: '',
         precache: 'test-precache',
         runtime: 'test-runtime',
+        googleAnalytics: 'test-ga',
       });
 
       // Scope be default is '/' from 'service-worker-mock'
       expect(core.cacheNames.precache).to.equal(`test-precache`);
       expect(core.cacheNames.runtime).to.equal(`test-runtime`);
+      expect(core.cacheNames.googleAnalytics).to.equal(`test-ga`);
     });
 
     devOnly.it('should not allow precache to be an empty string in dev', function() {
@@ -150,6 +160,14 @@ describe(`workbox-core WorkboxCore`, function() {
       return expectError(() => {
         core.setCacheNameDetails({
           runtime: '',
+        });
+      }, 'invalid-cache-name');
+    });
+
+    devOnly.it('should not allow googleAnalytics to be an empty string in dev', function() {
+      return expectError(() => {
+        core.setCacheNameDetails({
+          googleAnalytics: '',
         });
       }, 'invalid-cache-name');
     });
