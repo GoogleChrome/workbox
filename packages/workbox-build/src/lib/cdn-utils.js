@@ -15,16 +15,19 @@
 */
 const cdn = require('../cdn-details.json');
 
-const getRootCDNUrl = () => {
-  return `${cdn.origin}/${cdn.bucketName}/${cdn.releasesDir}/` +
-    `${cdn.latestVersion}`;
+const getCDNOrigin = () => {
+  return `${cdn.origin}/${cdn.bucketName}/${cdn.releasesDir}`;
+};
+
+const getVersionedCDNUrl = () => {
+  return `${getCDNOrigin()}/${cdn.latestVersion}`;
 };
 
 const getModuleUrl = (moduleName, buildType) => {
-  return `${getRootCDNUrl()}/${moduleName}.${buildType.slice(0, 4)}.js`;
+  return `${getVersionedCDNUrl()}/${moduleName}.${buildType.slice(0, 4)}.js`;
 };
 
 module.exports = {
-  getRootCDNUrl,
+  getCDNOrigin,
   getModuleUrl,
 };
