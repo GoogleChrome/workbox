@@ -17,6 +17,7 @@
 module.exports = `<% if (importScripts) { %>
 importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
 <% } %>
+
 /**
  * Welcome to your Workbox-powered service worker!
  *
@@ -34,9 +35,12 @@ importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
  * See https://goo.gl/YYPcyY
  */
 
-const workboxSW = new WorkboxSW(<%= workboxOptionsString %>);
-<% if (skipWaiting) { %>workboxSW.skipWaiting();<% } %>
-<% if (clientsClaim) { %>workboxSW.clientsClaim();<% } %>
+<% if (modulePathCb) { %>workbox.setConfig({modulePathCb: <%= modulePathCb %>});<% } %>
+<% if (cacheId) { %>workbox.core.setCacheNameDetails({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
+
+<% if (skipWaiting) { %>workbox.skipWaiting();<% } %>
+<% if (clientsClaim) { %>workbox.clientsClaim();<% } %>
+
 <% if (Array.isArray(manifestEntries)) {%>
 /**
  * The workboxSW.precacheAndRoute() method does the following:
@@ -56,11 +60,13 @@ const workboxSW = new WorkboxSW(<%= workboxOptionsString %>);
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
 <% } %>
 if (Array.isArray(self.__precacheManifest)) {
-  workboxSW.precaching.precacheAndRoute(self.__precacheManifest);
+  workbox.precaching.precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
 }
-<% if (navigateFallback) { %>workboxSW.router.registerNavigationRoute('<%= navigateFallback %>'<% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
+
+<% if (navigateFallback) { %>workbox.routing.registerNavigationRoute(<%= JSON.stringify(navigateFallback) %><% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
   <% if (navigateFallbackWhitelist) { %>whitelist: [<%= navigateFallbackWhitelist %>],<% } %>
   <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>
 }<% } %>);<% } %>
+
 <% if (runtimeCaching && runtimeCaching.length > 0) { runtimeCaching.forEach((runtimeCachingString) => {%><%= runtimeCachingString %>
 <% }); } %>`;

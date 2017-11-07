@@ -23,7 +23,6 @@ module.exports = baseSchema.keys({
   cacheId: joi.string(),
   clientsClaim: joi.boolean().default(false),
   directoryIndex: joi.string(),
-  handleFetch: joi.boolean().default(true),
   ignoreUrlParametersMatching: joi.array().items(joi.object().type(RegExp)),
   navigateFallback: joi.string().default(false),
   navigateFallbackBlacklist: joi.array().items(joi.object().type(RegExp)),
