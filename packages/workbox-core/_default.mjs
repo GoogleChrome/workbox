@@ -26,8 +26,8 @@ import './_version.mjs';
  * This class is never exposed publicly. Inidividual methods are exposed
  * using jsdoc alias commands.
  *
+ * @memberof workbox.core
  * @private
- * @memberof module:workbox-core
  */
 class WorkboxCore {
   /**
@@ -72,8 +72,9 @@ class WorkboxCore {
    * store `analytics.js`,
    * and `cacheNames.runtime` is used for everything else.
    *
-   * @alias module:workbox-core.cacheNames
    * @return {Object} An object with `precache` and `runtime` cache names.
+   *
+   * @alias workbox.core.cacheNames
    */
   get cacheNames() {
     return {
@@ -89,7 +90,6 @@ class WorkboxCore {
    *
    * Cache names are generated as `<prefix>-<Cache Name>-<suffix>`.
    *
-   * @alias module:workbox-core.setCacheNameDetails
    * @param {Object} details
    * @param {Object} details.prefix The string to add to the beginning of
    * the precache and runtime cache names.
@@ -100,6 +100,8 @@ class WorkboxCore {
    * @param {Object} details.runtime The cache name to use for runtime caching.
    * @param {Object} details.googleAnalytics The cache name to use for
    * `workbox-google-analytics` caching.
+   *
+   * @alias workbox.core.setCacheNameDetails
    */
   setCacheNameDetails(details) {
     if (process.env.NODE_ENV !== 'production') {
@@ -141,8 +143,9 @@ class WorkboxCore {
   /**
    * Get the current log level.
    *
-   * @alias module:workbox-core.logLevel
    * @return {number}.
+   *
+   * @alias workbox.core.logLevel
    */
   get logLevel() {
     return getLoggerLevel();
@@ -154,7 +157,7 @@ class WorkboxCore {
    *
    * @param {number} newLevel The new log level to use.
    *
-   * @alias module:workbox-core.setLogLevel
+   * @alias workbox.core.setLogLevel
    */
   setLogLevel(newLevel) {
     if (process.env.NODE_ENV !== 'production') {

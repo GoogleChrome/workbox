@@ -26,14 +26,14 @@ const DB_STORE_NAME = 'precached-details-models';
  * are cached and their matching revision details.
  *
  * @private
- * @memberof module:workbox-precaching
  */
 class PrecachedDetailsModel {
   /**
    * Construct a new model for a specific cache.
    *
-   * @private
    * @param {string} cacheName
+   *
+   * @private
    */
   constructor(cacheName) {
     this._cacheName = cacheNames.getPrecacheName(cacheName);
@@ -50,6 +50,8 @@ class PrecachedDetailsModel {
    *
    * @param {PrecacheEntry} precacheEntry
    * @return {boolean}
+   *
+   * @private
    */
   async _isEntryCached(precacheEntry) {
     const revisionDetails = await this._getRevision(precacheEntry._entryId);
@@ -64,6 +66,8 @@ class PrecachedDetailsModel {
 
   /**
    * @return {Promise<Array>}
+   *
+   * @private
    */
   async _getAllEntries() {
     return await this._db.getAll(DB_STORE_NAME);
@@ -74,6 +78,8 @@ class PrecachedDetailsModel {
    *
    * @param {Object} entryId
    * @return {Promise<string|null>}
+   *
+   * @private
    */
   async _getRevision(entryId) {
     const data = await this._db.get(DB_STORE_NAME, entryId);
@@ -84,6 +90,8 @@ class PrecachedDetailsModel {
    * Add an entry to the details model.
    *
    * @param {PrecacheEntry} precacheEntry
+   *
+   * @private
    */
   async _addEntry(precacheEntry) {
     await this._db.put(
@@ -100,6 +108,8 @@ class PrecachedDetailsModel {
    * Delete entry from details model.
    *
    * @param {string} entryId
+   *
+   * @private
    */
   async _deleteEntry(entryId) {
     await this._db.delete(DB_STORE_NAME, entryId);

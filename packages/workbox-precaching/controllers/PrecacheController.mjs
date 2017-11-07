@@ -33,7 +33,7 @@ import '../_version.mjs';
 /**
  * Performs efficient precaching of assets.
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox.precaching
  */
 class PrecacheController {
   /**
@@ -47,13 +47,6 @@ class PrecacheController {
     this._precacheDetailsModel = new PrecachedDetailsModel(this._cacheName);
   }
 
-  /**
-   * @typedef {Object} PrecacheEntry
-   * @property {string} url URL to precache.
-   * @property {string} revision Revision information for the URL.
-   *
-   * @memberof module:workbox-precaching.PrecacheController
-   */
   /**
    * This method will add items to the precache list, removing duplicates
    * and ensuring the information is valid.
@@ -148,19 +141,6 @@ class PrecacheController {
   }
 
   /**
-   * @typedef {Object} InstallResult
-   * @property {
-   * Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>
-   * } updatedEntries List of entries
-   * supplied for precaching that were precached.
-   * @property {
-   * Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>
-   * } notUpdatedEntries List of entries
-   * supplied for precaching that were already precached.
-   *
-   * @memberof module:workbox-precaching.PrecacheController
-   */
-  /**
    * Call this method from a service work install event to start
    * precaching assets.
    *
@@ -233,16 +213,6 @@ class PrecacheController {
 
     return true;
   }
-
-  /**
-   * @typedef {Object} CleanupResult
-   * @property {Array<string>} deletedCacheRequests List of URLs that were
-   * deleted from the precache cache.
-   * @property {Array<string>} deletedRevisionDetails
-   * List of URLs that were deleted from the precache cache.
-   *
-   * @memberof module:workbox-precaching.PrecacheController
-   */
 
   /**
    * Compare the URLs and determines which assets are no longer required

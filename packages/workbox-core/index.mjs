@@ -24,14 +24,14 @@ import './_version.mjs';
  * code as well as setting default values that need to be shared (like cache
  * names).
  *
- * @module workbox-core
+ * @namespace workbox.core
  */
 
 /**
  * Utilities that are shared with other Workbox modules.
  *
+ * @alias workbox.core._private
  * @private
- * @alias module:workbox-core._private
  */
 
 export {
