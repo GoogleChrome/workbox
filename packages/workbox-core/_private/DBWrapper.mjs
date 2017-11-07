@@ -50,6 +50,8 @@ class DBWrapper {
    * callback, and added an onversionchange callback to the database.
    *
    * @return {IDBDatabase}
+   *
+   * @private
    */
   async open() {
     if (this._db) return;
@@ -96,6 +98,8 @@ class DBWrapper {
    * @param {string} storeName The name of the object store to put the value.
    * @param {...*} args The values passed to the delegated method.
    * @return {*} The key of the entry.
+   *
+   * @private
    */
   async get(storeName, ...args) {
     return await this._call('get', storeName, 'readonly', ...args);
@@ -107,6 +111,8 @@ class DBWrapper {
    * @param {string} storeName The name of the object store to put the value.
    * @param {...*} args The values passed to the delegated method.
    * @return {*} The key of the entry.
+   *
+   * @private
    */
   async add(storeName, ...args) {
     return await this._call('add', storeName, 'readwrite', ...args);
@@ -118,6 +124,8 @@ class DBWrapper {
    * @param {string} storeName The name of the object store to put the value.
    * @param {...*} args The values passed to the delegated method.
    * @return {*} The key of the entry.
+   *
+   * @private
    */
   async put(storeName, ...args) {
     return await this._call('put', storeName, 'readwrite', ...args);
@@ -128,6 +136,8 @@ class DBWrapper {
    *
    * @param {string} storeName
    * @param {...*} args The values passed to the delegated method.
+   *
+   * @private
    */
   async delete(storeName, ...args) {
     await this._call('delete', storeName, 'readwrite', ...args);
@@ -141,6 +151,8 @@ class DBWrapper {
    * @param {*} query
    * @param {number} count
    * @return {Array}
+   *
+   * @private
    */
   async getAll(storeName, query, count) {
     if ('getAll' in IDBObjectStore.prototype) {
@@ -165,6 +177,8 @@ class DBWrapper {
    *     returned objects is changed from an array of values to an array of
    *     objects in the form {key, primaryKey, value}.
    * @return {Array}
+   *
+   * @private
    */
   async getAllMatching(storeName, opts = {}) {
     return await this.transaction([storeName], 'readonly', (stores, done) => {
@@ -205,6 +219,8 @@ class DBWrapper {
    * @param {string} type Can be `readonly` or `readwrite`.
    * @param {function(Object, function(), function(*)):?IDBRequest} callback
    * @return {*} The result of the transaction ran by the callback.
+   *
+   * @private
    */
   async transaction(storeNames, type, callback) {
     await this.open();
@@ -236,6 +252,8 @@ class DBWrapper {
    * @param {string} type Can be `readonly` or `readwrite`.
    * @param {...*} args The list of args to pass to the native method.
    * @return {*} The result of the transaction.
+   *
+   * @private
    */
   async _call(method, storeName, type, ...args) {
     await this.open();
@@ -253,6 +271,8 @@ class DBWrapper {
    * connections can open without being blocked.
    *
    * @param {Event} evt
+   *
+   * @private
    */
   _onversionchange(evt) {
     this.close();
@@ -268,6 +288,8 @@ class DBWrapper {
    * The primary use case for needing to close a connection is when another
    * reference (typically in another tab) needs to upgrade it and would be
    * blocked by the current, open connection.
+   *
+   * @private
    */
   close() {
     if (this._db) this._db.close();

@@ -82,6 +82,7 @@
     "gulp-sourcemaps": "^2.6.1",
     "gzip-size": "^4.0.0",
     "jsdoc": "^3.5.5",
+    "jsdoc-baseline": "https://github.com/hegemonic/baseline/tarball/master",
     "lerna": "^2.4.0",
     "mocha": "^4.0.1",
     "nyc": "^11.2.1",

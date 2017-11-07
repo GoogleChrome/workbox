@@ -16,14 +16,41 @@ gulp.task('docs:clean', () => {
 const getJSDocFunc = (debug) => {
   return () => {
     logHelper.log(`Building docs...`);
+    const queryString = [
+      `projectRoot=/`,
+      `basepath=/`,
+      `productName=Workbox`,
+    ].join('&');
+
     const params = [
       'run', 'local-jsdoc', '--',
       '-c', path.join(__dirname, '..', 'jsdoc.conf'),
       '-d', DOCS_DIRECTORY,
     ];
+
+
+    if (!global.cliOptions.pretty) {
+      logHelper.warn(`
+
+These docs will look ugly, but they will more accurately match what
+is shown on developers.google.com.
+
+You can view a friendlier UI by running
+
+  'gulp docs --pretty'
+`);
+      params.push(
+        '--template', path.join(
+          __dirname, '..', 'infra', 'templates', 'reference-docs', 'jsdoc'
+        ),
+        '--query', queryString,
+      );
+    }
+
     if (debug) {
       params.push('--debug');
     }
+
     return spawn(getNpmCmd(), params, {
       cwd: path.join(__dirname, '..'),
     })
