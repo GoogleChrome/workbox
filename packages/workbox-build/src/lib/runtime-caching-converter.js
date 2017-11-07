@@ -74,24 +74,24 @@ module.exports = (runtimeCaching) => {
     }
 
     if (typeof entry.handler === 'string') {
-      // In v3, the strategies are exposed on workbox-sw.strategies as their
-      // class names, and start with uppercase letters. We can maintain support
-      // for the old handleName config by capitalizing the first letter.
+      // In v3, the strategies are exposed as their class names, and start with
+      // uppercase letters. We can maintain support for the old handleName
+      // config by capitalizing the first letter.
       const handlerClass = entry.handler.charAt(0).toUpperCase() +
         entry.handler.substring(1);
 
       const optionsString = getOptionsString(entry.options || {});
 
       const strategyString =
-        `new workboxSW.strategies.${handlerClass}(${optionsString})`;
+        `new workbox.strategies.${handlerClass}(${optionsString})`;
 
-      return `workboxSW.router.registerRoute(` +
-        `new self.workbox.routing.RegExpRoute(` +
-        `${entry.urlPattern}, ${strategyString}, '${method}'));`;
+      return `workbox.routing.registerRoute(` +
+        `new workbox.routing.RegExpRoute(` +
+        `${entry.urlPattern}, ${strategyString}, '${method}'));\n`;
     } else if (typeof entry.handler === 'function') {
-      return `workboxSW.router.registerRoute(` +
-        `new self.workbox.routing.RegExpRoute(` +
-        `${entry.urlPattern}, ${entry.handler}, '${method}'));`;
+      return `workbox.routing.registerRoute(` +
+        `new workbox.routing.RegExpRoute(` +
+        `${entry.urlPattern}, ${entry.handler}, '${method}'));\n`;
     }
   }).filter((entry) => Boolean(entry)); // Remove undefined map() return values.
 };

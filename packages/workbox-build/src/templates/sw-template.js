@@ -14,11 +14,7 @@
   limitations under the License.
 */
 
-module.exports = `<% if (importScripts) { %>
-importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
-<% } %>
-
-/**
+module.exports = `/**
  * Welcome to your Workbox-powered service worker!
  *
  * Here are some next steps:
@@ -34,6 +30,10 @@ importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
  * and re-run your build process to regenerate this file with updated code.
  * See https://goo.gl/YYPcyY
  */
+ 
+<% if (importScripts) { %>
+importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
+<% } %>
 
 <% if (modulePathCb) { %>workbox.setConfig({modulePathCb: <%= modulePathCb %>});<% } %>
 <% if (cacheId) { %>workbox.core.setCacheNameDetails({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
@@ -68,5 +68,4 @@ if (Array.isArray(self.__precacheManifest)) {
   <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>
 }<% } %>);<% } %>
 
-<% if (runtimeCaching && runtimeCaching.length > 0) { runtimeCaching.forEach((runtimeCachingString) => {%><%= runtimeCachingString %>
-<% }); } %>`;
+<% if (runtimeCaching) { runtimeCaching.forEach(runtimeCachingString => {%><%= runtimeCachingString %><% });} %>`;
