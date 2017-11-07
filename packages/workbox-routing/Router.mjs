@@ -24,24 +24,25 @@ import normalizeHandler from './utils/normalizeHandler.mjs';
 import './_version.mjs';
 
 /**
- * The Router takes one or more [Routes]{@link Route} and passes each fetch
- * event through it's routing logic to determine the appropriate way to respond
- * with a Request.
+ * The Router can be used to process a FetchEvent through one or more
+ * [Routes]{@link module:workbox-routing.Route} responding  with a Request if
+ * a matching route exists.
  *
  * If no route matches a given a request, the Router will use a "default"
  * handler if one is defined.
  *
- * Should any of the Route's throw an error, you can define a "catch" handler to
- * gracefully deal with these issues and respond with a Request.
+ * Should the matching Route throw an error, the Router will use a "catch"
+ * handler if one is defined to gracefully deal with issues and respond with a
+ * Request.
  *
- * If a request matches multiple routes, precedence will be given to the
- * **earliest** registered route.
+ * If a request matches multiple routes, the **earliest** registered route will
+ * be used to respond to the request.
  *
  * @memberof module:workbox-routing
  */
 class Router {
   /**
-   * Constructs a new `Router` instance, without any registered routes.
+   * Initializes a new Router.
    */
   constructor() {
     // _routes will contain a mapping of HTTP method name ('GET', etc.) to an
@@ -51,12 +52,13 @@ class Router {
 
   /**
    * Apply the routing rules to a FetchEvent object to get a Response from an
-   * appropriate handler.
+   * appropriate Route's handler.
    *
-   * @param {FetchEvent} event The event passed in to a `fetch` handler.
-   * @return {Promise<Response>|undefined} Returns a promise for a response,
-   * taking the registered routes into account. If there was no matching route
-   * and there's no `defaultHandler`, then returns undefined.
+   * @param {FetchEvent} event The event from a service worker's 'fetch' event
+   * listener.
+   * @return {Promise<Response>|undefined} A promise is returned if a
+   * registered route can handle the FetchEvent's request. If there is no
+   * matching route and there's no `defaultHandler`, `undefined` is returned.
    */
   handleRequest(event) {
     if (process.env.NODE_ENV !== 'production') {
@@ -166,6 +168,7 @@ class Router {
    * @param {URL} url
    * @return {Object} Returns an object with `handler` and `params` properties.
    * They are populated if a matching route was found or `undefined` otherwise.
+   *
    * @private
    */
   _findHandlerAndParams(event, url) {
@@ -197,20 +200,14 @@ class Router {
   }
 
   /**
-   * An optional `handler` that's called when no routes explicitly match the
-   * incoming request.
+   * Define a default `handler` that's called when no routes explicitly
+   * match the incoming request.
    *
-   * If the default is not provided, unmatched requests will go against the
+   * Without a default handler, unmatched requests will go against the
    * network as if there were no service worker present.
    *
-   * @param {function|module:workbox-runtime-caching.Handler} handler
-   * This parameter can be either a function or an object with a `handle`
-   * function. See the
-   * [Handler interface]{@link module:workbox-routing.Route~handlerCallback}
-   * for details.
-   *
-   * Either option should result in a `Response` object, which will be used to
-   * respond to the `fetch` event.
+   * @param {module:workbox-routing.Route~handlerCallback} handler A callback
+   * function that returns a Promise resulting in a Response.
    */
   setDefaultHandler(handler) {
     this._defaultHandler = normalizeHandler(handler);
@@ -220,14 +217,8 @@ class Router {
    * If a Route throws an error while handling a request, this `handler`
    * will be called and given a chance to provide a response.
    *
-   * @param {function|module:workbox-runtime-caching.Handler} handler
-   * This parameter can be either a function or an object with a `handle`
-   * function. See the
-   * [Handler interface]{@link module:workbox-routing.Route~handlerCallback}
-   * for details.
-   *
-   * Either option should result in a `Response` that the `Route` can use to
-   * handle the `fetch` event.
+   * @param {module:workbox-routing.Route~handlerCallback} handler A callback
+   * function that returns a Promise resulting in a Response.
    */
   setCatchHandler(handler) {
     this._catchHandler = normalizeHandler(handler);

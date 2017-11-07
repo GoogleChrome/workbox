@@ -19,41 +19,31 @@ import {Route} from './Route.mjs';
 import './_version.mjs';
 
 /**
- * RegExpRoute is a helper class to make defining regular expression based
- * [Routes]{@link module:workbox-routing.Route} easy.
+ * RegExpRoute makes it easy to create a regular expression based
+ * [Route]{@link module:workbox-routing.Route}.
  *
- * Please note that this only needs to match any part of the URL for same-origin
- * requests. For requests against third-party servers, you must define a RegExp
- * that matches the start of the URL.
+ * For same-origin requests the RegExp only needs to match part of the URL. For
+ * requests against third-party servers, you must define a RegExp that matches
+ * the start of the URL.
  *
- * For example,
- *
- * ```
- * // Matches all local styles
- * new RegExpRoute(new RegExp('/styles/'), ...);
- * ```
- *
- * while
- *
- * ```js
-*  // Matches third-party styles
- * new RegexpRoute(new RegExp('https://example\.com/styles/'), ...);
- * ```
+ * [See the module docs for info.]{@link https://docs.google.com/document/d/1K7Up3vxSoSDeO3dSoLBKFoZ0oaEonQjsDCQJj9NKAJQ/edit?usp=sharing}
  *
  * @memberof module:workbox-routing
- * @extends Route
+ * @extends module:workbox-routing.Route
  */
 class RegExpRoute extends Route {
   /**
-   * If the `RegExp` associated with this route contains
-   * [capture groups](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references),
-   * then the array of captured values will be passed to `handler` as `params`.
+   * If the regulard expression contains
+   * [capture groups]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references},
+   * th ecaptured values will be passed to the
+   * [handler's]{@link module:workbox-routing.Route~handlerCallback} `params`
+   * argument.
    *
    * @param {RegExp} regExp The regular expression to match against URLs.
-   * @param {module:workbox-routing.Route~handlerCallback} handler The callback
-   * function that will provide the response for matching requests.
-   * @param {string} [method='GET'] Restrict the route to only match requests
-   * that use this HTTP method.
+   * @param {module:workbox-routing.Route~handlerCallback} handler A callback
+   * function that returns a Promise resulting in a Response.
+   * @param {string} [method='GET'] The HTTP method to match the Route
+   * against.
    */
   constructor(regExp, handler, method) {
     if (process.env.NODE_ENV !== 'production') {
