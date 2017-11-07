@@ -3,8 +3,9 @@ const minify = require('uglify-es').minify;
 const replace = require('rollup-plugin-replace');
 
 const constants = require('./constants');
-const {getRootCDNUrl} =
+const {getCDNOrigin} =
   require('../../packages/workbox-build/src/lib/cdn-utils.js');
+const lernaPkg = require('../../lerna.json');
 
 module.exports = {
   // Every use of rollup should have minification and the replace
@@ -43,7 +44,7 @@ module.exports = {
 
     // This is what the build should be
     const replaceOptions = {
-      'WORKBOX_CDN_ROOT_URL': getRootCDNUrl(),
+      'WORKBOX_CDN_ROOT_URL': `${getCDNOrigin()}/${lernaPkg.version}`,
     };
 
     if (buildType) {

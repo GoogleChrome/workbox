@@ -9,6 +9,11 @@ const github = new GitHubApi();
 // the next request, so it should be called once per method that requires auth.
 // See https://github.com/mikedeboer/node-github#authentication
 const authenticate = () => {
+  if (!process.env.GITHUB_TOKEN) {
+    throw new Error('You must set a GITHUB_TOKEN in your environment to ' +
+      'public a Github release.');
+  }
+
   github.authenticate({
     type: 'token',
     token: process.env.GITHUB_TOKEN,
