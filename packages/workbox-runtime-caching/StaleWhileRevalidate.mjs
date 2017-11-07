@@ -73,7 +73,7 @@ class StaleWhileRevalidate {
   /**
    * This method will perform a request strategy and follows an API that
    * will work with the
-   * [Workbox Router]{@link module:workbox-routing.Router}.
+   * [Workbox Router]{@link workbox.routing.Router}.
    *
    * @param {Object} input
    * @param {FetchEvent} input.event The fetch event to run this strategy

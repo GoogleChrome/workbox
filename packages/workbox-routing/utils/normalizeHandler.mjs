@@ -20,6 +20,8 @@ import '../_version.mjs';
  * @param {function|Object} handler Either a function, or an object with a
  * 'handle' method.
  * @return {Object} An object with a handle method.
+ *
+ * @private
  */
 export default (handler) => {
   if (handler && typeof handler === 'object') {

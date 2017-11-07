@@ -19,7 +19,7 @@ import './_version.mjs';
 
 /**
  * NavigationRoute makes it easy to create a [Route]{@link
- * module:workbox-routing.Route} that matches for browser
+ * workbox.routing.Route} that matches for browser
  * [navigation requests]{@link https://developers.google.com/web/fundamentals/primers/service-workers/high-performance-loading#first_what_are_navigation_requests}.
  *
  * It will only match incoming Requests whose
@@ -29,8 +29,8 @@ import './_version.mjs';
  * You can optionally only apply this route to a subset of navigation requests
  * by using one or both of the `blacklist` and `whitelist` parameters.
  *
- * @memberof module:workbox-routing
- * @extends module:workbox-routing.Route
+ * @memberof workbox.routing
+ * @extends workbox.routing.Route
  */
 class NavigationRoute extends Route {
   /**
@@ -43,7 +43,7 @@ class NavigationRoute extends Route {
    * and [`search`]{@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/search}
    * portions of the requested URL.
    *
-   * @param {module:workbox-routing.Route~handlerCallback} handler A callback
+   * @param {workbox.routing.Route~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    * @param {Object} options
    * @param {Array<RegExp>} [options.blacklist] If any of these patterns match,

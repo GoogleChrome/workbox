@@ -226,7 +226,7 @@ const injectManifest = require('./entry-points/inject-manifest');
  * E.g. `/\.\w{8}\./`
  *
  * @property {String} [navigateFallback] This will be used to create a
- * {@link module:workbox-routing.NavigationRoute|NavigationRoute} that will
+ * {@link workbox.routing.NavigationRoute|NavigationRoute} that will
  * respond to navigation requests for URLs that that aren't precached.
  *
  * This is meant to be used in a

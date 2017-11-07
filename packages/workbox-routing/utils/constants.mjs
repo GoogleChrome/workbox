@@ -22,7 +22,6 @@ import '../_version.mjs';
  * @type {string}
  *
  * @private
- * @memberof module:workbox-routing
  */
 export const defaultMethod = 'GET';
 
@@ -32,7 +31,6 @@ export const defaultMethod = 'GET';
  * @type {Array<string>}
  *
  * @private
- * @memberof module:workbox-routing
  */
 export const validMethods = [
   'DELETE',

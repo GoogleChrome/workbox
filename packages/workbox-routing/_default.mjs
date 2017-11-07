@@ -35,22 +35,22 @@ class DefaultRouter extends Router {
    *
    * This method will generate a Route for you if needed and
    * call [Router.registerRoute()]{@link
-   * module:workbox-routing.Router#registerRoute}.
+   * workbox.routing.Router#registerRoute}.
    *
    * @param {
    * RegExp|
-   * module:workbox-routing.Route~matchCallback|
-   * module:workbox-routing.Route
+   * workbox.routing.Route~matchCallback|
+   * workbox.routing.Route
    * } capture
    * If the capture param is a `Route`, all other arguments will be ignored.
-   * @param {module:workbox-routing.Route~handlerCallback} handler A callback
+   * @param {workbox.routing.Route~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    * @param {string} [method='GET'] The HTTP method to match the Route
    * against.
-   * @return {module:workbox-routing.Route} The generated `Route`(Useful for
+   * @return {workbox.routing.Route} The generated `Route`(Useful for
    * unregistering).
    *
-   * @alias module:workbox-routing.registerRoute
+   * @alias workbox.routing.registerRoute
    */
   registerRoute(capture, handler, method = 'GET') {
     let route;
@@ -92,26 +92,26 @@ class DefaultRouter extends Router {
    * [application shell pattern]{@link https://developers.google.com/web/fundamentals/architecture/app-shell}.
    *
    * This method will generate a
-   * [NavigationRoute]{@link module: workbox-routing.NavigationRoute}
+   * [NavigationRoute]{@link workbox.routing.NavigationRoute}
    * and call
-   * [Router.registerRoute()]{@link module:workbox-routing.Router#registerRoute}
+   * [Router.registerRoute()]{@link workbox.routing.Router#registerRoute}
    * .
    *
    * @param {string} cachedAssetUrl
    * @param {Object} [options]
    * @param {string} [options.cacheName] Cache name to store and retrieve
    * requests. Defaults to precache cache name provided by
-   * [workbox-core.cacheNames]{@link module:workbox-core.cacheNames}.
+   * [workbox-core.cacheNames]{@link workbox.core.cacheNames}.
    * @param {Array<RegExp>} [options.blacklist=[]] If any of these patterns
    * match, the route will not handle the request (even if a whitelist entry
    * matches).
    * @param {Array<RegExp>} [options.whitelist=[/./]] If any of these patterns
    * match the URL's pathname and search parameter, the route will handle the
    * request (assuming the blacklist doesn't match).
-   * @return {module:workbox-routing.NavigationRoute} Returns the generated
+   * @return {workbox.routing.NavigationRoute} Returns the generated
    * Route.
    *
-   * @alias module:workbox-routing.registerNavigationRoute
+   * @alias workbox.routing.registerNavigationRoute
    */
   registerNavigationRoute(cachedAssetUrl, options = {}) {
     if (process.env.NODE_ENV !== 'production') {
