@@ -28,6 +28,7 @@
   "module": "index.mjs",
   "browser": "build/browser/workbox-runtime-caching.prod.js",
   "dependencies": {
-    "workbox-core": "^3.0.0-alpha.23"
+    "workbox-core": "^3.0.0-alpha.23",
+    "workbox-cache-expiration": "^3.0.0-alpha.23"
   }
 }

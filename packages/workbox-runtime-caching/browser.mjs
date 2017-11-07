@@ -15,6 +15,9 @@
 */
 
 import * as publicAPI from './_public.mjs';
+import defaultExport from './_default.mjs';
 import './_version.mjs';
 
-export default publicAPI;
+const finalExport = Object.assign(defaultExport, publicAPI);
+
+export default finalExport;

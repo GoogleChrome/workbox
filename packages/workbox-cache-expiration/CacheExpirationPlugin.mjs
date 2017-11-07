@@ -13,7 +13,7 @@
 
 import {WorkboxError, assert} from 'workbox-core/_private.mjs';
 
-import CacheExpiration from './CacheExpiration.mjs';
+import {CacheExpiration} from './CacheExpiration.mjs';
 import './_version.mjs';
 
 /**
@@ -184,4 +184,4 @@ class CacheExpirationPlugin {
   }
 }
 
-export default CacheExpirationPlugin;
+export {CacheExpirationPlugin};
