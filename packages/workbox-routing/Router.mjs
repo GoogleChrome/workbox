@@ -13,30 +13,36 @@
  limitations under the License.
 */
 
-import {assert, logger, WorkboxError} from 'workbox-core/_private.mjs';
+import {
+  assert,
+  logger,
+  WorkboxError,
+  getFriendlyURL,
+} from 'workbox-core/_private.mjs';
 
 import normalizeHandler from './utils/normalizeHandler.mjs';
 import './_version.mjs';
 
 /**
- * The Router takes one or more [Routes]{@link Route} and passes each fetch
- * event through it's routing logic to determine the appropriate way to respond
- * with a Request.
+ * The Router can be used to process a FetchEvent through one or more
+ * [Routes]{@link module:workbox-routing.Route} responding  with a Request if
+ * a matching route exists.
  *
  * If no route matches a given a request, the Router will use a "default"
  * handler if one is defined.
  *
- * Should any of the Route's throw an error, you can define a "catch" handler to
- * gracefully deal with these issues and respond with a Request.
+ * Should the matching Route throw an error, the Router will use a "catch"
+ * handler if one is defined to gracefully deal with issues and respond with a
+ * Request.
  *
- * If a request matches multiple routes, precedence will be given to the
- * **earliest** registered route.
+ * If a request matches multiple routes, the **earliest** registered route will
+ * be used to respond to the request.
  *
  * @memberof module:workbox-routing
  */
 class Router {
   /**
-   * Constructs a new `Router` instance, without any registered routes.
+   * Initializes a new Router.
    */
   constructor() {
     // _routes will contain a mapping of HTTP method name ('GET', etc.) to an
@@ -46,12 +52,13 @@ class Router {
 
   /**
    * Apply the routing rules to a FetchEvent object to get a Response from an
-   * appropriate handler.
+   * appropriate Route's handler.
    *
-   * @param {FetchEvent} event The event passed in to a `fetch` handler.
-   * @return {Promise<Response>|undefined} Returns a promise for a response,
-   * taking the registered routes into account. If there was no matching route
-   * and there's no `defaultHandler`, then returns undefined.
+   * @param {FetchEvent} event The event from a service worker's 'fetch' event
+   * listener.
+   * @return {Promise<Response>|undefined} A promise is returned if a
+   * registered route can handle the FetchEvent's request. If there is no
+   * matching route and there's no `defaultHandler`, `undefined` is returned.
    */
   handleRequest(event) {
     if (process.env.NODE_ENV !== 'production') {
@@ -63,91 +70,93 @@ class Router {
       });
     }
 
-    let handler = null;
-    let params = null;
     const url = new URL(event.request.url);
-    let urlToLog = url.origin === location.origin ? url.pathname : url.href;
-    let debugMessages = [];
-
     if (!url.protocol.startsWith('http')) {
       if (process.env.NODE_ENV !== 'production') {
-        debugMessages.push(
-          `The URL does not start with 'http', so it can't be handled.`);
+        logger.debug(
+          `Workbox Router only supports URLs that start with 'http'.`);
       }
-    } else {
-      const result = this._findHandlerAndParams(event, url);
-      handler = result.handler;
-      params = result.params;
-      const route = result.route;
-      if (process.env.NODE_ENV !== 'production') {
-        if (handler) {
+      return;
+    }
+
+    let handler = null;
+    let params = null;
+    let debugMessages = [];
+
+    const result = this._findHandlerAndParams(event, url);
+    handler = result.handler;
+    params = result.params;
+    const route = result.route;
+    if (process.env.NODE_ENV !== 'production') {
+      if (handler) {
+        debugMessages.push([
+          `Found a route to handle this request:`, route,
+        ]);
+
+        if (params) {
           debugMessages.push([
-            `Matching route:`, route,
+            `Passing the following params to the route's handler:`, params,
           ]);
-
-          if (params) {
-            debugMessages.push([
-              `Passing the following params to the Routes handler:`, params,
-            ]);
-          }
         }
       }
+    }
 
-      // If we don't have a handler because there was no matching route, then
-      // fall back to defaultHandler if that's defined.
-      if (!handler && this._defaultHandler) {
-        if (process.env.NODE_ENV !== 'production') {
-          debugMessages.push(`Failed to find a matching route, so falling ` +
-            `back to the default handler.`);
-        }
-        handler = this._defaultHandler;
-      }
-
+    // If we don't have a handler because there was no matching route, then
+    // fall back to defaultHandler if that's defined.
+    if (!handler && this._defaultHandler) {
       if (process.env.NODE_ENV !== 'production') {
-        if (!handler) {
-          // No handler so Workbox will do nothing. If logs is set of debug
-          // i.e. verbose, we should print out this information.
-          logger.debug(`No route found for: ${urlToLog}`);
+        debugMessages.push(`Failed to find a matching route. Falling ` +
+          `back to the default handler.`);
+      }
+      handler = this._defaultHandler;
+    }
+
+    if (!handler) {
+      if (process.env.NODE_ENV !== 'production') {
+        // No handler so Workbox will do nothing. If logs is set of debug
+        // i.e. verbose, we should print out this information.
+        logger.debug(`No route found for: ${getFriendlyURL(url)}`);
+      }
+      return;
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      // We have a handler, meaning Workbox is going to handle the route.
+      // print the routing details to the console.
+      logger.groupCollapsed(`Router is responding to: ${getFriendlyURL(url)}`);
+      debugMessages.forEach((msg) => {
+        if (Array.isArray(msg)) {
+          logger.log(...msg);
         } else {
-          // We have a handler, meaning Workbox is handling the route. print to
-          // log.
-          logger.groupCollapsed(
-            `Router is responding to: ${urlToLog}`);
+          logger.log(msg);
+        }
+      });
 
-          // The Request object contains a great deal of information,
-          // hide it under a group in case developers wants to see it.
-          logger.groupCollapsed(
-            `    View full request details here.`);
-          logger.unprefixed.log(event.request);
-          logger.groupEnd();
+      // The Request and Response objects contains a great deal of information,
+      // hide it under a group in case developers want to see it.
+      logger.groupCollapsed(`View request details here.`);
+      logger.unprefixed.log(event.request);
+      logger.groupEnd();
 
-          debugMessages.forEach((msg) => {
-            if (Array.isArray(msg)) {
-              logger.unprefixed.log(...msg);
-            } else {
-              logger.unprefixed.log(msg);
-            }
-          });
+      logger.groupEnd();
+    }
+
+    let responsePromise = handler.handle({url, event, params});
+    if (this._catchHandler) {
+      responsePromise = responsePromise.catch((err) => {
+        if (process.env.NODE_ENV !== 'production') {
+          // Still include URL here as it will be async from the console group
+          // and may not make sense without the URL
+          logger.groupCollapsed(`The Router ${route} threw an error when ` +
+            `handling ${getFriendlyURL(url)}. Falling back to Catch Handler.`);
+          logger.unprefixed.error(err);
           logger.groupEnd();
         }
-      }
+        return this._catchHandler.handle({url, event, err});
+      });
     }
 
-    if (handler) {
-      let responsePromise = handler.handle({url, event, params});
-      if (this._catchHandler) {
-        responsePromise = responsePromise.catch((error) => {
-          if (process.env.NODE_ENV !== 'production') {
-            // Still include URL here as it will be async from the console group
-            // and may not make sense without the URL
-            logger.debug(`An error was thrown by the handler for ` +
-              `'${urlToLog}', so using the catch handler.`);
-          }
-          return this._catchHandler.handle({url, event, error});
-        });
-      }
-      return responsePromise;
-    }
+    return responsePromise;
   }
 
   /**
@@ -159,6 +168,7 @@ class Router {
    * @param {URL} url
    * @return {Object} Returns an object with `handler` and `params` properties.
    * They are populated if a matching route was found or `undefined` otherwise.
+   *
    * @private
    */
   _findHandlerAndParams(event, url) {
@@ -190,20 +200,14 @@ class Router {
   }
 
   /**
-   * An optional `handler` that's called when no routes explicitly match the
-   * incoming request.
+   * Define a default `handler` that's called when no routes explicitly
+   * match the incoming request.
    *
-   * If the default is not provided, unmatched requests will go against the
+   * Without a default handler, unmatched requests will go against the
    * network as if there were no service worker present.
    *
-   * @param {function|module:workbox-runtime-caching.Handler} handler
-   * This parameter can be either a function or an object with a `handle`
-   * function. See the
-   * [Handler interface]{@link module:workbox-routing.Route~handlerCallback}
-   * for details.
-   *
-   * Either option should result in a `Response` object, which will be used to
-   * respond to the `fetch` event.
+   * @param {module:workbox-routing.Route~handlerCallback} handler A callback
+   * function that returns a Promise resulting in a Response.
    */
   setDefaultHandler(handler) {
     this._defaultHandler = normalizeHandler(handler);
@@ -213,14 +217,8 @@ class Router {
    * If a Route throws an error while handling a request, this `handler`
    * will be called and given a chance to provide a response.
    *
-   * @param {function|module:workbox-runtime-caching.Handler} handler
-   * This parameter can be either a function or an object with a `handle`
-   * function. See the
-   * [Handler interface]{@link module:workbox-routing.Route~handlerCallback}
-   * for details.
-   *
-   * Either option should result in a `Response` that the `Route` can use to
-   * handle the `fetch` event.
+   * @param {module:workbox-routing.Route~handlerCallback} handler A callback
+   * function that returns a Promise resulting in a Response.
    */
   setCatchHandler(handler) {
     this._catchHandler = normalizeHandler(handler);

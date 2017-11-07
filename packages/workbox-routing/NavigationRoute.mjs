@@ -18,36 +18,36 @@ import {Route} from './Route.mjs';
 import './_version.mjs';
 
 /**
- * NavigationRoute is a helper class to create a [Route]{@link
- * module:workbox-routing.Route} that matches for browser navigation requests,
- * i.e. requests for HTML pages.
+ * NavigationRoute makes it easy to create a [Route]{@link
+ * module:workbox-routing.Route} that matches for browser
+ * [navigation requests]{@link https://developers.google.com/web/fundamentals/primers/service-workers/high-performance-loading#first_what_are_navigation_requests}.
  *
- * It will only match incoming requests whose [`mode`](https://fetch.spec.whatwg.org/#concept-request-mode)
+ * It will only match incoming Requests whose
+ * [`mode`]{@link https://fetch.spec.whatwg.org/#concept-request-mode}
  * is set to `navigate`.
  *
  * You can optionally only apply this route to a subset of navigation requests
- * by using one or both of the `blacklist` and `whitelist` parameters. If
- * both lists are provided, the blacklist will take precedence and the request
- * will not be matched by this route.
- *
- * The regular expressions in `whitelist` and `blacklist`
- * are matched against the concatenated
- * [`pathname`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/pathname)
- * and [`search`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/search)
- * portions of the requested URL.
+ * by using one or both of the `blacklist` and `whitelist` parameters.
  *
  * @memberof module:workbox-routing
- * @extends Route
+ * @extends module:workbox-routing.Route
  */
 class NavigationRoute extends Route {
   /**
-   * Constructor for NavigationRoute.
+   * If both `blacklist` and `whiltelist` are provided, the `blacklist` will
+   * take precedence and the request will not match this route.
    *
-   * @param {function|module:workbox-runtime-caching.Handler} handler The
-   * handler to use to provide a response if the route matches.
+   * The regular expressions in `whitelist` and `blacklist`
+   * are matched against the concatenated
+   * [`pathname`]{@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/pathname}
+   * and [`search`]{@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/search}
+   * portions of the requested URL.
+   *
+   * @param {module:workbox-routing.Route~handlerCallback} handler A callback
+   * function that returns a Promise resulting in a Response.
    * @param {Object} options
    * @param {Array<RegExp>} [options.blacklist] If any of these patterns match,
-   * the route will not handle the request (even if a whitelist entry matches).
+   * the route will not handle the request (even if a whitelist RegExp matches).
    * @param {Array<RegExp>} [options.whitelist=[/./]] If any of these patterns
    * match the URL's pathname and search parameter, the route will handle the
    * request (assuming the blacklist doesn't match).
@@ -81,6 +81,8 @@ class NavigationRoute extends Route {
    * @param {FetchEvent} input.event
    * @param {URL} input.url
    * @return {boolean}
+   *
+   * @private
    */
   _match({event, url}) {
     if (event.request.mode !== 'navigate') {

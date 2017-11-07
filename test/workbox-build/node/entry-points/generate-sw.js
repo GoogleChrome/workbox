@@ -1,20 +1,17 @@
 const expect = require('chai').expect;
 const fse = require('fs-extra');
+const glob = require('glob');
 const path = require('path');
 const tempy = require('tempy');
 
 const cdnUtils = require('../../../../packages/workbox-build/src/lib/cdn-utils');
+const copyWorkboxLibraries = require('../../../../packages/workbox-build/src/lib/copy-workbox-libraries');
 const generateSW = require('../../../../packages/workbox-build/src/entry-points/generate-sw');
-const useBuildType = require('../../../../packages/workbox-build/src/lib/use-build-type');
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() {
-  const BUILD_TYPE = (process.env.NODE_ENV && process.env.NODE_ENV.startsWith('dev')) ? 'dev' : 'prod';
-  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw', BUILD_TYPE);
-  const LOCAL_WORKBOX_SW_FILENAME = useBuildType(
-    path.basename(require.resolve('../../../../packages/workbox-build/node_modules/workbox-sw/')),
-    BUILD_TYPE
-  );
+  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw', 'prod');
+  const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
@@ -43,7 +40,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     'runtimeCaching',
     'skipWaiting',
     'templatedUrls',
-
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
     'injectionPointRegexp',
@@ -135,7 +131,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       }});
     });
 
-    it(`should use defaults and call importScripts() with a copy of workbox-sw when importWorkboxFromCDN is false`, async function() {
+    it(`should use defaults and make local copies of the Workbox libraries when importWorkboxFromCDN is false`, async function() {
       const swDest = path.join(tempy.directory(), 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
@@ -144,15 +140,47 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
       const {count, size} = await generateSW(options);
 
-      const pathToWorkboxSWCopy = path.join(path.dirname(swDest), LOCAL_WORKBOX_SW_FILENAME);
-      const stats = await fse.stat(pathToWorkboxSWCopy);
-      expect(stats.isFile()).to.be.true;
-
       expect(count).to.eql(6);
       expect(size).to.eql(2421);
+
+      // Validate the copied library files.
+      const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
+        {cwd: path.dirname(swDest)});
+
+      const basenames = libraryFiles.map((file) => path.basename(file));
+      expect(basenames).to.eql([
+        'workbox-cache-expiration.dev.js',
+        'workbox-cache-expiration.dev.js.map',
+        'workbox-cache-expiration.prod.js',
+        'workbox-cache-expiration.prod.js.map',
+        'workbox-precaching.dev.js',
+        'workbox-precaching.dev.js.map',
+        'workbox-precaching.prod.js',
+        'workbox-precaching.prod.js.map',
+        'workbox-routing.dev.js',
+        'workbox-routing.dev.js.map',
+        'workbox-routing.prod.js',
+        'workbox-routing.prod.js.map',
+        'workbox-runtime-caching.dev.js',
+        'workbox-runtime-caching.dev.js.map',
+        'workbox-runtime-caching.prod.js',
+        'workbox-runtime-caching.prod.js.map',
+        'workbox-sw.dev.js',
+        'workbox-sw.dev.js.map',
+        'workbox-sw.prod.js',
+        'workbox-sw.prod.js.map',
+      ]);
+
+      // The correct importScripts path should use the versioned name of the
+      // parent workbox libraries directory. We don't know that version ahead
+      // of time, so we ensure that there's a match based on what actually
+      // got copied over.
+      const workboxSWImport = libraryFiles.filter(
+        (file) => file.endsWith('workbox-sw.prod.js'));
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         constructor: [[{}]],
-        importScripts: [[LOCAL_WORKBOX_SW_FILENAME]],
+        importScripts: [workboxSWImport],
         precache: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -175,6 +203,30 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       }});
     });
 
+    it(`should not include the copied Workbox libraries in the precache manifest`, async function() {
+      const testFileContents = 'test';
+      const globDirectory = tempy.directory();
+      // We need at least one non-Workbox library file in the source directory.
+      await fse.writeFile(path.join(globDirectory, 'index.html'), testFileContents);
+
+      // Make two copies of the Workbox libraries into the source directory, to
+      // test the the globIgnore pattern works for both top and sub-directories.
+      await copyWorkboxLibraries(globDirectory);
+      await copyWorkboxLibraries(path.join(globDirectory, 'sub-directory'));
+
+      const swDest = path.join(tempy.directory(), 'sw.js');
+      const options = Object.assign({}, BASE_OPTIONS, {
+        globDirectory,
+        swDest,
+        importWorkboxFromCDN: false,
+      });
+
+      const {count, size} = await generateSW(options);
+
+      expect(count).to.eql(1);
+      expect(size).to.eql(testFileContents.length);
+    });
+
     it(`should use defaults when all the required parameters are present, with additional importScripts`, async function() {
       const swDest = path.join(tempy.directory(), 'sw.js');
       const importScripts = ['manifest.js'];
@@ -189,7 +241,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2421);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         constructor: [[{}]],
-        importScripts: [[...importScripts, WORKBOX_SW_CDN_URL]],
+        importScripts: [[WORKBOX_SW_CDN_URL, ...importScripts]],
         precache: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',

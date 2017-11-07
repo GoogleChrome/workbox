@@ -24,4 +24,12 @@ module.exports = {
   'config-validation-failed': `Your configuration is invalid:`,
   'workbox-build-runtime-error': `Service worker generation failed:`,
   'unknown-command': `Unknown command:`,
+  'no-file-extensions-found': ol`No files could be found that are suitable for
+    caching.`,
+  'no-file-extensions-selected': `Please select at least one file extension.`,
+  'invalid-sw-dest': ol`Please enter a valid path to use for the service worker
+    file that's created.`,
+  'glob-directory-invalid': ol`The path you entered isn't a valid directory.`,
+  'invalid-config-location': ol`Please enter a valid path to use for the saved
+    configuration file.`,
 };

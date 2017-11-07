@@ -15,11 +15,10 @@
 
 import {expect} from 'chai';
 import sinon from 'sinon';
+import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import {eventsDoneWaiting, resetEventListeners} from '../../../infra/testing/sw-env-mocks/event-listeners.js';
-import {OBJECT_STORE_NAME} from '../../../packages/workbox-background-sync/utils/constants.mjs';
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
-import {QueueStore} from '../../../packages/workbox-background-sync/models/QueueStore.mjs';
-import {_private} from '../../../packages/workbox-core/index.mjs';
+import {cacheNames} from '../../../packages/workbox-core/_private.mjs';
 import {NetworkFirst, NetworkOnly} from '../../../packages/workbox-runtime-caching/index.mjs';
 import * as googleAnalytics from '../../../packages/workbox-google-analytics/index.mjs';
 import {
@@ -29,33 +28,18 @@ import {
   COLLECT_PATH,
 } from '../../../packages/workbox-google-analytics/utils/constants.mjs';
 
-
 const PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
-
-
-const clearObjectStore = async () => {
-  // Get a reference to the DB by invoking _getDb on a mock instance.
-  const db = await QueueStore.prototype._getDb.call({});
-
-  await new Promise((resolve, reject) => {
-    const txn = db.transaction(OBJECT_STORE_NAME, 'readwrite');
-    txn.onerror = () => reject(txn.error);
-    txn.oncomplete = () => resolve();
-    txn.objectStore(OBJECT_STORE_NAME).clear();
-  });
-};
-
 
 describe(`[workbox-google-analytics] initialize`, function() {
   const sandbox = sinon.sandbox.create();
   const reset = async () => {
     Queue._queueNames.clear();
-    clearObjectStore();
     resetEventListeners();
     sandbox.restore();
+    iDBReset();
 
-    const cacheNames = await caches.keys();
-    await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+    const usedCaches = await caches.keys();
+    await Promise.all(usedCaches.map((cacheName) => caches.delete(cacheName)));
   };
 
   beforeEach(async function() {
@@ -93,9 +77,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     await eventsDoneWaiting();
 
-    const cacheNames = await caches.keys();
-    expect(cacheNames).to.have.lengthOf(1);
-    expect(cacheNames[0]).to.equal('foobar');
+    const usedCaches = await caches.keys();
+    expect(usedCaches).to.have.lengthOf(1);
+    expect(usedCaches[0]).to.equal('foobar');
 
     const cache = await caches.open('foobar');
     const cachedResponse = await cache.match(analyticsJsRequest);
@@ -114,10 +98,10 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     await eventsDoneWaiting();
 
-    const defaultCacheName = _private.cacheNames.getGoogleAnalyticsName();
-    const cacheNames = await caches.keys();
-    expect(cacheNames).to.have.lengthOf(1);
-    expect(cacheNames[0]).to.equal(defaultCacheName);
+    const defaultCacheName = cacheNames.getGoogleAnalyticsName();
+    const usedCaches = await caches.keys();
+    expect(usedCaches).to.have.lengthOf(1);
+    expect(usedCaches[0]).to.equal(defaultCacheName);
 
     const cache = await caches.open(defaultCacheName);
     const cachedResponse = await cache.match(analyticsJsRequest);
@@ -150,7 +134,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
   });
 
   it(`should not alter successful hits`, async function() {
-    sandbox.stub(self, 'fetch');
+    sandbox.spy(self, 'fetch');
 
     googleAnalytics.initialize();
 

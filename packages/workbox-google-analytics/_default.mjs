@@ -143,8 +143,7 @@ const createAnalyticsJsRoute = (cacheName) => {
  * @memberof module:workbox-google-analytics
  */
 const initialize = (options = {}) => {
-  const cacheName = cacheNames.getGoogleAnalyticsName(
-      options.cacheName);
+  const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
 
   const queue = new Queue(QUEUE_NAME, {
     maxRetentionTime: MAX_RETENTION_TIME,

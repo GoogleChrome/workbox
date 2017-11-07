@@ -383,10 +383,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
   });
 
   describe(`cleanup()`, function() {
-    // TODO: This requires service worker mocks to be fixed.
-    // https://github.com/pinterest/service-workers/issues/40
-    // https://github.com/pinterest/service-workers/issues/38
-    it.skip(`should remove out of date entries`, async function() {
+    it(`should remove out of date entries`, async function() {
       const cache = await caches.open(cacheNames.getPrecacheName());
 
       /*
@@ -432,7 +429,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(cleanupDetailsTwo.deletedCacheRequests.length).to.equal(1);
       expect(cleanupDetailsTwo.deletedCacheRequests[0]).to.equal('/index.1234.html');
       expect(cleanupDetailsTwo.deletedRevisionDetails.length).to.equal(1);
-      expect(cleanupDetailsTwo.deletedCacheRequests[0]).to.equal('/index.1234.html');
+      expect(cleanupDetailsTwo.deletedRevisionDetails[0]).to.equal('/index.1234.html');
 
       const keysTwo = await cache.keys();
       // Precaching can't determine that 'index.1234.html' and 'index.4321.html'
@@ -449,7 +446,11 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       }));
 
       // Make sure we print some debug info.
-      expect(logger.log.callCount).to.be.gt(0);
+      if (process.env.NODE_ENV === 'production') {
+        expect(logger.log.callCount).to.equal(0);
+      } else {
+        expect(logger.log.callCount).to.be.gt(0);
+      }
     });
 
     it(`shouldn't open / create a cache when performing cleanup`, async function() {

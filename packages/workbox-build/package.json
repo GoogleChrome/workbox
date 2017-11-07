@@ -1,6 +1,6 @@
 {
   "name": "workbox-build",
-  "version": "3.0.0-alpha.18",
+  "version": "3.0.0-alpha.23",
   "description": "A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
@@ -26,11 +26,15 @@
     "glob": "^7.1.2",
     "joi": "^11.1.1",
     "lodash.template": "^4.4.0",
-    "workbox-sw": "^3.0.0-alpha.17"
+    "workbox-cache-expiration": "^3.0.0-alpha.23",
+    "workbox-precaching": "^3.0.0-alpha.23",
+    "workbox-routing": "^3.0.0-alpha.23",
+    "workbox-runtime-caching": "^3.0.0-alpha.23",
+    "workbox-sw": "^3.0.0-alpha.23"
   },
   "main": "build/index.js",
   "scripts": {
-    "build": "gulp build-packages --package workbox-build",
+    "build": "gulp build:update-cdn-details && gulp build-packages --package workbox-build",
     "version": "npm run build",
     "prepare": "npm run build"
   },

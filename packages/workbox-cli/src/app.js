@@ -20,15 +20,16 @@ const prettyBytes = require('pretty-bytes');
 const workboxBuild = require('workbox-build');
 
 const errors = require('./lib/errors');
-const readConfig = require('./lib/read-config');
 const logger = require('./lib/logger');
+const readConfig = require('./lib/read-config');
+const runWizard = require('./lib/run-wizard');
 
 module.exports = async (command, configFile) => {
   assert(command, errors['missing-command-param']);
 
   switch (command) {
     case 'wizard': {
-      // TODO: Port over wizard code.
+      await runWizard();
       break;
     }
 

@@ -37,7 +37,12 @@ const runNodeTestSuite = async (testPath, nodeEnv) => {
 };
 
 const runNodeTestsWithEnv = async (nodeEnv) => {
-  const packagesToTest = glob.sync(`test/${global.packageOrStar}/node`);
+  let globFolderPattern = global.packageOrStar;
+  // This means will run the package tests along with the "all" tests.
+  if (global.packageOrStar !== '*') {
+    globFolderPattern = `{${[global.packageOrStar, 'all'].join(',')}}`;
+  }
+  const packagesToTest = glob.sync(`test/${globFolderPattern}/node`);
   for (const packageToTest of packagesToTest) {
     await runNodeTestSuite(packageToTest, nodeEnv);
   }

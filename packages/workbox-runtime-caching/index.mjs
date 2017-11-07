@@ -21,6 +21,8 @@
  * @module workbox-runtime-caching
  */
 
+import defaultExport from './_default.mjs';
 import './_version.mjs';
 
+export default defaultExport;
 export * from './_public.mjs';

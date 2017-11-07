@@ -45,8 +45,8 @@ module.exports = {
   'sw-write-failure': 'Unable to write the service worker file.',
   'sw-write-failure-directory': ol`Unable to write the service worker file;
     'swDest' should be a full path to the file, not a path to a directory.`,
-  'unable-to-copy-workbox-sw': ol`workbox-sw is needed by the service worker
-    and could not be copied over to your new site.`,
+  'unable-to-copy-workbox-libraries': ol`One or more of the Workbox libraries
+    could not be copied over to the destination directory: `,
   'invalid-generate-sw-input': ol`The input to generateSW() must be an object.`,
   'invalid-glob-directory': ol`The supplied globDirectory must be a path as a
     string.`,

@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 
 import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/models/CacheTimestampsModel.mjs';
-import indexedDBHelper from '../../../packages/workbox-core/_private/indexedDBHelper.mjs';
+import DBWrapper from '../../../packages/workbox-core/_private/DBWrapper.mjs';
 
 describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
   beforeEach(function() {
@@ -27,14 +27,13 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
       const timestamp = Date.now();
       await model.setTimestamp('/', timestamp);
 
-      const db = await indexedDBHelper.getDB(`workbox-cache-expiration`, 1);
-      const timestamps = await db.getAll('test-cache');
+      const timestamps =
+          await new DBWrapper(`workbox-cache-expiration`, 1).getAll('test-cache');
 
-      expect(timestamps['https://example.com/']).to.exist;
-      expect(timestamps['https://example.com/']).to.deep.equal({
+      expect(timestamps).to.deep.equal([{
         url: 'https://example.com/',
         timestamp,
-      });
+      }]);
     });
   });
 
@@ -43,23 +42,20 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
       const timestamp = Date.now();
 
       const model = new CacheTimestampsModel('test-cache');
-      const db = await model._getDb();
-      await db.put('test-cache', {url: '/', timestamp});
+      await model._db.put('test-cache', {url: '/', timestamp});
 
       const timestamps = await model.getAllTimestamps();
-      expect(timestamps).to.deep.equal([
-        {
-          url: '/',
-          timestamp: timestamp,
-        },
-      ]);
+      expect(timestamps).to.deep.equal([{
+        url: '/',
+        timestamp: timestamp,
+      }]);
     });
 
     it(`should return timestamps in order or oldest timestamp first`, async function() {
       const timestamp = Date.now();
 
       const model = new CacheTimestampsModel('test-cache');
-      const db = await model._getDb();
+      const db = model._db;
       await db.put('test-cache', {url: '/10', timestamp});
       await db.put('test-cache', {url: '/8', timestamp: timestamp - 2000});
       await db.put('test-cache', {url: '/9', timestamp: timestamp - 1000});

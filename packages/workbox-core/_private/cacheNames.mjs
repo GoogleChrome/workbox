@@ -39,7 +39,7 @@ export const updateDetails = (details) => {
 };
 
 export const getGoogleAnalyticsName = (userCacheName) => {
-  return userCacheName || _createCacheName(_cacheNameDetails.runtime);
+  return userCacheName || _createCacheName(_cacheNameDetails.googleAnalytics);
 };
 
 export const getPrecacheName = (userCacheName) => {
