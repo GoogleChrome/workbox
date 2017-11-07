@@ -15,6 +15,7 @@ describe(`[all] Test Exports of Each Module`, function() {
         case '_public':
         case '_default':
         case '_version':
+        case '_types':
           // These are special files and don't need to be exported.
           break;
         default:

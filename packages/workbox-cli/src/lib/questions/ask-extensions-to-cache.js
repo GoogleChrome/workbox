@@ -28,8 +28,8 @@ const name = 'globPatterns';
 
 /**
  * @param {string} globDirectory The directory used for the root of globbing.
- * @return {Promise<[string]>} The unique file extensions corresponding to all
- * of the files under globDirectory.
+ * @return {Promise<Array<string>>} The unique file extensions corresponding
+ * to all of the files under globDirectory.
  */
 async function getAllFileExtensions(globDirectory) {
   const files = await new Promise((resolve, reject) => {

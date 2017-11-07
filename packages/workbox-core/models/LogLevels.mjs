@@ -19,8 +19,6 @@ import '../_version.mjs';
 /**
  * The available log levels in Workbox: debug, log, warn, error and silent.
  *
- * @alias module:workbox-core.LOG_LEVELS
- *
  * @property {int} debug Prints all logs from Workbox. Useful for debugging.
  * @property {int} log Prints console log, warn, error and groups. Default for
  * debug builds.
@@ -28,6 +26,8 @@ import '../_version.mjs';
  * non-debug builds.
  * @property {int} error Print console error and groups.
  * @property {int} silent Force no logging from Workbox.
+ *
+ * @alias workbox.core.LOG_LEVELS
  */
 
 export default {

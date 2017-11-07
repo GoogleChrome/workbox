@@ -123,7 +123,7 @@ const moduleExports = {};
  *
  * @param {Array<Object|string>} entries Array of entries to precache.
  *
- * @alias module:workbox-precaching.precache
+ * @alias workbox.precaching.precache
  */
 moduleExports.precache = (entries) => {
   precacheController.addToCacheList(entries);
@@ -158,7 +158,7 @@ moduleExports.precache = (entries) => {
  * @param {Array<RegExp>} [options.ignoreUrlParametersMatching=[/^utm_/]] An
  * array of regex's to remove search params when looking for a cache match.
  *
- * @alias module:workbox-precaching.addRoute
+ * @alias workbox.precaching.addRoute
  */
 moduleExports.addRoute = (options) => {
   if (fetchListenersAdded) {
@@ -193,7 +193,7 @@ moduleExports.addRoute = (options) => {
  * @param {Object} options See
  * [addRoute() options]{@link module:workbox-precaching.addRoute}.
  *
- * @alias module:workbox-precaching.precacheAndRoute
+ * @alias workbox.precaching.precacheAndRoute
  */
 moduleExports.precacheAndRoute = (entries, options) => {
   moduleExports.precache(entries);
@@ -207,7 +207,7 @@ moduleExports.precacheAndRoute = (entries, options) => {
  *
  * @param {boolean} suppress
  *
- * @alias module:workbox-precahcing.suppressWarnings
+ * @alias workbox.precaching.suppressWarnings
  */
 moduleExports.suppressWarnings = (suppress) => {
   suppressWarnings = suppress;
