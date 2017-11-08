@@ -23,6 +23,8 @@ export default {
    * @param {Object} input
    * @param {Response} input.response
    * @return {Response|null}
+   *
+   * @private
    */
   cacheWillUpdate: ({response}) => {
     if (response.ok || response.status === 0) {

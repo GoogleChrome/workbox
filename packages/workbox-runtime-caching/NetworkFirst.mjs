@@ -38,14 +38,14 @@ import './_version.mjs';
  * Opaque responses are are cross-origin requests where the response doesn't
  * support [CORS]{@link https://enable-cors.org/}.
  *
- * @memberof module:workbox-runtime-caching
+ * @memberof workbox.strategies
  */
 class NetworkFirst {
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
    * requests. Defaults to cache names provided by
-   * [workbox-core]{@link module:workbox-core.cacheNames}.
+   * [workbox-core]{@link workbox.core.cacheNames}.
    * @param {string} options.plugins [Plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}
    * to use in conjunction with this caching strategy.
    * @param {number} options.networkTimeoutSeconds If set, any network requests
@@ -84,7 +84,7 @@ class NetworkFirst {
   /**
    * This method will perform a request strategy and follows an API that
    * will work with the
-   * [Workbox Router]{@link module:workbox-routing.Router}.
+   * [Workbox Router]{@link workbox.routing.Router}.
    *
    * @param {Object} input
    * @param {FetchEvent} input.event The fetch event to run this strategy
