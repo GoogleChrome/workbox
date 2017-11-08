@@ -31,7 +31,7 @@ import './_version.mjs';
  * such as URLs like `/styles/example.a8f5f1.css`, since they
  * can be cached for long periods of time.
  *
- * @memberof module:workbox-runtime-caching
+ * @memberof workbox.strategies
  */
 class CacheFirst {
   // TODO: Replace `plugins` parameter link with link to d.g.c.
@@ -40,7 +40,7 @@ class CacheFirst {
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
    * requests. Defaults to cache names provided by
-   * [workbox-core]{@link module:workbox-core.cacheNames}.
+   * [workbox-core]{@link workbox.core.cacheNames}.
    * @param {string} options.plugins [Plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}
    * to use in conjunction with this caching strategy.
    */
@@ -52,7 +52,7 @@ class CacheFirst {
   /**
    * This method will perform a request strategy and follows an API that
    * will work with the
-   * [Workbox Router]{@link module:workbox-routing.Router}.
+   * [Workbox Router]{@link workbox.routing.Router}.
    *
    * @param {Object} input
    * @param {FetchEvent} input.event The fetch event to run this strategy

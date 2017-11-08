@@ -226,4 +226,21 @@ describe(`[workbox-runtime-caching] CacheFirst`, function() {
     await compareResponses(firstCachedResponse, fetchResponse, true);
     await compareResponses(firstHandleResponse, fetchResponse, true);
   });
+
+  it(`should be able to handle a network error`, async function() {
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+    const injectedError = new Error(`Injected Error.`);
+    sandbox.stub(global, 'fetch').callsFake((req) => {
+      return Promise.reject(injectedError);
+    });
+
+    const cacheFirst = new CacheFirst();
+    try {
+      await cacheFirst.handle({event});
+      throw new Error('Expected an error to be thrown.');
+    } catch (err) {
+      expect(err).to.equal(injectedError);
+    }
+  });
 });

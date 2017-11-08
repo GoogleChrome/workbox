@@ -14,15 +14,17 @@
   limitations under the License.
 */
 
-/**
- * There are common caching strategies that most service workers will need
- * and use. This module provides simple implementations of these strategies.
- *
- * @namespace workbox.strategies
- */
-
-import defaultExport from './_default.mjs';
 import './_version.mjs';
 
-export default defaultExport;
-export * from './_public.mjs';
+/**
+ * @typedef {Object} StrategyOptions
+ * @property {String} cacheName Name of cache to use
+ * for caching (both lookup and updating).
+ * @property {Object} cacheExpiration Defining this
+ * object will add a cache expiration plugins to this strategy.
+ * @property {Number} cacheExpiration.maxEntries
+ * The maximum number of entries to store in a cache.
+ * @property {Number} cacheExpiration.maxAgeSeconds
+ * The maximum lifetime of a request to stay in the cache before it's removed.
+ * @memberof workbox.strategies
+ */

@@ -21,11 +21,12 @@ export default {
    * response is ok (i.e. 200) or is opaque.
    *
    * @param {Object} input
-   * @param {Request} input.request
    * @param {Response} input.response
    * @return {Response|null}
+   *
+   * @private
    */
-  cacheWillUpdate: ({request, response}) => {
+  cacheWillUpdate: ({response}) => {
     if (response.ok || response.status === 0) {
       return response;
     }

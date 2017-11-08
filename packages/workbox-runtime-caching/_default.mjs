@@ -21,6 +21,31 @@ import {StaleWhileRevalidate} from './StaleWhileRevalidate.mjs';
 import pluginBuilder from './utils/pluginBuilder.mjs';
 import './_version.mjs';
 
+/**
+ * @function workbox.strategies.cacheFirst
+ * @param {StrategyOptions} options
+ */
+
+/**
+ * @function workbox.strategies.cacheOnly
+ * @param {StrategyOptions} options
+ */
+
+/**
+ * @function workbox.strategies.networkFirst
+ * @param {StrategyOptions} options
+ */
+
+/**
+ * @function workbox.strategies.networkOnly
+ * @param {StrategyOptions} options
+ */
+
+/**
+ * @function workbox.strategies.staleWhileRevalidate
+ * @param {StrategyOptions} options
+ */
+
 const mapping = {
   cacheFirst: CacheFirst,
   cacheOnly: CacheOnly,

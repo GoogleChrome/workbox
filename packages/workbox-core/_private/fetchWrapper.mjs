@@ -60,7 +60,7 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
           request: request.clone(),
         });
 
-        // TODO Move to assertion
+        // TODO: Move to assertion
         // isInstance({request}, Request);
       }
     }
