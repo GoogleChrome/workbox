@@ -1,6 +1,6 @@
 {{{WORKBOX_SW_IMPORT}}}
 
-// Set logs to debug to view all logs
+// Set logs level to `debug` to view all logs
 // workbox.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
 
 // Set up a route to alter the demo-img
@@ -14,6 +14,7 @@ const handlerCb = ({url, event, params}) => {
 
 workbox.routing.registerRoute(matchCb, handlerCb);
 
+// TODO: Switch to just a string match when supported.
 const JQUERY_URL = 'https://code.jquery.com/jquery-3.2.1.slim.min.js';
 workbox.routing.registerRoute(new RegExp(JQUERY_URL), () => {
   // Demonstrating when an error is thrown by a Route.
