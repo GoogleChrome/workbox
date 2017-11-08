@@ -2,14 +2,14 @@ const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs-extra');
 
-const cdnUtils = require('../packages/workbox-build/src/lib/cdn-utils');
+const getVersionsCDNUrl = require('./utils/versioned-cdn-url');
 const getNpmCmd = require('./utils/get-npm-cmd');
 const spawn = require('./utils/spawn-promise-wrapper');
 const constants = require('./utils/constants');
 
 gulp.task('publish-demos:updateCDNDetails', () => {
   const details = {
-    latestUrl: cdnUtils.getRootCDNUrl(),
+    latestUrl: getVersionsCDNUrl(),
   };
   const filePath = path.join(__dirname, '..', 'demos',
     'functions', 'cdn-details.json');
