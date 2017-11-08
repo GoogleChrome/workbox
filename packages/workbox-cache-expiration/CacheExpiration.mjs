@@ -23,6 +23,8 @@ import './_version.mjs';
  * The `CacheExpiration` class allows you define an expiration and / or
  * limit on the number of responses stored in a
  * [`Cache`](https://developer.mozilla.org/en-US/docs/Web/API/Cache).
+ *
+ * @memberof workbox.expiration
  */
 class CacheExpiration {
   /**

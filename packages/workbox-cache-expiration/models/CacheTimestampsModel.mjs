@@ -22,11 +22,15 @@ const TIMESTAMP_KEY = 'timestamp';
 
 /**
  * Returns the timestamp model.
+ *
+ * @private
  */
 class CacheTimestampsModel {
   /**
    *
    * @param {string} cacheName
+   *
+   * @private
    */
   constructor(cacheName) {
     // TODO Check cacheName
@@ -42,9 +46,10 @@ class CacheTimestampsModel {
   }
 
   /**
-   *
    * @param {string} url
    * @param {number} timestamp
+   *
+   * @private
    */
   async setTimestamp(url, timestamp) {
     await this._db.put(this._storeName, {
@@ -57,6 +62,8 @@ class CacheTimestampsModel {
    * Get all of the timestamps in the indexedDB.
    *
    * @return {Array<Objects>}
+   *
+   * @private
    */
   async getAllTimestamps() {
     return await this._db.getAllMatching(this._storeName, {
@@ -69,6 +76,8 @@ class CacheTimestampsModel {
    *
    * @param {string} url
    * @return {number}
+   *
+   * @private
    */
   async getTimestamp(url) {
     const timestampObject = await this._db.get(this._storeName, url);
@@ -77,6 +86,8 @@ class CacheTimestampsModel {
 
   /**
    * @param {string} url
+   *
+   * @private
    */
   async deleteUrl(url) {
     await this._db.delete(this._storeName, new URL(url, location).href);

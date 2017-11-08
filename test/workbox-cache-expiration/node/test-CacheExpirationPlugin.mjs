@@ -18,6 +18,7 @@ import expectError from '../../../infra/testing/expectError';
 import {devOnly} from '../../../infra/testing/env-it';
 
 import {CacheExpirationPlugin} from '../../../packages/workbox-cache-expiration/CacheExpirationPlugin.mjs';
+import {CacheExpiration} from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
 
 describe(`[workbox-cache-expiration] CacheExpirationPlugin`, function() {
   const sandbox = sinon.sandbox.create();
@@ -68,51 +69,91 @@ describe(`[workbox-cache-expiration] CacheExpirationPlugin`, function() {
     });
   });
 
-  it(`should expose a cachedResponseWillBeUsed() method`, function() {
-    const plugin = new CacheExpirationPlugin({maxAgeSeconds: 1});
-    expect(plugin).to.respondTo('cachedResponseWillBeUsed');
-  });
-
-  it(`should expose a cacheDidUpdate() method`, function() {
-    const plugin = new CacheExpirationPlugin({maxAgeSeconds: 1});
-    expect(plugin).to.respondTo('cacheDidUpdate');
-  });
-
-  it(`should return cachedResponse when cachedResponseWillBeUsed() is called and Responses Data header it valid`, function() {
-    // Just to ensure no timing flakiness in test.
-    sandbox.useFakeTimers({
-      toFake: ['Date'],
+  describe(`cachedResponseWillBeUsed()`, function() {
+    it(`should expose a cachedResponseWillBeUsed() method`, function() {
+      const plugin = new CacheExpirationPlugin({maxAgeSeconds: 1});
+      expect(plugin).to.respondTo('cachedResponseWillBeUsed');
     });
 
-    const dateString = new Date().toUTCString();
-    const cachedResponse = new Response('', {headers: {date: dateString}});
+    it(`should return cachedResponse when cachedResponseWillBeUsed() is called and Responses Data header it valid`, function() {
+      // Just to ensure no timing flakiness in test.
+      sandbox.useFakeTimers({
+        toFake: ['Date'],
+      });
 
-    const plugin = new CacheExpirationPlugin({maxAgeSeconds: 1});
+      const dateString = new Date().toUTCString();
+      const cachedResponse = new Response('', {headers: {date: dateString}});
 
-    const expirationManager = plugin._getCacheExpiration('test-cache');
-    sandbox.spy(expirationManager, 'expireEntries');
+      const plugin = new CacheExpirationPlugin({maxAgeSeconds: 1});
 
-    expect(plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse})).to.eql(cachedResponse);
-    expect(expirationManager.expireEntries.callCount).to.equal(1);
-  });
+      const expirationManager = plugin._getCacheExpiration('test-cache');
+      sandbox.spy(expirationManager, 'expireEntries');
 
-  it(`should return null when cachedResponseWillBeUsed() is called and Responses Date header is too old`, function() {
-    const clock = sandbox.useFakeTimers({
-      toFake: ['Date'],
+      expect(plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse})).to.eql(cachedResponse);
+      expect(expirationManager.expireEntries.callCount).to.equal(1);
     });
 
-    const dateString = new Date().toUTCString();
-    const cachedResponse = new Response('', {headers: {date: dateString}});
+    it(`should return null when cachedResponseWillBeUsed() is called and Responses Date header is too old`, function() {
+      const clock = sandbox.useFakeTimers({
+        toFake: ['Date'],
+      });
 
-    // Clock past the expiration of the Data header
-    clock.tick(1000 + 1);
+      const dateString = new Date().toUTCString();
+      const cachedResponse = new Response('', {headers: {date: dateString}});
 
-    const plugin = new CacheExpirationPlugin({maxAgeSeconds: 1});
+      // Clock past the expiration of the Data header
+      clock.tick(1000 + 1);
 
-    const expirationManager = plugin._getCacheExpiration('test-cache');
-    sandbox.spy(expirationManager, 'expireEntries');
+      const plugin = new CacheExpirationPlugin({maxAgeSeconds: 1});
 
-    expect(plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse})).to.eql(null);
-    expect(expirationManager.expireEntries.callCount).to.equal(1);
+      const expirationManager = plugin._getCacheExpiration('test-cache');
+      sandbox.spy(expirationManager, 'expireEntries');
+
+      expect(plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse})).to.eql(null);
+      expect(expirationManager.expireEntries.callCount).to.equal(1);
+    });
+  });
+
+  describe(`cachedResponseWillBeUsed()`, function() {
+    it(`should expose a cacheDidUpdate() method`, function() {
+      const plugin = new CacheExpirationPlugin({maxAgeSeconds: 1});
+      expect(plugin).to.respondTo('cacheDidUpdate');
+    });
+  });
+
+  describe(`_isResponseDateFresh()`, function() {
+    it(`should return true when maxAgeSeconds is not set`, function() {
+      const plugin = new CacheExpirationPlugin({maxEntries: 1});
+      const isFresh = plugin._isResponseDateFresh(new Response('Hi'));
+      expect(isFresh).to.equal(true);
+    });
+
+    it(`should return true when there is not Date header`, function() {
+      const plugin = new CacheExpirationPlugin({maxAgeSeconds: 1});
+      const isFresh = plugin._isResponseDateFresh(new Response('Hi', {
+        // TODO: Remove this when https://github.com/pinterest/service-workers/issues/72
+        // is fixed.
+        headers: {},
+      }));
+      expect(isFresh).to.equal(true);
+    });
+  });
+
+  describe(`cacheDidUpdate()`, function() {
+    it(`should update timestamps and expire entries`, async function() {
+      const cacheName = 'test-cache';
+      const url = new URL('/test', self.location).toString();
+      const request = new Request(url);
+      const plugin = new CacheExpirationPlugin({maxAgeSeconds: 10});
+
+      sandbox.spy(CacheExpiration.prototype, 'updateTimestamp');
+      sandbox.spy(CacheExpiration.prototype, 'expireEntries');
+
+      await plugin.cacheDidUpdate({cacheName, request});
+
+      expect(CacheExpiration.prototype.updateTimestamp.callCount).to.equal(1);
+      expect(CacheExpiration.prototype.updateTimestamp.args[0][0]).to.equal(url);
+      expect(CacheExpiration.prototype.expireEntries.callCount).to.equal(1);
+    });
   });
 });
