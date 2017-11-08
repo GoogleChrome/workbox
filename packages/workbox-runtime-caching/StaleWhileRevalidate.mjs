@@ -140,16 +140,14 @@ class StaleWhileRevalidate {
       this._plugins
     );
 
-    if (response) {
-      event.waitUntil(
-        cacheWrapper.put(
-          this._cacheName,
-          event.request,
-          response.clone(),
-          this._plugins
-        )
-      );
-    }
+    event.waitUntil(
+      cacheWrapper.put(
+        this._cacheName,
+        event.request,
+        response.clone(),
+        this._plugins
+      )
+    );
 
     return response;
   }

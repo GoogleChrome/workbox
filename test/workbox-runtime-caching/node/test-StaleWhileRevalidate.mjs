@@ -135,4 +135,16 @@ describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
     const cachedResponse = await cache.match(request);
     expect(cachedResponse.status).to.eql(0);
   });
+
+  it(`should allow adding plugins to override cacheOkAndOpaque`, function() {
+    const plugins = [
+      {
+        cacheWillUpdate: () => {},
+      },
+    ];
+    const staleWhileRevalidate = new StaleWhileRevalidate({
+      plugins,
+    });
+    expect(staleWhileRevalidate._plugins).to.equal(plugins);
+  });
 });
