@@ -35,7 +35,7 @@ module.exports = `/**
 importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
 <% } %>
 
-<% if (modulePathCb) { %>workbox.setConfig({modulePathCb: <%= modulePathCb %>});<% } %>
+<% if (modulePathPrefix) { %>workbox.setConfig({modulePathPrefix: <%= JSON.stringify(modulePathPrefix) %>});<% } %>
 <% if (cacheId) { %>workbox.core.setCacheNameDetails({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
 
 <% if (skipWaiting) { %>workbox.skipWaiting();<% } %>

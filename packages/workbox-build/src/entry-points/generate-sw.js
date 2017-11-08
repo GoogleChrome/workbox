@@ -74,10 +74,7 @@ async function generateSW(input) {
       `${workboxDirectoryName}/${workboxSWFilename}`,
     ].concat(options.importScripts || []);
 
-    options.modulePathCb = `(moduleName, debug) => {
-  return '${workboxDirectoryName}/' + moduleName + '.' +
-    (debug ? 'dev' : 'prod') + '.js';
-}`;
+    options.modulePathPrefix = workboxDirectoryName;
   }
 
   const {count, size, manifestEntries} = await getFileManifestEntries(options);

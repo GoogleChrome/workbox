@@ -6,49 +6,56 @@ const sinon = require('sinon');
 const vm = require('vm');
 
 function setupSpiesAndContext() {
-  const importScripts = sinon.stub();
-  const methodsToSpies = {
-    importScripts,
-    // To make testing registerRoute() easier, return the name of the strategy.
-    cacheFirst: sinon.stub().returns('cacheFirst'),
-    constructor: sinon.spy(),
-    precache: sinon.spy(),
-    registerNavigationRoute: sinon.spy(),
-    registerRoute: sinon.spy(),
-  };
-
-  class WorkboxSW {
-    constructor(...args) {
-      methodsToSpies.constructor(...args);
-    }
-
-    precache(...args) {
-      methodsToSpies.precache(...args);
-    }
-  }
-
-  WorkboxSW.prototype.router = {
-    registerNavigationRoute: methodsToSpies.registerNavigationRoute,
-    registerRoute: methodsToSpies.registerRoute,
-  };
-
-  WorkboxSW.prototype.strategies = {
-    cacheFirst: methodsToSpies.cacheFirst,
+  const importScripts = sinon.spy();
+  const workbox = {
+    clientsClaim: sinon.spy(),
+    precaching: {
+      precacheAndRoute: sinon.spy(),
+    },
+    routing: {
+      registerNavigationRoute: sinon.spy(),
+      registerRoute: sinon.spy(),
+    },
+    core: {
+      setCacheNameDetails: sinon.spy(),
+    },
+    setConfig: sinon.spy(),
+    skipWaiting: sinon.spy(),
+    // To make testing easier, return the name of the strategy.
+    strategies: {
+      cacheFirst: sinon.stub().returns('cacheFirst'),
+    },
   };
 
   const context = Object.assign({
-    WorkboxSW,
+    workbox,
     importScripts,
   }, makeServiceWorkerEnv());
+
+  const methodsToSpies = {
+    importScripts,
+    cacheFirst: workbox.strategies.cacheFirst,
+    clientsClaim: workbox.clientsClaim,
+    precacheAndRoute: workbox.precaching.precacheAndRoute,
+    registerNavigationRoute: workbox.routing.registerNavigationRoute,
+    registerRoute: workbox.routing.registerRoute,
+    setCacheNameDetails: workbox.core.setCacheNameDetails,
+    setConfig: workbox.setConfig,
+    skipWaiting: workbox.skipWaiting,
+  };
 
   return {context, methodsToSpies};
 }
 
 function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
-  for (const method of Object.keys(expectedMethodCalls)) {
-    const spy = methodsToSpies[method];
-    expect(spy.args).to.deep.equal(expectedMethodCalls[method],
-      `while testing method calls for ${method}`);
+  for (const [method, spy] of Object.entries(methodsToSpies)) {
+    if (spy.called) {
+      expect(spy.args).to.deep.equal(expectedMethodCalls[method],
+        `while testing method calls for ${method}`);
+    } else {
+      expect(expectedMethodCalls[method],
+        `while testing method calls for ${method}`).to.be.undefined;
+    }
   }
 }
 

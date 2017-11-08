@@ -74,24 +74,16 @@ module.exports = (runtimeCaching) => {
     }
 
     if (typeof entry.handler === 'string') {
-      // In v3, the strategies are exposed as their class names, and start with
-      // uppercase letters. We can maintain support for the old handleName
-      // config by capitalizing the first letter.
-      const handlerClass = entry.handler.charAt(0).toUpperCase() +
-        entry.handler.substring(1);
-
       const optionsString = getOptionsString(entry.options || {});
 
       const strategyString =
-        `new workbox.strategies.${handlerClass}(${optionsString})`;
+        `workbox.strategies.${entry.handler}(${optionsString})`;
 
       return `workbox.routing.registerRoute(` +
-        `new workbox.routing.RegExpRoute(` +
-        `${entry.urlPattern}, ${strategyString}, '${method}'));\n`;
+        `${entry.urlPattern}, ${strategyString}, '${method}');\n`;
     } else if (typeof entry.handler === 'function') {
       return `workbox.routing.registerRoute(` +
-        `new workbox.routing.RegExpRoute(` +
-        `${entry.urlPattern}, ${entry.handler}, '${method}'));\n`;
+        `${entry.urlPattern}, ${entry.handler}, '${method}');\n`;
     }
   }).filter((entry) => Boolean(entry)); // Remove undefined map() return values.
 };

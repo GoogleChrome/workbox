@@ -6,12 +6,11 @@ const precache = (input) => {
 
 precache([]);
 
-const workboxSW = new WorkboxSW();
 // The automatic injection will happen here:
-workboxSW.precache([]);
+workbox.precaching.precacheAndRoute([]);
 
 // Then, call precache again:
-workboxSW.precache([
+workbox.precaching.precacheAndRoute([
   '/extra-assets/example.1234.css',
   '/extra-assets/example-2.1234.js',
 ]);

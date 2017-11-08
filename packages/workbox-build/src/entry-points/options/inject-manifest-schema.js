@@ -21,7 +21,7 @@ const baseSchema = require('./base-schema');
 module.exports = baseSchema.keys({
   globDirectory: joi.string().required(),
   injectionPointRegexp: joi.object().type(RegExp)
-    .default(/(\.precache\()\s*\[\s*\]\s*(\))/),
+    .default(/(\.precacheAndRoute\()\s*\[\s*\]\s*(\))/),
   swSrc: joi.string().required(),
   swDest: joi.string().required(),
 });

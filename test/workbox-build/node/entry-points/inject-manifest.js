@@ -33,7 +33,6 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'handleFetch',
     'ignoreUrlParametersMatching',
     'importScripts',
     'importWorkboxFromCDN',
@@ -160,8 +159,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       expect(count).to.eql(6);
       expect(size).to.eql(2421);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        constructor: [[]],
-        precache: [[[{
+        precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
         }, {
@@ -195,9 +193,8 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       expect(count).to.eql(6);
       expect(size).to.eql(2421);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        constructor: [[]],
         importScripts: [['./sample-import.js']],
-        precache: [[[{
+        precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
         }, {
@@ -226,7 +223,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       const swDest = tempy.file();
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
-        injectionPointRegexp: /(\.precache\()\/\* manifestEntries \*\/(\))/,
+        injectionPointRegexp: /(\.precacheAndRoute\()\/\* manifestEntries \*\/(\))/,
         swSrc: path.join(SW_SRC_DIR, 'custom-injection-point.js'),
       });
 
@@ -235,8 +232,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       expect(count).to.eql(6);
       expect(size).to.eql(2421);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        constructor: [[]],
-        precache: [[[{
+        precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
         }, {

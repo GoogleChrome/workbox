@@ -22,7 +22,6 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'handleFetch',
     'ignoreUrlParametersMatching',
     'importScripts',
     'importWorkboxFromCDN',
