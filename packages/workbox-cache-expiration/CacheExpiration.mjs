@@ -36,7 +36,7 @@ class CacheExpiration {
    * @param {number} [config.maxAgeSeconds] The maximum age of an entry before
    * it's treated as stale and removed.
    */
-  constructor(cacheName, config) {
+  constructor(cacheName, config = {}) {
     if (process.env.NODE_ENV !== 'production') {
       assert.isType(cacheName, 'string', {
         moduleName: 'workbox-cache-expiration',
@@ -46,7 +46,11 @@ class CacheExpiration {
       });
 
       if (!(config.maxEntries || config.maxAgeSeconds)) {
-        throw new WorkboxError('max-entries-or-age-required');
+        throw new WorkboxError('max-entries-or-age-required', {
+          moduleName: 'workbox-cache-expiration',
+          className: 'CacheExpiration',
+          funcName: 'constructor',
+        });
       }
 
       if (config.maxEntries) {
@@ -56,6 +60,8 @@ class CacheExpiration {
           funcName: 'constructor',
           paramName: 'config.maxEntries',
         });
+
+        // TODO: Assert is positive
       }
 
       if (config.maxAgeSeconds) {
@@ -65,6 +71,8 @@ class CacheExpiration {
           funcName: 'constructor',
           paramName: 'config.maxAgeSeconds',
         });
+
+        // TODO: Assert is positive
       }
     }
 
@@ -78,9 +86,6 @@ class CacheExpiration {
 
   /**
    * Expires entries for the given cache and given criteria.
-   *
-   * @return {Promise<Array<string>>} Returns an array of URLs that were
-   * removed.
    */
   async expireEntries() {
     if (this._isRunning) {
@@ -117,10 +122,9 @@ class CacheExpiration {
 
     this._isRunning = false;
     if (this._rerunRequested) {
+      this._rerunRequested = false;
       this.expireEntries();
     }
-
-    return allUrls;
   }
 
   /**
@@ -171,10 +175,6 @@ class CacheExpiration {
 
     const timestamps = await this._timestampModel.getAllTimestamps();
     while (timestamps.length > this._maxEntries) {
-      if (timestamps.length === 0) {
-        break;
-      }
-
       const lastUsed = timestamps.shift();
       extraUrls.push(lastUsed.url);
     }

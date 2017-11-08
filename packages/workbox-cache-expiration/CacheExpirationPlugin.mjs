@@ -27,10 +27,14 @@ class CacheExpirationPlugin {
    * @param {number} [config.maxAgeSeconds] The maximum age of an entry before
    * it's treated as stale and removed.
    */
-  constructor(config) {
+  constructor(config = {}) {
     if (process.env.NODE_ENV !== 'production') {
       if (!(config.maxEntries || config.maxAgeSeconds)) {
-        throw new WorkboxError('max-entries-or-age-required');
+        throw new WorkboxError('max-entries-or-age-required', {
+          moduleName: 'workbox-cache-expiration',
+          className: 'CacheExpirationPlugin',
+          funcName: 'constructor',
+        });
       }
 
       if (config.maxEntries) {
@@ -91,7 +95,7 @@ class CacheExpirationPlugin {
    * @return {Response} Either the `cachedResponse`, if it's
    *         fresh, or `null` if the `Response` is older than `maxAgeSeconds`.
    */
-  cachedResponseWillBeUsed({cacheName, cachedResponse} = {}) {
+  cachedResponseWillBeUsed({cacheName, cachedResponse}) {
     let isFresh = this._isResponseDateFresh(cachedResponse);
 
     // Expire entries to ensure that even if the expiration date has
@@ -162,7 +166,7 @@ class CacheExpirationPlugin {
    * @param {Response} input.newResponse The new value in the cache.
    * @param {string} input.url The URL for the cache entry.
    */
-  async cacheDidUpdate({cacheName, newResponse, url} = {}) {
+  async cacheDidUpdate({cacheName, newResponse, url}) {
     if (process.env.NODE_ENV !== 'production') {
       assert.isType(cacheName, 'string', {
         moduleName: 'workbox-cache-expiration',

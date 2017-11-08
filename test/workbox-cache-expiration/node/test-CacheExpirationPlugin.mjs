@@ -14,6 +14,9 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
+import expectError from '../../../infra/testing/expectError';
+import {devOnly} from '../../../infra/testing/env-it';
+
 import {CacheExpirationPlugin} from '../../../packages/workbox-cache-expiration/CacheExpirationPlugin.mjs';
 
 describe(`[workbox-cache-expiration] CacheExpirationPlugin`, function() {
@@ -25,6 +28,44 @@ describe(`[workbox-cache-expiration] CacheExpirationPlugin`, function() {
 
   after(function() {
     sandbox.restore();
+  });
+
+  describe(`constructor`, function() {
+    devOnly.it(`should throw for no config`, function() {
+      return expectError(() => {
+        new CacheExpirationPlugin();
+      }, 'max-entries-or-age-required');
+    });
+
+    devOnly.it(`should throw for non-number maxEntries`, function() {
+      return expectError(() => {
+        new CacheExpirationPlugin({
+          maxEntries: 'Hi',
+        });
+      }, 'incorrect-type');
+    });
+
+    devOnly.it(`should throw for non-number maxAgeSeconds`, function() {
+      return expectError(() => {
+        new CacheExpirationPlugin({
+          maxAgeSeconds: 'Hi',
+        });
+      }, 'incorrect-type');
+    });
+
+    it(`should construct with just maxAgeSeconds`, function() {
+      const plugin = new CacheExpirationPlugin({
+        maxAgeSeconds: 10,
+      });
+      expect(plugin._maxAgeSeconds).to.equal(10);
+    });
+
+    it(`should construct with just maxEntries`, function() {
+      const plugin = new CacheExpirationPlugin({
+        maxEntries: 10,
+      });
+      expect(plugin._config.maxEntries).to.equal(10);
+    });
   });
 
   it(`should expose a cachedResponseWillBeUsed() method`, function() {
