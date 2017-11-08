@@ -44,11 +44,11 @@ module.exports = ({
       undefined,
   };
 
-  let precacheOptionsString = JSON.stringify(precacheOptions);
+  let precacheOptionsString = JSON.stringify(precacheOptions, null, 2);
   if (ignoreUrlParametersMatching) {
     precacheOptionsString = precacheOptionsString.replace(
-      `"ignoreUrlParametersMatching":[]`,
-      `"ignoreUrlParametersMatching":[` +
+      `"ignoreUrlParametersMatching": []`,
+      `"ignoreUrlParametersMatching": [` +
       `${ignoreUrlParametersMatching.join(', ')}]`
     );
   }

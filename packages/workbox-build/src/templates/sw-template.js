@@ -25,9 +25,9 @@ module.exports = `/**
  * - Disable HTTP caching for this file.
  *   See https://goo.gl/rWuKgq
  *
- * The rest of the code in this file is auto-generated. Please don't update this
- * code directly; instead, make changes to your Workbox build configuration
- * and re-run your build process to regenerate this file with updated code.
+ * The rest of the code is auto-generated. Please don't update this file
+ * directly; instead, make changes to your Workbox build configuration
+ * and re-run your build process.
  * See https://goo.gl/YYPcyY
  */
  
@@ -43,19 +43,9 @@ importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
 
 <% if (Array.isArray(manifestEntries)) {%>
 /**
- * The workboxSW.precacheAndRoute() method does the following:
- * 1. Cache URLs in the manifest to a local cache.
- * 2. When a network request is made for any of these URLs the response
- *    will ALWAYS comes from the cache, NEVER the network.
- * 3. When the service worker changes ONLY assets with a revision change are
- *    updated. Old cache entries are left as-is.
- *
- * By changing the file manifest manually, your users may end up not receiving
- * new versions of files because the revision hasn't changed.
- *
- * Please use workbox-build, workbox-cli, workbox-webpack-plugin, or some other
- * equivalent build tool to generate the precache manifest for you as part of
- * your pre-deployment build process.
+ * The workboxSW.precacheAndRoute() method efficiently caches and responds to
+ * requests for URLs in the manifest.
+ * See https://goo.gl/GYZoHL
  */
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
 <% } %>

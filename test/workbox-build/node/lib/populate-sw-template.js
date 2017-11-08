@@ -69,7 +69,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const skipWaiting = true;
     const swTemplate = 'template';
-    const precacheOptionsString = '{"directoryIndex":"index.html","ignoreUrlParametersMatching":[/a/, /b/]}';
+    const precacheOptionsString = '{\n  "directoryIndex": "index.html",\n  "ignoreUrlParametersMatching": [/a/, /b/]\n}';
 
     // There are two stages in templating: creating the active template function
     // from an initial string, and passing variables to that template function
