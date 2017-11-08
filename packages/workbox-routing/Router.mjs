@@ -25,7 +25,7 @@ import './_version.mjs';
 
 /**
  * The Router can be used to process a FetchEvent through one or more
- * [Routes]{@link module:workbox-routing.Route} responding  with a Request if
+ * [Routes]{@link workbox.routing.Route} responding  with a Request if
  * a matching route exists.
  *
  * If no route matches a given a request, the Router will use a "default"
@@ -38,7 +38,7 @@ import './_version.mjs';
  * If a request matches multiple routes, the **earliest** registered route will
  * be used to respond to the request.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox.routing
  */
 class Router {
   /**
@@ -179,8 +179,8 @@ class Router {
         if (Array.isArray(matchResult) && matchResult.length === 0) {
           // Instead of passing an empty array in as params, use undefined.
           matchResult = undefined;
-        } else if (matchResult.constructor === Object &&
-          Object.keys(matchResult).length === 0) {
+        } else if ((matchResult.constructor === Object &&
+          Object.keys(matchResult).length === 0) || matchResult === true) {
           // Instead of passing an empty object in as params, use undefined.
           matchResult = undefined;
         }
@@ -206,7 +206,7 @@ class Router {
    * Without a default handler, unmatched requests will go against the
    * network as if there were no service worker present.
    *
-   * @param {module:workbox-routing.Route~handlerCallback} handler A callback
+   * @param {workbox.routing.Route~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    */
   setDefaultHandler(handler) {
@@ -217,7 +217,7 @@ class Router {
    * If a Route throws an error while handling a request, this `handler`
    * will be called and given a chance to provide a response.
    *
-   * @param {module:workbox-routing.Route~handlerCallback} handler A callback
+   * @param {workbox.routing.Route~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    */
   setCatchHandler(handler) {
@@ -227,7 +227,7 @@ class Router {
   /**
    * Registers a route with the router.
    *
-   * @param {module:workbox-routing.Route} route The route to register.
+   * @param {workbox.routing.Route} route The route to register.
    */
   registerRoute(route) {
     if (process.env.NODE_ENV !== 'production') {
@@ -279,7 +279,7 @@ class Router {
   /**
    * Unregisters a route with the router.
    *
-   * @param {module:workbox-routing.Route} route The route to unregister.
+   * @param {workbox.routing.Route} route The route to unregister.
    */
   unregisterRoute(route) {
     if (!this._routes.has(route.method)) {

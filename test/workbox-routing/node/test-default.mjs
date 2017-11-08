@@ -195,4 +195,41 @@ describe(`[workbox-routing] Default Router`, function() {
       expect(response).to.equal(injectedResponse);
     });
   });
+
+  describe(`Fetch Events`, function() {
+    it(`should not call event methods for no route`, function() {
+      sandbox.spy(defaultRouter, 'handleRequest');
+
+      const fetchEvent = new FetchEvent('fetch', {
+        request: new Request(new URL('/random/navigation.html', self.location)),
+      });
+      sandbox.stub(fetchEvent, 'respondWith');
+      self.dispatchEvent(fetchEvent);
+      expect(defaultRouter.handleRequest.callCount).to.equal(1);
+      expect(defaultRouter.handleRequest.args[0][0]).to.equal(fetchEvent);
+      expect(fetchEvent.respondWith.callCount).to.equal(0);
+    });
+
+    it(`should pass Fetch Events to router.handleRequest`, function() {
+      sandbox.spy(defaultRouter, 'handleRequest');
+
+      const injectResponse = new Response(`Injected Response`);
+      defaultRouter.registerRoute(/./, () => injectResponse);
+
+      const fetchEvent = new FetchEvent(
+        'fetch', {
+          request: new Request(new URL('/random/navigation.html', self.location)),
+        });
+      return new Promise((resolve) => {
+        sandbox.stub(fetchEvent, 'respondWith').callsFake((response) => {
+          expect(response).to.equal(injectResponse);
+          resolve();
+        });
+        self.dispatchEvent(fetchEvent);
+        expect(defaultRouter.handleRequest.callCount).to.equal(1);
+        expect(defaultRouter.handleRequest.args[0][0]).to.equal(fetchEvent);
+        expect(fetchEvent.respondWith.callCount).to.equal(1);
+      });
+    });
+  });
 });

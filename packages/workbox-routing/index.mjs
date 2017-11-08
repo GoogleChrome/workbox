@@ -18,10 +18,10 @@ import defaultExport from './_default.mjs';
 import './_version.mjs';
 
 /**
- * @module workbox-routing
- * @borrows module:workbox-routing.Router#setCatchHandler as setCatchHandler
- * @borrows module:workbox-routing.Router#setDefaultHandler as setDefaultHandler
- * @borrows module:workbox-routing.Router#unregisterRoute as unregisterRoute
+ * @namespace workbox.routing
+ * @borrows workbox.routing.Router#setCatchHandler as setCatchHandler
+ * @borrows workbox.routing.Router#setDefaultHandler as setDefaultHandler
+ * @borrows workbox.routing.Router#unregisterRoute as unregisterRoute
  */
 
 export * from './_public.mjs';

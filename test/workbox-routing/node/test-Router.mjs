@@ -295,5 +295,75 @@ describe(`[workbox-routing] Router`, function() {
 
       expect(response).not.to.exist;
     });
+
+    it(`should not respond to non-http requests`, function() {
+      const router = new Router();
+
+      // route.match() always returns false, so the Request details don't matter.
+      const event = new FetchEvent('fetch', {request: new Request(`example://test.com`)});
+      const response = router.handleRequest(event);
+
+      expect(response).not.to.exist;
+    });
+
+    it(`should result in params in handler`, function() {
+      const expectedParams = {
+        test: 'hello',
+      };
+      const router = new Router();
+      const route = new Route(
+        () => expectedParams,
+        ({params}) => {
+          expect(params).to.equal(expectedParams);
+          return new Response();
+        },
+      );
+      router.registerRoute(route);
+
+      // route.match() always returns false, so the Request details don't matter.
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
+      router.handleRequest(event);
+    });
+
+    it(`should result in no params in handler`, function() {
+      const router = new Router();
+      const route = new Route(
+        () => {
+          return {};
+        },
+        ({params}) => {
+          expect(params).to.equal(undefined);
+          return new Response();
+        },
+      );
+      router.registerRoute(route);
+
+      // route.match() always returns false, so the Request details don't matter.
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
+      router.handleRequest(event);
+    });
+
+    it(`should result in no params in handler for 'true'`, function() {
+      const router = new Router();
+      const route = new Route(
+        () => true,
+        ({params}) => {
+          expect(params).to.equal(undefined);
+          return new Response();
+        },
+      );
+      router.registerRoute(route);
+
+      // route.match() always returns false, so the Request details don't matter.
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
+      router.handleRequest(event);
+    });
+
+    it(`should not throw for router with no-routes set`, function() {
+      const router = new Router();
+
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
+      router.handleRequest(event);
+    });
   });
 });
