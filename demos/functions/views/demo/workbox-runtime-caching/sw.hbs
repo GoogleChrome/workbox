@@ -1,16 +1,47 @@
 {{{WORKBOX_SW_IMPORT}}}
 
-// TODO Skip Waiting
-// TODO Clients Claim
+self.addEventListener('fetch', (event) => {
+  switch (new URL(event.request.url).pathname) {
+    case '/demo/workbox-runtime-caching/cache-only-empty-cache.txt':
+      const cacheOnlyEmpty = new workbox.strategies.CacheOnly();
+      event.respondWith(cacheOnlyEmpty.handle({event}));
+      break;
+    case '/demo/workbox-runtime-caching/cache-only-populated-cache':
+      const cacheOnlyPopulated = new workbox.strategies.CacheOnly();
+      event.respondWith(cacheOnlyPopulated.handle({event}));
+      break;
+    case '/demo/workbox-runtime-caching/cache-first.txt':
+      const cacheFirst = new workbox.strategies.CacheFirst();
+      event.respondWith(cacheFirst.handle({event}));
+      break;
+    case '/demo/workbox-runtime-caching/network-only.txt':
+      const networkOnly = new workbox.strategies.NetworkOnly();
+      event.respondWith(networkOnly.handle({event}));
+      break;
+    case '/demo/workbox-runtime-caching/network-first.txt':
+      const networkFirst = new workbox.strategies.NetworkFirst();
+      event.respondWith(networkFirst.handle({event}));
+      break;
+    case '/demo/workbox-runtime-caching/network-first-404.txt':
+      const networkFirstInvalid = new workbox.strategies.NetworkFirst();
+      event.respondWith(networkFirstInvalid.handle({event}));
+      break;
+    case '/demo/workbox-runtime-caching/stale-while-revalidate.txt':
+      const staleWhileRevalidate = new workbox.strategies.StaleWhileRevalidate();
+      event.respondWith(staleWhileRevalidate.handle({event}));
+      break;
+  }
+});
 
-const EMPTY_CACHE = 'cache-only-empty';
-const POPULATED_CACHE = 'cache-only-populated';
+// The following code is here to demonstrate different aspects of the
+// strategies in the demo.
+
+workbox.skipWaiting();
+workbox.clientsClaim();
 
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
-
   event.waitUntil(
-    caches.open(POPULATED_CACHE)
+    caches.open(workbox.core.cacheNames.runtime)
     .then((cache) => {
       return cache.put(
         new Request('/demo/workbox-runtime-caching/cache-only-populated-cache'),
@@ -18,66 +49,4 @@ self.addEventListener('install', (event) => {
       );
     })
   );
-});
-self.addEventListener('activate', () => self.clients.claim());
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('/demo/workbox-runtime-caching/cache-only-empty-cache.txt')) {
-    const cacheOnly = new workbox.strategies.CacheOnly({
-      cacheName: EMPTY_CACHE
-    });
-    event.respondWith(cacheOnly.handle({event}));
-  }
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('/demo/workbox-runtime-caching/cache-only-populated-cache')) {
-    const cacheOnly = new workbox.strategies.CacheOnly({
-      cacheName: POPULATED_CACHE
-    });
-    event.respondWith(cacheOnly.handle({event}));
-  }
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('/demo/workbox-runtime-caching/cache-first.txt')) {
-    const cacheFirst = new workbox.strategies.CacheFirst({
-      cacheName: 'cache-first'
-    });
-    event.respondWith(cacheFirst.handle({event}));
-  }
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('/demo/workbox-runtime-caching/network-only.txt')) {
-    const networkOnly = new workbox.strategies.NetworkOnly();
-    event.respondWith(networkOnly.handle({event}));
-  }
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('/demo/workbox-runtime-caching/network-first.txt')) {
-    const networkFirst = new workbox.strategies.NetworkFirst({
-      cacheName: 'network-first'
-    });
-    event.respondWith(networkFirst.handle({event}));
-  }
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('/demo/workbox-runtime-caching/network-first-404.txt')) {
-    const networkFirst = new workbox.strategies.NetworkFirst({
-      cacheName: 'network-first'
-    });
-    event.respondWith(networkFirst.handle({event}));
-  }
-});
-
-self.addEventListener('fetch', (event) => {
-  if (event.request.url.includes('/demo/workbox-runtime-caching/stale-while-revalidate.txt')) {
-    const staleWhileRevalidate = new workbox.strategies.StaleWhileRevalidate({
-      cacheName: 'staleWhileRevalidate'
-    });
-    event.respondWith(staleWhileRevalidate.handle({event}));
-  }
 });
