@@ -179,8 +179,8 @@ class Router {
         if (Array.isArray(matchResult) && matchResult.length === 0) {
           // Instead of passing an empty array in as params, use undefined.
           matchResult = undefined;
-        } else if (matchResult.constructor === Object &&
-          Object.keys(matchResult).length === 0) {
+        } else if ((matchResult.constructor === Object &&
+          Object.keys(matchResult).length === 0) || matchResult === true) {
           // Instead of passing an empty object in as params, use undefined.
           matchResult = undefined;
         }
