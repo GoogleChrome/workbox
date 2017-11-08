@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 
 import expectError from '../../../infra/testing/expectError';
+import {devOnly} from '../../../infra/testing/env-it';
 
 import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/models/CacheTimestampsModel.mjs';
 import {CacheExpiration} from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
@@ -35,6 +36,12 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       const expirationManager = new CacheExpiration('test-cache', {maxEntries: 1, maxAgeSeconds: 2});
       expect(expirationManager._maxEntries).to.equal(1);
       expect(expirationManager._maxAgeSeconds).to.equal(2);
+    });
+
+    devOnly.it(`should throw with no config`, function() {
+      return expectError(() => {
+        new CacheExpiration('my-cache');
+      }, 'max-entries-or-age-required');
     });
 
     // TODO Bad constructor input
@@ -123,14 +130,12 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
 
       const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
 
-      let expiredUrls = await expirationManager.expireEntries();
-      expect(expiredUrls).to.deep.equal([]);
+      await expirationManager.expireEntries();
 
       clock.tick(maxAgeSeconds * 1000 + 1);
 
       // The plus one is to ensure it expires
-      expiredUrls = await expirationManager.expireEntries();
-      expect(expiredUrls).to.deep.equal(['https://example.com/']);
+      await expirationManager.expireEntries();
 
       // Check IDB is empty
       const timestamps = await timestampModel.getAllTimestamps();
@@ -153,15 +158,13 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
 
       const expirationManager = new CacheExpiration(cacheName, {maxEntries});
 
-      let expiredUrls = await expirationManager.expireEntries();
-      expect(expiredUrls).to.deep.equal([]);
+      await expirationManager.expireEntries();
 
       // Add entry and ensure it is removed
       await timestampModel.setTimestamp('/second', currentTimestamp - 1000);
       cache.put('https://example.com/second', new Response('Injected request'));
 
-      expiredUrls = await expirationManager.expireEntries();
-      expect(expiredUrls).to.deep.equal(['https://example.com/second']);
+      await expirationManager.expireEntries();
 
       // Check IDB is has /first
       let timestamps = await timestampModel.getAllTimestamps();
@@ -177,8 +180,7 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       await timestampModel.setTimestamp('/third', currentTimestamp + 1000);
       cache.put('https://example.com/third', new Response('Injected request'));
 
-      expiredUrls = await expirationManager.expireEntries();
-      expect(expiredUrls).to.deep.equal(['https://example.com/first']);
+      await expirationManager.expireEntries();
 
       // Check IDB is has /third
       timestamps = await timestampModel.getAllTimestamps();
@@ -190,6 +192,32 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       // Check cache has /third
       cachedRequests = await cache.keys();
       expect(cachedRequests.map((req) => req.url)).to.deep.equal(['https://example.com/third']);
+    });
+
+    it(`should queue up expireEntries calls`, async function() {
+      const expirationManager = new CacheExpiration('test', {maxEntries: 10});
+      let testResolve;
+      const testPromise = new Promise((resolve) => {
+        testResolve = resolve;
+      });
+
+      sandbox.spy(expirationManager, 'expireEntries');
+      sandbox.stub(expirationManager, '_findOldEntries')
+        .callsFake(() => testPromise);
+
+      const firstPromise = expirationManager.expireEntries();
+
+      expect(expirationManager.expireEntries.callCount).to.equal(1);
+
+      expirationManager.expireEntries();
+
+      expect(expirationManager.expireEntries.callCount).to.equal(2);
+
+      testResolve([]);
+
+      await firstPromise;
+
+      expect(expirationManager.expireEntries.callCount).to.equal(3);
     });
   });
 

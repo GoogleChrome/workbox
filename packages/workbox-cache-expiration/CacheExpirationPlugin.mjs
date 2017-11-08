@@ -17,7 +17,22 @@ import {CacheExpiration} from './CacheExpiration.mjs';
 import './_version.mjs';
 
 /**
+ * This plugin can be used in the Workbox API's to regularly enforce a
+ * limit on the age and / or the number of cached requests.
  *
+ * Whenever a cached request is used or updated, this plugin will look
+ * at the used Cache and remove any old or extra requests.
+ *
+ * When using `maxAgeSeconds`, requests may be used *once* after expiring
+ * because the expiration clean up will not have occured until *after* the
+ * cached request has been used. If the request has a "Date" header, then
+ * a light weight expiration check is performed and the request will not be
+ * used immediately.
+ *
+ * When using `maxEntries`, the last request to be used will be the request
+ * that is removed from the Cache.
+ *
+ * @memberof workbox.expiration
  */
 class CacheExpirationPlugin {
   /**
@@ -27,10 +42,14 @@ class CacheExpirationPlugin {
    * @param {number} [config.maxAgeSeconds] The maximum age of an entry before
    * it's treated as stale and removed.
    */
-  constructor(config) {
+  constructor(config = {}) {
     if (process.env.NODE_ENV !== 'production') {
       if (!(config.maxEntries || config.maxAgeSeconds)) {
-        throw new WorkboxError('max-entries-or-age-required');
+        throw new WorkboxError('max-entries-or-age-required', {
+          moduleName: 'workbox-cache-expiration',
+          className: 'CacheExpirationPlugin',
+          funcName: 'constructor',
+        });
       }
 
       if (config.maxEntries) {
@@ -83,15 +102,16 @@ class CacheExpirationPlugin {
    * prevents it from being used if the `Response`'s `Date` header value is
    * older than the configured `maxAgeSeconds`.
    *
-   * @private
    * @param {Object} input
    * @param {string} input.cacheName Name of the cache the responses belong to.
    * @param {Response} input.cachedResponse The `Response` object that's been
    *        read from a cache and whose freshness should be checked.
    * @return {Response} Either the `cachedResponse`, if it's
    *         fresh, or `null` if the `Response` is older than `maxAgeSeconds`.
+   *
+   * @private
    */
-  cachedResponseWillBeUsed({cacheName, cachedResponse} = {}) {
+  cachedResponseWillBeUsed({cacheName, cachedResponse}) {
     let isFresh = this._isResponseDateFresh(cachedResponse);
 
     // Expire entries to ensure that even if the expiration date has
@@ -156,13 +176,13 @@ class CacheExpirationPlugin {
    * A "lifecycle" callback that will be triggered automatically by the
    * `workbox.runtimeCaching` handlers when an entry is added to a cache.
    *
-   * @private
    * @param {Object} input
    * @param {string} input.cacheName Name of the cache the responses belong to.
-   * @param {Response} input.newResponse The new value in the cache.
-   * @param {string} input.url The URL for the cache entry.
+   * @param {string} input.request The Request for the cached entry.
+   *
+   * @private
    */
-  async cacheDidUpdate({cacheName, newResponse, url} = {}) {
+  async cacheDidUpdate({cacheName, request}) {
     if (process.env.NODE_ENV !== 'production') {
       assert.isType(cacheName, 'string', {
         moduleName: 'workbox-cache-expiration',
@@ -170,16 +190,16 @@ class CacheExpirationPlugin {
         funcName: 'cacheDidUpdate',
         paramName: 'cacheName',
       });
-      assert.isInstance(newResponse, Response, {
+      assert.isInstance(request, Request, {
         moduleName: 'workbox-cache-expiration',
         className: 'CacheExpirationPlugin',
         funcName: 'cacheDidUpdate',
-        paramName: 'newResponse',
+        paramName: 'request',
       });
     }
 
     const cacheExpiration = this._getCacheExpiration(cacheName);
-    await cacheExpiration.updateTimestamp(url);
+    await cacheExpiration.updateTimestamp(request.url);
     await cacheExpiration.expireEntries();
   }
 }

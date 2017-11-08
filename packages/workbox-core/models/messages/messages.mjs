@@ -148,4 +148,8 @@ export default {
       `Please check the call to ${moduleName}.${className}.${funcName}() ` +
       `to fix the issue.`;
   },
+  'max-entries-or-age-required': ({moduleName, className, funcName}) => {
+    return `You must define either config.maxEntries or config.maxAgeSeconds` +
+      `in ${moduleName}.${className}.${funcName}`;
+  },
 };

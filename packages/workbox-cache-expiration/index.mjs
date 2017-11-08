@@ -14,6 +14,10 @@
   limitations under the License.
 */
 
+/**
+ * @namespace workbox.expiration
+ */
+
 import './_version.mjs';
 
 export * from './_public.mjs';
