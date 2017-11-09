@@ -20,9 +20,10 @@
   },
   "workbox": {
     "browserNamespace": "workbox",
-    "packageType": "browser"
+    "packageType": "browser",
+    "prodOnly": true
   },
   "main": "index.mjs",
   "module": "index.mjs",
-  "browser": "build/browser/workbox-sw.prod.js"
+  "browser": "build/browser/workbox-sw.js"
 }

@@ -24,7 +24,10 @@ const getVersionedCDNUrl = () => {
 };
 
 const getModuleUrl = (moduleName, buildType) => {
-  return `${getVersionedCDNUrl()}/${moduleName}.${buildType.slice(0, 4)}.js`;
+  if (buildType) {
+    return `${getVersionedCDNUrl()}/${moduleName}.${buildType.slice(0, 4)}.js`;
+  }
+  return `${getVersionedCDNUrl()}/${moduleName}.js`;
 };
 
 module.exports = {

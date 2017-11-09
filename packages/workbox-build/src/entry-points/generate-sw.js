@@ -48,8 +48,7 @@ async function generateSW(input) {
   const destDirectory = path.dirname(options.swDest);
 
   if (options.importWorkboxFromCDN) {
-    // TODO: Update for https://github.com/GoogleChrome/workbox/issues/969.
-    const cdnUrl = cdnUtils.getModuleUrl('workbox-sw', 'prod');
+    const cdnUrl = cdnUtils.getModuleUrl('workbox-sw');
     // importScripts may or may not already be an array containing other URLs.
     // Either way, list cdnUrl first.
     options.importScripts = [cdnUrl].concat(options.importScripts || []);
