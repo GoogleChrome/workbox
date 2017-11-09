@@ -32,7 +32,7 @@ class CDNHelper {
   getGCS() {
     if (!this._gcs) {
       try {
-        fs.access(SERVICE_ACCOUNT_PATH);
+        fs.accessSync(SERVICE_ACCOUNT_PATH);
       } catch (err) {
         throw new Error(ERROR_SERVICE_ACCOUNT);
       }
