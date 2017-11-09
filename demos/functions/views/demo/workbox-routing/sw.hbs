@@ -1,12 +1,26 @@
 {{{WORKBOX_SW_IMPORT}}}
 
+// Set logs level to `debug` to view all logs
+// workbox.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
+
 // Set up a route to alter the demo-img
-const specialImgUrl = new URL('/demo/workbox-routing/demo-img.png', location).toString();
-const specialImgRoute = new workbox.routing.Route(({event}) => {
-  return (event.request.url === specialImgUrl);
-}, ()=> {
+const matchCb = ({url, event}) => {
+  return url.pathname === '/demo/workbox-routing/demo-img.png';
+};
+
+const handlerCb = ({url, event, params}) => {
   return fetch('/demo/workbox-routing/demo-img-intercepted.png');
+};
+
+workbox.routing.registerRoute(matchCb, handlerCb);
+
+// TODO: Switch to just a string match when supported.
+const JQUERY_URL = 'https://code.jquery.com/jquery-3.2.1.slim.min.js';
+workbox.routing.registerRoute(new RegExp(JQUERY_URL), () => {
+  // Demonstrating when an error is thrown by a Route.
+  throw new Error(`Example error thrown from the default handler`);
 });
 
-workbox.routing.registerRoute(specialImgRoute);
-
+workbox.routing.setCatchHandler(({event}) => {
+  return fetch(event.request);
+});

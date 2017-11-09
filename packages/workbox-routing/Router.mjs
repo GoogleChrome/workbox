@@ -79,6 +79,7 @@ class Router {
       return;
     }
 
+    let route = null;
     let handler = null;
     let params = null;
     let debugMessages = [];
@@ -86,7 +87,7 @@ class Router {
     const result = this._findHandlerAndParams(event, url);
     handler = result.handler;
     params = result.params;
-    const route = result.route;
+    route = result.route;
     if (process.env.NODE_ENV !== 'production') {
       if (handler) {
         debugMessages.push([
@@ -107,6 +108,9 @@ class Router {
       if (process.env.NODE_ENV !== 'production') {
         debugMessages.push(`Failed to find a matching route. Falling ` +
           `back to the default handler.`);
+
+        // This is used for debugging in logs in the case of an error.
+        route = '[Default Handler]';
       }
       handler = this._defaultHandler;
     }
@@ -141,14 +145,23 @@ class Router {
       logger.groupEnd();
     }
 
-    let responsePromise = handler.handle({url, event, params});
-    if (this._catchHandler) {
+    // Wrap in try and catch in case the handle method throws a synchronous
+    // error. It should still callback to the catch handler.
+    let responsePromise;
+    try {
+      responsePromise = handler.handle({url, event, params});
+    } catch (err) {
+      responsePromise = Promise.reject(err);
+    }
+
+    if (responsePromise && this._catchHandler) {
       responsePromise = responsePromise.catch((err) => {
         if (process.env.NODE_ENV !== 'production') {
           // Still include URL here as it will be async from the console group
           // and may not make sense without the URL
-          logger.groupCollapsed(`The Router ${route} threw an error when ` +
-            `handling ${getFriendlyURL(url)}. Falling back to Catch Handler.`);
+          logger.groupCollapsed(`Error thrown when responding to: ` +
+            ` ${getFriendlyURL(url)}. Falling back to Catch Handler.`);
+          logger.unprefixed.error(`Error thrown by:`, route);
           logger.unprefixed.error(err);
           logger.groupEnd();
         }
