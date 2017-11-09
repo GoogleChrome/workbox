@@ -14,6 +14,13 @@
   limitations under the License.
 */
 
+/**
+ * This module is a single import that can be used to dynamically import
+ * additional Workbox modules with no effort.
+ *
+ * @namespace workbox
+ */
+
 import defaultExport from './_default.mjs';
 import './_version.mjs';
 
