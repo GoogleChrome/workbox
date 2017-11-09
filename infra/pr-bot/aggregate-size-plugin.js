@@ -1,14 +1,14 @@
-const glob = require('glob');
-const path = require('path');
-const fs = require('fs-extra');
-const oneLine = require('common-tags').oneLine;
 const PluginInterface = require('pr-bot').PluginInterface;
-const gzipSize = require('gzip-size');
 const bytes = require('bytes');
+const fs = require('fs-extra');
+const glob = require('glob');
+const gzipSize = require('gzip-size');
+const oneLine = require('common-tags').oneLine;
+const path = require('path');
 
 const constants = require('../../gulp-tasks/utils/constants');
 
-// 10 KB max size
+// 15 KB max size
 const MAX_SIZE = 15 * 1000;
 
 class AggregateSizePlugin extends PluginInterface {
@@ -16,21 +16,23 @@ class AggregateSizePlugin extends PluginInterface {
     super(`Workbox Aggregate Size Plugin`);
   }
 
-  run({beforePath, afterPath} = {}) {
+  run({afterPath} = {}) {
     const packagesToAggregate = [
-      `workbox-loading`,
+      `workbox-cache-expiration`,
+      `workbox-cacheable-response`,
       `workbox-core`,
       `workbox-precaching`,
       `workbox-routing`,
-      `workbox-strategies`,
-      `workbox-cacheable-response`,
-      `workbox-cache-expiration`,
+      `workbox-runtime-caching`,
+      `workbox-sw`,
     ];
-    const globPattern = path.posix.join(
-      afterPath, 'packages', `{${packagesToAggregate.join(',')}}`,
-      constants.PACKAGE_BUILD_DIRNAME, 'browser', '*.prod.js',
-    );
-    const files = glob.sync(globPattern);
+    // I'm pretty sure we can get away with not supporting Windows paths here.
+    const files = packagesToAggregate.map((pkg) => {
+      const prefix = `${afterPath}/packages/${pkg}/`;
+      const pkgJson = require(`${prefix}package.json`);
+      return prefix + pkgJson.browser;
+    });
+
     let totalSize = 0;
     let totalGzipSize = 0;
     files.forEach((filePath) => {
