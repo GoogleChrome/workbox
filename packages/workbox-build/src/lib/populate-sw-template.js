@@ -24,21 +24,18 @@ module.exports = ({
   cacheId,
   clientsClaim,
   directoryIndex,
-  handleFetch,
   ignoreUrlParametersMatching,
   importScripts,
   manifestEntries,
+  modulePathPrefix,
   navigateFallback,
+  navigateFallbackBlacklist,
   navigateFallbackWhitelist,
   runtimeCaching,
   skipWaiting,
 }) => {
-  // These are all options that can be passed in to the WorkboxSW constructor.
-  const workboxOptions = {
-    cacheId,
-    skipWaiting,
-    handleFetch,
-    clientsClaim,
+  // These are all options that can be passed to the precacheAndRoute() method.
+  const precacheOptions = {
     directoryIndex,
     // An array of RegExp objects can't be serialized by JSON.stringify()'s
     // default behavior, so if it's given, convert it manually.
@@ -47,9 +44,9 @@ module.exports = ({
       undefined,
   };
 
-  let workboxOptionsString = JSON.stringify(workboxOptions, null, 2);
+  let precacheOptionsString = JSON.stringify(precacheOptions, null, 2);
   if (ignoreUrlParametersMatching) {
-    workboxOptionsString = workboxOptionsString.replace(
+    precacheOptionsString = precacheOptionsString.replace(
       `"ignoreUrlParametersMatching": []`,
       `"ignoreUrlParametersMatching": [` +
       `${ignoreUrlParametersMatching.join(', ')}]`
@@ -58,11 +55,16 @@ module.exports = ({
 
   try {
     return template(swTemplate)({
+      cacheId,
+      clientsClaim,
       importScripts,
       manifestEntries,
+      modulePathPrefix,
       navigateFallback,
+      navigateFallbackBlacklist,
       navigateFallbackWhitelist,
-      workboxOptionsString,
+      precacheOptionsString,
+      skipWaiting,
       runtimeCaching: runtimeCachingConverter(runtimeCaching),
     }).trim() + '\n';
   } catch (error) {

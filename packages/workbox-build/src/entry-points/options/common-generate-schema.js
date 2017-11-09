@@ -21,11 +21,11 @@ const baseSchema = require('./base-schema');
 // Add some constraints that apply to both generateSW and generateSWString.
 module.exports = baseSchema.keys({
   cacheId: joi.string(),
-  clientsClaim: joi.boolean(),
+  clientsClaim: joi.boolean().default(false),
   directoryIndex: joi.string(),
-  handleFetch: joi.boolean(),
   ignoreUrlParametersMatching: joi.array().items(joi.object().type(RegExp)),
-  navigateFallback: joi.string(),
+  navigateFallback: joi.string().default(false),
+  navigateFallbackBlacklist: joi.array().items(joi.object().type(RegExp)),
   navigateFallbackWhitelist: joi.array().items(joi.object().type(RegExp)),
   runtimeCaching: joi.array().items(joi.object().keys({
     urlPattern: [joi.object().type(RegExp), joi.string()],
@@ -49,5 +49,5 @@ module.exports = baseSchema.keys({
       }).or('statuses', 'headers'),
     }),
   }).requiredKeys('urlPattern', 'handler')),
-  skipWaiting: joi.boolean(),
+  skipWaiting: joi.boolean().default(false),
 });

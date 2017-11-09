@@ -13,6 +13,7 @@ describe(`[workbox-build] Test Dependencies`, function() {
       ignoreMatches: [
         'babel-runtime',
         'workbox-cache-expiration',
+        'workbox-core',
         'workbox-precaching',
         'workbox-routing',
         'workbox-runtime-caching',

@@ -100,4 +100,7 @@ module.exports = {
   'invalid-sw-src': `The 'swSrc' file can't be read.`,
   'same-src-and-dest': ol`'swSrc' and 'swDest' should not be set to the same ` +
     `file. Please use a different file path for 'swDest'.`,
+  'only-regexp-routes-supported': ol`Please use a regular expression object as
+    the urlPattern parameter. (Express-style routes are not currently
+    supported.)`,
 };

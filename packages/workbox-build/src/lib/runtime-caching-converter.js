@@ -67,28 +67,23 @@ module.exports = (runtimeCaching) => {
       throw new Error(errors['handler-is-required']);
     }
 
-    // urlPattern might be either a string or a RegExp object.
-    // If it's a string, it needs to be quoted. If it's a RegExp, it should
-    // be used as-is.
-    const matcher = typeof entry.urlPattern === 'string' ?
-      `'${entry.urlPattern}'` :
-      entry.urlPattern;
+    // TODO: Figure out our ExpressRoute story.
+    // In the meantime, we only support RegExp routes.
+    if (!(entry.urlPattern instanceof RegExp)) {
+      throw new Error(errors['only-regexp-routes-supported']);
+    }
 
     if (typeof entry.handler === 'string') {
-      const handlerName = entry.handler === 'fastest' ?
-        'staleWhileRevalidate' :
-        entry.handler;
-
       const optionsString = getOptionsString(entry.options || {});
 
       const strategyString =
-        `workboxSW.strategies.${handlerName}(${optionsString})`;
+        `workbox.strategies.${entry.handler}(${optionsString})`;
 
-      return `workboxSW.router.registerRoute(` +
-        `${matcher}, ${strategyString}, '${method}');`;
+      return `workbox.routing.registerRoute(` +
+        `${entry.urlPattern}, ${strategyString}, '${method}');\n`;
     } else if (typeof entry.handler === 'function') {
-      return `workboxSW.router.registerRoute(` +
-        `${matcher}, ${entry.handler}, '${method}');`;
+      return `workbox.routing.registerRoute(` +
+        `${entry.urlPattern}, ${entry.handler}, '${method}');\n`;
     }
   }).filter((entry) => Boolean(entry)); // Remove undefined map() return values.
 };

@@ -1,2 +1,1 @@
-const workboxSW = new WorkboxSW();
-workboxSW.precache(/* manifestEntries */);
+workbox.precaching.precacheAndRoute(/* manifestEntries */);

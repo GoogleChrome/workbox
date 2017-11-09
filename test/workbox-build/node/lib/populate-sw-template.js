@@ -25,7 +25,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
   it(`should pass the expected options to the template using mostly defaults`, function() {
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const swTemplate = 'template';
-    const workboxOptionsString = '{}';
+    const precacheOptionsString = '{}';
 
     const innerStub = sinon.stub().returns('');
     const outerStub = sinon.stub().returns(innerStub);
@@ -38,14 +38,19 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     populateSWTemplate({});
 
     expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
-    expect(innerStub.alwaysCalledWith({
+    expect(innerStub.args[0]).to.eql([{
+      cacheId: undefined,
+      clientsClaim: undefined,
       importScripts: undefined,
       manifestEntries: undefined,
+      modulePathPrefix: undefined,
       navigateFallback: undefined,
+      navigateFallbackBlacklist: undefined,
       navigateFallbackWhitelist: undefined,
+      precacheOptionsString,
       runtimeCaching: runtimeCachingPlaceholder,
-      workboxOptionsString,
-    })).to.be.true;
+      skipWaiting: undefined,
+    }]);
   });
 
   it(`should pass the expected options to the template`, function() {
@@ -56,13 +61,15 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const ignoreUrlParametersMatching = [/a/, /b/];
     const importScripts = ['test.js'];
     const manifestEntries = [{url: '/path/to/index.html', revision: '1234'}];
+    const modulePathPrefix = 'testing';
     const navigateFallback = '/shell.html';
+    const navigateFallbackBlacklist = [/another-test/];
     const navigateFallbackWhitelist = [/test/];
     const runtimeCaching = [];
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const skipWaiting = true;
     const swTemplate = 'template';
-    const workboxOptionsString = '{\n  "cacheId": "test-cache-id",\n  "skipWaiting": true,\n  "handleFetch": true,\n  "clientsClaim": true,\n  "directoryIndex": "index.html",\n  "ignoreUrlParametersMatching": [/a/, /b/]\n}';
+    const precacheOptionsString = '{\n  "directoryIndex": "index.html",\n  "ignoreUrlParametersMatching": [/a/, /b/]\n}';
 
     // There are two stages in templating: creating the active template function
     // from an initial string, and passing variables to that template function
@@ -84,20 +91,27 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       ignoreUrlParametersMatching,
       importScripts,
       manifestEntries,
+      modulePathPrefix,
       navigateFallback,
+      navigateFallbackBlacklist,
       navigateFallbackWhitelist,
       runtimeCaching,
       skipWaiting,
     });
 
     expect(templateCreationStub.alwaysCalledWith(swTemplate)).to.be.true;
-    expect(templatePopulationStub.alwaysCalledWith({
+    expect(templatePopulationStub.args[0]).to.eql([{
+      cacheId,
+      clientsClaim,
       importScripts,
       manifestEntries,
+      modulePathPrefix,
       navigateFallback,
+      navigateFallbackBlacklist,
       navigateFallbackWhitelist,
       runtimeCaching: runtimeCachingPlaceholder,
-      workboxOptionsString,
-    })).to.be.true;
+      precacheOptionsString,
+      skipWaiting,
+    }]);
   });
 });
