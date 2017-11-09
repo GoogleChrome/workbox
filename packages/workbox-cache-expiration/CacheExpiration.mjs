@@ -116,9 +116,10 @@ class CacheExpiration {
     if (process.env.NODE_ENV !== 'production') {
       // TODO break apart entries deleted due to expiration vs size restraints
       logger.groupCollapsed(
-        `Expired ${allUrls.length} entries have been removed from the cache.`);
-      logger.debug(`Cache name:`, this._cacheName);
-      logger.debug(`URLS:`, allUrls);
+        `Expired ${allUrls.length} entries and removed them from the ` +
+        `'${this._cacheName}' cache.`);
+      logger.log(`Expired the following URLs:`);
+      allUrls.forEach((url) => logger.log(`    ${url}`));
       logger.groupEnd();
     }
 
