@@ -24,7 +24,9 @@ import * as googleAnalytics from '../../../packages/workbox-google-analytics/ind
 import {
   MAX_RETENTION_TIME,
   GOOGLE_ANALYTICS_HOST,
+  GTM_HOST,
   ANALYTICS_JS_PATH,
+  GTAG_JS_PATH,
   COLLECT_PATH,
 } from '../../../packages/workbox-google-analytics/utils/constants.mjs';
 
@@ -58,6 +60,21 @@ describe(`[workbox-google-analytics] initialize`, function() {
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(
           `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
+        mode: 'no-cors',
+      }),
+    }));
+
+    expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
+  });
+
+  it(`should register a handler to cache the gtag.js script`, function() {
+    sandbox.spy(NetworkFirst.prototype, 'handle');
+
+    googleAnalytics.initialize();
+
+    self.dispatchEvent(new FetchEvent('fetch', {
+      request: new Request(
+          `https://${GTM_HOST}${GTAG_JS_PATH}?id=UA-XXXXX-Y`, {
         mode: 'no-cors',
       }),
     }));
