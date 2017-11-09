@@ -91,7 +91,7 @@ const _getPrecachedUrl = (url, {
     // It's a perfect match
     if (process.env.NODE_ENV !== 'production') {
       logger.debug(`Precaching found an exact URL match for ` +
-        getFriendlyURL(event.request.url));
+        getFriendlyURL(urlObject.toString()));
     }
     return urlObject.href;
   }

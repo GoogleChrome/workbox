@@ -257,4 +257,4 @@ class CacheExpiration {
   }
 }
 
-export {CacheExpiration};
+export default CacheExpiration;
