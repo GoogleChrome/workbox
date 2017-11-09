@@ -104,6 +104,16 @@ describe(`[workbox-sw] WorkboxSW`, function() {
         });
       }).to.throw();
     });
+
+    it(`should not throw on no config and environment should stay the same`, function() {
+      self.workbox = new WorkboxSW();
+
+      const originalOptions = self.workbox._options;
+
+      self.workbox.setConfig();
+
+      expect(self.workbox._options).to.equal(originalOptions);
+    });
   });
 
   describe(`skipWaiting`, function() {
