@@ -24,9 +24,8 @@
     "browserNamespace": "workbox.backgroundSync",
     "packageType": "browser"
   },
-  "main": "index.mjs",
+  "main": "build/workbox-background-sync.prod.js",
   "module": "index.mjs",
-  "browser": "build/browser/workbox-background-sync.prod.js",
   "dependencies": {
     "workbox-core": "^3.0.0-alpha.23"
   }
