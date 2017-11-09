@@ -5,7 +5,7 @@ import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import expectError from '../../../infra/testing/expectError';
 import {devOnly} from '../../../infra/testing/env-it';
 
-import {CacheTimestampsModel} from '../../../packages/workbox-cache-expiration/models/CacheTimestampsModel.mjs';
+import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/models/CacheTimestampsModel.mjs';
 import {CacheExpiration} from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
 
 describe(`[workbox-cache-expiration] CacheExpiration`, function() {
