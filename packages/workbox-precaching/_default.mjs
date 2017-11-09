@@ -14,7 +14,12 @@
   limitations under the License.
 */
 
-import {assert, cacheNames} from 'workbox-core/_private.mjs';
+import {
+  assert,
+  cacheNames,
+  logger,
+  getFriendlyURL,
+} from 'workbox-core/_private.mjs';
 import PrecacheController from './controllers/PrecacheController.mjs';
 import './_version.mjs';
 
@@ -84,6 +89,10 @@ const _getPrecachedUrl = (url, {
   const cachedUrls = precacheController.getCachedUrls();
   if (cachedUrls.indexOf(urlObject.href) !== -1) {
     // It's a perfect match
+    if (process.env.NODE_ENV !== 'production') {
+      logger.debug(`Precaching found an exact URL match for ` +
+        getFriendlyURL(urlObject.toString()));
+    }
     return urlObject.href;
   }
 
@@ -91,12 +100,20 @@ const _getPrecachedUrl = (url, {
     urlObject, ignoreUrlParametersMatching
   );
   if (cachedUrls.indexOf(strippedUrl.href) !== -1) {
+    if (process.env.NODE_ENV !== 'production') {
+      logger.debug(`Precaching found an exact URL match for stripped URL` +
+        getFriendlyURL(strippedUrl.toString()));
+    }
     return strippedUrl.href;
   }
 
   if (directoryIndex && strippedUrl.pathname.endsWith('/')) {
     strippedUrl.pathname += directoryIndex;
     if (cachedUrls.indexOf(strippedUrl.href) !== -1) {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.debug(`Precaching found an exact URL match with ` +
+          `'directoryIndex' ${getFriendlyURL(strippedUrl.toString())}`);
+      }
       return strippedUrl.href;
     }
   }
@@ -162,7 +179,7 @@ moduleExports.precache = (entries) => {
  */
 moduleExports.addRoute = (options) => {
   if (fetchListenersAdded) {
-    // TODO Throw error here.
+    // TODO: Throw error here.
     return;
   }
 
@@ -170,13 +187,39 @@ moduleExports.addRoute = (options) => {
   self.addEventListener('fetch', (event) => {
     const precachedUrl = _getPrecachedUrl(event.request.url, options);
     if (!precachedUrl) {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.debug(`Precaching found no match for ` +
+          getFriendlyURL(event.request.url));
+      }
       return;
     }
 
-    const responsePromise = caches.open(cacheName)
+    let responsePromise = caches.open(cacheName)
     .then((cache) => {
       return cache.match(precachedUrl);
     });
+    if (process.env.NODE_ENV !== 'production') {
+      responsePromise = responsePromise.then((response) => {
+        // Workbox is going to handle the route.
+        // print the routing details to the console.
+        logger.groupCollapsed(`Precaching is responding to: ` +
+          getFriendlyURL(event.request.url));
+        logger.log(`Serving the precached url: ${precachedUrl}`);
+
+        // The Request and Response objects contains a great deal of
+        // information, hide it under a group in case developers want to see it.
+        logger.groupCollapsed(`View request details here.`);
+        logger.unprefixed.log(event.request);
+        logger.groupEnd();
+
+        logger.groupCollapsed(`View response details here.`);
+        logger.unprefixed.log(response);
+        logger.groupEnd();
+
+        logger.groupEnd();
+        return response;
+      });
+    }
     event.respondWith(responsePromise);
   });
 };

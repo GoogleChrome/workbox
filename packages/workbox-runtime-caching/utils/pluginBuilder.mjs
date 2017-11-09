@@ -29,19 +29,19 @@ const pluginBuilder = (options) => {
     // TODO: Add support for 'cacheableResponse': CacheableResponsePlugin,
   };
 
-  for (const [pluginName, config] of Object.entries(options)) {
+  for (const [pluginId, config] of Object.entries(options)) {
     // Special case for the `cacheName` config.
-    if (pluginName === 'cacheName') {
+    if (pluginId === 'cacheName') {
       continue;
     }
 
-    const PluginClass = pluginParamsToClass[pluginName];
+    const PluginClass = pluginParamsToClass[pluginId];
     if (PluginClass) {
       plugins.push(new PluginClass(config));
     } else {
       // Nested if statement to ensure rollup can strip this statement
       if (process.env.NODE_ENV !== 'production') {
-        logger.warn(`Unknown plugin config '${pluginName}' passed in to` +
+        logger.warn(`Unknown plugin config '${pluginId}' passed in to` +
           ` 'workbox.strategies'.`);
       }
     }
