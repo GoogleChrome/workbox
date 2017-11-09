@@ -70,7 +70,7 @@ app.get('/demo/:moduleName/:swfile', function(req, res, next) {
   modulePathPrefix: '${cdnUrl}'`;
   }
 
-  const swImport = `importScripts('${cdnUrl}/workbox-sw.prod.js');
+  const swImport = `importScripts('${cdnUrl}/workbox-sw.js');
 
 workbox.setConfig({
   debug: true${extraConfig}
