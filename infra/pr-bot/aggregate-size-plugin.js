@@ -3,6 +3,7 @@ const bytes = require('bytes');
 const fs = require('fs-extra');
 const gzipSize = require('gzip-size');
 const oneLine = require('common-tags').oneLine;
+const path = require('path');
 
 // 15 KB max size
 const MAX_SIZE = 15 * 1000;
@@ -22,11 +23,11 @@ class AggregateSizePlugin extends PluginInterface {
       `workbox-runtime-caching`,
       `workbox-sw`,
     ];
-    // I'm pretty sure we can get away with not supporting Windows paths here.
     const files = packagesToAggregate.map((pkg) => {
       const prefix = `${afterPath}/packages/${pkg}/`;
       const pkgJson = require(`${prefix}package.json`);
-      return prefix + pkgJson.browser;
+      const posixPath = prefix + pkgJson.browser;
+      return posixPath.split('/').join(path.sep);
     });
 
     let totalSize = 0;
