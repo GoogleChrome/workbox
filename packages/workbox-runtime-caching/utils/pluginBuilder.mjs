@@ -14,7 +14,7 @@
 */
 
 import {logger} from 'workbox-core/_private.mjs';
-import CacheExpirationPlugin from
+import {CacheExpirationPlugin} from
   'workbox-cache-expiration/CacheExpirationPlugin.mjs';
 import '../_version.mjs';
 

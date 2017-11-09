@@ -17,8 +17,8 @@ import sinon from 'sinon';
 import expectError from '../../../infra/testing/expectError';
 import {devOnly} from '../../../infra/testing/env-it';
 
-import CacheExpirationPlugin from '../../../packages/workbox-cache-expiration/CacheExpirationPlugin.mjs';
-import CacheExpiration from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
+import {CacheExpirationPlugin} from '../../../packages/workbox-cache-expiration/CacheExpirationPlugin.mjs';
+import {CacheExpiration} from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
 
 describe(`[workbox-cache-expiration] CacheExpirationPlugin`, function() {
   const sandbox = sinon.sandbox.create();
