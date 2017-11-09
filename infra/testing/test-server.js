@@ -21,7 +21,7 @@ app.get(/\/__WORKBOX\/buildFile\/(workbox-[A-z]*)(\.(?:dev|prod)\.(.*))*/, (req,
     path.join(modulePath, 'package.json')
   );
 
-  const browserFile = pkg.browser;
+  const browserFile = pkg.main;
   const libraryPath = path.dirname(path.join(modulePath, browserFile));
   let libraryFileName = path.basename(browserFile);
   switch (process.env.NODE_ENV) {

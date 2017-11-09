@@ -23,7 +23,6 @@
     "packageType": "browser",
     "prodOnly": true
   },
-  "main": "index.mjs",
-  "module": "index.mjs",
-  "browser": "build/browser/workbox-sw.js"
+  "main": "build/workbox-sw.js",
+  "module": "index.mjs"
 }

@@ -60,8 +60,7 @@ module.exports = async (destDirectory) => {
     (dependency) => dependency.startsWith(WORKBOX_PREFIX));
   for (const library of librariesToCopy) {
     const pkg = require(`${library}/package.json`);
-    // TODO: This will change to pkg.main at some point.
-    const defaultPathToLibrary = require.resolve(`${library}/${pkg.browser}`);
+    const defaultPathToLibrary = require.resolve(`${library}/${pkg.main}`);
 
     for (const buildType of BUILD_TYPES) {
       const srcPath = useBuildType(defaultPathToLibrary, buildType);

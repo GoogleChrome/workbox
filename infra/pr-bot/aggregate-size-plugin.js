@@ -26,7 +26,7 @@ class AggregateSizePlugin extends PluginInterface {
     const files = packagesToAggregate.map((pkg) => {
       const prefix = `${afterPath}/packages/${pkg}/`;
       const pkgJson = require(`${prefix}package.json`);
-      const posixPath = prefix + pkgJson.browser;
+      const posixPath = prefix + pkgJson.main;
       return posixPath.split('/').join(path.sep);
     });
 
