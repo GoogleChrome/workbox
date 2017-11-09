@@ -35,10 +35,7 @@ const pluginBuilder = (options) => {
       continue;
     }
 
-    console.log(`Looking for pluginId: ${pluginId}`);
-    console.log(`pluginParamsToClass: `, pluginParamsToClass);
     const PluginClass = pluginParamsToClass[pluginId];
-    console.log(`Looking at PluginClass: ${PluginClass}`);
     if (PluginClass) {
       plugins.push(new PluginClass(config));
     } else {
