@@ -10,7 +10,7 @@ const generateSW = require('../../../../packages/workbox-build/src/entry-points/
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() {
-  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw', 'prod');
+  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw');
   const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
@@ -169,10 +169,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         'workbox-runtime-caching.dev.js.map',
         'workbox-runtime-caching.prod.js',
         'workbox-runtime-caching.prod.js.map',
-        'workbox-sw.dev.js',
-        'workbox-sw.dev.js.map',
-        'workbox-sw.prod.js',
-        'workbox-sw.prod.js.map',
+        'workbox-sw.js',
+        'workbox-sw.js.map',
       ]);
 
 
@@ -181,7 +179,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       // of time, so we ensure that there's a match based on what actually
       // got copied over.
       const workboxSWImport = libraryFiles.filter(
-        (file) => file.endsWith('workbox-sw.prod.js'));
+        (file) => file.endsWith('workbox-sw.js'));
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [workboxSWImport],

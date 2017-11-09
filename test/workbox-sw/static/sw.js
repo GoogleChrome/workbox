@@ -1,4 +1,4 @@
-importScripts('../../../packages/workbox-sw/build/browser/workbox-sw.prod.js');
+importScripts('../../../packages/workbox-sw/build/browser/workbox-sw.js');
 
 const wb = new self.WorkboxSW({
   modulePathCb: (moduleName, debug) => {
