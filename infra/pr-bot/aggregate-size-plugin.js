@@ -1,12 +1,8 @@
 const PluginInterface = require('pr-bot').PluginInterface;
 const bytes = require('bytes');
 const fs = require('fs-extra');
-const glob = require('glob');
 const gzipSize = require('gzip-size');
 const oneLine = require('common-tags').oneLine;
-const path = require('path');
-
-const constants = require('../../gulp-tasks/utils/constants');
 
 // 15 KB max size
 const MAX_SIZE = 15 * 1000;
