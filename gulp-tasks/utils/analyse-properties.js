@@ -34,9 +34,9 @@ class AnalyseBuildForProperties {
   }
 
   getBuildFiles() {
+    // workbox-sw doesn't include .prod. in the build name.
     const buildGlob = path.join(__dirname, '..', '..', 'packages',
-      '*', constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME,
-      '*.prod.js');
+      '*', constants.PACKAGE_BUILD_DIRNAME, '{*.prod.js,workbox-sw.js}');
     return glob.sync(buildGlob);
   }
 

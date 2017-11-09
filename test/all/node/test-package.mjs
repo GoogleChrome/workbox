@@ -20,7 +20,6 @@ describe(`[all] Test package.json`, function() {
           const propertiesToCheck = [
             'main',
             'module',
-            'browser',
           ];
 
           propertiesToCheck.forEach((propertyName) => {

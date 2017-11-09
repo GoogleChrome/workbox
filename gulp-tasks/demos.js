@@ -10,8 +10,7 @@ const spawn = require('./utils/spawn-promise-wrapper');
 gulp.task('demos:groupBuildFiles', async () => {
   const pattern = path.posix.join(
     __dirname, '..', 'packages', '**',
-    constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME,
-    '*.{js,map}');
+    constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
 
   const localBuildPath = path.join(__dirname, '..', 'demos', 'public',
     constants.LOCAL_BUILDS_DIR);

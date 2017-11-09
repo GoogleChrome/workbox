@@ -100,7 +100,7 @@ module.exports = (packagePath, buildType) => {
 
   const namespace = pkgJson.workbox.browserNamespace;
   const outputDirectory = path.join(packagePath,
-    constants.PACKAGE_BUILD_DIRNAME, constants.BROWSER_BUILD_DIRNAME);
+    constants.PACKAGE_BUILD_DIRNAME);
 
   logHelper.log(oneLine`
     Building Browser Bundle for

@@ -64,8 +64,7 @@ async function generateSW(input) {
     ].concat(options.globIgnores || []);
 
     const workboxSWPkg = require(`workbox-sw/package.json`);
-    // TODO: This will change to workboxSWPkg.main at some point.
-    const workboxSWFilename = path.basename(workboxSWPkg.browser);
+    const workboxSWFilename = path.basename(workboxSWPkg.main);
 
     // importScripts may or may not already be an array containing other URLs.
     // Either way, list workboxSWFilename first.
