@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import getFriendlyURL from '../../../../packages/workbox-core/_private/getFriendlyURL.mjs';
+import {getFriendlyURL} from '../../../../packages/workbox-core/_private/getFriendlyURL.mjs';
 
 describe(`[workbox-core] getFriendlyURL()`, function() {
   it(`should return short URL for local origin '/'`, function() {

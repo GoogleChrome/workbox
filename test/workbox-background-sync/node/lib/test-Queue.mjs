@@ -23,7 +23,7 @@ import sinon from 'sinon';
 import expectError from '../../../../infra/testing/expectError';
 import {DB_NAME, OBJECT_STORE_NAME} from
     '../../../../packages/workbox-background-sync/utils/constants.mjs';
-import {DBWrapper} from '../../../../packages/workbox-core/_private.mjs';
+import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 import {resetEventListeners} from
     '../../../../infra/testing/sw-env-mocks/event-listeners.js';
 

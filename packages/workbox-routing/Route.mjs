@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import {assert} from 'workbox-core/_private.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
 
 import {defaultMethod, validMethods} from './utils/constants.mjs';
 import normalizeHandler from './utils/normalizeHandler.mjs';

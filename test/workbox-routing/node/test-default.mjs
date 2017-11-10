@@ -6,7 +6,7 @@ import expectError from '../../../infra/testing/expectError';
 import {NavigationRoute} from '../../../packages/workbox-routing/NavigationRoute.mjs';
 import {RegExpRoute} from '../../../packages/workbox-routing/RegExpRoute.mjs';
 import {Route} from '../../../packages/workbox-routing/Route.mjs';
-import {cacheNames} from '../../../packages/workbox-core/_private.mjs';
+import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
 import {devOnly} from '../../../infra/testing/env-it';
 
 describe(`[workbox-routing] Default Router`, function() {

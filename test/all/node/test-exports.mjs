@@ -20,7 +20,7 @@ describe(`[all] Test Exports of Each Module`, function() {
           break;
         default:
           if (!(expectedExportName in allExports)) {
-            throw new Error(`Unable to find export for workbox.*.${expectedExportName}`);
+            throw new Error(`Unable to find export for workbox.*.${expectedExportName} in ${packagePath}`);
           }
           break;
       }

@@ -14,16 +14,14 @@
   limitations under the License.
 */
 
-import {
-  WorkboxError,
-  assert,
-  cacheNames,
-  logger,
-} from 'workbox-core/_private.mjs';
+import {NavigationRoute} from './NavigationRoute.mjs';
+import {RegExpRoute} from './RegExpRoute.mjs';
 import {Router} from './Router.mjs';
 import {Route} from './Route.mjs';
-import {RegExpRoute} from './RegExpRoute.mjs';
-import {NavigationRoute} from './NavigationRoute.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
 import './_version.mjs';
 
 if (process.env.NODE_ENV !== 'production') {

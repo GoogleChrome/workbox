@@ -16,12 +16,8 @@
 
 import '../_version.mjs';
 
-const getFriendlyURL = (url) => {
-  const urlObj = new URL(url, location);
-  if (urlObj.origin === location.origin) {
-    return urlObj.pathname;
-  }
-  return urlObj.href;
+export default {
+  filter: (plugins, callbackname) => {
+    return plugins.filter((plugin) => callbackname in plugin);
+  },
 };
-
-export {getFriendlyURL};

@@ -16,12 +16,10 @@
 
 import '../_version.mjs';
 
-const getFriendlyURL = (url) => {
-  const urlObj = new URL(url, location);
-  if (urlObj.origin === location.origin) {
-    return urlObj.pathname;
-  }
-  return urlObj.href;
+export default {
+  CACHE_DID_UPDATE: 'cacheDidUpdate',
+  CACHE_WILL_UPDATE: 'cacheWillUpdate',
+  CACHED_RESPONSE_WILL_BE_USED: 'cachedResponseWillBeUsed',
+  FETCH_DID_FAIL: 'fetchDidFail',
+  REQUEST_WILL_FETCH: 'requestWillFetch',
 };
-
-export {getFriendlyURL};

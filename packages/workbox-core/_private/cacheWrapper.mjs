@@ -14,8 +14,10 @@
   limitations under the License.
 */
 
-import logger from './logger.mjs';
-import getFriendlyURL from '../_private/getFriendlyURL.mjs';
+import {logger} from './logger.mjs';
+import {getFriendlyURL} from '../_private/getFriendlyURL.mjs';
+import pluginEvents from '../models/pluginEvents.mjs';
+import pluginUtils from '../utils/pluginUtils.mjs';
 import '../_version.mjs';
 
 /**
@@ -43,13 +45,10 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
 
   const cache = await caches.open(cacheName);
 
-  const cacheDidUpdateName = 'cacheDidUpdate';
-  const updateCbs = plugins.filter((plugin) => {
-    return plugin[cacheDidUpdateName];
-  })
-  .map((plugin) => plugin[cacheDidUpdateName]);
+  const updatePlugins = pluginUtils.filter(
+    plugins, pluginEvents.CACHE_DID_UPDATE);
 
-  let oldResponse = updateCbs.length > 0 ?
+  let oldResponse = updatePlugins.length > 0 ?
     await matchWrapper(cacheName, request) : null;
 
   if (process.env.NODE_ENV !== 'production') {
@@ -61,8 +60,8 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
   // cacheDidUpdate, wait until the cache is updated.
   await cache.put(request, responseToCache);
 
-  for (let cb of updateCbs) {
-    await cb({
+  for (let plugin of updatePlugins) {
+    await plugin[pluginEvents.CACHE_DID_UPDATE].call(plugin, {
       cacheName,
       request,
       oldResponse,
@@ -95,14 +94,14 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
     }
   }
   for (let plugin of plugins) {
-    const cb = plugin.cachedResponseWillBeUsed;
-    if (cb) {
-      cachedResponse = await cb({
-        cacheName,
-        request,
-        matchOptions,
-        cachedResponse,
-      });
+    if (pluginEvents.CACHED_RESPONSE_WILL_BE_USED in plugin) {
+      cachedResponse = await plugin[pluginEvents.CACHED_RESPONSE_WILL_BE_USED]
+        .call(plugin, {
+          cacheName,
+          request,
+          matchOptions,
+          cachedResponse,
+        });
     }
   }
   return cachedResponse;
@@ -124,13 +123,13 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
   let responseToCache = response;
   let pluginsUsed = false;
   for (let plugin of plugins) {
-    const cb = plugin.cacheWillUpdate;
-    if (cb) {
+    if (pluginEvents.CACHE_WILL_UPDATE in plugin) {
       pluginsUsed = true;
-      responseToCache = await cb({
-        request,
-        response: responseToCache,
-      });
+      responseToCache = await plugin[pluginEvents.CACHE_WILL_UPDATE]
+        .call(plugin, {
+          request,
+          response: responseToCache,
+        });
     }
   }
 
@@ -141,7 +140,9 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
   return responseToCache;
 };
 
-export default {
+const exports = {
   put: putWrapper,
   match: matchWrapper,
 };
+
+export {exports as cacheWrapper};

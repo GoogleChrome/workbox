@@ -14,9 +14,11 @@
   limitations under the License.
 */
 
-import WorkboxError from './WorkboxError.mjs';
-import logger from './logger.mjs';
-import getFriendlyURL from '../_private/getFriendlyURL.mjs';
+import {WorkboxError} from './WorkboxError.mjs';
+import {logger} from './logger.mjs';
+import {getFriendlyURL} from '../_private/getFriendlyURL.mjs';
+import pluginEvents from '../models/pluginEvents.mjs';
+import pluginUtils from '../utils/pluginUtils.mjs';
 import '../_version.mjs';
 
 /**
@@ -40,23 +42,19 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   // TODO Move to assertion
   // assert.isInstance({request}, Request);
 
-  const fetchDidFailName = 'fetchDidFail';
-  const failedFetchCbs = plugins.filter((plugin) => {
-    return plugin[fetchDidFailName];
-  })
-  .map((plugin) => plugin[fetchDidFailName]);
+  const failedFetchPlugins = pluginUtils.filter(
+    plugins, pluginEvents.FETCH_DID_FAIL);
 
   // If there is a fetchDidFail plugin, we need to save a clone of the
   // original request before it's either modified by a requestWillFetch
   // plugin or before the original request's body is consumed via fetch().
-  const originalRequest = failedFetchCbs.length > 0 ?
+  const originalRequest = failedFetchPlugins.length > 0 ?
     request.clone() : null;
 
   try {
     for (let plugin of plugins) {
-      const cb = plugin.requestWillFetch;
-      if (cb) {
-        request = await cb({
+      if (pluginEvents.REQUEST_WILL_FETCH in plugin) {
+        request = await plugin[pluginEvents.REQUEST_WILL_FETCH].call(plugin, {
           request: request.clone(),
         });
 
@@ -91,8 +89,8 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
       `'${getFriendlyURL(request.url)}' threw an error.`, err);
     }
 
-    for (let cb of failedFetchCbs) {
-      await cb({
+    for (let plugin of failedFetchPlugins) {
+      await plugin[pluginEvents.FETCH_DID_FAIL].call(plugin, {
         originalRequest: originalRequest.clone(),
         request: pluginFilteredRequest.clone(),
       });
@@ -102,6 +100,8 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   }
 };
 
-export default {
+const exports = {
   fetch: wrappedFetch,
 };
+
+export {exports as fetchWrapper};

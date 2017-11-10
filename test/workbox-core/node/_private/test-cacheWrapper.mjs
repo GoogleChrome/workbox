@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import cacheWrapper from '../../../../packages/workbox-core/_private/cacheWrapper.mjs';
+import {cacheWrapper} from '../../../../packages/workbox-core/_private/cacheWrapper.mjs';
 
 describe(`workbox-core cacheWrapper`, function() {
   let sandbox;
