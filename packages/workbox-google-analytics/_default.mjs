@@ -34,9 +34,10 @@ import './_version.mjs';
 /**
  * Promisifies the FileReader API to await a text response from a Blob.
  *
- * @private
  * @param {Blob} blob
  * @return {Promise<string>}
+ *
+ * @private
  */
 const getTextFromBlob = (blob) => {
   return new Promise((resolve, reject) => {
@@ -53,9 +54,10 @@ const getTextFromBlob = (blob) => {
  * `qt` param based on the current time, as well as applies any other
  * user-defined hit modifications.
  *
- * @private
  * @param {Object} config See workbox.googleAnalytics.initialize.
  * @return {Function} The requestWillDequeu callback function.
+ *
+ * @private
  */
 const createRequestWillReplayCallback = (config) => {
   return async ({url, timestamp, requestInit}) => {
@@ -96,9 +98,10 @@ const createRequestWillReplayCallback = (config) => {
 /**
  * Creates GET and POST routes to catch failed Measurement Protocol hits.
  *
- * @private
  * @param {Queue} queue
  * @return {Array<Route>} The created routes.
+ *
+ * @private
  */
 const createCollectRoutes = (queue) => {
   const match = ({url}) => url.hostname === GOOGLE_ANALYTICS_HOST &&
@@ -117,9 +120,10 @@ const createCollectRoutes = (queue) => {
 /**
  * Creates a route with a network first strategy for the analytics.js script.
  *
- * @private
  * @param {string} cacheName
  * @return {Route} The created route.
+ *
+ * @private
  */
 const createAnalyticsJsRoute = (cacheName) => {
   const match = ({url}) => url.hostname === GOOGLE_ANALYTICS_HOST &&
@@ -132,9 +136,10 @@ const createAnalyticsJsRoute = (cacheName) => {
 /**
  * Creates a route with a network first strategy for the gtag.js script.
  *
- * @private
  * @param {string} cacheName
  * @return {Route} The created route.
+ *
+ * @private
  */
 const createGtagJsRoute = (cacheName) => {
   const match = ({url}) => url.hostname === GTM_HOST &&
@@ -157,7 +162,8 @@ const createGtagJsRoute = (cacheName) => {
  *     the hit parameters prior to replaying
  *     the hit. The function is invoked with the original hit's URLSearchParams
  *     object as its only argument.
- * @memberof module:workbox-google-analytics
+ *
+ * @memberof workbox.googleAnalytics
  */
 const initialize = (options = {}) => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);

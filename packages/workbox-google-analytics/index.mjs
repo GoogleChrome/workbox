@@ -16,7 +16,7 @@
 import './_version.mjs';
 
 /**
- * @module workbox-google-analytics
+ * @namespace workbox.googleAnalytics
  */
 
 export * from './_default.mjs';
