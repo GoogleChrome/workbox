@@ -13,8 +13,8 @@
  limitations under the License.
 */
 
-import {assert, logger} from 'workbox-core/_private.mjs';
-
+import {assert} from 'workbox-core/_private/assert.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
 import {Route} from './Route.mjs';
 import './_version.mjs';
 

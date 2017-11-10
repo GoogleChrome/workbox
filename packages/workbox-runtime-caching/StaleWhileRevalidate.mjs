@@ -13,13 +13,11 @@
  limitations under the License.
 */
 
-import {
-  cacheNames,
-  cacheWrapper,
-  fetchWrapper,
-  logger,
-  assert,
-} from 'workbox-core/_private.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
+import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
 
 import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';

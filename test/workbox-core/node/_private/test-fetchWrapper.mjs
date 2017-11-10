@@ -3,7 +3,7 @@ import sinon from 'sinon';
 
 import expectError from '../../../../infra/testing/expectError';
 
-import fetchWrapper from '../../../../packages/workbox-core/_private/fetchWrapper.mjs';
+import {fetchWrapper} from '../../../../packages/workbox-core/_private/fetchWrapper.mjs';
 
 describe(`workbox-core fetchWrapper`, function() {
   let sandbox;

@@ -14,12 +14,10 @@
   limitations under the License.
 */
 
-import {
-  assert,
-  cacheNames,
-  logger,
-  getFriendlyURL,
-} from 'workbox-core/_private.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import PrecacheController from './controllers/PrecacheController.mjs';
 import './_version.mjs';
 

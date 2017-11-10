@@ -2,7 +2,7 @@ import {reset} from 'shelving-mock-indexeddb';
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import DBWrapper from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
+import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 
 
 const catchAsyncError = async (promiseOrFn) => {

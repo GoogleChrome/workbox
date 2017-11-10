@@ -28,26 +28,40 @@ const ERROR_NO_NAMSPACE = oneLine`
 // This makes Rollup assume workbox-* will be added to the global
 // scope and replace references with the core namespace
 const globals = (moduleId) => {
-  const splitModuleId = moduleId.split('/');
-  if (splitModuleId[0].indexOf('workbox-') !== 0) {
+  const splitImportPath = moduleId.split('/');
+  if (splitImportPath[0].indexOf('workbox-') !== 0) {
     throw new Error(`Unknown global module ID: ${moduleId}`);
   }
 
-  const packageName = splitModuleId.shift();
+  const packageName = splitImportPath.shift();
   const packagePath = path.join(__dirname, '..', '..', 'packages', packageName);
-  const namespacePath = splitModuleId.map((modulePiece) => {
+  const namespacePathParts = splitImportPath.map((importPathPiece) => {
     // The browser namespace will need the file extension removed
-    return path.basename(modulePiece, path.extname(modulePiece));
-  }).join('.');
+    return path.basename(importPathPiece, path.extname(importPathPiece));
+  });
 
-  if (splitModuleId.length === 0 || splitModuleId.length > 1) {
+  let additionalNamespace;
+  if (namespacePathParts.length === 0) {
     // Tried to pull in default export of module - this isn't allowed.
     // A specific file must be referenced
     throw new Error(oneLine`
-      You cannot use a module directly - you must specify a public top-level
+      You cannot use a module directly - you must specify
       file, this is to force a best practice for tree shaking (i.e. only
       pulling in what you use). Please fix the import: '${moduleId}'
     `);
+  }
+
+  if (namespacePathParts.length > 1) {
+    if (namespacePathParts[0] !== '_private' || namespacePathParts.length > 2) {
+      // Tried to pull in default export of module - this isn't allowed.
+    // A specific file must be referenced
+    throw new Error(oneLine`
+      You cannot use nested files. It must be a top level (and public) file
+      or a file under '_private' in a module. Please fix the import:
+      '${moduleId}'
+    `);
+    }
+    additionalNamespace = namespacePathParts[0];
   }
 
   // Get a package's browserNamespace so we know where it will be
@@ -56,8 +70,12 @@ const globals = (moduleId) => {
     const pkg = require(path.join(packagePath, 'package.json'));
     return [
       pkg.workbox.browserNamespace,
-      namespacePath,
-    ].join('.');
+      additionalNamespace,
+    ]
+    .filter((value) => {
+      return (value && value.length > 0);
+    })
+    .join('.');
   } catch (err) {
     logHelper.error(`Unable to get browserNamespace for package: ` +
       `'${packageName}'`);

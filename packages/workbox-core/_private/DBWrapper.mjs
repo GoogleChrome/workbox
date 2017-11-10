@@ -300,4 +300,4 @@ class DBWrapper {
 // or global basis.
 DBWrapper.prototype.OPEN_TIMEOUT = 2000;
 
-export default DBWrapper;
+export {DBWrapper};

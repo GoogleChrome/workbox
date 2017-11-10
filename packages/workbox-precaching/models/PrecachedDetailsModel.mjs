@@ -14,7 +14,8 @@
   limitations under the License.
 */
 
-import {DBWrapper, cacheNames} from 'workbox-core/_private.mjs';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import '../_version.mjs';
 
 // Allows minifier to mangle this name

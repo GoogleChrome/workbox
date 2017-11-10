@@ -30,22 +30,23 @@ const _createCacheName = (cacheName) => {
     .join('-');
 };
 
-export const updateDetails = (details) => {
-  Object.keys(_cacheNameDetails).forEach((key) => {
-    if (typeof details[key] !== 'undefined') {
-      _cacheNameDetails[key] = details[key];
-    }
-  });
+const exports = {
+  updateDetails: (details) => {
+    Object.keys(_cacheNameDetails).forEach((key) => {
+      if (typeof details[key] !== 'undefined') {
+        _cacheNameDetails[key] = details[key];
+      }
+    });
+  },
+  getGoogleAnalyticsName: (userCacheName) => {
+    return userCacheName || _createCacheName(_cacheNameDetails.googleAnalytics);
+  },
+  getPrecacheName: (userCacheName) => {
+    return userCacheName || _createCacheName(_cacheNameDetails.precache);
+  },
+  getRuntimeName: (userCacheName) => {
+    return userCacheName || _createCacheName(_cacheNameDetails.runtime);
+  },
 };
 
-export const getGoogleAnalyticsName = (userCacheName) => {
-  return userCacheName || _createCacheName(_cacheNameDetails.googleAnalytics);
-};
-
-export const getPrecacheName = (userCacheName) => {
-  return userCacheName || _createCacheName(_cacheNameDetails.precache);
-};
-
-export const getRuntimeName = (userCacheName) => {
-  return userCacheName || _createCacheName(_cacheNameDetails.runtime);
-};
+export {exports as cacheNames};

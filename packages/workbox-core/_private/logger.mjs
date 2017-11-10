@@ -88,4 +88,4 @@ Object.keys(levelToColor).forEach(
 export {getDefaultLogLevel};
 export {setLoggerLevel};
 export {getLoggerLevel};
-export default defaultExport;
+export {defaultExport as logger};

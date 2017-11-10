@@ -15,14 +15,14 @@
 */
 
 // We either expose defaults or we expose every named export.
-import assert from './_private/assert.mjs';
-import cacheWrapper from './_private/cacheWrapper.mjs';
-import fetchWrapper from './_private/fetchWrapper.mjs';
-import DBWrapper from './_private/DBWrapper.mjs';
-import logger from './_private/logger.mjs';
-import WorkboxError from './_private/WorkboxError.mjs';
-import * as cacheNames from './_private/cacheNames.mjs';
-import getFriendlyURL from './_private/getFriendlyURL.mjs';
+import {assert} from './_private/assert.mjs';
+import {cacheWrapper} from './_private/cacheWrapper.mjs';
+import {fetchWrapper} from './_private/fetchWrapper.mjs';
+import {DBWrapper} from './_private/DBWrapper.mjs';
+import {logger} from './_private/logger.mjs';
+import {WorkboxError} from './_private/WorkboxError.mjs';
+import {cacheNames} from './_private/cacheNames.mjs';
+import {getFriendlyURL} from './_private/getFriendlyURL.mjs';
 import './_version.mjs';
 
 export {

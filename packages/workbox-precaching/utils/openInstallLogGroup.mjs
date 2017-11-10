@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import {logger} from 'workbox-core/_private.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
 import '../_version.mjs';
 
 /**

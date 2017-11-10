@@ -11,8 +11,8 @@
  limitations under the License.
 */
 
-import {WorkboxError, assert} from 'workbox-core/_private.mjs';
-
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {CacheExpiration} from './CacheExpiration.mjs';
 import './_version.mjs';
 

@@ -14,7 +14,9 @@
   limitations under the License.
 */
 
-import {assert, WorkboxError, cacheNames} from 'workbox-core/_private.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {Router} from './Router.mjs';
 import {Route} from './Route.mjs';
 import {RegExpRoute} from './RegExpRoute.mjs';

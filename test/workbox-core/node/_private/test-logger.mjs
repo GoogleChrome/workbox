@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 import {devOnly, prodOnly} from '../../../../infra/testing/env-it.js';
 import LOG_LEVELS from '../../../../packages/workbox-core/models/LogLevels.mjs';
-import logger from '../../../../packages/workbox-core/_private/logger.mjs';
+import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
 import {setLoggerLevel, getDefaultLogLevel} from '../../../../packages/workbox-core/_private/logger.mjs';
 
 describe(`workbox-core logger`, function() {

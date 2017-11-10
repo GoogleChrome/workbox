@@ -2,7 +2,7 @@ import clearRequire from 'clear-require';
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import assert from '../../../packages/workbox-core/_private/assert.mjs';
+import {assert} from '../../../packages/workbox-core/_private/assert.mjs';
 import {devOnly} from '../../../infra/testing/env-it';
 import expectError from '../../../infra/testing/expectError';
 

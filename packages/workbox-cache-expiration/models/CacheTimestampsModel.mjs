@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import {DBWrapper} from 'workbox-core/_private.mjs';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
 import '../_version.mjs';
 
 const URL_KEY = 'url';

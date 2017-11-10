@@ -15,7 +15,7 @@
 
 import {Queue} from 'workbox-background-sync/Queue.mjs';
 import {QueuePlugin} from 'workbox-background-sync/QueuePlugin.mjs';
-import {cacheNames} from 'workbox-core/_private.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {Route} from 'workbox-routing/Route.mjs';
 import {Router} from 'workbox-routing/Router.mjs';
 import {NetworkFirst} from 'workbox-runtime-caching/NetworkFirst.mjs';

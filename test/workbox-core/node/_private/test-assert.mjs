@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 import expectError from '../../../../infra/testing/expectError';
 import {devOnly, prodOnly} from '../../../../infra/testing/env-it';
-import assert from '../../../../packages/workbox-core/_private/assert';
+import {assert} from '../../../../packages/workbox-core/_private/assert';
 
 describe(`workbox-core  assert`, function() {
   describe(`Production Environment`, function() {
