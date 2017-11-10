@@ -29,6 +29,10 @@ const {setReadFile} = require('./lib/utils/read-file');
  *
  * @module workbox-webpack-plugin
  */
+
+/**
+ * @memberof module:workbox-webpack-plugin
+ */
 class WorkboxWebpackPlugin {
   /**
    * Creates an instance of WorkboxWebpackPlugin.
@@ -55,9 +59,10 @@ class WorkboxWebpackPlugin {
   }
 
   /**
-   * @private
    * @return {Object} All workbox configuration options that can be accepted
    * by {@link module:workbox-build.generateSWString}
+   *
+   * @private
    */
   get generateSWStringOptions() {
     const {
@@ -75,8 +80,9 @@ class WorkboxWebpackPlugin {
   }
 
   /**
-   * @private
    * @param {Object} [compiler] default compiler object passed from webpack
+   *
+   * @private
    */
   apply(compiler) {
     /**

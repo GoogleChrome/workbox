@@ -24,6 +24,6 @@
  * @param {Array<string>} paths File paths to join
  * @return {string} Joined file path
  *
- * @memberof module:workbox-webpack-plugin
+ * @private
  */
 module.exports = (...paths) => paths.join('');

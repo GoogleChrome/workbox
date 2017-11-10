@@ -95,7 +95,7 @@ function mapAssetsToChunkHash(chunks) {
  * @param {module:workbox-webpack-plugin.Configuration} config
  * @return {Array<module:workbox-build.ManifestEntry>}
  *
- * @memberof module:workbox-webpack-plugin
+ * @private
  */
 module.exports = (compiler, compilation, config) => {
   const {publicPath} = compilation.options.output;
@@ -123,6 +123,8 @@ module.exports = (compiler, compilation, config) => {
    * otherwise we use all of webpack's compilation.assets.
    *
    * @type {Array<string>}
+   *
+   * @private
    */
   const manifestFiles = whitelist
     ? Object.keys(assetsToChunkHash)

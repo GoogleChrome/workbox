@@ -17,6 +17,7 @@
 /**
  * The variable name that workbox-sw expects manifest entries to be assigned.
  * @type {String}
+ * @private
  */
 const PRECACHE_MANIFEST_VAR = '__precacheManifest';
 
@@ -28,7 +29,7 @@ const PRECACHE_MANIFEST_VAR = '__precacheManifest';
  * @param {Array<module:workbox-build.ManifestEntry>} manifestEntries
  * @return {Promise<string>} service worker manifest file string
  *
- * @memberof module:workbox-webpack-plugin
+ * @private
  */
 module.exports = (manifestEntries) => {
   const entriesJson = JSON.stringify(manifestEntries, null, 2);

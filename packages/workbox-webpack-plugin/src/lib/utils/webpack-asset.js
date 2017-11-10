@@ -29,7 +29,7 @@
  *           webpack.
  * @property {Function} size Returns the byte size of the asset `source` value.
  *
- * @memberof module:workbox-webpack-plugin
+ * @private
  */
 
 /**
@@ -43,7 +43,7 @@
  *        written to the file system by webpack.
  * @return {WebpackAsset}
  *
- * @memberof module:workbox-webpack-plugin
+ * @private
  */
 module.exports = (asset) => {
   return {
