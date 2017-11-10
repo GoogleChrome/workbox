@@ -32,7 +32,7 @@ const {readFile} = require('./utils/read-file');
  * @param {string} [swSrc] The path to existing service worker.
  * @return {Promise<string>} The generated service worker string.
  *
- * @memberof module:workbox-webpack-plugin
+ * @private
  */
 module.exports = async (config, swSrc) => {
   if (!swSrc) {

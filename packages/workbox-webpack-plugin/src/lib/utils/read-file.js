@@ -25,8 +25,9 @@ let readFileFn;
 /**
  * Sets the read file function.
  *
- * @private
  * @param {Function} fn The function to use.
+ *
+ * @private
  */
 function setReadFile(fn) {
   readFileFn = fn;
@@ -35,9 +36,10 @@ function setReadFile(fn) {
 /**
  * A wrapper that calls readFileFn and returns a promise for the contents.
  *
- * @private
  * @param {string} filePath The file to read.
  * @return {Promise<string>} The contents of the file.
+ *
+ * @private
  */
 function readFile(filePath) {
   return new Promise((resolve, reject) => {

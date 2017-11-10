@@ -23,7 +23,9 @@ const copyWorkboxSW = require('./lib/utils/copy-workbox-sw');
 const {setReadFile} = require('./lib/utils/read-file');
 
 /**
- * Use the instance of this in the
+ * This module exports the `WorkboxWebpackPlugin`.
+ *
+ * Use an instance of `WorkboxWebpackPlugin` in the
  * [`plugins` array](https://webpack.js.org/concepts/plugins/#usage) of a
  * webpack config.
  *
@@ -55,9 +57,10 @@ class WorkboxWebpackPlugin {
   }
 
   /**
-   * @private
    * @return {Object} All workbox configuration options that can be accepted
    * by {@link module:workbox-build.generateSWString}
+   *
+   * @private
    */
   get generateSWStringOptions() {
     const {
@@ -75,8 +78,9 @@ class WorkboxWebpackPlugin {
   }
 
   /**
-   * @private
    * @param {Object} [compiler] default compiler object passed from webpack
+   *
+   * @private
    */
   apply(compiler) {
     /**
