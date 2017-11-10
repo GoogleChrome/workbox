@@ -134,6 +134,18 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
   }
 
   if (!pluginsUsed) {
+    if (process.env.NODE_ENV !== 'production') {
+      if (!responseToCache.ok) {
+        if (responseToCache.status === 0) {
+          logger.warn(`The response for '${request.url}' is an opaque ` +
+            `response. Workbox will not cache this by default.`);
+        } else {
+          logger.debug(`The response for '${request.url}' returned ` +
+          `a status code of '${response.status}' and won't be cached as a ` +
+          `result.`);
+        }
+      }
+    }
     responseToCache = responseToCache.ok ? responseToCache : null;
   }
 
