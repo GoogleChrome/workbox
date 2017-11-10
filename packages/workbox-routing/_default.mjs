@@ -62,6 +62,8 @@ class DefaultRouter extends Router {
     let route;
 
     if (typeof capture === 'string') {
+      const captureUrl = new URL(capture, location);
+
       if (process.env.NODE_ENV !== 'production') {
         if (!(capture.startsWith('/') || capture.startsWith('http'))) {
           throw new WorkboxError('invalid-string', {
@@ -72,49 +74,35 @@ class DefaultRouter extends Router {
           });
         }
 
-        // We want to only prohibit these characters in the pathname portion of
-        // the URL.
+        // We want to check if Express-style wildcards are in the pathname only.
+        // TODO: Remove this log message in v4.
         const valueToCheck = capture.startsWith('http') ?
-          new URL(capture).pathname :
+          captureUrl.pathname :
           capture;
         // See https://github.com/pillarjs/path-to-regexp#parameters
         const wildcards = '[*:?+]';
         if (valueToCheck.match(new RegExp(`${wildcards}`))) {
-          throw new WorkboxError('invalid-wildcards', {
-            moduleName: 'workbox-routing',
-            className: 'DefaultRouter',
-            funcName: 'registerRoute',
-            paramName: 'capture',
-            wildcards,
-          });
+          logger.debug(
+            `The '$capture' parameter contains an Express-style wildcard ` +
+            `character (${wildcards}). Strings are now always interpreted as ` +
+            `exact matches; use a RegExp for partial or wildcard matches.`
+          );
         }
       }
 
       const matchCallback = ({url}) => {
-        // If we have a path-only capture pattern...
-        if (capture.startsWith('/')) {
-          // ...and it's a match...
-          if (url.pathname === capture) {
-            // ...and it's same-origin, return true;
-            if (url.origin === location.origin) {
-              return true;
-            }
-            // ...otherwise, if it's cross-origin, log a debug message.
-            if (process.env.NODE_ENV !== 'production') {
-              logger.debug(
-                `${capture} only partially matches the cross-origin URL ` +
-                `${url}. This route will only handle cross-origin requests ` +
-                `if they match the entire URL.`
-              );
-            }
+        if (process.env.NODE_ENV !== 'production') {
+          if ((url.pathname === captureUrl.pathname) &&
+              (url.origin !== captureUrl.origin)) {
+            logger.debug(
+              `${capture} only partially matches the cross-origin URL ` +
+              `${url}. This route will only handle cross-origin requests ` +
+              `if they match the entire URL.`
+            );
           }
-          // If there is no path match, or a cross-origin match, return false.
-          return false;
         }
 
-        // If it's an absolute URL capture pattern,
-        // then just return true if the URLs are the same.
-        return url.href === capture;
+        return url.href === captureUrl.href;
       };
 
       route = new Route(matchCallback, handler, method);

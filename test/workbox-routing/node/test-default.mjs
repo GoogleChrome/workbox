@@ -3,7 +3,6 @@ import {expect} from 'chai';
 
 import defaultRouter from '../../../packages/workbox-routing/_default.mjs';
 import expectError from '../../../infra/testing/expectError';
-import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 import {NavigationRoute} from '../../../packages/workbox-routing/NavigationRoute.mjs';
 import {RegExpRoute} from '../../../packages/workbox-routing/RegExpRoute.mjs';
 import {Route} from '../../../packages/workbox-routing/Route.mjs';
@@ -33,21 +32,6 @@ describe(`[workbox-routing] Default Router`, function() {
           expect(error.details).to.have.property('paramName').that.equals('capture');
         }
       );
-    });
-
-    const wildcards = ['?', '*', ':', '+'];
-    generateTestVariants(`should throw when a wildcard is used in the string`, wildcards, async function(variant) {
-      if (process.env.NODE_ENV === 'production') return this.skip();
-
-      await expectError(
-        () => defaultRouter.registerRoute(`/test/${variant}`, sandbox.stub()),
-        'invalid-wildcards',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-          expect(error.details).to.have.property('className').that.equals('DefaultRouter');
-          expect(error.details).to.have.property('funcName').that.equals('registerRoute');
-          expect(error.details).to.have.property('paramName').that.equals('capture');
-        });
     });
 
     it(`should handle a string for input and return a route that can be unregistered.`, async function() {

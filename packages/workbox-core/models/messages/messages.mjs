@@ -167,12 +167,4 @@ export default {
       `Please see the docs for ${moduleName}.${className}.${funcName}() for ` +
       `more info.`;
   },
-
-  'invalid-wildcards': ({moduleName, className, funcName, paramName,
-                         wildcards}) => {
-    return `The '${paramName}' parameter contains an Express-style wildcard ` +
-    `character (${wildcards}), which is no longer supported. Strings are now ` +
-    `exact matches; use a RegExp for partial or wildcard matches. Please ` +
-    `see the docs for ${moduleName}.${className}.${funcName}() for more info.`;
-  },
 };
