@@ -13,6 +13,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
   const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw');
   const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
+  const STRING_URL_PATTERN = '/test';
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
     swDest: tempy.file(),
@@ -406,9 +407,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       }
     });
 
-    // Skipping until ExpressRoute is implemented.
-    it.skip(`should support a single string 'urlPattern' and a string 'handler'`, async function() {
-      const STRING_URL_PATTERN = 'test';
+    it(`should support a single string 'urlPattern' and a string 'handler'`, async function() {
       const swDest = tempy.file();
       const runtimeCaching = [{
         urlPattern: STRING_URL_PATTERN,

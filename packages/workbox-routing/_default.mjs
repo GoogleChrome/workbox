@@ -14,7 +14,12 @@
   limitations under the License.
 */
 
-import {assert, WorkboxError, cacheNames} from 'workbox-core/_private.mjs';
+import {
+  WorkboxError,
+  assert,
+  cacheNames,
+  logger,
+} from 'workbox-core/_private.mjs';
 import {Router} from './Router.mjs';
 import {Route} from './Route.mjs';
 import {RegExpRoute} from './RegExpRoute.mjs';
@@ -30,7 +35,7 @@ if (process.env.NODE_ENV !== 'production') {
  */
 class DefaultRouter extends Router {
   /**
-   * Easily register a Regular Expression or function with a caching
+   * Easily register a RegExp, string, or function with a caching
    * strategy to the Router.
    *
    * This method will generate a Route for you if needed and
@@ -39,6 +44,7 @@ class DefaultRouter extends Router {
    *
    * @param {
    * RegExp|
+   * string|
    * workbox.routing.Route~matchCallback|
    * workbox.routing.Route
    * } capture
@@ -54,20 +60,65 @@ class DefaultRouter extends Router {
    */
   registerRoute(capture, handler, method = 'GET') {
     let route;
-    // TODO Should we allow Express Route?
-    // TODO If so - don't forget to add 'string' to params in jsdoc.
-    /** if (typeof capture === 'string') {
-      if (capture.length === 0) {
-        throw new WorkboxError('empty-express-string', {
-          moduleName: 'workbox-routing',
-          class: 'DefaultRouter',
-          func: 'registerRoute',
-          paramName: 'capture',
-        });
+
+    if (typeof capture === 'string') {
+      if (process.env.NODE_ENV !== 'production') {
+        if (!(capture.startsWith('/') || capture.startsWith('http'))) {
+          throw new WorkboxError('invalid-string', {
+            moduleName: 'workbox-routing',
+            className: 'DefaultRouter',
+            funcName: 'registerRoute',
+            paramName: 'capture',
+          });
+        }
+
+        // We want to only prohibit these characters in the pathname portion of
+        // the URL.
+        const valueToCheck = capture.startsWith('http') ?
+          new URL(capture).pathname :
+          capture;
+        // See https://github.com/pillarjs/path-to-regexp#parameters
+        const wildcards = '[*:?+]';
+        if (valueToCheck.match(new RegExp(`${wildcards}`))) {
+          throw new WorkboxError('invalid-wildcards', {
+            moduleName: 'workbox-routing',
+            className: 'DefaultRouter',
+            funcName: 'registerRoute',
+            paramName: 'capture',
+            wildcards,
+          });
+        }
       }
-      route = new ExpressRoute(capture, handler, method);
-    } **/
-    if (capture instanceof RegExp) {
+
+      const matchCallback = ({url}) => {
+        // If we have a path-only capture pattern...
+        if (capture.startsWith('/')) {
+          // ...and it's a match...
+          if (url.pathname === capture) {
+            // ...and it's same-origin, return true;
+            if (url.origin === location.origin) {
+              return true;
+            }
+            // ...otherwise, if it's cross-origin, log a debug message.
+            if (process.env.NODE_ENV !== 'production') {
+              logger.debug(
+                `${capture} only partially matches the cross-origin URL ` +
+                `${url}. This route will only handle cross-origin requests ` +
+                `if they match the entire URL.`
+              );
+            }
+          }
+          // If there is no path match, or a cross-origin match, return false.
+          return false;
+        }
+
+        // If it's an absolute URL capture pattern,
+        // then just return true if the URLs are the same.
+        return url.href === capture;
+      };
+
+      route = new Route(matchCallback, handler, method);
+    } else if (capture instanceof RegExp) {
       route = new RegExpRoute(capture, handler, method);
     } else if (typeof capture === 'function') {
       route = new Route(capture, handler, method);

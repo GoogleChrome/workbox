@@ -47,12 +47,9 @@ function validate(runtimeCachingOptions, convertedOptions) {
       return;
     }
 
-    const handlerName = runtimeCachingOption.handler === 'fastest' ?
-      'staleWhileRevalidate' :
-      runtimeCachingOption.handler;
     // This validation assumes that there's only going to be one call to each
     // named strategy per test.
-    const strategiesCall = globalScope.workbox.strategies[handlerName].firstCall;
+    const strategiesCall = globalScope.workbox.strategies[runtimeCachingOption.handler].firstCall;
     const strategiesOptions = strategiesCall.args[0];
 
     const expectedOptions = {};
@@ -102,7 +99,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
     validate(runtimeCachingOptions, convertedOptions);
   });
 
-  it(`should support a single option, using mostly defaults`, function() {
+  it(`should support a single option with a RegExp urlPattern, using mostly defaults`, function() {
     const runtimeCachingOptions = [{
       urlPattern: /xyz/,
       handler: 'cacheFirst',
@@ -126,7 +123,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
         },
       },
     }, {
-      urlPattern: /def/,
+      urlPattern: '/test',
       handler: 'staleWhileRevalidate',
       options: {
         cache: {
@@ -139,8 +136,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
     validate(runtimeCachingOptions, convertedOptions);
   });
 
-  // Skipping until ExpressRoute is implemented.
-  it.skip(`should support a string urlPattern, using mostly defaults`, function() {
+  it(`should support a string urlPattern, using mostly defaults`, function() {
     const runtimeCachingOptions = [{
       urlPattern: '/path/to/file',
       handler: 'cacheFirst',
