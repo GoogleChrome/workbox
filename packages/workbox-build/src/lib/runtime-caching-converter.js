@@ -71,7 +71,7 @@ module.exports = (runtimeCaching) => {
     // If it's a string, it needs to be quoted. If it's a RegExp, it should
     // be used as-is.
     const matcher = typeof entry.urlPattern === 'string' ?
-      `'${entry.urlPattern}'` :
+      JSON.stringify(entry.urlPattern) :
       entry.urlPattern;
 
     if (typeof entry.handler === 'string') {
