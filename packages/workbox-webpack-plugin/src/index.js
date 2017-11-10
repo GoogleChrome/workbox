@@ -23,15 +23,13 @@ const copyWorkboxSW = require('./lib/utils/copy-workbox-sw');
 const {setReadFile} = require('./lib/utils/read-file');
 
 /**
- * Use the instance of this in the
+ * This module exports the `WorkboxWebpackPlugin`.
+ *
+ * Use an instance of `WorkboxWebpackPlugin` in the
  * [`plugins` array](https://webpack.js.org/concepts/plugins/#usage) of a
  * webpack config.
  *
  * @module workbox-webpack-plugin
- */
-
-/**
- * @memberof module:workbox-webpack-plugin
  */
 class WorkboxWebpackPlugin {
   /**
