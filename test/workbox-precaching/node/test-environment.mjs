@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 import clearRequire from 'clear-require';
 import expectError from '../../../infra/testing/expectError';
-import assert from '../../../packages/workbox-core/_private/assert.mjs';
+import {assert} from '../../../packages/workbox-core/_private/assert.mjs';
 import {devOnly, prodOnly} from '../../../infra/testing/env-it.js';
 
 describe(`[workbox-precaching] WorkboxPrecaching`, function() {

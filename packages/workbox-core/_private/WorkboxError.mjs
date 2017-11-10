@@ -26,7 +26,7 @@ import '../_version.mjs';
  *
  * @private
  */
-export default class WorkboxError extends Error {
+class WorkboxError extends Error {
   /**
    *
    * @param {string} errorCode The error code that
@@ -44,3 +44,5 @@ export default class WorkboxError extends Error {
     this.details = details;
   }
 }
+
+export {WorkboxError};

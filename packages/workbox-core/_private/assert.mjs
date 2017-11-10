@@ -14,7 +14,7 @@
   limitations under the License.
 */
 
-import WorkboxError from '../_private/WorkboxError.mjs';
+import {WorkboxError} from '../_private/WorkboxError.mjs';
 import '../_version.mjs';
 
 /*
@@ -105,4 +105,4 @@ const finalExports = process.env.NODE_ENV === 'production' ? null : {
   isArrayOfClass,
 };
 
-export default finalExports;
+export {finalExports as assert};

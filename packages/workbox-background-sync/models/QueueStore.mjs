@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import {DBWrapper} from 'workbox-core/_private.mjs';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
 import StorableRequest from './StorableRequest.mjs';
 import {DB_NAME, OBJECT_STORE_NAME, INDEXED_PROP} from '../utils/constants.mjs';
 import '../_version.mjs';

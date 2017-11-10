@@ -2,7 +2,7 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 
 import {devOnly} from '../../../../infra/testing/env-it';
-import logger from '../../../../packages/workbox-core/_private/logger.mjs';
+import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
 import openInstallLogGroup from '../../../../packages/workbox-precaching/utils/openInstallLogGroup.mjs';
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 

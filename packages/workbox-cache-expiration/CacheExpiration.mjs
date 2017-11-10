@@ -14,8 +14,9 @@
   limitations under the License.
 */
 
-import {WorkboxError, assert, logger} from 'workbox-core/_private.mjs';
-
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
 import CacheTimestampsModel from './models/CacheTimestampsModel.mjs';
 import './_version.mjs';
 
@@ -114,13 +115,20 @@ class CacheExpiration {
     ]);
 
     if (process.env.NODE_ENV !== 'production') {
-      // TODO break apart entries deleted due to expiration vs size restraints
-      logger.groupCollapsed(
-        `Expired ${allUrls.length} entries and removed them from the ` +
-        `'${this._cacheName}' cache.`);
-      logger.log(`Expired the following URLs:`);
-      allUrls.forEach((url) => logger.log(`    ${url}`));
-      logger.groupEnd();
+      // TODO: break apart entries deleted due to expiration vs size restraints
+      if (allUrls.length > 0) {
+        logger.groupCollapsed(
+          `Expired ${allUrls.length} ` +
+          `${allUrls.length === 1 ? 'entry' : 'entries'} and removed ` +
+          `${allUrls.length === 1 ? 'it' : 'them'} from the ` +
+          `'${this._cacheName}' cache.`);
+        logger.log(
+          `Expired the following ${allUrls.length === 1 ? 'URL' : 'URLs'}:`);
+        allUrls.forEach((url) => logger.log(`    ${url}`));
+        logger.groupEnd();
+      } else {
+        logger.debug(`Cache expiration ran and found no entries to remove.`);
+      }
     }
 
     this._isRunning = false;

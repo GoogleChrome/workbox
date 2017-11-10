@@ -13,12 +13,10 @@
  limitations under the License.
 */
 
-import {
-  assert,
-  logger,
-  WorkboxError,
-  getFriendlyURL,
-} from 'workbox-core/_private.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 
 import normalizeHandler from './utils/normalizeHandler.mjs';
 import './_version.mjs';
