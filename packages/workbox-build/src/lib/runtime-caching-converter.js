@@ -67,11 +67,12 @@ module.exports = (runtimeCaching) => {
       throw new Error(errors['handler-is-required']);
     }
 
-    // TODO: Figure out our ExpressRoute story.
-    // In the meantime, we only support RegExp routes.
-    if (!(entry.urlPattern instanceof RegExp)) {
-      throw new Error(errors['only-regexp-routes-supported']);
-    }
+    // urlPattern might be either a string or a RegExp object.
+    // If it's a string, it needs to be quoted. If it's a RegExp, it should
+    // be used as-is.
+    const matcher = typeof entry.urlPattern === 'string' ?
+      JSON.stringify(entry.urlPattern) :
+      entry.urlPattern;
 
     if (typeof entry.handler === 'string') {
       const optionsString = getOptionsString(entry.options || {});
@@ -80,10 +81,10 @@ module.exports = (runtimeCaching) => {
         `workbox.strategies.${entry.handler}(${optionsString})`;
 
       return `workbox.routing.registerRoute(` +
-        `${entry.urlPattern}, ${strategyString}, '${method}');\n`;
+        `${matcher}, ${strategyString}, '${method}');\n`;
     } else if (typeof entry.handler === 'function') {
       return `workbox.routing.registerRoute(` +
-        `${entry.urlPattern}, ${entry.handler}, '${method}');\n`;
+        `${matcher}, ${entry.handler}, '${method}');\n`;
     }
   }).filter((entry) => Boolean(entry)); // Remove undefined map() return values.
 };

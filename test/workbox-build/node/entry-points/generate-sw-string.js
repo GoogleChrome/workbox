@@ -226,7 +226,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
 
   describe(`[workbox-build] behavior with 'runtimeCaching'`, function() {
     const DEFAULT_METHOD = 'GET';
-    const STRING_URL_PATTERN = 'test';
+    const STRING_URL_PATTERN = '/test';
     const REGEXP_URL_PATTERN = /test/;
     const STRING_HANDLER = 'cacheFirst';
 
@@ -278,8 +278,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       }
     });
 
-    // Skipping until ExpressRoute is implemented.
-    it.skip(`should support a single string 'urlPattern' and a string 'handler'`, async function() {
+    it(`should support a single string 'urlPattern' and a string 'handler'`, async function() {
       const runtimeCaching = [{
         urlPattern: STRING_URL_PATTERN,
         handler: STRING_HANDLER,

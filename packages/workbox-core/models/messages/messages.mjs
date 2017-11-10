@@ -66,7 +66,7 @@ export default {
                     funcName}) => {
     if (!expectedMethod || !paramName || !moduleName || !className
         || !funcName) {
-      throw new Error(`Unexpected input to 'not-a-method' error.`);
+      throw new Error(`Unexpected input to 'missing-a-method' error.`);
     }
     return `${moduleName}.${className}.${funcName}() expected the ` +
       `'${paramName}' parameter to expose a '${expectedMethod}' method.`;
@@ -128,19 +128,23 @@ export default {
     return `The route you're trying to unregister was not previously ` +
       `registered.`;
   },
+
   'duplicate-queue-name': ({name}) => {
     return `The Queue name '${name}' is already being used. ` +
         `All instances of backgroundSync.Queue must be given unique names.`;
   },
+
   'expired-test-without-max-age': ({methodName, paramName}) => {
     return `The '${methodName}()' method can only be used when the ` +
       `'${paramName}' is used in the constructor.`;
   },
+
   'unsupported-route-type': ({moduleName, className, funcName, paramName}) => {
     return `The supplied '${paramName}' parameter was an unsupported type. ` +
       `Please check the docs for ${moduleName}.${className}.${funcName} for ` +
       `valid input types.`;
   },
+
   'not-array-of-class': ({value, expectedClass,
     moduleName, className, funcName, paramName}) => {
     return `The supplied '${paramName}' parameter must be an array of ` +
@@ -148,8 +152,19 @@ export default {
       `Please check the call to ${moduleName}.${className}.${funcName}() ` +
       `to fix the issue.`;
   },
+
   'max-entries-or-age-required': ({moduleName, className, funcName}) => {
     return `You must define either config.maxEntries or config.maxAgeSeconds` +
       `in ${moduleName}.${className}.${funcName}`;
+  },
+
+  'invalid-string': ({moduleName, className, funcName, paramName}) => {
+    if (!paramName || !moduleName || !className || !funcName) {
+      throw new Error(`Unexpected input to 'invalid-string' error.`);
+    }
+    return `When using strings, the '${paramName}' parameter must start with ` +
+      `'http' (for cross-origin matches) or '/' (for same-origin matches). ` +
+      `Please see the docs for ${moduleName}.${className}.${funcName}() for ` +
+      `more info.`;
   },
 };

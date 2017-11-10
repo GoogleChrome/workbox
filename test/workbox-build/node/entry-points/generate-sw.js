@@ -356,6 +356,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
   describe(`[workbox-build] behavior with 'runtimeCaching'`, function() {
     const DEFAULT_METHOD = 'GET';
     const REGEXP_URL_PATTERN = /test/;
+    const STRING_URL_PATTERN = '/test';
     const STRING_HANDLER = 'cacheFirst';
 
     it(`should reject when 'urlPattern' is missing from 'runtimeCaching'`, async function() {
@@ -406,9 +407,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       }
     });
 
-    // Skipping until ExpressRoute is implemented.
-    it.skip(`should support a single string 'urlPattern' and a string 'handler'`, async function() {
-      const STRING_URL_PATTERN = 'test';
+    it(`should support a single string 'urlPattern' and a string 'handler'`, async function() {
       const swDest = tempy.file();
       const runtimeCaching = [{
         urlPattern: STRING_URL_PATTERN,

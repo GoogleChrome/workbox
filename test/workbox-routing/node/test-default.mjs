@@ -1,11 +1,13 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
-import expectError from '../../../infra/testing/expectError';
-import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
+
 import defaultRouter from '../../../packages/workbox-routing/_default.mjs';
+import expectError from '../../../infra/testing/expectError';
+import {NavigationRoute} from '../../../packages/workbox-routing/NavigationRoute.mjs';
 import {RegExpRoute} from '../../../packages/workbox-routing/RegExpRoute.mjs';
 import {Route} from '../../../packages/workbox-routing/Route.mjs';
-import {NavigationRoute} from '../../../packages/workbox-routing/NavigationRoute.mjs';
+import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
+import {devOnly} from '../../../infra/testing/env-it';
 
 describe(`[workbox-routing] Default Router`, function() {
   const sandbox = sinon.sandbox.create();
@@ -19,6 +21,115 @@ describe(`[workbox-routing] Default Router`, function() {
   });
 
   describe(`registerRoute()`, function() {
+    devOnly.it(`should throw when using a string that doesn't start with '/' or 'http' is used.`, async function() {
+      await expectError(
+        () => defaultRouter.registerRoute('invalid-start', sandbox.stub()),
+        'invalid-string',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+          expect(error.details).to.have.property('className').that.equals('DefaultRouter');
+          expect(error.details).to.have.property('funcName').that.equals('registerRoute');
+          expect(error.details).to.have.property('paramName').that.equals('capture');
+        }
+      );
+    });
+
+    it(`should handle a string for input and return a route that can be unregistered.`, async function() {
+      const handlerSpy = sandbox.spy();
+
+      const route = defaultRouter.registerRoute('/abc', handlerSpy);
+      expect(route).to.be.an.instanceof(Route);
+
+      const event = new FetchEvent('fetch', {
+        request: new Request(
+          new URL('/abc', self.location).toString()
+        ),
+      });
+      await defaultRouter.handleRequest(event);
+
+      expect(handlerSpy.callCount).to.equal(1);
+      expect(handlerSpy.getCall(0).args[0].event).to.equal(event);
+
+      sandbox.reset();
+
+      defaultRouter.unregisterRoute(route);
+      await defaultRouter.handleRequest(event);
+      expect(handlerSpy.callCount).to.equal(0);
+    });
+
+    it(`should handle a string for input, matching same-origin requests, and return a route that can be unregistered.`, async function() {
+      const handlerSpy = sandbox.spy();
+
+      const crossOrigin = 'https://cross-origin.example.com';
+      const pathname = '/test/path';
+
+      const route = defaultRouter.registerRoute(pathname, handlerSpy);
+      expect(route).to.be.an.instanceof(Route);
+
+      const sameOriginEvent = new FetchEvent('fetch', {
+        request: new Request(
+          new URL(pathname, self.location).toString()
+        ),
+      });
+      await defaultRouter.handleRequest(sameOriginEvent);
+
+      const sameOriginEventNotMatching = new FetchEvent('fetch', {
+        request: new Request(
+          new URL('/does/not/match', self.location).toString()
+        ),
+      });
+      await defaultRouter.handleRequest(sameOriginEventNotMatching);
+
+      const crossOriginEvent = new FetchEvent('fetch', {
+        request: new Request(
+          new URL(pathname, crossOrigin).toString()
+        ),
+      });
+      await defaultRouter.handleRequest(crossOriginEvent);
+
+      expect(handlerSpy.callCount).to.equal(1);
+      expect(handlerSpy.getCall(0).args[0].event).to.equal(sameOriginEvent);
+
+      sandbox.reset();
+
+      defaultRouter.unregisterRoute(route);
+      await defaultRouter.handleRequest(sameOriginEvent);
+      expect(handlerSpy.callCount).to.equal(0);
+    });
+
+    it(`should handle a string for input, matching cross-origin requests, and return a route that can be unregistered.`, async function() {
+      const handlerSpy = sandbox.spy();
+
+      const crossOrigin = 'https://cross-origin.example.com';
+      const pathname = '/test/path';
+
+      const route = defaultRouter.registerRoute(`${crossOrigin}${pathname}`, handlerSpy);
+      expect(route).to.be.an.instanceof(Route);
+
+      const sameOriginEvent = new FetchEvent('fetch', {
+        request: new Request(
+          new URL(pathname, self.location).toString()
+        ),
+      });
+      await defaultRouter.handleRequest(sameOriginEvent);
+
+      const crossOriginEvent = new FetchEvent('fetch', {
+        request: new Request(
+          new URL(pathname, crossOrigin).toString()
+        ),
+      });
+      await defaultRouter.handleRequest(crossOriginEvent);
+
+      expect(handlerSpy.callCount).to.equal(1);
+      expect(handlerSpy.getCall(0).args[0].event).to.equal(crossOriginEvent);
+
+      sandbox.reset();
+
+      defaultRouter.unregisterRoute(route);
+      await defaultRouter.handleRequest(crossOriginEvent);
+      expect(handlerSpy.callCount).to.equal(0);
+    });
+
     it(`should handle a regex for input and return a route that can be unregistered.`, async function() {
       const handlerSpy = sandbox.spy();
 
