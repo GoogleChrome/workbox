@@ -52,7 +52,7 @@ class AggregateSizePlugin extends PluginInterface {
       markdownWarning = oneLine`
       <h3 align="center">${markdownMoji} WARNING ${markdownMoji}</h3>
       <p align="center">
-        We are using <strong>${parseFloat(percentValue).toFixed(0)}%</strong>
+        We are using <strong>${percentString}%</strong>
         of our max size budget.
       </p>
       `;
