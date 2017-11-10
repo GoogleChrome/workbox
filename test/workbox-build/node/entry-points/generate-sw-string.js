@@ -6,7 +6,6 @@ const validateServiceWorkerRuntime = require('../../../../infra/testing/validato
 
 describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, function() {
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
-  const STRING_URL_PATTERN = '/test';
   const DEFAULT_IMPORT_SCRIPTS = ['workbox.js'];
   const BASE_OPTIONS = {
     importScripts: DEFAULT_IMPORT_SCRIPTS,
@@ -227,7 +226,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
 
   describe(`[workbox-build] behavior with 'runtimeCaching'`, function() {
     const DEFAULT_METHOD = 'GET';
-    const STRING_URL_PATTERN = 'test';
+    const STRING_URL_PATTERN = '/test';
     const REGEXP_URL_PATTERN = /test/;
     const STRING_HANDLER = 'cacheFirst';
 

@@ -13,7 +13,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
   const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw');
   const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
-  const STRING_URL_PATTERN = '/test';
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
     swDest: tempy.file(),
@@ -357,6 +356,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
   describe(`[workbox-build] behavior with 'runtimeCaching'`, function() {
     const DEFAULT_METHOD = 'GET';
     const REGEXP_URL_PATTERN = /test/;
+    const STRING_URL_PATTERN = '/test';
     const STRING_HANDLER = 'cacheFirst';
 
     it(`should reject when 'urlPattern' is missing from 'runtimeCaching'`, async function() {
