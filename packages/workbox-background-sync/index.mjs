@@ -16,7 +16,7 @@
 import './_version.mjs';
 
 /**
- * @module workbox-background-sync
+ * @namespace workbox.backgroundSync
  */
 
 export * from './_public.mjs';

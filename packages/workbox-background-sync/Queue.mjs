@@ -27,7 +27,7 @@ const queueNames = new Set();
  * later. All parts of the storing and replaying process are observable via
  * callbacks.
  *
- * @memberof module:workbox-background-sync
+ * @memberof workbox.backgroundSync
  */
 class Queue {
   /**
@@ -196,8 +196,9 @@ class Queue {
    * Returns the set of queue names. This is primarily used to reset the list
    * of queue names in tests.
    *
-   * @private
    * @return {Set}
+   *
+   * @private
    */
   static get _queueNames() {
     return queueNames;

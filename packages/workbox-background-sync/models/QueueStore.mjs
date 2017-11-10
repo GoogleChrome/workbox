@@ -30,6 +30,8 @@ export class QueueStore {
    * identified by their queue name.
    *
    * @param {Queue} queue
+   *
+   * @private
    */
   constructor(queue) {
     this._queue = queue;
@@ -45,6 +47,8 @@ export class QueueStore {
    * as an entry in the object store.
    *
    * @param {StorableRequest} storableRequest
+   *
+   * @private
    */
   async addEntry(storableRequest) {
     await this._db.add(OBJECT_STORE_NAME, {
@@ -59,6 +63,8 @@ export class QueueStore {
    * undefined.
    *
    * @return {StorableRequest|undefined}
+   *
+   * @private
    */
   async getAndRemoveOldestEntry() {
     const [entry] = await this._db.getAllMatching(OBJECT_STORE_NAME, {
