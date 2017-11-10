@@ -15,7 +15,10 @@ module.exports = {
   },
   plugins: [
     new prbot.plugins.Size({
-      globPattern: 'packages/*/**/*.prod.js',
+      globPattern: [
+        'packages/workbox-sw/build/workbox-sw.js',
+        'packages/*/**/*.prod.js',
+      ],
       globOptions: {
         ignore: [
           '**/node_modules/**/*',
