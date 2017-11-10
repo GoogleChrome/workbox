@@ -44,6 +44,8 @@ const BUILD_TYPES = [
  * @param {string} destDirectory The path to the parent directory under which
  * the new directory of libraries will be created.
  * @return {Promise<string>} The name of the newly created directory.
+ *
+ * @alias module:workbox-build.copyWorkboxLibraries
  */
 module.exports = async (destDirectory) => {
   const thisPkg = require('../../package.json');
