@@ -16,13 +16,6 @@
 
 import '../_version.mjs';
 
-/**
- * This module is a single import that can be used to dynamically import
- * additional Workbox modules with no effort.
- *
- * @module workbox-sw
- */
-
 const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
 
 // TODO Make this list be generated during build time using the package.json's.
@@ -40,10 +33,14 @@ const MODULE_KEY_TO_NAME_MAPPING = {
 /**
  * This class can be used to make it easy to use the various parts of
  * Workbox.
+ *
+ * @private
  */
 class WorkboxSW {
   /**
    * Creates a proxy that automatically loads workbox namespaces on demand.
+   *
+   * @private
    */
   constructor() {
     this.v = {};
@@ -64,7 +61,7 @@ class WorkboxSW {
 
         const moduleName = MODULE_KEY_TO_NAME_MAPPING[key];
         if (moduleName) {
-          target._loadModule(`workbox-${moduleName}`);
+          target.loadModule(`workbox-${moduleName}`);
         }
 
         return target[key];
@@ -78,6 +75,8 @@ class WorkboxSW {
    * other workbox-modules
    *
    * @param {Object=} [options]
+   *
+   * @alias workbox.setConfig
    */
   setConfig(options = {}) {
     if (!this._modulesLoaded) {
@@ -91,6 +90,8 @@ class WorkboxSW {
   /**
    * Force a service worker to become active, instead of waiting. This is
    * normally used in conjunction with `clientsClaim()`.
+   *
+   * @alias workbox.skipWaiting
    */
   skipWaiting() {
     self.addEventListener('install', () => self.skipWaiting());
@@ -99,6 +100,8 @@ class WorkboxSW {
   /**
    * Claim any currently available clients once the service worker
    * becomes active. This is normally used in conjunction with `skipWaiting()`.
+   *
+   * @alias workbox.clientsClaim
    */
   clientsClaim() {
     self.addEventListener('activate', () => self.clients.claim());
@@ -107,11 +110,15 @@ class WorkboxSW {
   /**
    * Load a Workbox module by passing in the appropriate module name.
    *
+   * This is not generally needed unless you know there are modules that are
+   * dynamically used and you want to safe guard use of the module while the
+   * user may be offline.
+   *
    * @param {string} moduleName
    *
-   * @private
+   * @alias workbox.loadModule
    */
-  _loadModule(moduleName) {
+  loadModule(moduleName) {
     const modulePath = this._getImportPath(moduleName);
     try {
       importScripts(modulePath);
