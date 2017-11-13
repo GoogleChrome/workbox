@@ -4,9 +4,10 @@ const glob = require('glob');
 const archiver = require('archiver');
 const oneLine = require('common-tags').oneLine;
 
-const spawn = require('./spawn-promise-wrapper');
 const constants = require('./constants');
+const getPackagesOfType = require('./get-packages-of-type');
 const logHelper = require('../../infra/utils/log-helper');
+const spawn = require('./spawn-promise-wrapper');
 
 const SOURCE_CODE_DIR = 'source-code';
 const GROUPED_BUILD_FILES = 'grouped-build-files';
@@ -93,10 +94,11 @@ const groupBuildFiles = async (tagName, gitBranch) => {
 
     const sourceCodePath = path.join(getBuildPath(tagName), SOURCE_CODE_DIR);
 
-    const pattern = path.posix.join(
-      sourceCodePath, 'packages', '**',
-      constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
+    const browserPackages = getPackagesOfType(sourceCodePath, 'browser');
 
+    const pattern = path.posix.join(
+      sourceCodePath, 'packages', `{${browserPackages.join(',')}}`,
+      constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
 
     logHelper.log(oneLine`
       Grouping Build Files into
@@ -113,7 +115,7 @@ const groupBuildFiles = async (tagName, gitBranch) => {
       );
     }
   } else {
-    logHelper.log(`   Builds files already grouped.`);
+    logHelper.log(`   Build files already grouped.`);
   }
 
   return groupedBuildFiles;
