@@ -13,8 +13,8 @@ const {prodOnly} = require('../../../infra/testing/env-it');
 describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
   const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');
-  const WORKBOX_SW_FILE_NAME = 'workbox-sw.prod.v2.0.1.js';
-  const FILE_MANIFEST_NAME = 'file-manifest.d9b9be4d03e6c18744d9.js';
+  const WORKBOX_SW_FILE_NAME = 'workbox-sw.js';
+  const FILE_MANIFEST_NAME = 'file-manifest.f8e8e33d45c6284a54ce.js';
 
   describe(`[workbox-webpack-plugin] static assets`, function() {
     prodOnly.it(`should work when called without any parameters`, function(done) {
@@ -22,7 +22,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
       const config = {
         entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
-          filename: WEBPACK_ENTRY_FILENAME,
+          filename: '[name]-[chunkhash].js',
           path: outputDir,
         },
         plugins: [
@@ -44,12 +44,11 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
         try {
           // First, validate that the generated sw.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            constructor: [[{}]],
             importScripts: [[
               WORKBOX_SW_FILE_NAME,
               FILE_MANIFEST_NAME,
             ]],
-            precache: [[[]]],
+            precacheAndRoute: [[[], {}]],
           }});
 
           // Next, test the generated manifest to ensure that it contains
@@ -60,50 +59,54 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           // Unfortunately, the order of entries in the generated manifest isn't
           // stable, so we can't just use chai's .eql()
           const expectedEntries = [{
-            url: 'workbox-sw.prod.v2.0.1.js',
-            revision: 'd9b9be4d03e6c18744d9',
+            url: 'workbox-sw.js',
+            revision: 'f8e8e33d45c6284a54ce',
           }, {
-            url: 'workbox-sw.prod.v2.0.1.js.map',
-            revision: 'd9b9be4d03e6c18744d9',
+            url: 'workbox-sw.js.map',
+            revision: 'f8e8e33d45c6284a54ce',
           }, {
             url: 'webpackEntry.js',
-            revision: '8e8e9f093f036bd18dfa',
+            revision: 'f8e8e33d45c6284a54ce',
           }, {
             url: 'images/example-jpeg.jpg',
-            revision: 'd9b9be4d03e6c18744d9',
+            revision: 'f8e8e33d45c6284a54ce',
           }, {
             url: 'index.html',
-            revision: 'd9b9be4d03e6c18744d9',
+            revision: 'f8e8e33d45c6284a54ce',
           }, {
             url: 'images/web-fundamentals-icon192x192.png',
-            revision: 'd9b9be4d03e6c18744d9',
+            revision: 'f8e8e33d45c6284a54ce',
           }, {
             url: 'page-1.html',
-            revision: 'd9b9be4d03e6c18744d9',
+            revision: 'f8e8e33d45c6284a54ce',
           }, {
             url: 'page-2.html',
-            revision: 'd9b9be4d03e6c18744d9',
+            revision: 'f8e8e33d45c6284a54ce',
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: 'd9b9be4d03e6c18744d9',
+            revision: 'f8e8e33d45c6284a54ce',
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: 'd9b9be4d03e6c18744d9',
+            revision: 'f8e8e33d45c6284a54ce',
+          }, {
+            url: 'main-01d238afd95cf6d76eaf.js',
+            revision: '01d238afd95cf6d76eaf',
           }];
+
           const urlToIndex = new Map(expectedEntries.map((entry, index) => {
             return [entry.url, index];
           }));
 
           expect(context.self.__precacheManifest).to.have.lengthOf(expectedEntries.length);
           for (const entry of context.self.__precacheManifest) {
-            expect(urlToIndex.has(entry.url)).to.be.true;
+            expect(urlToIndex.has(entry.url), entry.url).to.be.true;
             const expectedEntry = expectedEntries[urlToIndex.get(entry.url)];
             expect(entry).to.eql(expectedEntry);
           }
 
           done();
         } catch (error) {
-          return done(error);
+          done(error);
         }
       });
     });
