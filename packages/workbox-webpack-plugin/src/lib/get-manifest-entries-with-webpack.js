@@ -95,9 +95,6 @@ function mapAssetsToChunkHash(chunks) {
  *   Rename variables so they are easier to understand:
  *      https://github.com/GoogleChrome/workbox/pull/808#discussion_r139605624
  *      https://github.com/GoogleChrome/workbox/pull/808#discussion_r139605973
- *   If an asset is already using some kind of build hash, do not use the
- *   revision parameter in `entry()`:
- *      https://github.com/GoogleChrome/workbox/pull/808#discussion_r140584483
  *
  * @function getManifestEntriesWithWebpack
  * @param {Object} compiler webpack compiler

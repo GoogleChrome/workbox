@@ -81,6 +81,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.1",
     "gzip-size": "^4.0.0",
+    "html-webpack-plugin": "^2.30.1",
     "jsdoc": "^3.5.5",
     "jsdoc-baseline": "https://github.com/hegemonic/baseline/tarball/master",
     "lerna": "^2.4.0",
