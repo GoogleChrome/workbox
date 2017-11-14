@@ -1,6 +1,5 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const expect = require('chai').expect;
 const fse = require('fs-extra');
 const path = require('path');
 const tempy = require('tempy');
