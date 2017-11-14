@@ -139,7 +139,8 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
         if (responseToCache.status === 0) {
           // TODO: Add a link to guide on third-party request handling
           logger.warn(`The response for '${request.url}' is an opaque ` +
-            `response. Workbox does not cache opaque responses by default.`);
+            `response. The caching strategy that you're using will not ` +
+            `cache opaque responses by default.`);
         } else {
           logger.debug(`The response for '${request.url}' returned ` +
           `a status code of '${response.status}' and won't be cached as a ` +
