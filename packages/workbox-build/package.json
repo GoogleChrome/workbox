@@ -30,7 +30,7 @@
     "workbox-core": "^3.0.0-alpha.24",
     "workbox-precaching": "^3.0.0-alpha.24",
     "workbox-routing": "^3.0.0-alpha.24",
-    "workbox-runtime-caching": "^3.0.0-alpha.24",
+    "workbox-strategies": "^3.0.0-alpha.24",
     "workbox-sw": "^3.0.0-alpha.24"
   },
   "main": "build/index.js",

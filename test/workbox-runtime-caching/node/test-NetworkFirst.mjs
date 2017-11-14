@@ -20,9 +20,9 @@ import {devOnly} from '../../../infra/testing/env-it';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
 
-import {NetworkFirst} from '../../../packages/workbox-runtime-caching/NetworkFirst.mjs';
+import {NetworkFirst} from '../../../packages/workbox-strategies/NetworkFirst.mjs';
 
-describe(`[workbox-runtime-caching] NetworkFirst`, function() {
+describe(`[workbox-strategies] NetworkFirst`, function() {
   let sandbox = sinon.sandbox.create();
 
   beforeEach(async function() {
@@ -128,7 +128,7 @@ describe(`[workbox-runtime-caching] NetworkFirst`, function() {
     return expectError(() => new NetworkFirst({networkTimeoutSeconds: 'invalid'}), 'incorrect-type', (err) => {
       expect(err.details.paramName).to.deep.equal('networkTimeoutSeconds');
       expect(err.details.expectedType).to.deep.equal('number');
-      expect(err.details.moduleName).to.deep.equal('workbox-runtime-caching');
+      expect(err.details.moduleName).to.deep.equal('workbox-strategies');
       expect(err.details.className).to.deep.equal('NetworkFirst');
       expect(err.details.funcName).to.deep.equal('constructor');
     });

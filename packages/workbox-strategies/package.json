@@ -1,5 +1,5 @@
 {
-  "name": "workbox-runtime-caching",
+  "name": "workbox-strategies",
   "version": "3.0.0-alpha.24",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
@@ -16,7 +16,7 @@
     "routing"
   ],
   "scripts": {
-    "build": "gulp build-packages --package workbox-runtime-caching",
+    "build": "gulp build-packages --package workbox-strategies",
     "version": "npm run build",
     "prepare": "npm run build"
   },
@@ -24,7 +24,7 @@
     "browserNamespace": "workbox.strategies",
     "packageType": "browser"
   },
-  "main": "build/workbox-runtime-caching.prod.js",
+  "main": "build/workbox-strategies.prod.js",
   "module": "index.mjs",
   "dependencies": {
     "workbox-cache-expiration": "^3.0.0-alpha.24",

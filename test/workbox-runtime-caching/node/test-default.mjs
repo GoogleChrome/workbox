@@ -1,9 +1,9 @@
 import {expect} from 'chai';
-import {CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate} from '../../../packages/workbox-runtime-caching/_public.mjs';
-import strategies from '../../../packages/workbox-runtime-caching/_default.mjs';
+import {CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate} from '../../../packages/workbox-strategies/_public.mjs';
+import strategies from '../../../packages/workbox-strategies/_default.mjs';
 import {CacheExpirationPlugin} from '../../../packages/workbox-cache-expiration/CacheExpirationPlugin.mjs';
 
-describe(`[workbox-runtime-caching] Default Export`, function() {
+describe(`[workbox-strategies] Default Export`, function() {
   const CUSTOM_PLUGIN = {};
   describe(`cacheFirst()`, function() {
     it(`should return a CacheFirst instance`, function() {

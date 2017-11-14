@@ -70,7 +70,7 @@ class NetworkFirst {
     if (process.env.NODE_ENV !== 'production') {
       if (this._networkTimeoutSeconds) {
         assert.isType(this._networkTimeoutSeconds, 'number', {
-          moduleName: 'workbox-runtime-caching',
+          moduleName: 'workbox-strategies',
           className: 'NetworkFirst',
           funcName: 'constructor',
           paramName: 'networkTimeoutSeconds',
@@ -93,7 +93,7 @@ class NetworkFirst {
     const logs = [];
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
-        moduleName: 'workbox-runtime-caching',
+        moduleName: 'workbox-strategies',
         className: 'NetworkFirst',
         funcName: 'handle',
         paramName: 'event',

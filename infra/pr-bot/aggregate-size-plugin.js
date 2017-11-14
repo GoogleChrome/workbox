@@ -21,7 +21,7 @@ class AggregateSizePlugin extends PluginInterface {
       `workbox-core`,
       `workbox-precaching`,
       `workbox-routing`,
-      `workbox-runtime-caching`,
+      `workbox-strategies`,
       `workbox-sw`,
     ];
     const files = packagesToAggregate.map((pkgName) => {

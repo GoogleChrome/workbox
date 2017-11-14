@@ -19,9 +19,9 @@ import {expect} from 'chai';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
 
-import {CacheOnly} from '../../../packages/workbox-runtime-caching/CacheOnly.mjs';
+import {CacheOnly} from '../../../packages/workbox-strategies/CacheOnly.mjs';
 
-describe(`[workbox-runtime-caching] CacheOnly`, function() {
+describe(`[workbox-strategies] CacheOnly`, function() {
   let sandbox = sinon.sandbox.create();
 
   beforeEach(async function() {

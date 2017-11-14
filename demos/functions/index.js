@@ -16,7 +16,7 @@ const workboxModules = [
   'workbox-precaching',
   'workbox-range-requests',
   'workbox-routing',
-  'workbox-runtime-caching',
+  'workbox-strategies',
   'workbox-sw',
 ];
 

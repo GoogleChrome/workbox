@@ -16,7 +16,7 @@ describe(`[workbox-build] Test Dependencies`, function() {
         'workbox-core',
         'workbox-precaching',
         'workbox-routing',
-        'workbox-runtime-caching',
+        'workbox-strategies',
         'workbox-sw',
       ],
     }, (unusedDeps) => {
