@@ -14,6 +14,7 @@
   limitations under the License.
 */
 
+const getAssetHash = require('./utils/get-asset-hash');
 const resolveWebpackUrl = require('./utils/resolve-webpack-url');
 
 /**
@@ -58,7 +59,7 @@ function filterChunks(chunks, whitelist, blacklist) {
 }
 
 /**
- * Maps webpack asset filenames to their chunk hash.
+ * Maps webpack chunk filenames to their chunk hash.
  *
  * TODO:
  *   Elaborate on this function description:
@@ -69,13 +70,37 @@ function filterChunks(chunks, whitelist, blacklist) {
  *
  * @private
  */
-function mapAssetsToChunkHash(chunks) {
-  return chunks.reduce((assetMap, chunk) => {
+function mapChunksToChunkHashes(chunks) {
+  return chunks.reduce((chunkMap, chunk) => {
     return Object.assign(
-      assetMap,
-      ...chunk.files.map((f) => ({[f]: chunk.renderedHash}))
+      chunkMap,
+      ...chunk.files.map((file) => {
+        return {[file]: chunk.renderedHash};
+      })
     );
   }, {});
+}
+
+/**
+ * Maps webpack assets to the hash of their source.
+ *
+ * TODO:
+ *   Elaborate on this function description:
+ *      https://github.com/GoogleChrome/workbox/pull/808#discussion_r139605066
+ *
+ * @param {Array<Object>} assets webpack assets
+ * @return {Object} {filename: hash} map
+ *
+ * @private
+ */
+function mapAssetsToSourceHashes(assets) {
+  const assetMap = {};
+
+  for (const [filePath, asset] of Object.entries(assets)) {
+    assetMap[filePath] = getAssetHash(asset);
+  }
+
+  return assetMap;
 }
 
 /**
@@ -104,8 +129,10 @@ module.exports = (compiler, compilation, config) => {
   const whitelist = config.chunks;
   const blacklist = config.excludeChunks;
 
-  // Array<{files: Array<(filename: string)>, name?: string}>
-  let {chunks} = compilation;
+  let {
+    assets,
+    chunks,
+  } = compilation;
 
   if (whitelist || blacklist) {
     // Only include chunks in config.chunks and
@@ -114,7 +141,10 @@ module.exports = (compiler, compilation, config) => {
   }
 
   // Use chunkhash to save a chunk hash to each filename in chunks
-  const assetsToChunkHash = mapAssetsToChunkHash(chunks);
+  const chunksToChunkHashes = mapChunksToChunkHashes(chunks);
+  const assetsToSourceHashes = mapAssetsToSourceHashes(assets);
+  const combinedHashes = Object.assign({}, assetsToSourceHashes,
+    chunksToChunkHashes);
 
   /**
    * Files that will be used to generate the manifest entries
@@ -126,14 +156,14 @@ module.exports = (compiler, compilation, config) => {
    *
    * @private
    */
-  const manifestFiles = whitelist
-    ? Object.keys(assetsToChunkHash)
-    : Object.keys(compilation.assets);
+  // const manifestFiles = whitelist
+  //   ? Object.keys(chunksToChunkHashes)
+  //   : Object.keys(compilation.assets);
 
   // Create and return the manifest entries.
-  return manifestFiles.map((filePath) => {
+  return Object.keys(combinedHashes).map((filePath) => {
     return getEntry(resolveWebpackUrl(publicPath, filePath),
       // Use chunkhash if available, otherwise use compilation hash.
-      assetsToChunkHash[filePath] || compilation.hash);
+      combinedHashes[filePath] || compilation.hash);
   });
 };
