@@ -154,12 +154,12 @@ module.exports = (packagePath, buildType) => {
       }
 
       // The final builds should have no warnings.
-      // if (warning.code && warning.message) {
-      //   throw new Error(`Unhandled Rollup Warning: [${warning.code}] ` +
-      //     `${warning.message}`);
-      // } else {
-      //   throw new Error(`Unhandled Rollup Warning: ${warning}`);
-      // }
+      if (warning.code && warning.message) {
+        throw new Error(`Unhandled Rollup Warning: [${warning.code}] ` +
+          `${warning.message}`);
+      } else {
+        throw new Error(`Unhandled Rollup Warning: ${warning}`);
+      }
     },
   })
   .on('error', (err) => {
