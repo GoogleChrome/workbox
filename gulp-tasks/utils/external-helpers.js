@@ -1,6 +1,8 @@
 /* eslint-disable */
-// This is a light wrapper on top of the babel-helpers runtime code, meant to
-// be included in the workbox-core bundle.
+// This is extracted from the Babel runtime, meant to be included once in
+// workbox-core and reused throughout all of the other modules as a way of
+// avoiding code duplication.
+// See https://github.com/babel/babel/blob/9e0f5235b1ca5167c368a576ad7c5af62d20b0e3/packages/babel-helpers/src/helpers.js#L240
 var babelHelpers = {
   asyncToGenerator: function(fn) {
     return function() {

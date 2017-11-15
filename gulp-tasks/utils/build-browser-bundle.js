@@ -131,7 +131,7 @@ module.exports = (packagePath, buildType) => {
   const plugins = rollupHelper.getDefaultPlugins(buildType);
 
   const banner = pkgJson.workbox.includeBabelHelpers ?
-    fs.readFileSync(path.join(__dirname, 'async-to-generator.js')):
+    fs.readFileSync(path.join(__dirname, 'external-helpers.js')) :
     '';
 
   return rollupStream({

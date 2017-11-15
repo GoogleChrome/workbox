@@ -16,10 +16,14 @@ module.exports = {
     const babelConfig = {
       presets: [['env', {
         targets: {
+          // This corresponds to the version of Chroumium used by
+          // Samsung Internet 5.x, which is the minimum non-evergreen browser
+          // we currently support.
           browsers: ['chrome >= 51'],
         },
         modules: false,
       }]],
+      // The babelHelpers code will be injected into the workbox-core bundle.
       plugins: ['external-helpers'],
       externalHelpers: true,
     };
