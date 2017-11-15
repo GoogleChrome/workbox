@@ -1,6 +1,7 @@
-const uglifyPlugin = require('rollup-plugin-uglify');
+const babel = require('rollup-plugin-babel');
 const minify = require('uglify-es').minify;
 const replace = require('rollup-plugin-replace');
+const uglifyPlugin = require('rollup-plugin-uglify');
 
 const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');
@@ -11,6 +12,18 @@ module.exports = {
   // as possible.
   getDefaultPlugins: (buildType) => {
     const plugins = [];
+
+    const babelConfig = {
+      presets: [['env', {
+        targets: {
+          browsers: ['chrome >= 51'],
+        },
+        modules: false,
+      }]],
+      plugins: ['external-helpers'],
+      externalHelpers: true,
+    };
+    plugins.push(babel(babelConfig));
 
     let minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {
