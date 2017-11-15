@@ -19,9 +19,9 @@ import {expect} from 'chai';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
 
-import {StaleWhileRevalidate} from '../../../packages/workbox-runtime-caching/StaleWhileRevalidate.mjs';
+import {StaleWhileRevalidate} from '../../../packages/workbox-strategies/StaleWhileRevalidate.mjs';
 
-describe(`[workbox-runtime-caching] StaleWhileRevalidate`, function() {
+describe(`[workbox-strategies] StaleWhileRevalidate`, function() {
   let sandbox = sinon.sandbox.create();
 
   beforeEach(async function() {

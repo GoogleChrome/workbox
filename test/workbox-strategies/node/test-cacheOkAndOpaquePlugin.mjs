@@ -1,7 +1,7 @@
 import {expect} from 'chai';
-import plugin from '../../../packages/workbox-runtime-caching/plugins/cacheOkAndOpaquePlugin.mjs';
+import plugin from '../../../packages/workbox-strategies/plugins/cacheOkAndOpaquePlugin.mjs';
 
-describe(`[workbox-runtime-caching] cacheOkAndOpaquePlugin`, function() {
+describe(`[workbox-strategies] cacheOkAndOpaquePlugin`, function() {
   it(`should return null if status is not ok and status is not opaque`, function() {
     const response = new Response('Hello', {
       status: 404,

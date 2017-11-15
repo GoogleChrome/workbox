@@ -14,26 +14,27 @@
 */
 
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+
 import messages from './utils/messages.mjs';
 import './_version.mjs';
 
-// TODO: Replace `Workbox plugins` link in the class description with a
-// link to d.g.c.
-// TODO: Replace `plugins` parameter link with link to d.g.c.
-
 /**
- * An implementation of a
- * [network-only]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only}
+ * An implementation of a [cache-first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network}
  * request strategy.
  *
- * This class is useful if you want to take advantage of any [Workbox plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}.
+ * A cache first strategy is useful for assets that have beeng revisioned,
+ * such as URLs like `/styles/example.a8f5f1.css`, since they
+ * can be cached for long periods of time.
  *
  * @memberof workbox.strategies
  */
-class NetworkOnly {
+class CacheFirst {
+  // TODO: Replace `plugins` parameter link with link to d.g.c.
+
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
@@ -58,47 +59,97 @@ class NetworkOnly {
    * @return {Promise<Response>}
    */
   async handle({event}) {
+    const logs = [];
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
-        moduleName: 'workbox-runtime-caching',
-        className: 'NetworkOnly',
+        moduleName: 'workbox-strategies',
+        className: 'CacheFirst',
         funcName: 'handle',
         paramName: 'event',
       });
     }
 
+    let response = await cacheWrapper.match(
+      this._cacheName,
+      event.request,
+      null,
+      this._plugins
+    );
+
     let error;
-    let response;
-    try {
-      response = await fetchWrapper.fetch(
-        event.request,
-        null,
-        this._plugins
-      );
-    } catch (err) {
-      error = err;
+    if (!response) {
+      if (process.env.NODE_ENV !== 'production') {
+        logs.push(
+          `No response found in the '${this._cacheName}' cache. ` +
+          `Will respond with a network request.`);
+      }
+      try {
+        response = await this._getFromNetwork(event);
+      } catch (err) {
+        error = err;
+      }
+
+      if (process.env.NODE_ENV !== 'production') {
+        if (response) {
+          logs.push(`Got response from network.`);
+        } else {
+          logs.push(`Unable to get a response from the network.`);
+        }
+      }
+    } else {
+      if (process.env.NODE_ENV !== 'production') {
+        logs.push(
+          `Found a cached response in the '${this._cacheName}' cache.`);
+      }
     }
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('NetworkOnly', event));
-      if (response) {
-        logger.log(`Got response from network.`);
-      } else {
-        logger.log(`Unable to get a response from the network.`);
+        messages.strategyStart('CacheFirst', event));
+      for (let log of logs) {
+        logger.log(log);
       }
       messages.printFinalResponse(response);
       logger.groupEnd();
     }
 
-    // If there was an error thrown, re-throw it to ensure the Routers
-    // catch handler is triggered.
     if (error) {
+      // Don't swallow error as we'll want it to throw and enable catch
+      // handlers in router.
       throw error;
     }
 
     return response;
   }
+
+  /**
+   * Handles the network and cache part of CacheFirst.
+   *
+   * @param {FetchEvent} event
+   * @return {Promise<Response>}
+   *
+   * @private
+   */
+  async _getFromNetwork(event) {
+    const response = await fetchWrapper.fetch(
+      event.request,
+      null,
+      this._plugins
+    );
+
+    // Keep the service worker while we put the request to the cache
+    const responseClone = response.clone();
+    event.waitUntil(
+      cacheWrapper.put(
+        this._cacheName,
+        event.request,
+        responseClone,
+        this._plugins
+      )
+    );
+
+    return response;
+  }
 }
 
-export {NetworkOnly};
+export {CacheFirst};

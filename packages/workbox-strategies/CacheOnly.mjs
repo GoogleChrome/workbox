@@ -61,7 +61,7 @@ class CacheOnly {
   async handle({event}) {
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
-        moduleName: 'workbox-runtime-caching',
+        moduleName: 'workbox-strategies',
         className: 'CacheOnly',
         funcName: 'handle',
         paramName: 'event',

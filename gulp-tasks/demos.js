@@ -14,6 +14,7 @@ gulp.task('demos:groupBuildFiles', async () => {
 
   const localBuildPath = path.join(__dirname, '..', 'demos', 'public',
     constants.LOCAL_BUILDS_DIR);
+  await fs.remove(localBuildPath);
   await fs.ensureDir(localBuildPath);
 
   // Copy files from the source code and move into the grouped build

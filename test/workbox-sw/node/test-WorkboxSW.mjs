@@ -38,7 +38,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       if (url.includes('workbox-precaching')) {
         self.workbox.precaching = fakeWorkbox.precaching;
       }
-      if (url.includes('workbox-runtime-caching')) {
+      if (url.includes('workbox-strategies')) {
         self.workbox.strategies = fakeWorkbox.strategies;
       }
     });

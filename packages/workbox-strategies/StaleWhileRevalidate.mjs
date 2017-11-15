@@ -82,7 +82,7 @@ class StaleWhileRevalidate {
     const logs = [];
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
-        moduleName: 'workbox-runtime-caching',
+        moduleName: 'workbox-strategies',
         className: 'StaleWhileRevalidate',
         funcName: 'handle',
         paramName: 'event',
