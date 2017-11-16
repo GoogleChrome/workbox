@@ -107,17 +107,18 @@ class Router extends SWRoutingRouter {
       const valueToCheck = capture.startsWith('http') ?
         new URL(capture, location).pathname :
         capture;
-      const match = valueToCheck.match(new RegExp(`${wildcards}`));
-      if (match) {
+      const possibleExpressString = valueToCheck.match(
+        new RegExp(`${wildcards}`));
+      if (possibleExpressString) {
         logHelper.warn({
           message: `registerRoute() was called with a string containing an ` +
-            `Express-style wildcard character. While this is currently ` +
-            `supported, it will no longer be treated as a wildcard match in ` +
-            `an upcoming release of Workbox. For equivalent behavior, please ` +
-            `switch to using a regular expression instead.`,
+            `Express-style wildcard character. In the next version of `+
+            `Workbox, Express-style wildcards won't be supported, and ` +
+            `strings will be treated a exact matches. Please switch to ` +
+            `regular expressions for equivalent behavior.`,
           data: {
             'Path String': capture,
-            'Wildcard Character': match[0],
+            'Wildcard Character': possibleExpressString[0],
             'Learn More': 'https://goo.gl/xZMKEV',
           },
         });
