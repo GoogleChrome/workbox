@@ -14,7 +14,7 @@ describe(`[workbox-precaching] cleanRedirect()`, function() {
     sandbox.restore();
   });
 
-  it(`should use blob where there is no body in the reponse`, async function() {
+  it(`should use blob() when there is no 'body' stream in the response`, async function() {
     const response = new Response('Original Response');
     sandbox.stub(response, 'clone').callsFake(() => {
       const newResponse = new Response('Repeated Response');
@@ -26,6 +26,7 @@ describe(`[workbox-precaching] cleanRedirect()`, function() {
     });
 
     const cleanedResponse = await cleanRedirect(response);
-    expect(cleanedResponse.body).to.equal('Blob Body');
+    const cleanedResponseBody = await cleanedResponse.text();
+    expect(cleanedResponseBody).to.equal('Blob Body');
   });
 });
