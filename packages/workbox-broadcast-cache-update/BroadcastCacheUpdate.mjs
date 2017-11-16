@@ -16,7 +16,6 @@
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {responsesAreSame} from './responsesAreSame.mjs';
 import {broadcastUpdate} from './broadcastUpdate.mjs';
-import MESSAGE_TYPES from './MESSAGE_TYPES.mjs';
 import './_version.mjs';
 
 /**
