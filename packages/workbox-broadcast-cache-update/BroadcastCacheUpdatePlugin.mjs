@@ -13,6 +13,7 @@
  limitations under the License.
 */
 
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.mjs';
 import './_version.mjs';
 
@@ -38,8 +39,18 @@ class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
   cacheDidUpdate({cacheName, oldResponse, newResponse, url}) {
     if (process.env.NODE !== 'production') {
       // TODO: Move to assert
-      // isType({cacheName}, 'string');
-      // isInstance({newResponse}, Response);
+      assert.isType(cacheName, 'string', {
+        moduleName: 'workbox-broadcast-cache-update',
+        className: 'BroadcastCacheUpdatePlugin',
+        funcName: 'constructor',
+        paramName: 'cacheName',
+      });
+      assert.isInstance(newResponse, Response, {
+        moduleName: 'workbox-broadcast-cache-update',
+        className: 'BroadcastCacheUpdatePlugin',
+        funcName: 'constructor',
+        paramName: 'newResponse',
+      });
     }
 
     if (!oldResponse) {
