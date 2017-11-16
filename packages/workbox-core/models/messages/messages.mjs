@@ -59,7 +59,7 @@ export default {
     }
     return `The parameter '${paramName}' passed into ` +
       `'${moduleName}.${className}.${funcName}()' must be an instance of ` +
-      `class ${expectedClass}.`;
+      `class ${expectedClass.name}.`;
   },
 
   'missing-a-method': ({expectedMethod, paramName, moduleName, className,
@@ -155,6 +155,11 @@ export default {
 
   'max-entries-or-age-required': ({moduleName, className, funcName}) => {
     return `You must define either config.maxEntries or config.maxAgeSeconds` +
+      `in ${moduleName}.${className}.${funcName}`;
+  },
+
+  'statuses-or-headers-required': ({moduleName, className, funcName}) => {
+    return `You must define either config.statuses or config.headers` +
       `in ${moduleName}.${className}.${funcName}`;
   },
 
