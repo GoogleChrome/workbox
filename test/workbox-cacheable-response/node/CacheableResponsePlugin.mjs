@@ -6,17 +6,17 @@ import {CacheableResponsePlugin} from '../../../packages/workbox-cacheable-respo
 
 describe(`[workbox-cacheable-response] CacheableResponsePlugin`, function() {
   describe(`constructor`, function() {
-    it(`should store a CacheableResponse instance`, function() {
-      const cacheableResponse = new CacheableResponse({statuses: [200]});
-      const cacheableResponsePlugin = new CacheableResponsePlugin(cacheableResponse);
-      expect(cacheableResponsePlugin._cacheableResponse).to.equal(cacheableResponse);
+    const STATUSES = [200];
+
+    it(`should construct a properly-configured internal CacheableResponse instance`, function() {
+      const cacheableResponsePlugin = new CacheableResponsePlugin({statuses: STATUSES});
+      expect(cacheableResponsePlugin._cacheableResponse).to.be.instanceOf(CacheableResponse);
+      expect(cacheableResponsePlugin._cacheableResponse._statuses).to.eql(STATUSES);
     });
 
     it(`should expose cacheWillUpdate, which calls cacheableResponse.isResponseCacheable()`, function() {
-      const cacheableResponse = new CacheableResponse({statuses: [200]});
-      const isResponseCacheableSpy = sinon.spy(cacheableResponse, 'isResponseCacheable');
-
-      const cacheableResponsePlugin = new CacheableResponsePlugin(cacheableResponse);
+      const cacheableResponsePlugin = new CacheableResponsePlugin({statuses: STATUSES});
+      const isResponseCacheableSpy = sinon.spy(cacheableResponsePlugin._cacheableResponse, 'isResponseCacheable');
       const response = new Response('');
       cacheableResponsePlugin.cacheWillUpdate({response});
 

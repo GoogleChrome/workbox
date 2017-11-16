@@ -84,8 +84,6 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
     it(`should return true when one of the statuses match the response`, function() {
       const cacheableResponse = new CacheableResponse({statuses: VALID_STATUSES});
       const response = new Response('', {status: VALID_STATUS});
-      // TODO: Remove after there's a proper Response mock.
-      response.headers = new Map();
 
       expect(cacheableResponse.isResponseCacheable(response)).to.be.true;
     });
@@ -93,8 +91,6 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
     it(`should return false when none of the statuses match the response`, function() {
       const cacheableResponse = new CacheableResponse({statuses: VALID_STATUSES});
       const response = new Response('', {status: INVALID_STATUS});
-      // TODO: Remove after there's a proper Response mock.
-      response.headers = new Map();
 
       expect(cacheableResponse.isResponseCacheable(response)).to.be.false;
     });
@@ -102,8 +98,6 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
     it(`should return true when one of the headers match the response`, function() {
       const cacheableResponse = new CacheableResponse({headers: VALID_HEADERS});
       const response = new Response('', {headers: VALID_HEADERS});
-      // TODO: Remove after there's a proper Response mock.
-      response.headers = new Map(Object.entries(response.headers));
 
       expect(cacheableResponse.isResponseCacheable(response)).to.be.true;
     });
@@ -111,8 +105,6 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
     it(`should return false when none of the headers match the response`, function() {
       const cacheableResponse = new CacheableResponse({headers: VALID_HEADERS});
       const response = new Response('');
-      // TODO: Remove after there's a proper Response mock.
-      response.headers = new Map();
 
       expect(cacheableResponse.isResponseCacheable(response)).to.be.false;
     });
@@ -123,8 +115,6 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
         headers: VALID_HEADERS,
       });
       const response = new Response('', {status: VALID_STATUS});
-      // TODO: Remove after there's a proper Response mock.
-      response.headers = new Map();
 
       expect(cacheableResponse.isResponseCacheable(response)).to.be.false;
     });
@@ -138,8 +128,6 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
         headers: VALID_HEADERS,
         status: INVALID_STATUS,
       });
-      // TODO: Remove after there's a proper Response mock.
-      response.headers = new Map(Object.entries(response.headers));
 
       expect(cacheableResponse.isResponseCacheable(response)).to.be.false;
     });
@@ -153,8 +141,6 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
         headers: VALID_HEADERS,
         status: VALID_STATUS,
       });
-      // TODO: Remove after there's a proper Response mock.
-      response.headers = new Map(Object.entries(response.headers));
 
       expect(cacheableResponse.isResponseCacheable(response)).to.be.true;
     });

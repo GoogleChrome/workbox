@@ -21,7 +21,7 @@ import {logger} from 'workbox-core/_private/logger.mjs';
 import './_version.mjs';
 
 /**
- * The `CacheableResponse` class allows you to set up rules determining what
+ * This class allows you to set up rules determining what
  * status codes and/or headers need to be present in order for a
  * [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response)
  * to be considered cacheable.
@@ -39,9 +39,9 @@ class CacheableResponse {
    * @param {Object} config
    * @param {Array<number>} [config.statuses] One or more status codes that a
    * `Response` can have and be considered cacheable.
-   * @param {Object<string,string>} [config.headers] One or more headers that a
-   * `Response` can have and be considered cacheable. If multiple headers are
-   * provided, only one needs to be present.
+   * @param {Object<string,string>} [config.headers] A mapping of header names
+   * and expected values that a `Response` can have and be considered cacheable.
+   * If multiple headers are provided, only one needs to be present.
    */
   constructor(config = {}) {
     if (process.env.NODE_ENV !== 'production') {
