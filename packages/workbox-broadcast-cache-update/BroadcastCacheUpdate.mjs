@@ -14,7 +14,8 @@
 */
 
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
+import {responsesAreSame} from './responsesAreSame.mjs';
+import {broadcastUpdate} from './broadcastUpdate.mjs';
 import MESSAGE_TYPES from './MESSAGE_TYPES.mjs';
 import './_version.mjs';
 
@@ -91,70 +92,10 @@ class BroadcastCacheUpdate {
     // TODO: Move to assert
     // isType({cacheName}, 'string');
 
-    if (!this._responsesAreSame(firstResponse, secondResponse)) {
-      this._broadcastUpdate(url, cacheName);
+    if (!responsesAreSame(
+      firstResponse, secondResponse, this._headersToCheck)) {
+      broadcastUpdate(url, cacheName);
     }
-  }
-
-  /**
-   * @param {Response} firstResponse
-   * @param {Response} secondResponse
-   * @param {Array<string>} headersToCheck
-   * @return {boolean}
-   *
-   * @private
-   */
-  _responsesAreSame(firstResponse, secondResponse) {
-    if (process.env.NODE_ENV !== 'production') {
-      if (!(firstResponse instanceof Response &&
-        secondResponse instanceof Response)) {
-        throw new WorkboxError('responses-are-same-parameters-required');
-      }
-    }
-
-    const atLeastOneHeaderAvailable = this._headersToCheck.some((header) => {
-      return firstResponse.headers.has(header) &&
-        secondResponse.headers.has(header);
-    });
-
-    if (!atLeastOneHeaderAvailable) {
-      if (process.env.NODE_ENV !== 'production') {
-        logger.warn(`Unable to determine where the response has been updated ` +
-          `because none of the headers that would be checked are present.`);
-        logger.debug(`Attempting to compare the following: `,
-          firstResponse, secondResponse, this._headersToCheck);
-      }
-
-      // Just return true, indicating the that responses are the same, since we
-      // can't determine otherwise.
-      return true;
-    }
-
-    return this._headersToCheck.every((header) => {
-      const headerStateComparison = firstResponse.headers.has(header) ===
-        secondResponse.headers.has(header);
-      const headerValueComparison = firstResponse.headers.get(header) ===
-        secondResponse.headers.get(header);
-
-      return headerStateComparison && headerValueComparison;
-    });
-  }
-
-  /**
-   * @param {string} url
-   * @param {string} cacheName
-   *
-   * @private
-   */
-  _broadcastUpdate(url, cacheName) {
-    this._getChannel().postMessage({
-      type: MESSAGE_TYPES.CACHE_UPDATED,
-      meta: this._source,
-      payload: {
-        cacheName: cacheName,
-        updatedUrl: url,
-      },
-    });
   }
 }
 

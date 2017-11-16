@@ -23,8 +23,7 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
       }, 'incorrect-class');
     });
 
-    // TODO: Enable when sw-env-mock has Response.headers.has
-    it.skip(`should not throw when called with valid parameters`, function() {
+    it(`should not throw when called with valid parameters`, function() {
       const bcuPlugin = new BroadcastCacheUpdatePlugin('channel-name');
       const cacheName = 'cache-name';
       const oldResponse = new Response();

@@ -38,10 +38,6 @@ class Headers {
   }
 
   // TODO: implement append() and [Symbol.iterator]()
-
-  has(key) {
-    return !!this.obj[key];
-  }
 }
 
 module.exports = Headers;

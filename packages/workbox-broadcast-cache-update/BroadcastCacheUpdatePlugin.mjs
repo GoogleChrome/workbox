@@ -37,8 +37,7 @@ class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
    * @param {string} input.url The cache key URL.
    */
   cacheDidUpdate({cacheName, oldResponse, newResponse, url}) {
-    if (process.env.NODE !== 'production') {
-      // TODO: Move to assert
+    if (process.env.NODE_ENV !== 'production') {
       assert.isType(cacheName, 'string', {
         moduleName: 'workbox-broadcast-cache-update',
         className: 'BroadcastCacheUpdatePlugin',
