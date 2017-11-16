@@ -13,8 +13,8 @@
  limitations under the License.
 */
 
-import BroadcastCacheUpdate from './BroadcastCacheUpdate.mjs';
-import {isType, isInstance} from '../../../../lib/assert';
+import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.mjs';
+import './_version.mjs';
 
 /**
  * This plugin will automatically broadcast a message whenever a cached response
@@ -37,8 +37,9 @@ class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
    */
   cacheDidUpdate({cacheName, oldResponse, newResponse, url}) {
     if (process.env.NODE !== 'production') {
-      isType({cacheName}, 'string');
-      isInstance({newResponse}, Response);
+      // TODO: Move to assert
+      // isType({cacheName}, 'string');
+      // isInstance({newResponse}, Response);
     }
 
     if (!oldResponse) {
@@ -50,4 +51,4 @@ class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
   }
 }
 
-export default BroadcastCacheUpdatePlugin;
+export {BroadcastCacheUpdatePlugin};

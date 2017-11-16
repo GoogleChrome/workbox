@@ -15,11 +15,11 @@
 
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
-import {isType} from '../../../../lib/assert';
 import MESSAGE_TYPES from './MESSAGE_TYPES.mjs';
+import './_version.mjs';
 
 /**
- * Uses the {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel API}
+ * Uses the [Broadcast Channel API]{@link https://developers.google.com/web/updates/2016/09/broadcastchannel}
  * to notify interested parties when a cached response has been updated.
  *
  * For efficiency's sake, the underlying response bodies are not compared;
@@ -37,7 +37,8 @@ class BroadcastCacheUpdate {
    * @param {Object} options
    * @param {Array<string>}
    * [options.headersToCheck=['content-length', 'etag', 'last-modified']] A
-   * list of headers that will be used to determine whether the responses differ.
+   * list of headers that will be used to determine whether the responses
+   * differ.
    * @param {string} [options.source='workbox-broadcast-cache-update'] An
    * attribution value that indicates where the update originated.
    */
@@ -67,7 +68,7 @@ class BroadcastCacheUpdate {
    */
   _getChannel() {
     if (!this._channel) {
-      this._channel = new BroadcastChannel(this.channelName);
+      this._channel = new BroadcastChannel(this._channelName);
     }
     return this._channel;
   }
@@ -87,7 +88,8 @@ class BroadcastCacheUpdate {
    * This is included in the message posted on the broadcast channel.
    */
   notifyIfUpdated(firstResponse, secondResponse, url, cacheName) {
-    isType({cacheName}, 'string');
+    // TODO: Move to assert
+    // isType({cacheName}, 'string');
 
     if (!this._responsesAreSame(firstResponse, secondResponse)) {
       this._broadcastUpdate(url, cacheName);
@@ -156,4 +158,4 @@ class BroadcastCacheUpdate {
   }
 }
 
-export default BroadcastCacheUpdate;
+export {BroadcastCacheUpdate};

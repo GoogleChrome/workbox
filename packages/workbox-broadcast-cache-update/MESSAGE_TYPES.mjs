@@ -13,6 +13,8 @@
  limitations under the License.
 */
 
+import './_version.mjs';
+
 export default {
   CACHE_UPDATED: 'CACHE_UPDATED',
 };

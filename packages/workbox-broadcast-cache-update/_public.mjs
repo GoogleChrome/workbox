@@ -16,9 +16,11 @@
 
 import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.mjs';
 import {BroadcastCacheUpdatePlugin} from './BroadcastCacheUpdatePlugin.mjs';
+import MESSAGE_TYPES from './MESSAGE_TYPES.mjs';
 import './_version.mjs';
 
 export {
   BroadcastCacheUpdate,
   BroadcastCacheUpdatePlugin,
+  MESSAGE_TYPES,
 };
