@@ -15,6 +15,7 @@
 
 /* eslint-env browser, serviceworker */
 
+import logHelper from '../../../../lib/log-helper';
 import {
   Router as SWRoutingRouter,
   ExpressRoute,
@@ -100,6 +101,27 @@ class Router extends SWRoutingRouter {
     if (typeof capture === 'string') {
       if (capture.length === 0) {
         throw ErrorFactory.createError('empty-express-string');
+      }
+      // See https://github.com/pillarjs/path-to-regexp#parameters
+      const wildcards = '[*:?+]';
+      const valueToCheck = capture.startsWith('http') ?
+        new URL(capture, location).pathname :
+        capture;
+      const possibleExpressString = valueToCheck.match(
+        new RegExp(`${wildcards}`));
+      if (possibleExpressString) {
+        logHelper.warn({
+          message: `registerRoute() was called with a string containing an ` +
+            `Express-style wildcard character. In the next version of `+
+            `Workbox, Express-style wildcards won't be supported, and ` +
+            `strings will be treated a exact matches. Please switch to ` +
+            `regular expressions for equivalent behavior.`,
+          data: {
+            'Path String': capture,
+            'Wildcard Character': possibleExpressString[0],
+            'Learn More': 'https://goo.gl/xZMKEV',
+          },
+        });
       }
       route = new ExpressRoute({path: capture, handler, method});
     } else if (capture instanceof RegExp) {
