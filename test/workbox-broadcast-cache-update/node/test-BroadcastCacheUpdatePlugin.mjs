@@ -1,5 +1,3 @@
-import {expect} from 'chai';
-
 import expectError from '../../../infra/testing/expectError';
 import {devOnly} from '../../../infra/testing/env-it';
 
