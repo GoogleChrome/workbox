@@ -28,6 +28,7 @@
   "module": "index.mjs",
   "dependencies": {
     "workbox-cache-expiration": "^3.0.0-alpha.24",
+    "workbox-cacheable-response": "^3.0.0-alpha.24",
     "workbox-core": "^3.0.0-alpha.24"
   }
 }
