@@ -29,6 +29,7 @@ const FetchEvent = require('./sw-env-mocks/FetchEvent');
 const FileReader = require('./sw-env-mocks/FileReader');
 const Headers = require('./sw-env-mocks/Headers');
 const Request = require('./sw-env-mocks/Request');
+const Response = require('./sw-env-mocks/Response');
 const SyncEvent = require('./sw-env-mocks/SyncEvent');
 const SyncManager = require('./sw-env-mocks/SyncManager');
 
@@ -56,6 +57,7 @@ global.importScripts = () => {};
 global.location = new URL('https://example.com');
 global.registration.sync = new SyncManager();
 global.Request = Request;
+global.Response = Response;
 global.SyncEvent = SyncEvent;
 global.URLSearchParams = URLSearchParams;
 

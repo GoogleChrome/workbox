@@ -159,7 +159,7 @@ class CacheExpirationPlugin {
    * @private
    */
   _getDateHeaderTimestamp(cachedResponse) {
-    const dateHeader = cachedResponse.headers['date'];
+    const dateHeader = cachedResponse.headers.get('date');
     const parsedDate = new Date(dateHeader);
     const headerTime = parsedDate.getTime();
 
