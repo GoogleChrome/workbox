@@ -35,7 +35,7 @@ class Response {
       throw new TypeError(`Failed to execute 'clone' on 'Response': ` +
         `Response body is already used`);
     } else {
-      return new Request(this.url, Object.assign({body: this._body}, this));
+      return new Response(this._body, this);
     }
   }
 
