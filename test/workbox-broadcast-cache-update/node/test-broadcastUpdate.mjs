@@ -19,7 +19,7 @@ import sinon from 'sinon';
 import expectError from '../../../infra/testing/expectError';
 import {devOnly} from '../../../infra/testing/env-it';
 
-import MESSAGE_TYPES from '../../../packages/workbox-broadcast-cache-update/MESSAGE_TYPES.mjs';
+import messageTypes from '../../../packages/workbox-broadcast-cache-update/messageTypes.mjs';
 import {broadcastUpdate} from '../../../packages/workbox-broadcast-cache-update/broadcastUpdate.mjs';
 
 describe(`[workbox-broadcast-cache-update] broadcastUpdate`, function() {
@@ -45,11 +45,11 @@ describe(`[workbox-broadcast-cache-update] broadcastUpdate`, function() {
     const channel = new BroadcastChannel('channel-name');
     sandbox.spy(channel, 'postMessage');
 
-    broadcastUpdate({channel, cacheName, source, url});
+    broadcastUpdate(channel, cacheName, url, source);
 
     expect(channel.postMessage.callCount).to.equal(1);
     expect(channel.postMessage.args[0][0]).to.deep.equal({
-      type: MESSAGE_TYPES.CACHE_UPDATED,
+      type: messageTypes.CACHE_UPDATED,
       meta: source,
       payload: {
         cacheName,

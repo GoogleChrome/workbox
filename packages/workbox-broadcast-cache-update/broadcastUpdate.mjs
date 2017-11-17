@@ -14,7 +14,7 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.mjs';
-import MESSAGE_TYPES from './MESSAGE_TYPES.mjs';
+import messageTypes from './messageTypes.mjs';
 import './_version.mjs';
 
 /**
@@ -45,17 +45,16 @@ import './_version.mjs';
  * (Usage of [Flux](https://facebook.github.io/flux/) itself is not at
  * all required.)
  *
- * @param {Object} input
- * @param {BroadcastChannel} input.channel The `BroadcastChannel` to use.
- * @param {string} input.cacheName The name of the cache in which the updated
+ * @param {BroadcastChannel} channel The `BroadcastChannel` to use.
+ * @param {string} cacheName The name of the cache in which the updated
  *        `Response` was stored.
- * @param {string} input.url The URL associated with the updated `Response`.
- * @param {string} input.source A string identifying this library as the source
+ * @param {string} url The URL associated with the updated `Response`.
+ * @param {string} source A string identifying this library as the source
  *        of the update message.
  *
  * @memberof workbox.broadcastUpdate
  */
-const broadcastUpdate = ({channel, cacheName, url, source} = {}) => {
+const broadcastUpdate = (channel, cacheName, url, source) => {
   if (process.env.NODE_ENV !== 'production') {
     assert.isInstance(channel, BroadcastChannel, {
       moduleName: 'workbox-broadcast-cache-update',
@@ -84,7 +83,7 @@ const broadcastUpdate = ({channel, cacheName, url, source} = {}) => {
   }
 
   channel.postMessage({
-    type: MESSAGE_TYPES.CACHE_UPDATED,
+    type: messageTypes.CACHE_UPDATED,
     meta: source,
     payload: {
       cacheName: cacheName,

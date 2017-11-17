@@ -93,7 +93,7 @@ class BroadcastCacheUpdate {
 
     if (!responsesAreSame(
       firstResponse, secondResponse, this._headersToCheck)) {
-      broadcastUpdate(url, cacheName);
+      broadcastUpdate(this._getChannel(), cacheName, url, this._source);
     }
   }
 }

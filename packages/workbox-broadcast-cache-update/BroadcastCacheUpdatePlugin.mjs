@@ -23,7 +23,24 @@ import './_version.mjs';
  *
  * @memberof workbox.broadcastUpdate
  */
-class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
+class BroadcastCacheUpdatePlugin {
+    /**
+   * Construct a new instance with a specific `channelName` to
+   * broadcast messages on
+   *
+   * @param {string} channelName The name that will be used when creating
+   * the `BroadcastChannel`.
+   * @param {Object} options
+   * @param {Array<string>}
+   * [options.headersToCheck=['content-length', 'etag', 'last-modified']] A
+   * list of headers that will be used to determine whether the responses
+   * differ.
+   * @param {string} [options.source='workbox-broadcast-cache-update'] An
+   * attribution value that indicates where the update originated.
+   */
+  constructor(channelName, options) {
+    this._broadcastUpdate = new BroadcastCacheUpdate(channelName, options);
+  }
   /**
    * A "lifecycle" callback that will be triggered automatically by the
    * `workbox-sw` and `workbox-runtime-caching` handlers when an entry is
@@ -57,7 +74,8 @@ class BroadcastCacheUpdatePlugin extends BroadcastCacheUpdate {
       return;
     }
 
-    this.notifyIfUpdated(oldResponse, newResponse, cacheName, url);
+    this._broadcastUpdate
+      .notifyIfUpdated(oldResponse, newResponse, cacheName, url);
   }
 }
 
