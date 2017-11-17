@@ -14,38 +14,47 @@
 */
 
 import {expect} from 'chai';
+import sinon from 'sinon';
 
 import expectError from '../../../infra/testing/expectError';
+import {devOnly} from '../../../infra/testing/env-it';
 
 import MESSAGE_TYPES from '../../../packages/workbox-broadcast-cache-update/MESSAGE_TYPES.mjs';
 import {broadcastUpdate} from '../../../packages/workbox-broadcast-cache-update/broadcastUpdate.mjs';
 
 describe(`[workbox-broadcast-cache-update] broadcastUpdate`, function() {
-  const channelName = 'test-channel';
-  const channel = new BroadcastChannel(channelName);
+  const sandbox = sinon.sandbox.create();
   const cacheName = 'test-cache';
   const url = 'https://example.com';
   const source = 'test-source';
 
-  it(`should throw when called without any parameters`, function() {
+  devOnly.it(`should throw when called without any parameters`, function() {
     return expectError(() => {
       broadcastUpdate();
     }, 'incorrect-class');
   });
 
-  it(`should trigger the appropriate message event on a BroadcastChannel with the same channel name`, function(done) {
-    const secondChannel = new BroadcastChannel(channelName);
+  it(`should trigger the appropriate message event on a BroadcastChannel with the same channel name`, function() {
+    /** const secondChannel = new BroadcastChannel(channelName);
     secondChannel.addEventListener('message', (event) => {
       expect(event.data).to.deep.equal({
-        type: MESSAGE_TYPES.CACHE_UPDATED,
-        meta: source,
-        payload: {
-          cacheName,
-          updatedUrl: url,
-        },
+
       });
       done();
-    });
+    });**/
+    const channel = new BroadcastChannel('channel-name');
+    sandbox.spy(channel, 'postMessage');
+
     broadcastUpdate({channel, cacheName, source, url});
+
+    expect(channel.postMessage.callCount).to.equal(1);
+    expect(channel.postMessage.args[0][0]).to.deep.equal({
+      type: MESSAGE_TYPES.CACHE_UPDATED,
+      meta: source,
+      payload: {
+        cacheName,
+        updatedUrl: url,
+      },
+    });
   });
 });

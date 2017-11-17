@@ -15,6 +15,7 @@
 
 import {expect} from 'chai';
 
+import {devOnly} from '../../../infra/testing/env-it';
 import expectError from '../../../infra/testing/expectError';
 
 import {responsesAreSame} from '../../../packages/workbox-broadcast-cache-update/utils/responsesAreSame.mjs';
@@ -24,7 +25,7 @@ describe(`[workbox-broadcast-cache-update] responsesAreSame`, function() {
   const secondHeaderName = 'x-second-header';
   const headersToCheck = [firstHeaderName, secondHeaderName];
 
-  it(`should throw when responsesAreSame() is called without any parameters`, function() {
+  devOnly.it(`should throw when responsesAreSame() is called without any parameters`, function() {
     return expectError(() => {
       responsesAreSame();
     }, 'invalid-responses-are-same-args');
