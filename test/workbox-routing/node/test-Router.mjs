@@ -164,7 +164,7 @@ describe(`[workbox-routing] Router`, function() {
       const putRoute = new Route(MATCH, HANDLER, 'PUT');
 
       router.registerRoute(getRoute);
-      expectError(
+      return expectError(
         () => router.unregisterRoute(putRoute),
         'unregister-route-but-not-found-with-method',
         (error) => {
@@ -181,7 +181,7 @@ describe(`[workbox-routing] Router`, function() {
       const getRoute2 = new Route(MATCH, HANDLER, 'GET');
 
       router.registerRoute(getRoute1);
-      expectError(
+      return expectError(
         () => router.unregisterRoute(getRoute2),
         'unregister-route-route-not-registered'
       );

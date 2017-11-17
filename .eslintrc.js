@@ -14,6 +14,7 @@ module.exports = {
     workbox: false,
     WorkboxSW: false,
     SyncEvent: false,
+    BroadcastChannel: false,
   },
   rules: {
     "jsdoc/check-types": 2,

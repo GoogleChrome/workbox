@@ -172,4 +172,12 @@ export default {
       `Please see the docs for ${moduleName}.${className}.${funcName}() for ` +
       `more info.`;
   },
+  'channel-name-required': () => {
+    return `You must provide a channelName to construct a ` +
+    `BroadcastCacheUpdate instance.`;
+  },
+  'invalid-responses-are-same-args': () => {
+    return `The arguments passed into responsesAreSame() appear to be ` +
+      `invalid. Please ensure valid Responses are used.`;
+  },
 };
