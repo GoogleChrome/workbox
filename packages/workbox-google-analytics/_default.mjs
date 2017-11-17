@@ -13,7 +13,6 @@
  limitations under the License.
 */
 
-import {Queue} from 'workbox-background-sync/Queue.mjs';
 import {QueuePlugin} from 'workbox-background-sync/QueuePlugin.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {Route} from 'workbox-routing/Route.mjs';
@@ -98,17 +97,17 @@ const createRequestWillReplayCallback = (config) => {
 /**
  * Creates GET and POST routes to catch failed Measurement Protocol hits.
  *
- * @param {Queue} queue
+ * @param {QueuePlugin} queuePlugin
  * @return {Array<Route>} The created routes.
  *
  * @private
  */
-const createCollectRoutes = (queue) => {
+const createCollectRoutes = (queuePlugin) => {
   const match = ({url}) => url.hostname === GOOGLE_ANALYTICS_HOST &&
       url.pathname === COLLECT_PATH;
 
   const handler = new NetworkOnly({
-    plugins: [new QueuePlugin(queue)],
+    plugins: [queuePlugin],
   });
 
   return [
@@ -168,7 +167,7 @@ const createGtagJsRoute = (cacheName) => {
 const initialize = (options = {}) => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
 
-  const queue = new Queue(QUEUE_NAME, {
+  const queuePlugin = new QueuePlugin(QUEUE_NAME, {
     maxRetentionTime: MAX_RETENTION_TIME,
     callbacks: {
       requestWillReplay: createRequestWillReplayCallback(options),
@@ -178,7 +177,7 @@ const initialize = (options = {}) => {
   const routes = [
     createAnalyticsJsRoute(cacheName),
     createGtagJsRoute(cacheName),
-    ...createCollectRoutes(queue),
+    ...createCollectRoutes(queuePlugin),
   ];
 
   const router = new Router();

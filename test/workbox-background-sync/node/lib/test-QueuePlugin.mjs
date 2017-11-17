@@ -15,32 +15,32 @@
 
 import {expect} from 'chai';
 import sinon from 'sinon';
-import {Queue} from '../../../../packages/workbox-background-sync/Queue.mjs';
+import {Queue} from
+    '../../../../packages/workbox-background-sync/Queue.mjs';
 import {QueuePlugin} from
     '../../../../packages/workbox-background-sync/QueuePlugin.mjs';
 
 describe(`[workbox-background-sync] QueuePlugin`, function() {
   const sandbox = sinon.sandbox.create();
-  const queue = new Queue('foo');
 
   beforeEach(function() {
-    sandbox.restore();
+    Queue._queueNames.clear();
   });
 
   after(function() {
-    sandbox.restore();
+    Queue._queueNames.clear();
   });
 
   describe(`constructor`, function() {
     it(`should store a Queue instance`, async function() {
-      const queuePlugin = new QueuePlugin(queue);
-      expect(queuePlugin._queue).to.equal(queue);
+      const queuePlugin = new QueuePlugin('foo');
+      expect(queuePlugin._queue).to.be.instanceOf(Queue);
     });
 
     it(`should implement fetchDidFail and add requests to the queue`,
         async function() {
       sandbox.stub(Queue.prototype, 'addRequest');
-      const queuePlugin = new QueuePlugin(queue);
+      const queuePlugin = new QueuePlugin('foo');
 
       queuePlugin.fetchDidFail({request: new Request('/')});
       expect(Queue.prototype.addRequest.calledOnce).to.be.true;

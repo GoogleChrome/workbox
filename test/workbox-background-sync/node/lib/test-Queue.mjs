@@ -14,20 +14,15 @@
 */
 
 import {expect} from 'chai';
-import clearRequire from 'clear-require';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import sinon from 'sinon';
-
-// import deleteIDBDatabase from
-//     '../../../../infra/testing/deleteIDBDatabase.mjs';
 import expectError from '../../../../infra/testing/expectError';
+import {Queue} from '../../../../packages/workbox-background-sync/Queue.mjs';
 import {DB_NAME, OBJECT_STORE_NAME} from
     '../../../../packages/workbox-background-sync/utils/constants.mjs';
 import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 import {resetEventListeners} from
     '../../../../infra/testing/sw-env-mocks/event-listeners.js';
-
-let Queue;
 
 const getObjectStoreEntries = async () => {
   return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);
@@ -36,34 +31,19 @@ const getObjectStoreEntries = async () => {
 describe(`[workbox-background-sync] Queue`, function() {
   const sandbox = sinon.sandbox.create();
 
-  beforeEach(async function() {
+  const reset = () => {
     sandbox.restore();
-
-    // Clear Queue so the name map gets reset on re-import.
-    clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
-
+    Queue._queueNames.clear();
     iDBReset();
-
-    // Remove any lingering event listeners
     resetEventListeners();
+  };
 
-    // Re-import Queue each time so the name map gets reset.
-    const imprt = await import(
-        '../../../../packages/workbox-background-sync/Queue.mjs');
-
-    Queue = imprt.Queue;
+  beforeEach(async function() {
+    reset();
   });
 
   after(async function() {
-    sandbox.restore();
-
-    // Clear Queue so the name map gets reset on re-import.
-    clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
-
-    iDBReset();
-
-    // Remove any lingering event listeners
-    resetEventListeners();
+    reset();
   });
 
   describe(`constructor`, function() {
