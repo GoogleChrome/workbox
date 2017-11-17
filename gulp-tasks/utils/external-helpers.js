@@ -1,9 +1,10 @@
 /* eslint-disable */
-// This is extracted from the Babel runtime, meant to be included once in
-// workbox-core and reused throughout all of the other modules as a way of
-// avoiding code duplication.
-// See https://github.com/babel/babel/blob/9e0f5235b1ca5167c368a576ad7c5af62d20b0e3/packages/babel-helpers/src/helpers.js#L240
-var babelHelpers = {
+// This is extracted from the Babel runtime (original source: https://github.com/babel/babel/blob/9e0f5235b1ca5167c368a576ad7c5af62d20b0e3/packages/babel-helpers/src/helpers.js#L240).
+// As part of the Rollup bundling process, it's injected once into workbox-core
+// and reused throughout all of the other modules, avoiding code duplication.
+// See https://github.com/GoogleChrome/workbox/pull/1048#issuecomment-344698046
+// for further background.
+self.babelHelpers = {
   asyncToGenerator: function(fn) {
     return function() {
       var gen = fn.apply(this, arguments);

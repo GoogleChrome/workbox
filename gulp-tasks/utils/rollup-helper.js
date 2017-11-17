@@ -23,7 +23,10 @@ module.exports = {
         },
         modules: false,
       }]],
-      // The babelHelpers code will be injected into the workbox-core bundle.
+      // This will result in references to `babelHelpers.asyncToGenerators()`
+      // in the transpiled code. The declaration of this method lives in the
+      // external-helpers.js file and is injected by Rollup once into the
+      // workbox-core bundle.
       plugins: ['external-helpers'],
       externalHelpers: true,
     };
