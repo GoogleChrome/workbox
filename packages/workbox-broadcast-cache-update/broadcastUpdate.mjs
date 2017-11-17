@@ -17,7 +17,34 @@ import {assert} from 'workbox-core/_private/assert.mjs';
 import MESSAGE_TYPES from './MESSAGE_TYPES.mjs';
 import './_version.mjs';
 
-/*
+/**
+ * You would not normally call this method directly; it's called automatically
+ * by an instance of the {@link BroadcastCacheUpdate} class. It's exposed here
+ * for the benefit of developers who would rather not use the full
+ * `BroadcastCacheUpdate` implementation.
+ *
+ * Calling this will dispatch a message on the provided
+ * {@link https://developers.google.com/web/updates/2016/09/broadcastchannel|Broadcast Channel}
+ * to notify interested subscribers about a change to a cached resource.
+ *
+ * The message that's posted has a formation inspired by the
+ * [Flux standard action](https://github.com/acdlite/flux-standard-action#introduction)
+ * format like so:
+ *
+ * ```
+ * {
+ *   type: 'CACHE_UPDATED',
+ *   meta: 'workbox-broadcast-cache-update',
+ *   payload: {
+ *     cacheName: 'the-cache-name',
+ *     updatedUrl: 'https://example.com/'
+ *   }
+ * }
+ * ```
+ *
+ * (Usage of [Flux](https://facebook.github.io/flux/) itself is not at
+ * all required.)
+ *
  * @param {Object} input
  * @param {BroadcastChannel} input.channel The `BroadcastChannel` to use.
  * @param {string} input.cacheName The name of the cache in which the updated
@@ -25,6 +52,8 @@ import './_version.mjs';
  * @param {string} input.url The URL associated with the updated `Response`.
  * @param {string} input.source A string identifying this library as the source
  *        of the update message.
+ *
+ * @memberof workbox.broadcastUpdate
  */
 const broadcastUpdate = ({channel, cacheName, url, source} = {}) => {
   if (process.env.NODE_ENV !== 'production') {

@@ -17,7 +17,7 @@ import {expect} from 'chai';
 
 import expectError from '../../../infra/testing/expectError';
 
-import {responsesAreSame} from '../../../packages/workbox-broadcast-cache-update/responsesAreSame.mjs';
+import {responsesAreSame} from '../../../packages/workbox-broadcast-cache-update/utils/responsesAreSame.mjs';
 
 describe(`[workbox-broadcast-cache-update] responsesAreSame`, function() {
   const firstHeaderName = 'x-first-header';
