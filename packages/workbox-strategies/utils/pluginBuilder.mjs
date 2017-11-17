@@ -16,6 +16,8 @@
 import {logger} from 'workbox-core/_private/logger.mjs';
 import {CacheExpirationPlugin} from
   'workbox-cache-expiration/CacheExpirationPlugin.mjs';
+import {CacheableResponsePlugin} from
+  'workbox-cacheable-response/CacheableResponsePlugin.mjs';
 import '../_version.mjs';
 
 const pluginBuilder = (options) => {
@@ -25,8 +27,8 @@ const pluginBuilder = (options) => {
 
   const pluginParamsToClass = {
     cacheExpiration: CacheExpirationPlugin,
+    cacheableResponse: CacheableResponsePlugin,
     // TODO: Add support for 'broadcastCacheUpdate': BroadcastCacheUpdatePlugin,
-    // TODO: Add support for 'cacheableResponse': CacheableResponsePlugin,
   };
 
   for (const [pluginId, config] of Object.entries(options)) {
