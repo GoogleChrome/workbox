@@ -57,6 +57,7 @@ function validate(runtimeCachingOptions, convertedOptions) {
       if (runtimeCachingOption.options.networkTimeoutSeconds) {
         expectedOptions.networkTimeoutSeconds = runtimeCachingOption.options.networkTimeoutSeconds;
       }
+
       if (runtimeCachingOption.options.cache) {
         if (runtimeCachingOption.options.cache.name) {
           expectedOptions.cacheName = runtimeCachingOption.options.cache.name;
@@ -65,6 +66,10 @@ function validate(runtimeCachingOptions, convertedOptions) {
           expectedOptions.cacheExpiration = Object.assign({}, runtimeCachingOption.options.cache);
           delete expectedOptions.cacheExpiration.name;
         }
+      }
+
+      if (runtimeCachingOption.options.cacheableResponse) {
+        expectedOptions.cacheableResponse = runtimeCachingOption.options.cacheableResponse;
       }
     }
 
@@ -128,6 +133,9 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       options: {
         cache: {
           maxEntries: 10,
+        },
+        cacheableResponse: {
+          statuses: [0, 200],
         },
       },
     }];

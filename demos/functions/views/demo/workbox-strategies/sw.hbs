@@ -1,0 +1,52 @@
+{{{WORKBOX_SW_IMPORT}}}
+
+self.addEventListener('fetch', (event) => {
+  switch (new URL(event.request.url).pathname) {
+    case '/demo/workbox-strategies/cache-only-empty-cache.txt':
+      const cacheOnlyEmpty = new workbox.strategies.CacheOnly();
+      event.respondWith(cacheOnlyEmpty.handle({event}));
+      break;
+    case '/demo/workbox-strategies/cache-only-populated-cache':
+      const cacheOnlyPopulated = new workbox.strategies.CacheOnly();
+      event.respondWith(cacheOnlyPopulated.handle({event}));
+      break;
+    case '/demo/workbox-strategies/cache-first.txt':
+      const cacheFirst = new workbox.strategies.CacheFirst();
+      event.respondWith(cacheFirst.handle({event}));
+      break;
+    case '/demo/workbox-strategies/network-only.txt':
+      const networkOnly = new workbox.strategies.NetworkOnly();
+      event.respondWith(networkOnly.handle({event}));
+      break;
+    case '/demo/workbox-strategies/network-first.txt':
+      const networkFirst = new workbox.strategies.NetworkFirst();
+      event.respondWith(networkFirst.handle({event}));
+      break;
+    case '/demo/workbox-strategies/network-first-404.txt':
+      const networkFirstInvalid = new workbox.strategies.NetworkFirst();
+      event.respondWith(networkFirstInvalid.handle({event}));
+      break;
+    case '/demo/workbox-strategies/stale-while-revalidate.txt':
+      const staleWhileRevalidate = new workbox.strategies.StaleWhileRevalidate();
+      event.respondWith(staleWhileRevalidate.handle({event}));
+      break;
+  }
+});
+
+// The following code is here to demonstrate different aspects of the
+// strategies in the demo.
+
+workbox.skipWaiting();
+workbox.clientsClaim();
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(workbox.core.cacheNames.runtime)
+    .then((cache) => {
+      return cache.put(
+        new Request('/demo/workbox-strategies/cache-only-populated-cache'),
+        new Response('Hello from the populated cache.')
+      );
+    })
+  );
+});

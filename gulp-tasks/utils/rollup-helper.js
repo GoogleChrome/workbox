@@ -1,6 +1,7 @@
-const uglifyPlugin = require('rollup-plugin-uglify');
+const babel = require('rollup-plugin-babel');
 const minify = require('uglify-es').minify;
 const replace = require('rollup-plugin-replace');
+const uglifyPlugin = require('rollup-plugin-uglify');
 
 const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');
@@ -11,6 +12,25 @@ module.exports = {
   // as possible.
   getDefaultPlugins: (buildType) => {
     const plugins = [];
+
+    const babelConfig = {
+      presets: [['env', {
+        targets: {
+          // This corresponds to the version of Chroumium used by
+          // Samsung Internet 5.x, which is the minimum non-evergreen browser
+          // we currently support.
+          browsers: ['chrome >= 51'],
+        },
+        modules: false,
+      }]],
+      // This will result in references to `babelHelpers.asyncToGenerators()`
+      // in the transpiled code. The declaration of this method lives in the
+      // external-helpers.js file and is injected by Rollup once into the
+      // workbox-core bundle.
+      plugins: ['external-helpers'],
+      externalHelpers: true,
+    };
+    plugins.push(babel(babelConfig));
 
     let minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {

@@ -24,6 +24,5 @@ const crypto = require('crypto');
  */
 module.exports = (asset) => {
   const hash = crypto.createHash('md5');
-  hash.update(asset.source());
-  return hash.digest('hex');
+  return hash.update(asset.source(), 'utf8', 'hex');
 };

@@ -18,8 +18,8 @@ import {QueuePlugin} from 'workbox-background-sync/QueuePlugin.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {Route} from 'workbox-routing/Route.mjs';
 import {Router} from 'workbox-routing/Router.mjs';
-import {NetworkFirst} from 'workbox-runtime-caching/NetworkFirst.mjs';
-import {NetworkOnly} from 'workbox-runtime-caching/NetworkOnly.mjs';
+import {NetworkFirst} from 'workbox-strategies/NetworkFirst.mjs';
+import {NetworkOnly} from 'workbox-strategies/NetworkOnly.mjs';
 import {
   QUEUE_NAME,
   MAX_RETENTION_TIME,

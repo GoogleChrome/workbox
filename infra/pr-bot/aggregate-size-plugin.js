@@ -16,12 +16,11 @@ class AggregateSizePlugin extends PluginInterface {
   run({afterPath} = {}) {
     const packagesToAggregate = [
       `workbox-cache-expiration`,
-      // TODO: Enable if this should be part of aggregate size
-      // `workbox-cacheable-response`,
+      `workbox-cacheable-response`,
       `workbox-core`,
       `workbox-precaching`,
       `workbox-routing`,
-      `workbox-runtime-caching`,
+      `workbox-strategies`,
       `workbox-sw`,
     ];
     const files = packagesToAggregate.map((pkgName) => {

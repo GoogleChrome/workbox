@@ -19,7 +19,7 @@ import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import {eventsDoneWaiting, resetEventListeners} from '../../../infra/testing/sw-env-mocks/event-listeners.js';
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
 import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
-import {NetworkFirst, NetworkOnly} from '../../../packages/workbox-runtime-caching/index.mjs';
+import {NetworkFirst, NetworkOnly} from '../../../packages/workbox-strategies/index.mjs';
 import * as googleAnalytics from '../../../packages/workbox-google-analytics/index.mjs';
 import {
   MAX_RETENTION_TIME,

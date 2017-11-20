@@ -8,10 +8,11 @@ const rollup = require('rollup');
 const rollupStream = require('rollup-stream');
 const source = require('vinyl-source-stream');
 const sourcemaps = require('gulp-sourcemaps');
+
 const constants = require('./constants');
+const logHelper = require('../../infra/utils/log-helper');
 const pkgPathToName = require('./pkg-path-to-name');
 const rollupHelper = require('./rollup-helper');
-const logHelper = require('../../infra/utils/log-helper');
 
 /*
  * To test sourcemaps are valid and working, use:
@@ -127,16 +128,23 @@ module.exports = (packagePath, buildType) => {
   logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
   logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
+  const plugins = rollupHelper.getDefaultPlugins(buildType);
+
+  const banner = pkgJson.workbox.includeBabelHelpers ?
+    fs.readFileSync(path.join(__dirname, 'external-helpers.js')) :
+    '';
+
   return rollupStream({
     input: moduleBrowserPath,
     rollup,
     format: 'iife',
+    banner,
     name: namespace,
     sourcemap: true,
     globals,
     external: externalAndPure,
     pureExternalModules: externalAndPure,
-    plugins: rollupHelper.getDefaultPlugins(buildType),
+    plugins,
     onwarn: (warning) => {
       if (buildType === constants.BUILD_TYPES.prod &&
         warning.code === 'UNUSED_EXTERNAL_IMPORT') {
@@ -146,8 +154,12 @@ module.exports = (packagePath, buildType) => {
       }
 
       // The final builds should have no warnings.
-      throw new Error(`Unhandled Rollup Warning: [${warning.code}] ` +
-        `${warning.message}`);
+      if (warning.code && warning.message) {
+        throw new Error(`Unhandled Rollup Warning: [${warning.code}] ` +
+          `${warning.message}`);
+      } else {
+        throw new Error(`Unhandled Rollup Warning: ${warning}`);
+      }
     },
   })
   .on('error', (err) => {

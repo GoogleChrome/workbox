@@ -59,7 +59,7 @@ export default {
     }
     return `The parameter '${paramName}' passed into ` +
       `'${moduleName}.${className}.${funcName}()' must be an instance of ` +
-      `class ${expectedClass}.`;
+      `class ${expectedClass.name}.`;
   },
 
   'missing-a-method': ({expectedMethod, paramName, moduleName, className,
@@ -158,6 +158,11 @@ export default {
       `in ${moduleName}.${className}.${funcName}`;
   },
 
+  'statuses-or-headers-required': ({moduleName, className, funcName}) => {
+    return `You must define either config.statuses or config.headers` +
+      `in ${moduleName}.${className}.${funcName}`;
+  },
+
   'invalid-string': ({moduleName, className, funcName, paramName}) => {
     if (!paramName || !moduleName || !className || !funcName) {
       throw new Error(`Unexpected input to 'invalid-string' error.`);
@@ -166,5 +171,13 @@ export default {
       `'http' (for cross-origin matches) or '/' (for same-origin matches). ` +
       `Please see the docs for ${moduleName}.${className}.${funcName}() for ` +
       `more info.`;
+  },
+  'channel-name-required': () => {
+    return `You must provide a channelName to construct a ` +
+    `BroadcastCacheUpdate instance.`;
+  },
+  'invalid-responses-are-same-args': () => {
+    return `The arguments passed into responsesAreSame() appear to be ` +
+      `invalid. Please ensure valid Responses are used.`;
   },
 };

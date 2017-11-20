@@ -20,7 +20,8 @@
   },
   "workbox": {
     "browserNamespace": "workbox.core",
-    "packageType": "browser"
+    "packageType": "browser",
+    "includeBabelHelpers": true
   },
   "main": "build/workbox-core.prod.js",
   "module": "index.mjs"

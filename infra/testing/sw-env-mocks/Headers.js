@@ -21,6 +21,10 @@ class Headers {
     this.obj = obj;
   }
 
+  has(key) {
+    return (key in this.obj);
+  }
+
   get(key) {
     return this.obj[key];
   }
