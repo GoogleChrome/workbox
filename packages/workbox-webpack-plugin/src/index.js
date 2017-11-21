@@ -15,11 +15,13 @@
 */
 
 const path = require('path');
-const getEntries = require('./lib/get-manifest-entries-with-webpack');
+
+const copyWorkboxSW = require('./lib/utils/copy-workbox-sw');
 const generateManifest = require('./lib/generate-manifest-with-webpack');
 const generateOrCopySW = require('./lib/generate-or-copy-sw');
+const getAssetHash = require('./lib/utils/get-asset-hash');
+const getEntries = require('./lib/get-manifest-entries-with-webpack');
 const webpackAsset = require('./lib/utils/webpack-asset');
-const copyWorkboxSW = require('./lib/utils/copy-workbox-sw');
 const {setReadFile} = require('./lib/utils/read-file');
 
 /**
@@ -114,6 +116,7 @@ class WorkboxWebpackPlugin {
       // The version of workbox-sw is included in it's filename so we need
       // that information to import it in the generated service worker.
       this.workboxSWFilename = workboxSWName;
+
       next();
     });
 
@@ -128,33 +131,26 @@ class WorkboxWebpackPlugin {
      *     assets.
      */
     compiler.plugin('emit', async (compilation, next) => {
-      const {
-        manifestFilename = `file-manifest.${compilation.hash}.js`,
-        swSrc,
-        filename = (swSrc && path.basename(swSrc)) || 'sw.js',
-      } = this.config;
+      const {swSrc} = this.config;
+      const serviceWorkerFilename = swSrc ? path.basename(swSrc) : 'sw.js';
 
-      const entries = getEntries(compiler, compilation, this.config);
+      const entries = getEntries(compilation, this.config);
+
+      const fileManifest = generateManifest(entries);
+      const fileManifestAsset = webpackAsset(fileManifest);
+      const fileManifestHash = getAssetHash(fileManifestAsset);
+      const manifestFilename = `precache-manifest.${fileManifestHash}.js`;
+      compilation.assets[manifestFilename] = fileManifestAsset;
 
       const importScripts = (this.config.importScripts || []).concat([
         this.workboxSWFilename,
         manifestFilename,
       ]);
 
-      const [fileManifest, serviceWorker] = await Promise.all([
-        // service worker and fileManifest are not (yet) assets when the
-        // manifest is generated
-        generateManifest(entries),
-        generateOrCopySW(
-          Object.assign(this.generateSWStringOptions, {
-            importScripts,
-          }),
-          swSrc
-        ),
-      ]);
+      const serviceWorker = await generateOrCopySW(Object.assign(
+        this.generateSWStringOptions, {importScripts}), swSrc);
+      compilation.assets[serviceWorkerFilename] = webpackAsset(serviceWorker);
 
-      compilation.assets[manifestFilename] = webpackAsset(fileManifest);
-      compilation.assets[filename] = webpackAsset(serviceWorker);
       next();
     });
   }

@@ -23,6 +23,7 @@ const crypto = require('crypto');
  * @private
  */
 module.exports = (asset) => {
-  const hash = crypto.createHash('md5');
-  return hash.update(asset.source(), 'utf8', 'hex');
+  return crypto.createHash('md5')
+    .update(asset.source(), 'utf8')
+    .digest('hex');
 };
