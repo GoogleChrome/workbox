@@ -21,7 +21,7 @@ const generateManifest = require('./lib/generate-manifest-with-webpack');
 const generateOrCopySW = require('./lib/generate-or-copy-sw');
 const getAssetHash = require('./lib/utils/get-asset-hash');
 const getEntries = require('./lib/get-manifest-entries-with-webpack');
-const webpackAsset = require('./lib/utils/webpack-asset');
+const formatAsWebpackAsset = require('./lib/utils/format-as-webpack-asset');
 const {setReadFile} = require('./lib/utils/read-file');
 
 /**
@@ -111,8 +111,9 @@ class WorkboxWebpackPlugin {
       } = await copyWorkboxSW();
 
       // Add the workbox-sw file to compilation assets.
-      compilation.assets[workboxSWName] = webpackAsset(workboxSW);
-      compilation.assets[`${workboxSWName}.map`] = webpackAsset(workboxSWMap);
+      compilation.assets[workboxSWName] = formatAsWebpackAsset(workboxSW);
+      compilation.assets[`${workboxSWName}.map`] = formatAsWebpackAsset(
+        workboxSWMap);
       // The version of workbox-sw is included in it's filename so we need
       // that information to import it in the generated service worker.
       this.workboxSWFilename = workboxSWName;
@@ -137,7 +138,7 @@ class WorkboxWebpackPlugin {
       const entries = getEntries(compilation, this.config);
 
       const fileManifest = generateManifest(entries);
-      const fileManifestAsset = webpackAsset(fileManifest);
+      const fileManifestAsset = formatAsWebpackAsset(fileManifest);
       const fileManifestHash = getAssetHash(fileManifestAsset);
       const manifestFilename = `precache-manifest.${fileManifestHash}.js`;
       compilation.assets[manifestFilename] = fileManifestAsset;
@@ -149,7 +150,8 @@ class WorkboxWebpackPlugin {
 
       const serviceWorker = await generateOrCopySW(Object.assign(
         this.generateSWStringOptions, {importScripts}), swSrc);
-      compilation.assets[serviceWorkerFilename] = webpackAsset(serviceWorker);
+      compilation.assets[serviceWorkerFilename] = formatAsWebpackAsset(
+        serviceWorker);
 
       next();
     });
