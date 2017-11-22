@@ -1,6 +1,6 @@
 {
   "name": "workbox-sw",
-  "version": "3.0.0-alpha",
+  "version": "3.0.0-alpha.0",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This module makes it easy to get started with the Workbox service worker libraries.",
