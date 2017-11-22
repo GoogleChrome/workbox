@@ -95,5 +95,5 @@ gulp.task('publish-github:temp-v3', async () => {
 
 gulp.task('publish-github', gulp.series(
   'publish-github:generate-from-tags',
-  'publish-github:temp-v3',
+  // 'publish-github:temp-v3',
 ));

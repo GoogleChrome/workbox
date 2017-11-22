@@ -81,5 +81,5 @@ gulp.task('publish-cdn:temp-v3', async () => {
 
 gulp.task('publish-cdn', gulp.series(
   'publish-cdn:generate-from-tags',
-  'publish-cdn:temp-v3',
+  // 'publish-cdn:temp-v3',
 ));
