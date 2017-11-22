@@ -47,7 +47,7 @@ describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
       // This reflects the number of library files that were copied over:
       // - both prod and dev builds
       // - source maps for each
-      expect(copyStub.callCount).to.eql(24);
+      expect(copyStub.callCount).to.eql(40);
     });
   }
 });
