@@ -19,6 +19,7 @@ const generateSW = require('./entry-points/generate-sw');
 const generateSWString = require('./entry-points/generate-sw-string');
 const getManifest = require('./entry-points/get-manifest');
 const injectManifest = require('./entry-points/inject-manifest');
+const {getModuleUrl} = require('./lib/cdn-utils');
 
 /**
  * This Node module can be used to generate a list of assets that should be
@@ -395,5 +396,6 @@ module.exports = {
   generateSW,
   generateSWString,
   getManifest,
+  getModuleUrl,
   injectManifest,
 };
