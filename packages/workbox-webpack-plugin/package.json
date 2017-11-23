@@ -28,6 +28,7 @@
     "node": ">=4.0.0"
   },
   "dependencies": {
+    "json-stable-stringify": "^1.0.1",
     "workbox-build": "^3.0.0-alpha.1"
   },
   "author": "Will Farley <a.will.farley@gmail.com> (http://www.willfarley.org/)",

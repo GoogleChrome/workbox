@@ -1,5 +1,6 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const expect = require('chai').expect;
 const fse = require('fs-extra');
 const path = require('path');
 const tempy = require('tempy');
@@ -8,7 +9,6 @@ const webpack = require('webpack');
 
 const WorkboxWebpackPlugin = require('../../../packages/workbox-webpack-plugin/src/index');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
-const compareManifestEntries = require('../../../infra/testing/validator/compare-manifest-entries');
 
 describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
@@ -16,9 +16,8 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
   const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');
 
   describe(`[workbox-webpack-plugin] multiple chunks`, function() {
-    const FILE_MANIFEST_NAME = 'file-manifest.bb510304f76a8d436905.js';
-
     it(`should work when called without any parameters`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.9327aebfe9bdc6ef157785412e48c72b.js';
       const outputDir = tempy.directory();
       const config = {
         entry: {
@@ -57,21 +56,18 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           const context = {self: {}};
           vm.runInNewContext(manifestFileContents, context);
 
-          // Unfortunately, the order of entries in the generated manifest isn't
-          // stable, so we can't just use chai's .eql()
           const expectedEntries = [{
-            revision: 'bb510304f76a8d436905',
-            url: 'workbox-sw.js',
-          }, {
-            revision: 'bb510304f76a8d436905',
+            revision: 'cf8990ddc7249733a2bb33e90181e944',
             url: 'workbox-sw.js.map',
           }, {
-            url: 'entry1-d7f4e7088b64a9896b23.js',
+            revision: 'b94a5e732244befa21836132eae7692a',
+            url: 'workbox-sw.js',
           }, {
             url: 'entry2-17c2a1b5c94290899539.js',
+          }, {
+            url: 'entry1-d7f4e7088b64a9896b23.js',
           }];
-
-          compareManifestEntries(expectedEntries, context.self.__precacheManifest);
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
           done();
         } catch (error) {
@@ -82,9 +78,8 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
   });
 
   describe(`[workbox-webpack-plugin] html-webpack-plugin and a single chunk`, function() {
-    const FILE_MANIFEST_NAME = 'file-manifest.5de7050ae3d21a3ada12.js';
-
     it(`should work when called without any parameters`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.66829ab9b26612f113a77c1556604649.js';
       const outputDir = tempy.directory();
       const config = {
         entry: {
@@ -124,24 +119,21 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           const context = {self: {}};
           vm.runInNewContext(manifestFileContents, context);
 
-          // Unfortunately, the order of entries in the generated manifest isn't
-          // stable, so we can't just use chai's .eql()
           const expectedEntries = [{
-            revision: '5de7050ae3d21a3ada12',
-            url: 'workbox-sw.js',
-          }, {
-            revision: '5de7050ae3d21a3ada12',
+            revision: 'cf8990ddc7249733a2bb33e90181e944',
             url: 'workbox-sw.js.map',
           }, {
-            url: 'entry1-d7f4e7088b64a9896b23.js',
+            revision: 'b94a5e732244befa21836132eae7692a',
+            url: 'workbox-sw.js',
+          }, {
+            revision: 'df7649048255d9f47e0f80cbe11cd4ef',
+            url: 'index.html',
           }, {
             url: 'entry2-17c2a1b5c94290899539.js',
           }, {
-            revision: '5de7050ae3d21a3ada12',
-            url: 'index.html',
+            url: 'entry1-d7f4e7088b64a9896b23.js',
           }];
-
-          compareManifestEntries(expectedEntries, context.self.__precacheManifest);
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
           done();
         } catch (error) {
@@ -152,9 +144,8 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
   });
 
   describe(`[workbox-webpack-plugin] copy-webpack-plugin and a single chunk`, function() {
-    const FILE_MANIFEST_NAME = 'file-manifest.d9b9be4d03e6c18744d9.js';
-
     it(`should work when called without any parameters`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.dd8c480e95ee8000463440f972c2a804.js';
       const outputDir = tempy.directory();
       const config = {
         entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
@@ -194,41 +185,38 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           const context = {self: {}};
           vm.runInNewContext(manifestFileContents, context);
 
-          // Unfortunately, the order of entries in the generated manifest isn't
-          // stable, so we can't just use chai's .eql()
           const expectedEntries = [{
-            url: 'workbox-sw.js',
-            revision: 'd9b9be4d03e6c18744d9',
-          }, {
+            revision: 'cf8990ddc7249733a2bb33e90181e944',
             url: 'workbox-sw.js.map',
-            revision: 'd9b9be4d03e6c18744d9',
           }, {
-            url: 'webpackEntry.js',
+            revision: 'b94a5e732244befa21836132eae7692a',
+            url: 'workbox-sw.js',
+          }, {
             revision: '8e8e9f093f036bd18dfa',
+            url: 'webpackEntry.js',
           }, {
-            url: 'images/example-jpeg.jpg',
-            revision: 'd9b9be4d03e6c18744d9',
-          }, {
-            url: 'index.html',
-            revision: 'd9b9be4d03e6c18744d9',
-          }, {
-            url: 'images/web-fundamentals-icon192x192.png',
-            revision: 'd9b9be4d03e6c18744d9',
-          }, {
-            url: 'page-1.html',
-            revision: 'd9b9be4d03e6c18744d9',
-          }, {
-            url: 'page-2.html',
-            revision: 'd9b9be4d03e6c18744d9',
-          }, {
-            url: 'styles/stylesheet-1.css',
-            revision: 'd9b9be4d03e6c18744d9',
-          }, {
+            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
             url: 'styles/stylesheet-2.css',
-            revision: 'd9b9be4d03e6c18744d9',
+          }, {
+            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            url: 'styles/stylesheet-1.css',
+          }, {
+            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            url: 'page-2.html',
+          }, {
+            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            url: 'page-1.html',
+          }, {
+            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            url: 'index.html',
+          }, {
+            revision: '93ffb20d77327583892ca47f597b77aa',
+            url: 'images/web-fundamentals-icon192x192.png',
+          }, {
+            revision: '452b0a9f3978190f4c77997ab23473db',
+            url: 'images/example-jpeg.jpg',
           }];
-
-          compareManifestEntries(expectedEntries, context.self.__precacheManifest);
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
           done();
         } catch (error) {
