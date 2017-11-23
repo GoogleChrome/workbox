@@ -15,8 +15,8 @@
 */
 
 const path = require('path');
+const {getModuleUrl} = require('workbox-build');
 
-const copyWorkboxSW = require('./lib/utils/copy-workbox-sw');
 const generateManifest = require('./lib/generate-manifest-with-webpack');
 const generateOrCopySW = require('./lib/generate-or-copy-sw');
 const getAssetHash = require('./lib/utils/get-asset-hash');
@@ -99,29 +99,6 @@ class WorkboxWebpackPlugin {
     setReadFile(compiler.inputFileSystem._readFile);
 
     /**
-     * During the make phase of the webpack compilation, we use
-     * workbox-webpack-plugin/utils/copy-workbox-sw to add a built version of
-     * workbox-sw to the webpack compilation assets array.
-     */
-    compiler.plugin('make', async (compilation, next) => {
-      const {
-        workboxSW,
-        workboxSWMap,
-        workboxSWName,
-      } = await copyWorkboxSW();
-
-      // Add the workbox-sw file to compilation assets.
-      compilation.assets[workboxSWName] = formatAsWebpackAsset(workboxSW);
-      compilation.assets[`${workboxSWName}.map`] = formatAsWebpackAsset(
-        workboxSWMap);
-      // The version of workbox-sw is included in it's filename so we need
-      // that information to import it in the generated service worker.
-      this.workboxSWFilename = workboxSWName;
-
-      next();
-    });
-
-    /**
      * During the emit phase of the webpack compilation, we:
      *  1. Get the manifest entries.
      *  2. Use the entries to generate a file-manifest.
@@ -144,7 +121,7 @@ class WorkboxWebpackPlugin {
       compilation.assets[manifestFilename] = fileManifestAsset;
 
       const importScripts = (this.config.importScripts || []).concat([
-        this.workboxSWFilename,
+        getModuleUrl('workbox-sw'),
         manifestFilename,
       ]);
 

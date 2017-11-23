@@ -9,15 +9,16 @@ const webpack = require('webpack');
 
 const WorkboxWebpackPlugin = require('../../../packages/workbox-webpack-plugin/src/index');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
+const {getModuleUrl} = require('../../../packages/workbox-build/src/lib/cdn-utils');
 
 describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
-  const WORKBOX_SW_FILE_NAME = 'workbox-sw.js';
+  const WORKBOX_SW_FILE_NAME = getModuleUrl('workbox-sw');
   const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');
 
   describe(`[workbox-webpack-plugin] multiple chunks`, function() {
     it(`should work when called without any parameters`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.9327aebfe9bdc6ef157785412e48c72b.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.b6f6b1b151c4f027ee1e1aa3061eeaf7.js';
       const outputDir = tempy.directory();
       const config = {
         entry: {
@@ -57,12 +58,6 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'cf8990ddc7249733a2bb33e90181e944',
-            url: 'workbox-sw.js.map',
-          }, {
-            revision: 'b94a5e732244befa21836132eae7692a',
-            url: 'workbox-sw.js',
-          }, {
             url: 'entry2-17c2a1b5c94290899539.js',
           }, {
             url: 'entry1-d7f4e7088b64a9896b23.js',
@@ -79,7 +74,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] html-webpack-plugin and a single chunk`, function() {
     it(`should work when called without any parameters`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.66829ab9b26612f113a77c1556604649.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.3025354ee867087a8f380b661c2ed62f.js';
       const outputDir = tempy.directory();
       const config = {
         entry: {
@@ -120,12 +115,6 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'cf8990ddc7249733a2bb33e90181e944',
-            url: 'workbox-sw.js.map',
-          }, {
-            revision: 'b94a5e732244befa21836132eae7692a',
-            url: 'workbox-sw.js',
-          }, {
             revision: 'df7649048255d9f47e0f80cbe11cd4ef',
             url: 'index.html',
           }, {
@@ -145,7 +134,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] copy-webpack-plugin and a single chunk`, function() {
     it(`should work when called without any parameters`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.dd8c480e95ee8000463440f972c2a804.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.f7220180c1f86202aa3bd9ed1ef02890.js';
       const outputDir = tempy.directory();
       const config = {
         entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
@@ -186,12 +175,6 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'cf8990ddc7249733a2bb33e90181e944',
-            url: 'workbox-sw.js.map',
-          }, {
-            revision: 'b94a5e732244befa21836132eae7692a',
-            url: 'workbox-sw.js',
-          }, {
             revision: '8e8e9f093f036bd18dfa',
             url: 'webpackEntry.js',
           }, {
