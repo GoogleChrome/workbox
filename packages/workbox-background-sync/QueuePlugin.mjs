@@ -13,6 +13,7 @@
  limitations under the License.
 */
 
+import {Queue} from './Queue.mjs';
 import './_version.mjs';
 
 /**
@@ -23,10 +24,12 @@ import './_version.mjs';
  */
 class QueuePlugin {
   /**
-   * @param {Queue} queue The Queue instance to add failed requests to.
+   * @param {...*} queueArgs Args to forward to the composed Queue instance.
+   *    See the [Queue]{@link workbox.backgroundSync.Queue} documentation for
+   *    parameter details.
    */
-  constructor(queue) {
-    this._queue = queue;
+  constructor(...queueArgs) {
+    this._queue = new Queue(...queueArgs);
     this.fetchDidFail = this.fetchDidFail.bind(this);
   }
 
