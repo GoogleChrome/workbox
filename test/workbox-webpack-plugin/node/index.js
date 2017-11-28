@@ -48,6 +48,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
               WORKBOX_SW_FILE_NAME,
               FILE_MANIFEST_NAME,
             ]],
+            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -105,6 +106,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
               WORKBOX_SW_FILE_NAME,
               FILE_MANIFEST_NAME,
             ]],
+            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -165,6 +167,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
               WORKBOX_SW_FILE_NAME,
               FILE_MANIFEST_NAME,
             ]],
+            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
