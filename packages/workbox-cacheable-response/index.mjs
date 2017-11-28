@@ -15,7 +15,7 @@
 */
 
 /**
- * @namespace workbox.expiration
+ * @namespace workbox.cacheableResponse
  */
 
 import './_version.mjs';
