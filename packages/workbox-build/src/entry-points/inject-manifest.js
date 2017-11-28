@@ -18,6 +18,7 @@ const assert = require('assert');
 const fse = require('fs-extra');
 const path = require('path');
 
+const defaults = require('./options/defaults');
 const errors = require('../lib/errors');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const injectManifestSchema = require('./options/inject-manifest-schema');
@@ -60,7 +61,13 @@ async function injectManifest(input) {
 
   const injectionResults = swFileContents.match(globalRegexp);
   assert(injectionResults, errors['injection-point-not-found'] +
-    ` ${options.injectionPointRegexp}`);
+    // Customize the error message when this happens:
+    // - If the default RegExp is used, then include the expected string that
+    //   matches as a hint to the developer.
+    // - If a custom RegExp is used, then just include the raw RegExp.
+    (options.injectionPointRegexp === defaults.injectionPointRegexp ?
+      'workbox.precaching.precacheAndRoute([])' :
+      options.injectionPointRegexp));
   assert(injectionResults.length === 1, errors['multiple-injection-points'] +
     ` ${options.injectionPointRegexp}`);
 

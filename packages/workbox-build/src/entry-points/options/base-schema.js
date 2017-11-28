@@ -16,17 +16,16 @@
 
 const joi = require('joi');
 
+const defaults = require('./defaults');
+
 // Define some common constrains used by all methods.
 module.exports = joi.object().keys({
   dontCacheBustUrlsMatching: joi.object().type(RegExp),
-  globIgnores: joi.array().items(joi.string()).default([
-    'node_modules/**/*',
-  ]),
-  globPatterns: joi.array().items(joi.string()).default([
-    '**/*.{js,css,html}',
-  ]),
+  globIgnores: joi.array().items(joi.string()).default(defaults.globIgnores),
+  globPatterns: joi.array().items(joi.string()).default(defaults.globPatterns),
   manifestTransforms: joi.array().items(joi.func().arity(1)),
-  maximumFileSizeToCacheInBytes: joi.number().min(1).default(2 * 1024 * 1024),
+  maximumFileSizeToCacheInBytes: joi.number().min(1)
+    .default(defaults.maximumFileSizeToCacheInBytes),
   modifyUrlPrefix: joi.object(),
   // templatedUrls is an object where any property name is valid, and the values
   // can be either a string or an array of strings.

@@ -17,11 +17,12 @@
 const joi = require('joi');
 
 const commonGenerateSchema = require('./common-generate-schema');
+const defaults = require('./defaults');
 
 // Define some additional constraints.
 module.exports = commonGenerateSchema.keys({
   globDirectory: joi.string().required(),
   importScripts: joi.array().items(joi.string()),
-  importWorkboxFromCDN: joi.boolean().default(true),
+  importWorkboxFromCDN: joi.boolean().default(defaults.importWorkboxFromCDN),
   swDest: joi.string().required(),
 });
