@@ -180,4 +180,12 @@ export default {
     return `The arguments passed into responsesAreSame() appear to be ` +
       `invalid. Please ensure valid Responses are used.`;
   },
+  'cache-expiration-requires-cache-name': ({moduleName, funcName}) => {
+    if (!moduleName || !funcName) {
+      throw new Error(`Unexpected input to 'cache-expiration-requires-cache` +
+        `-name' error.`);
+    }
+    return `You must also configure 'cacheName' when using 'cacheExpiration' ` +
+      `with ${moduleName}.${funcName}()`;
+  },
 };
