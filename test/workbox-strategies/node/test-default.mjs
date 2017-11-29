@@ -1,7 +1,9 @@
 import {expect} from 'chai';
-import {CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate} from '../../../packages/workbox-strategies/_public.mjs';
+
+import expectError from '../../../infra/testing/expectError';
 import strategies from '../../../packages/workbox-strategies/_default.mjs';
 import {CacheExpirationPlugin} from '../../../packages/workbox-cache-expiration/CacheExpirationPlugin.mjs';
+import {CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate} from '../../../packages/workbox-strategies/_public.mjs';
 
 describe(`[workbox-strategies] Default Export`, function() {
   const CUSTOM_PLUGIN = {};
@@ -28,6 +30,7 @@ describe(`[workbox-strategies] Default Export`, function() {
 
     it(`should allow extra plugins`, function() {
       const strategy = strategies.cacheFirst({
+        cacheName: 'test-cache-name',
         cacheExpiration: {
           maxAgeSeconds: 1,
           maxEntries: 2,
@@ -36,6 +39,21 @@ describe(`[workbox-strategies] Default Export`, function() {
       });
       expect(strategy._plugins.length).to.equal(2);
       expect(strategy._plugins[1]).to.equal(CUSTOM_PLUGIN);
+    });
+
+    it(`should throw when cacheExpiration is used without cacheName`, async function() {
+      await expectError(
+        () => strategies.cacheFirst({
+          cacheExpiration: {
+            maxEntries: 1,
+          },
+        }),
+        'cache-expiration-requires-cache-name',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-strategies');
+          expect(error.details).to.have.property('funcName').that.equals('cacheFirst');
+        }
+      );
     });
   });
 
@@ -62,6 +80,7 @@ describe(`[workbox-strategies] Default Export`, function() {
 
     it(`should allow extra plugins`, function() {
       const strategy = strategies.cacheOnly({
+        cacheName: 'test-cache-name',
         cacheExpiration: {
           maxAgeSeconds: 1,
           maxEntries: 2,
@@ -70,6 +89,21 @@ describe(`[workbox-strategies] Default Export`, function() {
       });
       expect(strategy._plugins.length).to.equal(2);
       expect(strategy._plugins[1]).to.equal(CUSTOM_PLUGIN);
+    });
+
+    it(`should throw when cacheExpiration is used without cacheName`, async function() {
+      await expectError(
+        () => strategies.cacheOnly({
+          cacheExpiration: {
+            maxEntries: 1,
+          },
+        }),
+        'cache-expiration-requires-cache-name',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-strategies');
+          expect(error.details).to.have.property('funcName').that.equals('cacheOnly');
+        }
+      );
     });
   });
 
@@ -100,6 +134,7 @@ describe(`[workbox-strategies] Default Export`, function() {
 
     it(`should allow extra plugins`, function() {
       const strategy = strategies.networkFirst({
+        cacheName: 'test-cache-name',
         cacheExpiration: {
           maxAgeSeconds: 1,
           maxEntries: 2,
@@ -108,6 +143,21 @@ describe(`[workbox-strategies] Default Export`, function() {
       });
       expect(strategy._plugins.length).to.equal(3);
       expect(strategy._plugins[2]).to.equal(CUSTOM_PLUGIN);
+    });
+
+    it(`should throw when cacheExpiration is used without cacheName`, async function() {
+      await expectError(
+        () => strategies.networkFirst({
+          cacheExpiration: {
+            maxEntries: 1,
+          },
+        }),
+        'cache-expiration-requires-cache-name',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-strategies');
+          expect(error.details).to.have.property('funcName').that.equals('networkFirst');
+        }
+      );
     });
   });
 
@@ -134,6 +184,7 @@ describe(`[workbox-strategies] Default Export`, function() {
 
     it(`should allow extra plugins`, function() {
       const strategy = strategies.networkOnly({
+        cacheName: 'test-cache-name',
         cacheExpiration: {
           maxAgeSeconds: 1,
           maxEntries: 2,
@@ -143,9 +194,24 @@ describe(`[workbox-strategies] Default Export`, function() {
       expect(strategy._plugins.length).to.equal(2);
       expect(strategy._plugins[1]).to.equal(CUSTOM_PLUGIN);
     });
+
+    it(`should throw when cacheExpiration is used without cacheName`, async function() {
+      await expectError(
+        () => strategies.networkOnly({
+          cacheExpiration: {
+            maxEntries: 1,
+          },
+        }),
+        'cache-expiration-requires-cache-name',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-strategies');
+          expect(error.details).to.have.property('funcName').that.equals('networkOnly');
+        }
+      );
+    });
   });
 
-  describe(`StaleWhileRevalidate()`, function() {
+  describe(`staleWhileRevalidate()`, function() {
     it(`should return a StaleWhileRevalidate instance`, function() {
       const strategy = strategies.staleWhileRevalidate();
       expect(strategy).to.be.an.instanceof(StaleWhileRevalidate);
@@ -170,6 +236,7 @@ describe(`[workbox-strategies] Default Export`, function() {
 
     it(`should allow extra plugins`, function() {
       const strategy = strategies.staleWhileRevalidate({
+        cacheName: 'test-cache-name',
         cacheExpiration: {
           maxAgeSeconds: 1,
           maxEntries: 2,
@@ -178,6 +245,21 @@ describe(`[workbox-strategies] Default Export`, function() {
       });
       expect(strategy._plugins.length).to.equal(3);
       expect(strategy._plugins[2]).to.equal(CUSTOM_PLUGIN);
+    });
+
+    it(`should throw when cacheExpiration is used without cacheName`, async function() {
+      await expectError(
+        () => strategies.staleWhileRevalidate({
+          cacheExpiration: {
+            maxEntries: 1,
+          },
+        }),
+        'cache-expiration-requires-cache-name',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-strategies');
+          expect(error.details).to.have.property('funcName').that.equals('staleWhileRevalidate');
+        }
+      );
     });
   });
 });
