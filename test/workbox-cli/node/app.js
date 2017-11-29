@@ -8,6 +8,7 @@ const errors = require('../../../packages/workbox-cli/src/lib/errors');
 describe(`[workbox-cli] app.js`, function() {
   const MODULE_PATH = '../../../packages/workbox-cli/src/app';
   const PROXIED_CONFIG_FILE = path.resolve(process.cwd(), '/will/be/proxied');
+  const PROXIED_DEST_DIR = path.resolve(process.cwd(), 'build');
   const PROXIED_ERROR = new Error('proxied error message');
   const PROXIED_CONFIG = {};
   const INVALID_CONFIG_FILE = path.resolve(process.cwd(), '/does/not/exist');
@@ -33,7 +34,7 @@ describe(`[workbox-cli] app.js`, function() {
       }
     });
 
-    it(`should reject when the command parameter is missing and configFile is present`, async function() {
+    it(`should reject when the command parameter is missing and options is present`, async function() {
       try {
         await app(undefined, PROXIED_CONFIG_FILE);
         throw new Error('Unexpected success.');
@@ -42,7 +43,7 @@ describe(`[workbox-cli] app.js`, function() {
       }
     });
 
-    it(`should reject when the command is unknown and configFile is present`, async function() {
+    it(`should reject when the command is unknown and options is present`, async function() {
       try {
         await app(UNKNOWN_COMMAND, PROXIED_CONFIG_FILE);
         throw new Error('Unexpected success.');
@@ -52,8 +53,17 @@ describe(`[workbox-cli] app.js`, function() {
       }
     });
 
+    it(`should reject when the command parameter is copyLibraries and options is missing`, async function() {
+      try {
+        await app('copyLibraries');
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.message).to.have.string(errors['missing-dest-dir-param']);
+      }
+    });
+
     for (const command of WORKBOX_BUILD_COMMANDS) {
-      it(`should reject when the command parameter is ${command} and configFile is missing`, async function() {
+      it(`should reject when the command parameter is ${command} and options is missing`, async function() {
         try {
           await app(command);
           throw new Error('Unexpected success.');
@@ -64,7 +74,7 @@ describe(`[workbox-cli] app.js`, function() {
     }
 
     for (const command of WORKBOX_BUILD_COMMANDS) {
-      it(`should reject when the command parameter is ${command} and configFile does not exist`, async function() {
+      it(`should reject when the command parameter is ${command} and options does not exist`, async function() {
         const loggerErrorStub = sinon.stub();
         const appWithStub = proxyquire(MODULE_PATH, {
           './lib/logger': {
@@ -99,8 +109,8 @@ describe(`[workbox-cli] app.js`, function() {
       for (const config of badConfigs) {
         it(`should reject with a validation error when workbox-build.${command}(${JSON.stringify(config)}) is called`, async function() {
           const app = proxyquire(MODULE_PATH, {
-            './lib/read-config': (configFile) => {
-              expect(configFile).to.eql(PROXIED_CONFIG_FILE);
+            './lib/read-config': (options) => {
+              expect(options).to.eql(PROXIED_CONFIG_FILE);
               return config;
             },
           });
@@ -120,8 +130,8 @@ describe(`[workbox-cli] app.js`, function() {
           './lib/logger': {
             error: loggerErrorStub,
           },
-          './lib/read-config': (configFile) => {
-            expect(configFile).to.eql(PROXIED_CONFIG_FILE);
+          './lib/read-config': (options) => {
+            expect(options).to.eql(PROXIED_CONFIG_FILE);
             return PROXIED_CONFIG;
           },
           'workbox-build': {
@@ -151,8 +161,8 @@ describe(`[workbox-cli] app.js`, function() {
       it(`should call logger.log() upon successfully running workbox-build.${command}()`, async function() {
         const loggerLogStub = sinon.stub();
         const app = proxyquire(MODULE_PATH, {
-          './lib/read-config': (configFile) => {
-            expect(configFile).to.eql(PROXIED_CONFIG_FILE);
+          './lib/read-config': (options) => {
+            expect(options).to.eql(PROXIED_CONFIG_FILE);
             return PROXIED_CONFIG;
           },
           './lib/logger': {
@@ -169,5 +179,23 @@ describe(`[workbox-cli] app.js`, function() {
         expect(loggerLogStub.calledOnce).to.be.true;
       });
     }
+
+    it(`should call logger.log() upon successfully running workbox-build.copyWorkboxLibraries()`, async function() {
+      const loggerLogStub = sinon.stub();
+      const app = proxyquire(MODULE_PATH, {
+        './lib/logger': {
+          log: loggerLogStub,
+        },
+        'workbox-build': {
+          copyWorkboxLibraries: (destDir) => {
+            expect(destDir).to.eql(PROXIED_DEST_DIR);
+            return path.join(destDir, 'workbox');
+          },
+        },
+      });
+
+      await app('copyLibraries', PROXIED_DEST_DIR);
+      expect(loggerLogStub.calledOnce).to.be.true;
+    });
   });
 });

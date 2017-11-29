@@ -24,7 +24,7 @@ const logger = require('./lib/logger');
 const readConfig = require('./lib/read-config');
 const runWizard = require('./lib/run-wizard');
 
-module.exports = async (command, configFile) => {
+module.exports = async (command, options) => {
   assert(command, errors['missing-command-param']);
 
   switch (command) {
@@ -33,12 +33,23 @@ module.exports = async (command, configFile) => {
       break;
     }
 
+    case 'copyLibraries': {
+      assert(options, errors['missing-dest-dir-param']);
+      const parentDirectory = path.resolve(process.cwd(), options);
+
+      const dirName = await workboxBuild.copyWorkboxLibraries(parentDirectory);
+      const fullPath = path.join(parentDirectory, dirName);
+
+      logger.log(`The Workbox libraries were copied to ${fullPath}`);
+      break;
+    }
+
     case 'generateSW':
     case 'injectManifest': {
-      assert(configFile, errors['missing-config-file-param']);
+      assert(options, errors['missing-config-file-param']);
 
       // TODO: Confirm that this works with Windows paths.
-      const configPath = path.resolve(process.cwd(), configFile);
+      const configPath = path.resolve(process.cwd(), options);
       let config;
       try {
         config = readConfig(configPath);
