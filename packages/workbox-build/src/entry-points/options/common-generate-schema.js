@@ -17,14 +17,15 @@
 const joi = require('joi');
 
 const baseSchema = require('./base-schema');
+const defaults = require('./defaults');
 
 // Add some constraints that apply to both generateSW and generateSWString.
 module.exports = baseSchema.keys({
   cacheId: joi.string(),
-  clientsClaim: joi.boolean().default(false),
+  clientsClaim: joi.boolean().default(defaults.clientsClaim),
   directoryIndex: joi.string(),
   ignoreUrlParametersMatching: joi.array().items(joi.object().type(RegExp)),
-  navigateFallback: joi.string().default(false),
+  navigateFallback: joi.string().default(defaults.navigateFallback),
   navigateFallbackBlacklist: joi.array().items(joi.object().type(RegExp)),
   navigateFallbackWhitelist: joi.array().items(joi.object().type(RegExp)),
   runtimeCaching: joi.array().items(joi.object().keys({
@@ -49,5 +50,5 @@ module.exports = baseSchema.keys({
       }).or('statuses', 'headers'),
     }),
   }).requiredKeys('urlPattern', 'handler')),
-  skipWaiting: joi.boolean().default(false),
+  skipWaiting: joi.boolean().default(defaults.skipWaiting),
 });

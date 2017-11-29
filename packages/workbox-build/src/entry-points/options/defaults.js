@@ -14,15 +14,13 @@
   limitations under the License.
 */
 
-const joi = require('joi');
-
-const baseSchema = require('./base-schema');
-const defaults = require('./defaults');
-
-module.exports = baseSchema.keys({
-  globDirectory: joi.string().required(),
-  injectionPointRegexp: joi.object().type(RegExp)
-    .default(defaults.injectionPointRegexp),
-  swSrc: joi.string().required(),
-  swDest: joi.string().required(),
-});
+module.exports = {
+  globIgnores: ['node_modules/**/*'],
+  globPatterns: ['**/*.{js,css,html}'],
+  maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
+  clientsClaim: false,
+  navigateFallback: undefined,
+  skipWaiting: false,
+  importWorkboxFromCDN: true,
+  injectionPointRegexp: /(\.precacheAndRoute\()\s*\[\s*\]\s*(\))/,
+};
