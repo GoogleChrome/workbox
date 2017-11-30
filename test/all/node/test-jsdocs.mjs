@@ -16,7 +16,7 @@ describe('[all] JSDocs', function() {
       cwd: projectRoot,
     });
 
-    const docs = glob.sync('*.html', {
+    const docs = glob.sync('**/*.html', {
       cwd: docsPath,
     });
 
