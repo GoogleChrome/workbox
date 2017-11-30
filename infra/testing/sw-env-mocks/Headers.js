@@ -38,6 +38,10 @@ class Headers {
   }
 
   // TODO: implement append() and [Symbol.iterator]()
+
+  forEach() {
+
+  }
 }
 
 module.exports = Headers;
