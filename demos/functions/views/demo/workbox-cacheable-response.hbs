@@ -1,0 +1,48 @@
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <ol>
+          <li>Open DevTools</li>
+          <li>Go to the Console</li>
+          <li>Click any of the buttons below and view the logs:
+            <ul>
+              <li><p><button class="with-good-header btn btn-outline-primary">With 'X-Is-Cacheable: true' Header</button></p></li>
+              <li><p><button class="with-bad-header btn btn-outline-primary">With 'X-Is-Cacheable: false' Header</button></p></li>
+              <li><p><button class="without-header btn btn-outline-primary">Without 'X-Is-Cacheable' Header</button></p></li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  navigator.serviceWorker.register('/demo/workbox-cacheable-response/sw.js');
+  const requestURL = '/api/is-response-cacheable';
+
+  const withGoodHeaderBtn = document.querySelector('.with-good-header');
+  withGoodHeaderBtn.addEventListener('click', () => {
+    fetch(requestURL, {
+      headers: {
+        'X-Is-Cacheable': true
+      }
+    });
+  });
+
+  const withBadHeaderBtn = document.querySelector('.with-bad-header');
+  withBadHeaderBtn.addEventListener('click', () => {
+    fetch(requestURL, {
+      headers: {
+        'X-Is-Cacheable': false
+      }
+    });
+  });
+
+  const withoutHeaderBtn = document.querySelector('.without-header');
+  withoutHeaderBtn.addEventListener('click', () => {
+    fetch(requestURL);
+  });
+
+</script>

@@ -50,6 +50,18 @@ app.get('/', function(req, res) {
   });
 });
 
+app.get('/api/is-response-cacheable',
+  function(req, res) {
+    if (req.headers['x-is-cacheable']) {
+      const value = req.headers['x-is-cacheable'];
+      res.set('X-Is-Cacheable', value);
+      res.send(`This response has 'X-Is-Cacheable' header set to '${value}'`);
+    } else {
+      res.send(`This response has no 'X-Is-Cacheable' header`);
+    }
+  }
+);
+
 app.get('/demo/:moduleName', function(req, res) {
   res.render(`demo/${req.params.moduleName}`, {
     title: `${req.params.moduleName} Demo`,

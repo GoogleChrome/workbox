@@ -28,6 +28,7 @@ const MODULE_KEY_TO_NAME_MAPPING = {
   strategies: 'strategies',
   precaching: 'precaching',
   routing: 'routing',
+  cacheableResponse: 'cacheable-response',
 };
 
 /**
