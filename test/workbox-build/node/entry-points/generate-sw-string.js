@@ -130,6 +130,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const options = Object.assign({}, BASE_OPTIONS, {
         importScripts,
         globDirectory: GLOB_DIR,
+        globPatterns: ['**/*.{js,css,html}'],
       });
 
       let swCode = await generateSWString(options);

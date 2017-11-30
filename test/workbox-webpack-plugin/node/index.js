@@ -115,6 +115,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
             ]],
             clientsClaim: [[]],
             skipWaiting: [[]],
+            suppressWarnings: [[]],
             precacheAndRoute: [[[{
               revision: '5cfecbd12c9fa32f03eafe27e2ac798e',
               url: '/shell',
