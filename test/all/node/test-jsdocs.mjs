@@ -11,27 +11,26 @@ describe('[all] JSDocs', function() {
     this.timeout(60 * 1000);
 
     const projectRoot = path.join(__dirname, '..', '..', '..');
-    const docsPath = path.join(projectRoot, 'docs');
     await spawn('gulp', ['docs:build'], {
       cwd: projectRoot,
     });
 
-    const docs = glob.sync('**/*.html', {
-      cwd: docsPath,
+    const docs = glob.sync('docs/**/*.html', {
+      cwd: projectRoot,
     });
 
-    logHelper.log('Docs path: ', docsPath);
+    logHelper.log('Project Root path: ', projectRoot);
     logHelper.log('Globbed Docs: ', docs);
 
     // global.html is only added when the docs have stray global values.
-    if (docs.indexOf('global.html') !== -1) {
+    if (docs.indexOf('docs/global.html') !== -1) {
       throw new Error('There should be **no** globals in the JSDocs.');
     }
 
     // On some occassions module.exports can leak into JSDocs and breaks
     // in the final template.
-    expect(docs.indexOf('index-all.html')).to.not.equal(-1);
-    const indexAllContents = fs.readFileSync(path.join(docsPath, 'index-all.html'))
+    expect(docs.indexOf('docs/index-all.html')).to.not.equal(-1);
+    const indexAllContents = fs.readFileSync(path.join(projectRoot, 'docs', 'index-all.html'))
       .toString();
     if (indexAllContents.indexOf('<a href="module.html#.exports">module.exports</a>') !== -1) {
       throw new Error('There is a stray `module.exports` in the docs. ' +
