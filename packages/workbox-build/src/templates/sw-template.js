@@ -50,6 +50,7 @@ importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
 <% } %>
 if (Array.isArray(self.__precacheManifest)) {
+  workbox.precaching.suppressWarnings();
   workbox.precaching.precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
 }
 
