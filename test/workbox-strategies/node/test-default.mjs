@@ -1,7 +1,7 @@
 import {expect} from 'chai';
 import {CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate} from '../../../packages/workbox-strategies/_public.mjs';
 import strategies from '../../../packages/workbox-strategies/_default.mjs';
-import {CacheExpirationPlugin} from '../../../packages/workbox-cache-expiration/CacheExpirationPlugin.mjs';
+import {Plugin} from '../../../packages/workbox-cache-expiration/Plugin.mjs';
 
 describe(`[workbox-strategies] Default Export`, function() {
   const CUSTOM_PLUGIN = {};
@@ -21,7 +21,7 @@ describe(`[workbox-strategies] Default Export`, function() {
       });
       expect(strategy._cacheName).to.equal('test-cache-name');
       expect(strategy._plugins.length).to.equal(1);
-      expect(strategy._plugins[0]).to.be.instanceOf(CacheExpirationPlugin);
+      expect(strategy._plugins[0]).to.be.instanceOf(Plugin);
       expect(strategy._plugins[0]._config.maxAgeSeconds).to.equal(1);
       expect(strategy._plugins[0]._config.maxEntries).to.equal(2);
     });
@@ -55,7 +55,7 @@ describe(`[workbox-strategies] Default Export`, function() {
       });
       expect(strategy._cacheName).to.equal('test-cache-name');
       expect(strategy._plugins.length).to.equal(1);
-      expect(strategy._plugins[0]).to.be.instanceOf(CacheExpirationPlugin);
+      expect(strategy._plugins[0]).to.be.instanceOf(Plugin);
       expect(strategy._plugins[0]._config.maxAgeSeconds).to.equal(1);
       expect(strategy._plugins[0]._config.maxEntries).to.equal(2);
     });
@@ -93,7 +93,7 @@ describe(`[workbox-strategies] Default Export`, function() {
 
       // 2 Plugins because of opaque caching plugin.
       expect(strategy._plugins.length).to.equal(2);
-      expect(strategy._plugins[1]).to.be.instanceOf(CacheExpirationPlugin);
+      expect(strategy._plugins[1]).to.be.instanceOf(Plugin);
       expect(strategy._plugins[1]._config.maxAgeSeconds).to.equal(1);
       expect(strategy._plugins[1]._config.maxEntries).to.equal(2);
     });
@@ -127,7 +127,7 @@ describe(`[workbox-strategies] Default Export`, function() {
       });
       expect(strategy._cacheName).to.equal('test-cache-name');
       expect(strategy._plugins.length).to.equal(1);
-      expect(strategy._plugins[0]).to.be.instanceOf(CacheExpirationPlugin);
+      expect(strategy._plugins[0]).to.be.instanceOf(Plugin);
       expect(strategy._plugins[0]._config.maxAgeSeconds).to.equal(1);
       expect(strategy._plugins[0]._config.maxEntries).to.equal(2);
     });
@@ -163,7 +163,7 @@ describe(`[workbox-strategies] Default Export`, function() {
 
       // 2 Plugins because of opaque caching plugin.
       expect(strategy._plugins.length).to.equal(2);
-      expect(strategy._plugins[1]).to.be.instanceOf(CacheExpirationPlugin);
+      expect(strategy._plugins[1]).to.be.instanceOf(Plugin);
       expect(strategy._plugins[1]._config.maxAgeSeconds).to.equal(1);
       expect(strategy._plugins[1]._config.maxEntries).to.equal(2);
     });
