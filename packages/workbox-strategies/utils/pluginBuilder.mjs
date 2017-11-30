@@ -14,21 +14,33 @@
 */
 
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {CacheExpirationPlugin} from
   'workbox-cache-expiration/CacheExpirationPlugin.mjs';
 import {CacheableResponsePlugin} from
   'workbox-cacheable-response/CacheableResponsePlugin.mjs';
+import {BroadcastCacheUpdatePlugin} from
+  'workbox-broadcast-cache-update/BroadcastCacheUpdatePlugin.mjs';
 import '../_version.mjs';
 
 const pluginBuilder = (options) => {
   const plugins = [];
 
-  // TODO: Assert plugins is an array
+  if (process.env.NODE_ENV !== 'production') {
+    if (options.plugins) {
+      assert.isArray(options.plugins, {
+        moduleName: 'workbox-strategies',
+        className: '',
+        funcName: '',
+        paramName: 'options.plugin',
+      });
+    }
+  }
 
   const pluginParamsToClass = {
     cacheExpiration: CacheExpirationPlugin,
     cacheableResponse: CacheableResponsePlugin,
-    // TODO: Add support for 'broadcastCacheUpdate': BroadcastCacheUpdatePlugin,
+    broadcastCacheUpdate: BroadcastCacheUpdatePlugin,
   };
 
   for (const [pluginId, config] of Object.entries(options)) {
