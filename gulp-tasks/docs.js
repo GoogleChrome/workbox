@@ -43,7 +43,7 @@ You can view a friendlier UI by running
         '--template', path.join(
           __dirname, '..', 'infra', 'templates', 'reference-docs', 'jsdoc'
         ),
-        '--query', `"${queryString}"`,
+        '--query', queryString,
       );
     }
 

@@ -6,14 +6,19 @@ import spawn from '../../../gulp-tasks/utils/spawn-promise-wrapper';
 
 describe('[all] JSDocs', function() {
   it('should run JSDocs and have no unexpected results', async function() {
+    // Windows is super unhappy with the JSDocs build pipeline.
+    // With gulp.cmd in spawn, the query string used by the baseline template
+    // causes issues.
+    if (process.platform === 'win32') {
+      this.skip();
+      return;
+    }
     // Building docs takes time.
     this.timeout(60 * 1000);
 
     const projectRoot = path.join(__dirname, '..', '..', '..');
     const docsPath = path.join(projectRoot, 'docs');
-    const gulpCommand = process.platform === 'win32' ?
-      'gulp.cmd' : 'gulp';
-    await spawn(gulpCommand, ['docs:build'], {
+    await spawn('gulp', ['docs:build'], {
       cwd: projectRoot,
     });
 
