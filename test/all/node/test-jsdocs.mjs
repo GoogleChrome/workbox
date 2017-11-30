@@ -11,7 +11,9 @@ describe('[all] JSDocs', function() {
 
     const projectRoot = path.join(__dirname, '..', '..', '..');
     const docsPath = path.join(projectRoot, 'docs');
-    await spawn('gulp', ['docs:build'], {
+    const gulpCommand = process.platform === 'win32' ?
+      'gulp.cmd' : 'gulp';
+    await spawn(gulpCommand, ['docs:build'], {
       cwd: projectRoot,
     });
 
