@@ -21,7 +21,6 @@ install:
 
 script:
   - gulp test
-  - gulp docs:build
 
 after_success:
   - npm run coveralls
