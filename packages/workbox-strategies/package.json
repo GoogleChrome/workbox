@@ -29,6 +29,7 @@
   "dependencies": {
     "workbox-cache-expiration": "^3.0.0-alpha.1",
     "workbox-cacheable-response": "^3.0.0-alpha.1",
+    "workbox-broadcast-cache-update": "^3.0.0-alpha.1",
     "workbox-core": "^3.0.0-alpha.1"
   }
 }
