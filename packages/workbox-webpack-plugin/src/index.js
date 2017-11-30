@@ -120,13 +120,12 @@ class WorkboxWebpackPlugin {
       const manifestFilename = `precache-manifest.${fileManifestHash}.js`;
       compilation.assets[manifestFilename] = fileManifestAsset;
 
-      const importScripts = (this.config.importScripts || []).concat([
+      this.config.importScripts = (this.config.importScripts || []).concat([
         getModuleUrl('workbox-sw'),
         manifestFilename,
       ]);
 
-      const serviceWorker = await generateOrCopySW(Object.assign(
-        this.generateSWStringOptions, {importScripts}), swSrc);
+      const serviceWorker = await generateOrCopySW(this.config, swSrc);
       compilation.assets[serviceWorkerFilename] = formatAsWebpackAsset(
         serviceWorker);
 
