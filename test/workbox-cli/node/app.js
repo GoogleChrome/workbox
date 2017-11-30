@@ -3,6 +3,7 @@ const path = require('path');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
+const constants = require('../../../packages/workbox-cli/src/lib/constants');
 const errors = require('../../../packages/workbox-cli/src/lib/errors');
 
 describe(`[workbox-cli] app.js`, function() {
@@ -63,17 +64,6 @@ describe(`[workbox-cli] app.js`, function() {
     });
 
     for (const command of WORKBOX_BUILD_COMMANDS) {
-      it(`should reject when the command parameter is ${command} and options is missing`, async function() {
-        try {
-          await app(command);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.message).to.have.string(errors['missing-config-file-param']);
-        }
-      });
-    }
-
-    for (const command of WORKBOX_BUILD_COMMANDS) {
       it(`should reject when the command parameter is ${command} and options does not exist`, async function() {
         const loggerErrorStub = sinon.stub();
         const appWithStub = proxyquire(MODULE_PATH, {
@@ -109,6 +99,9 @@ describe(`[workbox-cli] app.js`, function() {
       for (const config of badConfigs) {
         it(`should reject with a validation error when workbox-build.${command}(${JSON.stringify(config)}) is called`, async function() {
           const app = proxyquire(MODULE_PATH, {
+            './lib/logger': {
+              log: sinon.stub(),
+            },
             './lib/read-config': (options) => {
               expect(options).to.eql(PROXIED_CONFIG_FILE);
               return config;
@@ -128,6 +121,7 @@ describe(`[workbox-cli] app.js`, function() {
         const loggerErrorStub = sinon.stub();
         const app = proxyquire(MODULE_PATH, {
           './lib/logger': {
+            log: sinon.stub(),
             error: loggerErrorStub,
           },
           './lib/read-config': (options) => {
@@ -176,7 +170,29 @@ describe(`[workbox-cli] app.js`, function() {
         });
 
         await app(command, PROXIED_CONFIG_FILE);
-        expect(loggerLogStub.calledOnce).to.be.true;
+        expect(loggerLogStub.calledTwice).to.be.true;
+      });
+
+      it(`should call logger.log() upon successfully running workbox-build.${command}() using the default config file location`, async function() {
+        const loggerLogStub = sinon.stub();
+        const app = proxyquire(MODULE_PATH, {
+          './lib/read-config': (options) => {
+            const defaultConfigPath = path.join(process.cwd(), constants.defaultConfigFile);
+            expect(options).to.eql(defaultConfigPath);
+            return PROXIED_CONFIG;
+          },
+          './lib/logger': {
+            log: loggerLogStub,
+          },
+          'workbox-build': {
+            [command]: () => {
+              return WORKBOX_BUILD_RETURN_VALUE;
+            },
+          },
+        });
+
+        await app(command);
+        expect(loggerLogStub.calledTwice).to.be.true;
       });
     }
 

@@ -15,6 +15,7 @@
  **/
 
 module.exports = {
+  defaultConfigFile: 'workbox-config.js',
   ignoredDirectories: [
     'node_modules',
   ],
