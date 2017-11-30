@@ -19,6 +19,8 @@
  * `readFile` is configured to use `compiler.inputFileSystem._readFile` during
  * the run phase of the webpack compilation lifecycle by passing the function
  * to the `setReadFile` function.
+ *
+ * @private
  */
 let readFileFn;
 

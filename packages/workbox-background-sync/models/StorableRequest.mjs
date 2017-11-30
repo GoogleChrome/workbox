@@ -42,6 +42,8 @@ export default class StorableRequest {
    *
    * @param {Request} request
    * @return {Promise<StorableRequest>}
+   *
+   * @private
    */
   static async fromRequest(request) {
     const requestInit = {headers: {}};
@@ -79,6 +81,8 @@ export default class StorableRequest {
    *     See: https://fetch.spec.whatwg.org/#requestinit
    * @param {number} param1.timestamp The time the request was created,
    *     defaulting to the current time if not specified.
+   *
+   * @private
    */
   constructor({url, requestInit, timestamp = Date.now()}) {
     this.url = url;
@@ -92,6 +96,8 @@ export default class StorableRequest {
    * Gets the private _timestamp property.
    *
    * @return {number}
+   *
+   * @private
    */
   get timestamp() {
     return this._timestamp;
@@ -101,6 +107,8 @@ export default class StorableRequest {
    * Coverts this instance to a plain Object.
    *
    * @return {Object}
+   *
+   * @private
    */
   toObject() {
     return {
@@ -114,6 +122,8 @@ export default class StorableRequest {
    * Converts this instance to a Request.
    *
    * @return {Request}
+   *
+   * @private
    */
   toRequest() {
     return new Request(this.url, this.requestInit);
