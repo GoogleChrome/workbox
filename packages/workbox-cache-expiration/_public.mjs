@@ -15,10 +15,10 @@
 */
 
 import {CacheExpiration} from './CacheExpiration.mjs';
-import {CacheExpirationPlugin} from './CacheExpirationPlugin.mjs';
+import {Plugin} from './Plugin.mjs';
 import './_version.mjs';
 
 export {
   CacheExpiration,
-  CacheExpirationPlugin,
+  Plugin,
 };

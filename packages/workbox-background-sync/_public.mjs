@@ -14,10 +14,10 @@
 */
 
 import {Queue} from './Queue.mjs';
-import {QueuePlugin} from './QueuePlugin.mjs';
+import {Plugin} from './Plugin.mjs';
 import './_version.mjs';
 
 export {
   Queue,
-  QueuePlugin,
+  Plugin,
 };

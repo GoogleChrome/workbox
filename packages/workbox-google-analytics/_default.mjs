@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import {QueuePlugin} from 'workbox-background-sync/QueuePlugin.mjs';
+import {Plugin} from 'workbox-background-sync/Plugin.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {Route} from 'workbox-routing/Route.mjs';
 import {Router} from 'workbox-routing/Router.mjs';
@@ -97,7 +97,7 @@ const createRequestWillReplayCallback = (config) => {
 /**
  * Creates GET and POST routes to catch failed Measurement Protocol hits.
  *
- * @param {QueuePlugin} queuePlugin
+ * @param {Plugin} queuePlugin
  * @return {Array<Route>} The created routes.
  *
  * @private
@@ -167,7 +167,7 @@ const createGtagJsRoute = (cacheName) => {
 const initialize = (options = {}) => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
 
-  const queuePlugin = new QueuePlugin(QUEUE_NAME, {
+  const queuePlugin = new Plugin(QUEUE_NAME, {
     maxRetentionTime: MAX_RETENTION_TIME,
     callbacks: {
       requestWillReplay: createRequestWillReplayCallback(options),

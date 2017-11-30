@@ -22,7 +22,7 @@ import './_version.mjs';
  *
  * @memberof workbox.backgroundSync
  */
-class QueuePlugin {
+class Plugin {
   /**
    * @param {...*} queueArgs Args to forward to the composed Queue instance.
    *    See the [Queue]{@link workbox.backgroundSync.Queue} documentation for
@@ -43,4 +43,4 @@ class QueuePlugin {
   }
 }
 
-export {QueuePlugin};
+export {Plugin};
