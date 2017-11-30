@@ -17,10 +17,10 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 import {Queue} from
     '../../../../packages/workbox-background-sync/Queue.mjs';
-import {QueuePlugin} from
-    '../../../../packages/workbox-background-sync/QueuePlugin.mjs';
+import {Plugin} from
+    '../../../../packages/workbox-background-sync/Plugin.mjs';
 
-describe(`[workbox-background-sync] QueuePlugin`, function() {
+describe(`[workbox-background-sync] Plugin`, function() {
   const sandbox = sinon.sandbox.create();
 
   beforeEach(function() {
@@ -33,14 +33,14 @@ describe(`[workbox-background-sync] QueuePlugin`, function() {
 
   describe(`constructor`, function() {
     it(`should store a Queue instance`, async function() {
-      const queuePlugin = new QueuePlugin('foo');
+      const queuePlugin = new Plugin('foo');
       expect(queuePlugin._queue).to.be.instanceOf(Queue);
     });
 
     it(`should implement fetchDidFail and add requests to the queue`,
         async function() {
       sandbox.stub(Queue.prototype, 'addRequest');
-      const queuePlugin = new QueuePlugin('foo');
+      const queuePlugin = new Plugin('foo');
 
       queuePlugin.fetchDidFail({request: new Request('/')});
       expect(Queue.prototype.addRequest.calledOnce).to.be.true;
