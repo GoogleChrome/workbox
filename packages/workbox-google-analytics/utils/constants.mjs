@@ -21,4 +21,10 @@ export const GOOGLE_ANALYTICS_HOST = 'www.google-analytics.com';
 export const GTM_HOST = 'www.googletagmanager.com';
 export const ANALYTICS_JS_PATH = '/analytics.js';
 export const GTAG_JS_PATH = '/gtag/js';
-export const COLLECT_PATH = '/collect';
+export const COLLECT_DEFAULT_PATH = '/collect';
+
+// This RegExp matches all known Measurement Protocol single-hit collect
+// endpoints. Most of the time the default path (/collect) is used, but
+// occasionally an experimental endpoint is used when testing new features,
+// (e.g. /r/collect or /j/collect)
+export const COLLECT_PATHS_REGEX = /^\/(\w+\/)?collect/;

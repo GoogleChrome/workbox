@@ -27,7 +27,6 @@ import {
   GTM_HOST,
   ANALYTICS_JS_PATH,
   GTAG_JS_PATH,
-  COLLECT_PATH,
 } from '../../../packages/workbox-google-analytics/utils/constants.mjs';
 
 const PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
@@ -125,50 +124,68 @@ describe(`[workbox-google-analytics] initialize`, function() {
     expect(cachedResponse).to.be.instanceOf(Response);
   });
 
-  it(`should register GET/POST routes for /collect`, function() {
+  it(`should register GET/POST routes for collect endpoints`, function() {
     sandbox.spy(NetworkOnly.prototype, 'handle');
 
     googleAnalytics.initialize();
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}?${PAYLOAD}`, {
+          `/collect?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
 
-    expect(NetworkOnly.prototype.handle.calledOnce).to.be.true;
+    expect(NetworkOnly.prototype.handle.callCount).to.equal(1);
 
     self.dispatchEvent(new FetchEvent('fetch', {
-      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}`, {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
         method: 'POST',
         body: PAYLOAD,
       }),
     }));
 
-    expect(NetworkOnly.prototype.handle.calledTwice).to.be.true;
+    expect(NetworkOnly.prototype.handle.callCount).to.equal(2);
+
+    // Test the experimental /r/collect endpoint
+    self.dispatchEvent(new FetchEvent('fetch', {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
+          `/r/collect?${PAYLOAD}`, {
+        method: 'GET',
+      }),
+    }));
+
+    expect(NetworkOnly.prototype.handle.callCount).to.equal(3);
+
+    // Test the experimental /r/collect endpoint
+    self.dispatchEvent(new FetchEvent('fetch', {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/r/collect`, {
+        method: 'POST',
+        body: PAYLOAD,
+      }),
+    }));
+
+    expect(NetworkOnly.prototype.handle.callCount).to.equal(4);
   });
 
-  it(`should not alter successful hits`, async function() {
+  it(`should not alter successful hit payloads`, async function() {
     sandbox.spy(self, 'fetch');
 
     googleAnalytics.initialize();
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}?${PAYLOAD}`, {
+          `/collect?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
 
     expect(self.fetch.calledOnce).to.be.true;
     expect(self.fetch.firstCall.args[0].url).to.equal(`https://` +
-        `${GOOGLE_ANALYTICS_HOST}${COLLECT_PATH}?${PAYLOAD}`);
+        `${GOOGLE_ANALYTICS_HOST}/collect?${PAYLOAD}`);
 
     self.dispatchEvent(new FetchEvent('fetch', {
-      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}`, {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
         method: 'POST',
         body: PAYLOAD,
       }),
@@ -180,6 +197,36 @@ describe(`[workbox-google-analytics] initialize`, function() {
     expect(bodyText).to.equal(PAYLOAD);
   });
 
+  it(`should not alter hit paths`, async function() {
+    sandbox.spy(self, 'fetch');
+
+    googleAnalytics.initialize();
+
+    // Test the /r/collect endpoint
+    self.dispatchEvent(new FetchEvent('fetch', {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
+          `/r/collect?${PAYLOAD}`, {
+        method: 'GET',
+      }),
+    }));
+
+    expect(self.fetch.calledOnce).to.be.true;
+    expect(self.fetch.firstCall.args[0].url).to.equal(`https://` +
+        `${GOOGLE_ANALYTICS_HOST}/r/collect?${PAYLOAD}`);
+
+    // Test the /r/collect endpoint
+    self.dispatchEvent(new FetchEvent('fetch', {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/r/collect`, {
+        method: 'POST',
+        body: PAYLOAD,
+      }),
+    }));
+
+    expect(self.fetch.calledTwice).to.be.true;
+    expect(self.fetch.secondCall.args[0].url).to.equal(`https://` +
+        `${GOOGLE_ANALYTICS_HOST}/r/collect`);
+  });
+
   it(`should add failed hits to a background sync queue`, async function() {
     sandbox.stub(self, 'fetch').rejects();
     sandbox.spy(Queue.prototype, 'addRequest');
@@ -188,14 +235,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}?${PAYLOAD}`, {
+          `/collect?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
 
     self.dispatchEvent(new FetchEvent('fetch', {
-      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}`, {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
         method: 'POST',
         body: PAYLOAD,
       }),
@@ -205,9 +251,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     const [call1Args, call2Args] = Queue.prototype.addRequest.args;
     expect(call1Args[0].url).to.equal(`https://` +
-        `${GOOGLE_ANALYTICS_HOST}${COLLECT_PATH}?${PAYLOAD}`);
+        `${GOOGLE_ANALYTICS_HOST}/collect?${PAYLOAD}`);
     expect(call2Args[0].url).to.equal(`https://` +
-        `${GOOGLE_ANALYTICS_HOST}${COLLECT_PATH}`);
+        `${GOOGLE_ANALYTICS_HOST}/collect`);
   });
 
   it(`should add the qt param to replayed hits`, async function() {
@@ -218,14 +264,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}?${PAYLOAD}&`, {
+          `/collect?${PAYLOAD}&`, {
         method: 'GET',
       }),
     }));
 
     self.dispatchEvent(new FetchEvent('fetch', {
-      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}`, {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
         method: 'POST',
         body: PAYLOAD,
       }),
@@ -273,14 +318,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}?${PAYLOAD}`, {
+          `/collect?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
 
     self.dispatchEvent(new FetchEvent('fetch', {
-      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}`, {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
         method: 'POST',
         body: PAYLOAD,
       }),
@@ -325,14 +369,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}?${PAYLOAD}&foo=1`, {
+          `/collect?${PAYLOAD}&foo=1`, {
         method: 'GET',
       }),
     }));
 
     self.dispatchEvent(new FetchEvent('fetch', {
-      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `${COLLECT_PATH}`, {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
         method: 'POST',
         body: PAYLOAD + '&foo=2',
       }),
