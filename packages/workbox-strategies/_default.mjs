@@ -18,7 +18,6 @@ import {CacheOnly} from './CacheOnly.mjs';
 import {NetworkFirst} from './NetworkFirst.mjs';
 import {NetworkOnly} from './NetworkOnly.mjs';
 import {StaleWhileRevalidate} from './StaleWhileRevalidate.mjs';
-import pluginBuilder from './utils/pluginBuilder.mjs';
 import './_version.mjs';
 
 /**
@@ -58,9 +57,8 @@ const defaultExport = {};
 Object.keys(mapping).forEach((keyName) => {
   defaultExport[keyName] = (options = {}) => {
     const StrategyClass = mapping[keyName];
-    const plugins = pluginBuilder(options);
     return new StrategyClass(
-      Object.assign(options, {plugins})
+      Object.assign(options)
     );
   };
 });

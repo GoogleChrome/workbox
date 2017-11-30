@@ -23,7 +23,7 @@ import './_version.mjs';
  *
  * @memberof workbox.broadcastUpdate
  */
-class BroadcastCacheUpdatePlugin {
+class Plugin {
     /**
    * Construct a new instance with a specific `channelName` to
    * broadcast messages on
@@ -57,13 +57,13 @@ class BroadcastCacheUpdatePlugin {
     if (process.env.NODE_ENV !== 'production') {
       assert.isType(cacheName, 'string', {
         moduleName: 'workbox-broadcast-cache-update',
-        className: 'BroadcastCacheUpdatePlugin',
+        className: 'Plugin',
         funcName: 'constructor',
         paramName: 'cacheName',
       });
       assert.isInstance(newResponse, Response, {
         moduleName: 'workbox-broadcast-cache-update',
-        className: 'BroadcastCacheUpdatePlugin',
+        className: 'Plugin',
         funcName: 'constructor',
         paramName: 'newResponse',
       });
@@ -79,4 +79,4 @@ class BroadcastCacheUpdatePlugin {
   }
 }
 
-export {BroadcastCacheUpdatePlugin};
+export {Plugin};
