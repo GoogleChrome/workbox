@@ -19,6 +19,9 @@ describe('[all] JSDocs', function() {
       cwd: docsPath,
     });
 
+    console.log('Docs path: ', docsPath);
+    console.log('Globbed Docs: ', docs);
+
     // global.html is only added when the docs have stray global values.
     if (docs.indexOf('global.html') !== -1) {
       throw new Error('There should be **no** globals in the JSDocs.');
