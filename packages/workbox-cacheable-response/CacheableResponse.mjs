@@ -113,19 +113,30 @@ class CacheableResponse {
           `'${getFriendlyURL(response.url)}' returned a response that does ` +
           `not meet the criteria for being cached.`);
 
-        logger.groupCollapsed(`View response details here.`);
-        logger.unprefixed.log(response);
-        logger.groupEnd();
-
         logger.groupCollapsed(`View cacheability criteria here.`);
         logger.unprefixed.log(`Cacheable statuses: ` +
           JSON.stringify(this._statuses));
         logger.unprefixed.log(`Cacheable headers: ` +
-          JSON.stringify(this._headers));
+          JSON.stringify(this._headers, null, 2));
+        logger.groupEnd();
+
+        const logFriendlyHeaders = {};
+        response.headers.forEach((value, key) => {
+          logFriendlyHeaders[key] = value;
+        });
+
+        logger.groupCollapsed(`View response status and headers here.`);
+        logger.unprefixed.log(`Response status: ` + response.status);
+        logger.unprefixed.log(`Response headers: ` +
+          JSON.stringify(logFriendlyHeaders, null, 2));
+        logger.groupEnd();
+
+        logger.groupCollapsed(`View full response details here.`);
+        logger.unprefixed.log(response.headers);
+        logger.unprefixed.log(response);
         logger.groupEnd();
 
         logger.groupEnd();
-        logger.debug();
       }
     }
 

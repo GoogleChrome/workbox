@@ -1,0 +1,32 @@
+{{{WORKBOX_SW_IMPORT}}}
+
+const cacheable = new workbox.cacheableResponse.CacheableResponse({
+  statuses: [200],
+  headers: {
+    'X-Is-Cacheable': 'true',
+  },
+});
+
+const handleCachableResponse = (event) => {
+  return fetch(event.request)
+  .then((response) => {
+    if (cacheable.isResponseCacheable(response)) {
+      // Response meets the criteria
+    } else {
+      // Response does not meet the criteria
+    }
+
+    return response;
+  });
+};
+
+self.addEventListener('fetch', (event) => {
+  switch (new URL(event.request.url).pathname) {
+    case '/api/is-response-cacheable':
+      event.respondWith(handleCachableResponse(event));
+      break;
+  }
+});
+
+workbox.skipWaiting();
+workbox.clientsClaim();

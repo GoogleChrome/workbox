@@ -18,6 +18,8 @@
         "source": "/demo/*", "function": "app"
       }, {
         "source": "/demo/*/sw*.js", "function": "app"
+      }, {
+        "source": "/api/*", "function": "app"
       }
     ]
   }
