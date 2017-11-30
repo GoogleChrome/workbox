@@ -29,6 +29,7 @@ const MODULE_KEY_TO_NAME_MAPPING = {
   precaching: 'precaching',
   routing: 'routing',
   cacheableResponse: 'cacheable-response',
+  broadcastUpdate: 'broadcast-cache-update',
 };
 
 /**
