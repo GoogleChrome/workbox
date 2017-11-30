@@ -3,6 +3,7 @@ import glob from 'glob';
 import {expect} from 'chai';
 import fs from 'fs-extra';
 import spawn from '../../../gulp-tasks/utils/spawn-promise-wrapper';
+import logHelper from '../../../infra/utils/log-helper';
 
 describe('[all] JSDocs', function() {
   it('should run JSDocs and have no unexpected results', async function() {
@@ -19,8 +20,8 @@ describe('[all] JSDocs', function() {
       cwd: docsPath,
     });
 
-    console.log('Docs path: ', docsPath);
-    console.log('Globbed Docs: ', docs);
+    logHelper.log('Docs path: ', docsPath);
+    logHelper.log('Globbed Docs: ', docs);
 
     // global.html is only added when the docs have stray global values.
     if (docs.indexOf('global.html') !== -1) {
