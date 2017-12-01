@@ -10,7 +10,7 @@ const publishReleaseOnGithub =
   if (!releaseInfo) {
     const releaseData = await githubHelper.createRelease({
       tag_name: tagName,
-      draft: true,
+      draft: false,
       name: `Workbox ${tagName}`,
     });
     releaseInfo = releaseData.data;
@@ -40,9 +40,9 @@ const handleGithubRelease = async (tagName, gitBranch, releaseInfo) => {
   return publishReleaseOnGithub(tagName, releaseInfo, tarPath, zipPath);
 };
 
-const filterTagsWithReleaseBundles = (taggedReleases) => {
-  return Object.keys(taggedReleases).filter((tagName) => {
-    const release = taggedReleases[tagName];
+const filterTagsWithReleaseBundles = (allTags, taggedReleases) => {
+  return allTags.filter((tagInfo) => {
+    const release = taggedReleases[tagInfo.name];
     if (release && release.assets.length > 0) {
       // If a tag has a release and there is an asset let's assume the
       // the release is fine. Note: Github's source doesn't count as an
@@ -56,15 +56,19 @@ const filterTagsWithReleaseBundles = (taggedReleases) => {
 
 gulp.task('publish-github:generate-from-tags', async () => {
   // Get all of the tags in the repo.
+  const allTags = await githubHelper.getTags();
   const taggedReleases = await githubHelper.getTaggedReleases();
-  const tagsToBuild = await filterTagsWithReleaseBundles(taggedReleases);
+  const tagsToBuild = await filterTagsWithReleaseBundles(
+    allTags, taggedReleases);
 
   if (tagsToBuild.length === 0) {
     logHelper.log(`No tags missing from Github.`);
+    return;
   }
 
-  for (let tagName of tagsToBuild) {
-    await handleGithubRelease(tagName, tagName, taggedReleases[tagName]);
+  for (let tagInfo of tagsToBuild) {
+    await handleGithubRelease(
+      tagInfo.name, tagInfo.name, taggedReleases[tagInfo.name]);
   }
 });
 
