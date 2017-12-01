@@ -26,10 +26,13 @@ const handleCDNUpload = async (tagName, gitBranch) => {
   const buildFilesDir =
     await publishHelpers.groupBuildFiles(tagName, gitBranch);
 
+  // Git adds 'v' to tag name, lerna does not in package.json version.
+  // We are going to publish to CDN *without* the 'v'
   let friendlyTagName = tagName;
   if (friendlyTagName.indexOf('v') === 0) {
     friendlyTagName = friendlyTagName.substring(1);
   }
+
   logHelper.log(`Uploading '${tagName}' to CDN as ${friendlyTagName}.`);
   const publishUrls = await cdnUploadHelper.upload(
     friendlyTagName, buildFilesDir);
