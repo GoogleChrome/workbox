@@ -17,20 +17,16 @@
 module.exports = `/**
  * Welcome to your Workbox-powered service worker!
  *
- * Here are some next steps:
- *
- * - Your web app needs to register this file.
- *   See https://goo.gl/DNGzMp
- *
- * - Disable HTTP caching for this file.
- *   See https://goo.gl/rWuKgq
+ * You'll need to register this file in your web app and you should
+ * disable HTTP caching for this file too.
+ * See https://goo.gl/nhQhGp
  *
  * The rest of the code is auto-generated. Please don't update this file
  * directly; instead, make changes to your Workbox build configuration
  * and re-run your build process.
  * See https://goo.gl/YYPcyY
  */
- 
+
 <% if (importScripts) { %>
 importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
 <% } %>
@@ -45,7 +41,7 @@ importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
 /**
  * The workboxSW.precacheAndRoute() method efficiently caches and responds to
  * requests for URLs in the manifest.
- * See https://goo.gl/GYZoHL
+ * See https://goo.gl/S9QRab
  */
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
 <% } %>

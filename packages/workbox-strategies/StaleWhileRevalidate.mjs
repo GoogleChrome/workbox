@@ -38,7 +38,7 @@ import './_version.mjs';
  * with each successful request.
  *
  * By default, this strategy will cache responses with a 200 status code as
- * well as [opaque responses]{@link https://docs.google.com/document/d/1nHIjXdmXs9nT6_lcGcsZY5UZ-tL9JxXESlKbzAJdBG4/edit?usp=sharing}.
+ * well as [opaque responses]{@link https://developers.google.com/web/tools/workbox/guides/handle-third-party-requests}.
  * Opaque responses are are cross-origin requests where the response doesn't
  * support [CORS]{@link https://enable-cors.org/}.
  *
