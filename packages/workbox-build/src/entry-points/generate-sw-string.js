@@ -23,14 +23,14 @@ const validate = require('./options/validate');
  * This method generates a service worker based on the configuration options
  * provided.
  *
- * @param {Object} input
+ * @param {module:workbox-build.Configuration} config
  * @return {Promise<String>} A populated service worker template, based on the
  * other configuration options provided.
  *
  * @memberof module:workbox-build
  */
-async function generateSWString(input) {
-  const options = validate(input, generateSWStringSchema);
+async function generateSWString(config) {
+  const options = validate(config, generateSWStringSchema);
 
   const {manifestEntries} = await getFileManifestEntries(options);
 
