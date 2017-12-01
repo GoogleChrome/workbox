@@ -10,7 +10,7 @@ const publishReleaseOnGithub =
   if (!releaseInfo) {
     const releaseData = await githubHelper.createRelease({
       tag_name: tagName,
-      draft: false,
+      draft: true,
       name: `Workbox ${tagName}`,
     });
     releaseInfo = releaseData.data;
