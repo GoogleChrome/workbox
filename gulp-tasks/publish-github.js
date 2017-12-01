@@ -1,5 +1,6 @@
 const gulp = require('gulp');
 const path = require('path');
+const semver = require('semver');
 
 const publishHelpers = require('./utils/publish-helpers');
 const githubHelper = require('./utils/github-helper');
@@ -12,6 +13,7 @@ const publishReleaseOnGithub =
       tag_name: tagName,
       draft: true,
       name: `Workbox ${tagName}`,
+      prerelease: semver.prerelease(tagName) !== null,
     });
     releaseInfo = releaseData.data;
   }
