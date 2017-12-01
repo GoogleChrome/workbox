@@ -103,4 +103,6 @@ module.exports = {
   'only-regexp-routes-supported': ol`Please use a regular expression object as
     the urlPattern parameter. (Express-style routes are not currently
     supported.)`,
+  'bad-runtime-caching-config': ol`An unknown configuration option was used 
+    with runtimeCaching:`,
 };
