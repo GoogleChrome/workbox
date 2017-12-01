@@ -22,15 +22,17 @@ Commands:
     Runs the configuration wizard, which will generate a
     config file based on answers to questions.
 
-  generateSW <path/to/config.js>
+  generateSW [<path/to/config.js>]
     Creates a new service worker file based on the options
-    in the config file. See https://goo.gl/zQz4By
+    in the config file (defaults to workbox-config.js).
+    See https://goo.gl/zQz4By
 
-  injectManifest <path/to/config.js>
+  injectManifest [<path/to/config.js>]
     Takes an existing service worker file and creates a
     copy of it with a precaching manifest "injected" into
     it. The precaching manifest is generated based on the
-    options in the config file. See https://goo.gl/yB6KZL
+    options in the config file (defaults to workbox-config.js).
+    See https://goo.gl/yB6KZL
 
   copyLibraries <path/to/parent/dir>
     Makes a local copy of all of the Workbox libraries inside
@@ -41,11 +43,13 @@ Commands:
 Config file:
   In 'generateSW' or 'injectManifest' mode, the config file should be a
   JavaScript file, in CommonJS module format.
+  By default, a config location of workbox-config.js in the current
+  directory is assumed, but this can be overridden.
   The exported object's properties should follow https://goo.gl/YYPcyY
 
 Examples:
   $ workbox wizard
-  $ workbox generateSW workbox-config.js
+  $ workbox generateSW
   $ workbox injectManifest configs/workbox-dev-config.js
   $ workbox copyLibraries build/
 `;

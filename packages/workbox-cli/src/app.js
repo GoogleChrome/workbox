@@ -19,6 +19,7 @@ const path = require('path');
 const prettyBytes = require('pretty-bytes');
 const workboxBuild = require('workbox-build');
 
+const constants = require('./lib/constants');
 const errors = require('./lib/errors');
 const logger = require('./lib/logger');
 const readConfig = require('./lib/read-config');
@@ -46,10 +47,9 @@ module.exports = async (command, options) => {
 
     case 'generateSW':
     case 'injectManifest': {
-      assert(options, errors['missing-config-file-param']);
-
       // TODO: Confirm that this works with Windows paths.
-      const configPath = path.resolve(process.cwd(), options);
+      const configPath = path.resolve(process.cwd(),
+        options || constants.defaultConfigFile);
       let config;
       try {
         config = readConfig(configPath);
@@ -58,6 +58,7 @@ module.exports = async (command, options) => {
         throw error;
       }
 
+      logger.log(`Using configuration from ${configPath}.`);
       try {
         const {size, count} = await workboxBuild[command](config);
         logger.log(`The service worker was written to ${config.swDest}\n` +
