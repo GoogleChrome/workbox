@@ -23,7 +23,7 @@ const validate = require('./options/validate');
  * manifest", along with details about the number of entries and their size,
  * based on the options you provide.
  *
- * @param {Object} input
+ * @param {module:workbox-build.Configuration} config
  * @return {Promise<{manifestEntries: Array<ManifestEntry>,
  * count: Number, size: Number}>} A promise that resolves once the precache
  * manifest is determined. The `size` property contains the aggregate size of
@@ -33,8 +33,8 @@ const validate = require('./options/validate');
  *
  * @memberof module:workbox-build
  */
-async function getManifest(input) {
-  const options = validate(input, getManifestSchema);
+async function getManifest(config) {
+  const options = validate(config, getManifestSchema);
 
   const {manifestEntries, count, size} = await getFileManifestEntries(options);
   return {manifestEntries, count, size};
