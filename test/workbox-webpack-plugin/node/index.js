@@ -71,6 +71,76 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
         }
       });
     });
+
+    it(`should pass through the config to workbox-build.generateSWString()`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.b6f6b1b151c4f027ee1e1aa3061eeaf7.js';
+      const outputDir = tempy.directory();
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          // This is not an exhaustive test of all the supported options, but
+          // it should be enough to confirm that they're being interpreted
+          // by workbox-build.generateSWString() properly.
+          new WorkboxWebpackPlugin({
+            clientsClaim: true,
+            skipWaiting: true,
+            globDirectory: SRC_DIR,
+            templatedUrls: {
+              '/shell': ['index.html', 'styles/*.css'],
+            },
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        const swFile = path.join(outputDir, 'sw.js');
+        try {
+          // First, validate that the generated sw.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [[
+              WORKBOX_SW_FILE_NAME,
+              FILE_MANIFEST_NAME,
+            ]],
+            clientsClaim: [[]],
+            skipWaiting: [[]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[{
+              revision: '5cfecbd12c9fa32f03eafe27e2ac798e',
+              url: '/shell',
+            }], {}]],
+          }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            url: 'entry2-17c2a1b5c94290899539.js',
+          }, {
+            url: 'entry1-d7f4e7088b64a9896b23.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
   });
 
   describe(`[workbox-webpack-plugin] html-webpack-plugin and a single chunk`, function() {

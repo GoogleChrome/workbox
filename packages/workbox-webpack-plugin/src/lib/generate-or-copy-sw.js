@@ -18,6 +18,31 @@ const {generateSWString} = require('workbox-build');
 const {readFile} = require('./utils/read-file');
 
 /**
+ * Given a config object, remove the properties that we know are webpack-plugin
+ * specific, so that the remaining properties can be passed through to
+ * generateSWString().
+ *
+ * @param {Object} config
+ * @return {Object}
+ *
+ * @private
+ */
+function sanitizeConfig(config) {
+  const propertiesToRemove = [
+    'chunks',
+    'excludeChunks',
+    'filename',
+    'manifestFilename',
+  ];
+
+  for (const property of propertiesToRemove) {
+    delete config[property];
+  }
+
+  return config;
+}
+
+/**
  * Generate a service worker using {@link module:workbox-build.generateSWString}
  * or append `importScripts('workbox-sw.<version>.js', 'file-manifest.js')` to
  * an existing service worker if `swSrc` is specified
@@ -36,8 +61,8 @@ const {readFile} = require('./utils/read-file');
  */
 module.exports = async (config, swSrc) => {
   if (!swSrc) {
-    // use workbox-build to generate the service worker
-    return generateSWString(config);
+    // use workbox-build to generate the service worker.
+    return generateSWString(sanitizeConfig(config));
   } else {
     const serviceWorkerSource = await readFile(swSrc);
     const scripts = config.importScripts
