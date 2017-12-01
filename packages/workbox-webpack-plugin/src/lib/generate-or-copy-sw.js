@@ -24,6 +24,8 @@ const {readFile} = require('./utils/read-file');
  *
  * @param {Object} config
  * @return {Object}
+ *
+ * @private
  */
 function sanitizeConfig(config) {
   const propertiesToRemove = [
