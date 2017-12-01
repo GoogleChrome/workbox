@@ -30,7 +30,7 @@ module.exports = async () => {
 
   workbox generateSW ${configLocation}
 
-as part of a build process. See https://goo.gl/8zZy1P for details.`);
+as part of a build process. See https://goo.gl/fdTQBf for details.`);
 
   logger.log(ol`You can further customize your service worker by making changes
     to ${configLocation}. See https://goo.gl/YYPcyY for details.`);

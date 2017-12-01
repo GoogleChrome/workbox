@@ -26,7 +26,7 @@ import './_version.mjs';
  * requests against third-party servers, you must define a RegExp that matches
  * the start of the URL.
  *
- * [See the module docs for info.]{@link https://developers.google.com/web/tools/workbox/v3/modules/workbox-routing}
+ * [See the module docs for info.]{@link https://developers.google.com/web/tools/workbox/modules/workbox-routing}
  *
  * @memberof workbox.routing
  * @extends workbox.routing.Route

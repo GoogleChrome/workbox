@@ -16,7 +16,7 @@
 
 module.exports = `Usage:
 $ workbox <command> [options]
-  
+
 Commands:
   wizard
     Runs the configuration wizard, which will generate a
@@ -25,14 +25,14 @@ Commands:
   generateSW [<path/to/config.js>]
     Creates a new service worker file based on the options
     in the config file (defaults to workbox-config.js).
-    See https://goo.gl/zQz4By
+    See https://goo.gl/fdTQBf
 
   injectManifest [<path/to/config.js>]
     Takes an existing service worker file and creates a
     copy of it with a precaching manifest "injected" into
     it. The precaching manifest is generated based on the
     options in the config file (defaults to workbox-config.js).
-    See https://goo.gl/yB6KZL
+    See https://goo.gl/QRjpZj
 
   copyLibraries <path/to/parent/dir>
     Makes a local copy of all of the Workbox libraries inside
