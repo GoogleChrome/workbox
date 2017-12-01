@@ -28,7 +28,7 @@ gulp.task('publish-demos:deploy', () => {
 
 gulp.task('publish-demos:clean', () => {
   return fs.remove(
-    path.join(__dirname, '..', 'demos', constants.LOCAL_BUILDS_DIR)
+    path.join(__dirname, '..', 'demos', 'public', constants.LOCAL_BUILDS_DIR)
   );
 });
 

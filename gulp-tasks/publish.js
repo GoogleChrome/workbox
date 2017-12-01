@@ -29,12 +29,13 @@ gulp.task('publish:signin', async () => {
     logHelper.warn('    You must be signed in to NPM to publish.');
     logHelper.warn('    Please run `npm login` to publish.');
     logHelper.warn('');
+    process.exit(1);
   }
 });
 
 gulp.task('publish', gulp.series([
-  'test',
   'publish:signin',
+  'test',
   'publish-lerna',
   'publish:cdn+git',
   'publish-demos',
