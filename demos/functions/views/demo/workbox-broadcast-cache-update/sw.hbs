@@ -1,0 +1,30 @@
+{{{WORKBOX_SW_IMPORT}}}
+
+const broadcastUpdate = new workbox.broadcastUpdate.BroadcastCacheUpdate(
+  'broadcast-demo');
+
+const initialResponse = new Response('Response 1', {
+  headers: {
+    'last-modified': Date.now().toString(),
+  }
+});
+
+self.addEventListener('message', function(event) {
+  switch(event.data.command) {
+    case 'trigger-broadcast':
+      const secondResponse = new Response('Response 2', {
+        headers: {
+          'last-modified': Date.now().toString(),
+        }
+      });
+      broadcastUpdate.notifyIfUpdated(
+        initialResponse,
+        secondResponse,
+        'example-url',
+        'example-cachename'
+      );
+      break;
+    default:
+      console.log(`Unknown command received in the service worker: `, event);
+  }
+});
