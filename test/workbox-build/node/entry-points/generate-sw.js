@@ -444,7 +444,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2421);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        [STRING_HANDLER]: [[{}]],
+        [STRING_HANDLER]: [[]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
         suppressWarnings: [[]],
         precacheAndRoute: [[[{
@@ -507,7 +507,15 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2421);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        [STRING_HANDLER]: [[firstRuntimeCachingOptions], [secondRuntimeCachingOptions]],
+        [STRING_HANDLER]: [[{
+          cacheName: firstRuntimeCachingOptions.cacheName,
+          plugins: ['workbox.expiration.Plugin'],
+        }], [{
+          cacheName: secondRuntimeCachingOptions.cacheName,
+          plugins: ['workbox.cacheableResponse.Plugin'],
+        }]],
+        cacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
+        cacheExpirationPlugin: [[firstRuntimeCachingOptions.cacheExpiration]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
         suppressWarnings: [[]],
         precacheAndRoute: [[[{

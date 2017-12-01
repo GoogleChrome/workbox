@@ -14,6 +14,8 @@
   limitations under the License.
 */
 
+const ol = require('common-tags').oneLine;
+
 const errors = require('./errors');
 
 /**
@@ -26,32 +28,63 @@ const errors = require('./errors');
  *
  * @private
  */
-function getOptionsString(options) {
-  const cacheOptions = options.cache || {};
-  // Start with a base of a few properties that need to be renamed, as well
-  // as copying over all the other source properties as-is.
-  const effectiveOptions = Object.assign({
-    cacheName: cacheOptions.name,
-  }, options);
-
-  // Only create the cacheExpiration object if either maxEntries or
-  // maxAgeSeconds is set.
-  if (cacheOptions.maxEntries || cacheOptions.maxAgeSeconds) {
-    effectiveOptions.cacheExpiration =
-      Object.assign(effectiveOptions.cacheExpiration || {}, {
-        maxEntries: cacheOptions.maxEntries,
-        maxAgeSeconds: cacheOptions.maxAgeSeconds,
-      });
+function getOptionsString(options = {}) {
+  let plugins = [];
+  if (options.plugins) {
+    plugins = options.plugins.map((plugin) => JSON.stringify(plugin));
+    delete options.plugins;
   }
 
-  // Everything should be copied to the corresponding new option names at this
-  // point, so set the old-style `cache` property to undefined so that it
-  // doesn't show up in the JSON output.
-  effectiveOptions.cache = undefined;
+  let cacheName;
+  if (options.cache && options.cache.name) {
+    cacheName = options.cache.name;
+    delete options.cache.name;
+  }
 
-  // JSON.stringify() will automatically omit any properties that are set to
-  // undefined values.
-  return JSON.stringify(effectiveOptions, null, 2);
+  // Allow a top-level cacheName value to override the cache.name value.
+  if (options.cacheName) {
+    cacheName = options.cacheName;
+    delete options.cacheName;
+  }
+
+  let networkTimeoutSeconds;
+  if (options.networkTimeoutSeconds) {
+    networkTimeoutSeconds = options.networkTimeoutSeconds;
+    delete options.networkTimeoutSeconds;
+  }
+
+  const pluginsMapping = {
+    backgroundSync: 'workbox.backgroundSync.Plugin',
+    broadcastCacheUpdate: 'workbox.broadcastCacheUpdate.Plugin',
+    cache: 'workbox.expiration.Plugin',
+    cacheExpiration: 'workbox.expiration.Plugin',
+    cacheableResponse: 'workbox.cacheableResponse.Plugin',
+  };
+
+  for (const [pluginName, pluginConfig] of Object.entries(options)) {
+    // Ensure that we have some valid configuration to pass to Plugin().
+    if (Object.keys(pluginConfig).length === 0) {
+      continue;
+    }
+
+    const pluginString = pluginsMapping[pluginName];
+    if (!pluginString) {
+      throw new Error(`${errors['bad-runtime-caching-config']} ${pluginName}`);
+    }
+
+    plugins.push(`${pluginString}(${JSON.stringify(pluginConfig)})`);
+  }
+
+  if (networkTimeoutSeconds || cacheName || plugins.length > 0) {
+    return ol`{
+      ${networkTimeoutSeconds ? ('networkTimeoutSeconds: ' +
+        JSON.stringify(networkTimeoutSeconds)) + ',' : ''}
+      ${cacheName ? ('cacheName: ' + JSON.stringify(cacheName)) + ',' : ''}
+      plugins: [${plugins.join(', ')}]
+    }`;
+  } else {
+    return '';
+  }
 }
 
 module.exports = (runtimeCaching) => {

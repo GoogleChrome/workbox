@@ -16,6 +16,12 @@ function validate(runtimeCachingOptions, convertedOptions) {
 
   const globalScope = {
     workbox: {
+      cacheableResponse: {
+        Plugin: sinon.spy(),
+      },
+      expiration: {
+        Plugin: sinon.spy(),
+      },
       routing: {
         registerRoute: sinon.spy(),
       },
@@ -52,28 +58,28 @@ function validate(runtimeCachingOptions, convertedOptions) {
     const strategiesCall = globalScope.workbox.strategies[runtimeCachingOption.handler].firstCall;
     const strategiesOptions = strategiesCall.args[0];
 
-    const expectedOptions = {};
     if (runtimeCachingOption.options) {
-      if (runtimeCachingOption.options.networkTimeoutSeconds) {
-        expectedOptions.networkTimeoutSeconds = runtimeCachingOption.options.networkTimeoutSeconds;
+      const options = runtimeCachingOption.options;
+      if (options.networkTimeoutSeconds) {
+        expect(options.networkTimeoutSeconds)
+          .to.eql(strategiesOptions.networkTimeoutSeconds);
       }
 
-      if (runtimeCachingOption.options.cache) {
-        if (runtimeCachingOption.options.cache.name) {
-          expectedOptions.cacheName = runtimeCachingOption.options.cache.name;
+      if (options.cache) {
+        if (options.cache.name) {
+          expect(strategiesOptions.cacheName).to.eql(options.cache.name);
+          delete options.cache.name;
         }
-        if (runtimeCachingOption.options.cache.maxEntries || runtimeCachingOption.options.cache.maxAgeSeconds) {
-          expectedOptions.cacheExpiration = Object.assign({}, runtimeCachingOption.options.cache);
-          delete expectedOptions.cacheExpiration.name;
+
+        if (Object.keys(options.cache).length > 0) {
+          expect(globalScope.workbox.expiration.Plugin.calledWith(options.cache)).to.be.true;
         }
       }
 
-      if (runtimeCachingOption.options.cacheableResponse) {
-        expectedOptions.cacheableResponse = runtimeCachingOption.options.cacheableResponse;
+      if (options.cacheableResponse) {
+        expect(globalScope.workbox.cacheableResponse.Plugin.calledWith(options.cacheableResponse)).to.be.true;
       }
     }
-
-    expect(strategiesOptions).to.eql(expectedOptions);
   });
 }
 
