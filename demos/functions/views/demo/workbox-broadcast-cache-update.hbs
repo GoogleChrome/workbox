@@ -17,20 +17,23 @@
 </section>
 
 <script>
+  const triggerBroadcast = document.querySelector('.trigger-broadcast');
+
   const broadcastChannel = new BroadcastChannel('broadcast-demo');
   broadcastChannel.onmessage = (ev) => {
     console.log(`Received a message on 'broadcast-demo' channel.`);
     console.log(ev.data);
   };
 
-  navigator.serviceWorker.register('/demo/workbox-broadcast-cache-update/sw.js')
-  .then((reg) => {
-    const triggerBroadcast = document.querySelector('.trigger-broadcast');
-    triggerBroadcast.addEventListener('click', () => {
-      const message = {
-        command: 'trigger-broadcast',
-      };
-      reg.active.postMessage(message);
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/demo/workbox-broadcast-cache-update/sw.js')
+    .then((reg) => {
+      triggerBroadcast.addEventListener('click', () => {
+        const message = {
+          command: 'trigger-broadcast',
+        };
+        reg.active.postMessage(message);
+      });
     });
   });
 </script>

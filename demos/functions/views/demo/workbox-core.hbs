@@ -21,28 +21,20 @@
   const cacheNamesBtn = document.querySelector('.show-cache-names');
 
   installSWBtn.addEventListener('click', () => {
-    navigator.serviceWorker.register('/demo/workbox-core/sw.js');
-  });
-  showLogsBtn.addEventListener('click', () => {
     navigator.serviceWorker.register('/demo/workbox-core/sw.js')
     .then((reg) => {
-      const message = {
-        command: 'printLogs',
-      };
-      const messageChannel = new MessageChannel();
-      reg.active.postMessage(message,
-        [messageChannel.port2]);
-    });
-  });
-  cacheNamesBtn.addEventListener('click', () => {
-    navigator.serviceWorker.register('/demo/workbox-core/sw.js')
-    .then((reg) => {
-      const message = {
-        command: 'printCacheNames',
-      };
-      const messageChannel = new MessageChannel();
-      reg.active.postMessage(message,
-        [messageChannel.port2]);
+      showLogsBtn.addEventListener('click', () => {
+        const message = {
+          command: 'printLogs',
+        };
+        reg.active.postMessage(message);
+      });
+      cacheNamesBtn.addEventListener('click', () => {
+        const message = {
+          command: 'printCacheNames',
+        };
+        reg.active.postMessage(message);
+      });
     });
   });
 </script>

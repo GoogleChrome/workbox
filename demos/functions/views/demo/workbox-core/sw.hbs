@@ -18,7 +18,7 @@ const printCacheNames = () => {
   });
 };
 
-self.addEventListener('message', function(event) {
+self.addEventListener('message', (event) => {
   switch(event.data.command) {
     case 'printLogs':
       printLogs();

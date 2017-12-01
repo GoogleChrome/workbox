@@ -19,30 +19,34 @@
 </section>
 
 <script>
-  navigator.serviceWorker.register('/demo/workbox-cacheable-response/sw.js');
-  const requestURL = '/api/is-response-cacheable';
-
   const withGoodHeaderBtn = document.querySelector('.with-good-header');
-  withGoodHeaderBtn.addEventListener('click', () => {
-    fetch(requestURL, {
-      headers: {
-        'X-Is-Cacheable': true
-      }
-    });
-  });
-
   const withBadHeaderBtn = document.querySelector('.with-bad-header');
-  withBadHeaderBtn.addEventListener('click', () => {
-    fetch(requestURL, {
-      headers: {
-        'X-Is-Cacheable': false
-      }
+  const withoutHeaderBtn = document.querySelector('.without-header');
+
+  const DEMO_REQUEST_URL = '/api/is-response-cacheable';
+
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/demo/workbox-cacheable-response/sw.js')
+    .then(() => {
+      withGoodHeaderBtn.addEventListener('click', () => {
+        fetch(DEMO_REQUEST_URL, {
+          headers: {
+            'X-Is-Cacheable': true
+          }
+        });
+
+        withBadHeaderBtn.addEventListener('click', () => {
+          fetch(DEMO_REQUEST_URL, {
+            headers: {
+              'X-Is-Cacheable': false
+            }
+          });
+        });
+
+        withoutHeaderBtn.addEventListener('click', () => {
+          fetch(DEMO_REQUEST_URL);
+        });
+      });
     });
   });
-
-  const withoutHeaderBtn = document.querySelector('.without-header');
-  withoutHeaderBtn.addEventListener('click', () => {
-    fetch(requestURL);
-  });
-
 </script>
