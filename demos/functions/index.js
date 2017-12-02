@@ -90,6 +90,7 @@ workbox.setConfig({
 `;
 
   res.header('Content-Type', 'application/javascript');
+  res.header('Cache-Control', 'no-cache');
   res.render(`demo/${req.params.moduleName}/${swTemplate}`, {
     title: `${req.params.moduleName} Demo`,
     CDN_URL: cdnUrl,

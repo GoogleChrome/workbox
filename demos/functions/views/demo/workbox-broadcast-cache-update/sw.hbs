@@ -9,7 +9,7 @@ const initialResponse = new Response('Response 1', {
   }
 });
 
-self.addEventListener('message', function(event) {
+self.addEventListener('message', (event) => {
   switch(event.data.command) {
     case 'trigger-broadcast':
       const secondResponse = new Response('Response 2', {

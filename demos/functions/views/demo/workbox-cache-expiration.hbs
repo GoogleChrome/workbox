@@ -22,10 +22,10 @@
 </section>
 
 <script>
+  const expireBtn = document.querySelector('.expire');
+
   const TIMEOUT_IN_SECS = 30;
   const MAX_ENTRIES = 3;
-
-  navigator.serviceWorker.register('/demo/workbox-cache-expiration/sw.js');
 
   const setupTimeout = (btnElement, textElement) => {
     textElement.textContent = `${btnElement.__workbox_timeoutCount}s`;
@@ -39,44 +39,38 @@
     }, 1000);
   };
 
-  for (let i = 0; i < 5; i++) {
-    const entryBtn = document.querySelector(`.entry-${i + 1}`);
-    const expireText = document.querySelector(`.entry-expire-${i + 1}`);
-    entryBtn.addEventListener('click', () => {
-      navigator.serviceWorker.register('/demo/workbox-cache-expiration/sw.js')
-      .then((reg) => {
-        const message = {
-          command: 'update-entry',
-          id: i + 1,
-        };
-        const messageChannel = new MessageChannel();
-        reg.active.postMessage(message,
-          [messageChannel.port2]);
-      })
-      .then(() => {
-        if (entryBtn.__workbox_timeoutId) {
-          clearTimeout(entryBtn.__workbox_timeoutId);
-        }
-
-        entryBtn.__workbox_timeoutCount = TIMEOUT_IN_SECS;
-        setupTimeout(entryBtn, expireText);
-      });
-    });
-  }
-
-  const expireBtn = document.querySelector('.expire');
-  expireBtn.addEventListener('click', () => {
+  window.addEventListener('load', () => {
     navigator.serviceWorker.register('/demo/workbox-cache-expiration/sw.js')
     .then((reg) => {
-      const message = {
-        command: 'expire-entries',
-      };
-      const messageChannel = new MessageChannel();
-      reg.active.postMessage(message,
-        [messageChannel.port2]);
-    })
-    .then(() => {
-      // TODO Would be good to find a way to highlight max entries.
+      for (let i = 0; i < 5; i++) {
+        const entryBtn = document.querySelector(`.entry-${i + 1}`);
+        const expireText = document.querySelector(`.entry-expire-${i + 1}`);
+        entryBtn.addEventListener('click', () => {
+          const message = {
+            command: 'update-entry',
+            id: i + 1,
+          };
+
+          reg.active.postMessage(message);
+
+          if (entryBtn.__workbox_timeoutId) {
+            clearTimeout(entryBtn.__workbox_timeoutId);
+          }
+
+          entryBtn.__workbox_timeoutCount = TIMEOUT_IN_SECS;
+          setupTimeout(entryBtn, expireText);
+        });
+      }
+
+      expireBtn.addEventListener('click', () => {
+        const message = {
+          command: 'expire-entries',
+        };
+
+        reg.active.postMessage(message);
+
+        // TODO: Would be good to find a way to highlight max entries.
+      });
     });
   });
 </script>
