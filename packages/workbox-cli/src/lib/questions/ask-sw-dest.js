@@ -36,7 +36,7 @@ function askQuestion(defaultDir) {
   }]);
 }
 
-module.exports = async (defaultDir) => {
+module.exports = async (defaultDir = '.') => {
   const answers = await askQuestion(defaultDir);
   const swDest = answers[name].trim();
 
