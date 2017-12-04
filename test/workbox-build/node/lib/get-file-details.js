@@ -88,4 +88,46 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
       size: SIZE,
     }]);
   });
+
+  it(`should call sync with follow and strict options by default`, function() {
+    const getFileDetails = proxyquire(MODULE_PATH, {
+      'glob': {
+        sync: (pattern, options) => {
+          expect(options.follow).to.be.true;
+          expect(options.strict).to.be.true;
+
+          return [FILE1];
+        },
+      },
+      './get-file-size': (value) => SIZE,
+      './get-file-hash': (value) => HASH,
+    });
+
+    getFileDetails({
+      globDirectory: GLOB_DIRECTORY,
+      globPattern: GLOB_PATTERN,
+    });
+  });
+
+  it(`should call sync with follow and strict options with value`, function() {
+    const getFileDetails = proxyquire(MODULE_PATH, {
+      'glob': {
+        sync: (pattern, options) => {
+          expect(options.follow).to.be.false;
+          expect(options.strict).to.be.false;
+
+          return [FILE1];
+        },
+      },
+      './get-file-size': (value) => SIZE,
+      './get-file-hash': (value) => HASH,
+    });
+
+    getFileDetails({
+      globDirectory: GLOB_DIRECTORY,
+      globPattern: GLOB_PATTERN,
+      globFollow: false,
+      globStrict: false,
+    });
+  });
 });
