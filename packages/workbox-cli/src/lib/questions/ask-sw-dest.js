@@ -24,6 +24,7 @@ const errors = require('../errors');
 const name = 'swDest';
 
 /**
+ * @param {string} defaultDir
  * @return {Promise<Object>} The answers from inquirer.
  */
 function askQuestion(defaultDir) {
