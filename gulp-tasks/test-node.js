@@ -36,24 +36,33 @@ const runNodeTestSuite = async (testPath, nodeEnv) => {
   }
 };
 
-const runNodeTestsWithEnv = async (nodeEnv) => {
-  let globFolderPattern = global.packageOrStar;
-  // This means will run the package tests along with the "all" tests.
-  if (global.packageOrStar !== '*') {
-    globFolderPattern = `{${[global.packageOrStar, 'all'].join(',')}}`;
+const runNodeTestsWithEnv = async (testGroup, nodeEnv) => {
+  let globConfig = {
+    ignore: [
+      '**/all/**',
+    ],
+  };
+
+  if (testGroup === 'all') {
+    globConfig.ignore = [];
   }
-  const packagesToTest = glob.sync(`test/${globFolderPattern}/node`);
+
+  const packagesToTest = glob.sync(`test/${testGroup}/node`, globConfig);
   for (const packageToTest of packagesToTest) {
     await runNodeTestSuite(packageToTest, nodeEnv);
   }
 };
 
 gulp.task('test-node:prod', gulp.series(
-  () => runNodeTestsWithEnv(constants.BUILD_TYPES.prod),
+  () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.prod),
 ));
 
 gulp.task('test-node:dev', gulp.series(
-  () => runNodeTestsWithEnv(constants.BUILD_TYPES.dev),
+  () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.dev),
+));
+
+gulp.task('test-node:all', gulp.series(
+  () => runNodeTestsWithEnv('all', constants.BUILD_TYPES.prod),
 ));
 
 gulp.task('test-node:clean', () => {
@@ -76,5 +85,6 @@ gulp.task('test-node', gulp.series(
   'test-node:clean',
   'test-node:dev',
   'test-node:prod',
+  'test-node:all',
   'test-node:coverage',
 ));

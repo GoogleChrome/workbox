@@ -56,10 +56,8 @@ export default (entriesMap) => {
     `\n\n`
   );
 
-  // TODO (gauntface) Before launch swap for d.g.c/web URL
   logger.unprefixed.warn(`You can learn more about why this might be a ` +
-    `problem here: https://docs.google.com/document/d/1i83D4x_1Jz2JT3BCRjO` +
-    `18m-vdL9uG7ksscqZ_E0XjO0/edit?usp=sharing`);
+    `problem here: https://developers.google.com/web/tools/workbox/modules/workbox-precaching`);
 
   logger.groupEnd();
 };

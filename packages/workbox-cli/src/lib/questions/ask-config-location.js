@@ -18,6 +18,7 @@ const assert = require('assert');
 const inquirer = require('inquirer');
 const ol = require('common-tags').oneLine;
 
+const constants = require('../constants');
 const errors = require('../errors');
 
 // The key used for the question/answer.
@@ -31,7 +32,7 @@ function askQuestion() {
     name,
     message: ol`Where would you like to save these configuration options?`,
     type: 'input',
-    default: 'workbox-config.js',
+    default: constants.defaultConfigFile,
   }]);
 }
 

@@ -15,14 +15,14 @@
 */
 
 import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.mjs';
-import {BroadcastCacheUpdatePlugin} from './BroadcastCacheUpdatePlugin.mjs';
+import {Plugin} from './Plugin.mjs';
 import {broadcastUpdate} from './broadcastUpdate.mjs';
 import messageTypes from './messageTypes.mjs';
 import './_version.mjs';
 
 export {
   BroadcastCacheUpdate,
-  BroadcastCacheUpdatePlugin,
+  Plugin,
   broadcastUpdate,
   messageTypes,
 };

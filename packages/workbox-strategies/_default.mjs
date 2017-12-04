@@ -19,7 +19,7 @@ import {NetworkFirst} from './NetworkFirst.mjs';
 import {NetworkOnly} from './NetworkOnly.mjs';
 import {StaleWhileRevalidate} from './StaleWhileRevalidate.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import pluginBuilder from './utils/pluginBuilder.mjs';
+
 import './_version.mjs';
 
 /**
@@ -58,17 +58,18 @@ const mapping = {
 const defaultExport = {};
 Object.keys(mapping).forEach((keyName) => {
   defaultExport[keyName] = (options = {}) => {
-    if (options.cacheExpiration && !options.cacheName) {
-      throw new WorkboxError('cache-expiration-requires-cache-name', {
-        moduleName: 'workbox-strategies',
-        funcName: keyName,
-      });
+    if (process.env.NODE_ENV !== 'production') {
+      if (options.cacheExpiration && !options.cacheName) {
+        throw new WorkboxError('cache-expiration-requires-cache-name', {
+          moduleName: 'workbox-strategies',
+          funcName: keyName,
+        });
+      }
     }
 
     const StrategyClass = mapping[keyName];
-    const plugins = pluginBuilder(options);
     return new StrategyClass(
-      Object.assign(options, {plugins})
+      Object.assign(options)
     );
   };
 });

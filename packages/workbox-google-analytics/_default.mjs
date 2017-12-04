@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import {QueuePlugin} from 'workbox-background-sync/QueuePlugin.mjs';
+import {Plugin} from 'workbox-background-sync/Plugin.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {Route} from 'workbox-routing/Route.mjs';
 import {Router} from 'workbox-routing/Router.mjs';
@@ -26,7 +26,7 @@ import {
   GTM_HOST,
   ANALYTICS_JS_PATH,
   GTAG_JS_PATH,
-  COLLECT_PATH,
+  COLLECT_PATHS_REGEX,
 } from './utils/constants.mjs';
 import './_version.mjs';
 
@@ -60,6 +60,8 @@ const getTextFromBlob = (blob) => {
  */
 const createRequestWillReplayCallback = (config) => {
   return async ({url, timestamp, requestInit}) => {
+    url = new URL(url);
+
     // Measurement protocol requests can set their payload parameters in either
     // the URL query string (for GET requests) or the POST body.
     let params;
@@ -67,7 +69,7 @@ const createRequestWillReplayCallback = (config) => {
       const payload = await getTextFromBlob(requestInit.body);
       params = new URLSearchParams(payload);
     } else {
-      params = new URL(url).searchParams;
+      params = url.searchParams;
     }
 
     // Set the qt param prior to apply the hitFilter or parameterOverrides.
@@ -90,21 +92,23 @@ const createRequestWillReplayCallback = (config) => {
     requestInit.mode = 'cors';
     requestInit.credentials = 'omit';
     requestInit.headers = '[["Content-Type", "text/plain"]]';
-    requestInit.url = `https://${GOOGLE_ANALYTICS_HOST}/${COLLECT_PATH}`;
+
+    // Ignore URL search params as they're in the post body.
+    requestInit.url = `${url.origin}${url.pathname}`;
   };
 };
 
 /**
  * Creates GET and POST routes to catch failed Measurement Protocol hits.
  *
- * @param {QueuePlugin} queuePlugin
+ * @param {Plugin} queuePlugin
  * @return {Array<Route>} The created routes.
  *
  * @private
  */
 const createCollectRoutes = (queuePlugin) => {
   const match = ({url}) => url.hostname === GOOGLE_ANALYTICS_HOST &&
-      url.pathname === COLLECT_PATH;
+      COLLECT_PATHS_REGEX.test(url.pathname);
 
   const handler = new NetworkOnly({
     plugins: [queuePlugin],
@@ -167,7 +171,7 @@ const createGtagJsRoute = (cacheName) => {
 const initialize = (options = {}) => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
 
-  const queuePlugin = new QueuePlugin(QUEUE_NAME, {
+  const queuePlugin = new Plugin(QUEUE_NAME, {
     maxRetentionTime: MAX_RETENTION_TIME,
     callbacks: {
       requestWillReplay: createRequestWillReplayCallback(options),

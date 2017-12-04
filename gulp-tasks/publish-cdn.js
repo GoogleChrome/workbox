@@ -1,12 +1,10 @@
 const gulp = require('gulp');
 const path = require('path');
-const fs = require('fs-extra');
 
 const cdnUploadHelper = require('./utils/cdn-helper');
 const publishHelpers = require('./utils/publish-helpers');
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
-const constants = require('./utils/constants');
 
 const findMissingCDNTags = async (tagsData) => {
   const missingTags = [];
@@ -28,8 +26,16 @@ const handleCDNUpload = async (tagName, gitBranch) => {
   const buildFilesDir =
     await publishHelpers.groupBuildFiles(tagName, gitBranch);
 
-  logHelper.log(`Uploading '${tagName}' to CDN.`);
-  const publishUrls = await cdnUploadHelper.upload(tagName, buildFilesDir);
+  // Git adds 'v' to tag name, lerna does not in package.json version.
+  // We are going to publish to CDN *without* the 'v'
+  let friendlyTagName = tagName;
+  if (friendlyTagName.indexOf('v') === 0) {
+    friendlyTagName = friendlyTagName.substring(1);
+  }
+
+  logHelper.log(`Uploading '${tagName}' to CDN as ${friendlyTagName}.`);
+  const publishUrls = await cdnUploadHelper.upload(
+    friendlyTagName, buildFilesDir);
 
   logHelper.log(`The following URLs are now avaiable:`);
   publishUrls.forEach((url) => {
@@ -58,28 +64,6 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
   }
 });
 
-gulp.task('publish-cdn:temp-v3', async () => {
-  // Let's force this to always be fresh - in case we run it outside of
-  // gulp publish
-  await fs.remove(
-    path.join(__dirname, '..', constants.GENERATED_RELEASE_FILES_DIRNAME));
-
-  const lernaPkg = await fs.readJSON(
-    path.join(__dirname, '..', 'lerna.json'),
-  );
-  const tagName = lernaPkg.version;
-  const gitBranch = 'v3';
-
-  const missingTags = await findMissingCDNTags([{name: tagName}]);
-  logHelper.log(missingTags);
-  for (let tagData of missingTags) {
-    // Override the git branch here since we aren't actually
-    // using a tagged release.
-    await handleCDNUpload(tagData.name, gitBranch);
-  }
-});
-
 gulp.task('publish-cdn', gulp.series(
   'publish-cdn:generate-from-tags',
-  'publish-cdn:temp-v3',
 ));

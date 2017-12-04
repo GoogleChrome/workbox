@@ -2,6 +2,9 @@ const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs-extra');
 
+const getNpmCmd = require('./utils/get-npm-cmd');
+const spawn = require('./utils/spawn-promise-wrapper');
+const logHelper = require('../infra/utils/log-helper');
 const constants = require('./utils/constants');
 
 gulp.task('publish:clean', () => {
@@ -15,7 +18,23 @@ gulp.task('publish:cdn+git', gulp.series([
   'publish-cdn',
 ]));
 
+gulp.task('publish:signin', async () => {
+  try {
+    await spawn(getNpmCmd(), [
+      'whoami',
+    ]);
+  } catch (err) {
+    // Sign in
+    logHelper.warn('');
+    logHelper.warn('    You must be signed in to NPM to publish.');
+    logHelper.warn('    Please run `npm login` to publish.');
+    logHelper.warn('');
+    process.exit(1);
+  }
+});
+
 gulp.task('publish', gulp.series([
+  'publish:signin',
   'test',
   'publish-lerna',
   'publish:cdn+git',

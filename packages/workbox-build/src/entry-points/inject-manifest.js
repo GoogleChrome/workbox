@@ -34,7 +34,7 @@ const validate = require('./options/validate');
  * The final service worker file, with the manifest injected, is written to
  * disk at `swDest`.
  *
- * @param {Object} input
+ * @param {module:workbox-build.Configuration} config
  * @return {Promise<{count: Number, size: Number}>} A promise that resolves once
  * the service worker file has been written to `swDest`. The `size` property
  * contains the aggregate size of all the precached entries, in bytes, and the
@@ -42,10 +42,10 @@ const validate = require('./options/validate');
  *
  * @memberof module:workbox-build
  */
-async function injectManifest(input) {
-  const options = validate(input, injectManifestSchema);
+async function injectManifest(config) {
+  const options = validate(config, injectManifestSchema);
 
-  if (path.normalize(input.swSrc) === path.normalize(input.swDest)) {
+  if (path.normalize(config.swSrc) === path.normalize(config.swDest)) {
     throw new Error(errors['same-src-and-dest']);
   }
 
@@ -54,7 +54,7 @@ async function injectManifest(input) {
   const {count, size, manifestEntries} = await getFileManifestEntries(options);
   let swFileContents;
   try {
-    swFileContents = await fse.readFile(input.swSrc, 'utf8');
+    swFileContents = await fse.readFile(config.swSrc, 'utf8');
   } catch (error) {
     throw new Error(`${errors['invalid-sw-src']} ${error.message}`);
   }
@@ -81,7 +81,7 @@ async function injectManifest(input) {
       ` '${error.message}'`);
   }
 
-  await fse.writeFile(input.swDest, swFileContents);
+  await fse.writeFile(config.swDest, swFileContents);
 
   return {count, size};
 }

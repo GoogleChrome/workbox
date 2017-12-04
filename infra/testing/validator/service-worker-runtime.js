@@ -8,9 +8,18 @@ const vm = require('vm');
 function setupSpiesAndContext() {
   const importScripts = sinon.spy();
   const workbox = {
+    // To make testing easier, return the name of the plugin.
+    cacheableResponse: {
+      Plugin: sinon.stub().returns('workbox.cacheableResponse.Plugin'),
+    },
     clientsClaim: sinon.spy(),
+    // To make testing easier, return the name of the plugin.
+    expiration: {
+      Plugin: sinon.stub().returns('workbox.expiration.Plugin'),
+    },
     precaching: {
       precacheAndRoute: sinon.spy(),
+      suppressWarnings: sinon.spy(),
     },
     routing: {
       registerNavigationRoute: sinon.spy(),
@@ -34,6 +43,8 @@ function setupSpiesAndContext() {
 
   const methodsToSpies = {
     importScripts,
+    cacheableResponsePlugin: workbox.cacheableResponse.Plugin,
+    cacheExpirationPlugin: workbox.expiration.Plugin,
     cacheFirst: workbox.strategies.cacheFirst,
     clientsClaim: workbox.clientsClaim,
     precacheAndRoute: workbox.precaching.precacheAndRoute,
@@ -42,6 +53,7 @@ function setupSpiesAndContext() {
     setCacheNameDetails: workbox.core.setCacheNameDetails,
     setConfig: workbox.setConfig,
     skipWaiting: workbox.skipWaiting,
+    suppressWarnings: workbox.precaching.suppressWarnings,
   };
 
   return {context, methodsToSpies};
