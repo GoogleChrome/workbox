@@ -14,40 +14,33 @@
 */
 
 import {expect} from 'chai';
-import clearRequire from 'clear-require';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import {DB_NAME, OBJECT_STORE_NAME} from
     '../../../../packages/workbox-background-sync/utils/constants.mjs';
+import {Queue} from
+    '../../../../packages/workbox-background-sync/Queue.mjs';
 import {QueueStore} from
     '../../../../packages/workbox-background-sync/models/QueueStore.mjs';
 import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 import StorableRequest from
     '../../../../packages/workbox-background-sync/models/StorableRequest.mjs';
 
-let Queue;
-
 const getObjectStoreEntries = async () => {
   return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);
 };
 
-
 describe(`[workbox-background-sync] QueueStore`, function() {
-  beforeEach(async function() {
-    // Clear Queue so the name map gets reset on re-import.
-    clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
+  const reset = () => {
+    Queue._queueNames.clear();
     iDBReset();
+  };
 
-    // Re-import Queue each time so the name map gets reset.
-    const imprt = await import(
-        '../../../../packages/workbox-background-sync/Queue.mjs');
-
-    Queue = imprt.Queue;
+  beforeEach(function() {
+    reset();
   });
 
   after(async function() {
-    // Clear Queue so the name map gets reset on re-import.
-    clearRequire('../../../../packages/workbox-background-sync/Queue.mjs');
-    iDBReset();
+    reset();
   });
 
   describe(`constructor`, function() {
