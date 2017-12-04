@@ -57,7 +57,7 @@ export default class PrecacheEntry {
     if ('cache' in Request.prototype) {
       // Make use of the Request cache mode where we can.
       // Reload skips the HTTP cache for outgoing requests and updates
-      // the cache with the returned reponse.
+      // the cache with the returned response.
       requestOptions.cache = 'reload';
     } else {
       const parsedURL = new URL(url, location);

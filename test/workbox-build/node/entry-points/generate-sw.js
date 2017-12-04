@@ -231,7 +231,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       await fse.writeFile(path.join(globDirectory, 'index.html'), testFileContents);
 
       // Make two copies of the Workbox libraries into the source directory, to
-      // test the the globIgnore pattern works for both top and sub-directories.
+      // test the globIgnore pattern works for both top and sub-directories.
       await copyWorkboxLibraries(globDirectory);
       await copyWorkboxLibraries(path.join(globDirectory, 'sub-directory'));
 

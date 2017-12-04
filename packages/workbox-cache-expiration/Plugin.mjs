@@ -24,7 +24,7 @@ import './_version.mjs';
  * at the used Cache and remove any old or extra requests.
  *
  * When using `maxAgeSeconds`, requests may be used *once* after expiring
- * because the expiration clean up will not have occured until *after* the
+ * because the expiration clean up will not have occurred until *after* the
  * cached request has been used. If the request has a "Date" header, then
  * a light weight expiration check is performed and the request will not be
  * used immediately.
