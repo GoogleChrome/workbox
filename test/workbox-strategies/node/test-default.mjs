@@ -1,5 +1,6 @@
 import {expect} from 'chai';
 
+import {devOnly} from '../../../infra/testing/env-it';
 import expectError from '../../../infra/testing/expectError';
 import {CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate} from '../../../packages/workbox-strategies/_public.mjs';
 import strategies from '../../../packages/workbox-strategies/_default.mjs';
@@ -20,7 +21,7 @@ describe(`[workbox-strategies] Default Export`, function() {
       expect(strategy._plugins[0]).to.equal(CUSTOM_PLUGIN);
     });
 
-    it(`should throw when cacheExpiration is used without cacheName`, async function() {
+    devOnly.it(`should throw when cacheExpiration is used without cacheName`, async function() {
       await expectError(
         () => strategies.cacheFirst({
           cacheExpiration: {
@@ -50,7 +51,7 @@ describe(`[workbox-strategies] Default Export`, function() {
       expect(strategy._plugins[0]).to.equal(CUSTOM_PLUGIN);
     });
 
-    it(`should throw when cacheExpiration is used without cacheName`, async function() {
+    devOnly.it(`should throw when cacheExpiration is used without cacheName`, async function() {
       await expectError(
         () => strategies.cacheOnly({
           cacheExpiration: {
@@ -81,7 +82,7 @@ describe(`[workbox-strategies] Default Export`, function() {
       expect(strategy._plugins[1]).to.equal(CUSTOM_PLUGIN);
     });
 
-    it(`should throw when cacheExpiration is used without cacheName`, async function() {
+    devOnly.it(`should throw when cacheExpiration is used without cacheName`, async function() {
       await expectError(
         () => strategies.networkFirst({
           cacheExpiration: {
@@ -111,7 +112,7 @@ describe(`[workbox-strategies] Default Export`, function() {
       expect(strategy._plugins[0]).to.equal(CUSTOM_PLUGIN);
     });
 
-    it(`should throw when cacheExpiration is used without cacheName`, async function() {
+    devOnly.it(`should throw when cacheExpiration is used without cacheName`, async function() {
       await expectError(
         () => strategies.networkOnly({
           cacheExpiration: {
@@ -142,7 +143,7 @@ describe(`[workbox-strategies] Default Export`, function() {
       expect(strategy._plugins[1]).to.equal(CUSTOM_PLUGIN);
     });
 
-    it(`should throw when cacheExpiration is used without cacheName`, async function() {
+    devOnly.it(`should throw when cacheExpiration is used without cacheName`, async function() {
       await expectError(
         () => strategies.staleWhileRevalidate({
           cacheExpiration: {
