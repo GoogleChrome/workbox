@@ -26,7 +26,7 @@ module.exports = (globOptions) => {
     globDirectory,
     globIgnores,
     globPattern,
-    globFollows,
+    globFollow,
     globStrict,
   } = globOptions;
   let globbedFiles;
@@ -34,7 +34,7 @@ module.exports = (globOptions) => {
     globbedFiles = glob.sync(globPattern, {
       cwd: globDirectory,
       ignore: globIgnores,
-      follow: typeof globFollows !== 'undefined'? globFollows : true,
+      follow: typeof globFollow !== 'undefined'? globFollow : true,
       strict: typeof globStrict !== 'undefined'? globStrict : true,
 
     });
