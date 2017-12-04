@@ -21,12 +21,22 @@ const errors = require('./errors');
 const getFileSize = require('./get-file-size');
 const getFileHash = require('./get-file-hash');
 
-module.exports = ({globDirectory, globIgnores, globPattern}) => {
+module.exports = (globOptions) => {
+  const {
+    globDirectory,
+    globIgnores,
+    globPattern,
+    globFollows,
+    globStrict,
+  } = globOptions;
   let globbedFiles;
   try {
     globbedFiles = glob.sync(globPattern, {
       cwd: globDirectory,
       ignore: globIgnores,
+      follow: typeof globFollows !== 'undefined'? globFollows : true,
+      strict: typeof globStrict !== 'undefined'? globStrict : true,
+
     });
   } catch (err) {
     throw new Error(errors['unable-to-glob-files'] + ` '${err.message}'`);
