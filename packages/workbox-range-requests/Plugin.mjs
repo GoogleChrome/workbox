@@ -16,15 +16,11 @@ import {createPartialResponse} from './createPartialResponse.mjs';
 import './_version.mjs';
 
 /**
- * A class implementing the `cachedResponseWillBeUsed` lifecycle callback.
- * This makes it easier to add in support for used cached responses to fulfill
- * requests with `Range:` headers.
+ * The range request plugin makes it easy for a request with a 'Range' header to
+ * be fulfilled by a cached response.
  *
- * If an incoming request does contain a `Range:` header, then the appropriate
- * subset of the cached body will be returned as part of a HTTP 416 response.
- *
- * If the incoming request does not contain a `Range:` header, then the cached
- * response will be used as-is.
+ * It does this by intercepting the `cachedResponseWillBeUsed` plugin callback
+ * and returning the appropriate subset of the cached response body.
  *
  * @memberof workbox.rangeRequests
  */
@@ -34,10 +30,9 @@ class Plugin {
    * @param {Request} options.request The original request, which may or may not
    * contain a Range: header.
    * @param {Response} options.cachedResponse The complete cached response.
-   * @return {Promise<Response>} If request contains a Range: header, then
-   * a Response with status 206 whose body is a subset of cachedResponse. If
-   * request does not have a Range: header, then cachedResponse is returned
-   * as-is.
+   * @return {Promise<Response>} If request contains a 'Range' header, then a
+   * new response with status 206 whose body is a subset of `cachedResponse` is
+   * returned. Otherwise, `cachedResponse` is returned as-is.
    *
    * @private
    */
