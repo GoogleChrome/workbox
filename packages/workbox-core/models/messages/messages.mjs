@@ -43,23 +43,22 @@ export default {
 
   'incorrect-type': ({expectedType, paramName, moduleName, className,
                    funcName}) => {
-    if (!expectedType || !paramName || !moduleName || !className || !funcName) {
+    if (!expectedType || !paramName || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'incorrect-type' error.`);
     }
     return `The parameter '${paramName}' passed into ` +
-      `'${moduleName}.${className}.${funcName}()' must be of type ` +
-      `${expectedType}.`;
+      `'${moduleName}.${className ? (className + '.') : ''}` +
+      `${funcName}()' must be of type ${expectedType}.`;
   },
 
   'incorrect-class': ({expectedClass, paramName, moduleName, className,
                        funcName}) => {
-    if (!expectedClass || !paramName || !moduleName || !className ||
-      !funcName) {
+    if (!expectedClass || !paramName || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'incorrect-class' error.`);
     }
     return `The parameter '${paramName}' passed into ` +
-      `'${moduleName}.${className}.${funcName}()' must be an instance of ` +
-      `class ${expectedClass.name}.`;
+      `'${moduleName}.${className ? (className + '.') : ''}.${funcName}()' ` +
+      `must be an instance of class ${expectedClass.name}.`;
   },
 
   'missing-a-method': ({expectedMethod, paramName, moduleName, className,
@@ -179,5 +178,35 @@ export default {
   'invalid-responses-are-same-args': () => {
     return `The arguments passed into responsesAreSame() appear to be ` +
       `invalid. Please ensure valid Responses are used.`;
+  },
+  'unit-must-be-bytes': ({normalizedRangeHeader}) => {
+    if (!normalizedRangeHeader) {
+      throw new Error(`Unexpected input to 'unit-must-be-bytes' error.`);
+    }
+    return `The 'unit' portion of the Range header must be set to 'bytes'. ` +
+      `The Range header provided was "${normalizedRangeHeader}"`;
+  },
+  'single-range-only': ({normalizedRangeHeader}) => {
+    if (!normalizedRangeHeader) {
+      throw new Error(`Unexpected input to 'single-range-only' error.`);
+    }
+    return `Multiple ranges are not supported. Please use a  single start ` +
+      `value, and optional end value. The Range header provided was ` +
+      `"${normalizedRangeHeader}"`;
+  },
+  'invalid-range-values': ({normalizedRangeHeader}) => {
+    if (!normalizedRangeHeader) {
+      throw new Error(`Unexpected input to 'invalid-range-values' error.`);
+    }
+    return `The Range header is missing both start and end values. At least ` +
+      `one of those values is needed. The Range header provided was ` +
+      `"${normalizedRangeHeader}"`;
+  },
+  'no-range-header': () => {
+    return `No Range header was found in the Request provided.`;
+  },
+  'range-not-satisfiable': ({size, start, end}) => {
+    return `The start (${start}) and end (${end}) values in the Range are ` +
+      `not satisfiable by the cached response, which is ${size} bytes.`;
   },
 };

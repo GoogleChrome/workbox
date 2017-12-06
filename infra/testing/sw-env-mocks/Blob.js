@@ -49,6 +49,12 @@ class Blob {
     }
     return text;
   }
+
+  slice(start, end, type) {
+    const bodyString = this._text;
+    const slicedBodyString = bodyString.substring(start, end);
+    return new Blob([slicedBodyString], {type});
+  }
 }
 
 module.exports = Blob;
