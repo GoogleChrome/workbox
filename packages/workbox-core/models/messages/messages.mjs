@@ -53,7 +53,7 @@ export default {
 
   'incorrect-class': ({expectedClass, paramName, moduleName, className,
                        funcName}) => {
-    if (!expectedClass || !paramName || !moduleName  || !funcName) {
+    if (!expectedClass || !paramName || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'incorrect-class' error.`);
     }
     return `The parameter '${paramName}' passed into ` +
