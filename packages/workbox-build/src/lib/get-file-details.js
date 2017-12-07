@@ -24,19 +24,18 @@ const getFileHash = require('./get-file-hash');
 module.exports = (globOptions) => {
   const {
     globDirectory,
+    globFollow,
     globIgnores,
     globPattern,
-    globFollow,
     globStrict,
   } = globOptions;
   let globbedFiles;
   try {
     globbedFiles = glob.sync(globPattern, {
       cwd: globDirectory,
+      follow: globFollow,
       ignore: globIgnores,
-      follow: typeof globFollow !== 'undefined'? globFollow : true,
-      strict: typeof globStrict !== 'undefined'? globStrict : true,
-
+      strict: globStrict,
     });
   } catch (err) {
     throw new Error(errors['unable-to-glob-files'] + ` '${err.message}'`);

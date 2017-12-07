@@ -26,8 +26,10 @@ const getStringDetails = require('./get-string-details');
 module.exports = async ({
   dontCacheBustUrlsMatching,
   globDirectory,
+  globFollow,
   globIgnores,
   globPatterns,
+  globStrict,
   manifestTransforms,
   maximumFileSizeToCacheInBytes,
   modifyUrlPrefix,
@@ -48,8 +50,10 @@ module.exports = async ({
     fileDetails = globPatterns.reduce((accumulated, globPattern) => {
       const globbedFileDetails = getFileDetails({
         globDirectory,
-        globPattern,
+        globFollow,
         globIgnores,
+        globPattern,
+        globStrict,
       });
 
       globbedFileDetails.forEach((fileDetails) => {
@@ -74,8 +78,10 @@ module.exports = async ({
           try {
             const globbedFileDetails = getFileDetails({
               globDirectory,
-              globPattern,
+              globFollow,
               globIgnores,
+              globPattern,
+              globStrict,
             });
             return previous.concat(globbedFileDetails);
           } catch (error) {
