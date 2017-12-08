@@ -41,7 +41,11 @@ class PrecachedDetailsModel {
     this._db = new DBWrapper(`workbox-precaching`, 2, {
       onupgradeneeded: (evt) => {
         if (evt.oldVersion < 2) {
-          evt.target.result.deleteObjectStore('workbox-precaching');
+          try {
+            evt.target.result.deleteObjectStore('workbox-precaching');
+          } catch (err) {
+            // NOOP
+          }
         }
         evt.target.result.createObjectStore(DB_STORE_NAME);
       },
