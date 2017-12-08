@@ -38,8 +38,11 @@ class PrecachedDetailsModel {
    */
   constructor(cacheName) {
     this._cacheName = cacheNames.getPrecacheName(cacheName);
-    this._db = new DBWrapper(`workbox-precaching`, 1, {
+    this._db = new DBWrapper(`workbox-precaching`, 2, {
       onupgradeneeded: (evt) => {
+        if (evt.oldVersion === 1) {
+          evt.target.result.deleteObjectStore('workbox-precaching');
+        }
         evt.target.result.createObjectStore(DB_STORE_NAME);
       },
     });
