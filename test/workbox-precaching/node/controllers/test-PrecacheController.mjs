@@ -383,6 +383,41 @@ describe(`[workbox-precaching] PrecacheController`, function() {
   });
 
   describe(`cleanup()`, function() {
+    it(`should remove out of date entry`, async function() {
+      const cache = await caches.open(cacheNames.getPrecacheName());
+
+      /*
+      First precache some entries
+      */
+      const precacheControllerOne = new PrecacheController();
+      const cacheListOne = [
+        {url: '/scripts/index.js', revision: '1234'},
+      ];
+      precacheControllerOne.addToCacheList(cacheListOne);
+      await precacheControllerOne.install();
+
+      const cleanupDetailsOne = await precacheControllerOne.cleanup();
+      expect(cleanupDetailsOne.deletedCacheRequests.length).to.equal(0);
+      expect(cleanupDetailsOne.deletedRevisionDetails.length).to.equal(0);
+
+      const precacheControllerTwo = new PrecacheController();
+      const cacheListTwo = [];
+      precacheControllerTwo.addToCacheList(cacheListTwo);
+      await precacheControllerTwo.install();
+
+      const cleanupDetailsTwo = await precacheControllerTwo.cleanup();
+      expect(cleanupDetailsTwo.deletedCacheRequests.length).to.equal(1);
+      expect(cleanupDetailsTwo.deletedCacheRequests[0]).to.equal('/scripts/index.js');
+      expect(cleanupDetailsTwo.deletedRevisionDetails.length).to.equal(1);
+      expect(cleanupDetailsTwo.deletedRevisionDetails[0]).to.equal('/scripts/index.js');
+
+      const keysTwo = await cache.keys();
+      expect(keysTwo.length).to.equal(cacheListTwo.length);
+
+      const entries = await precacheControllerTwo._precacheDetailsModel._getAllEntries();
+      expect(entries).to.deep.equal([]);
+    });
+
     it(`should remove out of date entries`, async function() {
       const cache = await caches.open(cacheNames.getPrecacheName());
 
@@ -444,6 +479,42 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         const cachedResponse = await cache.match(url);
         expect(cachedResponse).to.exist;
       }));
+
+      const entries = await precacheControllerTwo._precacheDetailsModel._getAllEntries();
+      expect(entries).to.deep.equal([
+        {
+          key: '/example.1234.css',
+          primaryKey: '/example.1234.css',
+          value: {
+            revision: '/example.1234.css',
+            url: '/example.1234.css',
+          },
+        },
+        {
+          key: '/index.4321.html',
+          primaryKey: '/index.4321.html',
+          value: {
+            revision: '/index.4321.html',
+            url: '/index.4321.html',
+          },
+        },
+        {
+          key: '/scripts/index.js',
+          primaryKey: '/scripts/index.js',
+          value: {
+            revision: '1234',
+            url: '/scripts/index.js',
+          },
+        },
+        {
+          key: '/scripts/stress.js?test=search&foo=bar',
+          primaryKey: '/scripts/stress.js?test=search&foo=bar',
+          value: {
+            revision: '4321',
+            url: '/scripts/stress.js?test=search&foo=bar',
+          },
+        },
+      ]);
 
       // Make sure we print some debug info.
       if (process.env.NODE_ENV === 'production') {
