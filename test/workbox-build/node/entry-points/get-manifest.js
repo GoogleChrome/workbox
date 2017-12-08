@@ -1,5 +1,7 @@
 const expect = require('chai').expect;
+const fse = require('fs-extra');
 const path = require('path');
+const tempy = require('tempy');
 
 const getManifest = require('../../../../packages/workbox-build/src/entry-points/get-manifest');
 
@@ -11,8 +13,10 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
   const REQUIRED_PARAMS = ['globDirectory'];
   const SUPPORTED_PARAMS = [
     'dontCacheBustUrlsMatching',
+    'globFollow',
     'globIgnores',
     'globPatterns',
+    'globStrict',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
     'modifyUrlPrefix',
@@ -258,6 +262,35 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
       }]);
       expect(count).to.eql(2);
       expect(size).to.eql(50);
+    });
+
+    it(`should use defaults when all the required parameters are present, with 'globFollow' and symlinks`, async function() {
+      const globDirectory = tempy.directory();
+
+      await fse.ensureSymlink(SRC_DIR, path.join(globDirectory, 'link'));
+
+      const options = Object.assign({}, BASE_OPTIONS, {
+        globDirectory,
+        globFollow: false,
+      });
+
+      const {count, size, manifestEntries} = await getManifest(options);
+
+      expect(manifestEntries).to.deep.equal([{
+        url: 'link/index.html',
+        revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+      }, {
+        url: 'link/page-1.html',
+        revision: '544658ab25ee8762dc241e8b1c5ed96d',
+      }, {
+        url: 'link/page-2.html',
+        revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+      }, {
+        url: 'link/webpackEntry.js',
+        revision: 'd41d8cd98f00b204e9800998ecf8427e',
+      }]);
+      expect(count).to.eql(4);
+      expect(size).to.eql(2352);
     });
   });
 });

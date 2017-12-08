@@ -26,8 +26,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     'clientsClaim',
     'directoryIndex',
     'dontCacheBustUrlsMatching',
+    'globFollow',
     'globIgnores',
     'globPatterns',
+    'globStrict',
     'ignoreUrlParametersMatching',
     'importScripts',
     'importWorkboxFromCDN',
@@ -370,6 +372,81 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         registerNavigationRoute: [[navigateFallback, {
           whitelist: navigateFallbackWhitelist,
         }]],
+      }});
+    });
+
+    it(`should use defaults when all the required parameters are present, with symlinks`, async function() {
+      const swDest = tempy.file();
+      const globDirectory = tempy.directory();
+
+      await fse.ensureSymlink(GLOB_DIR, path.join(globDirectory, 'link'));
+
+      const options = Object.assign({}, BASE_OPTIONS, {
+        globDirectory,
+        swDest,
+      });
+
+      const {count, size} = await generateSW(options);
+
+      expect(count).to.eql(6);
+      expect(size).to.eql(2421);
+      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
+        importScripts: [[WORKBOX_SW_CDN_URL]],
+        suppressWarnings: [[]],
+        precacheAndRoute: [[[{
+          url: 'link/index.html',
+          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+        }, {
+          url: 'link/page-1.html',
+          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        }, {
+          url: 'link/page-2.html',
+          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        }, {
+          url: 'link/styles/stylesheet-1.css',
+          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        }, {
+          url: 'link/styles/stylesheet-2.css',
+          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        }, {
+          url: 'link/webpackEntry.js',
+          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+        }], {}]],
+      }});
+    });
+
+    it(`should use defaults when all the required parameters are present, with 'globFollow' and  symlinks`, async function() {
+      const swDest = tempy.file();
+      const globDirectory = tempy.directory();
+
+      await fse.ensureSymlink(GLOB_DIR, path.join(globDirectory, 'link'));
+
+      const options = Object.assign({}, BASE_OPTIONS, {
+        globDirectory,
+        globFollow: false,
+        swDest,
+      });
+
+      const {count, size} = await generateSW(options);
+
+      expect(count).to.eql(4);
+      expect(size).to.eql(2352);
+      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
+        importScripts: [[WORKBOX_SW_CDN_URL]],
+        suppressWarnings: [[]],
+        precacheAndRoute: [[[{
+          url: 'link/index.html',
+          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+        }, {
+          url: 'link/page-1.html',
+          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        }, {
+          url: 'link/page-2.html',
+          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        }, {
+          url: 'link/webpackEntry.js',
+          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+        }], {}]],
       }});
     });
   });

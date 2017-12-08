@@ -132,6 +132,15 @@ import './_version.mjs';
  *
  * E.g. `['**\/ignored.html']`
  *
+ * @property {Boolean} [globFollow=true] Follow symlinked directories when
+ * expanding '**' patterns. Note that this can result in a lot of duplicate
+ * references in the presence of cyclic links.
+ *
+ * @property {Boolean} [globStrict=true] When an unusual error is encountered
+ * when attempting to read a directory, the process will just continue on in
+ * search of other matches. Set the strict option to raise an error in these
+ * cases.
+ *
  * @property {Object<String,Array|string>} [templatedUrls]
  * If a URL is rendered generated based on some server-side logic, its contents
  * may depend on multiple files or on some other unique string value.
