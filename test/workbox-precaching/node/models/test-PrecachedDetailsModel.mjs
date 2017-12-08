@@ -23,6 +23,31 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     // TODO Bad cache name input
   });
 
+  describe('_getAllEntries', function() {
+    it(`should return an empty array`, async function() {
+      const model = new PrecachedDetailsModel(`test-cache-name`);
+      const allEntries = await model._getAllEntries();
+      expect(allEntries).to.deep.equal([]);
+    });
+
+    it(`should return entry with ID`, async function() {
+      const model = new PrecachedDetailsModel(`test-cache-name`);
+      await model._addEntry(new PrecacheEntry(
+        {}, '/', '1234', true
+      ));
+      const allEntries = await model._getAllEntries();
+      expect(allEntries.length).to.equal(1);
+      expect(allEntries[0]).to.deep.equal({
+        key: '/',
+        primaryKey: '/',
+        value: {
+          revision: '1234',
+          url: '/',
+        },
+      });
+    });
+  });
+
   describe(`_isEntryCached()`, function() {
     // TODO Test bad inputs
 
@@ -87,7 +112,20 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
     it(`should be able to delete an entry`, async function() {
       const model = new PrecachedDetailsModel();
+
+      await model._addEntry(
+        new PrecacheEntry(
+          {}, '/', '1234', true
+        )
+      );
+
+      let allEntries = await model._getAllEntries();
+      expect(allEntries.length).to.equal(1);
+
       await model._deleteEntry('/');
+
+      allEntries = await model._getAllEntries();
+      expect(allEntries.length).to.equal(0);
     });
   });
 });

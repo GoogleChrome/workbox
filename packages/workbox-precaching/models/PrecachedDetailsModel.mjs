@@ -71,7 +71,9 @@ class PrecachedDetailsModel {
    * @private
    */
   async _getAllEntries() {
-    return await this._db.getAll(DB_STORE_NAME);
+    return await this._db.getAllMatching(DB_STORE_NAME, {
+      includeKeys: true,
+    });
   }
 
   /**

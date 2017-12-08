@@ -287,21 +287,19 @@ class PrecacheController {
    */
   async _cleanupDetailsModel(expectedCacheUrls) {
     const revisionedEntries = await this._precacheDetailsModel._getAllEntries();
-
-    const detailsToDelete = (Object.keys(revisionedEntries))
-      .filter((entryId) => {
-        const entry = revisionedEntries[entryId];
-        const fullUrl = new URL(entry.url, location).toString();
+    const detailsToDelete = revisionedEntries
+      .filter((entry) => {
+        const fullUrl = new URL(entry.value.url, location).toString();
         return !expectedCacheUrls.includes(fullUrl);
       });
 
     await Promise.all(
       detailsToDelete.map(
-        (detailsId) => this._precacheDetailsModel._deleteEntry(detailsId)
+        (entry) => this._precacheDetailsModel._deleteEntry(entry.primaryKey)
       )
     );
-    return detailsToDelete.map((detailsId) => {
-      return revisionedEntries[detailsId].url;
+    return detailsToDelete.map((entry) => {
+      return entry.value.url;
     });
   }
 
