@@ -19,11 +19,10 @@ import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
 import PrecacheEntry from '../models/PrecacheEntry.mjs';
 import PrecachedDetailsModel from '../models/PrecachedDetailsModel.mjs';
 import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
-import openInstallLogGroup from '../utils/openInstallLogGroup.mjs';
+import printInstallDetails from '../utils/printInstallDetails.mjs';
 import printCleanupDetails from '../utils/printCleanupDetails.mjs';
 import cleanRedirect from '../utils/cleanRedirect.mjs';
 import '../_version.mjs';
@@ -165,17 +164,13 @@ class PrecacheController {
       }
     }
 
-    if (process.env.NODE_ENV !== 'production') {
-      openInstallLogGroup(entriesToPrecache, entriesAlreadyPrecached);
-    }
-
     // Wait for all requests to be cached.
     await Promise.all(entriesToPrecache.map((precacheEntry) => {
       return this._cacheEntry(precacheEntry);
     }));
 
     if (process.env.NODE_ENV !== 'production') {
-      logger.groupEnd();
+      printInstallDetails(entriesToPrecache, entriesAlreadyPrecached);
     }
 
     return {
