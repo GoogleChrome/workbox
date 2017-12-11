@@ -67,4 +67,5 @@ export default (entriesToPrecache, alreadyPrecachedEntries) => {
   _nestedGroup(
     `View URLs that were already precached.`,
     alreadyPrecachedEntries);
+  logger.groupEnd();
 };
