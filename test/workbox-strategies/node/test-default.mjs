@@ -1,7 +1,5 @@
 import {expect} from 'chai';
 
-import {devOnly} from '../../../infra/testing/env-it';
-import expectError from '../../../infra/testing/expectError';
 import {CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate} from '../../../packages/workbox-strategies/_public.mjs';
 import strategies from '../../../packages/workbox-strategies/_default.mjs';
 

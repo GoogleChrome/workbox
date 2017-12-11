@@ -180,9 +180,6 @@ export default {
       `invalid. Please ensure valid Responses are used.`;
   },
   'expire-custom-caches-only': () => {
-    if (!funcName) {
-      throw new Error(`Unexpected input to 'expire-custom-caches-only' error.`);
-    }
     return `You must provide a 'cacheName' property when using the ` +
       `expiration plugin with a runtime caching strategy.`;
   },
