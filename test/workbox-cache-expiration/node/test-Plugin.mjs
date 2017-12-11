@@ -163,11 +163,7 @@ describe(`[workbox-cache-expiration] Plugin`, function() {
       const plugin = new Plugin({maxAgeSeconds: 1});
       await expectError(
         () => plugin._getCacheExpiration(cacheNames.getRuntimeName()),
-        'cache-expiration-requires-cache-name',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-cache-expiration');
-          expect(error.details).to.have.property('funcName').that.equals('Plugin._getCacheExpiration');
-        }
+        'expire-custom-caches-only'
       );
     });
   });

@@ -20,21 +20,6 @@ describe(`[workbox-strategies] Default Export`, function() {
       expect(strategy._plugins.length).to.equal(1);
       expect(strategy._plugins[0]).to.equal(CUSTOM_PLUGIN);
     });
-
-    devOnly.it(`should throw when cacheExpiration is used without cacheName`, async function() {
-      await expectError(
-        () => strategies.cacheFirst({
-          cacheExpiration: {
-            maxEntries: 1,
-          },
-        }),
-        'cache-expiration-requires-cache-name',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-strategies');
-          expect(error.details).to.have.property('funcName').that.equals('cacheFirst');
-        }
-      );
-    });
   });
 
   describe(`cacheOnly()`, function() {
@@ -49,21 +34,6 @@ describe(`[workbox-strategies] Default Export`, function() {
       });
       expect(strategy._plugins.length).to.equal(1);
       expect(strategy._plugins[0]).to.equal(CUSTOM_PLUGIN);
-    });
-
-    devOnly.it(`should throw when cacheExpiration is used without cacheName`, async function() {
-      await expectError(
-        () => strategies.cacheOnly({
-          cacheExpiration: {
-            maxEntries: 1,
-          },
-        }),
-        'cache-expiration-requires-cache-name',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-strategies');
-          expect(error.details).to.have.property('funcName').that.equals('cacheOnly');
-        }
-      );
     });
   });
 
@@ -81,21 +51,6 @@ describe(`[workbox-strategies] Default Export`, function() {
       expect(strategy._plugins.length).to.equal(2);
       expect(strategy._plugins[1]).to.equal(CUSTOM_PLUGIN);
     });
-
-    devOnly.it(`should throw when cacheExpiration is used without cacheName`, async function() {
-      await expectError(
-        () => strategies.networkFirst({
-          cacheExpiration: {
-            maxEntries: 1,
-          },
-        }),
-        'cache-expiration-requires-cache-name',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-strategies');
-          expect(error.details).to.have.property('funcName').that.equals('networkFirst');
-        }
-      );
-    });
   });
 
   describe(`networkOnly()`, function() {
@@ -110,21 +65,6 @@ describe(`[workbox-strategies] Default Export`, function() {
       });
       expect(strategy._plugins.length).to.equal(1);
       expect(strategy._plugins[0]).to.equal(CUSTOM_PLUGIN);
-    });
-
-    devOnly.it(`should throw when cacheExpiration is used without cacheName`, async function() {
-      await expectError(
-        () => strategies.networkOnly({
-          cacheExpiration: {
-            maxEntries: 1,
-          },
-        }),
-        'cache-expiration-requires-cache-name',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-strategies');
-          expect(error.details).to.have.property('funcName').that.equals('networkOnly');
-        }
-      );
     });
   });
 
@@ -141,21 +81,6 @@ describe(`[workbox-strategies] Default Export`, function() {
       // Stale while revalidate adds a plugin for opaque responses.
       expect(strategy._plugins.length).to.equal(2);
       expect(strategy._plugins[1]).to.equal(CUSTOM_PLUGIN);
-    });
-
-    devOnly.it(`should throw when cacheExpiration is used without cacheName`, async function() {
-      await expectError(
-        () => strategies.staleWhileRevalidate({
-          cacheExpiration: {
-            maxEntries: 1,
-          },
-        }),
-        'cache-expiration-requires-cache-name',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-strategies');
-          expect(error.details).to.have.property('funcName').that.equals('staleWhileRevalidate');
-        }
-      );
     });
   });
 });

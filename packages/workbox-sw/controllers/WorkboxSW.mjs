@@ -30,6 +30,7 @@ const MODULE_KEY_TO_NAME_MAPPING = {
   routing: 'routing',
   cacheableResponse: 'cacheable-response',
   broadcastUpdate: 'broadcast-cache-update',
+  rangeRequests: 'range-requests',
 };
 
 /**

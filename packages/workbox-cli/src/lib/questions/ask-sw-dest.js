@@ -16,7 +16,7 @@
 
 const assert = require('assert');
 const inquirer = require('inquirer');
-const ol = require('common-tags').oneLine;
+const path = require('path');
 
 const errors = require('../errors');
 
@@ -24,19 +24,20 @@ const errors = require('../errors');
 const name = 'swDest';
 
 /**
+ * @param {string} defaultDir
  * @return {Promise<Object>} The answers from inquirer.
  */
-function askQuestion() {
+function askQuestion(defaultDir) {
   return inquirer.prompt([{
     name,
-    message: ol`Where would you like your service worker file to be saved?`,
+    message: `Where would you like your service worker file to be saved?`,
     type: 'input',
-    default: 'build/sw.js',
+    default: path.join(defaultDir, 'sw.js'),
   }]);
 }
 
-module.exports = async () => {
-  const answers = await askQuestion();
+module.exports = async (defaultDir = '.') => {
+  const answers = await askQuestion(defaultDir);
   const swDest = answers[name].trim();
 
   assert(swDest, errors['invalid-sw-dest']);

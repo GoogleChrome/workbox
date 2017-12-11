@@ -14,17 +14,10 @@
   limitations under the License.
 */
 
-module.exports = {
-  globFollow: true,
-  globIgnores: ['node_modules/**/*'],
-  globPatterns: ['**/*.{js,css,html}'],
-  globStrict: true,
-  // Use a different default for generateSWString.
-  generateSWStringGlobPatterns: [],
-  maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
-  clientsClaim: false,
-  navigateFallback: undefined,
-  skipWaiting: false,
-  importWorkboxFromCDN: true,
-  injectionPointRegexp: /(\.precacheAndRoute\()\s*\[\s*\]\s*(\))/,
-};
+/**
+ * @namespace workbox.rangeRequests
+ */
+
+import './_version.mjs';
+
+export * from './_public.mjs';

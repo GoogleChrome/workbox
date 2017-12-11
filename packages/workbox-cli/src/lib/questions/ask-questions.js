@@ -22,7 +22,7 @@ const askSWDest = require('./ask-sw-dest');
 module.exports = async () => {
   const globDirectory = await askRootOfWebApp();
   const globPatterns = await askExtensionsToCache(globDirectory);
-  const swDest = await askSWDest();
+  const swDest = await askSWDest(globDirectory);
   const configLocation = await askConfigLocation();
   const config = {
     globDirectory,

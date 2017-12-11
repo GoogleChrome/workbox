@@ -14,17 +14,11 @@
   limitations under the License.
 */
 
-module.exports = {
-  globFollow: true,
-  globIgnores: ['node_modules/**/*'],
-  globPatterns: ['**/*.{js,css,html}'],
-  globStrict: true,
-  // Use a different default for generateSWString.
-  generateSWStringGlobPatterns: [],
-  maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
-  clientsClaim: false,
-  navigateFallback: undefined,
-  skipWaiting: false,
-  importWorkboxFromCDN: true,
-  injectionPointRegexp: /(\.precacheAndRoute\()\s*\[\s*\]\s*(\))/,
+import {createPartialResponse} from './createPartialResponse.mjs';
+import {Plugin} from './Plugin.mjs';
+import './_version.mjs';
+
+export {
+  createPartialResponse,
+  Plugin,
 };

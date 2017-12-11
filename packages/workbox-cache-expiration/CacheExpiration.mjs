@@ -139,7 +139,7 @@ class CacheExpiration {
   }
 
   /**
-   * Expires entries based on the the maximum age.
+   * Expires entries based on the maximum age.
    *
    * @param {number} expireFromTimestamp A timestamp.
    * @return {Promise<Array<string>>} A list of the URLs that were expired.

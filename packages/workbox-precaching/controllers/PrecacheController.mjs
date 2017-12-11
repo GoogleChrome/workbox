@@ -19,11 +19,10 @@ import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
 import PrecacheEntry from '../models/PrecacheEntry.mjs';
 import PrecachedDetailsModel from '../models/PrecachedDetailsModel.mjs';
 import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
-import openInstallLogGroup from '../utils/openInstallLogGroup.mjs';
+import printInstallDetails from '../utils/printInstallDetails.mjs';
 import printCleanupDetails from '../utils/printCleanupDetails.mjs';
 import cleanRedirect from '../utils/cleanRedirect.mjs';
 import '../_version.mjs';
@@ -165,17 +164,13 @@ class PrecacheController {
       }
     }
 
-    if (process.env.NODE_ENV !== 'production') {
-      openInstallLogGroup(entriesToPrecache, entriesAlreadyPrecached);
-    }
-
     // Wait for all requests to be cached.
     await Promise.all(entriesToPrecache.map((precacheEntry) => {
       return this._cacheEntry(precacheEntry);
     }));
 
     if (process.env.NODE_ENV !== 'production') {
-      logger.groupEnd();
+      printInstallDetails(entriesToPrecache, entriesAlreadyPrecached);
     }
 
     return {
@@ -287,21 +282,19 @@ class PrecacheController {
    */
   async _cleanupDetailsModel(expectedCacheUrls) {
     const revisionedEntries = await this._precacheDetailsModel._getAllEntries();
-
-    const detailsToDelete = (Object.keys(revisionedEntries))
-      .filter((entryId) => {
-        const entry = revisionedEntries[entryId];
-        const fullUrl = new URL(entry.url, location).toString();
+    const detailsToDelete = revisionedEntries
+      .filter((entry) => {
+        const fullUrl = new URL(entry.value.url, location).toString();
         return !expectedCacheUrls.includes(fullUrl);
       });
 
     await Promise.all(
       detailsToDelete.map(
-        (detailsId) => this._precacheDetailsModel._deleteEntry(detailsId)
+        (entry) => this._precacheDetailsModel._deleteEntry(entry.primaryKey)
       )
     );
-    return detailsToDelete.map((detailsId) => {
-      return revisionedEntries[detailsId].url;
+    return detailsToDelete.map((entry) => {
+      return entry.value.url;
     });
   }
 

@@ -21,8 +21,10 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
   ];
   const SUPPORTED_PARAMS = [
     'dontCacheBustUrlsMatching',
+    'globFollow',
     'globIgnores',
     'globPatterns',
+    'globStrict',
     'injectionPointRegexp',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
