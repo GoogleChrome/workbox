@@ -1,4 +1,5 @@
 import {expect} from 'chai';
+
 import {CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate} from '../../../packages/workbox-strategies/_public.mjs';
 import strategies from '../../../packages/workbox-strategies/_default.mjs';
 
@@ -65,7 +66,7 @@ describe(`[workbox-strategies] Default Export`, function() {
     });
   });
 
-  describe(`StaleWhileRevalidate()`, function() {
+  describe(`staleWhileRevalidate()`, function() {
     it(`should return a StaleWhileRevalidate instance`, function() {
       const strategy = strategies.staleWhileRevalidate();
       expect(strategy).to.be.an.instanceof(StaleWhileRevalidate);
@@ -75,7 +76,7 @@ describe(`[workbox-strategies] Default Export`, function() {
       const strategy = strategies.staleWhileRevalidate({
         plugins: [CUSTOM_PLUGIN],
       });
-      // Stale while revalidate adds a plugin for opaque resposnes
+      // Stale while revalidate adds a plugin for opaque responses.
       expect(strategy._plugins.length).to.equal(2);
       expect(strategy._plugins[1]).to.equal(CUSTOM_PLUGIN);
     });

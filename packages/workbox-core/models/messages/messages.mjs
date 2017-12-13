@@ -179,6 +179,10 @@ export default {
     return `The arguments passed into responsesAreSame() appear to be ` +
       `invalid. Please ensure valid Responses are used.`;
   },
+  'expire-custom-caches-only': () => {
+    return `You must provide a 'cacheName' property when using the ` +
+      `expiration plugin with a runtime caching strategy.`;
+  },
   'unit-must-be-bytes': ({normalizedRangeHeader}) => {
     if (!normalizedRangeHeader) {
       throw new Error(`Unexpected input to 'unit-must-be-bytes' error.`);

@@ -11,9 +11,11 @@
  limitations under the License.
 */
 
+import {CacheExpiration} from './CacheExpiration.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
-import {CacheExpiration} from './CacheExpiration.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+
 import './_version.mjs';
 
 /**
@@ -86,6 +88,10 @@ class Plugin {
    * @private
    */
   _getCacheExpiration(cacheName) {
+    if (cacheName === cacheNames.getRuntimeName()) {
+      throw new WorkboxError('expire-custom-caches-only');
+    }
+
     let cacheExpiration = this._cacheExpirations.get(cacheName);
     if (!cacheExpiration) {
       cacheExpiration = new CacheExpiration(cacheName, this._config);

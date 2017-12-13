@@ -19,6 +19,7 @@ import {devOnly} from '../../../infra/testing/env-it';
 
 import {Plugin} from '../../../packages/workbox-cache-expiration/Plugin.mjs';
 import {CacheExpiration} from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
+import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
 
 describe(`[workbox-cache-expiration] Plugin`, function() {
   const sandbox = sinon.sandbox.create();
@@ -154,6 +155,16 @@ describe(`[workbox-cache-expiration] Plugin`, function() {
       expect(CacheExpiration.prototype.updateTimestamp.callCount).to.equal(1);
       expect(CacheExpiration.prototype.updateTimestamp.args[0][0]).to.equal(url);
       expect(CacheExpiration.prototype.expireEntries.callCount).to.equal(1);
+    });
+  });
+
+  describe(`_getCacheExpiration()`, function() {
+    it(`should reject when called with the default runtime cache name`, async function() {
+      const plugin = new Plugin({maxAgeSeconds: 1});
+      await expectError(
+        () => plugin._getCacheExpiration(cacheNames.getRuntimeName()),
+        'expire-custom-caches-only'
+      );
     });
   });
 });
