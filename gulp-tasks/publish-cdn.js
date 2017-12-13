@@ -6,14 +6,20 @@ const publishHelpers = require('./utils/publish-helpers');
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
 
+// Git adds 'v' to tag name, lerna does not in package.json version.
+// We are going to publish to CDN *without* the 'v'
+const cleanTagName = (name) => {
+  let friendlyTagName = name;
+  if (friendlyTagName.indexOf('v') === 0) {
+    friendlyTagName = friendlyTagName.substring(1);
+  }
+  return friendlyTagName;
+};
+
 const findMissingCDNTags = async (tagsData) => {
   const missingTags = [];
   for (let tagData of tagsData) {
-    let exists = await cdnUploadHelper.tagExists(tagData.name);
-
-    if (tagData.name.includes('3.0.0-alpha')) {
-      exists = false;
-    }
+    let exists = await cdnUploadHelper.tagExists(cleanTagName(tagData.name));
 
     if (!exists) {
       missingTags.push(tagData);
@@ -26,12 +32,7 @@ const handleCDNUpload = async (tagName, gitBranch) => {
   const buildFilesDir =
     await publishHelpers.groupBuildFiles(tagName, gitBranch);
 
-  // Git adds 'v' to tag name, lerna does not in package.json version.
-  // We are going to publish to CDN *without* the 'v'
-  let friendlyTagName = tagName;
-  if (friendlyTagName.indexOf('v') === 0) {
-    friendlyTagName = friendlyTagName.substring(1);
-  }
+  const friendlyTagName = cleanTagName(tagName);
 
   logHelper.log(`Uploading '${tagName}' to CDN as ${friendlyTagName}.`);
   const publishUrls = await cdnUploadHelper.upload(
