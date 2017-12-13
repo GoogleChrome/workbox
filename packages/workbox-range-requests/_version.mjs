@@ -1,1 +1,1 @@
-try{self.workbox.v['workbox:range-requests:3.0.0-alpha.2']=1;}catch(e){} // eslint-disable-line
+try{self.workbox.v['workbox:range-requests:3.0.0-alpha.3']=1;}catch(e){} // eslint-disable-line

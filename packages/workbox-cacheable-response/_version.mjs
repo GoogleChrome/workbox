@@ -1,1 +1,1 @@
-try{self.workbox.v['workbox:cacheable-response:3.0.0-alpha.2']=1;}catch(e){} // eslint-disable-line
+try{self.workbox.v['workbox:cacheable-response:3.0.0-alpha.3']=1;}catch(e){} // eslint-disable-line
