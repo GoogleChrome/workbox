@@ -43,6 +43,42 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     }
   };
 
+  const getCachedRequests = (cacheName) => {
+    return webdriver.executeAsyncScript((cacheName, cb) => {
+      caches.open(cacheName)
+      .then((cache) => {
+        return cache.keys();
+      })
+      .then((keys) => {
+        cb(
+          keys.map((request) => request.url).sort()
+        );
+      });
+    }, cacheName);
+  };
+
+  const getIDBData = () => {
+    return webdriver.executeAsyncScript((cb) => {
+      const request = indexedDB.open('workbox-precaching');
+      request.onerror = function(event) {
+        cb('Error opening indexedDB');
+      };
+      request.onsuccess = function(event) {
+        const db = event.target.result;
+
+        const transaction = db.transaction(['precached-details-models'], 'readwrite');
+        const objectStore = transaction.objectStore('precached-details-models');
+        const getAllRequest = objectStore.getAll();
+        getAllRequest.onerror = function(event) {
+          cb('Error opening getting all content');
+        };
+        getAllRequest.onsuccess = function(event) {
+          cb(event.target.result);
+        };
+      };
+    });
+  };
+
   it(`should load a page with service worker `, async function() {
     const testingURl = `${testServerAddress}/test/workbox-precaching/static/precache-and-update/`;
     const SW_1_URL = `${testingURl}sw-1.js`;
@@ -71,20 +107,22 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     ]);
 
     // Check that the cached requests are what we expect for sw-1.js
-    let cachedRequests = await webdriver.executeAsyncScript((cacheName, cb) => {
-      caches.open(cacheName)
-      .then((cache) => {
-        return cache.keys();
-      })
-      .then((keys) => {
-        cb(
-          keys.map((request) => request.url).sort()
-        );
-      });
-    }, keys[0]);
+    let cachedRequests = await getCachedRequests(keys[0]);
     expect(cachedRequests).to.deep.equal([
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/index.html',
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/styles/index.css',
+    ]);
+
+    let savedIDBData = await getIDBData();
+    expect(savedIDBData).to.deep.equal([
+      {
+        revision: '1',
+        url: 'http://localhost:3004/test/workbox-precaching/static/precache-and-update/index.html',
+      },
+      {
+        revision: '1',
+        url: 'http://localhost:3004/test/workbox-precaching/static/precache-and-update/styles/index.css',
+      },
     ]);
 
     // Make sure the requested URL's include cache busting search param if needed.
@@ -102,6 +140,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     // Request the page and check that the precached assets weren't requested from the network
     global.__workbox.server.reset();
     await webdriver.get(testingURl);
+
     requestsMade = global.__workbox.server.getRequests();
     expect(requestsMade['/test/workbox-precaching/static/precache-and-update/']).to.equal(undefined);
     expect(requestsMade['/test/workbox-precaching/static/precache-and-update/index.html']).to.equal(undefined);
@@ -133,20 +172,22 @@ describe(`[workbox-precaching] Precache and Update`, function() {
 
     // Check that the cached entries were deleted / added as expected when
     // updating from sw-1.js to sw-2.js
-    cachedRequests = await webdriver.executeAsyncScript((cacheName, cb) => {
-      caches.open(cacheName)
-      .then((cache) => {
-        return cache.keys();
-      })
-      .then((keys) => {
-        cb(
-          keys.map((request) => request.url).sort()
-        );
-      });
-    }, keys[0]);
+    cachedRequests = await getCachedRequests(keys[0]);
     expect(cachedRequests).to.deep.equal([
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/index.html',
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/new-request.txt',
+    ]);
+
+    savedIDBData = await getIDBData();
+    expect(savedIDBData).to.deep.equal([
+      {
+        revision: '2',
+        url: 'http://localhost:3004/test/workbox-precaching/static/precache-and-update/index.html',
+      },
+      {
+        revision: '2',
+        url: 'http://localhost:3004/test/workbox-precaching/static/precache-and-update/new-request.txt',
+      },
     ]);
 
     // Refresh the page and test that the requests are as expected
