@@ -54,7 +54,7 @@ module.exports = ({
   }
 
   try {
-    return template(swTemplate)({
+    const populatedTemplate = template(swTemplate)({
       cacheId,
       clientsClaim,
       importScripts,
@@ -66,7 +66,10 @@ module.exports = ({
       precacheOptionsString,
       skipWaiting,
       runtimeCaching: runtimeCachingConverter(runtimeCaching),
-    }).trim() + '\n';
+    });
+
+    // Clean up multiple blank lines.
+    return populatedTemplate.replace(/\n{3,}/g, '\n\n').trim() + '\n';
   } catch (error) {
     throw new Error(
       `${errors['populating-sw-tmpl-failed']} '${error.message}'`);

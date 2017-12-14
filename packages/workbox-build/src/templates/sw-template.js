@@ -28,7 +28,9 @@ module.exports = `/**
  */
 
 <% if (importScripts) { %>
-importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
+importScripts(
+  <%= importScripts.map(JSON.stringify).join(',\\n  ') %>
+);
 <% } %>
 
 <% if (modulePathPrefix) { %>workbox.setConfig({modulePathPrefix: <%= JSON.stringify(modulePathPrefix) %>});<% } %>
@@ -44,12 +46,14 @@ importScripts(<%= importScripts.map(JSON.stringify).join(',') %>);
  * See https://goo.gl/S9QRab
  */
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
-<% } %>
+workbox.precaching.suppressWarnings();
+workbox.precaching.precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
+<% } else { %>
 if (Array.isArray(self.__precacheManifest)) {
   workbox.precaching.suppressWarnings();
   workbox.precaching.precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
 }
-
+<% } %>
 <% if (navigateFallback) { %>workbox.routing.registerNavigationRoute(<%= JSON.stringify(navigateFallback) %><% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
   <% if (navigateFallbackWhitelist) { %>whitelist: [<%= navigateFallbackWhitelist %>],<% } %>
   <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>
