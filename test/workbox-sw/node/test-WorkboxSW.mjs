@@ -1,28 +1,12 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
+import path from 'path';
+import fs from 'fs-extra';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 import WorkboxSW from '../../../packages/workbox-sw/controllers/WorkboxSW.mjs';
+import getPackagesOfType from '../../../gulp-tasks/utils/get-packages-of-type';
 
-const fakeWorkbox = {
-  core: {
-    default: {
-      msg: 'workbox-core',
-    },
-  },
-  precaching: {
-    default: {
-      msg: 'workbox-precaching',
-    },
-  },
-  strategies: {
-    example1: {
-      msg: 'workbox-strategies-1',
-    },
-    example2: {
-      msg: 'workbox-strategies-2',
-    },
-  },
-};
+const ROOT_DIR = path.join(__dirname, '..', '..', '..');
 
 describe(`[workbox-sw] WorkboxSW`, function() {
   let sandbox = sinon.sandbox.create();
@@ -32,15 +16,18 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     delete self.workbox;
 
     sandbox.stub(self, 'importScripts').callsFake((url) => {
-      if (url.includes('workbox-core')) {
-        self.workbox.core = fakeWorkbox.core;
+      // This auto generates a value for self.workbox.<namespace>
+      const match = /WORKBOX_CDN_ROOT_URL\/(.*)\.(?:dev|prod)\.js/.exec(url);
+      if (!match) {
+        return;
       }
-      if (url.includes('workbox-precaching')) {
-        self.workbox.precaching = fakeWorkbox.precaching;
-      }
-      if (url.includes('workbox-strategies')) {
-        self.workbox.strategies = fakeWorkbox.strategies;
-      }
+
+      const packageName = match[1];
+      const pkgJson = fs.readJSONSync(path.join(ROOT_DIR, 'packages', packageName, 'package.json'));
+      const namespace = pkgJson.workbox.browserNamespace.split('.')[1];
+      self.workbox[namespace] = {
+        injectedMsg: `Injected value for ${packageName}.`,
+      };
     });
   });
 
@@ -236,24 +223,20 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
   });
 
-  describe(`get core`, function() {
-    it(`should return core.default`, function() {
-      self.workbox = new WorkboxSW();
-      expect(self.workbox.core).to.equal(fakeWorkbox.core);
-    });
-  });
+  const browserPackages = getPackagesOfType(ROOT_DIR, 'browser');
+  browserPackages.forEach((pkgName) => {
+    const pkg = fs.readJSONSync(path.join(ROOT_DIR, 'packages', pkgName, 'package.json'));
+    if (pkg.workbox.browserNamespace === 'workbox') {
+      return;
+    }
 
-  describe(`get precaching`, function() {
-    it(`should return precaching`, function() {
-      self.workbox = new WorkboxSW();
-      expect(self.workbox.precaching).to.equal(fakeWorkbox.precaching);
-    });
-  });
-
-  describe(`get strategies`, function() {
-    it(`should return all of strategies`, function() {
-      self.workbox = new WorkboxSW();
-      expect(self.workbox.strategies).to.equal(fakeWorkbox.strategies);
+    describe(`get ${pkg.workbox.browserNamespace}`, function() {
+      it(`should return ${pkg.workbox.browserNamespace}`, function() {
+        const namespace = pkg.workbox.browserNamespace.split('.')[1];
+        self.workbox = new WorkboxSW();
+        expect(self.workbox[namespace]).to.exist;
+        expect(self.workbox[namespace].injectedMsg).to.exist;
+      });
     });
   });
 });
