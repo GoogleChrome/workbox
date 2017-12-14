@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const seleniumAssistant = require('selenium-assistant');
 
-describe(`[workbox-routing] Route via RegExp`, function() {
+describe(`[workbox-routing] Route via NavigationRoute`, function() {
   let webdriver;
   let testServerAddress = global.__workbox.server.getAddress();
 
