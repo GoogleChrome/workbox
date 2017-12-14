@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const seleniumAssistant = require('selenium-assistant');
 
-describe(`[workbox-strategies] CacheOnly Requests`, function() {
+describe(`[workbox-strategies] CacheFirst Requests`, function() {
   let webdriver;
   let testServerAddress = global.__workbox.server.getAddress();
 
@@ -44,7 +44,7 @@ describe(`[workbox-strategies] CacheOnly Requests`, function() {
   };
 
   it(`should respond with cached and non-cached entry`, async function() {
-    const testingURl = `${testServerAddress}/test/workbox-strategies/static/cache-only/`;
+    const testingURl = `${testServerAddress}/test/workbox-strategies/static/cache-first/`;
     const SW_URL = `${testingURl}sw.js`;
 
     // Load the page and wait for the first service worker to register and activate.
@@ -54,20 +54,26 @@ describe(`[workbox-strategies] CacheOnly Requests`, function() {
     await activateSW(SW_URL);
 
     let response = await webdriver.executeAsyncScript((cb) => {
-      fetch(new URL(`/CacheOnly/InCache/`, location).href)
+      fetch(new URL(`/test/workbox-strategies/static/cache-first/example.txt`, location).href)
       .then((response) => response.text())
       .then((responseBody) => cb(responseBody))
       .catch((err) => cb(err.message));
     });
-    expect(response).to.equal('Cached');
+    expect(response.trim()).to.equal('hello');
 
-    // For a non-cached entry, the fetch should throw an error with
-    // a message defined by the browser.
+    let requestsMade = global.__workbox.server.getRequests();
+    expect(requestsMade['/test/workbox-strategies/static/cache-first/example.txt']).to.equal(1);
+
+    // This request should come from cache and not the server
     response = await webdriver.executeAsyncScript((cb) => {
-      fetch(new URL(`/CacheOnly/NotInCache/`, location).href)
-      .then(() => cb(null))
+      fetch(new URL(`/test/workbox-strategies/static/cache-first/example.txt`, location).href)
+      .then((response) => response.text())
+      .then((responseBody) => cb(responseBody))
       .catch((err) => cb(err.message));
     });
-    expect(response).to.exist;
+    expect(response.trim()).to.equal('hello');
+
+    requestsMade = global.__workbox.server.getRequests();
+    expect(requestsMade['/test/workbox-strategies/static/cache-first/example.txt']).to.equal(1);
   });
 });
