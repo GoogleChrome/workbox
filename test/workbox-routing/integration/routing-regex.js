@@ -43,7 +43,7 @@ describe(`[workbox-routing] Route via RegExp`, function() {
     }
   };
 
-  it(`should load a page a route requests`, async function() {
+  it(`should load a page and route requests`, async function() {
     const testingURl = `${testServerAddress}/test/workbox-routing/static/routing-regex/`;
     const SW_URL = `${testingURl}sw.js`;
 
