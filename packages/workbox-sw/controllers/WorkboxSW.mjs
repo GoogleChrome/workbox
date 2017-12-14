@@ -18,8 +18,6 @@ import '../_version.mjs';
 
 const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
 
-// TODO Make this list be generated during build time using the package.json's.
-// workbox namespace value.
 const MODULE_KEY_TO_NAME_MAPPING = {
   backgroundSync: 'background-sync',
   core: 'core',
