@@ -143,6 +143,8 @@ class PrecacheController {
    *
    * @param {Object} options
    * @param {boolean} options.suppressWarnings Suppress warning messages.
+   * @param {Array<Object>} options.plugins Plugins to be used for fetching
+   * and caching during install.
    * @return {
    * Promise<module:workbox-precaching.PrecacheController.InstallResult>}
    */
@@ -150,6 +152,15 @@ class PrecacheController {
     if (process.env.NODE_ENV !== 'production') {
       if (options.suppressWarnings !== true) {
         showWarningsIfNeeded(this._entriesToCacheMap);
+      }
+
+      if (options.plugins) {
+        assert.isArray(options.plugins, {
+          moduleName: 'workbox-precaching',
+          className: 'PrecacheController',
+          funcName: 'install',
+          paramName: 'plugins',
+        });
       }
     }
 
@@ -166,7 +177,7 @@ class PrecacheController {
 
     // Wait for all requests to be cached.
     await Promise.all(entriesToPrecache.map((precacheEntry) => {
-      return this._cacheEntry(precacheEntry);
+      return this._cacheEntry(precacheEntry, options.plugins);
     }));
 
     if (process.env.NODE_ENV !== 'production') {
@@ -185,14 +196,18 @@ class PrecacheController {
    *
    * @private
    * @param {BaseCacheEntry} precacheEntry The entry to fetch and cache.
+   * @param {Array<Object>} plugins Array of plugins to apply to fetch and
+   * caching.
    * @return {Promise<boolean>} Returns a promise that resolves once the entry
    * has been fetched and cached or skipped if no update is needed. The
    * promise resolves with true if the entry was cached / updated and
    * false if the entry is already cached and up-to-date.
    */
-  async _cacheEntry(precacheEntry) {
+  async _cacheEntry(precacheEntry, plugins) {
     let response = await fetchWrapper.fetch(
       precacheEntry._networkRequest,
+      null,
+      plugins,
     );
 
     if (response.redirected) {
@@ -200,7 +215,7 @@ class PrecacheController {
     }
 
     await cacheWrapper.put(this._cacheName,
-      precacheEntry._cacheRequest, response);
+      precacheEntry._cacheRequest, response, plugins);
 
     await this._precacheDetailsModel._addEntry(precacheEntry);
 

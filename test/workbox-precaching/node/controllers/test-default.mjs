@@ -345,9 +345,44 @@ describe(`[workbox-precaching] default export`, function() {
 
       await installPromise;
 
-      expect(PrecacheController.prototype.install.args[0][0]).to.deep.equal({
-        suppressWarnings: true,
+      expect(PrecacheController.prototype.install.args[0][0].suppressWarnings).to.equal(true);
+    });
+  });
+
+  describe(`addPlugins()`, function() {
+    it(`should add plugins during install`, async function() {
+      let eventCallbacks = {};
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        eventCallbacks[eventName] = cb;
       });
+      sandbox.spy(PrecacheController.prototype, 'install');
+
+      const precacheArgs = ['/'];
+
+      const plugin1 = {
+        name: 'plugin1',
+      };
+      const plugin2 = {
+        name: 'plugin2',
+      };
+
+      precaching.precache(precacheArgs);
+      precaching.addPlugins([plugin1]);
+      precaching.addPlugins([plugin2]);
+
+      const installEvent = new ExtendableEvent('install');
+      let installPromise;
+      installEvent.waitUntil = (promise) => {
+        installPromise = promise;
+      };
+      eventCallbacks['install'](installEvent);
+
+      await installPromise;
+
+      expect(PrecacheController.prototype.install.args[0][0].plugins).to.deep.equal([
+        plugin1,
+        plugin2,
+      ]);
     });
   });
 });

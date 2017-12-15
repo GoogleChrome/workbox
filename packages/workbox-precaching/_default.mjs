@@ -28,6 +28,7 @@ if (process.env.NODE_ENV !== 'production') {
 let installActivateListenersAdded = false;
 let fetchListenersAdded = false;
 let suppressWarnings = false;
+let plugins = [];
 
 const cacheName = cacheNames.getPrecacheName();
 const precacheController = new PrecacheController(cacheName);
@@ -149,7 +150,10 @@ moduleExports.precache = (entries) => {
 
   installActivateListenersAdded = true;
   self.addEventListener('install', (event) => {
-    event.waitUntil(precacheController.install({suppressWarnings}));
+    event.waitUntil(precacheController.install({
+      suppressWarnings,
+      plugins,
+    }));
   });
   self.addEventListener('activate', (event) => {
     event.waitUntil(precacheController.cleanup());
@@ -252,6 +256,17 @@ moduleExports.precacheAndRoute = (entries, options) => {
  */
 moduleExports.suppressWarnings = (suppress) => {
   suppressWarnings = suppress;
+};
+
+/**
+ * Add plugins to precaching.
+ *
+ * @param {Array<Object>} newPlugins
+ *
+ * @alias workbox.precaching.addPlugins
+ */
+moduleExports.addPlugins = (newPlugins) => {
+  plugins = plugins.concat(newPlugins);
 };
 
 export default moduleExports;
