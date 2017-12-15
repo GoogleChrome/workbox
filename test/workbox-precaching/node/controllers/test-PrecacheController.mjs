@@ -9,6 +9,8 @@ import {prodOnly, devOnly} from '../../../../infra/testing/env-it';
 import {_private} from '../../../../packages/workbox-core/index.mjs';
 import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
 import PrecacheController from '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
+import {fetchWrapper} from '../../../../packages/workbox-core/_private/fetchWrapper.mjs';
+import {cacheWrapper} from '../../../../packages/workbox-core/_private/cacheWrapper.mjs';
 
 const {cacheNames} = _private;
 
@@ -379,6 +381,32 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         // Make sure we print some debug info.
         expect(logger.log.callCount).to.be.gt(0);
       }
+    });
+
+    it('it should precache with plugins', async function() {
+      sandbox.spy(fetchWrapper, 'fetch');
+      sandbox.spy(cacheWrapper, 'put');
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        '/index.1234.html',
+        {url: '/example.1234.css'},
+        {url: '/scripts/index.js', revision: '1234'},
+        {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      const testPlugins = [{
+        name: 'plugin1',
+      }, {
+        name: 'plugin2',
+      }];
+      await precacheController.install({
+        plugins: testPlugins,
+      });
+
+      expect(fetchWrapper.fetch.args[0][2]).to.equal(testPlugins);
+      expect(cacheWrapper.put.args[0][3]).to.equal(testPlugins);
     });
   });
 
