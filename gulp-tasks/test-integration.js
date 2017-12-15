@@ -17,7 +17,7 @@ const runFile = (filePath) => {
 
   return new Promise((resolve, reject) => {
     const mocha = new Mocha({
-      retries: process.env.TRAVIS ? 2 : 0,
+      retries: process.env.TRAVIS ? 2 : 1,
       timeout: 3 * 60 * 1000,
     });
 
