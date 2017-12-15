@@ -93,10 +93,11 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       });
 
       // Assert only create called
-      expect(fakeDB.createObjectStore.callCount).to.equal(0);
-
-     expect(fakeDB.deleteObjectStore.callCount).to.equal(1);
-     expect(fakeDB.deleteObjectStore.args[0][0]).to.equal(`workbox-precaching`);
+      expect(fakeDB.createObjectStore.callCount).to.equal(1);
+      expect(fakeDB.createObjectStore.args[0][0]).to.equal(`precached-details-models`);
+      expect(fakeDB.deleteObjectStore.callCount).to.equal(2);
+      expect(fakeDB.deleteObjectStore.args[0][0]).to.equal(`workbox-precaching`);
+      expect(fakeDB.deleteObjectStore.args[1][0]).to.equal(`precached-details-models`);
     });
   });
 

@@ -53,14 +53,17 @@ class PrecachedDetailsModel {
   _handleUpgrade(evt) {
     const db = evt.target.result;
     if (evt.oldVersion < 2) {
+      // IndexedDB version 1 used both 'workbox-precaching' and
+      // 'precached-details-model' before upgrading to version 2.
+      // Delete them and create a new store with latest schema.
       if (db.objectStoreNames.indexOf('workbox-precaching') !== -1) {
         db.deleteObjectStore('workbox-precaching');
       }
+      if (db.objectStoreNames.indexOf(DB_STORE_NAME) !== -1) {
+        db.deleteObjectStore(DB_STORE_NAME);
+      }
     }
-
-    if (db.objectStoreNames.indexOf(DB_STORE_NAME) === -1) {
-      db.createObjectStore(DB_STORE_NAME);
-    }
+    db.createObjectStore(DB_STORE_NAME);
   }
 
   /**
