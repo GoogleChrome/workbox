@@ -35,7 +35,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     'templatedUrls',
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
-    'importWorkboxFromCDN',
+    'importWorkboxFrom',
     'injectionPointRegexp',
     'swDest',
     'swSrc',

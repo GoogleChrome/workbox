@@ -32,7 +32,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     'globStrict',
     'ignoreUrlParametersMatching',
     'importScripts',
-    'importWorkboxFromCDN',
+    'importWorkboxFrom',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
     'modifyUrlPrefix',
@@ -132,11 +132,11 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       }});
     });
 
-    it(`should use defaults and make local copies of the Workbox libraries when importWorkboxFromCDN is false`, async function() {
+    it(`should use defaults and make local copies of the Workbox libraries when importWorkboxFrom is 'local'`, async function() {
       const swDest = path.join(tempy.directory(), 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
-        importWorkboxFromCDN: false,
+        importWorkboxFrom: 'local',
       });
 
       const {count, size} = await generateSW(options);
@@ -241,7 +241,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const options = Object.assign({}, BASE_OPTIONS, {
         globDirectory,
         swDest,
-        importWorkboxFromCDN: false,
+        importWorkboxFrom: 'local',
       });
 
       const {count, size} = await generateSW(options);
