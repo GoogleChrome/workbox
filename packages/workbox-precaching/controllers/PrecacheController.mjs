@@ -143,6 +143,8 @@ class PrecacheController {
    *
    * @param {Object} options
    * @param {boolean} options.suppressWarnings Suppress warning messages.
+   * @param {Array<Object>} options.plugins Plugins to be used for fetching
+   * and caching during install.
    * @return {
    * Promise<module:workbox-precaching.PrecacheController.InstallResult>}
    */

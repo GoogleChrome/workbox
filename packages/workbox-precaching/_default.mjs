@@ -263,7 +263,7 @@ moduleExports.suppressWarnings = (suppress) => {
  *
  * @param {Array<Object>} newPlugins
  *
- * @alias workbox.precaching.suppressWarnings
+ * @alias workbox.precaching.addPlugins
  */
 moduleExports.addPlugins = (newPlugins) => {
   plugins = plugins.concat(newPlugins);
