@@ -4,7 +4,6 @@ import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import {_private} from '../../../../packages/workbox-core/index.mjs';
 import PrecachedDetailsModel from '../../../../packages/workbox-precaching/models/PrecachedDetailsModel.mjs';
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
-import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 
 describe('[workbox-precaching] PrecachedDetailsModel', function() {
   const sandbox = sinon.sandbox.create();
