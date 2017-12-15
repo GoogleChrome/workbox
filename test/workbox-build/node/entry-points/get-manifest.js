@@ -28,7 +28,7 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     'directoryIndex',
     'ignoreUrlParametersMatching',
     'importScripts',
-    'importWorkboxFromCDN',
+    'importWorkboxFrom',
     'injectionPointRegexp',
     'navigateFallback',
     'navigateFallbackWhitelist',

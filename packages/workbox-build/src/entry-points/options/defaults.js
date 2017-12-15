@@ -25,6 +25,6 @@ module.exports = {
   clientsClaim: false,
   navigateFallback: undefined,
   skipWaiting: false,
-  importWorkboxFromCDN: true,
+  importWorkboxFrom: 'cdn',
   injectionPointRegexp: /(\.precacheAndRoute\()\s*\[\s*\]\s*(\))/,
 };

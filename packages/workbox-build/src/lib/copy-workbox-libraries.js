@@ -39,7 +39,7 @@ const BUILD_TYPES = [
  * prefer not to use the CDN copies of Workbox. Developers using
  * [generateSW()]{@link module:workbox-build.generateSW} don't need to
  * explicitly call this method, as it's called automatically when
- * `importWorkboxFromCDN` is set to `false`.
+ * `importWorkboxFrom` is set to `local`.
  *
  * @param {string} destDirectory The path to the parent directory under which
  * the new directory of libraries will be created.

@@ -47,14 +47,14 @@ async function generateSW(config) {
 
   const destDirectory = path.dirname(options.swDest);
 
-  if (options.importWorkboxFromCDN) {
+  // Do nothing if importWorkboxFrom is set to 'disabled'. Otherwise, check:
+  if (options.importWorkboxFrom === 'cdn') {
     const cdnUrl = cdnUtils.getModuleUrl('workbox-sw');
     // importScripts may or may not already be an array containing other URLs.
     // Either way, list cdnUrl first.
     options.importScripts = [cdnUrl].concat(options.importScripts || []);
-  } else {
-    // If we're not importing the Workbox scripts from the CDN, then copy
-    // over the dev + prod version of all of the core libraries.
+  } else if (options.importWorkboxFrom === 'local') {
+    // Copy over the dev + prod version of all of the core libraries.
     const workboxDirectoryName = await copyWorkboxLibraries(destDirectory);
 
     // The Workbox library files should not be precached, since they're cached

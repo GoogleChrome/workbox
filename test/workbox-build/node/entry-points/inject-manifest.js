@@ -37,7 +37,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
     'directoryIndex',
     'ignoreUrlParametersMatching',
     'importScripts',
-    'importWorkboxFromCDN',
+    'importWorkboxFrom',
     'navigateFallback',
     'navigateFallbackWhitelist',
     'runtimeCaching',

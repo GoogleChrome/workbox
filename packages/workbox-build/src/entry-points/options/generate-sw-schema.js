@@ -23,6 +23,10 @@ const defaults = require('./defaults');
 module.exports = commonGenerateSchema.keys({
   globDirectory: joi.string().required(),
   importScripts: joi.array().items(joi.string()),
-  importWorkboxFromCDN: joi.boolean().default(defaults.importWorkboxFromCDN),
+  importWorkboxFrom: joi.string().default(defaults.importWorkboxFrom).valid(
+    'cdn',
+    'local',
+    'disabled'
+  ),
   swDest: joi.string().required(),
 });
