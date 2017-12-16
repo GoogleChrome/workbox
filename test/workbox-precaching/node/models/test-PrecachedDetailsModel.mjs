@@ -34,8 +34,11 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
   describe('_handleUpgrade', function() {
     it('should handle upgrade 0 (Doesnt exist)', () => {
+      const objectStoreNames = [];
       const fakeDB = {
-        objectStoreNames: [],
+        objectStoreNames: {
+          contains: (name) => objectStoreNames.indexOf(name) !== -1,
+        },
         deleteObjectStore: sandbox.spy(),
         createObjectStore: sandbox.spy(),
       };
@@ -55,8 +58,11 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     });
 
     it('should handle upgrade 1 > 2', () => {
+      const objectStoreNames = ['workbox-precaching'];
       const fakeDB = {
-        objectStoreNames: ['workbox-precaching'],
+        objectStoreNames: {
+          contains: (name) => objectStoreNames.indexOf(name) !== -1,
+        },
         deleteObjectStore: sandbox.spy(),
         createObjectStore: sandbox.spy(),
       };
@@ -78,8 +84,11 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     });
 
     it('should handle upgrade 1 > 2 with constructing precached-details-models', () => {
+      const objectStoreNames = ['workbox-precaching', 'precached-details-models'];
       const fakeDB = {
-        objectStoreNames: ['workbox-precaching', 'precached-details-models'],
+        objectStoreNames: {
+          contains: (name) => objectStoreNames.indexOf(name) !== -1,
+        },
         deleteObjectStore: sandbox.spy(),
         createObjectStore: sandbox.spy(),
       };

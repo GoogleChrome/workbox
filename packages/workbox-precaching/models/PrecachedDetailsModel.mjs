@@ -56,10 +56,10 @@ class PrecachedDetailsModel {
       // IndexedDB version 1 used both 'workbox-precaching' and
       // 'precached-details-model' before upgrading to version 2.
       // Delete them and create a new store with latest schema.
-      if (db.objectStoreNames.indexOf('workbox-precaching') !== -1) {
+      if (db.objectStoreNames.contains('workbox-precaching')) {
         db.deleteObjectStore('workbox-precaching');
       }
-      if (db.objectStoreNames.indexOf(DB_STORE_NAME) !== -1) {
+      if (db.objectStoreNames.contains(DB_STORE_NAME)) {
         db.deleteObjectStore(DB_STORE_NAME);
       }
     }
