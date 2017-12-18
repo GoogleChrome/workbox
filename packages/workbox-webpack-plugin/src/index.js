@@ -59,8 +59,7 @@ class WorkboxWebpackPlugin {
   }
 
   /**
-   * @param compilation
-   * @return {Promise.<void>}
+   * @param {Object} compilation The webpack compilation.
    * @private
    */
   async handleEmit(compilation) {
