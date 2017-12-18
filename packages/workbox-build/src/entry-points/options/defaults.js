@@ -16,7 +16,7 @@
 
 module.exports = {
   globFollow: true,
-  globIgnores: ['node_modules/**/*'],
+  globIgnores: ['**/node_modules/**/*'],
   globPatterns: ['**/*.{js,css,html}'],
   globStrict: true,
   // Use a different default for generateSWString.

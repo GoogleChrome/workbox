@@ -59,24 +59,69 @@ class WorkboxWebpackPlugin {
   }
 
   /**
-   * @return {Object} All workbox configuration options that can be accepted
-   * by {@link module:workbox-build.generateSWString}
-   *
+   * @param compilation
+   * @return {Promise.<void>}
    * @private
    */
-  get generateSWStringOptions() {
+  async handleEmit(compilation) {
     const {
-      importScripts = [],
-      // TODO: decide on other options that should be passed to
-      // `generateSWString`. What operations should be possible for webpack
-      // users? eg, should webpack users also be able to specify a
-      // `globDirectory` that allows manifestEntries to be added that are
-      // outside webpack's scope?
+      importWorkboxFrom = 'cdn',
+      swSrc,
     } = this.config;
+    const serviceWorkerFilename = swSrc ? path.basename(swSrc) : 'sw.js';
 
-    return {
-      importScripts,
-    };
+    let workboxSWImport;
+    switch (importWorkboxFrom) {
+      case 'cdn': {
+        workboxSWImport = getModuleUrl('workbox-sw');
+        break;
+      }
+
+      case 'local': {
+        // TODO: Implement.
+        break;
+      }
+
+      case 'disabled': {
+        // No-op.
+        break;
+      }
+
+      default: {
+        for (const chunk of compilation.chunks) {
+          if (chunk.name === importWorkboxFrom) {
+            workboxSWImport = chunk.files;
+            this.config.excludeChunks = (this.config.excludeChunks || [])
+              .concat(chunk.name);
+            break;
+          }
+        }
+
+        if (workboxSWImport === undefined) {
+          throw Error(`importWorkboxFrom was set to ` +
+            `'${importWorkboxFrom}', which is not an existing chunk name.`);
+        }
+      }
+    }
+
+    const entries = getEntries(compilation, this.config);
+    const fileManifest = generateManifest(entries);
+    const fileManifestAsset = formatAsWebpackAsset(fileManifest);
+    const fileManifestHash = getAssetHash(fileManifestAsset);
+    const manifestFilename = `precache-manifest.${fileManifestHash}.js`;
+    compilation.assets[manifestFilename] = fileManifestAsset;
+
+    this.config.importScripts = (this.config.importScripts || [])
+      .concat(manifestFilename);
+
+    if (workboxSWImport) {
+      this.config.importScripts = this.config.importScripts
+        .concat(workboxSWImport);
+    }
+
+    const serviceWorker = await generateOrCopySW(this.config, swSrc);
+    compilation.assets[serviceWorkerFilename] =
+      formatAsWebpackAsset(serviceWorker);
   }
 
   /**
@@ -108,28 +153,10 @@ class WorkboxWebpackPlugin {
      *  4. Add both the file-manifest and the service worker to the webpack
      *     assets.
      */
-    compiler.plugin('emit', async (compilation, next) => {
-      const {swSrc} = this.config;
-      const serviceWorkerFilename = swSrc ? path.basename(swSrc) : 'sw.js';
-
-      const entries = getEntries(compilation, this.config);
-
-      const fileManifest = generateManifest(entries);
-      const fileManifestAsset = formatAsWebpackAsset(fileManifest);
-      const fileManifestHash = getAssetHash(fileManifestAsset);
-      const manifestFilename = `precache-manifest.${fileManifestHash}.js`;
-      compilation.assets[manifestFilename] = fileManifestAsset;
-
-      this.config.importScripts = (this.config.importScripts || []).concat([
-        getModuleUrl('workbox-sw'),
-        manifestFilename,
-      ]);
-
-      const serviceWorker = await generateOrCopySW(this.config, swSrc);
-      compilation.assets[serviceWorkerFilename] = formatAsWebpackAsset(
-        serviceWorker);
-
-      next();
+    compiler.plugin('emit', (compilation, next) => {
+      this.handleEmit(compilation)
+        .then(next)
+        .catch(next);
     });
   }
 }

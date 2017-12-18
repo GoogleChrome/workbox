@@ -31,8 +31,7 @@ function sanitizeConfig(config) {
   const propertiesToRemove = [
     'chunks',
     'excludeChunks',
-    'filename',
-    'manifestFilename',
+    'importWorkboxFrom',
   ];
 
   for (const property of propertiesToRemove) {
