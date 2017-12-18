@@ -1,11 +1,20 @@
 import {expect} from 'chai';
+import sinon from 'sinon';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import {_private} from '../../../../packages/workbox-core/index.mjs';
 import PrecachedDetailsModel from '../../../../packages/workbox-precaching/models/PrecachedDetailsModel.mjs';
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 
 describe('[workbox-precaching] PrecachedDetailsModel', function() {
+  const sandbox = sinon.sandbox.create();
+
   beforeEach(function() {
+    sandbox.restore();
+    iDBReset();
+  });
+
+  after(function() {
+    sandbox.restore();
     iDBReset();
   });
 
@@ -21,6 +30,84 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     });
 
     // TODO Bad cache name input
+  });
+
+  describe('_handleUpgrade', function() {
+    it('should handle upgrade 0 (Doesnt exist)', () => {
+      const objectStoreNames = [];
+      const fakeDB = {
+        objectStoreNames: {
+          contains: (name) => objectStoreNames.indexOf(name) !== -1,
+        },
+        deleteObjectStore: sandbox.spy(),
+        createObjectStore: sandbox.spy(),
+      };
+
+      const precacheDetailsModel = new PrecachedDetailsModel();
+      precacheDetailsModel._handleUpgrade({
+        target: {
+          result: fakeDB,
+        },
+      });
+
+      // Assert only create called
+      expect(fakeDB.createObjectStore.callCount).to.equal(1);
+      expect(fakeDB.createObjectStore.args[0][0]).to.equal(`precached-details-models`);
+
+     expect(fakeDB.deleteObjectStore.callCount).to.equal(0);
+    });
+
+    it('should handle upgrade 1 > 2', () => {
+      const objectStoreNames = ['workbox-precaching'];
+      const fakeDB = {
+        objectStoreNames: {
+          contains: (name) => objectStoreNames.indexOf(name) !== -1,
+        },
+        deleteObjectStore: sandbox.spy(),
+        createObjectStore: sandbox.spy(),
+      };
+
+      const precacheDetailsModel = new PrecachedDetailsModel();
+      precacheDetailsModel._handleUpgrade({
+        oldVersion: 1,
+        target: {
+          result: fakeDB,
+        },
+      });
+
+      // Assert only create called
+      expect(fakeDB.createObjectStore.callCount).to.equal(1);
+      expect(fakeDB.createObjectStore.args[0][0]).to.equal(`precached-details-models`);
+
+     expect(fakeDB.deleteObjectStore.callCount).to.equal(1);
+     expect(fakeDB.deleteObjectStore.args[0][0]).to.equal(`workbox-precaching`);
+    });
+
+    it('should handle upgrade 1 > 2 with constructing precached-details-models', () => {
+      const objectStoreNames = ['workbox-precaching', 'precached-details-models'];
+      const fakeDB = {
+        objectStoreNames: {
+          contains: (name) => objectStoreNames.indexOf(name) !== -1,
+        },
+        deleteObjectStore: sandbox.spy(),
+        createObjectStore: sandbox.spy(),
+      };
+
+      const precacheDetailsModel = new PrecachedDetailsModel();
+      precacheDetailsModel._handleUpgrade({
+        oldVersion: 1,
+        target: {
+          result: fakeDB,
+        },
+      });
+
+      // Assert only create called
+      expect(fakeDB.createObjectStore.callCount).to.equal(1);
+      expect(fakeDB.createObjectStore.args[0][0]).to.equal(`precached-details-models`);
+      expect(fakeDB.deleteObjectStore.callCount).to.equal(2);
+      expect(fakeDB.deleteObjectStore.args[0][0]).to.equal(`workbox-precaching`);
+      expect(fakeDB.deleteObjectStore.args[1][0]).to.equal(`precached-details-models`);
+    });
   });
 
   describe('_getAllEntries', function() {

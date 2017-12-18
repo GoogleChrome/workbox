@@ -39,17 +39,31 @@ class PrecachedDetailsModel {
   constructor(cacheName) {
     this._cacheName = cacheNames.getPrecacheName(cacheName);
     this._db = new DBWrapper(`workbox-precaching`, 2, {
-      onupgradeneeded: (evt) => {
-        if (evt.oldVersion < 2) {
-          try {
-            evt.target.result.deleteObjectStore('workbox-precaching');
-          } catch (err) {
-            // NOOP
-          }
-        }
-        evt.target.result.createObjectStore(DB_STORE_NAME);
-      },
+      onupgradeneeded: this._handleUpgrade,
     });
+  }
+
+  /**
+   * Should perform an upgrade of indexedDB.
+   *
+   * @param {Event} evt
+   *
+   * @private
+   */
+  _handleUpgrade(evt) {
+    const db = evt.target.result;
+    if (evt.oldVersion < 2) {
+      // IndexedDB version 1 used both 'workbox-precaching' and
+      // 'precached-details-model' before upgrading to version 2.
+      // Delete them and create a new store with latest schema.
+      if (db.objectStoreNames.contains('workbox-precaching')) {
+        db.deleteObjectStore('workbox-precaching');
+      }
+      if (db.objectStoreNames.contains(DB_STORE_NAME)) {
+        db.deleteObjectStore(DB_STORE_NAME);
+      }
+    }
+    db.createObjectStore(DB_STORE_NAME);
   }
 
   /**
