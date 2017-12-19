@@ -25,7 +25,7 @@ describe(`[workbox-build] entry-points/options/validate.js`, function() {
 
     expect(options).to.eql({
       globFollow: true,
-      globIgnores: ['node_modules/**/*'],
+      globIgnores: ['**/node_modules/**/*'],
       globPatterns: ['**/*.{js,css,html}'],
       globStrict: true,
       maximumFileSizeToCacheInBytes: 2097152,
@@ -38,7 +38,7 @@ describe(`[workbox-build] entry-points/options/validate.js`, function() {
 
     expect(options).to.eql({
       globFollow: true,
-      globIgnores: ['node_modules/**/*'],
+      globIgnores: ['**/node_modules/**/*'],
       globPatterns: ['**/*.{js,css,html}'],
       globStrict: true,
       maximumFileSizeToCacheInBytes,
@@ -52,7 +52,7 @@ describe(`[workbox-build] entry-points/options/validate.js`, function() {
     expect(options).to.eql({
       dontCacheBustUrlsMatching,
       globFollow: true,
-      globIgnores: ['node_modules/**/*'],
+      globIgnores: ['**/node_modules/**/*'],
       globPatterns: ['**/*.{js,css,html}'],
       globStrict: true,
       maximumFileSizeToCacheInBytes: 2097152,

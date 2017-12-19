@@ -53,47 +53,105 @@ function getEntry(knownHashes, url, revision) {
  *  but filter for [/\.map$/, /asset-manifest\.json$/] by default:
  *    https://github.com/GoogleChrome/workbox/pull/808#discussion_r140565156
  *
- * @param {Array<Object>} chunks webpack chunks.
+ * @param {Object<string, Object>} assetMetadata Metadata about the assets.
  * @param {Array<string>} [whitelist] Chunk names to include.
  * @param {Array<string>} [blacklist] Chunk names to exclude.
- * @return {Array<Object>} Filtered array of chunks.
+ * @return {Object<string, Object>} Filtered asset metadata.
  *
  * @private
  */
-function filterChunks(chunks, whitelist, blacklist) {
-  return chunks.filter((chunk) => {
-    return 'name' in chunk &&
-      (!whitelist || whitelist.includes(chunk.name)) &&
-      (!blacklist || !blacklist.includes(chunk.name));
-  });
+function filterAssets(assetMetadata, whitelist, blacklist) {
+  const filteredMapping = {};
+
+  for (const [file, metadata] of Object.entries(assetMetadata)) {
+    const chunkName = metadata.chunkName;
+    // This file is whitelisted if:
+    // - Trivially, if there is no whitelist defined.
+    // - There is a whitelist and our file is associated with a chunk whose name
+    // is listed.
+    const isWhitelisted = whitelist.length === 0 ||
+      whitelist.includes(chunkName);
+
+    // This file is blacklisted if our file is associated with a chunk whose
+    // name is listed.
+    const isBlacklisted = blacklist.includes(chunkName);
+
+    // Only include this entry in the filtered mapping if we're whitelisted and
+    // not blacklisted.
+    if (isWhitelisted && !isBlacklisted) {
+      filteredMapping[file] = metadata;
+    }
+  }
+
+  return filteredMapping;
 }
 
 /**
- * Takes in a list of webpack chunks, and returns a mapping of the path for each
- * file in the chunk to the associated hash for the entire chunk.
+ * Takes in compilation.assets and compilation.chunks, and assigns metadata
+ * to each file listed in assets:
  *
- * @param {Array<Object>} chunks The webpack chunks.
- * @return {Object<string, string>} Mapping of paths to hashes.
+ * - If the asset was created by a chunk, it assigns the existing chunk name and
+ * chunk hash.
+ * - If the asset was created outside of a chunk, it assigns a chunk name of ''
+ * and generates a hash of the asset.
+ *
+ * @param {Object} assets The compilation.assets
+ * @param {Array<Object>} chunks The compilation.chunks
+ * @return {Object<string, Object>} Mapping of asset paths to chunk name and
+ * hash metadata.
  *
  * @private
  */
-function mapChunksToChunkHashes(chunks) {
+function generateMetadataForAssets(assets, chunks) {
   const mapping = {};
+
+  // Start out by getting metadata for all the assets associated with a chunk.
   for (const chunk of chunks) {
     for (const file of chunk.files) {
-      mapping[file] = chunk.renderedHash;
+      mapping[file] = {
+        chunkName: chunk.name,
+        hash: chunk.renderedHash,
+      };
     }
   }
+
+  // Next, loop through the total list of assets and find anything that isn't
+  // associated with a chunk.
+  for (const [file, asset] of Object.entries(assets)) {
+    if (file in mapping) {
+      continue;
+    }
+
+    mapping[file] = {
+      // Just use an empty string to denote the lack of chunk association.
+      chunkName: '',
+      hash: getAssetHash(asset),
+    };
+  }
+
   return mapping;
 }
 
 /**
- * Generate an array of manifest entries using webpack's compilation data
+ * Given an assetMetadata mapping, returns a Set of all of the hashes that
+ * are associated with at least one asset.
  *
- * TODO:
- *   Rename variables so they are easier to understand:
- *      https://github.com/GoogleChrome/workbox/pull/808#discussion_r139605624
- *      https://github.com/GoogleChrome/workbox/pull/808#discussion_r139605973
+ * @param {Object<string, Object>} assetMetadata Mapping of asset paths to chunk
+ * name and hash metadata.
+ * @return {Set} The known hashes associated with an asset.
+ *
+ * @private
+ */
+function getKnownHashesFromAssets(assetMetadata) {
+  const knownHashes = new Set();
+  for (const metadata of Object.values(assetMetadata)) {
+    knownHashes.add(metadata.hash);
+  }
+  return knownHashes;
+}
+
+/**
+ * Generate an array of manifest entries using webpack's compilation data.
  *
  * @function getManifestEntriesWithWebpack
  * @param {Object} compilation webpack compilation
@@ -103,46 +161,25 @@ function mapChunksToChunkHashes(chunks) {
  * @private
  */
 module.exports = (compilation, config) => {
-  const {publicPath} = compilation.options.output;
-  const whitelistedChunkNames = config.chunks;
   const blacklistedChunkNames = config.excludeChunks;
-  let {
-    assets,
-    chunks,
-  } = compilation;
+  const whitelistedChunkNames = config.chunks;
+  const {assets, chunks} = compilation;
+  const {publicPath} = compilation.options.output;
 
-  // If specified, only include chunks in config.chunks and exclude any chunks
-  // named in config.excludeChunks.
-  if (whitelistedChunkNames || blacklistedChunkNames) {
-    chunks = filterChunks(chunks, whitelistedChunkNames, blacklistedChunkNames);
-  }
+  const assetMetadata = generateMetadataForAssets(assets, chunks);
+  const filteredAssetMetadata = filterAssets(assetMetadata,
+    whitelistedChunkNames, blacklistedChunkNames);
 
-  // Map all of the paths from the named chunks to their associated hashes.
-  const pathsToHashes = mapChunksToChunkHashes(chunks);
-
-  // If we're not in whitelist mode, then also include the paths we can infer
-  // from compilation.assets in the final output.
-  if (!whitelistedChunkNames) {
-    for (const [filePath, asset] of Object.entries(assets)) {
-      // If we already have a hash because this filePath was part of a chunk's
-      // files, then we can skip calculating a hash.
-      if (!(filePath in pathsToHashes)) {
-        pathsToHashes[filePath] = getAssetHash(asset);
-      }
-    }
-  }
-
-  let knownHashes = [compilation.hash, compilation.fullHash];
-  for (const chunk of compilation.chunks) {
-    knownHashes.push(chunk.hash, chunk.renderedHash);
-  }
-  // Make sure we don't have any empty/undefined hashes.
-  knownHashes = knownHashes.filter((hash) => !!hash);
+  const knownHashes = [
+    compilation.hash,
+    compilation.fullHash,
+    ...getKnownHashesFromAssets(filteredAssetMetadata),
+  ].filter((hash) => !!hash);
 
   const manifestEntries = [];
-  for (const [filePath, hash] of Object.entries(pathsToHashes)) {
-    const publicUrl = resolveWebpackUrl(publicPath, filePath);
-    const manifestEntry = getEntry(knownHashes, publicUrl, hash);
+  for (const [file, metadata] of Object.entries(filteredAssetMetadata)) {
+    const publicUrl = resolveWebpackUrl(publicPath, file);
+    const manifestEntry = getEntry(knownHashes, publicUrl, metadata.hash);
     manifestEntries.push(manifestEntry);
   }
   return manifestEntries;
