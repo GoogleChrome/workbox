@@ -139,6 +139,8 @@ function generateMetadataForAssets(assets, chunks) {
  * @param {Object<string, Object>} assetMetadata Mapping of asset paths to chunk
  * name and hash metadata.
  * @return {Set} The known hashes associated with an asset.
+ *
+ * @private
  */
 function getKnownHashesFromAssets(assetMetadata) {
   const knownHashes = new Set();
