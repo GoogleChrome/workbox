@@ -47,15 +47,17 @@ class WorkboxWebpackPlugin {
    *        exclude from the asset manifest. Any asset beloning to the provided
    *        chunk names will not be included in the asset manifest. This does
    *        not affect chunks with no chunk name.
-   * @param {string} [config.filename = 'sw.js'] Name of the service worker file
-   * @param {string} [config.manifestFilename = 'file-manifest[hash].js'] Name
-   *        of the manifest file that will be written to the build directory
    * @param {string} [config.swSrc] Path to an existing service worker file.
    *        Will be added to the webpack compilation and prepended with
    *        importScripts('workbox-sw.js', 'file-manifest.js')
    */
   constructor(config = {}) {
-    this.config = config;
+    this.config = Object.assign({}, {
+      chunks: [],
+      excludeChunks: [],
+      importScripts: [],
+      importWorkboxFrom: 'cdn',
+    }, config);
   }
 
   /**
@@ -64,7 +66,7 @@ class WorkboxWebpackPlugin {
    */
   async handleEmit(compilation) {
     const {
-      importWorkboxFrom = 'cdn',
+      importWorkboxFrom,
       swSrc,
     } = this.config;
     const serviceWorkerFilename = swSrc ? path.basename(swSrc) : 'sw.js';
@@ -87,15 +89,19 @@ class WorkboxWebpackPlugin {
       }
 
       default: {
+        // If importWorkboxFrom is anything else, then treat it as the name of
+        // a webpack chunk that corresponds to the custom compilation of the
+        // Workbox code.
         for (const chunk of compilation.chunks) {
+          // Make sure that we actually have a chunk with the appropriate name.
           if (chunk.name === importWorkboxFrom) {
             workboxSWImport = chunk.files;
-            this.config.excludeChunks = (this.config.excludeChunks || [])
-              .concat(chunk.name);
+            this.config.excludeChunks.push(chunk.name);
             break;
           }
         }
 
+        // If there's no chunk with the right name, treat it as a fatal error.
         if (workboxSWImport === undefined) {
           throw Error(`importWorkboxFrom was set to ` +
             `'${importWorkboxFrom}', which is not an existing chunk name.`);
@@ -110,12 +116,11 @@ class WorkboxWebpackPlugin {
     const manifestFilename = `precache-manifest.${fileManifestHash}.js`;
     compilation.assets[manifestFilename] = fileManifestAsset;
 
-    this.config.importScripts = (this.config.importScripts || [])
-      .concat(manifestFilename);
+    this.config.importScripts.push(manifestFilename);
 
     if (workboxSWImport) {
-      this.config.importScripts = this.config.importScripts
-        .concat(workboxSWImport);
+      this.config.importScripts = this.config.importScripts.concat(
+        workboxSWImport);
     }
 
     const serviceWorker = await generateOrCopySW(this.config, swSrc);

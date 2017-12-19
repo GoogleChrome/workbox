@@ -159,8 +159,8 @@ function getKnownHashesFromAssets(assetMetadata) {
  * @private
  */
 module.exports = (compilation, config) => {
-  const blacklistedChunkNames = config.excludeChunks || [];
-  const whitelistedChunkNames = config.chunks || [];
+  const blacklistedChunkNames = config.excludeChunks;
+  const whitelistedChunkNames = config.chunks;
   const {assets, chunks} = compilation;
   const {publicPath} = compilation.options.output;
 
