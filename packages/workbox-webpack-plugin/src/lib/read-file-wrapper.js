@@ -20,8 +20,8 @@
  *
  * @param {Function} readFileFn The function to use for readFile. This will be
  * derived from compiler.inputFileSystem.
- * @param {String} filePath The path to the file to read.
- * @return {Promise<String>} The contents of the file.
+ * @param {string} filePath The path to the file to read.
+ * @return {Promise<string>} The contents of the file.
  * @private
  */
 function readFileWrapper(readFileFn, filePath) {

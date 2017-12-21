@@ -54,7 +54,7 @@ function getWorkboxSWImport(compilation, config) {
 
       // If there's no chunk with the right name, treat it as a fatal error.
       throw Error(`importWorkboxFrom was set to ` +
-        `'${importWorkboxFrom}', which is not an existing chunk name.`);
+        `'${config.importWorkboxFrom}', which is not an existing chunk name.`);
     }
   }
 }
