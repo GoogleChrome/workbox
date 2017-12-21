@@ -16,12 +16,13 @@
 
 const {generateSWString} = require('workbox-build');
 
-const generateManifest = require('./lib/generate-manifest');
+const convertStringToAsset = require('./lib/convert-string-to-asset');
 const getAssetHash = require('./lib/get-asset-hash');
-const getManifestEntries = require('./lib/get-manifest-entries');
+const getManifestEntriesFromCompilation =
+  require('./lib/get-manifest-entries-from-compilation');
 const getWorkboxSWImports = require('./lib/get-workbox-sw-imports');
-const formatAsWebpackAsset = require('./lib/format-as-webpack-asset');
 const sanitizeConfig = require('./lib/sanitize-config');
+const stringifyManifest = require('./lib/stringify-manifest');
 
 /**
  * This class supports creating a new, ready-to-use service worker file as
@@ -57,13 +58,13 @@ class GenerateSW {
    */
   async handleEmit(compilation) {
     const workboxSWImports = getWorkboxSWImports(compilation, this.config);
-    const entries = getManifestEntries(compilation, this.config);
+    const entries = getManifestEntriesFromCompilation(compilation, this.config);
 
-    const fileManifest = generateManifest(entries);
-    const fileManifestAsset = formatAsWebpackAsset(fileManifest);
-    const fileManifestHash = getAssetHash(fileManifestAsset);
-    const manifestFilename = `precache-manifest.${fileManifestHash}.js`;
-    compilation.assets[manifestFilename] = fileManifestAsset;
+    const manifestString = stringifyManifest(entries);
+    const manifestAsset = convertStringToAsset(manifestString);
+    const manifestHash = getAssetHash(manifestAsset);
+    const manifestFilename = `precache-manifest.${manifestHash}.js`;
+    compilation.assets[manifestFilename] = manifestAsset;
     this.config.importScripts.push(manifestFilename);
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
@@ -73,11 +74,10 @@ class GenerateSW {
         workboxSWImports);
     }
 
-    // Pull out swDest before it's "sanitized" from the config.
-    const {swDest} = this.config;
-    const sanitizedConfig = sanitizeConfig(this.config);
+    const sanitizedConfig = sanitizeConfig.forGenerateSWString(this.config);
     const serviceWorker = await generateSWString(sanitizedConfig);
-    compilation.assets[swDest] = formatAsWebpackAsset(serviceWorker);
+    compilation.assets[this.config.swDest] =
+      convertStringToAsset(serviceWorker);
   }
 
   /**

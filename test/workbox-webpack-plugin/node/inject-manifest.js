@@ -53,7 +53,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
   });
 
   describe(`[workbox-webpack-plugin] multiple chunks`, function() {
-    it(`should work when called without any parameters`, function(done) {
+    it(`should work when called with just swSrc`, function(done) {
       const FILE_MANIFEST_NAME = 'precache-manifest.b6f6b1b151c4f027ee1e1aa3061eeaf7.js';
       const outputDir = tempy.directory();
       const config = {
@@ -399,6 +399,137 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
             url: 'entry2-17c2a1b5c94290899539.js',
           }, {
             url: 'entry1-d7f4e7088b64a9896b23.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it(`should honor a custom swDest`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.3025354ee867087a8f380b661c2ed62f.js';
+      const SW_DEST = 'custom-sw-dest.js';
+      const outputDir = tempy.directory();
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new InjectManifest({
+            swDest: SW_DEST,
+            swSrc: SW_SRC,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        const swFile = path.join(outputDir, SW_DEST);
+        try {
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            revision: 'df7649048255d9f47e0f80cbe11cd4ef',
+            url: 'index.html',
+          }, {
+            url: 'entry2-17c2a1b5c94290899539.js',
+          }, {
+            url: 'entry1-d7f4e7088b64a9896b23.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it(`should support passing options through to workbox-build.getManifest() to precache additional files`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.06576212e1040579b494a559d9e82d3c.js';
+      const outputDir = tempy.directory();
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new HtmlWebpackPlugin(),
+          new InjectManifest({
+            swSrc: SW_SRC,
+            globDirectory: SRC_DIR,
+            templatedUrls: {
+              '/shell': ['index.html', 'styles/*.css'],
+            },
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        const swFile = path.join(outputDir, path.basename(SW_SRC));
+        try {
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            revision: 'df7649048255d9f47e0f80cbe11cd4ef',
+            url: 'index.html',
+          }, {
+            url: 'entry2-17c2a1b5c94290899539.js',
+          }, {
+            url: 'entry1-d7f4e7088b64a9896b23.js',
+          }, {
+            revision: '5cfecbd12c9fa32f03eafe27e2ac798e',
+            url: '/shell',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 

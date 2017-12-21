@@ -16,13 +16,16 @@
 
 const assert = require('assert');
 const path = require('path');
+const {getManifest} = require('workbox-build');
 
-const formatAsWebpackAsset = require('./lib/format-as-webpack-asset');
-const generateManifest = require('./lib/generate-manifest');
+const convertStringToAsset = require('./lib/convert-string-to-asset');
 const getAssetHash = require('./lib/get-asset-hash');
-const getManifestEntries = require('./lib/get-manifest-entries');
+const getManifestEntriesFromCompilation =
+  require('./lib/get-manifest-entries-from-compilation');
 const getWorkboxSWImports = require('./lib/get-workbox-sw-imports');
 const readFileWrapper = require('./lib/read-file-wrapper');
+const sanitizeConfig = require('./lib/sanitize-config');
+const stringifyManifest = require('./lib/stringify-manifest');
 
 /**
  * This class supports taking an existing service worker file which already
@@ -64,13 +67,23 @@ class InjectManifest {
    */
   async handleEmit(compilation, readFile) {
     const workboxSWImports = getWorkboxSWImports(compilation, this.config);
-    const entries = getManifestEntries(compilation, this.config);
+    let entries = getManifestEntriesFromCompilation(compilation, this.config);
 
-    const fileManifest = generateManifest(entries);
-    const fileManifestAsset = formatAsWebpackAsset(fileManifest);
-    const fileManifestHash = getAssetHash(fileManifestAsset);
-    const manifestFilename = `precache-manifest.${fileManifestHash}.js`;
-    compilation.assets[manifestFilename] = fileManifestAsset;
+    const sanitizedConfig = sanitizeConfig.forGetManifest(this.config);
+    try {
+      const {manifestEntries} = await getManifest(sanitizedConfig);
+      entries = entries.concat(manifestEntries);
+    } catch (error) {
+      if (!error.isJoi) {
+        throw error;
+      }
+    }
+
+    const manifestString = stringifyManifest(entries);
+    const manifestAsset = convertStringToAsset(manifestString);
+    const manifestHash = getAssetHash(manifestAsset);
+    const manifestFilename = `precache-manifest.${manifestHash}.js`;
+    compilation.assets[manifestFilename] = manifestAsset;
     this.config.importScripts.push(manifestFilename);
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
@@ -80,18 +93,19 @@ class InjectManifest {
         workboxSWImports);
     }
 
-    const originalSWSrc = await readFileWrapper(readFile, this.config.swSrc);
+    const originalSWString = await readFileWrapper(readFile, this.config.swSrc);
 
     const importScriptsString = this.config.importScripts
       .map(JSON.stringify)
       .join(', ');
-    const postInjectionSWSrc = `importScripts(${importScriptsString});
 
-${originalSWSrc}
+    const postInjectionSWString = `importScripts(${importScriptsString});
+
+${originalSWString}
 `;
 
     compilation.assets[this.config.swDest] =
-      formatAsWebpackAsset(postInjectionSWSrc);
+      convertStringToAsset(postInjectionSWString);
   }
 
   /**

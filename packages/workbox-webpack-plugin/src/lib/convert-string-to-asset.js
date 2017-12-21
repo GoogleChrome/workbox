@@ -35,19 +35,18 @@
 /**
  * Creates a webpack asset from a string that can be added to a compilation.
  *
- * Given a string (`asset`) we can return a webpack compilation asset object
- * that can be added to the map of webpack's compilation assets.
- *
- * @function webpackAsset
- * @param {string} asset String representation of the asset that should be
- *        written to the file system by webpack.
+ * @param {string} assetAsString String representation of the asset that should
+ * be written to the file system by webpack.
  * @return {WebpackAsset}
  *
  * @private
  */
-module.exports = (asset) => {
+function convertStringToAsset(assetAsString) {
   return {
-    source: () => asset,
-    size: () => asset.length,
+    source: () => assetAsString,
+    size: () => assetAsString.length,
   };
-};
+}
+
+module.exports = convertStringToAsset;
+

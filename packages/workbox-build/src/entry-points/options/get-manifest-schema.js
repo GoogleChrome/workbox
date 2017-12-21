@@ -17,8 +17,11 @@
 const joi = require('joi');
 
 const baseSchema = require('./base-schema');
+const defaults = require('./defaults');
 
 // Define some additional constraints.
 module.exports = baseSchema.keys({
   globDirectory: joi.string().required(),
+  globPatterns: joi.array().items(joi.string()).default(
+    defaults.generateSWStringGlobPatterns),
 });
