@@ -15,35 +15,16 @@
 */
 
 /**
- * Use the `compiler.inputFileSystem._readFile` method instead of `fs.readFile`,
- * `readFile` is configured to use `compiler.inputFileSystem._readFile` during
- * the run phase of the webpack compilation lifecycle by passing the function
- * to the `setReadFile` function.
+ * A wrapper that calls readFileFn and returns a promise for the contents of
+ * filePath.
  *
+ * @param {Function} readFileFn The function to use for readFile. This will be
+ * derived from compiler.inputFileSystem.
+ * @param {String} filePath The path to the file to read.
+ * @return {Promise<String>} The contents of the file.
  * @private
  */
-let readFileFn;
-
-/**
- * Sets the read file function.
- *
- * @param {Function} fn The function to use.
- *
- * @private
- */
-function setReadFile(fn) {
-  readFileFn = fn;
-}
-
-/**
- * A wrapper that calls readFileFn and returns a promise for the contents.
- *
- * @param {string} filePath The file to read.
- * @return {Promise<string>} The contents of the file.
- *
- * @private
- */
-function readFile(filePath) {
+function readFileWrapper(readFileFn, filePath) {
   return new Promise((resolve, reject) => {
     readFileFn(filePath, 'utf8', (error, data) => {
       if (error) {
@@ -54,7 +35,4 @@ function readFile(filePath) {
   });
 }
 
-module.exports = {
-  readFile,
-  setReadFile,
-};
+module.exports = readFileWrapper;

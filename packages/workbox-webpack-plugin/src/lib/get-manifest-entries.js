@@ -14,8 +14,8 @@
   limitations under the License.
 */
 
-const getAssetHash = require('./utils/get-asset-hash');
-const resolveWebpackUrl = require('./utils/resolve-webpack-url');
+const getAssetHash = require('./get-asset-hash');
+const resolveWebpackUrl = require('./resolve-webpack-url');
 
 /**
  * A single manifest entry that Workbox can precache.

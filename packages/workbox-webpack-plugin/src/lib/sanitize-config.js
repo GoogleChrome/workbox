@@ -14,10 +14,29 @@
   limitations under the License.
 */
 
-const GenerateSW = require('./generate-sw');
-const InjectManifest = require('./inject-manifest');
+/**
+ * Given a config object, remove the properties that we know are webpack-plugin
+ * specific, so that the remaining properties can be passed through to the
+ * appropriate workbox-build method.
+ *
+ * @param {Object} config
+ * @return {Object}
+ *
+ * @private
+ */
+function sanitizeConfig(config) {
+  const propertiesToRemove = [
+    'chunks',
+    'excludeChunks',
+    'importWorkboxFrom',
+    'swDest',
+  ];
 
-module.exports = {
-  GenerateSW,
-  InjectManifest,
-};
+  for (const property of propertiesToRemove) {
+    delete config[property];
+  }
+
+  return config;
+}
+
+module.exports = sanitizeConfig;
