@@ -70,13 +70,12 @@ class InjectManifest {
     let entries = getManifestEntriesFromCompilation(compilation, this.config);
 
     const sanitizedConfig = sanitizeConfig.forGetManifest(this.config);
-    try {
+    // If there are any "extra" config options remaining after we remove the
+    // ones that are used natively by the plugin, then assume that they should
+    // be passed on to workbox-build.getManifest() to generate extra entries.
+    if (Object.keys(sanitizedConfig).length > 0) {
       const {manifestEntries} = await getManifest(sanitizedConfig);
       entries = entries.concat(manifestEntries);
-    } catch (error) {
-      if (!error.isJoi) {
-        throw error;
-      }
     }
 
     const manifestString = stringifyManifest(entries);
