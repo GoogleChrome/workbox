@@ -17,12 +17,9 @@
 const joi = require('joi');
 
 const commonGenerateSchema = require('./common-generate-schema');
-const defaults = require('./defaults');
 
 // Define some additional constraints.
 module.exports = commonGenerateSchema.keys({
   globDirectory: joi.string(),
-  globPatterns: joi.array().items(joi.string()).default(
-    defaults.generateSWStringGlobPatterns),
   importScripts: joi.array().items(joi.string()).required(),
 });

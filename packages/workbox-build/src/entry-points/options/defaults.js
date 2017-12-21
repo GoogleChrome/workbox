@@ -15,11 +15,9 @@
 */
 
 module.exports = {
-  getManifestGlobPatterns: [],
-  generateSWStringGlobPatterns: [],
   globFollow: true,
   globIgnores: ['**/node_modules/**/*'],
-  globPatterns: ['**/*.{js,css,html}'],
+  globPatterns: [],
   globStrict: true,
   maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
   clientsClaim: false,

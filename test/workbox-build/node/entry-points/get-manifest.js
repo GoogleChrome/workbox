@@ -9,6 +9,7 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
   const SRC_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: SRC_DIR,
+    globPatterns: ['**/*.{js,css,html}'],
   };
   const REQUIRED_PARAMS = ['globDirectory'];
   const SUPPORTED_PARAMS = [
@@ -119,9 +120,9 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     });
 
     it(`should use defaults when all the required parameters, and 'globPatterns' are present`, async function() {
-      const options = Object.assign({
+      const options = Object.assign({}, BASE_OPTIONS, {
         globPatterns: ['**/*.html', '**/*.js'],
-      }, BASE_OPTIONS);
+      });
 
       const {count, size, manifestEntries} = await getManifest(options);
 
@@ -161,10 +162,10 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     });
 
     it(`should use defaults when all the required parameters, 'globIgnores', and 'globPatterns' are present`, async function() {
-      const options = Object.assign({
+      const options = Object.assign({}, BASE_OPTIONS, {
         globPatterns: ['**/*.css', '**/*.js'],
         globIgnores: ['node_modules/**/*', '**/*2*'],
-      }, BASE_OPTIONS);
+      });
 
       const {count, size, manifestEntries} = await getManifest(options);
 

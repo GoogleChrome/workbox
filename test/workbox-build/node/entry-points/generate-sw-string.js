@@ -9,6 +9,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
   const DEFAULT_IMPORT_SCRIPTS = ['workbox.js'];
   const BASE_OPTIONS = {
     importScripts: DEFAULT_IMPORT_SCRIPTS,
+    globPatterns: ['**/*.{js,css,html}'],
   };
   const REQUIRED_PARAMS = [
     'importScripts',
