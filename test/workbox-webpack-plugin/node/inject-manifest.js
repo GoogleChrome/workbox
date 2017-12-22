@@ -475,7 +475,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     it(`should support passing options through to workbox-build.getManifest() to precache additional files`, function(done) {
       const FILE_MANIFEST_NAME = 'precache-manifest.06576212e1040579b494a559d9e82d3c.js';
       const outputDir = tempy.directory();
-      console.log(outputDir);
       const config = {
         entry: {
           entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
