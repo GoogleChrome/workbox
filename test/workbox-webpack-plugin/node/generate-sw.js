@@ -7,11 +7,11 @@ const tempy = require('tempy');
 const vm = require('vm');
 const webpack = require('webpack');
 
-const WorkboxWebpackPlugin = require('../../../packages/workbox-webpack-plugin/src/index');
+const {GenerateSW} = require('../../../packages/workbox-webpack-plugin/src/index');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 const {getModuleUrl} = require('../../../packages/workbox-build/src/lib/cdn-utils');
 
-describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
+describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
   const WORKBOX_SW_FILE_NAME = getModuleUrl('workbox-sw');
   const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');
@@ -28,7 +28,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new WorkboxWebpackPlugin({
+          new GenerateSW({
             importWorkboxFrom: 'INVALID',
           }),
         ],
@@ -37,6 +37,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
       const compiler = webpack(config);
       compiler.run((webpackError) => {
         if (webpackError) {
+          expect(webpackError.message.includes('importWorkboxFrom'));
           done();
         } else {
           done('Unexpected success.');
@@ -59,7 +60,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new WorkboxWebpackPlugin(),
+          new GenerateSW(),
         ],
       };
 
@@ -69,9 +70,9 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           return done(webpackError);
         }
 
-        const swFile = path.join(outputDir, 'sw.js');
+        const swFile = path.join(outputDir, 'service-worker.js');
         try {
-          // First, validate that the generated sw.js meets some basic assumptions.
+          // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[
               FILE_MANIFEST_NAME,
@@ -116,7 +117,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new WorkboxWebpackPlugin({importWorkboxFrom: 'workboxEntry'}),
+          new GenerateSW({importWorkboxFrom: 'workboxEntry'}),
         ],
       };
 
@@ -126,9 +127,9 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           return done(webpackError);
         }
 
-        const swFile = path.join(outputDir, 'sw.js');
+        const swFile = path.join(outputDir, 'service-worker.js');
         try {
-          // First, validate that the generated sw.js meets some basic assumptions.
+          // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[
               FILE_MANIFEST_NAME,
@@ -172,7 +173,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new WorkboxWebpackPlugin({
+          new GenerateSW({
             chunks: ['entry1', 'entry2'],
           }),
         ],
@@ -184,9 +185,9 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           return done(webpackError);
         }
 
-        const swFile = path.join(outputDir, 'sw.js');
+        const swFile = path.join(outputDir, 'service-worker.js');
         try {
-          // First, validate that the generated sw.js meets some basic assumptions.
+          // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[
               FILE_MANIFEST_NAME,
@@ -230,7 +231,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new WorkboxWebpackPlugin({
+          new GenerateSW({
             excludeChunks: ['entry3'],
           }),
         ],
@@ -242,9 +243,9 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           return done(webpackError);
         }
 
-        const swFile = path.join(outputDir, 'sw.js');
+        const swFile = path.join(outputDir, 'service-worker.js');
         try {
-          // First, validate that the generated sw.js meets some basic assumptions.
+          // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[
               FILE_MANIFEST_NAME,
@@ -288,7 +289,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new WorkboxWebpackPlugin({
+          new GenerateSW({
             chunks: ['entry1', 'entry2'],
             excludeChunks: ['entry2', 'entry3'],
           }),
@@ -301,9 +302,9 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           return done(webpackError);
         }
 
-        const swFile = path.join(outputDir, 'sw.js');
+        const swFile = path.join(outputDir, 'service-worker.js');
         try {
-          // First, validate that the generated sw.js meets some basic assumptions.
+          // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[
               FILE_MANIFEST_NAME,
@@ -347,7 +348,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           // This is not an exhaustive test of all the supported options, but
           // it should be enough to confirm that they're being interpreted
           // by workbox-build.generateSWString() properly.
-          new WorkboxWebpackPlugin({
+          new GenerateSW({
             clientsClaim: true,
             skipWaiting: true,
             globDirectory: SRC_DIR,
@@ -364,9 +365,9 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           return done(webpackError);
         }
 
-        const swFile = path.join(outputDir, 'sw.js');
+        const swFile = path.join(outputDir, 'service-worker.js');
         try {
-          // First, validate that the generated sw.js meets some basic assumptions.
+          // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[
               FILE_MANIFEST_NAME,
@@ -417,7 +418,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
         },
         plugins: [
           new HtmlWebpackPlugin(),
-          new WorkboxWebpackPlugin(),
+          new GenerateSW(),
         ],
       };
 
@@ -427,9 +428,9 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           return done(webpackError);
         }
 
-        const swFile = path.join(outputDir, 'sw.js');
+        const swFile = path.join(outputDir, 'service-worker.js');
         try {
-          // First, validate that the generated sw.js meets some basic assumptions.
+          // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[
               FILE_MANIFEST_NAME,
@@ -478,7 +479,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
             from: SRC_DIR,
             to: outputDir,
           }]),
-          new WorkboxWebpackPlugin(),
+          new GenerateSW(),
         ],
       };
 
@@ -488,9 +489,9 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
           return done(webpackError);
         }
 
-        const swFile = path.join(outputDir, 'sw.js');
+        const swFile = path.join(outputDir, 'service-worker.js');
         try {
-          // First, validate that the generated sw.js meets some basic assumptions.
+          // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[
               FILE_MANIFEST_NAME,

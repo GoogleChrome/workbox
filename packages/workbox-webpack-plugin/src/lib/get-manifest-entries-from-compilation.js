@@ -14,8 +14,8 @@
   limitations under the License.
 */
 
-const getAssetHash = require('./utils/get-asset-hash');
-const resolveWebpackUrl = require('./utils/resolve-webpack-url');
+const getAssetHash = require('./get-asset-hash');
+const resolveWebpackUrl = require('./resolve-webpack-url');
 
 /**
  * A single manifest entry that Workbox can precache.
@@ -153,14 +153,13 @@ function getKnownHashesFromAssets(assetMetadata) {
 /**
  * Generate an array of manifest entries using webpack's compilation data.
  *
- * @function getManifestEntriesWithWebpack
  * @param {Object} compilation webpack compilation
- * @param {module:workbox-webpack-plugin.Configuration} config
- * @return {Array<module:workbox-build.ManifestEntry>}
+ * @param {Object} config
+ * @return {Array<workbox.build.ManifestEntry>}
  *
  * @private
  */
-module.exports = (compilation, config) => {
+function getManifestEntriesFromCompilation(compilation, config) {
   const blacklistedChunkNames = config.excludeChunks;
   const whitelistedChunkNames = config.chunks;
   const {assets, chunks} = compilation;
@@ -183,4 +182,6 @@ module.exports = (compilation, config) => {
     manifestEntries.push(manifestEntry);
   }
   return manifestEntries;
-};
+}
+
+module.exports = getManifestEntriesFromCompilation;
