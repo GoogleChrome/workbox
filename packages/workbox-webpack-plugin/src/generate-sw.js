@@ -75,6 +75,9 @@ class GenerateSW {
     }
 
     const sanitizedConfig = sanitizeConfig.forGenerateSWString(this.config);
+    // If globPatterns isn't explicitly set, then default to [], instead of
+    // the workbox-build.generateSWString() default.
+    sanitizedConfig.globPatterns = sanitizedConfig.globPatterns || [];
     const serviceWorker = await generateSWString(sanitizedConfig);
     compilation.assets[this.config.swDest] =
       convertStringToAsset(serviceWorker);

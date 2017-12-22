@@ -18,8 +18,10 @@
  * A wrapper that calls readFileFn and returns a promise for the contents of
  * filePath.
  *
- * @param {Function} readFileFn The function to use for readFile. This will be
- * derived from compiler.inputFileSystem.
+ * readFileFn is expected to be set to compiler.inputFileSystem._readFile, to
+ * ensure compatibility with webpack dev server's in-memory filesystem.
+ *
+ * @param {Function} readFileFn The function to use for readFile.
  * @param {string} filePath The path to the file to read.
  * @return {Promise<string>} The contents of the file.
  * @private

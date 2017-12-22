@@ -11,7 +11,6 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
   const SW_SRC_DIR = path.join(__dirname, '..', '..', 'static', 'sw-injections');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
-    globPatterns: ['**/*.{js,css,html}'],
     swDest: tempy.file(),
     swSrc: path.join(SW_SRC_DIR, 'basic.js'),
   };

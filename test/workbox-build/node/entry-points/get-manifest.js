@@ -9,7 +9,6 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
   const SRC_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: SRC_DIR,
-    globPatterns: ['**/*.{js,css,html}'],
   };
   const REQUIRED_PARAMS = ['globDirectory'];
   const SUPPORTED_PARAMS = [

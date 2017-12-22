@@ -74,6 +74,9 @@ class InjectManifest {
     // ones that are used natively by the plugin, then assume that they should
     // be passed on to workbox-build.getManifest() to generate extra entries.
     if (Object.keys(sanitizedConfig).length > 0) {
+      // If globPatterns isn't explicitly set, then default to [], instead of
+      // the workbox-build.getManifest() default.
+      sanitizedConfig.globPatterns = sanitizedConfig.globPatterns || [];
       const {manifestEntries} = await getManifest(sanitizedConfig);
       entries = entries.concat(manifestEntries);
     }

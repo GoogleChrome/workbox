@@ -11,7 +11,7 @@ const {GenerateSW} = require('../../../packages/workbox-webpack-plugin/src/index
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 const {getModuleUrl} = require('../../../packages/workbox-build/src/lib/cdn-utils');
 
-describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
+describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
   const WORKBOX_SW_FILE_NAME = getModuleUrl('workbox-sw');
   const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');

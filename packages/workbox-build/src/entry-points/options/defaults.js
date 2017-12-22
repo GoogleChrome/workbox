@@ -17,7 +17,7 @@
 module.exports = {
   globFollow: true,
   globIgnores: ['**/node_modules/**/*'],
-  globPatterns: [],
+  globPatterns: ['**/*.{js,css,html}'],
   globStrict: true,
   maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
   clientsClaim: false,

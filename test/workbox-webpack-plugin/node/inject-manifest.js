@@ -11,7 +11,7 @@ const {InjectManifest} = require('../../../packages/workbox-webpack-plugin/src/i
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 const {getModuleUrl} = require('../../../packages/workbox-build/src/lib/cdn-utils');
 
-describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
+describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
   const WORKBOX_SW_FILE_NAME = getModuleUrl('workbox-sw');
   const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');
@@ -475,6 +475,7 @@ describe(`[workbox-webpack-plugin] index.js (End to End)`, function() {
     it(`should support passing options through to workbox-build.getManifest() to precache additional files`, function(done) {
       const FILE_MANIFEST_NAME = 'precache-manifest.06576212e1040579b494a559d9e82d3c.js';
       const outputDir = tempy.directory();
+      console.log(outputDir);
       const config = {
         entry: {
           entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),

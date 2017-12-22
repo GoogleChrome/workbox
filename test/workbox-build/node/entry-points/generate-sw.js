@@ -15,7 +15,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
-    globPatterns: ['**/*.{js,css,html}'],
     swDest: tempy.file(),
   };
   const REQUIRED_PARAMS = [
