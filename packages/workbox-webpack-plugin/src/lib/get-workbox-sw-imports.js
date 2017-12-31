@@ -14,26 +14,39 @@
   limitations under the License.
 */
 
-const {getModuleUrl} = require('workbox-build');
+const {copyWorkboxLibraries, getModuleUrl} = require('workbox-build');
 
 /**
  * @param {Object} compilation The webpack compilation.
  * @param {Object} config The options passed to the plugin constructor.
- * config.excludeChunks may be modified by this function if
- * config.importWorkboxFrom is set to a chunk name.
+ * - config.excludeChunks may be modified by this function if
+ *   config.importWorkboxFrom is set to a chunk name.
+ * - config.modulePathPrefix may be modified by this function if
+ *   config.importWorkboxFrom is set to 'local'.
  * @return {Array<String>|null} A list of URLs to use to import the Workbox
  * runtime code, or null if importWorkboxFrom is 'disabled'.
  * @private
  */
-function getWorkboxSWImport(compilation, config) {
+async function getWorkboxSWImport(compilation, config) {
   switch (config.importWorkboxFrom) {
     case 'cdn': {
       return [getModuleUrl('workbox-sw')];
     }
 
     case 'local': {
-      // TODO: Implement.
-      throw Error(`importWorkboxFrom 'local' is not yet supported.`);
+      // This will create a local copy of the Workbox runtime libraries in
+      // the output directory, independent of the webpack build pipeline.
+      // In general, this should work, but one thing to keep in mind is that
+      // when using the webpack-dev-server, the output will be created on
+      // disk, rather than in the in-memory filesystem. (webpack-dev-server will
+      // still be able to serve the runtime libraries from disk.)
+      const wbDir = await copyWorkboxLibraries(compilation.options.output.path);
+      const workboxSWImport = compilation.options.output.publicPath || ''
+        + wbDir + '/workbox-sw.js';
+      // We need to set this extra option in the config to ensure that the
+      // workbox library loader knows where to get the local libraries from.
+      config.modulePathPrefix = wbDir;
+      return [workboxSWImport];
     }
 
     case 'disabled': {

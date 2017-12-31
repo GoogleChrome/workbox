@@ -66,7 +66,8 @@ class InjectManifest {
    * @private
    */
   async handleEmit(compilation, readFile) {
-    const workboxSWImports = getWorkboxSWImports(compilation, this.config);
+    const workboxSWImports = await getWorkboxSWImports(
+      compilation, this.config);
     let entries = getManifestEntriesFromCompilation(compilation, this.config);
 
     const sanitizedConfig = sanitizeConfig.forGetManifest(this.config);
@@ -116,10 +117,10 @@ ${originalSWString}
    * @private
    */
   apply(compiler) {
-    compiler.plugin('emit', (compilation, next) => {
+    compiler.plugin('emit', (compilation, callback) => {
       this.handleEmit(compilation, compiler.inputFileSystem._readFile)
-        .then(next)
-        .catch(next);
+        .then(callback)
+        .catch(callback);
     });
   }
 }
