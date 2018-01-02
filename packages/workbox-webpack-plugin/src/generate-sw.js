@@ -57,7 +57,8 @@ class GenerateSW {
    * @private
    */
   async handleEmit(compilation) {
-    const workboxSWImports = getWorkboxSWImports(compilation, this.config);
+    const workboxSWImports = await getWorkboxSWImports(
+      compilation, this.config);
     const entries = getManifestEntriesFromCompilation(compilation, this.config);
 
     const manifestString = stringifyManifest(entries);
@@ -89,10 +90,10 @@ class GenerateSW {
    * @private
    */
   apply(compiler) {
-    compiler.plugin('emit', (compilation, next) => {
+    compiler.plugin('emit', (compilation, callback) => {
       this.handleEmit(compilation)
-        .then(next)
-        .catch(next);
+        .then(callback)
+        .catch(callback);
     });
   }
 }

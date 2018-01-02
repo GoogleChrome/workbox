@@ -50,6 +50,35 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         }
       });
     });
+
+    it(`should throw when importWorkboxFrom is set to 'local'`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            importWorkboxFrom: 'local',
+            swSrc: SW_SRC,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run((webpackError) => {
+        if (webpackError) {
+          expect(webpackError.message.includes('importWorkboxFrom'));
+          done();
+        } else {
+          done('Unexpected success.');
+        }
+      });
+    });
   });
 
   describe(`[workbox-webpack-plugin] multiple chunks`, function() {

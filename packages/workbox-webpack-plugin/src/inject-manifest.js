@@ -66,7 +66,13 @@ class InjectManifest {
    * @private
    */
   async handleEmit(compilation, readFile) {
-    const workboxSWImports = getWorkboxSWImports(compilation, this.config);
+    if (this.config.importWorkboxFrom === 'local') {
+      throw new Error(`importWorkboxFrom can not be set to 'local' when using` +
+        ` InjectManifest. Please use 'cdn' or a chunk name instead.`);
+    }
+
+    const workboxSWImports = await getWorkboxSWImports(
+      compilation, this.config);
     let entries = getManifestEntriesFromCompilation(compilation, this.config);
 
     const sanitizedConfig = sanitizeConfig.forGetManifest(this.config);
@@ -116,10 +122,10 @@ ${originalSWString}
    * @private
    */
   apply(compiler) {
-    compiler.plugin('emit', (compilation, next) => {
+    compiler.plugin('emit', (compilation, callback) => {
       this.handleEmit(compilation, compiler.inputFileSystem._readFile)
-        .then(next)
-        .catch(next);
+        .then(callback)
+        .catch(callback);
     });
   }
 }
