@@ -66,6 +66,11 @@ class InjectManifest {
    * @private
    */
   async handleEmit(compilation, readFile) {
+    if (this.config.importWorkboxFrom === 'local') {
+      throw new Error(`importWorkboxFrom can not be set to 'local' when using` +
+        ` InjectManifest. Please use 'cdn' or a chunk name instead.`);
+    }
+
     const workboxSWImports = await getWorkboxSWImports(
       compilation, this.config);
     let entries = getManifestEntriesFromCompilation(compilation, this.config);
