@@ -14,6 +14,8 @@
   limitations under the License.
 */
 
+const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
+
 const getAssetHash = require('./get-asset-hash');
 const resolveWebpackUrl = require('./resolve-webpack-url');
 
@@ -177,6 +179,13 @@ function getManifestEntriesFromCompilation(compilation, config) {
 
   const manifestEntries = [];
   for (const [file, metadata] of Object.entries(filteredAssetMetadata)) {
+    // Filter based on test/include/exclude options set in the webpack config.
+    // See https://github.com/GoogleChrome/workbox/issues/935#issue-267021143 and
+    // https://github.com/webpack-contrib/uglifyjs-webpack-plugin/blob/025262284c86196d0a4c4fe71e186132579629ec/src/index.js
+    if (!ModuleFilenameHelpers.matchObject(config, file)) {
+      continue;
+    }
+
     const publicUrl = resolveWebpackUrl(publicPath, file);
     const manifestEntry = getEntry(knownHashes, publicUrl, metadata.hash);
     manifestEntries.push(manifestEntry);

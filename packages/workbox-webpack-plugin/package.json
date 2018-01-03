@@ -31,6 +31,9 @@
     "json-stable-stringify": "^1.0.1",
     "workbox-build": "^3.0.0-alpha.3"
   },
+  "peerDependencies": {
+    "webpack": "^2.0.0 || ^3.0.0"
+  },
   "author": "Will Farley <a.will.farley@gmail.com> (http://www.willfarley.org/)",
   "license": "Apache-2.0",
   "repository": "googlechrome/workbox",

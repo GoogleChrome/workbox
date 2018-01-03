@@ -25,11 +25,14 @@
 function forGetManifest(originalConfig) {
   const propertiesToRemove = [
     'chunks',
+    'exclude',
     'excludeChunks',
     'importScripts',
     'importWorkboxFrom',
+    'include',
     'swDest',
     'swSrc',
+    'test',
   ];
 
   return sanitizeConfig(originalConfig, propertiesToRemove);
@@ -46,9 +49,12 @@ function forGetManifest(originalConfig) {
 function forGenerateSWString(originalConfig) {
   const propertiesToRemove = [
     'chunks',
+    'exclude',
     'excludeChunks',
     'importWorkboxFrom',
+    'include',
     'swDest',
+    'test',
   ];
 
   return sanitizeConfig(originalConfig, propertiesToRemove);
