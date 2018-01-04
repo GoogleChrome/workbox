@@ -84,7 +84,7 @@ const _getPrecachedUrl = (url, {
   // Change '/some-url#123' => '/some-url'
   urlObject.hash = '';
 
-  const noSearchUrl = _removeIgnoreUrlParams(
+  const urlWithoutIgnoredParams = _removeIgnoreUrlParams(
     urlObject, ignoreUrlParametersMatching
   );
 
@@ -92,19 +92,19 @@ const _getPrecachedUrl = (url, {
     // Test the URL that was fetched
     urlObject,
     // Test the URL without search params
-    noSearchUrl,
+    urlWithoutIgnoredParams,
   ];
 
   // Test the URL with a directory index
-  if (directoryIndex && noSearchUrl.pathname.endsWith('/')) {
-    const directoryUrl = new URL(noSearchUrl);
+  if (directoryIndex && urlWithoutIgnoredParams.pathname.endsWith('/')) {
+    const directoryUrl = new URL(urlWithoutIgnoredParams);
     directoryUrl.pathname += directoryIndex;
     urlsToAttempt.push(directoryUrl);
   }
 
   // Test the URL with a '.html' extension
   if (cleanUrls) {
-    const cleanUrl = new URL(noSearchUrl);
+    const cleanUrl = new URL(urlWithoutIgnoredParams);
     cleanUrl.pathname += '.html';
     urlsToAttempt.push(cleanUrl);
   }
