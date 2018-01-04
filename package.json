@@ -113,8 +113,8 @@
     "tempy": "^0.2.1",
     "uglify-es": "^3.1.0",
     "url-search-params": "^0.10.0",
-    "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0",
     "webpack": "^3.8.1"
   }
 }
