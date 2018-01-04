@@ -293,37 +293,43 @@ describe(`[workbox-background-sync] Queue`, function() {
       await queue.addRequest(new Request('/three'));
       await queue.addRequest(new Request('/four'));
       await queue.addRequest(new Request('/five'));
-      await queue.replayRequests(); // The 2nd and 4th requests should fail.
 
+      try {
+        await queue.replayRequests(); // The 2nd and 4th requests should fail.
+      } catch (error) {
+        const entries = await getObjectStoreEntries();
+        expect(entries.length).to.equal(2);
+        expect(entries[0].storableRequest.url).to.equal('/two');
+        expect(entries[1].storableRequest.url).to.equal('/four');
+        return;
+      }
 
-      const entries = await getObjectStoreEntries();
-      expect(entries.length).to.equal(2);
-      expect(entries[0].storableRequest.url).to.equal('/two');
-      expect(entries[1].storableRequest.url).to.equal('/four');
+      return Promise.reject('should have exit from catch');
     });
 
-    it(`should re-register for a sync event if re-fetching fails`,
+    it(`should reject replayRequests promise if re-fetching fails`,
         async function() {
-      sandbox.stub(self.registration, 'sync').value({
-        register: sinon.stub().resolves(),
-      });
       sandbox.stub(self, 'fetch')
           .onCall(1).rejects(new Error())
           .callThrough();
 
+      const failureURL = '/two';
       const queue = new Queue('foo');
 
       // Add requests for both queues to ensure only the requests from
       // the matching queue are replayed.
       await queue.addRequest(new Request('/one'));
-      await queue.addRequest(new Request('/two'));
+      await queue.addRequest(new Request(failureURL));
 
-      self.registration.sync.register.reset();
-      await queue.replayRequests(); // The second request should fail.
+      try {
+        await queue.replayRequests(); // The second request should fail.
+      } catch (error) {
+        expect(error.length).to.be.equal(1);
+        expect(error[0].url).to.be.equal(failureURL);
+        return;
+      }
 
-      expect(self.registration.sync.register.calledOnce).to.be.true;
-      expect(self.registration.sync.register.calledWith(
-          'workbox-background-sync:foo')).to.be.true;
+      return Promise.reject('should have exit from catch');
     });
 
     it(`should invoke all replay callbacks`, async function() {
@@ -376,7 +382,13 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       await queue.addRequest(new Request('/three'));
       await queue.addRequest(new Request('/four'));
-      await queue.replayRequests();
+      try {
+        await queue.replayRequests();
+      } catch (error) {
+        // Dont do anything as this is expected to be rejected
+        // but every callback should still be called.
+      }
+
 
       expect(requestWillReplay.calledTwice).to.be.true;
 
