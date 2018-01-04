@@ -263,7 +263,38 @@ describe(`[workbox-precaching] default export`, function() {
       expect(response).to.equal(cachedResponse);
     });
 
-    it(`should return null if there is no match (event with directoryIndex) 'index.html'`, async function() {
+    it.only(`should use the cleanUrls of 'about.html'`, async function() {
+      let fetchCb;
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        if (eventName === 'fetch') {
+          fetchCb = cb;
+        }
+      });
+
+      const PRECACHED_FILE = 'about.html';
+
+      const cachedResponse = new Response('Injected Response');
+      const cache = await caches.open(core.cacheNames.precache);
+      cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
+
+      precaching.addRoute();
+      precaching.precache([`/${PRECACHED_FILE}`]);
+
+      const fetchEvent = new FetchEvent('fetch', {
+        request: new Request(`/about`),
+      });
+      let fetchPromise;
+      fetchEvent.respondWith = (promise) => {
+        fetchPromise = promise;
+      };
+      fetchCb(fetchEvent);
+
+      const response = await fetchPromise;
+      expect(response).to.exist;
+      expect(response).to.equal(cachedResponse);
+    });
+
+    it(`should return null if there is no match`, async function() {
       let fetchCb;
       sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
         if (eventName === 'fetch') {
