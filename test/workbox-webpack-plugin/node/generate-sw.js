@@ -1,4 +1,5 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const GenerateAssetPlugin = require('generate-asset-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const expect = require('chai').expect;
 const fse = require('fs-extra');
@@ -645,6 +646,253 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           }, {
             revision: '452b0a9f3978190f4c77997ab23473db',
             url: 'images/example-jpeg.jpg',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  describe(`[workbox-webpack-plugin] Filtering via test/include/exclude`, function() {
+    const TEST_ASSET_CB = (compilation, callback) => callback(null, 'test');
+
+    it(`should exclude .map and manifest.js(on) files by default`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.43591bdf46c7ac47eb8d7b2bcd41f13e.js';
+      const outputDir = tempy.directory();
+      const config = {
+        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'source-map',
+        plugins: [
+          new GenerateAssetPlugin({
+            filename: 'manifest.js',
+            fn: TEST_ASSET_CB,
+          }),
+          new GenerateAssetPlugin({
+            filename: 'manifest.json',
+            fn: TEST_ASSET_CB,
+          }),
+          new GenerateSW(),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        const swFile = path.join(outputDir, 'service-worker.js');
+        try {
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            revision: '8e8e9f093f036bd18dfa',
+            url: 'webpackEntry.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it(`should allow developers to override the default exclude filter`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.b87ef85173e527290f94979b09e72d12.js';
+      const outputDir = tempy.directory();
+      const config = {
+        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'source-map',
+        plugins: [
+          new GenerateSW({
+            exclude: [],
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        const swFile = path.join(outputDir, 'service-worker.js');
+        try {
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            revision: '8e8e9f093f036bd18dfa',
+            url: 'webpackEntry.js.map',
+          }, {
+            revision: '8e8e9f093f036bd18dfa',
+            url: 'webpackEntry.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it(`should allow developers to whitelist via include`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.1242f9e007897f035a52e56690ff17a6.js';
+      const outputDir = tempy.directory();
+      const config = {
+        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'source-map',
+        plugins: [
+          new CopyWebpackPlugin([{
+            from: SRC_DIR,
+            to: outputDir,
+          }]),
+          new GenerateSW({
+            include: [/.html$/],
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        const swFile = path.join(outputDir, 'service-worker.js');
+        try {
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            url: 'page-2.html',
+          }, {
+            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            url: 'page-1.html',
+          }, {
+            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            url: 'index.html',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it(`should allow developers to combine the test and exclude filters`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.83df65831eb442f8ad5fbeb8edecc558.js';
+      const outputDir = tempy.directory();
+      const config = {
+        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'source-map',
+        plugins: [
+          new CopyWebpackPlugin([{
+            from: SRC_DIR,
+            to: outputDir,
+          }]),
+          new GenerateSW({
+            test: [/.html$/],
+            exclude: [/index/],
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        const swFile = path.join(outputDir, 'service-worker.js');
+        try {
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            url: 'page-2.html',
+          }, {
+            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            url: 'page-1.html',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 

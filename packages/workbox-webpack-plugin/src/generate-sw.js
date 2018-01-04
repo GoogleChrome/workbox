@@ -45,6 +45,12 @@ class GenerateSW {
   constructor(config = {}) {
     this.config = Object.assign({}, {
       chunks: [],
+      exclude: [
+        // Exclude source maps.
+        /\.map$/,
+        // Exclude anything starting with manifest and ending .js or .json.
+        /^manifest.*\.js(?:on)?$/,
+      ],
       excludeChunks: [],
       importScripts: [],
       importWorkboxFrom: 'cdn',

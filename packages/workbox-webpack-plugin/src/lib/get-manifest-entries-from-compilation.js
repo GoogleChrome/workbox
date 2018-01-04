@@ -14,6 +14,8 @@
   limitations under the License.
 */
 
+const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
+
 const getAssetHash = require('./get-asset-hash');
 const resolveWebpackUrl = require('./resolve-webpack-url');
 
@@ -177,6 +179,13 @@ function getManifestEntriesFromCompilation(compilation, config) {
 
   const manifestEntries = [];
   for (const [file, metadata] of Object.entries(filteredAssetMetadata)) {
+    // Filter based on test/include/exclude options set in the config,
+    // following webpack's conventions.
+    // This matches the behavior of, e.g., UglifyJS's webpack plugin.
+    if (!ModuleFilenameHelpers.matchObject(config, file)) {
+      continue;
+    }
+
     const publicUrl = resolveWebpackUrl(publicPath, file);
     const manifestEntry = getEntry(knownHashes, publicUrl, metadata.hash);
     manifestEntries.push(manifestEntry);
