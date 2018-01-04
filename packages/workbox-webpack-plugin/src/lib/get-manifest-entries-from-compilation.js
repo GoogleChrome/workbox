@@ -179,9 +179,9 @@ function getManifestEntriesFromCompilation(compilation, config) {
 
   const manifestEntries = [];
   for (const [file, metadata] of Object.entries(filteredAssetMetadata)) {
-    // Filter based on test/include/exclude options set in the webpack config.
-    // See https://github.com/GoogleChrome/workbox/issues/935#issue-267021143 and
-    // https://github.com/webpack-contrib/uglifyjs-webpack-plugin/blob/025262284c86196d0a4c4fe71e186132579629ec/src/index.js
+    // Filter based on test/include/exclude options set in the config,
+    // following webpack's conventions.
+    // This matches the behavior of, e.g., UglifyJS's webpack plugin.
     if (!ModuleFilenameHelpers.matchObject(config, file)) {
       continue;
     }
