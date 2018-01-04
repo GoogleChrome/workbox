@@ -104,6 +104,8 @@ class Queue {
    * `queueDidReplay` callback is invoked (which implies the queue is
    * now empty). If any of the requests fail, a new sync registration is
    * created to retry again later.
+   *
+   * @return {Promise}
    */
   async replayRequests() {
     const now = Date.now();
@@ -132,17 +134,17 @@ class Queue {
       replayedRequests.push(replay);
     }
 
+    await this._runCallback('queueDidReplay', replayedRequests);
+
     // If any requests failed, put the failed requests back in the queue
-    // and register for another sync.
+    // and reject promise.
     if (failedRequests.length) {
       await Promise.all(failedRequests.map((storableRequest) => {
         return this._queueStore.addEntry(storableRequest);
       }));
 
-      await this._registerSync();
+      return Promise.reject(failedRequests);
     }
-
-    await this._runCallback('queueDidReplay', replayedRequests);
   }
 
   /**
