@@ -76,44 +76,53 @@ const _removeIgnoreUrlParams = (origUrlObject, ignoreUrlParametersMatching) => {
 const _getPrecachedUrl = (url, {
   ignoreUrlParametersMatching = [/^utm_/],
   directoryIndex = 'index.html',
+  cleanUrls = true,
+  urlManipulation = null,
 } = {}) => {
   const urlObject = new URL(url, location);
 
-  // If we precache '/some-url' but the URL referenced from the browser
-  // is '/some-url#1234', the comparison won't work unless we normalise
-  // the URLS.
-  // See https://github.com/GoogleChrome/workbox/issues/488.
+  // Change '/some-url#123' => '/some-url'
   urlObject.hash = '';
 
-  const cachedUrls = precacheController.getCachedUrls();
-  if (cachedUrls.indexOf(urlObject.href) !== -1) {
-    // It's a perfect match
-    if (process.env.NODE_ENV !== 'production') {
-      logger.debug(`Precaching found an exact URL match for ` +
-        getFriendlyURL(urlObject.toString()));
-    }
-    return urlObject.href;
-  }
-
-  let strippedUrl = _removeIgnoreUrlParams(
+  const urlWithoutIgnoredParams = _removeIgnoreUrlParams(
     urlObject, ignoreUrlParametersMatching
   );
-  if (cachedUrls.indexOf(strippedUrl.href) !== -1) {
-    if (process.env.NODE_ENV !== 'production') {
-      logger.debug(`Precaching found an exact URL match for stripped URL` +
-        getFriendlyURL(strippedUrl.toString()));
-    }
-    return strippedUrl.href;
+
+  let urlsToAttempt = [
+    // Test the URL that was fetched
+    urlObject,
+    // Test the URL without search params
+    urlWithoutIgnoredParams,
+  ];
+
+  // Test the URL with a directory index
+  if (directoryIndex && urlWithoutIgnoredParams.pathname.endsWith('/')) {
+    const directoryUrl = new URL(urlWithoutIgnoredParams);
+    directoryUrl.pathname += directoryIndex;
+    urlsToAttempt.push(directoryUrl);
   }
 
-  if (directoryIndex && strippedUrl.pathname.endsWith('/')) {
-    strippedUrl.pathname += directoryIndex;
-    if (cachedUrls.indexOf(strippedUrl.href) !== -1) {
+  // Test the URL with a '.html' extension
+  if (cleanUrls) {
+    const cleanUrl = new URL(urlWithoutIgnoredParams);
+    cleanUrl.pathname += '.html';
+    urlsToAttempt.push(cleanUrl);
+  }
+
+  if (urlManipulation) {
+    const additionalUrls = urlManipulation({url: urlObject});
+    urlsToAttempt = urlsToAttempt.concat(additionalUrls);
+  }
+
+  const cachedUrls = precacheController.getCachedUrls();
+  for (const possibleUrl of urlsToAttempt) {
+    if (cachedUrls.indexOf(possibleUrl.href) !== -1) {
+      // It's a perfect match
       if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`Precaching found an exact URL match with ` +
-          `'directoryIndex' ${getFriendlyURL(strippedUrl.toString())}`);
+        logger.debug(`Precaching found a match for ` +
+          getFriendlyURL(possibleUrl.toString()));
       }
-      return strippedUrl.href;
+      return possibleUrl.href;
     }
   }
 
@@ -176,6 +185,11 @@ moduleExports.precache = (entries) => {
  * appending the `directoryIndex` value.
  * @param {Array<RegExp>} [options.ignoreUrlParametersMatching=[/^utm_/]] An
  * array of regex's to remove search params when looking for a cache match.
+ * @param {boolean} [options.cleanUrls=true] The `cleanUrls` option will
+ * check the cache for the URL with a `.html` added to the end of the end.
+ * @param {workbox.precaching~urlManipulation} [options.urlManipulation]
+ * This is a function that should take a URL and return an array of
+ * alternative URL's that should be checked for precache matches.
  *
  * @alias workbox.precaching.addRoute
  */

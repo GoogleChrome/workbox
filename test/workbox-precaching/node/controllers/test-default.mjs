@@ -263,7 +263,111 @@ describe(`[workbox-precaching] default export`, function() {
       expect(response).to.equal(cachedResponse);
     });
 
-    it(`should return null if there is no match (event with directoryIndex) 'index.html'`, async function() {
+    it(`should use the cleanUrls of 'about.html'`, async function() {
+      let fetchCb;
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        if (eventName === 'fetch') {
+          fetchCb = cb;
+        }
+      });
+
+      const PRECACHED_FILE = 'about.html';
+
+      const cachedResponse = new Response('Injected Response');
+      const cache = await caches.open(core.cacheNames.precache);
+      cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
+
+      precaching.addRoute();
+      precaching.precache([`/${PRECACHED_FILE}`]);
+
+      const fetchEvent = new FetchEvent('fetch', {
+        request: new Request(`/about`),
+      });
+      let fetchPromise;
+      fetchEvent.respondWith = (promise) => {
+        fetchPromise = promise;
+      };
+      fetchCb(fetchEvent);
+
+      const response = await fetchPromise;
+      expect(response).to.exist;
+      expect(response).to.equal(cachedResponse);
+    });
+
+    it(`should *not* use the cleanUrls of 'about.html' if set to false`, async function() {
+      let fetchCb;
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        if (eventName === 'fetch') {
+          fetchCb = cb;
+        }
+      });
+
+      const PRECACHED_FILE = 'about.html';
+
+      const cachedResponse = new Response('Injected Response');
+      const cache = await caches.open(core.cacheNames.precache);
+      cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
+
+      precaching.addRoute({
+        cleanUrls: false,
+      });
+      precaching.precache([`/${PRECACHED_FILE}`]);
+
+      const fetchEvent = new FetchEvent('fetch', {
+        request: new Request(`/about`),
+      });
+      let fetchPromise;
+      fetchEvent.respondWith = (promise) => {
+        fetchPromise = promise;
+      };
+      fetchCb(fetchEvent);
+
+      const response = await fetchPromise;
+      expect(response).to.not.exist;
+    });
+
+    it(`should use custom urlManipulation function`, async function() {
+      let fetchCb;
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        if (eventName === 'fetch') {
+          fetchCb = cb;
+        }
+      });
+
+      const PRECACHED_FILE = '123.html';
+
+      const cachedResponse = new Response('Injected Response');
+      const cache = await caches.open(core.cacheNames.precache);
+      cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
+
+      precaching.addRoute({
+        urlManipulation: ({url}) => {
+          expect(url.pathname).to.equal('/');
+
+          const customUrl = new URL(url);
+          customUrl.pathname = '123.html';
+          return [
+            customUrl,
+          ];
+        },
+      });
+      precaching.precache([`/${PRECACHED_FILE}`]);
+
+      const fetchEvent = new FetchEvent('fetch', {
+        request: new Request(`/`),
+      });
+      let fetchPromise;
+      fetchEvent.respondWith = (promise) => {
+        fetchPromise = promise;
+      };
+      fetchCb(fetchEvent);
+
+      const response = await fetchPromise;
+      expect(response).to.exist;
+      expect(response).to.equal(cachedResponse);
+    });
+
+    it(`should return null if there is no match`, async function() {
       let fetchCb;
       sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
         if (eventName === 'fetch') {
