@@ -105,4 +105,6 @@ module.exports = {
     supported.)`,
   'bad-runtime-caching-config': ol`An unknown configuration option was used 
     with runtimeCaching:`,
+  'invalid-network-timeout-seconds': ol`When using networkTimeoutSeconds, you
+    must set the handler to 'networkFirst'.`,
 };

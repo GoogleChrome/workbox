@@ -38,16 +38,25 @@ module.exports = baseSchema.keys({
       'staleWhileRevalidate'
     )],
     options: joi.object().keys({
-      cacheName: joi.string(),
-      plugins: joi.array().items(joi.object()),
-      cacheExpiration: joi.object().keys({
-        maxEntries: joi.number().min(1),
-        maxAgeSeconds: joi.number().min(1),
-      }).or('maxEntries', 'maxAgeSeconds'),
+      backgroundSync: joi.object().keys({
+        name: joi.string().required(),
+        options: joi.object(),
+      }),
+      broadcastCacheUpdate: joi.object().keys({
+        channelName: joi.string().required(),
+        options: joi.object(),
+      }),
       cacheableResponse: joi.object().keys({
         statuses: joi.array().items(joi.number().min(0).max(599)),
         headers: joi.object(),
       }).or('statuses', 'headers'),
+      cacheName: joi.string(),
+      expiration: joi.object().keys({
+        maxEntries: joi.number().min(1),
+        maxAgeSeconds: joi.number().min(1),
+      }).or('maxEntries', 'maxAgeSeconds'),
+      networkTimeoutSeconds: joi.number().min(1),
+      plugins: joi.array().items(joi.object()),
     }),
   }).requiredKeys('urlPattern', 'handler')),
   skipWaiting: joi.boolean().default(defaults.skipWaiting),

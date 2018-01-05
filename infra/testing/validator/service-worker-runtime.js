@@ -33,6 +33,7 @@ function setupSpiesAndContext() {
     // To make testing easier, return the name of the strategy.
     strategies: {
       cacheFirst: sinon.stub().returns('cacheFirst'),
+      networkFirst: sinon.stub().returns('networkFirst'),
     },
   };
 
@@ -47,6 +48,7 @@ function setupSpiesAndContext() {
     cacheExpirationPlugin: workbox.expiration.Plugin,
     cacheFirst: workbox.strategies.cacheFirst,
     clientsClaim: workbox.clientsClaim,
+    networkFirst: workbox.strategies.networkFirst,
     precacheAndRoute: workbox.precaching.precacheAndRoute,
     registerNavigationRoute: workbox.routing.registerNavigationRoute,
     registerRoute: workbox.routing.registerRoute,

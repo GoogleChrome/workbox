@@ -366,7 +366,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const runtimeCachingOptions = {
         cacheName: 'test-cache-name',
         plugins: [{}, {}],
-        cacheExpiration: {
+        expiration: {
           maxEntries: 1,
           maxAgeSeconds: 1,
         },
@@ -395,7 +395,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
           ]),
         }]],
         cacheableResponsePlugin: [[runtimeCachingOptions.cacheableResponse]],
-        cacheExpirationPlugin: [[runtimeCachingOptions.cacheExpiration]],
+        cacheExpirationPlugin: [[runtimeCachingOptions.expiration]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
@@ -406,7 +406,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     it(`should support setting individual 'options' each, for multiple 'runtimeCaching' entries`, async function() {
       const firstRuntimeCachingOptions = {
         cacheName: 'first-cache-name',
-        cacheExpiration: {
+        expiration: {
           maxEntries: 1,
           maxAgeSeconds: 1,
         },
@@ -442,7 +442,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
           plugins: ['workbox.cacheableResponse.Plugin'],
         }]],
         cacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
-        cacheExpirationPlugin: [[firstRuntimeCachingOptions.cacheExpiration]],
+        cacheExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
