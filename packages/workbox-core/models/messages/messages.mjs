@@ -128,6 +128,10 @@ export default {
       `registered.`;
   },
 
+  'queue-replay-failed': ({name, count}) => {
+    return `${count} requests failed, while trying to replay Queue: ${name}.`;
+  },
+
   'duplicate-queue-name': ({name}) => {
     return `The Queue name '${name}' is already being used. ` +
         `All instances of backgroundSync.Queue must be given unique names.`;

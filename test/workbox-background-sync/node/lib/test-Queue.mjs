@@ -23,6 +23,7 @@ import {DB_NAME, OBJECT_STORE_NAME} from
 import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 import {resetEventListeners} from
     '../../../../infra/testing/sw-env-mocks/event-listeners.js';
+import {WorkboxError} from '../../../../packages/workbox-core/_private/WorkboxError.mjs';
 
 const getObjectStoreEntries = async () => {
   return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);
@@ -304,10 +305,10 @@ describe(`[workbox-background-sync] Queue`, function() {
         return;
       }
 
-      return Promise.reject('should have exit from catch');
+      throw new Error('should have exit from catch');
     });
 
-    it(`should reject replayRequests promise if re-fetching fails`,
+    it(`should throw WorkboxError if re-fetching fails`,
         async function() {
       sandbox.stub(self, 'fetch')
           .onCall(1).rejects(new Error())
@@ -324,12 +325,11 @@ describe(`[workbox-background-sync] Queue`, function() {
       try {
         await queue.replayRequests(); // The second request should fail.
       } catch (error) {
-        expect(error.length).to.be.equal(1);
-        expect(error[0].url).to.be.equal(failureURL);
+        expect(error).to.be.instanceof(WorkboxError);
         return;
       }
 
-      return Promise.reject('should have exit from catch');
+      throw new Error('should have exit from catch');
     });
 
     it(`should invoke all replay callbacks`, async function() {
