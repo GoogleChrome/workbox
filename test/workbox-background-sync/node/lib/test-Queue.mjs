@@ -23,7 +23,6 @@ import {DB_NAME, OBJECT_STORE_NAME} from
 import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 import {resetEventListeners} from
     '../../../../infra/testing/sw-env-mocks/event-listeners.js';
-import {WorkboxError} from '../../../../packages/workbox-core/_private/WorkboxError.mjs';
 
 const getObjectStoreEntries = async () => {
   return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);
@@ -295,17 +294,14 @@ describe(`[workbox-background-sync] Queue`, function() {
       await queue.addRequest(new Request('/four'));
       await queue.addRequest(new Request('/five'));
 
-      try {
-        await queue.replayRequests(); // The 2nd and 4th requests should fail.
-      } catch (error) {
-        const entries = await getObjectStoreEntries();
-        expect(entries.length).to.equal(2);
-        expect(entries[0].storableRequest.url).to.equal('/two');
-        expect(entries[1].storableRequest.url).to.equal('/four');
-        return;
-      }
+      await expectError(() => {
+        return queue.replayRequests(); // The 2nd and 4th requests should fail.
+      }, 'queue-replay-failed');
 
-      throw new Error('should have exit from catch');
+      const entries = await getObjectStoreEntries();
+      expect(entries.length).to.equal(2);
+      expect(entries[0].storableRequest.url).to.equal('/two');
+      expect(entries[1].storableRequest.url).to.equal('/four');
     });
 
     it(`should throw WorkboxError if re-fetching fails`,
@@ -322,14 +318,9 @@ describe(`[workbox-background-sync] Queue`, function() {
       await queue.addRequest(new Request('/one'));
       await queue.addRequest(new Request(failureURL));
 
-      try {
-        await queue.replayRequests(); // The second request should fail.
-      } catch (error) {
-        expect(error).to.be.instanceof(WorkboxError);
-        return;
-      }
-
-      throw new Error('should have exit from catch');
+      await expectError(() => {
+        return queue.replayRequests();
+      }, 'queue-replay-failed');
     });
 
     it(`should invoke all replay callbacks`, async function() {
@@ -382,13 +373,9 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       await queue.addRequest(new Request('/three'));
       await queue.addRequest(new Request('/four'));
-      try {
-        await queue.replayRequests();
-      } catch (error) {
-        // Dont do anything as this is expected to be rejected
-        // but every callback should still be called.
-      }
-
+      await expectError(() => {
+        return queue.replayRequests();
+      }, 'queue-replay-failed');
 
       expect(requestWillReplay.calledTwice).to.be.true;
 
