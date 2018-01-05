@@ -54,7 +54,9 @@ describe(`[workbox-routing] Route via NavigationRoute`, function() {
     await activateSW(SW_URL);
 
     const nestedUrl = `${testingURl}TestNavigationURL`;
+
     await webdriver.get(nestedUrl);
+
     const bodyText = await webdriver.executeScript(() => {
       return document.body.textContent;
     });

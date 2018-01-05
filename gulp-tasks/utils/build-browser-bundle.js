@@ -29,6 +29,10 @@ const ERROR_NO_NAMSPACE = oneLine`
 // This makes Rollup assume workbox-* will be added to the global
 // scope and replace references with the core namespace
 const globals = (moduleId) => {
+  if (moduleId === 'workbox') {
+    return moduleId;
+  }
+
   const splitImportPath = moduleId.split('/');
   if (splitImportPath[0].indexOf('workbox-') !== 0) {
     throw new Error(`Unknown global module ID: ${moduleId}`);
@@ -87,7 +91,9 @@ const globals = (moduleId) => {
 
 // This ensures all workbox-* modules are treated as external and are
 // referenced as globals.
-const externalAndPure = (moduleId) => (moduleId.indexOf('workbox-') === 0);
+const externalAndPure = (importPath) => {
+  return (importPath.indexOf('workbox-') === 0);
+};
 
 module.exports = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
@@ -137,13 +143,17 @@ module.exports = (packagePath, buildType) => {
   return rollupStream({
     input: moduleBrowserPath,
     rollup,
-    format: 'iife',
-    banner,
-    name: namespace,
-    sourcemap: true,
-    globals,
+    output: {
+      name: namespace,
+      sourcemap: true,
+      format: 'iife',
+      banner,
+      globals,
+    },
     external: externalAndPure,
-    pureExternalModules: externalAndPure,
+    treeshake: {
+      pureExternalModules: externalAndPure,
+    },
     plugins,
     onwarn: (warning) => {
       if (buildType === constants.BUILD_TYPES.prod &&
