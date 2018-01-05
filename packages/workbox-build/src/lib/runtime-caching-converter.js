@@ -35,29 +35,17 @@ function getOptionsString(options = {}) {
     delete options.plugins;
   }
 
-  let cacheName;
-  if (options.cache && options.cache.name) {
-    cacheName = options.cache.name;
-    delete options.cache.name;
-  }
-
-  // Allow a top-level cacheName value to override the cache.name value.
-  if (options.cacheName) {
-    cacheName = options.cacheName;
-    delete options.cacheName;
-  }
-
-  let networkTimeoutSeconds;
-  if (options.networkTimeoutSeconds) {
-    networkTimeoutSeconds = options.networkTimeoutSeconds;
-    delete options.networkTimeoutSeconds;
-  }
+  // Pull cacheName and networkTimeoutSeconds from the options object, since
+  // they are not directly used to construct a Plugin instance.
+  // If set, need to be passed as options to the handler constructor instead.
+  const {cacheName, networkTimeoutSeconds} = options;
+  delete options.cacheName;
+  delete options.networkTimeoutSeconds;
 
   const pluginsMapping = {
     backgroundSync: 'workbox.backgroundSync.Plugin',
     broadcastCacheUpdate: 'workbox.broadcastCacheUpdate.Plugin',
-    cache: 'workbox.expiration.Plugin',
-    cacheExpiration: 'workbox.expiration.Plugin',
+    expiration: 'workbox.expiration.Plugin',
     cacheableResponse: 'workbox.cacheableResponse.Plugin',
   };
 
@@ -87,8 +75,7 @@ function getOptionsString(options = {}) {
   }
 }
 
-module.exports = (runtimeCaching) => {
-  runtimeCaching = runtimeCaching || [];
+module.exports = (runtimeCaching = []) => {
   return runtimeCaching.map((entry) => {
     const method = entry.method || 'GET';
 
@@ -98,6 +85,13 @@ module.exports = (runtimeCaching) => {
 
     if (!entry.handler) {
       throw new Error(errors['handler-is-required']);
+    }
+
+    // This validation logic is a bit too gnarly for joi, so it's manually
+    // implemented here.
+    if (entry.options && entry.options.networkTimeoutSeconds &&
+        entry.handler !== 'networkFirst') {
+      throw new Error(errors['invalid-network-timeout-seconds']);
     }
 
     // urlPattern might be either a string or a RegExp object.

@@ -65,15 +65,12 @@ function validate(runtimeCachingOptions, convertedOptions) {
           .to.eql(strategiesOptions.networkTimeoutSeconds);
       }
 
-      if (options.cache) {
-        if (options.cache.name) {
-          expect(strategiesOptions.cacheName).to.eql(options.cache.name);
-          delete options.cache.name;
-        }
+      if (options.cacheName) {
+        expect(options.cacheName).to.eql(strategiesOptions.cacheName);
+      }
 
-        if (Object.keys(options.cache).length > 0) {
-          expect(globalScope.workbox.expiration.Plugin.calledWith(options.cache)).to.be.true;
-        }
+      if (Object.keys(options.expiration).length > 0) {
+        expect(globalScope.workbox.expiration.Plugin.calledWith(options.expiration)).to.be.true;
       }
 
       if (options.cacheableResponse) {
@@ -127,8 +124,8 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       handler: 'networkFirst',
       options: {
         networkTimeoutSeconds: 20,
-        cache: {
-          name: 'abc-cache',
+        cacheName: 'abc-cache',
+        expiration: {
           maxEntries: 5,
           maxAgeSeconds: 50,
         },
@@ -137,7 +134,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       urlPattern: '/test',
       handler: 'staleWhileRevalidate',
       options: {
-        cache: {
+        expiration: {
           maxEntries: 10,
         },
         cacheableResponse: {
