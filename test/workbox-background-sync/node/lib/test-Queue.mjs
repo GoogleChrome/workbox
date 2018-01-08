@@ -293,8 +293,10 @@ describe(`[workbox-background-sync] Queue`, function() {
       await queue.addRequest(new Request('/three'));
       await queue.addRequest(new Request('/four'));
       await queue.addRequest(new Request('/five'));
-      await queue.replayRequests(); // The 2nd and 4th requests should fail.
 
+      await expectError(() => {
+        return queue.replayRequests(); // The 2nd and 4th requests should fail.
+      }, 'queue-replay-failed');
 
       const entries = await getObjectStoreEntries();
       expect(entries.length).to.equal(2);
@@ -302,28 +304,23 @@ describe(`[workbox-background-sync] Queue`, function() {
       expect(entries[1].storableRequest.url).to.equal('/four');
     });
 
-    it(`should re-register for a sync event if re-fetching fails`,
+    it(`should throw WorkboxError if re-fetching fails`,
         async function() {
-      sandbox.stub(self.registration, 'sync').value({
-        register: sinon.stub().resolves(),
-      });
       sandbox.stub(self, 'fetch')
           .onCall(1).rejects(new Error())
           .callThrough();
 
+      const failureURL = '/two';
       const queue = new Queue('foo');
 
       // Add requests for both queues to ensure only the requests from
       // the matching queue are replayed.
       await queue.addRequest(new Request('/one'));
-      await queue.addRequest(new Request('/two'));
+      await queue.addRequest(new Request(failureURL));
 
-      self.registration.sync.register.reset();
-      await queue.replayRequests(); // The second request should fail.
-
-      expect(self.registration.sync.register.calledOnce).to.be.true;
-      expect(self.registration.sync.register.calledWith(
-          'workbox-background-sync:foo')).to.be.true;
+      await expectError(() => {
+        return queue.replayRequests();
+      }, 'queue-replay-failed');
     });
 
     it(`should invoke all replay callbacks`, async function() {
@@ -376,7 +373,9 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       await queue.addRequest(new Request('/three'));
       await queue.addRequest(new Request('/four'));
-      await queue.replayRequests();
+      await expectError(() => {
+        return queue.replayRequests();
+      }, 'queue-replay-failed');
 
       expect(requestWillReplay.calledTwice).to.be.true;
 

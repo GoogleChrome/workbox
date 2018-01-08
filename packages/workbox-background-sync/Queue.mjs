@@ -132,17 +132,18 @@ class Queue {
       replayedRequests.push(replay);
     }
 
+    await this._runCallback('queueDidReplay', replayedRequests);
+
     // If any requests failed, put the failed requests back in the queue
-    // and register for another sync.
+    // and rethrow the failed requests count.
     if (failedRequests.length) {
       await Promise.all(failedRequests.map((storableRequest) => {
         return this._queueStore.addEntry(storableRequest);
       }));
 
-      await this._registerSync();
+      throw new WorkboxError('queue-replay-failed',
+        {name: this._name, count: failedRequests.length});
     }
-
-    await this._runCallback('queueDidReplay', replayedRequests);
   }
 
   /**
