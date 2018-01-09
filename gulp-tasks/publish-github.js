@@ -1,6 +1,7 @@
 const gulp = require('gulp');
 const path = require('path');
 const semver = require('semver');
+const fs = require('fs-extra');
 
 const publishHelpers = require('./utils/publish-helpers');
 const githubHelper = require('./utils/github-helper');
@@ -18,16 +19,22 @@ const publishReleaseOnGithub =
     releaseInfo = releaseData.data;
   }
 
+  const tarBuffer = await fs.readFile(tarPath);
   await githubHelper.uploadAsset({
-    id: releaseInfo.id,
-    filePath: tarPath,
+    url: releaseInfo.upload_url,
+    file: tarBuffer,
+    contentType: 'application/gzip',
+    contentLength: tarBuffer.length,
     name: path.basename(tarPath),
     label: path.basename(tarPath),
   });
 
+  const zipBuffer = await fs.readFile(zipPath);
   await githubHelper.uploadAsset({
-    id: releaseInfo.id,
-    filePath: zipPath,
+    url: releaseInfo.upload_url,
+    file: zipBuffer,
+    contentType: 'application/zip',
+    contentLength: zipBuffer.length,
     name: path.basename(zipPath),
     label: path.basename(zipPath),
   });

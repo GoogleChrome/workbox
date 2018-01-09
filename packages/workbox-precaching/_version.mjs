@@ -1,1 +1,1 @@
-try{self.workbox.v['workbox:precaching:3.0.0-alpha.3']=1;}catch(e){} // eslint-disable-line
+try{self.workbox.v['workbox:precaching:3.0.0-alpha.4']=1;}catch(e){} // eslint-disable-line
