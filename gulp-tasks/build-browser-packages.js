@@ -14,8 +14,6 @@ const browserBundle = gulp.series(
   ))
 );
 browserBundle.displayName = 'build-browser-packages:browser-bundle';
-// GULP: Is this exposed to the CLI?
-gulp.task(browserBundle);
 
 const version = gulp.series(
   Object.keys(constants.BUILD_TYPES).map((buildKey) => packageRunnner(
@@ -26,8 +24,6 @@ const version = gulp.series(
   ))
 );
 version.displayName = 'build-browser-packages:version-module';
-// GULP: Is this exposed to the CLI?
-gulp.task(version);
 
 const buildPackages = gulp.series(
   version,

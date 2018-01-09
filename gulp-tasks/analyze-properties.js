@@ -12,8 +12,6 @@ const runAnalyzeProperties = async () => {
   });
 };
 runAnalyzeProperties.displayName = 'analyze-properties:run';
-// GULP: Is this exposed to the CLI?
-gulp.task(runAnalyzeProperties);
 
 const analyzeProperties = gulp.series(
   build,

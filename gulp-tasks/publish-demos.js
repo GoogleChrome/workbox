@@ -20,8 +20,6 @@ const updateCDNDetails = () => {
   return fs.writeJSON(filePath, details);
 };
 updateCDNDetails.displayName = 'publish-demos:updateCDNDetails';
-// GULP: Is this exposed to the CLI?
-gulp.task(updateCDNDetails);
 
 const deploy = () => {
   return spawn(getNpmCmd(), ['run', 'demos-deploy'], {
@@ -29,8 +27,6 @@ const deploy = () => {
   });
 };
 deploy.displayName = 'publish-demos:deploy';
-// GULP: Is this exposed to the CLI?
-gulp.task(deploy);
 
 const clean = () => {
   return fs.remove(
@@ -38,8 +34,6 @@ const clean = () => {
   );
 };
 clean.displayName = 'publish-demos:clean';
-// GULP: Is this exposed to the CLI?
-gulp.task(clean);
 
 const publishDemos = gulp.series(
   clean,

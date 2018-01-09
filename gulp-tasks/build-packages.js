@@ -23,16 +23,12 @@ const clean = gulp.series(
     )
 );
 clean.displayName = 'build-packages:clean';
-// GULP: Is this exposed to the CLI?
-gulp.task(clean);
 
 const build = gulp.parallel(
   buildNodePackages,
   buildBrowserPackages
 );
 build.displayName = 'build-packages:build';
-// GULP: Is this exposed to the CLI?
-gulp.task(build);
 
 const buildPackages = gulp.series(
   clean,

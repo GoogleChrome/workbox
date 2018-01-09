@@ -74,8 +74,6 @@ const generateFromTags = async () => {
   }
 };
 generateFromTags.displayName = 'publish-github:generate-from-tags';
-// GULP: Is this exposed to the CLI?
-gulp.task(generateFromTags);
 
 const publishGithub = gulp.series(
   generateFromTags,

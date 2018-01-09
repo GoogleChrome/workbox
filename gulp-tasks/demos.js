@@ -28,8 +28,6 @@ const groupBuildFiles = async () => {
   }
 };
 groupBuildFiles.displayName = 'demos:groupBuildFiles';
-// GULP: Is this exposed to the CLI?
-gulp.task(groupBuildFiles);
 
 const firebaseServeLocal = () => {
   process.env.WORKBOX_DEMO_ENV = 'local';
@@ -38,8 +36,6 @@ const firebaseServeLocal = () => {
   ]);
 };
 firebaseServeLocal.displayName = 'demos:firebaseServe:local';
-// GULP: Is this exposed to the CLI?
-gulp.task(firebaseServeLocal);
 
 const firebaseServeCdn = () => {
   process.env.WORKBOX_DEMO_ENV = 'cdn';
@@ -48,33 +44,27 @@ const firebaseServeCdn = () => {
   ]);
 };
 firebaseServeCdn.displayName = 'demos:firebaseServe:cdn';
-// GULP: Is this exposed to the CLI?
-gulp.task(firebaseServeCdn);
 
 const serveLocal = gulp.series(
   groupBuildFiles,
   firebaseServeLocal,
 );
 serveLocal.displayName = 'demos:serve:local';
-// GULP: Is this exposed to the CLI?
-gulp.task(serveLocal);
 
+// GULP: This is never used?
 const serveCdn = gulp.series(
   groupBuildFiles,
   firebaseServeCdn,
 );
 serveCdn.displayName = 'demos:serve:cdn';
-// GULP: Is this exposed to the CLI?
-gulp.task(serveCdn);
 
 // GULP: Why is series used here?
+// GULP: This is never used?
 const demosCdn = gulp.series(
   // GULP: Why is this serveLocal?
   serveLocal,
 );
 demosCdn.displayName = 'demos:cdn';
-// GULP: Is this exposed to the CLI?
-gulp.task(demosCdn);
 
 // GULP: Why is series used here?
 const demos = gulp.series(

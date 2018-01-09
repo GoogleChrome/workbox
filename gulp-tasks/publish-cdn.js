@@ -65,8 +65,6 @@ const generateFromTags = async () => {
   }
 };
 generateFromTags.displayName = 'publish-cdn:generate-from-tags';
-// GULP: Is this exposed to the CLI?
-gulp.task(generateFromTags);
 
 // GULP: Why is this using gulp.series?
 const publishCdn = gulp.series(

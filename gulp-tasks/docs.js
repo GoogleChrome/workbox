@@ -13,8 +13,6 @@ const clean = () => {
   return fs.remove(DOCS_DIRECTORY);
 };
 clean.displayName = 'docs:clean';
-// GULP: Is this exposed to the CLI?
-gulp.task(clean);
 
 const getJSDocFunc = (debug) => {
   return () => {
@@ -68,21 +66,18 @@ You can view a friendlier UI by running
   };
 };
 
+// GULP: This is never used?
 const buildDebug = gulp.series(
   clean,
   getJSDocFunc(true),
 );
 buildDebug.displayName = 'docs:build-debug';
-// GULP: Is this exposed to the CLI?
-gulp.task(buildDebug);
 
 const build = gulp.series(
   clean,
   getJSDocFunc(false),
 );
 build.displayName = 'docs:build';
-// GULP: Is this exposed to the CLI?
-gulp.task(build);
 
 const watch = () => {
   const watcher = gulp.watch('packages/**/*',
@@ -92,8 +87,6 @@ const watch = () => {
   });
 };
 watch.displayName = 'docs:watch';
-// GULP: Is this exposed to the CLI?
-gulp.task(watch);
 
 const serve = () => {
   browserSync.init({
@@ -103,8 +96,6 @@ const serve = () => {
   });
 };
 serve.displayName = 'docs:serve';
-// GULP: Is this exposed to the CLI?
-gulp.task(serve);
 
 const docs = gulp.series(
   build,

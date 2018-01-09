@@ -18,8 +18,6 @@ const publishClean = () => {
     constants.GENERATED_RELEASE_FILES_DIRNAME));
 };
 publishClean.displayName = 'publish:clean';
-// GULP: Is this exposed to the CLI?
-gulp.task(publishClean);
 
 const publishCdnGit = gulp.series(
   publishClean,
@@ -27,8 +25,6 @@ const publishCdnGit = gulp.series(
   publishCdn,
 );
 publishCdnGit.displayName = 'publish:cdn+git';
-// GULP: Is this exposed to the CLI?
-gulp.task(publishCdnGit);
 
 const publishSignin = async () => {
   try {
@@ -45,8 +41,6 @@ const publishSignin = async () => {
   }
 };
 publishSignin.displayName = 'publish:signin';
-// GULP: Is this exposed to the CLI?
-gulp.task(publishSignin);
 
 const publish = gulp.series(
   publishSignin,

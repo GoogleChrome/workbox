@@ -57,29 +57,21 @@ const testNodeProd = gulp.series(
   () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.prod),
 );
 testNodeProd.displayName = 'test-node:prod';
-// GULP: Is this exposed to the CLI?
-gulp.task(testNodeProd);
 
 const testNodeDev = gulp.series(
   () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.dev),
 );
 testNodeDev.displayName = 'test-node:dev';
-// GULP: Is this exposed to the CLI?
-gulp.task(testNodeDev);
 
 const testNodeAll = gulp.series(
   () => runNodeTestsWithEnv('all', constants.BUILD_TYPES.prod),
 );
 testNodeAll.displayName = 'test-node:all';
-// GULP: Is this exposed to the CLI?
-gulp.task(testNodeAll);
 
 const testNodeClean = () => {
   return fse.remove(path.join(__dirname, '..', '.nyc_output'));
 };
 testNodeClean.displayName = 'test-node:clean';
-// GULP: Is this exposed to the CLI?
-gulp.task(testNodeClean);
 
 const testNodeCoverage = () => {
   const runOptions = ['run', 'coverage-report'];
@@ -93,8 +85,6 @@ const testNodeCoverage = () => {
   return spawn(getNpmCmd(), runOptions);
 };
 testNodeCoverage.displayName = 'test-node:coverage';
-// GULP: Is this exposed to the CLI?
-gulp.task(testNodeCoverage);
 
 const testNode = gulp.series(
   testNodeClean,

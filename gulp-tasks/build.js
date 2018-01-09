@@ -16,8 +16,6 @@ const lernaBootstrap = () => {
   );
 };
 lernaBootstrap.displayName = 'lerna-bootstrap';
-// GULP: Is this exposed to the CLI?
-gulp.task(lernaBootstrap);
 
 // This is needed for workbox-build but is also used by the rollup-helper
 // to add CDN details to workbox-sw.
@@ -42,8 +40,6 @@ const updateCdnDetails = async () => {
   });
 };
 updateCdnDetails.displayName = 'build:update-cdn-details';
-// GULP: Is this exposed to the CLI?
-gulp.task(updateCdnDetails);
 
 const build = gulp.series(
   updateCdnDetails,
