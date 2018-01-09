@@ -39,7 +39,7 @@
   },
   "main": "build/index.js",
   "scripts": {
-    "build": "gulp build:update-cdn-details && gulp build-packages --package workbox-build",
+    "build": "gulp build-packages --package workbox-build",
     "version": "npm run build",
     "prepare": "npm run build"
   },
