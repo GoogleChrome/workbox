@@ -1,6 +1,6 @@
 {
   "name": "workbox-range-requests",
-  "version": "3.0.0-alpha.3",
+  "version": "3.0.0-alpha.4",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This library creates a new Response, given a source Response and a Range header value.",
@@ -29,6 +29,6 @@
   "main": "build/workbox-range-requests.prod.js",
   "module": "index.mjs",
   "dependencies": {
-    "workbox-core": "^3.0.0-alpha.3"
+    "workbox-core": "^3.0.0-alpha.4"
   }
 }
