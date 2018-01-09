@@ -1,4 +1,3 @@
-const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
 const glob = require('glob');
 const seleniumAssistant = require('selenium-assistant');
@@ -85,7 +84,7 @@ const runIntegrationForBrowser = async (browser) => {
   }
 };
 
-gulp.task('test-integration', async () => {
+const testIntegration = async () => {
   if (process.platform === 'win32') {
     logHelper.warn(`Skipping integration tests on Windows.`);
     return;
@@ -121,4 +120,7 @@ gulp.task('test-integration', async () => {
 
   // TODO Saucelabs browsers for latest - 1 browser
   // TODO Saucelabs browsers for latest - 2 browser
-});
+};
+testIntegration.displayName = 'test-integration';
+
+module.exports = testIntegration;

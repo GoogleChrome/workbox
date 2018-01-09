@@ -7,7 +7,7 @@ const constants = require('./utils/constants');
 const getNpmCmd = require('./utils/get-npm-cmd');
 const spawn = require('./utils/spawn-promise-wrapper');
 
-gulp.task('demos:groupBuildFiles', async () => {
+const groupBuildFiles = async () => {
   const pattern = path.posix.join(
     __dirname, '..', 'packages', '**',
     constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
@@ -26,36 +26,60 @@ gulp.task('demos:groupBuildFiles', async () => {
       path.join(localBuildPath, path.basename(fileToInclude)),
     );
   }
-});
+};
+groupBuildFiles.displayName = 'demos:groupBuildFiles';
+// GULP: Is this exposed to the CLI?
+gulp.task(groupBuildFiles);
 
-gulp.task('demos:firebaseServe:local', () => {
+const firebaseServeLocal = () => {
   process.env.WORKBOX_DEMO_ENV = 'local';
   return spawn(getNpmCmd(), [
     'run', 'demos-serve',
   ]);
-});
+};
+firebaseServeLocal.displayName = 'demos:firebaseServe:local';
+// GULP: Is this exposed to the CLI?
+gulp.task(firebaseServeLocal);
 
-gulp.task('demos:firebaseServe:cdn', () => {
+const firebaseServeCdn = () => {
   process.env.WORKBOX_DEMO_ENV = 'cdn';
   return spawn(getNpmCmd(), [
     'run', 'demos-serve',
   ]);
-});
+};
+firebaseServeCdn.displayName = 'demos:firebaseServe:cdn';
+// GULP: Is this exposed to the CLI?
+gulp.task(firebaseServeCdn);
 
-gulp.task('demos:serve:local', gulp.series([
-  'demos:groupBuildFiles',
-  'demos:firebaseServe:local',
-]));
+const serveLocal = gulp.series(
+  groupBuildFiles,
+  firebaseServeLocal,
+);
+serveLocal.displayName = 'demos:serve:local';
+// GULP: Is this exposed to the CLI?
+gulp.task(serveLocal);
 
-gulp.task('demos:serve:cdn', gulp.series([
-  'demos:groupBuildFiles',
-  'demos:firebaseServe:cdn',
-]));
+const serveCdn = gulp.series(
+  groupBuildFiles,
+  firebaseServeCdn,
+);
+serveCdn.displayName = 'demos:serve:cdn';
+// GULP: Is this exposed to the CLI?
+gulp.task(serveCdn);
 
-gulp.task('demos:cdn', gulp.series([
-  'demos:serve:local',
-]));
+// GULP: Why is series used here?
+const demosCdn = gulp.series(
+  // GULP: Why is this serveLocal?
+  serveLocal,
+);
+demosCdn.displayName = 'demos:cdn';
+// GULP: Is this exposed to the CLI?
+gulp.task(demosCdn);
 
-gulp.task('demos', gulp.series([
-  'demos:serve:local',
-]));
+// GULP: Why is series used here?
+const demos = gulp.series(
+  serveLocal
+);
+demos.displayName = 'demos';
+
+module.exports = demos;

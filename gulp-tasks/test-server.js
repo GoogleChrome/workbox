@@ -23,12 +23,18 @@ const startServer = () => {
   return testServer.start();
 };
 
-gulp.task('test-server:prod', () => {
+const testServerProd = () => {
   process.env.NODE_ENV = constants.BUILD_TYPES.prod;
   startServer();
-});
+};
+// GULP: Is this exposed to the CLI?
+// GULP: This should probably be a CLI flag like `--prod`
+gulp.task('test-server:prod', testServerProd);
 
-gulp.task('test-server', () => {
+const testServerDev = () => {
   process.env.NODE_ENV = constants.BUILD_TYPES.dev;
   startServer();
-});
+};
+testServerDev.displayName = 'test-server';
+
+module.exports = testServerDev;

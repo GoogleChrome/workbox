@@ -2,23 +2,35 @@ const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs-extra');
 
+const test = require('./test');
+const publishCdn = require('./publish-cdn');
+const publishDemos = require('./publish-demos');
+const publishLerna = require('./publish-lerna');
+const publishGithub = require('./publish-github');
+
 const getNpmCmd = require('./utils/get-npm-cmd');
 const spawn = require('./utils/spawn-promise-wrapper');
 const logHelper = require('../infra/utils/log-helper');
 const constants = require('./utils/constants');
 
-gulp.task('publish:clean', () => {
+const publishClean = () => {
   return fs.remove(path.join(__dirname, '..',
     constants.GENERATED_RELEASE_FILES_DIRNAME));
-});
+};
+publishClean.displayName = 'publish:clean';
+// GULP: Is this exposed to the CLI?
+gulp.task(publishClean);
 
-gulp.task('publish:cdn+git', gulp.series([
-  'publish:clean',
-  'publish-github',
-  'publish-cdn',
-]));
+const publishCdnGit = gulp.series(
+  publishClean,
+  publishGithub,
+  publishCdn,
+);
+publishCdnGit.displayName = 'publish:cdn+git';
+// GULP: Is this exposed to the CLI?
+gulp.task(publishCdnGit);
 
-gulp.task('publish:signin', async () => {
+const publishSignin = async () => {
   try {
     await spawn(getNpmCmd(), [
       'whoami',
@@ -31,12 +43,18 @@ gulp.task('publish:signin', async () => {
     logHelper.warn('');
     process.exit(1);
   }
-});
+};
+publishSignin.displayName = 'publish:signin';
+// GULP: Is this exposed to the CLI?
+gulp.task(publishSignin);
 
-gulp.task('publish', gulp.series([
-  'publish:signin',
-  'test',
-  'publish-lerna',
-  'publish:cdn+git',
-  'publish-demos',
-]));
+const publish = gulp.series(
+  publishSignin,
+  test,
+  publishLerna,
+  publishCdnGit,
+  publishDemos,
+);
+publish.displayName = 'publish';
+
+module.exports = publish;

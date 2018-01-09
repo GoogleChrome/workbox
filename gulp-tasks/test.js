@@ -1,8 +1,16 @@
 const gulp = require('gulp');
 
-gulp.task('test', gulp.series(
-  'build',
-  'test-node',
-  'test-integration',
-  'lint',
-));
+const lint = require('./lint');
+const build = require('./build');
+const testNode = require('./test-node');
+const testIntegration = require('./test-integration');
+
+const test = gulp.series(
+  build,
+  testNode,
+  testIntegration,
+  lint,
+);
+test.displayName = 'test';
+
+module.exports = test;
