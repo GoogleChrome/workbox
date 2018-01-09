@@ -105,7 +105,9 @@ gulp.task('test-integration', async () => {
       switch (localBrowser.getId()) {
         case 'chrome':
         case 'firefox':
-          await runIntegrationForBrowser(localBrowser);
+          if (localBrowser.getReleaseName() !== 'unstable') {
+            await runIntegrationForBrowser(localBrowser);
+          }
           break;
         default:
           logHelper.warn(oneLine`
