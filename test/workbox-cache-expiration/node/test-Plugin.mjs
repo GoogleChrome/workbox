@@ -113,12 +113,14 @@ describe(`[workbox-cache-expiration] Plugin`, function() {
       expect(plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse})).to.eql(null);
       expect(expirationManager.expireEntries.callCount).to.equal(1);
     });
-  });
 
-  describe(`cachedResponseWillBeUsed()`, function() {
-    it(`should expose a cacheDidUpdate() method`, function() {
+    it(`should handle a null cachedResponse`, function() {
       const plugin = new Plugin({maxAgeSeconds: 1});
-      expect(plugin).to.respondTo('cacheDidUpdate');
+
+      const expirationManager = plugin._getCacheExpiration('test-cache');
+      sandbox.spy(expirationManager, 'expireEntries');
+
+      expect(plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse: null})).to.eql(null);
     });
   });
 
@@ -141,6 +143,11 @@ describe(`[workbox-cache-expiration] Plugin`, function() {
   });
 
   describe(`cacheDidUpdate()`, function() {
+    it(`should expose a cacheDidUpdate() method`, function() {
+      const plugin = new Plugin({maxAgeSeconds: 1});
+      expect(plugin).to.respondTo('cacheDidUpdate');
+    });
+
     it(`should update timestamps and expire entries`, async function() {
       const cacheName = 'test-cache';
       const url = new URL('/test', self.location).toString();

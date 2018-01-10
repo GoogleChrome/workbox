@@ -118,6 +118,10 @@ class Plugin {
    * @private
    */
   cachedResponseWillBeUsed({cacheName, cachedResponse}) {
+    if (!cachedResponse) {
+      return null;
+    }
+
     let isFresh = this._isResponseDateFresh(cachedResponse);
 
     // Expire entries to ensure that even if the expiration date has
