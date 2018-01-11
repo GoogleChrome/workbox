@@ -15,8 +15,10 @@ workbox.routing.registerRoute(
   /.*\.(?:png|jpg|jpeg|svg|gif)/g,
   workbox.strategies.cacheFirst({
     cacheName: 'image-cache',
-    cacheExpiration: {
-      maxEntries: 3,
-    },
+    plugins: [
+      new workbox.expiration.Plugin({
+        maxEntries: 3
+      })
+    ]
   })
 );
