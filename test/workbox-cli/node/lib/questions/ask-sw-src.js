@@ -1,8 +1,6 @@
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 
-const errors = require('../../../../../packages/workbox-cli/src/lib/errors');
-
 const MODULE_PATH = '../../../../../packages/workbox-cli/src/lib/questions/ask-sw-src';
 // This is the hardcoded name of the question that's passed to inquirer.
 // It's used as the key to read the response from the answer.
