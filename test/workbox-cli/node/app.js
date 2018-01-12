@@ -63,16 +63,6 @@ describe(`[workbox-cli] app.js`, function() {
       }
     });
 
-    it(`should reject when the command parameter is wizard and --swSrc is a non-existent file`, async function() {
-      const swSrc = '/does/not/exist';
-      try {
-        await app('wizard', {swSrc});
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.have.string(swSrc);
-      }
-    });
-
     for (const command of WORKBOX_BUILD_COMMANDS) {
       it(`should reject when the command parameter is ${command} and options does not exist`, async function() {
         const loggerErrorStub = sinon.stub();

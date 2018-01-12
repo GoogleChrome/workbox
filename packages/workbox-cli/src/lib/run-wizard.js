@@ -18,24 +18,18 @@ const fse = require('fs-extra');
 const ol = require('common-tags').oneLine;
 
 const askQuestions = require('./questions/ask-questions');
-const assertValidSwSrc = require('./assert-valid-sw-src');
 const logger = require('./logger');
 
 module.exports = async (options = {}) => {
-  if (options.swSrc) {
-    await assertValidSwSrc(options.swSrc);
-  }
-
-  const {configLocation, config} = await askQuestions();
-  // If swSrc is undefined, it won't be included in the final JSON output.
-  config.swSrc = options.swSrc;
+  const {configLocation, config} = await askQuestions(options);
 
   const contents = `module.exports = ${JSON.stringify(config, null, 2)};`;
   await fse.writeFile(configLocation, contents);
 
+  const command = options.injectManifest ? 'injectManifest' : 'generateSW';
   logger.log(`To build your service worker, run
 
-  workbox ${config.swSrc ? 'injectManifest' : 'generateSW'} ${configLocation}
+  workbox ${command} ${configLocation}
 
 as part of a build process. See https://goo.gl/fdTQBf for details.`);
 
