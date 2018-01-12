@@ -41,7 +41,7 @@ async function getWorkboxSWImport(compilation, config) {
       // disk, rather than in the in-memory filesystem. (webpack-dev-server will
       // still be able to serve the runtime libraries from disk.)
       const wbDir = await copyWorkboxLibraries(compilation.options.output.path);
-      const workboxSWImport = compilation.options.output.publicPath || ''
+      const workboxSWImport = (compilation.options.output.publicPath || '')
         + wbDir + '/workbox-sw.js';
       // We need to set this extra option in the config to ensure that the
       // workbox library loader knows where to get the local libraries from.
