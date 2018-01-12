@@ -162,7 +162,6 @@ describe(`expiration.Plugin`, function() {
 
     // Caching is done async from returning a response, so we may need
     // to wait before the cache has be cleaned up.
-    console.log(`Waiting for cache cleanup`);
     let waitForCleanup = true;
     while (waitForCleanup) {
       cachedRequests = await getCachedRequests(keys[0]);
