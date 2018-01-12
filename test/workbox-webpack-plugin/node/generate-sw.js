@@ -375,9 +375,9 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: '/testing/entry2-9700b0cb6282320b628f.js',
+            url: publicPath + 'entry2-9700b0cb6282320b628f.js',
           }, {
-            url: '/testing/entry1-ebb39acd9a53861a2a43.js',
+            url: publicPath + 'entry1-ebb39acd9a53861a2a43.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
