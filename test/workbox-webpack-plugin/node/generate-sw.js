@@ -18,6 +18,46 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
   const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
   const WORKBOX_SW_FILE_NAME = getModuleUrl('workbox-sw');
   const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');
+  const ALL_WORKBOX_FILES = [
+    'workbox-background-sync.dev.js',
+    'workbox-background-sync.dev.js.map',
+    'workbox-background-sync.prod.js',
+    'workbox-background-sync.prod.js.map',
+    'workbox-broadcast-cache-update.dev.js',
+    'workbox-broadcast-cache-update.dev.js.map',
+    'workbox-broadcast-cache-update.prod.js',
+    'workbox-broadcast-cache-update.prod.js.map',
+    'workbox-cache-expiration.dev.js',
+    'workbox-cache-expiration.dev.js.map',
+    'workbox-cache-expiration.prod.js',
+    'workbox-cache-expiration.prod.js.map',
+    'workbox-cacheable-response.dev.js',
+    'workbox-cacheable-response.dev.js.map',
+    'workbox-cacheable-response.prod.js',
+    'workbox-cacheable-response.prod.js.map',
+    'workbox-core.dev.js',
+    'workbox-core.dev.js.map',
+    'workbox-core.prod.js',
+    'workbox-core.prod.js.map',
+    'workbox-google-analytics.dev.js',
+    'workbox-google-analytics.dev.js.map',
+    'workbox-google-analytics.prod.js',
+    'workbox-google-analytics.prod.js.map',
+    'workbox-precaching.dev.js',
+    'workbox-precaching.dev.js.map',
+    'workbox-precaching.prod.js',
+    'workbox-precaching.prod.js.map',
+    'workbox-routing.dev.js',
+    'workbox-routing.dev.js.map',
+    'workbox-routing.prod.js',
+    'workbox-routing.prod.js.map',
+    'workbox-strategies.dev.js',
+    'workbox-strategies.dev.js.map',
+    'workbox-strategies.prod.js',
+    'workbox-strategies.prod.js.map',
+    'workbox-sw.js',
+    'workbox-sw.js.map',
+  ];
 
   describe(`[workbox-webpack-plugin] runtime errors`, function() {
     it(`should throw when importWorkboxFrom is set to an invalid chunk name`, function(done) {
@@ -194,46 +234,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           const modulePathPrefix = path.dirname(libraryFiles[0]);
 
           const basenames = libraryFiles.map((file) => path.basename(file));
-          expect(basenames).to.eql([
-            'workbox-background-sync.dev.js',
-            'workbox-background-sync.dev.js.map',
-            'workbox-background-sync.prod.js',
-            'workbox-background-sync.prod.js.map',
-            'workbox-broadcast-cache-update.dev.js',
-            'workbox-broadcast-cache-update.dev.js.map',
-            'workbox-broadcast-cache-update.prod.js',
-            'workbox-broadcast-cache-update.prod.js.map',
-            'workbox-cache-expiration.dev.js',
-            'workbox-cache-expiration.dev.js.map',
-            'workbox-cache-expiration.prod.js',
-            'workbox-cache-expiration.prod.js.map',
-            'workbox-cacheable-response.dev.js',
-            'workbox-cacheable-response.dev.js.map',
-            'workbox-cacheable-response.prod.js',
-            'workbox-cacheable-response.prod.js.map',
-            'workbox-core.dev.js',
-            'workbox-core.dev.js.map',
-            'workbox-core.prod.js',
-            'workbox-core.prod.js.map',
-            'workbox-google-analytics.dev.js',
-            'workbox-google-analytics.dev.js.map',
-            'workbox-google-analytics.prod.js',
-            'workbox-google-analytics.prod.js.map',
-            'workbox-precaching.dev.js',
-            'workbox-precaching.dev.js.map',
-            'workbox-precaching.prod.js',
-            'workbox-precaching.prod.js.map',
-            'workbox-routing.dev.js',
-            'workbox-routing.dev.js.map',
-            'workbox-routing.prod.js',
-            'workbox-routing.prod.js.map',
-            'workbox-strategies.dev.js',
-            'workbox-strategies.dev.js.map',
-            'workbox-strategies.prod.js',
-            'workbox-strategies.prod.js.map',
-            'workbox-sw.js',
-            'workbox-sw.js.map',
-          ]);
+          expect(basenames).to.eql(ALL_WORKBOX_FILES);
 
 
           // The correct importScripts path should use the versioned name of the
@@ -308,46 +309,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           const modulePathPrefix = path.dirname(libraryFiles[0]);
 
           const basenames = libraryFiles.map((file) => path.basename(file));
-          expect(basenames).to.eql([
-            'workbox-background-sync.dev.js',
-            'workbox-background-sync.dev.js.map',
-            'workbox-background-sync.prod.js',
-            'workbox-background-sync.prod.js.map',
-            'workbox-broadcast-cache-update.dev.js',
-            'workbox-broadcast-cache-update.dev.js.map',
-            'workbox-broadcast-cache-update.prod.js',
-            'workbox-broadcast-cache-update.prod.js.map',
-            'workbox-cache-expiration.dev.js',
-            'workbox-cache-expiration.dev.js.map',
-            'workbox-cache-expiration.prod.js',
-            'workbox-cache-expiration.prod.js.map',
-            'workbox-cacheable-response.dev.js',
-            'workbox-cacheable-response.dev.js.map',
-            'workbox-cacheable-response.prod.js',
-            'workbox-cacheable-response.prod.js.map',
-            'workbox-core.dev.js',
-            'workbox-core.dev.js.map',
-            'workbox-core.prod.js',
-            'workbox-core.prod.js.map',
-            'workbox-google-analytics.dev.js',
-            'workbox-google-analytics.dev.js.map',
-            'workbox-google-analytics.prod.js',
-            'workbox-google-analytics.prod.js.map',
-            'workbox-precaching.dev.js',
-            'workbox-precaching.dev.js.map',
-            'workbox-precaching.prod.js',
-            'workbox-precaching.prod.js.map',
-            'workbox-routing.dev.js',
-            'workbox-routing.dev.js.map',
-            'workbox-routing.prod.js',
-            'workbox-routing.prod.js.map',
-            'workbox-strategies.dev.js',
-            'workbox-strategies.dev.js.map',
-            'workbox-strategies.prod.js',
-            'workbox-strategies.prod.js.map',
-            'workbox-sw.js',
-            'workbox-sw.js.map',
-          ]);
+          expect(basenames).to.eql(ALL_WORKBOX_FILES);
 
 
           // The correct importScripts path should use the versioned name of the
