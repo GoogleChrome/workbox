@@ -72,7 +72,7 @@ describe(`[workbox-cli] app.js`, function() {
           },
         });
 
-      try {
+        try {
           await appWithStub(command, INVALID_CONFIG_FILE);
           throw new Error('Unexpected success.');
         } catch (error) {

@@ -33,4 +33,7 @@ module.exports = {
   'glob-directory-invalid': ol`The path you entered isn't a valid directory.`,
   'invalid-config-location': ol`Please enter a valid path to use for the saved
     configuration file.`,
+  'sw-src-missing-injection-point': ol`That is not a valid source service worker
+    file. Please try again with a file containing
+    'workbox.precaching.precacheAndRoute([])'.`,
 };

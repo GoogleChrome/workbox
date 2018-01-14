@@ -18,9 +18,13 @@ module.exports = `Usage:
 $ workbox <command> [options]
 
 Commands:
-  wizard
+  wizard [--injectManifest]
     Runs the configuration wizard, which will generate a
     config file based on answers to questions.
+    By default the configuration will be tailored to the
+    generateSW use case.
+    If --injectManifest is provided, the wizard will ask
+    questions needed for the injectManifest use case.
 
   generateSW [<path/to/config.js>]
     Creates a new service worker file based on the options
@@ -49,6 +53,7 @@ Config file:
 
 Examples:
   $ workbox wizard
+  $ workbox wizard --injectManifest
   $ workbox generateSW
   $ workbox injectManifest configs/workbox-dev-config.js
   $ workbox copyLibraries build/

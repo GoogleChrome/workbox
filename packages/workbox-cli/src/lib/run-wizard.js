@@ -20,15 +20,16 @@ const ol = require('common-tags').oneLine;
 const askQuestions = require('./questions/ask-questions');
 const logger = require('./logger');
 
-module.exports = async () => {
-  const {configLocation, config} = await askQuestions();
+module.exports = async (options = {}) => {
+  const {configLocation, config} = await askQuestions(options);
 
   const contents = `module.exports = ${JSON.stringify(config, null, 2)};`;
   await fse.writeFile(configLocation, contents);
 
+  const command = options.injectManifest ? 'injectManifest' : 'generateSW';
   logger.log(`To build your service worker, run
 
-  workbox generateSW ${configLocation}
+  workbox ${command} ${configLocation}
 
 as part of a build process. See https://goo.gl/fdTQBf for details.`);
 

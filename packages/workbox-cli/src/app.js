@@ -30,7 +30,7 @@ module.exports = async (command, options) => {
 
   switch (command) {
     case 'wizard': {
-      await runWizard();
+      await runWizard(options);
       break;
     }
 
