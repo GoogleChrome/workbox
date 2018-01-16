@@ -26,7 +26,7 @@ describe(`[workbox-build] lib/cdn-utils.js`, function() {
   });
 
   it(`getModuleUrl(moduleName, buildType) should return the expected URL`, function() {
-    const moduleName = 'workbox-sw';
+    const moduleName = 'workbox-routing';
     const buildType = 'prod';
 
     const url = cdnUtils.getModuleUrl(moduleName, buildType);
