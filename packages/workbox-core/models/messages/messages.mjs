@@ -52,12 +52,19 @@ export default {
   },
 
   'incorrect-class': ({expectedClass, paramName, moduleName, className,
-                       funcName}) => {
-    if (!expectedClass || !paramName || !moduleName || !funcName) {
+                       funcName, isReturnValueProblem}) => {
+    if (!expectedClass || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'incorrect-class' error.`);
     }
+
+    if (isReturnValueProblem) {
+      return `The return value from ` +
+        `'${moduleName}.${className ? (className + '.') : ''}${funcName}()' ` +
+        `must be an instance of class ${expectedClass.name}.`;
+    }
+
     return `The parameter '${paramName}' passed into ` +
-      `'${moduleName}.${className ? (className + '.') : ''}.${funcName}()' ` +
+      `'${moduleName}.${className ? (className + '.') : ''}${funcName}()' ` +
       `must be an instance of class ${expectedClass.name}.`;
   },
 

@@ -15,6 +15,7 @@
 */
 
 import {logger} from './logger.mjs';
+import {assert} from './assert.mjs';
 import {getFriendlyURL} from '../_private/getFriendlyURL.mjs';
 import pluginEvents from '../models/pluginEvents.mjs';
 import pluginUtils from '../utils/pluginUtils.mjs';
@@ -130,6 +131,20 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
           request,
           response: responseToCache,
         });
+
+      if (process.env.NODE_ENV !== 'production') {
+        if (responseToCache) {
+          assert.isInstance(responseToCache, Response, {
+            moduleName: 'Plugin',
+            funcName: pluginEvents.CACHE_WILL_UPDATE,
+            isReturnValueProblem: true,
+          });
+        }
+      }
+
+      if (!responseToCache) {
+        break;
+      }
     }
   }
 
@@ -137,7 +152,6 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
     if (process.env.NODE_ENV !== 'production') {
       if (!responseToCache.ok) {
         if (responseToCache.status === 0) {
-          // TODO: Add a link to guide on third-party request handling
           logger.warn(`The response for '${request.url}' is an opaque ` +
             `response. The caching strategy that you're using will not ` +
             `cache opaque responses by default.`);
@@ -151,7 +165,7 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
     responseToCache = responseToCache.ok ? responseToCache : null;
   }
 
-  return responseToCache;
+  return responseToCache ? responseToCache : null;
 };
 
 const exports = {
