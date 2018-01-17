@@ -13,6 +13,7 @@ const constants = require('./constants');
 const logHelper = require('../../infra/utils/log-helper');
 const pkgPathToName = require('./pkg-path-to-name');
 const rollupHelper = require('./rollup-helper');
+const uglifyNameCacheHelper = require('./uglify-name-cache-helper');
 
 /*
  * To test sourcemaps are valid and working, use:
@@ -96,6 +97,8 @@ const externalAndPure = (importPath) => {
 };
 
 module.exports = (packagePath, buildType) => {
+  uglifyNameCacheHelper.load();
+
   const packageName = pkgPathToName(packagePath);
   const moduleBrowserPath = path.join(packagePath, `browser.mjs`);
 
@@ -191,5 +194,6 @@ module.exports = (packagePath, buildType) => {
   .pipe(rename(outputFilename))
   // This writes the sourcemap alongside the final build file
   .pipe(sourcemaps.write('.'))
-  .pipe(gulp.dest(outputDirectory));
+  .pipe(gulp.dest(outputDirectory))
+  .on('end', uglifyNameCacheHelper.save);
 };

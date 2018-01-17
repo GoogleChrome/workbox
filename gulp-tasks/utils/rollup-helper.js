@@ -11,6 +11,10 @@ module.exports = {
   // plugin set up and used to ensure as consist set of tests
   // as possible.
   getDefaultPlugins: (buildType) => {
+    if (!global.uglifyNameCache) {
+      throw Error('global.uglifyNameCache needs to be initialized.');
+    }
+
     const plugins = [];
 
     const babelConfig = {
@@ -47,16 +51,18 @@ module.exports = {
             // private variable and names that start with a single underscore
             // followed by a letter. This restriction to avoid mangling
             // unintentional fields in our or other libraries code.
-            regex: /^_[A-Za-z]/,
+            regex: /(?:^_[A-Za-z])|(?:babelHelpers)|(?:asyncToGenerator)/,
             // If you are getting an error due to a property mangle
             // set this flag to true and the property will be changed
             // from '_foo' to '$_foo$' to help diagnose the problem.
             debug: false,
           },
         },
+        nameCache: global.uglifyNameCache,
       };
       plugins.push(
-        uglifyPlugin(uglifyOptions, minify),
+        replace({babelHelpers: 'self.babelHelpers'}),
+        uglifyPlugin(uglifyOptions, minify)
       );
     }
 
