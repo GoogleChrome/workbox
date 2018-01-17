@@ -65,6 +65,13 @@ module.exports = async (destDirectory) => {
     const defaultPathToLibrary = require.resolve(`${library}/${pkg.main}`);
 
     for (const buildType of BUILD_TYPES) {
+      // Special-case logic for workbox-sw, which only has a single build type.
+      // This prevents a race condition with two identical copy promises;
+      // see https://github.com/GoogleChrome/workbox/issues/1180
+      if (library === 'workbox-sw' && buildType === BUILD_TYPES[0]) {
+        continue;
+      }
+
       const srcPath = useBuildType(defaultPathToLibrary, buildType);
       const destPath = path.join(workboxDirectoryPath,
         path.basename(srcPath));
