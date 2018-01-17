@@ -140,17 +140,12 @@ const createArchive = async (tagName, fileExtension, format, options) => {
   const groupedBuildFiles =
     path.join(getBuildPath(tagName), GROUPED_BUILD_FILES);
 
-  await new Promise((resolve, reject) => {
-    const writeStream = fs.createWriteStream(outputFilePath);
-    writeStream.on('close', () => resolve(outputFilePath));
-
-    const archive = archiver(format, options);
-    archive.on('error', reject);
-    archive.pipe(writeStream);
-    // Adds the directory contents to the zip.
-    archive.directory(groupedBuildFiles, false);
-    archive.finalize();
-  });
+  const writeStream = fs.createWriteStream(outputFilePath);
+  const archive = archiver(format, options);
+  archive.pipe(writeStream);
+  // Adds the directory contents to the zip.
+  archive.directory(groupedBuildFiles, false);
+  await archive.finalize();
 
   return outputFilePath;
 };

@@ -17,6 +17,12 @@ describe(`[workbox-build] lib/cdn-utils.js`, function() {
     ).to.throw(errors['no-module-name']);
   });
 
+  it(`getModuleUrl('workbox-sw', 'dev') should throw`, function() {
+    expect(
+      () => cdnUtils.getModuleUrl('workbox-sw', 'dev')
+    ).to.throw('workbox-sw');
+  });
+
   it(`getModuleUrl(moduleName) should return the expected URL`, function() {
     const moduleName = 'workbox-sw';
     const url = cdnUtils.getModuleUrl(moduleName);
@@ -25,8 +31,8 @@ describe(`[workbox-build] lib/cdn-utils.js`, function() {
     expect(url.includes(moduleName)).to.be.true;
   });
 
-  it(`getModuleUrl(moduleName, buildType) should return the expected URL`, function() {
-    const moduleName = 'workbox-sw';
+  it(`getModuleUrl('workbox-routing', buildType) should return the expected URL`, function() {
+    const moduleName = 'workbox-routing';
     const buildType = 'prod';
 
     const url = cdnUtils.getModuleUrl(moduleName, buildType);
