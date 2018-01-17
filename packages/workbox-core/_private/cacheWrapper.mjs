@@ -15,6 +15,7 @@
 */
 
 import {logger} from './logger.mjs';
+import {assert} from './assert.mjs';
 import {getFriendlyURL} from '../_private/getFriendlyURL.mjs';
 import pluginEvents from '../models/pluginEvents.mjs';
 import pluginUtils from '../utils/pluginUtils.mjs';
@@ -122,17 +123,26 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
 const _isResponseSafeToCache = async (request, response, plugins) => {
   let responseToCache = response;
   let pluginsUsed = false;
-  let canBeCached = false;
   for (let plugin of plugins) {
     if (pluginEvents.CACHE_WILL_UPDATE in plugin) {
       pluginsUsed = true;
-      canBeCached = await plugin[pluginEvents.CACHE_WILL_UPDATE]
+      responseToCache = await plugin[pluginEvents.CACHE_WILL_UPDATE]
         .call(plugin, {
           request,
           response: responseToCache,
         });
 
-      if (!canBeCached) {
+      if (process.env.NODE_ENV !== 'production') {
+        if (responseToCache) {
+          assert.isInstance(responseToCache, Response, {
+            moduleName: 'Plugin',
+            funcName: pluginEvents.CACHE_WILL_UPDATE,
+            isReturnValueProblem: true,
+          });
+        }
+      }
+
+      if (!responseToCache) {
         break;
       }
     }
@@ -152,10 +162,10 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
         }
       }
     }
-    canBeCached = responseToCache.ok ? true : false;
+    responseToCache = responseToCache.ok ? responseToCache : null;
   }
 
-  return canBeCached ? responseToCache : null;
+  return responseToCache ? responseToCache : null;
 };
 
 const exports = {

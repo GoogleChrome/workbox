@@ -47,7 +47,10 @@ class Plugin {
    * @private
    */
   cacheWillUpdate({response}) {
-    return this._cacheableResponse.isResponseCacheable(response);
+    if (this._cacheableResponse.isResponseCacheable(response)) {
+      return response;
+    }
+    return null;
   }
 }
 
