@@ -107,4 +107,6 @@ module.exports = {
     with runtimeCaching:`,
   'invalid-network-timeout-seconds': ol`When using networkTimeoutSeconds, you
     must set the handler to 'networkFirst'.`,
+  'no-module-name': ol`You must provide a moduleName parameter when calling
+    getModuleUrl().`,
 };

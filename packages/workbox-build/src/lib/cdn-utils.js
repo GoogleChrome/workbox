@@ -13,7 +13,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+
+const assert = require('assert');
+
 const cdn = require('../cdn-details.json');
+const errors = require('./errors');
 
 const getCDNOrigin = () => {
   return `${cdn.origin}/${cdn.bucketName}/${cdn.releasesDir}`;
@@ -24,6 +28,8 @@ const getVersionedCDNUrl = () => {
 };
 
 const getModuleUrl = (moduleName, buildType) => {
+  assert(moduleName, errors['no-module-name']);
+
   if (buildType) {
     const pkgJson = require(`${moduleName}/package.json`);
     if (buildType === 'dev' && pkgJson.workbox.prodOnly) {
