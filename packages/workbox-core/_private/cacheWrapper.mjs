@@ -122,14 +122,19 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
 const _isResponseSafeToCache = async (request, response, plugins) => {
   let responseToCache = response;
   let pluginsUsed = false;
+  let canBeCached = false;
   for (let plugin of plugins) {
     if (pluginEvents.CACHE_WILL_UPDATE in plugin) {
       pluginsUsed = true;
-      responseToCache = await plugin[pluginEvents.CACHE_WILL_UPDATE]
+      canBeCached = await plugin[pluginEvents.CACHE_WILL_UPDATE]
         .call(plugin, {
           request,
           response: responseToCache,
         });
+
+      if (!canBeCached) {
+        break;
+      }
     }
   }
 
@@ -137,7 +142,6 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
     if (process.env.NODE_ENV !== 'production') {
       if (!responseToCache.ok) {
         if (responseToCache.status === 0) {
-          // TODO: Add a link to guide on third-party request handling
           logger.warn(`The response for '${request.url}' is an opaque ` +
             `response. The caching strategy that you're using will not ` +
             `cache opaque responses by default.`);
@@ -148,10 +152,10 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
         }
       }
     }
-    responseToCache = responseToCache.ok ? responseToCache : null;
+    canBeCached = responseToCache.ok ? true : false;
   }
 
-  return responseToCache;
+  return canBeCached ? responseToCache : null;
 };
 
 const exports = {

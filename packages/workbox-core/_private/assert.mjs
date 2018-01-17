@@ -61,10 +61,11 @@ const isType = (object, expectedType,
 };
 
 const isInstance = (object, expectedClass,
-                    {moduleName, className, funcName, paramName}) => {
+                    {moduleName, className, funcName,
+                      paramName, isReturnValueProblem}) => {
   if (!(object instanceof expectedClass)) {
     throw new WorkboxError('incorrect-class', {paramName, expectedClass,
-      moduleName, className, funcName});
+      moduleName, className, funcName, isReturnValueProblem});
   }
 };
 

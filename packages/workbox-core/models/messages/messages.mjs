@@ -57,7 +57,7 @@ export default {
       throw new Error(`Unexpected input to 'incorrect-class' error.`);
     }
     return `The parameter '${paramName}' passed into ` +
-      `'${moduleName}.${className ? (className + '.') : ''}.${funcName}()' ` +
+      `'${moduleName}.${className ? (className + '.') : ''}${funcName}()' ` +
       `must be an instance of class ${expectedClass.name}.`;
   },
 
