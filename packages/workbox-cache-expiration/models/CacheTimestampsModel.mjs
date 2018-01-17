@@ -38,7 +38,7 @@ class CacheTimestampsModel {
     this._cacheName = cacheName;
     this._storeName = cacheName;
 
-    this._db = new DBWrapper('workbox-cache-expiration', 1, {
+    this._db = new DBWrapper(this._cacheName, 1, {
       onupgradeneeded: (evt) => evt.target.result
           .createObjectStore(this._storeName, {keyPath: URL_KEY})
           .createIndex(TIMESTAMP_KEY, TIMESTAMP_KEY, {unique: false}),

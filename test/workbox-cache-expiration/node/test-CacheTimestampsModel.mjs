@@ -28,7 +28,7 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
       await model.setTimestamp('/', timestamp);
 
       const timestamps =
-          await new DBWrapper(`workbox-cache-expiration`, 1).getAll('test-cache');
+          await new DBWrapper('test-cache', 1).getAll('test-cache');
 
       expect(timestamps).to.deep.equal([{
         url: 'https://example.com/',
