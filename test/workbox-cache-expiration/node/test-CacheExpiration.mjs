@@ -219,6 +219,40 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
 
       expect(expirationManager.expireEntries.callCount).to.equal(3);
     });
+
+    it(`should expire multiple expired entries`, async function() {
+      const clock = sandbox.useFakeTimers({
+        toFake: ['Date'],
+      });
+
+      const cacheName = 'expire-and-delete';
+      const maxAgeSeconds = 10;
+      const currentTimestamp = Date.now();
+      const cache = await caches.open(cacheName);
+
+      const timestampModel = new CacheTimestampsModel(cacheName);
+      await timestampModel.setTimestamp('/1', currentTimestamp);
+      await timestampModel.setTimestamp('/2', currentTimestamp);
+      cache.put('https://example.com/1', new Response('Injected request'));
+      cache.put('https://example.com/2', new Response('Injected request'));
+
+      const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
+
+      await expirationManager.expireEntries();
+
+      clock.tick(maxAgeSeconds * 1000 + 1);
+
+      // The plus one is to ensure it expires
+      await expirationManager.expireEntries();
+
+      // Check IDB is empty
+      const timestamps = await timestampModel.getAllTimestamps();
+      expect(timestamps).to.deep.equal([]);
+
+      // Check cache is empty
+      const cachedRequests = await cache.keys();
+      expect(cachedRequests).to.deep.equal([]);
+    });
   });
 
   describe(`updateTimestamp()`, function() {
