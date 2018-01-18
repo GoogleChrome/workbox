@@ -38,8 +38,11 @@ import './_version.mjs';
  *
  * @private
  */
-const getTextFromBlob = (blob) => {
-  return new Promise((resolve, reject) => {
+const getTextFromBlob = async (blob) => {
+  // This usage of `return await new Promise...` is intentional to work around
+  // a bug in the transpiled/minified output.
+  // See https://github.com/GoogleChrome/workbox/issues/1186
+  return await new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onloadend = () => resolve(reader.result);
     reader.onerror = () => reject(reader.error);
