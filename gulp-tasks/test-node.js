@@ -71,7 +71,6 @@ gulp.task('test-node:clean', () => {
 
 gulp.task('test-node:coverage', () => {
   const runOptions = ['run', 'coverage-report'];
-  console.log(global.packageOrStar);
   if (global.packageOrStar !== '*') {
     runOptions.push('--');
     runOptions.push('--include');
@@ -79,7 +78,6 @@ gulp.task('test-node:coverage', () => {
       path.posix.join('packages', global.packageOrStar, '**', '*')
     );
   }
-  console.log(runOptions);
   return spawn(getNpmCmd(), runOptions);
 });
 
