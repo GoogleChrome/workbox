@@ -38,11 +38,30 @@ class CacheTimestampsModel {
     this._cacheName = cacheName;
     this._storeName = cacheName;
 
-    this._db = new DBWrapper('workbox-cache-expiration', 1, {
-      onupgradeneeded: (evt) => evt.target.result
-          .createObjectStore(this._storeName, {keyPath: URL_KEY})
-          .createIndex(TIMESTAMP_KEY, TIMESTAMP_KEY, {unique: false}),
+    this._db = new DBWrapper(this._cacheName, 2, {
+      onupgradeneeded: (evt) => this._handleUpgrade(evt),
     });
+  }
+
+  /**
+   * Should perform an upgrade of indexedDB.
+   *
+   * @param {Event} evt
+   *
+   * @private
+   */
+  _handleUpgrade(evt) {
+    const db = evt.target.result;
+    if (evt.oldVersion < 2) {
+      // Remove old databases.
+      if (db.objectStoreNames.contains('workbox-cache-expiration')) {
+        db.deleteObjectStore('workbox-cache-expiration');
+      }
+    }
+
+    db
+    .createObjectStore(this._storeName, {keyPath: URL_KEY})
+    .createIndex(TIMESTAMP_KEY, TIMESTAMP_KEY, {unique: false});
   }
 
   /**

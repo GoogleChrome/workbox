@@ -1,15 +1,20 @@
 import {expect} from 'chai';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
+import * as sinon from 'sinon';
 
 import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/models/CacheTimestampsModel.mjs';
 import {DBWrapper} from '../../../packages/workbox-core/_private/DBWrapper.mjs';
 
 describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
+  const sandbox = sinon.sandbox.create();
+
   beforeEach(function() {
+    sandbox.restore();
     iDBReset();
   });
 
   after(function() {
+    sandbox.restore();
     iDBReset();
   });
 
@@ -28,7 +33,7 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
       await model.setTimestamp('/', timestamp);
 
       const timestamps =
-          await new DBWrapper(`workbox-cache-expiration`, 1).getAll('test-cache');
+          await new DBWrapper('test-cache', 2).getAll('test-cache');
 
       expect(timestamps).to.deep.equal([{
         url: 'https://example.com/',
@@ -110,6 +115,62 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
           timestamp: timestamp,
         },
       ]);
+    });
+  });
+
+  describe('_handleUpgrade', function() {
+    it('should handle upgrade 0 (Doesnt exist)', () => {
+      const objectStoreNames = [];
+      const fakeDB = {
+        objectStoreNames: {
+          contains: (name) => objectStoreNames.indexOf(name) !== -1,
+        },
+        createIndex: sandbox.spy(),
+        deleteObjectStore: sandbox.spy(),
+        createObjectStore: sandbox.stub().callsFake(() => fakeDB),
+      };
+
+      const DB_NAME = 'test';
+      const model = new CacheTimestampsModel(DB_NAME);
+      model._handleUpgrade({
+        target: {
+          result: fakeDB,
+        },
+      });
+
+      // Assert only create called
+      expect(fakeDB.createObjectStore.callCount).to.equal(1);
+      expect(fakeDB.createObjectStore.args[0][0]).to.equal(DB_NAME);
+
+     expect(fakeDB.deleteObjectStore.callCount).to.equal(0);
+    });
+
+    it('should handle upgrade 1 > 2', () => {
+      const objectStoreNames = ['workbox-cache-expiration'];
+      const fakeDB = {
+        objectStoreNames: {
+          contains: (name) => objectStoreNames.indexOf(name) !== -1,
+        },
+        createIndex: sandbox.spy(),
+        deleteObjectStore: sandbox.spy(),
+        createObjectStore: sandbox.stub().callsFake(() => fakeDB),
+      };
+
+      const DB_NAME = 'test';
+      const model = new CacheTimestampsModel(DB_NAME);
+      model._handleUpgrade({
+        oldVersion: 1,
+        target: {
+          result: fakeDB,
+        },
+      });
+
+      // Assert only create called
+      expect(fakeDB.createObjectStore.callCount).to.equal(1);
+      expect(fakeDB.createObjectStore.args[0][0]).to.equal(DB_NAME);
+
+     expect(fakeDB.deleteObjectStore.callCount).to.equal(1);
+     expect(fakeDB.deleteObjectStore.args[0][0]).to.equal('workbox-cache-expiration');
     });
   });
 });
