@@ -127,7 +127,7 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
         },
         createIndex: sandbox.spy(),
         deleteObjectStore: sandbox.spy(),
-        createObjectStore: sandbox.stub().callsFake(() => fakeDB)
+        createObjectStore: sandbox.stub().callsFake(() => fakeDB),
       };
 
       const DB_NAME = 'test';

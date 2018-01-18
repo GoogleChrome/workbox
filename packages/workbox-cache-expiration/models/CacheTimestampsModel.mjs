@@ -43,6 +43,13 @@ class CacheTimestampsModel {
     });
   }
 
+  /**
+   * Should perform an upgrade of indexedDB.
+   *
+   * @param {Event} evt
+   *
+   * @private
+   */
   _handleUpgrade(evt) {
     const db = evt.target.result;
     if (evt.oldVersion < 2) {
