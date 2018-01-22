@@ -64,7 +64,7 @@ describe(`broadcastCacheUpdate.Plugin`, function() {
     const updateMessageEventData = await webdriver.executeAsyncScript((cb) => {
       // updateReceivedPromise is defined on the test page, and resolves when
       // the initial Broadcast Channel API Message event fires.
-      updateReceivedPromise.then(cb);
+      window.updateReceivedPromise.then(cb);
     });
 
     expect(updateMessageEventData).to.deep.equal({

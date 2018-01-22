@@ -6,9 +6,9 @@
     <script>
       window.__test = {};
 
-      const updateReceivedPromise = new Promise((resolve) => {
+      window.updateReceivedPromise = new Promise((resolve) => {
         const updatesChannel = new BroadcastChannel('bcu-integration-test');
-        updatesChannel.addEventListener('message', async (event) => {
+        updatesChannel.addEventListener('message', (event) => {
           resolve(event.data);
         });
       });
