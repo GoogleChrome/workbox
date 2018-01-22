@@ -97,8 +97,6 @@ const externalAndPure = (importPath) => {
 };
 
 module.exports = (packagePath, buildType) => {
-  uglifyNameCacheHelper.load();
-
   const packageName = pkgPathToName(packagePath);
   const moduleBrowserPath = path.join(packagePath, `browser.mjs`);
 

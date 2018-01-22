@@ -1,7 +1,15 @@
-const gulp = require('gulp');
-const lernaWrapper = require('./utils/lerna-wrapper');
 const fs = require('fs-extra');
+const gulp = require('gulp');
 const path = require('path');
+
+const constants = require('./utils/constants');
+const lernaWrapper = require('./utils/lerna-wrapper');
+
+// While not strictly necessary, it's good practice to start with a fresh
+// set of name mappings to feed into the UglifyJS plugin.
+gulp.task('clean-uglify-name-cache', async () => {
+  await fs.remove(constants.UGLIFY_NAME_CACHE_FILE);
+});
 
 gulp.task('lerna-bootstrap', () => {
   // If it's a star, build all projects (I.e. bootstrap everything.)
@@ -40,6 +48,7 @@ gulp.task('build:update-cdn-details', async function() {
 });
 
 gulp.task('build', gulp.series(
+  'clean-uglify-name-cache',
   'build:update-cdn-details',
   'lerna-bootstrap',
 ));

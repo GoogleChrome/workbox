@@ -5,15 +5,14 @@ const uglifyPlugin = require('rollup-plugin-uglify');
 
 const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');
+const uglifyNameCacheHelper = require('./uglify-name-cache-helper');
 
 module.exports = {
   // Every use of rollup should have minification and the replace
   // plugin set up and used to ensure as consist set of tests
   // as possible.
   getDefaultPlugins: (buildType) => {
-    if (!global.uglifyNameCache) {
-      throw Error('global.uglifyNameCache needs to be initialized.');
-    }
+    const uglifyNameCache = uglifyNameCacheHelper.load();
 
     const plugins = [];
 
@@ -58,7 +57,7 @@ module.exports = {
             debug: false,
           },
         },
-        nameCache: global.uglifyNameCache,
+        nameCache: uglifyNameCache,
       };
       plugins.push(
         replace({babelHelpers: 'self.babelHelpers'}),
