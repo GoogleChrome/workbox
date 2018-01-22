@@ -587,10 +587,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[{
           cacheName: firstRuntimeCachingOptions.cacheName,
-          plugins: ['workbox.expiration.Plugin'],
+          plugins: [{}],
         }], [{
           cacheName: secondRuntimeCachingOptions.cacheName,
-          plugins: ['workbox.cacheableResponse.Plugin'],
+          plugins: [{}],
         }]],
         cacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
         cacheExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
