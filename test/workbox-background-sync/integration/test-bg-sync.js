@@ -62,7 +62,7 @@ describe(`[workbox-background-sync] Load and use Background Sync`, function() {
 
     let waiting = true;
     let shouldPass = false;
-    
+
     setTimeout(() => {
       waiting = false;
     }, 5000);
