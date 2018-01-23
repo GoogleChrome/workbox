@@ -4,8 +4,8 @@
 // and reused throughout all of the other modules, avoiding code duplication.
 // See https://github.com/GoogleChrome/workbox/pull/1048#issuecomment-344698046
 // for further background.
-self.b = {
-  a: (fn) => {
+self.babelHelpers = {
+  asyncToGenerator: (fn) => {
     return () => {
       var gen = fn.apply(this, arguments);
       return new Promise((resolve, reject) => {
