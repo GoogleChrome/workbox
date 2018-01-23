@@ -1,0 +1,17 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <p>You need to manually register sw.js</p>
+    <script>
+      window.__test = {};
+
+      window.updateReceivedPromise = new Promise((resolve) => {
+        const updatesChannel = new BroadcastChannel('bcu-integration-test');
+        updatesChannel.addEventListener('message', (event) => {
+          resolve(event.data);
+        });
+      });
+    </script>
+  </body>
+  </html>

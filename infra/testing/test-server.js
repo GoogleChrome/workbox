@@ -40,6 +40,13 @@ app.get(/\/__WORKBOX\/buildFile\/(workbox-[A-z|-]*)(\.(?:dev|prod)\.(.*))*/, (re
   res.sendFile(path.join(libraryPath, libraryFileName));
 });
 
+let eTagCounter = 0;
+app.get('/test/uniqueETag', (req, res) => {
+  res.header('Cache-Control', 'no-cache');
+  res.header('ETag', eTagCounter++);
+  res.send('ignored');
+});
+
 let server = null;
 let requestCounts = {};
 module.exports = {

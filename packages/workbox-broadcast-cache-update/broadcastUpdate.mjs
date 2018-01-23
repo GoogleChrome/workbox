@@ -59,26 +59,26 @@ const broadcastUpdate = (channel, cacheName, url, source) => {
     assert.isInstance(channel, BroadcastChannel, {
       moduleName: 'workbox-broadcast-cache-update',
       className: '~',
-      funcName: 'broadcaseUpdate',
+      funcName: 'broadcastUpdate',
       paramName: 'channel',
     });
     assert.isType(cacheName, 'string', {
       moduleName: 'workbox-broadcast-cache-update',
       className: '~',
-      funcName: 'broadcaseUpdate',
+      funcName: 'broadcastUpdate',
       paramName: 'cacheName',
-    });
-    assert.isType(source, 'string', {
-      moduleName: 'workbox-broadcast-cache-update',
-      className: '~',
-      funcName: 'broadcaseUpdate',
-      paramName: 'source',
     });
     assert.isType(url, 'string', {
       moduleName: 'workbox-broadcast-cache-update',
       className: '~',
-      funcName: 'broadcaseUpdate',
+      funcName: 'broadcastUpdate',
       paramName: 'url',
+    });
+    assert.isType(source, 'string', {
+      moduleName: 'workbox-broadcast-cache-update',
+      className: '~',
+      funcName: 'broadcastUpdate',
+      paramName: 'source',
     });
   }
 
