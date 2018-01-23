@@ -4,12 +4,12 @@
 // and reused throughout all of the other modules, avoiding code duplication.
 // See https://github.com/GoogleChrome/workbox/pull/1048#issuecomment-344698046
 // for further background.
-self.babelHelpers = {
-  asyncToGenerator: function(fn) {
-    return function() {
+self.b = {
+  a: (fn) => {
+    return () => {
       var gen = fn.apply(this, arguments);
-      return new Promise(function(resolve, reject) {
-        function step(key, arg) {
+      return new Promise((resolve, reject) => {
+        const step = (key, arg) => {
           try {
             var info = gen[key](arg);
             var value = info.value;
@@ -21,9 +21,9 @@ self.babelHelpers = {
           if (info.done) {
             resolve(value);
           } else {
-            return Promise.resolve(value).then(function(value) {
+            return Promise.resolve(value).then((value) => {
               step('next', value);
-            }, function(err) {
+            }, (err) => {
               step('throw', err);
             });
           }
