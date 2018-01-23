@@ -13,6 +13,7 @@
  limitations under the License.
 */
 
+import {logger} from 'workbox-core/_private/logger.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {QueueStore} from './models/QueueStore.mjs';
 import StorableRequest from './models/StorableRequest.mjs';
@@ -169,6 +170,10 @@ class Queue {
   _addSyncListener() {
     if ('sync' in registration) {
       self.addEventListener('sync', (event) => {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.log(`Replaying background sync queue.`);
+        }
+
         event.waitUntil(this.replayRequests());
       });
     } else {

@@ -1,0 +1,24 @@
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <ol>
+          <li>Open DevTools</li>
+          <li>Go to the Console</li>
+          <li>Click this button:<br /><button class="register-event btn btn-outline-primary">Fetch Request for BG Sync</button></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const registerEventBtn = document.querySelector('.register-event');
+
+  navigator.serviceWorker.register('/demo/workbox-background-sync/sw.js')
+  .then(() => {
+    registerEventBtn.addEventListener('click', () => {
+      fetch(`./example.txt`);
+    });
+  });
+</script>
