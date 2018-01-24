@@ -77,6 +77,6 @@ describe(`[workbox-background-sync] Load and use Background Sync`, function() {
 
     expect(err).to.not.exist;
 
-    await waitUntilRequestMade(`/test/workbox-background-sync/static/basic-example/example.txt`, 20, 200);
+    await waitUntilRequestMade(`/test/workbox-background-sync/static/basic-example/example.txt`, 20, 500);
   });
 });
