@@ -43,6 +43,23 @@ describe(`[workbox-background-sync] Load and use Background Sync`, function() {
     }
   };
 
+  const waitUntilRequestMade = (url, maxRetires, intervalInMs) => {
+    let tries = 0;
+    return new Promise((resolve, reject) => {
+      const intervalId = setInterval(() => {
+        tries++;
+        const requests = global.__workbox.server.getRequests();
+        if (requests[url] > 0) {
+          clearInterval(intervalId);
+          resolve();
+        } else if (tries > maxRetires) {
+          clearInterval(intervalId);
+          reject(`Request not made: ${url}`);
+        }
+      }, intervalInMs);
+    });
+  };
+
   it(`should load a page with service worker `, async function() {
     const testingUrl = `${testServerAddress}/test/workbox-background-sync/static/basic-example/`;
     const SW_URL = `${testingUrl}sw.js`;
@@ -60,21 +77,6 @@ describe(`[workbox-background-sync] Load and use Background Sync`, function() {
 
     expect(err).to.not.exist;
 
-    let waiting = true;
-    let shouldPass = false;
-
-    setTimeout(() => {
-      waiting = false;
-    }, 5000);
-
-    while (waiting) {
-      const requestsMade = global.__workbox.server.getRequests();
-      if (requestsMade['/test/workbox-background-sync/static/basic-example/example.txt'] > 0) {
-        waiting = false;
-        shouldPass = true;
-      }
-    }
-
-    expect(shouldPass).to.equal(true);
+    await waitUntilRequestMade(`/test/workbox-background-sync/static/basic-example/example.txt`, 20, 200);
   });
 });
