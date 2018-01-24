@@ -25,7 +25,6 @@ const serializableProperties = [
   'redirect',
   'integrity',
   'keepalive',
-  'signal',
 ];
 
 
