@@ -43,7 +43,7 @@ describe(`rangeRequests.Plugin`, function() {
   it(`should return a partial response that satisfies the request's Range: header, and an error response when it can't be satisfied`, async function() {
     const testPageUrl = `${testServerAddress}/test/workbox-range-requests/static/`;
     const swUrl = `${testPageUrl}sw.js`;
-    const dummyUrl = `${testPageUrl}dummy.txt`;
+    const dummyUrl = `${testPageUrl}this-file-doesnt-exist.txt`;
     const dummyBody = '0123456789';
 
     await webdriver.get(testPageUrl);
