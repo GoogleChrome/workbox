@@ -187,10 +187,11 @@ class Queue {
       try {
         await registration.sync.register(`${TAG_PREFIX}:${this._name}`);
       } catch (err) {
-        // This means the registration failed for some reason, possibly due to 
+        // This means the registration failed for some reason, possibly due to
         // the user disabling it.
         if (process.env.NODE_ENV !== 'production') {
-          logger.warn(`Unable to register sync event for '${this._name}'.`, err);
+          logger.warn(
+            `Unable to register sync event for '${this._name}'.`, err);
         }
       }
     }

@@ -91,7 +91,7 @@ gulp.task('test-integration', async () => {
     return;
   }
 
-  console.log(`Downloading browsers......`);
+  logHelper.log(`Downloading browsers......`);
   await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', 24);
   await seleniumAssistant.downloadLocalBrowser('chrome', 'beta', 24);
   await seleniumAssistant.downloadLocalBrowser('firefox', 'stable', 24);
