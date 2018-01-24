@@ -4,7 +4,7 @@ importScripts('/__WORKBOX/buildFile/workbox-routing');
 importScripts('/__WORKBOX/buildFile/workbox-strategies');
 
 workbox.routing.registerRoute(
-  new RegExp('file\\.txt$'),
+  new RegExp('dummy\\.txt$'),
   workbox.strategies.cacheFirst({
     cacheName: 'range-requests-integration-test',
     plugins: [

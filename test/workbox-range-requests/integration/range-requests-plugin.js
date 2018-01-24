@@ -43,30 +43,32 @@ describe(`rangeRequests.Plugin`, function() {
   it(`should return a partial response that satisfies the request's Range: header, and an error response when it can't be satisfied`, async function() {
     const testPageUrl = `${testServerAddress}/test/workbox-range-requests/static/`;
     const swUrl = `${testPageUrl}sw.js`;
-    const fileUrl = `${testPageUrl}file.txt`;
+    const dummyUrl = `${testPageUrl}dummy.txt`;
+    const dummyBody = '0123456789';
 
     await webdriver.get(testPageUrl);
     await activateSW(swUrl);
 
-    const partialResponseBody = await webdriver.executeAsyncScript((fileUrl, cb) => {
+    const partialResponseBody = await webdriver.executeAsyncScript((dummyUrl, dummyBody, cb) => {
+      const dummyResponse = new Response(dummyBody);
       // Prime the cache, and then make the Range: request.
       caches.open('range-requests-integration-test')
-        .then((cache) => cache.add(fileUrl))
-        .then(() => fetch(new Request(fileUrl, {headers: {Range: `bytes=10-20`}})))
+        .then((cache) => cache.put(dummyUrl, dummyResponse))
+        .then(() => fetch(new Request(dummyUrl, {headers: {Range: `bytes=5-6`}})))
         .then((response) => response.text())
         .then((text) => cb(text))
         .catch((error) => cb(error.message));
-    }, fileUrl);
+    }, dummyUrl, dummyBody);
 
     // The values used for the byte range are inclusive, so we'll end up with
     // 11 characters returned in the partial response.
-    expect(partialResponseBody).to.eql('01234567890');
+    expect(partialResponseBody).to.eql('56');
 
-    const errorResponse = await webdriver.executeAsyncScript((fileUrl, cb) => {
+    const errorResponse = await webdriver.executeAsyncScript((dummyUrl, cb) => {
       // These are arbitrary large values that extend past the end of the file.
-      fetch(new Request(fileUrl, {headers: {Range: `bytes=1000000000-1000000001`}}))
+      fetch(new Request(dummyUrl, {headers: {Range: `bytes=100-101`}}))
         .then((response) => cb(response));
-    }, fileUrl);
+    }, dummyUrl);
 
     // The expected error status is 416 (Range Not Satisfiable)
     expect(errorResponse.status).to.eql(416);
