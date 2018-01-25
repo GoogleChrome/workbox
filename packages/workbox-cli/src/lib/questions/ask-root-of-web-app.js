@@ -18,6 +18,7 @@ const assert = require('assert');
 const fse = require('fs-extra');
 const glob = require('glob');
 const inquirer = require('inquirer');
+const ol = require('common-tags').oneLine;
 
 const {ignoredDirectories} = require('../constants');
 const errors = require('../errors');
@@ -56,7 +57,8 @@ async function askQuestion() {
     return inquirer.prompt([{
       name,
       type: 'list',
-      message: 'What is the root of your web app?',
+      message: ol`What is the root of your web app (i.e. which directory do
+        you deploy)?`,
       choices: subdirectories.concat([
         new inquirer.Separator(),
         manualEntryChoice,
