@@ -32,6 +32,16 @@ module.exports = {
     };
     plugins.push(babel(babelConfig));
 
+    // This is a brute-force approach to minifying the babel-helpers code.
+    // self.Z is defined in our external-helper.js file and is used as the
+    // exposed interface for alias for babelHelpers.asyncToGenerator.
+    // See https://github.com/GoogleChrome/workbox/issues/1061
+    plugins.push(
+      replace({
+        'babelHelpers.asyncToGenerator': 'self.Z',
+      }),
+    );
+
     let minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {
       const uglifyOptions = {
