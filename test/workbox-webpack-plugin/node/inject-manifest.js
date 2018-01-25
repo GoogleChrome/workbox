@@ -439,9 +439,11 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
-    it(`should honor a custom swDest`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.3025354ee867087a8f380b661c2ed62f.js';
+    it(`should honor a custom swDest and publicPath`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.06492856a9a2f9af91f132aa316c5572.js';
       const SW_DEST = 'custom-sw-dest.js';
+      const publicPath = '/testing/';
+
       const outputDir = tempy.directory();
       const config = {
         entry: {
@@ -451,6 +453,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         output: {
           filename: '[name]-[chunkhash].js',
           path: outputDir,
+          publicPath,
         },
         plugins: [
           new HtmlWebpackPlugin(),
@@ -472,7 +475,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[
-              FILE_MANIFEST_NAME,
+              publicPath + FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
             suppressWarnings: [[]],
@@ -486,12 +489,12 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'df7649048255d9f47e0f80cbe11cd4ef',
-            url: 'index.html',
+            revision: '35473c67acf1c2d0caffebd0cc31cbb5',
+            url: publicPath + 'index.html',
           }, {
-            url: 'entry2-17c2a1b5c94290899539.js',
+            url: publicPath + 'entry2-9700b0cb6282320b628f.js',
           }, {
-            url: 'entry1-d7f4e7088b64a9896b23.js',
+            url: publicPath + 'entry1-ebb39acd9a53861a2a43.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 

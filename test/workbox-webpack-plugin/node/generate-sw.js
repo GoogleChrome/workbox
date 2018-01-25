@@ -322,7 +322,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
               importScripts: [[
-                FILE_MANIFEST_NAME,
+                publicPath + FILE_MANIFEST_NAME,
                 publicPath + workboxSWImport,
               ]],
               setConfig: [[{modulePathPrefix}]],

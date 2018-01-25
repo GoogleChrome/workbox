@@ -98,7 +98,8 @@ class InjectManifest {
     const manifestHash = getAssetHash(manifestAsset);
     const manifestFilename = `precache-manifest.${manifestHash}.js`;
     compilation.assets[manifestFilename] = manifestAsset;
-    this.config.importScripts.push(manifestFilename);
+    this.config.importScripts.push(
+      (compilation.options.output.publicPath || '') + manifestFilename);
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
     if (workboxSWImports) {
