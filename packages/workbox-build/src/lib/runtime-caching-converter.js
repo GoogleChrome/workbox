@@ -60,7 +60,7 @@ function getOptionsString(options = {}) {
       throw new Error(`${errors['bad-runtime-caching-config']} ${pluginName}`);
     }
 
-    plugins.push(`${pluginString}(${JSON.stringify(pluginConfig)})`);
+    plugins.push(`new ${pluginString}(${JSON.stringify(pluginConfig)})`);
   }
 
   if (networkTimeoutSeconds || cacheName || plugins.length > 0) {

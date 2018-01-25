@@ -51,31 +51,36 @@ class Plugin {
    * @param {string} input.cacheName Name of the cache the responses belong to.
    * @param {Response} [input.oldResponse] The previous cached value, if any.
    * @param {Response} input.newResponse The new value in the cache.
-   * @param {string} input.url The cache key URL.
    */
-  cacheDidUpdate({cacheName, oldResponse, newResponse, url}) {
+  cacheDidUpdate({cacheName, oldResponse, newResponse, request}) {
     if (process.env.NODE_ENV !== 'production') {
       assert.isType(cacheName, 'string', {
         moduleName: 'workbox-broadcast-cache-update',
         className: 'Plugin',
-        funcName: 'constructor',
+        funcName: 'cacheDidUpdate',
         paramName: 'cacheName',
       });
       assert.isInstance(newResponse, Response, {
         moduleName: 'workbox-broadcast-cache-update',
         className: 'Plugin',
-        funcName: 'constructor',
+        funcName: 'cacheDidUpdate',
         paramName: 'newResponse',
+      });
+      assert.isInstance(request, Request, {
+        moduleName: 'workbox-broadcast-cache-update',
+        className: 'Plugin',
+        funcName: 'cacheDidUpdate',
+        paramName: 'request',
       });
     }
 
     if (!oldResponse) {
-      // Without a two responses there is nothing to comapre
+      // Without a two responses there is nothing to compare.
       return;
     }
 
     this._broadcastUpdate
-      .notifyIfUpdated(oldResponse, newResponse, cacheName, url);
+      .notifyIfUpdated(oldResponse, newResponse, request.url, cacheName);
   }
 }
 

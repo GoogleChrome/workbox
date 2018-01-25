@@ -390,8 +390,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         [STRING_HANDLER]: [[{
           cacheName: runtimeCachingOptions.cacheName,
           plugins: runtimeCachingOptions.plugins.concat([
-            'workbox.expiration.Plugin',
-            'workbox.cacheableResponse.Plugin',
+            {}, {},
           ]),
         }]],
         cacheableResponsePlugin: [[runtimeCachingOptions.cacheableResponse]],
@@ -436,10 +435,10 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
         [STRING_HANDLER]: [[{
           cacheName: firstRuntimeCachingOptions.cacheName,
-          plugins: ['workbox.expiration.Plugin'],
+          plugins: [{}],
         }], [{
           cacheName: secondRuntimeCachingOptions.cacheName,
-          plugins: ['workbox.cacheableResponse.Plugin'],
+          plugins: [{}],
         }]],
         cacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
         cacheExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],

@@ -26,9 +26,10 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
     it(`should not throw when called with valid parameters`, function() {
       const bcuPlugin = new Plugin('channel-name');
       const cacheName = 'cache-name';
+      const request = new Request('/');
       const oldResponse = new Response();
       const newResponse = new Response();
-      bcuPlugin.cacheDidUpdate({cacheName, oldResponse, newResponse});
+      bcuPlugin.cacheDidUpdate({cacheName, oldResponse, newResponse, request});
     });
   });
 });

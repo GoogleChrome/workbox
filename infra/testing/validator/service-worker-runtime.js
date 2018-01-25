@@ -6,16 +6,29 @@ const sinon = require('sinon');
 const vm = require('vm');
 
 function setupSpiesAndContext() {
+  const cacheableResponsePluginSpy = sinon.spy();
+  class CacheableResponsePlugin {
+    constructor(...args) {
+      cacheableResponsePluginSpy(...args);
+    }
+  }
+
+  const cacheExpirationPluginSpy = sinon.spy();
+  class CacheExpirationPlugin {
+    constructor(...args) {
+      cacheExpirationPluginSpy(...args);
+    }
+  }
+
   const importScripts = sinon.spy();
+
   const workbox = {
-    // To make testing easier, return the name of the plugin.
     cacheableResponse: {
-      Plugin: sinon.stub().returns('workbox.cacheableResponse.Plugin'),
+      Plugin: CacheableResponsePlugin,
     },
     clientsClaim: sinon.spy(),
-    // To make testing easier, return the name of the plugin.
     expiration: {
-      Plugin: sinon.stub().returns('workbox.expiration.Plugin'),
+      Plugin: CacheExpirationPlugin,
     },
     precaching: {
       precacheAndRoute: sinon.spy(),
@@ -44,8 +57,8 @@ function setupSpiesAndContext() {
 
   const methodsToSpies = {
     importScripts,
-    cacheableResponsePlugin: workbox.cacheableResponse.Plugin,
-    cacheExpirationPlugin: workbox.expiration.Plugin,
+    cacheableResponsePlugin: cacheableResponsePluginSpy,
+    cacheExpirationPlugin: cacheExpirationPluginSpy,
     cacheFirst: workbox.strategies.cacheFirst,
     clientsClaim: workbox.clientsClaim,
     networkFirst: workbox.strategies.networkFirst,
