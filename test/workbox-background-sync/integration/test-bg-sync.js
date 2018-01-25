@@ -60,7 +60,7 @@ describe(`[workbox-background-sync] Load and use Background Sync`, function() {
     });
   };
 
-  it(`should load a page with service worker `, async function() {
+  it(`should load a page with service worker`, async function() {
     const testingUrl = `${testServerAddress}/test/workbox-background-sync/static/basic-example/`;
     const SW_URL = `${testingUrl}sw.js`;
 
