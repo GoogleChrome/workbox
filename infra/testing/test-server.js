@@ -50,7 +50,6 @@ app.get('/test/uniqueETag', (req, res) => {
 let uniqueValue = 0;
 app.get('/test/uniqueValue', (req, res) => {
   res.header('Cache-Control', 'no-cache');
-  res.header('ETag', uniqueValue++);
   res.send(uniqueValue.toString());
 });
 
