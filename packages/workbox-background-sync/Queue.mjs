@@ -14,6 +14,7 @@
 */
 
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
 import {QueueStore} from './models/QueueStore.mjs';
 import StorableRequest from './models/StorableRequest.mjs';
 import {TAG_PREFIX, MAX_RETENTION_TIME} from './utils/constants.mjs';
@@ -91,9 +92,7 @@ class Queue {
    */
   async addRequest(request) {
     const storableRequest = await StorableRequest.fromRequest(request.clone());
-
     await this._runCallback('requestWillEnqueue', storableRequest);
-
     await this._queueStore.addEntry(storableRequest);
     await this._registerSync();
   }
@@ -184,12 +183,17 @@ class Queue {
    * @private
    */
   async _registerSync() {
-    try {
-      await registration.sync.register(`${TAG_PREFIX}:${this._name}`);
-    } catch (err) {
-      // This means the registration failed for some reason, either because
-      // the browser doesn't supported it or because the user has disabled it.
-      // In either case, do nothing.
+    if ('sync' in registration) {
+      try {
+        await registration.sync.register(`${TAG_PREFIX}:${this._name}`);
+      } catch (err) {
+        // This means the registration failed for some reason, possibly due to
+        // the user disabling it.
+        if (process.env.NODE_ENV !== 'production') {
+          logger.warn(
+            `Unable to register sync event for '${this._name}'.`, err);
+        }
+      }
     }
   }
 
