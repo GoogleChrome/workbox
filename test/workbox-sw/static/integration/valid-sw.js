@@ -1,5 +1,6 @@
 importScripts('/__WORKBOX/buildFile/workbox-sw');
 
+// TODO: Find some way to autogenerate this list.
 const namespaces = [
   'backgroundSync',
   'broadcastUpdate',
