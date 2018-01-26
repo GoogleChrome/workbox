@@ -1,9 +1,8 @@
-const gulp = require('gulp');
-
 const getNpmCmd = require('./utils/get-npm-cmd');
+// GULP: We handle async completion on child processes
 const spawn = require('./utils/spawn-promise-wrapper');
 
-gulp.task('publish-lerna', () => {
+const publishLerna = () => {
   return spawn(getNpmCmd(), [
     'run', 'local-lerna',
     '--',
@@ -15,4 +14,7 @@ gulp.task('publish-lerna', () => {
     '--cd-version=prerelease', '--preid=alpha',
     '--npm-tag', 'alpha',
   ]);
-});
+};
+publishLerna.displayName = 'publish-lerna';
+
+module.exports = publishLerna;

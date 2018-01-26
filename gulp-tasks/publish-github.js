@@ -63,7 +63,7 @@ const filterTagsWithReleaseBundles = (allTags, taggedReleases) => {
   });
 };
 
-gulp.task('publish-github:generate-from-tags', async () => {
+const generateFromTags = async () => {
   // Get all of the tags in the repo.
   const allTags = await githubHelper.getTags();
   const taggedReleases = await githubHelper.getTaggedReleases();
@@ -79,8 +79,12 @@ gulp.task('publish-github:generate-from-tags', async () => {
     await handleGithubRelease(
       tagInfo.name, tagInfo.name, taggedReleases[tagInfo.name]);
   }
-});
+};
+generateFromTags.displayName = 'publish-github:generate-from-tags';
 
-gulp.task('publish-github', gulp.series(
-  'publish-github:generate-from-tags',
-));
+const publishGithub = gulp.series(
+  generateFromTags,
+);
+publishGithub.displayName = 'publish-github';
+
+module.exports = publishGithub;

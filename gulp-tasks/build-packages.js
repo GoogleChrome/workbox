@@ -2,6 +2,9 @@ const fse = require('fs-extra');
 const gulp = require('gulp');
 const path = require('path');
 
+const buildNodePackages = require('./build-node-packages');
+const buildBrowserPackages = require('./build-browser-packages');
+
 const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
 
@@ -11,20 +14,26 @@ const cleanPackage = (packagePath) => {
   return fse.remove(outputDirectory);
 };
 
-gulp.task('build-packages:clean', gulp.series(
+// GULP: Why is this using gulp.series?
+const clean = gulp.series(
     packageRunnner(
       'build-packages:clean',
       'all',
       cleanPackage
     )
-));
+);
+clean.displayName = 'build-packages:clean';
 
-gulp.task('build-packages:build', gulp.parallel(
-  'build-node-packages',
-  'build-browser-packages'
-));
+const build = gulp.parallel(
+  buildNodePackages,
+  buildBrowserPackages
+);
+build.displayName = 'build-packages:build';
 
-gulp.task('build-packages', gulp.series(
-  'build-packages:clean',
-  'build-packages:build'
-));
+const buildPackages = gulp.series(
+  clean,
+  build
+);
+buildPackages.displayName = 'build-packages';
+
+module.exports = buildPackages;

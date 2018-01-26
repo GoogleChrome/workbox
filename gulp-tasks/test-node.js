@@ -53,23 +53,27 @@ const runNodeTestsWithEnv = async (testGroup, nodeEnv) => {
   }
 };
 
-gulp.task('test-node:prod', gulp.series(
+const testNodeProd = gulp.series(
   () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.prod),
-));
+);
+testNodeProd.displayName = 'test-node:prod';
 
-gulp.task('test-node:dev', gulp.series(
+const testNodeDev = gulp.series(
   () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.dev),
-));
+);
+testNodeDev.displayName = 'test-node:dev';
 
-gulp.task('test-node:all', gulp.series(
+const testNodeAll = gulp.series(
   () => runNodeTestsWithEnv('all', constants.BUILD_TYPES.prod),
-));
+);
+testNodeAll.displayName = 'test-node:all';
 
-gulp.task('test-node:clean', () => {
+const testNodeClean = () => {
   return fse.remove(path.join(__dirname, '..', '.nyc_output'));
-});
+};
+testNodeClean.displayName = 'test-node:clean';
 
-gulp.task('test-node:coverage', () => {
+const testNodeCoverage = () => {
   const runOptions = ['run', 'coverage-report'];
   if (global.packageOrStar !== '*') {
     runOptions.push('--');
@@ -79,12 +83,16 @@ gulp.task('test-node:coverage', () => {
     );
   }
   return spawn(getNpmCmd(), runOptions);
-});
+};
+testNodeCoverage.displayName = 'test-node:coverage';
 
-gulp.task('test-node', gulp.series(
-  'test-node:clean',
-  'test-node:dev',
-  'test-node:prod',
-  'test-node:all',
-  'test-node:coverage',
-));
+const testNode = gulp.series(
+  testNodeClean,
+  testNodeDev,
+  testNodeProd,
+  testNodeAll,
+  testNodeCoverage,
+);
+testNode.displayName = 'test-node';
+
+module.exports = testNode;

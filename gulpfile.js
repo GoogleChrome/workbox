@@ -36,7 +36,9 @@ global.cliOptions = options;
 
 // Forward referencing means the order of gulp-task
 // requires is important
-const gulpTaskFiles = [
+const exportedTasks = [
+  // GULP: If you use function everywhere instead of strings,
+  // this order doesn't matter
   'build-node-packages',
   'build-browser-packages',
   'build-packages',
@@ -57,7 +59,7 @@ const gulpTaskFiles = [
   'demos',
 ];
 
-gulpTaskFiles.forEach((gulpTaskFile) => {
+exportedTasks.forEach((taskName) => {
   // Requiring will be enough to register the tasks with gulp.
-  require(path.join(__dirname, 'gulp-tasks', gulpTaskFile));
+  exports[taskName] = require(path.join(__dirname, 'gulp-tasks', taskName));
 });

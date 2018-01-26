@@ -7,7 +7,7 @@ const constants = require('./utils/constants');
 const getNpmCmd = require('./utils/get-npm-cmd');
 const spawn = require('./utils/spawn-promise-wrapper');
 
-gulp.task('demos:groupBuildFiles', async () => {
+const groupBuildFiles = async () => {
   const pattern = path.posix.join(
     __dirname, '..', 'packages', '**',
     constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
@@ -26,36 +26,50 @@ gulp.task('demos:groupBuildFiles', async () => {
       path.join(localBuildPath, path.basename(fileToInclude)),
     );
   }
-});
+};
+groupBuildFiles.displayName = 'demos:groupBuildFiles';
 
-gulp.task('demos:firebaseServe:local', () => {
+const firebaseServeLocal = () => {
   process.env.WORKBOX_DEMO_ENV = 'local';
   return spawn(getNpmCmd(), [
     'run', 'demos-serve',
   ]);
-});
+};
+firebaseServeLocal.displayName = 'demos:firebaseServe:local';
 
-gulp.task('demos:firebaseServe:cdn', () => {
+const firebaseServeCdn = () => {
   process.env.WORKBOX_DEMO_ENV = 'cdn';
   return spawn(getNpmCmd(), [
     'run', 'demos-serve',
   ]);
-});
+};
+firebaseServeCdn.displayName = 'demos:firebaseServe:cdn';
 
-gulp.task('demos:serve:local', gulp.series([
-  'demos:groupBuildFiles',
-  'demos:firebaseServe:local',
-]));
+const serveLocal = gulp.series(
+  groupBuildFiles,
+  firebaseServeLocal,
+);
+serveLocal.displayName = 'demos:serve:local';
 
-gulp.task('demos:serve:cdn', gulp.series([
-  'demos:groupBuildFiles',
-  'demos:firebaseServe:cdn',
-]));
+// GULP: This is never used?
+const serveCdn = gulp.series(
+  groupBuildFiles,
+  firebaseServeCdn,
+);
+serveCdn.displayName = 'demos:serve:cdn';
 
-gulp.task('demos:cdn', gulp.series([
-  'demos:serve:local',
-]));
+// GULP: Why is series used here?
+// GULP: This is never used?
+const demosCdn = gulp.series(
+  // GULP: Why is this serveLocal?
+  serveLocal,
+);
+demosCdn.displayName = 'demos:cdn';
 
-gulp.task('demos', gulp.series([
-  'demos:serve:local',
-]));
+// GULP: Why is series used here?
+const demos = gulp.series(
+  serveLocal
+);
+demos.displayName = 'demos';
+
+module.exports = demos;

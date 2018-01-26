@@ -3,7 +3,7 @@ const lernaWrapper = require('./utils/lerna-wrapper');
 const fs = require('fs-extra');
 const path = require('path');
 
-gulp.task('lerna-bootstrap', () => {
+const lernaBootstrap = () => {
   // If it's a star, build all projects (I.e. bootstrap everything.)
   if (global.packageOrStar === '*') {
     return lernaWrapper.bootstrap();
@@ -14,12 +14,13 @@ gulp.task('lerna-bootstrap', () => {
     '--include-filtered-dependencies',
     '--scope', global.packageOrStar
   );
-});
+};
+lernaBootstrap.displayName = 'lerna-bootstrap';
 
 // This is needed for workbox-build but is also used by the rollup-helper
 // to add CDN details to workbox-sw.
 // Make sure this runs **before** lerna-bootstrap.
-gulp.task('build:update-cdn-details', async function() {
+const updateCdnDetails = async () => {
   const cdnDetails = await fs.readJSON(path.join(
     __dirname, '..', 'cdn-details.json'
   ));
@@ -37,9 +38,13 @@ gulp.task('build:update-cdn-details', async function() {
   await fs.writeJson(workboxBuildPath, cdnDetails, {
     spaces: 2,
   });
-});
+};
+updateCdnDetails.displayName = 'build:update-cdn-details';
 
-gulp.task('build', gulp.series(
-  'build:update-cdn-details',
-  'lerna-bootstrap',
-));
+const build = gulp.series(
+  updateCdnDetails,
+  lernaBootstrap,
+);
+build.displayName = 'build';
+
+module.exports = build;

@@ -49,7 +49,7 @@ const handleCDNUpload = async (tagName, gitBranch) => {
   });
 };
 
-gulp.task('publish-cdn:generate-from-tags', async () => {
+const generateFromTags = async () => {
   // Get all of the tags in the repo.
   const tags = await githubHelper.getTags();
   const missingTags = await findMissingCDNTags(tags);
@@ -63,8 +63,13 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
     // using a tagged release.
     await handleCDNUpload(tagData.name, tagData.name);
   }
-});
+};
+generateFromTags.displayName = 'publish-cdn:generate-from-tags';
 
-gulp.task('publish-cdn', gulp.series(
-  'publish-cdn:generate-from-tags',
-));
+// GULP: Why is this using gulp.series?
+const publishCdn = gulp.series(
+  generateFromTags
+);
+publishCdn.displayName = 'publish-cdn';
+
+module.exports = publishCdn;

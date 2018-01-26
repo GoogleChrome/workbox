@@ -9,9 +9,10 @@ const logHelper = require('../infra/utils/log-helper');
 
 const DOCS_DIRECTORY = path.join(__dirname, '..', 'docs');
 
-gulp.task('docs:clean', () => {
+const clean = () => {
   return fs.remove(DOCS_DIRECTORY);
-});
+};
+clean.displayName = 'docs:clean';
 
 const getJSDocFunc = (debug) => {
   return () => {
@@ -65,33 +66,41 @@ You can view a friendlier UI by running
   };
 };
 
-gulp.task('docs:build-debug', gulp.series([
-  'docs:clean',
+// GULP: This is never used?
+const buildDebug = gulp.series(
+  clean,
   getJSDocFunc(true),
-]));
+);
+buildDebug.displayName = 'docs:build-debug';
 
-gulp.task('docs:build', gulp.series([
-  'docs:clean',
+const build = gulp.series(
+  clean,
   getJSDocFunc(false),
-]));
+);
+build.displayName = 'docs:build';
 
-gulp.task('docs:watch', () => {
+const watch = () => {
   const watcher = gulp.watch('packages/**/*',
     gulp.series(['docs:build']));
   watcher.on('error', (err) => {
     logHelper.error(`Docs failed to build: `, err);
   });
-});
+};
+watch.displayName = 'docs:watch';
 
-gulp.task('docs:serve', () => {
+const serve = () => {
   browserSync.init({
     server: {
         baseDir: DOCS_DIRECTORY,
     },
   });
-});
+};
+serve.displayName = 'docs:serve';
 
-gulp.task('docs', gulp.series([
-  'docs:build',
-  gulp.parallel(['docs:serve', 'docs:watch']),
-]));
+const docs = gulp.series(
+  build,
+  gulp.parallel(serve, watch),
+);
+docs.displayName = 'docs';
+
+module.exports = docs;
