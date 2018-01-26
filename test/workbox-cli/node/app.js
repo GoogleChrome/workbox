@@ -31,22 +31,13 @@ describe(`[workbox-cli] app.js`, function() {
         await app();
         throw new Error('Unexpected success.');
       } catch (error) {
-        expect(error.message).to.have.string(errors['missing-command-param']);
-      }
-    });
-
-    it(`should reject when the command parameter is missing and options is present`, async function() {
-      try {
-        await app(undefined, PROXIED_CONFIG_FILE);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.have.string(errors['missing-command-param']);
+        expect(error.message).to.have.string(errors['missing-input']);
       }
     });
 
     it(`should reject when the command is unknown and options is present`, async function() {
       try {
-        await app(UNKNOWN_COMMAND, PROXIED_CONFIG_FILE);
+        await app({input: [UNKNOWN_COMMAND, PROXIED_CONFIG_FILE]});
         throw new Error('Unexpected success.');
       } catch (error) {
         expect(error.message).to.have.string(errors['unknown-command']);
@@ -56,7 +47,7 @@ describe(`[workbox-cli] app.js`, function() {
 
     it(`should reject when the command parameter is copyLibraries and options is missing`, async function() {
       try {
-        await app('copyLibraries');
+        await app({input: ['copyLibraries']});
         throw new Error('Unexpected success.');
       } catch (error) {
         expect(error.message).to.have.string(errors['missing-dest-dir-param']);
@@ -73,7 +64,7 @@ describe(`[workbox-cli] app.js`, function() {
         });
 
         try {
-          await appWithStub(command, INVALID_CONFIG_FILE);
+          await appWithStub({input: [command, INVALID_CONFIG_FILE]});
           throw new Error('Unexpected success.');
         } catch (error) {
           expect(loggerErrorStub.calledOnce).to.be.true;
@@ -109,7 +100,7 @@ describe(`[workbox-cli] app.js`, function() {
           });
 
           try {
-            await app(command, PROXIED_CONFIG_FILE);
+            await app({input: [command, PROXIED_CONFIG_FILE]});
             throw new Error('Unexpected success.');
           } catch (error) {
             expect(error.message).to.have.string(errors['config-validation-failed']);
@@ -137,7 +128,7 @@ describe(`[workbox-cli] app.js`, function() {
         });
 
         try {
-          await app(command, PROXIED_CONFIG_FILE);
+          await app({input: [command, PROXIED_CONFIG_FILE]});
           throw new Error('Unexpected success.');
         } catch (error) {
           expect(loggerErrorStub.calledOnce).to.be.true;
@@ -169,7 +160,7 @@ describe(`[workbox-cli] app.js`, function() {
           },
         });
 
-        await app(command, PROXIED_CONFIG_FILE);
+        await app({input: [command, PROXIED_CONFIG_FILE]});
         expect(loggerLogStub.calledTwice).to.be.true;
       });
 
@@ -191,7 +182,7 @@ describe(`[workbox-cli] app.js`, function() {
           },
         });
 
-        await app(command);
+        await app({input: [command]});
         expect(loggerLogStub.calledTwice).to.be.true;
       });
     }
@@ -210,8 +201,32 @@ describe(`[workbox-cli] app.js`, function() {
         },
       });
 
-      await app('copyLibraries', PROXIED_DEST_DIR);
+      await app({input: ['copyLibraries', PROXIED_DEST_DIR]});
       expect(loggerLogStub.calledOnce).to.be.true;
+    });
+
+    it(`should call params.showHelp() when passed 'help'`, async function() {
+      const app = require(MODULE_PATH);
+
+      const params = {
+        input: ['help'],
+        showHelp: sinon.stub(),
+      };
+
+      await app(params);
+      expect(params.showHelp.calledOnce).to.be.true;
+    });
+
+    it(`should call params.showHelp() when not passed any command`, async function() {
+      const app = require(MODULE_PATH);
+
+      const params = {
+        input: [],
+        showHelp: sinon.stub(),
+      };
+
+      await app(params);
+      expect(params.showHelp.calledOnce).to.be.true;
     });
   });
 });

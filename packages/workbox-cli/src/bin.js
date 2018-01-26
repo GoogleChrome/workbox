@@ -29,11 +29,7 @@ const logger = require('./lib/logger');
   updateNotifier({pkg: params.pkg}).notify();
 
   try {
-    if (params.input.length > 0) {
-      await app(...params.input, params.flags);
-    } else {
-      params.showHelp();
-    }
+    await app(params);
   } catch (error) {
     // Show the full error and stack trace if we're run with --debug.
     if (params.flags.debug) {
