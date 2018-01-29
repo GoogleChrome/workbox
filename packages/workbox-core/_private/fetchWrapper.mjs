@@ -16,6 +16,7 @@
 
 import {WorkboxError} from './WorkboxError.mjs';
 import {logger} from './logger.mjs';
+import {assert} from './assert.mjs';
 import {getFriendlyURL} from '../_private/getFriendlyURL.mjs';
 import pluginEvents from '../models/pluginEvents.mjs';
 import pluginUtils from '../utils/pluginUtils.mjs';
@@ -58,8 +59,15 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
           request: request.clone(),
         });
 
-        // TODO: Move to assertion
-        // isInstance({request}, Request);
+        if (process.env.NODE_ENV !== 'production') {
+          if (request) {
+            assert.isInstance(request, 'Request', {
+              moduleName: 'Plugin',
+              funcName: pluginEvents.CACHED_RESPONSE_WILL_BE_USED,
+              isReturnValueProblem: true,
+            });
+          }
+        }
       }
     }
   } catch (err) {
@@ -72,8 +80,6 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   // the original request (Most likely from a `fetch` event) to be different
   // to the Request we make. Pass both to `fetchDidFail` to aid debugging.
   const pluginFilteredRequest = request.clone();
-
-  // TODO Log when the plugin filtered URL is different from the input request
 
   try {
     const response = await fetch(request, fetchOptions);
