@@ -52,7 +52,7 @@ describe(`broadcastCacheUpdate.Plugin`, function() {
     await webdriver.get(testPageUrl);
     await activateSW(swUrl);
 
-    await webdriver.executeAsyncScript((apiUrl, cb) => {
+    const err = await webdriver.executeAsyncScript((apiUrl, cb) => {
       // Call fetch(apiUrl) twice. Each response will include a different ETag,
       // which will trigger the BCU plugin's behavior.
       fetch(apiUrl)
@@ -60,6 +60,8 @@ describe(`broadcastCacheUpdate.Plugin`, function() {
         .then(() => cb())
         .catch((err) => cb(err.message));
     }, apiUrl);
+
+    expect(err).to.not.exist;
 
     const updateMessageEventData = await webdriver.executeAsyncScript((cb) => {
       // updateReceivedPromise is defined on the test page, and resolves when

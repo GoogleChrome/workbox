@@ -17,7 +17,7 @@
 const ol = require('common-tags').oneLine;
 
 module.exports = {
-  'missing-command-param': `Please provide a command.`,
+  'missing-input': `params.input value was not set properly.`,
   'missing-dest-dir-param': ol`Please provide the path to a directory in which
     the libraries will be copied.`,
   'invalid-common-js-module': ol`Please pass in a valid CommonJS module that

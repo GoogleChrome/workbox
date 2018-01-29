@@ -25,18 +25,22 @@ const logger = require('./lib/logger');
 const readConfig = require('./lib/read-config');
 const runWizard = require('./lib/run-wizard');
 
-module.exports = async (command, options) => {
-  assert(command, errors['missing-command-param']);
+module.exports = async (params = {}) => {
+  // This should not be a user-visible error, unless meow() messes something up.
+  assert(Array.isArray(params.input), errors['missing-input']);
+
+  // Default to showing the help message if there's no command provided.
+  const [command = 'help', option] = params.input;
 
   switch (command) {
     case 'wizard': {
-      await runWizard(options);
+      await runWizard(params.flags);
       break;
     }
 
     case 'copyLibraries': {
-      assert(options, errors['missing-dest-dir-param']);
-      const parentDirectory = path.resolve(process.cwd(), options);
+      assert(option, errors['missing-dest-dir-param']);
+      const parentDirectory = path.resolve(process.cwd(), option);
 
       const dirName = await workboxBuild.copyWorkboxLibraries(parentDirectory);
       const fullPath = path.join(parentDirectory, dirName);
@@ -49,7 +53,7 @@ module.exports = async (command, options) => {
     case 'injectManifest': {
       // TODO: Confirm that this works with Windows paths.
       const configPath = path.resolve(process.cwd(),
-        options || constants.defaultConfigFile);
+        option || constants.defaultConfigFile);
       let config;
       try {
         config = readConfig(configPath);
@@ -72,6 +76,11 @@ module.exports = async (command, options) => {
         logger.error(errors['workbox-build-runtime-error']);
         throw error;
       }
+      break;
+    }
+
+    case 'help': {
+      params.showHelp();
       break;
     }
 
