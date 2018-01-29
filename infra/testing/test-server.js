@@ -47,6 +47,13 @@ app.get('/test/uniqueETag', (req, res) => {
   res.send('ignored');
 });
 
+let uniqueValue = 0;
+app.get('/test/uniqueValue', (req, res) => {
+  res.header('Cache-Control', 'no-cache');
+  res.send(uniqueValue.toString());
+  uniqueValue++;
+});
+
 let server = null;
 let requestCounts = {};
 module.exports = {
