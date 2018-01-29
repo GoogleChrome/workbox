@@ -51,6 +51,7 @@ let uniqueValue = 0;
 app.get('/test/uniqueValue', (req, res) => {
   res.header('Cache-Control', 'no-cache');
   res.send(uniqueValue.toString());
+  uniqueValue++;
 });
 
 let server = null;
