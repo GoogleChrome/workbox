@@ -24,4 +24,6 @@ module.exports = {
 
   // This is used in demos directory when referencing local files
   LOCAL_BUILDS_DIR: 'local-builds',
+
+  UGLIFY_NAME_CACHE_FILE: 'uglifyNameCache.json',
 };
