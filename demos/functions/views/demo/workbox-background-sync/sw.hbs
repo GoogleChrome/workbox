@@ -1,14 +1,18 @@
 {{{WORKBOX_SW_IMPORT}}}
 
-const queue = new workbox.backgroundSync.Queue('myQueueName');
+const bgSyncPlugin = new workbox.backgroundSync.Plugin('myQueueName');
 
-self.addEventListener('fetch', (event) => {
-  const pathname = new URL(event.request.url).pathname;
-  if (pathname === '/demo/workbox-background-sync/example.txt') {
-    queue.addRequest(event.request);
-    event.respondWith(Promise.resolve(new Response(`Added to BG Sync`)));
-  }
+const networkOnlyStrategy = new workbox.strategies.NetworkOnly({
+  plugins: [bgSyncPlugin],
 });
+
+const route = new workbox.routing.RegExpRoute(
+  /^https\:\/\/jsonplaceholder.typicode.com\/posts/,
+  networkOnlyStrategy,
+  'GET'
+);
+
+workbox.routing.registerRoute(route);
 
 workbox.skipWaiting();
 workbox.clientsClaim();

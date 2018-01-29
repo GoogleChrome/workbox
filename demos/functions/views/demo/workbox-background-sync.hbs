@@ -3,22 +3,29 @@
     <div class="row">
       <div class="col-lg-8 mx-auto">
         <ol>
-          <li>Open DevTools</li>
-          <li>Go to the Console</li>
-          <li>Click this button:<br /><button class="register-event btn btn-outline-primary">Fetch Request for BG Sync</button></li>
+          <li>Open DevTools.</li>
+          <li>Go to the Network.</li>
+          <li>Click `Make Fetch request` button below.</li>
+          <li>Observe that request is successfully completed with status 200.</li>
+          <li>Disconnect from actual network(Devtools offline does not work for bgsync).</li>
+          <li>Again, click `Make Fetch request` button below.</li>
+          <li>Observe that request is abortedd due to no network.</li>
+          <li>Connect to your network and observe the Network panel in devtools.</li>
+          <li>Once the network is connected, you will see that the request is retried automatically upon the `sync event.</li>
         </ol>
+      </div>
+      <div class="col-lg-8 mx-auto">
+        <button class="fetch">Make fetch request</button>
       </div>
     </div>
   </div>
 </section>
 
 <script>
+  document.querySelector('.fetch').addEventListener('click', () => {
+    fetch('https://jsonplaceholder.typicode.com/posts');
+  })
   const registerEventBtn = document.querySelector('.register-event');
 
-  navigator.serviceWorker.register('/demo/workbox-background-sync/sw.js')
-  .then(() => {
-    registerEventBtn.addEventListener('click', () => {
-      fetch(`./example.txt`);
-    });
-  });
+  navigator.serviceWorker.register('/demo/workbox-background-sync/sw.js');
 </script>
