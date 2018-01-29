@@ -1,0 +1,16 @@
+{{{WORKBOX_SW_IMPORT}}}
+
+console.log(new workbox.rangeRequests.Plugin());
+
+workbox.routing.registerRoute(
+  new RegExp('/range-request-example'),
+  workbox.strategies.cacheOnly({
+    cacheName: 'range-requests-demo',
+    plugins: [
+      new workbox.rangeRequests.Plugin(),
+    ],
+  })
+);
+
+workbox.skipWaiting();
+workbox.clientsClaim();

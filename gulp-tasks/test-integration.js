@@ -91,6 +91,12 @@ gulp.task('test-integration', async () => {
     return;
   }
 
+  logHelper.log(`Downloading browsers......`);
+  await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', 24);
+  await seleniumAssistant.downloadLocalBrowser('chrome', 'beta', 24);
+  await seleniumAssistant.downloadLocalBrowser('firefox', 'stable', 24);
+  await seleniumAssistant.downloadLocalBrowser('firefox', 'beta', 24);
+
   const packagesToTest =
     glob.sync(`test/${global.packageOrStar}/integration`);
   if (packagesToTest.length === 0) {

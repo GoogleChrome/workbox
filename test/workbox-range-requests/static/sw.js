@@ -8,7 +8,7 @@ workbox.routing.registerRoute(
   workbox.strategies.cacheOnly({
     cacheName: 'range-requests-integration-test',
     plugins: [
-      workbox.rangeRequests.Plugin,
+      new workbox.rangeRequests.Plugin(),
     ],
   })
 );
