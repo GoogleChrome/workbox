@@ -21,7 +21,7 @@ const ora = require('ora');
 const path = require('path');
 
 const errors = require('../errors');
-const {ignoredDirectories} = require('../constants');
+const {ignoredDirectories, ignoredFileExtensions} = require('../constants');
 
 // The key used for the question/answer.
 const name = 'globPatterns';
@@ -38,7 +38,10 @@ async function getAllFileExtensions(globDirectory) {
     glob('**/*.*', {
       cwd: globDirectory,
       nodir: true,
-      ignore: ignoredDirectories.map((directory) => `**/${directory}/**`),
+      ignore: [
+        ...ignoredDirectories.map((directory) => `**/${directory}/**`),
+        ...ignoredFileExtensions.map((extension) => `**/*.${extension}`),
+      ],
     }, (error, files) => {
       if (error) {
         reject(error);
@@ -51,6 +54,7 @@ async function getAllFileExtensions(globDirectory) {
   const extensions = new Set();
   for (const file of files) {
     const extension = path.extname(file);
+    // We skip a few extensions that never make sense to precache.
     if (extension) {
       // Get rid of the leading . character.
       extensions.add(extension.replace(/^\./, ''));
