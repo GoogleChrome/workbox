@@ -40,8 +40,8 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
 
   if (!responseToCache) {
     if (process.env.NODE_ENV !== 'production') {
-      logger.debug(`Response '${getFriendlyURL(request.url)}' is not safe ` +
-        `to cache`, responseToCache);
+      logger.debug(`Response '${getFriendlyURL(request.url)}' will not be ` +
+        `cached.`, responseToCache);
     }
     return;
   }
