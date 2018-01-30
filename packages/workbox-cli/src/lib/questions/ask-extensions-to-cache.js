@@ -54,7 +54,6 @@ async function getAllFileExtensions(globDirectory) {
   const extensions = new Set();
   for (const file of files) {
     const extension = path.extname(file);
-    // We skip a few extensions that never make sense to precache.
     if (extension) {
       // Get rid of the leading . character.
       extensions.add(extension.replace(/^\./, ''));
