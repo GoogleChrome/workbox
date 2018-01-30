@@ -40,7 +40,7 @@ describe(`[workbox-cacheable-response] Plugin`, function() {
       const cacheableResponsePlugin = new Plugin({statuses: STATUSES});
       sandbox.stub(cacheableResponsePlugin._cacheableResponse, 'isResponseCacheable').callsFake(() => false);
       expect(cacheableResponsePlugin.cacheWillUpdate({
-        response: new Response()
+        response: new Response(),
       })).to.equal(null);
     });
   });
