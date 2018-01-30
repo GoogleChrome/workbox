@@ -19,4 +19,7 @@ module.exports = {
   ignoredDirectories: [
     'node_modules',
   ],
+  ignoredFileExtensions: [
+    'map',
+  ],
 };

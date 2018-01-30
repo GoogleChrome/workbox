@@ -100,5 +100,26 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function() {
     const answer = await askExtensionsToCache(GLOB_DIRECTORY);
     expect(answer).to.eql([`**/*.{${MULTIPLE_EXTENSIONS.join(',')}}`]);
   });
+
+  it(`should ignore the expected directories and extensions`, async function() {
+    const askExtensionsToCache = proxyquire(MODULE_PATH, {
+      glob: (pattern, config, callback) => {
+        expect(config.ignore).to.eql(['**/node_modules/**', '**/*.map']);
+        callback(null, MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`));
+      },
+      inquirer: {
+        prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
+      },
+      ora: () => {
+        return {
+          start: () => {
+            return {stop: () => {}};
+          },
+        };
+      },
+    });
+
+    await askExtensionsToCache(GLOB_DIRECTORY);
+  });
 });
 
