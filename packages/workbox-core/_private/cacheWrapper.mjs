@@ -38,9 +38,11 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
   let responseToCache = await _isResponseSafeToCache(
     request, response, plugins);
 
-  // TODO If response is not safe to cache - print info to log.
-
   if (!responseToCache) {
+    if (process.env.NODE_ENV !== 'production') {
+      logger.debug(`Response '${getFriendlyURL(request.url)}' will not be ` +
+        `cached.`, responseToCache);
+    }
     return;
   }
 
@@ -103,6 +105,15 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
           matchOptions,
           cachedResponse,
         });
+      if (process.env.NODE_ENV !== 'production') {
+        if (cachedResponse) {
+          assert.isInstance(cachedResponse, Response, {
+            moduleName: 'Plugin',
+            funcName: pluginEvents.CACHED_RESPONSE_WILL_BE_USED,
+            isReturnValueProblem: true,
+          });
+        }
+      }
     }
   }
   return cachedResponse;
