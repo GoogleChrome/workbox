@@ -40,8 +40,15 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
     request = new Request(request);
   }
 
-  // TODO Move to assertion
-  // assert.isInstance({request}, Request);
+  if (process.env.NODE_ENV !== 'production') {
+    assert.isInstance(request, Request, {
+      paramName: request,
+      expectedClass: 'Request',
+      moduleName: 'workbox-core',
+      className: 'fetchWrapper',
+      funcName: 'wrappedFetch',
+    });
+  }
 
   const failedFetchPlugins = pluginUtils.filter(
     plugins, pluginEvents.FETCH_DID_FAIL);
@@ -61,7 +68,7 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
 
         if (process.env.NODE_ENV !== 'production') {
           if (request) {
-            assert.isInstance(request, 'Request', {
+            assert.isInstance(request, Request, {
               moduleName: 'Plugin',
               funcName: pluginEvents.CACHED_RESPONSE_WILL_BE_USED,
               isReturnValueProblem: true,

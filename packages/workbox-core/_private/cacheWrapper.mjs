@@ -107,7 +107,7 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
         });
       if (process.env.NODE_ENV !== 'production') {
         if (cachedResponse) {
-          assert.isInstance(cachedResponse, 'Response', {
+          assert.isInstance(cachedResponse, Response, {
             moduleName: 'Plugin',
             funcName: pluginEvents.CACHED_RESPONSE_WILL_BE_USED,
             isReturnValueProblem: true,
