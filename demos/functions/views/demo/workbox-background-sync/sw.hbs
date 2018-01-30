@@ -6,13 +6,11 @@ const networkOnlyStrategy = new workbox.strategies.NetworkOnly({
   plugins: [bgSyncPlugin],
 });
 
-const route = new workbox.routing.RegExpRoute(
-  /^https\:\/\/jsonplaceholder.typicode.com\/posts/,
+workbox.routing.registerRoute(new workbox.routing.Route(
+  ({url}) => url.pathname === '/example.txt',
   networkOnlyStrategy,
   'GET'
-);
-
-workbox.routing.registerRoute(route);
+));
 
 workbox.skipWaiting();
 workbox.clientsClaim();

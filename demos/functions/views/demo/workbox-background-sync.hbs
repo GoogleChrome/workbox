@@ -3,8 +3,8 @@
     <div class="row">
       <div class="col-lg-8 mx-auto">
         <ol>
-          <li>Open DevTools.</li>
-          <li>Go to the Network.</li>
+          <li><a href='https://developers.google.com/web/tools/chrome-devtools/#open'>Open DevTools.</a></li>
+          <li>Switch to the Network panel.</li>
           <li>Click `Make Fetch request` button below.</li>
           <li>Observe that request is successfully completed with status 200.</li>
           <li>Disconnect from actual network(Devtools offline does not work for bgsync).</li>
@@ -15,7 +15,7 @@
         </ol>
       </div>
       <div class="col-lg-8 mx-auto">
-        <button class="fetch">Make fetch request</button>
+        <button class="fetch btn btn-primary">Make fetch request</button>
       </div>
     </div>
   </div>
@@ -23,7 +23,7 @@
 
 <script>
   document.querySelector('.fetch').addEventListener('click', () => {
-    fetch('https://jsonplaceholder.typicode.com/posts');
+    fetch('/example.txt');
   })
   const registerEventBtn = document.querySelector('.register-event');
 
