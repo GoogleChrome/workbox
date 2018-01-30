@@ -223,11 +223,30 @@ describe(`[workbox-routing] Router`, function() {
       expect(router._catchHandler).to.deep.eql(HANDLER);
     });
 
-    it(`should return a response from the catch handler when the matching route's handler rejects`, async function() {
+    it(`should return a response from the catch handler when the matching route's handler rejects async`, async function() {
       const router = new Router();
       const route = new Route(
         () => true,
         () => Promise.reject(),
+      );
+      router.registerRoute(route);
+      router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
+
+      // route.match() always returns false, so the Request details don't matter.
+      const event = new FetchEvent('fetch', {request: new Request(self.location)});
+      const response = await router.handleRequest(event);
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
+    });
+
+    it(`should return a response from the catch handler when the matching route's handler throws sync`, async function() {
+      const router = new Router();
+      const route = new Route(
+        () => true,
+        () => {
+          throw new Error(`Injected sync error`);
+        },
       );
       router.registerRoute(route);
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));

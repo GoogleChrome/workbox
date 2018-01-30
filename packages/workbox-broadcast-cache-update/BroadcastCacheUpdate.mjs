@@ -88,9 +88,6 @@ class BroadcastCacheUpdate {
    * This is included in the message posted on the broadcast channel.
    */
   notifyIfUpdated(firstResponse, secondResponse, url, cacheName) {
-    // TODO: Move to assert
-    // isType({cacheName}, 'string');
-
     if (!responsesAreSame(
       firstResponse, secondResponse, this._headersToCheck)) {
       broadcastUpdate(this._getChannel(), cacheName, url, this._source);

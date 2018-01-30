@@ -39,8 +39,10 @@ class Headers {
 
   // TODO: implement append() and [Symbol.iterator]()
 
-  forEach() {
-
+  forEach(cb) {
+    Object.keys(this.obj).forEach((key) => {
+      cb(this.obj[key], key);
+    });
   }
 }
 

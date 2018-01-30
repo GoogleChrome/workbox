@@ -1,6 +1,7 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 
+import {logger} from '../../../packages/workbox-core/_private/logger.mjs';
 import defaultRouter from '../../../packages/workbox-routing/_default.mjs';
 import expectError from '../../../infra/testing/expectError';
 import {NavigationRoute} from '../../../packages/workbox-routing/NavigationRoute.mjs';
@@ -234,6 +235,16 @@ describe(`[workbox-routing] Default Router`, function() {
       defaultRouter.unregisterRoute(outputRoute);
       await defaultRouter.handleRequest(event);
       expect(handlerSpy.callCount).to.equal(0);
+    });
+
+    it(`should log for express styles routes`, function() {
+      defaultRouter.registerRoute('/:example/', () => {});
+
+      if (process.env.NODE_ENV !== 'production') {
+        expect(logger.debug.callCount).to.be.gt(0);
+      } else {
+        expect(logger.debug.callCount).to.be.equal(0);
+      }
     });
   });
 

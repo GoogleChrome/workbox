@@ -104,7 +104,11 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
 
     it(`should return false when none of the headers match the response`, function() {
       const cacheableResponse = new CacheableResponse({headers: VALID_HEADERS});
-      const response = new Response('');
+      const response = new Response('', {
+        headers: {
+          key: 'value',
+        },
+      });
 
       expect(cacheableResponse.isResponseCacheable(response)).to.be.false;
     });
