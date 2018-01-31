@@ -36,7 +36,7 @@ class Plugin {
    * and expected values that a `Response` can have and be considered cacheable.
    * If multiple headers are provided, only one needs to be present.
    */
-  constructor(config = {}) {
+  constructor(config) {
     this._cacheableResponse = new CacheableResponse(config);
   }
 

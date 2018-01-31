@@ -419,4 +419,31 @@ describe(`[workbox-background-sync] Queue`, function() {
       }))).to.be.true;
     });
   });
+
+  describe(`_registerSync()`, function() {
+    it(`should support _registerSync() in supporting browsers`, async function() {
+      const queue = new Queue();
+      await queue._registerSync();
+    });
+
+    it(`should support _registerSync() in non-supporting browsers`, async function() {
+      // Delete the SyncManager interface to mock a non-supporting browser.
+      const originalSyncManager = registration.sync;
+      delete registration.sync;
+
+      const queue = new Queue();
+      await queue._registerSync();
+
+      registration.sync = originalSyncManager;
+    });
+
+    it(`should handle thrown errors in sync registration`, async function() {
+      sandbox.stub(registration.sync, 'register').callsFake(() => {
+        return Promise.reject(new Error('Injected Error'));
+      });
+
+      const queue = new Queue();
+      await queue._registerSync();
+    });
+  });
 });

@@ -1,4 +1,5 @@
 import {expect} from 'chai';
+import * as sinon from 'sinon';
 
 import expectError from '../../../infra/testing/expectError';
 import {devOnly} from '../../../infra/testing/env-it';
@@ -6,6 +7,16 @@ import {devOnly} from '../../../infra/testing/env-it';
 import {BroadcastCacheUpdate} from '../../../packages/workbox-broadcast-cache-update/BroadcastCacheUpdate.mjs';
 
 describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
+  const sandbox = sinon.sandbox.create();
+
+  beforeEach(function() {
+    sandbox.restore();
+  });
+
+  after(function() {
+    sandbox.restore();
+  });
+
   describe(`constructor()`, function() {
     devOnly.it(`should throw without any parameters`, function() {
       return expectError(() => {
@@ -57,6 +68,46 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
       // BroadcastChannel object when called twice.
       expect(broadcastChannel).to.eql(bcu._getChannel());
       expect(broadcastChannel.name).to.equal(channelName);
+    });
+  });
+
+  describe(`notifyIfUpdated()`, function() {
+    it('should broadcast update if responses are different', function() {
+      const channelName = 'channel-name';
+      const bcu = new BroadcastCacheUpdate(channelName);
+      const channel = bcu._getChannel();
+      sandbox.spy(channel, 'postMessage');
+
+      bcu.notifyIfUpdated(new Response('', {
+        headers: {
+          'content-length': 0,
+        },
+      }), new Response('', {
+        headers: {
+          'content-length': 1,
+        },
+      }), '/', 'cache-name');
+
+      expect(channel.postMessage.callCount).to.equal(1);
+    });
+
+    it('should not broadcast update if responses are the same', function() {
+      const channelName = 'channel-name';
+      const bcu = new BroadcastCacheUpdate(channelName);
+      const channel = bcu._getChannel();
+      sandbox.spy(channel, 'postMessage');
+
+      bcu.notifyIfUpdated(new Response('', {
+        headers: {
+          'content-length': 0,
+        },
+      }), new Response('', {
+        headers: {
+          'content-length': 0,
+        },
+      }), '/', 'cache-name');
+
+      expect(channel.postMessage.callCount).to.equal(0);
     });
   });
 });

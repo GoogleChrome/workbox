@@ -36,7 +36,7 @@ class Plugin {
    *
    * @private
    */
-  async cachedResponseWillBeUsed({request, cachedResponse} = {}) {
+  async cachedResponseWillBeUsed({request, cachedResponse}) {
     // Only return a sliced response if there's a Range: header in the request.
     if (request.headers.has('range')) {
       return await createPartialResponse(request, cachedResponse);
