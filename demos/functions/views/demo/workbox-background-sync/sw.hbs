@@ -2,12 +2,12 @@
 
 const bgSyncPlugin = new workbox.backgroundSync.Plugin('myQueueName');
 
-workbox.routing.registerRoute(new workbox.routing.Route(
+workbox.routing.registerRoute(
   ({url}) => url.pathname === '/demo/workbox-background-sync/example.txt',
   new workbox.strategies.NetworkOnly({
     plugins: [bgSyncPlugin],
   }),
-));
+);
 
 workbox.skipWaiting();
 workbox.clientsClaim();
