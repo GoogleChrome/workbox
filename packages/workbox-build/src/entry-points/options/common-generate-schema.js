@@ -18,18 +18,19 @@ const joi = require('joi');
 
 const baseSchema = require('./base-schema');
 const defaults = require('./defaults');
+const regExpObject = require('./reg-exp-object');
 
 // Add some constraints that apply to both generateSW and generateSWString.
 module.exports = baseSchema.keys({
   cacheId: joi.string(),
   clientsClaim: joi.boolean().default(defaults.clientsClaim),
   directoryIndex: joi.string(),
-  ignoreUrlParametersMatching: joi.array().items(joi.object().type(RegExp)),
+  ignoreUrlParametersMatching: joi.array().items(regExpObject),
   navigateFallback: joi.string().default(defaults.navigateFallback),
-  navigateFallbackBlacklist: joi.array().items(joi.object().type(RegExp)),
-  navigateFallbackWhitelist: joi.array().items(joi.object().type(RegExp)),
+  navigateFallbackBlacklist: joi.array().items(regExpObject),
+  navigateFallbackWhitelist: joi.array().items(regExpObject),
   runtimeCaching: joi.array().items(joi.object().keys({
-    urlPattern: [joi.object().type(RegExp), joi.string()],
+    urlPattern: [regExpObject, joi.string()],
     handler: [joi.func(), joi.string().valid(
       'cacheFirst',
       'cacheOnly',
