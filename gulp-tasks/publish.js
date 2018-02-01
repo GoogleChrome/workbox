@@ -12,12 +12,6 @@ gulp.task('publish:clean', () => {
     constants.GENERATED_RELEASE_FILES_DIRNAME));
 });
 
-gulp.task('publish:cdn+git', gulp.series([
-  'publish:clean',
-  'publish-github',
-  'publish-cdn',
-]));
-
 gulp.task('publish:signin', async () => {
   try {
     await spawn(getNpmCmd(), [
@@ -33,10 +27,19 @@ gulp.task('publish:signin', async () => {
   }
 });
 
+gulp.task('publish-assets', gulp.series([
+  'publish:clean',
+  'publish-github',
+  'publish-cdn',
+  'publish-demos',
+]));
+
 gulp.task('publish', gulp.series([
   'publish:signin',
   'test',
   'publish-lerna',
-  'publish:cdn+git',
-  'publish-demos',
+  () => {
+    logHelper.log(`The release was successful!\n\n`);
+    logHelper.log(logHelper.highlight(`Now run gulp publish-assets\n\n`));
+  }
 ]));
