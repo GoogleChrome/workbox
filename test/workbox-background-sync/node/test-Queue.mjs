@@ -260,13 +260,13 @@ describe(`[workbox-background-sync] Queue`, function() {
       });
 
       const queue = new Queue('foo', {
-        maxRetentionTime: 1000 / MINUTES,
+        maxRetentionTime: 1,
       });
 
       await queue.addRequest(new Request('/one'));
       await queue.addRequest(new Request('/two'));
 
-      clock.tick(2000);
+      clock.tick(1 * MINUTES + 1); // One minute and 1ms.
 
       await queue.addRequest(new Request('/three'));
       await queue.replayRequests();
