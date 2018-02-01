@@ -422,7 +422,7 @@ describe(`[workbox-background-sync] Queue`, function() {
 
   describe(`_registerSync()`, function() {
     it(`should support _registerSync() in supporting browsers`, async function() {
-      const queue = new Queue();
+      const queue = new Queue('foo');
       await queue._registerSync();
     });
 
@@ -431,7 +431,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       const originalSyncManager = registration.sync;
       delete registration.sync;
 
-      const queue = new Queue();
+      const queue = new Queue('foo');
       await queue._registerSync();
 
       registration.sync = originalSyncManager;
@@ -442,7 +442,7 @@ describe(`[workbox-background-sync] Queue`, function() {
         return Promise.reject(new Error('Injected Error'));
       });
 
-      const queue = new Queue();
+      const queue = new Queue('foo');
       await queue._registerSync();
     });
   });
