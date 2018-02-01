@@ -24,6 +24,8 @@ import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mj
 import {resetEventListeners} from
     '../../../../infra/testing/sw-env-mocks/event-listeners.js';
 
+const MINUTES = 60 * 1000;
+
 const getObjectStoreEntries = async () => {
   return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);
 };
@@ -258,7 +260,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       });
 
       const queue = new Queue('foo', {
-        maxRetentionTime: 1000,
+        maxRetentionTime: 1000 / MINUTES,
       });
 
       await queue.addRequest(new Request('/one'));

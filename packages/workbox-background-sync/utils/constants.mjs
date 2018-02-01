@@ -19,4 +19,4 @@ export const DB_NAME = 'workbox-background-sync';
 export const OBJECT_STORE_NAME = 'requests';
 export const INDEXED_PROP = 'queueName';
 export const TAG_PREFIX = 'workbox-background-sync';
-export const MAX_RETENTION_TIME = 1000 * 60 * 60 * 24 * 7; // 7 days
+export const MAX_RETENTION_TIME = 60 * 24 * 7; // 7 days in minutes
