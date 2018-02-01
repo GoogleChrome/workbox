@@ -22,9 +22,6 @@ import './_version.mjs';
 
 const queueNames = new Set();
 
-const MINUTES = 60 * 1000;
-
-
 /**
  * A class to manage storing failed requests in IndexedDB and retrying them
  * later. All parts of the storing and replaying process are observable via
