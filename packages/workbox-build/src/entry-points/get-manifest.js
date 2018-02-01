@@ -23,7 +23,8 @@ const validate = require('./options/validate');
  * manifest", along with details about the number of entries and their size,
  * based on the options you provide.
  *
- * @param {module:workbox-build.Configuration} config
+ * @param {Object} config Please refer to the
+ * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#getmanifest_mode).
  * @return {Promise<{manifestEntries: Array<ManifestEntry>,
  * count: Number, size: Number}>} A promise that resolves once the precache
  * manifest is determined. The `size` property contains the aggregate size of

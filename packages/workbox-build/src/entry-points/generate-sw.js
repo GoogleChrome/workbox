@@ -34,7 +34,8 @@ const writeServiceWorkerUsingDefaultTemplate =
  * Based on the precache manifest and the additional configuration, it writes
  * a ready-to-use service worker file to disk at `swDest`.
  *
- * @param {module:workbox-build.Configuration} config
+ * @param {Object} config Please refer to the
+ * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#full_generatesw_config).
  * @return {Promise<{count: Number, size: Number}>} A promise that resolves once
  * the service worker file has been written to `swDest`. The `size` property
  * contains the aggregate size of all the precached entries, in bytes, and the
