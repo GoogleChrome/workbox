@@ -16,13 +16,5 @@
 
 const joi = require('joi');
 
-const baseSchema = require('./base-schema');
-const defaults = require('./defaults');
-const regExpObject = require('./reg-exp-object');
-
-module.exports = baseSchema.keys({
-  globDirectory: joi.string().required(),
-  injectionPointRegexp: regExpObject.default(defaults.injectionPointRegexp),
-  swSrc: joi.string().required(),
-  swDest: joi.string().required(),
-});
+module.exports = joi.object().type(RegExp)
+  .error(() => 'the value must be a RegExp');
