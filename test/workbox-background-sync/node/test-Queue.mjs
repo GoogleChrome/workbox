@@ -16,13 +16,15 @@
 import {expect} from 'chai';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import sinon from 'sinon';
-import expectError from '../../../../infra/testing/expectError';
-import {Queue} from '../../../../packages/workbox-background-sync/Queue.mjs';
+import expectError from '../../../infra/testing/expectError';
+import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
 import {DB_NAME, OBJECT_STORE_NAME} from
-    '../../../../packages/workbox-background-sync/utils/constants.mjs';
-import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
+    '../../../packages/workbox-background-sync/utils/constants.mjs';
+import {DBWrapper} from '../../../packages/workbox-core/_private/DBWrapper.mjs';
 import {resetEventListeners} from
-    '../../../../infra/testing/sw-env-mocks/event-listeners.js';
+    '../../../infra/testing/sw-env-mocks/event-listeners.js';
+
+const MINUTES = 60 * 1000;
 
 const getObjectStoreEntries = async () => {
   return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);
@@ -258,13 +260,13 @@ describe(`[workbox-background-sync] Queue`, function() {
       });
 
       const queue = new Queue('foo', {
-        maxRetentionTime: 1000,
+        maxRetentionTime: 1,
       });
 
       await queue.addRequest(new Request('/one'));
       await queue.addRequest(new Request('/two'));
 
-      clock.tick(2000);
+      clock.tick(1 * MINUTES + 1); // One minute and 1ms.
 
       await queue.addRequest(new Request('/three'));
       await queue.replayRequests();
@@ -422,7 +424,7 @@ describe(`[workbox-background-sync] Queue`, function() {
 
   describe(`_registerSync()`, function() {
     it(`should support _registerSync() in supporting browsers`, async function() {
-      const queue = new Queue();
+      const queue = new Queue('foo');
       await queue._registerSync();
     });
 
@@ -431,7 +433,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       const originalSyncManager = registration.sync;
       delete registration.sync;
 
-      const queue = new Queue();
+      const queue = new Queue('foo');
       await queue._registerSync();
 
       registration.sync = originalSyncManager;
@@ -442,7 +444,7 @@ describe(`[workbox-background-sync] Queue`, function() {
         return Promise.reject(new Error('Injected Error'));
       });
 
-      const queue = new Queue();
+      const queue = new Queue('foo');
       await queue._registerSync();
     });
   });

@@ -14,6 +14,7 @@
 */
 
 import {expect} from 'chai';
+import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import sinon from 'sinon';
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
 import {Plugin} from '../../../packages/workbox-background-sync/Plugin.mjs';
@@ -21,12 +22,18 @@ import {Plugin} from '../../../packages/workbox-background-sync/Plugin.mjs';
 describe(`[workbox-background-sync] Plugin`, function() {
   const sandbox = sinon.sandbox.create();
 
-  beforeEach(function() {
+  const reset = () => {
+    sandbox.restore();
     Queue._queueNames.clear();
+    iDBReset();
+  };
+
+  beforeEach(async function() {
+    reset();
   });
 
-  after(function() {
-    Queue._queueNames.clear();
+  after(async function() {
+    reset();
   });
 
   describe(`constructor`, function() {

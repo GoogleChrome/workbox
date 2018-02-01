@@ -22,7 +22,6 @@ import './_version.mjs';
 
 const queueNames = new Set();
 
-
 /**
  * A class to manage storing failed requests in IndexedDB and retrying them
  * later. All parts of the storing and replaying process are observable via
@@ -54,8 +53,8 @@ class Queue {
    *     [options.callbacks.queueDidReplay]
    *     Invoked after all requests in the queue have successfully replayed.
    * @param {number} [options.maxRetentionTime = 7 days] The amount of time (in
-   *     ms) a request may be retried. After this amount of time has passed,
-   *     the request will be deleted from the queue.
+   *     minutes) a request may be retried. After this amount of time has
+   *     passed, the request will be deleted from the queue.
    */
   constructor(name, {
     callbacks = {},
@@ -112,7 +111,8 @@ class Queue {
     let storableRequest;
     while (storableRequest = await this._queueStore.getAndRemoveOldestEntry()) {
       // Ignore requests older than maxRetentionTime.
-      if (now - storableRequest.timestamp > this._maxRetentionTime) {
+      const maxRetentionTimeInMs = this._maxRetentionTime * 60 * 1000;
+      if (now - storableRequest.timestamp > maxRetentionTimeInMs) {
         continue;
       }
 
