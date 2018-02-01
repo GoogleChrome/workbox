@@ -24,7 +24,7 @@ const validate = require('./options/validate');
  * provided.
  *
  * @param {Object} config Please refer to the
- * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#full_generateswstring_config).
+ * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#generateswstring_mode).
  * @return {Promise<String>} A populated service worker template, based on the
  * other configuration options provided.
  *
