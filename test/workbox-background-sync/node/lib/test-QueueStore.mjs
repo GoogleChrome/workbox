@@ -21,7 +21,8 @@ import {Queue} from
     '../../../../packages/workbox-background-sync/Queue.mjs';
 import {QueueStore} from
     '../../../../packages/workbox-background-sync/models/QueueStore.mjs';
-import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
+import {DBWrapper} from
+    '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 import StorableRequest from
     '../../../../packages/workbox-background-sync/models/StorableRequest.mjs';
 
