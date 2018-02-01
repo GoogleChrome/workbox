@@ -41,5 +41,8 @@ gulp.task('publish', gulp.series([
   () => {
     logHelper.log(`The release was successful!\n\n`);
     logHelper.log(logHelper.highlight(`Now run gulp publish-assets\n\n`));
-  }
+
+    // Gulp requires a promise.
+    return Promise.resolve();
+  },
 ]));
