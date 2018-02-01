@@ -63,10 +63,14 @@ describe(`broadcastCacheUpdate.Plugin`, function() {
 
     expect(err).to.not.exist;
 
-    const updateMessageEventData = await webdriver.executeAsyncScript((cb) => {
-      // updateReceivedPromise is defined on the test page, and resolves when
-      // the initial Broadcast Channel API Message event fires.
-      window.updateReceivedPromise.then(cb);
+    await webdriver.wait(() => {
+      return webdriver.executeScript(() => {
+        return typeof window.__test.message !== 'undefined';
+      });
+    });
+
+    const updateMessageEventData = await webdriver.executeScript(() => {
+      return window.__test.message;
     });
 
     expect(updateMessageEventData).to.deep.equal({
