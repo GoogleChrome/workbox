@@ -61,7 +61,9 @@ async function getWorkboxSWImport(compilation, config) {
         // Make sure that we actually have a chunk with the appropriate name.
         if (chunk.name === config.importWorkboxFrom) {
           config.excludeChunks.push(chunk.name);
-          return chunk.files;
+          return chunk.files.map((file) => {
+            return (compilation.options.output.publicPath || '') + file;
+          });
         }
       }
 

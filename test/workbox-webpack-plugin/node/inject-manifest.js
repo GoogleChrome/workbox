@@ -200,6 +200,70 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
+    it(`should respect output.publicPath if importWorkboxFrom is set to a Webpack chunk name`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.c8c87b7b2af4d79242a895050ff70e48.js';
+      const publicPath = 'https://testing.path/';
+      const workboxChunkName = 'workbox-sw-chunk-name';
+
+      const outputDir = tempy.directory();
+
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          [workboxChunkName]: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+          publicPath,
+        },
+        plugins: [
+          new InjectManifest({
+            importWorkboxFrom: workboxChunkName,
+            swSrc: SW_SRC,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        const swFile = path.join(outputDir, path.basename(SW_SRC));
+        try {
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [[
+              publicPath + FILE_MANIFEST_NAME,
+              `${publicPath}${workboxChunkName}-a045703b655e4960bca0.js`,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            url: publicPath + 'entry2-61ee477935384006abe1.js',
+          }, {
+            url: publicPath + 'entry1-2970939c7fd9c82eaf46.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
     it(`should honor the 'chunks' whitelist config`, function(done) {
       const FILE_MANIFEST_NAME = 'precache-manifest.77e720b5deee9dafb4df79d5e4c2f2e0.js';
       const outputDir = tempy.directory();
