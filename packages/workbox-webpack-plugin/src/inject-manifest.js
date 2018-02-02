@@ -104,7 +104,7 @@ class InjectManifest {
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
     if (workboxSWImports) {
-      Array.prototype.push.apply(importScriptsArray, workboxSWImports);
+      importScriptsArray.push(...workboxSWImports);
     }
 
     const originalSWString = await readFileWrapper(readFile, this.config.swSrc);
