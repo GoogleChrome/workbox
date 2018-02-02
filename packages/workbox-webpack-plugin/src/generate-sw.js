@@ -66,26 +66,26 @@ class GenerateSW {
     const workboxSWImports = await getWorkboxSWImports(
       compilation, this.config);
     const entries = getManifestEntriesFromCompilation(compilation, this.config);
+    const importScriptsArray = [].concat(this.config.importScripts);
 
     const manifestString = stringifyManifest(entries);
     const manifestAsset = convertStringToAsset(manifestString);
     const manifestHash = getAssetHash(manifestAsset);
     const manifestFilename = `precache-manifest.${manifestHash}.js`;
     compilation.assets[manifestFilename] = manifestAsset;
-    this.config.importScripts.push(
+    importScriptsArray.push(
       (compilation.options.output.publicPath || '') + manifestFilename);
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
     if (workboxSWImports) {
-      // workboxSWImport is an array, so use concat() rather than push().
-      this.config.importScripts = this.config.importScripts.concat(
-        workboxSWImports);
+      importScriptsArray.push(...workboxSWImports);
     }
 
     const sanitizedConfig = sanitizeConfig.forGenerateSWString(this.config);
     // If globPatterns isn't explicitly set, then default to [], instead of
     // the workbox-build.generateSWString() default.
     sanitizedConfig.globPatterns = sanitizedConfig.globPatterns || [];
+    sanitizedConfig.importScripts = importScriptsArray;
     const serviceWorker = await generateSWString(sanitizedConfig);
     compilation.assets[this.config.swDest] =
       convertStringToAsset(serviceWorker);
