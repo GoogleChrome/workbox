@@ -53,10 +53,9 @@ describe(`broadcastCacheUpdate.Plugin`, function() {
     await activateSW(swUrl);
 
     const err = await webdriver.executeAsyncScript((apiUrl, cb) => {
-      // Call fetch(apiUrl) twice. Each response will include a different ETag,
-      // which will trigger the BCU plugin's behavior.
+      // There's already a cached entry for apiUrl created by the
+      // service worker's install handler.
       fetch(apiUrl)
-        .then(() => fetch(apiUrl))
         .then(() => cb())
         .catch((err) => cb(err.message));
     }, apiUrl);
