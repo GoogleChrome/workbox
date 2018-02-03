@@ -82,6 +82,76 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
   });
 
+  describe(`[workbox-webpack-plugin] Ensure only one precache-manifest is present on re-compile`, function() {
+    it(`should only have one reference to precache-manifest file in 'importScripts'`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.b6f6b1b151c4f027ee1e1aa3061eeaf7.js';
+      const outputDir = tempy.directory();
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: SW_SRC,
+          }),
+        ],
+      };
+      let emitCount = 0;
+
+      const compiler = webpack(config);
+      const watching = compiler.watch({
+      }, async (err, stats) => {
+        emitCount += 1;
+
+        if (err) {
+          done(err);
+          return;
+        }
+
+        const swFile = path.join(outputDir, path.basename(SW_SRC));
+
+        try {
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            url: 'entry2-17c2a1b5c94290899539.js',
+          }, {
+            url: 'entry1-d7f4e7088b64a9896b23.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          if (emitCount == 2) {
+            watching.close(done);
+          } else {
+            watching.invalidate(); // triggers second compilation
+          }
+        } catch (error) {
+          watching.close();
+          done(error);
+        }
+      });
+    });
+  });
+
   describe(`[workbox-webpack-plugin] multiple chunks`, function() {
     it(`should work when called with just swSrc`, function(done) {
       const FILE_MANIFEST_NAME = 'precache-manifest.b6f6b1b151c4f027ee1e1aa3061eeaf7.js';

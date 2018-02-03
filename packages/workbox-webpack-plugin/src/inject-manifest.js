@@ -80,6 +80,7 @@ class InjectManifest {
     const workboxSWImports = await getWorkboxSWImports(
       compilation, this.config);
     let entries = getManifestEntriesFromCompilation(compilation, this.config);
+    const importScriptsArray = [].concat(this.config.importScripts);
 
     const sanitizedConfig = sanitizeConfig.forGetManifest(this.config);
     // If there are any "extra" config options remaining after we remove the
@@ -98,19 +99,17 @@ class InjectManifest {
     const manifestHash = getAssetHash(manifestAsset);
     const manifestFilename = `precache-manifest.${manifestHash}.js`;
     compilation.assets[manifestFilename] = manifestAsset;
-    this.config.importScripts.push(
+    importScriptsArray.push(
       (compilation.options.output.publicPath || '') + manifestFilename);
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
     if (workboxSWImports) {
-      // workboxSWImport is an array, so use concat() rather than push().
-      this.config.importScripts = this.config.importScripts.concat(
-        workboxSWImports);
+      importScriptsArray.push(...workboxSWImports);
     }
 
     const originalSWString = await readFileWrapper(readFile, this.config.swSrc);
 
-    const importScriptsString = this.config.importScripts
+    const importScriptsString = importScriptsArray
       .map(JSON.stringify)
       .join(', ');
 
