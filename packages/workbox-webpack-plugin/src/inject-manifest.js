@@ -128,11 +128,21 @@ ${originalSWString}
    * @private
    */
   apply(compiler) {
-    compiler.plugin('emit', (compilation, callback) => {
-      this.handleEmit(compilation, compiler.inputFileSystem._readFile)
-        .then(callback)
-        .catch(callback);
-    });
+    if ('hooks' in compiler) {
+      // We're in webpack 4+.
+      compiler.hooks.emit.tapPromise(
+        this.constructor.name,
+        (compilation) => this.handleEmit(compilation,
+          compiler.inputFileSystem._readFile)
+      );
+    } else {
+      // We're in webpack 2 or 3.
+      compiler.plugin('emit', (compilation, callback) => {
+        this.handleEmit(compilation, compiler.inputFileSystem._readFile)
+          .then(callback)
+          .catch(callback);
+      });
+    }
   }
 }
 
