@@ -79,6 +79,11 @@ describe(`[workbox-background-sync] Queue`, function() {
         tag: 'workbox-background-sync:foo',
       }));
 
+      // replayRequests should not be called for this due to incorrect tag name
+      self.dispatchEvent(new SyncEvent('sync', {
+        tag: 'workbox-background-sync:bar',
+      }));
+
       expect(Queue.prototype.replayRequests.calledOnce).to.be.true;
     });
 

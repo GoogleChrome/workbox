@@ -94,6 +94,8 @@ class Queue {
     await this._runCallback('requestWillEnqueue', storableRequest);
     await this._queueStore.addEntry(storableRequest);
     await this._registerSync();
+    logger.log(`Request for '${request.url}' has been added to
+        background sync queue '${this._name}'.`);
   }
 
   /**
@@ -168,7 +170,9 @@ class Queue {
   _addSyncListener() {
     if ('sync' in registration) {
       self.addEventListener('sync', (event) => {
-        event.waitUntil(this.replayRequests());
+        if (event.tag === `${TAG_PREFIX}:${this._name}`) {
+          event.waitUntil(this.replayRequests());
+        }
       });
     } else {
       // If the browser doesn't support background sync, retry
