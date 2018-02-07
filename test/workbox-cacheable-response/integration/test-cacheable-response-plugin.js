@@ -1,50 +1,14 @@
 const expect = require('chai').expect;
-const seleniumAssistant = require('selenium-assistant');
+
+const activateSW = require('../../../infra/testing/activate-sw');
 
 describe(`cacheableResponse.Plugin`, function() {
-  let webdriver;
-  let testServerAddress = global.__workbox.server.getAddress();
-
-  beforeEach(async function() {
-    if (webdriver) {
-      await seleniumAssistant.killWebDriver(webdriver);
-      webdriver = null;
-    }
-
-    global.__workbox.server.reset();
-
-    // Allow async functions 10s to complete
-    webdriver = await global.__workbox.seleniumBrowser.getSeleniumDriver();
-    webdriver.manage().timeouts().setScriptTimeout(10 * 1000);
-  });
-
-  after(async function() {
-    if (webdriver) {
-      await seleniumAssistant.killWebDriver(webdriver);
-    }
-  });
-
-  const activateSW = async (swFile) => {
-    const error = await webdriver.executeAsyncScript((swFile, cb) => {
-      navigator.serviceWorker.register(swFile)
-      .then(() => {
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (navigator.serviceWorker.controller.scriptURL.endsWith(swFile)) {
-            cb();
-          }
-        });
-      })
-      .catch((err) => {
-        cb(err.message);
-      });
-    }, swFile);
-    if (error) {
-      throw error;
-    }
-  };
+  const testServerAddress = global.__workbox.server.getAddress();
+  const testingUrl = `${testServerAddress}/test/workbox-cacheable-response/static/cacheable-response-plugin/`;
+  const swUrl = `${testingUrl}sw.js`;
 
   const getCachedRequests = (cacheName) => {
-    return webdriver.executeAsyncScript((cacheName, cb) => {
+    return global.__workbox.webdriver.executeAsyncScript((cacheName, cb) => {
       caches.open(cacheName)
       .then((cache) => {
         return cache.keys();
@@ -57,29 +21,33 @@ describe(`cacheableResponse.Plugin`, function() {
     }, cacheName);
   };
 
+  before(async function() {
+    // Navigate to our test page and clear all caches before this test runs.
+    await global.__workbox.webdriver.get(testingUrl);
+    await global.__workbox.webdriver.executeAsyncScript((cb) => {
+      caches.keys()
+        .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+        .then(cb);
+    });
+  });
+
   it(`should load a page and cache entries`, async function() {
-    const testingURl = `${testServerAddress}/test/workbox-cacheable-response/static/cacheable-response-plugin/`;
-    const SW_URL = `${testingURl}sw.js`;
+    // Wait for the service worker to register and activate.
+    await activateSW(global.__workbox.webdriver, swUrl);
 
-    // Load the page and wait for the first service worker to register and activate.
-    await webdriver.get(testingURl);
-
-    // Register the service worker.
-    await activateSW(SW_URL);
-
-    await webdriver.executeAsyncScript((testingURl, cb) => {
-      fetch(`${testingURl}example-1.txt`).then(() => cb()).catch((err) => cb(err.message));
-    }, testingURl);
+    await global.__workbox.webdriver.executeAsyncScript((testingUrl, cb) => {
+      fetch(`${testingUrl}example-1.txt`).then(() => cb()).catch((err) => cb(err.message));
+    }, testingUrl);
 
     // Caching is done async from returning a response, so we may need
     // to wait before the cache has some content.
-    await webdriver.wait(async () => {
-      return await webdriver.executeAsyncScript((cb) => {
+    await global.__workbox.webdriver.wait(async () => {
+      return await global.__workbox.webdriver.executeAsyncScript((cb) => {
         caches.keys().then((keys) => cb(keys.length > 0));
       });
     });
 
-    const keys = await webdriver.executeAsyncScript((cb) => {
+    const keys = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       caches.keys().then(cb);
     });
 
@@ -89,7 +57,7 @@ describe(`cacheableResponse.Plugin`, function() {
 
     let cachedRequests = await getCachedRequests(keys[0]);
     expect(cachedRequests).to.deep.equal([
-      `${testingURl}example-1.txt`,
+      `${testingUrl}example-1.txt`,
     ]);
   });
 });

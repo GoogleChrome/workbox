@@ -1,56 +1,13 @@
-const seleniumAssistant = require('selenium-assistant');
+const activateSW = require('../../../infra/testing/activate-sw');
 
 describe(`[workbox-core] Load core in the browser`, function() {
-  let webdriver;
-  let testServerAddress = global.__workbox.server.getAddress();
-
-  beforeEach(async function() {
-    if (webdriver) {
-      await seleniumAssistant.killWebDriver(webdriver);
-      webdriver = null;
-    }
-
-    global.__workbox.server.reset();
-
-    // Allow async functions 10s to complete
-    webdriver = await global.__workbox.seleniumBrowser.getSeleniumDriver();
-    webdriver.manage().timeouts().setScriptTimeout(10 * 1000);
-  });
-
-  after(async function() {
-    if (webdriver) {
-      await seleniumAssistant.killWebDriver(webdriver);
-    }
-  });
-
-  const activateSW = async (swFile) => {
-    const error = await webdriver.executeAsyncScript((swFile, cb) => {
-      navigator.serviceWorker.register(swFile)
-      .then(() => {
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (navigator.serviceWorker.controller.scriptURL.endsWith(swFile)) {
-            cb();
-          }
-        });
-      })
-      .catch((err) => {
-        cb(err.message);
-      });
-    }, swFile);
-    if (error) {
-      throw error;
-    }
-  };
+  const testServerAddress = global.__workbox.server.getAddress();
+  const testingUrl = `${testServerAddress}/test/workbox-core/static/core-in-browser/`;
+  const swUrl = `${testingUrl}sw.js`;
 
   it(`should load workbox-core in a service worker.`, async function() {
-    const testingURl = `${testServerAddress}/test/workbox-core/static/core-in-browser/`;
-    const SW_URL = `${testingURl}sw.js`;
-
-    // Load the page and wait for the first service worker to register and activate.
-    await webdriver.get(testingURl);
-
-    // Register the service worker.
-    await activateSW(SW_URL);
+    await global.__workbox.webdriver.get(testingUrl);
+    await activateSW(global.__workbox.webdriver, swUrl);
 
     // If the service worker activated, it meant the assertions in sw.js were
     // met and workbox-core exposes the expected API and defaults that were

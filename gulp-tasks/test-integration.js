@@ -33,8 +33,8 @@ const runFile = (filePath) => {
   });
 };
 
-const runIntegrationTestSuite =
-async (testPath, nodeEnv, seleniumBrowser) => {
+const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
+                                       webdriver) => {
   logHelper.log(oneLine`
     Running Integration test on ${logHelper.highlight(testPath)}
     with NODE_ENV '${nodeEnv}'
@@ -51,13 +51,14 @@ async (testPath, nodeEnv, seleniumBrowser) => {
 
   try {
     global.__workbox = {
+      webdriver,
       seleniumBrowser,
       server: testServer,
     };
 
     const testFiles = glob.sync(
       path.posix.join(__dirname, '..', testPath, '*.js'));
-    for (let testFile of testFiles) {
+    for (const testFile of testFiles) {
       testServer.reset();
       await runFile(testFile);
     }
@@ -73,14 +74,22 @@ async (testPath, nodeEnv, seleniumBrowser) => {
 };
 
 const runIntegrationForBrowser = async (browser) => {
-  const packagesToTest =
-    glob.sync(`test/${global.packageOrStar}/integration`);
+  const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
 
-  for (const packageToTest of packagesToTest) {
-    for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
+  for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
+    const webdriver = await browser.getSeleniumDriver();
+    webdriver.manage().timeouts().setScriptTimeout(30 * 1000);
+
+    for (const packageToTest of packagesToTest) {
       const nodeEnv = constants.BUILD_TYPES[buildKey];
-      await runIntegrationTestSuite(
-        packageToTest, nodeEnv, browser);
+      try {
+        await runIntegrationTestSuite(packageToTest, nodeEnv, browser,
+          webdriver);
+        await seleniumAssistant.killWebDriver(webdriver);
+      } catch (error) {
+        await seleniumAssistant.killWebDriver(webdriver);
+        throw error;
+      }
     }
   }
 };
@@ -92,13 +101,18 @@ gulp.task('test-integration', async () => {
   }
 
   logHelper.log(`Downloading browsers......`);
-  await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', 24);
-  await seleniumAssistant.downloadLocalBrowser('chrome', 'beta', 24);
-  await seleniumAssistant.downloadLocalBrowser('firefox', 'stable', 24);
-  await seleniumAssistant.downloadLocalBrowser('firefox', 'beta', 24);
+  // Kick off all the downloads simultaneously if we haven't previously
+  // downloaded the browsers within the past 24 hours.
+  const expiration = 24;
+  const downloadPromises = [
+    seleniumAssistant.downloadLocalBrowser('chrome', 'stable', expiration),
+    seleniumAssistant.downloadLocalBrowser('chrome', 'beta', expiration),
+    seleniumAssistant.downloadLocalBrowser('firefox', 'stable', expiration),
+    seleniumAssistant.downloadLocalBrowser('firefox', 'beta', expiration),
+  ];
+  await Promise.all(downloadPromises);
 
-  const packagesToTest =
-    glob.sync(`test/${global.packageOrStar}/integration`);
+  const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
   if (packagesToTest.length === 0) {
     return;
   }
@@ -107,7 +121,7 @@ gulp.task('test-integration', async () => {
 
   try {
     const localBrowsers = seleniumAssistant.getLocalBrowsers();
-    for (let localBrowser of localBrowsers) {
+    for (const localBrowser of localBrowsers) {
       switch (localBrowser.getId()) {
         case 'chrome':
         case 'firefox':
