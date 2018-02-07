@@ -103,16 +103,11 @@ gulp.task('test-integration', async () => {
   }
 
   logHelper.log(`Downloading browsers......`);
-  // Kick off all the downloads simultaneously if we haven't previously
-  // downloaded the browsers within the past 24 hours.
   const expiration = 24;
-  const downloadPromises = [
-    seleniumAssistant.downloadLocalBrowser('chrome', 'stable', expiration),
-    seleniumAssistant.downloadLocalBrowser('chrome', 'beta', expiration),
-    seleniumAssistant.downloadLocalBrowser('firefox', 'stable', expiration),
-    seleniumAssistant.downloadLocalBrowser('firefox', 'beta', expiration),
-  ];
-  await Promise.all(downloadPromises);
+  await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', expiration);
+  await seleniumAssistant.downloadLocalBrowser('chrome', 'beta', expiration);
+  await seleniumAssistant.downloadLocalBrowser('firefox', 'stable', expiration);
+  await seleniumAssistant.downloadLocalBrowser('firefox', 'beta', expiration);
 
   const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
   if (packagesToTest.length === 0) {
