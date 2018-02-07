@@ -9,7 +9,7 @@ const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
 const testServer = require('../infra/testing/test-server');
 
-const runFile = (filePath) => {
+const runFiles = (filePaths) => {
   // Mocha can't be run multiple times, which we need for NODE_ENV.
   // More info: https://github.com/mochajs/mocha/issues/995
   clearRequire.all();
@@ -21,7 +21,9 @@ const runFile = (filePath) => {
       timeout: 3 * 60 * 1000,
     });
 
-    mocha.addFile(filePath);
+    for (const filePath of filePaths) {
+      mocha.addFile(filePath);
+    }
 
     // Run the tests.
     mocha.run(function(failureCount) {
@@ -56,12 +58,11 @@ const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
       server: testServer,
     };
 
-    const testFiles = glob.sync(
-      path.posix.join(__dirname, '..', testPath, '*.js'));
-    for (const testFile of testFiles) {
-      testServer.reset();
-      await runFile(testFile);
-    }
+    const testFiles = glob.sync(path.posix.join(__dirname, '..', testPath,
+      '*.js'));
+
+    testServer.reset();
+    await runFiles(testFiles);
 
     process.env.NODE_ENV = originalNodeEnv;
   } catch (err) {
@@ -85,12 +86,13 @@ const runIntegrationForBrowser = async (browser) => {
       try {
         await runIntegrationTestSuite(packageToTest, nodeEnv, browser,
           webdriver);
-        await seleniumAssistant.killWebDriver(webdriver);
       } catch (error) {
         await seleniumAssistant.killWebDriver(webdriver);
         throw error;
       }
     }
+
+    await seleniumAssistant.killWebDriver(webdriver);
   }
 };
 
