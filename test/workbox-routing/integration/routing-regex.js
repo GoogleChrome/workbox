@@ -1,61 +1,20 @@
 const expect = require('chai').expect;
-const seleniumAssistant = require('selenium-assistant');
+
+const activateSW = require('../../../infra/testing/activate-sw');
 
 describe(`[workbox-routing] Route via RegExp`, function() {
-  let webdriver;
-  let testServerAddress = global.__workbox.server.getAddress();
-
-  beforeEach(async function() {
-    if (webdriver) {
-      await seleniumAssistant.killWebDriver(webdriver);
-      webdriver = null;
-    }
-
-    global.__workbox.server.reset();
-
-    // Allow async functions 10s to complete
-    webdriver = await global.__workbox.seleniumBrowser.getSeleniumDriver();
-    webdriver.manage().timeouts().setScriptTimeout(10 * 1000);
-  });
-
-  after(async function() {
-    if (webdriver) {
-      await seleniumAssistant.killWebDriver(webdriver);
-    }
-  });
-
-  const activateSW = async (swFile) => {
-    const error = await webdriver.executeAsyncScript((swFile, cb) => {
-      navigator.serviceWorker.register(swFile)
-      .then(() => {
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (navigator.serviceWorker.controller.scriptURL.endsWith(swFile)) {
-            cb();
-          }
-        });
-      })
-      .catch((err) => {
-        cb(err);
-      });
-    }, swFile);
-    if (error) {
-      throw error;
-    }
-  };
+  const testServerAddress = global.__workbox.server.getAddress();
+  const testingUrl = `${testServerAddress}/test/workbox-routing/static/routing-regex/`;
+  const swUrl = `${testingUrl}sw.js`;
 
   it(`should load a page and route requests`, async function() {
-    const testingURl = `${testServerAddress}/test/workbox-routing/static/routing-regex/`;
-    const SW_URL = `${testingURl}sw.js`;
-
     // Load the page and wait for the first service worker to register and activate.
-    await webdriver.get(testingURl);
-
-    // Register the service worker.
-    await activateSW(SW_URL);
+    await global.__workbox.webdriver.get(testingUrl);
+    await activateSW(global.__workbox.webdriver, swUrl);
 
     let testCounter = 0;
 
-    let response = await webdriver.executeAsyncScript((testCounter, cb) => {
+    let response = await global.__workbox.webdriver.executeAsyncScript((testCounter, cb) => {
       fetch(new URL(`/RegExp/${testCounter}/`, location).href)
       .then((response) => response.text())
       .then((responseBody) => cb(responseBody))
@@ -66,7 +25,7 @@ describe(`[workbox-routing] Route via RegExp`, function() {
 
     testCounter += 1;
 
-    response = await webdriver.executeAsyncScript((testCounter, cb) => {
+    response = await global.__workbox.webdriver.executeAsyncScript((testCounter, cb) => {
       fetch(new URL(`/regular-expression/${testCounter}/`, location).href)
       .then((response) => response.text())
       .then((responseBody) => cb(responseBody))
@@ -77,7 +36,7 @@ describe(`[workbox-routing] Route via RegExp`, function() {
 
     testCounter += 1;
 
-    response = await webdriver.executeAsyncScript((testCounter, cb) => {
+    response = await global.__workbox.webdriver.executeAsyncScript((testCounter, cb) => {
       fetch(new URL(`/RegExpRoute/RegExp/${testCounter}/`, location).href)
       .then((response) => response.text())
       .then((responseBody) => cb(responseBody))
@@ -88,7 +47,7 @@ describe(`[workbox-routing] Route via RegExp`, function() {
 
     testCounter += 1;
 
-    response = await webdriver.executeAsyncScript((testCounter, cb) => {
+    response = await global.__workbox.webdriver.executeAsyncScript((testCounter, cb) => {
       fetch(new URL(`/RegExpRoute/regular-expression/${testCounter}/`, location).href)
       .then((response) => response.text())
       .then((responseBody) => cb(responseBody))
@@ -96,7 +55,5 @@ describe(`[workbox-routing] Route via RegExp`, function() {
     }, testCounter);
 
     expect(response).to.equal(`RegExpRoute.regular-expression.${testServerAddress}/RegExpRoute/regular-expression/${testCounter}/`);
-
-    testCounter += 1;
   });
 });

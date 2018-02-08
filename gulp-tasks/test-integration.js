@@ -9,7 +9,7 @@ const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
 const testServer = require('../infra/testing/test-server');
 
-const runFile = (filePath) => {
+const runFiles = (filePaths) => {
   // Mocha can't be run multiple times, which we need for NODE_ENV.
   // More info: https://github.com/mochajs/mocha/issues/995
   clearRequire.all();
@@ -21,7 +21,9 @@ const runFile = (filePath) => {
       timeout: 3 * 60 * 1000,
     });
 
-    mocha.addFile(filePath);
+    for (const filePath of filePaths) {
+      mocha.addFile(filePath);
+    }
 
     // Run the tests.
     mocha.run(function(failureCount) {
@@ -33,8 +35,8 @@ const runFile = (filePath) => {
   });
 };
 
-const runIntegrationTestSuite =
-async (testPath, nodeEnv, seleniumBrowser) => {
+const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
+                                       webdriver) => {
   logHelper.log(oneLine`
     Running Integration test on ${logHelper.highlight(testPath)}
     with NODE_ENV '${nodeEnv}'
@@ -51,16 +53,16 @@ async (testPath, nodeEnv, seleniumBrowser) => {
 
   try {
     global.__workbox = {
+      webdriver,
       seleniumBrowser,
       server: testServer,
     };
 
-    const testFiles = glob.sync(
-      path.posix.join(__dirname, '..', testPath, '*.js'));
-    for (let testFile of testFiles) {
-      testServer.reset();
-      await runFile(testFile);
-    }
+    const testFiles = glob.sync(path.posix.join(__dirname, '..', testPath,
+      '*.js'));
+
+    testServer.reset();
+    await runFiles(testFiles);
 
     process.env.NODE_ENV = originalNodeEnv;
   } catch (err) {
@@ -73,15 +75,24 @@ async (testPath, nodeEnv, seleniumBrowser) => {
 };
 
 const runIntegrationForBrowser = async (browser) => {
-  const packagesToTest =
-    glob.sync(`test/${global.packageOrStar}/integration`);
+  const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
 
-  for (const packageToTest of packagesToTest) {
-    for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
+  for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
+    const webdriver = await browser.getSeleniumDriver();
+    webdriver.manage().timeouts().setScriptTimeout(30 * 1000);
+
+    for (const packageToTest of packagesToTest) {
       const nodeEnv = constants.BUILD_TYPES[buildKey];
-      await runIntegrationTestSuite(
-        packageToTest, nodeEnv, browser);
+      try {
+        await runIntegrationTestSuite(packageToTest, nodeEnv, browser,
+          webdriver);
+      } catch (error) {
+        await seleniumAssistant.killWebDriver(webdriver);
+        throw error;
+      }
     }
+
+    await seleniumAssistant.killWebDriver(webdriver);
   }
 };
 
@@ -92,13 +103,13 @@ gulp.task('test-integration', async () => {
   }
 
   logHelper.log(`Downloading browsers......`);
-  await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', 24);
-  await seleniumAssistant.downloadLocalBrowser('chrome', 'beta', 24);
-  await seleniumAssistant.downloadLocalBrowser('firefox', 'stable', 24);
-  await seleniumAssistant.downloadLocalBrowser('firefox', 'beta', 24);
+  const expiration = 24;
+  await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', expiration);
+  await seleniumAssistant.downloadLocalBrowser('chrome', 'beta', expiration);
+  await seleniumAssistant.downloadLocalBrowser('firefox', 'stable', expiration);
+  await seleniumAssistant.downloadLocalBrowser('firefox', 'beta', expiration);
 
-  const packagesToTest =
-    glob.sync(`test/${global.packageOrStar}/integration`);
+  const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
   if (packagesToTest.length === 0) {
     return;
   }
@@ -107,7 +118,7 @@ gulp.task('test-integration', async () => {
 
   try {
     const localBrowsers = seleniumAssistant.getLocalBrowsers();
-    for (let localBrowser of localBrowsers) {
+    for (const localBrowser of localBrowsers) {
       switch (localBrowser.getId()) {
         case 'chrome':
         case 'firefox':
