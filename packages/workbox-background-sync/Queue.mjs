@@ -94,6 +94,10 @@ class Queue {
     await this._runCallback('requestWillEnqueue', storableRequest);
     await this._queueStore.addEntry(storableRequest);
     await this._registerSync();
+    if (process.env.NODE_ENV !== 'production') {
+      logger.log(`Request for '${request.url}' has been added to
+          background sync queue '${this._name}'.`);
+    }
   }
 
   /**
@@ -168,9 +172,18 @@ class Queue {
   _addSyncListener() {
     if ('sync' in registration) {
       self.addEventListener('sync', (event) => {
-        event.waitUntil(this.replayRequests());
+        if (event.tag === `${TAG_PREFIX}:${this._name}`) {
+          if (process.env.NODE_ENV !== 'production') {
+            logger.log(`Background sync for tag '${event.tag}'
+                has been received, starting replay now`);
+          }
+          event.waitUntil(this.replayRequests());
+        }
       });
     } else {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.log(`Background sync replaying without background sync event`);
+      }
       // If the browser doesn't support background sync, retry
       // every time the service worker starts up as a fallback.
       this.replayRequests();
