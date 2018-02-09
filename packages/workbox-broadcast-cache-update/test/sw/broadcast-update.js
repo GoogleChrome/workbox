@@ -18,32 +18,35 @@
 import {cacheUpdatedMessageType} from '../../src/lib/constants.js';
 import broadcastUpdate from '../../src/lib/broadcast-update.js';
 
-describe(`Test of the broadcastUpdate function`, function() {
-  const channelName = 'test-channel';
-  const channel = new BroadcastChannel(channelName);
-  const cacheName = 'test-cache';
-  const url = 'https://example.com';
-  const source = 'test-source';
+if ('BroadcastChannel' in self) {
+  describe(`Test of the broadcastUpdate function`, function() {
+    const channelName = 'test-channel';
+    const channel = new BroadcastChannel(channelName);
+    const cacheName = 'test-cache';
+    const url = 'https://example.com';
+    const source = 'test-source';
 
-  it(`should throw when broadcastUpdate() is called without any parameters`, function() {
-    expect(() => {
-      broadcastUpdate();
-    }).to.throw().with.property('name', 'assertion-failed');
-  });
-
-  it(`should trigger the appropriate message event on a BroadcastChannel with the same channel name`, function(done) {
-    const secondChannel = new BroadcastChannel(channelName);
-    secondChannel.addEventListener('message', (event) => {
-      expect(event.data).to.eql({
-        type: cacheUpdatedMessageType,
-        meta: source,
-        payload: {
-          cacheName,
-          updatedUrl: url,
-        },
-      });
-      done();
+    it(`should throw when broadcastUpdate() is called without any parameters`, function() {
+      expect(() => {
+        broadcastUpdate();
+      }).to.throw().with.property('name', 'assertion-failed');
     });
-    broadcastUpdate({channel, cacheName, source, url});
+
+
+    it(`should trigger the appropriate message event on a BroadcastChannel with the same channel name`, function(done) {
+      const secondChannel = new BroadcastChannel(channelName);
+      secondChannel.addEventListener('message', (event) => {
+        expect(event.data).to.eql({
+          type: cacheUpdatedMessageType,
+          meta: source,
+          payload: {
+            cacheName,
+            updatedUrl: url,
+          },
+        });
+        done();
+      });
+      broadcastUpdate({channel, cacheName, source, url});
+    });
   });
-});
+}

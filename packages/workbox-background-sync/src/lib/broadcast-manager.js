@@ -12,7 +12,7 @@ import {isType, isInstance} from '../../../../lib/assert';
  * @private
  */
 function broadcastMessage({broadcastChannel, type, url}) {
-  if (!broadcastChannel) {
+  if (!('BroadcastChannel' in self) || !broadcastChannel) {
     return;
   }
 

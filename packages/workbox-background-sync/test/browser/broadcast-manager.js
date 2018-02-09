@@ -15,22 +15,24 @@
 
 import * as broadcastManager from '../../src/lib/broadcast-manager.js';
 
-describe(`broadcast manager`, function() {
-  it(`should broadcast message on given channel name`, function(done) {
-    this.timeout(100);
-    let msgRead = false;
-    const channelName = 'CHANNEL';
-    const testBroadcastChannel = new BroadcastChannel(channelName);
-    const testReceiverChannel = new BroadcastChannel(channelName);
-    testReceiverChannel.onmessage = function() {
-      msgRead = true;
-      expect(msgRead).to.be.true;
-      done();
-    };
-    broadcastManager.broadcastMessage({
-      broadcastChannel: testBroadcastChannel,
-      type: 'SUCCESS',
-      url: 'http://google.com',
+if ('BroadcastChannel' in self) {
+  describe(`broadcast manager`, function() {
+    it(`should broadcast message on given channel name`, function(done) {
+      this.timeout(100);
+      let msgRead = false;
+      const channelName = 'CHANNEL';
+      const testBroadcastChannel = new BroadcastChannel(channelName);
+      const testReceiverChannel = new BroadcastChannel(channelName);
+      testReceiverChannel.onmessage = function() {
+        msgRead = true;
+        expect(msgRead).to.be.true;
+        done();
+      };
+      broadcastManager.broadcastMessage({
+        broadcastChannel: testBroadcastChannel,
+        type: 'SUCCESS',
+        url: 'http://google.com',
+      });
     });
   });
-});
+}

@@ -53,14 +53,16 @@ describe(`Test of the BroadcastCacheUpdate class`, function() {
     expect(bcu.source).to.not.be.empty;
   });
 
-  it(`should create and reuse a BroadcastChannel based on channelName`, function() {
-    const bcu = new BroadcastCacheUpdate({channelName});
-    const broadcastChannel = bcu.channel;
-    expect(broadcastChannel).to.be.instanceof(BroadcastChannel);
-    // bcu.channel is a getter that create a BroadcastChannel the first
-    // time it's called, and this test confirms that it returns the same
-    // BroadcastChannel object when called twice.
-    expect(broadcastChannel).to.eql(bcu.channel);
-    expect(broadcastChannel.name).to.equal(channelName);
-  });
+  if ('BroadcastChannel' in self) {
+    it(`should create and reuse a BroadcastChannel based on channelName`, function() {
+      const bcu = new BroadcastCacheUpdate({channelName});
+      const broadcastChannel = bcu.channel;
+      expect(broadcastChannel).to.be.instanceof(BroadcastChannel);
+      // bcu.channel is a getter that create a BroadcastChannel the first
+      // time it's called, and this test confirms that it returns the same
+      // BroadcastChannel object when called twice.
+      expect(broadcastChannel).to.eql(bcu.channel);
+      expect(broadcastChannel.name).to.equal(channelName);
+    });
+  }
 });
