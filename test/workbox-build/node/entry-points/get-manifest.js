@@ -21,7 +21,7 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     'maximumFileSizeToCacheInBytes',
     'modifyUrlPrefix',
     'templatedUrls',
-  ].concat(REQUIRED_PARAMS);
+  ];
   const UNSUPPORTED_PARAMS = [
     'cacheId',
     'clientsClaim',
