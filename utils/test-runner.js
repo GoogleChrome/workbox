@@ -68,6 +68,12 @@ class TestRunner {
           }
           this._addBrowserTests(browser, getBaseTestUrl);
           break;
+        case 'safari':
+          if (browser.getReleaseName() !== 'beta') {
+            return;
+          }
+          this._addBrowserTests(browser, getBaseTestUrl);
+         break;
       }
     });
   }
