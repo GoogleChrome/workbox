@@ -13,70 +13,72 @@
 <!-- This file is served via /__test/mocha/<pkg>
      See utils/service-instance.js for the serving logic. -->
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Mocha Test Harness: {{pkg}}</title>
-    <base href="/packages/{{pkg}}/test/browser/">
-    <link href="/node_modules/mocha/mocha.css" rel="stylesheet">
 
-    <!--
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Test Harness: {{pkg}}</title>
+  <base href="/packages/{{pkg}}/test/browser/">
+  <link href="/node_modules/mocha/mocha.css" rel="stylesheet">
+
+  <!--
       iframes are used to manage service worker scoping.
       This will hide them and stop the page from jumping around
     -->
-    <style>
-      iframe {
-        width: 0;
-        height: 0;
-      }
-    </style>
-  </head>
+  <style>
+    iframe {
+      width: 0;
+      height: 0;
+    }
+  </style>
+</head>
 
-  <body>
-    <div id="mocha"></div>
+<body>
+  <div id="mocha"></div>
 
-    <script src="/node_modules/chai/chai.js"></script>
-    <script src="/node_modules/mocha/mocha.js"></script>
+  <script src="/node_modules/chai/chai.js"></script>
+  <script src="/node_modules/mocha/mocha.js"></script>
 
-    <!-- sw-testing-helpers -->
-    <script src="/node_modules/sw-testing-helpers/build/browser/mocha-utils.js"></script>
-    <script src="/node_modules/sw-testing-helpers/build/browser/sw-utils.js"></script>
-    <script src="/node_modules/sinon/pkg/sinon.js"></script>
+  <!-- sw-testing-helpers -->
+  <script src="/node_modules/sw-testing-helpers/build/browser/mocha-utils.js"></script>
+  <script src="/node_modules/sw-testing-helpers/build/browser/sw-utils.js"></script>
+  <script src="/node_modules/sinon/pkg/sinon.js"></script>
 
-    <script>
-      mocha.setup({
-        ui: 'bdd',
-        timeout: 10000,
-      });
+  <script>
+    mocha.setup({
+      ui: 'bdd',
+      timeout: 5 * 60 * 1000,
+    });
 
-      chai.should();
-      window.expect = chai.expect;
-    </script>
+    chai.should();
+    window.expect = chai.expect;
+  </script>
 
-    <script>
-    describe('{{pkg}} > test/sw/*.js', function() {
-      it(`should run sw tests`, function() {
+  <script>
+    describe('{{pkg}} > test/sw/*.js', function () {
+      it(`should run sw tests`, function () {
         return window.goog.mochaUtils.registerServiceWorkerMochaTests(
-            '/packages/{{pkg}}/build/test/sw-bundle.js');
+          '/packages/{{pkg}}/build/test/sw-bundle.js');
       });
     });
-    </script>
+  </script>
 
-    <script>
-      (function() {
-        // This make browsers without a service worker pass tests by
-        // bypassing the tests altogether.
-        // This is desirable to allow travis to run tests in all browsers
-        // regardless of support or not and perform tests when the browser
-        // starts to support service workers.
-        if (!('serviceWorker' in navigator)) {
-          window.testsuite = {};
-          return;
-        }
+  <script>
+    (function () {
+      // This make browsers without a service worker pass tests by
+      // bypassing the tests altogether.
+      // This is desirable to allow travis to run tests in all browsers
+      // regardless of support or not and perform tests when the browser
+      // starts to support service workers.
+      if (!('serviceWorker' in navigator)) {
+        window.testsuite = {};
+        return;
+      }
 
-        window.goog.mochaUtils.startInBrowserMochaTests().then((results) => {
-          window.testsuite = results;
-        });
-      })();
-    </script>
-  </body>
+      window.goog.mochaUtils.startInBrowserMochaTests().then((results) => {
+        window.testsuite = results;
+      });
+    })();
+  </script>
+</body>
+
 </html>
