@@ -33,6 +33,9 @@ class Request {
     this.url = url;
     this.method = options.method || 'GET';
     this.mode = options.mode || 'cors';
+    // See https://fetch.spec.whatwg.org/#concept-request-credentials-mode
+    this.credentials = options.credentials || (this.mode === 'navigate' ?
+      'include' : 'omit');
     this.headers = new Headers(options.headers);
 
     this._body = new Blob('body' in options ? [options.body] : []);

@@ -128,6 +128,7 @@ describe(`[workbox-background-sync] Queue`, function() {
         'body',
         'headers',
         'mode',
+        'credentials',
       ]);
     });
 
