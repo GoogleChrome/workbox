@@ -20,5 +20,5 @@ const baseSchema = require('./base-schema');
 
 // Define some additional constraints.
 module.exports = baseSchema.keys({
-  globDirectory: joi.string().required(),
+  globDirectory: joi.string(),
 });
