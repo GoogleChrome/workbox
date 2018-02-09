@@ -289,7 +289,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     it(`should support setting importWorkboxFrom to 'local'`, function(done) {
       const FILE_MANIFEST_NAME = 'precache-manifest.b6f6b1b151c4f027ee1e1aa3061eeaf7.js';
       const outputDir = tempy.directory();
-      console.log({outputDir});
       const config = {
         entry: {
           entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
