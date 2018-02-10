@@ -10,7 +10,16 @@ describe(`broadcastCacheUpdate.Plugin`, function() {
 
   it(`should broadcast a message on the expected channel when there's a cache update`, async function() {
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(global.__workbox.webdriver, swUrl);
+    await activateSW(swUrl);
+
+    const supported = await global.__workbox.webdriver.executeScript(() => {
+      return 'BroadcastChannel' in window;
+    });
+
+    if (!supported) {
+      this.skip();
+      return;
+    }
 
     const err = await global.__workbox.webdriver.executeAsyncScript((apiUrl, cb) => {
       // There's already a cached entry for apiUrl created by the

@@ -79,7 +79,8 @@ const runIntegrationForBrowser = async (browser) => {
 
   for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
     const webdriver = await browser.getSeleniumDriver();
-    webdriver.manage().timeouts().setScriptTimeout(30 * 1000);
+    // Safari Tech Preview can take a long time when working with SW APIs
+    webdriver.manage().timeouts().setScriptTimeout(2 * 60 * 1000);
 
     for (const packageToTest of packagesToTest) {
       const nodeEnv = constants.BUILD_TYPES[buildKey];
@@ -123,6 +124,11 @@ gulp.task('test-integration', async () => {
         case 'chrome':
         case 'firefox':
           if (localBrowser.getReleaseName() !== 'unstable') {
+            await runIntegrationForBrowser(localBrowser);
+          }
+          break;
+        case 'safari':
+          if (localBrowser.getReleaseName() === 'beta') {
             await runIntegrationForBrowser(localBrowser);
           }
           break;

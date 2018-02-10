@@ -1,5 +1,6 @@
 importScripts('/__WORKBOX/buildFile/workbox-core');
 importScripts('/__WORKBOX/buildFile/workbox-precaching');
+importScripts('messenger.js');
 
 /* globals workbox */
 

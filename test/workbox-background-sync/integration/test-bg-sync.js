@@ -27,7 +27,7 @@ describe(`[workbox-background-sync] Load and use Background Sync`, function() {
   it(`should load a page with service worker`, async function() {
     // Load the page and wait for the first service worker to register and activate.
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(global.__workbox.webdriver, swUrl);
+    await activateSW(swUrl);
 
     const err = await global.__workbox.webdriver.executeAsyncScript((testingUrl, cb) => {
       return fetch(`${testingUrl}example.txt`)
