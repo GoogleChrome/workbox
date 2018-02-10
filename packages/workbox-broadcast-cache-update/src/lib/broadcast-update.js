@@ -63,7 +63,12 @@ import {cacheUpdatedMessageType} from './constants';
  *        of the update message.
  */
 function broadcastUpdate({channel, cacheName, url, source} = {}) {
+  if (!('BroadcastChannel' in self)) {
+    return;
+  }
+
   isInstance({channel}, BroadcastChannel);
+
   isType({cacheName}, 'string');
   isType({source}, 'string');
   isType({url}, 'string');

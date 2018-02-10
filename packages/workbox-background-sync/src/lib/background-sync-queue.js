@@ -68,7 +68,7 @@ class Queue {
       isType({maxRetentionTime}, 'number');
     }
 
-    if (broadcastChannel) {
+    if ('BroadcastChannel' in self && broadcastChannel) {
       isInstance({broadcastChannel}, BroadcastChannel);
     }
 

@@ -103,7 +103,13 @@ class BroadcastCacheUpdate {
    */
   get channel() {
     if (!this._channel) {
-      this._channel = new BroadcastChannel(this.channelName);
+      if ('BroadcastChannel' in self) {
+        this._channel = new BroadcastChannel(this.channelName);
+      } else {
+        this._channel = {
+          postMessage: () => {},
+        };
+      }
     }
     return this._channel;
   }
