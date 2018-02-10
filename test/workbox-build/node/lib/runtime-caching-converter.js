@@ -22,6 +22,9 @@ function validate(runtimeCachingOptions, convertedOptions) {
       expiration: {
         Plugin: sinon.spy(),
       },
+      broadcastUpdate: {
+        Plugin: sinon.spy(),
+      },
       routing: {
         registerRoute: sinon.spy(),
       },
@@ -75,6 +78,10 @@ function validate(runtimeCachingOptions, convertedOptions) {
 
       if (options.cacheableResponse) {
         expect(globalScope.workbox.cacheableResponse.Plugin.calledWith(options.cacheableResponse)).to.be.true;
+      }
+
+      if (options.broadcastUpdate) {
+        expect(globalScope.workbox.broadcastUpdate.Plugin.calledWith(options.broadcastUpdate)).to.be.true;
       }
     }
   });
@@ -139,6 +146,9 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
         },
         cacheableResponse: {
           statuses: [0, 200],
+        },
+        broadcastUpdate: {
+          channelName: 'test',
         },
       },
     }];
