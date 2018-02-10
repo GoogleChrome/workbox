@@ -59,7 +59,7 @@
     "bytes": "^3.0.0",
     "chai": "^4.1.2",
     "chalk": "^2.1.0",
-    "chromedriver": "^2.33.2",
+    "chromedriver": "^2.35.0",
     "clear-require": "^2.0.0",
     "common-tags": "^1.4.0",
     "copy-webpack-plugin": "^4.2.0",
