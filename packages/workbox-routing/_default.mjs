@@ -161,14 +161,27 @@ class DefaultRouter extends Router {
     }
 
     const cacheName = cacheNames.getPrecacheName(options.cacheName);
-    const handler = () => caches.match(cachedAssetUrl, {cacheName});
+    const handler = () => caches.match(cachedAssetUrl, {cacheName})
+      .then((response) => {
+        if (response) {
+          return response;
+        }
+        throw new Error(`The cache ${cacheName} did not have an entry for ` +
+          `${cachedAssetUrl}.`);
+      }).catch((error) => {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.debug(`Unable to respond to navigation request with cached ` +
+            `response: ${error}. Falling back to network.`);
+        }
+        return fetch(cachedAssetUrl);
+      });
+
     const route = new NavigationRoute(handler, {
       whitelist: options.whitelist,
       blacklist: options.blacklist,
     });
-    super.registerRoute(
-      route
-    );
+    super.registerRoute(route);
+
     return route;
   }
 }
