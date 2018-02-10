@@ -35,13 +35,13 @@ describe(`rangeRequests.Plugin`, function() {
     // 11 characters returned in the partial response.
     expect(partialResponseBody).to.eql('56');
 
-    const errorResponse = await global.__workbox.webdriver.executeAsyncScript((dummyUrl, cb) => {
+    const errorResponseStatus = await global.__workbox.webdriver.executeAsyncScript((dummyUrl, cb) => {
       // These are arbitrary large values that extend past the end of the file.
       fetch(new Request(dummyUrl, {headers: {Range: `bytes=100-101`}}))
-        .then((response) => cb(response));
+        .then((response) => cb(response.status));
     }, dummyUrl);
 
     // The expected error status is 416 (Range Not Satisfiable)
-    expect(errorResponse.status).to.eql(416);
+    expect(errorResponseStatus).to.eql(416);
   });
 });
