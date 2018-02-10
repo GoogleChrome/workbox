@@ -1,18 +1,24 @@
 const expect = require('chai').expect;
 
 const activateSW = require('../../../infra/testing/activate-sw');
+const cleanSWEnv = require('../../../infra/testing/clean-sw');
 
 describe(`rangeRequests.Plugin`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
   const testingUrl = `${testServerAddress}/test/workbox-range-requests/static/`;
   const swUrl = `${testingUrl}sw.js`;
 
+  beforeEach(async function() {
+    // Navigate to our test page and clear all caches before this test runs.
+    await cleanSWEnv(global.__workbox.webdriver, testingUrl);
+  });
+
   it(`should return a partial response that satisfies the request's Range: header, and an error response when it can't be satisfied`, async function() {
     const dummyUrl = `${testingUrl}this-file-doesnt-exist.txt`;
     const dummyBody = '0123456789';
 
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(global.__workbox.webdriver, swUrl);
+    await activateSW(swUrl);
 
     const partialResponseBody = await global.__workbox.webdriver.executeAsyncScript((dummyUrl, dummyBody, cb) => {
       const dummyResponse = new Response(dummyBody);

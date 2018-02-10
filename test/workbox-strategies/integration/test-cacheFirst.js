@@ -10,7 +10,7 @@ describe(`[workbox-strategies] CacheFirst Requests`, function() {
   it(`should respond with cached and non-cached entry`, async function() {
     // Load the page and wait for the first service worker to register and activate.
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(global.__workbox.webdriver, swUrl);
+    await activateSW(swUrl);
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(new URL(`/test/workbox-strategies/static/cache-first/example.txt`, location).href)
