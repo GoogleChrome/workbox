@@ -50,7 +50,7 @@ describe(`[workbox-strategies] StaleWhileRevalidate Requests`, function() {
 
     // Load the page and wait for the first service worker to register and activate.
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(global.__workbox.webdriver, swUrl);
+    await activateSW(swUrl);
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(new URL(`/test/uniqueValue`, location).href)

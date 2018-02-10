@@ -44,7 +44,7 @@ function getOptionsString(options = {}) {
 
   const pluginsMapping = {
     backgroundSync: 'workbox.backgroundSync.Plugin',
-    broadcastCacheUpdate: 'workbox.broadcastCacheUpdate.Plugin',
+    broadcastUpdate: 'workbox.broadcastUpdate.Plugin',
     expiration: 'workbox.expiration.Plugin',
     cacheableResponse: 'workbox.cacheableResponse.Plugin',
   };

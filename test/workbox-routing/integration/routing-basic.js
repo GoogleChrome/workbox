@@ -9,7 +9,7 @@ describe(`[workbox-routing] Basic Route`, function() {
 
   before(async function() {
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(global.__workbox.webdriver, swUrl);
+    await activateSW(swUrl);
   });
 
   it(`should honor a route created by a Route object`, async function() {

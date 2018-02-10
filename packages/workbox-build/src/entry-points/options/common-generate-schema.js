@@ -43,7 +43,7 @@ module.exports = baseSchema.keys({
         name: joi.string().required(),
         options: joi.object(),
       }),
-      broadcastCacheUpdate: joi.object().keys({
+      broadcastUpdate: joi.object().keys({
         channelName: joi.string().required(),
         options: joi.object(),
       }),

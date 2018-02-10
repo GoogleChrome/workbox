@@ -33,7 +33,7 @@ describe(`cacheableResponse.Plugin`, function() {
 
   it(`should load a page and cache entries`, async function() {
     // Wait for the service worker to register and activate.
-    await activateSW(global.__workbox.webdriver, swUrl);
+    await activateSW(swUrl);
 
     await global.__workbox.webdriver.executeAsyncScript((testingUrl, cb) => {
       fetch(`${testingUrl}example-1.txt`).then(() => cb()).catch((err) => cb(err.message));

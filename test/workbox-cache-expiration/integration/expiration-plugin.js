@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
 
 const activateSW = require('../../../infra/testing/activate-sw');
+const cleanSWEnv = require('../../../infra/testing/clean-sw');
 
 describe(`expiration.Plugin`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
@@ -20,21 +21,16 @@ describe(`expiration.Plugin`, function() {
     }, cacheName);
   };
 
-  before(async function() {
+  beforeEach(async function() {
     // Navigate to our test page and clear all caches before this test runs.
-    await global.__workbox.webdriver.get(testingUrl);
-    await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      caches.keys()
-        .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
-        .then(cb);
-    });
+    await cleanSWEnv(global.__workbox.webdriver, testingUrl);
   });
 
   it(`should load a page with entries managed by maxEntries`, async function() {
     const swUrl = `${testingUrl}sw-max-entries.js`;
 
     // Wait for the service worker to register and activate.
-    await activateSW(global.__workbox.webdriver, swUrl);
+    await activateSW(swUrl);
 
     await global.__workbox.webdriver.executeAsyncScript((testingUrl, cb) => {
       fetch(`${testingUrl}example-1.txt`).then(() => cb()).catch((err) => cb(err.message));
@@ -90,7 +86,7 @@ describe(`expiration.Plugin`, function() {
 
     // Load the page and wait for the service worker to register and activate.
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(global.__workbox.webdriver, swUrl);
+    await activateSW(swUrl);
 
     await global.__workbox.webdriver.executeAsyncScript((testingUrl, cb) => {
       fetch(`${testingUrl}example-1.txt`).then(() => cb()).catch((err) => cb(err.message));
