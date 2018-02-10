@@ -25,7 +25,7 @@ const getFriendlyURL = (url) => {
 };
 
 export default {
-  strategyStart: (strategyName, event) => `Using ${strategyName} to repond ` +
+  strategyStart: (strategyName, event) => `Using ${strategyName} to respond ` +
     `to  '${getFriendlyURL(event.request.url)}'`,
   printFinalResponse: (response) => {
     if (response) {
