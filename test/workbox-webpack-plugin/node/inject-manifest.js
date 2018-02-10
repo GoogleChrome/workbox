@@ -361,6 +361,83 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
+    it(`should support setting importWorkboxFrom to 'local', and respect output.publicPath`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.1f4b80f3bf4cbdfc323cd47d280a9561.js';
+      const outputDir = tempy.directory();
+      const publicPath = 'https://testing.path/';
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+          publicPath,
+        },
+        plugins: [
+          new InjectManifest({
+            importWorkboxFrom: 'local',
+            swSrc: SW_SRC,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        const swFile = path.join(outputDir, path.basename(SW_SRC));
+        try {
+          // Validate the copied library files.
+          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
+            {cwd: outputDir});
+
+          const modulePathPrefix = path.dirname(libraryFiles[0]);
+
+          const basenames = libraryFiles.map((file) => path.basename(file));
+          expect(basenames).to.eql(ALL_WORKBOX_FILES);
+
+          // The correct importScripts path should use the versioned name of the
+          // parent workbox libraries directory. We don't know that version ahead
+          // of time, so we ensure that there's a match based on what actually
+          // got copied over.
+          const workboxSWImport = libraryFiles.filter(
+            (file) => file.endsWith('workbox-sw.js'))[0];
+
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [[
+              publicPath + FILE_MANIFEST_NAME,
+              publicPath + workboxSWImport,
+            ]],
+            setConfig: [[{modulePathPrefix}]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            url: publicPath + 'entry2-a73dfbc0c0f27e33c997.js',
+          }, {
+            url: publicPath + 'entry1-72d0a5a3a44942369363.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
     it(`should respect output.publicPath if importWorkboxFrom is set to a Webpack chunk name`, function(done) {
       const FILE_MANIFEST_NAME = 'precache-manifest.c8c87b7b2af4d79242a895050ff70e48.js';
       const publicPath = 'https://testing.path/';
