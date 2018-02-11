@@ -8,8 +8,6 @@ describe(`[workbox-precaching] Precache and Update`, function() {
   const testingUrl = `${testServerAddress}/test/workbox-precaching/static/precache-and-update/`;
 
   beforeEach(async function() {
-    global.__workbox.server.reset();
-
     // Navigate to our test page and clear all caches before this test runs.
     await cleanSWEnv(global.__workbox.webdriver, testingUrl);
   });
@@ -32,25 +30,24 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     const SW_1_URL = `${testingUrl}sw-1.js`;
     const SW_2_URL = `${testingUrl}sw-2.js`;
 
-    const getIdbData = global.__workbox.seleniumBrowser.getId() === 'safari' ? require('../utils/getPrecachedIDBData-safari') : require('../utils/getPrecachedIDBData');
-
-    // Load the page and wait for the first service worker to register and actsw-testinivate.
-    await global.__workbox.webdriver.get(testingUrl);
+    const getIdbData = global.__workbox.seleniumBrowser.getId() === 'safari' ?
+      require('../utils/getPrecachedIDBData-safari') :
+      require('../utils/getPrecachedIDBData');
 
     // Precaching will cache bust with a search param in some situations.
     const needsCacheBustSearchParam = await global.__workbox.webdriver.executeScript(() => {
       return !('cache' in Request.prototype);
     });
 
+    // Clear out the counters so that we start fresh.
+    global.__workbox.server.reset();
+
     // Register the first service worker.
     await activateSW(SW_1_URL);
 
     // Check that only the precache cache was created.
     const keys = await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      caches.keys()
-      .then((keys) => {
-        cb(keys);
-      });
+      caches.keys().then((keys) => cb(keys));
     });
     expect(keys).to.deep.equal([
       'workbox-precache-http://localhost:3004/test/workbox-precaching/static/precache-and-update/',
@@ -77,14 +74,12 @@ describe(`[workbox-precaching] Precache and Update`, function() {
 
     // Make sure the requested URL's include cache busting search param if needed.
     let requestsMade = global.__workbox.server.getRequests();
-    // This is two due to activateSw() refreshing the page.
-    expect(requestsMade['/test/workbox-precaching/static/precache-and-update/']).to.equal(2);
     if (needsCacheBustSearchParam) {
       expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(1);
       expect(requestsMade['/test/workbox-precaching/static/precache-and-update/index.html?_workbox-cache-bust=1']).to.equal(1);
       expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css?_workbox-cache-bust=1']).to.equal(1);
     } else {
-      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(3);
+      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(1);
       expect(requestsMade['/test/workbox-precaching/static/precache-and-update/index.html']).to.equal(1);
     }
 
