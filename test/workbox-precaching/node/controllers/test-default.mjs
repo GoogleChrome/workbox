@@ -394,6 +394,39 @@ describe(`[workbox-precaching] default export`, function() {
       const response = await fetchPromise;
       expect(response).to.not.exist;
     });
+
+    it(`should call fetch() if there's a missing entry for a URL that has been precached`, async function() {
+      const fetchResponse = new Response('From fetch()');
+      const fetchStub = sandbox.stub(self, 'fetch').returns(fetchResponse);
+
+      const url = '/some-url';
+
+      let fetchCb;
+      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+        if (eventName === 'fetch') {
+          fetchCb = cb;
+        }
+      });
+
+      precaching.addRoute();
+      // Because the install handler is not called in this test, there won't be
+      // a cache entry for url, even though precache() is called.
+      precaching.precache([url]);
+
+      const fetchEvent = new FetchEvent('fetch', {
+        request: new Request(url),
+      });
+      let responsePromise;
+      fetchEvent.respondWith = (promise) => {
+        responsePromise = promise;
+      };
+      fetchCb(fetchEvent);
+
+      const response = await responsePromise;
+
+      expect(fetchStub.calledOnce).to.be.true;
+      expect(response).to.eql(fetchResponse);
+    });
   });
 
   describe(`precacheAndRoute()`, function() {
