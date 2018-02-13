@@ -15,6 +15,7 @@
 
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {QueueStore} from './models/QueueStore.mjs';
 import StorableRequest from './models/StorableRequest.mjs';
 import {TAG_PREFIX, MAX_RETENTION_TIME} from './utils/constants.mjs';
@@ -90,6 +91,15 @@ class Queue {
    * @param {Request} request The request object to store.
    */
   async addRequest(request) {
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(request, Request, {
+        moduleName: 'workbox-background-sync',
+        className: 'Queue',
+        funcName: 'addRequest',
+        paramName: 'request',
+      });
+    }
+
     const storableRequest = await StorableRequest.fromRequest(request.clone());
     await this._runCallback('requestWillEnqueue', storableRequest);
     await this._queueStore.addEntry(storableRequest);
