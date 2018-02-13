@@ -72,13 +72,16 @@ class InjectManifest {
    * @private
    */
   async handleEmit(compilation, readFile) {
-    if (this.config.importWorkboxFrom === 'local') {
-      throw new Error(`importWorkboxFrom can not be set to 'local' when using` +
-        ` InjectManifest. Please use 'cdn' or a chunk name instead.`);
-    }
-
     const workboxSWImports = await getWorkboxSWImports(
       compilation, this.config);
+
+    // this.config.modulePathPrefix may or may not have been set by
+    // getWorkboxSWImports(), depending on the other config options. If it was
+    // set, we need to pull it out and make use of it later, as it can't be
+    // used by the underlying workbox-build getManifest() method.
+    const modulePathPrefix = this.config.modulePathPrefix;
+    delete this.config.modulePathPrefix;
+
     let entries = getManifestEntriesFromCompilation(compilation, this.config);
     const importScriptsArray = [].concat(this.config.importScripts);
 
@@ -113,8 +116,13 @@ class InjectManifest {
       .map(JSON.stringify)
       .join(', ');
 
-    const postInjectionSWString = `importScripts(${importScriptsString});
+    const setConfigString = modulePathPrefix
+      ? `workbox.setConfig({modulePathPrefix: ` +
+        `${JSON.stringify(modulePathPrefix)}});`
+      : '';
 
+    const postInjectionSWString = `importScripts(${importScriptsString});
+${setConfigString}
 ${originalSWString}
 `;
 

@@ -10,9 +10,9 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
   const BASE_OPTIONS = {
     globDirectory: SRC_DIR,
   };
-  const REQUIRED_PARAMS = ['globDirectory'];
   const SUPPORTED_PARAMS = [
     'dontCacheBustUrlsMatching',
+    'globDirectory',
     'globFollow',
     'globIgnores',
     'globPatterns',
@@ -21,7 +21,7 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     'maximumFileSizeToCacheInBytes',
     'modifyUrlPrefix',
     'templatedUrls',
-  ].concat(REQUIRED_PARAMS);
+  ];
   const UNSUPPORTED_PARAMS = [
     'cacheId',
     'clientsClaim',
@@ -37,23 +37,6 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     'swSrc',
     'swDest',
   ];
-
-  describe('[workbox-build] required parameters', function() {
-    for (const requiredParam of REQUIRED_PARAMS) {
-      it(`should reject with a ValidationError when '${requiredParam}' is missing`, async function() {
-        const options = Object.assign({}, BASE_OPTIONS);
-        delete options[requiredParam];
-
-        try {
-          await getManifest(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError');
-          expect(error.details[0].context.key).to.eql(requiredParam);
-        }
-      });
-    }
-  });
 
   describe('[workbox-build] unsupported parameters', function() {
     for (const unsupportedParam of UNSUPPORTED_PARAMS) {
