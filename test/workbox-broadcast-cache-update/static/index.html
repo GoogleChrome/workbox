@@ -6,10 +6,12 @@
     <script>
       window.__test = {};
 
-      const updatesChannel = new BroadcastChannel('bcu-integration-test');
-      updatesChannel.addEventListener('message', (event) => {
-        window.__test.message = event.data;
-      });
+      if ('BroadcastChannel' in self) {
+        const updatesChannel = new BroadcastChannel('bcu-integration-test');
+        updatesChannel.addEventListener('message', (event) => {
+          window.__test.message = event.data;
+        });
+      }
     </script>
   </body>
   </html>
