@@ -109,19 +109,40 @@ describe(`[workbox-strategies] NetworkFirst`, function() {
       networkTimeoutSeconds: TEST_TIMEOUT_SECS,
     });
 
-    let handlePromise = networkFirst.handle({event});
-    clock.tick(TEST_TIMEOUT_SECS * 1.5 * 1000);
-    const emptyCacheResponse = await handlePromise;
-    expect(emptyCacheResponse).to.not.exist;
-
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
-    handlePromise = networkFirst.handle({event});
+    const handlePromise = networkFirst.handle({event});
     clock.tick(TEST_TIMEOUT_SECS * 1.5 * 1000);
     const populatedCacheResponse = await handlePromise;
     await compareResponses(populatedCacheResponse, injectedResponse, true);
+  });
+
+  it(`should return the network response if the timeout is execeeded, but there is no cached response`, async function() {
+    const clock = sandbox.useFakeTimers();
+
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+
+    const networkTimeoutSeconds = 5;
+    const networkResponse = new Response('from network');
+
+    sandbox.stub(global, 'fetch').callsFake(() => {
+      return new Promise((resolve) => {
+        setTimeout(
+          () => resolve(networkResponse),
+          (networkTimeoutSeconds + 1) * 1000
+        );
+      });
+    });
+
+    const networkFirst = new NetworkFirst({networkTimeoutSeconds});
+    let handlePromise = networkFirst.handle({event});
+    clock.tick((networkTimeoutSeconds + 2) * 1000);
+    const handlerResponse = await handlePromise;
+
+    expect(handlerResponse).to.eql(networkResponse);
   });
 
   devOnly.it(`should throw when NetworkFirst() is called with an invalid networkTimeoutSeconds parameter`, function() {
