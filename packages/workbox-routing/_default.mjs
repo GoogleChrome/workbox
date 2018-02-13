@@ -171,7 +171,7 @@ class DefaultRouter extends Router {
       }).catch((error) => {
         if (process.env.NODE_ENV !== 'production') {
           logger.debug(`Unable to respond to navigation request with cached ` +
-            `response: ${error}. Falling back to network.`);
+            `response: ${error.message}. Falling back to network.`);
         }
         return fetch(cachedAssetUrl);
       });
