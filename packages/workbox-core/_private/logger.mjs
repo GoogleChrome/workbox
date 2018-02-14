@@ -17,6 +17,9 @@
 import LOG_LEVELS from '../models/LogLevels.mjs';
 import '../_version.mjs';
 
+// Safari doesn't print all console.groupCollapsed() arguments.
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 const GREY = `#7f8c8d`;
 const GREEN = `#2ecc71`;
 const YELLOW = `#f39c12`;
@@ -41,7 +44,7 @@ const _print = function(keyName, logArgs, levelColor) {
     return;
   }
 
-  if (!levelColor) {
+  if (!levelColor || (keyName === 'groupCollapsed' && isSafari)) {
     console[keyName](...logArgs);
     return;
   }
