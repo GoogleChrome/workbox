@@ -63,6 +63,9 @@ global.SyncEvent = SyncEvent;
 global.URLSearchParams = URLSearchParams;
 global.BroadcastChannel = BroadcastChannel;
 
+global.navigator = global.navigator || {};
+global.navigator.userAgent = global.navigator.userAgent || 'Workbox User Agent';
+
 // TODO: Remove when fixed in service-worker-mock:
 // https://github.com/pinterest/service-workers/issues/71
 const origMatch = caches.match;
