@@ -96,6 +96,90 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         }
       });
     });
+
+    it(`should throw when any of the specified chunks is missing from the compilation`, (done) => {
+      const outputDir = tempy.directory();
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            chunks: [
+              'chunkDoesNotExist',
+              'anotherMissingChunk',
+            ],
+            swSrc: SW_SRC,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run((webpackError, stats) => {
+        if (webpackError || stats.hasErrors()) {
+          if (stats.hasErrors()) {
+            const webpackStats = stats.toJson('minimal');
+            if (webpackStats.errors.reduce((builder, err) => {
+              return builder && /Specified chunks '.+' is missing from the compilation/.test(err);
+            }, true)) {
+              done();
+            } else {
+              done(new Error(`Expected all missing chunks errors to be thrown with the message but some are missing.`));
+            }
+          } else {
+            done(new Error(`An unexpected error was thrown: ${webpackError.message}`));
+          }
+        } else {
+          done(new Error('Unexpected success.'));
+        }
+      });
+    });
+
+    it(`should throw when any of the specified excludeChunks is missing from the compilation`, (done) => {
+      const outputDir = tempy.directory();
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            excludeChunks: [
+              'missingExcludeChunk',
+              'anotherMissingExcludeChunk',
+            ],
+            swSrc: SW_SRC,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run((webpackError, stats) => {
+        if (webpackError || stats.hasErrors()) {
+          if (stats.hasErrors()) {
+            const webpackStats = stats.toJson('minimal');
+            if (webpackStats.errors.reduce((builder, err) => {
+              return builder && /Specified excludeChunks '.+' is missing from the compilation/.test(err);
+            }, true)) {
+              done();
+            } else {
+              done(new Error(`Expected all missing excludeChunks errors to be thrown with the message but some are missing.`));
+            }
+          } else {
+            done(new Error(`An unexpected error was thrown: ${webpackError.message}`));
+          }
+        } else {
+          done(new Error('Unexpected success.'));
+        }
+      });
+    });
   });
 
   describe(`[workbox-webpack-plugin] Ensure only one precache-manifest is present on re-compile`, function() {

@@ -55,6 +55,7 @@ function getEntry(knownHashes, url, revision) {
  *  but filter for [/\.map$/, /asset-manifest\.json$/] by default:
  *    https://github.com/GoogleChrome/workbox/pull/808#discussion_r140565156
  *
+ * @param {Object} compilation webpack compilation
  * @param {Object<string, Object>} assetMetadata Metadata about the assets.
  * @param {Array<string>} [whitelist] Chunk names to include.
  * @param {Array<string>} [blacklist] Chunk names to exclude.
@@ -62,8 +63,13 @@ function getEntry(knownHashes, url, revision) {
  *
  * @private
  */
-function filterAssets(assetMetadata, whitelist, blacklist) {
+function filterAssets(compilation, assetMetadata, whitelist, blacklist) {
   const filteredMapping = {};
+
+  const whitelistSet = new Set(whitelist);
+  const blacklistSet = new Set(blacklist);
+  const chunksPickedFromWhitelist = new Set();
+  const chunksPickedFromBlacklist = new Set();
 
   for (const [file, metadata] of Object.entries(assetMetadata)) {
     const chunkName = metadata.chunkName;
@@ -72,11 +78,13 @@ function filterAssets(assetMetadata, whitelist, blacklist) {
     // - There is a whitelist and our file is associated with a chunk whose name
     // is listed.
     const isWhitelisted = whitelist.length === 0 ||
-      whitelist.includes(chunkName);
+      whitelistSet.has(chunkName);
+    chunksPickedFromWhitelist.add(chunkName);
 
     // This file is blacklisted if our file is associated with a chunk whose
     // name is listed.
-    const isBlacklisted = blacklist.includes(chunkName);
+    const isBlacklisted = blacklistSet.has(chunkName);
+    chunksPickedFromBlacklist.add(chunkName);
 
     // Only include this entry in the filtered mapping if we're whitelisted and
     // not blacklisted.
@@ -84,6 +92,24 @@ function filterAssets(assetMetadata, whitelist, blacklist) {
       filteredMapping[file] = metadata;
     }
   }
+
+  whitelist.forEach((potentialMissingChunkName) => {
+    if (!chunksPickedFromWhitelist.has(potentialMissingChunkName)) {
+      compilation.errors.push(
+        new Error(`Specified chunks '${potentialMissingChunkName}' is \
+missing from the compilation.`)
+      );
+    }
+  });
+
+  blacklist.forEach((potentialMissingChunkName) => {
+    if (!chunksPickedFromBlacklist.has(potentialMissingChunkName)) {
+      compilation.errors.push(
+        new Error(`Specified excludeChunks '${potentialMissingChunkName}' is \
+missing from the compilation.`)
+      );
+    }
+  });
 
   return filteredMapping;
 }
@@ -168,7 +194,7 @@ function getManifestEntriesFromCompilation(compilation, config) {
   const {publicPath} = compilation.options.output;
 
   const assetMetadata = generateMetadataForAssets(assets, chunks);
-  const filteredAssetMetadata = filterAssets(assetMetadata,
+  const filteredAssetMetadata = filterAssets(compilation, assetMetadata,
     whitelistedChunkNames, blacklistedChunkNames);
 
   const knownHashes = [
