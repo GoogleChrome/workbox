@@ -68,7 +68,7 @@ class BroadcastCacheUpdate {
    * @private
    */
   _getChannel() {
-    if (!this._channel) {
+    if (('BroadcastChannel' in self) && !this._channel) {
       this._channel = new BroadcastChannel(this._channelName);
     }
     return this._channel;
