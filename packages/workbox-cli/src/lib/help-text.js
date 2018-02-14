@@ -29,14 +29,14 @@ Commands:
   generateSW [<path/to/config.js>]
     Creates a new service worker file based on the options
     in the config file (defaults to workbox-config.js).
-    See https://goo.gl/2aRDsh
+    See https://goo.gl/gVo87N
 
   injectManifest [<path/to/config.js>]
     Takes an existing service worker file and creates a
     copy of it with a precaching manifest "injected" into
     it. The precaching manifest is generated based on the
     options in the config file (defaults to workbox-config.js).
-    See https://goo.gl/xoLmFB
+    See https://goo.gl/8bs14N
 
   copyLibraries <path/to/parent/dir>
     Makes a local copy of all of the Workbox libraries inside
