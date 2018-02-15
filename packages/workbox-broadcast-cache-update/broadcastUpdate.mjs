@@ -62,8 +62,7 @@ const broadcastUpdate = (channel, cacheName, url, source) => {
   if (!(('BroadcastChannel' in self) && channel)) {
     if (process.env.NODE_ENV !== 'production') {
       logger.debug(`${url} was updated, but the Broadcast Channel API is not ` +
-        `available in the current browser. A message will not be posted ` +
-        `on channel ${channelName}.`);
+        `available in the current browser.`);
     }
     return;
   }
