@@ -59,11 +59,11 @@ const broadcastUpdate = (channel, cacheName, url, source) => {
   // There are browsers which support service workers but don't support the
   // Broadcast Channel API.
   // See https://github.com/GoogleChrome/workbox/issues/1304
-  if (!('BroadcastChannel' in self)) {
+  if (!(('BroadcastChannel' in self) && channel)) {
     if (process.env.NODE_ENV !== 'production') {
       logger.debug(`${url} was updated, but the Broadcast Channel API is not ` +
         `available in the current browser. A message will not be posted ` +
-        `on channel ${channel}.`);
+        `on channel ${channelName}.`);
     }
     return;
   }
