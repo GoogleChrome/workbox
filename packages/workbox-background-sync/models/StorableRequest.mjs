@@ -127,4 +127,25 @@ export default class StorableRequest {
   toRequest() {
     return new Request(this.url, this.requestInit);
   }
+
+  /**
+   * Creates and returns a deep clone of the instance.
+   *
+   * @return {StorableRequest}
+   *
+   * @private
+   */
+  clone() {
+    const requestInit = Object.assign({}, this.requestInit);
+    requestInit.headers = Object.assign({}, this.requestInit.headers);
+    if (this.requestInit.body) {
+      requestInit.body = this.requestInit.body.slice();
+    }
+
+    return new StorableRequest({
+      url: this.url,
+      timestamp: this.timestamp,
+      requestInit,
+    });
+  }
 }
