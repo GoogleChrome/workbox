@@ -22,7 +22,6 @@ import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs
 import {NetworkFirst, NetworkOnly} from '../../../packages/workbox-strategies/index.mjs';
 import * as googleAnalytics from '../../../packages/workbox-google-analytics/index.mjs';
 import {
-  MAX_RETENTION_TIME,
   GOOGLE_ANALYTICS_HOST,
   GTM_HOST,
   ANALYTICS_JS_PATH,
@@ -351,7 +350,6 @@ describe(`[workbox-google-analytics] initialize`, function() {
     const replay2 = self.fetch.secondCall.args[0];
     const replayParams1 = new URLSearchParams(await replay1.text());
     const replayParams2 = new URLSearchParams(await replay2.text());
-    const payloadParams = new URLSearchParams(PAYLOAD);
 
     expect(parseInt(replayParams1.get('qt'))).to.equal(1200);
     expect(parseInt(replayParams2.get('qt'))).to.equal(3100);

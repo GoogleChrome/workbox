@@ -155,7 +155,7 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
             'x-foo': 'bar',
             'x-qux': 'baz',
           },
-        }
+        },
       });
       const clone = original.clone();
 
