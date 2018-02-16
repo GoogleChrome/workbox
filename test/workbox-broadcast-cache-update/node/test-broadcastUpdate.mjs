@@ -16,9 +16,6 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import expectError from '../../../infra/testing/expectError';
-import {devOnly} from '../../../infra/testing/env-it';
-
 import messageTypes from '../../../packages/workbox-broadcast-cache-update/messageTypes.mjs';
 import {broadcastUpdate} from '../../../packages/workbox-broadcast-cache-update/broadcastUpdate.mjs';
 
