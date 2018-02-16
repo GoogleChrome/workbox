@@ -124,7 +124,7 @@ class Queue {
 
     let storableRequest;
     while (storableRequest = await this._queueStore.getAndRemoveOldestEntry()) {
-      // Make a copy so the unmodified request can be stored]
+      // Make a copy so the unmodified request can be stored
       // in the event of a replay failure.
       const storableRequestClone = storableRequest.clone();
 
