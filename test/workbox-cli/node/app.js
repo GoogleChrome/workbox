@@ -71,6 +71,8 @@ describe(`[workbox-cli] app.js`, function() {
           expect(
             loggerErrorStub.alwaysCalledWithExactly(errors['invalid-common-js-module'])
           ).to.be.true;
+          /* eslint-disable */
+          console.log(error.message);
           expect(error.message).to.have.string(INVALID_CONFIG_FILE);
         }
       });
