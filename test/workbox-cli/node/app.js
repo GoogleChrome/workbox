@@ -72,8 +72,10 @@ describe(`[workbox-cli] app.js`, function() {
             loggerErrorStub.alwaysCalledWithExactly(errors['invalid-common-js-module'])
           ).to.be.true;
           /* eslint-disable */
-          console.log(error.message, INVALID_CONFIG_FILE, error.message.indexOf(INVALID_CONFIG_FILE));
-          expect(error.message).to.have.string(INVALID_CONFIG_FILE);
+          // Windows will log with backslashes that need escaping
+          const escapedPath = INVALID_CONFIG_FILE.replace('\\', '\\\\');
+          console.log(error.message, escapedPath, error.message.indexOf(escapedPath));
+          expect(error.message).to.have.string(escapedPath);
         }
       });
     }
