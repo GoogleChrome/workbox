@@ -28,12 +28,6 @@ describe(`[workbox-broadcast-cache-update] broadcastUpdate`, function() {
   const url = 'https://example.com';
   const source = 'test-source';
 
-  devOnly.it(`should throw when called without any parameters`, function() {
-    return expectError(() => {
-      broadcastUpdate();
-    }, 'incorrect-class');
-  });
-
   it(`should trigger the appropriate message event on a BroadcastChannel with the same channel name`, function() {
     /** const secondChannel = new BroadcastChannel(channelName);
     secondChannel.addEventListener('message', (event) => {
