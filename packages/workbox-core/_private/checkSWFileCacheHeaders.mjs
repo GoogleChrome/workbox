@@ -43,37 +43,41 @@ function showWarning(cacheControlHeader) {
  *
  * @private
  */
-async function checkSWFileCacheHeaders() {
-  try {
-    const swFile = self.location.href;
-    const response = await fetch(swFile);
-    if (!response.ok) {
-      // Response failed so nothing we can check;
-      return;
-    }
-
-    if (!response.headers.has('cache-control')) {
-      // No cache control header.
-      return;
-    }
-
-    const cacheControlHeader = response.headers.get('cache-control');
-
-    const maxAgeResult = MAX_AGE_REGEX.exec(cacheControlHeader);
-    if (maxAgeResult) {
-      if (parseInt(maxAgeResult[1], 10) === 0) {
+function checkSWFileCacheHeaders() {
+  // This is wrapped as an iife to allow async/await while making
+  //  rollup exclude it in builds.
+  (async () => {
+    try {
+      const swFile = self.location.href;
+      const response = await fetch(swFile);
+      if (!response.ok) {
+        // Response failed so nothing we can check;
         return;
       }
-    }
 
-    if (cacheControlHeader.indexOf('no-cache') !== -1) {
-      return;
-    }
+      if (!response.headers.has('cache-control')) {
+        // No cache control header.
+        return;
+      }
 
-    showWarning(cacheControlHeader);
-  } catch (err) {
-    // NOOP
-  }
+      const cacheControlHeader = response.headers.get('cache-control');
+
+      const maxAgeResult = MAX_AGE_REGEX.exec(cacheControlHeader);
+      if (maxAgeResult) {
+        if (parseInt(maxAgeResult[1], 10) === 0) {
+          return;
+        }
+      }
+
+      if (cacheControlHeader.indexOf('no-cache') !== -1) {
+        return;
+      }
+
+      showWarning(cacheControlHeader);
+    } catch (err) {
+      // NOOP
+    }
+  })();
 }
 
 const finalCheckSWFileCacheHeaders =
