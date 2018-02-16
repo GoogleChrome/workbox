@@ -18,6 +18,8 @@ import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import sinon from 'sinon';
 import expectError from '../../../infra/testing/expectError';
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
+import {QueueStore} from
+    '../../../packages/workbox-background-sync/models/QueueStore.mjs';
 import {DB_NAME, OBJECT_STORE_NAME} from
     '../../../packages/workbox-background-sync/utils/constants.mjs';
 import {DBWrapper} from '../../../packages/workbox-core/_private/DBWrapper.mjs';
@@ -425,6 +427,35 @@ describe(`[workbox-background-sync] Queue`, function() {
       expect(self.fetch.getCall(1).calledWith(sinon.match({
         url: '/two?q=foo',
       }))).to.be.true;
+    });
+
+    it(`should store the original request if a modified request replay fails`,
+        async function() {
+      sandbox.stub(self, 'fetch').rejects();
+      sandbox.spy(QueueStore.prototype, 'addEntry');
+
+      const requestWillReplay = (storableRequest) => {
+        storableRequest.url += '?q=foo';
+        storableRequest.requestInit.headers['x-foo'] = 'bar';
+      };
+
+      const queue = new Queue('foo', {
+        callbacks: {requestWillReplay},
+      });
+
+      await queue.addRequest(new Request('/one'));
+      await queue.addRequest(new Request('/two'));
+
+
+      await expectError(() => {
+        return queue.replayRequests();
+      }, 'queue-replay-failed');
+
+      // Ensure the re-enqueued requests are the same as the originals.
+      expect(QueueStore.prototype.addEntry.getCall(0).args).to.deep.equal(
+          QueueStore.prototype.addEntry.getCall(2).args);
+      expect(QueueStore.prototype.addEntry.getCall(1).args).to.deep.equal(
+          QueueStore.prototype.addEntry.getCall(3).args);
     });
   });
 

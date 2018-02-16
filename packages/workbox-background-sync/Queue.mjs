@@ -124,6 +124,10 @@ class Queue {
 
     let storableRequest;
     while (storableRequest = await this._queueStore.getAndRemoveOldestEntry()) {
+      // Make a copy so the unmodified request can be stored
+      // in the event of a replay failure.
+      const storableRequestClone = storableRequest.clone();
+
       // Ignore requests older than maxRetentionTime.
       const maxRetentionTimeInMs = this._maxRetentionTime * 60 * 1000;
       if (now - storableRequest.timestamp > maxRetentionTimeInMs) {
@@ -139,7 +143,7 @@ class Queue {
         replay.response = await fetch(replay.request.clone());
       } catch (err) {
         replay.error = err;
-        failedRequests.push(storableRequest);
+        failedRequests.push(storableRequestClone);
       }
 
       replayedRequests.push(replay);

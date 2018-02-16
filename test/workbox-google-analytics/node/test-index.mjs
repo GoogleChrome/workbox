@@ -22,7 +22,6 @@ import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs
 import {NetworkFirst, NetworkOnly} from '../../../packages/workbox-strategies/index.mjs';
 import * as googleAnalytics from '../../../packages/workbox-google-analytics/index.mjs';
 import {
-  MAX_RETENTION_TIME,
   GOOGLE_ANALYTICS_HOST,
   GTM_HOST,
   ANALYTICS_JS_PATH,
@@ -259,18 +258,22 @@ describe(`[workbox-google-analytics] initialize`, function() {
   it(`should add the qt param to replayed hits`, async function() {
     sandbox.stub(self, 'fetch').rejects();
     sandbox.spy(Queue.prototype, 'addRequest');
+    const clock = sandbox.useFakeTimers({toFake: ['Date']});
 
     googleAnalytics.initialize();
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
-          `/collect?${PAYLOAD}&`, {
+          `/collect?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
 
+    await eventsDoneWaiting();
+    clock.tick(100);
+
     self.dispatchEvent(new FetchEvent('fetch', {
-      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/r/collect`, {
         method: 'POST',
         body: PAYLOAD,
       }),
@@ -281,28 +284,75 @@ describe(`[workbox-google-analytics] initialize`, function() {
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
-    const [queuePlugin] = Queue.prototype.addRequest.thisValues;
-    await queuePlugin.replayRequests();
+    const [queue] = Queue.prototype.addRequest.thisValues;
+
+    clock.tick(100);
+
+    await queue.replayRequests();
 
     expect(self.fetch.callCount).to.equal(2);
 
     const replay1 = self.fetch.firstCall.args[0];
     const replay2 = self.fetch.secondCall.args[0];
-
+    expect(replay1.url).to.equal(`https://${GOOGLE_ANALYTICS_HOST}/collect`);
+    expect(replay2.url).to.equal(`https://${GOOGLE_ANALYTICS_HOST}/r/collect`);
 
     const replayParams1 = new URLSearchParams(await replay1.text());
     const replayParams2 = new URLSearchParams(await replay2.text());
     const payloadParams = new URLSearchParams(PAYLOAD);
 
-    expect(parseInt(replayParams1.get('qt'))).to.be.above(0);
-    expect(parseInt(replayParams1.get('qt'))).to.be.below(MAX_RETENTION_TIME);
-    expect(parseInt(replayParams2.get('qt'))).to.be.above(0);
-    expect(parseInt(replayParams2.get('qt'))).to.be.below(MAX_RETENTION_TIME);
+    expect(parseInt(replayParams1.get('qt'))).to.equal(200);
+    expect(parseInt(replayParams2.get('qt'))).to.equal(100);
 
     for (const [key, value] of payloadParams.entries()) {
       expect(replayParams1.get(key)).to.equal(value);
       expect(replayParams2.get(key)).to.equal(value);
     }
+  });
+
+  it(`should update an existing qt param`, async function() {
+    sandbox.stub(self, 'fetch').rejects();
+    sandbox.spy(Queue.prototype, 'addRequest');
+    const clock = sandbox.useFakeTimers({toFake: ['Date']});
+
+    googleAnalytics.initialize();
+
+    self.dispatchEvent(new FetchEvent('fetch', {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
+          `/collect?${PAYLOAD}&qt=1000`, {
+        method: 'GET',
+      }),
+    }));
+
+    await eventsDoneWaiting();
+    clock.tick(100);
+
+    self.dispatchEvent(new FetchEvent('fetch', {
+      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/r/collect`, {
+        method: 'POST',
+        body: `${PAYLOAD}&qt=3000`,
+      }),
+    }));
+
+    await eventsDoneWaiting();
+
+    self.fetch.restore();
+    sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
+
+    const [queue] = Queue.prototype.addRequest.thisValues;
+
+    clock.tick(100);
+    await queue.replayRequests();
+
+    expect(self.fetch.callCount).to.equal(2);
+
+    const replay1 = self.fetch.firstCall.args[0];
+    const replay2 = self.fetch.secondCall.args[0];
+    const replayParams1 = new URLSearchParams(await replay1.text());
+    const replayParams2 = new URLSearchParams(await replay2.text());
+
+    expect(parseInt(replayParams1.get('qt'))).to.equal(1200);
+    expect(parseInt(replayParams2.get('qt'))).to.equal(3100);
   });
 
   it(`should add parameterOverrides to replayed hits`, async function() {
