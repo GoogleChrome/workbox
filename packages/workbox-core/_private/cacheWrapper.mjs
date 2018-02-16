@@ -179,9 +179,9 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
   return responseToCache ? responseToCache : null;
 };
 
-const exports = {
+const cacheWrapper = {
   put: putWrapper,
   match: matchWrapper,
 };
 
-export {exports as cacheWrapper};
+export {cacheWrapper};

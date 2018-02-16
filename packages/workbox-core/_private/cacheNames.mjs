@@ -30,7 +30,7 @@ const _createCacheName = (cacheName) => {
     .join('-');
 };
 
-const exports = {
+const cacheNames = {
   updateDetails: (details) => {
     Object.keys(_cacheNameDetails).forEach((key) => {
       if (typeof details[key] !== 'undefined') {
@@ -49,4 +49,4 @@ const exports = {
   },
 };
 
-export {exports as cacheNames};
+export {cacheNames};
