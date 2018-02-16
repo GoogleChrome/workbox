@@ -26,19 +26,21 @@ const validate = require('./options/validate');
  * @param {Object} config Please refer to the
  * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#getmanifest_mode).
  * @return {Promise<{manifestEntries: Array<ManifestEntry>,
- * count: Number, size: Number}>} A promise that resolves once the precache
- * manifest is determined. The `size` property contains the aggregate size of
- * all the precached entries, in bytes, the `count` property contains the total
- * number of precached entries, and the `manifestEntries` property contains all
- * the `ManifestEntry` items.
+ * count: Number, size: Number, warnings: Array<String>}>} A promise that
+ * resolves once the precache manifest is determined. The `size` property
+ * contains the aggregate size of all the precached entries, in bytes, the
+ * `count` property contains the total number of precached entries, and the
+ * `manifestEntries` property contains all the `ManifestEntry` items. Any
+ * non-fatal warning messages will be returned via `warnings`.
  *
  * @memberof module:workbox-build
  */
 async function getManifest(config) {
   const options = validate(config, getManifestSchema);
 
-  const {manifestEntries, count, size} = await getFileManifestEntries(options);
-  return {manifestEntries, count, size};
+  const {manifestEntries, count, size, warnings} =
+    await getFileManifestEntries(options);
+  return {manifestEntries, count, size, warnings};
 }
 
 module.exports = getManifest;

@@ -25,19 +25,23 @@ const validate = require('./options/validate');
  *
  * @param {Object} config Please refer to the
  * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#generateswstring_mode).
- * @return {Promise<String>} A populated service worker template, based on the
- * other configuration options provided.
+ * @return {Promise<{swString: String, warnings: Array<String>}>} A promise that
+ * resolves once the service worker template is populated. The `swString`
+ * property contains a string representation of the full service worker code.
+ * Any non-fatal warning messages will be returned via `warnings`.
  *
  * @memberof module:workbox-build
  */
 async function generateSWString(config) {
   const options = validate(config, generateSWStringSchema);
 
-  const {manifestEntries} = await getFileManifestEntries(options);
+  const {manifestEntries, warnings} = await getFileManifestEntries(options);
 
-  return populateSWTemplate(Object.assign({
+  const swString = await populateSWTemplate(Object.assign({
     manifestEntries,
   }, options));
+
+  return {swString, warnings};
 }
 
 module.exports = generateSWString;

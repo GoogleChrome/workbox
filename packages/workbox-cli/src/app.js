@@ -64,7 +64,12 @@ module.exports = async (params = {}) => {
 
       logger.log(`Using configuration from ${configPath}.`);
       try {
-        const {size, count} = await workboxBuild[command](config);
+        const {size, count, warnings} = await workboxBuild[command](config);
+
+        for (const warning of warnings) {
+          logger.warn(warning);
+        }
+
         logger.log(`The service worker was written to ${config.swDest}\n` +
           `${count} files will be precached, totalling ${prettyBytes(size)}.`);
       } catch (error) {

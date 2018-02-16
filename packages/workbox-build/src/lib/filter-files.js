@@ -117,5 +117,7 @@ module.exports = ({
     count,
     size,
     manifestEntries: transformedManifest,
+    // TODO: Report any warnings here.
+    warnings: [],
   };
 };
