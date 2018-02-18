@@ -80,7 +80,7 @@ const createRequestWillReplayCallback = (config) => {
 
     // Calculate the qt param, accounting for the fact that an existing
     // qt param may be present and should be updated rather than replaced.
-    const originalHitTime = timestamp - (params.get('qt') || 0);
+    const originalHitTime = timestamp - (Number(params.get('qt')) || 0);
     const queueTime = Date.now() - originalHitTime;
 
     // Set the qt param prior to applying the hitFilter or parameterOverrides.
