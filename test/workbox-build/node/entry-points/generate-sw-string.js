@@ -97,6 +97,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const options = Object.assign({}, BASE_OPTIONS);
 
       const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
@@ -111,7 +112,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       });
 
       let {swString, warnings} = await generateSWString(options);
-
+      expect(warnings).to.be.empty;
       // Rather than emulate importScripts() logic in the validator, we're just
       // going to inject some additional code at the start of the generated
       // service worker, and pretend that it's the code in 'manifest.js'.
@@ -135,7 +136,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       });
 
       let {swString, warnings} = await generateSWString(options);
-
+      expect(warnings).to.be.empty;
       // Rather than emulate importScripts() logic in the validator, we're just
       // going to inject some additional code at the start of the generated
       // service worker, and pretend that it's the code in 'manifest.js'.
@@ -184,7 +185,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const options = Object.assign({}, BASE_OPTIONS, workboxOptions);
 
       const {swString, warnings} = await generateSWString(options);
-
+      expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         clientsClaim: [[]],
         skipWaiting: [[]],
@@ -202,7 +203,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       });
 
       const {swString, warnings} = await generateSWString(options);
-
+      expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
@@ -220,7 +221,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       });
 
       const {swString, warnings} = await generateSWString(options);
-
+      expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],

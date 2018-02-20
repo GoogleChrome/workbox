@@ -62,7 +62,7 @@ const noRevisionForUrlsMatchingTransform =
  * @callback ManifestTransform
  * @param {Array<ManifestEntry>} manifestEntries The full array of entries,
  * prior to the current transformation.
- * @return {Object<manifest: Array<ManifestEntry>, warnings: Array<String>>}
+ * @return {{manifest: Array<ManifestEntry>, warnings: Array<String>}}
  * The array of entries with the transformation applied, and optionally, any
  * warnings that should be reported back to the build tool.
  *
