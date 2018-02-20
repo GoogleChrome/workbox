@@ -88,7 +88,7 @@ class GenerateSW {
     sanitizedConfig.importScripts = importScriptsArray;
 
     const {swString, warnings} = await generateSWString(sanitizedConfig);
-    compilation.warnings = compilation.warnings.concat(warnings);
+    compilation.warnings = compilation.warnings.concat(warnings || []);
     compilation.assets[this.config.swDest] = convertStringToAsset(swString);
   }
 

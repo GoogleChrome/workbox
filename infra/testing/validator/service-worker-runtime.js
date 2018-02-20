@@ -101,7 +101,7 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
  * @param {Object} expectedMethodCalls
  * @return {Promise} Resolves if all of the expected method calls were made.
  */
-module.exports = async ({swFile, swCode: swString, expectedMethodCalls}) => {
+module.exports = async ({swFile, swString, expectedMethodCalls}) => {
   assert((swFile || swString) && !(swFile && swString),
     `Set swFile or swString, but not both.`);
 

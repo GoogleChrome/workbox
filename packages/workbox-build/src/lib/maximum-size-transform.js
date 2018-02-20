@@ -14,8 +14,22 @@
   limitations under the License.
 */
 
+const prettyBytes = require('pretty-bytes');
+
 module.exports = (maximumFileSizeToCacheInBytes) => {
-  return (manifest) => manifest.filter((entry) => {
-    return entry.size <= maximumFileSizeToCacheInBytes;
-  });
+  return (originalManifest) => {
+    const warnings = [];
+    const manifest = originalManifest.filter((entry) => {
+      if (entry.size <= maximumFileSizeToCacheInBytes) {
+        return true;
+      }
+
+      warnings.push(`${entry.url} is ${prettyBytes(entry.size)}, and won't ` +
+        `be precached. Configure maximumFileSizeToCacheInBytes to change ` +
+        `this limit.`);
+      return false;
+    });
+
+    return {manifest, warnings};
+  };
 };

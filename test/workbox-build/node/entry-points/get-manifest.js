@@ -76,8 +76,8 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     it(`should use defaults when all the required parameters are present`, async function() {
       const options = Object.assign({}, BASE_OPTIONS);
 
-      const {count, size, manifestEntries} = await getManifest(options);
-
+      const {count, size, manifestEntries, warnings} = await getManifest(options);
+      expect(warnings).to.be.empty;
       expect(manifestEntries).to.deep.equal([{
         url: 'index.html',
         revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -106,8 +106,8 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         globPatterns: ['**/*.html', '**/*.js'],
       });
 
-      const {count, size, manifestEntries} = await getManifest(options);
-
+      const {count, size, manifestEntries, warnings} = await getManifest(options);
+      expect(warnings).to.be.empty;
       expect(manifestEntries).to.deep.equal([{
         url: 'index.html',
         revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -130,8 +130,8 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         globIgnores: ['**/*.html', '**/*.js'],
       }, BASE_OPTIONS);
 
-      const {count, size, manifestEntries} = await getManifest(options);
-
+      const {count, size, manifestEntries, warnings} = await getManifest(options);
+      expect(warnings).to.be.empty;
       expect(manifestEntries).to.deep.equal([{
         url: 'styles/stylesheet-1.css',
         revision: '934823cbc67ccf0d67aa2a2eeb798f12',
@@ -149,8 +149,8 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         globIgnores: ['node_modules/**/*', '**/*2*'],
       });
 
-      const {count, size, manifestEntries} = await getManifest(options);
-
+      const {count, size, manifestEntries, warnings} = await getManifest(options);
+      expect(warnings).to.be.empty;
       expect(manifestEntries).to.deep.equal([{
         url: 'styles/stylesheet-1.css',
         revision: '934823cbc67ccf0d67aa2a2eeb798f12',
@@ -167,8 +167,8 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         maximumFileSizeToCacheInBytes: 10,
       }, BASE_OPTIONS);
 
-      const {count, size, manifestEntries} = await getManifest(options);
-
+      const {count, size, manifestEntries, warnings} = await getManifest(options);
+      expect(warnings).to.have.lengthOf(5);
       expect(manifestEntries).to.deep.equal([{
         url: 'webpackEntry.js',
         revision: 'd41d8cd98f00b204e9800998ecf8427e',
@@ -188,8 +188,8 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         },
       }, BASE_OPTIONS);
 
-      const {count, size, manifestEntries} = await getManifest(options);
-
+      const {count, size, manifestEntries, warnings} = await getManifest(options);
+      expect(warnings).to.be.empty;
       expect(manifestEntries).to.deep.equal([{
         url: 'index.html',
         revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -221,21 +221,27 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
 
     it(`should use defaults when all the required parameters, and 'manifestTransforms' are present`, async function() {
       // This filters out all entries unless the url property includes the string '1'.
-      const transform1 = (entries) => entries.filter((entry) => {
-        return entry.url.includes('1');
-      });
+      const transform1 = (entries) => {
+        const manifest = entries.filter((entry) => {
+          return entry.url.includes('1');
+        });
+        return {manifest};
+      };
       // This modifies all entries to prefix the url property with the string '/prefix/'.
-      const transform2 = (entries) => entries.filter((entry) => {
-        entry.url = `/prefix/${entry.url}`;
-        return entry;
-      });
+      const transform2 = (entries) => {
+        const manifest = entries.filter((entry) => {
+          entry.url = `/prefix/${entry.url}`;
+          return entry;
+        });
+        return {manifest};
+      };
 
       const options = Object.assign({
         manifestTransforms: [transform1, transform2],
       }, BASE_OPTIONS);
 
-      const {count, size, manifestEntries} = await getManifest(options);
-
+      const {count, size, manifestEntries, warnings} = await getManifest(options);
+      expect(warnings).to.be.empty;
       expect(manifestEntries).to.deep.equal([{
         url: '/prefix/page-1.html',
         revision: '544658ab25ee8762dc241e8b1c5ed96d',
@@ -257,8 +263,8 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         globFollow: false,
       });
 
-      const {count, size, manifestEntries} = await getManifest(options);
-
+      const {count, size, manifestEntries, warnings} = await getManifest(options);
+      expect(warnings).to.be.empty;
       expect(manifestEntries).to.deep.equal([{
         url: 'link/index.html',
         revision: '3883c45b119c9d7e9ad75a1b4a4672ac',

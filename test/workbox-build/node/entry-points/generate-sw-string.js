@@ -293,7 +293,8 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const swString = await generateSWString(options);
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
@@ -311,7 +312,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
       const {swString, warnings} = await generateSWString(options);
-
+      expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
@@ -332,7 +333,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
       const {swString, warnings} = await generateSWString(options);
-
+      expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[], []],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
@@ -385,7 +386,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
       const {swString, warnings} = await generateSWString(options);
-
+      expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[{
           cacheName: runtimeCachingOptions.cacheName,
@@ -431,7 +432,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
       const {swString, warnings} = await generateSWString(options);
-
+      expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[{
           cacheName: firstRuntimeCachingOptions.cacheName,

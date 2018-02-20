@@ -95,7 +95,7 @@ class InjectManifest {
       sanitizedConfig.globPatterns = sanitizedConfig.globPatterns || [];
 
       const {manifestEntries, warnings} = await getManifest(sanitizedConfig);
-      compilation.warnings = compilation.warnings.concat(warnings);
+      compilation.warnings = compilation.warnings.concat(warnings || []);
       entries = entries.concat(manifestEntries);
     }
 

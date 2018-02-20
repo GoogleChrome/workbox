@@ -60,6 +60,25 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     }
   });
 
+  it(`should treat an exception thrown by getFileDetails() as a warning message`, async function() {
+    const warningMessage = 'test warning';
+    const getFileManifestEntries = proxyquire(MODULE_PATH, {
+      './get-file-details': () => {
+        throw new Error(warningMessage);
+      },
+    });
+
+    const {warnings} = await getFileManifestEntries({
+      globDirectory: GLOB_DIRECTORY,
+      globPatterns: GLOB_PATTERNS,
+      templatedUrls: {
+        [FILE.file]: '',
+      },
+    });
+
+    expect(warnings).to.eql([warningMessage]);
+  });
+
   it(`should throw when a templatedUrl contains a pattern that doesn't match anything`, async function() {
     const getFileManifestEntries = require(MODULE_PATH);
 
