@@ -15,6 +15,8 @@
 
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {QueueStore} from './models/QueueStore.mjs';
 import StorableRequest from './models/StorableRequest.mjs';
 import {TAG_PREFIX, MAX_RETENTION_TIME} from './utils/constants.mjs';
@@ -90,13 +92,22 @@ class Queue {
    * @param {Request} request The request object to store.
    */
   async addRequest(request) {
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(request, Request, {
+        moduleName: 'workbox-background-sync',
+        className: 'Queue',
+        funcName: 'addRequest',
+        paramName: 'request',
+      });
+    }
+
     const storableRequest = await StorableRequest.fromRequest(request.clone());
     await this._runCallback('requestWillEnqueue', storableRequest);
     await this._queueStore.addEntry(storableRequest);
     await this._registerSync();
     if (process.env.NODE_ENV !== 'production') {
-      logger.log(`Request for '${request.url}' has been added to
-          background sync queue '${this._name}'.`);
+      logger.log(`Request for '${getFriendlyURL(storableRequest.url)}' has been
+          added to background sync queue '${this._name}'.`);
     }
   }
 
@@ -114,6 +125,10 @@ class Queue {
 
     let storableRequest;
     while (storableRequest = await this._queueStore.getAndRemoveOldestEntry()) {
+      // Make a copy so the unmodified request can be stored
+      // in the event of a replay failure.
+      const storableRequestClone = storableRequest.clone();
+
       // Ignore requests older than maxRetentionTime.
       const maxRetentionTimeInMs = this._maxRetentionTime * 60 * 1000;
       if (now - storableRequest.timestamp > maxRetentionTimeInMs) {
@@ -128,14 +143,16 @@ class Queue {
         // Clone the request before fetching so callbacks get an unused one.
         replay.response = await fetch(replay.request.clone());
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${storableRequest.url}' has been replayed`);
+          logger.log(`Request for '${getFriendlyURL(storableRequest.url)}'
+             has been replayed`);
         }
       } catch (err) {
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${storableRequest.url}' failed to replay`);
+          logger.log(`Request for '${getFriendlyURL(storableRequest.url)}'
+             failed to replay`);
         }
         replay.error = err;
-        failedRequests.push(storableRequest);
+        failedRequests.push(storableRequestClone);
       }
 
       replayedRequests.push(replay);

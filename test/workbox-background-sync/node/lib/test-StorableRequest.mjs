@@ -141,4 +141,32 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
       expect(request.headers.get('x-qux')).to.equal('baz');
     });
   });
+
+  describe(`clone`, function() {
+    it(`creates a new instance with the same values`, async function() {
+      const original = new StorableRequest({
+        timestamp: 123456,
+        url: '/foo',
+        requestInit: {
+          body: new Blob(['it worked!']),
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'x-foo': 'bar',
+            'x-qux': 'baz',
+          },
+        },
+      });
+      const clone = original.clone();
+
+      expect(original.url).to.equal(clone.url);
+      expect(original.timestamp).to.equal(clone.timestamp);
+      expect(original.requestInit).to.deep.equal(clone.requestInit);
+
+      // Ensure clone was not shallow.
+      expect(original.requestInit.body).to.not.equal(clone.requestInit.body);
+      expect(original.requestInit.headers).to.not.equal(
+          clone.requestInit.headers);
+    });
+  });
 });

@@ -211,9 +211,24 @@ moduleExports.addRoute = (options) => {
     }
 
     let responsePromise = caches.open(cacheName)
-    .then((cache) => {
-      return cache.match(precachedUrl);
-    });
+      .then((cache) => {
+        return cache.match(precachedUrl);
+      }).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        // Fall back to the network if we don't have a cached response (perhaps
+        // due to manual cache cleanup).
+        if (process.env.NODE_ENV !== 'production') {
+          logger.debug(`The precached response for ` +
+            `${getFriendlyURL(precachedUrl)} in ${cacheName} was not found. ` +
+            `Falling back to the network instead.`);
+        }
+
+        return fetch(precachedUrl);
+      });
+
     if (process.env.NODE_ENV !== 'production') {
       responsePromise = responsePromise.then((response) => {
         // Workbox is going to handle the route.

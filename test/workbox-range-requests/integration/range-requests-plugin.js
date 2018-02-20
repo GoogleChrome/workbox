@@ -1,55 +1,26 @@
 const expect = require('chai').expect;
-const seleniumAssistant = require('selenium-assistant');
+
+const activateSW = require('../../../infra/testing/activate-sw');
+const cleanSWEnv = require('../../../infra/testing/clean-sw');
 
 describe(`rangeRequests.Plugin`, function() {
-  let webdriver;
-  let testServerAddress = global.__workbox.server.getAddress();
+  const testServerAddress = global.__workbox.server.getAddress();
+  const testingUrl = `${testServerAddress}/test/workbox-range-requests/static/`;
+  const swUrl = `${testingUrl}sw.js`;
 
   beforeEach(async function() {
-    if (webdriver) {
-      await seleniumAssistant.killWebDriver(webdriver);
-      webdriver = null;
-    }
-
-    global.__workbox.server.reset();
-
-    // Allow async functions 10s to complete
-    webdriver = await global.__workbox.seleniumBrowser.getSeleniumDriver();
-    webdriver.manage().timeouts().setScriptTimeout(10 * 1000);
+    // Navigate to our test page and clear all caches before this test runs.
+    await cleanSWEnv(global.__workbox.webdriver, testingUrl);
   });
-
-  after(async function() {
-    if (webdriver) {
-      await seleniumAssistant.killWebDriver(webdriver);
-    }
-  });
-
-  const activateSW = async (swFile) => {
-    const error = await webdriver.executeAsyncScript((swFile, cb) => {
-      navigator.serviceWorker.register(swFile).then(() => {
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (navigator.serviceWorker.controller.scriptURL.endsWith(swFile)) {
-            cb();
-          }
-        });
-      }).catch((error) => cb(error.message));
-    }, swFile);
-
-    if (error) {
-      throw error;
-    }
-  };
 
   it(`should return a partial response that satisfies the request's Range: header, and an error response when it can't be satisfied`, async function() {
-    const testPageUrl = `${testServerAddress}/test/workbox-range-requests/static/`;
-    const swUrl = `${testPageUrl}sw.js`;
-    const dummyUrl = `${testPageUrl}this-file-doesnt-exist.txt`;
+    const dummyUrl = `${testingUrl}this-file-doesnt-exist.txt`;
     const dummyBody = '0123456789';
 
-    await webdriver.get(testPageUrl);
+    await global.__workbox.webdriver.get(testingUrl);
     await activateSW(swUrl);
 
-    const partialResponseBody = await webdriver.executeAsyncScript((dummyUrl, dummyBody, cb) => {
+    const partialResponseBody = await global.__workbox.webdriver.executeAsyncScript((dummyUrl, dummyBody, cb) => {
       const dummyResponse = new Response(dummyBody);
       // Prime the cache, and then make the Range: request.
       caches.open('range-requests-integration-test')
@@ -64,13 +35,13 @@ describe(`rangeRequests.Plugin`, function() {
     // 11 characters returned in the partial response.
     expect(partialResponseBody).to.eql('56');
 
-    const errorResponse = await webdriver.executeAsyncScript((dummyUrl, cb) => {
+    const errorResponseStatus = await global.__workbox.webdriver.executeAsyncScript((dummyUrl, cb) => {
       // These are arbitrary large values that extend past the end of the file.
       fetch(new Request(dummyUrl, {headers: {Range: `bytes=100-101`}}))
-        .then((response) => cb(response));
+        .then((response) => cb(response.status));
     }, dummyUrl);
 
     // The expected error status is 416 (Range Not Satisfiable)
-    expect(errorResponse.status).to.eql(416);
+    expect(errorResponseStatus).to.eql(416);
   });
 });

@@ -36,7 +36,7 @@ export default class PrecacheEntry {
     this._originalInput = originalInput;
     this._entryId = url;
     this._revision = revision;
-    const requestAsCacheKey = new Request(url);
+    const requestAsCacheKey = new Request(url, {credentials: 'same-origin'});
     this._cacheRequest = requestAsCacheKey;
     this._networkRequest = shouldCacheBust ?
       this._cacheBustRequest(requestAsCacheKey) : requestAsCacheKey;
@@ -53,7 +53,9 @@ export default class PrecacheEntry {
    */
   _cacheBustRequest(request) {
     let url = request.url;
-    const requestOptions = {};
+    const requestOptions = {
+      credentials: 'same-origin',
+    };
     if ('cache' in Request.prototype) {
       // Make use of the Request cache mode where we can.
       // Reload skips the HTTP cache for outgoing requests and updates

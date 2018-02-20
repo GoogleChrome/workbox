@@ -12,7 +12,7 @@ describe(`[workbox-cli] app.js`, function() {
   const PROXIED_DEST_DIR = path.resolve(process.cwd(), 'build');
   const PROXIED_ERROR = new Error('proxied error message');
   const PROXIED_CONFIG = {};
-  const INVALID_CONFIG_FILE = path.resolve(process.cwd(), '/does/not/exist');
+  const INVALID_CONFIG_FILE = path.resolve(process.cwd(), path.join('does', 'not', 'exist'));
   const UNKNOWN_COMMAND = 'unknown-command';
   const WORKBOX_BUILD_COMMANDS = [
     'generateSW',
@@ -71,7 +71,10 @@ describe(`[workbox-cli] app.js`, function() {
           expect(
             loggerErrorStub.alwaysCalledWithExactly(errors['invalid-common-js-module'])
           ).to.be.true;
-          expect(error.message).to.have.string(INVALID_CONFIG_FILE);
+
+          // Windows will log with backslashes that need escaping
+          const escapedPath = INVALID_CONFIG_FILE.split('\\').join('\\\\');
+          expect(error.message).to.have.string(escapedPath);
         }
       });
     }

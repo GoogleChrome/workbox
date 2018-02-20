@@ -1,50 +1,19 @@
 const expect = require('chai').expect;
-const seleniumAssistant = require('selenium-assistant');
+
+const activateSW = require('../../../infra/testing/activate-sw');
+const cleanSWEnv = require('../../../infra/testing/clean-sw');
 
 describe(`[workbox-precaching] Precache and Update`, function() {
-  let webdriver;
   let testServerAddress = global.__workbox.server.getAddress();
+  const testingUrl = `${testServerAddress}/test/workbox-precaching/static/precache-and-update/`;
 
   beforeEach(async function() {
-    if (webdriver) {
-      await seleniumAssistant.killWebDriver(webdriver);
-      webdriver = null;
-    }
-
-    global.__workbox.server.reset();
-
-    // Allow async functions 10s to complete
-    webdriver = await global.__workbox.seleniumBrowser.getSeleniumDriver();
-    webdriver.manage().timeouts().setScriptTimeout(10 * 1000);
+    // Navigate to our test page and clear all caches before this test runs.
+    await cleanSWEnv(global.__workbox.webdriver, testingUrl);
   });
-
-  after(async function() {
-    if (webdriver) {
-      await seleniumAssistant.killWebDriver(webdriver);
-    }
-  });
-
-  const activateSW = async (swFile) => {
-    const error = await webdriver.executeAsyncScript((swFile, cb) => {
-      navigator.serviceWorker.register(swFile)
-      .then(() => {
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          if (navigator.serviceWorker.controller.scriptURL.endsWith(swFile)) {
-            cb();
-          }
-        });
-      })
-      .catch((err) => {
-        cb(err);
-      });
-    }, swFile);
-    if (error) {
-      throw error;
-    }
-  };
 
   const getCachedRequests = (cacheName) => {
-    return webdriver.executeAsyncScript((cacheName, cb) => {
+    return global.__workbox.webdriver.executeAsyncScript((cacheName, cb) => {
       caches.open(cacheName)
       .then((cache) => {
         return cache.keys();
@@ -57,50 +26,28 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     }, cacheName);
   };
 
-  const getIDBData = () => {
-    return webdriver.executeAsyncScript((cb) => {
-      const request = indexedDB.open('workbox-precaching');
-      request.onerror = function(event) {
-        cb('Error opening indexedDB');
-      };
-      request.onsuccess = function(event) {
-        const db = event.target.result;
-
-        const transaction = db.transaction(['precached-details-models'], 'readwrite');
-        const objectStore = transaction.objectStore('precached-details-models');
-        const getAllRequest = objectStore.getAll();
-        getAllRequest.onerror = function(event) {
-          cb('Error opening getting all content');
-        };
-        getAllRequest.onsuccess = function(event) {
-          cb(event.target.result);
-        };
-      };
-    });
-  };
-
   it(`should load a page with service worker `, async function() {
-    const testingURl = `${testServerAddress}/test/workbox-precaching/static/precache-and-update/`;
-    const SW_1_URL = `${testingURl}sw-1.js`;
-    const SW_2_URL = `${testingURl}sw-2.js`;
+    const SW_1_URL = `${testingUrl}sw-1.js`;
+    const SW_2_URL = `${testingUrl}sw-2.js`;
 
-    // Load the page and wait for the first service worker to register and activate.
-    await webdriver.get(testingURl);
+    const getIdbData = global.__workbox.seleniumBrowser.getId() === 'safari' ?
+      require('../utils/getPrecachedIDBData-safari') :
+      require('../utils/getPrecachedIDBData');
 
     // Precaching will cache bust with a search param in some situations.
-    const needsCacheBustSearchParam = await webdriver.executeScript(() => {
+    const needsCacheBustSearchParam = await global.__workbox.webdriver.executeScript(() => {
       return !('cache' in Request.prototype);
     });
+
+    // Clear out the counters so that we start fresh.
+    global.__workbox.server.reset();
 
     // Register the first service worker.
     await activateSW(SW_1_URL);
 
     // Check that only the precache cache was created.
-    const keys = await webdriver.executeAsyncScript((cb) => {
-      caches.keys()
-      .then((keys) => {
-        cb(keys);
-      });
+    const keys = await global.__workbox.webdriver.executeAsyncScript((cb) => {
+      caches.keys().then((keys) => cb(keys));
     });
     expect(keys).to.deep.equal([
       'workbox-precache-http://localhost:3004/test/workbox-precaching/static/precache-and-update/',
@@ -113,7 +60,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/styles/index.css',
     ]);
 
-    let savedIDBData = await getIDBData();
+    let savedIDBData = await getIdbData();
     expect(savedIDBData).to.deep.equal([
       {
         revision: '1',
@@ -127,19 +74,18 @@ describe(`[workbox-precaching] Precache and Update`, function() {
 
     // Make sure the requested URL's include cache busting search param if needed.
     let requestsMade = global.__workbox.server.getRequests();
-    expect(requestsMade['/test/workbox-precaching/static/precache-and-update/']).to.equal(1);
     if (needsCacheBustSearchParam) {
       expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(1);
       expect(requestsMade['/test/workbox-precaching/static/precache-and-update/index.html?_workbox-cache-bust=1']).to.equal(1);
       expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css?_workbox-cache-bust=1']).to.equal(1);
     } else {
-      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(2);
+      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(1);
       expect(requestsMade['/test/workbox-precaching/static/precache-and-update/index.html']).to.equal(1);
     }
 
     // Request the page and check that the precached assets weren't requested from the network
     global.__workbox.server.reset();
-    await webdriver.get(testingURl);
+    await global.__workbox.webdriver.get(testingUrl);
 
     requestsMade = global.__workbox.server.getRequests();
     expect(requestsMade['/test/workbox-precaching/static/precache-and-update/']).to.equal(undefined);
@@ -147,7 +93,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(undefined);
 
     // This is a crude way to fake an updated service worker.
-    const error = await webdriver.executeAsyncScript((SW_1_URL, cb) => {
+    const error = await global.__workbox.webdriver.executeAsyncScript((SW_1_URL, cb) => {
       navigator.serviceWorker.getRegistration()
       .then((reg) => reg.unregister(SW_1_URL))
       .then(() => cb())
@@ -178,7 +124,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/new-request.txt',
     ]);
 
-    savedIDBData = await getIDBData();
+    savedIDBData = await getIdbData();
     expect(savedIDBData).to.deep.equal([
       {
         revision: '2',
@@ -192,7 +138,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
 
     // Refresh the page and test that the requests are as expected
     global.__workbox.server.reset();
-    await webdriver.get(testingURl);
+    await global.__workbox.webdriver.get(testingUrl);
     requestsMade = global.__workbox.server.getRequests();
     // Ensure the HTML page is returned from cache and not network
     expect(requestsMade['/test/workbox-precaching/static/precache-and-update/']).to.equal(undefined);

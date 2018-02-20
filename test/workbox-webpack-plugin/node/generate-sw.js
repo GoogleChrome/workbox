@@ -80,10 +80,13 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       const compiler = webpack(config);
       compiler.run((webpackError) => {
         if (webpackError) {
-          expect(webpackError.message.includes('importWorkboxFrom'));
-          done();
+          if (webpackError.message.includes('importWorkboxFrom')) {
+            done();
+          } else {
+            done(new Error(`An unexpected error was thrown: ${webpackError.message}`));
+          }
         } else {
-          done('Unexpected success.');
+          done(new Error('Unexpected success.'));
         }
       });
     });
@@ -303,7 +306,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           const basenames = libraryFiles.map((file) => path.basename(file));
           expect(basenames).to.eql(ALL_WORKBOX_FILES);
-
 
           // The correct importScripts path should use the versioned name of the
           // parent workbox libraries directory. We don't know that version ahead

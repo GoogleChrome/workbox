@@ -408,6 +408,21 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(fetchWrapper.fetch.args[0][2]).to.equal(testPlugins);
       expect(cacheWrapper.put.args[0][3]).to.equal(testPlugins);
     });
+
+    it(`it should set credentials: 'same-origin' on the precaching requests`, async function() {
+      sandbox.spy(fetchWrapper, 'fetch');
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        '/index.1234.html',
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      await precacheController.install();
+
+      const request = fetchWrapper.fetch.args[0][0];
+      expect(request.credentials).to.eql('same-origin');
+    });
   });
 
   describe(`cleanup()`, function() {

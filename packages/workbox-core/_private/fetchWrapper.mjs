@@ -113,8 +113,8 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   }
 };
 
-const exports = {
+const fetchWrapper = {
   fetch: wrappedFetch,
 };
 
-export {exports as fetchWrapper};
+export {fetchWrapper};

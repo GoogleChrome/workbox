@@ -62,21 +62,28 @@ const getTextFromBlob = async (blob) => {
  * @private
  */
 const createRequestWillReplayCallback = (config) => {
-  return async ({url, timestamp, requestInit}) => {
+  return async (storableRequest) => {
+    let {url, requestInit, timestamp} = storableRequest;
     url = new URL(url);
 
     // Measurement protocol requests can set their payload parameters in either
     // the URL query string (for GET requests) or the POST body.
     let params;
     if (requestInit.body) {
-      const payload = await getTextFromBlob(requestInit.body);
+      const payload = requestInit.body instanceof Blob ?
+          await getTextFromBlob(requestInit.body) : requestInit.body;
+
       params = new URLSearchParams(payload);
     } else {
       params = url.searchParams;
     }
 
-    // Set the qt param prior to apply the hitFilter or parameterOverrides.
-    const queueTime = Date.now() - timestamp;
+    // Calculate the qt param, accounting for the fact that an existing
+    // qt param may be present and should be updated rather than replaced.
+    const originalHitTime = timestamp - (params.get('qt') || 0);
+    const queueTime = Date.now() - originalHitTime;
+
+    // Set the qt param prior to applying the hitFilter or parameterOverrides.
     params.set('qt', queueTime);
 
     if (config.parameterOverrides) {
@@ -94,10 +101,10 @@ const createRequestWillReplayCallback = (config) => {
     requestInit.method = 'POST';
     requestInit.mode = 'cors';
     requestInit.credentials = 'omit';
-    requestInit.headers = '[["Content-Type", "text/plain"]]';
+    requestInit.headers = {'Content-Type': 'text/plain'};
 
-    // Ignore URL search params as they're in the post body.
-    requestInit.url = `${url.origin}${url.pathname}`;
+    // Ignore URL search params as they're now in the post body.
+    storableRequest.url = `${url.origin}${url.pathname}`;
   };
 };
 
