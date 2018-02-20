@@ -127,7 +127,13 @@ class Queue {
       try {
         // Clone the request before fetching so callbacks get an unused one.
         replay.response = await fetch(replay.request.clone());
+        if (process.env.NODE_ENV !== 'production') {
+          logger.log(`Request for '${storableRequest.url}' has been replayed`);
+        }
       } catch (err) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.log(`Request for '${storableRequest.url}' failed to replay`);
+        }
         replay.error = err;
         failedRequests.push(storableRequest);
       }
