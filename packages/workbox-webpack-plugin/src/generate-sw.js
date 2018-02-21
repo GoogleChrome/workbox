@@ -77,7 +77,10 @@ class GenerateSW {
       (compilation.options.output.publicPath || '') + manifestFilename);
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
+    let workboxSWImport;
     if (workboxSWImports) {
+      // Get the Workbox SW import from the first element in the array.
+      workboxSWImport = workboxSWImports.shift();
       importScriptsArray.push(...workboxSWImports);
     }
 
@@ -86,6 +89,7 @@ class GenerateSW {
     // the workbox-build.generateSWString() default.
     sanitizedConfig.globPatterns = sanitizedConfig.globPatterns || [];
     sanitizedConfig.importScripts = importScriptsArray;
+    sanitizedConfig.workboxSWImport = workboxSWImport;
     const serviceWorker = await generateSWString(sanitizedConfig);
     compilation.assets[this.config.swDest] =
       convertStringToAsset(serviceWorker);
