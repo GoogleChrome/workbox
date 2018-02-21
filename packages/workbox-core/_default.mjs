@@ -63,7 +63,9 @@ class WorkboxCore {
       );
       logger.groupEnd();
 
-      checkSWFileCacheHeaders();
+      if (typeof checkSWFileCacheHeaders === 'function') {
+        checkSWFileCacheHeaders();
+      }
     }
   }
 
