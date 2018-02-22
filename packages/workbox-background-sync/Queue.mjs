@@ -16,6 +16,7 @@
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {QueueStore} from './models/QueueStore.mjs';
 import StorableRequest from './models/StorableRequest.mjs';
 import {TAG_PREFIX, MAX_RETENTION_TIME} from './utils/constants.mjs';
@@ -105,8 +106,8 @@ class Queue {
     await this._queueStore.addEntry(storableRequest);
     await this._registerSync();
     if (process.env.NODE_ENV !== 'production') {
-      logger.log(`Request for '${request.url}' has been added to
-          background sync queue '${this._name}'.`);
+      logger.log(`Request for '${getFriendlyURL(storableRequest.url)}' has been
+          added to background sync queue '${this._name}'.`);
     }
   }
 
@@ -141,7 +142,15 @@ class Queue {
       try {
         // Clone the request before fetching so callbacks get an unused one.
         replay.response = await fetch(replay.request.clone());
+        if (process.env.NODE_ENV !== 'production') {
+          logger.log(`Request for '${getFriendlyURL(storableRequest.url)}'
+             has been replayed`);
+        }
       } catch (err) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.log(`Request for '${getFriendlyURL(storableRequest.url)}'
+             failed to replay`);
+        }
         replay.error = err;
         failedRequests.push(storableRequestClone);
       }
