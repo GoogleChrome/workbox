@@ -50,6 +50,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       precacheOptionsString,
       runtimeCaching: runtimeCachingPlaceholder,
       skipWaiting: undefined,
+      workboxSWImport: undefined,
     }]);
   });
 
@@ -70,6 +71,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const skipWaiting = true;
     const swTemplate = 'template';
     const precacheOptionsString = '{\n  "directoryIndex": "index.html",\n  "ignoreUrlParametersMatching": [/a/, /b/]\n}';
+    const workboxSWImport = 'workbox-sw.js';
 
     // There are two stages in templating: creating the active template function
     // from an initial string, and passing variables to that template function
@@ -97,6 +99,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       navigateFallbackWhitelist,
       runtimeCaching,
       skipWaiting,
+      workboxSWImport,
     });
 
     expect(templateCreationStub.alwaysCalledWith(swTemplate)).to.be.true;
@@ -112,6 +115,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       runtimeCaching: runtimeCachingPlaceholder,
       precacheOptionsString,
       skipWaiting,
+      workboxSWImport,
     }]);
   });
 });

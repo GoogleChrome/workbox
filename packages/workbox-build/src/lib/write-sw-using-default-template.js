@@ -35,6 +35,7 @@ module.exports = async ({
   runtimeCaching,
   skipWaiting,
   swDest,
+  workboxSWImport,
 }) => {
   try {
     await fse.mkdirp(path.dirname(swDest));
@@ -57,6 +58,7 @@ module.exports = async ({
     navigateFallbackWhitelist,
     runtimeCaching,
     skipWaiting,
+    workboxSWImport,
   });
 
   try {

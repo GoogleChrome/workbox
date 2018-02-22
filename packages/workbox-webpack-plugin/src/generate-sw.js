@@ -77,8 +77,19 @@ class GenerateSW {
       (compilation.options.output.publicPath || '') + manifestFilename);
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
+    let workboxSWImport;
     if (workboxSWImports) {
-      importScriptsArray.push(...workboxSWImports);
+      if (workboxSWImports.length === 1) {
+        // When importWorkboxFrom is 'cdn' or 'local', or a chunk name
+        // that only contains one JavaScript asset, then this will be a one
+        // element array, containing just the Workbox SW code.
+        workboxSWImport = workboxSWImports[0];
+      } else {
+        // If importWorkboxFrom was a chunk name that contained multiple
+        // JavaScript assets, then we don't know which contains the Workbox SW
+        // code. Just import them first as part of the "main" importScripts().
+        importScriptsArray.unshift(...workboxSWImports);
+      }
     }
 
     const sanitizedConfig = sanitizeConfig.forGenerateSWString(this.config);
@@ -86,6 +97,7 @@ class GenerateSW {
     // the workbox-build.generateSWString() default.
     sanitizedConfig.globPatterns = sanitizedConfig.globPatterns || [];
     sanitizedConfig.importScripts = importScriptsArray;
+    sanitizedConfig.workboxSWImport = workboxSWImport;
     const serviceWorker = await generateSWString(sanitizedConfig);
     compilation.assets[this.config.swDest] =
       convertStringToAsset(serviceWorker);
