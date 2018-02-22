@@ -79,9 +79,17 @@ class GenerateSW {
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
     let workboxSWImport;
     if (workboxSWImports) {
-      // Get the Workbox SW import from the first element in the array.
-      workboxSWImport = workboxSWImports.shift();
-      importScriptsArray.push(...workboxSWImports);
+      if (workboxSWImports.length === 1) {
+        // When importWorkboxFrom is 'cdn' or 'local', or a chunk name
+        // that only contains one JavaScript asset, then this will be a one
+        // element array, containing just the Workbox SW code.
+        workboxSWImport = workboxSWImports[0];
+      } else {
+        // If importWorkboxFrom was a chunk name that contained multiple
+        // JavaScript assets, then we don't know which contains the Workbox SW
+        // code. Just import them first as part of the "main" importScripts().
+        importScriptsArray.unshift(...workboxSWImports);
+      }
     }
 
     const sanitizedConfig = sanitizeConfig.forGenerateSWString(this.config);
