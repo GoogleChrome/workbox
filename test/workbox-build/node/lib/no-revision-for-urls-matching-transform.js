@@ -61,7 +61,7 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
       revision: '1234abcd',
     }, {
       url: '/third-match/12345/hello',
-    }], warnings: []});
+    }]});
   });
 
   it(`should remove revision info from multiple matching entries`, function() {
@@ -72,11 +72,11 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
       url: '/second-match/12345/hello',
     }, {
       url: '/third-match/12345/hello',
-    }], warnings: []});
+    }]});
   });
 
   it(`should do nothing when there's a match for an entry without a revision`, function() {
     const transform = noRevisionForUrlsMatching(/third-match/);
-    expect(transform(MANIFEST)).to.eql({manifest: MANIFEST, warnings: []});
+    expect(transform(MANIFEST)).to.eql({manifest: MANIFEST});
   });
 });

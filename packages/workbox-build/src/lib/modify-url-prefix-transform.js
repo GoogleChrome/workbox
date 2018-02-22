@@ -73,6 +73,6 @@ module.exports = (modifyUrlPrefix) => {
       return entry;
     });
 
-    return {manifest, warnings: []};
+    return {manifest};
   };
 };

@@ -34,6 +34,6 @@ module.exports = (regexp) => {
       return entry;
     });
 
-    return {manifest, warnings: []};
+    return {manifest};
   };
 };
