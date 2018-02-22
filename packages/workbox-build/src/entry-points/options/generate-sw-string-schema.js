@@ -23,4 +23,5 @@ module.exports = commonGenerateSchema.keys({
   globDirectory: joi.string(),
   importScripts: joi.array().items(joi.string()).required(),
   modulePathPrefix: joi.string(),
+  workboxSWImport: joi.string(),
 });

@@ -19,6 +19,7 @@ import {WorkboxError} from './_private/WorkboxError.mjs';
 import {cacheNames} from './_private/cacheNames.mjs';
 import {logger} from './_private/logger.mjs';
 import {assert} from './_private/assert.mjs';
+import {checkSWFileCacheHeaders} from './_private/checkSWFileCacheHeaders.mjs';
 import {setLoggerLevel, getLoggerLevel} from './_private/logger.mjs';
 import './_version.mjs';
 
@@ -61,6 +62,10 @@ class WorkboxCore {
         `${padding}https://github.com/GoogleChrome/workbox/issues/new`
       );
       logger.groupEnd();
+
+      if (typeof checkSWFileCacheHeaders === 'function') {
+        checkSWFileCacheHeaders();
+      }
     }
   }
 

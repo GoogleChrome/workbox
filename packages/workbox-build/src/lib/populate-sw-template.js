@@ -33,6 +33,7 @@ module.exports = ({
   navigateFallbackWhitelist,
   runtimeCaching,
   skipWaiting,
+  workboxSWImport,
 }) => {
   // These are all options that can be passed to the precacheAndRoute() method.
   const precacheOptions = {
@@ -66,6 +67,7 @@ module.exports = ({
       precacheOptionsString,
       skipWaiting,
       runtimeCaching: runtimeCachingConverter(runtimeCaching),
+      workboxSWImport,
     });
 
     // Clean up multiple blank lines.

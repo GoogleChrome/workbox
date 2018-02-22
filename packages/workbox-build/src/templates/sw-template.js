@@ -27,13 +27,16 @@ module.exports = `/**
  * See https://goo.gl/2aRDsh
  */
 
+<% if (workboxSWImport) { %>
+importScripts(<%= JSON.stringify(workboxSWImport) %>);
+<% if (modulePathPrefix) { %>workbox.setConfig({modulePathPrefix: <%= JSON.stringify(modulePathPrefix) %>});<% } %>
+<% } %>
 <% if (importScripts) { %>
 importScripts(
   <%= importScripts.map(JSON.stringify).join(',\\n  ') %>
 );
 <% } %>
 
-<% if (modulePathPrefix) { %>workbox.setConfig({modulePathPrefix: <%= JSON.stringify(modulePathPrefix) %>});<% } %>
 <% if (cacheId) { %>workbox.core.setCacheNameDetails({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
 
 <% if (skipWaiting) { %>workbox.skipWaiting();<% } %>

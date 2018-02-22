@@ -96,7 +96,7 @@ const isArrayOfClass = (value, expectedClass,
   }
 };
 
-const finalExports = process.env.NODE_ENV === 'production' ? null : {
+const finalAssertExports = process.env.NODE_ENV === 'production' ? null : {
   hasMethod,
   isArray,
   isInstance,
@@ -106,4 +106,4 @@ const finalExports = process.env.NODE_ENV === 'production' ? null : {
   isArrayOfClass,
 };
 
-export {finalExports as assert};
+export {finalAssertExports as assert};
