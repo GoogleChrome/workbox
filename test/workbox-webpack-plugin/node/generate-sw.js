@@ -701,10 +701,10 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[
-              FILE_MANIFEST_NAME,
-              WORKBOX_SW_FILE_NAME,
-            ]],
+            importScripts: [
+              [WORKBOX_SW_FILE_NAME],
+              [FILE_MANIFEST_NAME],
+            ],
             suppressWarnings: [[]],
             precacheAndRoute: [[[{
               revision: '544658ab25ee8762dc241e8b1c5ed96d',
