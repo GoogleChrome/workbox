@@ -96,8 +96,9 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     it(`should use defaults when all the required parameters are present`, async function() {
       const options = Object.assign({}, BASE_OPTIONS);
 
-      const swCode = await generateSWString(options);
-      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
@@ -110,8 +111,8 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         importScripts,
       });
 
-      let swCode = await generateSWString(options);
-
+      let {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
       // Rather than emulate importScripts() logic in the validator, we're just
       // going to inject some additional code at the start of the generated
       // service worker, and pretend that it's the code in 'manifest.js'.
@@ -119,8 +120,8 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         url: '/test',
         revision: 'test',
       }];
-      swCode = `self.__precacheManifest = ${JSON.stringify(additionalManifestEntries)};${swCode}`;
-      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+      swString = `self.__precacheManifest = ${JSON.stringify(additionalManifestEntries)};${swString}`;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...importScripts]],
         suppressWarnings: [[]],
         precacheAndRoute: [[additionalManifestEntries, {}]],
@@ -134,8 +135,8 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         globDirectory: GLOB_DIR,
       });
 
-      let swCode = await generateSWString(options);
-
+      let {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
       // Rather than emulate importScripts() logic in the validator, we're just
       // going to inject some additional code at the start of the generated
       // service worker, and pretend that it's the code in 'manifest.js'.
@@ -143,8 +144,8 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         url: '/test',
         revision: 'test',
       }];
-      swCode = `self.__precacheManifest = ${JSON.stringify(additionalManifestEntries)};${swCode}`;
-      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+      swString = `self.__precacheManifest = ${JSON.stringify(additionalManifestEntries)};${swString}`;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...importScripts]],
         suppressWarnings: [[]],
         precacheAndRoute: [[[{
@@ -183,9 +184,9 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       };
       const options = Object.assign({}, BASE_OPTIONS, workboxOptions);
 
-      const swCode = await generateSWString(options);
-
-      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         clientsClaim: [[]],
         skipWaiting: [[]],
         setCacheNameDetails: [[{prefix: cacheId}]],
@@ -201,9 +202,9 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         navigateFallback,
       });
 
-      const swCode = await generateSWString(options);
-
-      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
@@ -219,9 +220,9 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         navigateFallbackWhitelist,
       });
 
-      const swCode = await generateSWString(options);
-
-      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
@@ -293,8 +294,9 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const swCode = await generateSWString(options);
-      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
@@ -310,9 +312,9 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const swCode = await generateSWString(options);
-
-      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
@@ -331,9 +333,9 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const swCode = await generateSWString(options);
-
-      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[], []],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
@@ -384,9 +386,9 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const swCode = await generateSWString(options);
-
-      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[{
           cacheName: runtimeCachingOptions.cacheName,
           plugins: runtimeCachingOptions.plugins.concat([
@@ -430,9 +432,9 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const swCode = await generateSWString(options);
-
-      await validateServiceWorkerRuntime({swCode, expectedMethodCalls: {
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[{
           cacheName: firstRuntimeCachingOptions.cacheName,
           plugins: [{}],

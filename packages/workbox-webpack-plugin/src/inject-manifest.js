@@ -93,7 +93,9 @@ class InjectManifest {
       // If globPatterns isn't explicitly set, then default to [], instead of
       // the workbox-build.getManifest() default.
       sanitizedConfig.globPatterns = sanitizedConfig.globPatterns || [];
-      const {manifestEntries} = await getManifest(sanitizedConfig);
+
+      const {manifestEntries, warnings} = await getManifest(sanitizedConfig);
+      compilation.warnings = compilation.warnings.concat(warnings || []);
       entries = entries.concat(manifestEntries);
     }
 

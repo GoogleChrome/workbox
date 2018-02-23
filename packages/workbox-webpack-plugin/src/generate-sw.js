@@ -98,9 +98,9 @@ class GenerateSW {
     sanitizedConfig.globPatterns = sanitizedConfig.globPatterns || [];
     sanitizedConfig.importScripts = importScriptsArray;
     sanitizedConfig.workboxSWImport = workboxSWImport;
-    const serviceWorker = await generateSWString(sanitizedConfig);
-    compilation.assets[this.config.swDest] =
-      convertStringToAsset(serviceWorker);
+    const {swString, warnings} = await generateSWString(sanitizedConfig);
+    compilation.warnings = compilation.warnings.concat(warnings || []);
+    compilation.assets[this.config.swDest] = convertStringToAsset(swString);
   }
 
   /**

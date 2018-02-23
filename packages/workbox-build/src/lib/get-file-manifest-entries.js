@@ -36,6 +36,7 @@ module.exports = async ({
   swDest,
   templatedUrls,
 }) => {
+  const warnings = [];
   // Initialize to an empty array so that we can still pass something to
   // filterFiles() and get a normalized output.
   let fileDetails = [];
@@ -47,25 +48,31 @@ module.exports = async ({
       globIgnores.push(`**/${path.basename(swDest)}`);
     }
 
-    fileDetails = globPatterns.reduce((accumulated, globPattern) => {
-      const globbedFileDetails = getFileDetails({
-        globDirectory,
-        globFollow,
-        globIgnores,
-        globPattern,
-        globStrict,
-      });
+    try {
+      fileDetails = globPatterns.reduce((accumulated, globPattern) => {
+        const globbedFileDetails = getFileDetails({
+          globDirectory,
+          globFollow,
+          globIgnores,
+          globPattern,
+          globStrict,
+        });
 
-      globbedFileDetails.forEach((fileDetails) => {
-        if (fileSet.has(fileDetails.file)) {
-          return;
-        }
+        globbedFileDetails.forEach((fileDetails) => {
+          if (fileSet.has(fileDetails.file)) {
+            return;
+          }
 
-        fileSet.add(fileDetails.file);
-        accumulated.push(fileDetails);
-      });
-      return accumulated;
-    }, []);
+          fileSet.add(fileDetails.file);
+          accumulated.push(fileDetails);
+        });
+        return accumulated;
+      }, []);
+    } catch (error) {
+      // If there's an exception thrown while globbing, then report
+      // it back as a warning, and don't consider it fatal.
+      warnings.push(error.message);
+    }
   }
 
   if (templatedUrls) {
@@ -99,6 +106,13 @@ module.exports = async ({
     }
   }
 
-  return filterFiles({fileDetails, maximumFileSizeToCacheInBytes,
-    modifyUrlPrefix, dontCacheBustUrlsMatching, manifestTransforms});
+  const filteredFiles = filterFiles({fileDetails,
+    maximumFileSizeToCacheInBytes, modifyUrlPrefix, dontCacheBustUrlsMatching,
+    manifestTransforms});
+
+  if (warnings.length > 0) {
+    filteredFiles.warnings.push(...warnings);
+  }
+
+  return filteredFiles;
 };

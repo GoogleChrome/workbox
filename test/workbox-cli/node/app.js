@@ -18,9 +18,15 @@ describe(`[workbox-cli] app.js`, function() {
     'generateSW',
     'injectManifest',
   ];
-  const WORKBOX_BUILD_RETURN_VALUE = {
+  const WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE = {
     size: 2,
     count: 1,
+    warnings: [],
+  };
+  const WORKBOX_BUILD_WITH_WARNINGS_RETURN_VALUE = {
+    size: 2,
+    count: 1,
+    warnings: ['warning'],
   };
 
   describe(`failures due to bad parameters`, function() {
@@ -158,12 +164,36 @@ describe(`[workbox-cli] app.js`, function() {
           },
           'workbox-build': {
             [command]: () => {
-              return WORKBOX_BUILD_RETURN_VALUE;
+              return WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE;
             },
           },
         });
 
         await app({input: [command, PROXIED_CONFIG_FILE]});
+        expect(loggerLogStub.calledTwice).to.be.true;
+      });
+
+      it(`should call logger.warn() to report warnings, and then logger.log() upon successfully running workbox-build.${command}()`, async function() {
+        const loggerLogStub = sinon.stub();
+        const loggerWarningStub = sinon.stub();
+        const app = proxyquire(MODULE_PATH, {
+          './lib/read-config': (options) => {
+            expect(options).to.eql(PROXIED_CONFIG_FILE);
+            return PROXIED_CONFIG;
+          },
+          './lib/logger': {
+            log: loggerLogStub,
+            warn: loggerWarningStub,
+          },
+          'workbox-build': {
+            [command]: () => {
+              return WORKBOX_BUILD_WITH_WARNINGS_RETURN_VALUE;
+            },
+          },
+        });
+
+        await app({input: [command, PROXIED_CONFIG_FILE]});
+        expect(loggerWarningStub.calledOnce).to.be.true;
         expect(loggerLogStub.calledTwice).to.be.true;
       });
 
@@ -180,7 +210,7 @@ describe(`[workbox-cli] app.js`, function() {
           },
           'workbox-build': {
             [command]: () => {
-              return WORKBOX_BUILD_RETURN_VALUE;
+              return WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE;
             },
           },
         });

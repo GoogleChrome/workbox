@@ -60,15 +60,19 @@ module.exports = (modifyUrlPrefix) => {
   // a string.
   const modifyRegex = new RegExp(`^(${prefixMatchesStrings})`);
 
-  return (manifest) => manifest.map((entry) => {
-    if (typeof entry.url !== 'string') {
-      throw new Error(errors['manifest-entry-bad-url']);
-    }
+  return (originalManifest) => {
+    const manifest = originalManifest.map((entry) => {
+      if (typeof entry.url !== 'string') {
+        throw new Error(errors['manifest-entry-bad-url']);
+      }
 
-    entry.url = entry.url.replace(modifyRegex, (match) => {
-      return modifyUrlPrefix[match];
+      entry.url = entry.url.replace(modifyRegex, (match) => {
+        return modifyUrlPrefix[match];
+      });
+
+      return entry;
     });
 
-    return entry;
-  });
+    return {manifest};
+  };
 };

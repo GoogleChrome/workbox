@@ -85,24 +85,30 @@ describe(`[workbox-build] lib/filter-files.js`, function() {
     const prefix1 = 'prefix1/';
     const prefix2 = 'prefix2/';
 
+    const warning1 = 'test warning 1';
+    const warning2 = 'test warning 1';
+
     const transform1 = (files) => {
-      return files.map((file) => {
+      const manifest = files.map((file) => {
         file.url = prefix1 + file.url;
         return file;
       });
+      return {manifest, warnings: [warning1]};
     };
     const transform2 = (files) => {
-      return files.map((file) => {
+      const manifest = files.map((file) => {
         file.url = prefix2 + file.url;
         return file;
       });
+      return {manifest, warnings: [warning2]};
     };
 
-    const {size, count, manifestEntries} = filterFiles({
+    const {size, count, manifestEntries, warnings} = filterFiles({
       fileDetails: FILE_DETAILS,
       manifestTransforms: [transform1, transform2],
     });
 
+    expect(warnings).to.eql([warning1, warning2]);
     expect(size).to.eql(ENTRY1.size + ENTRY2.size + ENTRY3.size);
     expect(count).to.eql(3);
     expect(manifestEntries).to.deep.equal([{

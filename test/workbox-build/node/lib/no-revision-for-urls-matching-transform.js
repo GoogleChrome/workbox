@@ -54,29 +54,29 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
 
   it(`should remove revision info from a single matching entry`, function() {
     const transform = noRevisionForUrlsMatching(/first-match/);
-    expect(transform(MANIFEST)).to.eql([{
+    expect(transform(MANIFEST)).to.eql({manifest: [{
       url: '/first-match/12345/hello',
     }, {
       url: '/second-match/12345/hello',
       revision: '1234abcd',
     }, {
       url: '/third-match/12345/hello',
-    }]);
+    }]});
   });
 
   it(`should remove revision info from multiple matching entries`, function() {
     const transform = noRevisionForUrlsMatching(/12345/);
-    expect(transform(MANIFEST)).to.eql([{
+    expect(transform(MANIFEST)).to.eql({manifest: [{
       url: '/first-match/12345/hello',
     }, {
       url: '/second-match/12345/hello',
     }, {
       url: '/third-match/12345/hello',
-    }]);
+    }]});
   });
 
   it(`should do nothing when there's a match for an entry without a revision`, function() {
     const transform = noRevisionForUrlsMatching(/third-match/);
-    expect(transform(MANIFEST)).to.eql(MANIFEST);
+    expect(transform(MANIFEST)).to.eql({manifest: MANIFEST});
   });
 });

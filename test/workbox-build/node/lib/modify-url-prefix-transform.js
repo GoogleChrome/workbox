@@ -61,11 +61,11 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
     };
 
     const transform = modifyUrlPrefix(modifications);
-    expect(transform(getManifest())).to.eql([{
+    expect(transform(getManifest())).to.eql({manifest: [{
       url: '/12345/hello',
     }, {
       url: '/second-match/12345/hello',
-    }]);
+    }]});
   });
 
   it(`should prepend prefixes`, function() {
@@ -74,11 +74,11 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
     };
 
     const transform = modifyUrlPrefix(modifications);
-    expect(transform(getManifest())).to.eql([{
+    expect(transform(getManifest())).to.eql({manifest: [{
       url: '/public/first-match/12345/hello',
     }, {
       url: '/public/second-match/12345/hello',
-    }]);
+    }]});
   });
 
   it(`should only replace the initial match`, function() {
@@ -88,11 +88,11 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
     };
 
     const transform = modifyUrlPrefix(modifications);
-    expect(transform(getManifest())).to.eql([{
+    expect(transform(getManifest())).to.eql({manifest: [{
       url: '/second-match/12345/hello',
     }, {
       url: '/third-match/12345/hello',
-    }]);
+    }]});
   });
 
   it(`should not replace when the match is not at the start of the URL`, function() {
@@ -101,6 +101,6 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
     };
 
     const transform = modifyUrlPrefix(modifications);
-    expect(transform(getManifest())).to.eql(getManifest());
+    expect(transform(getManifest())).to.eql({manifest: getManifest()});
   });
 });

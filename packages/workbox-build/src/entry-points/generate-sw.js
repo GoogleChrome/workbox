@@ -36,10 +36,12 @@ const writeServiceWorkerUsingDefaultTemplate =
  *
  * @param {Object} config Please refer to the
  * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#full_generatesw_config).
- * @return {Promise<{count: Number, size: Number}>} A promise that resolves once
- * the service worker file has been written to `swDest`. The `size` property
- * contains the aggregate size of all the precached entries, in bytes, and the
- * `count` property contains the total number of precached entries.
+ * @return {Promise<{count: Number, size: Number, warnings: Array<String>}>}
+ * A promise that resolves once the service worker file has been written to
+ * `swDest`. The `size` property contains the aggregate size of all the
+ * precached entries, in bytes, and the `count` property contains the total
+ * number of precached entries. Any non-fatal warning messages will be returned
+ * via `warnings`.
  *
  * @memberof module:workbox-build
  */
@@ -69,13 +71,14 @@ async function generateSW(config) {
     options.modulePathPrefix = workboxDirectoryName;
   }
 
-  const {count, size, manifestEntries} = await getFileManifestEntries(options);
+  const {count, size, manifestEntries, warnings} =
+    await getFileManifestEntries(options);
 
   await writeServiceWorkerUsingDefaultTemplate(Object.assign({
     manifestEntries,
   }, options));
 
-  return {count, size};
+  return {count, size, warnings};
 }
 
 module.exports = generateSW;

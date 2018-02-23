@@ -97,21 +97,21 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
  * this method will reject with a description of what failed.
  *
  * @param {string} [swFile]
- * @param {string} [swCode]
+ * @param {string} [swString]
  * @param {Object} expectedMethodCalls
  * @return {Promise} Resolves if all of the expected method calls were made.
  */
-module.exports = async ({swFile, swCode, expectedMethodCalls}) => {
-  assert((swFile || swCode) && !(swFile && swCode),
-    `Set swFile or swCode, but not both.`);
+module.exports = async ({swFile, swString, expectedMethodCalls}) => {
+  assert((swFile || swString) && !(swFile && swString),
+    `Set swFile or swString, but not both.`);
 
   if (swFile) {
-    swCode = await fse.readFile(swFile, 'utf8');
+    swString = await fse.readFile(swFile, 'utf8');
   }
 
   const {context, methodsToSpies} = setupSpiesAndContext();
 
-  vm.runInNewContext(swCode, context);
+  vm.runInNewContext(swString, context);
 
   validateMethodCalls({methodsToSpies, expectedMethodCalls});
 };

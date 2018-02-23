@@ -21,14 +21,19 @@ module.exports = (regexp) => {
     throw new Error(errors['invalid-dont-cache-bust']);
   }
 
-  return (manifest) => manifest.map((entry) => {
-    if (typeof entry.url !== 'string') {
-      throw new Error(errors['manifest-entry-bad-url']);
-    }
+  return (originalManifest) => {
+    const manifest = originalManifest.map((entry) => {
+      if (typeof entry.url !== 'string') {
+        throw new Error(errors['manifest-entry-bad-url']);
+      }
 
-    if (entry.url.match(regexp)) {
-      delete entry.revision;
-    }
-    return entry;
-  });
+      if (entry.url.match(regexp)) {
+        delete entry.revision;
+      }
+
+      return entry;
+    });
+
+    return {manifest};
+  };
 };

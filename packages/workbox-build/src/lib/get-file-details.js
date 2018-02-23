@@ -42,7 +42,7 @@ module.exports = (globOptions) => {
   }
 
   if (globbedFiles.length === 0) {
-    throw new Error(errors['useless-glob-pattern'] +
+    throw new Error(errors['useless-glob-pattern'] + ' ' +
       JSON.stringify({globDirectory, globPattern, globIgnores}, null, 2));
   }
 
