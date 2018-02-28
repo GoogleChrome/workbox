@@ -61,13 +61,14 @@ class BroadcastCacheUpdate {
   }
 
   /**
-   * @return {BroadcastChannel} The BroadcastChannel instance used for
-   * broadcasting updates.
+   * @return {BroadcastChannel|undefined} The BroadcastChannel instance used for
+   * broadcasting updates, or undefined if the browser doesn't support the
+   * Broadcast Channel API.
    *
    * @private
    */
   _getChannel() {
-    if (!this._channel) {
+    if (('BroadcastChannel' in self) && !this._channel) {
       this._channel = new BroadcastChannel(this._channelName);
     }
     return this._channel;

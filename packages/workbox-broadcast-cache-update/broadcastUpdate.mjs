@@ -14,6 +14,7 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
 import messageTypes from './messageTypes.mjs';
 import './_version.mjs';
 
@@ -55,6 +56,17 @@ import './_version.mjs';
  * @memberof workbox.broadcastUpdate
  */
 const broadcastUpdate = (channel, cacheName, url, source) => {
+  // There are browsers which support service workers but don't support the
+  // Broadcast Channel API.
+  // See https://github.com/GoogleChrome/workbox/issues/1304
+  if (!(('BroadcastChannel' in self) && channel)) {
+    if (process.env.NODE_ENV !== 'production') {
+      logger.debug(`${url} was updated, but the Broadcast Channel API is not ` +
+        `available in the current browser.`);
+    }
+    return;
+  }
+
   if (process.env.NODE_ENV !== 'production') {
     assert.isInstance(channel, BroadcastChannel, {
       moduleName: 'workbox-broadcast-cache-update',

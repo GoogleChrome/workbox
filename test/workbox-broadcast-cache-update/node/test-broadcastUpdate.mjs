@@ -16,9 +16,6 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import expectError from '../../../infra/testing/expectError';
-import {devOnly} from '../../../infra/testing/env-it';
-
 import messageTypes from '../../../packages/workbox-broadcast-cache-update/messageTypes.mjs';
 import {broadcastUpdate} from '../../../packages/workbox-broadcast-cache-update/broadcastUpdate.mjs';
 
@@ -27,12 +24,6 @@ describe(`[workbox-broadcast-cache-update] broadcastUpdate`, function() {
   const cacheName = 'test-cache';
   const url = 'https://example.com';
   const source = 'test-source';
-
-  devOnly.it(`should throw when called without any parameters`, function() {
-    return expectError(() => {
-      broadcastUpdate();
-    }, 'incorrect-class');
-  });
 
   it(`should trigger the appropriate message event on a BroadcastChannel with the same channel name`, function() {
     /** const secondChannel = new BroadcastChannel(channelName);
