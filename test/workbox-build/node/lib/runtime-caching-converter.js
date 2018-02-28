@@ -22,6 +22,9 @@ function validate(runtimeCachingOptions, convertedOptions) {
       expiration: {
         Plugin: sinon.spy(),
       },
+      backgroundSync: {
+        Plugin: sinon.spy(),
+      },
       broadcastUpdate: {
         Plugin: sinon.spy(),
       },
@@ -80,8 +83,32 @@ function validate(runtimeCachingOptions, convertedOptions) {
         expect(globalScope.workbox.cacheableResponse.Plugin.calledWith(options.cacheableResponse)).to.be.true;
       }
 
+      if (options.backgroundSync) {
+        if ('options' in options.backgroundSync) {
+          expect(
+            globalScope.workbox.backgroundSync.Plugin.calledWith(
+              options.backgroundSync.name, options.backgroundSync.options)
+          ).to.be.true;
+        } else {
+          expect(
+            globalScope.workbox.backgroundSync.Plugin.calledWith(
+              options.backgroundSync.name)
+          ).to.be.true;
+        }
+      }
+
       if (options.broadcastUpdate) {
-        expect(globalScope.workbox.broadcastUpdate.Plugin.calledWith(options.broadcastUpdate)).to.be.true;
+        if ('options' in options.broadcastUpdate) {
+          expect(
+            globalScope.workbox.broadcastUpdate.Plugin.calledWith(
+              options.broadcastUpdate.channelName, options.broadcastUpdate.options)
+          ).to.be.true;
+        } else {
+          expect(
+            globalScope.workbox.broadcastUpdate.Plugin.calledWith(
+              options.broadcastUpdate.channelName)
+          ).to.be.true;
+        }
       }
     }
   });
@@ -136,6 +163,12 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
           maxEntries: 5,
           maxAgeSeconds: 50,
         },
+        broadcastUpdate: {
+          channelName: 'test',
+        },
+        backgroundSync: {
+          name: 'test',
+        },
       },
     }, {
       urlPattern: '/test',
@@ -149,6 +182,15 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
         },
         broadcastUpdate: {
           channelName: 'test',
+          options: {
+            source: 'test-source',
+          },
+        },
+        backgroundSync: {
+          name: 'test',
+          options: {
+            maxRetentionTime: 123,
+          },
         },
       },
     }];
