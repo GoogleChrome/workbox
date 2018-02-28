@@ -75,7 +75,7 @@ class WorkboxSW {
    * debug build and whether to use a CDN or a specific path when importing
    * other workbox-modules
    *
-   * @param {Object=} [options]
+   * @param {workbox.ConfigOptions} [options]
    *
    * @alias workbox.setConfig
    */
