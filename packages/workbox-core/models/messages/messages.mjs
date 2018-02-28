@@ -224,4 +224,8 @@ export default {
     return `The start (${start}) and end (${end}) values in the Range are ` +
       `not satisfiable by the cached response, which is ${size} bytes.`;
   },
+  'attempt-to-cache-non-get-request': ({url, method}) => {
+    return `Unable to cache '${url}' because it is a '${method}' request and ` +
+      `only 'GET' requests can be cached.`;
+  },
 };

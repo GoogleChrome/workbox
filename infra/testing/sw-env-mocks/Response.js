@@ -28,6 +28,7 @@ class Response {
     this.type = this.status === 0 ? 'opaque' : 'basic';
     this.redirected = false;
     this.url = 'http://example.com/asset';
+    this.method = (options && options.method) || 'GET';
   }
 
   clone() {

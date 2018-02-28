@@ -17,8 +17,6 @@
 import {logger} from './logger.mjs';
 import '../_version.mjs';
 
-const MAX_AGE_REGEX = /max-age\s*=\s*(\d*)/g;
-
 /**
  * Logs a warning to the user recommending changing
  * to max-age=0 or no-cache.
@@ -61,8 +59,7 @@ function checkSWFileCacheHeaders() {
       }
 
       const cacheControlHeader = response.headers.get('cache-control');
-
-      const maxAgeResult = MAX_AGE_REGEX.exec(cacheControlHeader);
+      const maxAgeResult = /max-age\s*=\s*(\d*)/g.exec(cacheControlHeader);
       if (maxAgeResult) {
         if (parseInt(maxAgeResult[1], 10) === 0) {
           return;
@@ -70,6 +67,10 @@ function checkSWFileCacheHeaders() {
       }
 
       if (cacheControlHeader.indexOf('no-cache') !== -1) {
+        return;
+      }
+
+      if (cacheControlHeader.indexOf('no-store') !== -1) {
         return;
       }
 

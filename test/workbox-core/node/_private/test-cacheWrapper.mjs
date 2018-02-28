@@ -2,6 +2,8 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 
 import {cacheWrapper} from '../../../../packages/workbox-core/_private/cacheWrapper.mjs';
+import expectError from '../../../../infra/testing/expectError';
+import {devOnly} from '../../../../infra/testing/env-it';
 
 describe(`workbox-core cacheWrapper`, function() {
   let sandbox;
@@ -53,6 +55,26 @@ describe(`workbox-core cacheWrapper`, function() {
         status: 1,
       });
       await cacheWrapper.put('TODO-CHANGE-ME', putRequest, putResponse);
+
+      expect(cacheOpenStub.callCount).to.equal(0);
+      expect(cachePutStub.callCount).to.equal(0);
+    });
+
+    devOnly.it(`should not cache POST responses`, async function() {
+      const testCache = await caches.open('TEST-CACHE');
+      const cacheOpenStub = sandbox.stub(global.caches, 'open');
+      const cachePutStub = sandbox.stub(testCache, 'put');
+      cacheOpenStub.callsFake(async (cacheName) => {
+        return testCache;
+      });
+      const putRequest = new Request('/test/string');
+      const putResponse = new Response('Response for /test/string', {
+        method: 'POST',
+      });
+
+      await expectError(async () => {
+        await cacheWrapper.put('CACHE NAME', putRequest, putResponse);
+      }, 'attempt-to-cache-non-get-request');
 
       expect(cacheOpenStub.callCount).to.equal(0);
       expect(cachePutStub.callCount).to.equal(0);
