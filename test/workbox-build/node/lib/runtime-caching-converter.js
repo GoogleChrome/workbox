@@ -93,7 +93,8 @@ function validate(runtimeCachingOptions, convertedOptions) {
           expect(
             globalScope.workbox.backgroundSync.Plugin.calledWith(
               options.backgroundSync.name)
-          ).to.be.true;        }
+          ).to.be.true;
+        }
       }
 
       if (options.broadcastUpdate) {
