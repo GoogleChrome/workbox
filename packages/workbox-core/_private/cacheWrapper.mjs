@@ -16,6 +16,7 @@
 
 import {logger} from './logger.mjs';
 import {assert} from './assert.mjs';
+import {WorkboxError} from './WorkboxError.mjs';
 import {getFriendlyURL} from '../_private/getFriendlyURL.mjs';
 import pluginEvents from '../models/pluginEvents.mjs';
 import pluginUtils from '../utils/pluginUtils.mjs';
@@ -44,6 +45,15 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
         `cached.`, responseToCache);
     }
     return;
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    if (responseToCache.method && responseToCache.method !== 'GET') {
+      throw new WorkboxError('attempt-to-cache-non-get-request', {
+        url: getFriendlyURL(request.url),
+        method: responseToCache.method,
+      });
+    }
   }
 
   const cache = await caches.open(cacheName);
