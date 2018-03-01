@@ -19,12 +19,11 @@ import './_version.mjs';
 /**
  * @typedef {Object} InstallResult
  * @property {
- * Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>
+ * Array<workbox.precaching.PrecacheEntry|string>
  * } updatedEntries List of entries
  * supplied for precaching that were precached.
- * @property {
- * Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>
- * } notUpdatedEntries List of entries
+ * @property {Array<workbox.precaching.PrecacheEntry|string>}
+ * notUpdatedEntries List of entries
  * supplied for precaching that were already precached.
  *
  * @memberof workbox.precaching
