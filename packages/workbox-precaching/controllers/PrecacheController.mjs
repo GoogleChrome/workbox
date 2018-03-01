@@ -146,7 +146,7 @@ class PrecacheController {
    * @param {Array<Object>} options.plugins Plugins to be used for fetching
    * and caching during install.
    * @return {
-   * Promise<module:workbox-precaching.PrecacheController.InstallResult>}
+   * Promise<workbox.precaching.InstallResult>}
    */
   async install(options = {}) {
     if (process.env.NODE_ENV !== 'production') {
@@ -229,7 +229,7 @@ class PrecacheController {
    * This should be called in the service worker activate event.
    *
    * @return {
-   * Promise<module:workbox-precaching.PrecacheController.CleanupResult>}
+   * Promise<workbox.precaching.CleanupResult>}
    * Resolves with an object containing details of the deleted cache requests
    * and precache revision details.
    */

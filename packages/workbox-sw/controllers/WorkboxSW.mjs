@@ -75,7 +75,15 @@ class WorkboxSW {
    * debug build and whether to use a CDN or a specific path when importing
    * other workbox-modules
    *
-   * @param {Object=} [options]
+   * @param {Object} [options]
+   * @param {boolean} [options.debug] If true, `dev` builds are using, otherwise
+   * `prod` builds are used. By default, `prod` is used unless on localhost.
+   * @param {Function} [options.modulePathPrefix] To avoid using the CDN with
+   * `workbox-sw` set the path prefix of where modules should be loaded from.
+   * For example `modulePathPrefix: '/third_party/workbox/v3.0.0/'`.
+   * @param {workbox~ModulePathCallback} [options.modulePathCb] If defined,
+   * this callback will be responsible for determining the path of each
+   * workbox module.
    *
    * @alias workbox.setConfig
    */
