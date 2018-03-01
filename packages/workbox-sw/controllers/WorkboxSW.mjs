@@ -81,8 +81,9 @@ class WorkboxSW {
    * @param {Function} [options.modulePathPrefix] To avoid using the CDN with
    * `workbox-sw` set the path prefix of where modules should be loaded from.
    * For example `modulePathPrefix: '/third_party/workbox/v3.0.0/'`.
-   * @param {workbox~ModulePathCallback} [options.modulePathCb] If defined, this callback will
-   * be responsible for determining the path of each workbox module.
+   * @param {workbox~ModulePathCallback} [options.modulePathCb] If defined,
+   * this callback will be responsible for determining the path of each
+   * workbox module.
    *
    * @alias workbox.setConfig
    */
