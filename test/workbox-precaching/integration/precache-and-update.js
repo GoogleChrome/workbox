@@ -30,6 +30,8 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     const SW_1_URL = `${testingUrl}sw-1.js`;
     const SW_2_URL = `${testingUrl}sw-2.js`;
 
+    await global.__workbox.webdriver.get(testingUrl);
+
     const getIdbData = global.__workbox.seleniumBrowser.getId() === 'safari' ?
       require('../utils/getPrecachedIDBData-safari') :
       require('../utils/getPrecachedIDBData');
@@ -116,7 +118,32 @@ describe(`[workbox-precaching] Precache and Update`, function() {
       expect(requestsMade['/test/workbox-precaching/static/precache-and-update/new-request.txt']).to.equal(1);
     }
 
-    // Check that the cached entries were deleted / added as expected when
+    // FF triggers the controllerchange event before our precaching
+    // activate step has finished - this may be WAI.
+    // 2 seconds given to try and settle the activate listeners
+    await new Promise(async (resolve, reject) => {
+      let loop = true;
+      let expectedSize = false;
+
+      setTimeout(() => {
+        loop = false;
+      }, 2000);
+
+      while (loop) {
+        const cachedResults = await getCachedRequests(keys[0]);
+        if (cachedResults.length === 2) {
+          expectedSize = true;
+          loop = false;
+        }
+      }
+      if (expectedSize) {
+        resolve();
+      } else {
+        reject(new Error('Cached assets werent cleaned up'));
+      }
+    });
+
+      // Check that the cached entries were deleted / added as expected when
     // updating from sw-1.js to sw-2.js
     cachedRequests = await getCachedRequests(keys[0]);
     expect(cachedRequests).to.deep.equal([
@@ -139,6 +166,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     // Refresh the page and test that the requests are as expected
     global.__workbox.server.reset();
     await global.__workbox.webdriver.get(testingUrl);
+
     requestsMade = global.__workbox.server.getRequests();
     // Ensure the HTML page is returned from cache and not network
     expect(requestsMade['/test/workbox-precaching/static/precache-and-update/']).to.equal(undefined);

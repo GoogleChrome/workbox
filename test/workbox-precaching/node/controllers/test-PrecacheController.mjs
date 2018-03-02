@@ -239,8 +239,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(updateInfo.updatedEntries.length).to.equal(cacheList.length);
       expect(updateInfo.notUpdatedEntries.length).to.equal(0);
 
-
-      const cache = await caches.open(cacheNames.getPrecacheName());
+      const cache = await caches.open(`${cacheNames.getPrecacheName()}-temp`);
       const keys = await cache.keys();
       expect(keys.length).to.equal(cacheList.length);
 
@@ -298,7 +297,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheController.addToCacheList(cacheList);
       await precacheController.install();
 
-      const cache = await caches.open(`test-cache-name`);
+      const cache = await caches.open(`test-cache-name-temp`);
       const keys = await cache.keys();
       expect(keys.length).to.equal(cacheList.length);
 
@@ -309,8 +308,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
 
     it('should only precache assets that have changed', async function() {
-      const cache = await caches.open(cacheNames.getPrecacheName());
-
       /*
       First precache some entries
       */
@@ -321,6 +318,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         {url: '/scripts/index.js', revision: '1234'},
         {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
       ];
+      const urlsListOne = cacheListOne.map((entry) => entry.url || entry);
+
       precacheControllerOne.addToCacheList(cacheListOne);
 
       // Reset as addToCacheList will log.
@@ -330,19 +329,42 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(updateInfo.updatedEntries.length).to.equal(cacheListOne.length);
       expect(updateInfo.notUpdatedEntries.length).to.equal(0);
 
-      const keysOne = await cache.keys();
-      expect(keysOne.length).to.equal(cacheListOne.length);
-
-      const urlsOne = cacheListOne.map((entry) => entry.url || entry);
-      await Promise.all(urlsOne.map(async (url) => {
-        const cachedResponse = await cache.match(url);
-        expect(cachedResponse).to.exist;
-      }));
-
       if (process.env.NODE_ENV != 'production') {
         // Make sure we print some debug info.
         expect(logger.log.callCount).to.be.gt(0);
       }
+
+      const tempCacheName = `${cacheNames.getPrecacheName()}-temp`;
+      let tempCache = await caches.open(tempCacheName);
+      let finalCache = await caches.open(cacheNames.getPrecacheName());
+
+      // Make sure the files are cached in the temp cache and no the final cache
+      const tempKeysOne = await tempCache.keys();
+      const finalCacheKeysOne = await finalCache.keys();
+      expect(tempKeysOne.length).to.equal(cacheListOne.length);
+      expect(finalCacheKeysOne.length).to.equal(0);
+
+      await Promise.all(urlsListOne.map(async (url) => {
+        const cachedResponse = await tempCache.match(url);
+        expect(cachedResponse).to.exist;
+      }));
+
+      await precacheControllerOne.activate();
+
+      // Ensure temp cache is deleted
+      let availableCaches = await caches.keys();
+      expect(availableCaches.indexOf(tempCacheName)).to.equal(-1);
+
+      // The cache mock needs the cache to be re-opened to have up-to-date keys.
+      finalCache = await caches.open(cacheNames.getPrecacheName());
+      const finalCacheKeysOneActivate = await finalCache.keys();
+      expect(finalCacheKeysOneActivate.length).to.equal(cacheListOne.length);
+
+      // Make sure the files are cached in the final cache
+      await Promise.all(urlsListOne.map(async (url) => {
+        const cachedResponse = await finalCache.match(url);
+        expect(cachedResponse).to.exist;
+      }));
 
       /*
       THEN precache the same URLs but two with different revisions
@@ -354,6 +376,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         {url: '/scripts/index.js', revision: '1234'},
         {url: '/scripts/stress.js?test=search&foo=bar', revision: '4321'},
       ];
+      const urlsListTwo = cacheListTwo.map((entry) => entry.url || entry);
+
       precacheControllerTwo.addToCacheList(cacheListTwo);
 
       // Reset as addToCacheList will log.
@@ -363,17 +387,25 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(updateInfoTwo.updatedEntries.length).to.equal(2);
       expect(updateInfoTwo.notUpdatedEntries.length).to.equal(2);
 
-      const keysTwo = await cache.keys();
-      // Precaching can't determine that 'index.1234.html' and 'index.4321.html'
-      // represent the same URL, so the cache ould contain both at this point
-      // since they are technically different URLs
+      // The cache mock needs the cache to be re-opened to have up-to-date keys.
+      tempCache = await caches.open(`${cacheNames.getPrecacheName()}-temp`);
+      finalCache = await caches.open(cacheNames.getPrecacheName());
+
+      const tempKeysTwo = await tempCache.keys();
+      const finalKeysTwo = await finalCache.keys();
+
+      // Temp cache will contain the two new URLs that need to be cached.
+      // The final cache should be untouched until the activate step.
       // It would be in the activate event that 'index.1234.html' would
       // be removed from the cache and indexedDB.
-      expect(keysTwo.length).to.equal(cacheListTwo.length + 1);
-
-      const urlsTwo = cacheListTwo.map((entry) => entry.url || entry);
-      await Promise.all(urlsTwo.map(async (url) => {
-        const cachedResponse = await cache.match(url);
+      expect(tempKeysTwo.length).to.equal(updateInfoTwo.updatedEntries.length);
+      expect(finalKeysTwo.length).to.equal(cacheListOne.length);
+      await Promise.all(updateInfoTwo.updatedEntries.map(async (precacheEntry) => {
+        const cachedResponse = await tempCache.match(precacheEntry._cacheRequest);
+        expect(cachedResponse).to.exist;
+      }));
+      await Promise.all(urlsListOne.map(async (url) => {
+        const cachedResponse = await finalCache.match(url);
         expect(cachedResponse).to.exist;
       }));
 
@@ -381,6 +413,21 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         // Make sure we print some debug info.
         expect(logger.log.callCount).to.be.gt(0);
       }
+
+      await precacheControllerTwo.activate();
+
+      // Ensure temp cache is deleted
+      availableCaches = await caches.keys();
+      expect(availableCaches.indexOf(tempCacheName)).to.equal(-1);
+
+      // Cache mock needs this to update keys
+      finalCache = await caches.open(cacheNames.getPrecacheName());
+      const finalKeysTwoActivate = await finalCache.keys();
+      expect(finalKeysTwoActivate.length).to.equal(urlsListTwo.length);
+      await Promise.all(urlsListTwo.map(async (url) => {
+        const cachedResponse = await finalCache.match(url);
+        expect(cachedResponse).to.exist;
+      }));
     });
 
     it('it should precache with plugins', async function() {
@@ -425,7 +472,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
   });
 
-  describe(`cleanup()`, function() {
+  describe(`activate()`, function() {
     it(`should remove out of date entry`, async function() {
       const cache = await caches.open(cacheNames.getPrecacheName());
 
@@ -439,7 +486,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheControllerOne.addToCacheList(cacheListOne);
       await precacheControllerOne.install();
 
-      const cleanupDetailsOne = await precacheControllerOne.cleanup();
+      const cleanupDetailsOne = await precacheControllerOne.activate();
       expect(cleanupDetailsOne.deletedCacheRequests.length).to.equal(0);
       expect(cleanupDetailsOne.deletedRevisionDetails.length).to.equal(0);
 
@@ -448,7 +495,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheControllerTwo.addToCacheList(cacheListTwo);
       await precacheControllerTwo.install();
 
-      const cleanupDetailsTwo = await precacheControllerTwo.cleanup();
+      const cleanupDetailsTwo = await precacheControllerTwo.activate();
       expect(cleanupDetailsTwo.deletedCacheRequests.length).to.equal(1);
       expect(cleanupDetailsTwo.deletedCacheRequests[0]).to.equal('/scripts/index.js');
       expect(cleanupDetailsTwo.deletedRevisionDetails.length).to.equal(1);
@@ -480,7 +527,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       // Reset as addToCacheList and install will log.
       logger.log.reset();
 
-      const cleanupDetailsOne = await precacheControllerOne.cleanup();
+      const cleanupDetailsOne = await precacheControllerOne.activate();
       expect(cleanupDetailsOne.deletedCacheRequests.length).to.equal(0);
       expect(cleanupDetailsOne.deletedRevisionDetails.length).to.equal(0);
 
@@ -503,7 +550,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       // Reset as addToCacheList and install will log.
       logger.log.reset();
 
-      const cleanupDetailsTwo = await precacheControllerTwo.cleanup();
+      const cleanupDetailsTwo = await precacheControllerTwo.activate();
       expect(cleanupDetailsTwo.deletedCacheRequests.length).to.equal(1);
       expect(cleanupDetailsTwo.deletedCacheRequests[0]).to.equal('/index.1234.html');
       expect(cleanupDetailsTwo.deletedRevisionDetails.length).to.equal(1);
@@ -567,9 +614,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       }
     });
 
-    it(`shouldn't open / create a cache when performing cleanup`, async function() {
+    it(`shouldn't open / create a cache when performing activate`, async function() {
       const precacheController = new PrecacheController();
-      await precacheController.cleanup();
+      await precacheController.activate();
 
       const hasCache = await caches.has(cacheNames.getPrecacheName());
       expect(hasCache).to.equal(false);
@@ -585,7 +632,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       ];
       precacheControllerOne.addToCacheList(cacheListOne);
       await precacheControllerOne.install();
-      await precacheControllerOne.cleanup();
+      await precacheControllerOne.activate();
 
       const precacheControllerTwo = new PrecacheController();
       const cacheListTwo = [
@@ -600,7 +647,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       // Reset as addToCacheList and install will log.
       logger.log.reset();
 
-      await precacheControllerTwo.cleanup();
+      await precacheControllerTwo.activate();
 
       // Make sure we didn't print any debug info.
       expect(logger.log.callCount).to.equal(0);

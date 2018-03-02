@@ -3,9 +3,9 @@
   <meta charset="UTF-8">
 </head>
 <body>
-  <h3>precache.install() &amp; precache.cleanup()</h3>
+  <h3>precache.install() &amp; precache.activate()</h3>
   <button class="js-index-install">Install</button>
-  <button class="js-index-cleanup">Cleanup</button>
+  <button class="js-index-activate">Activate</button>
 
 <script>
   // Make sure there is scope available for core.
@@ -45,11 +45,11 @@
     }
   });
 
-  const cleanupBtn = document.querySelector('.js-index-cleanup');
-  cleanupBtn.addEventListener('click', () => {
+  const activateBtn = document.querySelector('.js-index-activate');
+  activateBtn.addEventListener('click', () => {
     const precacheController = new workbox.precaching.PrecacheController();
     precacheController.addToCacheList(lastInstallValues);
-    precacheController.cleanup();
+    precacheController.activate();
   });
 </script>
 </body>

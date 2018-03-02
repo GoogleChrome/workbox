@@ -15,7 +15,6 @@
 */
 
 import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import '../_version.mjs';
 
 // Allows minifier to mangle this name
@@ -32,12 +31,9 @@ class PrecachedDetailsModel {
   /**
    * Construct a new model for a specific cache.
    *
-   * @param {string} cacheName
-   *
    * @private
    */
-  constructor(cacheName) {
-    this._cacheName = cacheNames.getPrecacheName(cacheName);
+  constructor() {
     this._db = new DBWrapper(`workbox-precaching`, 2, {
       onupgradeneeded: this._handleUpgrade,
     });
@@ -70,18 +66,19 @@ class PrecachedDetailsModel {
    * Check if an entry is already cached. Returns false if
    * the entry isn't cached or the revision has changed.
    *
+   * @param {string} cacheName
    * @param {PrecacheEntry} precacheEntry
    * @return {boolean}
    *
    * @private
    */
-  async _isEntryCached(precacheEntry) {
+  async _isEntryCached(cacheName, precacheEntry) {
     const revisionDetails = await this._getRevision(precacheEntry._entryId);
     if (revisionDetails !== precacheEntry._revision) {
       return false;
     }
 
-    const openCache = await caches.open(this._cacheName);
+    const openCache = await caches.open(cacheName);
     const cachedResponse = await openCache.match(precacheEntry._cacheRequest);
     return !!cachedResponse;
   }
