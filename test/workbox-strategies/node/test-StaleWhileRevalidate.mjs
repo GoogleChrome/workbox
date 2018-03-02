@@ -147,4 +147,18 @@ describe(`[workbox-strategies] StaleWhileRevalidate`, function() {
     });
     expect(staleWhileRevalidate._plugins).to.equal(plugins);
   });
+
+  it(`should use the fetchOptions provided`, async function() {
+    const fetchOptions = {credentials: 'include'};
+    const staleWhileRevalidate = new StaleWhileRevalidate({fetchOptions});
+
+    const fetchStub = sandbox.stub(global, 'fetch').resolves(new Response());
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+
+    await staleWhileRevalidate.handle({event});
+
+    expect(fetchStub.calledOnce).to.be.true;
+    expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
+  });
 });

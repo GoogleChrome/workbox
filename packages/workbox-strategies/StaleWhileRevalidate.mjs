@@ -52,6 +52,9 @@ class StaleWhileRevalidate {
    * [workbox-core]{@link workbox.core.cacheNames}.
    * @param {string} options.plugins [Plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}
    * to use in conjunction with this caching strategy.
+   * @param {Object} options.fetchOptions Values passed along to the
+   * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
+   * of all fetch() requests made by this strategy.
    */
   constructor(options = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
@@ -66,6 +69,8 @@ class StaleWhileRevalidate {
       // No plugins passed in, use the default plugin.
       this._plugins = [cacheOkAndOpaquePlugin];
     }
+
+    this._fetchOptions = options.fetchOptions || null;
   }
 
   /**
@@ -134,7 +139,7 @@ class StaleWhileRevalidate {
   async _getFromNetwork(event) {
     const response = await fetchWrapper.fetch(
       event.request,
-      null,
+      this._fetchOptions,
       this._plugins
     );
 

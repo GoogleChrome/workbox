@@ -46,6 +46,9 @@ class NetworkFirst {
    * [workbox-core]{@link workbox.core.cacheNames}.
    * @param {string} options.plugins [Plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}
    * to use in conjunction with this caching strategy.
+   * @param {Object} options.fetchOptions Values passed along to the
+   * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
+   * of all fetch() requests made by this strategy.
    * @param {number} options.networkTimeoutSeconds If set, any network requests
    * that fail to respond within the timeout will fallback to the cache.
    *
@@ -77,6 +80,8 @@ class NetworkFirst {
         });
       }
     }
+
+    this._fetchOptions = options.fetchOptions || null;
   }
 
   /**
@@ -181,6 +186,7 @@ class NetworkFirst {
     try {
       response = await fetchWrapper.fetch(
         event.request,
+        this._fetchOptions,
         this._plugins
       );
     } catch (err) {

@@ -102,4 +102,18 @@ describe(`[workbox-strategies] NetworkOnly`, function() {
     const keys = await cache.keys();
     expect(keys).to.be.empty;
   });
+
+  it(`should use the fetchOptions provided`, async function() {
+    const fetchOptions = {credentials: 'include'};
+    const networkOnly = new NetworkOnly({fetchOptions});
+
+    const fetchStub = sandbox.stub(global, 'fetch').resolves(new Response());
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+
+    await networkOnly.handle({event});
+
+    expect(fetchStub.calledOnce).to.be.true;
+    expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
+  });
 });
