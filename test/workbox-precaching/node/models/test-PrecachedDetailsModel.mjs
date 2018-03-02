@@ -1,7 +1,6 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
-import {_private} from '../../../../packages/workbox-core/index.mjs';
 import PrecachedDetailsModel from '../../../../packages/workbox-precaching/models/PrecachedDetailsModel.mjs';
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 
