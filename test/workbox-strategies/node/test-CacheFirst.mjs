@@ -77,7 +77,7 @@ describe(`[workbox-strategies] CacheFirst`, function() {
     expect(fetch.callCount).to.equal(0);
   });
 
-  it(`should be able to cache a non-existant request to custom cache`, async function() {
+  it(`should be able to cache a non-existent request to custom cache`, async function() {
     const cacheName = 'test-cache-name';
     const request = new Request('http://example.io/test/');
     const event = new FetchEvent('fetch', {request});
@@ -220,7 +220,7 @@ describe(`[workbox-strategies] CacheFirst`, function() {
     // Wait until cache.put is finished.
     await cachePromise;
 
-    // The cache should be overriden
+    // The cache should be overridden.
     const firstCachedResponse = await cache.match(request);
 
     await compareResponses(firstCachedResponse, fetchResponse, true);
@@ -242,5 +242,19 @@ describe(`[workbox-strategies] CacheFirst`, function() {
     } catch (err) {
       expect(err).to.equal(injectedError);
     }
+  });
+
+  it(`should use the fetchOptions provided`, async function() {
+    const fetchOptions = {credentials: 'include'};
+    const cacheFirst = new CacheFirst({fetchOptions});
+
+    const fetchStub = sandbox.stub(global, 'fetch').resolves(new Response());
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+
+    await cacheFirst.handle({event});
+
+    expect(fetchStub.calledOnce).to.be.true;
+    expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
   });
 });
