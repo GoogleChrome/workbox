@@ -118,32 +118,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
       expect(requestsMade['/test/workbox-precaching/static/precache-and-update/new-request.txt']).to.equal(1);
     }
 
-    // FF triggers the controllerchange event before our precaching
-    // activate step has finished - this may be WAI.
-    // 2 seconds given to try and settle the activate listeners
-    await new Promise(async (resolve, reject) => {
-      let loop = true;
-      let expectedSize = false;
-
-      setTimeout(() => {
-        loop = false;
-      }, 2000);
-
-      while (loop) {
-        const cachedResults = await getCachedRequests(keys[0]);
-        if (cachedResults.length === 2) {
-          expectedSize = true;
-          loop = false;
-        }
-      }
-      if (expectedSize) {
-        resolve();
-      } else {
-        reject(new Error('Cached assets werent cleaned up'));
-      }
-    });
-
-      // Check that the cached entries were deleted / added as expected when
+    // Check that the cached entries were deleted / added as expected when
     // updating from sw-1.js to sw-2.js
     cachedRequests = await getCachedRequests(keys[0]);
     expect(cachedRequests).to.deep.equal([

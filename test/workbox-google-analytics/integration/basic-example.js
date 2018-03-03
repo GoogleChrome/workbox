@@ -27,11 +27,14 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`,
         data, [messageChannel.port2]);
   };
 
-  beforeEach(async function() {
+  before(async function() {
     // Load the page and wait for the first service worker to activate.
     await driver.get(testingUrl);
-    await activateSW(swUrl);
 
+    await activateSW(swUrl);
+  });
+
+  beforeEach(async function() {
     // Reset the spied requests array.
     await driver.executeAsyncScript(messageSw, {
       action: 'clear-spied-requests',
