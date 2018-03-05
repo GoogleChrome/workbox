@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 const qs = require('qs');
 const {By} = require('selenium-webdriver');
-const activateSW = require('../../../infra/testing/activate-sw');
+const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 
 describe(`[workbox-google-analytics] Load and use Google Analytics`,
     function() {
@@ -27,11 +27,14 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`,
         data, [messageChannel.port2]);
   };
 
-  beforeEach(async function() {
+  before(async function() {
     // Load the page and wait for the first service worker to activate.
     await driver.get(testingUrl);
-    await activateSW(swUrl);
 
+    await activateAndControlSW(swUrl);
+  });
+
+  beforeEach(async function() {
     // Reset the spied requests array.
     await driver.executeAsyncScript(messageSw, {
       action: 'clear-spied-requests',

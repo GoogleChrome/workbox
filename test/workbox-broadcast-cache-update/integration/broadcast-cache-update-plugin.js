@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 
-const activateSW = require('../../../infra/testing/activate-sw');
+const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 
 describe(`broadcastCacheUpdate.Plugin`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
@@ -10,7 +10,7 @@ describe(`broadcastCacheUpdate.Plugin`, function() {
 
   it(`should broadcast a message on the expected channel when there's a cache update`, async function() {
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(swUrl);
+    await activateAndControlSW(swUrl);
 
     const supported = await global.__workbox.webdriver.executeScript(() => {
       return 'BroadcastChannel' in window;

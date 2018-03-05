@@ -34,13 +34,13 @@ describe(`[workbox-precaching] default export`, function() {
       expect(self.addEventListener.args[1][0]).to.equal('activate');
     });
 
-    it(`should call install and cleanup on install and activate`, async function() {
+    it(`should call install and activate on install and activate`, async function() {
       let eventCallbacks = {};
       sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
         eventCallbacks[eventName] = cb;
       });
       sandbox.spy(PrecacheController.prototype, 'install');
-      sandbox.spy(PrecacheController.prototype, 'cleanup');
+      sandbox.spy(PrecacheController.prototype, 'activate');
 
       expect(PrecacheController.prototype.install.callCount).to.equal(0);
 
@@ -64,7 +64,7 @@ describe(`[workbox-precaching] default export`, function() {
       eventCallbacks['activate'](installEvent);
 
       await controllerActivatePromise;
-      expect(PrecacheController.prototype.cleanup.callCount).to.equal(1);
+      expect(PrecacheController.prototype.activate.callCount).to.equal(1);
     });
   });
 

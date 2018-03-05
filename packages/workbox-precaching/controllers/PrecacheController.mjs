@@ -164,11 +164,15 @@ class PrecacheController {
       }
     }
 
+    // Clear any existing temp cache
+    await caches.delete(this._getTempCacheName());
+
     const entriesToPrecache = [];
     const entriesAlreadyPrecached = [];
 
     for (const precacheEntry of this._entriesToCacheMap.values()) {
-      if (await this._precacheDetailsModel._isEntryCached(precacheEntry)) {
+      if (await this._precacheDetailsModel._isEntryCached(
+        this._cacheName, precacheEntry)) {
         entriesAlreadyPrecached.push(precacheEntry);
       } else {
         entriesToPrecache.push(precacheEntry);
@@ -177,7 +181,7 @@ class PrecacheController {
 
     // Wait for all requests to be cached.
     await Promise.all(entriesToPrecache.map((precacheEntry) => {
-      return this._cacheEntry(precacheEntry, options.plugins);
+      return this._cacheEntryInTemp(precacheEntry, options.plugins);
     }));
 
     if (process.env.NODE_ENV !== 'production') {
@@ -188,6 +192,41 @@ class PrecacheController {
       updatedEntries: entriesToPrecache,
       notUpdatedEntries: entriesAlreadyPrecached,
     };
+  }
+
+  /**
+   * Takes the current set of temporary files and moves them to the final
+   * cache, deleting the temporary cache once copying is complete.
+   *
+   * @return {
+   * Promise<workbox.precaching.CleanupResult>}
+   * Resolves with an object containing details of the deleted cache requests
+   * and precache revision details.
+   */
+  async activate() {
+    const tempCache = await caches.open(this._getTempCacheName());
+
+    const requests = await tempCache.keys();
+    await Promise.all(requests.map(async (request) => {
+      const response = await tempCache.match(request);
+      await cacheWrapper.put(this._cacheName, request, response);
+      await tempCache.delete(request);
+    }));
+
+    await caches.delete(this._getTempCacheName());
+
+    return this._cleanup();
+  }
+
+  /**
+   * Returns the name of the temporary cache.
+   *
+   * @return {string}
+   *
+   * @private
+   */
+  _getTempCacheName() {
+    return `${this._cacheName}-temp`;
   }
 
   /**
@@ -203,7 +242,7 @@ class PrecacheController {
    * promise resolves with true if the entry was cached / updated and
    * false if the entry is already cached and up-to-date.
    */
-  async _cacheEntry(precacheEntry, plugins) {
+  async _cacheEntryInTemp(precacheEntry, plugins) {
     let response = await fetchWrapper.fetch(
       precacheEntry._networkRequest,
       null,
@@ -214,7 +253,7 @@ class PrecacheController {
       response = await cleanRedirect(response);
     }
 
-    await cacheWrapper.put(this._cacheName,
+    await cacheWrapper.put(this._getTempCacheName(),
       precacheEntry._cacheRequest, response, plugins);
 
     await this._precacheDetailsModel._addEntry(precacheEntry);
@@ -232,8 +271,10 @@ class PrecacheController {
    * Promise<workbox.precaching.CleanupResult>}
    * Resolves with an object containing details of the deleted cache requests
    * and precache revision details.
+   *
+   * @private
    */
-  async cleanup() {
+  async _cleanup() {
     const expectedCacheUrls = [];
     this._entriesToCacheMap.forEach((entry) => {
       const fullUrl = new URL(entry._cacheRequest.url, location).toString();

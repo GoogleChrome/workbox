@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 
-const activateSW = require('../../../infra/testing/activate-sw');
+const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 
 describe(`[workbox-strategies] StaleWhileRevalidate Requests`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
@@ -50,7 +50,7 @@ describe(`[workbox-strategies] StaleWhileRevalidate Requests`, function() {
 
     // Load the page and wait for the first service worker to register and activate.
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(swUrl);
+    await activateAndControlSW(swUrl);
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(new URL(`/test/uniqueValue`, location).href)

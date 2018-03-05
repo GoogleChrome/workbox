@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 
-const activateSW = require('../../../infra/testing/activate-sw');
+const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 
 describe(`[workbox-routing] Route via RegExp`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
@@ -10,7 +10,7 @@ describe(`[workbox-routing] Route via RegExp`, function() {
   it(`should load a page and route requests`, async function() {
     // Load the page and wait for the first service worker to register and activate.
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(swUrl);
+    await activateAndControlSW(swUrl);
 
     let testCounter = 0;
 

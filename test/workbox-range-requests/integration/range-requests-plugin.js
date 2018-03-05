@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 
-const activateSW = require('../../../infra/testing/activate-sw');
+const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 const cleanSWEnv = require('../../../infra/testing/clean-sw');
 
 describe(`rangeRequests.Plugin`, function() {
@@ -18,7 +18,7 @@ describe(`rangeRequests.Plugin`, function() {
     const dummyBody = '0123456789';
 
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(swUrl);
+    await activateAndControlSW(swUrl);
 
     const partialResponseBody = await global.__workbox.webdriver.executeAsyncScript((dummyUrl, dummyBody, cb) => {
       const dummyResponse = new Response(dummyBody);

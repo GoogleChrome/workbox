@@ -165,7 +165,7 @@ moduleExports.precache = (entries) => {
     }));
   });
   self.addEventListener('activate', (event) => {
-    event.waitUntil(precacheController.cleanup());
+    event.waitUntil(precacheController.activate());
   });
 };
 

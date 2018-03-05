@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 
-const activateSW = require('../../../infra/testing/activate-sw');
+const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 const cleanSWEnv = require('../../../infra/testing/clean-sw');
 
 describe(`expiration.Plugin`, function() {
@@ -30,7 +30,7 @@ describe(`expiration.Plugin`, function() {
     const swUrl = `${testingUrl}sw-max-entries.js`;
 
     // Wait for the service worker to register and activate.
-    await activateSW(swUrl);
+    await activateAndControlSW(swUrl);
 
     await global.__workbox.webdriver.executeAsyncScript((testingUrl, cb) => {
       fetch(`${testingUrl}example-1.txt`).then(() => cb()).catch((err) => cb(err.message));
@@ -86,7 +86,7 @@ describe(`expiration.Plugin`, function() {
 
     // Load the page and wait for the service worker to register and activate.
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(swUrl);
+    await activateAndControlSW(swUrl);
 
     await global.__workbox.webdriver.executeAsyncScript((testingUrl, cb) => {
       fetch(`${testingUrl}example-1.txt`).then(() => cb()).catch((err) => cb(err.message));
