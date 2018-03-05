@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 
-const activateSW = require('../../../infra/testing/activate-sw');
+const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 const cleanSWEnv = require('../../../infra/testing/clean-sw');
 
 describe(`[workbox-precaching] Precache and Update`, function() {
@@ -45,7 +45,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     global.__workbox.server.reset();
 
     // Register the first service worker.
-    await activateSW(SW_1_URL);
+    await activateAndControlSW(SW_1_URL);
 
     // Check that only the precache cache was created.
     const keys = await global.__workbox.webdriver.executeAsyncScript((cb) => {
@@ -106,7 +106,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     }
 
     // Activate the second service worker
-    await activateSW(SW_2_URL);
+    await activateAndControlSW(SW_2_URL);
 
     // Ensure that the new assets were requested and cache busted.
     requestsMade = global.__workbox.server.getRequests();

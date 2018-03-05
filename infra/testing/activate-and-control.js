@@ -41,6 +41,21 @@ module.exports = async (swUrl) => {
     .then((registration) => {
       return _onStateChangePromise(registration, 'activated');
     })
+    .then(() => {
+      // Ensure the page is being controlled by the SW.
+      if (navigator.serviceWorker.controller &&
+        navigator.serviceWorker.controller.scriptURL === swUrl) {
+        return;
+      } else {
+        return new Promise((resolve) => {
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (navigator.serviceWorker.controller.scriptURL === swUrl) {
+              resolve();
+            }
+          });
+        });
+      }
+    })
     .then(() => cb())
     .catch((err) => cb(err));
   }, swUrl);

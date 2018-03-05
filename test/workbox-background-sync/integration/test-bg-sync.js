@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 
-const activateSW = require('../../../infra/testing/activate-sw');
+const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 
 describe(`[workbox-background-sync] Load and use Background Sync`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
@@ -27,7 +27,7 @@ describe(`[workbox-background-sync] Load and use Background Sync`, function() {
   it(`should load a page with service worker`, async function() {
     // Load the page and wait for the first service worker to register and activate.
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(swUrl);
+    await activateAndControlSW(swUrl);
 
     const err = await global.__workbox.webdriver.executeAsyncScript((testingUrl, cb) => {
       return fetch(`${testingUrl}example.txt`)

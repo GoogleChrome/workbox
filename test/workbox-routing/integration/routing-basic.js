@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 
-const activateSW = require('../../../infra/testing/activate-sw');
+const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 
 describe(`[workbox-routing] Basic Route`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
@@ -9,7 +9,7 @@ describe(`[workbox-routing] Basic Route`, function() {
 
   before(async function() {
     await global.__workbox.webdriver.get(testingUrl);
-    await activateSW(swUrl);
+    await activateAndControlSW(swUrl);
   });
 
   it(`should honor a route created by a Route object`, async function() {
