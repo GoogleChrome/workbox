@@ -210,6 +210,7 @@ class PrecacheController {
     await Promise.all(requests.map(async (request) => {
       const response = await tempCache.match(request);
       await cacheWrapper.put(this._cacheName, request, response);
+      await tempCache.delete(request);
     }));
 
     await caches.delete(this._getTempCacheName());
