@@ -4,6 +4,8 @@ const activateAndControlSW = require('../../../infra/testing/activate-and-contro
 const cleanSWEnv = require('../../../infra/testing/clean-sw');
 
 describe(`[workbox-precaching] Precache and Update`, function() {
+  const DB_NAME = 'workbox-precache-http___localhost_3004_test_workbox-precaching_static_precache-and-update_';
+
   let testServerAddress = global.__workbox.server.getAddress();
   const testingUrl = `${testServerAddress}/test/workbox-precaching/static/precache-and-update/`;
 
@@ -62,7 +64,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/styles/index.css',
     ]);
 
-    let savedIDBData = await getIdbData();
+    let savedIDBData = await getIdbData(DB_NAME);
     expect(savedIDBData).to.deep.equal([
       {
         revision: '1',
@@ -126,7 +128,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/new-request.txt',
     ]);
 
-    savedIDBData = await getIdbData();
+    savedIDBData = await getIdbData(DB_NAME);
     expect(savedIDBData).to.deep.equal([
       {
         revision: '2',

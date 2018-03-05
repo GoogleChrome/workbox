@@ -19,7 +19,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
   describe('constructor', function() {
     it(`should construct with no input`, async function() {
-      new PrecachedDetailsModel();
+      new PrecachedDetailsModel(`test-idb-name`);
     });
   });
 
@@ -34,7 +34,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
         createObjectStore: sandbox.spy(),
       };
 
-      const precacheDetailsModel = new PrecachedDetailsModel();
+      const precacheDetailsModel = new PrecachedDetailsModel(`test-idb-name`);
       precacheDetailsModel._handleUpgrade({
         target: {
           result: fakeDB,
@@ -58,7 +58,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
         createObjectStore: sandbox.spy(),
       };
 
-      const precacheDetailsModel = new PrecachedDetailsModel();
+      const precacheDetailsModel = new PrecachedDetailsModel(`test-idb-name`);
       precacheDetailsModel._handleUpgrade({
         oldVersion: 1,
         target: {
@@ -84,7 +84,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
         createObjectStore: sandbox.spy(),
       };
 
-      const precacheDetailsModel = new PrecachedDetailsModel();
+      const precacheDetailsModel = new PrecachedDetailsModel(`test-idb-name`);
       precacheDetailsModel._handleUpgrade({
         oldVersion: 1,
         target: {
@@ -103,13 +103,13 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
   describe('_getAllEntries', function() {
     it(`should return an empty array`, async function() {
-      const model = new PrecachedDetailsModel(`test-cache-name`);
+      const model = new PrecachedDetailsModel(`test-idb-name`);
       const allEntries = await model._getAllEntries();
       expect(allEntries).to.deep.equal([]);
     });
 
     it(`should return entry with ID`, async function() {
-      const model = new PrecachedDetailsModel(`test-cache-name`);
+      const model = new PrecachedDetailsModel(`test-idb-name`);
       await model._addEntry(new PrecacheEntry(
         {}, '/', '1234', true
       ));
@@ -130,7 +130,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     // TODO Test bad inputs
 
     it(`should return false for non-existant entry`, async function() {
-      const model = new PrecachedDetailsModel();
+      const model = new PrecachedDetailsModel(`test-idb-name`);
       const isCached = await model._isEntryCached(
         'test-cache',
         new PrecacheEntry(
@@ -143,7 +143,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     it(`should return false for entry with different revision`, async function() {
       const cacheName = 'test-cache';
 
-      const model = new PrecachedDetailsModel();
+      const model = new PrecachedDetailsModel(`test-idb-name`);
 
       await model._addEntry(
         new PrecacheEntry(
@@ -163,7 +163,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     it(`should return false for entry with revision but not in cache`, async function() {
       const cacheName = 'test-cache';
 
-      const model = new PrecachedDetailsModel();
+      const model = new PrecachedDetailsModel(`test-idb-name`);
       const entry = new PrecacheEntry(
         {}, '/', '1234', true
       );
@@ -177,7 +177,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     it(`should return true if entry with revision and in cache`, async function() {
       const cacheName = 'test-cache';
 
-      const model = new PrecachedDetailsModel();
+      const model = new PrecachedDetailsModel(`test-idb-name`);
       const entry = new PrecacheEntry(
         {}, '/', '1234', true
       );
@@ -196,7 +196,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     // TODO add bad input tests
 
     it(`should be able to delete an entry`, async function() {
-      const model = new PrecachedDetailsModel();
+      const model = new PrecachedDetailsModel(`test-idb-name`);
 
       await model._addEntry(
         new PrecacheEntry(
