@@ -1,7 +1,7 @@
 // Get the data for precached details from IDB via the window.
-module.exports = () => {
-  return global.__workbox.webdriver.executeAsyncScript((cb) => {
-    const request = indexedDB.open('workbox-precaching');
+module.exports = (dbName) => {
+  return global.__workbox.webdriver.executeAsyncScript((dbName, cb) => {
+    const request = indexedDB.open(dbName);
     request.onerror = function(event) {
       cb('Error opening indexedDB');
     };
@@ -18,5 +18,5 @@ module.exports = () => {
         cb(event.target.result);
       };
     };
-  });
+  }, dbName);
 };

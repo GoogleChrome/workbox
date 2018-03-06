@@ -31,10 +31,13 @@ class PrecachedDetailsModel {
   /**
    * Construct a new model for a specific cache.
    *
+   * @param {string} dbName
    * @private
    */
-  constructor() {
-    this._db = new DBWrapper(`workbox-precaching`, 2, {
+  constructor(dbName) {
+    // This ensures the db name contains only letters, numbers, '-', '_' and '$'
+    const filteredDBName = dbName.replace(/[^\w-]/g, '_');
+    this._db = new DBWrapper(filteredDBName, 2, {
       onupgradeneeded: this._handleUpgrade,
     });
   }
