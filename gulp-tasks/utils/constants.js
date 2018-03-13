@@ -7,12 +7,7 @@ module.exports = {
 
   // This is used in the publish-bundle step to avoid doing anything
   // with tags < v3.0.0.
-  // The "-beta" means semver will match against tags with prelease
-  // info (although the prelease tag must be a string >= 'beta'
-  // alphabetically speaking).
-  // TODO: Change to v3.0.0 when v3 is launched to avoid doing anything
-  // with prelease versions.
-  MIN_RELEASE_TAG_TO_PUBLISH: 'v3.0.0-beta',
+  MIN_RELEASE_TAG_TO_PUBLISH: 'v3.0.0',
   GITHUB_OWNER: 'GoogleChrome',
   GITHUB_REPO: 'workbox',
 

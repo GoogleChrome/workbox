@@ -9,10 +9,9 @@ gulp.task('publish-lerna', () => {
     '--',
     'publish',
 
-    // TODO: The following flags are for testing deploy process and can
-    // be removed
-
-    '--cd-version=prerelease', '--preid=beta',
-    '--npm-tag', 'beta',
+    // The following flags can be used if publishing non-stable versions
+    // '--cd-version=prerelease',
+    // '--preid=beta',
+    // '--npm-tag', 'beta',
   ]);
 });
