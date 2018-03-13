@@ -24,3 +24,11 @@ import './_version.mjs';
  *
  * @memberof module:workbox-build
  */
+
+/**
+ * @typedef {Object} ManifestTransformResult
+ * @property {Array<ManifestEntry>} manifest
+ * @property {Array<string>|undefined} warnings
+ *
+ * @memberof module:workbox-build
+ */
