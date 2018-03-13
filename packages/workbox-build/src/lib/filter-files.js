@@ -60,8 +60,8 @@ const noRevisionForUrlsMatchingTransform =
  * };
  *
  * @callback ManifestTransform
- * @param {Array<module:workbox-build.ManifestEntry>} manifestEntries The full array of entries,
- * prior to the current transformation.
+ * @param {Array<module:workbox-build.ManifestEntry>} manifestEntries The full
+ * array of entries, prior to the current transformation.
  * @return {module:workbox-build.ManifestTransformResult}
  * The array of entries with the transformation applied, and optionally, any
  * warnings that should be reported back to the build tool.
