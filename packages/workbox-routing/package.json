@@ -1,7 +1,12 @@
 {
   "name": "workbox-routing",
-  "version": "2.1.0",
+  "version": "3.0.0",
+  "license": "Apache-2.0",
+  "author": "Google's Web DevRel Team",
   "description": "A service worker helper library to route request URLs to handlers.",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox",
   "keywords": [
     "workbox",
     "workboxjs",
@@ -10,18 +15,18 @@
     "router",
     "routing"
   ],
-  "files": [
-    "src",
-    "build"
-  ],
   "scripts": {
-    "prepublish": "gulp build --project workbox-routing"
+    "build": "gulp build-packages --package workbox-routing",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
-  "author": "Google's Web DevRel Team",
-  "license": "Apache-2.0",
-  "repository": "googlechrome/workbox",
-  "bugs": "https://github.com/googlechrome/workbox/issues",
-  "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-routing",
-  "main": "build/importScripts/workbox-routing.prod.v2.1.0.js",
-  "module": "build/modules/workbox-routing.prod.v2.1.0.mjs"
+  "workbox": {
+    "browserNamespace": "workbox.routing",
+    "packageType": "browser"
+  },
+  "main": "build/workbox-routing.prod.js",
+  "module": "index.mjs",
+  "dependencies": {
+    "workbox-core": "^3.0.0"
+  }
 }

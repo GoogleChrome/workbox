@@ -1,32 +1,30 @@
 {
   "name": "workbox-precaching",
-  "version": "2.1.0",
-  "description": "A lower-level server worker library to precache a manifest of URLs.",
+  "version": "3.0.0",
+  "license": "Apache-2.0",
+  "author": "Google's Web DevRel Team",
+  "description": "This module efficiently precaches assets.",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox",
   "keywords": [
     "workbox",
     "workboxjs",
     "service worker",
-    "sw",
-    "caching",
-    "cache",
-    "precache"
-  ],
-  "files": [
-    "src",
-    "build"
+    "sw"
   ],
   "scripts": {
-    "prepublish": "gulp build --project workbox-precaching"
+    "build": "gulp build-packages --package workbox-precaching",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
-  "author": "Google's Web DevRel Team",
-  "license": "Apache-2.0",
-  "repository": "googlechrome/workbox",
-  "bugs": "https://github.com/googlechrome/workbox/issues",
-  "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-precaching",
-  "devDependencies": {
-    "workbox-routing": "^2.1.0",
-    "workbox-runtime-caching": "^2.0.3"
+  "workbox": {
+    "browserNamespace": "workbox.precaching",
+    "packageType": "browser"
   },
-  "main": "build/importScripts/workbox-precaching.prod.v2.1.0.js",
-  "module": "build/modules/workbox-precaching.prod.v2.1.0.mjs"
+  "main": "build/workbox-precaching.prod.js",
+  "module": "index.mjs",
+  "dependencies": {
+    "workbox-core": "^3.0.0"
+  }
 }

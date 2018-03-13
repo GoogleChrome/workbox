@@ -1,21 +1,14 @@
-only_commits:
-  files:
-    - packages/workbox-cli/
-    - packages/workbox-build/
-    - test/
-    - appveyor.yml
-    - .travis.yml
-    - package.json
+cache:
+  - node_modules
 
 install:
   - ps: Install-Product node Stable
-  - npm install -g gulp
   - npm install
-  - gulp lerna-bootstrap-scoped --project="workbox-cli"
+  - npm install gulpjs/gulp-cli -g
 
 test_script:
   - node --version
   - npm --version
-  - gulp test --project "workbox-cli"
+  - gulp test
 
 build: off

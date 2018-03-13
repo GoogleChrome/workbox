@@ -21,21 +21,43 @@ const path = require('path');
 
 const options = minimist(process.argv.slice(2));
 
-if (options.project) {
+if (options.package) {
   // Ensure the project is valid before running tasks
   try {
-    fs.statSync(path.join(__dirname, 'packages', options.project));
+    fs.statSync(path.posix.join(__dirname, 'packages', options.package));
   } catch (err) {
-    throw new Error(`The supplied project '${options.project}' is invalid.`);
+    throw new Error(`The supplied project '${options.package}' is invalid.`);
   }
 }
 
 global.port = options.port || 3000;
-global.projectOrStar = options.project || '*';
+global.packageOrStar = options.package || '*';
 global.cliOptions = options;
 
-require('./gulp-tasks/lint.js');
-require('./gulp-tasks/lerna.js');
-require('./gulp-tasks/build.js');
-require('./gulp-tasks/test.js');
-require('./gulp-tasks/serve.js');
+// Forward referencing means the order of gulp-task
+// requires is important
+const gulpTaskFiles = [
+  'build-node-packages',
+  'build-browser-packages',
+  'build-packages',
+  'build',
+  'lint',
+  'test-node',
+  'test-integration',
+  'test',
+  'test-server',
+  'analyze-properties',
+  'publish-github',
+  'publish-cdn',
+  'publish-lerna',
+  'publish-demos',
+  'publish',
+  'watch',
+  'docs',
+  'demos',
+];
+
+gulpTaskFiles.forEach((gulpTaskFile) => {
+  // Requiring will be enough to register the tasks with gulp.
+  require(path.join(__dirname, 'gulp-tasks', gulpTaskFile));
+});

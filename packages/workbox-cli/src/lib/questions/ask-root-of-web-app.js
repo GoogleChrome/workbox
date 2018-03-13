@@ -1,96 +1,92 @@
-const fs = require('fs');
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+
+const assert = require('assert');
+const fse = require('fs-extra');
+const glob = require('glob');
 const inquirer = require('inquirer');
-const path = require('path');
+const ol = require('common-tags').oneLine;
 
-
-const constants = require('../constants');
-const logHelper = require('../log-helper');
+const {ignoredDirectories} = require('../constants');
 const errors = require('../errors');
 
+const ROOT_PROMPT = 'Please enter the path to the root of your web app:';
+
+// The key used for the question/answer.
+const name = 'globDirectory';
+
 /**
- * This method requests the root directory of the web app.
- * The user can opt to type in the directory OR select = require(a list of
- * directories in the current path.
- * @return {Promise<string>} Promise that resolves with the name of the root
- * directory if given.
- *
- * @private
+ * @return {Promise<Array<string>>} The subdirectories of the current
+ * working directory, with hidden and ignored ones filtered out.
  */
-module.exports = () => {
-  const manualEntryChoice = 'Manually Enter Path';
-  const currentDirectory = process.cwd();
-
-  return new Promise((resolve, reject) => {
-    fs.readdir(currentDirectory, (err, directoryContents) => {
-      if (err) {
-        return reject(err);
+async function getSubdirectories() {
+  return await new Promise((resolve, reject) => {
+    glob('*/', {
+      ignore: ignoredDirectories.map((directory) => `${directory}/`),
+    }, (error, directories) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(directories);
       }
-
-      resolve(directoryContents);
     });
-  })
-  .then((directoryContents) => {
-    return directoryContents.filter((directoryContent) => {
-      return fs.statSync(directoryContent).isDirectory();
-    });
-  })
-  .then((subdirectories) => {
-    return subdirectories.filter((subdirectory) => {
-      // Strip black listed directories from options.
-      if (constants.blacklistDirectoryNames.includes(subdirectory)) {
-        return false;
-      }
+  });
+}
 
-      // Strip hidden directories from options.
-      if (subdirectory.indexOf('.') === 0) {
-        return false;
-      }
+/**
+ * @return {Promise<Object>} The answers from inquirer.
+ */
+async function askQuestion() {
+  const subdirectories = await getSubdirectories();
 
-      return true;
-    });
-  })
-  .then((subdirectories) => {
-    if (subdirectories.length > 0) {
-      // There are subdirectories we can set for the root of the project.
-      const choices = subdirectories.concat([
+  if (subdirectories.length > 0) {
+    const manualEntryChoice = 'Manually enter path';
+    return inquirer.prompt([{
+      name,
+      type: 'list',
+      message: ol`What is the root of your web app (i.e. which directory do
+        you deploy)?`,
+      choices: subdirectories.concat([
         new inquirer.Separator(),
         manualEntryChoice,
-      ]);
-      return inquirer.prompt([
-        {
-          name: 'rootDir',
-          message: 'What is the root of your web app?',
-          type: 'list',
-          choices: choices,
-        },
-        {
-          name: 'rootDir',
-          message: 'Please manually enter the root of your web app?',
-          when: (answers) => {
-            return answers.rootDir === manualEntryChoice;
-          },
-        },
-      ]);
-    } else {
-      // There are no subdirectories so the developer must manually define this.
-      return inquirer.prompt([
-        {
-          name: 'rootDir',
-          message: 'Please enter the root of your web app? (Defaults to ' +
-            'the current directory)',
-          default: '.',
-        },
-      ]);
-    }
-  })
-  .then((answers) => {
-    return path.join(currentDirectory, answers.rootDir);
-  })
-  .catch((err) => {
-    logHelper.error(
-      errors['unable-to-get-rootdir'],
-      err
-    );
-    throw err;
-  });
+      ]),
+    }, {
+      name,
+      when: (answers) => answers[name] === manualEntryChoice,
+      message: ROOT_PROMPT,
+    }]);
+  } else {
+    return inquirer.prompt([{
+      name,
+      message: ROOT_PROMPT,
+      default: '.',
+    }]);
+  }
+}
+
+module.exports = async () => {
+  const answers = await askQuestion();
+  const globDirectory = answers[name];
+
+  try {
+    const stat = await fse.stat(globDirectory);
+    assert(stat.isDirectory());
+  } catch (error) {
+    throw new Error(errors['glob-directory-invalid']);
+  }
+
+  return globDirectory;
 };

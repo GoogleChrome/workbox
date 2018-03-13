@@ -1,34 +1,28 @@
 {
   "name": "workbox-sw",
-  "version": "2.1.3",
-  "description": "A service worker library to make managing fetch requests and caching as easy as possible.",
+  "version": "3.0.0",
+  "license": "Apache-2.0",
+  "author": "Google's Web DevRel Team",
+  "description": "This module makes it easy to get started with the Workbox service worker libraries.",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox",
   "keywords": [
     "workbox",
     "workboxjs",
     "service worker",
-    "caching",
-    "fetch requests",
-    "offline"
-  ],
-  "files": [
-    "build"
+    "sw"
   ],
   "scripts": {
-    "prepublish": "gulp build --project workbox-sw"
+    "build": "gulp build-packages --package workbox-sw",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
-  "author": "Google's Web DevRel Team",
-  "license": "Apache-2.0",
-  "repository": "googlechrome/workbox",
-  "bugs": "https://github.com/googlechrome/workbox/issues",
-  "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-sw",
-  "main": "build/importScripts/workbox-sw.prod.v2.1.3.js",
-  "module": "build/modules/workbox-sw.prod.v2.1.3.mjs",
-  "devDependencies": {
-    "workbox-broadcast-cache-update": "^2.1.3",
-    "workbox-cache-expiration": "^2.0.3",
-    "workbox-cacheable-response": "^2.0.3",
-    "workbox-precaching": "^2.1.0",
-    "workbox-routing": "^2.1.0",
-    "workbox-runtime-caching": "^2.0.3"
-  }
+  "workbox": {
+    "browserNamespace": "workbox",
+    "packageType": "browser",
+    "prodOnly": true
+  },
+  "main": "build/workbox-sw.js",
+  "module": "index.mjs"
 }

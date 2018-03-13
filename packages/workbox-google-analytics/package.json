@@ -1,29 +1,36 @@
 {
   "name": "workbox-google-analytics",
-  "version": "2.1.1",
-  "description": "A service worker helper library to retry offline Google Analytics requests when a connection is available.",
+  "version": "3.0.0",
+  "license": "Apache-2.0",
+  "author": "Google's Web DevRel Team",
+  "description": "Queues failed requests and uses the Background Sync API to replay them when the network is available",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox",
   "keywords": [
     "workbox",
     "workboxjs",
     "service worker",
     "sw",
     "offline",
+    "google",
     "analytics"
   ],
-  "author": {
-    "name": "Jeff Posnick",
-    "email": "jeffy@google.com",
-    "url": "https://jeffy.info"
-  },
   "scripts": {
-    "prepublish": "gulp build --project workbox-google-analytics"
+    "build": "gulp build-packages --package workbox-google-analytics",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
-  "license": "Apache-2.0",
-  "repository": "googlechrome/workbox",
-  "bugs": "https://github.com/googlechrome/workbox/issues",
-  "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-google-analytics",
-  "files": [
-    "build"
-  ],
-  "main": "build/importScripts/workbox-google-analytics.prod.v2.1.1.js"
+  "workbox": {
+    "browserNamespace": "workbox.googleAnalytics",
+    "packageType": "browser"
+  },
+  "main": "build/workbox-google-analytics.prod.js",
+  "module": "index.mjs",
+  "dependencies": {
+    "workbox-background-sync": "^3.0.0",
+    "workbox-core": "^3.0.0",
+    "workbox-routing": "^3.0.0",
+    "workbox-strategies": "^3.0.0"
+  }
 }

@@ -1,7 +1,12 @@
 {
   "name": "workbox-range-requests",
-  "version": "2.1.0",
+  "version": "3.0.0",
+  "license": "Apache-2.0",
+  "author": "Google's Web DevRel Team",
   "description": "This library creates a new Response, given a source Response and a Range header value.",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox",
   "keywords": [
     "workbox",
     "workboxjs",
@@ -12,17 +17,18 @@
     "range",
     "media"
   ],
-  "files": [
-    "build"
-  ],
   "scripts": {
-    "prepublish": "gulp build --project workbox-range-requests"
+    "build": "gulp build-packages --package workbox-range-requests",
+    "version": "npm run build",
+    "prepare": "npm run build"
   },
-  "author": "Google's Web DevRel Team",
-  "license": "Apache-2.0",
-  "repository": "googlechrome/workbox",
-  "bugs": "https://github.com/googlechrome/workbox/issues",
-  "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-range-requests",
-  "main": "build/importScripts/workbox-range-requests.prod.v2.1.0.js",
-  "module": "build/modules/workbox-range-requests.prod.v2.1.0.mjs"
+  "workbox": {
+    "browserNamespace": "workbox.rangeRequests",
+    "packageType": "browser"
+  },
+  "main": "build/workbox-range-requests.prod.js",
+  "module": "index.mjs",
+  "dependencies": {
+    "workbox-core": "^3.0.0"
+  }
 }

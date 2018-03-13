@@ -1,7 +1,0 @@
-{
-  "browser": {
-    "scripts": [
-      "/packages/workbox-precaching/test/static/test-data.js"
-    ]
-  }
-}
