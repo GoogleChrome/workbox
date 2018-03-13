@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 /**
- * Copyright 2016 Google Inc.
+ * Copyright 2017 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 **/
-'use strict';
 
 const meow = require('meow');
-const cliHelpText = require('./cli-help');
-const CLI = require('./index.js');
+const updateNotifier = require('update-notifier');
 
-/* eslint-disable no-console */
-// argv[0] is the path to the node runtime.
-// argv[1] is the path to the script that node is running.
-if (process.argv[1].endsWith('workbox-cli')) {
-  console.warn(`Please run the command line tool as 'workbox' instead of ` +
-    `'workbox-cli'.\n'workbox-cli' will stop working in the next major ` +
-    `release.\n(See: https://github.com/GoogleChrome/workbox/issues/730)`);
-}
-/* eslint-enable no-console */
+const app = require('./app.js');
+const cleanupStackTrace = require('./lib/cleanup-stack-trace.js');
+const helpText = require('./lib/help-text');
+const logger = require('./lib/logger');
 
-const cliInstance = new CLI();
-const meowOutput = meow(cliHelpText);
-cliInstance.argv(meowOutput);
+(async () => {
+  const params = meow(helpText);
+  updateNotifier({pkg: params.pkg}).notify();
+
+  try {
+    await app(params);
+  } catch (error) {
+    // Show the full error and stack trace if we're run with --debug.
+    if (params.flags.debug) {
+      logger.error(`\n${error.stack}`);
+    } else {
+      logger.error(`\n${error.message}`);
+      logger.debug(`${cleanupStackTrace(error, 'app.js')}\n`);
+    }
+
+    process.exit(1);
+  }
+})();

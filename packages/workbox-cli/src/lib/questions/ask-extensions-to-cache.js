@@ -1,105 +1,103 @@
-const fs = require('fs');
-const path = require('path');
+/**
+ * Copyright 2017 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
+
+const assert = require('assert');
+const glob = require('glob');
 const inquirer = require('inquirer');
+const ora = require('ora');
+const path = require('path');
 
-const logHelper = require('../log-helper');
 const errors = require('../errors');
-const constants = require('../constants');
+const {ignoredDirectories, ignoredFileExtensions} = require('../constants');
+
+// The key used for the question/answer.
+const name = 'globPatterns';
 
 /**
- * @private
- * @param {String} directory
- * @return {Promise<String>} Files in the directory
+ * @param {string} globDirectory The directory used for the root of globbing.
+ * @return {Promise<Array<string>>} The unique file extensions corresponding
+ * to all of the files under globDirectory.
  */
-const getFileContents = (directory) => {
-  return new Promise((resolve, reject) => {
-    fs.readdir(directory, (err, directoryContents) => {
-      if (err) {
-        return reject(err);
-      }
-
-      resolve(directoryContents);
-    });
-  })
-  .then((directoryContents) => {
-    const promises = directoryContents.map((directoryContent) => {
-      const fullPath = path.join(directory, directoryContent);
-      if (fs.statSync(fullPath).isDirectory()) {
-        if (!constants.blacklistDirectoryNames.includes(directoryContent)) {
-          return getFileContents(fullPath);
-        } else {
-          return [];
-        }
+async function getAllFileExtensions(globDirectory) {
+  const files = await new Promise((resolve, reject) => {
+    // Use a pattern to match any file that contains a '.', since that signifies
+    // the presence of a file extension.
+    glob('**/*.*', {
+      cwd: globDirectory,
+      nodir: true,
+      ignore: [
+        ...ignoredDirectories.map((directory) => `**/${directory}/**`),
+        ...ignoredFileExtensions.map((extension) => `**/*.${extension}`),
+      ],
+    }, (error, files) => {
+      if (error) {
+        reject(error);
       } else {
-        return fullPath;
+        resolve(files);
       }
     });
-
-    return Promise.all(promises);
-  })
-  .then((fileResults) => {
-    return fileResults.reduce((collapsedFiles, fileResult) => {
-      return collapsedFiles.concat(fileResult);
-    }, []);
   });
-};
 
-/**
- * @private
- * @param {Array<String>} files In directory which should indicate the
- * available extensions to offer the user.
- * @return {Promise<Array<String>>}
- */
-const getFileExtensions = (files) => {
-  const fileExtensions = new Set();
-  files.forEach((file) => {
+  const extensions = new Set();
+  for (const file of files) {
     const extension = path.extname(file);
-    if (extension && extension.length > 0) {
-      fileExtensions.add(extension);
+    if (extension) {
+      // Get rid of the leading . character.
+      extensions.add(extension.replace(/^\./, ''));
     }
-  });
+  }
 
-  // Strip the '.' character if it's the first character.
-  return [...fileExtensions].map(
-    (fileExtension) => fileExtension.replace(/^\./, ''));
-};
+  return [...extensions];
+}
 
 /**
- * @private
- * @param {String} globDirectory
- * @return {Promise<Array<String>>}
+ * @param {string} globDirectory The directory used for the root of globbing.
+ * @return {Promise<Object>} The answers from inquirer.
  */
-module.exports = (globDirectory) => {
-  return getFileContents(globDirectory)
-  .then((files) => {
-    return getFileExtensions(files);
-  })
-  .then((fileExtensions) => {
-    if (fileExtensions.length === 0) {
-      throw new Error(errors['no-file-extensions-found']);
-    }
+async function askQuestion(globDirectory) {
+  // We need to get a list of extensions corresponding to files in the directory
+  // to use when asking the next question. That could potentially take some
+  // time, so we show a spinner and explanatory text.
+  const spinner = ora({
+    text: `Examining files in ${globDirectory}...`,
+    stream: process.stdout,
+  }).start();
+  const fileExtensions = await getAllFileExtensions(globDirectory);
+  spinner.stop();
 
-    return inquirer.prompt([
-      {
-        name: 'cacheExtensions',
-        message: 'Which file types would you like to cache?',
-        type: 'checkbox',
-        choices: fileExtensions,
-        default: fileExtensions,
-      },
-    ]);
-  })
-  .then((results) => {
-    if (results.cacheExtensions.length === 0) {
-      throw new Error(errors['no-file-extensions-selected']);
-    }
-    return results.cacheExtensions;
-  })
-  .catch((err) => {
-    logHelper.error(
-      errors['unable-to-get-file-extensions'],
-      err
-    );
-    throw err;
-  });
+  assert(fileExtensions.length > 0, errors['no-file-extensions-found']);
+
+  return inquirer.prompt([{
+    name,
+    message: 'Which file types would you like to precache?',
+    type: 'checkbox',
+    choices: fileExtensions,
+    default: fileExtensions,
+  }]);
+}
+
+module.exports = async (globDirectory) => {
+  const answers = await askQuestion(globDirectory);
+  const extensions = answers[name];
+  assert(extensions.length > 0, errors['no-file-extensions-selected']);
+
+  // glob isn't happy with a single option inside of a {} group, so use a
+  // pattern without a {} group when there's only one extension.
+  const extensionsPattern = extensions.length === 1 ?
+    extensions[0] :
+    `{${extensions.join(',')}}`;
+  return [`**/*.${extensionsPattern}`];
 };

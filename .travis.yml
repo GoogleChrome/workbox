@@ -10,30 +10,18 @@ cache:
 node_js:
   - 'stable'
 
-env:
-  - PROJECT="workbox-background-sync"
-  - PROJECT="workbox-broadcast-cache-update"
-  - PROJECT="workbox-build"
-  - PROJECT="workbox-webpack-plugin"
-  - PROJECT="workbox-cache-expiration"
-  - PROJECT="workbox-cli"
-  - PROJECT="workbox-sw"
-  - PROJECT="workbox-google-analytics"
-  - PROJECT="workbox-precaching"
-  - PROJECT="workbox-routing"
-  - PROJECT="workbox-runtime-caching"
-
-install:
-  - npm install -g gulp-cli
-  - npm install
-  - gulp lerna-bootstrap-scoped --project="${PROJECT}"
-
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start || echo \"Unable to start virtual display.\""
   - sleep 3 # give xvfb some time to start
 
+install:
+  - npm install
+
 script:
-  # Building is handled in gulp test.
-  - gulp test --project "${PROJECT}"
+  - gulp test
+
+after_success:
+  - npm run coveralls
+  - npm run bot
