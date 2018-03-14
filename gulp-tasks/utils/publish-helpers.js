@@ -77,7 +77,7 @@ const buildGitCommit = async (tagName) => {
     cwd: sourceCodePath,
   });
 
-  // This is to try and fix Github and CDN steps from having file read / close
+  // This is to try and fix GitHub and CDN steps from having file read / close
   // issues by removing any risk of spawn tasks being out of sync
   return new Promise((resolve) => setTimeout(resolve, 1000));
 };

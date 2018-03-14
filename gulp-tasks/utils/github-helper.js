@@ -11,7 +11,7 @@ const github = new GitHubApi();
 const authenticate = () => {
   if (!process.env.GITHUB_TOKEN) {
     throw new Error('You must set a GITHUB_TOKEN in your environment to ' +
-      'public a Github release.');
+      'publish a GitHub release.');
   }
 
   github.authenticate({
