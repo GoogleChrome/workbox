@@ -41,7 +41,7 @@ const publishReleaseOnGithub =
 };
 
 const handleGithubRelease = async (tagName, gitBranch, releaseInfo) => {
-  logHelper.log(`Creating Github release ${logHelper.highlight(tagName)}.`);
+  logHelper.log(`Creating GitHub release ${logHelper.highlight(tagName)}.`);
 
   const {tarPath, zipPath} =
     await publishHelpers.createBundles(tagName, gitBranch);
@@ -54,7 +54,7 @@ const filterTagsWithReleaseBundles = (allTags, taggedReleases) => {
     const release = taggedReleases[tagInfo.name];
     if (release && release.assets.length > 0) {
       // If a tag has a release and there is an asset let's assume the
-      // the release is fine. Note: Github's source doesn't count as an
+      // the release is fine. Note: GitHub's source doesn't count as an
       // asset
       return false;
     }
@@ -71,7 +71,7 @@ gulp.task('publish-github:generate-from-tags', async () => {
     allTags, taggedReleases);
 
   if (tagsToBuild.length === 0) {
-    logHelper.log(`No tags missing from Github.`);
+    logHelper.log(`No tags missing from GitHub.`);
     return;
   }
 
