@@ -164,8 +164,17 @@ class PrecacheController {
       }
     }
 
-    // Clear any existing temp cache
-    await caches.delete(this._getTempCacheName());
+    // Empty the temporary cache.
+    // NOTE: We remove all entries instead of deleting the cache as the cache
+    // may be marked for deletion but still exist until a later stage
+    // resulting in unexpected behavior of being deletect when all references
+    // are dropped.
+    // https://github.com/GoogleChrome/workbox/issues/1368
+    const tempCache = await caches.open(this._getTempCacheName());
+    const requests = await tempCache.keys();
+    await Promise.all(requests.map((request) => {
+      return tempCache.delete(request);
+    }));
 
     const entriesToPrecache = [];
     const entriesAlreadyPrecached = [];
@@ -212,8 +221,6 @@ class PrecacheController {
       await cacheWrapper.put(this._cacheName, request, response);
       await tempCache.delete(request);
     }));
-
-    await caches.delete(this._getTempCacheName());
 
     return this._cleanup();
   }

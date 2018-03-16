@@ -54,11 +54,12 @@ describe(`[workbox-precaching] Precache and Update`, function() {
       caches.keys().then((keys) => cb(keys));
     });
     expect(keys).to.deep.equal([
+      'workbox-precache-http://localhost:3004/test/workbox-precaching/static/precache-and-update/-temp',
       'workbox-precache-http://localhost:3004/test/workbox-precaching/static/precache-and-update/',
     ]);
 
     // Check that the cached requests are what we expect for sw-1.js
-    let cachedRequests = await getCachedRequests(keys[0]);
+    let cachedRequests = await getCachedRequests('workbox-precache-http://localhost:3004/test/workbox-precaching/static/precache-and-update/');
     expect(cachedRequests).to.deep.equal([
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/index.html',
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/styles/index.css',
@@ -122,7 +123,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
 
     // Check that the cached entries were deleted / added as expected when
     // updating from sw-1.js to sw-2.js
-    cachedRequests = await getCachedRequests(keys[0]);
+    cachedRequests = await getCachedRequests('workbox-precache-http://localhost:3004/test/workbox-precaching/static/precache-and-update/');
     expect(cachedRequests).to.deep.equal([
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/index.html',
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/new-request.txt',
