@@ -36,6 +36,17 @@ import '../_version.mjs';
  * @memberof module:workbox-core
  */
 const putWrapper = async (cacheName, request, response, plugins = []) => {
+  if (!response) {
+    if (process.env.NODE_ENV !== 'production') {
+      logger.error(`Cannot cache non-existant response for ` +
+        `'${getFriendlyURL(request.url)}'.`);
+    }
+
+    throw new WorkboxError('cache-put-with-no-response', {
+      url: getFriendlyURL(request.url),
+    });
+  }
+
   let responseToCache = await _isResponseSafeToCache(
     request, response, plugins);
 

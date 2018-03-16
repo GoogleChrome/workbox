@@ -228,4 +228,8 @@ export default {
     return `Unable to cache '${url}' because it is a '${method}' request and ` +
       `only 'GET' requests can be cached.`;
   },
+  'cache-put-with-no-response': ({url}) => {
+    return `There was an attempt to cache '${url}' but the response was not ` +
+      `defined.`;
+  },
 };
