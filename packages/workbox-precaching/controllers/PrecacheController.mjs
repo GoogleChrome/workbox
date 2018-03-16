@@ -222,8 +222,6 @@ class PrecacheController {
       await tempCache.delete(request);
     }));
 
-    await caches.delete(this._getTempCacheName());
-
     return this._cleanup();
   }
 
