@@ -22,6 +22,8 @@ const path = require('path');
  *
  * @return {string} If swDest was not absolute, the returns swDest as-is.
  * Otheriwse, returns swDest relative to the compilation's output path.
+ *
+ * @private
  */
 module.exports = (compilation, swDest) => {
   // See https://github.com/jantimon/html-webpack-plugin/pull/266/files#diff-168726dbe96b3ce427e7fedce31bb0bcR38
