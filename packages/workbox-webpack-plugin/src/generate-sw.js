@@ -21,6 +21,7 @@ const getAssetHash = require('./lib/get-asset-hash');
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
 const getWorkboxSWImports = require('./lib/get-workbox-sw-imports');
+const relativeToOutputPath = require('./lib/relative-to-output-path');
 const sanitizeConfig = require('./lib/sanitize-config');
 const stringifyManifest = require('./lib/stringify-manifest');
 
@@ -100,7 +101,9 @@ class GenerateSW {
     sanitizedConfig.workboxSWImport = workboxSWImport;
     const {swString, warnings} = await generateSWString(sanitizedConfig);
     compilation.warnings = compilation.warnings.concat(warnings || []);
-    compilation.assets[this.config.swDest] = convertStringToAsset(swString);
+
+    const relSwDest = relativeToOutputPath(compilation, this.config.swDest);
+    compilation.assets[relSwDest] = convertStringToAsset(swString);
   }
 
   /**
