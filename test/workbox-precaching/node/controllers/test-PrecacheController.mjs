@@ -351,9 +351,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       await precacheControllerOne.activate();
 
-      // Ensure temp cache is deleted
-      let availableCaches = await caches.keys();
-      expect(availableCaches.indexOf(tempCacheName)).to.equal(-1);
+      // Ensure temp cache is empty
+       tempCache = await caches.open(tempCache);
+      let requests = await tempCache.keys();
+      expect(requests.length).to.equal(0);
 
       // The cache mock needs the cache to be re-opened to have up-to-date keys.
       finalCache = await caches.open(cacheNames.getPrecacheName());
@@ -416,9 +417,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       await precacheControllerTwo.activate();
 
-      // Ensure temp cache is deleted
-      availableCaches = await caches.keys();
-      expect(availableCaches.indexOf(tempCacheName)).to.equal(-1);
+      // Ensure temp cache is empty
+      tempCache = await caches.open(tempCache);
+      requests = await tempCache.keys();
+      expect(requests.length).to.equal(0);
 
       // Cache mock needs this to update keys
       finalCache = await caches.open(cacheNames.getPrecacheName());
