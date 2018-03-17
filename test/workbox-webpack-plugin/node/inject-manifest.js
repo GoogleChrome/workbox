@@ -1207,4 +1207,61 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
   });
+
+  describe(`[workbox-webpack-plugin] swDest variations`, function() {
+    it(`should work when swDest is an absolute path`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.43591bdf46c7ac47eb8d7b2bcd41f13e.js';
+      const outputDir = tempy.directory();
+      const config = {
+        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: SW_SRC,
+            // path.resolve() will always return an absolute path.
+            swDest: path.resolve(path.join(outputDir, 'service-worker.js')),
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        const swFile = path.join(outputDir, 'service-worker.js');
+        try {
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            revision: '8e8e9f093f036bd18dfa',
+            url: 'webpackEntry.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
 });

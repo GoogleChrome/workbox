@@ -24,6 +24,7 @@ const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
 const getWorkboxSWImports = require('./lib/get-workbox-sw-imports');
 const readFileWrapper = require('./lib/read-file-wrapper');
+const relativeToOutputPath = require('./lib/relative-to-output-path');
 const sanitizeConfig = require('./lib/sanitize-config');
 const stringifyManifest = require('./lib/stringify-manifest');
 
@@ -128,8 +129,8 @@ ${setConfigString}
 ${originalSWString}
 `;
 
-    compilation.assets[this.config.swDest] =
-      convertStringToAsset(postInjectionSWString);
+    const relSwDest = relativeToOutputPath(compilation, this.config.swDest);
+    compilation.assets[relSwDest] = convertStringToAsset(postInjectionSWString);
   }
 
   /**
