@@ -27,6 +27,7 @@ const readFileWrapper = require('./lib/read-file-wrapper');
 const relativeToOutputPath = require('./lib/relative-to-output-path');
 const sanitizeConfig = require('./lib/sanitize-config');
 const stringifyManifest = require('./lib/stringify-manifest');
+const warnAboutConfig = require('./lib/warn-about-config');
 
 /**
  * This class supports taking an existing service worker file which already
@@ -73,6 +74,11 @@ class InjectManifest {
    * @private
    */
   async handleEmit(compilation, readFile) {
+    const configWarning = warnAboutConfig(this.config);
+    if (configWarning) {
+      compilation.warnings.push(configWarning);
+    }
+
     const workboxSWImports = await getWorkboxSWImports(
       compilation, this.config);
 
