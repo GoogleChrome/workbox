@@ -124,6 +124,9 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         const swFile = path.join(outputDir, 'service-worker.js');
 
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -179,13 +182,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -236,13 +242,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -291,13 +300,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // Validate the copied library files.
           const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
             {cwd: outputDir});
@@ -365,13 +377,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // Validate the copied library files.
           const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
             {cwd: outputDir});
@@ -441,13 +456,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -499,13 +517,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -558,13 +579,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -621,13 +645,17 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          // There's a warning about globDirectory that is expected.
+          expect(statsJson.warnings).to.have.lengthOf(1);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -662,79 +690,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         }
       });
     });
-
-    it(`should add warnings from the workbox-build methods to compilation.warnings`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.eca1a14406dbeefe3925758a8999609a.js';
-      const outputDir = tempy.directory();
-      const config = {
-        entry: {
-          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-        },
-        output: {
-          filename: '[name]-[chunkhash].js',
-          path: outputDir,
-        },
-        plugins: [
-          // This is not an exhaustive test of all the supported options, but
-          // it should be enough to confirm that they're being interpreted
-          // by workbox-build.generateSWString() properly.
-          new GenerateSW({
-            globDirectory: SRC_DIR,
-            globPatterns: ['**/*'],
-            // Make this large enough to cache some, but not all, files.
-            maximumFileSizeToCacheInBytes: 20,
-          }),
-        ],
-      };
-
-      const compiler = webpack(config);
-      compiler.run(async (webpackError, stats) => {
-        if (webpackError) {
-          return done(webpackError);
-        }
-
-        // Check to make sure we have warnings about the files that are too large to cache.
-        const statsJson = stats.toJson('verbose');
-        expect(statsJson.warnings).to.have.lengthOf(5);
-
-        const swFile = path.join(outputDir, 'service-worker.js');
-        try {
-          // First, validate that the generated service-worker.js meets some basic assumptions.
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [
-              [WORKBOX_SW_FILE_NAME],
-              [FILE_MANIFEST_NAME],
-            ],
-            suppressWarnings: [[]],
-            precacheAndRoute: [[[{
-              revision: '544658ab25ee8762dc241e8b1c5ed96d',
-              url: 'page-1.html',
-            }, {
-              revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-              url: 'page-2.html',
-            }, {
-              revision: 'edeab2a4c398a3f25d7b92bedea10d31',
-              url: 'webpackEntry.js',
-            }], {}]],
-          }});
-
-          // Next, test the generated manifest to ensure that it contains
-          // exactly the entries that we expect.
-          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
-          const context = {self: {}};
-          vm.runInNewContext(manifestFileContents, context);
-
-          const expectedEntries = [{
-            url: 'entry1-89d6aad5d80ebcfb2e8a.js',
-          }];
-          expect(context.self.__precacheManifest).to.eql(expectedEntries);
-
-          done();
-        } catch (error) {
-          done(error);
-        }
-      });
-    });
   });
 
   describe(`[workbox-webpack-plugin] html-webpack-plugin and a single chunk`, function() {
@@ -757,13 +712,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -818,13 +776,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -903,13 +864,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -957,13 +921,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -1018,13 +985,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -1083,13 +1053,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -1142,13 +1115,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      compiler.run(async (webpackError) => {
+      compiler.run(async (webpackError, stats) => {
         if (webpackError) {
           return done(webpackError);
         }
 
         const swFile = path.join(outputDir, 'service-worker.js');
         try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [
@@ -1168,6 +1144,232 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           const expectedEntries = [{
             revision: '8e8e9f093f036bd18dfa',
             url: 'webpackEntry.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  describe(`[workbox-webpack-plugin] Reporting webpack warnings`, function() {
+    it(`should add warnings from the workbox-build methods to compilation.warnings`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.eca1a14406dbeefe3925758a8999609a.js';
+      const outputDir = tempy.directory();
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          // This is not an exhaustive test of all the supported options, but
+          // it should be enough to confirm that they're being interpreted
+          // by workbox-build.generateSWString() properly.
+          new GenerateSW({
+            globDirectory: SRC_DIR,
+            globPatterns: ['**/*'],
+            // Make this large enough to cache some, but not all, files.
+            maximumFileSizeToCacheInBytes: 20,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(6);
+
+          const swFile = path.join(outputDir, 'service-worker.js');
+
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+              importScripts: [
+                [WORKBOX_SW_FILE_NAME],
+                [FILE_MANIFEST_NAME],
+              ],
+              suppressWarnings: [[]],
+              precacheAndRoute: [[[{
+                revision: '544658ab25ee8762dc241e8b1c5ed96d',
+                url: 'page-1.html',
+              }, {
+                revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+                url: 'page-2.html',
+              }, {
+                revision: 'edeab2a4c398a3f25d7b92bedea10d31',
+                url: 'webpackEntry.js',
+              }], {}]],
+            }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            url: 'entry1-89d6aad5d80ebcfb2e8a.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it(`should add a warning when various glob-related options are set`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.eca1a14406dbeefe3925758a8999609a.js';
+      const outputDir = tempy.directory();
+      const globOptionsToWarnAbout = [
+        'globDirectory',
+        'globFollow',
+        'globIgnores',
+        'globPatterns',
+        'globStrict',
+      ];
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW({
+            globDirectory: SRC_DIR,
+            globFollow: true,
+            globIgnores: ['ignored'],
+            globPatterns: ['**/*.html'],
+            globStrict: true,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(1);
+          for (const globOptionToWarnAbout of globOptionsToWarnAbout) {
+            expect(statsJson.warnings[0]).to.include(globOptionToWarnAbout);
+          }
+
+          const swFile = path.join(outputDir, 'service-worker.js');
+
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+              importScripts: [
+                [WORKBOX_SW_FILE_NAME],
+                [FILE_MANIFEST_NAME],
+              ],
+              suppressWarnings: [[]],
+              precacheAndRoute: [[[{
+                revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+                url: 'index.html',
+              }, {
+                revision: '544658ab25ee8762dc241e8b1c5ed96d',
+                url: 'page-1.html',
+              }, {
+                revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+                url: 'page-2.html',
+              }], {}]],
+            }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            url: 'entry1-89d6aad5d80ebcfb2e8a.js',
+          }];
+          expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it(`should add a warning when certain options are used, but globPatterns isn't set`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.eca1a14406dbeefe3925758a8999609a.js';
+      const outputDir = tempy.directory();
+      const optionsToWarnAboutWhenGlobPatternsIsNotSet = [
+        'dontCacheBustUrlsMatching',
+        'manifestTransforms',
+        'maximumFileSizeToCacheInBytes',
+        'modifyUrlPrefix',
+      ];
+      const config = {
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW({
+            dontCacheBustUrlsMatching: /testing/,
+            manifestTransforms: [],
+            maximumFileSizeToCacheInBytes: 1000000,
+            modifyUrlPrefix: {abc: 'def'},
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(1);
+          for (const optionToWarnAboutWhenGlobPatternsIsNotSet of optionsToWarnAboutWhenGlobPatternsIsNotSet) {
+            expect(statsJson.warnings[0]).to.include(optionToWarnAboutWhenGlobPatternsIsNotSet);
+          }
+
+          const swFile = path.join(outputDir, 'service-worker.js');
+
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+              importScripts: [
+                [WORKBOX_SW_FILE_NAME],
+                [FILE_MANIFEST_NAME],
+              ],
+              suppressWarnings: [[]],
+              precacheAndRoute: [[[], {}]],
+            }});
+
+          // Next, test the generated manifest to ensure that it contains
+          // exactly the entries that we expect.
+          const manifestFileContents = await fse.readFile(path.join(outputDir, FILE_MANIFEST_NAME), 'utf-8');
+          const context = {self: {}};
+          vm.runInNewContext(manifestFileContents, context);
+
+          const expectedEntries = [{
+            url: 'entry1-89d6aad5d80ebcfb2e8a.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 

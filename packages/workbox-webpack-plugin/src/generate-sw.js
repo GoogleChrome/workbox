@@ -24,6 +24,7 @@ const getWorkboxSWImports = require('./lib/get-workbox-sw-imports');
 const relativeToOutputPath = require('./lib/relative-to-output-path');
 const sanitizeConfig = require('./lib/sanitize-config');
 const stringifyManifest = require('./lib/stringify-manifest');
+const warnAboutConfig = require('./lib/warn-about-config');
 
 /**
  * This class supports creating a new, ready-to-use service worker file as
@@ -64,6 +65,11 @@ class GenerateSW {
    * @private
    */
   async handleEmit(compilation) {
+    const configWarning = warnAboutConfig(this.config);
+    if (configWarning) {
+      compilation.warnings.push(configWarning);
+    }
+
     const workboxSWImports = await getWorkboxSWImports(
       compilation, this.config);
     const entries = getManifestEntriesFromCompilation(compilation, this.config);
