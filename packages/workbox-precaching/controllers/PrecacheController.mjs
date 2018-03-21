@@ -207,18 +207,22 @@ class PrecacheController {
    * Takes the current set of temporary files and moves them to the final
    * cache, deleting the temporary cache once copying is complete.
    *
+   * @param {Object} options
+   * @param {Array<Object>} options.plugins Plugins to be used for fetching
+   * and caching during install.
    * @return {
    * Promise<workbox.precaching.CleanupResult>}
    * Resolves with an object containing details of the deleted cache requests
    * and precache revision details.
    */
-  async activate() {
+  async activate(options = {}) {
     const tempCache = await caches.open(this._getTempCacheName());
 
     const requests = await tempCache.keys();
     await Promise.all(requests.map(async (request) => {
       const response = await tempCache.match(request);
-      await cacheWrapper.put(this._cacheName, request, response);
+      await cacheWrapper.put(this._cacheName, request,
+        response, options.plugins);
       await tempCache.delete(request);
     }));
 
