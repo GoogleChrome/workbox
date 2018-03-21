@@ -27,10 +27,10 @@ module.exports = (config) => {
 
   const usedGlobOptions = globOptions.filter((option) => option in config);
   if (usedGlobOptions.length > 0) {
-    return `You're using the following Workbox configuration options: ` +
-      `[${usedGlobOptions.join(', ')}] In Workbox v3 and later, these ` +
-      `options are usually not needed. Please see ${moreInfoUrl} for ` +
-      `more info.`;
+    return `You're using the following Workbox configuration option` +
+      `${usedGlobOptions.length === 1 ? '' : 's'}: ` +
+      `[${usedGlobOptions.join(', ')}]. In Workbox v3 and later, this is ` +
+      `usually not needed. Please see ${moreInfoUrl} for more info.`;
   }
 
   const optionsToWarnAboutWhenGlobPatternsIsNotSet = [
@@ -43,11 +43,11 @@ module.exports = (config) => {
   const usedNoopOptions = optionsToWarnAboutWhenGlobPatternsIsNotSet
     .filter((option) => option in config);
   if (usedNoopOptions.length > 0) {
-    return `You're using the following Workbox configuration options: ` +
-      `[${usedNoopOptions.join(', ')}] These options will not have any ` +
-      `effect, as they only modify files that are matched via ` +
-      `'globPatterns'. You can remove them from your config, and learn more ` +
-      `at ${moreInfoUrl}`;
+    return `You're using the following Workbox configuration option` +
+      `${usedGlobOptions.length === 1 ? '' : 's'}: ` +
+      `[${usedNoopOptions.join(', ')}]. This will not have any effect, as ` +
+      `it will only modify files that are matched via 'globPatterns'. You ` +
+      `can remove them from your config, and learn more at ${moreInfoUrl}`;
   }
 
   return null;
