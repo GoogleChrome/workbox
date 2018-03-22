@@ -20,15 +20,16 @@ const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
 
 const MODULE_KEY_TO_NAME_MAPPING = {
   backgroundSync: 'background-sync',
+  broadcastUpdate: 'broadcast-cache-update',
+  cacheableResponse: 'cacheable-response',
   core: 'core',
   expiration: 'cache-expiration',
   googleAnalytics: 'google-analytics',
-  strategies: 'strategies',
   precaching: 'precaching',
-  routing: 'routing',
-  cacheableResponse: 'cacheable-response',
-  broadcastUpdate: 'broadcast-cache-update',
   rangeRequests: 'range-requests',
+  routing: 'routing',
+  strategies: 'strategies',
+  streams: 'streams',
 };
 
 /**

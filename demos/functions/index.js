@@ -17,6 +17,7 @@ const workboxModules = [
   'workbox-range-requests',
   'workbox-routing',
   'workbox-strategies',
+  'workbox-streams',
   'workbox-sw',
 ];
 

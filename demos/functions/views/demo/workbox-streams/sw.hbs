@@ -1,0 +1,66 @@
+{{{WORKBOX_SW_IMPORT}}}
+
+const CACHE_NAME = 'my-cache';
+const START_CACHE_KEY = 'start';
+const END_CACHE_KEY = 'end';
+
+self.addEventListener('install', (event) => {
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await Promise.all([
+      cache.put(START_CACHE_KEY, new Response('<html><head></head><body>')),
+      cache.put(END_CACHE_KEY, new Response('</body></html>')),
+    ]);
+  })());
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.endsWith('stream123')) {
+    const {completionPromise, response} = workbox.streams.concatenate([
+      new Response('1'),
+      new Response('2'),
+      new Response('3'),
+    ], {'content-type': 'text/plain'});
+    event.waitUntil(completionPromise);
+    event.respondWith(response);
+  }
+});
+
+workbox.routing.registerRoute(
+  new RegExp('stream456$'),
+  ({url, event}) => {
+    const {completionPromise, response} = workbox.streams.concatenate([
+      new Response('4'),
+      new Response('5'),
+      new Response('6'),
+    ], {'content-type': 'text/plain'});
+    event.waitUntil(completionPromise);
+    return response;
+  }
+);
+
+workbox.routing.registerRoute(
+  new RegExp('stream789$'),
+  workbox.streams.strategy([
+    () => new Response('7'),
+    () => new Response('8'),
+    () => new Response('9'),
+  ], {'content-type': 'text/plain'})
+);
+
+workbox.routing.registerRoute(
+  new RegExp('\.html'),
+  workbox.streams.strategy([
+    () => caches.match(START_CACHE_KEY, {cacheName: CACHE_NAME}),
+    ({url}) => {
+      if (url.searchParams.has('content')) {
+        return new Response(url.searchParams.get('content'));
+      }
+      throw new Error(`Oops: ${url}`);
+    },
+    () => caches.match(END_CACHE_KEY, {cacheName: CACHE_NAME}),
+  ])
+);
+
+workbox.skipWaiting();
+workbox.clientsClaim();
