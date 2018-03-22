@@ -25,8 +25,8 @@ const getFriendlyURL = (url) => {
 };
 
 export default {
-  strategyStart: (strategyName, event) => `Using ${strategyName} to respond ` +
-    `to  '${getFriendlyURL(event.request.url)}'`,
+  strategyStart: (strategyName, request) => `Using ${strategyName} to ` +
+    `respond to '${getFriendlyURL(request.url)}'`,
   printFinalResponse: (response) => {
     if (response) {
       logger.groupCollapsed(`View the final response here.`);

@@ -52,6 +52,22 @@ class CacheFirst {
     this._fetchOptions = options.fetchOptions || null;
   }
 
+  handle({event}) {
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(event, FetchEvent, {
+        moduleName: 'workbox-strategies',
+        className: 'CacheFirst',
+        funcName: 'handle',
+        paramName: 'event',
+      });
+    }
+
+    return this.makeRequest({
+      event,
+      request: event.request,
+    });
+  }
+
   /**
    * This method will perform a request strategy and follows an API that
    * will work with the
@@ -62,20 +78,20 @@ class CacheFirst {
    * against.
    * @return {Promise<Response>}
    */
-  async handle({event}) {
+  async makeRequest({event, request}) {
     const logs = [];
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(event, FetchEvent, {
+      assert.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
         className: 'CacheFirst',
-        funcName: 'handle',
-        paramName: 'event',
+        funcName: 'makeRequest',
+        paramName: 'request',
       });
     }
 
     let response = await cacheWrapper.match(
       this._cacheName,
-      event.request,
+      request,
       null,
       this._plugins
     );
@@ -88,7 +104,7 @@ class CacheFirst {
           `Will respond with a network request.`);
       }
       try {
-        response = await this._getFromNetwork(event);
+        response = await this._getFromNetwork(request, event);
       } catch (err) {
         error = err;
       }
@@ -109,7 +125,7 @@ class CacheFirst {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('CacheFirst', event));
+        messages.strategyStart('CacheFirst', request));
       for (let log of logs) {
         logger.log(log);
       }
@@ -134,23 +150,25 @@ class CacheFirst {
    *
    * @private
    */
-  async _getFromNetwork(event) {
+  async _getFromNetwork(request, event) {
     const response = await fetchWrapper.fetch(
-      event.request,
+      effectiveRequest,
       this._fetchOptions,
       this._plugins
     );
 
     // Keep the service worker while we put the request to the cache
     const responseClone = response.clone();
-    event.waitUntil(
-      cacheWrapper.put(
-        this._cacheName,
-        event.request,
-        responseClone,
-        this._plugins
-      )
+    const cachePutPromise = cacheWrapper.put(
+      this._cacheName,
+      effectiveRequest,
+      responseClone,
+      this._plugins
     );
+
+    if (event) {
+      event.waitUntil(cachePutPromise);
+    }
 
     return response;
   }

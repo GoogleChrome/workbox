@@ -84,6 +84,22 @@ class NetworkFirst {
     this._fetchOptions = options.fetchOptions || null;
   }
 
+  handle({event}) {
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(event, FetchEvent, {
+        moduleName: 'workbox-strategies',
+        className: 'NetworkFirst',
+        funcName: 'handle',
+        paramName: 'event',
+      });
+    }
+
+    return this.makeRequest({
+      event,
+      request: event.request,
+    });
+  }
+
   /**
    * This method will perform a request strategy and follows an API that
    * will work with the
@@ -94,14 +110,14 @@ class NetworkFirst {
    * against.
    * @return {Promise<Response>}
    */
-  async handle({event}) {
+  async makeRequest({event, request}) {
     const logs = [];
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(event, FetchEvent, {
+      assert.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
         className: 'NetworkFirst',
         funcName: 'handle',
-        paramName: 'event',
+        paramName: 'makeRequest',
       });
     }
 
@@ -109,12 +125,13 @@ class NetworkFirst {
     let timeoutId;
 
     if (this._networkTimeoutSeconds) {
-      const {id, promise} = this._getTimeoutPromise(event, logs);
+      const {id, promise} = this._getTimeoutPromise(request, logs);
       timeoutId = id;
       promises.push(promise);
     }
 
-    const networkPromise = this._getNetworkPromise(timeoutId, event, logs);
+    const networkPromise = this._getNetworkPromise(timeoutId, event, request,
+      logs);
     promises.push(networkPromise);
 
     // Promise.race() will resolve as soon as the first promise resolves.
@@ -130,7 +147,7 @@ class NetworkFirst {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('NetworkFirst', event));
+        messages.strategyStart('NetworkFirst', request));
       for (let log of logs) {
         logger.log(log);
       }
@@ -148,7 +165,7 @@ class NetworkFirst {
    *
    * @private
    */
-  _getTimeoutPromise(event, logs) {
+  _getTimeoutPromise(request, logs) {
     let timeoutId;
     const timeoutPromise = new Promise((resolve) => {
       const onNetworkTimeout = async () => {
@@ -157,7 +174,7 @@ class NetworkFirst {
             `${this._networkTimeoutSeconds} seconds.`);
         }
 
-        resolve(await this._respondFromCache(event.request));
+        resolve(await this._respondFromCache(request));
       };
 
       timeoutId = setTimeout(
@@ -180,12 +197,12 @@ class NetworkFirst {
    *
    * @private
    */
-  async _getNetworkPromise(timeoutId, event, logs) {
+  async _getNetworkPromise(timeoutId, event, request, logs) {
     let error;
     let response;
     try {
       response = await fetchWrapper.fetch(
-        event.request,
+        request,
         this._fetchOptions,
         this._plugins
       );
@@ -207,7 +224,7 @@ class NetworkFirst {
     }
 
     if (error || !response) {
-      response = await this._respondFromCache(event.request);
+      response = await this._respondFromCache(effectiveRequest);
       if (process.env.NODE_ENV !== 'production') {
         if (response) {
           logs.push(`Found a cached response in the '${this._cacheName}'` +
@@ -219,14 +236,15 @@ class NetworkFirst {
     } else {
        // Keep the service worker alive while we put the request in the cache
       const responseClone = response.clone();
-      event.waitUntil(
-        cacheWrapper.put(
-          this._cacheName,
-          event.request,
-          responseClone,
-          this._plugins
-        )
+      const cachePutPromise = cacheWrapper.put(
+        this._cacheName,
+        request,
+        responseClone,
+        this._plugins
       );
+      if (event) {
+        event.waitUntil(cachePutPromise);
+      }
     }
 
     return response;
@@ -240,10 +258,10 @@ class NetworkFirst {
    *
    * @private
    */
-  _respondFromCache(request) {
+  _respondFromCache(effectiveRequest) {
     return cacheWrapper.match(
       this._cacheName,
-      request,
+      effectiveRequest,
       null,
       this._plugins
     );

@@ -46,7 +46,6 @@ const moduleExports = {
    * @alias workbox.streams.concatenate
    */
   concatenate,
-
   strategy,
 };
 

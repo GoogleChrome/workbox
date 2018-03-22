@@ -42,8 +42,14 @@ function concatenate(responseSources, headersInit) {
   }
 
   const readerPromises = responseSources.map((responseSource) => {
-    return Promise.resolve(responseSource)
-      .then((response) => response.body.getReader());
+    return Promise.resolve(responseSource).then((potentialResponse) => {
+      if (potentialResponse instanceof Response) {
+        return potentialResponse.body.getReader();
+      } else {
+        // TODO: This should be possible to do by constructing a ReadableStream.
+        return new Response(potentialResponse).body.getReader();
+      }
+    });
   });
 
   let fullyStreamedResolve;
@@ -55,6 +61,7 @@ function concatenate(responseSources, headersInit) {
 
   const readableStream = new ReadableStream({
     pull(controller) {
+      console.log({controller});
       return readerPromises[0]
         .then((reader) => reader.read())
         .then((result) => {

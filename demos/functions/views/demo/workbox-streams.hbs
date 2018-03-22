@@ -5,6 +5,7 @@
         <ol>
           <li>Open DevTools</li>
           <li>Go to the Console</li>
+          <li><p><button class="add-iframe btn btn-outline-primary">Add iframe</button></p></li>
         </ol>
       </div>
     </div>
@@ -12,9 +13,15 @@
 </section>
 
 <script>
-  window.addEventListener('load', () => {
+  window.addEventListener('load', async () => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
+      await navigator.serviceWorker.ready;
+      document.querySelector('.add-iframe').addEventListener('click', (event) => {
+        const iframe = document.createElement('iframe');
+        iframe.src = `./iframe/${Math.random()}`;
+        event.target.parentElement.parentElement.appendChild(iframe);
+      });
     }
   });
 </script>

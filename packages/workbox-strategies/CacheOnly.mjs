@@ -48,6 +48,22 @@ class CacheOnly {
     this._plugins = options.plugins || [];
   }
 
+  handle({event}) {
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(event, FetchEvent, {
+        moduleName: 'workbox-strategies',
+        className: 'CacheOnly',
+        funcName: 'handle',
+        paramName: 'event',
+      });
+    }
+
+    return this.makeRequest({
+      event,
+      request: event.request,
+    });
+  }
+
   /**
    * This method will perform a request strategy and follows an API that
    * will work with the
@@ -58,26 +74,26 @@ class CacheOnly {
    * against.
    * @return {Promise<Response>}
    */
-  async handle({event}) {
+  async makeRequest({event, request}) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(event, FetchEvent, {
+      assert.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
         className: 'CacheOnly',
-        funcName: 'handle',
-        paramName: 'event',
+        funcName: 'makeRequest',
+        paramName: 'request',
       });
     }
 
     const response = await cacheWrapper.match(
       this._cacheName,
-      event.request,
+      request,
       null,
       this._plugins
     );
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('CacheOnly', event));
+        messages.strategyStart('CacheOnly', request));
       if (response) {
         logger.log(`Found a cached response in the '${this._cacheName}'` +
           ` cache.`);

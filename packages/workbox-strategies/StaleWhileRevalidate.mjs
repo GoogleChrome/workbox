@@ -73,6 +73,22 @@ class StaleWhileRevalidate {
     this._fetchOptions = options.fetchOptions || null;
   }
 
+  handle({event}) {
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(event, FetchEvent, {
+        moduleName: 'workbox-strategies',
+        className: 'StaleWhileRevalidate',
+        funcName: 'handle',
+        paramName: 'event',
+      });
+    }
+
+    return this.makeRequest({
+      event,
+      request: event.request,
+    });
+  }
+
   /**
    * This method will perform a request strategy and follows an API that
    * will work with the
@@ -83,22 +99,22 @@ class StaleWhileRevalidate {
    * against.
    * @return {Promise<Response>}
    */
-  async handle({event}) {
+  async makeRequest({event, request}) {
     const logs = [];
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(event, FetchEvent, {
+      assert.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
         className: 'StaleWhileRevalidate',
         funcName: 'handle',
-        paramName: 'event',
+        paramName: 'request',
       });
     }
 
-    const fetchAndCachePromise = this._getFromNetwork(event);
+    const fetchAndCachePromise = this._getFromNetwork(request, event);
 
     let response = await cacheWrapper.match(
       this._cacheName,
-      event.request,
+      request,
       null,
       this._plugins
     );
@@ -119,7 +135,7 @@ class StaleWhileRevalidate {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('StaleWhileRevalidate', event));
+        messages.strategyStart('StaleWhileRevalidate', request));
       for (let log of logs) {
         logger.log(log);
       }
@@ -136,21 +152,22 @@ class StaleWhileRevalidate {
    *
    * @private
    */
-  async _getFromNetwork(event) {
+  async _getFromNetwork(request, event) {
     const response = await fetchWrapper.fetch(
-      event.request,
+      request,
       this._fetchOptions,
       this._plugins
     );
 
-    event.waitUntil(
-      cacheWrapper.put(
-        this._cacheName,
-        event.request,
-        response.clone(),
-        this._plugins
-      )
+    const cachePutPromise = cacheWrapper.put(
+      this._cacheName,
+      request,
+      response.clone(),
+      this._plugins
     );
+    if (event) {
+      event.waitUntil(cachePutPromise);
+    }
 
     return response;
   }

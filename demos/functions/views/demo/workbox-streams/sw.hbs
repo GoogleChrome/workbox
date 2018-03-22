@@ -14,8 +14,11 @@ self.addEventListener('install', (event) => {
   })());
 });
 
+// ******************* EXAMPLE 1 *******************
+// You handle routing, calling waitUntil(), and calling respondWith().
+// workbox.streams.concatenate() composes the individual streams.
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.endsWith('stream123')) {
+  if (event.request.url.endsWith('123')) {
     const {completionPromise, response} = workbox.streams.concatenate([
       new Response('1'),
       new Response('2'),
@@ -26,8 +29,12 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
+// ******************* EXAMPLE 2 *******************
+// Workbox handles routing and calling respondWith(), but you handle calling
+// waitUntil() and returning the response.
+// workbox.streams.concatenate() composes the individual streams.
 workbox.routing.registerRoute(
-  new RegExp('stream456$'),
+  new RegExp('456$'),
   ({url, event}) => {
     const {completionPromise, response} = workbox.streams.concatenate([
       new Response('4'),
@@ -39,8 +46,12 @@ workbox.routing.registerRoute(
   }
 );
 
+// ******************* EXAMPLE 3 *******************
+// Workbox handles routing, calling, respondWith(), and calling waitUntil().
+// workbox.streams.strategy() provides a drop-in interface with the router,
+// and calls workbox.streams.concatenate() under the hood.
 workbox.routing.registerRoute(
-  new RegExp('stream789$'),
+  new RegExp('789$'),
   workbox.streams.strategy([
     () => new Response('7'),
     () => new Response('8'),
@@ -48,18 +59,35 @@ workbox.routing.registerRoute(
   ], {'content-type': 'text/plain'})
 );
 
+// ******************* EXAMPLE 4 *******************
+// Workbox handles routing, calling, respondWith(), and calling waitUntil().
+// workbox.streams.strategy() provides a drop-in interface with the router,
+// and calls workbox.streams.concatenate() under the hood.
+
+// Using a stale-while-revalidate strategy as a source for part of the response.
+const httpBinStrategy = workbox.strategies.staleWhileRevalidate({
+  cacheName: 'httpbin',
+});
+
+// String together an artificially complex series of stream sources.
+const streamingResponseStrategy = workbox.streams.strategy([
+  () => caches.match(START_CACHE_KEY, {cacheName: CACHE_NAME}),
+  () => `<p>this was executed at ${Date.now()}</p>`,
+  ({event}) => httpBinStrategy.makeRequest({
+    event,
+    request: new Request('https://httpbin.org/bytes/12'),
+  }),
+  () => new Promise((resolve) => {
+    setTimeout(() => resolve(`<p>this was executed at ${Date.now()}</p>`), 5000);
+  }),
+  () => `<p>this was executed at ${Date.now()}</p>`,
+  () => caches.match(END_CACHE_KEY, {cacheName: CACHE_NAME}),
+]);
+
+// Once the strategy is configured, the actual routing looks clean.
 workbox.routing.registerRoute(
-  new RegExp('\.html'),
-  workbox.streams.strategy([
-    () => caches.match(START_CACHE_KEY, {cacheName: CACHE_NAME}),
-    ({url}) => {
-      if (url.searchParams.has('content')) {
-        return new Response(url.searchParams.get('content'));
-      }
-      throw new Error(`Oops: ${url}`);
-    },
-    () => caches.match(END_CACHE_KEY, {cacheName: CACHE_NAME}),
-  ])
+  new RegExp('/iframe/'),
+  streamingResponseStrategy
 );
 
 workbox.skipWaiting();

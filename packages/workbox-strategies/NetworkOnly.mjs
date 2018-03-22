@@ -51,6 +51,22 @@ class NetworkOnly {
     this._fetchOptions = options.fetchOptions || null;
   }
 
+  handle({event}) {
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(event, FetchEvent, {
+        moduleName: 'workbox-strategies',
+        className: 'NetworkOnly',
+        funcName: 'handle',
+        paramName: 'event',
+      });
+    }
+
+    return this.makeRequest({
+      event,
+      request: event.request,
+    });
+  }
+
   /**
    * This method will perform a request strategy and follows an API that
    * will work with the
@@ -61,13 +77,13 @@ class NetworkOnly {
    * against.
    * @return {Promise<Response>}
    */
-  async handle({event}) {
+  async makeRequest({event, request}) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(event, FetchEvent, {
+      assert.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
         className: 'NetworkOnly',
         funcName: 'handle',
-        paramName: 'event',
+        paramName: 'request',
       });
     }
 
@@ -75,7 +91,7 @@ class NetworkOnly {
     let response;
     try {
       response = await fetchWrapper.fetch(
-        event.request,
+        request,
         this._fetchOptions,
         this._plugins
       );
@@ -85,7 +101,7 @@ class NetworkOnly {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('NetworkOnly', event));
+        messages.strategyStart('NetworkOnly', request));
       if (response) {
         logger.log(`Got response from network.`);
       } else {
