@@ -15,8 +15,6 @@
 */
 
 /**
- * TODO: Write something.
- *
  * @namespace workbox.streams
  */
 

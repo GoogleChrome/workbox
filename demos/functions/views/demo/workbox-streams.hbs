@@ -5,7 +5,11 @@
         <ol>
           <li>Open DevTools</li>
           <li>Go to the Console</li>
-          <li><p><button class="add-iframe btn btn-outline-primary">Add iframe</button></p></li>
+          <p><button data-url="./12" class="example btn btn-outline-primary">Example 1</button></p>
+          <p><button data-url="./34" class="example btn btn-outline-primary">Example 2</button></p>
+          <p><button data-url="./56" class="example btn btn-outline-primary">Example 3</button></p>
+          <p><button data-url="./78" class="example btn btn-outline-primary">Example 4</button></p>
+          <p><button class="iframe btn btn-outline-primary">Example 5</button></p>
         </ol>
       </div>
     </div>
@@ -17,10 +21,21 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
       await navigator.serviceWorker.ready;
-      document.querySelector('.add-iframe').addEventListener('click', (event) => {
+      for (const button of [...document.querySelectorAll('.example')]) {
+        button.addEventListener('click', async (event) => {
+          const url = event.target.dataset.url;
+          const response = await fetch(url);
+          const p = document.createElement('p');
+          p.textContent = await response.text();
+          event.target.parentElement.appendChild(p);
+        });
+      }
+
+      let counter = 1;
+      document.querySelector('.iframe').addEventListener('click', async (event) => {
         const iframe = document.createElement('iframe');
-        iframe.src = `./iframe/${Math.random()}`;
-        event.target.parentElement.parentElement.appendChild(iframe);
+        iframe.src = `./iframe/${counter++}`;
+        event.target.parentElement.appendChild(iframe);
       });
     }
   });

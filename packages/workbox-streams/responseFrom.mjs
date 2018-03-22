@@ -14,21 +14,20 @@
 */
 
 import {concatenate} from './concatenate.mjs';
-import {responseFrom} from './responseFrom.mjs';
 
 import './_version.mjs';
 
-function strategy(sourceFunctions, headersInit) {
-  return ({event, url, params}) => {
-    const {done, response} = responseFrom(sourceFunctions.map(
-      (sourceFunction) => sourceFunction({event, url, params})), headersInit);
-    event.waitUntil(done);
-    return response;
-  };
+function responseFrom(sourcePromises, headersInit) {
+  const {done, stream} = concatenate(sourcePromises);
+
+  const headers = new Headers(headersInit);
+  if (!headers.has('content-type')) {
+    headers.set('content-type', 'text/html');
+  }
+
+  const response = new Response(stream, {headers});
+
+  return {done, response};
 }
 
-export default {
-  concatenate,
-  responseFrom,
-  strategy,
-};
+export {responseFrom};

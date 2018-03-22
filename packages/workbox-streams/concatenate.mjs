@@ -18,50 +18,46 @@ import {assert} from 'workbox-core/_private/assert.mjs';
 
 import './_version.mjs';
 
-/**
- * TODO: Write something.
- *
- * @param {Array<Promise<Response>|Response>} responseSources
- * @param {Object} [headersInit]
- * @return {Object{completionPromise: <Promise>, response: <Response>}}
- *
- * @private
- */
-function concatenate(responseSources, headersInit) {
+function _getReaderFromSource(source) {
+  if (source.body && source.body.getReader) {
+    return source.body.getReader();
+  }
+
+  if (source.getReader) {
+    return source.getReader();
+  }
+
+  // For sources like strings.
+  // TODO: This should be possible to do by constructing a ReadableStream, but
+  // I can't get it to work. As a hack, construct a new Response, and use the
+  // reader associated with its body.
+  return new Response(source).body.getReader();
+}
+
+function concatenate(sourcePromises) {
   if (process.env.NODE_ENV !== 'production') {
-    assert.isArray(responseSources, {
+    assert.isArray(sourcePromises, {
       moduleName: 'workbox-streams',
       funcName: 'concatenate',
-      paramName: 'responseSources',
+      paramName: 'sourcePromises',
     });
   }
 
-  const headers = new Headers(headersInit);
-  if (!headers.has('content-type')) {
-    headers.set('content-type', 'text/html');
-  }
-
-  const readerPromises = responseSources.map((responseSource) => {
-    return Promise.resolve(responseSource).then((potentialResponse) => {
-      if (potentialResponse instanceof Response) {
-        return potentialResponse.body.getReader();
-      } else {
-        // TODO: This should be possible to do by constructing a ReadableStream.
-        return new Response(potentialResponse).body.getReader();
-      }
+  const readerPromises = sourcePromises.map((sourcePromise) => {
+    return Promise.resolve(sourcePromise).then((source) => {
+      return _getReaderFromSource(source);
     });
   });
 
   let fullyStreamedResolve;
   let fullyStreamedReject;
-  const completionPromise = new Promise((resolve, reject) => {
+  const done = new Promise((resolve, reject) => {
     fullyStreamedResolve = resolve;
     fullyStreamedReject = reject;
   });
 
-  const readableStream = new ReadableStream({
+  const stream = new ReadableStream({
     pull(controller) {
-      console.log({controller});
       return readerPromises[0]
         .then((reader) => reader.read())
         .then((result) => {
@@ -92,12 +88,7 @@ function concatenate(responseSources, headersInit) {
     },
   });
 
-  if (process.env.NODE_ENV !== 'production') {
-    logger.log('about to return.');
-  }
-
-  const response = new Response(readableStream, {headers});
-  return {completionPromise, response};
+  return {done, stream};
 }
 
 export {concatenate};

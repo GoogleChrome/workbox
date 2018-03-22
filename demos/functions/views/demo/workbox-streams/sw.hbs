@@ -15,54 +15,70 @@ self.addEventListener('install', (event) => {
 });
 
 // ******************* EXAMPLE 1 *******************
-// You handle routing, calling waitUntil(), and calling respondWith().
+// You handle routing, calling waitUntil(), constructing a Response, and calling respondWith().
 // workbox.streams.concatenate() composes the individual streams.
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.endsWith('123')) {
-    const {completionPromise, response} = workbox.streams.concatenate([
+  if (event.request.url.endsWith('12')) {
+    const {done, stream} = workbox.streams.concatenate([
       new Response('1'),
       new Response('2'),
-      new Response('3'),
-    ], {'content-type': 'text/plain'});
-    event.waitUntil(completionPromise);
+    ]);
+    const response = new Response(stream, {
+      headers: {
+        'content-type': 'text/plain',
+      },
+    });
     event.respondWith(response);
+    event.waitUntil(done);
   }
 });
 
 // ******************* EXAMPLE 2 *******************
+// You handle routing, calling waitUntil(), and calling respondWith().
+// workbox.streams.responseFrom() composes the streams and constructs the Response.
+self.addEventListener('fetch', (event) => {
+  if (event.request.url.endsWith('34')) {
+    const {done, response} = workbox.streams.responseFrom([
+      new Response('3'),
+      new Response('4'),
+    ], {'content-type': 'text/plain'});
+    event.respondWith(response);
+    event.waitUntil(done);
+  }
+});
+
+// ******************* EXAMPLE 3 *******************
 // Workbox handles routing and calling respondWith(), but you handle calling
 // waitUntil() and returning the response.
-// workbox.streams.concatenate() composes the individual streams.
+// workbox.streams.responseFrom() composes the streams and constructs the Response.
 workbox.routing.registerRoute(
-  new RegExp('456$'),
+  new RegExp('56$'),
   ({url, event}) => {
-    const {completionPromise, response} = workbox.streams.concatenate([
-      new Response('4'),
+    const {done, response} = workbox.streams.responseFrom([
       new Response('5'),
       new Response('6'),
     ], {'content-type': 'text/plain'});
-    event.waitUntil(completionPromise);
+    event.waitUntil(done);
     return response;
   }
-);
-
-// ******************* EXAMPLE 3 *******************
-// Workbox handles routing, calling, respondWith(), and calling waitUntil().
-// workbox.streams.strategy() provides a drop-in interface with the router,
-// and calls workbox.streams.concatenate() under the hood.
-workbox.routing.registerRoute(
-  new RegExp('789$'),
-  workbox.streams.strategy([
-    () => new Response('7'),
-    () => new Response('8'),
-    () => new Response('9'),
-  ], {'content-type': 'text/plain'})
 );
 
 // ******************* EXAMPLE 4 *******************
 // Workbox handles routing, calling, respondWith(), and calling waitUntil().
 // workbox.streams.strategy() provides a drop-in interface with the router,
-// and calls workbox.streams.concatenate() under the hood.
+// and calls workbox.streams.responseFrom() under the hood.
+workbox.routing.registerRoute(
+  new RegExp('78$'),
+  workbox.streams.strategy([
+    () => new Response('7'),
+    () => new Response('8'),
+  ], {'content-type': 'text/plain'})
+);
+
+// ******************* EXAMPLE 5 *******************
+// Workbox handles routing, calling, respondWith(), and calling waitUntil().
+// workbox.streams.strategy() provides a drop-in interface with the router,
+// and calls workbox.streams.responseFrom() under the hood.
 
 // Using a stale-while-revalidate strategy as a source for part of the response.
 const httpBinStrategy = workbox.strategies.staleWhileRevalidate({
@@ -78,7 +94,7 @@ const streamingResponseStrategy = workbox.streams.strategy([
     request: new Request('https://httpbin.org/bytes/12'),
   }),
   () => new Promise((resolve) => {
-    setTimeout(() => resolve(`<p>this was executed at ${Date.now()}</p>`), 5000);
+    setTimeout(() => resolve(`<p>this was executed at ${Date.now()}</p>`), 1000);
   }),
   () => `<p>this was executed at ${Date.now()}</p>`,
   () => caches.match(END_CACHE_KEY, {cacheName: CACHE_NAME}),

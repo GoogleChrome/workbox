@@ -15,9 +15,11 @@
 */
 
 import {concatenate} from './concatenate.mjs';
+import {responseFrom} from './responseFrom.mjs';
 
 import './_version.mjs';
 
 export {
   concatenate,
+  responseFrom,
 };
