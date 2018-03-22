@@ -101,6 +101,11 @@ class StaleWhileRevalidate {
    */
   async makeRequest({event, request}) {
     const logs = [];
+
+    if (typeof request === 'string') {
+      request = new Request(request);
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(request, Request, {
         moduleName: 'workbox-strategies',

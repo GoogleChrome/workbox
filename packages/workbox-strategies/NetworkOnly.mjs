@@ -78,6 +78,10 @@ class NetworkOnly {
    * @return {Promise<Response>}
    */
   async makeRequest({event, request}) {
+    if (typeof request === 'string') {
+      request = new Request(request);
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(request, Request, {
         moduleName: 'workbox-strategies',

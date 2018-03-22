@@ -91,7 +91,7 @@ const streamingResponseStrategy = workbox.streams.strategy([
   () => `<p>this was executed at ${Date.now()}</p>`,
   ({event}) => httpBinStrategy.makeRequest({
     event,
-    request: new Request('https://httpbin.org/bytes/12'),
+    request: 'https://httpbin.org/bytes/12',
   }),
   () => new Promise((resolve) => {
     setTimeout(() => resolve(`<p>this was executed at ${Date.now()}</p>`), 1000);
