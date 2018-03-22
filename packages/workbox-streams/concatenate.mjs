@@ -18,6 +18,15 @@ import {assert} from 'workbox-core/_private/assert.mjs';
 
 import './_version.mjs';
 
+/**
+ * Takes either a Response, a ReadableStream, or a
+ * [BodyInit](https://fetch.spec.whatwg.org/#bodyinit) and returns the
+ * ReadableStreamReader object associated with it.
+ *
+ * @param {workbox.streams.StreamSource} source
+ * @return {ReadableStreamReader}
+ * @private
+ */
 function _getReaderFromSource(source) {
   if (source.body && source.body.getReader) {
     return source.body.getReader();
@@ -27,13 +36,25 @@ function _getReaderFromSource(source) {
     return source.getReader();
   }
 
-  // For sources like strings.
   // TODO: This should be possible to do by constructing a ReadableStream, but
   // I can't get it to work. As a hack, construct a new Response, and use the
   // reader associated with its body.
   return new Response(source).body.getReader();
 }
 
+/**
+ * Takes multiple source Promises, each of which could resolve to a Response, a
+ * ReadableStream, or a [BodyInit](https://fetch.spec.whatwg.org/#bodyinit).
+ *
+ * Returns an object exposing a ReadableStream with each individual stream's
+ * data returned in sequence, along with a Promise which signals when the
+ * stream is finished (useful for passing to a FetchEvent's waitUntil()).
+ *
+ * @param {Array<Promise<workbox.streams.StreamSource>>} sourcePromises
+ * @return {Object<{done: Promise, stream: ReadableStream}>}
+ *
+ * @memberof workbox.streams
+ */
 function concatenate(sourcePromises) {
   if (process.env.NODE_ENV !== 'production') {
     assert.isArray(sourcePromises, {

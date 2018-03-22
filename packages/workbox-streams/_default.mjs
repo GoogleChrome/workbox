@@ -18,6 +18,19 @@ import {responseFrom} from './responseFrom.mjs';
 
 import './_version.mjs';
 
+/**
+ * A shortcut to create a strategy that could be dropped-in to Workbox's router.
+ *
+ * @param {
+ *   Array<function(workbox.routing.Route~handlerCallback)>} sourceFunctions
+ * Each function should return a {@link workbox.streams.StreamSource} (or a
+ * Promise which resolves to one).
+ * @params {HeadersInit} [headersInit] If there's no `Content-Type` specified,
+ * `'text/html'` will be used by default.
+ * @return {workbox.routing.Route~handlerCallback}
+ *
+ * @memberof workbox.streams
+ */
 function strategy(sourceFunctions, headersInit) {
   return ({event, url, params}) => {
     const {done, response} = responseFrom(sourceFunctions.map(
