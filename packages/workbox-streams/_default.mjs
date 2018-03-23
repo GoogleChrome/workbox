@@ -14,7 +14,7 @@
 */
 
 import {concatenate} from './concatenate.mjs';
-import {responseFrom} from './responseFrom.mjs';
+import {concatenateToResponse} from './concatenateToResponse.mjs';
 
 import './_version.mjs';
 
@@ -33,7 +33,7 @@ import './_version.mjs';
  */
 function strategy(sourceFunctions, headersInit) {
   return ({event, url, params}) => {
-    const {done, response} = responseFrom(sourceFunctions.map(
+    const {done, response} = concatenateToResponse(sourceFunctions.map(
       (sourceFunction) => sourceFunction({event, url, params})), headersInit);
     event.waitUntil(done);
     return response;
@@ -42,6 +42,6 @@ function strategy(sourceFunctions, headersInit) {
 
 export default {
   concatenate,
-  responseFrom,
+  concatenateToResponse,
   strategy,
 };

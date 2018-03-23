@@ -34,7 +34,7 @@ import './_version.mjs';
  *
  * @memberof workbox.streams
  */
-function responseFrom(sourcePromises, headersInit) {
+function concatenateToResponse(sourcePromises, headersInit) {
   const {done, stream} = concatenate(sourcePromises);
 
   const headers = new Headers(headersInit);
@@ -47,4 +47,4 @@ function responseFrom(sourcePromises, headersInit) {
   return {done, response};
 }
 
-export {responseFrom};
+export {concatenateToResponse};
