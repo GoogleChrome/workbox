@@ -107,14 +107,18 @@ class NetworkFirst {
 
     const promises = [];
     let timeoutId;
-
+    let promiseHandled = false;
+    let eventRespondedTo = () => {
+      return promiseHandled;
+    };
     if (this._networkTimeoutSeconds) {
       const {id, promise} = this._getTimeoutPromise(event, logs);
       timeoutId = id;
       promises.push(promise);
     }
 
-    const networkPromise = this._getNetworkPromise(timeoutId, event, logs);
+    const networkPromise = this._getNetworkPromise(
+      timeoutId, event, logs, eventRespondedTo);
     promises.push(networkPromise);
 
     // Promise.race() will resolve as soon as the first promise resolves.
@@ -137,6 +141,8 @@ class NetworkFirst {
       messages.printFinalResponse(response);
       logger.groupEnd();
     }
+
+    promiseHandled = true;
 
     return response;
   }
@@ -176,11 +182,13 @@ class NetworkFirst {
    * @param {number} timeoutId
    * @param {FetchEvent} event
    * @param {Array} logs A reference to the logs Array.
+   * @param {Function} eventRespondedTo A callback that directs whether the
+   * event has been responded to.
    * @return {Promise<Response>}
    *
    * @private
    */
-  async _getNetworkPromise(timeoutId, event, logs) {
+  async _getNetworkPromise(timeoutId, event, logs, eventRespondedTo) {
     let error;
     let response;
     try {
@@ -217,16 +225,20 @@ class NetworkFirst {
         }
       }
     } else {
-       // Keep the service worker alive while we put the request in the cache
+      // Keep the service worker alive while we put the request in the cache
       const responseClone = response.clone();
-      event.waitUntil(
-        cacheWrapper.put(
-          this._cacheName,
-          event.request,
-          responseClone,
-          this._plugins
-        )
+
+      const cachePut = cacheWrapper.put(
+        this._cacheName,
+        event.request,
+        responseClone,
+        this._plugins
       );
+      if (!eventRespondedTo()) {
+        // The event has been responded to so we can keep the SW alive to
+        // respond to the request
+        event.waitUntil(cachePut);
+      }
     }
 
     return response;
