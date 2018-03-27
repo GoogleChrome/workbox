@@ -18,6 +18,7 @@ import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 
 import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
@@ -107,10 +108,6 @@ class NetworkFirst {
 
     const promises = [];
     let timeoutId;
-    let promiseHandled = false;
-    let eventRespondedTo = () => {
-      return promiseHandled;
-    };
     if (this._networkTimeoutSeconds) {
       const {id, promise} = this._getTimeoutPromise(event, logs);
       timeoutId = id;
@@ -118,7 +115,7 @@ class NetworkFirst {
     }
 
     const networkPromise = this._getNetworkPromise(
-      timeoutId, event, logs, eventRespondedTo);
+      timeoutId, event, logs);
     promises.push(networkPromise);
 
     // Promise.race() will resolve as soon as the first promise resolves.
@@ -141,8 +138,6 @@ class NetworkFirst {
       messages.printFinalResponse(response);
       logger.groupEnd();
     }
-
-    promiseHandled = true;
 
     return response;
   }
@@ -182,13 +177,11 @@ class NetworkFirst {
    * @param {number} timeoutId
    * @param {FetchEvent} event
    * @param {Array} logs A reference to the logs Array.
-   * @param {Function} eventRespondedTo A callback that directs whether the
-   * event has been responded to.
    * @return {Promise<Response>}
    *
    * @private
    */
-  async _getNetworkPromise(timeoutId, event, logs, eventRespondedTo) {
+  async _getNetworkPromise(timeoutId, event, logs) {
     let error;
     let response;
     try {
@@ -234,10 +227,16 @@ class NetworkFirst {
         responseClone,
         this._plugins
       );
-      if (!eventRespondedTo()) {
+
+      try {
         // The event has been responded to so we can keep the SW alive to
         // respond to the request
         event.waitUntil(cachePut);
+      } catch (err) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.warn(`Unable to ensure service worker stays alive when ` +
+            `updating cache entry for '${getFriendlyURL(event.request.url)}'.`);
+        }
       }
     }
 

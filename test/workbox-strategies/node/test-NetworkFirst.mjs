@@ -282,9 +282,7 @@ describe(`[workbox-strategies] NetworkFirst`, function() {
 
 
     let throwOnWaitUntil = false;
-    let waitUntilPromise = null;
     sandbox.stub(event, 'waitUntil').callsFake((newPromise) => {
-      expect(waitUntilPromise).to.equal(false);
       if (throwOnWaitUntil) {
         throw new Error('This should not be called after respondWith.');
       }
