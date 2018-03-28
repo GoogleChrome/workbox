@@ -76,7 +76,7 @@ const {getModuleUrl} = require('./lib/cdn-utils');
  * {@link module:workbox-sw.WorkboxSW|WorkboxSW() constructor} in your `swSrc`
  * file.
  *
- * @memberof module:workbox-build
+ * @module workbox-build
  */
 module.exports = {
   copyWorkboxLibraries,
