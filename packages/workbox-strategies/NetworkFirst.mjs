@@ -18,6 +18,7 @@ import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 
 import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
@@ -107,14 +108,14 @@ class NetworkFirst {
 
     const promises = [];
     let timeoutId;
-
     if (this._networkTimeoutSeconds) {
       const {id, promise} = this._getTimeoutPromise(event, logs);
       timeoutId = id;
       promises.push(promise);
     }
 
-    const networkPromise = this._getNetworkPromise(timeoutId, event, logs);
+    const networkPromise = this._getNetworkPromise(
+      timeoutId, event, logs);
     promises.push(networkPromise);
 
     // Promise.race() will resolve as soon as the first promise resolves.
@@ -217,16 +218,26 @@ class NetworkFirst {
         }
       }
     } else {
-       // Keep the service worker alive while we put the request in the cache
+      // Keep the service worker alive while we put the request in the cache
       const responseClone = response.clone();
-      event.waitUntil(
-        cacheWrapper.put(
-          this._cacheName,
-          event.request,
-          responseClone,
-          this._plugins
-        )
+
+      const cachePut = cacheWrapper.put(
+        this._cacheName,
+        event.request,
+        responseClone,
+        this._plugins
       );
+
+      try {
+        // The event has been responded to so we can keep the SW alive to
+        // respond to the request
+        event.waitUntil(cachePut);
+      } catch (err) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.warn(`Unable to ensure service worker stays alive when ` +
+            `updating cache entry for '${getFriendlyURL(event.request.url)}'.`);
+        }
+      }
     }
 
     return response;

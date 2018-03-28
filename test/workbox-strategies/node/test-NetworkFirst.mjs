@@ -261,4 +261,63 @@ describe(`[workbox-strategies] NetworkFirst`, function() {
     expect(fetchStub.calledOnce).to.be.true;
     expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
   });
+
+  it(`should not allow waitUntil if responded`, async function() {
+    const fakeTimer = sandbox.useFakeTimers({
+      toFake: ['Date'],
+    });
+
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    await cache.put('http://example.io/test/', new Response('from cache'));
+
+    let fetchResolve;
+    sandbox.stub(global, 'fetch').callsFake(() => {
+      return new Promise((resolve) => {
+        fetchResolve = resolve;
+      });
+    });
+
+
+    let throwOnWaitUntil = false;
+    sandbox.stub(event, 'waitUntil').callsFake((newPromise) => {
+      if (throwOnWaitUntil) {
+        throw new Error('This should not be called after respondWith.');
+      }
+    });
+
+    // Edge case
+    // Timer and network request started
+    // Make the timeout occur
+    // Then make the fetch return
+    // Then make the fetch event get cached
+
+    const networkFirst = new NetworkFirst({
+      networkTimeoutSeconds: 1,
+    });
+
+    let networkPromise = null;
+    const origMethod = networkFirst._getNetworkPromise.bind(networkFirst);
+    sandbox.stub(networkFirst, '_getNetworkPromise').callsFake((...args) => {
+      networkPromise = origMethod(...args);
+      return networkPromise;
+    });
+
+    const handlePromise = networkFirst.handle({event});
+
+    // Let timer run
+    fakeTimer.tick(1001);
+
+    const reseponse = await handlePromise;
+    throwOnWaitUntil = true;
+    const resultText = await reseponse.text();
+    expect(resultText).to.equal('from cache');
+
+    fetchResolve(new Response('Network Response'));
+
+    // Wait for network promise to finish
+    await networkPromise;
+  });
 });
