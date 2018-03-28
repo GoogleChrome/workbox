@@ -15,8 +15,11 @@
 */
 
 const {generateSWString} = require('workbox-build');
+const path = require('path');
 
 const convertStringToAsset = require('./lib/convert-string-to-asset');
+const getDefaultConfig = require('./lib/get-default-config');
+const formatManifestFilename = require('./lib/format-manifest-filename');
 const getAssetHash = require('./lib/get-asset-hash');
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
@@ -45,17 +48,7 @@ class GenerateSW {
    * for all supported options and defaults.
    */
   constructor(config = {}) {
-    this.config = Object.assign({}, {
-      chunks: [],
-      exclude: [
-        // Exclude source maps.
-        /\.map$/,
-        // Exclude anything starting with manifest and ending .js or .json.
-        /^manifest.*\.js(?:on)?$/,
-      ],
-      excludeChunks: [],
-      importScripts: [],
-      importWorkboxFrom: 'cdn',
+    this.config = Object.assign(getDefaultConfig(), {
       swDest: 'service-worker.js',
     }, config);
   }
@@ -78,10 +71,16 @@ class GenerateSW {
     const manifestString = stringifyManifest(entries);
     const manifestAsset = convertStringToAsset(manifestString);
     const manifestHash = getAssetHash(manifestAsset);
-    const manifestFilename = `precache-manifest.${manifestHash}.js`;
-    compilation.assets[manifestFilename] = manifestAsset;
+
+    const manifestFilename = formatManifestFilename(
+      this.config.precacheManifestFilename, manifestHash);
+    const pathToManifestFile = relativeToOutputPath(
+      compilation, path.join(this.config.importsDirectory, manifestFilename));
+    compilation.assets[pathToManifestFile] = manifestAsset;
+
     importScriptsArray.push(
-      (compilation.options.output.publicPath || '') + manifestFilename);
+      (compilation.options.output.publicPath || '') +
+      pathToManifestFile.replace(path.sep, '/'));
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
     let workboxSWImport;
