@@ -47,7 +47,7 @@ async function getWorkboxSWImport(compilation, config) {
       // We need to set this extra option in the config to ensure that the
       // workbox library loader knows where to get the local libraries from.
       config.modulePathPrefix = (compilation.options.output.publicPath || '') +
-        path.join(config.importsDirectory, wbDir).replace(path.sep, '/');
+        path.join(config.importsDirectory, wbDir).split(path.sep).join('/');
 
       const workboxSWImport = config.modulePathPrefix + '/workbox-sw.js';
       return [workboxSWImport];

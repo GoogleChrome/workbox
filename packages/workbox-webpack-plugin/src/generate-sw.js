@@ -49,6 +49,8 @@ class GenerateSW {
    */
   constructor(config = {}) {
     this.config = Object.assign(getDefaultConfig(), {
+      // Hardcode this default filename, since we don't have swSrc to read from
+      // (like we do in InjectManifest).
       swDest: 'service-worker.js',
     }, config);
   }
@@ -78,9 +80,8 @@ class GenerateSW {
       compilation, path.join(this.config.importsDirectory, manifestFilename));
     compilation.assets[pathToManifestFile] = manifestAsset;
 
-    importScriptsArray.push(
-      (compilation.options.output.publicPath || '') +
-      pathToManifestFile.replace(path.sep, '/'));
+    importScriptsArray.push((compilation.options.output.publicPath || '') +
+      pathToManifestFile.split(path.sep).join('/'));
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
     let workboxSWImport;

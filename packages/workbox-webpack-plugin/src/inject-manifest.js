@@ -55,6 +55,8 @@ class InjectManifest {
       `to an existing service worker file.`);
 
     this.config = Object.assign(getDefaultConfig(), {
+      // Default to using the same filename as the swSrc file, since that's
+      // provided here. (In GenerateSW, that's not available.)
       swDest: path.basename(config.swSrc),
     }, config);
   }
@@ -109,9 +111,8 @@ class InjectManifest {
       compilation, path.join(this.config.importsDirectory, manifestFilename));
     compilation.assets[pathToManifestFile] = manifestAsset;
 
-    importScriptsArray.push(
-      (compilation.options.output.publicPath || '') +
-      pathToManifestFile.replace(path.sep, '/'));
+    importScriptsArray.push((compilation.options.output.publicPath || '') +
+      pathToManifestFile.split(path.sep).join('/'));
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
     if (workboxSWImports) {
