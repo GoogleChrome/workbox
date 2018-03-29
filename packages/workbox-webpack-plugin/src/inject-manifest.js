@@ -19,6 +19,8 @@ const path = require('path');
 const {getManifest} = require('workbox-build');
 
 const convertStringToAsset = require('./lib/convert-string-to-asset');
+const getDefaultConfig = require('./lib/get-default-config');
+const formatManifestFilename = require('./lib/format-manifest-filename');
 const getAssetHash = require('./lib/get-asset-hash');
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
@@ -52,17 +54,9 @@ class InjectManifest {
     assert(typeof config.swSrc === 'string', `swSrc must be set to the path ` +
       `to an existing service worker file.`);
 
-    this.config = Object.assign({}, {
-      chunks: [],
-      exclude: [
-        // Exclude source maps.
-        /\.map$/,
-        // Exclude anything starting with manifest and ending .js or .json.
-        /^manifest.*\.js(?:on)?$/,
-      ],
-      excludeChunks: [],
-      importScripts: [],
-      importWorkboxFrom: 'cdn',
+    this.config = Object.assign(getDefaultConfig(), {
+      // Default to using the same filename as the swSrc file, since that's
+      // provided here. (In GenerateSW, that's not available.)
       swDest: path.basename(config.swSrc),
     }, config);
   }
@@ -109,10 +103,16 @@ class InjectManifest {
     const manifestString = stringifyManifest(entries);
     const manifestAsset = convertStringToAsset(manifestString);
     const manifestHash = getAssetHash(manifestAsset);
-    const manifestFilename = `precache-manifest.${manifestHash}.js`;
-    compilation.assets[manifestFilename] = manifestAsset;
-    importScriptsArray.push(
-      (compilation.options.output.publicPath || '') + manifestFilename);
+
+    const manifestFilename = formatManifestFilename(
+      this.config.precacheManifestFilename, manifestHash);
+
+    const pathToManifestFile = relativeToOutputPath(
+      compilation, path.join(this.config.importsDirectory, manifestFilename));
+    compilation.assets[pathToManifestFile] = manifestAsset;
+
+    importScriptsArray.push((compilation.options.output.publicPath || '') +
+      pathToManifestFile.split(path.sep).join('/'));
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
     if (workboxSWImports) {

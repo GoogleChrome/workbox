@@ -14,6 +14,7 @@
   limitations under the License.
 */
 
+const path = require('path');
 const {copyWorkboxLibraries, getModuleUrl} = require('workbox-build');
 
 /**
@@ -40,12 +41,15 @@ async function getWorkboxSWImport(compilation, config) {
       // when using the webpack-dev-server, the output will be created on
       // disk, rather than in the in-memory filesystem. (webpack-dev-server will
       // still be able to serve the runtime libraries from disk.)
-      const wbDir = await copyWorkboxLibraries(compilation.options.output.path);
-      const workboxSWImport = (compilation.options.output.publicPath || '')
-        + wbDir + '/workbox-sw.js';
+      const wbDir = await copyWorkboxLibraries(path.join(
+        compilation.options.output.path, config.importsDirectory));
+
       // We need to set this extra option in the config to ensure that the
       // workbox library loader knows where to get the local libraries from.
-      config.modulePathPrefix = wbDir;
+      config.modulePathPrefix = (compilation.options.output.publicPath || '') +
+        path.join(config.importsDirectory, wbDir).split(path.sep).join('/');
+
+      const workboxSWImport = config.modulePathPrefix + '/workbox-sw.js';
       return [workboxSWImport];
     }
 
