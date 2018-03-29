@@ -164,7 +164,7 @@ class CacheFirst {
    * Handles the network and cache part of CacheFirst.
    *
    * @param {Request} request
-   * @param {FetchEvent} event
+   * @param {FetchEvent} [event]
    * @return {Promise<Response>}
    *
    * @private

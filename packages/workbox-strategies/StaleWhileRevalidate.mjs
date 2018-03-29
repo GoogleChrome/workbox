@@ -163,7 +163,8 @@ class StaleWhileRevalidate {
   }
 
   /**
-   * @param {FetchEvent} event
+   * @param {Request} request
+   * @param {FetchEvent} [event]
    * @return {Promise<Response>}
    *
    * @private

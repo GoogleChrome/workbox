@@ -177,7 +177,7 @@ class NetworkFirst {
   }
 
   /**
-   * @param {FetchEvent} event
+   * @param {Request} request
    * @param {Array} logs A reference to the logs array
    * @return {Promise<Response>}
    *
@@ -209,7 +209,7 @@ class NetworkFirst {
 
   /**
    * @param {number} timeoutId
-   * @param {FetchEvent} event
+   * @param {FetchEvent|null} event
    * @param {Request} request
    * @param {Array} logs A reference to the logs Array.
    * @return {Promise<Response>}
