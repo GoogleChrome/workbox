@@ -22,7 +22,84 @@ import {compareResponses} from '../utils/response-comparisons.mjs';
 
 import {NetworkFirst} from '../../../packages/workbox-strategies/NetworkFirst.mjs';
 
-describe(`[workbox-strategies] NetworkFirst`, function() {
+describe(`[workbox-strategies] NetworkFirst.makeRequest()`, function() {
+  const sandbox = sinon.sandbox.create();
+
+  beforeEach(async function() {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+    sandbox.restore();
+  });
+
+  after(async function() {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+    sandbox.restore();
+  });
+
+  it(`should add the network response to the cache, when passed a URL string`, async function() {
+    const url = 'http://example.io/test/';
+    const request = new Request(url);
+    const event = new FetchEvent('fetch', {request});
+
+    const fetchResponse = new Response('Hello Test.');
+    sandbox.stub(global, 'fetch').callsFake((req) => {
+      expect(req.url).to.equal(request.url);
+      return Promise.resolve(fetchResponse);
+    });
+
+    let cachePromise;
+    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
+      cachePromise = promise;
+    });
+
+    const networkFirst = new NetworkFirst();
+    const handleResponse = await networkFirst.makeRequest({
+      event,
+      request: url,
+    });
+
+    // Wait until cache.put is finished.
+    await cachePromise;
+
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cachedResponse = await cache.match(request);
+
+    await compareResponses(cachedResponse, handleResponse, true);
+  });
+
+  it(`should add the network response to the cache, when passed a Request object`, async function() {
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+
+    const fetchResponse = new Response('Hello Test.');
+    sandbox.stub(global, 'fetch').callsFake((req) => {
+      expect(req).to.equal(request);
+      return Promise.resolve(fetchResponse);
+    });
+
+    let cachePromise;
+    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
+      cachePromise = promise;
+    });
+
+    const networkFirst = new NetworkFirst();
+    const handleResponse = await networkFirst.makeRequest({
+      event,
+      request,
+    });
+
+    // Wait until cache.put is finished.
+    await cachePromise;
+
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cachedResponse = await cache.match(request);
+
+    await compareResponses(cachedResponse, handleResponse, true);
+  });
+});
+
+describe(`[workbox-strategies] NetworkFirst.handle()`, function() {
   let sandbox = sinon.sandbox.create();
 
   beforeEach(async function() {

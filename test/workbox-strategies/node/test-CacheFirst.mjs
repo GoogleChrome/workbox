@@ -20,7 +20,109 @@ import {compareResponses} from '../utils/response-comparisons.mjs';
 
 import {CacheFirst} from '../../../packages/workbox-strategies/CacheFirst.mjs';
 
-describe(`[workbox-strategies] CacheFirst`, function() {
+describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
+  const sandbox = sinon.sandbox.create();
+
+  beforeEach(async function() {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+    sandbox.restore();
+  });
+
+  after(async function() {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+    sandbox.restore();
+  });
+
+  it(`should be able to make a request when passed a URL string`, async function() {
+    const url = 'http://example.io/test/';
+    const request = new Request(url);
+    const event = new FetchEvent('fetch', {request});
+
+    const fetchResponse = new Response('Hello Test.');
+    sandbox.stub(global, 'fetch').callsFake((req) => {
+      expect(req.url).to.equal(request.url);
+      return Promise.resolve(fetchResponse);
+    });
+
+    let cachePromise;
+    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
+      cachePromise = promise;
+    });
+
+    const cacheFirst = new CacheFirst();
+    const firstResponse = await cacheFirst.makeRequest({
+      event,
+      request: url,
+    });
+
+    // Wait until cache.put is finished.
+    await cachePromise;
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const firstCachedResponse = await cache.match(request);
+
+    await compareResponses(firstCachedResponse, fetchResponse, true);
+    await compareResponses(firstResponse, fetchResponse, true);
+
+    // Reset spy state so we can check fetch wasn't called.
+    global.fetch.reset();
+
+    const secondResponse = await cacheFirst.makeRequest({
+      request: url,
+    });
+
+    const secondCachedResponse = await cache.match(request);
+    await compareResponses(firstCachedResponse, secondResponse, true);
+    await compareResponses(firstCachedResponse, secondCachedResponse, true);
+    expect(fetch.callCount).to.equal(0);
+  });
+
+  it(`should be able to make a request when passed a Request object`, async function() {
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+
+    const fetchResponse = new Response('Hello Test.');
+    sandbox.stub(global, 'fetch').callsFake((req) => {
+      expect(req).to.equal(request);
+      return Promise.resolve(fetchResponse);
+    });
+
+    let cachePromise;
+    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
+      cachePromise = promise;
+    });
+
+    const cacheFirst = new CacheFirst();
+    const firstResponse = await cacheFirst.makeRequest({
+      event,
+      request,
+    });
+
+    // Wait until cache.put is finished.
+    await cachePromise;
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const firstCachedResponse = await cache.match(request);
+
+    await compareResponses(firstCachedResponse, fetchResponse, true);
+    await compareResponses(firstResponse, fetchResponse, true);
+
+    // Reset spy state so we can check fetch wasn't called.
+    global.fetch.reset();
+
+    const secondResponse = await cacheFirst.makeRequest({
+      request,
+    });
+
+    const secondCachedResponse = await cache.match(request);
+    await compareResponses(firstCachedResponse, secondResponse, true);
+    await compareResponses(firstCachedResponse, secondCachedResponse, true);
+    expect(fetch.callCount).to.equal(0);
+  });
+});
+
+
+describe(`[workbox-strategies] CacheFirst.handle()`, function() {
   let sandbox = sinon.sandbox.create();
 
   beforeEach(async function() {

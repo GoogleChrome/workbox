@@ -1,5 +1,5 @@
 /*
- Copyright 2016 Google Inc. All Rights Reserved.
+ Copyright 2018 Google Inc. All Rights Reserved.
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -25,8 +25,8 @@ const getFriendlyURL = (url) => {
 };
 
 export default {
-  strategyStart: (strategyName, event) => `Using ${strategyName} to respond ` +
-    `to  '${getFriendlyURL(event.request.url)}'`,
+  strategyStart: (strategyName, request) => `Using ${strategyName} to ` +
+    `respond to '${getFriendlyURL(request.url)}'`,
   printFinalResponse: (response) => {
     if (response) {
       logger.groupCollapsed(`View the final response here.`);
