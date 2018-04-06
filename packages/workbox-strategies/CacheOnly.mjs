@@ -1,5 +1,5 @@
 /*
- Copyright 2016 Google Inc. All Rights Reserved.
+ Copyright 2018 Google Inc. All Rights Reserved.
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -21,16 +21,13 @@ import {logger} from 'workbox-core/_private/logger.mjs';
 import messages from './utils/messages.mjs';
 import './_version.mjs';
 
-// TODO: Replace `Workbox plugins` link in the class description with a
-// link to d.g.c.
-// TODO: Replace `plugins` parameter link with link to d.g.c.
 
 /**
  * An implementation of a
  * [cache-only]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only}
  * request strategy.
  *
- * This class is useful if you want to take advantage of any [Workbox plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}.
+ * This class is useful if you want to take advantage of any [Workbox plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}.
  *
  * @memberof workbox.strategies
  */
@@ -40,7 +37,7 @@ class CacheOnly {
    * @param {string} options.cacheName Cache name to store and retrieve
    * requests. Defaults to cache names provided by
    * [workbox-core]{@link workbox.core.cacheNames}.
-   * @param {string} options.plugins [Plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}
+   * @param {string} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
    */
   constructor(options = {}) {
@@ -68,16 +65,51 @@ class CacheOnly {
       });
     }
 
+    return this.makeRequest({
+      event,
+      request: event.request,
+    });
+  }
+
+  /**
+   * This method can be used to perform a make a standalone request outside the
+   * context of the [Workbox Router]{@link workbox.routing.Router}.
+   *
+   * See "[Advanced Recipes](https://developers.google.com/web/tools/workbox/guides/advanced-recipes#make-requests)"
+   * for more usage information.
+   *
+   * @param {Object} input
+   * @param {Request|string} input.request Either a
+   * [`Request`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Request}
+   * object, or a string URL, corresponding to the request to be made.
+   * @param {FetchEvent} [input.event] If provided, `event.waitUntil()` will be
+   * called automatically to extend the service worker's lifetime.
+   * @return {Promise<Response>}
+   */
+  async makeRequest({event, request}) {
+    if (typeof request === 'string') {
+      request = new Request(request);
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(request, Request, {
+        moduleName: 'workbox-strategies',
+        className: 'CacheOnly',
+        funcName: 'makeRequest',
+        paramName: 'request',
+      });
+    }
+
     const response = await cacheWrapper.match(
       this._cacheName,
-      event.request,
+      request,
       null,
       this._plugins
     );
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('CacheOnly', event));
+        messages.strategyStart('CacheOnly', request));
       if (response) {
         logger.log(`Found a cached response in the '${this._cacheName}'` +
           ` cache.`);

@@ -20,7 +20,53 @@ import {_private} from '../../../packages/workbox-core/index.mjs';
 
 import {NetworkOnly} from '../../../packages/workbox-strategies/NetworkOnly.mjs';
 
-describe(`[workbox-strategies] NetworkOnly`, function() {
+describe(`[workbox-strategies] NetworkOnly.makeRequest()`, function() {
+  const sandbox = sinon.sandbox.create();
+
+  beforeEach(async function() {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+    sandbox.restore();
+  });
+
+  after(async function() {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+    sandbox.restore();
+  });
+
+  it(`should return a response without adding anything to the cache when the network request is successful, when passed a URL string`, async function() {
+    const url = 'http://example.io/test/';
+
+    const networkOnly = new NetworkOnly();
+
+    const handleResponse = await networkOnly.makeRequest({
+      request: url,
+    });
+    expect(handleResponse).to.be.instanceOf(Response);
+
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const keys = await cache.keys();
+    expect(keys).to.be.empty;
+  });
+
+  it(`should return a response without adding anything to the cache when the network request is successful, when passed a Request object`, async function() {
+    const request = new Request('http://example.io/test/');
+
+    const networkOnly = new NetworkOnly();
+
+    const handleResponse = await networkOnly.makeRequest({
+      request,
+    });
+    expect(handleResponse).to.be.instanceOf(Response);
+
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const keys = await cache.keys();
+    expect(keys).to.be.empty;
+  });
+});
+
+describe(`[workbox-strategies] NetworkOnly.handle()`, function() {
   let sandbox = sinon.sandbox.create();
 
   beforeEach(async function() {

@@ -21,7 +21,52 @@ import {compareResponses} from '../utils/response-comparisons.mjs';
 
 import {CacheOnly} from '../../../packages/workbox-strategies/CacheOnly.mjs';
 
-describe(`[workbox-strategies] CacheOnly`, function() {
+describe(`[workbox-strategies] CacheOnly.makeRequest()`, function() {
+  const sandbox = sinon.sandbox.create();
+
+  beforeEach(async function() {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+    sandbox.restore();
+  });
+
+  after(async function() {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+    sandbox.restore();
+  });
+
+  it(`should return the cached response when the cache is populated, when passed a URL string`, async function() {
+    const url = 'http://example.io/test/';
+    const request = new Request(url);
+
+    const injectedResponse = new Response('response body');
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    await cache.put(request, injectedResponse.clone());
+
+    const cacheOnly = new CacheOnly();
+    const handleResponse = await cacheOnly.makeRequest({
+      request: url,
+    });
+    await compareResponses(injectedResponse, handleResponse, true);
+  });
+
+  it(`should be able to make a request when passed a Request object`, async function() {
+    const request = new Request('http://example.io/test/');
+
+    const injectedResponse = new Response('response body');
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    await cache.put(request, injectedResponse.clone());
+
+    const cacheOnly = new CacheOnly();
+    const handleResponse = await cacheOnly.makeRequest({
+      request,
+    });
+    await compareResponses(injectedResponse, handleResponse, true);
+  });
+});
+
+describe(`[workbox-strategies] CacheOnly.handle()`, function() {
   let sandbox = sinon.sandbox.create();
 
   beforeEach(async function() {

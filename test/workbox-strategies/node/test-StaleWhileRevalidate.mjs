@@ -21,7 +21,68 @@ import {compareResponses} from '../utils/response-comparisons.mjs';
 
 import {StaleWhileRevalidate} from '../../../packages/workbox-strategies/StaleWhileRevalidate.mjs';
 
-describe(`[workbox-strategies] StaleWhileRevalidate`, function() {
+describe(`[workbox-strategies] StaleWhileRevalidate.makeRequest()`, function() {
+  const sandbox = sinon.sandbox.create();
+
+  beforeEach(async function() {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+    sandbox.restore();
+  });
+
+  after(async function() {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+    sandbox.restore();
+  });
+
+  it(`should add the initial response to the cache, when passed a URL string`, async function() {
+    const url = 'http://example.io/test/';
+    const request = new Request(url);
+    const event = new FetchEvent('fetch', {request});
+    let cachePromise;
+    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
+      cachePromise = promise;
+    });
+
+    const staleWhileRevalidate = new StaleWhileRevalidate();
+    const handleResponse = await staleWhileRevalidate.makeRequest({
+      event,
+      request: url,
+    });
+
+    await cachePromise;
+
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cachedResponse = await cache.match(request);
+
+    await compareResponses(cachedResponse, handleResponse, true);
+  });
+
+  it(`should add the initial response to the cache, when passed a Request object`, async function() {
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+    let cachePromise;
+    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
+      cachePromise = promise;
+    });
+
+    const staleWhileRevalidate = new StaleWhileRevalidate();
+    const handleResponse = await staleWhileRevalidate.makeRequest({
+      event,
+      request,
+    });
+
+    await cachePromise;
+
+    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cachedResponse = await cache.match(request);
+
+    await compareResponses(cachedResponse, handleResponse, true);
+  });
+});
+
+describe(`[workbox-strategies] StaleWhileRevalidate.handle()`, function() {
   let sandbox = sinon.sandbox.create();
 
   beforeEach(async function() {

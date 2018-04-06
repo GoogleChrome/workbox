@@ -1,5 +1,5 @@
 /*
- Copyright 2016 Google Inc. All Rights Reserved.
+ Copyright 2018 Google Inc. All Rights Reserved.
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -24,9 +24,6 @@ import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
 
-// TODO: Change opaque responses to d.g.c link
-// TODO: Replace `plugins` parameter link with link to d.g.c.
-
 /**
  * An implementation of a
  * [network first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache}
@@ -45,7 +42,7 @@ class NetworkFirst {
    * @param {string} options.cacheName Cache name to store and retrieve
    * requests. Defaults to cache names provided by
    * [workbox-core]{@link workbox.core.cacheNames}.
-   * @param {string} options.plugins [Plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}
+   * @param {string} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
    * @param {Object} options.fetchOptions Values passed along to the
    * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
@@ -96,7 +93,6 @@ class NetworkFirst {
    * @return {Promise<Response>}
    */
   async handle({event}) {
-    const logs = [];
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-strategies',
@@ -106,16 +102,54 @@ class NetworkFirst {
       });
     }
 
+    return this.makeRequest({
+      event,
+      request: event.request,
+    });
+  }
+
+  /**
+   * This method can be used to perform a make a standalone request outside the
+   * context of the [Workbox Router]{@link workbox.routing.Router}.
+   *
+   * See "[Advanced Recipes](https://developers.google.com/web/tools/workbox/guides/advanced-recipes#make-requests)"
+   * for more usage information.
+   *
+   * @param {Object} input
+   * @param {Request|string} input.request Either a
+   * [`Request`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Request}
+   * object, or a string URL, corresponding to the request to be made.
+   * @param {FetchEvent} [input.event] If provided, `event.waitUntil()` will be
+   * called automatically to extend the service worker's lifetime.
+   * @return {Promise<Response>}
+   */
+  async makeRequest({event, request}) {
+    const logs = [];
+
+    if (typeof request === 'string') {
+      request = new Request(request);
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(request, Request, {
+        moduleName: 'workbox-strategies',
+        className: 'NetworkFirst',
+        funcName: 'handle',
+        paramName: 'makeRequest',
+      });
+    }
+
     const promises = [];
     let timeoutId;
+
     if (this._networkTimeoutSeconds) {
-      const {id, promise} = this._getTimeoutPromise(event, logs);
+      const {id, promise} = this._getTimeoutPromise(request, logs);
       timeoutId = id;
       promises.push(promise);
     }
 
-    const networkPromise = this._getNetworkPromise(
-      timeoutId, event, logs);
+    const networkPromise = this._getNetworkPromise(timeoutId, event, request,
+      logs);
     promises.push(networkPromise);
 
     // Promise.race() will resolve as soon as the first promise resolves.
@@ -131,7 +165,7 @@ class NetworkFirst {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('NetworkFirst', event));
+        messages.strategyStart('NetworkFirst', request));
       for (let log of logs) {
         logger.log(log);
       }
@@ -143,13 +177,13 @@ class NetworkFirst {
   }
 
   /**
-   * @param {FetchEvent} event
+   * @param {Request} request
    * @param {Array} logs A reference to the logs array
    * @return {Promise<Response>}
    *
    * @private
    */
-  _getTimeoutPromise(event, logs) {
+  _getTimeoutPromise(request, logs) {
     let timeoutId;
     const timeoutPromise = new Promise((resolve) => {
       const onNetworkTimeout = async () => {
@@ -158,7 +192,7 @@ class NetworkFirst {
             `${this._networkTimeoutSeconds} seconds.`);
         }
 
-        resolve(await this._respondFromCache(event.request));
+        resolve(await this._respondFromCache(request));
       };
 
       timeoutId = setTimeout(
@@ -175,18 +209,19 @@ class NetworkFirst {
 
   /**
    * @param {number} timeoutId
-   * @param {FetchEvent} event
+   * @param {FetchEvent|null} event
+   * @param {Request} request
    * @param {Array} logs A reference to the logs Array.
    * @return {Promise<Response>}
    *
    * @private
    */
-  async _getNetworkPromise(timeoutId, event, logs) {
+  async _getNetworkPromise(timeoutId, event, request, logs) {
     let error;
     let response;
     try {
       response = await fetchWrapper.fetch(
-        event.request,
+        request,
         this._fetchOptions,
         this._plugins
       );
@@ -208,7 +243,7 @@ class NetworkFirst {
     }
 
     if (error || !response) {
-      response = await this._respondFromCache(event.request);
+      response = await this._respondFromCache(request);
       if (process.env.NODE_ENV !== 'production') {
         if (response) {
           logs.push(`Found a cached response in the '${this._cacheName}'` +
@@ -220,22 +255,23 @@ class NetworkFirst {
     } else {
       // Keep the service worker alive while we put the request in the cache
       const responseClone = response.clone();
-
       const cachePut = cacheWrapper.put(
         this._cacheName,
-        event.request,
+        request,
         responseClone,
         this._plugins
       );
 
-      try {
-        // The event has been responded to so we can keep the SW alive to
-        // respond to the request
-        event.waitUntil(cachePut);
-      } catch (err) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn(`Unable to ensure service worker stays alive when ` +
-            `updating cache entry for '${getFriendlyURL(event.request.url)}'.`);
+      if (event) {
+        try {
+          // The event has been responded to so we can keep the SW alive to
+          // respond to the request
+          event.waitUntil(cachePut);
+        } catch (err) {
+          if (process.env.NODE_ENV !== 'production') {
+            logger.warn(`Unable to ensure service worker stays alive when ` +
+              `updating cache for '${getFriendlyURL(event.request.url)}'.`);
+          }
         }
       }
     }

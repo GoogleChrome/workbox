@@ -1,5 +1,5 @@
 /*
- Copyright 2016 Google Inc. All Rights Reserved.
+ Copyright 2018 Google Inc. All Rights Reserved.
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -22,10 +22,6 @@ import {assert} from 'workbox-core/_private/assert.mjs';
 import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
-
-// TODO: Replace `Workbox plugins` link in the class description with a
-// link to d.g.c.
-// TODO: Replace `plugins` parameter link with link to d.g.c.
 
 /**
  * An implementation of a
@@ -50,7 +46,7 @@ class StaleWhileRevalidate {
    * @param {string} options.cacheName Cache name to store and retrieve
    * requests. Defaults to cache names provided by
    * [workbox-core]{@link workbox.core.cacheNames}.
-   * @param {string} options.plugins [Plugins]{@link https://docs.google.com/document/d/1Qye_GDVNF1lzGmhBaUvbgwfBWRQDdPgwUAgsbs8jhsk/edit?usp=sharing}
+   * @param {string} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
    * @param {Object} options.fetchOptions Values passed along to the
    * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
@@ -58,7 +54,7 @@ class StaleWhileRevalidate {
    */
   constructor(options = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
-      this._plugins = options.plugins || [];
+    this._plugins = options.plugins || [];
 
     if (options.plugins) {
       let isUsingCacheWillUpdate =
@@ -84,7 +80,6 @@ class StaleWhileRevalidate {
    * @return {Promise<Response>}
    */
   async handle({event}) {
-    const logs = [];
     if (process.env.NODE_ENV !== 'production') {
       assert.isInstance(event, FetchEvent, {
         moduleName: 'workbox-strategies',
@@ -94,11 +89,48 @@ class StaleWhileRevalidate {
       });
     }
 
-    const fetchAndCachePromise = this._getFromNetwork(event);
+    return this.makeRequest({
+      event,
+      request: event.request,
+    });
+  }
+
+  /**
+   * This method can be used to perform a make a standalone request outside the
+   * context of the [Workbox Router]{@link workbox.routing.Router}.
+   *
+   * See "[Advanced Recipes](https://developers.google.com/web/tools/workbox/guides/advanced-recipes#make-requests)"
+   * for more usage information.
+   *
+   * @param {Object} input
+   * @param {Request|string} input.request Either a
+   * [`Request`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Request}
+   * object, or a string URL, corresponding to the request to be made.
+   * @param {FetchEvent} [input.event] If provided, `event.waitUntil()` will be
+   * called automatically to extend the service worker's lifetime.
+   * @return {Promise<Response>}
+   */
+  async makeRequest({event, request}) {
+    const logs = [];
+
+    if (typeof request === 'string') {
+      request = new Request(request);
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(request, Request, {
+        moduleName: 'workbox-strategies',
+        className: 'StaleWhileRevalidate',
+        funcName: 'handle',
+        paramName: 'request',
+      });
+    }
+
+    const fetchAndCachePromise = this._getFromNetwork(request, event);
 
     let response = await cacheWrapper.match(
       this._cacheName,
-      event.request,
+      request,
       null,
       this._plugins
     );
@@ -119,7 +151,7 @@ class StaleWhileRevalidate {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('StaleWhileRevalidate', event));
+        messages.strategyStart('StaleWhileRevalidate', request));
       for (let log of logs) {
         logger.log(log);
       }
@@ -131,26 +163,28 @@ class StaleWhileRevalidate {
   }
 
   /**
-   * @param {FetchEvent} event
+   * @param {Request} request
+   * @param {FetchEvent} [event]
    * @return {Promise<Response>}
    *
    * @private
    */
-  async _getFromNetwork(event) {
+  async _getFromNetwork(request, event) {
     const response = await fetchWrapper.fetch(
-      event.request,
+      request,
       this._fetchOptions,
       this._plugins
     );
 
-    event.waitUntil(
-      cacheWrapper.put(
-        this._cacheName,
-        event.request,
-        response.clone(),
-        this._plugins
-      )
+    const cachePutPromise = cacheWrapper.put(
+      this._cacheName,
+      request,
+      response.clone(),
+      this._plugins
     );
+    if (event) {
+      event.waitUntil(cachePutPromise);
+    }
 
     return response;
   }
