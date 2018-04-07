@@ -131,12 +131,20 @@ describe(`[workbox-cache-expiration] Plugin`, function() {
       expect(isFresh).to.equal(true);
     });
 
-    it(`should return true when there is not Date header`, function() {
+    it(`should return true when there is no Date header`, function() {
       const plugin = new Plugin({maxAgeSeconds: 1});
       const isFresh = plugin._isResponseDateFresh(new Response('Hi', {
         // TODO: Remove this when https://github.com/pinterest/service-workers/issues/72
         // is fixed.
         headers: {},
+      }));
+      expect(isFresh).to.equal(true);
+    });
+
+    it(`should return true when the Date header is invalid`, function() {
+      const plugin = new Plugin({maxAgeSeconds: 1});
+      const isFresh = plugin._isResponseDateFresh(new Response('Hi', {
+        headers: {date: 'invalid header'},
       }));
       expect(isFresh).to.equal(true);
     });

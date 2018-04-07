@@ -169,6 +169,10 @@ class Plugin {
    * @private
    */
   _getDateHeaderTimestamp(cachedResponse) {
+    if (!cachedResponse.headers.has('date')) {
+      return null;
+    }
+
     const dateHeader = cachedResponse.headers.get('date');
     const parsedDate = new Date(dateHeader);
     const headerTime = parsedDate.getTime();
