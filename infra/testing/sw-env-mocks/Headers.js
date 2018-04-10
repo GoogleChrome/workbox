@@ -26,7 +26,7 @@ class Headers {
   }
 
   get(key) {
-    return this.obj[key];
+    return this.has(key) ? this.obj[key] : null;
   }
 
   set(key, value) {
