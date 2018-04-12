@@ -7,7 +7,7 @@ describe(`[workbox-range-requests] Plugin`, function() {
     new Plugin();
   });
 
-  it(`should return untouched response if no range-request header`, async function() {
+  it(`should return an untouched response if there's no Range: request header`, async function() {
     const response = new Response();
 
     const plugin = new Plugin();
@@ -18,7 +18,7 @@ describe(`[workbox-range-requests] Plugin`, function() {
     expect(resultResponse).to.equal(response);
   });
 
-  it(`should return partial response response if range header`, async function() {
+  it(`should return partial response response if there's a valid Range: request header`, async function() {
     const response = new Response('hello, world.');
 
     const plugin = new Plugin();
@@ -34,5 +34,19 @@ describe(`[workbox-range-requests] Plugin`, function() {
 
     const responseBody = await resultResponse.text();
     expect(responseBody).to.equal('ello');
+  });
+
+  it(`should return null when the cachedResponse is null`, async function() {
+    const cachedResponse = null;
+    const plugin = new Plugin();
+    const resultResponse = await plugin.cachedResponseWillBeUsed({
+      request: new Request('/', {
+        headers: {
+          'range': 'bytes=1-4',
+        },
+      }),
+      cachedResponse,
+    });
+    expect(resultResponse).to.eql(null);
   });
 });

@@ -37,12 +37,14 @@ class Plugin {
    * @private
    */
   async cachedResponseWillBeUsed({request, cachedResponse}) {
-    // Only return a sliced response if there's a Range: header in the request.
-    if (request.headers.has('range')) {
+    // Only return a sliced response if there's something valid in the cache,
+    // and there's a Range: header in the request.
+    if (cachedResponse && request.headers.has('range')) {
       return await createPartialResponse(request, cachedResponse);
     }
 
-    // If there was no Range: header, return the original response as-is.
+    // If there was no Range: header, or if cachedResponse wasn't valid, just
+    // pass it through as-is.
     return cachedResponse;
   }
 }
