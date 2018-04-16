@@ -21,9 +21,9 @@ import '../_version.mjs';
 
 /**
  * @param {Blob} blob A source blob.
- * @param {Number|null} start The offset to use as the start of the
+ * @param {number|null} start The offset to use as the start of the
  * slice.
- * @param {Number|null} end The offset to use as the end of the slice.
+ * @param {number|null} end The offset to use as the end of the slice.
  * @return {Object} An object with `start` and `end` properties, reflecting
  * the effective boundaries to use given the size of the blob.
  *
