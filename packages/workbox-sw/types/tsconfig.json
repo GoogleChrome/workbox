@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "DOM",
+      "WebWorker",
+      "ScriptHost",
+      "ES5",
+      "ES2015"
+    ],
+    "noEmit": true
+  },
+  "files": [
+    "workbox-sw.d.ts"
+  ]
+}
