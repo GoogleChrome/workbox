@@ -18,14 +18,14 @@ self.addEventListener('fetch', (event) => {
   if (!workbox.streams.isSupported()) {
     event.respondWith(new Response('No streams support'));
   } else if (event.request.url.endsWith('concatenateToResponse')) {
-    const {done, response} = workbox.streams.concatenateToResponse(getSourceFunctions().map(f => f()), {
+    const {done, response} = workbox.streams.concatenateToResponse(getSourceFunctions().map((f) => f()), {
       'content-type': 'text/plain',
       'x-test-case': 'concatenateToResponse',
     });
     event.respondWith(response);
     event.waitUntil(done);
   } else if (event.request.url.endsWith('concatenate')) {
-    const {done, stream} = workbox.streams.concatenate(getSourceFunctions().map(f => f()));
+    const {done, stream} = workbox.streams.concatenate(getSourceFunctions().map((f) => f()));
     const response = new Response(stream, {
       headers: {
         'content-type': 'text/plain',
@@ -39,7 +39,7 @@ self.addEventListener('fetch', (event) => {
 
 workbox.routing.registerRoute(
   new RegExp('strategy$'),
-  new workbox.streams.strategy(getSourceFunctions(), {
+  workbox.streams.strategy(getSourceFunctions(), {
     'content-type': 'text/plain',
     'x-test-case': 'strategy',
   })
