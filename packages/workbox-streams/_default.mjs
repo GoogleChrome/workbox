@@ -17,6 +17,7 @@ import {createHeaders} from './utils/createHeaders.mjs';
 import {concatenate} from './concatenate.mjs';
 import {concatenateToResponse} from './concatenateToResponse.mjs';
 import {isSupported} from './isSupported.mjs';
+import {logger} from '../workbox-core/_private/logger';
 
 import './_version.mjs';
 
@@ -44,6 +45,11 @@ function strategy(sourceFunctions, headersInit) {
         (sourceFunction) => sourceFunction({event, url, params})), headersInit);
       event.waitUntil(done);
       return response;
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      logger.log(`The current browser doesn't support creating response ` +
+        `streams. Falling back to non-streaming response instead.`);
     }
 
     // Fallback to waiting for everything to finish, and concatenating the

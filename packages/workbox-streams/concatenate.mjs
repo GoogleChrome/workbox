@@ -77,38 +77,66 @@ function concatenate(sourcePromises) {
     fullyStreamedReject = reject;
   });
 
+  if (process.env.NODE_ENV !== 'production') {
+    logger.log(`About to concatenate ${readerPromises.length} sources ` +
+      `into a final ReadableStream.`);
+  }
+
+  let i = 0;
+  let logStartOfGroup = true;
+
   const stream = new ReadableStream({
     pull(controller) {
-      return readerPromises[0]
-        .then((reader) => reader.read())
-        .then((result) => {
+      return readerPromises[i]
+        .then((reader) => {
+          if (process.env.NODE_ENV !== 'production') {
+            if (logStartOfGroup) {
+              logStartOfGroup = false;
+              logger.groupCollapsed('Current source is', sourcePromises[i]);
+            }
+          }
+          return reader.read();
+        }).then((result) => {
           if (result.done) {
+            logStartOfGroup = true;
             if (process.env.NODE_ENV !== 'production') {
-              logger.log('Finished reading a stream.');
+              logger.log('Reached the end of that source.');
+              logger.groupEnd();
             }
 
-            readerPromises.shift();
+            i++;
+            if (i >= readerPromises.length) {
+              if (process.env.NODE_ENV !== 'production') {
+                logger.log('Finished reading all sources.');
+              }
 
-            if (readerPromises.length === 0) {
               controller.close();
               fullyStreamedResolve();
-              if (process.env.NODE_ENV !== 'production') {
-                logger.log('Finished reading all streams.');
-              }
               return;
             }
 
             return this.pull(controller);
           } else {
+            if (process.env.NODE_ENV !== 'production') {
+              logger.log('...reading...');
+            }
+
             controller.enqueue(result.value);
           }
-        }).catch((err) => {
-          fullyStreamedReject(err);
-          throw err;
+        }).catch((error) => {
+          if (process.env.NODE_ENV !== 'production') {
+            logger.error('An error occurred:', error);
+          }
+          fullyStreamedReject(error);
+          throw error;
         });
     },
 
     cancel() {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.warn('The ReadableStream was cancelled.');
+      }
+
       fullyStreamedResolve();
     },
   });
