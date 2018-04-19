@@ -120,6 +120,7 @@ class InjectManifest {
     }
 
     const originalSWString = await readFileWrapper(readFile, this.config.swSrc);
+    compilation.fileDependencies.push(this.config.swSrc);
 
     const importScriptsString = importScriptsArray
       .map(JSON.stringify)
