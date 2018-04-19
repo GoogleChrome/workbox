@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import './_version.mjs';
+import '../_version.mjs';
 
 /**
  * This is a utility method that determines whether the current browser supports

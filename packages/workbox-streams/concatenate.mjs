@@ -82,15 +82,19 @@ function concatenate(sourcePromises) {
       return readerPromises[0]
         .then((reader) => reader.read())
         .then((result) => {
-          if (process.env.NODE_ENV !== 'production') {
-            logger.log({result});
-          }
           if (result.done) {
+            if (process.env.NODE_ENV !== 'production') {
+              logger.log('Finished reading a stream.');
+            }
+
             readerPromises.shift();
 
             if (readerPromises.length === 0) {
               controller.close();
               fullyStreamedResolve();
+              if (process.env.NODE_ENV !== 'production') {
+                logger.log('Finished reading all streams.');
+              }
               return;
             }
 

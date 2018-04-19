@@ -13,7 +13,7 @@
  limitations under the License.
 */
 
-import {createHeaders} from './createHeaders.mjs';
+import {createHeaders} from './utils/createHeaders.mjs';
 import {concatenate} from './concatenate.mjs';
 
 import './_version.mjs';
