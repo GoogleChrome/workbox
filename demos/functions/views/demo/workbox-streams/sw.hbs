@@ -1,0 +1,44 @@
+{{{WORKBOX_SW_IMPORT}}}
+
+const CACHE_NAME = 'my-cache';
+const START_CACHE_KEY = 'start';
+const END_CACHE_KEY = 'end';
+
+self.addEventListener('install', (event) => {
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await Promise.all([
+      cache.put(START_CACHE_KEY, new Response('<html><head></head><body>')),
+      cache.put(END_CACHE_KEY, new Response('</body></html>')),
+    ]);
+  })());
+});
+
+// Use a stale-while-revalidate strategy as a source for part of the response.
+const httpBinStrategy = workbox.strategies.staleWhileRevalidate({
+  cacheName: 'httpbin',
+});
+
+// String together an artificially complex series of stream sources.
+const streamsStrategy = workbox.streams.strategy([
+  () => caches.match(START_CACHE_KEY, {cacheName: CACHE_NAME}),
+  () => `<p>this was executed at ${Date.now()}</p>`,
+  ({event}) => httpBinStrategy.makeRequest({
+    event,
+    request: 'https://httpbin.org/bytes/12',
+  }),
+  () => new Promise((resolve) => {
+    setTimeout(() => resolve(`<p>this was executed at ${Date.now()}</p>`), 100);
+  }),
+  () => `<p>this was executed at ${Date.now()}</p>`,
+  () => caches.match(END_CACHE_KEY, {cacheName: CACHE_NAME}),
+]);
+
+// Once the strategy is configured, the actual routing looks clean.
+workbox.routing.registerRoute(
+  new RegExp('streamedResponse$'),
+  streamsStrategy
+);
+
+workbox.skipWaiting();
+workbox.clientsClaim();
