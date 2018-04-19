@@ -3,15 +3,17 @@ module.exports = async (swUrl) => {
   let error = await global.__workbox.webdriver.executeAsyncScript((swUrl, cb) => {
     const onStateChangePromise = (registration, desiredState) => {
       return new Promise((resolve, reject) => {
-        if (registration.installing === null) {
-          throw new Error('Regstration is not installing');
+        if (desiredState === 'activated' && registration.active) {
+          resolve();
+          return;
         }
 
-        let serviceWorker = registration.installing;
+        const serviceWorker = registration.installing || registration.waiting;
+        if (serviceWorker === null) {
+          throw new Error('There is no installing or waiting service worker.');
+        }
 
-        // We unregister all service workers after each test - this should
-        // always trigger an install state change
-        let stateChangeListener = function(evt) {
+        const stateChangeListener = function(evt) {
           if (evt.target.state === desiredState) {
             serviceWorker.removeEventListener('statechange', stateChangeListener);
             resolve();
@@ -23,7 +25,7 @@ module.exports = async (swUrl) => {
 
             // Must call reject rather than throw error here due to this
             // being inside the scope of the callback function stateChangeListener
-            reject(new Error('Installing servier worker became redundant'));
+            reject(new Error('The new service worker became redundant.'));
             return;
           }
         };
@@ -33,11 +35,9 @@ module.exports = async (swUrl) => {
     };
 
     navigator.serviceWorker.register(swUrl)
-    .then((registration) => {
-      return onStateChangePromise(registration, 'activated');
-    })
-    .then(cb)
-    .catch((err) => cb(err.message));
+      .then((registration) => onStateChangePromise(registration, 'activated'))
+      .then(() => cb())
+      .catch((err) => cb(err.message));
   }, swUrl);
 
   if (error) {
@@ -53,9 +53,9 @@ module.exports = async (swUrl) => {
         navigator.serviceWorker.controller.scriptURL === swUrl) {
       cb();
     } else if (!navigator.serviceWorker.controller) {
-      cb(`No SW controlling the page`);
+      cb(`There's no service worker controlling the page.`);
     } else {
-      cb(`Unexpected SW controlling the page ${navigator.serviceWorker.controller.scriptURL}`);
+      cb(`There's an unexpected SW controlling the page: ${navigator.serviceWorker.controller.scriptURL}`);
     }
   }, swUrl);
 
