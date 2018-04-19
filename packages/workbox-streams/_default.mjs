@@ -13,11 +13,12 @@
  limitations under the License.
 */
 
+import {logger} from 'workbox-core/_private/logger.mjs';
+
 import {createHeaders} from './utils/createHeaders.mjs';
 import {concatenate} from './concatenate.mjs';
 import {concatenateToResponse} from './concatenateToResponse.mjs';
 import {isSupported} from './isSupported.mjs';
-import {logger} from '../workbox-core/_private/logger';
 
 import './_version.mjs';
 
