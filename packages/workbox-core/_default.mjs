@@ -49,12 +49,16 @@ class WorkboxCore {
     if (process.env.NODE_ENV !== 'production') {
       const padding = '   ';
       logger.groupCollapsed('Welcome to Workbox!');
+      if (self.location.hostname === 'localhost') {
+        logger.unprefixed.log(`The development build with extra logging is ` +
+          `automatically enabled when accessing your web app via localhost.`);
+      }
       logger.unprefixed.log(
         `📖 Read the guides and documentation\n` +
         `${padding}https://developers.google.com/web/tools/workbox/`
       );
       logger.unprefixed.log(
-        `❓ Use the [workbox] tag on StackOverflow to ask questions\n` +
+        `❓ Use the [workbox] tag on Stack Overflow to ask questions\n` +
         `${padding}https://stackoverflow.com/questions/ask?tags=workbox`
       );
       logger.unprefixed.log(
