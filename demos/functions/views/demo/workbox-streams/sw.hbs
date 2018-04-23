@@ -15,28 +15,25 @@ self.addEventListener('install', (event) => {
 });
 
 // Use a stale-while-revalidate strategy as a source for part of the response.
-const httpBinStrategy = workbox.strategies.staleWhileRevalidate({
-  cacheName: 'httpbin',
+const apiStrategy = workbox.strategies.staleWhileRevalidate({
+  cacheName: 'apiStrategy',
 });
 
 // String together an artificially complex series of stream sources.
 const streamsStrategy = workbox.streams.strategy([
   () => caches.match(START_CACHE_KEY, {cacheName: CACHE_NAME}),
-  () => `<p>this was executed at ${Date.now()}</p>`,
-  ({event}) => httpBinStrategy.makeRequest({
+  () => `<p>🎉 This <code>iframe</code> is composed of multiple streams.</p>`,
+  () => `<p>Here's an API call, using a stale-while-revalidate strategy:</p>`,
+  ({event}) => apiStrategy.makeRequest({
     event,
-    request: 'https://httpbin.org/bytes/12',
+    request: '/api/date',
   }),
-  () => new Promise((resolve) => {
-    setTimeout(() => resolve(`<p>this was executed at ${Date.now()}</p>`), 100);
-  }),
-  () => `<p>this was executed at ${Date.now()}</p>`,
   () => caches.match(END_CACHE_KEY, {cacheName: CACHE_NAME}),
 ]);
 
 // Once the strategy is configured, the actual routing looks clean.
 workbox.routing.registerRoute(
-  new RegExp('streamedResponse$'),
+  new RegExp('iframe$'),
   streamsStrategy
 );
 

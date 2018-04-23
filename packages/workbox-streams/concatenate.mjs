@@ -77,37 +77,34 @@ function concatenate(sourcePromises) {
     fullyStreamedReject = reject;
   });
 
-  if (process.env.NODE_ENV !== 'production') {
-    logger.log(`About to concatenate ${readerPromises.length} sources ` +
-      `into a final ReadableStream.`);
-  }
-
   let i = 0;
-  let logStartOfGroup = true;
-
+  const logMessages = [];
   const stream = new ReadableStream({
     pull(controller) {
       return readerPromises[i]
-        .then((reader) => {
-          if (process.env.NODE_ENV !== 'production') {
-            if (logStartOfGroup) {
-              logStartOfGroup = false;
-              logger.groupCollapsed('Current source is', sourcePromises[i]);
-            }
-          }
-          return reader.read();
-        }).then((result) => {
+        .then((reader) => reader.read())
+        .then((result) => {
           if (result.done) {
-            logStartOfGroup = true;
             if (process.env.NODE_ENV !== 'production') {
-              logger.log('Reached the end of that source.');
-              logger.groupEnd();
+              logMessages.push(['Reached the end of source:',
+                sourcePromises[i]]);
             }
 
             i++;
             if (i >= readerPromises.length) {
+              // Log all the messages in the group at once in a single group.
               if (process.env.NODE_ENV !== 'production') {
+                logger.groupCollapsed(
+                  `Concatenating ${readerPromises.length} sources.`);
+                for (const message of logMessages) {
+                  if (Array.isArray(message)) {
+                    logger.log(...message);
+                  } else {
+                    logger.log(message);
+                  }
+                }
                 logger.log('Finished reading all sources.');
+                logger.groupEnd();
               }
 
               controller.close();
@@ -117,10 +114,6 @@ function concatenate(sourcePromises) {
 
             return this.pull(controller);
           } else {
-            if (process.env.NODE_ENV !== 'production') {
-              logger.log('...reading...');
-            }
-
             controller.enqueue(result.value);
           }
         }).catch((error) => {
