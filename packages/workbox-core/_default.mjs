@@ -51,7 +51,10 @@ class WorkboxCore {
       logger.groupCollapsed('Welcome to Workbox!');
       if (self.location.hostname === 'localhost') {
         logger.unprefixed.log(`The development build with extra logging is ` +
-          `automatically enabled when accessing your web app via localhost.`);
+          `automatically enabled when accessing your web app via localhost.` +
+          `More info is available at\n` +
+          `${padding}https://developers.google.com/web/tools/workbox/` +
+          `guides/troubleshoot-and-debug`);
       }
       logger.unprefixed.log(
         `📖 Read the guides and documentation\n` +
