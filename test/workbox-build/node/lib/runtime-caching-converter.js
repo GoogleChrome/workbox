@@ -10,7 +10,7 @@ const runtimeCachingConverter = require('../../../../packages/workbox-build/src/
  *
  * @private
  * @param {Array<Object>} runtimeCachingOptions
- * @param {Array<String>} convertedOptions
+ * @param {Array<string>} convertedOptions
  */
 function validate(runtimeCachingOptions, convertedOptions) {
   expect(convertedOptions).to.have.lengthOf(runtimeCachingOptions.length);
