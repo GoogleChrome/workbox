@@ -17,6 +17,7 @@ const workboxModules = [
   'workbox-range-requests',
   'workbox-routing',
   'workbox-strategies',
+  'workbox-streams',
   'workbox-sw',
 ];
 
@@ -66,6 +67,12 @@ app.get('/demo/:moduleName', function(req, res) {
   res.render(`demo/${req.params.moduleName}`, {
     title: `${req.params.moduleName} Demo`,
   });
+});
+
+app.get('/api/date', function(req, res) {
+  res.header('Content-Type', 'text/plain');
+  res.header('Cache-Control', 'no-cache');
+  res.send(`Received from the server at ${new Date().toLocaleString()}`);
 });
 
 app.get('/demo/:moduleName/:swfile', function(req, res, next) {
