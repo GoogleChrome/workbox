@@ -2,7 +2,7 @@ cache:
   - node_modules
 
 install:
-  - ps: Install-Product node Stable
+  - ps: Install-Product node 9
   - npm install
   - npm install gulpjs/gulp-cli -g
 
