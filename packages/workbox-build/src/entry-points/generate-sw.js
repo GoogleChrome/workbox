@@ -36,7 +36,7 @@ const writeServiceWorkerUsingDefaultTemplate =
  *
  * @param {Object} config Please refer to the
  * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#full_generatesw_config).
- * @return {Promise<{count: Number, size: Number, warnings: Array<String>}>}
+ * @return {Promise<{count: number, size: number, warnings: Array<string>}>}
  * A promise that resolves once the service worker file has been written to
  * `swDest`. The `size` property contains the aggregate size of all the
  * precached entries, in bytes, and the `count` property contains the total

@@ -17,7 +17,7 @@ import {assert} from 'workbox-core/_private/assert.mjs';
 import '../_version.mjs';
 
 /**
- * @param {function|Object} handler Either a function, or an object with a
+ * @param {function()|Object} handler Either a function, or an object with a
  * 'handle' method.
  * @return {Object} An object with a handle method.
  *

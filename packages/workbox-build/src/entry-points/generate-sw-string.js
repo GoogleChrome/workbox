@@ -25,7 +25,7 @@ const validate = require('./options/validate');
  *
  * @param {Object} config Please refer to the
  * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#generateswstring_mode).
- * @return {Promise<{swString: String, warnings: Array<String>}>} A promise that
+ * @return {Promise<{swString: string, warnings: Array<string>}>} A promise that
  * resolves once the service worker template is populated. The `swString`
  * property contains a string representation of the full service worker code.
  * Any non-fatal warning messages will be returned via `warnings`.

@@ -24,7 +24,7 @@ const {copyWorkboxLibraries, getModuleUrl} = require('workbox-build');
  *   config.importWorkboxFrom is set to a chunk name.
  * - config.modulePathPrefix may be modified by this function if
  *   config.importWorkboxFrom is set to 'local'.
- * @return {Array<String>|null} A list of URLs to use to import the Workbox
+ * @return {Array<string>|null} A list of URLs to use to import the Workbox
  * runtime code, or null if importWorkboxFrom is 'disabled'.
  * @private
  */
