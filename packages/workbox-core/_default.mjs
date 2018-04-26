@@ -49,13 +49,9 @@ class WorkboxCore {
     if (process.env.NODE_ENV !== 'production') {
       const padding = '   ';
       logger.groupCollapsed('Welcome to Workbox!');
-      if (self.location.hostname === 'localhost') {
-        logger.unprefixed.log(`The development build with extra logging is ` +
-          `automatically enabled when accessing your web app via localhost.` +
-          `More info is available at\n` +
-          `${padding}https://developers.google.com/web/tools/workbox/` +
-          `guides/troubleshoot-and-debug`);
-      }
+      logger.unprefixed.log(`You are currently using a development build. ` +
+        `By default this will switch to prod builds when not on localhost. ` +
+        `You can force this with workbox.setConfig({debug: true|false}).`);
       logger.unprefixed.log(
         `📖 Read the guides and documentation\n` +
         `${padding}https://developers.google.com/web/tools/workbox/`
