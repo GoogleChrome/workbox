@@ -166,13 +166,21 @@ class DefaultRouter extends Router {
         if (response) {
           return response;
         }
+        // This shouldn't normally happen, but there are edge cases:
+        // https://github.com/GoogleChrome/workbox/issues/1441
         throw new Error(`The cache ${cacheName} did not have an entry for ` +
           `${cachedAssetUrl}.`);
       }).catch((error) => {
+        // If there's either a cache miss, or the caches.match() call threw
+        // an exception, then attempt to fulfill the navitation request with
+        // a response from the network rather than leaving the user with a
+        // failed navigation.
         if (process.env.NODE_ENV !== 'production') {
           logger.debug(`Unable to respond to navigation request with cached ` +
             `response: ${error.message}. Falling back to network.`);
         }
+
+        // This might still fail if the browser is offline...
         return fetch(cachedAssetUrl);
       });
 
