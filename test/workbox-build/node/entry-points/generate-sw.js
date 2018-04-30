@@ -696,5 +696,28 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         ],
       }});
     });
+
+    it(`should reject when 'options.expiration' is used without 'options.cacheName'`, async function() {
+      const urlPattern = REGEXP_URL_PATTERN;
+      const options = Object.assign({}, BASE_OPTIONS, {
+        runtimeCaching: [{
+          urlPattern,
+          handler: 'networkFirst',
+          options: {
+            expiration: {
+              maxEntries: 5,
+            },
+          },
+        }],
+      });
+
+      try {
+        await generateSW(options);
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.name).to.eql('ValidationError');
+        expect(error.details[0].context.key).to.eql('expiration');
+      }
+    });
   });
 });
