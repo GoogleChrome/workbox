@@ -13,11 +13,12 @@
  limitations under the License.
 */
 
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
 
 import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
@@ -140,7 +141,17 @@ class StaleWhileRevalidate {
         logs.push(`Found a cached response in the '${this._cacheName}'` +
           ` cache. Will update with the network response in the background.`);
       }
-      event.waitUntil(fetchAndCachePromise);
+
+      if (event) {
+        try {
+          event.waitUntil(fetchAndCachePromise);
+        } catch (error) {
+          if (process.env.NODE_ENV !== 'production') {
+            logger.warn(`Unable to ensure service worker stays alive when ` +
+              `updating cache for '${getFriendlyURL(event.request.url)}'.`);
+          }
+        }
+      }
     } else {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(`No response found in the '${this._cacheName}' cache. ` +
@@ -182,8 +193,16 @@ class StaleWhileRevalidate {
       response.clone(),
       this._plugins
     );
+
     if (event) {
-      event.waitUntil(cachePutPromise);
+      try {
+        event.waitUntil(cachePutPromise);
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.warn(`Unable to ensure service worker stays alive when ` +
+            `updating cache for '${getFriendlyURL(event.request.url)}'.`);
+        }
+      }
     }
 
     return response;

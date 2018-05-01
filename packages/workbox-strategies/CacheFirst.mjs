@@ -13,10 +13,11 @@
  limitations under the License.
 */
 
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
 
 import messages from './utils/messages.mjs';
@@ -186,7 +187,14 @@ class CacheFirst {
     );
 
     if (event) {
-      event.waitUntil(cachePutPromise);
+      try {
+        event.waitUntil(cachePutPromise);
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.warn(`Unable to ensure service worker stays alive when ` +
+            `updating cache for '${getFriendlyURL(event.request.url)}'.`);
+        }
+      }
     }
 
     return response;
