@@ -34,8 +34,10 @@
     "workbox-core": "^3.1.0",
     "workbox-google-analytics": "^3.1.0",
     "workbox-precaching": "^3.1.0",
+    "workbox-range-requests": "^3.1.0",
     "workbox-routing": "^3.1.0",
     "workbox-strategies": "^3.1.0",
+    "workbox-streams": "^3.1.0",
     "workbox-sw": "^3.1.0"
   },
   "main": "build/index.js",
