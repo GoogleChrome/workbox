@@ -58,7 +58,7 @@ module.exports = baseSchema.keys({
       }).or('maxEntries', 'maxAgeSeconds'),
       networkTimeoutSeconds: joi.number().min(1),
       plugins: joi.array().items(joi.object()),
-    }),
+    }).with('expiration', 'cacheName'),
   }).requiredKeys('urlPattern', 'handler')),
   skipWaiting: joi.boolean().default(defaults.skipWaiting),
 });
