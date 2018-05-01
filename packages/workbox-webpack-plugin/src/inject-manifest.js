@@ -120,7 +120,18 @@ class InjectManifest {
     }
 
     const originalSWString = await readFileWrapper(readFile, this.config.swSrc);
-    compilation.fileDependencies.push(this.config.swSrc);
+
+    // compilation.fileDependencies needs absolute paths.
+    const absoluteSwSrc = path.resolve(this.config.swSrc);
+    if (Array.isArray(compilation.fileDependencies)) {
+      // webpack v3
+      if (compilation.fileDependencies.indexOf(absoluteSwSrc) === -1) {
+        compilation.fileDependencies.push(absoluteSwSrc);
+      }
+    } else if ('add' in compilation.fileDependencies) {
+      // webpack v4; no need to check for membership first, since it's a Set.
+      compilation.fileDependencies.add(absoluteSwSrc);
+    }
 
     const importScriptsString = importScriptsArray
       .map(JSON.stringify)
