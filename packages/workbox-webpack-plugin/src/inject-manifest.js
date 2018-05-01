@@ -146,17 +146,18 @@ ${originalSWString}
    * @private
    */
   apply(compiler) {
+    const readFile = compiler.inputFileSystem.readFile
+      .bind(compiler.inputFileSystem);
     if ('hooks' in compiler) {
       // We're in webpack 4+.
       compiler.hooks.emit.tapPromise(
         this.constructor.name,
-        (compilation) => this.handleEmit(compilation,
-          compiler.inputFileSystem._readFile)
+        (compilation) => this.handleEmit(compilation, readFile)
       );
     } else {
       // We're in webpack 2 or 3.
       compiler.plugin('emit', (compilation, callback) => {
-        this.handleEmit(compilation, compiler.inputFileSystem._readFile)
+        this.handleEmit(compilation, readFile)
           .then(callback)
           .catch(callback);
       });
