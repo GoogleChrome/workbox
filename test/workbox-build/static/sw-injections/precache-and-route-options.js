@@ -1,1 +1,1 @@
-workbox.precaching.precacheAndRoute([], { cleanUrls: true });
+workbox.precaching.precacheAndRoute([], {cleanUrls: true});
