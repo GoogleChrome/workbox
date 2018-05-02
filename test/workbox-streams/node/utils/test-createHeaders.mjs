@@ -6,7 +6,7 @@ import {createHeaders} from '../../../../packages/workbox-streams/utils/createHe
 describe(`[workbox-streams] utils/createHeaders`, function() {
   const sandbox = sinon.sandbox.create();
 
-  afterEach(async function() {
+  afterEach(function() {
     sandbox.restore();
   });
 
