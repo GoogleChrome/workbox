@@ -28,7 +28,8 @@ import '../_version.mjs';
  *
  * @memberof workbox.streams
  */
-function createHeaders(headersInit) {
+function createHeaders(headersInit = {}) {
+  // See https://github.com/GoogleChrome/workbox/issues/1461
   const headers = new Headers(headersInit);
   if (!headers.has('content-type')) {
     headers.set('content-type', 'text/html');
