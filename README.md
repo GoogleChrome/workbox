@@ -10,27 +10,24 @@
 Workbox is a collection of JavaScript libraries for
 [Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/). 
 
-**Offline Caching**: Workbox helps you add offline caching support to your website. This enables it to work offline on repeat views and ensures your site is resilient to spotty network conditions.
-
-**Offline Analytics**: Workbox can collect user analytics while offline and send them to your Google Analytics account when a connection becomes available.
-
-Visit [workboxjs.org](https://workboxjs.org/) to learn more about what Workbox
-can do for you.
-
 ## Documentation
 
-* **Main site:** [workboxjs.org](https://workboxjs.org) ([site source](https://github.com/GoogleChrome/workbox-microsite))
-* [Get started](https://workboxjs.org/#get-started)
-* [Overview](https://workboxjs.org/overview.html)
+* [Overview](https://developers.google.com/web/tools/workbox/) ([site source](https://github.com/google/WebFundamentals/tree/master/src/content/en/tools/workbox))
+* [Get started](https://developers.google.com/web/tools/workbox/guides/get-started)
 * [Contribute](CONTRIBUTING.md)
 
-Workbox is available on npm. We have [install instructions](https://workboxjs.org/#get-started) available depending on your build tool or bundler of choice, including Webpack.
+Workbox is available on `npm`. We have [installation
+instructions](https://developers.google.com/web/tools/workbox/guides/precache-files/)
+available depending on your build tool or bundler of choice, including
+`webpack`.
 
 ## Contributing
 
-The main purpose of this repository is to continue evolving the Workbox libraries, making them robust for production use. Development happens in the open on GitHub. We're thankful to the community for contributing any improvements.
+Development happens in the open on GitHub. We're thankful to the community for
+contributing any improvements.
 
-Please read the [guide to contributing](CONTRIBUTING.md) prior to filing any pull requests.
+Please read the [guide to contributing](CONTRIBUTING.md) prior to filing any
+pull requests.
 
 <h2>Core Team</h2>
 
