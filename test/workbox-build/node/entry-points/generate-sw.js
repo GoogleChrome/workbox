@@ -181,6 +181,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         'workbox-precaching.dev.js.map',
         'workbox-precaching.prod.js',
         'workbox-precaching.prod.js.map',
+        'workbox-range-requests.dev.js',
+        'workbox-range-requests.dev.js.map',
+        'workbox-range-requests.prod.js',
+        'workbox-range-requests.prod.js.map',
         'workbox-routing.dev.js',
         'workbox-routing.dev.js.map',
         'workbox-routing.prod.js',
@@ -189,6 +193,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         'workbox-strategies.dev.js.map',
         'workbox-strategies.prod.js',
         'workbox-strategies.prod.js.map',
+        'workbox-streams.dev.js',
+        'workbox-streams.dev.js.map',
+        'workbox-streams.prod.js',
+        'workbox-streams.prod.js.map',
         'workbox-sw.js',
         'workbox-sw.js.map',
       ]);
@@ -695,6 +703,29 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           [REGEXP_URL_PATTERN, handler, DEFAULT_METHOD],
         ],
       }});
+    });
+
+    it(`should reject when 'options.expiration' is used without 'options.cacheName'`, async function() {
+      const urlPattern = REGEXP_URL_PATTERN;
+      const options = Object.assign({}, BASE_OPTIONS, {
+        runtimeCaching: [{
+          urlPattern,
+          handler: 'networkFirst',
+          options: {
+            expiration: {
+              maxEntries: 5,
+            },
+          },
+        }],
+      });
+
+      try {
+        await generateSW(options);
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.name).to.eql('ValidationError');
+        expect(error.details[0].context.key).to.eql('expiration');
+      }
     });
   });
 });

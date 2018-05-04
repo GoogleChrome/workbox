@@ -121,6 +121,18 @@ class InjectManifest {
 
     const originalSWString = await readFileWrapper(readFile, this.config.swSrc);
 
+    // compilation.fileDependencies needs absolute paths.
+    const absoluteSwSrc = path.resolve(this.config.swSrc);
+    if (Array.isArray(compilation.fileDependencies)) {
+      // webpack v3
+      if (compilation.fileDependencies.indexOf(absoluteSwSrc) === -1) {
+        compilation.fileDependencies.push(absoluteSwSrc);
+      }
+    } else if ('add' in compilation.fileDependencies) {
+      // webpack v4; no need to check for membership first, since it's a Set.
+      compilation.fileDependencies.add(absoluteSwSrc);
+    }
+
     const importScriptsString = importScriptsArray
       .map(JSON.stringify)
       .join(', ');
@@ -145,17 +157,18 @@ ${originalSWString}
    * @private
    */
   apply(compiler) {
+    const readFile = compiler.inputFileSystem.readFile
+      .bind(compiler.inputFileSystem);
     if ('hooks' in compiler) {
       // We're in webpack 4+.
       compiler.hooks.emit.tapPromise(
         this.constructor.name,
-        (compilation) => this.handleEmit(compilation,
-          compiler.inputFileSystem._readFile)
+        (compilation) => this.handleEmit(compilation, readFile)
       );
     } else {
       // We're in webpack 2 or 3.
       compiler.plugin('emit', (compilation, callback) => {
-        this.handleEmit(compilation, compiler.inputFileSystem._readFile)
+        this.handleEmit(compilation, readFile)
           .then(callback)
           .catch(callback);
       });

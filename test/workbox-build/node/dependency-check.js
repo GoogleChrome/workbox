@@ -19,8 +19,10 @@ describe(`[workbox-build] Test Dependencies`, function() {
         'workbox-core',
         'workbox-google-analytics',
         'workbox-precaching',
+        'workbox-range-requests',
         'workbox-routing',
         'workbox-strategies',
+        'workbox-streams',
         'workbox-sw',
       ],
     }, (unusedDeps) => {

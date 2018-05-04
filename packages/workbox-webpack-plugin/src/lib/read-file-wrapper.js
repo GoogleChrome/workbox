@@ -18,7 +18,7 @@
  * A wrapper that calls readFileFn and returns a promise for the contents of
  * filePath.
  *
- * readFileFn is expected to be set to compiler.inputFileSystem._readFile, to
+ * readFileFn is expected to be set to compiler.inputFileSystem.readFile, to
  * ensure compatibility with webpack dev server's in-memory filesystem.
  *
  * @param {Function} readFileFn The function to use for readFile.
@@ -28,7 +28,7 @@
  */
 function readFileWrapper(readFileFn, filePath) {
   return new Promise((resolve, reject) => {
-    readFileFn(filePath, 'utf8', (error, data) => {
+    readFileFn(filePath, (error, data) => {
       if (error) {
         return reject(error);
       }

@@ -18,7 +18,7 @@
 // https://fetch.spec.whatwg.org/#headers-class
 class Headers {
   constructor(obj = {}) {
-    this.obj = obj;
+    this.obj = Object.assign({}, obj);
   }
 
   has(key) {

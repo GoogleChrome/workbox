@@ -316,6 +316,27 @@ describe(`[workbox-routing] Default Router`, function() {
       }));
       expect(response).to.equal(injectedResponse);
     });
+
+    it(`should fetch() when there's a cache miss for the registered URL`, async function() {
+      const fakeResponse = new Response('fake');
+      const fetchStub = sandbox.stub(self, 'fetch').returns(fakeResponse);
+
+      const cacheName = 'does-not-exist';
+      const shellUrl = '/does-not-exist.html';
+
+      const route = defaultRouter.registerNavigationRoute(shellUrl, {
+        cacheName,
+      });
+      const response = await route.handler.handle(new FetchEvent('fetch', {
+        request: new Request('/random/navigation.html', {
+          mode: 'navigate',
+        }),
+      }));
+
+      expect(fetchStub.calledOnce).to.be.true;
+      expect(fetchStub.firstCall.args[0]).to.eql(shellUrl);
+      expect(response).to.eql(fakeResponse);
+    });
   });
 
   describe(`Fetch Events`, function() {
