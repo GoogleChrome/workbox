@@ -19,7 +19,7 @@ import './_version.mjs';
  * This is a utility method that determines whether the current browser supports
  * the features required to create streamed responses. Currently, it checks if
  * [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/ReadableStream)
- * is available.
+ * can be created.
  *
  * @return {boolean} `true`, if the current browser meets the requirements for
  * streaming responses, and `false` otherwise.
@@ -27,7 +27,12 @@ import './_version.mjs';
  * @memberof workbox.streams
  */
 function isSupported() {
-  return 'ReadableStream' in self;
+  try {
+    new ReadableStream({start() {}});
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
 export {isSupported};
