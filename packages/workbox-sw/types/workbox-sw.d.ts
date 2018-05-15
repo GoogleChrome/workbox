@@ -1085,6 +1085,64 @@ declare module "workbox-sw" {
 	}
 
 	/**
+	 * ===== StreamsNamespace =====
+	 */
+
+	type StreamSource = Response|ReadableStream|BodyInit;
+
+	interface IConcatenateResult {
+		done: Promise<StreamSource>;
+		stream: ReadableStream;
+	}
+
+	interface IConcatenateToResponseResult {
+		done: Promise<StreamSource>;
+		response: Response;
+	}
+
+	class StreamsNamespace {
+		/**
+		 * Takes multiple source Promises, each of which could resolve to a Response, a ReadableStream, or a BodyInit.
+		 * Returns an object exposing a ReadableStream with each individual stream's data returned in sequence, along with a Promise which signals when the stream is finished (useful for passing to a FetchEvent's waitUntil()).
+		 * @param {Promise<StreamSource>[]} sourcePromises - Array of Promise containing StreamSource
+		 * @returns {IConcatenateResult}
+		 */
+		static concatenate (sourcePromises: Promise<StreamSource>[]): IConcatenateResult;
+
+		/**
+		 * Takes multiple source Promises, each of which could resolve to a Response, a ReadableStream, or a BodyInit, along with a HeadersInit.
+		 * Returns an object exposing a Response whose body consists of each individual stream's data returned in sequence, along with a Promise which signals when the stream is finished (useful for passing to a FetchEvent's waitUntil()).
+		 * @param {Promise<StreamSource>[]} sourcePromises - Array of Promise containing StreamSource
+		 * @param {HeadersInit} [headersInit] - If there's no Content-Type specified, 'text/html' will be used by default.
+		 * @returns {IConcatenateToResponseResult}
+		 */
+		static concatenateToResponse (sourcePromises: Promise<StreamSource>[], headersInit?: HeadersInit): IConcatenateToResponseResult;
+
+		/**
+		 * This is a utility method that determines whether the current browser supports the features required to create streamed responses. Currently, it checks if ReadableStream is available.
+		 * @param {HeadersInit} [headersInit] - If there's no Content-Type specified, 'text/html' will be used by default.
+		 * @returns {boolean} - true, if the current browser meets the requirements for streaming responses, and false otherwise.
+		 */
+		static createHeaders (headersInit?: HeadersInit): boolean;
+
+		/**
+		 * This is a utility method that determines whether the current browser supports the features required to create streamed responses. Currently, it checks if ReadableStream is available.
+		 * @returns {boolean} - true, if the current browser meets the requirements for streaming responses, and false otherwise.
+		 */
+		static isSupported (): boolean;
+
+		/**
+		 * A shortcut to create a strategy that could be dropped-in to Workbox's router.
+
+		 On browsers that do not support constructing new ReadableStreams, this strategy will automatically wait for all the sourceFunctions to complete, and create a final response that concatenates their values together.
+		 * @param {HandlerCallback[]} sourceFunctions - Each function should return a workbox.streams.StreamSource (or a Promise which resolves to one).
+		 * @param {HeadersInit} headersInit . If there's no Content-Type specified, 'text/html' will be used by default.
+		 * @returns {HandlerCallback}
+		 */
+		static strategy (sourceFunctions: HandlerCallback[], headersInit?: HeadersInit): HandlerCallback;
+	}
+
+	/**
 	 * ===== ExpirationNamespace =====
 	 */
 
@@ -1251,6 +1309,7 @@ declare module "workbox-sw" {
 		static readonly rangeRequests: typeof RangeRequestsNamespace;
 		static readonly routing: typeof RoutingNamespace;
 		static readonly strategies: typeof StrategiesNamespace;
+		static readonly streams: typeof StreamsNamespace;
 
 		/**
 		 * Claim any currently available clients once the service worker becomes active. This is normally used in conjunction with skipWaiting().
