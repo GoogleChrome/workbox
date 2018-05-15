@@ -1050,38 +1050,38 @@ declare module "workbox-sw" {
 
 		/**
 		 * Instantiates a new CacheFirst strategy
-		 * @param {Partial<IStrategyOptions>} options
+		 * @param {Partial<IStrategyOptions>} [options]
 		 * @returns {HandlerCallback}
 		 */
-		static cacheFirst (options: Partial<IStrategyOptions>): HandlerCallback;
+		static cacheFirst (options?: Partial<IStrategyOptions>): HandlerCallback;
 
 		/**
 		 * Instantiates a new CacheOnly strategy
-		 * @param {Partial<IStrategyOptions>} options
+		 * @param {Partial<IStrategyOptions>} [options]
 		 * @returns {HandlerCallback}
 		 */
-		static cacheOnly (options: Partial<IStrategyOptions>): HandlerCallback;
+		static cacheOnly (options?: Partial<IStrategyOptions>): HandlerCallback;
 
 		/**
 		 * Instantiates a new NetworkFirst strategy
-		 * @param {Partial<IStrategyOptions>} options
+		 * @param {Partial<IStrategyOptions>} [options]
 		 * @returns {HandlerCallback}
 		 */
-		static networkFirst (options: Partial<IStrategyOptions>): HandlerCallback;
+		static networkFirst (options?: Partial<IStrategyOptions>): HandlerCallback;
 
 		/**
 		 * Instantiates a new NetworkOnly strategy
-		 * @param {Partial<IStrategyOptions>} options
+		 * @param {Partial<IStrategyOptions>} [options]
 		 * @returns {HandlerCallback}
 		 */
-		static networkOnly (options: Partial<IStrategyOptions>): HandlerCallback;
+		static networkOnly (options?: Partial<IStrategyOptions>): HandlerCallback;
 
 		/**
 		 * Instantiates a new StaleWhileRevalidate strategy
-		 * @param {Partial<IStrategyOptions>} options
+		 * @param {Partial<IStrategyOptions>} [options]
 		 * @returns {StaleWhileRevalidate}
 		 */
-		static staleWhileRevalidate (options: Partial<IStrategyOptions>): HandlerCallback;
+		static staleWhileRevalidate (options?: Partial<IStrategyOptions>): HandlerCallback;
 	}
 
 	/**
