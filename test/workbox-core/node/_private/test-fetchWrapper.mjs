@@ -119,9 +119,10 @@ describe(`workbox-core fetchWrapper`, function() {
       });
 
       const secondPlugin = {
-        fetchDidFail: ({originalRequest, request}) => {
+        fetchDidFail: ({originalRequest, request, error}) => {
           expect(originalRequest.url).to.equal('/test/failingRequest/0');
           expect(request.url).to.equal('/test/failingRequest/1');
+          expect(error.message).to.equal('Injected Error.');
         },
       };
       const spyTwo = sandbox.spy(secondPlugin, 'fetchDidFail');
@@ -130,11 +131,12 @@ describe(`workbox-core fetchWrapper`, function() {
         requestWillFetch: ({request}) => {
           return new Request('/test/failingRequest/1');
         },
-        fetchDidFail: ({originalRequest, request}) => {
+        fetchDidFail: ({originalRequest, request, error}) => {
           // This should be called first
           expect(spyTwo.callCount).to.equal(0);
           expect(originalRequest.url).to.equal('/test/failingRequest/0');
           expect(request.url).to.equal('/test/failingRequest/1');
+          expect(error.message).to.equal('Injected Error.');
         },
       };
       const spyOne = sandbox.spy(firstPlugin, 'fetchDidFail');

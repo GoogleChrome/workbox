@@ -96,20 +96,21 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
       `status '${response.status}'.`);
     }
     return response;
-  } catch (err) {
+  } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
       logger.error(`Network request for `+
-      `'${getFriendlyURL(request.url)}' threw an error.`, err);
+      `'${getFriendlyURL(request.url)}' threw an error.`, error);
     }
 
     for (let plugin of failedFetchPlugins) {
       await plugin[pluginEvents.FETCH_DID_FAIL].call(plugin, {
+        error,
         originalRequest: originalRequest.clone(),
         request: pluginFilteredRequest.clone(),
       });
     }
 
-    throw err;
+    throw error;
   }
 };
 
