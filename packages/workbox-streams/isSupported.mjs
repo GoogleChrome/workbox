@@ -15,6 +15,8 @@
 
 import './_version.mjs';
 
+let cachedIsSupported = undefined;
+
 /**
  * This is a utility method that determines whether the current browser supports
  * the features required to create streamed responses. Currently, it checks if
@@ -27,12 +29,17 @@ import './_version.mjs';
  * @memberof workbox.streams
  */
 function isSupported() {
-  try {
-    new ReadableStream({start() {}});
-    return true;
-  } catch (error) {
-    return false;
+  if (cachedIsSupported === undefined) {
+    // See https://github.com/GoogleChrome/workbox/issues/1473
+    try {
+      new ReadableStream({start() {}});
+      cachedIsSupported = true;
+    } catch (error) {
+      cachedIsSupported = false;
+    }
   }
+
+  return cachedIsSupported;
 }
 
 export {isSupported};
