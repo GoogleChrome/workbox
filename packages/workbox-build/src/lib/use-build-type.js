@@ -36,7 +36,8 @@ module.exports = (source, buildType) => {
   // Otherwise, look for the last instance of DEFAULT_BUILD_TYPE, and replace it
   // with the new buildType. This is easier via split/join than RegExp.
   const parts = source.split(DEFAULT_BUILD_TYPE);
-  // Join the last two split parts with the new buildType.
+  // Join the last two split parts with the new buildType. (If parts only has
+  // one item, this will be a no-op.)
   const replaced = parts.slice(parts.length - 2).join(buildType);
   // Take the remaining parts, if any exist, and join them with the replaced
   // part using the DEFAULT_BUILD_TYPE, to restore any other matches as-is.
