@@ -18,7 +18,7 @@ describe(`[workbox-build] lib/use-build-type.js`, function() {
     expect(result).to.eql('/path/to/production/also.prod.path/workbox.dev.js');
   });
 
-  it(`should not update anything is there is no match for the default build type`, function() {
+  it(`should not update anything if there is no match for the default build type`, function() {
     const result = useBuildType('/does/not/match', 'dev');
     expect(result).to.eql('/does/not/match');
   });
