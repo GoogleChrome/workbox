@@ -27,6 +27,7 @@ const DEFAULT_BUILD_TYPE = 'prod';
  * @param {string} buildType The alternative build type value to swap in.
  * @return {string} source, with the last occurrence of DEFAULT_BUILD_TYPE
  * replaced with buildType.
+ * @private
  */
 module.exports = (source, buildType) => {
   // If we want the DEFAULT_BUILD_TYPE, then just return things as-is.
