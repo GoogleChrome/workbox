@@ -15,7 +15,7 @@ describe(`[workbox-build] lib/use-build-type.js`, function() {
 
   it(`should only update the last match when buildType is 'dev'`, function() {
     const result = useBuildType('/path/to/production/and.prod.check/workbox.prod.js', 'dev');
-    expect(result).to.eql('/path/to/production/also.prod.path/workbox.dev.js');
+    expect(result).to.eql('/path/to/production/and.prod.check/workbox.dev.js');
   });
 
   it(`should not update anything if there is no match for the default build type`, function() {
