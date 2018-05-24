@@ -447,7 +447,7 @@ declare module "workbox-sw" {
 	 * ===== ExpirationPlugin =====
 	 */
 
-	type Plugin = BroadcastUpdatePlugin|RangeRequestsPlugin|CacheableResponsePlugin|BackgroundSyncPlugin|ExpirationPlugin
+	type Plugin = BroadcastUpdatePlugin|RangeRequestsPlugin|CacheableResponsePlugin|BackgroundSyncPlugin|ExpirationPlugin|WorkboxPlugin;
 
 	/**
 	 * ===== BackgroundSync =====
@@ -713,9 +713,9 @@ declare module "workbox-sw" {
 		/**
 		 * Apply the routing rules to a FetchEvent object to get a Response from an appropriate Route's handler.
 		 * @param {FetchEvent} event - The event from a service worker's 'fetch' event listener.
-		 * @returns {Promise<Response | undefined>} A promise is returned if a registered route can handle the FetchEvent's request. If there is no matching route and there's no defaultHandler, undefined is returned.
+		 * @returns {Promise<Response>?} A promise is returned if a registered route can handle the FetchEvent's request. If there is no matching route and there's no defaultHandler, undefined is returned.
 		 */
-		handleRequest (event: FetchEvent): Promise<Response|undefined>;
+		handleRequest (event: FetchEvent): Promise<Response>|undefined;
 
 		/**
 		 * Registers a route with the router.
@@ -1267,6 +1267,75 @@ declare module "workbox-sw" {
 		 * @returns {Promise<Response>} Either a 206 Partial Content response, with the response body set to the slice of content specified by the request's Range: header, or a 416 Range Not Satisfiable response if the conditions of the Range: header can't be met.
 		 */
 		static createPartialResponse (request: Request, originalResponse: Response): Promise<Response>;
+	}
+
+	/**
+	 * ===== Workbox Plugin =====
+	 */
+	export interface WorkboxPlugin {
+		/**
+		 * Called before a Response is used to update a cache. You can alter the Response before it’s added to the cache or return null to avoid updating the cache at all.
+		 * @param {CacheWillUpdatePluginContext} context
+		 * @returns {Response|null}
+		 */
+		readonly cacheWillUpdate?: (context: CacheWillUpdatePluginContext) => Response|null;
+
+		/**
+		 * Called when a new entry is added to a cache or it’s updated. Useful if you wish to perform an action after a cache update.
+		 * @param {CacheDidUpdatePluginContext} context
+		 * @returns {void}
+		 */
+		readonly cacheDidUpdate?: (context: CacheDidUpdatePluginContext) => void;
+
+		/**
+		 * Before a cached Response is used to respond to a fetch event, this callback can be used to allow or block the Response from being used.
+		 * @param {CacheResponseWillBeUsedPluginContext} context
+		 * @returns {Response|null}
+		 */
+		readonly cachedResponseWillBeUsed?: (context: CacheResponseWillBeUsedPluginContext) => Response|null;
+
+		/**
+		 * This is called whenever a fetch event is about to be made. You can alter the Request in this callback.
+		 * @param {RequestWillFetchPluginContext} context
+		 * @returns {Request}
+		 */
+		readonly requestWillFetch?: (context: RequestWillFetchPluginContext) => Request;
+
+		/**
+		 * Called when a fetch event fails (note this is when the network request can’t be made at all and not when a request is a non-200 request).
+		 * @param {FetchDidFailPluginContext}
+		 * @returns {void}
+		 */
+		readonly fetchDidFail?: (context: FetchDidFailPluginContext) => void;
+	}
+
+	interface CacheWillUpdatePluginContext {
+		readonly request: Request;
+		readonly response: Response;
+	}
+
+	interface CacheDidUpdatePluginContext {
+		readonly cacheName: string;
+		readonly request: Request;
+		readonly oldResponse: Response;
+		readonly newResponse: Response;
+	}
+
+	interface CacheResponseWillBeUsedPluginContext {
+		readonly cacheName: string;
+		readonly request: Request;
+		readonly matchOptions: any;
+		readonly cachedResponse: Response;
+	}
+
+	interface RequestWillFetchPluginContext {
+		readonly request: Request;
+	}
+
+	interface FetchDidFailPluginContext {
+		readonly originalRequest: Request;
+		readonly request: Request;
+		readonly error: Error;
 	}
 
 	/**
