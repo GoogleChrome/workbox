@@ -114,8 +114,6 @@ class CacheTimestampsModel {
 
   /**
    * Removes the underlying IndexedDB object store entirely.
-   *
-   * @return {Promise<void>} A promise which resolves once deletion is complete.
    */
   async delete() {
     await this._db.deleteDatabase();

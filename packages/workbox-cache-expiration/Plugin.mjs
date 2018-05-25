@@ -233,8 +233,6 @@ class Plugin {
    * Note that if you're *not* using cache expiration for a given cache, calling
    * `caches.delete()` and passing in the cache's name should be sufficient.
    * There is no Workbox-specific method needed for cleanup in that case.
-   *
-   * @return {Promise} A promise which resolves when cleanup is complete.
    */
   async deleteCacheAndMetadata() {
     // Do this one at at a time instance of all at once via `Promise.all()` to

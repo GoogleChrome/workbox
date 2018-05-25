@@ -268,8 +268,6 @@ class CacheExpiration {
   /**
    * Removes the IndexedDB object store used to keep track of cache expiration
    * metadata.
-   *
-   * @return {Promise<void>}
    */
   async delete() {
     // Make sure we don't attempt another rerun if we're called in the middle of
