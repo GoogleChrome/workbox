@@ -264,6 +264,19 @@ class CacheExpiration {
     const expireOlderThan = Date.now() - (this._maxAgeSeconds * 1000);
     return (timestamp < expireOlderThan);
   }
+
+  /**
+   * Removes the IndexedDB object store used to keep track of cache expiration
+   * metadata.
+   *
+   * @return {Promise<void>}
+   */
+  async delete() {
+    // Make sure we don't attempt another rerun if we're called in the middle of
+    // a cache expiration.
+    this._rerunRequested = false;
+    await this._timestampModel.delete();
+  }
 }
 
 export {CacheExpiration};
