@@ -111,6 +111,14 @@ class CacheTimestampsModel {
   async deleteUrl(url) {
     await this._db.delete(this._storeName, new URL(url, location).href);
   }
+
+  /**
+   * Removes the underlying IndexedDB object store entirely.
+   */
+  async delete() {
+    await this._db.deleteDatabase();
+    this._db = null;
+  }
 }
 
 export default CacheTimestampsModel;

@@ -144,6 +144,23 @@ class DBWrapper {
   }
 
   /**
+   * Deletes the underlying database, ensuring that any open connections are
+   * closed first.
+   *
+   * @private
+   */
+  async deleteDatabase() {
+    this.close();
+    this._db = null;
+    await new Promise((resolve, reject) => {
+      const request = indexedDB.deleteDatabase(this._name);
+      request.onerror = (evt) => reject(evt.target.error);
+      request.onblocked = () => reject(new Error('Deletion was blocked.'));
+      request.onsuccess = () => resolve();
+    });
+  }
+
+  /**
    * Delegates to the native `getAll()` or polyfills it via the `find()`
    * method in older browsers.
    *

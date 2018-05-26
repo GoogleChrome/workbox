@@ -216,6 +216,35 @@ class Plugin {
     await cacheExpiration.updateTimestamp(request.url);
     await cacheExpiration.expireEntries();
   }
+
+
+  /**
+   * This is a helper method that performs two operations:
+   *
+   * - Deletes *all* the underlying Cache instances associated with this plugin
+   * instance, by calling caches.delete() on you behalf.
+   * - Deletes the metadata from IndexedDB used to keep track of expiration
+   * details for each Cache instance.
+   *
+   * When using cache expiration, calling this method is preferable to calling
+   * `caches.delete()` directly, since this will ensure that the IndexedDB
+   * metadata is also cleanly removed and open IndexedDB instances are deleted.
+   *
+   * Note that if you're *not* using cache expiration for a given cache, calling
+   * `caches.delete()` and passing in the cache's name should be sufficient.
+   * There is no Workbox-specific method needed for cleanup in that case.
+   */
+  async deleteCacheAndMetadata() {
+    // Do this one at at a time instance of all at once via `Promise.all()` to
+    // reduce the chance of inconsistency if a promise rejects.
+    for (const [cacheName, cacheExpiration] of this._cacheExpirations) {
+      await caches.delete(cacheName);
+      await cacheExpiration.delete();
+    }
+
+    // Reset this._cacheExpirations to its initial state.
+    this._cacheExpirations = new Map();
+  }
 }
 
 export {Plugin};

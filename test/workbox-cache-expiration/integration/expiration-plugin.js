@@ -141,4 +141,71 @@ describe(`expiration.Plugin`, function() {
     // If the code path reaches here - the clean up from expiration was
     // successful
   });
+
+  it(`should clean up when deleteCacheAndMetadata() is called`, async function() {
+    const name = 'expiration-plugin-deletion';
+    const swUrl = `${testingUrl}sw-deletion.js`;
+
+    // Wait for the service worker to register and activate.
+    await activateAndControlSW(swUrl);
+
+    await global.__workbox.webdriver.executeAsyncScript((testingUrl, cb) => {
+      fetch(`${testingUrl}example-1.txt`)
+        .then(() => cb())
+        .catch((err) => cb(err.message));
+    }, testingUrl);
+
+    // Caching is done async from returning a response, so we may need
+    // to wait until the cache has some content.
+    await global.__workbox.webdriver.wait(async () => {
+      return await global.__workbox.webdriver.executeAsyncScript((cb) => {
+        caches.keys().then((keys) => cb(keys.length > 0));
+      });
+    });
+
+    let cacheKeys = await global.__workbox.webdriver.executeAsyncScript((cb) => {
+      caches.keys().then(cb);
+    });
+
+    expect(cacheKeys).to.deep.equal([
+      name,
+    ]);
+
+    let existence = await global.__workbox.webdriver.executeAsyncScript((cb) => {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        cb(event.data);
+      }, {once: true});
+
+      navigator.serviceWorker.controller.postMessage('doesDbExist');
+    });
+    expect(existence).to.be.true;
+
+    const error = await global.__workbox.webdriver.executeAsyncScript((cb) => {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        cb(event.data);
+      }, {once: true});
+
+      navigator.serviceWorker.controller.postMessage('delete');
+    });
+
+    if (error) {
+      throw new Error(error);
+    }
+
+    // After cleanup, there shouldn't be any cache keys or IndexedDB dbs.
+    cacheKeys = await global.__workbox.webdriver.executeAsyncScript((cb) => {
+      caches.keys().then(cb);
+    });
+
+    expect(cacheKeys).to.deep.equal([]);
+
+    existence = await global.__workbox.webdriver.executeAsyncScript((cb) => {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        cb(event.data);
+      }, {once: true});
+
+      navigator.serviceWorker.controller.postMessage('doesDbExist');
+    });
+    expect(existence).to.be.false;
+  });
 });
