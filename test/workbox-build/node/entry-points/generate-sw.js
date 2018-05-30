@@ -563,6 +563,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         expiration: {
           maxEntries: 1,
           maxAgeSeconds: 1,
+          purgeOnQuotaError: false,
         },
       };
       const secondRuntimeCachingOptions = {

@@ -15,14 +15,15 @@
 */
 
 module.exports = {
+  clientsClaim: false,
   globFollow: true,
   globIgnores: ['**/node_modules/**/*'],
   globPatterns: ['**/*.{js,css,html}'],
   globStrict: true,
-  maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
-  clientsClaim: false,
-  navigateFallback: undefined,
-  skipWaiting: false,
   importWorkboxFrom: 'cdn',
   injectionPointRegexp: /(\.precacheAndRoute\()\s*\[\s*\]\s*(\)|,)/,
+  maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
+  navigateFallback: undefined,
+  purgeOnQuotaError: false,
+  skipWaiting: false,
 };

@@ -219,12 +219,14 @@ class PrecacheController {
     const tempCache = await caches.open(this._getTempCacheName());
 
     const requests = await tempCache.keys();
-    await Promise.all(requests.map(async (request) => {
+    // Process each request/response one at a time, deleting the temporary entry
+    // when done, to help avoid triggering quota errors.
+    for (const request of requests) {
       const response = await tempCache.match(request);
       await cacheWrapper.put(this._cacheName, request,
         response, options.plugins);
       await tempCache.delete(request);
-    }));
+    }
 
     return this._cleanup();
   }

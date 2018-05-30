@@ -20,6 +20,7 @@ import {devOnly} from '../../../infra/testing/env-it';
 import {Plugin} from '../../../packages/workbox-cache-expiration/Plugin.mjs';
 import {CacheExpiration} from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
 import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
+import {executeCallbacks} from '../../../packages/workbox-core/_private/quota.mjs';
 
 describe(`[workbox-cache-expiration] Plugin`, function() {
   const sandbox = sinon.sandbox.create();
@@ -67,6 +68,30 @@ describe(`[workbox-cache-expiration] Plugin`, function() {
         maxEntries: 10,
       });
       expect(plugin._config.maxEntries).to.equal(10);
+    });
+
+    it(`should register a quota error callback when purgeOnQuotaError is true`, async function() {
+      const plugin = new Plugin({
+        maxEntries: 10,
+        purgeOnQuotaError: true,
+      });
+      plugin.deleteCacheAndMetadata = sandbox.stub();
+
+      await executeCallbacks();
+
+      expect(plugin.deleteCacheAndMetadata.calledOnce).to.be.true;
+    });
+
+    it(`should not register a quota error callback when purgeOnQuotaError is false`, async function() {
+      const plugin = new Plugin({
+        maxEntries: 10,
+        purgeOnQuotaError: false,
+      });
+      plugin.deleteCacheAndMetadata = sandbox.stub();
+
+      await executeCallbacks();
+
+      expect(plugin.deleteCacheAndMetadata.called).to.be.false;
     });
   });
 
