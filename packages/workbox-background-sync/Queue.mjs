@@ -123,6 +123,8 @@ class Queue {
     const replayedRequests = [];
     const failedRequests = [];
 
+    await this._runCallback('queueWillReplay');
+
     let storableRequest;
     while (storableRequest = await this._queueStore.getAndRemoveOldestEntry()) {
       // Make a copy so the unmodified request can be stored
@@ -154,6 +156,7 @@ class Queue {
         replay.error = err;
         failedRequests.push(storableRequestClone);
       }
+      await this._runCallback('requestDidReplay', replay);
 
       replayedRequests.push(replay);
     }

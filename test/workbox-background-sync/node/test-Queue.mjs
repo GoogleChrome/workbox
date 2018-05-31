@@ -334,12 +334,16 @@ describe(`[workbox-background-sync] Queue`, function() {
     });
 
     it(`should invoke all replay callbacks`, async function() {
+      const queueWillReplay = sinon.spy();
       const requestWillReplay = sinon.spy();
+      const requestDidReplay = sinon.spy();
       const queueDidReplay = sinon.spy();
 
       const queue = new Queue('foo', {
         callbacks: {
+          queueWillReplay,
           requestWillReplay,
+          requestDidReplay,
           queueDidReplay,
         },
       });
@@ -347,6 +351,8 @@ describe(`[workbox-background-sync] Queue`, function() {
       await queue.addRequest(new Request('/one'));
       await queue.addRequest(new Request('/two'));
       await queue.replayRequests();
+
+      expect(queueWillReplay.calledOnce).to.be.true;
 
       expect(requestWillReplay.calledTwice).to.be.true;
       expect(requestWillReplay.getCall(0).calledWith(sinon.match({
@@ -358,6 +364,18 @@ describe(`[workbox-background-sync] Queue`, function() {
         url: '/two',
         timestamp: sinon.match.number,
         requestInit: sinon.match.object,
+      }))).to.be.true;
+
+      expect(requestDidReplay.calledTwice).to.be.true;
+      expect(requestDidReplay.calledWith(sinon.match({
+        request: sinon.match.instanceOf(Request).and(
+            sinon.match({url: '/one'})),
+        response: sinon.match.instanceOf(Response),
+      }))).to.be.true;
+      expect(requestDidReplay.calledWith(sinon.match({
+        request: sinon.match.instanceOf(Request).and(
+            sinon.match({url: '/two'})),
+        response: sinon.match.instanceOf(Response),
       }))).to.be.true;
 
       expect(queueDidReplay.calledOnce).to.be.true;
@@ -374,7 +392,9 @@ describe(`[workbox-background-sync] Queue`, function() {
         }),
       ]))).to.be.true;
 
+      queueWillReplay.resetHistory();
       requestWillReplay.resetHistory();
+      requestDidReplay.resetHistory();
       queueDidReplay.resetHistory();
 
       sandbox.stub(self, 'fetch')
@@ -387,7 +407,23 @@ describe(`[workbox-background-sync] Queue`, function() {
         return queue.replayRequests();
       }, 'queue-replay-failed');
 
+      expect(queueWillReplay.calledOnce).to.be.true;
+
       expect(requestWillReplay.calledTwice).to.be.true;
+
+      expect(requestDidReplay.calledTwice).to.be.true;
+      expect(requestDidReplay.calledWith(
+        sinon.match({
+          request: sinon.match.instanceOf(Request).and(
+              sinon.match({url: '/three'})),
+          response: sinon.match.instanceOf(Response),
+        }))).to.be.true;
+      expect(requestDidReplay.calledWith(
+        sinon.match({
+          request: sinon.match.instanceOf(Request).and(
+              sinon.match({url: '/three'})),
+          response: sinon.match.instanceOf(Response),
+        }))).to.be.true;
 
       expect(queueDidReplay.calledOnce).to.be.true;
       expect(queueDidReplay.calledWith(sinon.match([
