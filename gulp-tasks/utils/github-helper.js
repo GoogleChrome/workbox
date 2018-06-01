@@ -1,4 +1,4 @@
-const GitHubApi = require('github');
+const GitHubApi = require('@octokit/rest');
 const semver = require('semver');
 
 const constants = require('./constants');

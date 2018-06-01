@@ -20,7 +20,7 @@ import messageTypes from '../../../packages/workbox-broadcast-cache-update/messa
 import {broadcastUpdate} from '../../../packages/workbox-broadcast-cache-update/broadcastUpdate.mjs';
 
 describe(`[workbox-broadcast-cache-update] broadcastUpdate`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
   const cacheName = 'test-cache';
   const url = 'https://example.com';
   const source = 'test-source';

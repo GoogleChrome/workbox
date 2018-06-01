@@ -23,7 +23,7 @@ import {compareResponses} from '../utils/response-comparisons.mjs';
 import {NetworkFirst} from '../../../packages/workbox-strategies/NetworkFirst.mjs';
 
 describe(`[workbox-strategies] NetworkFirst.makeRequest()`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     const keys = await caches.keys();
@@ -100,7 +100,7 @@ describe(`[workbox-strategies] NetworkFirst.makeRequest()`, function() {
 });
 
 describe(`[workbox-strategies] NetworkFirst.handle()`, function() {
-  let sandbox = sinon.sandbox.create();
+  let sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     let usedCacheNames = await caches.keys();

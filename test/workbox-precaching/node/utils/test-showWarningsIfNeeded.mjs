@@ -6,7 +6,7 @@ import showWarningsIfNeeded from '../../../../packages/workbox-precaching/utils/
 import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
 
 describe(`[workbox-precaching] showWarningsIfNeeded`, function() {
-  let sandbox = sinon.sandbox.create();
+  let sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

@@ -5,7 +5,7 @@ import PrecachedDetailsModel from '../../../../packages/workbox-precaching/model
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 
 describe('[workbox-precaching] PrecachedDetailsModel', function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

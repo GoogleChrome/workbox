@@ -4,7 +4,7 @@ import {expect} from 'chai';
 import cleanRedirect from '../../../../packages/workbox-precaching/utils/cleanRedirect.mjs';
 
 describe(`[workbox-precaching] cleanRedirect()`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

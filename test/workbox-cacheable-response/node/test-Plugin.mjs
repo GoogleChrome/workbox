@@ -7,7 +7,7 @@ import {Plugin} from '../../../packages/workbox-cacheable-response/Plugin.mjs';
 describe(`[workbox-cacheable-response] Plugin`, function() {
   const STATUSES = [200];
 
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

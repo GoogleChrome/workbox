@@ -21,7 +21,7 @@ import {compareResponses} from '../utils/response-comparisons.mjs';
 import {CacheFirst} from '../../../packages/workbox-strategies/CacheFirst.mjs';
 
 describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     const keys = await caches.keys();
@@ -66,7 +66,7 @@ describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
     await compareResponses(firstResponse, fetchResponse, true);
 
     // Reset spy state so we can check fetch wasn't called.
-    global.fetch.reset();
+    global.fetch.resetHistory();
 
     const secondResponse = await cacheFirst.makeRequest({
       request: url,
@@ -108,7 +108,7 @@ describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
     await compareResponses(firstResponse, fetchResponse, true);
 
     // Reset spy state so we can check fetch wasn't called.
-    global.fetch.reset();
+    global.fetch.resetHistory();
 
     const secondResponse = await cacheFirst.makeRequest({
       request,
@@ -123,7 +123,7 @@ describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
 
 
 describe(`[workbox-strategies] CacheFirst.handle()`, function() {
-  let sandbox = sinon.sandbox.create();
+  let sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     let usedCacheNames = await caches.keys();
@@ -171,7 +171,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
     const secondHandleResponse = await cacheFirst.handle({event});
 
     // Reset spy state so we can check fetch wasn't called.
-    global.fetch.reset();
+    global.fetch.resetHistory();
 
     const secondCachedResponse = await cache.match(request);
     await compareResponses(firstCachedResponse, secondHandleResponse, true);

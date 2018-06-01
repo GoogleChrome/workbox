@@ -7,7 +7,7 @@ import {devOnly} from '../../../infra/testing/env-it';
 import {Plugin} from '../../../packages/workbox-broadcast-cache-update/Plugin.mjs';
 
 describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

@@ -8,7 +8,7 @@ import expectError from '../../../infra/testing/expectError';
 
 describe(`[workbox-routing] SW environment`, function() {
   const MODULE_PATH = '../../../packages/workbox-routing/index.mjs';
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     clearRequire.all();

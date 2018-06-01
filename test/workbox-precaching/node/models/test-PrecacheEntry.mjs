@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 
 describe('[workbox-precaching] PrecacheEntry', function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   afterEach(function() {
     sandbox.restore();

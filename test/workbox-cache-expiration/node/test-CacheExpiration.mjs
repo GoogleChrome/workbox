@@ -9,7 +9,7 @@ import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/mod
 import {CacheExpiration} from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
 
 describe(`[workbox-cache-expiration] CacheExpiration`, function() {
-  let sandbox = sinon.sandbox.create();
+  let sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

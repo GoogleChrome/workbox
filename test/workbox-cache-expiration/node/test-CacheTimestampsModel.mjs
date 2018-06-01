@@ -6,7 +6,7 @@ import CacheTimestampsModel from '../../../packages/workbox-cache-expiration/mod
 import {DBWrapper} from '../../../packages/workbox-core/_private/DBWrapper.mjs';
 
 describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

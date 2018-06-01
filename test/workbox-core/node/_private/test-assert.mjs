@@ -14,7 +14,7 @@ describe(`workbox-core  assert`, function() {
   describe(`isSwEnv`, function() {
     let sandbox;
     before(function() {
-      sandbox = sinon.sandbox.create();
+      sandbox = sinon.createSandbox();
     });
 
     afterEach(function() {

@@ -22,7 +22,7 @@ import {compareResponses} from '../utils/response-comparisons.mjs';
 import {StaleWhileRevalidate} from '../../../packages/workbox-strategies/StaleWhileRevalidate.mjs';
 
 describe(`[workbox-strategies] StaleWhileRevalidate.makeRequest()`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     const keys = await caches.keys();
@@ -83,7 +83,7 @@ describe(`[workbox-strategies] StaleWhileRevalidate.makeRequest()`, function() {
 });
 
 describe(`[workbox-strategies] StaleWhileRevalidate.handle()`, function() {
-  let sandbox = sinon.sandbox.create();
+  let sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     let usedCacheNames = await caches.keys();

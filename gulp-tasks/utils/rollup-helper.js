@@ -1,7 +1,7 @@
 const babel = require('rollup-plugin-babel');
 const minify = require('uglify-es').minify;
 const replace = require('rollup-plugin-replace');
-const uglifyPlugin = require('rollup-plugin-uglify');
+const uglifyPlugin = require('rollup-plugin-uglify').uglify;
 
 const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');

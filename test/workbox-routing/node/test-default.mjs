@@ -11,7 +11,7 @@ import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs
 import {devOnly} from '../../../infra/testing/env-it';
 
 describe(`[workbox-routing] Default Router`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();
@@ -51,7 +51,7 @@ describe(`[workbox-routing] Default Router`, function() {
       expect(handlerSpy.callCount).to.equal(1);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(event);
 
-      sandbox.reset();
+      sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(route);
       await defaultRouter.handleRequest(event);
@@ -91,7 +91,7 @@ describe(`[workbox-routing] Default Router`, function() {
       expect(handlerSpy.callCount).to.equal(1);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(sameOriginEvent);
 
-      sandbox.reset();
+      sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(route);
       await defaultRouter.handleRequest(sameOriginEvent);
@@ -124,7 +124,7 @@ describe(`[workbox-routing] Default Router`, function() {
       expect(handlerSpy.callCount).to.equal(1);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(crossOriginEvent);
 
-      sandbox.reset();
+      sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(route);
       await defaultRouter.handleRequest(crossOriginEvent);
@@ -147,7 +147,7 @@ describe(`[workbox-routing] Default Router`, function() {
       expect(handlerSpy.callCount).to.equal(1);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(event);
 
-      sandbox.reset();
+      sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(route);
       await defaultRouter.handleRequest(event);
@@ -172,7 +172,7 @@ describe(`[workbox-routing] Default Router`, function() {
       expect(handlerSpy.callCount).to.equal(1);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(event);
 
-      sandbox.reset();
+      sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(route);
       await defaultRouter.handleRequest(event);
@@ -205,7 +205,7 @@ describe(`[workbox-routing] Default Router`, function() {
       expect(handlerSpy.callCount).to.equal(1);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(event);
 
-      sandbox.reset();
+      sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(outputRoute);
       await defaultRouter.handleRequest(event);
@@ -230,7 +230,7 @@ describe(`[workbox-routing] Default Router`, function() {
       expect(handlerSpy.callCount).to.equal(1);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(event);
 
-      sandbox.reset();
+      sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(outputRoute);
       await defaultRouter.handleRequest(event);

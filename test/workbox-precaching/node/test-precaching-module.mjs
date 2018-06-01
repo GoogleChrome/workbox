@@ -6,7 +6,7 @@ import {assert} from '../../../packages/workbox-core/_private/assert.mjs';
 
 describe(`[workbox-precaching] Module`, function() {
   let precachingModule;
-  let sandbox = sinon.sandbox.create();
+  let sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     clearRequire.all();

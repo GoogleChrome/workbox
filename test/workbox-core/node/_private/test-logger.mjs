@@ -6,7 +6,7 @@ import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
 import {setLoggerLevel, getDefaultLogLevel} from '../../../../packages/workbox-core/_private/logger.mjs';
 
 describe(`workbox-core logger`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     // Reset between runs

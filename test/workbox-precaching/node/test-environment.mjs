@@ -9,7 +9,7 @@ describe(`[workbox-precaching] WorkboxPrecaching`, function() {
   let sandbox;
 
   before(function() {
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
   });
 
   beforeEach(function() {

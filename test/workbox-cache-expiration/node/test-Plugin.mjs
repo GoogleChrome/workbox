@@ -22,7 +22,7 @@ import {CacheExpiration} from '../../../packages/workbox-cache-expiration/CacheE
 import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
 
 describe(`[workbox-cache-expiration] Plugin`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

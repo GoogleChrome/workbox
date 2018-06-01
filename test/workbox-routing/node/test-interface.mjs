@@ -6,7 +6,7 @@ import {assert} from '../../../packages/workbox-core/_private/assert.mjs';
 
 describe(`[workbox-routing] Module Interface`, function() {
   let routingModule;
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     clearRequire.all();
