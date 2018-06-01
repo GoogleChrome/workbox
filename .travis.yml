@@ -1,10 +1,10 @@
-sudo: required
+sudo: false
 dist: trusty
 language: node_js
 
 cache:
   directories:
-    - node_modules
+    - "$HOME/.npm"
     - ~/.selenium-assistant
 
 node_js:
@@ -17,7 +17,7 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 install:
-  - npm install
+  - npm ci
 
 script:
   - gulp test
