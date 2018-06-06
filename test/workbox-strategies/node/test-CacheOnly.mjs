@@ -22,7 +22,7 @@ import {compareResponses} from '../utils/response-comparisons.mjs';
 import {CacheOnly} from '../../../packages/workbox-strategies/CacheOnly.mjs';
 
 describe(`[workbox-strategies] CacheOnly.makeRequest()`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     const keys = await caches.keys();
@@ -67,7 +67,7 @@ describe(`[workbox-strategies] CacheOnly.makeRequest()`, function() {
 });
 
 describe(`[workbox-strategies] CacheOnly.handle()`, function() {
-  let sandbox = sinon.sandbox.create();
+  let sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     let usedCacheNames = await caches.keys();

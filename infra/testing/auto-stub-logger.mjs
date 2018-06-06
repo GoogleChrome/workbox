@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import {logger} from '../../packages/workbox-core/_private/logger.mjs';
 
-const sandbox = sinon.sandbox.create();
+const sandbox = sinon.createSandbox();
 
 const stubLogger = () => {
   sandbox.stub(logger);

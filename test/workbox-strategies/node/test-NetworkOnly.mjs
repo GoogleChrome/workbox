@@ -21,7 +21,7 @@ import {_private} from '../../../packages/workbox-core/index.mjs';
 import {NetworkOnly} from '../../../packages/workbox-strategies/NetworkOnly.mjs';
 
 describe(`[workbox-strategies] NetworkOnly.makeRequest()`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     const keys = await caches.keys();
@@ -67,7 +67,7 @@ describe(`[workbox-strategies] NetworkOnly.makeRequest()`, function() {
 });
 
 describe(`[workbox-strategies] NetworkOnly.handle()`, function() {
-  let sandbox = sinon.sandbox.create();
+  let sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     let usedCacheNames = await caches.keys();

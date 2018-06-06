@@ -15,7 +15,7 @@ import {cacheWrapper} from '../../../../packages/workbox-core/_private/cacheWrap
 const {cacheNames} = _private;
 
 describe(`[workbox-precaching] PrecacheController`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     let usedCacheNames = await caches.keys();
@@ -233,7 +233,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheController.addToCacheList(cacheList);
 
       // Reset as addToCacheList will log.
-      logger.log.reset();
+      logger.log.resetHistory();
 
       const updateInfo = await precacheController.install();
       expect(updateInfo.updatedEntries.length).to.equal(cacheList.length);
@@ -323,7 +323,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheControllerOne.addToCacheList(cacheListOne);
 
       // Reset as addToCacheList will log.
-      logger.log.reset();
+      logger.log.resetHistory();
 
       const updateInfo = await precacheControllerOne.install();
       expect(updateInfo.updatedEntries.length).to.equal(cacheListOne.length);
@@ -382,7 +382,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheControllerTwo.addToCacheList(cacheListTwo);
 
       // Reset as addToCacheList will log.
-      logger.log.reset();
+      logger.log.resetHistory();
 
       const updateInfoTwo = await precacheControllerTwo.install();
       expect(updateInfoTwo.updatedEntries.length).to.equal(2);
@@ -533,7 +533,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerOne.install();
 
       // Reset as addToCacheList and install will log.
-      logger.log.reset();
+      logger.log.resetHistory();
 
       const cleanupDetailsOne = await precacheControllerOne.activate();
       expect(cleanupDetailsOne.deletedCacheRequests.length).to.equal(0);
@@ -556,7 +556,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerTwo.install();
 
       // Reset as addToCacheList and install will log.
-      logger.log.reset();
+      logger.log.resetHistory();
 
       const cleanupDetailsTwo = await precacheControllerTwo.activate();
       expect(cleanupDetailsTwo.deletedCacheRequests.length).to.equal(1);
@@ -653,7 +653,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerTwo.install();
 
       // Reset as addToCacheList and install will log.
-      logger.log.reset();
+      logger.log.resetHistory();
 
       await precacheControllerTwo.activate();
 

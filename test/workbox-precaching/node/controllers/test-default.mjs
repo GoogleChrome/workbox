@@ -6,7 +6,7 @@ import core from '../../../../packages/workbox-core/index.mjs';
 import PrecacheController from '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
 
 describe(`[workbox-precaching] default export`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
   let precaching;
 
   beforeEach(async function() {

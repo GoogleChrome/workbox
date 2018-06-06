@@ -11,7 +11,7 @@ describe(`[workbox-routing] RegExpRoute`, function() {
   const PATH = '/test/path';
   const HANDLER = {handle: () => {}};
 
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
   beforeEach(function() {
     sandbox.restore();
     sandbox.stub(global, 'location').value(SAME_ORIGIN_URL);

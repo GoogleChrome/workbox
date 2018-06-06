@@ -4,7 +4,7 @@ const sinon = require('sinon');
 const logger = require('../../../../packages/workbox-cli/src/lib/logger');
 
 describe(`[workbox-cli] lib/logger.js`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

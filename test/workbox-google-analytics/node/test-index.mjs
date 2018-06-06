@@ -31,7 +31,7 @@ import {
 const PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
 describe(`[workbox-google-analytics] initialize`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
   const reset = async () => {
     Queue._queueNames.clear();
     resetEventListeners();

@@ -6,7 +6,7 @@ import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
 import printCleanupDetails from '../../../../packages/workbox-precaching/utils/printCleanupDetails.mjs';
 
 describe(`[workbox-precaching] printCleanupDetails`, function() {
-  let sandbox = sinon.sandbox.create();
+  let sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

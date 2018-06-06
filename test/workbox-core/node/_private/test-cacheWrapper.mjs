@@ -9,7 +9,7 @@ describe(`workbox-core cacheWrapper`, function() {
   let sandbox;
 
   before(function() {
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
   });
 
   afterEach(function() {
@@ -113,7 +113,7 @@ describe(`workbox-core cacheWrapper`, function() {
         });
 
         // Reset so the spies are clean for next step in the test.
-        pluginSpy.reset();
+        pluginSpy.resetHistory();
       });
 
       const putResponseUpdate = new Response('Response for /test/string number 2');

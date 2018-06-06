@@ -7,7 +7,7 @@ import {devOnly} from '../../../infra/testing/env-it';
 import {BroadcastCacheUpdate} from '../../../packages/workbox-broadcast-cache-update/BroadcastCacheUpdate.mjs';
 
 describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

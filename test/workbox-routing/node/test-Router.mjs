@@ -7,7 +7,7 @@ import expectError from '../../../infra/testing/expectError';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 
 describe(`[workbox-routing] Router`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
   const MATCH = () => {};
   const HANDLER = {handle: () => {}};
   const METHOD = 'POST';

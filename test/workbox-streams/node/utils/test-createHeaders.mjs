@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import {createHeaders} from '../../../../packages/workbox-streams/utils/createHeaders.mjs';
 
 describe(`[workbox-streams] utils/createHeaders`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   afterEach(function() {
     sandbox.restore();

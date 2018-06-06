@@ -7,7 +7,7 @@ import printInstallDetails from '../../../../packages/workbox-precaching/utils/p
 import PrecacheEntry from '../../../../packages/workbox-precaching/models/PrecacheEntry.mjs';
 
 describe(`[workbox-precaching] printInstallDetails`, function() {
-  let sandbox = sinon.sandbox.create();
+  let sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

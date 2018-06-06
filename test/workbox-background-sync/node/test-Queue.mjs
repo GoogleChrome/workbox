@@ -33,7 +33,7 @@ const getObjectStoreEntries = async () => {
 };
 
 describe(`[workbox-background-sync] Queue`, function() {
-  const sandbox = sinon.sandbox.create();
+  const sandbox = sinon.createSandbox();
 
   const reset = () => {
     sandbox.restore();
@@ -374,8 +374,8 @@ describe(`[workbox-background-sync] Queue`, function() {
         }),
       ]))).to.be.true;
 
-      requestWillReplay.reset();
-      queueDidReplay.reset();
+      requestWillReplay.resetHistory();
+      queueDidReplay.resetHistory();
 
       sandbox.stub(self, 'fetch')
           .onCall(1).rejects(new Error())

@@ -4,11 +4,11 @@ language: node_js
 
 cache:
   directories:
-    - node_modules
+    - "$HOME/.npm"
     - ~/.selenium-assistant
 
 node_js:
-  - '9'
+  - 'node'
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
@@ -17,7 +17,7 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 install:
-  - npm install
+  - npm ci
 
 script:
   - gulp test

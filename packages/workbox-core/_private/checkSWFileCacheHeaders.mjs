@@ -39,12 +39,13 @@ function showWarning(cacheControlHeader) {
  * warns the developer if it exists with a value
  * other than max-age=0 or no-cache.
  *
+ * @return {Promise}
  * @private
  */
 function checkSWFileCacheHeaders() {
   // This is wrapped as an iife to allow async/await while making
   //  rollup exclude it in builds.
-  (async () => {
+  return (async () => {
     try {
       const swFile = self.location.href;
       const response = await fetch(swFile);

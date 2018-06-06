@@ -9,7 +9,7 @@ import getPackagesOfType from '../../../gulp-tasks/utils/get-packages-of-type';
 const ROOT_DIR = path.join(__dirname, '..', '..', '..');
 
 describe(`[workbox-sw] WorkboxSW`, function() {
-  let sandbox = sinon.sandbox.create();
+  let sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();
