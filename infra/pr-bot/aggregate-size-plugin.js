@@ -59,6 +59,8 @@ class AggregateSizePlugin extends PluginInterface {
       </p>`;
     }
 
+    const failPR = Boolean(percentValue > 100);
+
     const prettyLog = `**${totalGzipString}** gzip'ed ` +
       `(**${percentString}%** of limit)\n` +
       `**${totalSizeString}** uncompressed`;
@@ -66,9 +68,9 @@ class AggregateSizePlugin extends PluginInterface {
     const markdownLog = `${markdownWarning}\n\n${prettyLog}`;
 
     return {
-      prettyLog,
+      failPR, // Fail the PR if we have exceeded the limit.
       markdownLog,
-      failPR: true, // Fail the PR if we have exceeded the limit.
+      prettyLog,
     };
   }
 }
