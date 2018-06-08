@@ -1,19 +1,19 @@
-const PluginInterface = require('pr-bot').PluginInterface;
+const {oneLine} = require('common-tags');
+const {PluginInterface} = require('pr-bot');
 const bytes = require('bytes');
 const fs = require('fs-extra');
 const gzipSize = require('gzip-size');
-const oneLine = require('common-tags').oneLine;
 const path = require('path');
 
-// 15 KB max size
-const MAX_SIZE = 15 * 1000;
+// 15kb max size, gzip'ed.
+const MAX_SIZE_GZIP = 15 * 1024;
 
 class AggregateSizePlugin extends PluginInterface {
   constructor() {
     super(`Workbox Aggregate Size Plugin`);
   }
 
-  run({afterPath} = {}) {
+  async run({afterPath} = {}) {
     const packagesToAggregate = [
       `workbox-cache-expiration`,
       `workbox-cacheable-response`,
@@ -23,8 +23,10 @@ class AggregateSizePlugin extends PluginInterface {
       `workbox-strategies`,
       `workbox-sw`,
     ];
+
+    const absoluteAfterPath = path.resolve(afterPath);
     const files = packagesToAggregate.map((pkgName) => {
-      const prefix = `${afterPath}/packages/${pkgName}/`;
+      const prefix = `${absoluteAfterPath}/packages/${pkgName}/`;
       const pkgJson = require(`${prefix}package.json`);
       const posixPath = prefix + pkgJson.main;
       return posixPath.split('/').join(path.sep);
@@ -32,18 +34,19 @@ class AggregateSizePlugin extends PluginInterface {
 
     let totalSize = 0;
     let totalGzipSize = 0;
-    files.forEach((filePath) => {
-      const fileContents = fs.readFileSync(filePath);
-      const stat = fs.statSync(filePath);
-      totalSize += stat.size;
-      totalGzipSize += gzipSize.sync(fileContents);
-    });
 
-    const percentValue = (totalSize / MAX_SIZE) * 100;
+    for (const filePath of files) {
+      const fileContents = await fs.readFile(filePath);
+      const stat = await fs.stat(filePath);
+      totalSize += stat.size;
+      totalGzipSize += await gzipSize(fileContents);
+    }
+
+    const percentValue = (totalGzipSize / MAX_SIZE_GZIP) * 100;
     const percentString = parseFloat(percentValue).toFixed(0);
 
-    let totalSizeString = bytes(totalSize);
-    let totalGzipString = bytes(totalGzipSize);
+    const totalSizeString = bytes(totalSize);
+    const totalGzipString = bytes(totalGzipSize);
 
     let markdownWarning = ``;
     if (percentValue >= 90) {
@@ -52,27 +55,23 @@ class AggregateSizePlugin extends PluginInterface {
       <h3 align="center">${markdownMoji} WARNING ${markdownMoji}</h3>
       <p align="center">
         We are using <strong>${percentString}%</strong>
-        of our max size budget.
-      </p>
-      `;
+        of our max budget for gzip'ed bundle size.
+      </p>`;
     }
 
-    // TODO: Enable *if* we can get under target size.
-    const failPR = false; // totalSize >= MAX_SIZE;
+    const failPR = Boolean(percentValue > 100);
 
-    const markdownLog = `${markdownWarning}\n\n`+
-      `**Total Size:**                   ${totalSizeString}\n` +
-      `**Percentage of Size Used:**      ${percentString}%\n\n` +
-      `**Gzipped:**                      ${totalGzipString}`;
-    const prettyLog =
-      `Total Size:                   ${totalSizeString}\n` +
-      `**Percentage of Size Used:**  ${percentString}%\n\n` +
-      `Gzipped:                      ${totalGzipString}`;
-    return Promise.resolve({
-      prettyLog,
+    const prettyLog = `**${totalGzipString}** gzip'ed ` +
+      `(**${percentString}%** of limit)\n` +
+      `**${totalSizeString}** uncompressed`;
+
+    const markdownLog = `${markdownWarning}\n\n${prettyLog}`;
+
+    return {
+      failPR, // Fail the PR if we have exceeded the limit.
       markdownLog,
-      failPR,
-    });
+      prettyLog,
+    };
   }
 }
 
