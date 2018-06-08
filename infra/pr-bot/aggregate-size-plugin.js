@@ -59,9 +59,9 @@ class AggregateSizePlugin extends PluginInterface {
       </p>`;
     }
 
-    const prettyLog = `${totalGzipString} gzip'ed ` +
-      `(${percentString}% of limit)\n` +
-      `${totalSizeString} uncompressed`;
+    const prettyLog = `**${totalGzipString}** gzip'ed ` +
+      `(**${percentString}%** of limit)\n` +
+      `**${totalSizeString}** uncompressed`;
 
     const markdownLog = `${markdownWarning}\n\n${prettyLog}`;
 
