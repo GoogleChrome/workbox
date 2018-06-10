@@ -1,7 +1,7 @@
-const path = require('path');
-const glob = require('glob');
+const {oneLine} = require('common-tags');
 const fs = require('fs-extra');
-const oneLine = require('common-tags').oneLine;
+const glob = require('glob');
+const path = require('path');
 const storage = require('@google-cloud/storage');
 
 const cdnDetails = require('../../cdn-details.json');
@@ -10,15 +10,6 @@ const logHelper = require('../../infra/utils/log-helper');
 const PROJECT_ID = 'workbox-bab1f';
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, '..', '..',
   `workbox-9d39634504ad.json`);
-
-const ERROR_SERVICE_ACCOUNT = oneLine`
-  Unable to find the service account file that is required to upload
-  to the CDN.
-  Please get the service account file and put it at the root of the
-  workbox repo.
-
-  File Path Tested: '${SERVICE_ACCOUNT_PATH}'.
-`;
 
 class CDNHelper {
   constructor() {
@@ -29,12 +20,20 @@ class CDNHelper {
     return `${cdnDetails.releasesDir}/${tagName}`;
   }
 
-  getGCS() {
+  async getGCS() {
     if (!this._gcs) {
       try {
-        fs.accessSync(SERVICE_ACCOUNT_PATH);
+        await fs.access(SERVICE_ACCOUNT_PATH);
       } catch (err) {
-        throw new Error(ERROR_SERVICE_ACCOUNT);
+        const errorMessage = oneLine`
+  Unable to find the service account file that is required to upload
+  to the CDN.
+  Please get the service account file and put it at the root of the
+  workbox repo.
+
+  File Path Tested: '${SERVICE_ACCOUNT_PATH}'.
+`;
+        throw new Error(errorMessage);
       }
 
       this._gcs = storage({
@@ -47,16 +46,15 @@ class CDNHelper {
   }
 
   async tagExists(tagName) {
-    const gcs = this.getGCS();
+    const gcs = await this.getGCS();
     try {
       const bucket = gcs.bucket(cdnDetails.bucketName);
       // bucket.file('some/path/').exists() doesn't seem to work
       // for nested directories. Instead we are checking if there are
       // files in the expected release directory.
-      const response = await bucket.getFiles({
+      const [files] = await bucket.getFiles({
         prefix: `${this._getReleaseTagPath(tagName)}/`,
       });
-      const files = response[0];
       return files.length > 0;
     } catch (err) {
       logHelper.error(err);
@@ -65,23 +63,28 @@ class CDNHelper {
   }
 
   async upload(tagName, directoryToUpload) {
-    const gcs = this.getGCS();
+    const gcs = await this.getGCS();
 
-    const globPattern = path.posix.join(directoryToUpload, '*');
-    const filePaths = glob.sync(globPattern, {
+    const filePaths = glob.sync(`${directoryToUpload}/*`, {
       absolute: true,
     });
 
     const publicUrls = [];
     const bucket = gcs.bucket(cdnDetails.bucketName);
-    for (let filePath of filePaths) {
+
+    for (const filePath of filePaths) {
       const destination =
         `${this._getReleaseTagPath(tagName)}/${path.basename(filePath)}`;
 
       try {
         await bucket.upload(filePath, {
           destination,
+          gzip: true,
           public: true,
+          resumable: false,
+          metadata: {
+            metadata: {'Cache-Control': 'max-age=31536000'},
+          },
         });
       } catch (err) {
         logHelper.error(`Failed to upload file to GCS bucket: '${filePath}'`);
@@ -91,6 +94,7 @@ class CDNHelper {
         `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`
       );
     }
+
     return publicUrls;
   }
 }
