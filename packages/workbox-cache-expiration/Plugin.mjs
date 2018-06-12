@@ -242,7 +242,7 @@ class Plugin {
    * There is no Workbox-specific method needed for cleanup in that case.
    */
   async deleteCacheAndMetadata() {
-    // Do this one at at a time instead of all at once via `Promise.all()` to
+    // Do this one at a time instead of all at once via `Promise.all()` to
     // reduce the chance of inconsistency if a promise rejects.
     for (const [cacheName, cacheExpiration] of this._cacheExpirations) {
       await caches.delete(cacheName);

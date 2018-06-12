@@ -25,7 +25,6 @@ const callbacks = new Set();
  * a quota error.
  *
  * @param {Function} callback
- *
  * @memberof workbox.core
  */
 function registerCallback(callback) {
