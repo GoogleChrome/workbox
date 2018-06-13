@@ -20,7 +20,7 @@ import {devOnly} from '../../../infra/testing/env-it';
 import {Plugin} from '../../../packages/workbox-cache-expiration/Plugin.mjs';
 import {CacheExpiration} from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
 import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
-import {executeCallbacks} from '../../../packages/workbox-core/_private/quota.mjs';
+import {executeCallbacks as executeQuotaErrorCallbacks} from '../../../packages/workbox-core/_private/quota.mjs';
 
 describe(`[workbox-cache-expiration] Plugin`, function() {
   const sandbox = sinon.sandbox.create();
@@ -77,7 +77,7 @@ describe(`[workbox-cache-expiration] Plugin`, function() {
       });
       plugin.deleteCacheAndMetadata = sandbox.stub();
 
-      await executeCallbacks();
+      await executeQuotaErrorCallbacks();
 
       expect(plugin.deleteCacheAndMetadata.calledOnce).to.be.true;
     });
@@ -89,7 +89,7 @@ describe(`[workbox-cache-expiration] Plugin`, function() {
       });
       plugin.deleteCacheAndMetadata = sandbox.stub();
 
-      await executeCallbacks();
+      await executeQuotaErrorCallbacks();
 
       expect(plugin.deleteCacheAndMetadata.called).to.be.false;
     });
