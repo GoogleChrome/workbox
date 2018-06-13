@@ -371,6 +371,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         expiration: {
           maxEntries: 1,
           maxAgeSeconds: 1,
+          purgeOnQuotaError: false,
         },
         cacheableResponse: {
           headers: {
@@ -410,6 +411,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         expiration: {
           maxEntries: 1,
           maxAgeSeconds: 1,
+          purgeOnQuotaError: false,
         },
       };
       const secondRuntimeCachingOptions = {

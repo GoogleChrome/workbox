@@ -15,23 +15,28 @@
 */
 
 // We either expose defaults or we expose every named export.
+import {DBWrapper} from './_private/DBWrapper.mjs';
+import {WorkboxError} from './_private/WorkboxError.mjs';
 import {assert} from './_private/assert.mjs';
+import {cacheNames} from './_private/cacheNames.mjs';
 import {cacheWrapper} from './_private/cacheWrapper.mjs';
 import {fetchWrapper} from './_private/fetchWrapper.mjs';
-import {DBWrapper} from './_private/DBWrapper.mjs';
-import {logger} from './_private/logger.mjs';
-import {WorkboxError} from './_private/WorkboxError.mjs';
-import {cacheNames} from './_private/cacheNames.mjs';
 import {getFriendlyURL} from './_private/getFriendlyURL.mjs';
+import {logger} from './_private/logger.mjs';
+import {
+  registerCallback as registerQuotaErrorCallback,
+} from './_private/quota.mjs';
+
 import './_version.mjs';
 
 export {
-  logger,
+  DBWrapper,
+  WorkboxError,
   assert,
   cacheNames,
   cacheWrapper,
   fetchWrapper,
-  WorkboxError,
-  DBWrapper,
   getFriendlyURL,
+  logger,
+  registerQuotaErrorCallback,
 };

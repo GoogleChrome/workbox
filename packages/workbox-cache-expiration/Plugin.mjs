@@ -15,6 +15,7 @@ import {CacheExpiration} from './CacheExpiration.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {registerCallback} from 'workbox-core/_private/quota.mjs';
 
 import './_version.mjs';
 
@@ -43,6 +44,8 @@ class Plugin {
    * Entries used the least will be removed as the maximum is reached.
    * @param {number} [config.maxAgeSeconds] The maximum age of an entry before
    * it's treated as stale and removed.
+   * @param {boolean} [config.purgeOnQuotaError] Whether to opt this cache in to
+   * automatic deletion if the available storage quota has been exceeded.
    */
   constructor(config = {}) {
     if (process.env.NODE_ENV !== 'production') {
@@ -76,6 +79,10 @@ class Plugin {
     this._config = config;
     this._maxAgeSeconds = config.maxAgeSeconds;
     this._cacheExpirations = new Map();
+
+    if (config.purgeOnQuotaError) {
+      registerCallback(() => this.deleteCacheAndMetadata());
+    }
   }
 
   /**
@@ -235,7 +242,7 @@ class Plugin {
    * There is no Workbox-specific method needed for cleanup in that case.
    */
   async deleteCacheAndMetadata() {
-    // Do this one at at a time instance of all at once via `Promise.all()` to
+    // Do this one at a time instead of all at once via `Promise.all()` to
     // reduce the chance of inconsistency if a promise rejects.
     for (const [cacheName, cacheExpiration] of this._cacheExpirations) {
       await caches.delete(cacheName);

@@ -1,9 +1,10 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import {cacheWrapper} from '../../../../packages/workbox-core/_private/cacheWrapper.mjs';
 import expectError from '../../../../infra/testing/expectError';
+import {cacheWrapper} from '../../../../packages/workbox-core/_private/cacheWrapper.mjs';
 import {devOnly} from '../../../../infra/testing/env-it';
+import {registerCallback} from '../../../../packages/workbox-core/_private/quota.mjs';
 
 describe(`workbox-core cacheWrapper`, function() {
   let sandbox;
@@ -150,7 +151,6 @@ describe(`workbox-core cacheWrapper`, function() {
         },
       };
 
-
       const spyOne = sandbox.spy(firstPlugin, 'cacheWillUpdate');
       const spyTwo = sandbox.spy(secondPlugin, 'cacheWillUpdate');
 
@@ -174,6 +174,45 @@ describe(`workbox-core cacheWrapper`, function() {
         request: putRequest,
         response: firstPluginResponse,
       });
+    });
+
+    it(`should call the quota exceeded callbacks when there's a QuotaExceeded error`, async function() {
+      const callback1 = sandbox.stub();
+      registerCallback(callback1);
+      const callback2 = sandbox.stub();
+      registerCallback(callback2);
+
+      const cacheName = 'test-cache';
+      const testCache = await caches.open(cacheName);
+      sandbox.stub(global.caches, 'open').returns(Promise.resolve(testCache));
+      sandbox.stub(testCache, 'put').throws('QuotaExceededError');
+
+      try {
+        await cacheWrapper.put(cacheName, 'ignored', new Response());
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.name).to.eql('QuotaExceededError');
+      }
+      expect(callback1.calledOnce).to.be.true;
+      expect(callback2.calledOnce).to.be.true;
+    });
+
+    it(`should not call the quota exceeded callbacks when there's a non-QuotaExceeded error`, async function() {
+      const callback = sandbox.stub();
+      registerCallback(callback);
+
+      const cacheName = 'test-cache';
+      const testCache = await caches.open(cacheName);
+      sandbox.stub(global.caches, 'open').returns(Promise.resolve(testCache));
+      sandbox.stub(testCache, 'put').throws('NetworkError');
+
+      try {
+        await cacheWrapper.put(cacheName, 'ignored', new Response());
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.name).to.eql('NetworkError');
+      }
+      expect(callback.called).to.be.false;
     });
   });
 

@@ -14,12 +14,14 @@
   limitations under the License.
 */
 
-import {logger} from './logger.mjs';
-import {assert} from './assert.mjs';
-import {WorkboxError} from './WorkboxError.mjs';
-import {getFriendlyURL} from '../_private/getFriendlyURL.mjs';
 import pluginEvents from '../models/pluginEvents.mjs';
 import pluginUtils from '../utils/pluginUtils.mjs';
+import {WorkboxError} from './WorkboxError.mjs';
+import {assert} from './assert.mjs';
+import {executeCallbacks as executeQuotaErrorCallbacks} from './quota.mjs';
+import {getFriendlyURL} from './getFriendlyURL.mjs';
+import {logger} from './logger.mjs';
+
 import '../_version.mjs';
 
 /**
@@ -38,7 +40,7 @@ import '../_version.mjs';
 const putWrapper = async (cacheName, request, response, plugins = []) => {
   if (!response) {
     if (process.env.NODE_ENV !== 'production') {
-      logger.error(`Cannot cache non-existant response for ` +
+      logger.error(`Cannot cache non-existent response for ` +
         `'${getFriendlyURL(request.url)}'.`);
     }
 
@@ -80,9 +82,15 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
       `${getFriendlyURL(request.url)}.`);
   }
 
-  // Regardless of whether or not we'll end up invoking
-  // cacheDidUpdate, wait until the cache is updated.
-  await cache.put(request, responseToCache);
+  try {
+    await cache.put(request, responseToCache);
+  } catch (error) {
+    // See https://developer.mozilla.org/en-US/docs/Web/API/DOMException#exception-QuotaExceededError
+    if (error.name === 'QuotaExceededError') {
+      await executeQuotaErrorCallbacks();
+    }
+    throw error;
+  }
 
   for (let plugin of updatePlugins) {
     await plugin[pluginEvents.CACHE_DID_UPDATE].call(plugin, {

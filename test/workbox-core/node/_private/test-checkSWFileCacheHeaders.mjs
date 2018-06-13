@@ -5,7 +5,7 @@ import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
 import {checkSWFileCacheHeaders} from '../../../../packages/workbox-core/_private/checkSWFileCacheHeaders.mjs';
 import {devOnly} from '../../../../infra/testing/env-it';
 
-describe(`workbox-core cacheWrapper`, function() {
+describe(`workbox-core checkSWFileCacheHeaders`, function() {
   let sandbox;
 
   before(function() {
