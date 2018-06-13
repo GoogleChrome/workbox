@@ -18,7 +18,7 @@ import pluginEvents from '../models/pluginEvents.mjs';
 import pluginUtils from '../utils/pluginUtils.mjs';
 import {WorkboxError} from './WorkboxError.mjs';
 import {assert} from './assert.mjs';
-import {executeCallbacks} from './quota.mjs';
+import {executeCallbacks as executeQuotaErrorCallbacks} from './quota.mjs';
 import {getFriendlyURL} from './getFriendlyURL.mjs';
 import {logger} from './logger.mjs';
 
@@ -87,7 +87,7 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
   } catch (error) {
     // See https://developer.mozilla.org/en-US/docs/Web/API/DOMException#exception-QuotaExceededError
     if (error.name === 'QuotaExceededError') {
-      await executeCallbacks();
+      await executeQuotaErrorCallbacks();
     }
     throw error;
   }
