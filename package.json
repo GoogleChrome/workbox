@@ -98,7 +98,7 @@
     "selenium-assistant": "^5.3.0",
     "semver": "^5.4.1",
     "service-worker-mock": "^1.7.2",
-    "shelving-mock-indexeddb": "github:philipwalton/shelving-mock-indexeddb#workbox-fixes",
+    "shelving-mock-indexeddb": "github:philipwalton/shelving-mock-indexeddb#d2c5e52b6f9903026f5bac31cbe758cbebd98661",
     "sinon": "^5.0.10",
     "tempy": "^0.2.1",
     "uglify-es": "^3.1.0",
