@@ -1276,9 +1276,9 @@ declare module "workbox-sw" {
 		/**
 		 * Called before a Response is used to update a cache. You can alter the Response before it’s added to the cache or return null to avoid updating the cache at all.
 		 * @param {CacheWillUpdatePluginContext} context
-		 * @returns {Response|null}
+		 * @returns {Promise<Response>|Response|null}
 		 */
-		readonly cacheWillUpdate?: (context: CacheWillUpdatePluginContext) => Response|null;
+		readonly cacheWillUpdate?: (context: CacheWillUpdatePluginContext) => Promise<Response>|Response|null;
 
 		/**
 		 * Called when a new entry is added to a cache or it’s updated. Useful if you wish to perform an action after a cache update.
@@ -1290,9 +1290,9 @@ declare module "workbox-sw" {
 		/**
 		 * Before a cached Response is used to respond to a fetch event, this callback can be used to allow or block the Response from being used.
 		 * @param {CacheResponseWillBeUsedPluginContext} context
-		 * @returns {Response|null}
+		 * @returns {Promise<Response>|Response|null}
 		 */
-		readonly cachedResponseWillBeUsed?: (context: CacheResponseWillBeUsedPluginContext) => Response|null;
+		readonly cachedResponseWillBeUsed?: (context: CacheResponseWillBeUsedPluginContext) => Promise<Response>|Response|null;
 
 		/**
 		 * This is called whenever a fetch event is about to be made. You can alter the Request in this callback.
