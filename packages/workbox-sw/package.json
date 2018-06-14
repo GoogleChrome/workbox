@@ -24,5 +24,6 @@
     "prodOnly": true
   },
   "main": "build/workbox-sw.js",
+  "types": "./typings/workbox-sw.d.ts",
   "module": "index.mjs"
 }
