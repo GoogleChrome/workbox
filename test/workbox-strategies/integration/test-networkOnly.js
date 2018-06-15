@@ -18,8 +18,6 @@ describe(`[workbox-strategies] NetworkOnly Requests`, function() {
     // Wait for the service worker to register and activate.
     await activateAndControlSW(swUrl);
 
-    const cacheName = 'network-only';
-
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(`/test/uniqueValue`)
         .then((response) => response.text())

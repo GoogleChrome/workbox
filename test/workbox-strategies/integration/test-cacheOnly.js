@@ -28,7 +28,7 @@ describe(`[workbox-strategies] CacheOnly`, function() {
     response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(`/CacheOnly/NotInCache/`)
         .then((response) => response.text())
-        .then(() => cb(responseBody))
+        .then((responseBody) => cb(responseBody))
         .catch((err) => cb(err.message));
     });
     expect(response).to.not.eql('Cached');
