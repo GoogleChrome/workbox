@@ -2,13 +2,12 @@ importScripts('/__WORKBOX/buildFile/workbox-core');
 importScripts('/__WORKBOX/buildFile/workbox-cache-expiration');
 importScripts('/__WORKBOX/buildFile/workbox-routing');
 importScripts('/__WORKBOX/buildFile/workbox-strategies');
-
-/* globals workbox */
+importScripts('/infra/testing/comlink/sw-interface.js');
 
 workbox.routing.registerRoute(
   /.*.txt/,
   workbox.strategies.cacheFirst({
-    cacheName: 'expiration-plugin-max-entries',
+    cacheName: 'expiration-plugin-max-age-seconds',
     plugins: [
       new workbox.expiration.Plugin({
         maxAgeSeconds: 1,

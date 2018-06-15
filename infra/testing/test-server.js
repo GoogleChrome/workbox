@@ -54,6 +54,17 @@ app.get('/test/uniqueValue', (req, res) => {
   uniqueValue++;
 });
 
+app.get('/comlink.js', (req, res) => {
+  const comlinkMain = require.resolve('comlinkjs');
+  const comlinkPath = path.join(path.dirname(comlinkMain), 'umd', 'comlink.js');
+  res.sendFile(comlinkPath, {cacheControl: true, maxAge: 31536000000});
+});
+
+app.get('/*/integration.html', (req, res) => {
+  const integrationPath = path.join(__dirname, 'integration.html');
+  res.sendFile(integrationPath, {cacheControl: true, maxAge: 31536000000});
+});
+
 let server = null;
 let requestCounts = {};
 module.exports = {

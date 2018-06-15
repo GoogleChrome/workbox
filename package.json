@@ -62,6 +62,7 @@
     "chalk": "^2.1.0",
     "chromedriver": "^2.38.3",
     "clear-require": "^2.0.0",
+    "comlinkjs": "^3.0.1",
     "common-tags": "^1.8.0",
     "copy-webpack-plugin": "^4.2.0",
     "coveralls": "^3.0.1",

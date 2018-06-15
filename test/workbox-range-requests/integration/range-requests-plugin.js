@@ -6,7 +6,6 @@ const cleanSWEnv = require('../../../infra/testing/clean-sw');
 describe(`rangeRequests.Plugin`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
   const testingUrl = `${testServerAddress}/test/workbox-range-requests/static/`;
-  const swUrl = `${testingUrl}sw.js`;
 
   beforeEach(async function() {
     // Navigate to our test page and clear all caches before this test runs.
@@ -14,22 +13,18 @@ describe(`rangeRequests.Plugin`, function() {
   });
 
   it(`should return a partial response that satisfies the request's Range: header, and an error response when it can't be satisfied`, async function() {
-    const dummyUrl = `${testingUrl}this-file-doesnt-exist.txt`;
-    const dummyBody = '0123456789';
-
-    await global.__workbox.webdriver.get(testingUrl);
+    const swUrl = `${testingUrl}sw.js`;
     await activateAndControlSW(swUrl);
 
-    const partialResponseBody = await global.__workbox.webdriver.executeAsyncScript((dummyUrl, dummyBody, cb) => {
-      const dummyResponse = new Response(dummyBody);
+    const dummyUrl = `this-file-doesnt-exist.txt`;
+
+    const partialResponseBody = await global.__workbox.webdriver.executeAsyncScript((dummyUrl, cb) => {
       // Prime the cache, and then make the Range: request.
-      caches.open('range-requests-integration-test')
-        .then((cache) => cache.put(dummyUrl, dummyResponse))
-        .then(() => fetch(new Request(dummyUrl, {headers: {Range: `bytes=5-6`}})))
+      fetch(new Request(dummyUrl, {headers: {Range: `bytes=5-6`}}))
         .then((response) => response.text())
         .then((text) => cb(text))
         .catch((error) => cb(error.message));
-    }, dummyUrl, dummyBody);
+    }, dummyUrl);
 
     // The values used for the byte range are inclusive, so we'll end up with
     // 11 characters returned in the partial response.
