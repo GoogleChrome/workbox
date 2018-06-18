@@ -1,6 +1,6 @@
 {
   "name": "workbox-cacheable-response",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This library takes a Response object and determines whether it's cacheable based on a specific configuration.",
@@ -25,6 +25,6 @@
   "main": "build/workbox-cacheable-response.prod.js",
   "module": "index.mjs",
   "dependencies": {
-    "workbox-core": "^3.2.0"
+    "workbox-core": "^3.3.0"
   }
 }

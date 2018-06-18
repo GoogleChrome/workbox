@@ -1,6 +1,6 @@
 {
   "name": "workbox-routing",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "A service worker helper library to route request URLs to handlers.",
@@ -27,6 +27,6 @@
   "main": "build/workbox-routing.prod.js",
   "module": "index.mjs",
   "dependencies": {
-    "workbox-core": "^3.2.0"
+    "workbox-core": "^3.3.0"
   }
 }

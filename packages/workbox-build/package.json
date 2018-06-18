@@ -1,6 +1,6 @@
 {
   "name": "workbox-build",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
@@ -27,18 +27,18 @@
     "joi": "^11.1.1",
     "lodash.template": "^4.4.0",
     "pretty-bytes": "^4.0.2",
-    "workbox-background-sync": "^3.2.0",
-    "workbox-broadcast-cache-update": "^3.2.0",
-    "workbox-cache-expiration": "^3.2.0",
-    "workbox-cacheable-response": "^3.2.0",
-    "workbox-core": "^3.2.0",
-    "workbox-google-analytics": "^3.2.0",
-    "workbox-precaching": "^3.2.0",
-    "workbox-range-requests": "^3.2.0",
-    "workbox-routing": "^3.2.0",
-    "workbox-strategies": "^3.2.0",
-    "workbox-streams": "^3.2.0",
-    "workbox-sw": "^3.2.0"
+    "workbox-background-sync": "^3.3.0",
+    "workbox-broadcast-cache-update": "^3.3.0",
+    "workbox-cache-expiration": "^3.3.0",
+    "workbox-cacheable-response": "^3.3.0",
+    "workbox-core": "^3.3.0",
+    "workbox-google-analytics": "^3.3.0",
+    "workbox-precaching": "^3.3.0",
+    "workbox-range-requests": "^3.3.0",
+    "workbox-routing": "^3.3.0",
+    "workbox-strategies": "^3.3.0",
+    "workbox-streams": "^3.3.0",
+    "workbox-sw": "^3.3.0"
   },
   "main": "build/index.js",
   "scripts": {

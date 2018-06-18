@@ -1,6 +1,6 @@
 {
   "name": "workbox-broadcast-cache-update",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "A service worker helper library that uses the Broadcast Channel API to announce when a cached response has updated",
@@ -25,6 +25,6 @@
   "main": "build/workbox-broadcast-cache-update.prod.js",
   "module": "index.mjs",
   "dependencies": {
-    "workbox-core": "^3.2.0"
+    "workbox-core": "^3.3.0"
   }
 }
