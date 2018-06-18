@@ -128,7 +128,9 @@ gulp.task('test-integration', async () => {
           }
           break;
         case 'safari':
-          await runIntegrationForBrowser(localBrowser);
+          if (localBrowser.getReleaseName() === 'stable') {
+            await runIntegrationForBrowser(localBrowser);
+          }
           break;
         default:
           logHelper.warn(oneLine`

@@ -1,49 +1,44 @@
 const expect = require('chai').expect;
 
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
+const cleanSWEnv = require('../../../infra/testing/clean-sw');
+const runInSW = require('../../../infra/testing/comlink/node-interface');
 
-describe.only(`[workbox-strategies] NetworkOnly Requests`, function() {
-  const testServerAddress = global.__workbox.server.getAddress();
-  const testingUrl = `${testServerAddress}/test/workbox-strategies/static/network-only/`;
-  const swUrl = `${testingUrl}sw.js`;
+describe(`[workbox-strategies] NetworkOnly Requests`, function() {
+  const baseUrl = `${global.__workbox.server.getAddress()}/test/workbox-strategies/static/network-only/`;
+
+  beforeEach(async function() {
+    // Navigate to our test page and clear all caches before this test runs.
+    await cleanSWEnv(global.__workbox.webdriver, `${baseUrl}integration.html`);
+  });
 
   it(`should respond with a non-cached entry`, async function() {
-    const cacheName = 'network-only';
+    const swUrl = `${baseUrl}sw.js`;
 
-    // Load the page and wait for the first service worker to register and activate.
-    await global.__workbox.webdriver.get(testingUrl);
+    // Wait for the service worker to register and activate.
     await activateAndControlSW(swUrl);
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      fetch(new URL(`/test/uniqueValue`, location).href)
-      .then((response) => response.text())
-      .then((responseBody) => cb(responseBody))
-      .catch((err) => cb(err.message));
+      fetch(`/test/uniqueValue`)
+        .then((response) => response.text())
+        .then((responseBody) => cb(responseBody))
+        .catch((err) => cb(err.message));
     });
     const firstResponse = response.trim();
-    expect(firstResponse).to.not.equal('Cached');
+    expect(firstResponse).to.not.eql('Cached');
 
-    await global.__workbox.webdriver.executeAsyncScript((cacheName, cb) => {
-      caches.delete(cacheName)
-      .then(cb)
-      .catch(cb);
-    }, cacheName);
+    await runInSW('clearAllCaches');
 
     response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      fetch(new URL(`/test/uniqueValue`, location).href)
-      .then((response) => response.text())
-      .then((responseBody) => cb(responseBody))
-      .catch((err) => cb(err.message));
+      fetch(`/test/uniqueValue`)
+        .then((response) => response.text())
+        .then((responseBody) => cb(responseBody))
+        .catch((err) => cb(err.message));
     });
     const secondResponse = response.trim();
-    expect(secondResponse).to.not.equal(firstResponse);
+    expect(secondResponse).to.not.eql(firstResponse);
 
-    const cachedValues = await global.__workbox.webdriver.executeAsyncScript((cacheName, cb) => {
-      caches.open(cacheName)
-        .then((cache) => cache.keys())
-        .then(cb)
-        .catch(cb);
-    }, cacheName);
-    expect(cachedValues.length).to.equal(0);
+    const keys = await runInSW('cachesKeys');
+    expect(keys).to.eql([]);
   });
 });

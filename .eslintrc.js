@@ -15,6 +15,7 @@ module.exports = {
     WorkboxSW: false,
     SyncEvent: false,
     BroadcastChannel: false,
+    Comlink: false,
   },
   rules: {
     "jsdoc/check-types": 2,

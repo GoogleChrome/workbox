@@ -1,32 +1,36 @@
 const expect = require('chai').expect;
 
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
+const cleanSWEnv = require('../../../infra/testing/clean-sw');
 
-describe(`[workbox-strategies] CacheOnly Requests`, function() {
-  const testServerAddress = global.__workbox.server.getAddress();
-  const testingUrl = `${testServerAddress}/test/workbox-strategies/static/cache-only/`;
-  const swUrl = `${testingUrl}sw.js`;
+describe(`[workbox-strategies] CacheOnly`, function() {
+  const baseUrl = `${global.__workbox.server.getAddress()}/test/workbox-strategies/static/cache-only/`;
 
-  it(`should respond with cached and non-cached entry`, async function() {
-    // Load the page and wait for the first service worker to register and activate.
-    await global.__workbox.webdriver.get(testingUrl);
+  beforeEach(async function() {
+    // Navigate to our test page and clear all caches before this test runs.
+    await cleanSWEnv(global.__workbox.webdriver, `${baseUrl}integration.html`);
+  });
+
+  it(`should respond with a cached response`, async function() {
+    const swUrl = `${baseUrl}sw.js`;
+
+    // Wait for the service worker to register and activate.
     await activateAndControlSW(swUrl);
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      fetch(new URL(`/CacheOnly/InCache/`, location).href)
-      .then((response) => response.text())
-      .then((responseBody) => cb(responseBody))
-      .catch((err) => cb(err.message));
+      fetch(`/CacheOnly/InCache/`)
+        .then((response) => response.text())
+        .then((responseBody) => cb(responseBody))
+        .catch((err) => cb(err.message));
     });
-    expect(response).to.equal('Cached');
+    expect(response).to.eql('Cached');
 
-    // For a non-cached entry, the fetch should throw an error with
-    // a message defined by the browser.
     response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      fetch(new URL(`/CacheOnly/NotInCache/`, location).href)
-      .then(() => cb(null))
-      .catch((err) => cb(err.message));
+      fetch(`/CacheOnly/NotInCache/`)
+        .then((response) => response.text())
+        .then((responseBody) => cb(responseBody))
+        .catch((err) => cb(err.message));
     });
-    expect(response).to.exist;
+    expect(response).to.not.eql('Cached');
   });
 });

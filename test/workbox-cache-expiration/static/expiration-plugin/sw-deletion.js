@@ -2,6 +2,7 @@ importScripts('/__WORKBOX/buildFile/workbox-core');
 importScripts('/__WORKBOX/buildFile/workbox-cache-expiration');
 importScripts('/__WORKBOX/buildFile/workbox-routing');
 importScripts('/__WORKBOX/buildFile/workbox-strategies');
+importScripts('/infra/testing/comlink/sw-interface.js');
 
 const expirationPlugin = new workbox.expiration.Plugin({
   maxEntries: 1,
@@ -19,21 +20,6 @@ workbox.routing.registerRoute(
   })
 );
 
-const doesDbExist = () => {
-  return new Promise((resolve) => {
-    const result = indexedDB.open(cacheName);
-    result.onupgradeneeded = (event) => {
-      event.target.transaction.abort();
-      event.target.result.close();
-      resolve(false);
-    };
-    result.onsuccess = (event) => {
-      event.target.result.close();
-      resolve(true);
-    };
-  });
-};
-
 self.addEventListener('message', async (event) => {
   let message;
 
@@ -43,8 +29,6 @@ self.addEventListener('message', async (event) => {
     } catch (error) {
       message = error.message;
     }
-  } else if (event.data === 'doesDbExist') {
-    message = await doesDbExist(cacheName);
   }
 
   // Send all open clients a message indicating that deletion is done.
