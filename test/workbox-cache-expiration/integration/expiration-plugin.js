@@ -38,7 +38,7 @@ describe(`expiration.Plugin`, function() {
       'expiration-plugin-max-entries',
     ]);
 
-    let cachedRequests = await runInSW('cacheContents', keys[0]);
+    let cachedRequests = await runInSW('cacheUrls', keys[0]);
     expect(cachedRequests).to.eql([
       `${baseUrl}example-1.txt`,
     ]);
@@ -53,7 +53,7 @@ describe(`expiration.Plugin`, function() {
     // Caching is done async from returning a response, so we may need
     // to wait before the cache has be cleaned up.
     await waitUntil(async () => {
-      cachedRequests = await runInSW('cacheContents', keys[0]);
+      cachedRequests = await runInSW('cacheUrls', keys[0]);
       return (cachedRequests.length === 1 &&
               cachedRequests[0] === `${baseUrl}example-2.txt`);
     });
@@ -84,7 +84,7 @@ describe(`expiration.Plugin`, function() {
       'expiration-plugin-max-age-seconds',
     ]);
 
-    let cachedRequests = await runInSW('cacheContents', keys[0]);
+    let cachedRequests = await runInSW('cacheUrls', keys[0]);
     expect(cachedRequests).to.eql([
       `${baseUrl}example-1.txt`,
     ]);
@@ -104,7 +104,7 @@ describe(`expiration.Plugin`, function() {
     // Caching is done async from returning a response, so we may need
     // to wait before the cache has be cleaned up.
     await waitUntil(async () => {
-      cachedRequests = await runInSW('cacheContents', keys[0]);
+      cachedRequests = await runInSW('cacheUrls', keys[0]);
       return (cachedRequests.length === 1 &&
               cachedRequests[0] === `${baseUrl}example-2.txt`);
     });

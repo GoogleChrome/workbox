@@ -38,7 +38,7 @@ describe(`cacheableResponse.Plugin`, function() {
       'cacheable-response-cache',
     ]);
 
-    let cachedRequests = await runInSW('cacheContents', keys[0]);
+    let cachedRequests = await runInSW('cacheUrls', keys[0]);
     expect(cachedRequests).to.eql([
       `${baseUrl}example-1.txt`,
     ]);
