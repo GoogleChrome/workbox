@@ -83,7 +83,7 @@ class CDNHelper {
           public: true,
           resumable: false,
           metadata: {
-            metadata: {'Cache-Control': 'max-age=31536000'},
+            cacheControl: 'public, max-age=31536000',
           },
         });
       } catch (err) {
