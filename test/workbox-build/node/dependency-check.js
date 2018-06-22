@@ -18,6 +18,7 @@ describe(`[workbox-build] Test Dependencies`, function() {
         'workbox-cacheable-response',
         'workbox-core',
         'workbox-google-analytics',
+        'workbox-navigation-preload',
         'workbox-precaching',
         'workbox-range-requests',
         'workbox-routing',
