@@ -27,7 +27,7 @@ const callbacks = new Set();
  * @param {Function} callback
  * @memberof workbox.core
  */
-function registerCallback(callback) {
+function registerQuotaErrorCallback(callback) {
   if (process.env.NODE_ENV !== 'production') {
     assert.isType(callback, 'function', {
       moduleName: 'workbox-core',
@@ -50,7 +50,7 @@ function registerCallback(callback) {
  * @memberof workbox.core
  * @private
  */
-async function executeCallbacks() {
+async function executeQuotaErrorCallbacks() {
   if (process.env.NODE_ENV !== 'production') {
     logger.log(`About to run ${callbacks.size} callbacks to clean up caches.`);
   }
@@ -68,6 +68,6 @@ async function executeCallbacks() {
 }
 
 export {
-  executeCallbacks,
-  registerCallback,
+  executeQuotaErrorCallbacks,
+  registerQuotaErrorCallback,
 };
