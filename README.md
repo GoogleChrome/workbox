@@ -1,6 +1,5 @@
 [![Travis Build Status][travis-image]][travis-url]
 [![AppVeyor Build status][appveyor-image]][appveyor-url]
-[![Dependency Status][dependency-image]][dependency-url]
 [![Dev Dependency Status][dev-dependency-image]][dev-dependency-url]
 [![TypeScript definitions on DefinitelyTyped](https://definitelytyped.org/badges/standard-flat.svg)](https://www.npmjs.com/package/@types/workbox-sw)
 
@@ -91,7 +90,5 @@ limitations under the License.
 [travis-image]: https://travis-ci.org/GoogleChrome/workbox.svg?branch=master
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/4ct8ph4d34c5ifnw?svg=true
 [appveyor-url]: https://ci.appveyor.com/project/gauntface/workbox
-[dependency-url]: https://david-dm.org/GoogleChrome/workbox/
-[dependency-image]: https://david-dm.org/GoogleChrome/workbox/status.svg
 [dev-dependency-url]: https://david-dm.org/GoogleChrome/workbox?type=dev
 [dev-dependency-image]: https://david-dm.org/GoogleChrome/workbox/dev-status.svg
