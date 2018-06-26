@@ -2,6 +2,7 @@
 [![AppVeyor Build status][appveyor-image]][appveyor-url]
 [![Dependency Status][dependency-image]][dependency-url]
 [![Dev Dependency Status][dev-dependency-image]][dev-dependency-url]
+[![TypeScript definitions on DefinitelyTyped](https://definitelytyped.org/badges/standard.svg)](https://www.npmjs.com/package/@types/workbox-sw)
 
 <img src='https://user-images.githubusercontent.com/110953/28352645-7a8a66d8-6c0c-11e7-83af-752609e7e072.png' width='500px'/>
 
