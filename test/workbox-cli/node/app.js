@@ -235,7 +235,7 @@ describe(`[workbox-cli] app.js`, function() {
       });
 
       await app({input: ['copyLibraries', PROXIED_DEST_DIR]});
-      expect(loggerLogStub.calledOnce).to.be.true;
+      expect(loggerLogStub.callCount).to.eql(3);
     });
 
     it(`should call params.showHelp() when passed 'help'`, async function() {
