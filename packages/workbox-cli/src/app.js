@@ -15,6 +15,7 @@
 **/
 
 const assert = require('assert');
+const ol = require('common-tags').oneLine;
 const path = require('path');
 const prettyBytes = require('pretty-bytes');
 const workboxBuild = require('workbox-build');
@@ -46,6 +47,9 @@ module.exports = async (params = {}) => {
       const fullPath = path.join(parentDirectory, dirName);
 
       logger.log(`The Workbox libraries were copied to ${fullPath}`);
+      logger.log(ol`Add a call to workbox.setConfig({modulePathPrefix: '...'})
+        to your service worker to use these local libraries.`);
+      logger.log(`See https://goo.gl/Fo9gPX for further documentation.`);
       break;
     }
 
