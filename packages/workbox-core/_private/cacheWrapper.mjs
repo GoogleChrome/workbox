@@ -18,7 +18,7 @@ import pluginEvents from '../models/pluginEvents.mjs';
 import pluginUtils from '../utils/pluginUtils.mjs';
 import {WorkboxError} from './WorkboxError.mjs';
 import {assert} from './assert.mjs';
-import {executeCallbacks as executeQuotaErrorCallbacks} from './quota.mjs';
+import {executeQuotaErrorCallbacks} from './quota.mjs';
 import {getFriendlyURL} from './getFriendlyURL.mjs';
 import {logger} from './logger.mjs';
 

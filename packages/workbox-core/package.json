@@ -3,7 +3,7 @@
   "version": "3.3.0",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
-  "description": "This module is used by a number of the other workboxjs.org modules to share common code.",
+  "description": "This module is used by a number of the other Workbox modules to share common code.",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
