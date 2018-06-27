@@ -30,12 +30,26 @@ import '../_version.mjs';
  * @param {Request|string} request
  * @param {Object} fetchOptions
  * @param {Array<Object>} [plugins]
+ * @param {Promise<Response>} [preloadResponse]
  * @return {Promise<Response>}
  *
  * @private
  * @memberof module:workbox-core
  */
-const wrappedFetch = async (request, fetchOptions, plugins = []) => {
+const wrappedFetch = async (request,
+                            fetchOptions,
+                            plugins = [],
+                            preloadResponse) => {
+  // preloadResponse might be undefined, but you can still await it.
+  let response = await preloadResponse;
+  if (response) {
+    if (process.env.NODE_ENV !== 'production') {
+      logger.info(`Using a preloaded navigation response for ` +
+        `'${getFriendlyURL(request.url)}'`);
+    }
+    return response;
+  }
+
   if (typeof request === 'string') {
     request = new Request(request);
   }
@@ -89,7 +103,7 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   const pluginFilteredRequest = request.clone();
 
   try {
-    const response = await fetch(request, fetchOptions);
+    response = await fetch(request, fetchOptions);
     if (process.env.NODE_ENV !== 'production') {
       logger.debug(`Network request for `+
       `'${getFriendlyURL(request.url)}' returned a response with ` +
