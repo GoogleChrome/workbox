@@ -44,7 +44,7 @@ const wrappedFetch = async (request,
   let response = await preloadResponse;
   if (response) {
     if (process.env.NODE_ENV !== 'production') {
-      logger.info(`Using a preloaded navigation response for ` +
+      logger.log(`Using a preloaded navigation response for ` +
         `'${getFriendlyURL(request.url)}'`);
     }
     return response;

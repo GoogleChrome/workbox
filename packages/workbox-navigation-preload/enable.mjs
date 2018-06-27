@@ -41,14 +41,14 @@ function enable(headerValue) {
             }
 
             if (process.env.NODE_ENV !== 'production') {
-              logger.info(`Navigation preload is enabled.`);
+              logger.log(`Navigation preload is enabled.`);
             }
           })
         );
     });
   } else {
     if (process.env.NODE_ENV !== 'production') {
-      logger.info(`Navigation preload is not supported in this browser.`);
+      logger.log(`Navigation preload is not supported in this browser.`);
     }
   }
 }
