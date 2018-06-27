@@ -15,12 +15,12 @@ import {CacheExpiration} from './CacheExpiration.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {registerCallback} from 'workbox-core/_private/quota.mjs';
+import {registerQuotaErrorCallback} from 'workbox-core/_private/quota.mjs';
 
 import './_version.mjs';
 
 /**
- * This plugin can be used in the Workbox API's to regularly enforce a
+ * This plugin can be used in the Workbox APIs to regularly enforce a
  * limit on the age and / or the number of cached requests.
  *
  * Whenever a cached request is used or updated, this plugin will look
@@ -81,7 +81,7 @@ class Plugin {
     this._cacheExpirations = new Map();
 
     if (config.purgeOnQuotaError) {
-      registerCallback(() => this.deleteCacheAndMetadata());
+      registerQuotaErrorCallback(() => this.deleteCacheAndMetadata());
     }
   }
 

@@ -23,9 +23,7 @@ import {cacheWrapper} from './_private/cacheWrapper.mjs';
 import {fetchWrapper} from './_private/fetchWrapper.mjs';
 import {getFriendlyURL} from './_private/getFriendlyURL.mjs';
 import {logger} from './_private/logger.mjs';
-import {
-  registerCallback as registerQuotaErrorCallback,
-} from './_private/quota.mjs';
+import {registerQuotaErrorCallback} from './_private/quota.mjs';
 
 import './_version.mjs';
 

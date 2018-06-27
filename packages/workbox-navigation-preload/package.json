@@ -26,6 +26,6 @@
   "main": "build/workbox-navigation-preload.prod.js",
   "module": "index.mjs",
   "dependencies": {
-    "workbox-core": "^3.3.0"
+    "workbox-core": "^3.3.1"
   }
 }

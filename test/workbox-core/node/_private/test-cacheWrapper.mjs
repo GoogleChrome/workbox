@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import expectError from '../../../../infra/testing/expectError';
 import {cacheWrapper} from '../../../../packages/workbox-core/_private/cacheWrapper.mjs';
 import {devOnly} from '../../../../infra/testing/env-it';
-import {registerCallback} from '../../../../packages/workbox-core/_private/quota.mjs';
+import {registerQuotaErrorCallback} from '../../../../packages/workbox-core/_private/quota.mjs';
 
 describe(`workbox-core cacheWrapper`, function() {
   let sandbox;
@@ -178,9 +178,9 @@ describe(`workbox-core cacheWrapper`, function() {
 
     it(`should call the quota exceeded callbacks when there's a QuotaExceeded error`, async function() {
       const callback1 = sandbox.stub();
-      registerCallback(callback1);
+      registerQuotaErrorCallback(callback1);
       const callback2 = sandbox.stub();
-      registerCallback(callback2);
+      registerQuotaErrorCallback(callback2);
 
       const cacheName = 'test-cache';
       const testCache = await caches.open(cacheName);
@@ -199,7 +199,7 @@ describe(`workbox-core cacheWrapper`, function() {
 
     it(`should not call the quota exceeded callbacks when there's a non-QuotaExceeded error`, async function() {
       const callback = sandbox.stub();
-      registerCallback(callback);
+      registerQuotaErrorCallback(callback);
 
       const cacheName = 'test-cache';
       const testCache = await caches.open(cacheName);
