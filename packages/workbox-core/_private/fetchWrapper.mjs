@@ -40,14 +40,18 @@ const wrappedFetch = async (request,
                             fetchOptions,
                             plugins = [],
                             preloadResponse) => {
-  // preloadResponse might be undefined, but you can still await it.
-  const possiblePreloadResponse = await preloadResponse;
-  if (possiblePreloadResponse) {
-    if (process.env.NODE_ENV !== 'production') {
-      logger.log(`Using a preloaded navigation response for ` +
-        `'${getFriendlyURL(request.url)}'`);
+  // We *should* be able to call `await preloadResponse` even if it's undefined,
+  // but for some reason, doing so leads to errors in our Node unit tests.
+  // To work around that, explicitly check preloadResponse's value first.
+  if (preloadResponse) {
+    const possiblePreloadResponse = await preloadResponse;
+    if (possiblePreloadResponse) {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.log(`Using a preloaded navigation response for ` +
+          `'${getFriendlyURL(request.url)}'`);
+      }
+      return possiblePreloadResponse;
     }
-    return possiblePreloadResponse;
   }
 
   if (typeof request === 'string') {
