@@ -3,7 +3,8 @@ importScripts('/infra/testing/comlink/sw-interface.js');
 
 workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
 
-workbox.navigationPreload.enable();
+// The header will be `Service-Worker-Navigation-Preload: custom-value`.
+workbox.navigationPreload.enable('custom-value');
 
 // Once the service worker's taken control, it responds to navigations with
 // a synthetic response.

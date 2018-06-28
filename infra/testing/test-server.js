@@ -10,6 +10,7 @@ const app = express();
 
 let server = null;
 let requestCounts = {};
+let navigationPreloadCounter = {};
 
 app.get(/\/__WORKBOX\/buildFile\/(workbox-[A-z|-]*)(\.(?:dev|prod)\.(.*))*/, (req, res) => {
   res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
@@ -68,6 +69,17 @@ module.exports = {
     return new Promise((resolve) => {
       const staticPath = path.join(__dirname, '..', '..');
 
+      app.use((req, res, next) => {
+        const headerValue = req.get('Service-Worker-Navigation-Preload');
+        if (headerValue) {
+          if (!navigationPreloadCounter[headerValue]) {
+            navigationPreloadCounter[headerValue] = 0;
+          }
+          navigationPreloadCounter[headerValue]++;
+        }
+        next();
+      });
+
       // This allows test to assess how many requests were made to the server.
       app.use((req, res, next) => {
         if (!requestCounts[req.url]) {
@@ -111,5 +123,11 @@ module.exports = {
   },
   getRequests: () => {
     return Object.assign({}, requestCounts);
+  },
+  resetPreloadCounter: () => {
+    navigationPreloadCounter = {};
+  },
+  getPreloadCounter: () => {
+    return Object.assign({}, navigationPreloadCounter);
   },
 };
