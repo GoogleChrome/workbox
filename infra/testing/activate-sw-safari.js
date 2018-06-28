@@ -44,9 +44,6 @@ module.exports = async (swUrl) => {
     throw error;
   }
 
-  // Refresh the page - Safari should be controlled by the SW after this.
-  global.__workbox.webdriver.navigate().refresh();
-
   // To be 100% certain - ensure the SW is controlling the page.
   error = await global.__workbox.webdriver.executeAsyncScript((swUrl, cb) => {
     if (navigator.serviceWorker.controller &&

@@ -23,7 +23,7 @@ import '../_version.mjs';
  * @memberof workbox.navigationPreload
  */
 function isSupported() {
-  return self.registration && self.registration.navigationPreload;
+  return Boolean(self.registration && self.registration.navigationPreload);
 }
 
 export {isSupported};
