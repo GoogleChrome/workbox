@@ -109,7 +109,7 @@ class NetworkOnly {
         request,
         this._fetchOptions,
         this._plugins,
-        event.preloadResponse
+        event ? event.preloadResponse : undefined
       );
     } catch (err) {
       error = err;

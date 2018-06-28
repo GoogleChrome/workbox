@@ -41,13 +41,13 @@ const wrappedFetch = async (request,
                             plugins = [],
                             preloadResponse) => {
   // preloadResponse might be undefined, but you can still await it.
-  let response = await preloadResponse;
-  if (response) {
+  const possiblePreloadResponse = await preloadResponse;
+  if (possiblePreloadResponse) {
     if (process.env.NODE_ENV !== 'production') {
       logger.log(`Using a preloaded navigation response for ` +
         `'${getFriendlyURL(request.url)}'`);
     }
-    return response;
+    return possiblePreloadResponse;
   }
 
   if (typeof request === 'string') {
@@ -103,13 +103,13 @@ const wrappedFetch = async (request,
   const pluginFilteredRequest = request.clone();
 
   try {
-    response = await fetch(request, fetchOptions);
+    const fetchResponse = await fetch(request, fetchOptions);
     if (process.env.NODE_ENV !== 'production') {
       logger.debug(`Network request for `+
       `'${getFriendlyURL(request.url)}' returned a response with ` +
-      `status '${response.status}'.`);
+      `status '${fetchResponse.status}'.`);
     }
-    return response;
+    return fetchResponse;
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
       logger.error(`Network request for `+
