@@ -15,7 +15,7 @@
 */
 
 /**
- * @namespace workbox.rangeRequests
+ * @namespace workbox.navigationPreload
  */
 
 import './_version.mjs';
