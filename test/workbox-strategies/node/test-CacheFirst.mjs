@@ -362,13 +362,13 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
   it(`should use the CacheQueryOptions when performing a cache match`, async function() {
     const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(new Response());
 
-    const matchOptions = { ignoreSearch: true };
-    const cacheFirst = new CacheFirst({ matchOptions });
+    const matchOptions = {ignoreSearch: true};
+    const cacheFirst = new CacheFirst({matchOptions});
 
     const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', { request });
+    const event = new FetchEvent('fetch', {request});
 
-    await cacheFirst.handle({ event });
+    await cacheFirst.handle({event});
 
     expect(matchStub.calledOnce).to.be.true;
     expect(matchStub.calledWith(request, matchOptions)).to.be.true;

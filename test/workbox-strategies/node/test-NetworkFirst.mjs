@@ -343,13 +343,13 @@ describe(`[workbox-strategies] NetworkFirst.handle()`, function() {
     const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(new Response());
     sandbox.stub(global, 'fetch').callsFake(() => Promise.reject());
 
-    const matchOptions = { ignoreSearch: true };
-    const networkFirst = new NetworkFirst({ matchOptions });
+    const matchOptions = {ignoreSearch: true};
+    const networkFirst = new NetworkFirst({matchOptions});
 
     const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', { request });
+    const event = new FetchEvent('fetch', {request});
 
-    await networkFirst.handle({ event });
+    await networkFirst.handle({event});
 
     expect(matchStub.calledWith(request, matchOptions)).to.be.true;
   });
