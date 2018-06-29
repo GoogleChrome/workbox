@@ -359,6 +359,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
     expect(fetchStub.calledOnce).to.be.true;
     expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
   });
+
   it(`should use the CacheQueryOptions when performing a cache match`, async function() {
     const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(new Response());
 
