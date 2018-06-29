@@ -67,7 +67,7 @@
     "copy-webpack-plugin": "^4.2.0",
     "coveralls": "^3.0.1",
     "depcheck": "^0.6.7",
-    "eslint": "^4.6.1",
+    "eslint": "^4.19.1",
     "eslint-config-google": "^0.9.1",
     "eslint-plugin-header": "^1.2.0",
     "eslint-plugin-jsdoc": "^3.7.1",

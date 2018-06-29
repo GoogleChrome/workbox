@@ -39,10 +39,12 @@ class CacheOnly {
    * [workbox-core]{@link workbox.core.cacheNames}.
    * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
+   * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
    */
   constructor(options = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
     this._plugins = options.plugins || [];
+    this._matchOptions = options.matchOptions || null;
   }
 
   /**
@@ -103,7 +105,7 @@ class CacheOnly {
     const response = await cacheWrapper.match(
       this._cacheName,
       request,
-      null,
+      this._matchOptions,
       this._plugins
     );
 

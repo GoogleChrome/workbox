@@ -339,6 +339,21 @@ describe(`[workbox-strategies] NetworkFirst.handle()`, function() {
     expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
   });
 
+  it(`should use the CacheQueryOptions when performing a cache match`, async function() {
+    const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(new Response());
+    sandbox.stub(global, 'fetch').callsFake(() => Promise.reject());
+
+    const matchOptions = {ignoreSearch: true};
+    const networkFirst = new NetworkFirst({matchOptions});
+
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+
+    await networkFirst.handle({event});
+
+    expect(matchStub.calledWith(request, matchOptions)).to.be.true;
+  });
+
   it(`should not allow waitUntil if responded`, async function() {
     const fakeTimer = sandbox.useFakeTimers({
       toFake: ['Date'],

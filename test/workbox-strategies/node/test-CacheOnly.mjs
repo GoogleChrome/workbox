@@ -157,4 +157,19 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     const handleResponse = await cacheOnly.handle({event});
     await compareResponses(pluginResponse, handleResponse, true);
   });
+
+  it(`should use the CacheQueryOptions when performing a cache match`, async function() {
+    const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(new Response());
+
+    const matchOptions = {ignoreSearch: true};
+    const cacheOnly = new CacheOnly({matchOptions});
+
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+
+    await cacheOnly.handle({event});
+
+    expect(matchStub.calledOnce).to.be.true;
+    expect(matchStub.calledWith(request, matchOptions)).to.be.true;
+  });
 });

@@ -222,4 +222,19 @@ describe(`[workbox-strategies] StaleWhileRevalidate.handle()`, function() {
     expect(fetchStub.calledOnce).to.be.true;
     expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
   });
+
+  it(`should use the CacheQueryOptions when performing a cache match`, async function() {
+    const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(new Response());
+
+    const matchOptions = {ignoreSearch: true};
+    const staleWhileRevalidate = new StaleWhileRevalidate({matchOptions});
+
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+
+    await staleWhileRevalidate.handle({event});
+
+    expect(matchStub.calledOnce).to.be.true;
+    expect(matchStub.calledWith(request, matchOptions)).to.be.true;
+  });
 });

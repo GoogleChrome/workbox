@@ -52,6 +52,7 @@ class StaleWhileRevalidate {
    * @param {Object} options.fetchOptions Values passed along to the
    * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
    * of all fetch() requests made by this strategy.
+   * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
    */
   constructor(options = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
@@ -68,6 +69,7 @@ class StaleWhileRevalidate {
     }
 
     this._fetchOptions = options.fetchOptions || null;
+    this._matchOptions = options.matchOptions || null;
   }
 
   /**
@@ -132,7 +134,7 @@ class StaleWhileRevalidate {
     let response = await cacheWrapper.match(
       this._cacheName,
       request,
-      null,
+      this._matchOptions,
       this._plugins
     );
 
