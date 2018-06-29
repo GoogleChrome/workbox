@@ -8,6 +8,10 @@ const logHelper = require('../utils/log-helper');
 
 const app = express();
 
+let server = null;
+let requestCounts = {};
+let navigationPreloadCounter = {};
+
 app.get(/\/__WORKBOX\/buildFile\/(workbox-[A-z|-]*)(\.(?:dev|prod)\.(.*))*/, (req, res) => {
   res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
   res.header('Expires', '-1');
@@ -54,23 +58,27 @@ app.get('/test/uniqueValue', (req, res) => {
   uniqueValue++;
 });
 
-app.get('/comlink.js', (req, res) => {
+app.get('/comlink.js', (req, res, next) => {
   const comlinkMain = require.resolve('comlinkjs');
   const comlinkPath = path.join(path.dirname(comlinkMain), 'umd', 'comlink.js');
-  res.sendFile(comlinkPath, {cacheControl: true, maxAge: 31536000000});
+  res.sendFile(comlinkPath);
 });
 
-app.get('/*/integration.html', (req, res) => {
-  const integrationPath = path.join(__dirname, 'integration.html');
-  res.sendFile(integrationPath, {cacheControl: true, maxAge: 31536000000});
-});
-
-let server = null;
-let requestCounts = {};
 module.exports = {
   start: () => {
     return new Promise((resolve) => {
       const staticPath = path.join(__dirname, '..', '..');
+
+      app.use((req, res, next) => {
+        const headerValue = req.get('Service-Worker-Navigation-Preload');
+        if (headerValue) {
+          if (!navigationPreloadCounter[headerValue]) {
+            navigationPreloadCounter[headerValue] = 0;
+          }
+          navigationPreloadCounter[headerValue]++;
+        }
+        next();
+      });
 
       // This allows test to assess how many requests were made to the server.
       app.use((req, res, next) => {
@@ -86,6 +94,11 @@ module.exports = {
         express.static(staticPath),
         serveIndex(staticPath, {'icons': true})
       );
+
+      app.get('/*/integration.html', (req, res) => {
+        const integrationPath = path.join(__dirname, 'integration.html');
+        res.sendFile(integrationPath);
+      });
 
       server = app.listen(3004, () => {
         logHelper.log(oneLine`
@@ -110,5 +123,11 @@ module.exports = {
   },
   getRequests: () => {
     return Object.assign({}, requestCounts);
+  },
+  resetPreloadCounter: () => {
+    navigationPreloadCounter = {};
+  },
+  getPreloadCounter: () => {
+    return Object.assign({}, navigationPreloadCounter);
   },
 };

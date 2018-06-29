@@ -174,7 +174,8 @@ class CacheFirst {
     const response = await fetchWrapper.fetch(
       request,
       this._fetchOptions,
-      this._plugins
+      this._plugins,
+      event ? event.preloadResponse : undefined
     );
 
     // Keep the service worker while we put the request to the cache

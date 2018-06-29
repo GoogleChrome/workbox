@@ -25,6 +25,7 @@ const MODULE_KEY_TO_NAME_MAPPING = {
   core: 'core',
   expiration: 'cache-expiration',
   googleAnalytics: 'google-analytics',
+  navigationPreload: 'navigation-preload',
   precaching: 'precaching',
   rangeRequests: 'range-requests',
   routing: 'routing',

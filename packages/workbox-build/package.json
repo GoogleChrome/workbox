@@ -33,6 +33,7 @@
     "workbox-cacheable-response": "^3.3.1",
     "workbox-core": "^3.3.1",
     "workbox-google-analytics": "^3.3.1",
+    "workbox-navigation-preload": "^3.3.1",
     "workbox-precaching": "^3.3.1",
     "workbox-range-requests": "^3.3.1",
     "workbox-routing": "^3.3.1",

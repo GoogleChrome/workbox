@@ -30,12 +30,30 @@ import '../_version.mjs';
  * @param {Request|string} request
  * @param {Object} fetchOptions
  * @param {Array<Object>} [plugins]
+ * @param {Promise<Response>} [preloadResponse]
  * @return {Promise<Response>}
  *
  * @private
  * @memberof module:workbox-core
  */
-const wrappedFetch = async (request, fetchOptions, plugins = []) => {
+const wrappedFetch = async (request,
+                            fetchOptions,
+                            plugins = [],
+                            preloadResponse) => {
+  // We *should* be able to call `await preloadResponse` even if it's undefined,
+  // but for some reason, doing so leads to errors in our Node unit tests.
+  // To work around that, explicitly check preloadResponse's value first.
+  if (preloadResponse) {
+    const possiblePreloadResponse = await preloadResponse;
+    if (possiblePreloadResponse) {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.log(`Using a preloaded navigation response for ` +
+          `'${getFriendlyURL(request.url)}'`);
+      }
+      return possiblePreloadResponse;
+    }
+  }
+
   if (typeof request === 'string') {
     request = new Request(request);
   }
@@ -89,13 +107,13 @@ const wrappedFetch = async (request, fetchOptions, plugins = []) => {
   const pluginFilteredRequest = request.clone();
 
   try {
-    const response = await fetch(request, fetchOptions);
+    const fetchResponse = await fetch(request, fetchOptions);
     if (process.env.NODE_ENV !== 'production') {
       logger.debug(`Network request for `+
       `'${getFriendlyURL(request.url)}' returned a response with ` +
-      `status '${response.status}'.`);
+      `status '${fetchResponse.status}'.`);
     }
-    return response;
+    return fetchResponse;
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
       logger.error(`Network request for `+

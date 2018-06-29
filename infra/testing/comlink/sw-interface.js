@@ -40,6 +40,10 @@ const api = {
     const response = await cache.match(url);
     return response.text();
   },
+
+  isNavigationPreloadSupported: async () => {
+    return workbox.navigationPreload.isSupported();
+  },
 };
 
 self.addEventListener('message', (event) => {
