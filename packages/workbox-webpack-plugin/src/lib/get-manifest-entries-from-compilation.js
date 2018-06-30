@@ -165,7 +165,7 @@ function getManifestEntriesFromCompilation(compilation, config) {
   const blacklistedChunkNames = config.excludeChunks;
   const whitelistedChunkNames = config.chunks;
   const {assets, chunks} = compilation;
-  const {publicPath} = compilation.options.output;
+  const {publicPath} = config.publicPath || compilation.options.output;
 
   const assetMetadata = generateMetadataForAssets(assets, chunks);
   const filteredAssetMetadata = filterAssets(assetMetadata,
