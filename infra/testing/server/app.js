@@ -1,12 +1,15 @@
-const express = require('express');
+const Koa = require('koa');
 const oneLine = require('common-tags').oneLine;
 const path = require('path');
-const serveIndex = require('serve-index');
+const serveStatic = require('koa-static');
 
 const constants = require('../../gulp-tasks/utils/constants');
 const logHelper = require('../utils/log-helper');
 
-const app = express();
+const app = new Koa();
+
+const staticDir = path.join(__dirname, '..', '..');
+app.use(serveStatic(staticDir));
 
 let server = null;
 let requestCounts = {};
