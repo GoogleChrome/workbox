@@ -6,7 +6,7 @@ function initComlink() {
 }
 
 const scriptEl = document.createElement('script');
-scriptEl.src = '/comlink.js';
+scriptEl.src = '/__WORKBOX/comlink.js';
 scriptEl.addEventListener('load', () => {
   if (navigator.serviceWorker.controller) {
     initComlink();

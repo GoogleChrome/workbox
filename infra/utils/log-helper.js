@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 
 const prefix = function() {
-  return chalk.inverse(`[Workbox Log]:`);
+  return chalk.inverse(`[Workbox]:`);
 };
 
 module.exports = {
