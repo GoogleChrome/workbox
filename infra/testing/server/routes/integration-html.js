@@ -1,11 +1,9 @@
 const path = require('path');
-const send = require('koa-send');
-
 const match = '/*/integration.html';
 
-async function handler(ctx) {
-  const root = path.resolve(__dirname, '..', 'static');
-  await send(ctx, 'integration.html', {root});
+async function handler(req, res) {
+  const filePath = path.join(__dirname, '..', 'static', 'integration.html');
+  res.sendFile(filePath);
 }
 
 module.exports = {

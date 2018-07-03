@@ -1,13 +1,11 @@
 const path = require('path');
-const send = require('koa-send');
 
 const match = '/__WORKBOX/comlink.js';
 
-async function handler(ctx) {
+async function handler(req, res) {
   const comlinkMain = require.resolve('comlinkjs');
-  const root = path.join(path.dirname(comlinkMain), 'umd');
-
-  await send(ctx, 'comlink.js', {root});
+  const comlinkPath = path.join(path.dirname(comlinkMain), 'umd', 'comlink.js');
+  res.sendFile(comlinkPath);
 }
 
 module.exports = {

@@ -1,7 +1,7 @@
 const gulp = require('gulp');
 
 const constants = require('./utils/constants');
-const testServer = require('../infra/testing/test-server');
+const testServer = require('../infra/testing/server/index');
 
 const handleExit = () => {
   testServer.stop();
@@ -16,9 +16,9 @@ const startServer = () => {
     'SIGUSR2',
     'uncaughtException',
   ];
-  eventNames.forEach((eventName) => {
+  for (const eventName of eventNames) {
     process.on(eventName, handleExit);
-  });
+  }
 
   return testServer.start();
 };

@@ -5,9 +5,9 @@ class RequestCounter {
     this.urlCount = {};
   }
 
-  count(ctx) {
+  count(req) {
     if (this.headerName) {
-      const headerValue = ctx.get(this.headerName);
+      const headerValue = req.get(this.headerName);
       if (headerValue !== undefined) {
         if (!(headerValue in this.headerCount)) {
           this.headerCount[headerValue] = 0;
@@ -16,7 +16,7 @@ class RequestCounter {
       }
     }
 
-    const url = ctx.request.url;
+    const url = req.url.replace(new RegExp('^//'), '/');
     if (!(url in this.urlCount)) {
       this.urlCount[url] = 0;
     }

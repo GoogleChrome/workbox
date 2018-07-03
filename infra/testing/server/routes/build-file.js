@@ -1,12 +1,11 @@
 const path = require('path');
-const send = require('koa-send');
 
 const constants = require('../../../../gulp-tasks/utils/constants');
 
 const match = '/__WORKBOX/buildFile/:moduleInfo';
 
-async function handler(ctx) {
-  const {moduleInfo} = ctx.params;
+async function handler(req, res) {
+  const {moduleInfo} = req.params;
   const [moduleName, buildType, extension] = moduleInfo.split('.', 3);
 
   const packagePath = `../../../../packages/${moduleName}`;
@@ -25,8 +24,8 @@ async function handler(ctx) {
     fileName = fileName.replace(/\.js$/, `.${extension}`);
   }
 
-  const root = path.resolve(__dirname, buildPath);
-  await send(ctx, fileName, {root});
+  const filePath = path.resolve(__dirname, buildPath, fileName);
+  res.sendFile(filePath);
 }
 
 module.exports = {
