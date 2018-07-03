@@ -6,7 +6,7 @@ importScripts('/__WORKBOX/buildFile/workbox-strategies');
 const cacheName = 'bcu-integration-test';
 
 workbox.routing.registerRoute(
-  new RegExp('/test/uniqueETag$'),
+  new RegExp('/__WORKBOX/uniqueETag$'),
   workbox.strategies.staleWhileRevalidate({
     cacheName,
     plugins: [
@@ -18,7 +18,7 @@ workbox.routing.registerRoute(
 self.addEventListener('install', (event) => {
   // Pre-populate the cache.
   event.waitUntil(caches.open(cacheName)
-    .then((cache) => cache.add('/test/uniqueETag')));
+    .then((cache) => cache.add('/__WORKBOX/uniqueETag')));
   self.skipWaiting();
 });
 self.addEventListener('activate', () => self.clients.claim());

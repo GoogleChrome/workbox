@@ -16,7 +16,7 @@ class RequestCounter {
       }
     }
 
-    const url = req.url.replace(new RegExp('^//'), '/');
+    const url = req.url;
     if (!(url in this.urlCount)) {
       this.urlCount[url] = 0;
     }

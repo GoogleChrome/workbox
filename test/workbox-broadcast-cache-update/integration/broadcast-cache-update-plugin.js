@@ -6,7 +6,7 @@ describe(`broadcastCacheUpdate.Plugin`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
   const testingUrl = `${testServerAddress}/test/workbox-broadcast-cache-update/static/`;
   const swUrl = `${testingUrl}sw.js`;
-  const apiUrl = `${testServerAddress}/test/uniqueETag`;
+  const apiUrl = `${testServerAddress}/__WORKBOX/uniqueETag`;
 
   it(`should broadcast a message on the expected channel when there's a cache update`, async function() {
     await global.__workbox.webdriver.get(testingUrl);

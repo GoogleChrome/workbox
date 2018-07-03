@@ -59,7 +59,7 @@ function stop() {
 }
 
 function getAddress() {
-  return `http://localhost:${PORT}/`;
+  return `http://localhost:${PORT}`;
 }
 
 function startCountingRequests(headerValue) {
