@@ -1,4 +1,4 @@
-importScripts('/comlink.js');
+importScripts('/__WORKBOX/comlink.js');
 
 // TODO: Standardize on naming, and move over some of the legacy uses of
 // postMessage() to this new approach.

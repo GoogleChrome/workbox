@@ -9,10 +9,10 @@ describe(`[workbox-background-sync] Load and use Background Sync`, function() {
   const swUrl = `${testingUrl}sw.js`;
 
   let requestCounter;
-  beforeEach(() => {
+  beforeEach(function() {
     requestCounter = global.__workbox.server.startCountingRequests();
   });
-  afterEach(() => {
+  afterEach(function() {
     global.__workbox.server.stopCountingRequests(requestCounter);
   });
 
