@@ -1,4 +1,5 @@
 const path = require('path');
+
 const match = '/*/integration.html';
 
 async function handler(req, res) {
