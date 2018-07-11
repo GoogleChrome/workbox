@@ -107,28 +107,31 @@ function filterAssets(assetMetadata, whitelist, blacklist) {
 function generateMetadataForAssets(assets, chunks) {
   const mapping = {};
 
-  // Start out by getting metadata for all the assets associated with a chunk.
-  for (const chunk of chunks) {
-    for (const file of chunk.files) {
-      mapping[file] = {
-        chunkName: chunk.name,
-        hash: chunk.renderedHash,
-      };
-    }
-  }
-
-  // Next, loop through the total list of assets and find anything that isn't
-  // associated with a chunk.
+  // If we have standalone info about an asset, use that to calculate the hash,
+  // as it will be specific to a given file.
   for (const [file, asset] of Object.entries(assets)) {
-    if (file in mapping) {
-      continue;
-    }
-
     mapping[file] = {
       // Just use an empty string to denote the lack of chunk association.
       chunkName: '',
       hash: getAssetHash(asset),
     };
+  }
+
+  for (const chunk of chunks) {
+    for (const file of chunk.files) {
+      if (file in mapping) {
+        // If we already knew about this file via assets, then we have its
+        // hash already. Just denote the chunk affiliation.
+        mapping[file].chunkName = chunk.name;
+      } else {
+        // Otherwise, if this is a file that wasn't in assets, use the hash
+        // associated with the chunk as a fallback.
+        mapping[file] = {
+          chunkName: chunk.name,
+          hash: chunk.renderedHash,
+        };
+      }
+    }
   }
 
   return mapping;
