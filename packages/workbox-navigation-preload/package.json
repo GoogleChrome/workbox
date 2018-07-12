@@ -1,6 +1,6 @@
 {
   "name": "workbox-navigation-preload",
-  "version": "3.3.1",
+  "version": "3.4.1",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This library allows developers to opt-in to using Navigation Preload in their service worker.",
@@ -26,6 +26,6 @@
   "main": "build/workbox-navigation-preload.prod.js",
   "module": "index.mjs",
   "dependencies": {
-    "workbox-core": "^3.3.1"
+    "workbox-core": "^3.4.1"
   }
 }
