@@ -203,7 +203,12 @@ class DBWrapper {
       const target = opts.index ? store.index(opts.index) : store;
       const results = [];
 
-      target.openCursor(opts.query, opts.direction).onsuccess = (evt) => {
+      // Passing `undefined` arguments to Edge's `openCursor(...)` causes
+      // 'DOMException: DataError'
+      // Details in issue: https://github.com/GoogleChrome/workbox/issues/1509
+      const query = opts.query || null;
+      const direction = opts.direction || 'next';
+      target.openCursor(query, direction).onsuccess = (evt) => {
         const cursor = evt.target.result;
         if (cursor) {
           const {primaryKey, key, value} = cursor;
