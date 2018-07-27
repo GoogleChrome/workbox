@@ -22,7 +22,7 @@ describe(`[workbox-strategies] StaleWhileRevalidate Requests`, function() {
     const cacheName = 'stale-while-revalidate';
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      fetch(`/test/uniqueValue`)
+      fetch(`/__WORKBOX/uniqueValue`)
         .then((response) => response.text())
         .then((responseBody) => cb(responseBody))
         .catch((err) => cb(err.message));
@@ -31,13 +31,13 @@ describe(`[workbox-strategies] StaleWhileRevalidate Requests`, function() {
 
     // Writing to the cache is asynchronous, so this might not happen right away.
     await waitUntil(async () => {
-      const responseText = await runInSW('getCachedResponseText', cacheName, '/test/uniqueValue');
+      const responseText = await runInSW('getCachedResponseText', cacheName, '/__WORKBOX/uniqueValue');
       return responseText === firstResponse;
     });
 
     // This response should come from cache and not the server
     response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      fetch(`/test/uniqueValue`)
+      fetch(`/__WORKBOX/uniqueValue`)
         .then((response) => response.text())
         .then((responseBody) => cb(responseBody))
         .catch((err) => cb(err.message));
@@ -48,7 +48,7 @@ describe(`[workbox-strategies] StaleWhileRevalidate Requests`, function() {
     // Writing to the cache is asynchronous, so this might not happen right away.
     // We expect a new value, updated from the network, different than secondResponse.
     await waitUntil(async () => {
-      const responseText = await runInSW('getCachedResponseText', cacheName, '/test/uniqueValue');
+      const responseText = await runInSW('getCachedResponseText', cacheName, '/__WORKBOX/uniqueValue');
       return responseText !== secondResponse;
     });
   });

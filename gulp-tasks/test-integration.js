@@ -7,7 +7,7 @@ const clearRequire = require('clear-require');
 
 const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
-const testServer = require('../infra/testing/test-server');
+const server = require('../infra/testing/server/index');
 
 const runFiles = (filePaths) => {
   // Mocha can't be run multiple times, which we need for NODE_ENV.
@@ -53,24 +53,19 @@ const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
 
   try {
     global.__workbox = {
-      webdriver,
       seleniumBrowser,
-      server: testServer,
+      server,
+      webdriver,
     };
 
     const testFiles = glob.sync(path.posix.join(__dirname, '..', testPath,
       '*.js'));
-
-    testServer.reset();
     await runFiles(testFiles);
 
     process.env.NODE_ENV = originalNodeEnv;
   } catch (err) {
     process.env.NODE_ENV = originalNodeEnv;
-
-    logHelper.error(err);
-    throw new Error(
-      `[Workbox Error Msg] 'gulp test-integration' discovered errors.`);
+    throw new Error(`'gulp test-integration' discovered errors.`);
   }
 };
 
@@ -115,7 +110,7 @@ gulp.task('test-integration', async () => {
     return;
   }
 
-  await testServer.start();
+  await server.start();
 
   try {
     const localBrowsers = seleniumAssistant.getLocalBrowsers();
@@ -138,9 +133,9 @@ gulp.task('test-integration', async () => {
           `);
       }
     }
-    await testServer.stop();
+    await server.stop();
   } catch (err) {
-    await testServer.stop();
+    await server.stop();
     throw err;
   }
 

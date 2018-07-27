@@ -19,7 +19,7 @@ describe(`[workbox-strategies] NetworkOnly Requests`, function() {
     await activateAndControlSW(swUrl);
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      fetch(`/test/uniqueValue`)
+      fetch(`/__WORKBOX/uniqueValue`)
         .then((response) => response.text())
         .then((responseBody) => cb(responseBody))
         .catch((err) => cb(err.message));
@@ -30,7 +30,7 @@ describe(`[workbox-strategies] NetworkOnly Requests`, function() {
     await runInSW('clearAllCaches');
 
     response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      fetch(`/test/uniqueValue`)
+      fetch(`/__WORKBOX/uniqueValue`)
         .then((response) => response.text())
         .then((responseBody) => cb(responseBody))
         .catch((err) => cb(err.message));

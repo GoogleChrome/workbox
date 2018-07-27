@@ -2,7 +2,7 @@ importScripts('/__WORKBOX/buildFile/workbox-sw');
 importScripts('/infra/testing/comlink/sw-interface.js');
 
 workbox.routing.registerRoute(
-  new RegExp('/test/uniqueValue'),
+  new RegExp('/__WORKBOX/uniqueValue'),
   workbox.strategies.staleWhileRevalidate({
     cacheName: 'stale-while-revalidate',
   })

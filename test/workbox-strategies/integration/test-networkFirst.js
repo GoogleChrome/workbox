@@ -22,7 +22,7 @@ describe(`[workbox-strategies] NetworkFirst Requests`, function() {
     const cacheName = 'network-first';
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      fetch(`/test/uniqueValue`)
+      fetch(`/__WORKBOX/uniqueValue`)
         .then((response) => response.text())
         .then((responseBody) => cb(responseBody))
         .catch((err) => cb(err.message));
@@ -32,12 +32,12 @@ describe(`[workbox-strategies] NetworkFirst Requests`, function() {
 
     // Writing to the cache is asynchronous, so this might not happen right away.
     await waitUntil(async () => {
-      const responseText = await runInSW('getCachedResponseText', cacheName, '/test/uniqueValue');
+      const responseText = await runInSW('getCachedResponseText', cacheName, '/__WORKBOX/uniqueValue');
       return responseText === firstResponse;
     });
 
     response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
-      fetch(`/test/uniqueValue`)
+      fetch(`/__WORKBOX/uniqueValue`)
         .then((response) => response.text())
         .then((responseBody) => cb(responseBody))
         .catch((err) => cb(err.message));
@@ -47,7 +47,7 @@ describe(`[workbox-strategies] NetworkFirst Requests`, function() {
 
     // Writing to the cache is asynchronous, so this might not happen right away.
     await waitUntil(async () => {
-      const responseText = await runInSW('getCachedResponseText', cacheName, '/test/uniqueValue');
+      const responseText = await runInSW('getCachedResponseText', cacheName, '/__WORKBOX/uniqueValue');
       return responseText === secondResponse;
     });
   });

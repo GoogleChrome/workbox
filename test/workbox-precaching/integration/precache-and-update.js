@@ -26,8 +26,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
       return !('cache' in Request.prototype);
     });
 
-    // Clear out the counters so that we start fresh.
-    global.__workbox.server.reset();
+    let requestCounter = global.__workbox.server.startCountingRequests();
 
     // Register the first service worker.
     await activateAndControlSW(SW_1_URL);
@@ -59,24 +58,29 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     ]);
 
     // Make sure the requested URL's include cache busting search param if needed.
-    let requestsMade = global.__workbox.server.getRequests();
     if (needsCacheBustSearchParam) {
-      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(1);
-      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/index.html?_workbox-cache-bust=1']).to.equal(1);
-      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css?_workbox-cache-bust=1']).to.equal(1);
+      expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/styles/index.css')).to.equal(1);
+      expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/index.html?_workbox-cache-bust=1')).to.equal(1);
+      expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/styles/index.css?_workbox-cache-bust=1')).to.equal(1);
     } else {
-      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(1);
-      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/index.html']).to.equal(1);
+      expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/styles/index.css')).to.equal(1);
+      expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/index.html')).to.equal(1);
     }
 
+    // Unregister the old counter, and start a new count.
+    global.__workbox.server.stopCountingRequests(requestCounter);
+    requestCounter = global.__workbox.server.startCountingRequests();
+
     // Request the page and check that the precached assets weren't requested from the network.
-    global.__workbox.server.reset();
     await global.__workbox.webdriver.get(`${baseUrl}index.html`);
 
-    requestsMade = global.__workbox.server.getRequests();
-    expect(requestsMade['/test/workbox-precaching/static/precache-and-update/']).to.equal(undefined);
-    expect(requestsMade['/test/workbox-precaching/static/precache-and-update/index.html']).to.equal(undefined);
-    expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(undefined);
+    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/')).to.eql(0);
+    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/index.html')).to.eql(0);
+    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/styles/index.css')).to.eql(0);
+
+    // Unregister the old counter, and start a new count.
+    global.__workbox.server.stopCountingRequests(requestCounter);
+    requestCounter = global.__workbox.server.startCountingRequests();
 
     // Activate the second service worker
     await activateAndControlSW(SW_2_URL);
@@ -84,13 +88,12 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Ensure that the new assets were requested and cache busted.
-    requestsMade = global.__workbox.server.getRequests();
     if (needsCacheBustSearchParam) {
-      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/index.html?_workbox-cache-bust=2']).to.equal(1);
-      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/new-request.txt?_workbox-cache-bust=2']).to.equal(1);
+      expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/index.html?_workbox-cache-bust=2')).to.equal(1);
+      expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/new-request.txt?_workbox-cache-bust=2')).to.equal(1);
     } else {
-      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/index.html']).to.equal(1);
-      expect(requestsMade['/test/workbox-precaching/static/precache-and-update/new-request.txt']).to.equal(1);
+      expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/index.html')).to.equal(1);
+      expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/new-request.txt')).to.equal(1);
     }
 
     // Check that the cached entries were deleted / added as expected when
@@ -113,14 +116,17 @@ describe(`[workbox-precaching] Precache and Update`, function() {
       },
     ]);
 
-    // Refresh the page and test that the requests are as expected
-    global.__workbox.server.reset();
+    // Unregister the old counter, and start a new count.
+    global.__workbox.server.stopCountingRequests(requestCounter);
+    requestCounter = global.__workbox.server.startCountingRequests();
+
     await global.__workbox.webdriver.get(`${baseUrl}index.html`);
 
-    requestsMade = global.__workbox.server.getRequests();
     // Ensure the HTML page is returned from cache and not network
-    expect(requestsMade['/test/workbox-precaching/static/precache-and-update/index.html']).to.equal(undefined);
+    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/index.html')).to.eql(0);
     // Ensure the now deleted index.css file is returned from network and not cache.
-    expect(requestsMade['/test/workbox-precaching/static/precache-and-update/styles/index.css']).to.equal(1);
+    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/styles/index.css')).to.equal(1);
+
+    global.__workbox.server.stopCountingRequests(requestCounter);
   });
 });
