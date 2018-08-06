@@ -15,8 +15,9 @@
 */
 
 const ol = require('common-tags').oneLine;
-
+const objectStringify = require('stringify-object');
 const errors = require('./errors');
+
 
 /**
  * Given a set of options that configures `sw-toolbox`'s behavior, convert it
@@ -31,7 +32,8 @@ const errors = require('./errors');
 function getOptionsString(options = {}) {
   let plugins = [];
   if (options.plugins) {
-    plugins = options.plugins.map((plugin) => JSON.stringify(plugin));
+    // Using lib because JSON.stringify won't handle functions
+    plugins = options.plugins.map((plugin) => objectStringify(plugin));
     delete options.plugins;
   }
 
