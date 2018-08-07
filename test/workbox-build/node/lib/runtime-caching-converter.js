@@ -235,24 +235,6 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
         urlPattern: /abc/,
         handler: 'cacheFirst',
         options: {
-          expiration: {
-              maxEntries: 10,
-          },
-          cacheableResponse: {
-            statuses: [0, 200],
-          },
-          broadcastUpdate: {
-            channelName: 'test',
-            options: {
-              source: 'test-source',
-            },
-          },
-          backgroundSync: {
-            name: 'test',
-            options: {
-              maxRetentionTime: 123,
-            },
-          },
           plugins: [{
             cacheWillUpdate: async ({request, response}) => {
                 return response;
@@ -270,7 +252,11 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
     }];
 
     const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
-    validate(runtimeCachingOptions, convertedOptions);
+    expect(convertedOptions[0].includes('cacheWillUpdate: async')).to.true;
+    expect(convertedOptions[0].includes('cacheDidUpdate: async')).to.true;
+    expect(convertedOptions[0].includes('cachedResponseWillBeUsed: async')).to.true;
+    expect(convertedOptions[0].includes('requestWillFetch: async')).to.true;
+    expect(convertedOptions[0].includes('fetchDidFail: async')).to.true;
   });
 
   it(`should strip comments on custom plugins`, function() {
@@ -284,14 +270,14 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
                 return response;
             },
             cachedResponseWillBeUsed: async ({cacheName, request, matchOptions, cachedResponse}) => {
-				/* Commenting */
+                /* Commenting */
                 return cachedResponse;
             },
           }],
         },
     }];
 
-	const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
     expect(convertedOptions[0].includes('// Commenting')).to.false;
     expect(convertedOptions[0].includes('/* Commenting */')).to.false;
   });
