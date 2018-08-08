@@ -281,4 +281,28 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
     expect(convertedOptions[0].includes('// Commenting')).to.false;
     expect(convertedOptions[0].includes('/* Commenting */')).to.false;
   });
+
+  it(`should keep contents with // that are not comments`, function() {
+    const runtimeCachingOptions = [{
+        urlPattern: /abc/,
+        handler: 'cacheFirst',
+        options: {
+          plugins: [{
+            cacheWillUpdate: async ({request, response}) => {
+                // Commenting
+
+                if (request.url === 'https://test.com') {
+                    return null;
+                }
+
+                return response;
+            },
+          }],
+        },
+    }];
+
+    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    expect(convertedOptions[0].includes('// Commenting')).to.false;
+    expect(convertedOptions[0].includes('https://test.com')).to.true;
+  });
 });
