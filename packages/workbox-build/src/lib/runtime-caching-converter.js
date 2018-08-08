@@ -16,6 +16,7 @@
 
 const ol = require('common-tags').oneLine;
 const objectStringify = require('stringify-object');
+const stripComments = require('strip-comments');
 const errors = require('./errors');
 
 
@@ -33,9 +34,9 @@ function getOptionsString(options = {}) {
   let plugins = [];
   if (options.plugins) {
     // Using libs because JSON.stringify won't handle functions
-    plugins = options.plugins.map((plugin) => objectStringify(plugin)
-        // See http://blog.moagrius.com/javascript/javascript-regexp-to-remove-comments/
-        .replace(/(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm, ''));
+    plugins = options.plugins.map((plugin) =>
+      objectStringify(plugin, {transform: (_obj, _prop, str) =>
+        stripComments(str)}));
     delete options.plugins;
   }
 
