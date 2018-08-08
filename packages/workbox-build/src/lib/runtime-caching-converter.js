@@ -35,8 +35,11 @@ function getOptionsString(options = {}) {
   if (options.plugins) {
     // Using libs because JSON.stringify won't handle functions
     plugins = options.plugins.map((plugin) =>
-      objectStringify(plugin, {transform: (_obj, _prop, str) =>
-        stripComments(str)}));
+      objectStringify(plugin, {
+        transform: (_obj, _prop, str) => stripComments(str),
+      })
+    );
+
     delete options.plugins;
   }
 
