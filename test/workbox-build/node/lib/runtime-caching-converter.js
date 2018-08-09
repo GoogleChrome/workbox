@@ -44,7 +44,6 @@ function validate(runtimeCachingOptions, convertedOptions) {
 
   const script = new vm.Script(convertedOptions.join('\n'));
   script.runInNewContext(globalScope);
-
   runtimeCachingOptions.forEach((runtimeCachingOption, i) => {
     const registerRouteCall = globalScope.workbox.routing.registerRoute.getCall(i);
     expect(registerRouteCall.args[0]).to.eql(runtimeCachingOption.urlPattern);
@@ -229,5 +228,81 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
 
     const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
     validate(runtimeCachingOptions, convertedOptions);
+  });
+
+  it(`should support custom plugins`, function() {
+    const runtimeCachingOptions = [{
+        urlPattern: /abc/,
+        handler: 'cacheFirst',
+        options: {
+          plugins: [{
+            cacheWillUpdate: async ({request, response}) => {
+                return response;
+              },
+              cacheDidUpdate: async ({cacheName, request, oldResponse, newResponse}) => {},
+              cachedResponseWillBeUsed: async ({cacheName, request, matchOptions, cachedResponse}) => {
+                return cachedResponse;
+              },
+              requestWillFetch: async ({request}) => {
+                return request;
+              },
+              fetchDidFail: async ({originalRequest, request, error}) => {},
+          }],
+        },
+    }];
+
+    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    expect(convertedOptions[0].includes('cacheWillUpdate: async')).to.true;
+    expect(convertedOptions[0].includes('cacheDidUpdate: async')).to.true;
+    expect(convertedOptions[0].includes('cachedResponseWillBeUsed: async')).to.true;
+    expect(convertedOptions[0].includes('requestWillFetch: async')).to.true;
+    expect(convertedOptions[0].includes('fetchDidFail: async')).to.true;
+  });
+
+  it(`should strip comments on custom plugins`, function() {
+    const runtimeCachingOptions = [{
+        urlPattern: /abc/,
+        handler: 'cacheFirst',
+        options: {
+          plugins: [{
+            cacheWillUpdate: async ({request, response}) => {
+                // Commenting
+                return response;
+            },
+            cachedResponseWillBeUsed: async ({cacheName, request, matchOptions, cachedResponse}) => {
+                /* Commenting */
+                return cachedResponse;
+            },
+          }],
+        },
+    }];
+
+    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    expect(convertedOptions[0].includes('// Commenting')).to.false;
+    expect(convertedOptions[0].includes('/* Commenting */')).to.false;
+  });
+
+  it(`should keep contents with // that are not comments`, function() {
+    const runtimeCachingOptions = [{
+        urlPattern: /abc/,
+        handler: 'cacheFirst',
+        options: {
+          plugins: [{
+            cacheWillUpdate: async ({request, response}) => {
+                // Commenting
+
+                if (request.url === 'https://test.com') {
+                    return null;
+                }
+
+                return response;
+            },
+          }],
+        },
+    }];
+
+    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    expect(convertedOptions[0].includes('// Commenting')).to.false;
+    expect(convertedOptions[0].includes('https://test.com')).to.true;
   });
 });

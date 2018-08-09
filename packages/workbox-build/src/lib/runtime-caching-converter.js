@@ -15,8 +15,10 @@
 */
 
 const ol = require('common-tags').oneLine;
-
+const objectStringify = require('stringify-object');
+const stripComments = require('strip-comments');
 const errors = require('./errors');
+
 
 /**
  * Given a set of options that configures `sw-toolbox`'s behavior, convert it
@@ -31,7 +33,13 @@ const errors = require('./errors');
 function getOptionsString(options = {}) {
   let plugins = [];
   if (options.plugins) {
-    plugins = options.plugins.map((plugin) => JSON.stringify(plugin));
+    // Using libs because JSON.stringify won't handle functions
+    plugins = options.plugins.map((plugin) =>
+      objectStringify(plugin, {
+        transform: (_obj, _prop, str) => stripComments(str),
+      })
+    );
+
     delete options.plugins;
   }
 
