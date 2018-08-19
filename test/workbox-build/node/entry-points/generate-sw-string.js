@@ -379,6 +379,8 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
           },
           statuses: [0, 200],
         },
+        fetchOptions: {},
+        matchOptions: {},
       };
       const runtimeCaching = [{
         urlPattern: REGEXP_URL_PATTERN,
@@ -395,6 +397,8 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
           plugins: runtimeCachingOptions.plugins.concat([
             {}, {},
           ]),
+          fetchOptions: {},
+          matchOptions: {},
         }]],
         cacheableResponsePlugin: [[runtimeCachingOptions.cacheableResponse]],
         cacheExpirationPlugin: [[runtimeCachingOptions.expiration]],

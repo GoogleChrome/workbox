@@ -75,6 +75,14 @@ function validate(runtimeCachingOptions, convertedOptions) {
         expect(options.cacheName).to.eql(strategiesOptions.cacheName);
       }
 
+      if (options.fetchOptions) {
+        expect(options.fetchOptions).to.deep.eql(strategiesOptions.fetchOptions);
+      }
+
+      if (options.matchOptions) {
+        expect(options.matchOptions).to.deep.eql(strategiesOptions.matchOptions);
+      }
+
       if (Object.keys(options.expiration).length > 0) {
         expect(globalScope.workbox.expiration.Plugin.calledWith(options.expiration)).to.be.true;
       }
@@ -169,6 +177,11 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
         backgroundSync: {
           name: 'test',
         },
+        fetchOptions: {
+          headers: {
+            'Custom': 'Header',
+          },
+        },
       },
     }, {
       urlPattern: '/test',
@@ -191,6 +204,9 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
           options: {
             maxRetentionTime: 123,
           },
+        },
+        matchOptions: {
+          ignoreSearch: true,
         },
       },
     }];

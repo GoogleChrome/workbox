@@ -43,12 +43,18 @@ function getOptionsString(options = {}) {
     delete options.plugins;
   }
 
-  // Pull cacheName and networkTimeoutSeconds from the options object, since
-  // they are not directly used to construct a Plugin instance.
-  // If set, need to be passed as options to the handler constructor instead.
-  const {cacheName, networkTimeoutSeconds} = options;
-  delete options.cacheName;
-  delete options.networkTimeoutSeconds;
+  // Pull handler-specific config from the options object, since they are
+  // not directly used to construct a Plugin instance. If set, need to be
+  // passed as options to the handler constructor instead.
+  const handlerOptionKeys =
+      ['cacheName', 'networkTimeoutSeconds', 'fetchOptions', 'matchOptions'];
+  const handlerOptions = {};
+  for (const key of handlerOptionKeys) {
+    if (key in options) {
+      handlerOptions[key] = options[key];
+      delete options[key];
+    }
+  }
 
   const pluginsMapping = {
     backgroundSync: 'workbox.backgroundSync.Plugin',
@@ -104,11 +110,10 @@ function getOptionsString(options = {}) {
     plugins.push(pluginCode);
   }
 
-  if (networkTimeoutSeconds || cacheName || plugins.length > 0) {
+  if (Object.keys(handlerOptions).length > 0 || plugins.length > 0) {
+    const optionsString = JSON.stringify(handlerOptions).slice(1, -1);
     return ol`{
-      ${networkTimeoutSeconds ? ('networkTimeoutSeconds: ' +
-        JSON.stringify(networkTimeoutSeconds)) + ',' : ''}
-      ${cacheName ? ('cacheName: ' + JSON.stringify(cacheName)) + ',' : ''}
+      ${optionsString ? optionsString + ',' : ''}
       plugins: [${plugins.join(', ')}]
     }`;
   } else {
