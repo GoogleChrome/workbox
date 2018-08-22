@@ -64,4 +64,4 @@ if (Array.isArray(self.__precacheManifest)) {
 
 <% if (runtimeCaching) { runtimeCaching.forEach(runtimeCachingString => {%><%= runtimeCachingString %><% });} %>
 
-<% if (offlineGoogleAnalytics) { %>workbox.googleAnalytics.initialize();<% } %>`;
+<% if (offlineAnalyticsConfigString) { %>workbox.googleAnalytics.initialize(<%= offlineAnalyticsConfigString %>);<% } %>`;

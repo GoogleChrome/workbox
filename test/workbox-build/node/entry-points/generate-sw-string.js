@@ -233,7 +233,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       }});
     });
 
-    it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics'`, async function() {
+    it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to true`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
         offlineGoogleAnalytics: true,
       });
@@ -244,7 +244,30 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
-        googleAnalyticsInitialize: [[]],
+        googleAnalyticsInitialize: [[{}]],
+      }});
+    });
+
+    it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to a config`, async function() {
+      const options = Object.assign({}, BASE_OPTIONS, {
+        offlineGoogleAnalytics: {
+          parameterOverrides: {
+            cd1: 'offline',
+          },
+        },
+      });
+
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
+        importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
+        suppressWarnings: [[]],
+        precacheAndRoute: [[[], {}]],
+        googleAnalyticsInitialize: [[{
+          parameterOverrides: {
+            cd1: 'offline',
+          },
+        }]],
       }});
     });
   });

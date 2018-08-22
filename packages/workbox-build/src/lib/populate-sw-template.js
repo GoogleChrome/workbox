@@ -19,6 +19,7 @@ const swTemplate = require('../templates/sw-template');
 
 const errors = require('./errors');
 const runtimeCachingConverter = require('./runtime-caching-converter');
+const stringifyWithoutComments = require('./stringify-without-comments');
 
 module.exports = ({
   cacheId,
@@ -55,6 +56,18 @@ module.exports = ({
     );
   }
 
+  let offlineAnalyticsConfigString;
+  if (offlineGoogleAnalytics) {
+    // If offlineGoogleAnalytics is a truthy value, we need to convert it to the
+    // format expected by the template.
+    offlineAnalyticsConfigString = offlineGoogleAnalytics === true ?
+      // If it's the literal value true, then use an empty config string.
+      '{}' :
+      // Otherwise, convert the config object into a more complex string, taking
+      // into account the fact that functions might need to be stringified.
+      stringifyWithoutComments(offlineGoogleAnalytics);
+  }
+
   try {
     const populatedTemplate = template(swTemplate)({
       cacheId,
@@ -65,7 +78,7 @@ module.exports = ({
       navigateFallback,
       navigateFallbackBlacklist,
       navigateFallbackWhitelist,
-      offlineGoogleAnalytics,
+      offlineAnalyticsConfigString,
       precacheOptionsString,
       skipWaiting,
       runtimeCaching: runtimeCachingConverter(runtimeCaching),

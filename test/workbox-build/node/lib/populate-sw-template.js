@@ -47,7 +47,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       navigateFallback: undefined,
       navigateFallbackBlacklist: undefined,
       navigateFallbackWhitelist: undefined,
-      offlineGoogleAnalytics: undefined,
+      offlineAnalyticsConfigString: undefined,
       precacheOptionsString,
       runtimeCaching: runtimeCachingPlaceholder,
       skipWaiting: undefined,
@@ -68,6 +68,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const navigateFallbackBlacklist = [/another-test/];
     const navigateFallbackWhitelist = [/test/];
     const offlineGoogleAnalytics = true;
+    const offlineAnalyticsConfigString = '{}';
     const runtimeCaching = [];
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const skipWaiting = true;
@@ -115,11 +116,54 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       navigateFallback,
       navigateFallbackBlacklist,
       navigateFallbackWhitelist,
-      offlineGoogleAnalytics,
+      offlineAnalyticsConfigString,
       runtimeCaching: runtimeCachingPlaceholder,
       precacheOptionsString,
       skipWaiting,
       workboxSWImport,
+    }]);
+  });
+
+  it(`should handle a complex offlineGoogleAnalytics value when populating the template`, function() {
+    const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
+    const swTemplate = 'template';
+    const precacheOptionsString = '{}';
+    const offlineGoogleAnalytics = {
+      parameterOverrides: {
+        cd1: 'offline',
+      },
+      hitFilter: (params) => {
+        // Comments are stripped.
+        params.set('cm1', params.get('qt'));
+      },
+    };
+    const offlineAnalyticsConfigString = `{\n\tparameterOverrides: {\n\t\tcd1: 'offline'\n\t},\n\thitFilter: (params) => {\n        \n        params.set('cm1', params.get('qt'));\n      }\n}`;
+
+    const innerStub = sinon.stub().returns('');
+    const outerStub = sinon.stub().returns(innerStub);
+    const populateSWTemplate = proxyquire(MODULE_PATH, {
+      'lodash.template': outerStub,
+      './runtime-caching-converter': () => runtimeCachingPlaceholder,
+      '../templates/sw-template': swTemplate,
+    });
+
+    populateSWTemplate({offlineGoogleAnalytics});
+
+    expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
+    expect(innerStub.args[0]).to.eql([{
+      cacheId: undefined,
+      clientsClaim: undefined,
+      importScripts: undefined,
+      manifestEntries: undefined,
+      modulePathPrefix: undefined,
+      navigateFallback: undefined,
+      navigateFallbackBlacklist: undefined,
+      navigateFallbackWhitelist: undefined,
+      offlineAnalyticsConfigString,
+      precacheOptionsString,
+      runtimeCaching: runtimeCachingPlaceholder,
+      skipWaiting: undefined,
+      workboxSWImport: undefined,
     }]);
   });
 });
