@@ -30,6 +30,9 @@ function setupSpiesAndContext() {
     expiration: {
       Plugin: CacheExpirationPlugin,
     },
+    googleAnalytics: {
+      initialize: sinon.spy(),
+    },
     precaching: {
       precacheAndRoute: sinon.spy(),
       suppressWarnings: sinon.spy(),
@@ -61,6 +64,7 @@ function setupSpiesAndContext() {
     cacheExpirationPlugin: cacheExpirationPluginSpy,
     cacheFirst: workbox.strategies.cacheFirst,
     clientsClaim: workbox.clientsClaim,
+    googleAnalyticsInitialize: workbox.googleAnalytics.initialize,
     networkFirst: workbox.strategies.networkFirst,
     precacheAndRoute: workbox.precaching.precacheAndRoute,
     registerNavigationRoute: workbox.routing.registerNavigationRoute,

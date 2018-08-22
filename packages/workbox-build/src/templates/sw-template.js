@@ -62,4 +62,6 @@ if (Array.isArray(self.__precacheManifest)) {
   <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>
 }<% } %>);<% } %>
 
-<% if (runtimeCaching) { runtimeCaching.forEach(runtimeCachingString => {%><%= runtimeCachingString %><% });} %>`;
+<% if (runtimeCaching) { runtimeCaching.forEach(runtimeCachingString => {%><%= runtimeCachingString %><% });} %>
+
+<% if (offlineAnalyticsConfigString) { %>workbox.googleAnalytics.initialize(<%= offlineAnalyticsConfigString %>);<% } %>`;

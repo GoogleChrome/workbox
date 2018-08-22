@@ -29,6 +29,8 @@ module.exports = baseSchema.keys({
   navigateFallback: joi.string().default(defaults.navigateFallback),
   navigateFallbackBlacklist: joi.array().items(regExpObject),
   navigateFallbackWhitelist: joi.array().items(regExpObject),
+  offlineGoogleAnalytics: joi.alternatives().try(joi.boolean(), joi.object())
+    .default(defaults.offlineGoogleAnalytics),
   runtimeCaching: joi.array().items(joi.object().keys({
     urlPattern: [regExpObject, joi.string()],
     handler: [joi.func(), joi.string().valid(

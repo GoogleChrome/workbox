@@ -1,5 +1,5 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google Inc.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,17 +14,11 @@
   limitations under the License.
 */
 
-module.exports = {
-  clientsClaim: false,
-  globFollow: true,
-  globIgnores: ['**/node_modules/**/*'],
-  globPatterns: ['**/*.{js,css,html}'],
-  globStrict: true,
-  importWorkboxFrom: 'cdn',
-  injectionPointRegexp: /(\.precacheAndRoute\()\s*\[\s*\]\s*(\)|,)/,
-  maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
-  navigateFallback: undefined,
-  offlineGoogleAnalytics: false,
-  purgeOnQuotaError: false,
-  skipWaiting: false,
+const objectStringify = require('stringify-object');
+const stripComments = require('strip-comments');
+
+module.exports = (obj) => {
+  return objectStringify(obj, {
+    transform: (_obj, _prop, str) => stripComments(str),
+  });
 };
