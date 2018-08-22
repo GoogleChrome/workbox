@@ -30,6 +30,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     'modifyUrlPrefix',
     'navigateFallback',
     'navigateFallbackWhitelist',
+    'offlineGoogleAnalytics',
     'runtimeCaching',
     'skipWaiting',
     'templatedUrls',
@@ -229,6 +230,21 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         registerNavigationRoute: [[navigateFallback, {
           whitelist: navigateFallbackWhitelist,
         }]],
+      }});
+    });
+
+    it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics'`, async function() {
+      const options = Object.assign({}, BASE_OPTIONS, {
+        offlineGoogleAnalytics: true,
+      });
+
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
+        importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
+        suppressWarnings: [[]],
+        precacheAndRoute: [[[], {}]],
+        googleAnalyticsInitialize: [[]],
       }});
     });
   });
