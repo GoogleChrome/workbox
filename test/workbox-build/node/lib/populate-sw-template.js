@@ -47,6 +47,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       navigateFallback: undefined,
       navigateFallbackBlacklist: undefined,
       navigateFallbackWhitelist: undefined,
+      offlineGoogleAnalytics: undefined,
       precacheOptionsString,
       runtimeCaching: runtimeCachingPlaceholder,
       skipWaiting: undefined,
@@ -66,6 +67,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const navigateFallback = '/shell.html';
     const navigateFallbackBlacklist = [/another-test/];
     const navigateFallbackWhitelist = [/test/];
+    const offlineGoogleAnalytics = true;
     const runtimeCaching = [];
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const skipWaiting = true;
@@ -97,6 +99,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       navigateFallback,
       navigateFallbackBlacklist,
       navigateFallbackWhitelist,
+      offlineGoogleAnalytics,
       runtimeCaching,
       skipWaiting,
       workboxSWImport,
@@ -112,6 +115,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       navigateFallback,
       navigateFallbackBlacklist,
       navigateFallbackWhitelist,
+      offlineGoogleAnalytics,
       runtimeCaching: runtimeCachingPlaceholder,
       precacheOptionsString,
       skipWaiting,
