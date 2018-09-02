@@ -36,6 +36,7 @@ export const validMethods = [
   'DELETE',
   'GET',
   'HEAD',
+  'PATCH',
   'POST',
   'PUT',
 ];
