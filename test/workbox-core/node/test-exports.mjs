@@ -8,6 +8,7 @@ describe('workbox-core Exports', function() {
         'LOG_LEVELS',
         '_private',
         'default',
+        'registerQuotaErrorCallback',
       ]);
     });
   });

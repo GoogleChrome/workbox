@@ -14,9 +14,11 @@
   limitations under the License.
 */
 
+import {registerQuotaErrorCallback} from './_private/quota.mjs';
+import * as _private from './_private.mjs';
 import defaultExport from './_default.mjs';
 import LOG_LEVELS from './models/LogLevels.mjs';
-import * as _private from './_private.mjs';
+
 import './_version.mjs';
 
 /**
@@ -35,8 +37,9 @@ import './_version.mjs';
  */
 
 export {
-  LOG_LEVELS,
   _private,
+  LOG_LEVELS,
+  registerQuotaErrorCallback,
 };
 
 export default defaultExport;
