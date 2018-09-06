@@ -74,7 +74,7 @@
     "express": "^4.16.3",
     "firebase-tools": "^3.18.5",
     "fs-extra": "^6.0.1",
-    "geckodriver": "^1.8.1",
+    "geckodriver": "^1.12.2",
     "glob": "^7.1.2",
     "gulp": "^4.0.0",
     "gulp-babel": "^7.0.0",
