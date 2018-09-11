@@ -1,6 +1,6 @@
 {
   "name": "workbox-streams",
-  "version": "3.4.1",
+  "version": "3.5.0",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "A library that makes it easier to work with Streams in the browser.",
@@ -27,6 +27,6 @@
   "main": "build/workbox-streams.prod.js",
   "module": "index.mjs",
   "dependencies": {
-    "workbox-core": "^3.4.1"
+    "workbox-core": "^3.5.0"
   }
 }
