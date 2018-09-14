@@ -3,7 +3,11 @@ module.exports = async (swUrl) => {
   let error = await global.__workbox.webdriver.executeAsyncScript((swUrl, cb) => {
     const onStateChangePromise = (registration, desiredState) => {
       return new Promise((resolve, reject) => {
-        if (desiredState === 'activated' && registration.active) {
+        if (desiredState === 'activated' &&
+            registration.active &&
+            // Checking that the URLs match is needed to fix:
+            // https://github.com/GoogleChrome/workbox/issues/1633
+            registration.active.scriptURL === swUrl) {
           resolve();
           return;
         }
