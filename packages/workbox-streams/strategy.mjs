@@ -16,7 +16,6 @@
 import {logger} from 'workbox-core/_private/logger.mjs';
 
 import {createHeaders} from './utils/createHeaders.mjs';
-import {concatenate} from './concatenate.mjs';
 import {concatenateToResponse} from './concatenateToResponse.mjs';
 import {isSupported} from './isSupported.mjs';
 
@@ -39,7 +38,7 @@ import './_version.mjs';
  *
  * @memberof workbox.streams
  */
-function strategy(sourceFunctions, headersInit) {
+export function strategy(sourceFunctions, headersInit) {
   return async ({event, url, params}) => {
     if (isSupported()) {
       const {done, response} = concatenateToResponse(sourceFunctions.map(
@@ -76,10 +75,3 @@ function strategy(sourceFunctions, headersInit) {
     return new Response(new Blob(parts), {headers});
   };
 }
-
-export default {
-  concatenate,
-  concatenateToResponse,
-  isSupported,
-  strategy,
-};

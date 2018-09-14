@@ -14,10 +14,6 @@
   limitations under the License.
 */
 
-import * as publicAPI from './_public.mjs';
-import defaultExport from './_default.mjs';
 import './_version.mjs';
 
-const finalExport = Object.assign(defaultExport, publicAPI);
-
-export default finalExport;
+export * from './_public.mjs';
