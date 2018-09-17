@@ -14,12 +14,10 @@
   limitations under the License.
 */
 
+import './_version.mjs';
+
 /**
  * @namespace workbox.streams
  */
 
-import defaultExport from './_default.mjs';
-import './_version.mjs';
-
-export default defaultExport;
 export * from './_public.mjs';
