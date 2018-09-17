@@ -160,12 +160,14 @@ moduleExports.precache = (entries) => {
   installActivateListenersAdded = true;
   self.addEventListener('install', (event) => {
     event.waitUntil(precacheController.install({
-      suppressWarnings,
+      event,
       plugins,
+      suppressWarnings,
     }));
   });
   self.addEventListener('activate', (event) => {
     event.waitUntil(precacheController.activate({
+      event,
       plugins,
     }));
   });

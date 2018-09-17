@@ -129,14 +129,15 @@ class StaleWhileRevalidate {
       });
     }
 
-    const fetchAndCachePromise = this._getFromNetwork(request, event);
+    const fetchAndCachePromise = this._getFromNetwork({request, event});
 
-    let response = await cacheWrapper.match(
-      this._cacheName,
+    let response = await cacheWrapper.match({
+      cacheName: this._cacheName,
       request,
-      this._matchOptions,
-      this._plugins
-    );
+      event,
+      matchOptions: this._matchOptions,
+      plugins: this._plugins,
+    });
 
     if (response) {
       if (process.env.NODE_ENV !== 'production') {
@@ -176,26 +177,28 @@ class StaleWhileRevalidate {
   }
 
   /**
-   * @param {Request} request
-   * @param {FetchEvent} [event]
+   * @param {Object} options
+   * @param {Request} options.request
+   * @param {Event} [options.event]
    * @return {Promise<Response>}
    *
    * @private
    */
-  async _getFromNetwork(request, event) {
-    const response = await fetchWrapper.fetch(
+  async _getFromNetwork({request, event}) {
+    const response = await fetchWrapper.fetch({
       request,
-      this._fetchOptions,
-      this._plugins,
-      event ? event.preloadResponse : undefined
-    );
+      event,
+      fetchOptions: this._fetchOptions,
+      plugins: this._plugins,
+    });
 
-    const cachePutPromise = cacheWrapper.put(
-      this._cacheName,
+    const cachePutPromise = cacheWrapper.put({
+      cacheName: this._cacheName,
       request,
-      response.clone(),
-      this._plugins
-    );
+      response: response.clone(),
+      event,
+      plugins: this._plugins,
+    });
 
     if (event) {
       try {

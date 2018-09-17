@@ -142,20 +142,20 @@ class PrecacheController {
    * precaching assets.
    *
    * @param {Object} options
-   * @param {boolean} options.suppressWarnings Suppress warning messages.
-   * @param {Array<Object>} options.plugins Plugins to be used for fetching
-   * and caching during install.
-   * @return {
-   * Promise<workbox.precaching.InstallResult>}
+   * @param {boolean} [options.suppressWarnings] Suppress warning messages.
+   * @param {Event} [options.event] The install event (if needed).
+   * @param {Array<Object>} [options.plugins] Plugins to be used for fetching
+   *     and caching during install.
+   * @return {Promise<workbox.precaching.InstallResult>}
    */
-  async install(options = {}) {
+  async install({suppressWarnings = false, event, plugins} = {}) {
     if (process.env.NODE_ENV !== 'production') {
-      if (options.suppressWarnings !== true) {
+      if (suppressWarnings !== true) {
         showWarningsIfNeeded(this._entriesToCacheMap);
       }
 
-      if (options.plugins) {
-        assert.isArray(options.plugins, {
+      if (plugins) {
+        assert.isArray(plugins, {
           moduleName: 'workbox-precaching',
           className: 'PrecacheController',
           funcName: 'install',
@@ -190,7 +190,7 @@ class PrecacheController {
 
     // Wait for all requests to be cached.
     await Promise.all(entriesToPrecache.map((precacheEntry) => {
-      return this._cacheEntryInTemp(precacheEntry, options.plugins);
+      return this._cacheEntryInTemp({event, plugins, precacheEntry});
     }));
 
     if (process.env.NODE_ENV !== 'production') {
@@ -223,8 +223,12 @@ class PrecacheController {
     // when done, to help avoid triggering quota errors.
     for (const request of requests) {
       const response = await tempCache.match(request);
-      await cacheWrapper.put(this._cacheName, request,
-        response, options.plugins);
+      await cacheWrapper.put({
+        cacheName: this._cacheName,
+        request,
+        response,
+        plugins: options.plugins,
+      });
       await tempCache.delete(request);
     }
 
@@ -247,27 +251,35 @@ class PrecacheController {
    * is valid.
    *
    * @private
-   * @param {BaseCacheEntry} precacheEntry The entry to fetch and cache.
-   * @param {Array<Object>} plugins Array of plugins to apply to fetch and
-   * caching.
+   * @param {Object} options
+   * @param {BaseCacheEntry} options.precacheEntry The entry to fetch and cache.
+   * @param {Event} [options.event] The install event (if passed).
+   * @param {Array<Object>} [options.plugins] An array of plugins to apply to
+   *     fetch and caching.
    * @return {Promise<boolean>} Returns a promise that resolves once the entry
-   * has been fetched and cached or skipped if no update is needed. The
-   * promise resolves with true if the entry was cached / updated and
-   * false if the entry is already cached and up-to-date.
+   *     has been fetched and cached or skipped if no update is needed. The
+   *     promise resolves with true if the entry was cached / updated and
+   *     false if the entry is already cached and up-to-date.
    */
-  async _cacheEntryInTemp(precacheEntry, plugins) {
-    let response = await fetchWrapper.fetch(
-      precacheEntry._networkRequest,
-      null,
+  async _cacheEntryInTemp({precacheEntry, event, plugins}) {
+    let response = await fetchWrapper.fetch({
+      request: precacheEntry._networkRequest,
+      event,
+      fetchOptions: null,
       plugins,
-    );
+    });
 
     if (response.redirected) {
       response = await cleanRedirect(response);
     }
 
-    await cacheWrapper.put(this._getTempCacheName(),
-      precacheEntry._cacheRequest, response, plugins);
+    await cacheWrapper.put({
+      cacheName: this._getTempCacheName(),
+      request: precacheEntry._cacheRequest,
+      response,
+      event,
+      plugins,
+    });
 
     await this._precacheDetailsModel._addEntry(precacheEntry);
 

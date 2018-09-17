@@ -102,12 +102,13 @@ class CacheOnly {
       });
     }
 
-    const response = await cacheWrapper.match(
-      this._cacheName,
+    const response = await cacheWrapper.match({
+      cacheName: this._cacheName,
       request,
-      this._matchOptions,
-      this._plugins
-    );
+      event,
+      matchOptions: this._matchOptions,
+      plugins: this._plugins,
+    });
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(

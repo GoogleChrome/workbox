@@ -105,12 +105,12 @@ class NetworkOnly {
     let error;
     let response;
     try {
-      response = await fetchWrapper.fetch(
+      response = await fetchWrapper.fetch({
         request,
-        this._fetchOptions,
-        this._plugins,
-        event ? event.preloadResponse : undefined
-      );
+        event,
+        fetchOptions: this._fetchOptions,
+        plugins: this._plugins,
+      });
     } catch (err) {
       error = err;
     }
