@@ -34,7 +34,7 @@ import '../_version.mjs';
  * @param {Request} options.request
  * @param {Response} options.response
  * @param {Event} [options.event]
- * @param {Array} [options.plugins=[]]
+ * @param {Array<Object>} [options.plugins=[]]
  *
  * @private
  * @memberof module:workbox-core

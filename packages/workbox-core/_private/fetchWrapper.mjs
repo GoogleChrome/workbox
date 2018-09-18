@@ -39,9 +39,8 @@ import '../_version.mjs';
  */
 const wrappedFetch = async ({
     request,
-    event,
     fetchOptions,
-    preloadResponse,
+    event,
     plugins = []}) => {
   // We *should* be able to call `await event.preloadResponse` even if it's
   // undefined, but for some reason, doing so leads to errors in our Node unit
