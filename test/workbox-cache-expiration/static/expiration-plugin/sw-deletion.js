@@ -6,6 +6,7 @@ importScripts('/infra/testing/comlink/sw-interface.js');
 
 const expirationPlugin = new workbox.expiration.Plugin({
   maxEntries: 1,
+  purgeOnQuotaError: true,
 });
 
 const cacheName = 'expiration-plugin-deletion';
