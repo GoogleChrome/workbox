@@ -32,6 +32,14 @@ module.exports = baseSchema.keys({
   offlineGoogleAnalytics: joi.alternatives().try(joi.boolean(), joi.object())
     .default(defaults.offlineGoogleAnalytics),
   runtimeCaching: joi.array().items(joi.object().keys({
+    method: joi.string().valid(
+      'DELETE',
+      'GET',
+      'HEAD',
+      'PATCH',
+      'POST',
+      'PUT'
+    ),
     urlPattern: [regExpObject, joi.string()],
     handler: [joi.func(), joi.string().valid(
       'cacheFirst',
