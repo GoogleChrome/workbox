@@ -47,10 +47,10 @@ class Plugin {
    * added to a cache.
    *
    * @private
-   * @param {Object} input The input object to this function.
-   * @param {string} input.cacheName Name of the cache the responses belong to.
-   * @param {Response} [input.oldResponse] The previous cached value, if any.
-   * @param {Response} input.newResponse The new value in the cache.
+   * @param {Object} options The input object to this function.
+   * @param {string} options.cacheName Name of the cache being updated.
+   * @param {Response} [options.oldResponse] The previous cached value, if any.
+   * @param {Response} options.newResponse The new value in the cache.
    */
   cacheDidUpdate({cacheName, oldResponse, newResponse, request}) {
     if (process.env.NODE_ENV !== 'production') {

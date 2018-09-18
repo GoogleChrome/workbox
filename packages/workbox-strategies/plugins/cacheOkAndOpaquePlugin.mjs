@@ -20,8 +20,8 @@ export default {
    * Return return a response (i.e. allow caching) if the
    * response is ok (i.e. 200) or is opaque.
    *
-   * @param {Object} input
-   * @param {Response} input.response
+   * @param {Object} options
+   * @param {Response} options.response
    * @return {Response|null}
    *
    * @private

@@ -78,9 +78,9 @@ class NavigationRoute extends Route {
   /**
    * Routes match handler.
    *
-   * @param {Object} input
-   * @param {FetchEvent} input.event
-   * @param {URL} input.url
+   * @param {Object} options
+   * @param {FetchEvent} options.event
+   * @param {URL} options.url
    * @return {boolean}
    *
    * @private
