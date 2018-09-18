@@ -15,7 +15,7 @@ import {CacheExpiration} from './CacheExpiration.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {registerQuotaErrorCallback} from 'workbox-core/_private/quota.mjs';
+import {registerQuotaErrorCallback} from 'workbox-core/index.mjs';
 
 import './_version.mjs';
 
