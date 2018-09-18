@@ -454,14 +454,14 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         plugins: testPlugins,
       });
 
-      expect(fetchWrapper.fetch.args[0][2]).to.equal(testPlugins);
-      expect(cacheWrapper.put.args[0][3]).to.equal(testPlugins);
+      expect(fetchWrapper.fetch.args[0][0].plugins).to.equal(testPlugins);
+      expect(cacheWrapper.put.args[0][0].plugins).to.equal(testPlugins);
 
       await precacheController.activate({
         plugins: testPlugins,
       });
 
-      expect(cacheWrapper.put.args[1][3]).to.equal(testPlugins);
+      expect(cacheWrapper.put.args[1][0].plugins).to.equal(testPlugins);
     });
 
     it(`it should set credentials: 'same-origin' on the precaching requests`, async function() {
@@ -475,7 +475,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       await precacheController.install();
 
-      const request = fetchWrapper.fetch.args[0][0];
+      const {request} = fetchWrapper.fetch.args[0][0];
       expect(request.credentials).to.eql('same-origin');
     });
   });

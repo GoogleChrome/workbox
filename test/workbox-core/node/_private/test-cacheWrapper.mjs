@@ -29,7 +29,11 @@ describe(`workbox-core cacheWrapper`, function() {
       });
       const putRequest = new Request('/test/string');
       const putResponse = new Response('Response for /test/string');
-      await cacheWrapper.put('TODO-CHANGE-ME', putRequest, putResponse);
+      await cacheWrapper.put({
+        cacheName: 'TODO-CHANGE-ME',
+        request: putRequest,
+        response: putResponse,
+      });
 
       expect(cacheOpenStub.callCount).to.equal(1);
       const cacheName1 = cacheOpenStub.args[0][0];
@@ -55,7 +59,11 @@ describe(`workbox-core cacheWrapper`, function() {
         // so mock to 1.
         status: 1,
       });
-      await cacheWrapper.put('TODO-CHANGE-ME', putRequest, putResponse);
+      await cacheWrapper.put({
+        cacheName: 'TODO-CHANGE-ME',
+        request: putRequest,
+        response: putResponse,
+      });
 
       expect(cacheOpenStub.callCount).to.equal(0);
       expect(cachePutStub.callCount).to.equal(0);
@@ -74,7 +82,11 @@ describe(`workbox-core cacheWrapper`, function() {
       });
 
       await expectError(async () => {
-        await cacheWrapper.put('CACHE NAME', putRequest, putResponse);
+        await cacheWrapper.put({
+          cacheName: 'CACHE NAME',
+          request: putRequest,
+          response: putResponse,
+        });
       }, 'attempt-to-cache-non-get-request');
 
       expect(cacheOpenStub.callCount).to.equal(0);
@@ -96,44 +108,54 @@ describe(`workbox-core cacheWrapper`, function() {
 
       const putRequest = new Request('/test/string');
       const putResponse = new Response('Response for /test/string');
-      await cacheWrapper.put('TODO-CHANGE-ME', putRequest, putResponse, [
-        firstPlugin,
-        {
-          // Should work without require functions
-        },
-        secondPlugin,
-      ]);
+      await cacheWrapper.put({
+        cacheName: 'TODO-CHANGE-ME',
+        request: putRequest,
+        response: putResponse,
+        plugins: [
+          firstPlugin,
+          {
+            // Should work without require functions
+          },
+          secondPlugin,
+        ],
+      });
 
       [spyOne, spyTwo].forEach((pluginSpy) => {
         expect(pluginSpy.callCount).to.equal(1);
-        expect(pluginSpy.args[0][0]).to.deep.equal({
+        expect(pluginSpy.calledWith(sinon.match({
           cacheName: 'TODO-CHANGE-ME',
-        request: putRequest,
-        oldResponse: null,
-        newResponse: putResponse,
-        });
+          request: putRequest,
+          oldResponse: null,
+          newResponse: putResponse,
+        }))).to.be.true;
 
         // Reset so the spies are clean for next step in the test.
         pluginSpy.resetHistory();
       });
 
       const putResponseUpdate = new Response('Response for /test/string number 2');
-      await cacheWrapper.put('TODO-CHANGE-ME', putRequest, putResponseUpdate, [
-        firstPlugin,
-        {
-          // Should work without require functions
-        },
-        secondPlugin,
-      ]);
+      await cacheWrapper.put({
+        cacheName: 'TODO-CHANGE-ME',
+        request: putRequest,
+        response: putResponseUpdate,
+        plugins: [
+          firstPlugin,
+          {
+            // Should work without require functions
+          },
+          secondPlugin,
+        ],
+      });
 
       [spyOne, spyTwo].forEach((pluginSpy) => {
         expect(pluginSpy.callCount).to.equal(1);
-        expect(pluginSpy.args[0][0]).to.deep.equal({
+        expect(pluginSpy.calledWith(sinon.match({
           cacheName: 'TODO-CHANGE-ME',
           request: putRequest,
           oldResponse: putResponse,
           newResponse: putResponseUpdate,
-        });
+        }))).to.be.true;
       });
     });
 
@@ -156,24 +178,34 @@ describe(`workbox-core cacheWrapper`, function() {
 
       const putRequest = new Request('/test/string');
       const putResponse = new Response('Response for /test/string');
-      await cacheWrapper.put('TODO-CHANGE-ME', putRequest, putResponse, [
-        firstPlugin,
-        {
-          // Should work without require functions
-        },
-        secondPlugin,
-      ]);
+      const fetchEvent = new FetchEvent('fetch', {request: putRequest});
 
-      expect(spyOne.callCount).to.equal(1);
-      expect(spyOne.args[0][0]).to.deep.equal({
+      await cacheWrapper.put({
+        cacheName: 'TODO-CHANGE-ME',
         request: putRequest,
         response: putResponse,
+        event: fetchEvent,
+        plugins: [
+          firstPlugin,
+          {
+            // Should work without require functions
+          },
+          secondPlugin,
+        ],
       });
+
+      expect(spyOne.callCount).to.equal(1);
+      expect(spyOne.calledWith(sinon.match({
+        request: putRequest,
+        response: putResponse,
+        event: fetchEvent,
+      }))).to.be.true;
       expect(spyTwo.callCount).to.equal(1);
-      expect(spyTwo.args[0][0]).to.deep.equal({
+      expect(spyTwo.calledWith(sinon.match({
         request: putRequest,
         response: firstPluginResponse,
-      });
+        event: fetchEvent,
+      }))).to.be.true;
     });
 
     it(`should call the quota exceeded callbacks when there's a QuotaExceeded error`, async function() {
@@ -188,7 +220,11 @@ describe(`workbox-core cacheWrapper`, function() {
       sandbox.stub(testCache, 'put').throws('QuotaExceededError');
 
       try {
-        await cacheWrapper.put(cacheName, 'ignored', new Response());
+        await cacheWrapper.put({
+          cacheName,
+          request: 'ignored',
+          response: new Response(),
+        });
         throw new Error('Unexpected success.');
       } catch (error) {
         expect(error.name).to.eql('QuotaExceededError');
@@ -207,7 +243,11 @@ describe(`workbox-core cacheWrapper`, function() {
       sandbox.stub(testCache, 'put').throws('NetworkError');
 
       try {
-        await cacheWrapper.put(cacheName, 'ignored', new Response());
+        await cacheWrapper.put({
+          cacheName,
+          request: 'ignored',
+          response: new Response(),
+        });
         throw new Error('Unexpected success.');
       } catch (error) {
         expect(error.name).to.eql('NetworkError');
@@ -255,20 +295,24 @@ describe(`workbox-core cacheWrapper`, function() {
         },
       };
 
-
       const spyOne = sandbox.spy(firstPlugin, 'cachedResponseWillBeUsed');
       const spyTwo = sandbox.spy(secondPlugin, 'cachedResponseWillBeUsed');
 
       const openCache = await caches.open(matchCacheName);
       await openCache.put(matchRequest, matchResponse);
 
-      const result = await cacheWrapper.match(matchCacheName, matchRequest, options, [
-        firstPlugin,
-        {
-          // Should work without require functions
-        },
-        secondPlugin,
-      ]);
+      const result = await cacheWrapper.match({
+        cacheName: matchCacheName,
+        request: matchRequest,
+        matchOptions: options,
+        plugins: [
+          firstPlugin,
+          {
+            // Should work without require functions
+          },
+          secondPlugin,
+        ],
+      });
 
       expect(result).to.equal(secondPluginResponse);
       expect(spyOne.callCount).to.equal(1);

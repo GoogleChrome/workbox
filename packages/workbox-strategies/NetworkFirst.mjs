@@ -89,8 +89,8 @@ class NetworkFirst {
    * will work with the
    * [Workbox Router]{@link workbox.routing.Router}.
    *
-   * @param {Object} input
-   * @param {FetchEvent} input.event The fetch event to run this strategy
+   * @param {Object} options
+   * @param {FetchEvent} options.event The fetch event to run this strategy
    * against.
    * @return {Promise<Response>}
    */
@@ -117,12 +117,12 @@ class NetworkFirst {
    * See "[Advanced Recipes](https://developers.google.com/web/tools/workbox/guides/advanced-recipes#make-requests)"
    * for more usage information.
    *
-   * @param {Object} input
-   * @param {Request|string} input.request Either a
-   * [`Request`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Request}
-   * object, or a string URL, corresponding to the request to be made.
-   * @param {FetchEvent} [input.event] If provided, `event.waitUntil()` will be
-   * called automatically to extend the service worker's lifetime.
+   * @param {Object} options
+   * @param {Request|string} options.request Either a
+   *     [`Request`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Request}
+   *     object, or a string URL, corresponding to the request to be made.
+   * @param {FetchEvent} [options.event] If provided, `event.waitUntil()` will
+   *     be called automatically to extend the service worker's lifetime.
    * @return {Promise<Response>}
    */
   async makeRequest({event, request}) {
@@ -145,13 +145,13 @@ class NetworkFirst {
     let timeoutId;
 
     if (this._networkTimeoutSeconds) {
-      const {id, promise} = this._getTimeoutPromise(request, logs);
+      const {id, promise} = this._getTimeoutPromise({request, event, logs});
       timeoutId = id;
       promises.push(promise);
     }
 
-    const networkPromise = this._getNetworkPromise(timeoutId, event, request,
-      logs);
+    const networkPromise =
+        this._getNetworkPromise({timeoutId, request, event, logs});
     promises.push(networkPromise);
 
     // Promise.race() will resolve as soon as the first promise resolves.
@@ -179,13 +179,15 @@ class NetworkFirst {
   }
 
   /**
-   * @param {Request} request
-   * @param {Array} logs A reference to the logs array
+   * @param {Object} options
+   * @param {Request} options.request
+   * @param {Array} options.logs A reference to the logs array
+   * @param {Event} [options.event]
    * @return {Promise<Response>}
    *
    * @private
    */
-  _getTimeoutPromise(request, logs) {
+  _getTimeoutPromise({request, logs, event}) {
     let timeoutId;
     const timeoutPromise = new Promise((resolve) => {
       const onNetworkTimeout = async () => {
@@ -194,7 +196,7 @@ class NetworkFirst {
             `${this._networkTimeoutSeconds} seconds.`);
         }
 
-        resolve(await this._respondFromCache(request));
+        resolve(await this._respondFromCache({request, event}));
       };
 
       timeoutId = setTimeout(
@@ -210,24 +212,25 @@ class NetworkFirst {
   }
 
   /**
-   * @param {number} timeoutId
-   * @param {FetchEvent|null} event
-   * @param {Request} request
-   * @param {Array} logs A reference to the logs Array.
+   * @param {Object} options
+   * @param {number|undefined} options.timeoutId
+   * @param {Request} options.request
+   * @param {Array} options.logs A reference to the logs Array.
+   * @param {Event} [options.event]
    * @return {Promise<Response>}
    *
    * @private
    */
-  async _getNetworkPromise(timeoutId, event, request, logs) {
+  async _getNetworkPromise({timeoutId, request, logs, event}) {
     let error;
     let response;
     try {
-      response = await fetchWrapper.fetch(
+      response = await fetchWrapper.fetch({
         request,
-        this._fetchOptions,
-        this._plugins,
-        event ? event.preloadResponse : undefined
-      );
+        event,
+        fetchOptions: this._fetchOptions,
+        plugins: this._plugins,
+      });
     } catch (err) {
       error = err;
     }
@@ -246,7 +249,7 @@ class NetworkFirst {
     }
 
     if (error || !response) {
-      response = await this._respondFromCache(request);
+      response = await this._respondFromCache({request, event});
       if (process.env.NODE_ENV !== 'production') {
         if (response) {
           logs.push(`Found a cached response in the '${this._cacheName}'` +
@@ -258,12 +261,13 @@ class NetworkFirst {
     } else {
       // Keep the service worker alive while we put the request in the cache
       const responseClone = response.clone();
-      const cachePut = cacheWrapper.put(
-        this._cacheName,
+      const cachePut = cacheWrapper.put({
+        cacheName: this._cacheName,
         request,
-        responseClone,
-        this._plugins
-      );
+        response: responseClone,
+        event,
+        plugins: this._plugins,
+      });
 
       if (event) {
         try {
@@ -285,18 +289,21 @@ class NetworkFirst {
   /**
    * Used if the network timeouts or fails to make the request.
    *
-   * @param {Request} request The fetchEvent request to match in the cache
+   * @param {Object} options
+   * @param {Request} request The request to match in the cache
+   * @param {Event} [options.event]
    * @return {Promise<Object>}
    *
    * @private
    */
-  _respondFromCache(request) {
-    return cacheWrapper.match(
-      this._cacheName,
+  _respondFromCache({event, request}) {
+    return cacheWrapper.match({
+      cacheName: this._cacheName,
       request,
-      this._matchOptions,
-      this._plugins
-    );
+      event,
+      matchOptions: this._matchOptions,
+      plugins: this._plugins,
+    });
   }
 }
 

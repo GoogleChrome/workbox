@@ -29,15 +29,23 @@ import '../_version.mjs';
  *
  * Will call `cacheDidUpdate` on plugins if the cache was updated.
  *
- * @param {string} cacheName
- * @param {Request} request
- * @param {Response} response
- * @param {Array<Object>} [plugins]
+ * @param {Object} options
+ * @param {string} options.cacheName
+ * @param {Request} options.request
+ * @param {Response} options.response
+ * @param {Event} [options.event]
+ * @param {Array<Object>} [options.plugins=[]]
  *
  * @private
  * @memberof module:workbox-core
  */
-const putWrapper = async (cacheName, request, response, plugins = []) => {
+const putWrapper = async ({
+    cacheName,
+    request,
+    response,
+    event,
+    plugins = [],
+  } = {}) => {
   if (!response) {
     if (process.env.NODE_ENV !== 'production') {
       logger.error(`Cannot cache non-existent response for ` +
@@ -49,8 +57,8 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
     });
   }
 
-  let responseToCache = await _isResponseSafeToCache(
-    request, response, plugins);
+  let responseToCache =
+      await _isResponseSafeToCache({request, response, event, plugins});
 
   if (!responseToCache) {
     if (process.env.NODE_ENV !== 'production') {
@@ -75,7 +83,7 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
     plugins, pluginEvents.CACHE_DID_UPDATE);
 
   let oldResponse = updatePlugins.length > 0 ?
-    await matchWrapper(cacheName, request) : null;
+    await matchWrapper({cacheName, request}) : null;
 
   if (process.env.NODE_ENV !== 'production') {
     logger.debug(`Updating the '${cacheName}' cache with a new Response for ` +
@@ -96,6 +104,7 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
     await plugin[pluginEvents.CACHE_DID_UPDATE].call(plugin, {
       cacheName,
       request,
+      event,
       oldResponse,
       newResponse: responseToCache,
     });
@@ -105,17 +114,24 @@ const putWrapper = async (cacheName, request, response, plugins = []) => {
 /**
  * This is a wrapper around cache.match().
  *
- * @param {string} cacheName Name of the cache to match against.
- * @param {Request} request The Request that will be used to look up cache
- * entries.
- * @param {Object} matchOptions Options passed to cache.match().
- * @param {Array<Object>} [plugins] Array of plugins.
+ * @param {Object} options
+ * @param {string} options.cacheName Name of the cache to match against.
+ * @param {Request} options.request The Request that will be used to look up
+ *.    cache entries.
+ * @param {Event} [options.event] The event that propted the action.
+ * @param {Object} [options.matchOptions] Options passed to cache.match().
+ * @param {Array<Object>} [options.plugins=[]] Array of plugins.
  * @return {Response} A cached response if available.
  *
  * @private
  * @memberof module:workbox-core
  */
-const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
+const matchWrapper = async ({
+    cacheName,
+    request,
+    event,
+    matchOptions,
+    plugins = []}) => {
   const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
   if (process.env.NODE_ENV !== 'production') {
@@ -131,6 +147,7 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
         .call(plugin, {
           cacheName,
           request,
+          event,
           matchOptions,
           cachedResponse,
         });
@@ -152,15 +169,17 @@ const matchWrapper = async (cacheName, request, matchOptions, plugins = []) => {
  * This method will call cacheWillUpdate on the available plugins (or use
  * response.ok) to determine if the Response is safe and valid to cache.
  *
- * @param {Request} request
- * @param {Response} response
- * @param {Array<Object>} plugins
+ * @param {Object} options
+ * @param {Request} options.request
+ * @param {Response} options.response
+ * @param {Event} [options.event]
+ * @param {Array<Object>} [options.plugins=[]]
  * @return {Promise<Response>}
  *
  * @private
  * @memberof module:workbox-core
  */
-const _isResponseSafeToCache = async (request, response, plugins) => {
+const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
   let responseToCache = response;
   let pluginsUsed = false;
   for (let plugin of plugins) {
@@ -170,6 +189,7 @@ const _isResponseSafeToCache = async (request, response, plugins) => {
         .call(plugin, {
           request,
           response: responseToCache,
+          event,
         });
 
       if (process.env.NODE_ENV !== 'production') {

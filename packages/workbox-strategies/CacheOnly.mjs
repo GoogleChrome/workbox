@@ -52,8 +52,8 @@ class CacheOnly {
    * will work with the
    * [Workbox Router]{@link workbox.routing.Router}.
    *
-   * @param {Object} input
-   * @param {FetchEvent} input.event The fetch event to run this strategy
+   * @param {Object} options
+   * @param {FetchEvent} options.event The fetch event to run this strategy
    * against.
    * @return {Promise<Response>}
    */
@@ -80,12 +80,12 @@ class CacheOnly {
    * See "[Advanced Recipes](https://developers.google.com/web/tools/workbox/guides/advanced-recipes#make-requests)"
    * for more usage information.
    *
-   * @param {Object} input
-   * @param {Request|string} input.request Either a
-   * [`Request`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Request}
-   * object, or a string URL, corresponding to the request to be made.
-   * @param {FetchEvent} [input.event] If provided, `event.waitUntil()` will be
-   * called automatically to extend the service worker's lifetime.
+   * @param {Object} options
+   * @param {Request|string} options.request Either a
+   *     [`Request`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Request}
+   *     object, or a string URL, corresponding to the request to be made.
+   * @param {FetchEvent} [options.event] If provided, `event.waitUntil()` will
+   *     be called automatically to extend the service worker's lifetime.
    * @return {Promise<Response>}
    */
   async makeRequest({event, request}) {
@@ -102,12 +102,13 @@ class CacheOnly {
       });
     }
 
-    const response = await cacheWrapper.match(
-      this._cacheName,
+    const response = await cacheWrapper.match({
+      cacheName: this._cacheName,
       request,
-      this._matchOptions,
-      this._plugins
-    );
+      event,
+      matchOptions: this._matchOptions,
+      plugins: this._plugins,
+    });
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(

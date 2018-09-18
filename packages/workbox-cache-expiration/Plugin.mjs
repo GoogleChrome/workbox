@@ -115,12 +115,12 @@ class Plugin {
    * prevents it from being used if the `Response`'s `Date` header value is
    * older than the configured `maxAgeSeconds`.
    *
-   * @param {Object} input
-   * @param {string} input.cacheName Name of the cache the responses belong to.
-   * @param {Response} input.cachedResponse The `Response` object that's been
-   *        read from a cache and whose freshness should be checked.
+   * @param {Object} options
+   * @param {string} options.cacheName Name of the cache the response is in.
+   * @param {Response} options.cachedResponse The `Response` object that's been
+   *     read from a cache and whose freshness should be checked.
    * @return {Response} Either the `cachedResponse`, if it's
-   *         fresh, or `null` if the `Response` is older than `maxAgeSeconds`.
+   *     fresh, or `null` if the `Response` is older than `maxAgeSeconds`.
    *
    * @private
    */
@@ -197,9 +197,9 @@ class Plugin {
    * A "lifecycle" callback that will be triggered automatically by the
    * `workbox.runtimeCaching` handlers when an entry is added to a cache.
    *
-   * @param {Object} input
-   * @param {string} input.cacheName Name of the cache the responses belong to.
-   * @param {string} input.request The Request for the cached entry.
+   * @param {Object} options
+   * @param {string} options.cacheName Name of the cache that was updated.
+   * @param {string} options.request The Request for the cached entry.
    *
    * @private
    */

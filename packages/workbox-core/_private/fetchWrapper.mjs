@@ -27,24 +27,26 @@ import '../_version.mjs';
  *
  * Will call requestWillFetch on available plugins.
  *
- * @param {Request|string} request
- * @param {Object} fetchOptions
- * @param {Array<Object>} [plugins]
- * @param {Promise<Response>} [preloadResponse]
+ * @param {Object} options
+ * @param {Request|string} options.request
+ * @param {Object} [options.fetchOptions]
+ * @param {Event} [options.event]
+ * @param {Array<Object>} [options.plugins=[]]
  * @return {Promise<Response>}
  *
  * @private
  * @memberof module:workbox-core
  */
-const wrappedFetch = async (request,
-                            fetchOptions,
-                            plugins = [],
-                            preloadResponse) => {
-  // We *should* be able to call `await preloadResponse` even if it's undefined,
-  // but for some reason, doing so leads to errors in our Node unit tests.
-  // To work around that, explicitly check preloadResponse's value first.
-  if (preloadResponse) {
-    const possiblePreloadResponse = await preloadResponse;
+const wrappedFetch = async ({
+    request,
+    fetchOptions,
+    event,
+    plugins = []}) => {
+  // We *should* be able to call `await event.preloadResponse` even if it's
+  // undefined, but for some reason, doing so leads to errors in our Node unit
+  // tests. To work around that, explicitly check preloadResponse's value first.
+  if (event && event.preloadResponse) {
+    const possiblePreloadResponse = await event.preloadResponse;
     if (possiblePreloadResponse) {
       if (process.env.NODE_ENV !== 'production') {
         logger.log(`Using a preloaded navigation response for ` +
@@ -82,6 +84,7 @@ const wrappedFetch = async (request,
       if (pluginEvents.REQUEST_WILL_FETCH in plugin) {
         request = await plugin[pluginEvents.REQUEST_WILL_FETCH].call(plugin, {
           request: request.clone(),
+          event,
         });
 
         if (process.env.NODE_ENV !== 'production') {
@@ -123,6 +126,7 @@ const wrappedFetch = async (request,
     for (let plugin of failedFetchPlugins) {
       await plugin[pluginEvents.FETCH_DID_FAIL].call(plugin, {
         error,
+        event,
         originalRequest: originalRequest.clone(),
         request: pluginFilteredRequest.clone(),
       });
