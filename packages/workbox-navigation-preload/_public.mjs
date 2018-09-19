@@ -14,12 +14,14 @@
   limitations under the License.
 */
 
+import {disable} from './disable.mjs';
 import {enable} from './enable.mjs';
 import {isSupported} from './utils/isSupported.mjs';
 
 import './_version.mjs';
 
 export {
+  disable,
   enable,
   isSupported,
 };
