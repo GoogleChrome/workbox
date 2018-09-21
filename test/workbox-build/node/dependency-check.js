@@ -11,7 +11,7 @@ describe(`[workbox-build] Test Dependencies`, function() {
         'demo',
       ],
       ignoreMatches: [
-        'babel-runtime',
+        '@babel/runtime',
         'workbox-background-sync',
         'workbox-broadcast-cache-update',
         'workbox-cache-expiration',

@@ -8,7 +8,9 @@ describe(`[workbox-cli] package.json`, function() {
       ignoreDirs: [
         'build',
       ],
-      ignoreMatches: [],
+      ignoreMatches: [
+        '@babel/runtime',
+      ],
     }, (unusedDeps) => {
       if (unusedDeps.dependencies.length > 0) {
         return reject(new Error(`Unused dependencies defined in package.json: ${JSON.stringify(unusedDeps.dependencies)}`));

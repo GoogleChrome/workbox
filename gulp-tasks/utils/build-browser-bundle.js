@@ -136,10 +136,6 @@ module.exports = (packagePath, buildType) => {
 
   const plugins = rollupHelper.getDefaultPlugins(buildType);
 
-  const banner = pkgJson.workbox.includeBabelHelpers ?
-    fs.readFileSync(path.join(__dirname, 'external-helpers.js')) :
-    '';
-
   return rollupStream({
     input: moduleBrowserPath,
     rollup,
@@ -147,7 +143,6 @@ module.exports = (packagePath, buildType) => {
       name: namespace,
       sourcemap: true,
       format: 'iife',
-      banner,
       globals,
     },
     external: externalAndPure,

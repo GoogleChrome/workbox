@@ -18,12 +18,12 @@ module.exports = (packagePath) => {
   `);
 
   return gulp.src(`${packagePath}/src/**`).pipe(babel({
-    only: /\.js$/,
+    only: [/\.js$/],
     presets: [
-      ['env', {
+      ['@babel/preset-env', {
         targets: {
           // Change this when our minimum required node version changes.
-          node: '4.0',
+          node: '6.0',
         },
       }],
     ],
@@ -32,7 +32,7 @@ module.exports = (packagePath) => {
       // are only included in our Rollup bundles once, even if they're used
       // in multiple source files.
       // See https://github.com/rollup/rollup-plugin-babel#helpers
-      'transform-runtime',
+      '@babel/transform-runtime',
     ],
   })).pipe(gulp.dest(outputDirectory));
 };
