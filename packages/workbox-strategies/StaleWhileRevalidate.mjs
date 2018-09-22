@@ -19,6 +19,7 @@ import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
 import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
@@ -138,7 +139,7 @@ class StaleWhileRevalidate {
       matchOptions: this._matchOptions,
       plugins: this._plugins,
     });
-
+    let error;
     if (response) {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(`Found a cached response in the '${this._cacheName}'` +
@@ -160,7 +161,11 @@ class StaleWhileRevalidate {
         logs.push(`No response found in the '${this._cacheName}' cache. ` +
           `Will wait for the network response.`);
       }
-      response = await fetchAndCachePromise;
+      try {
+        response = await fetchAndCachePromise;
+      } catch (err) {
+        error = err;
+      }
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -173,7 +178,10 @@ class StaleWhileRevalidate {
       logger.groupEnd();
     }
 
-    return response;
+    if (response) {
+      return response;
+    }
+    throw new WorkboxError('no-response', {url: request.url, error});
   }
 
   /**

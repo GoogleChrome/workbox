@@ -17,8 +17,8 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 
 import {_private} from '../../../packages/workbox-core/index.mjs';
-
 import {NetworkOnly} from '../../../packages/workbox-strategies/NetworkOnly.mjs';
+import expectError from '../../../infra/testing/expectError';
 
 describe(`[workbox-strategies] NetworkOnly.makeRequest()`, function() {
   const sandbox = sinon.createSandbox();
@@ -110,14 +110,10 @@ describe(`[workbox-strategies] NetworkOnly.handle()`, function() {
     });
 
     const networkOnly = new NetworkOnly();
-    // This promise should reject, so call done() passing in an error string
-    // if it resolves, and done() without an error if it rejects.
-    try {
-      await networkOnly.handle({event});
-      throw new Error('Expected error to be thrown.');
-    } catch (err) {
-      expect(err.message).to.equal('Injected Error');
-    }
+    await expectError(
+      () => networkOnly.handle({event}),
+      'no-response'
+    );
   });
 
   it(`should use plugins response`, async function() {

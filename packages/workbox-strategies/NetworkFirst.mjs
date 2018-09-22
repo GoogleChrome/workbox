@@ -13,12 +13,13 @@
  limitations under the License.
 */
 
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
 import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
@@ -175,7 +176,10 @@ class NetworkFirst {
       logger.groupEnd();
     }
 
-    return response;
+    if (response) {
+      return response;
+    }
+    throw new WorkboxError('no-response', {url: request.url});
   }
 
   /**

@@ -19,6 +19,7 @@ import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
 import messages from './utils/messages.mjs';
 import './_version.mjs';
@@ -155,13 +156,10 @@ class CacheFirst {
       logger.groupEnd();
     }
 
-    if (error) {
-      // Don't swallow error as we'll want it to throw and enable catch
-      // handlers in router.
-      throw error;
+    if (response) {
+      return response;
     }
-
-    return response;
+    throw new WorkboxError('no-response', {url: request.url, error});
   }
 
   /**
