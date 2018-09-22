@@ -33,18 +33,18 @@ import './_version.mjs';
 function enable(headerValue) {
   if (isSupported()) {
     self.addEventListener('activate', (event) => {
-        event.waitUntil(
-          self.registration.navigationPreload.enable().then(() => {
-            // Defaults to Service-Worker-Navigation-Preload: true if not set.
-            if (headerValue) {
-              self.registration.navigationPreload.setHeaderValue(headerValue);
-            }
+      event.waitUntil(
+        self.registration.navigationPreload.enable().then(() => {
+          // Defaults to Service-Worker-Navigation-Preload: true if not set.
+          if (headerValue) {
+            self.registration.navigationPreload.setHeaderValue(headerValue);
+          }
 
-            if (process.env.NODE_ENV !== 'production') {
-              logger.log(`Navigation preload is enabled.`);
-            }
-          })
-        );
+          if (process.env.NODE_ENV !== 'production') {
+            logger.log(`Navigation preload is enabled.`);
+          }
+        })
+      );
     });
   } else {
     if (process.env.NODE_ENV !== 'production') {

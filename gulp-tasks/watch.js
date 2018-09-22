@@ -13,9 +13,9 @@ gulp.task('watch', gulp.series(
         '!packages/**/node_modules/**/*',
       ], gulp.series('build'),
     )
-    .on('error', () => {})
-    .on('change', function(path, stats) {
-      logHelper.log(`gulp.watch() is running due to a change in '${path}'`);
-    });
+      .on('error', () => {})
+      .on('change', function(path, stats) {
+        logHelper.log(`gulp.watch() is running due to a change in '${path}'`);
+      });
   }
 ));

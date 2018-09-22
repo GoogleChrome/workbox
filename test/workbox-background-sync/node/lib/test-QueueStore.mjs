@@ -16,15 +16,15 @@
 import {expect} from 'chai';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import {DB_NAME, OBJECT_STORE_NAME} from
-    '../../../../packages/workbox-background-sync/utils/constants.mjs';
+  '../../../../packages/workbox-background-sync/utils/constants.mjs';
 import {Queue} from
-    '../../../../packages/workbox-background-sync/Queue.mjs';
+  '../../../../packages/workbox-background-sync/Queue.mjs';
 import {QueueStore} from
-    '../../../../packages/workbox-background-sync/models/QueueStore.mjs';
+  '../../../../packages/workbox-background-sync/models/QueueStore.mjs';
 import {DBWrapper} from
-    '../../../../packages/workbox-core/_private/DBWrapper.mjs';
+  '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 import StorableRequest from
-    '../../../../packages/workbox-background-sync/models/StorableRequest.mjs';
+  '../../../../packages/workbox-background-sync/models/StorableRequest.mjs';
 
 const getObjectStoreEntries = async () => {
   return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);

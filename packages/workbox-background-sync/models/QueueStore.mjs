@@ -37,8 +37,8 @@ export class QueueStore {
     this._queue = queue;
     this._db = new DBWrapper(DB_NAME, 1, {
       onupgradeneeded: (evt) => evt.target.result
-          .createObjectStore(OBJECT_STORE_NAME, {autoIncrement: true})
-          .createIndex(INDEXED_PROP, INDEXED_PROP, {unique: false}),
+        .createObjectStore(OBJECT_STORE_NAME, {autoIncrement: true})
+        .createIndex(INDEXED_PROP, INDEXED_PROP, {unique: false}),
     });
   }
 

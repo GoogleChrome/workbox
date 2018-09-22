@@ -24,7 +24,7 @@ class SyncEvent extends ExtendableEvent {
 
     if (!init.tag) {
       throw new TypeError(
-          `Failed to construct 'SyncEvent': required member tag is undefined.`);
+        `Failed to construct 'SyncEvent': required member tag is undefined.`);
     }
 
     this.tag = init.tag;

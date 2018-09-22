@@ -79,37 +79,37 @@ class PrecacheController {
    */
   _parseEntry(input) {
     switch (typeof input) {
-      case 'string': {
-        if (process.env.NODE_ENV !== 'production') {
-          if (input.length === 0) {
-            throw new WorkboxError(
-              'add-to-cache-list-unexpected-type', {
-                entry: input,
-              }
-            );
-          }
+    case 'string': {
+      if (process.env.NODE_ENV !== 'production') {
+        if (input.length === 0) {
+          throw new WorkboxError(
+            'add-to-cache-list-unexpected-type', {
+              entry: input,
+            }
+          );
         }
-
-        return new PrecacheEntry(input, input, input);
       }
-      case 'object': {
-        if (process.env.NODE_ENV !== 'production') {
-          if (!input || !input.url) {
-            throw new WorkboxError(
-              'add-to-cache-list-unexpected-type', {
-                entry: input,
-              }
-            );
-          }
+
+      return new PrecacheEntry(input, input, input);
+    }
+    case 'object': {
+      if (process.env.NODE_ENV !== 'production') {
+        if (!input || !input.url) {
+          throw new WorkboxError(
+            'add-to-cache-list-unexpected-type', {
+              entry: input,
+            }
+          );
         }
-
-        return new PrecacheEntry(
-          input, input.url, input.revision || input.url, !!input.revision);
       }
-      default:
-        throw new WorkboxError('add-to-cache-list-unexpected-type', {
-          entry: input,
-        });
+
+      return new PrecacheEntry(
+        input, input.url, input.revision || input.url, !!input.revision);
+    }
+    default:
+      throw new WorkboxError('add-to-cache-list-unexpected-type', {
+        entry: input,
+      });
     }
   }
 
@@ -386,7 +386,7 @@ class PrecacheController {
    */
   getCachedUrls() {
     return Array.from(this._entriesToCacheMap.keys())
-    .map((url) => new URL(url, location).href);
+      .map((url) => new URL(url, location).href);
   }
 }
 

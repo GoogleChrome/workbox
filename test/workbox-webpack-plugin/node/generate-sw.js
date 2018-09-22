@@ -456,14 +456,14 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [
-                [publicPath + workboxSWImport],
-                [publicPath + FILE_MANIFEST_NAME],
-              ],
-              setConfig: [[{modulePathPrefix: publicPath + modulePathPrefix}]],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[], {}]],
-            }});
+            importScripts: [
+              [publicPath + workboxSWImport],
+              [publicPath + FILE_MANIFEST_NAME],
+            ],
+            setConfig: [[{modulePathPrefix: publicPath + modulePathPrefix}]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
@@ -1252,22 +1252,22 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [
-                [WORKBOX_SW_FILE_NAME],
-                [FILE_MANIFEST_NAME],
-              ],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[{
-                revision: '544658ab25ee8762dc241e8b1c5ed96d',
-                url: 'page-1.html',
-              }, {
-                revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-                url: 'page-2.html',
-              }, {
-                revision: 'edeab2a4c398a3f25d7b92bedea10d31',
-                url: 'webpackEntry.js',
-              }], {}]],
-            }});
+            importScripts: [
+              [WORKBOX_SW_FILE_NAME],
+              [FILE_MANIFEST_NAME],
+            ],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[{
+              revision: '544658ab25ee8762dc241e8b1c5ed96d',
+              url: 'page-1.html',
+            }, {
+              revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+              url: 'page-2.html',
+            }, {
+              revision: 'edeab2a4c398a3f25d7b92bedea10d31',
+              url: 'webpackEntry.js',
+            }], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
@@ -1334,22 +1334,22 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [
-                [WORKBOX_SW_FILE_NAME],
-                [FILE_MANIFEST_NAME],
-              ],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[{
-                revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
-                url: 'index.html',
-              }, {
-                revision: '544658ab25ee8762dc241e8b1c5ed96d',
-                url: 'page-1.html',
-              }, {
-                revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-                url: 'page-2.html',
-              }], {}]],
-            }});
+            importScripts: [
+              [WORKBOX_SW_FILE_NAME],
+              [FILE_MANIFEST_NAME],
+            ],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[{
+              revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+              url: 'index.html',
+            }, {
+              revision: '544658ab25ee8762dc241e8b1c5ed96d',
+              url: 'page-1.html',
+            }, {
+              revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+              url: 'page-2.html',
+            }], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
@@ -1414,13 +1414,13 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [
-                [WORKBOX_SW_FILE_NAME],
-                [FILE_MANIFEST_NAME],
-              ],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[], {}]],
-            }});
+            importScripts: [
+              [WORKBOX_SW_FILE_NAME],
+              [FILE_MANIFEST_NAME],
+            ],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
@@ -1482,7 +1482,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               ],
               suppressWarnings: [[]],
               precacheAndRoute: [[[], {}]],
-          }});
+            }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.

@@ -352,7 +352,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerOne.activate();
 
       // Ensure temp cache is empty
-       tempCache = await caches.open(tempCache);
+      tempCache = await caches.open(tempCache);
       let requests = await tempCache.keys();
       expect(requests.length).to.equal(0);
 

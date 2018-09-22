@@ -27,6 +27,7 @@ module.exports = {
   ],
   overrides: [{
     files: ['test/**/*.{js,mjs}'],
+    parser: 'babel-eslint',
     env: {
       mocha: true,
     },

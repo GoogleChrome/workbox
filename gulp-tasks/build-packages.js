@@ -12,11 +12,11 @@ const cleanPackage = (packagePath) => {
 };
 
 gulp.task('build-packages:clean', gulp.series(
-    packageRunnner(
-      'build-packages:clean',
-      'all',
-      cleanPackage
-    )
+  packageRunnner(
+    'build-packages:clean',
+    'all',
+    cleanPackage
+  )
 ));
 
 gulp.task('build-packages:build', gulp.parallel(

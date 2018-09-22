@@ -70,35 +70,35 @@ function getOptionsString(options = {}) {
 
     let pluginCode;
     switch (pluginName) {
-      // Special case logic for plugins that have a required parameter, and then
-      // an additional optional config parameter.
-      case 'backgroundSync': {
-        const name = pluginConfig.name;
-        pluginCode = `new ${pluginString}(${JSON.stringify(name)}`;
-        if ('options' in pluginConfig) {
-          pluginCode += `, ${JSON.stringify(pluginConfig.options)}`;
-        }
-        pluginCode += `)`;
-
-        break;
+    // Special case logic for plugins that have a required parameter, and then
+    // an additional optional config parameter.
+    case 'backgroundSync': {
+      const name = pluginConfig.name;
+      pluginCode = `new ${pluginString}(${JSON.stringify(name)}`;
+      if ('options' in pluginConfig) {
+        pluginCode += `, ${JSON.stringify(pluginConfig.options)}`;
       }
+      pluginCode += `)`;
 
-      case 'broadcastUpdate': {
-        const channelName = pluginConfig.channelName;
-        pluginCode = `new ${pluginString}(${JSON.stringify(channelName)}`;
-        if ('options' in pluginConfig) {
-          pluginCode += `, ${JSON.stringify(pluginConfig.options)}`;
-        }
-        pluginCode += `)`;
+      break;
+    }
 
-        break;
+    case 'broadcastUpdate': {
+      const channelName = pluginConfig.channelName;
+      pluginCode = `new ${pluginString}(${JSON.stringify(channelName)}`;
+      if ('options' in pluginConfig) {
+        pluginCode += `, ${JSON.stringify(pluginConfig.options)}`;
       }
+      pluginCode += `)`;
 
-      // For plugins that just pass in an Object to the constructor, like
-      // expiration and cacheableResponse
-      default: {
-        pluginCode = `new ${pluginString}(${JSON.stringify(pluginConfig)})`;
-      }
+      break;
+    }
+
+    // For plugins that just pass in an Object to the constructor, like
+    // expiration and cacheableResponse
+    default: {
+      pluginCode = `new ${pluginString}(${JSON.stringify(pluginConfig)})`;
+    }
     }
 
     plugins.push(pluginCode);

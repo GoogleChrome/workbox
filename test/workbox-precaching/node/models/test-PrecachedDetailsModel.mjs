@@ -45,7 +45,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       expect(fakeDB.createObjectStore.callCount).to.equal(1);
       expect(fakeDB.createObjectStore.args[0][0]).to.equal(`precached-details-models`);
 
-     expect(fakeDB.deleteObjectStore.callCount).to.equal(0);
+      expect(fakeDB.deleteObjectStore.callCount).to.equal(0);
     });
 
     it('should handle upgrade 1 > 2', () => {
@@ -70,8 +70,8 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       expect(fakeDB.createObjectStore.callCount).to.equal(1);
       expect(fakeDB.createObjectStore.args[0][0]).to.equal(`precached-details-models`);
 
-     expect(fakeDB.deleteObjectStore.callCount).to.equal(1);
-     expect(fakeDB.deleteObjectStore.args[0][0]).to.equal(`workbox-precaching`);
+      expect(fakeDB.deleteObjectStore.callCount).to.equal(1);
+      expect(fakeDB.deleteObjectStore.args[0][0]).to.equal(`workbox-precaching`);
     });
 
     it('should handle upgrade 1 > 2 with constructing precached-details-models', () => {

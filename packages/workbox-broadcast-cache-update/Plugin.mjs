@@ -24,7 +24,7 @@ import './_version.mjs';
  * @memberof workbox.broadcastUpdate
  */
 class Plugin {
-    /**
+  /**
    * Construct a new instance with a specific `channelName` to
    * broadcast messages on
    *

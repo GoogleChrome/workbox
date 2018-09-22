@@ -54,14 +54,14 @@ You can view a friendlier UI by running
     return spawn(getNpmCmd(), params, {
       cwd: path.join(__dirname, '..'),
     })
-    .then(() => {
-      logHelper.log(`Docs built successfully`);
-      browserSync.reload();
-    })
-    .catch((err) => {
-      logHelper.error(`Docs failed to build: `, err);
-      throw err;
-    });
+      .then(() => {
+        logHelper.log(`Docs built successfully`);
+        browserSync.reload();
+      })
+      .catch((err) => {
+        logHelper.error(`Docs failed to build: `, err);
+        throw err;
+      });
   };
 };
 
@@ -86,7 +86,7 @@ gulp.task('docs:watch', () => {
 gulp.task('docs:serve', () => {
   browserSync.init({
     server: {
-        baseDir: DOCS_DIRECTORY,
+      baseDir: DOCS_DIRECTORY,
     },
   });
 });

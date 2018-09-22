@@ -38,10 +38,10 @@ import '../_version.mjs';
  * @memberof module:workbox-core
  */
 const wrappedFetch = async ({
-    request,
-    fetchOptions,
-    event,
-    plugins = []}) => {
+  request,
+  fetchOptions,
+  event,
+  plugins = []}) => {
   // We *should* be able to call `await event.preloadResponse` even if it's
   // undefined, but for some reason, doing so leads to errors in our Node unit
   // tests. To work around that, explicitly check preloadResponse's value first.
