@@ -1,5 +1,4 @@
 const babel = require('rollup-plugin-babel');
-const minify = require('uglify-es').minify;
 const replace = require('rollup-plugin-replace');
 const terserPlugin = require('rollup-plugin-terser').terser;
 
