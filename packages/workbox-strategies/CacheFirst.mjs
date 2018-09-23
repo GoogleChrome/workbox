@@ -32,6 +32,9 @@ import './_version.mjs';
  * such as URLs like `/styles/example.a8f5f1.css`, since they
  * can be cached for long periods of time.
  *
+ * If the network request fails, and there is no cache match, this will throw
+ * a `WorkboxError` exception.
+ *
  * @memberof workbox.strategies
  */
 class CacheFirst {

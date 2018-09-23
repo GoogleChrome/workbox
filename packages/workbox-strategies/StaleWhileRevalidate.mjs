@@ -40,6 +40,9 @@ import './_version.mjs';
  * Opaque responses are are cross-origin requests where the response doesn't
  * support [CORS]{@link https://enable-cors.org/}.
  *
+ * If the network request fails, and there is no cache match, this will throw
+ * a `WorkboxError` exception.
+ *
  * @memberof workbox.strategies
  */
 class StaleWhileRevalidate {

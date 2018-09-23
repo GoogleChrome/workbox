@@ -27,7 +27,10 @@ import './_version.mjs';
  * [network-only]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only}
  * request strategy.
  *
- * This class is useful if you want to take advantage of any [Workbox plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}.
+ * This class is useful if you want to take advantage of any
+ * [Workbox plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}.
+ *
+ * If the network request fails, this will throw a `WorkboxError` exception.
  *
  * @memberof workbox.strategies
  */
