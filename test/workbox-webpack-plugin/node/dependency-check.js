@@ -10,6 +10,9 @@ describe(`[workbox-webpack-plugin] Test Dependencies`, function() {
         'build',
         'demo',
       ],
+      ignoreMatches: [
+        'babel-runtime',
+      ],
     }, (unusedDeps) => {
       if (unusedDeps.dependencies.length > 0) {
         return reject(new Error(`Unused dependencies defined in package.json: ${JSON.stringify(unusedDeps.dependencies)}`));
