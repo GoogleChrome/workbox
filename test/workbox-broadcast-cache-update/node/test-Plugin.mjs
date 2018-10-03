@@ -20,7 +20,7 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
   describe(`cacheDidUpdate`, function() {
     devOnly.it(`should throw when called and cacheName is missing`, function() {
       return expectError(() => {
-        const bcuPlugin = new Plugin('channel-name');
+        const bcuPlugin = new Plugin();
         const oldResponse = new Response();
         const newResponse = new Response();
         bcuPlugin.cacheDidUpdate({oldResponse, newResponse});
@@ -29,7 +29,7 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
 
     devOnly.it(`should throw when called and newResponse is missing`, function() {
       return expectError(() => {
-        const bcuPlugin = new Plugin('channel-name');
+        const bcuPlugin = new Plugin();
         const cacheName = 'cache-name';
         const oldResponse = new Response();
         bcuPlugin.cacheDidUpdate({cacheName, oldResponse});
@@ -37,7 +37,7 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
     });
 
     it(`should not throw when called with valid parameters`, function() {
-      const bcuPlugin = new Plugin('channel-name');
+      const bcuPlugin = new Plugin();
       sandbox.spy(bcuPlugin._broadcastUpdate, 'notifyIfUpdated');
 
       const cacheName = 'cache-name';
@@ -49,8 +49,36 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
       expect(bcuPlugin._broadcastUpdate.notifyIfUpdated.callCount).to.equal(1);
     });
 
+    it(`should notify and pass all options`, function() {
+      const bcuPlugin = new Plugin();
+      sandbox.spy(bcuPlugin._broadcastUpdate, 'notifyIfUpdated');
+
+      const cacheName = 'cache-name';
+      const request = new Request('/');
+      const newResponse = new Response();
+      const oldResponse = new Response();
+      const event = new FetchEvent('fetch', {request});
+
+      bcuPlugin.cacheDidUpdate({
+        cacheName,
+        newResponse,
+        oldResponse,
+        request,
+        event,
+      });
+
+      expect(bcuPlugin._broadcastUpdate.notifyIfUpdated.callCount).to.equal(1);
+      expect(bcuPlugin._broadcastUpdate.notifyIfUpdated.args[0][0]).to.deep.equal({
+        cacheName,
+        newResponse,
+        oldResponse,
+        event,
+        url: request.url,
+      });
+    });
+
     it(`should not notify when no oldResponse supplied`, function() {
-      const bcuPlugin = new Plugin('channel-name');
+      const bcuPlugin = new Plugin();
       sandbox.spy(bcuPlugin._broadcastUpdate, 'notifyIfUpdated');
 
       const cacheName = 'cache-name';

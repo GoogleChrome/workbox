@@ -10,7 +10,7 @@ workbox.routing.registerRoute(
   workbox.strategies.staleWhileRevalidate({
     cacheName,
     plugins: [
-      new workbox.broadcastUpdate.Plugin('bcu-integration-test'),
+      new workbox.broadcastUpdate.Plugin(),
     ],
   })
 );
