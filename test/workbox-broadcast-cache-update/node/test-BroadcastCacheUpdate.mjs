@@ -3,6 +3,7 @@ import * as sinon from 'sinon';
 
 import waitUntil from '../../../infra/testing/wait-until';
 
+import {Deferred} from '../../../packages/workbox-core/_private/Deferred.mjs';
 import {BroadcastCacheUpdate} from '../../../packages/workbox-broadcast-cache-update/BroadcastCacheUpdate.mjs';
 import {
   CACHE_UPDATED_MESSAGE_META,
@@ -59,6 +60,35 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
       const bcu = new BroadcastCacheUpdate();
       expect(bcu._deferNoticationTimeout).to.equal(
           DEFAULT_DEFER_NOTIFICATION_TIMEOUT);
+    });
+
+    it(`adds a deferreds mapping for navigation fetch events`, () => {
+      const bcu = new BroadcastCacheUpdate();
+      expect(bcu._navigationEventsDeferreds).to.be.an.instanceof(Map);
+    });
+
+    it(`adds a message event listener that resolves deferreds`, () => {
+      // Set a test timeout greater than the setTimeout below.
+      this.timeout(1000);
+
+      sandbox.spy(self, 'addEventListener');
+
+      const bcu = new BroadcastCacheUpdate();
+      expect(self.addEventListener.callCount).to.equal(1);
+
+      const fetchEvent = new FetchEvent('fetch', {request: new Request('/')});
+      const deferred = new Deferred();
+      bcu._navigationEventsDeferreds.set(fetchEvent, deferred);
+
+      setTimeout(() => {
+        const messageEvent = new ExtendableMessageEvent('message', {
+          data: {type: 'WINDOW_READY', meta: 'workbox-window'},
+        });
+        self.dispatchEvent(messageEvent);
+      }, 100);
+
+      // The message event should resolve this deferred's promise.
+      return deferred.promise;
     });
   });
 

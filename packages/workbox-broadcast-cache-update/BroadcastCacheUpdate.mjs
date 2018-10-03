@@ -14,17 +14,16 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
-
+import {Deferred} from 'workbox-core/_private/Deferred.mjs';
 import {responsesAreSame} from './responsesAreSame.mjs';
 import {broadcastUpdate} from './broadcastUpdate.mjs';
 
 import {DEFAULT_HEADERS_TO_CHECK, DEFAULT_BROADCAST_CHANNEL_NAME,
     DEFAULT_DEFER_NOTIFICATION_TIMEOUT} from './utils/constants.mjs';
 
-
 import './_version.mjs';
-
 
 /**
  * Uses the [Broadcast Channel API]{@link https://developers.google.com/web/updates/2016/09/broadcastchannel}
@@ -75,21 +74,7 @@ class BroadcastCacheUpdate {
       });
     }
 
-    // The message listener needs to be added in the initial run of the
-    // service worker, but since we don't actually need to be listening for
-    // messages until the cache updates, we only invoke the callback if set.
-    this._onReadyMessageCallback = null;
-    self.addEventListener('message', (event) => {
-      if (event.data.type === 'WINDOW_READY' &&
-          event.data.meta === 'workbox-window') {
-        if (this._onReadyMessageCallback) {
-          if (process.env.NODE_ENV !== 'production') {
-            logger.debug(`Received WINDOW_READY event: `, event);
-          }
-          this._onReadyMessageCallback();
-        }
-      }
-    });
+    this._initWindowReadyDeferreds();
   }
 
   /**
@@ -125,15 +110,24 @@ class BroadcastCacheUpdate {
             logger.debug(`Original request was a navigation request, ` +
                 `waiting for a ready message from the window`, event.request);
           }
-          await this._windowReadyOrTimeout();
+          await this._windowReadyOrTimeout(event);
         }
         await broadcastUpdate({channel: this._getChannel(), cacheName, url});
       };
 
       // Send the update and ensure the SW stays alive until it's sent.
       const done = sendUpdate();
+
       if (event) {
-        event.waitUntil(done);
+        try {
+          event.waitUntil(done);
+        } catch (error) {
+          if (process.env.NODE_ENV !== 'production') {
+            logger.warn(`Unable to ensure service worker stays alive ` +
+                `when broadcasting cache update for ` +
+                `${getFriendlyURL(event.request.url)}'.`);
+          }
+        }
       }
       return done;
     }
@@ -156,30 +150,65 @@ class BroadcastCacheUpdate {
   /**
    * Waits for a message from the window indicating that it's capable of
    * receiving broadcasts. By default, this will only wait for the amount of
-   * specified via the `deferNoticationTimeout` option.
+   * time specified via the `deferNoticationTimeout` option.
    *
+   * @param {Event} event The navigation fetch event.
+   * @return {Promise}
    * @private
    */
-  async _windowReadyOrTimeout() {
-    await new Promise((resolve) => {
-      let timeout;
+  _windowReadyOrTimeout(event) {
+    if (!this._navigationEventsDeferreds.has(event)) {
+      const deferred = new Deferred();
 
-      // Set a callback so that if a message comes in within the next
-      // few seconds the promise will resolve.
-      this._onReadyMessageCallback = () => {
-        this._onReadyMessageCallback = null;
-        clearTimeout(timeout);
-        resolve();
-      };
+      // Set the deferred on the `_navigationEventsDeferreds` map so it will
+      // be resolved when the next ready message event comes.
+      this._navigationEventsDeferreds.set(event, deferred);
 
       // But don't wait too long for the message since it may never come.
-      timeout = setTimeout(() => {
+      const timeout = setTimeout(() => {
         if (process.env.NODE_ENV !== 'production') {
           logger.debug(`Timed out after ${this._deferNoticationTimeout}` +
               `ms waiting for message from window`);
         }
-        resolve();
+        deferred.resolve();
       }, this._deferNoticationTimeout);
+
+      // Ensure the timeout is cleared if the deferred promise is resolved.
+      deferred.promise.then(() => clearTimeout(timeout));
+    }
+    return this._navigationEventsDeferreds.get(event).promise;
+  }
+
+  /**
+   * Creates a mapping between navigation fetch events and deferreds, and adds
+   * a listener for message events from the window. When message events arrive,
+   * all deferreds in the mapping are resolved.
+   *
+   * Note: it would be easier if we could only resolve the deferred of
+   * navigation fetch event whose client ID matched the source ID of the
+   * message event, but currently client IDs are not exposed on navigation
+   * fetch events: https://www.chromestatus.com/feature/4846038800138240
+   */
+  _initWindowReadyDeferreds() {
+    // A mapping between navigation events and their deferreds.
+    this._navigationEventsDeferreds = new Map();
+
+    // The message listener needs to be added in the initial run of the
+    // service worker, but since we don't actually need to be listening for
+    // messages until the cache updates, we only invoke the callback if set.
+    self.addEventListener('message', (event) => {
+      if (event.data.type === 'WINDOW_READY' &&
+          event.data.meta === 'workbox-window' &&
+          this._navigationEventsDeferreds.size > 0) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.debug(`Received WINDOW_READY event: `, event);
+        }
+        // Resolve any pending deferreds.
+        for (const [, deferred] of this._navigationEventsDeferreds.entries()) {
+          deferred.resolve();
+        }
+        this._navigationEventsDeferreds.clear();
+      }
     });
   }
 }
