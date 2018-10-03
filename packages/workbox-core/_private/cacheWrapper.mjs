@@ -40,12 +40,12 @@ import '../_version.mjs';
  * @memberof module:workbox-core
  */
 const putWrapper = async ({
-    cacheName,
-    request,
-    response,
-    event,
-    plugins = [],
-  } = {}) => {
+  cacheName,
+  request,
+  response,
+  event,
+  plugins = [],
+} = {}) => {
   if (!response) {
     if (process.env.NODE_ENV !== 'production') {
       logger.error(`Cannot cache non-existent response for ` +
@@ -127,11 +127,11 @@ const putWrapper = async ({
  * @memberof module:workbox-core
  */
 const matchWrapper = async ({
-    cacheName,
-    request,
-    event,
-    matchOptions,
-    plugins = []}) => {
+  cacheName,
+  request,
+  event,
+  matchOptions,
+  plugins = []}) => {
   const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
   if (process.env.NODE_ENV !== 'production') {

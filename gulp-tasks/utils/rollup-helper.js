@@ -1,7 +1,6 @@
 const babel = require('rollup-plugin-babel');
-const minify = require('uglify-es').minify;
 const replace = require('rollup-plugin-replace');
-const uglifyPlugin = require('rollup-plugin-uglify').uglify;
+const terserPlugin = require('rollup-plugin-terser').terser;
 
 const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');
@@ -14,27 +13,20 @@ module.exports = {
     const plugins = [];
 
     const babelConfig = {
-      presets: [['env', {
+      presets: [['@babel/preset-env', {
         targets: {
-          // This corresponds to the version of Chroumium used by
-          // Samsung Internet 5.x, which is the minimum non-evergreen browser
+          // This corresponds to the version of Chromium used by
+          // Samsung Internet 6.x, which is the minimum non-evergreen browser
           // we currently support.
-          browsers: ['chrome >= 51'],
+          browsers: ['chrome >= 56'],
         },
-        modules: false,
       }]],
-      // This will result in references to `babelHelpers.asyncToGenerators()`
-      // in the transpiled code. The declaration of this method lives in the
-      // external-helpers.js file and is injected by Rollup once into the
-      // workbox-core bundle.
-      plugins: ['external-helpers'],
-      externalHelpers: true,
     };
     plugins.push(babel(babelConfig));
 
     let minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {
-      const uglifyOptions = {
+      const terserOptions = {
         mangle: {
           properties: {
             reserved: [
@@ -56,7 +48,7 @@ module.exports = {
         },
       };
       plugins.push(
-        uglifyPlugin(uglifyOptions, minify),
+        terserPlugin(terserOptions),
       );
     }
 

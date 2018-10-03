@@ -314,13 +314,13 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [[
-                FILE_MANIFEST_NAME,
-                workboxEntryName,
-              ]],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[], {}]],
-            }});
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              workboxEntryName,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
@@ -1419,13 +1419,13 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [[
-                FILE_MANIFEST_NAME,
-                WORKBOX_SW_FILE_NAME,
-              ]],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[], {}]],
-            }});
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
@@ -1502,13 +1502,13 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [[
-                FILE_MANIFEST_NAME,
-                WORKBOX_SW_FILE_NAME,
-              ]],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[], {}]],
-            }});
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
@@ -1583,13 +1583,13 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [[
-                FILE_MANIFEST_NAME,
-                WORKBOX_SW_FILE_NAME,
-              ]],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[], {}]],
-            }});
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            suppressWarnings: [[]],
+            precacheAndRoute: [[[], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.

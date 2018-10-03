@@ -71,7 +71,7 @@ const createRequestWillReplayCallback = (config) => {
     let params;
     if (requestInit.body) {
       const payload = requestInit.body instanceof Blob ?
-          await getTextFromBlob(requestInit.body) : requestInit.body;
+        await getTextFromBlob(requestInit.body) : requestInit.body;
 
       params = new URLSearchParams(payload);
     } else {

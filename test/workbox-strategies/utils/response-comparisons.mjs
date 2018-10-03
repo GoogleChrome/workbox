@@ -5,9 +5,9 @@ function compareResponses(first, second, shouldBeSame) {
   const secondClone = second.clone();
 
   return Promise.all([firstClone.text(), secondClone.text()])
-  .then(([firstBody, secondBody]) => {
-    return expect(firstBody === secondBody).to.eql(shouldBeSame);
-  });
+    .then(([firstBody, secondBody]) => {
+      return expect(firstBody === secondBody).to.eql(shouldBeSame);
+    });
 }
 
 export {

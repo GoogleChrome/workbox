@@ -36,8 +36,8 @@ const cleanRedirect = async (response) => {
 
   // new Response() is happy when passed either a stream or a Blob.
   return new Response(body, ['headers', 'status', 'statusText'].map((key) => {
-      return clonedResponse[key];
-    })
+    return clonedResponse[key];
+  })
   );
 };
 

@@ -5,42 +5,42 @@ describe(`[workbox-build] Test Dependencies`, function() {
   it(`should have required dependencies`, function() {
     return new Promise((resolve, reject) => {
       depcheck(path.join(__dirname, '..', '..', '..', 'packages', 'workbox-build'), {
-      ignoreDirs: [
-        'test',
-        'build',
-        'demo',
-      ],
-      ignoreMatches: [
-        'babel-runtime',
-        'workbox-background-sync',
-        'workbox-broadcast-cache-update',
-        'workbox-cache-expiration',
-        'workbox-cacheable-response',
-        'workbox-core',
-        'workbox-google-analytics',
-        'workbox-navigation-preload',
-        'workbox-precaching',
-        'workbox-range-requests',
-        'workbox-routing',
-        'workbox-strategies',
-        'workbox-streams',
-        'workbox-sw',
-      ],
-    }, (unusedDeps) => {
-      if (unusedDeps.dependencies.length > 0) {
-        return reject(new Error(`Unused dependencies defined in package.json: ${JSON.stringify(unusedDeps.dependencies)}`));
-      }
+        ignoreDirs: [
+          'test',
+          'build',
+          'demo',
+        ],
+        ignoreMatches: [
+          '@babel/runtime',
+          'workbox-background-sync',
+          'workbox-broadcast-cache-update',
+          'workbox-cache-expiration',
+          'workbox-cacheable-response',
+          'workbox-core',
+          'workbox-google-analytics',
+          'workbox-navigation-preload',
+          'workbox-precaching',
+          'workbox-range-requests',
+          'workbox-routing',
+          'workbox-strategies',
+          'workbox-streams',
+          'workbox-sw',
+        ],
+      }, (unusedDeps) => {
+        if (unusedDeps.dependencies.length > 0) {
+          return reject(new Error(`Unused dependencies defined in package.json: ${JSON.stringify(unusedDeps.dependencies)}`));
+        }
 
-      if (unusedDeps.devDependencies.length > 0) {
-        return reject(new Error(`Unused dependencies defined in package.json: ${JSON.stringify(unusedDeps.devDependencies)}`));
-      }
+        if (unusedDeps.devDependencies.length > 0) {
+          return reject(new Error(`Unused dependencies defined in package.json: ${JSON.stringify(unusedDeps.devDependencies)}`));
+        }
 
-      if (Object.keys(unusedDeps.missing).length > 0) {
-        return reject(new Error(`Dependencies missing from package.json: ${JSON.stringify(unusedDeps.missing)}`));
-      }
+        if (Object.keys(unusedDeps.missing).length > 0) {
+          return reject(new Error(`Dependencies missing from package.json: ${JSON.stringify(unusedDeps.missing)}`));
+        }
 
-      resolve();
-    });
+        resolve();
+      });
     });
   });
 

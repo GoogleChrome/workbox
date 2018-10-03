@@ -9,36 +9,36 @@ const logHelper = require('../infra/utils/log-helper');
 
 const publishReleaseOnGithub =
   async (tagName, releaseInfo, tarPath, zipPath) => {
-  if (!releaseInfo) {
-    const releaseData = await githubHelper.createRelease({
-      tag_name: tagName,
-      draft: true,
-      name: `Workbox ${tagName}`,
-      prerelease: semver.prerelease(tagName) !== null,
+    if (!releaseInfo) {
+      const releaseData = await githubHelper.createRelease({
+        tag_name: tagName,
+        draft: true,
+        name: `Workbox ${tagName}`,
+        prerelease: semver.prerelease(tagName) !== null,
+      });
+      releaseInfo = releaseData.data;
+    }
+
+    const tarBuffer = await fs.readFile(tarPath);
+    await githubHelper.uploadAsset({
+      url: releaseInfo.upload_url,
+      file: tarBuffer,
+      contentType: 'application/gzip',
+      contentLength: tarBuffer.length,
+      name: path.basename(tarPath),
+      label: path.basename(tarPath),
     });
-    releaseInfo = releaseData.data;
-  }
 
-  const tarBuffer = await fs.readFile(tarPath);
-  await githubHelper.uploadAsset({
-    url: releaseInfo.upload_url,
-    file: tarBuffer,
-    contentType: 'application/gzip',
-    contentLength: tarBuffer.length,
-    name: path.basename(tarPath),
-    label: path.basename(tarPath),
-  });
-
-  const zipBuffer = await fs.readFile(zipPath);
-  await githubHelper.uploadAsset({
-    url: releaseInfo.upload_url,
-    file: zipBuffer,
-    contentType: 'application/zip',
-    contentLength: zipBuffer.length,
-    name: path.basename(zipPath),
-    label: path.basename(zipPath),
-  });
-};
+    const zipBuffer = await fs.readFile(zipPath);
+    await githubHelper.uploadAsset({
+      url: releaseInfo.upload_url,
+      file: zipBuffer,
+      contentType: 'application/zip',
+      contentLength: zipBuffer.length,
+      name: path.basename(zipPath),
+      label: path.basename(zipPath),
+    });
+  };
 
 const handleGithubRelease = async (tagName, gitBranch, releaseInfo) => {
   logHelper.log(`Creating GitHub release ${logHelper.highlight(tagName)}.`);

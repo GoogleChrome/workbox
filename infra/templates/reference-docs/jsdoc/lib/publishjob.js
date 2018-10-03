@@ -105,9 +105,9 @@ class PublishJob extends BaselinePublishJob {
   generateIndexAll(longnames) {
     longnames.sort();
     const data = {
-        longnames: longnames,
-        pageTitle: global.env.opts.query ?
-            global.env.opts.query.productName : '',
+      longnames: longnames,
+      pageTitle: global.env.opts.query ?
+        global.env.opts.query.productName : '',
     };
 
     this.generate('index-all', data, 'index-all.html');

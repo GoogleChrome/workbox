@@ -73,18 +73,18 @@ class AnalyseBuildForProperties {
       // either not important or it's already been minified.
       return entry.propertyCount > 1 && entry.propertyName.length > 1;
     })
-    .filter((entry) => {
-      switch (entry.propertyName) {
+      .filter((entry) => {
+        switch (entry.propertyName) {
         case 'await':
         case 'async':
           return false;
         default:
           return true;
-      }
-    })
-    .sort((a, b) => {
-      return b.propertyCount - a.propertyCount;
-    });
+        }
+      })
+      .sort((a, b) => {
+        return b.propertyCount - a.propertyCount;
+      });
   }
 
   printDetails({filePath, analysis}) {
@@ -105,7 +105,7 @@ class AnalyseBuildForProperties {
       logHelper.log(`    ${entry.propertyName} ` +
         `${extraSpace} ${entry.propertyCount}`);
     });
-      logHelper.log();
+    logHelper.log();
   }
 }
 

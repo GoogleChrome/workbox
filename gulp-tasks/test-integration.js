@@ -36,7 +36,7 @@ const runFiles = (filePaths) => {
 };
 
 const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
-                                       webdriver) => {
+  webdriver) => {
   logHelper.log(oneLine`
     Running Integration test on ${logHelper.highlight(testPath)}
     with NODE_ENV '${nodeEnv}'
@@ -116,19 +116,19 @@ gulp.task('test-integration', async () => {
     const localBrowsers = seleniumAssistant.getLocalBrowsers();
     for (const localBrowser of localBrowsers) {
       switch (localBrowser.getId()) {
-        case 'chrome':
-        case 'firefox':
-          if (localBrowser.getReleaseName() !== 'unstable') {
-            await runIntegrationForBrowser(localBrowser);
-          }
-          break;
-        case 'safari':
-          if (localBrowser.getReleaseName() === 'stable') {
-            await runIntegrationForBrowser(localBrowser);
-          }
-          break;
-        default:
-          logHelper.warn(oneLine`
+      case 'chrome':
+      case 'firefox':
+        if (localBrowser.getReleaseName() !== 'unstable') {
+          await runIntegrationForBrowser(localBrowser);
+        }
+        break;
+      case 'safari':
+        if (localBrowser.getReleaseName() === 'stable') {
+          await runIntegrationForBrowser(localBrowser);
+        }
+        break;
+      default:
+        logHelper.warn(oneLine`
             Skipping integration tests for ${localBrowser.getPrettyName()}.
           `);
       }

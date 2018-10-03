@@ -2,7 +2,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const gulp = require('gulp');
 const getNpmCmd = require('./utils/get-npm-cmd');
-const browserSync = require('browser-sync').create();
 
 const spawn = require('./utils/spawn-promise-wrapper');
 const logHelper = require('../infra/utils/log-helper');
@@ -54,14 +53,13 @@ You can view a friendlier UI by running
     return spawn(getNpmCmd(), params, {
       cwd: path.join(__dirname, '..'),
     })
-    .then(() => {
-      logHelper.log(`Docs built successfully`);
-      browserSync.reload();
-    })
-    .catch((err) => {
-      logHelper.error(`Docs failed to build: `, err);
-      throw err;
-    });
+      .then(() => {
+        logHelper.log(`Docs built successfully`);
+      })
+      .catch((err) => {
+        logHelper.error(`Docs failed to build: `, err);
+        throw err;
+      });
   };
 };
 
@@ -83,15 +81,7 @@ gulp.task('docs:watch', () => {
   });
 });
 
-gulp.task('docs:serve', () => {
-  browserSync.init({
-    server: {
-        baseDir: DOCS_DIRECTORY,
-    },
-  });
-});
-
 gulp.task('docs', gulp.series([
   'docs:build',
-  gulp.parallel(['docs:serve', 'docs:watch']),
+  'docs:watch',
 ]));

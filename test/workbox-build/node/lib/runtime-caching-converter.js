@@ -248,23 +248,23 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
 
   it(`should support custom plugins`, function() {
     const runtimeCachingOptions = [{
-        urlPattern: /abc/,
-        handler: 'cacheFirst',
-        options: {
-          plugins: [{
-            cacheWillUpdate: async ({request, response}) => {
-                return response;
-              },
-              cacheDidUpdate: async ({cacheName, request, oldResponse, newResponse}) => {},
-              cachedResponseWillBeUsed: async ({cacheName, request, matchOptions, cachedResponse}) => {
-                return cachedResponse;
-              },
-              requestWillFetch: async ({request}) => {
-                return request;
-              },
-              fetchDidFail: async ({originalRequest, request, error}) => {},
-          }],
-        },
+      urlPattern: /abc/,
+      handler: 'cacheFirst',
+      options: {
+        plugins: [{
+          cacheWillUpdate: async ({request, response}) => {
+            return response;
+          },
+          cacheDidUpdate: async ({cacheName, request, oldResponse, newResponse}) => {},
+          cachedResponseWillBeUsed: async ({cacheName, request, matchOptions, cachedResponse}) => {
+            return cachedResponse;
+          },
+          requestWillFetch: async ({request}) => {
+            return request;
+          },
+          fetchDidFail: async ({originalRequest, request, error}) => {},
+        }],
+      },
     }];
 
     const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
@@ -277,20 +277,20 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
 
   it(`should strip comments on custom plugins`, function() {
     const runtimeCachingOptions = [{
-        urlPattern: /abc/,
-        handler: 'cacheFirst',
-        options: {
-          plugins: [{
-            cacheWillUpdate: async ({request, response}) => {
-                // Commenting
-                return response;
-            },
-            cachedResponseWillBeUsed: async ({cacheName, request, matchOptions, cachedResponse}) => {
-                /* Commenting */
-                return cachedResponse;
-            },
-          }],
-        },
+      urlPattern: /abc/,
+      handler: 'cacheFirst',
+      options: {
+        plugins: [{
+          cacheWillUpdate: async ({request, response}) => {
+            // Commenting
+            return response;
+          },
+          cachedResponseWillBeUsed: async ({cacheName, request, matchOptions, cachedResponse}) => {
+            /* Commenting */
+            return cachedResponse;
+          },
+        }],
+      },
     }];
 
     const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
@@ -300,21 +300,21 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
 
   it(`should keep contents with // that are not comments`, function() {
     const runtimeCachingOptions = [{
-        urlPattern: /abc/,
-        handler: 'cacheFirst',
-        options: {
-          plugins: [{
-            cacheWillUpdate: async ({request, response}) => {
-                // Commenting
+      urlPattern: /abc/,
+      handler: 'cacheFirst',
+      options: {
+        plugins: [{
+          cacheWillUpdate: async ({request, response}) => {
+            // Commenting
 
-                if (request.url === 'https://test.com') {
-                    return null;
-                }
+            if (request.url === 'https://test.com') {
+              return null;
+            }
 
-                return response;
-            },
-          }],
-        },
+            return response;
+          },
+        }],
+      },
     }];
 
     const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
