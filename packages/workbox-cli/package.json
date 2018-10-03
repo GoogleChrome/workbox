@@ -1,6 +1,6 @@
 {
   "name": "workbox-cli",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "description": "workbox-cli is the command line interface for Workbox.",
   "keywords": [
     "workbox",
@@ -39,7 +39,7 @@
     "ora": "^3.0.0",
     "pretty-bytes": "^5.1.0",
     "update-notifier": "^2.5.0",
-    "workbox-build": "^3.6.1"
+    "workbox-build": "^3.6.2"
   },
   "workbox": {
     "packageType": "node"
