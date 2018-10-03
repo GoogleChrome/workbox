@@ -21,7 +21,7 @@ import {responsesAreSame} from './responsesAreSame.mjs';
 import {broadcastUpdate} from './broadcastUpdate.mjs';
 
 import {DEFAULT_HEADERS_TO_CHECK, DEFAULT_BROADCAST_CHANNEL_NAME,
-    DEFAULT_DEFER_NOTIFICATION_TIMEOUT} from './utils/constants.mjs';
+  DEFAULT_DEFER_NOTIFICATION_TIMEOUT} from './utils/constants.mjs';
 
 import './_version.mjs';
 

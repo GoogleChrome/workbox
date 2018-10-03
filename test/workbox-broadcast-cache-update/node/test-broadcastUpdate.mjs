@@ -17,7 +17,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 
 import {CACHE_UPDATED_MESSAGE_TYPE, CACHE_UPDATED_MESSAGE_META}
-    from '../../../packages/workbox-broadcast-cache-update/utils/constants.mjs';
+  from '../../../packages/workbox-broadcast-cache-update/utils/constants.mjs';
 import {broadcastUpdate} from '../../../packages/workbox-broadcast-cache-update/broadcastUpdate.mjs';
 
 describe(`[workbox-broadcast-cache-update] broadcastUpdate`, function() {

@@ -24,7 +24,7 @@ import './_version.mjs';
  * @memberof workbox.broadcastUpdate
  */
 class Plugin {
-    /**
+  /**
    * Construct a BroadcastCacheUpdate instance with the passed options and
    * calls its `notifyIfUpdated()` method whenever the plugin's
    * `cacheDidUpdate` callback is invoked.

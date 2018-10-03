@@ -15,7 +15,7 @@
 
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {CACHE_UPDATED_MESSAGE_TYPE, CACHE_UPDATED_MESSAGE_META}
-    from './utils/constants.mjs';
+  from './utils/constants.mjs';
 
 import './_version.mjs';
 
