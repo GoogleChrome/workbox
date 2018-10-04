@@ -160,7 +160,7 @@ class CacheFirst {
     }
 
     if (!response) {
-      throw new WorkboxError('no-response', {url: request.url});
+      throw new WorkboxError('no-response', {url: request.url, error});
     }
     return response;
   }
