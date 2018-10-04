@@ -16,32 +16,25 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import messageTypes from '../../../packages/workbox-broadcast-cache-update/messageTypes.mjs';
+import {CACHE_UPDATED_MESSAGE_TYPE, CACHE_UPDATED_MESSAGE_META}
+  from '../../../packages/workbox-broadcast-cache-update/utils/constants.mjs';
 import {broadcastUpdate} from '../../../packages/workbox-broadcast-cache-update/broadcastUpdate.mjs';
 
 describe(`[workbox-broadcast-cache-update] broadcastUpdate`, function() {
   const sandbox = sinon.createSandbox();
   const cacheName = 'test-cache';
   const url = 'https://example.com';
-  const source = 'test-source';
 
   it(`should trigger the appropriate message event on a BroadcastChannel with the same channel name`, function() {
-    /** const secondChannel = new BroadcastChannel(channelName);
-    secondChannel.addEventListener('message', (event) => {
-      expect(event.data).to.deep.equal({
-
-      });
-      done();
-    });**/
     const channel = new BroadcastChannel('channel-name');
     sandbox.spy(channel, 'postMessage');
 
-    broadcastUpdate(channel, cacheName, url, source);
+    broadcastUpdate({channel, cacheName, url});
 
     expect(channel.postMessage.callCount).to.equal(1);
     expect(channel.postMessage.args[0][0]).to.deep.equal({
-      type: messageTypes.CACHE_UPDATED,
-      meta: source,
+      type: CACHE_UPDATED_MESSAGE_TYPE,
+      meta: CACHE_UPDATED_MESSAGE_META,
       payload: {
         cacheName,
         updatedUrl: url,

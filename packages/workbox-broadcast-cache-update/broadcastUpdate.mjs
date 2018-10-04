@@ -14,8 +14,9 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import messageTypes from './messageTypes.mjs';
+import {CACHE_UPDATED_MESSAGE_TYPE, CACHE_UPDATED_MESSAGE_META}
+  from './utils/constants.mjs';
+
 import './_version.mjs';
 
 /**
@@ -46,34 +47,18 @@ import './_version.mjs';
  * (Usage of [Flux](https://facebook.github.io/flux/) itself is not at
  * all required.)
  *
- * @param {BroadcastChannel} channel The `BroadcastChannel` to use.
- * @param {string} cacheName The name of the cache in which the updated
- *        `Response` was stored.
- * @param {string} url The URL associated with the updated `Response`.
- * @param {string} source A string identifying this library as the source
- *        of the update message.
+ * @param {Object} options
+ * @param {string} options.cacheName The name of the cache in which the updated
+ *     `Response` was stored.
+ * @param {string} options.url The URL associated with the updated `Response`.
+ * @param {BroadcastChannel} [options.channel] The `BroadcastChannel` to use.
+ *     If no channel is set or the browser doesn't support the BroadcastChannel
+ *     api, then an attempt will be made to `postMessage` each window client.
  *
  * @memberof workbox.broadcastUpdate
  */
-const broadcastUpdate = (channel, cacheName, url, source) => {
-  // There are browsers which support service workers but don't support the
-  // Broadcast Channel API.
-  // See https://github.com/GoogleChrome/workbox/issues/1304
-  if (!(('BroadcastChannel' in self) && channel)) {
-    if (process.env.NODE_ENV !== 'production') {
-      logger.debug(`${url} was updated, but the Broadcast Channel API is not ` +
-        `available in the current browser.`);
-    }
-    return;
-  }
-
+const broadcastUpdate = async ({channel, cacheName, url}) => {
   if (process.env.NODE_ENV !== 'production') {
-    assert.isInstance(channel, BroadcastChannel, {
-      moduleName: 'workbox-broadcast-cache-update',
-      className: '~',
-      funcName: 'broadcastUpdate',
-      paramName: 'channel',
-    });
     assert.isType(cacheName, 'string', {
       moduleName: 'workbox-broadcast-cache-update',
       className: '~',
@@ -86,22 +71,25 @@ const broadcastUpdate = (channel, cacheName, url, source) => {
       funcName: 'broadcastUpdate',
       paramName: 'url',
     });
-    assert.isType(source, 'string', {
-      moduleName: 'workbox-broadcast-cache-update',
-      className: '~',
-      funcName: 'broadcastUpdate',
-      paramName: 'source',
-    });
   }
 
-  channel.postMessage({
-    type: messageTypes.CACHE_UPDATED,
-    meta: source,
+  const data = {
+    type: CACHE_UPDATED_MESSAGE_TYPE,
+    meta: CACHE_UPDATED_MESSAGE_META,
     payload: {
       cacheName: cacheName,
       updatedUrl: url,
     },
-  });
+  };
+
+  if (channel) {
+    channel.postMessage(data);
+  } else {
+    const windows = await clients.matchAll({type: 'window'});
+    for (const win of windows) {
+      win.postMessage(data);
+    }
+  }
 };
 
 export {broadcastUpdate};
