@@ -17,8 +17,12 @@
 // Stub missing/broken Headers API methods in `service-worker-mock`.
 // https://fetch.spec.whatwg.org/#headers-class
 class Headers {
-  constructor(obj = {}) {
-    this.obj = Object.assign({}, obj);
+  constructor(init = {}) {
+    if (init instanceof Headers) {
+      this.obj = Object.assign({}, init.obj);
+    } else {
+      this.obj = Object.assign({}, init);
+    }
   }
 
   has(key) {
