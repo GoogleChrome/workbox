@@ -28,10 +28,10 @@ module.exports = joi.object().keys({
   globStrict: joi.boolean().default(defaults.globStrict),
   manifestTransforms: joi.array().items(joi.func().arity(1)),
   maximumFileSizeToCacheInBytes: joi.number().min(1)
-    .default(defaults.maximumFileSizeToCacheInBytes),
+      .default(defaults.maximumFileSizeToCacheInBytes),
   modifyUrlPrefix: joi.object(),
   // templatedUrls is an object where any property name is valid, and the values
   // can be either a string or an array of strings.
   templatedUrls: joi.object().pattern(/./,
-    [joi.string(), joi.array().items(joi.string())]),
+      [joi.string(), joi.array().items(joi.string())]),
 });

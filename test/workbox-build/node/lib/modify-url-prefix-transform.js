@@ -30,7 +30,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
     const transform = modifyUrlPrefix(modifications);
     for (const badInput of badInputs) {
       expect(
-        () => transform([{url: badInput}])
+          () => transform([{url: badInput}])
       ).to.throw(errors['manifest-entry-bad-url']);
     }
   });
@@ -50,7 +50,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
 
     for (const badInput of badInputs) {
       expect(
-        () => modifyUrlPrefix(badInput)
+          () => modifyUrlPrefix(badInput)
       ).to.throw(errors['modify-url-prefix-bad-prefixes']);
     }
   });

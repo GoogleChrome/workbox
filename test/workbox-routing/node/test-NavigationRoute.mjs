@@ -14,25 +14,25 @@ const invalidHandlerObject = {};
 describe(`[workbox-routing] NavigationRoute`, function() {
   devOnly.it(`should throw when called without a valid handler parameter in dev`, async function() {
     await expectError(
-      () => new NavigationRoute(),
-      'incorrect-type',
-      (error) => {
-        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-        expect(error.details).to.have.property('className').that.equals('Route');
-        expect(error.details).to.have.property('funcName').that.equals('constructor');
-        expect(error.details).to.have.property('paramName').that.equals('handler');
-      }
+        () => new NavigationRoute(),
+        'incorrect-type',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+          expect(error.details).to.have.property('className').that.equals('Route');
+          expect(error.details).to.have.property('funcName').that.equals('constructor');
+          expect(error.details).to.have.property('paramName').that.equals('handler');
+        }
     );
 
     await expectError(
-      () => new NavigationRoute(invalidHandlerObject),
-      'missing-a-method',
-      (error) => {
-        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-        expect(error.details).to.have.property('className').that.equals('Route');
-        expect(error.details).to.have.property('funcName').that.equals('constructor');
-        expect(error.details).to.have.property('paramName').that.equals('handler');
-      }
+        () => new NavigationRoute(invalidHandlerObject),
+        'missing-a-method',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+          expect(error.details).to.have.property('className').that.equals('Route');
+          expect(error.details).to.have.property('funcName').that.equals('constructor');
+          expect(error.details).to.have.property('paramName').that.equals('handler');
+        }
     );
   });
 

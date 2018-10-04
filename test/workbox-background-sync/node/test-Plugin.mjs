@@ -43,14 +43,14 @@ describe(`[workbox-background-sync] Plugin`, function() {
     });
 
     it(`should implement fetchDidFail and add requests to the queue`,
-      async function() {
-        sandbox.stub(Queue.prototype, 'addRequest');
-        const queuePlugin = new Plugin('foo');
+        async function() {
+          sandbox.stub(Queue.prototype, 'addRequest');
+          const queuePlugin = new Plugin('foo');
 
-        queuePlugin.fetchDidFail({request: new Request('/')});
-        expect(Queue.prototype.addRequest.calledOnce).to.be.true;
-        expect(Queue.prototype.addRequest.calledWith(
-          sinon.match.instanceOf(Request))).to.be.true;
-      });
+          queuePlugin.fetchDidFail({request: new Request('/')});
+          expect(Queue.prototype.addRequest.calledOnce).to.be.true;
+          expect(Queue.prototype.addRequest.calledWith(
+              sinon.match.instanceOf(Request))).to.be.true;
+        });
   });
 });

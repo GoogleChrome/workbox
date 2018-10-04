@@ -23,9 +23,9 @@ describe(`[workbox-strategies] StaleWhileRevalidate Requests`, function() {
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(`/__WORKBOX/uniqueValue`)
-        .then((response) => response.text())
-        .then((responseBody) => cb(responseBody))
-        .catch((err) => cb(err.message));
+          .then((response) => response.text())
+          .then((responseBody) => cb(responseBody))
+          .catch((err) => cb(err.message));
     });
     const firstResponse = response.trim();
 
@@ -38,9 +38,9 @@ describe(`[workbox-strategies] StaleWhileRevalidate Requests`, function() {
     // This response should come from cache and not the server
     response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(`/__WORKBOX/uniqueValue`)
-        .then((response) => response.text())
-        .then((responseBody) => cb(responseBody))
-        .catch((err) => cb(err.message));
+          .then((response) => response.text())
+          .then((responseBody) => cb(responseBody))
+          .catch((err) => cb(err.message));
     });
     const secondResponse = response.trim();
     expect(secondResponse).to.eql(firstResponse);

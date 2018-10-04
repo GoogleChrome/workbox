@@ -122,7 +122,7 @@ class NetworkOnly {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('NetworkOnly', request));
+          messages.strategyStart('NetworkOnly', request));
       if (response) {
         logger.log(`Got response from network.`);
       } else {

@@ -339,8 +339,8 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
 
     const cacheFirst = new CacheFirst();
     await expectError(
-      () => cacheFirst.handle({event}),
-      'no-response'
+        () => cacheFirst.handle({event}),
+        'no-response'
     );
   });
 

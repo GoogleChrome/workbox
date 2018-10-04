@@ -26,8 +26,8 @@ const _cacheNameDetails = {
 
 const _createCacheName = (cacheName) => {
   return [_cacheNameDetails.prefix, cacheName, _cacheNameDetails.suffix]
-    .filter((value) => value.length > 0)
-    .join('-');
+      .filter((value) => value.length > 0)
+      .join('-');
 };
 
 const cacheNames = {

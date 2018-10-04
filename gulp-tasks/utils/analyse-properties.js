@@ -36,7 +36,7 @@ class AnalyseBuildForProperties {
   getBuildFiles() {
     // workbox-sw doesn't include .prod. in the build name.
     const buildGlob = path.join(__dirname, '..', '..', 'packages',
-      '*', constants.PACKAGE_BUILD_DIRNAME, '{*.prod.js,workbox-sw.js}');
+        '*', constants.PACKAGE_BUILD_DIRNAME, '{*.prod.js,workbox-sw.js}');
     return glob.sync(buildGlob);
   }
 
@@ -73,18 +73,18 @@ class AnalyseBuildForProperties {
       // either not important or it's already been minified.
       return entry.propertyCount > 1 && entry.propertyName.length > 1;
     })
-      .filter((entry) => {
-        switch (entry.propertyName) {
-        case 'await':
-        case 'async':
-          return false;
-        default:
-          return true;
-        }
-      })
-      .sort((a, b) => {
-        return b.propertyCount - a.propertyCount;
-      });
+        .filter((entry) => {
+          switch (entry.propertyName) {
+            case 'await':
+            case 'async':
+              return false;
+            default:
+              return true;
+          }
+        })
+        .sort((a, b) => {
+          return b.propertyCount - a.propertyCount;
+        });
   }
 
   printDetails({filePath, analysis}) {

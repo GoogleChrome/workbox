@@ -64,7 +64,7 @@ Object.keys(mapping).forEach((keyName) => {
   defaultExport[keyName] = (options = {}) => {
     const StrategyClass = mapping[keyName];
     return new StrategyClass(
-      Object.assign(options)
+        Object.assign(options)
     );
   };
 });

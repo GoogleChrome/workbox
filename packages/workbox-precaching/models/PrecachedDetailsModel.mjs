@@ -119,12 +119,12 @@ class PrecachedDetailsModel {
    */
   async _addEntry(precacheEntry) {
     await this._db.put(
-      DB_STORE_NAME,
-      {
-        [REVISON_IDB_FIELD]: precacheEntry._revision,
-        [URL_IDB_FIELD]: precacheEntry._cacheRequest.url,
-      },
-      precacheEntry._entryId
+        DB_STORE_NAME,
+        {
+          [REVISON_IDB_FIELD]: precacheEntry._revision,
+          [URL_IDB_FIELD]: precacheEntry._cacheRequest.url,
+        },
+        precacheEntry._entryId
     );
   }
 

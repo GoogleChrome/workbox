@@ -34,67 +34,67 @@ module.exports = async (params = {}) => {
   const [command = 'help', option] = params.input;
 
   switch (command) {
-  case 'wizard': {
-    await runWizard(params.flags);
-    break;
-  }
+    case 'wizard': {
+      await runWizard(params.flags);
+      break;
+    }
 
-  case 'copyLibraries': {
-    assert(option, errors['missing-dest-dir-param']);
-    const parentDirectory = path.resolve(process.cwd(), option);
+    case 'copyLibraries': {
+      assert(option, errors['missing-dest-dir-param']);
+      const parentDirectory = path.resolve(process.cwd(), option);
 
-    const dirName = await workboxBuild.copyWorkboxLibraries(parentDirectory);
-    const fullPath = path.join(parentDirectory, dirName);
+      const dirName = await workboxBuild.copyWorkboxLibraries(parentDirectory);
+      const fullPath = path.join(parentDirectory, dirName);
 
-    logger.log(`The Workbox libraries were copied to ${fullPath}`);
-    logger.log(ol`Add a call to workbox.setConfig({modulePathPrefix: '...'})
+      logger.log(`The Workbox libraries were copied to ${fullPath}`);
+      logger.log(ol`Add a call to workbox.setConfig({modulePathPrefix: '...'})
         to your service worker to use these local libraries.`);
-    logger.log(`See https://goo.gl/Fo9gPX for further documentation.`);
-    break;
-  }
+      logger.log(`See https://goo.gl/Fo9gPX for further documentation.`);
+      break;
+    }
 
-  case 'generateSW':
-  case 'injectManifest': {
+    case 'generateSW':
+    case 'injectManifest': {
     // TODO: Confirm that this works with Windows paths.
-    const configPath = path.resolve(process.cwd(),
-      option || constants.defaultConfigFile);
-    let config;
-    try {
-      config = readConfig(configPath);
-    } catch (error) {
-      logger.error(errors['invalid-common-js-module']);
-      throw error;
-    }
-
-    logger.log(`Using configuration from ${configPath}.`);
-    try {
-      const {size, count, warnings} = await workboxBuild[command](config);
-
-      for (const warning of warnings) {
-        logger.warn(warning);
+      const configPath = path.resolve(process.cwd(),
+          option || constants.defaultConfigFile);
+      let config;
+      try {
+        config = readConfig(configPath);
+      } catch (error) {
+        logger.error(errors['invalid-common-js-module']);
+        throw error;
       }
 
-      logger.log(`The service worker was written to ${config.swDest}\n` +
+      logger.log(`Using configuration from ${configPath}.`);
+      try {
+        const {size, count, warnings} = await workboxBuild[command](config);
+
+        for (const warning of warnings) {
+          logger.warn(warning);
+        }
+
+        logger.log(`The service worker was written to ${config.swDest}\n` +
           `${count} files will be precached, totalling ${prettyBytes(size)}.`);
-    } catch (error) {
+      } catch (error) {
       // See https://github.com/hapijs/joi/blob/v11.3.4/API.md#errors
-      if (typeof error.annotate === 'function') {
-        throw new Error(
-          `${errors['config-validation-failed']}\n${error.annotate()}`);
+        if (typeof error.annotate === 'function') {
+          throw new Error(
+              `${errors['config-validation-failed']}\n${error.annotate()}`);
+        }
+        logger.error(errors['workbox-build-runtime-error']);
+        throw error;
       }
-      logger.error(errors['workbox-build-runtime-error']);
-      throw error;
+      break;
     }
-    break;
-  }
 
-  case 'help': {
-    params.showHelp();
-    break;
-  }
+    case 'help': {
+      params.showHelp();
+      break;
+    }
 
-  default: {
-    throw new Error(errors['unknown-command'] + ` ` + command);
-  }
+    default: {
+      throw new Error(errors['unknown-command'] + ` ` + command);
+    }
   }
 };

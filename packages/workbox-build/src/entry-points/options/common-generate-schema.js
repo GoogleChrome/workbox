@@ -30,23 +30,23 @@ module.exports = baseSchema.keys({
   navigateFallbackBlacklist: joi.array().items(regExpObject),
   navigateFallbackWhitelist: joi.array().items(regExpObject),
   offlineGoogleAnalytics: joi.alternatives().try(joi.boolean(), joi.object())
-    .default(defaults.offlineGoogleAnalytics),
+      .default(defaults.offlineGoogleAnalytics),
   runtimeCaching: joi.array().items(joi.object().keys({
     method: joi.string().valid(
-      'DELETE',
-      'GET',
-      'HEAD',
-      'PATCH',
-      'POST',
-      'PUT'
+        'DELETE',
+        'GET',
+        'HEAD',
+        'PATCH',
+        'POST',
+        'PUT'
     ),
     urlPattern: [regExpObject, joi.string()],
     handler: [joi.func(), joi.string().valid(
-      'cacheFirst',
-      'cacheOnly',
-      'networkFirst',
-      'networkOnly',
-      'staleWhileRevalidate'
+        'cacheFirst',
+        'cacheOnly',
+        'networkFirst',
+        'networkOnly',
+        'staleWhileRevalidate'
     )],
     options: joi.object().keys({
       backgroundSync: joi.object().keys({

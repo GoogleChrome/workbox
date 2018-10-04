@@ -119,12 +119,12 @@ class CacheExpiration {
       // TODO: break apart entries deleted due to expiration vs size restraints
       if (allUrls.length > 0) {
         logger.groupCollapsed(
-          `Expired ${allUrls.length} ` +
+            `Expired ${allUrls.length} ` +
           `${allUrls.length === 1 ? 'entry' : 'entries'} and removed ` +
           `${allUrls.length === 1 ? 'it' : 'them'} from the ` +
           `'${this._cacheName}' cache.`);
         logger.log(
-          `Expired the following ${allUrls.length === 1 ? 'URL' : 'URLs'}:`);
+            `Expired the following ${allUrls.length === 1 ? 'URL' : 'URLs'}:`);
         allUrls.forEach((url) => logger.log(`    ${url}`));
         logger.groupEnd();
       } else {

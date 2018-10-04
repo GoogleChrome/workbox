@@ -29,11 +29,11 @@ function disable() {
   if (isSupported()) {
     self.addEventListener('activate', (event) => {
       event.waitUntil(
-        self.registration.navigationPreload.disable().then(() => {
-          if (process.env.NODE_ENV !== 'production') {
-            logger.log(`Navigation preload is disabled.`);
-          }
-        })
+          self.registration.navigationPreload.disable().then(() => {
+            if (process.env.NODE_ENV !== 'production') {
+              logger.log(`Navigation preload is disabled.`);
+            }
+          })
       );
     });
   } else {

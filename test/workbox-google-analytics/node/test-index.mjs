@@ -57,9 +57,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(
-        `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
-          mode: 'no-cors',
-        }),
+          `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
+            mode: 'no-cors',
+          }),
     }));
 
     expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
@@ -72,9 +72,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(
-        `https://${GTM_HOST}${GTAG_JS_PATH}?id=UA-XXXXX-Y`, {
-          mode: 'no-cors',
-        }),
+          `https://${GTM_HOST}${GTAG_JS_PATH}?id=UA-XXXXX-Y`, {
+            mode: 'no-cors',
+          }),
     }));
 
     expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
@@ -84,9 +84,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
     googleAnalytics.initialize({cacheName: 'foobar'});
 
     const analyticsJsRequest = new Request(
-      `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
-        mode: 'no-cors',
-      });
+        `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
+          mode: 'no-cors',
+        });
 
     self.dispatchEvent(new FetchEvent('fetch', {request: analyticsJsRequest}));
 
@@ -105,9 +105,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
     googleAnalytics.initialize();
 
     const analyticsJsRequest = new Request(
-      `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
-        mode: 'no-cors',
-      });
+        `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
+          mode: 'no-cors',
+        });
 
     self.dispatchEvent(new FetchEvent('fetch', {request: analyticsJsRequest}));
 

@@ -11,4 +11,4 @@ gulp.task('analyze-properties:run', async () => {
 });
 
 gulp.task('analyze-properties',
-  gulp.series(['build', 'analyze-properties:run']));
+    gulp.series(['build', 'analyze-properties:run']));

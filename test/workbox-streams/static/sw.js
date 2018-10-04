@@ -38,9 +38,9 @@ self.addEventListener('fetch', (event) => {
 });
 
 workbox.routing.registerRoute(
-  new RegExp('strategy$'),
-  workbox.streams.strategy(getSourceFunctions(), {
-    'content-type': 'text/plain',
-    'x-test-case': 'strategy',
-  })
+    new RegExp('strategy$'),
+    workbox.streams.strategy(getSourceFunctions(), {
+      'content-type': 'text/plain',
+      'x-test-case': 'strategy',
+    })
 );

@@ -9,7 +9,7 @@ const logHelper = require('../../infra/utils/log-helper');
 
 const PROJECT_ID = 'workbox-bab1f';
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, '..', '..',
-  `workbox-9d39634504ad.json`);
+    `workbox-9d39634504ad.json`);
 
 class CDNHelper {
   constructor() {
@@ -91,7 +91,7 @@ class CDNHelper {
         throw err;
       }
       publicUrls.push(
-        `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`
+          `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`
       );
     }
 

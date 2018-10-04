@@ -59,7 +59,7 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
     it(`should use the default headersToCheck when not passed`, function() {
       const bcu = new BroadcastCacheUpdate();
       expect(bcu._deferNoticationTimeout).to.equal(
-        DEFAULT_DEFER_NOTIFICATION_TIMEOUT);
+          DEFAULT_DEFER_NOTIFICATION_TIMEOUT);
     });
 
     it(`adds a deferreds mapping for navigation fetch events`, () => {
@@ -148,8 +148,8 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
       const pm1Spy = sandbox.spy();
       const pm2Spy = sandbox.spy();
       sandbox.stub(self.clients, 'matchAll')
-        .withArgs(sinon.match.has('type', 'window'))
-        .resolves([{postMessage: pm1Spy}, {postMessage: pm2Spy}]);
+          .withArgs(sinon.match.has('type', 'window'))
+          .resolves([{postMessage: pm1Spy}, {postMessage: pm2Spy}]);
 
       await bcu.notifyIfUpdated({
         oldResponse: new Response('', {
@@ -190,8 +190,8 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
       const pm1Spy = sandbox.spy();
       const pm2Spy = sandbox.spy();
       sandbox.stub(self.clients, 'matchAll')
-        .withArgs(sinon.match.has('type', 'window'))
-        .resolves([{postMessage: pm1Spy}, {postMessage: pm2Spy}]);
+          .withArgs(sinon.match.has('type', 'window'))
+          .resolves([{postMessage: pm1Spy}, {postMessage: pm2Spy}]);
 
       await bcu.notifyIfUpdated({
         oldResponse: new Response('', {

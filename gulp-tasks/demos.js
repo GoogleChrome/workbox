@@ -9,11 +9,11 @@ const spawn = require('./utils/spawn-promise-wrapper');
 
 gulp.task('demos:groupBuildFiles', async () => {
   const pattern = path.posix.join(
-    __dirname, '..', 'packages', '**',
-    constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
+      __dirname, '..', 'packages', '**',
+      constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
 
   const localBuildPath = path.join(__dirname, '..', 'demos', 'public',
-    constants.LOCAL_BUILDS_DIR);
+      constants.LOCAL_BUILDS_DIR);
   await fs.remove(localBuildPath);
   await fs.ensureDir(localBuildPath);
 
@@ -22,8 +22,8 @@ gulp.task('demos:groupBuildFiles', async () => {
   const filesToIncludeInBundle = glob.sync(pattern);
   for (const fileToInclude of filesToIncludeInBundle) {
     await fs.ensureSymlink(
-      fileToInclude,
-      path.join(localBuildPath, path.basename(fileToInclude)),
+        fileToInclude,
+        path.join(localBuildPath, path.basename(fileToInclude)),
     );
   }
 });

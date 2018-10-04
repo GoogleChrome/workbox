@@ -10,19 +10,19 @@ describe(`[all] Test Exports of Each Module`, function() {
     publicFiles.forEach((publicFilePath) => {
       const expectedExportName = path.basename(publicFilePath, path.extname(publicFilePath));
       switch (expectedExportName) {
-      case 'index':
-      case 'browser':
-      case '_public':
-      case '_default':
-      case '_version':
-      case '_types':
+        case 'index':
+        case 'browser':
+        case '_public':
+        case '_default':
+        case '_version':
+        case '_types':
         // These are special files and don't need to be exported.
-        break;
-      default:
-        if (!(expectedExportName in allExports)) {
-          throw new Error(`Unable to find export for workbox.*.${expectedExportName} in ${packagePath}`);
-        }
-        break;
+          break;
+        default:
+          if (!(expectedExportName in allExports)) {
+            throw new Error(`Unable to find export for workbox.*.${expectedExportName} in ${packagePath}`);
+          }
+          break;
       }
     });
   };

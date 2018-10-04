@@ -202,8 +202,8 @@ describe(`[workbox-cache-expiration] Plugin`, function() {
     it(`should reject when called with the default runtime cache name`, async function() {
       const plugin = new Plugin({maxAgeSeconds: 1});
       await expectError(
-        () => plugin._getCacheExpiration(cacheNames.getRuntimeName()),
-        'expire-custom-caches-only'
+          () => plugin._getCacheExpiration(cacheNames.getRuntimeName()),
+          'expire-custom-caches-only'
       );
     });
   });

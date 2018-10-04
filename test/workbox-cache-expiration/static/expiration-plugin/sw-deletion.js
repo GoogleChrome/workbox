@@ -12,13 +12,13 @@ const expirationPlugin = new workbox.expiration.Plugin({
 const cacheName = 'expiration-plugin-deletion';
 
 workbox.routing.registerRoute(
-  /.*.txt/,
-  workbox.strategies.cacheFirst({
-    cacheName,
-    plugins: [
-      expirationPlugin,
-    ],
-  })
+    /.*.txt/,
+    workbox.strategies.cacheFirst({
+      cacheName,
+      plugins: [
+        expirationPlugin,
+      ],
+    })
 );
 
 self.addEventListener('message', async (event) => {

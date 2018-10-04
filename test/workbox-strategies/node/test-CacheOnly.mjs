@@ -93,8 +93,8 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
 
     const cacheOnly = new CacheOnly();
     await expectError(
-      () => cacheOnly.handle({event}),
-      'no-response'
+        () => cacheOnly.handle({event}),
+        'no-response'
     );
   });
 
@@ -121,8 +121,8 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
 
     const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
     await expectError(
-      () => cacheOnly.handle({event}),
-      'no-response'
+        () => cacheOnly.handle({event}),
+        'no-response'
     );
   });
 

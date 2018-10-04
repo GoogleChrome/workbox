@@ -4,10 +4,10 @@ module.exports = async (command, ...args) => {
       cb({error: '_runInSW is not initialized.'});
     } else {
       window._runInSW[command](...args)
-        .then((result) => cb(result))
-        .catch((error) => cb({
-          error: `While running ${command}(${args}): ${error.message}`,
-        }));
+          .then((result) => cb(result))
+          .catch((error) => cb({
+            error: `While running ${command}(${args}): ${error.message}`,
+          }));
     }
   }, command, args);
 

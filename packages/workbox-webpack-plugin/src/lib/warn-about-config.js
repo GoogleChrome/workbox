@@ -41,7 +41,7 @@ module.exports = (config) => {
   ];
 
   const usedNoopOptions = optionsToWarnAboutWhenGlobPatternsIsNotSet
-    .filter((option) => option in config);
+      .filter((option) => option in config);
   if (usedNoopOptions.length > 0) {
     return `You're using the following Workbox configuration option` +
       `${usedGlobOptions.length === 1 ? '' : 's'}: ` +

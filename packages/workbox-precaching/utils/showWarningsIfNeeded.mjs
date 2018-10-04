@@ -31,11 +31,11 @@ import '../_version.mjs';
 export default (entriesMap) => {
   const urlOnlyEntries = [];
   entriesMap.forEach(
-    (entry) => {
-      if (typeof entry === 'string' || !entry._originalInput.revision) {
-        urlOnlyEntries.push(entry._originalInput);
+      (entry) => {
+        if (typeof entry === 'string' || !entry._originalInput.revision) {
+          urlOnlyEntries.push(entry._originalInput);
+        }
       }
-    }
   );
 
   if (urlOnlyEntries.length === 0) {
@@ -50,7 +50,7 @@ export default (entriesMap) => {
   }).join(`\n`);
 
   logger.warn(
-    `The following precache entries might not be revisioned:` +
+      `The following precache entries might not be revisioned:` +
     `\n\n` +
     urlsList +
     `\n\n`

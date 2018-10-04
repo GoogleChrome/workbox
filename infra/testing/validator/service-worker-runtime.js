@@ -82,10 +82,10 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
   for (const [method, spy] of Object.entries(methodsToSpies)) {
     if (spy.called) {
       expect(spy.args).to.deep.equal(expectedMethodCalls[method],
-        `while testing method calls for ${method}`);
+          `while testing method calls for ${method}`);
     } else {
       expect(expectedMethodCalls[method],
-        `while testing method calls for ${method}`).to.be.undefined;
+          `while testing method calls for ${method}`).to.be.undefined;
     }
   }
 }
@@ -107,7 +107,7 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
  */
 module.exports = async ({swFile, swString, expectedMethodCalls}) => {
   assert((swFile || swString) && !(swFile && swString),
-    `Set swFile or swString, but not both.`);
+      `Set swFile or swString, but not both.`);
 
   if (swFile) {
     swString = await fse.readFile(swFile, 'utf8');

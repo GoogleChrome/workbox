@@ -17,4 +17,4 @@
 const joi = require('joi');
 
 module.exports = joi.object().type(RegExp)
-  .error(() => 'the value must be a RegExp');
+    .error(() => 'the value must be a RegExp');

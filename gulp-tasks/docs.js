@@ -39,10 +39,10 @@ You can view a friendlier UI by running
   'gulp docs --pretty'
 `);
       params.push(
-        '--template', path.join(
-          __dirname, '..', 'infra', 'templates', 'reference-docs', 'jsdoc'
-        ),
-        '--query', queryString,
+          '--template', path.join(
+              __dirname, '..', 'infra', 'templates', 'reference-docs', 'jsdoc'
+          ),
+          '--query', queryString,
       );
     }
 
@@ -53,13 +53,13 @@ You can view a friendlier UI by running
     return spawn(getNpmCmd(), params, {
       cwd: path.join(__dirname, '..'),
     })
-      .then(() => {
-        logHelper.log(`Docs built successfully`);
-      })
-      .catch((err) => {
-        logHelper.error(`Docs failed to build: `, err);
-        throw err;
-      });
+        .then(() => {
+          logHelper.log(`Docs built successfully`);
+        })
+        .catch((err) => {
+          logHelper.error(`Docs failed to build: `, err);
+          throw err;
+        });
   };
 };
 
@@ -75,7 +75,7 @@ gulp.task('docs:build', gulp.series([
 
 gulp.task('docs:watch', () => {
   const watcher = gulp.watch('packages/**/*',
-    gulp.series(['docs:build']));
+      gulp.series(['docs:build']));
   watcher.on('error', (err) => {
     logHelper.error(`Docs failed to build: `, err);
   });

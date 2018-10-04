@@ -24,14 +24,14 @@ describe(`[workbox-routing] Default Router`, function() {
   describe(`registerRoute()`, function() {
     devOnly.it(`should throw when using a string that doesn't start with '/' or 'http' is used.`, async function() {
       await expectError(
-        () => defaultRouter.registerRoute('invalid-start', sandbox.stub()),
-        'invalid-string',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-          expect(error.details).to.have.property('className').that.equals('DefaultRouter');
-          expect(error.details).to.have.property('funcName').that.equals('registerRoute');
-          expect(error.details).to.have.property('paramName').that.equals('capture');
-        }
+          () => defaultRouter.registerRoute('invalid-start', sandbox.stub()),
+          'invalid-string',
+          (error) => {
+            expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+            expect(error.details).to.have.property('className').that.equals('DefaultRouter');
+            expect(error.details).to.have.property('funcName').that.equals('registerRoute');
+            expect(error.details).to.have.property('paramName').that.equals('capture');
+          }
       );
     });
 
@@ -43,7 +43,7 @@ describe(`[workbox-routing] Default Router`, function() {
 
       const event = new FetchEvent('fetch', {
         request: new Request(
-          new URL('/abc', self.location).toString()
+            new URL('/abc', self.location).toString()
         ),
       });
       await defaultRouter.handleRequest(event);
@@ -69,21 +69,21 @@ describe(`[workbox-routing] Default Router`, function() {
 
       const sameOriginEvent = new FetchEvent('fetch', {
         request: new Request(
-          new URL(pathname, self.location).toString()
+            new URL(pathname, self.location).toString()
         ),
       });
       await defaultRouter.handleRequest(sameOriginEvent);
 
       const sameOriginEventNotMatching = new FetchEvent('fetch', {
         request: new Request(
-          new URL('/does/not/match', self.location).toString()
+            new URL('/does/not/match', self.location).toString()
         ),
       });
       await defaultRouter.handleRequest(sameOriginEventNotMatching);
 
       const crossOriginEvent = new FetchEvent('fetch', {
         request: new Request(
-          new URL(pathname, crossOrigin).toString()
+            new URL(pathname, crossOrigin).toString()
         ),
       });
       await defaultRouter.handleRequest(crossOriginEvent);
@@ -109,14 +109,14 @@ describe(`[workbox-routing] Default Router`, function() {
 
       const sameOriginEvent = new FetchEvent('fetch', {
         request: new Request(
-          new URL(pathname, self.location).toString()
+            new URL(pathname, self.location).toString()
         ),
       });
       await defaultRouter.handleRequest(sameOriginEvent);
 
       const crossOriginEvent = new FetchEvent('fetch', {
         request: new Request(
-          new URL(pathname, crossOrigin).toString()
+            new URL(pathname, crossOrigin).toString()
         ),
       });
       await defaultRouter.handleRequest(crossOriginEvent);
@@ -139,7 +139,7 @@ describe(`[workbox-routing] Default Router`, function() {
 
       const event = new FetchEvent('fetch', {
         request: new Request(
-          new URL('/', self.location).toString()
+            new URL('/', self.location).toString()
         ),
       });
       await defaultRouter.handleRequest(event);
@@ -163,7 +163,7 @@ describe(`[workbox-routing] Default Router`, function() {
 
       const event = new FetchEvent('fetch', {
         request: new Request(
-          new URL('/', self.location).toString()
+            new URL('/', self.location).toString()
         ),
       });
       await defaultRouter.handleRequest(event);
@@ -196,7 +196,7 @@ describe(`[workbox-routing] Default Router`, function() {
 
       const event = new FetchEvent('fetch', {
         request: new Request(
-          new URL('/', self.location).toString()
+            new URL('/', self.location).toString()
         ),
       });
       await defaultRouter.handleRequest(event);
@@ -222,7 +222,7 @@ describe(`[workbox-routing] Default Router`, function() {
 
       const event = new FetchEvent('fetch', {
         request: new Request(
-          new URL('/', self.location).toString()
+            new URL('/', self.location).toString()
         ),
       });
       await defaultRouter.handleRequest(event);
@@ -360,9 +360,9 @@ describe(`[workbox-routing] Default Router`, function() {
       defaultRouter.registerRoute(/./, () => injectResponse);
 
       const fetchEvent = new FetchEvent(
-        'fetch', {
-          request: new Request(new URL('/random/navigation.html', self.location)),
-        });
+          'fetch', {
+            request: new Request(new URL('/random/navigation.html', self.location)),
+          });
       return new Promise((resolve) => {
         sandbox.stub(fetchEvent, 'respondWith').callsFake((response) => {
           expect(response).to.equal(injectResponse);

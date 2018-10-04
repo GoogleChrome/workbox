@@ -74,7 +74,7 @@ class InjectManifest {
     }
 
     const workboxSWImports = await getWorkboxSWImports(
-      compilation, this.config);
+        compilation, this.config);
 
     // this.config.modulePathPrefix may or may not have been set by
     // getWorkboxSWImports(), depending on the other config options. If it was
@@ -105,10 +105,10 @@ class InjectManifest {
     const manifestHash = getAssetHash(manifestAsset);
 
     const manifestFilename = formatManifestFilename(
-      this.config.precacheManifestFilename, manifestHash);
+        this.config.precacheManifestFilename, manifestHash);
 
     const pathToManifestFile = relativeToOutputPath(
-      compilation, path.join(this.config.importsDirectory, manifestFilename));
+        compilation, path.join(this.config.importsDirectory, manifestFilename));
     compilation.assets[pathToManifestFile] = manifestAsset;
 
     importScriptsArray.push((compilation.options.output.publicPath || '') +
@@ -134,8 +134,8 @@ class InjectManifest {
     }
 
     const importScriptsString = importScriptsArray
-      .map(JSON.stringify)
-      .join(', ');
+        .map(JSON.stringify)
+        .join(', ');
 
     const setConfigString = modulePathPrefix
       ? `workbox.setConfig({modulePathPrefix: ` +
@@ -158,19 +158,19 @@ ${originalSWString}
    */
   apply(compiler) {
     const readFile = compiler.inputFileSystem.readFile
-      .bind(compiler.inputFileSystem);
+        .bind(compiler.inputFileSystem);
     if ('hooks' in compiler) {
       // We're in webpack 4+.
       compiler.hooks.emit.tapPromise(
-        this.constructor.name,
-        (compilation) => this.handleEmit(compilation, readFile)
+          this.constructor.name,
+          (compilation) => this.handleEmit(compilation, readFile)
       );
     } else {
       // We're in webpack 2 or 3.
       compiler.plugin('emit', (compilation, callback) => {
         this.handleEmit(compilation, readFile)
-          .then(callback)
-          .catch(callback);
+            .then(callback)
+            .catch(callback);
       });
     }
   }

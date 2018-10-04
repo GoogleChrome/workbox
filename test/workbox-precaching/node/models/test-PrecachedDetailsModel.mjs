@@ -111,7 +111,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     it(`should return entry with ID`, async function() {
       const model = new PrecachedDetailsModel(`test-idb-name`);
       await model._addEntry(new PrecacheEntry(
-        {}, '/', '1234', true
+          {}, '/', '1234', true
       ));
       const allEntries = await model._getAllEntries();
       expect(allEntries.length).to.equal(1);
@@ -132,10 +132,10 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
     it(`should return false for non-existant entry`, async function() {
       const model = new PrecachedDetailsModel(`test-idb-name`);
       const isCached = await model._isEntryCached(
-        'test-cache',
-        new PrecacheEntry(
-          {}, '/', '1234', true
-        )
+          'test-cache',
+          new PrecacheEntry(
+              {}, '/', '1234', true
+          )
       );
       expect(isCached).to.equal(false);
     });
@@ -146,16 +146,16 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       const model = new PrecachedDetailsModel(`test-idb-name`);
 
       await model._addEntry(
-        new PrecacheEntry(
-          {}, '/', '1234', true
-        )
+          new PrecacheEntry(
+              {}, '/', '1234', true
+          )
       );
 
       const isCached = await model._isEntryCached(
-        cacheName,
-        new PrecacheEntry(
-          {}, '/', '4321', true
-        )
+          cacheName,
+          new PrecacheEntry(
+              {}, '/', '4321', true
+          )
       );
       expect(isCached).to.equal(false);
     });
@@ -165,7 +165,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
       const model = new PrecachedDetailsModel(`test-idb-name`);
       const entry = new PrecacheEntry(
-        {}, '/', '1234', true
+          {}, '/', '1234', true
       );
 
       await model._addEntry(entry);
@@ -179,7 +179,7 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
 
       const model = new PrecachedDetailsModel(`test-idb-name`);
       const entry = new PrecacheEntry(
-        {}, '/', '1234', true
+          {}, '/', '1234', true
       );
 
       const openCache = await caches.open(cacheName);
@@ -199,9 +199,9 @@ describe('[workbox-precaching] PrecachedDetailsModel', function() {
       const model = new PrecachedDetailsModel(`test-idb-name`);
 
       await model._addEntry(
-        new PrecacheEntry(
-          {}, '/', '1234', true
-        )
+          new PrecacheEntry(
+              {}, '/', '1234', true
+          )
       );
 
       let allEntries = await model._getAllEntries();

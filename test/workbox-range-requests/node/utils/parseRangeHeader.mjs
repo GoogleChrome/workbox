@@ -8,29 +8,29 @@ describe(`[workbox-range-requests] utils/parseRangeHeader`, function() {
   devOnly.it(`should throw when it's is called with an invalid 'rangeHeader' parameter`, async function() {
     const rangeHeader = null;
     await expectError(
-      () => parseRangeHeader(rangeHeader),
-      'incorrect-type', (error) => {
-        expect(error.details).to.have.property('moduleName', 'workbox-range-requests');
-        expect(error.details).to.have.property('funcName', 'parseRangeHeader');
-        expect(error.details).to.have.property('paramName', 'rangeHeader');
-        expect(error.details).to.have.property('expectedType', 'string');
-      }
+        () => parseRangeHeader(rangeHeader),
+        'incorrect-type', (error) => {
+          expect(error.details).to.have.property('moduleName', 'workbox-range-requests');
+          expect(error.details).to.have.property('funcName', 'parseRangeHeader');
+          expect(error.details).to.have.property('paramName', 'rangeHeader');
+          expect(error.details).to.have.property('expectedType', 'string');
+        }
     );
   });
 
   it(`should throw when it's is called with a rangeHeader that doesn't start with 'bytes='`, async function() {
     const rangeHeader = 'not-bytes=';
     await expectError(
-      () => parseRangeHeader(rangeHeader),
-      'unit-must-be-bytes'
+        () => parseRangeHeader(rangeHeader),
+        'unit-must-be-bytes'
     );
   });
 
   it(`should throw when it's is called with a rangeHeader contains multiple ranges`, async function() {
     const rangeHeader = 'bytes=1-2, 3-4';
     await expectError(
-      () => parseRangeHeader(rangeHeader),
-      'single-range-only'
+        () => parseRangeHeader(rangeHeader),
+        'single-range-only'
     );
   });
 
@@ -45,8 +45,8 @@ describe(`[workbox-range-requests] utils/parseRangeHeader`, function() {
     for (const badRange of badRanges) {
       const rangeHeader = `bytes=${badRange}`;
       await expectError(
-        () => parseRangeHeader(rangeHeader),
-        'invalid-range-values'
+          () => parseRangeHeader(rangeHeader),
+          'invalid-range-values'
       );
     }
   });

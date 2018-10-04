@@ -203,7 +203,7 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
 
       sandbox.spy(expirationManager, 'expireEntries');
       sandbox.stub(expirationManager, '_findOldEntries')
-        .callsFake(() => testPromise);
+          .callsFake(() => testPromise);
 
       const firstPromise = expirationManager.expireEntries();
 

@@ -47,7 +47,7 @@ const eventsDoneWaiting = () => {
   // that the normal behavior `Promise.all` erroring at the first error.
   for (const event of _allExtendableEvents) {
     const extendLifetimePromisesOrErrors = [...event._extendLifetimePromises]
-      .map((promise) => promise.catch((err) => err));
+        .map((promise) => promise.catch((err) => err));
 
     allExtendLifetimePromises.push(...extendLifetimePromisesOrErrors);
   }

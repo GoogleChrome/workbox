@@ -11,9 +11,9 @@ const pkgPathToName = require('./pkg-path-to-name');
  */
 function getPackages(typeFilter) {
   return glob.sync(
-    `packages/${global.packageOrStar}/package.json`, {
-      absolute: true,
-    }
+      `packages/${global.packageOrStar}/package.json`, {
+        absolute: true,
+      }
   ).filter((pathToPackageJson) => {
     const pkgInfo = require(pathToPackageJson);
     const packageType = pkgInfo.workbox.packageType;

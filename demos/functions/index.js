@@ -28,7 +28,7 @@ app.set('view engine', 'hbs');
 app.get('/', function(req, res) {
   let moduleData = workboxModules.map((moduleName) => {
     const docPath = path.join(
-      __dirname, 'views', 'demo', `${moduleName}.hbs`
+        __dirname, 'views', 'demo', `${moduleName}.hbs`
     );
 
     let exists = false;
@@ -52,15 +52,15 @@ app.get('/', function(req, res) {
 });
 
 app.get('/api/is-response-cacheable',
-  function(req, res) {
-    if (req.headers['x-is-cacheable']) {
-      const value = req.headers['x-is-cacheable'];
-      res.set('X-Is-Cacheable', value);
-      res.send(`This response has 'X-Is-Cacheable' header set to '${value}'`);
-    } else {
-      res.send(`This response has no 'X-Is-Cacheable' header`);
+    function(req, res) {
+      if (req.headers['x-is-cacheable']) {
+        const value = req.headers['x-is-cacheable'];
+        res.set('X-Is-Cacheable', value);
+        res.send(`This response has 'X-Is-Cacheable' header set to '${value}'`);
+      } else {
+        res.send(`This response has no 'X-Is-Cacheable' header`);
+      }
     }
-  }
 );
 
 app.get('/demo/:moduleName', function(req, res) {
@@ -77,8 +77,8 @@ app.get('/api/date', function(req, res) {
 
 app.get('/demo/:moduleName/:swfile', function(req, res, next) {
   const swTemplate = path.basename(
-    req.params.swfile,
-    path.extname(req.params.swfile)
+      req.params.swfile,
+      path.extname(req.params.swfile)
   );
 
   let cdnUrl = cdnDetails.latestUrl;

@@ -21,9 +21,9 @@ describe(`rangeRequests.Plugin`, function() {
     const partialResponseBody = await global.__workbox.webdriver.executeAsyncScript((dummyUrl, cb) => {
       // Prime the cache, and then make the Range: request.
       fetch(new Request(dummyUrl, {headers: {Range: `bytes=5-6`}}))
-        .then((response) => response.text())
-        .then((text) => cb(text))
-        .catch((error) => cb(error.message));
+          .then((response) => response.text())
+          .then((text) => cb(text))
+          .catch((error) => cb(error.message));
     }, dummyUrl);
 
     // The values used for the byte range are inclusive, so we'll end up with
@@ -33,7 +33,7 @@ describe(`rangeRequests.Plugin`, function() {
     const errorResponseStatus = await global.__workbox.webdriver.executeAsyncScript((dummyUrl, cb) => {
       // These are arbitrary large values that extend past the end of the file.
       fetch(new Request(dummyUrl, {headers: {Range: `bytes=100-101`}}))
-        .then((response) => cb(response.status));
+          .then((response) => cb(response.status));
     }, dummyUrl);
 
     // The expected error status is 416 (Range Not Satisfiable)

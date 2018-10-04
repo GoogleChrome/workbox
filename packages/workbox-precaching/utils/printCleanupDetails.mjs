@@ -51,8 +51,8 @@ export default (deletedCacheRequests, deletedRevisionDetails) => {
     `${revisionDeleteCount === 1 ? 'entry' : 'entries'} ` +
     `${revisionDeleteCount === 1 ? 'was' : 'were'} deleted from IndexedDB.`;
 
-  logger.groupCollapsed(
-    `During precaching cleanup, ${cacheDeleteText} and ${revisionDeleteText}`);
+  logger.groupCollapsed(`During precaching cleanup, ${cacheDeleteText} ` +
+  `and ${revisionDeleteText}`);
 
   logGroup('Deleted Cache Requests', deletedCacheRequests);
   logGroup('Revision Details Deleted from DB', deletedRevisionDetails);

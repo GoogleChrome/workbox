@@ -45,10 +45,10 @@ const _removeIgnoreUrlParams = (origUrlObject, ignoreUrlParametersMatching) => {
   });
   const filteredKeyValuesPairs = keyValuePairs.filter((keyValuePair) => {
     return ignoreUrlParametersMatching
-      .every((ignoredRegex) => {
+        .every((ignoredRegex) => {
         // Return true iff the key doesn't match any of the regexes.
-        return !ignoredRegex.test(keyValuePair[0]);
-      });
+          return !ignoredRegex.test(keyValuePair[0]);
+        });
   });
   const filteredStrings = filteredKeyValuesPairs.map((keyValuePair) => {
     // Join each [key, value] array into a 'key=value' string
@@ -85,7 +85,7 @@ const _getPrecachedUrl = (url, {
   urlObject.hash = '';
 
   const urlWithoutIgnoredParams = _removeIgnoreUrlParams(
-    urlObject, ignoreUrlParametersMatching
+      urlObject, ignoreUrlParametersMatching
   );
 
   let urlsToAttempt = [
@@ -215,23 +215,23 @@ moduleExports.addRoute = (options) => {
     }
 
     let responsePromise = caches.open(cacheName)
-      .then((cache) => {
-        return cache.match(precachedUrl);
-      }).then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
+        .then((cache) => {
+          return cache.match(precachedUrl);
+        }).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
 
-        // Fall back to the network if we don't have a cached response (perhaps
-        // due to manual cache cleanup).
-        if (process.env.NODE_ENV !== 'production') {
-          logger.debug(`The precached response for ` +
+          // Fall back to the network if we don't have a cached response
+          // (perhaps due to manual cache cleanup).
+          if (process.env.NODE_ENV !== 'production') {
+            logger.debug(`The precached response for ` +
             `${getFriendlyURL(precachedUrl)} in ${cacheName} was not found. ` +
             `Falling back to the network instead.`);
-        }
+          }
 
-        return fetch(precachedUrl);
-      });
+          return fetch(precachedUrl);
+        });
 
     if (process.env.NODE_ENV !== 'production') {
       responsePromise = responsePromise.then((response) => {

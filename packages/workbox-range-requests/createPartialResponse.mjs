@@ -64,10 +64,10 @@ async function createPartialResponse(request, originalResponse) {
     const originalBlob = await originalResponse.blob();
 
     const effectiveBoundaries = calculateEffectiveBoundaries(
-      originalBlob, boundaries.start, boundaries.end);
+        originalBlob, boundaries.start, boundaries.end);
 
     const slicedBlob = originalBlob.slice(effectiveBoundaries.start,
-      effectiveBoundaries.end);
+        effectiveBoundaries.end);
     const slicedBlobSize = slicedBlob.size;
 
     const slicedResponse = new Response(slicedBlob, {
@@ -80,7 +80,7 @@ async function createPartialResponse(request, originalResponse) {
 
     slicedResponse.headers.set('Content-Length', slicedBlobSize);
     slicedResponse.headers.set('Content-Range',
-      `bytes ${effectiveBoundaries.start}-${effectiveBoundaries.end - 1}/` +
+        `bytes ${effectiveBoundaries.start}-${effectiveBoundaries.end - 1}/` +
       originalBlob.size);
 
     return slicedResponse;

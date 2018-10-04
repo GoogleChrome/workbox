@@ -45,9 +45,9 @@ describe(`[workbox-broadcast-cache-update] responsesAreSame`, function() {
       },
     });
     expect(responsesAreSame(
-      first,
-      second,
-      headersToCheck,
+        first,
+        second,
+        headersToCheck,
     )).to.be.true;
   });
 
@@ -63,9 +63,9 @@ describe(`[workbox-broadcast-cache-update] responsesAreSame`, function() {
       },
     });
     expect(responsesAreSame(
-      first,
-      second,
-      headersToCheck,
+        first,
+        second,
+        headersToCheck,
     )).to.be.true;
   });
 
@@ -73,9 +73,9 @@ describe(`[workbox-broadcast-cache-update] responsesAreSame`, function() {
     const first = new Response('');
     const second = new Response('');
     expect(responsesAreSame(
-      first,
-      second,
-      headersToCheck,
+        first,
+        second,
+        headersToCheck,
     )).to.be.true;
   });
 
@@ -93,9 +93,9 @@ describe(`[workbox-broadcast-cache-update] responsesAreSame`, function() {
       },
     });
     expect(responsesAreSame(
-      first,
-      second,
-      headersToCheck,
+        first,
+        second,
+        headersToCheck,
     )).to.be.false;
   });
 
@@ -113,9 +113,9 @@ describe(`[workbox-broadcast-cache-update] responsesAreSame`, function() {
       },
     });
     expect(responsesAreSame(
-      first,
-      second,
-      headersToCheck,
+        first,
+        second,
+        headersToCheck,
     )).to.be.false;
   });
 });

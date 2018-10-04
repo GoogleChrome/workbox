@@ -15,7 +15,7 @@ describe(`[workbox-build] entry-points/options/validate.js`, function() {
   for (const badInput of badInputs) {
     it(`should throw a ValidationError when passed bad input: ${JSON.stringify(badInput)}`, function() {
       expect(
-        () => validate(badInput, baseSchema)
+          () => validate(badInput, baseSchema)
       ).to.throw().with.property('name', 'ValidationError');
     });
   }

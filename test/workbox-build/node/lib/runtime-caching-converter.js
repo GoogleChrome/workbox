@@ -68,7 +68,7 @@ function validate(runtimeCachingOptions, convertedOptions) {
       const options = runtimeCachingOption.options;
       if (options.networkTimeoutSeconds) {
         expect(options.networkTimeoutSeconds)
-          .to.eql(strategiesOptions.networkTimeoutSeconds);
+            .to.eql(strategiesOptions.networkTimeoutSeconds);
       }
 
       if (options.cacheName) {
@@ -94,13 +94,13 @@ function validate(runtimeCachingOptions, convertedOptions) {
       if (options.backgroundSync) {
         if ('options' in options.backgroundSync) {
           expect(
-            globalScope.workbox.backgroundSync.Plugin.calledWith(
-              options.backgroundSync.name, options.backgroundSync.options)
+              globalScope.workbox.backgroundSync.Plugin.calledWith(
+                  options.backgroundSync.name, options.backgroundSync.options)
           ).to.be.true;
         } else {
           expect(
-            globalScope.workbox.backgroundSync.Plugin.calledWith(
-              options.backgroundSync.name)
+              globalScope.workbox.backgroundSync.Plugin.calledWith(
+                  options.backgroundSync.name)
           ).to.be.true;
         }
       }
@@ -108,13 +108,13 @@ function validate(runtimeCachingOptions, convertedOptions) {
       if (options.broadcastUpdate) {
         if ('options' in options.broadcastUpdate) {
           expect(
-            globalScope.workbox.broadcastUpdate.Plugin.calledWith(
-              options.broadcastUpdate.channelName, options.broadcastUpdate.options)
+              globalScope.workbox.broadcastUpdate.Plugin.calledWith(
+                  options.broadcastUpdate.channelName, options.broadcastUpdate.options)
           ).to.be.true;
         } else {
           expect(
-            globalScope.workbox.broadcastUpdate.Plugin.calledWith(
-              options.broadcastUpdate.channelName)
+              globalScope.workbox.broadcastUpdate.Plugin.calledWith(
+                  options.broadcastUpdate.channelName)
           ).to.be.true;
         }
       }

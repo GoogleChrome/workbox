@@ -66,7 +66,7 @@ class GenerateSW {
     }
 
     const workboxSWImports = await getWorkboxSWImports(
-      compilation, this.config);
+        compilation, this.config);
     const entries = getManifestEntriesFromCompilation(compilation, this.config);
     const importScriptsArray = [].concat(this.config.importScripts);
 
@@ -75,9 +75,9 @@ class GenerateSW {
     const manifestHash = getAssetHash(manifestAsset);
 
     const manifestFilename = formatManifestFilename(
-      this.config.precacheManifestFilename, manifestHash);
+        this.config.precacheManifestFilename, manifestHash);
     const pathToManifestFile = relativeToOutputPath(
-      compilation, path.join(this.config.importsDirectory, manifestFilename));
+        compilation, path.join(this.config.importsDirectory, manifestFilename));
     compilation.assets[pathToManifestFile] = manifestAsset;
 
     importScriptsArray.push((compilation.options.output.publicPath || '') +
@@ -121,15 +121,15 @@ class GenerateSW {
     if ('hooks' in compiler) {
       // We're in webpack 4+.
       compiler.hooks.emit.tapPromise(
-        this.constructor.name,
-        (compilation) => this.handleEmit(compilation)
+          this.constructor.name,
+          (compilation) => this.handleEmit(compilation)
       );
     } else {
       // We're in webpack 2 or 3.
       compiler.plugin('emit', (compilation, callback) => {
         this.handleEmit(compilation)
-          .then(callback)
-          .catch(callback);
+            .then(callback)
+            .catch(callback);
       });
     }
   }

@@ -5,15 +5,15 @@ importScripts('/__WORKBOX/buildFile/workbox-strategies');
 importScripts('/infra/testing/comlink/sw-interface.js');
 
 workbox.routing.registerRoute(
-  /.*.txt/,
-  workbox.strategies.cacheFirst({
-    cacheName: 'expiration-plugin-max-age-seconds',
-    plugins: [
-      new workbox.expiration.Plugin({
-        maxAgeSeconds: 1,
-      }),
-    ],
-  })
+    /.*.txt/,
+    workbox.strategies.cacheFirst({
+      cacheName: 'expiration-plugin-max-age-seconds',
+      plugins: [
+        new workbox.expiration.Plugin({
+          maxAgeSeconds: 1,
+        }),
+      ],
+    })
 );
 
 self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));

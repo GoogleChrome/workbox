@@ -48,7 +48,7 @@ module.exports = {
         },
       };
       plugins.push(
-        terserPlugin(terserOptions),
+          terserPlugin(terserOptions),
       );
     }
 

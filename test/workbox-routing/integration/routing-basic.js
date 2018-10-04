@@ -16,9 +16,9 @@ describe(`[workbox-routing] Basic Route`, function() {
     const testUrl = `${testServerAddress}/routeObject`;
     const responseBody = await global.__workbox.webdriver.executeAsyncScript((testUrl, cb) => {
       fetch(testUrl)
-        .then((response) => response.text())
-        .then((responseBody) => cb(responseBody))
-        .catch((err) => cb(err.message));
+          .then((response) => response.text())
+          .then((responseBody) => cb(responseBody))
+          .catch((err) => cb(err.message));
     }, testUrl);
 
     expect(responseBody).to.eql(testUrl);
@@ -28,9 +28,9 @@ describe(`[workbox-routing] Basic Route`, function() {
     const testUrl = `${testServerAddress}/sameOrigin`;
     const responseBody = await global.__workbox.webdriver.executeAsyncScript((testUrl, cb) => {
       fetch(testUrl)
-        .then((response) => response.text())
-        .then((responseBody) => cb(responseBody))
-        .catch((err) => cb(err.message));
+          .then((response) => response.text())
+          .then((responseBody) => cb(responseBody))
+          .catch((err) => cb(err.message));
     }, testUrl);
 
     expect(responseBody).to.eql(testUrl);
@@ -40,9 +40,9 @@ describe(`[workbox-routing] Basic Route`, function() {
     const testUrl = 'https://example.com/crossOrigin';
     const responseBody = await global.__workbox.webdriver.executeAsyncScript((testUrl, cb) => {
       fetch(testUrl)
-        .then((response) => response.text())
-        .then((responseBody) => cb(responseBody))
-        .catch((err) => cb(err.message));
+          .then((response) => response.text())
+          .then((responseBody) => cb(responseBody))
+          .catch((err) => cb(err.message));
     }, testUrl);
 
     expect(responseBody).to.eql(testUrl);
@@ -52,8 +52,8 @@ describe(`[workbox-routing] Basic Route`, function() {
     const testUrl = `${testServerAddress}/doesNotMatch`;
     const responseStatus = await global.__workbox.webdriver.executeAsyncScript((testUrl, cb) => {
       fetch(testUrl)
-        .then((response) => cb(response.status))
-        .catch((err) => cb(err.message));
+          .then((response) => cb(response.status))
+          .catch((err) => cb(err.message));
     }, testUrl);
 
     expect(responseStatus).to.eql(404);

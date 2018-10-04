@@ -169,7 +169,7 @@ function getManifestEntriesFromCompilation(compilation, config) {
 
   const assetMetadata = generateMetadataForAssets(assets, chunks);
   const filteredAssetMetadata = filterAssets(assetMetadata,
-    whitelistedChunkNames, blacklistedChunkNames);
+      whitelistedChunkNames, blacklistedChunkNames);
 
   const knownHashes = [
     compilation.hash,

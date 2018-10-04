@@ -91,15 +91,15 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
     it(`converts the instance to a plain object`, async function() {
       const clock = sinon.useFakeTimers({now: Date.now()});
       const storableRequest = await StorableRequest.fromRequest(
-        new Request('/foo', {
-          method: 'POST',
-          body: 'it worked!',
-          mode: 'no-cors',
-          headers: {
-            'x-foo': 'bar',
-            'x-qux': 'baz',
-          },
-        }));
+          new Request('/foo', {
+            method: 'POST',
+            body: 'it worked!',
+            mode: 'no-cors',
+            headers: {
+              'x-foo': 'bar',
+              'x-qux': 'baz',
+            },
+          }));
 
       const requestObj = storableRequest.toObject();
 
@@ -120,15 +120,15 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
   describe(`toRequest`, function() {
     it(`converts the instance to a Request object`, async function() {
       const storableRequest = await StorableRequest.fromRequest(
-        new Request('/foo', {
-          method: 'POST',
-          body: 'it worked!',
-          mode: 'no-cors',
-          headers: {
-            'x-foo': 'bar',
-            'x-qux': 'baz',
-          },
-        }));
+          new Request('/foo', {
+            method: 'POST',
+            body: 'it worked!',
+            mode: 'no-cors',
+            headers: {
+              'x-foo': 'bar',
+              'x-qux': 'baz',
+            },
+          }));
 
       const request = storableRequest.toRequest();
 
@@ -166,7 +166,7 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
       // Ensure clone was not shallow.
       expect(original.requestInit.body).to.not.equal(clone.requestInit.body);
       expect(original.requestInit.headers).to.not.equal(
-        clone.requestInit.headers);
+          clone.requestInit.headers);
     });
   });
 });

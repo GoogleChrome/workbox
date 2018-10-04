@@ -80,7 +80,7 @@ const putWrapper = async ({
   const cache = await caches.open(cacheName);
 
   const updatePlugins = pluginUtils.filter(
-    plugins, pluginEvents.CACHE_DID_UPDATE);
+      plugins, pluginEvents.CACHE_DID_UPDATE);
 
   let oldResponse = updatePlugins.length > 0 ?
     await matchWrapper({cacheName, request}) : null;
@@ -144,13 +144,13 @@ const matchWrapper = async ({
   for (let plugin of plugins) {
     if (pluginEvents.CACHED_RESPONSE_WILL_BE_USED in plugin) {
       cachedResponse = await plugin[pluginEvents.CACHED_RESPONSE_WILL_BE_USED]
-        .call(plugin, {
-          cacheName,
-          request,
-          event,
-          matchOptions,
-          cachedResponse,
-        });
+          .call(plugin, {
+            cacheName,
+            request,
+            event,
+            matchOptions,
+            cachedResponse,
+          });
       if (process.env.NODE_ENV !== 'production') {
         if (cachedResponse) {
           assert.isInstance(cachedResponse, Response, {
@@ -186,11 +186,11 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
     if (pluginEvents.CACHE_WILL_UPDATE in plugin) {
       pluginsUsed = true;
       responseToCache = await plugin[pluginEvents.CACHE_WILL_UPDATE]
-        .call(plugin, {
-          request,
-          response: responseToCache,
-          event,
-        });
+          .call(plugin, {
+            request,
+            response: responseToCache,
+            event,
+          });
 
       if (process.env.NODE_ENV !== 'production') {
         if (responseToCache) {

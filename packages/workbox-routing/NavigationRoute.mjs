@@ -108,7 +108,7 @@ class NavigationRoute extends Route {
     } else {
       if (process.env.NODE_ENV !== 'production') {
         logger.debug(
-          `The navigation route is not being used, since the ` +
+            `The navigation route is not being used, since the ` +
           `URL being navigated to doesn't match the whitelist.`
         );
       }

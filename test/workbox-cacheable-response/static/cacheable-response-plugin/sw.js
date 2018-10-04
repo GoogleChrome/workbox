@@ -5,15 +5,15 @@ importScripts('/__WORKBOX/buildFile/workbox-strategies');
 importScripts('/infra/testing/comlink/sw-interface.js');
 
 workbox.routing.registerRoute(
-  /.*.txt/,
-  workbox.strategies.cacheFirst({
-    cacheName: 'cacheable-response-cache',
-    plugins: [
-      new workbox.cacheableResponse.Plugin({
-        statuses: [0, 200],
-      }),
-    ],
-  })
+    /.*.txt/,
+    workbox.strategies.cacheFirst({
+      cacheName: 'cacheable-response-cache',
+      plugins: [
+        new workbox.cacheableResponse.Plugin({
+          statuses: [0, 200],
+        }),
+      ],
+    })
 );
 
 self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));

@@ -25,8 +25,8 @@ describe(`broadcastCacheUpdate.Plugin`, function() {
       // There's already a cached entry for apiUrl created by the
       // service worker's install handler.
       fetch(apiUrl)
-        .then(() => cb())
-        .catch((err) => cb(err.message));
+          .then(() => cb())
+          .catch((err) => cb(err.message));
     }, apiUrl);
 
     expect(err).to.not.exist;

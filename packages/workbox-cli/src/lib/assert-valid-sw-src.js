@@ -24,5 +24,5 @@ const INJECTION_POINT_REGEXP = /\.precacheAndRoute\(\s*\[\s*\]\s*\)/;
 module.exports = async (swSrc) => {
   const swContents = await fse.readFile(swSrc, 'utf-8');
   assert(swContents.match(INJECTION_POINT_REGEXP),
-    errors['sw-src-missing-injection-point']);
+      errors['sw-src-missing-injection-point']);
 };

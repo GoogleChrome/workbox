@@ -148,7 +148,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
       // Validate the copied library files.
       const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
-        {cwd: path.dirname(swDest)});
+          {cwd: path.dirname(swDest)});
 
       const modulePathPrefix = path.dirname(libraryFiles[0]);
 
@@ -212,7 +212,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       // of time, so we ensure that there's a match based on what actually
       // got copied over.
       const workboxSWImport = libraryFiles.filter(
-        (file) => file.endsWith('workbox-sw.js'));
+          (file) => file.endsWith('workbox-sw.js'));
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [workboxSWImport],
