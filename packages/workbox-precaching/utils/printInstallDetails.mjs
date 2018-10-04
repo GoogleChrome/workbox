@@ -62,10 +62,10 @@ export default (entriesToPrecache, alreadyPrecachedEntries) => {
   logger.groupCollapsed(printText);
 
   _nestedGroup(
-    `View precached URLs.`,
-    entriesToPrecache);
+      `View precached URLs.`,
+      entriesToPrecache);
   _nestedGroup(
-    `View URLs that were already precached.`,
-    alreadyPrecachedEntries);
+      `View URLs that were already precached.`,
+      alreadyPrecachedEntries);
   logger.groupEnd();
 };

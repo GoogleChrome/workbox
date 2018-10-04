@@ -116,7 +116,7 @@ class CacheOnly {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('CacheOnly', request));
+          messages.strategyStart('CacheOnly', request));
       if (response) {
         logger.log(`Found a cached response in the '${this._cacheName}'` +
           ` cache.`);

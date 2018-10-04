@@ -27,7 +27,7 @@
 module.exports = (originalFilename, manifestHash) => {
   const manifestHashPlaceholder = '[manifestHash]';
   const replacedFilename = originalFilename.replace(
-    manifestHashPlaceholder, manifestHash);
+      manifestHashPlaceholder, manifestHash);
 
   if (replacedFilename === originalFilename) {
     throw new Error(`Your configured precacheManifestFilename option, ` +

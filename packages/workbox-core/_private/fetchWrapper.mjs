@@ -71,7 +71,7 @@ const wrappedFetch = async ({
   }
 
   const failedFetchPlugins = pluginUtils.filter(
-    plugins, pluginEvents.FETCH_DID_FAIL);
+      plugins, pluginEvents.FETCH_DID_FAIL);
 
   // If there is a fetchDidFail plugin, we need to save a clone of the
   // original request before it's either modified by a requestWillFetch

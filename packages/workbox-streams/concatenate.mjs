@@ -82,47 +82,47 @@ function concatenate(sourcePromises) {
   const stream = new ReadableStream({
     pull(controller) {
       return readerPromises[i]
-        .then((reader) => reader.read())
-        .then((result) => {
-          if (result.done) {
-            if (process.env.NODE_ENV !== 'production') {
-              logMessages.push(['Reached the end of source:',
-                sourcePromises[i]]);
-            }
-
-            i++;
-            if (i >= readerPromises.length) {
-              // Log all the messages in the group at once in a single group.
+          .then((reader) => reader.read())
+          .then((result) => {
+            if (result.done) {
               if (process.env.NODE_ENV !== 'production') {
-                logger.groupCollapsed(
-                  `Concatenating ${readerPromises.length} sources.`);
-                for (const message of logMessages) {
-                  if (Array.isArray(message)) {
-                    logger.log(...message);
-                  } else {
-                    logger.log(message);
-                  }
-                }
-                logger.log('Finished reading all sources.');
-                logger.groupEnd();
+                logMessages.push(['Reached the end of source:',
+                  sourcePromises[i]]);
               }
 
-              controller.close();
-              fullyStreamedResolve();
-              return;
-            }
+              i++;
+              if (i >= readerPromises.length) {
+              // Log all the messages in the group at once in a single group.
+                if (process.env.NODE_ENV !== 'production') {
+                  logger.groupCollapsed(
+                      `Concatenating ${readerPromises.length} sources.`);
+                  for (const message of logMessages) {
+                    if (Array.isArray(message)) {
+                      logger.log(...message);
+                    } else {
+                      logger.log(message);
+                    }
+                  }
+                  logger.log('Finished reading all sources.');
+                  logger.groupEnd();
+                }
 
-            return this.pull(controller);
-          } else {
-            controller.enqueue(result.value);
-          }
-        }).catch((error) => {
-          if (process.env.NODE_ENV !== 'production') {
-            logger.error('An error occurred:', error);
-          }
-          fullyStreamedReject(error);
-          throw error;
-        });
+                controller.close();
+                fullyStreamedResolve();
+                return;
+              }
+
+              return this.pull(controller);
+            } else {
+              controller.enqueue(result.value);
+            }
+          }).catch((error) => {
+            if (process.env.NODE_ENV !== 'production') {
+              logger.error('An error occurred:', error);
+            }
+            fullyStreamedReject(error);
+            throw error;
+          });
     },
 
     cancel() {

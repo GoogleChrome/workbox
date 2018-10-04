@@ -68,7 +68,7 @@ gulp.task('publish-github:generate-from-tags', async () => {
   const allTags = await githubHelper.getTags();
   const taggedReleases = await githubHelper.getTaggedReleases();
   const tagsToBuild = await filterTagsWithReleaseBundles(
-    allTags, taggedReleases);
+      allTags, taggedReleases);
 
   if (tagsToBuild.length === 0) {
     logHelper.log(`No tags missing from GitHub.`);
@@ -77,10 +77,10 @@ gulp.task('publish-github:generate-from-tags', async () => {
 
   for (let tagInfo of tagsToBuild) {
     await handleGithubRelease(
-      tagInfo.name, tagInfo.name, taggedReleases[tagInfo.name]);
+        tagInfo.name, tagInfo.name, taggedReleases[tagInfo.name]);
   }
 });
 
 gulp.task('publish-github', gulp.series(
-  'publish-github:generate-from-tags',
+    'publish-github:generate-from-tags',
 ));

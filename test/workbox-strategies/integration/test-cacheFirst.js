@@ -24,9 +24,9 @@ describe(`[workbox-strategies] CacheFirst Requests`, function() {
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(new URL(`/test/workbox-strategies/static/cache-first/example.txt`, location).href)
-        .then((response) => response.text())
-        .then((responseBody) => cb(responseBody))
-        .catch((err) => cb(err.message));
+          .then((response) => response.text())
+          .then((responseBody) => cb(responseBody))
+          .catch((err) => cb(err.message));
     });
     expect(response.trim()).to.equal('hello');
 
@@ -35,9 +35,9 @@ describe(`[workbox-strategies] CacheFirst Requests`, function() {
     // This request should come from cache and not the server
     response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(new URL(`/test/workbox-strategies/static/cache-first/example.txt`, location).href)
-        .then((response) => response.text())
-        .then((responseBody) => cb(responseBody))
-        .catch((err) => cb(err.message));
+          .then((response) => response.text())
+          .then((responseBody) => cb(responseBody))
+          .catch((err) => cb(err.message));
     });
     expect(response.trim()).to.equal('hello');
 

@@ -168,7 +168,7 @@ class Queue {
       }));
 
       throw new WorkboxError('queue-replay-failed',
-        {name: this._name, count: failedRequests.length});
+          {name: this._name, count: failedRequests.length});
     }
   }
 
@@ -227,7 +227,7 @@ class Queue {
         // the user disabling it.
         if (process.env.NODE_ENV !== 'production') {
           logger.warn(
-            `Unable to register sync event for '${this._name}'.`, err);
+              `Unable to register sync event for '${this._name}'.`, err);
         }
       }
     }

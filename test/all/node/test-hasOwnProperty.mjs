@@ -23,8 +23,8 @@ describe('[all] Check for hasOwnProperty', function() {
 
     if (invalidFiles.length > 0) {
       logHelper.error(
-        `Files with 'hasOwnProperty('default')' in them\n`,
-        JSON.stringify(invalidFiles, null, 2));
+          `Files with 'hasOwnProperty('default')' in them\n`,
+          JSON.stringify(invalidFiles, null, 2));
       throw new Error(oneLine`
         Found ${invalidFiles.length} files with 'hasOwnProperty('default')'
         in the final build. Please convert these to named exports to be friendly

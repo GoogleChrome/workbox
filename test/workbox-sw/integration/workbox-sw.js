@@ -5,8 +5,8 @@ describe(`WorkboxSW interface`, function() {
     return global.__workbox.webdriver.executeAsyncScript((swFile, cb) => {
       // Invokes cb() with true when registration succeeds, and false otherwise.
       navigator.serviceWorker.register(swFile)
-        .then(() => cb(true))
-        .catch(() => cb(false));
+          .then(() => cb(true))
+          .catch(() => cb(false));
     }, swFile);
   };
 

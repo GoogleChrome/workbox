@@ -24,9 +24,9 @@ module.exports = commonGenerateSchema.keys({
   globDirectory: joi.string().required(),
   importScripts: joi.array().items(joi.string()),
   importWorkboxFrom: joi.string().default(defaults.importWorkboxFrom).valid(
-    'cdn',
-    'local',
-    'disabled'
+      'cdn',
+      'local',
+      'disabled'
   ),
   swDest: joi.string().required(),
 });

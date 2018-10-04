@@ -77,10 +77,10 @@ const globals = (moduleId) => {
       pkg.workbox.browserNamespace,
       additionalNamespace,
     ]
-      .filter((value) => {
-        return (value && value.length > 0);
-      })
-      .join('.');
+        .filter((value) => {
+          return (value && value.length > 0);
+        })
+        .join('.');
   } catch (err) {
     logHelper.error(`Unable to get browserNamespace for package: ` +
       `'${packageName}'`);
@@ -125,7 +125,7 @@ module.exports = (packagePath, buildType) => {
 
   const namespace = pkgJson.workbox.browserNamespace;
   const outputDirectory = path.join(packagePath,
-    constants.PACKAGE_BUILD_DIRNAME);
+      constants.PACKAGE_BUILD_DIRNAME);
 
   logHelper.log(oneLine`
     Building Browser Bundle for
@@ -167,24 +167,24 @@ module.exports = (packagePath, buildType) => {
       }
     },
   })
-    .on('error', (err) => {
-      const args = [];
-      Object.keys(err).forEach((key) => {
-        args.push(`${key}: ${err[key]}`);
-      });
-      logHelper.error(err, `\n\n${args.join('\n')}`);
-      throw err;
-    })
+      .on('error', (err) => {
+        const args = [];
+        Object.keys(err).forEach((key) => {
+          args.push(`${key}: ${err[key]}`);
+        });
+        logHelper.error(err, `\n\n${args.join('\n')}`);
+        throw err;
+      })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
-    .pipe(source(moduleBrowserPath))
+      .pipe(source(moduleBrowserPath))
   // gulp-sourcemaps don't work with streams so we need
-    .pipe(buffer())
+      .pipe(buffer())
   // This tells gulp-sourcemaps to load the inline sourcemap
-    .pipe(sourcemaps.init({loadMaps: true}))
+      .pipe(sourcemaps.init({loadMaps: true}))
   // This renames the output file
-    .pipe(rename(outputFilename))
+      .pipe(rename(outputFilename))
   // This writes the sourcemap alongside the final build file
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest(outputDirectory));
+      .pipe(sourcemaps.write('.'))
+      .pipe(gulp.dest(outputDirectory));
 };

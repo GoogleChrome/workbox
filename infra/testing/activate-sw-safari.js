@@ -39,9 +39,9 @@ module.exports = async (swUrl) => {
     };
 
     navigator.serviceWorker.register(swUrl)
-      .then((registration) => onStateChangePromise(registration, 'activated'))
-      .then(() => cb())
-      .catch((err) => cb(err.message));
+        .then((registration) => onStateChangePromise(registration, 'activated'))
+        .then(() => cb())
+        .catch((err) => cb(err.message));
   }, swUrl);
 
   if (error) {

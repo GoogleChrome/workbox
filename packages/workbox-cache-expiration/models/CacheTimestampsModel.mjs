@@ -60,8 +60,8 @@ class CacheTimestampsModel {
     }
 
     db
-      .createObjectStore(this._storeName, {keyPath: URL_KEY})
-      .createIndex(TIMESTAMP_KEY, TIMESTAMP_KEY, {unique: false});
+        .createObjectStore(this._storeName, {keyPath: URL_KEY})
+        .createIndex(TIMESTAMP_KEY, TIMESTAMP_KEY, {unique: false});
   }
 
   /**

@@ -29,14 +29,14 @@ describe(`workbox-routing: _normalizeHandler`, function() {
     if (process.env.NODE_ENV == 'production') return this.skip();
 
     await expectError(
-      () => normalizeHandler(invalidHandlerObject),
-      'missing-a-method',
-      (error) => {
-        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-        expect(error.details).to.have.property('className').that.equals('Route');
-        expect(error.details).to.have.property('funcName').that.equals('constructor');
-        expect(error.details).to.have.property('paramName').that.equals('handler');
-      }
+        () => normalizeHandler(invalidHandlerObject),
+        'missing-a-method',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+          expect(error.details).to.have.property('className').that.equals('Route');
+          expect(error.details).to.have.property('funcName').that.equals('constructor');
+          expect(error.details).to.have.property('paramName').that.equals('handler');
+        }
     );
   });
 
@@ -44,14 +44,14 @@ describe(`workbox-routing: _normalizeHandler`, function() {
     if (process.env.NODE_ENV == 'production') return this.skip();
 
     await expectError(
-      () => normalizeHandler(invalidHandlerString),
-      'incorrect-type',
-      (error) => {
-        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-        expect(error.details).to.have.property('className').that.equals('Route');
-        expect(error.details).to.have.property('funcName').that.equals('constructor');
-        expect(error.details).to.have.property('paramName').that.equals('handler');
-      }
+        () => normalizeHandler(invalidHandlerString),
+        'incorrect-type',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+          expect(error.details).to.have.property('className').that.equals('Route');
+          expect(error.details).to.have.property('funcName').that.equals('constructor');
+          expect(error.details).to.have.property('paramName').that.equals('handler');
+        }
     );
   });
 

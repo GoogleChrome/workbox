@@ -156,8 +156,8 @@ describe(`[workbox-strategies] NetworkFirst.handle()`, function() {
 
     const networkFirst = new NetworkFirst();
     await expectError(
-      () => networkFirst.handle({event}),
-      'no-response'
+        () => networkFirst.handle({event}),
+        'no-response'
     );
 
     const injectedResponse = new Response('response body');
@@ -210,8 +210,8 @@ describe(`[workbox-strategies] NetworkFirst.handle()`, function() {
     sandbox.stub(global, 'fetch').callsFake(() => {
       return new Promise((resolve) => {
         setTimeout(
-          () => resolve(networkResponse),
-          (networkTimeoutSeconds + 1) * 1000
+            () => resolve(networkResponse),
+            (networkTimeoutSeconds + 1) * 1000
         );
       });
     });

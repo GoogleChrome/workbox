@@ -23,9 +23,9 @@ describe(`[workbox-strategies] NetworkFirst Requests`, function() {
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(`/__WORKBOX/uniqueValue`)
-        .then((response) => response.text())
-        .then((responseBody) => cb(responseBody))
-        .catch((err) => cb(err.message));
+          .then((response) => response.text())
+          .then((responseBody) => cb(responseBody))
+          .catch((err) => cb(err.message));
     });
     const firstResponse = response.trim();
     expect(firstResponse).to.not.equal('Cached');
@@ -38,9 +38,9 @@ describe(`[workbox-strategies] NetworkFirst Requests`, function() {
 
     response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(`/__WORKBOX/uniqueValue`)
-        .then((response) => response.text())
-        .then((responseBody) => cb(responseBody))
-        .catch((err) => cb(err.message));
+          .then((response) => response.text())
+          .then((responseBody) => cb(responseBody))
+          .catch((err) => cb(err.message));
     });
     const secondResponse = response.trim();
     expect(secondResponse).to.not.equal(firstResponse);

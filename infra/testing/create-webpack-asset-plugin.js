@@ -12,11 +12,11 @@ class CreateWebpackAssetPlugin {
 
   apply(compiler) {
     compiler.hooks.emit.tap(
-      this.constructor.name,
-      (compilation) => compilation.assets[this.name] = {
-        source: () => this.name,
-        size: () => this.name.length,
-      }
+        this.constructor.name,
+        (compilation) => compilation.assets[this.name] = {
+          source: () => this.name,
+          size: () => this.name.length,
+        }
     );
   }
 }

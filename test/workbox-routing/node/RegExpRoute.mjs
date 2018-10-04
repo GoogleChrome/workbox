@@ -23,14 +23,14 @@ describe(`[workbox-routing] RegExpRoute`, function() {
   for (const badRegExp of [undefined, null, 123, '123', {}]) {
     devOnly.it(`should throw when called with a regExp parameter of ${JSON.stringify(badRegExp)} in dev`, async function() {
       await expectError(
-        () => new RegExpRoute(),
-        'incorrect-class',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-          expect(error.details).to.have.property('className').that.equals('RegExpRoute');
-          expect(error.details).to.have.property('funcName').that.equals('constructor');
-          expect(error.details).to.have.property('paramName').that.equals('pattern');
-        }
+          () => new RegExpRoute(),
+          'incorrect-class',
+          (error) => {
+            expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+            expect(error.details).to.have.property('className').that.equals('RegExpRoute');
+            expect(error.details).to.have.property('funcName').that.equals('constructor');
+            expect(error.details).to.have.property('paramName').that.equals('pattern');
+          }
       );
     });
   }

@@ -112,7 +112,7 @@ export default {
   'invalid-cache-name': ({cacheNameId, value}) => {
     if (!cacheNameId) {
       throw new Error(
-        `Expected a 'cacheNameId' for error 'invalid-cache-name'`);
+          `Expected a 'cacheNameId' for error 'invalid-cache-name'`);
     }
 
     return `You must provide a name containing at least one character for ` +

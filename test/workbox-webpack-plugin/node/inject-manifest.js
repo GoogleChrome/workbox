@@ -376,7 +376,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
           // Validate the copied library files.
           const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
-            {cwd: outputDir});
+              {cwd: outputDir});
 
           const modulePathPrefix = path.dirname(libraryFiles[0]);
 
@@ -388,7 +388,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           // of time, so we ensure that there's a match based on what actually
           // got copied over.
           const workboxSWImport = libraryFiles.filter(
-            (file) => file.endsWith('workbox-sw.js'))[0];
+              (file) => file.endsWith('workbox-sw.js'))[0];
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -457,7 +457,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
           // Validate the copied library files.
           const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
-            {cwd: outputDir});
+              {cwd: outputDir});
 
           const modulePathPrefix = path.dirname(libraryFiles[0]);
 
@@ -469,7 +469,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           // of time, so we ensure that there's a match based on what actually
           // got copied over.
           const workboxSWImport = libraryFiles.filter(
-            (file) => file.endsWith('workbox-sw.js'))[0];
+              (file) => file.endsWith('workbox-sw.js'))[0];
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -1722,7 +1722,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
           const manifestFileContents = await fse.readFile(
-            path.join(outputDir, importsDirectory, FILE_MANIFEST_NAME), 'utf-8');
+              path.join(outputDir, importsDirectory, FILE_MANIFEST_NAME), 'utf-8');
           const context = {self: {}};
           vm.runInNewContext(manifestFileContents, context);
 
@@ -1776,7 +1776,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
           // Validate the copied library files.
           const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
-            {cwd: path.join(outputDir, importsDirectory)});
+              {cwd: path.join(outputDir, importsDirectory)});
 
           const modulePathPrefix = path.dirname(libraryFiles[0]);
 
@@ -1788,7 +1788,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           // of time, so we ensure that there's a match based on what actually
           // got copied over.
           const workboxSWImport = libraryFiles.filter(
-            (file) => file.endsWith('workbox-sw.js'))[0];
+              (file) => file.endsWith('workbox-sw.js'))[0];
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({
@@ -1805,7 +1805,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
           const manifestFileContents = await fse.readFile(
-            path.join(outputDir, importsDirectory, FILE_MANIFEST_NAME), 'utf-8');
+              path.join(outputDir, importsDirectory, FILE_MANIFEST_NAME), 'utf-8');
           const context = {self: {}};
           vm.runInNewContext(manifestFileContents, context);
 

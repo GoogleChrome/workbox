@@ -140,7 +140,7 @@ class WorkboxSW {
       // We can't rely on workbox-core being loaded so using console
       // eslint-disable-next-line
       console.error(
-        `Unable to import module '${moduleName}' from '${modulePath}'.`);
+          `Unable to import module '${moduleName}' from '${modulePath}'.`);
       throw err;
     }
   }

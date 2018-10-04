@@ -36,7 +36,7 @@ const handleCDNUpload = async (tagName, gitBranch) => {
 
   logHelper.log(`Uploading '${tagName}' to CDN as ${friendlyTagName}.`);
   const publishUrls = await cdnUploadHelper.upload(
-    friendlyTagName, buildFilesDir);
+      friendlyTagName, buildFilesDir);
 
   logHelper.log(`The following URLs are now avaiable:`);
   publishUrls.forEach((url) => {
@@ -66,5 +66,5 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
 });
 
 gulp.task('publish-cdn', gulp.series(
-  'publish-cdn:generate-from-tags',
+    'publish-cdn:generate-from-tags',
 ));

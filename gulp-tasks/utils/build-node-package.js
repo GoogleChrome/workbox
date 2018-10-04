@@ -10,7 +10,7 @@ const pkgPathToName = require('./pkg-path-to-name');
 module.exports = (packagePath) => {
   const packageName = pkgPathToName(packagePath);
   const outputDirectory = path.join(packagePath,
-    constants.PACKAGE_BUILD_DIRNAME);
+      constants.PACKAGE_BUILD_DIRNAME);
 
   logHelper.log(oneLine`
     Building Node Package for

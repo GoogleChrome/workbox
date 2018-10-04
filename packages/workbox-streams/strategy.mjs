@@ -42,7 +42,7 @@ export function strategy(sourceFunctions, headersInit) {
   return async ({event, url, params}) => {
     if (isSupported()) {
       const {done, response} = concatenateToResponse(sourceFunctions.map(
-        (sourceFunction) => sourceFunction({event, url, params})), headersInit);
+          (fn) => fn({event, url, params})), headersInit);
       event.waitUntil(done);
       return response;
     }
@@ -55,18 +55,18 @@ export function strategy(sourceFunctions, headersInit) {
     // Fallback to waiting for everything to finish, and concatenating the
     // responses.
     const parts = await Promise.all(
-      sourceFunctions.map(
-        (sourceFunction) => sourceFunction({event, url, params})
-      ).map(async (responsePromise) => {
-        const response = await responsePromise;
-        if (response instanceof Response) {
-          return response.blob();
-        }
+        sourceFunctions.map(
+            (sourceFunction) => sourceFunction({event, url, params})
+        ).map(async (responsePromise) => {
+          const response = await responsePromise;
+          if (response instanceof Response) {
+            return response.blob();
+          }
 
-        // Otherwise, assume it's something like a string which can be used
-        // as-is when constructing the final composite blob.
-        return response;
-      })
+          // Otherwise, assume it's something like a string which can be used
+          // as-is when constructing the final composite blob.
+          return response;
+        })
     );
 
     const headers = createHeaders(headersInit);

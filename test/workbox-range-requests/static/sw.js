@@ -5,13 +5,13 @@ importScripts('/__WORKBOX/buildFile/workbox-strategies');
 
 const cacheName = 'range-requests-integration-test';
 workbox.routing.registerRoute(
-  new RegExp('this-file-doesnt-exist\\.txt$'),
-  workbox.strategies.cacheOnly({
-    cacheName,
-    plugins: [
-      new workbox.rangeRequests.Plugin(),
-    ],
-  })
+    new RegExp('this-file-doesnt-exist\\.txt$'),
+    workbox.strategies.cacheOnly({
+      cacheName,
+      plugins: [
+        new workbox.rangeRequests.Plugin(),
+      ],
+    })
 );
 
 self.addEventListener('install', (event) => {

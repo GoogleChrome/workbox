@@ -100,7 +100,7 @@ module.exports = ({
 
   if (dontCacheBustUrlsMatching) {
     transformsToApply.push(
-      noRevisionForUrlsMatchingTransform(dontCacheBustUrlsMatching));
+        noRevisionForUrlsMatchingTransform(dontCacheBustUrlsMatching));
   }
 
   // Any additional manifestTransforms that were passed will be applied last.

@@ -126,7 +126,7 @@ class CacheFirst {
     if (!response) {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(
-          `No response found in the '${this._cacheName}' cache. ` +
+            `No response found in the '${this._cacheName}' cache. ` +
           `Will respond with a network request.`);
       }
       try {
@@ -145,13 +145,13 @@ class CacheFirst {
     } else {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(
-          `Found a cached response in the '${this._cacheName}' cache.`);
+            `Found a cached response in the '${this._cacheName}' cache.`);
       }
     }
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('CacheFirst', request));
+          messages.strategyStart('CacheFirst', request));
       for (let log of logs) {
         logger.log(log);
       }

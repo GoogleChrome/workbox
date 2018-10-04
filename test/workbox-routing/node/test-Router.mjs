@@ -39,15 +39,15 @@ describe(`[workbox-routing] Router`, function() {
 
       const router = new Router();
       await expectError(
-        () => router.registerRoute({handler: HANDLER, method: METHOD, match: variant}),
-        'missing-a-method',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
-          expect(error.details).to.have.property('className').that.eql('Router');
-          expect(error.details).to.have.property('funcName').that.eql('registerRoute');
-          expect(error.details).to.have.property('paramName').that.eql('route');
-          expect(error.details).to.have.property('expectedMethod').that.eql('match');
-        });
+          () => router.registerRoute({handler: HANDLER, method: METHOD, match: variant}),
+          'missing-a-method',
+          (error) => {
+            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+            expect(error.details).to.have.property('className').that.eql('Router');
+            expect(error.details).to.have.property('funcName').that.eql('registerRoute');
+            expect(error.details).to.have.property('paramName').that.eql('route');
+            expect(error.details).to.have.property('expectedMethod').that.eql('match');
+          });
     });
 
     const invalidHandlers = [() => {}, true, false, 123, '123', undefined];
@@ -56,15 +56,15 @@ describe(`[workbox-routing] Router`, function() {
 
       const router = new Router();
       await expectError(
-        () => router.registerRoute({match: MATCH, method: METHOD, handler: variant}),
-        'incorrect-type',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
-          expect(error.details).to.have.property('className').that.eql('Router');
-          expect(error.details).to.have.property('funcName').that.eql('registerRoute');
-          expect(error.details).to.have.property('paramName').that.eql('route');
-          expect(error.details).to.have.property('expectedType').that.eql('object');
-        }
+          () => router.registerRoute({match: MATCH, method: METHOD, handler: variant}),
+          'incorrect-type',
+          (error) => {
+            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+            expect(error.details).to.have.property('className').that.eql('Router');
+            expect(error.details).to.have.property('funcName').that.eql('registerRoute');
+            expect(error.details).to.have.property('paramName').that.eql('route');
+            expect(error.details).to.have.property('expectedType').that.eql('object');
+          }
       );
     });
 
@@ -74,15 +74,15 @@ describe(`[workbox-routing] Router`, function() {
 
       const router = new Router();
       await expectError(
-        () => router.registerRoute({match: MATCH, handler: HANDLER, method: variant}),
-        'incorrect-type',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
-          expect(error.details).to.have.property('className').that.eql('Router');
-          expect(error.details).to.have.property('funcName').that.eql('registerRoute');
-          expect(error.details).to.have.property('paramName').that.eql('route.method');
-          expect(error.details).to.have.property('expectedType').that.eql('string');
-        }
+          () => router.registerRoute({match: MATCH, handler: HANDLER, method: variant}),
+          'incorrect-type',
+          (error) => {
+            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+            expect(error.details).to.have.property('className').that.eql('Router');
+            expect(error.details).to.have.property('funcName').that.eql('registerRoute');
+            expect(error.details).to.have.property('paramName').that.eql('route.method');
+            expect(error.details).to.have.property('expectedType').that.eql('string');
+          }
       );
     });
 
@@ -91,15 +91,15 @@ describe(`[workbox-routing] Router`, function() {
 
       const router = new Router();
       await expectError(
-        () => router.registerRoute({match: MATCH, method: METHOD, handler: {}}),
-        'missing-a-method',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
-          expect(error.details).to.have.property('className').that.eql('Router');
-          expect(error.details).to.have.property('funcName').that.eql('registerRoute');
-          expect(error.details).to.have.property('paramName').that.eql('route.handler');
-          expect(error.details).to.have.property('expectedMethod').that.eql('handle');
-        }
+          () => router.registerRoute({match: MATCH, method: METHOD, handler: {}}),
+          'missing-a-method',
+          (error) => {
+            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+            expect(error.details).to.have.property('className').that.eql('Router');
+            expect(error.details).to.have.property('funcName').that.eql('registerRoute');
+            expect(error.details).to.have.property('paramName').that.eql('route.handler');
+            expect(error.details).to.have.property('expectedMethod').that.eql('handle');
+          }
       );
     });
 
@@ -165,11 +165,11 @@ describe(`[workbox-routing] Router`, function() {
 
       router.registerRoute(getRoute);
       return expectError(
-        () => router.unregisterRoute(putRoute),
-        'unregister-route-but-not-found-with-method',
-        (error) => {
-          expect(error.details).to.have.property('method').that.eql('PUT');
-        }
+          () => router.unregisterRoute(putRoute),
+          'unregister-route-but-not-found-with-method',
+          (error) => {
+            expect(error.details).to.have.property('method').that.eql('PUT');
+          }
       );
     });
 
@@ -182,8 +182,8 @@ describe(`[workbox-routing] Router`, function() {
 
       router.registerRoute(getRoute1);
       return expectError(
-        () => router.unregisterRoute(getRoute2),
-        'unregister-route-route-not-registered'
+          () => router.unregisterRoute(getRoute2),
+          'unregister-route-route-not-registered'
       );
     });
   });
@@ -199,8 +199,8 @@ describe(`[workbox-routing] Router`, function() {
     it(`should return a response from the default handler when there's no matching route`, async function() {
       const router = new Router();
       const route = new Route(
-        () => false,
-        () => new Response(),
+          () => false,
+          () => new Response(),
       );
       router.registerRoute(route);
       router.setDefaultHandler(() => new Response(EXPECTED_RESPONSE_BODY));
@@ -226,8 +226,8 @@ describe(`[workbox-routing] Router`, function() {
     it(`should return a response from the catch handler when the matching route's handler rejects async`, async function() {
       const router = new Router();
       const route = new Route(
-        () => true,
-        () => Promise.reject(),
+          () => true,
+          () => Promise.reject(),
       );
       router.registerRoute(route);
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
@@ -243,10 +243,10 @@ describe(`[workbox-routing] Router`, function() {
     it(`should return a response from the catch handler when the matching route's handler throws sync`, async function() {
       const router = new Router();
       const route = new Route(
-        () => true,
-        () => {
-          throw new Error(`Injected sync error`);
-        },
+          () => true,
+          () => {
+            throw new Error(`Injected sync error`);
+          },
       );
       router.registerRoute(route);
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
@@ -264,8 +264,8 @@ describe(`[workbox-routing] Router`, function() {
     it(`should return a response from the Route's handler when there's a matching route`, async function() {
       const router = new Router();
       const route = new Route(
-        () => true,
-        () => new Response(EXPECTED_RESPONSE_BODY),
+          () => true,
+          () => new Response(EXPECTED_RESPONSE_BODY),
       );
       router.registerRoute(route);
 
@@ -282,13 +282,13 @@ describe(`[workbox-routing] Router`, function() {
       const response1 = 'response1';
       const response2 = 'response2';
       const route1 = new Route(
-        () => true,
-        () => new Response(response1),
+          () => true,
+          () => new Response(response1),
       );
       router.registerRoute(route1);
       const route2 = new Route(
-        () => true,
-        () => new Response(response2),
+          () => true,
+          () => new Response(response2),
       );
       router.registerRoute(route2);
 
@@ -303,8 +303,8 @@ describe(`[workbox-routing] Router`, function() {
     it(`should not return a response when there's no matching route and no default handler`, async function() {
       const router = new Router();
       const route = new Route(
-        () => false,
-        () => new Response(),
+          () => false,
+          () => new Response(),
       );
       router.registerRoute(route);
 
@@ -331,11 +331,11 @@ describe(`[workbox-routing] Router`, function() {
       };
       const router = new Router();
       const route = new Route(
-        () => expectedParams,
-        ({params}) => {
-          expect(params).to.equal(expectedParams);
-          return new Response();
-        },
+          () => expectedParams,
+          ({params}) => {
+            expect(params).to.equal(expectedParams);
+            return new Response();
+          },
       );
       router.registerRoute(route);
 
@@ -347,13 +347,13 @@ describe(`[workbox-routing] Router`, function() {
     it(`should result in no params in handler`, function() {
       const router = new Router();
       const route = new Route(
-        () => {
-          return {};
-        },
-        ({params}) => {
-          expect(params).to.equal(undefined);
-          return new Response();
-        },
+          () => {
+            return {};
+          },
+          ({params}) => {
+            expect(params).to.equal(undefined);
+            return new Response();
+          },
       );
       router.registerRoute(route);
 
@@ -365,11 +365,11 @@ describe(`[workbox-routing] Router`, function() {
     it(`should result in no params in handler for 'true'`, function() {
       const router = new Router();
       const route = new Route(
-        () => true,
-        ({params}) => {
-          expect(params).to.equal(undefined);
-          return new Response();
-        },
+          () => true,
+          ({params}) => {
+            expect(params).to.equal(undefined);
+            return new Response();
+          },
       );
       router.registerRoute(route);
 

@@ -72,7 +72,7 @@ class Router {
     if (!url.protocol.startsWith('http')) {
       if (process.env.NODE_ENV !== 'production') {
         logger.debug(
-          `Workbox Router only supports URLs that start with 'http'.`);
+            `Workbox Router only supports URLs that start with 'http'.`);
       }
       return;
     }
@@ -295,9 +295,9 @@ class Router {
   unregisterRoute(route) {
     if (!this._routes.has(route.method)) {
       throw new WorkboxError(
-        'unregister-route-but-not-found-with-method', {
-          method: route.method,
-        }
+          'unregister-route-but-not-found-with-method', {
+            method: route.method,
+          }
       );
     }
 

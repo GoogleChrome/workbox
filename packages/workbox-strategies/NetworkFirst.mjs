@@ -171,7 +171,7 @@ class NetworkFirst {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('NetworkFirst', request));
+          messages.strategyStart('NetworkFirst', request));
       for (let log of logs) {
         logger.log(log);
       }
@@ -207,8 +207,8 @@ class NetworkFirst {
       };
 
       timeoutId = setTimeout(
-        onNetworkTimeout,
-        this._networkTimeoutSeconds * 1000,
+          onNetworkTimeout,
+          this._networkTimeoutSeconds * 1000,
       );
     });
 

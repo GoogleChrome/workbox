@@ -65,7 +65,7 @@ class PrecacheController {
 
     entries.map((userEntry) => {
       this._addEntryToCacheList(
-        this._parseEntry(userEntry)
+          this._parseEntry(userEntry)
       );
     });
   }
@@ -79,37 +79,37 @@ class PrecacheController {
    */
   _parseEntry(input) {
     switch (typeof input) {
-    case 'string': {
-      if (process.env.NODE_ENV !== 'production') {
-        if (input.length === 0) {
-          throw new WorkboxError(
-            'add-to-cache-list-unexpected-type', {
-              entry: input,
-            }
-          );
+      case 'string': {
+        if (process.env.NODE_ENV !== 'production') {
+          if (input.length === 0) {
+            throw new WorkboxError(
+                'add-to-cache-list-unexpected-type', {
+                  entry: input,
+                }
+            );
+          }
         }
-      }
 
-      return new PrecacheEntry(input, input, input);
-    }
-    case 'object': {
-      if (process.env.NODE_ENV !== 'production') {
-        if (!input || !input.url) {
-          throw new WorkboxError(
-            'add-to-cache-list-unexpected-type', {
-              entry: input,
-            }
-          );
+        return new PrecacheEntry(input, input, input);
+      }
+      case 'object': {
+        if (process.env.NODE_ENV !== 'production') {
+          if (!input || !input.url) {
+            throw new WorkboxError(
+                'add-to-cache-list-unexpected-type', {
+                  entry: input,
+                }
+            );
+          }
         }
-      }
 
-      return new PrecacheEntry(
-        input, input.url, input.revision || input.url, !!input.revision);
-    }
-    default:
-      throw new WorkboxError('add-to-cache-list-unexpected-type', {
-        entry: input,
-      });
+        return new PrecacheEntry(
+            input, input.url, input.revision || input.url, !!input.revision);
+      }
+      default:
+        throw new WorkboxError('add-to-cache-list-unexpected-type', {
+          entry: input,
+        });
     }
   }
 
@@ -181,7 +181,7 @@ class PrecacheController {
 
     for (const precacheEntry of this._entriesToCacheMap.values()) {
       if (await this._precacheDetailsModel._isEntryCached(
-        this._cacheName, precacheEntry)) {
+          this._cacheName, precacheEntry)) {
         entriesAlreadyPrecached.push(precacheEntry);
       } else {
         entriesToPrecache.push(precacheEntry);
@@ -341,12 +341,12 @@ class PrecacheController {
     const cachedRequests = await cache.keys();
     const cachedRequestsToDelete = cachedRequests.filter((cachedRequest) => {
       return !expectedCacheUrls.includes(
-        new URL(cachedRequest.url, location).toString()
+          new URL(cachedRequest.url, location).toString()
       );
     });
 
     await Promise.all(
-      cachedRequestsToDelete.map((cacheUrl) => cache.delete(cacheUrl))
+        cachedRequestsToDelete.map((cacheUrl) => cache.delete(cacheUrl))
     );
 
     return cachedRequestsToDelete.map((request) => request.url);
@@ -364,15 +364,15 @@ class PrecacheController {
   async _cleanupDetailsModel(expectedCacheUrls) {
     const revisionedEntries = await this._precacheDetailsModel._getAllEntries();
     const detailsToDelete = revisionedEntries
-      .filter((entry) => {
-        const fullUrl = new URL(entry.value.url, location).toString();
-        return !expectedCacheUrls.includes(fullUrl);
-      });
+        .filter((entry) => {
+          const fullUrl = new URL(entry.value.url, location).toString();
+          return !expectedCacheUrls.includes(fullUrl);
+        });
 
     await Promise.all(
-      detailsToDelete.map(
-        (entry) => this._precacheDetailsModel._deleteEntry(entry.primaryKey)
-      )
+        detailsToDelete.map(
+            (entry) => this._precacheDetailsModel._deleteEntry(entry.primaryKey)
+        )
     );
     return detailsToDelete.map((entry) => {
       return entry.value.url;
@@ -386,7 +386,7 @@ class PrecacheController {
    */
   getCachedUrls() {
     return Array.from(this._entriesToCacheMap.keys())
-      .map((url) => new URL(url, location).href);
+        .map((url) => new URL(url, location).href);
   }
 }
 

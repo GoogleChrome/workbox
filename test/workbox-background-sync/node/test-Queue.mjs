@@ -52,20 +52,20 @@ describe(`[workbox-background-sync] Queue`, function() {
 
   describe(`constructor`, function() {
     it(`should throw if two queues are created with the same name`,
-      async function() {
-        expect(() => {
-          new Queue('foo');
-          new Queue('bar');
-        }).not.to.throw();
+        async function() {
+          expect(() => {
+            new Queue('foo');
+            new Queue('bar');
+          }).not.to.throw();
 
-        await expectError(() => {
-          new Queue('foo');
-        }, 'duplicate-queue-name');
+          await expectError(() => {
+            new Queue('foo');
+          }, 'duplicate-queue-name');
 
-        expect(() => {
-          new Queue('baz');
-        }).not.to.throw();
-      });
+          expect(() => {
+            new Queue('baz');
+          }).not.to.throw();
+        });
 
     it(`should add a sync event listener that replays the queue when the ` +
         `event is dispatched`, async function() {
@@ -107,55 +107,55 @@ describe(`[workbox-background-sync] Queue`, function() {
 
   describe(`addRequest`, function() {
     it(`should serialize the request and store it in IndexedDB`,
-      async function() {
-        const now = Date.now();
-        const queue = new Queue('foo');
-        const requestUrl = 'https://example.com';
-        const requestInit = {
-          method: 'POST',
-          body: 'testing...',
-          headers: {'x-foo': 'bar'},
-          mode: 'cors',
-        };
-        const request = new Request(requestUrl, requestInit);
+        async function() {
+          const now = Date.now();
+          const queue = new Queue('foo');
+          const requestUrl = 'https://example.com';
+          const requestInit = {
+            method: 'POST',
+            body: 'testing...',
+            headers: {'x-foo': 'bar'},
+            mode: 'cors',
+          };
+          const request = new Request(requestUrl, requestInit);
 
-        await queue.addRequest(request);
+          await queue.addRequest(request);
 
-        const entries = await getObjectStoreEntries();
-        expect(entries).to.have.lengthOf(1);
-        expect(entries[0].storableRequest.url).to.equal(requestUrl);
-        expect(entries[0].storableRequest.timestamp).to.be.at.least(now);
-        expect(entries[0].storableRequest.requestInit).to.have.keys([
-          'method',
-          'body',
-          'headers',
-          'mode',
-          'credentials',
-        ]);
-      });
-
-    it(`should register to receive sync events for a unique tag`,
-      async function() {
-        sandbox.stub(self.registration, 'sync').value({
-          register: sinon.stub().resolves(),
+          const entries = await getObjectStoreEntries();
+          expect(entries).to.have.lengthOf(1);
+          expect(entries[0].storableRequest.url).to.equal(requestUrl);
+          expect(entries[0].storableRequest.timestamp).to.be.at.least(now);
+          expect(entries[0].storableRequest.requestInit).to.have.keys([
+            'method',
+            'body',
+            'headers',
+            'mode',
+            'credentials',
+          ]);
         });
 
-        const queue = new Queue('foo');
-        const requestUrl = 'https://example.com';
-        const requestInit = {
-          method: 'POST',
-          body: 'testing...',
-          headers: {'x-foo': 'bar'},
-          mode: 'cors',
-        };
-        const request = new Request(requestUrl, requestInit);
+    it(`should register to receive sync events for a unique tag`,
+        async function() {
+          sandbox.stub(self.registration, 'sync').value({
+            register: sinon.stub().resolves(),
+          });
 
-        await queue.addRequest(request);
+          const queue = new Queue('foo');
+          const requestUrl = 'https://example.com';
+          const requestInit = {
+            method: 'POST',
+            body: 'testing...',
+            headers: {'x-foo': 'bar'},
+            mode: 'cors',
+          };
+          const request = new Request(requestUrl, requestInit);
 
-        expect(self.registration.sync.register.calledOnce).to.be.true;
-        expect(self.registration.sync.register.calledWith(
-          'workbox-background-sync:foo')).to.be.true;
-      });
+          await queue.addRequest(request);
+
+          expect(self.registration.sync.register.calledOnce).to.be.true;
+          expect(self.registration.sync.register.calledWith(
+              'workbox-background-sync:foo')).to.be.true;
+        });
 
     it(`should invoke the requestWillEnqueue callback`, async function() {
       const queue = new Queue('foo', {
@@ -175,22 +175,22 @@ describe(`[workbox-background-sync] Queue`, function() {
     });
 
     it(`should support modifying the stored request via requestWillEnqueue`,
-      async function() {
-        const requestWillEnqueue = sinon.spy();
-        const queue = new Queue('foo', {
-          callbacks: {requestWillEnqueue},
+        async function() {
+          const requestWillEnqueue = sinon.spy();
+          const queue = new Queue('foo', {
+            callbacks: {requestWillEnqueue},
+          });
+
+          const request = new Request('/');
+          await queue.addRequest(request);
+
+          expect(requestWillEnqueue.calledOnce).to.be.true;
+          expect(requestWillEnqueue.calledWith(sinon.match({
+            url: '/',
+            timestamp: sinon.match.number,
+            requestInit: sinon.match.object,
+          }))).to.be.true;
         });
-
-        const request = new Request('/');
-        await queue.addRequest(request);
-
-        expect(requestWillEnqueue.calledOnce).to.be.true;
-        expect(requestWillEnqueue.calledWith(sinon.match({
-          url: '/',
-          timestamp: sinon.match.number,
-          requestInit: sinon.match.object,
-        }))).to.be.true;
-      });
   });
 
   describe(`replayRequests`, function() {
@@ -260,78 +260,78 @@ describe(`[workbox-background-sync] Queue`, function() {
     });
 
     it(`should ignore (and remove) requests if maxRetentionTime has passed`,
-      async function() {
-        sandbox.spy(self, 'fetch');
-        const clock = sandbox.useFakeTimers({
-          now: Date.now(),
-          toFake: ['Date'],
+        async function() {
+          sandbox.spy(self, 'fetch');
+          const clock = sandbox.useFakeTimers({
+            now: Date.now(),
+            toFake: ['Date'],
+          });
+
+          const queue = new Queue('foo', {
+            maxRetentionTime: 1,
+          });
+
+          await queue.addRequest(new Request('/one'));
+          await queue.addRequest(new Request('/two'));
+
+          clock.tick(1 * MINUTES + 1); // One minute and 1ms.
+
+          await queue.addRequest(new Request('/three'));
+          await queue.replayRequests();
+
+          expect(self.fetch.calledOnce).to.be.true;
+          expect(self.fetch.calledWith(sinon.match({
+            url: '/three',
+          }))).to.be.true;
+
+          const entries = await getObjectStoreEntries();
+          // Assert that the two requests not replayed were deleted.
+          expect(entries.length).to.equal(0);
         });
-
-        const queue = new Queue('foo', {
-          maxRetentionTime: 1,
-        });
-
-        await queue.addRequest(new Request('/one'));
-        await queue.addRequest(new Request('/two'));
-
-        clock.tick(1 * MINUTES + 1); // One minute and 1ms.
-
-        await queue.addRequest(new Request('/three'));
-        await queue.replayRequests();
-
-        expect(self.fetch.calledOnce).to.be.true;
-        expect(self.fetch.calledWith(sinon.match({
-          url: '/three',
-        }))).to.be.true;
-
-        const entries = await getObjectStoreEntries();
-        // Assert that the two requests not replayed were deleted.
-        expect(entries.length).to.equal(0);
-      });
 
     it(`should keep a request in the queue if re-fetching fails`,
-      async function() {
-        sandbox.stub(self, 'fetch')
-          .onCall(1).rejects(new Error())
-          .onCall(3).rejects(new Error())
-          .callThrough();
+        async function() {
+          sandbox.stub(self, 'fetch')
+              .onCall(1).rejects(new Error())
+              .onCall(3).rejects(new Error())
+              .callThrough();
 
-        const queue = new Queue('foo');
+          const queue = new Queue('foo');
 
-        await queue.addRequest(new Request('/one'));
-        await queue.addRequest(new Request('/two'));
-        await queue.addRequest(new Request('/three'));
-        await queue.addRequest(new Request('/four'));
-        await queue.addRequest(new Request('/five'));
+          await queue.addRequest(new Request('/one'));
+          await queue.addRequest(new Request('/two'));
+          await queue.addRequest(new Request('/three'));
+          await queue.addRequest(new Request('/four'));
+          await queue.addRequest(new Request('/five'));
 
-        await expectError(() => {
-          return queue.replayRequests(); // The 2nd and 4th requests should fail.
-        }, 'queue-replay-failed');
+          await expectError(() => {
+            return queue.replayRequests(); // The 2nd and 4th requests should fail.
+          }, 'queue-replay-failed');
 
-        const entries = await getObjectStoreEntries();
-        expect(entries.length).to.equal(2);
-        expect(entries[0].storableRequest.url).to.equal('/two');
-        expect(entries[1].storableRequest.url).to.equal('/four');
-      });
+          const entries = await getObjectStoreEntries();
+          expect(entries.length).to.equal(2);
+          expect(entries[0].storableRequest.url).to.equal('/two');
+          expect(entries[1].storableRequest.url).to.equal('/four');
+        });
 
     it(`should throw WorkboxError if re-fetching fails`,
-      async function() {
-        sandbox.stub(self, 'fetch')
-          .onCall(1).rejects(new Error())
-          .callThrough();
+        async function() {
+          sandbox.stub(self, 'fetch')
+              .onCall(1).rejects(new Error())
+              .callThrough();
 
-        const failureURL = '/two';
-        const queue = new Queue('foo');
+          const failureURL = '/two';
+          const queue = new Queue('foo');
 
-        // Add requests for both queues to ensure only the requests from
-        // the matching queue are replayed.
-        await queue.addRequest(new Request('/one'));
-        await queue.addRequest(new Request(failureURL));
+          // Add requests for both queues to ensure only the requests from
+          // the matching queue are replayed.
+          await queue.addRequest(new Request('/one'));
+          await queue.addRequest(new Request(failureURL));
 
-        await expectError(() => {
-          return queue.replayRequests();
-        }, 'queue-replay-failed');
-      });
+          await expectError(() => {
+            return queue.replayRequests();
+          }, 'queue-replay-failed');
+        });
 
     it(`should invoke all replay callbacks`, async function() {
       const requestWillReplay = sinon.spy();
@@ -364,12 +364,12 @@ describe(`[workbox-background-sync] Queue`, function() {
       expect(queueDidReplay.calledWith(sinon.match([
         sinon.match({
           request: sinon.match.instanceOf(Request).and(
-            sinon.match({url: '/one'})),
+              sinon.match({url: '/one'})),
           response: sinon.match.instanceOf(Response),
         }),
         sinon.match({
           request: sinon.match.instanceOf(Request).and(
-            sinon.match({url: '/two'})),
+              sinon.match({url: '/two'})),
           response: sinon.match.instanceOf(Response),
         }),
       ]))).to.be.true;
@@ -378,8 +378,8 @@ describe(`[workbox-background-sync] Queue`, function() {
       queueDidReplay.resetHistory();
 
       sandbox.stub(self, 'fetch')
-        .onCall(1).rejects(new Error())
-        .callThrough();
+          .onCall(1).rejects(new Error())
+          .callThrough();
 
       await queue.addRequest(new Request('/three'));
       await queue.addRequest(new Request('/four'));
@@ -393,70 +393,70 @@ describe(`[workbox-background-sync] Queue`, function() {
       expect(queueDidReplay.calledWith(sinon.match([
         sinon.match({
           request: sinon.match.instanceOf(Request).and(
-            sinon.match({url: '/three'})),
+              sinon.match({url: '/three'})),
           response: sinon.match.instanceOf(Response),
         }),
         sinon.match({
           request: sinon.match.instanceOf(Request).and(
-            sinon.match({url: '/four'})),
+              sinon.match({url: '/four'})),
           error: sinon.match.instanceOf(Error),
         }),
       ]))).to.be.true;
     });
 
     it(`should support modifying the request via the requestWillReplay`,
-      async function() {
-        sandbox.spy(self, 'fetch');
+        async function() {
+          sandbox.spy(self, 'fetch');
 
-        const requestWillReplay = (storableRequest) => {
-          storableRequest.url += '?q=foo';
-        };
+          const requestWillReplay = (storableRequest) => {
+            storableRequest.url += '?q=foo';
+          };
 
-        const queue = new Queue('foo', {
-          callbacks: {requestWillReplay},
+          const queue = new Queue('foo', {
+            callbacks: {requestWillReplay},
+          });
+
+          await queue.addRequest(new Request('/one'));
+          await queue.addRequest(new Request('/two'));
+          await queue.replayRequests();
+
+          expect(self.fetch.calledTwice).to.be.true;
+          expect(self.fetch.getCall(0).calledWith(sinon.match({
+            url: '/one?q=foo',
+          }))).to.be.true;
+          expect(self.fetch.getCall(1).calledWith(sinon.match({
+            url: '/two?q=foo',
+          }))).to.be.true;
         });
-
-        await queue.addRequest(new Request('/one'));
-        await queue.addRequest(new Request('/two'));
-        await queue.replayRequests();
-
-        expect(self.fetch.calledTwice).to.be.true;
-        expect(self.fetch.getCall(0).calledWith(sinon.match({
-          url: '/one?q=foo',
-        }))).to.be.true;
-        expect(self.fetch.getCall(1).calledWith(sinon.match({
-          url: '/two?q=foo',
-        }))).to.be.true;
-      });
 
     it(`should store the original request if a modified request replay fails`,
-      async function() {
-        sandbox.stub(self, 'fetch').rejects();
-        sandbox.spy(QueueStore.prototype, 'addEntry');
+        async function() {
+          sandbox.stub(self, 'fetch').rejects();
+          sandbox.spy(QueueStore.prototype, 'addEntry');
 
-        const requestWillReplay = (storableRequest) => {
-          storableRequest.url += '?q=foo';
-          storableRequest.requestInit.headers['x-foo'] = 'bar';
-        };
+          const requestWillReplay = (storableRequest) => {
+            storableRequest.url += '?q=foo';
+            storableRequest.requestInit.headers['x-foo'] = 'bar';
+          };
 
-        const queue = new Queue('foo', {
-          callbacks: {requestWillReplay},
+          const queue = new Queue('foo', {
+            callbacks: {requestWillReplay},
+          });
+
+          await queue.addRequest(new Request('/one'));
+          await queue.addRequest(new Request('/two'));
+
+
+          await expectError(() => {
+            return queue.replayRequests();
+          }, 'queue-replay-failed');
+
+          // Ensure the re-enqueued requests are the same as the originals.
+          expect(QueueStore.prototype.addEntry.getCall(0).args).to.deep.equal(
+              QueueStore.prototype.addEntry.getCall(2).args);
+          expect(QueueStore.prototype.addEntry.getCall(1).args).to.deep.equal(
+              QueueStore.prototype.addEntry.getCall(3).args);
         });
-
-        await queue.addRequest(new Request('/one'));
-        await queue.addRequest(new Request('/two'));
-
-
-        await expectError(() => {
-          return queue.replayRequests();
-        }, 'queue-replay-failed');
-
-        // Ensure the re-enqueued requests are the same as the originals.
-        expect(QueueStore.prototype.addEntry.getCall(0).args).to.deep.equal(
-          QueueStore.prototype.addEntry.getCall(2).args);
-        expect(QueueStore.prototype.addEntry.getCall(1).args).to.deep.equal(
-          QueueStore.prototype.addEntry.getCall(3).args);
-      });
   });
 
   describe(`_registerSync()`, function() {

@@ -24,7 +24,7 @@ const doesDirectoryExist = async (directoryPath) => {
 
 const getBuildPath = (tagName) => {
   const tempReleasePath = path.join(
-    __dirname, '..', '..', constants.GENERATED_RELEASE_FILES_DIRNAME);
+      __dirname, '..', '..', constants.GENERATED_RELEASE_FILES_DIRNAME);
   return path.join(tempReleasePath, tagName);
 };
 
@@ -101,8 +101,8 @@ const groupBuildFiles = async (tagName, gitBranch) => {
     const browserPackages = getPackagesOfType(sourceCodePath, 'browser');
 
     const pattern = path.posix.join(
-      sourceCodePath, 'packages', `{${browserPackages.join(',')}}`,
-      constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
+        sourceCodePath, 'packages', `{${browserPackages.join(',')}}`,
+        constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
 
     logHelper.log(oneLine`
       Grouping Build Files into
@@ -114,8 +114,8 @@ const groupBuildFiles = async (tagName, gitBranch) => {
     const filesToIncludeInBundle = glob.sync(pattern);
     for (const fileToInclude of filesToIncludeInBundle) {
       await fs.copy(
-        fileToInclude,
-        path.join(groupedBuildFiles, path.basename(fileToInclude)),
+          fileToInclude,
+          path.join(groupedBuildFiles, path.basename(fileToInclude)),
       );
     }
   } else {

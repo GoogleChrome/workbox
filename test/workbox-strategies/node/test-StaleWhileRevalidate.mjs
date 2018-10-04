@@ -246,8 +246,8 @@ describe(`[workbox-strategies] StaleWhileRevalidate.handle()`, function() {
 
     const staleWhileRevalidate = new StaleWhileRevalidate();
     await expectError(
-      () => staleWhileRevalidate.handle({event}),
-      'no-response'
+        () => staleWhileRevalidate.handle({event}),
+        'no-response'
     );
   });
 });

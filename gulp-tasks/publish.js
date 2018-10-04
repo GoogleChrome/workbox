@@ -9,7 +9,7 @@ const constants = require('./utils/constants');
 
 gulp.task('publish:clean', () => {
   return fs.remove(path.join(__dirname, '..',
-    constants.GENERATED_RELEASE_FILES_DIRNAME));
+      constants.GENERATED_RELEASE_FILES_DIRNAME));
 });
 
 gulp.task('publish:signin', async () => {

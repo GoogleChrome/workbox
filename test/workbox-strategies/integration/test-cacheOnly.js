@@ -19,17 +19,17 @@ describe(`[workbox-strategies] CacheOnly`, function() {
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(`/CacheOnly/InCache/`)
-        .then((response) => response.text())
-        .then((responseBody) => cb(responseBody))
-        .catch((err) => cb(err.message));
+          .then((response) => response.text())
+          .then((responseBody) => cb(responseBody))
+          .catch((err) => cb(err.message));
     });
     expect(response).to.eql('Cached');
 
     response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(`/CacheOnly/NotInCache/`)
-        .then((response) => response.text())
-        .then((responseBody) => cb(responseBody))
-        .catch((err) => cb(err.message));
+          .then((response) => response.text())
+          .then((responseBody) => cb(responseBody))
+          .catch((err) => cb(err.message));
     });
     expect(response).to.not.eql('Cached');
   });

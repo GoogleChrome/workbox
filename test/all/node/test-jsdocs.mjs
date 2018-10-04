@@ -35,7 +35,7 @@ describe('[all] JSDocs', function() {
     // in the final template.
     expect(docs.indexOf('index-all.html')).to.not.equal(-1);
     const indexAllContents = fs.readFileSync(path.join(docsPath, 'index-all.html'))
-      .toString();
+        .toString();
     if (indexAllContents.indexOf('<a href="module.html#.exports">module.exports</a>') !== -1) {
       throw new Error('There is a stray `module.exports` in the docs. ' +
         'Find and fix this issue.');

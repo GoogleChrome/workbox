@@ -59,7 +59,7 @@ module.exports = async (destDirectory) => {
 
   const copyPromises = [];
   const librariesToCopy = Object.keys(thisPkg.dependencies).filter(
-    (dependency) => dependency.startsWith(WORKBOX_PREFIX));
+      (dependency) => dependency.startsWith(WORKBOX_PREFIX));
   for (const library of librariesToCopy) {
     const pkg = require(`${library}/package.json`);
     const defaultPathToLibrary = require.resolve(`${library}/${pkg.main}`);
@@ -74,7 +74,7 @@ module.exports = async (destDirectory) => {
 
       const srcPath = useBuildType(defaultPathToLibrary, buildType);
       const destPath = path.join(workboxDirectoryPath,
-        path.basename(srcPath));
+          path.basename(srcPath));
       copyPromises.push(fse.copy(srcPath, destPath));
       copyPromises.push(fse.copy(`${srcPath}.map`, `${destPath}.map`));
     }

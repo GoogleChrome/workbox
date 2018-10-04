@@ -86,7 +86,7 @@ const levelToColor = {
   groupCollapsed: BLUE,
 };
 Object.keys(levelToColor).forEach(
-  (keyName) => setupLogs(keyName, levelToColor[keyName])
+    (keyName) => setupLogs(keyName, levelToColor[keyName])
 );
 
 export {getDefaultLogLevel};

@@ -29,31 +29,31 @@ self.fetch = async (...args) => {
 // Add a message listener for communication between the client and SW.
 self.addEventListener('message', (evt) => {
   switch (evt.data.action) {
-  case 'simulate-offline':
-    simulateOffline = evt.data.value;
-    evt.ports[0].postMessage(null);
-    break;
-  case 'clear-spied-requests':
-    spiedRequests = [];
-    evt.ports[0].postMessage(null);
-    break;
-  case 'get-spied-requests':
-    evt.ports[0].postMessage(spiedRequests);
-    break;
-  case 'dispatch-sync-event':
-    {
+    case 'simulate-offline':
+      simulateOffline = evt.data.value;
+      evt.ports[0].postMessage(null);
+      break;
+    case 'clear-spied-requests':
+      spiedRequests = [];
+      evt.ports[0].postMessage(null);
+      break;
+    case 'get-spied-requests':
+      evt.ports[0].postMessage(spiedRequests);
+      break;
+    case 'dispatch-sync-event':
+      {
       // Override `.waitUntil` so we can signal when the sync is done.
-      const originalSyncEventWaitUntil = SyncEvent.prototype.waitUntil;
-      SyncEvent.prototype.waitUntil = (promise) => {
-        return promise.then(() => evt.ports[0].postMessage(null));
-      };
+        const originalSyncEventWaitUntil = SyncEvent.prototype.waitUntil;
+        SyncEvent.prototype.waitUntil = (promise) => {
+          return promise.then(() => evt.ports[0].postMessage(null));
+        };
 
-      self.dispatchEvent(new SyncEvent('sync', {
-        tag: 'workbox-background-sync:workbox-google-analytics',
-      }));
-      SyncEvent.prototype.waitUntil = originalSyncEventWaitUntil;
-    }
-    break;
+        self.dispatchEvent(new SyncEvent('sync', {
+          tag: 'workbox-background-sync:workbox-google-analytics',
+        }));
+        SyncEvent.prototype.waitUntil = originalSyncEventWaitUntil;
+      }
+      break;
   }
 });
 

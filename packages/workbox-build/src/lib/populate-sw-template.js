@@ -50,8 +50,8 @@ module.exports = ({
   let precacheOptionsString = JSON.stringify(precacheOptions, null, 2);
   if (ignoreUrlParametersMatching) {
     precacheOptionsString = precacheOptionsString.replace(
-      `"ignoreUrlParametersMatching": []`,
-      `"ignoreUrlParametersMatching": [` +
+        `"ignoreUrlParametersMatching": []`,
+        `"ignoreUrlParametersMatching": [` +
       `${ignoreUrlParametersMatching.join(', ')}]`
     );
   }
@@ -89,6 +89,6 @@ module.exports = ({
     return populatedTemplate.replace(/\n{3,}/g, '\n\n').trim() + '\n';
   } catch (error) {
     throw new Error(
-      `${errors['populating-sw-tmpl-failed']} '${error.message}'`);
+        `${errors['populating-sw-tmpl-failed']} '${error.message}'`);
   }
 };

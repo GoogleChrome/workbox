@@ -147,7 +147,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       sandbox.stub(console, 'error').callsFake((errMsg) => {
         expect(errMsg.includes('workbox-core')).to.be.true;
         expect(errMsg.includes(
-          'WORKBOX_CDN_ROOT_URL/workbox-core.prod.js')).to.be.true;
+            'WORKBOX_CDN_ROOT_URL/workbox-core.prod.js')).to.be.true;
       });
 
       try {

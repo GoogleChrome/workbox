@@ -59,7 +59,7 @@ const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
     };
 
     const testFiles = glob.sync(path.posix.join(__dirname, '..', testPath,
-      '*.js'));
+        '*.js'));
     await runFiles(testFiles);
 
     process.env.NODE_ENV = originalNodeEnv;
@@ -81,7 +81,7 @@ const runIntegrationForBrowser = async (browser) => {
       const nodeEnv = constants.BUILD_TYPES[buildKey];
       try {
         await runIntegrationTestSuite(packageToTest, nodeEnv, browser,
-          webdriver);
+            webdriver);
       } catch (error) {
         await seleniumAssistant.killWebDriver(webdriver);
         throw error;
@@ -116,19 +116,19 @@ gulp.task('test-integration', async () => {
     const localBrowsers = seleniumAssistant.getLocalBrowsers();
     for (const localBrowser of localBrowsers) {
       switch (localBrowser.getId()) {
-      case 'chrome':
-      case 'firefox':
-        if (localBrowser.getReleaseName() !== 'unstable') {
-          await runIntegrationForBrowser(localBrowser);
-        }
-        break;
-      case 'safari':
-        if (localBrowser.getReleaseName() === 'stable') {
-          await runIntegrationForBrowser(localBrowser);
-        }
-        break;
-      default:
-        logHelper.warn(oneLine`
+        case 'chrome':
+        case 'firefox':
+          if (localBrowser.getReleaseName() !== 'unstable') {
+            await runIntegrationForBrowser(localBrowser);
+          }
+          break;
+        case 'safari':
+          if (localBrowser.getReleaseName() === 'stable') {
+            await runIntegrationForBrowser(localBrowser);
+          }
+          break;
+        default:
+          logHelper.warn(oneLine`
             Skipping integration tests for ${localBrowser.getPrettyName()}.
           `);
       }

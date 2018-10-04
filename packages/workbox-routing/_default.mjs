@@ -81,7 +81,7 @@ class DefaultRouter extends Router {
         const wildcards = '[*:?+]';
         if (valueToCheck.match(new RegExp(`${wildcards}`))) {
           logger.debug(
-            `The '$capture' parameter contains an Express-style wildcard ` +
+              `The '$capture' parameter contains an Express-style wildcard ` +
             `character (${wildcards}). Strings are now always interpreted as ` +
             `exact matches; use a RegExp for partial or wildcard matches.`
           );
@@ -93,7 +93,7 @@ class DefaultRouter extends Router {
           if ((url.pathname === captureUrl.pathname) &&
               (url.origin !== captureUrl.origin)) {
             logger.debug(
-              `${capture} only partially matches the cross-origin URL ` +
+                `${capture} only partially matches the cross-origin URL ` +
               `${url}. This route will only handle cross-origin requests ` +
               `if they match the entire URL.`
             );
@@ -162,27 +162,27 @@ class DefaultRouter extends Router {
 
     const cacheName = cacheNames.getPrecacheName(options.cacheName);
     const handler = () => caches.match(cachedAssetUrl, {cacheName})
-      .then((response) => {
-        if (response) {
-          return response;
-        }
-        // This shouldn't normally happen, but there are edge cases:
-        // https://github.com/GoogleChrome/workbox/issues/1441
-        throw new Error(`The cache ${cacheName} did not have an entry for ` +
+        .then((response) => {
+          if (response) {
+            return response;
+          }
+          // This shouldn't normally happen, but there are edge cases:
+          // https://github.com/GoogleChrome/workbox/issues/1441
+          throw new Error(`The cache ${cacheName} did not have an entry for ` +
           `${cachedAssetUrl}.`);
-      }).catch((error) => {
+        }).catch((error) => {
         // If there's either a cache miss, or the caches.match() call threw
         // an exception, then attempt to fulfill the navigation request with
         // a response from the network rather than leaving the user with a
         // failed navigation.
-        if (process.env.NODE_ENV !== 'production') {
-          logger.debug(`Unable to respond to navigation request with cached ` +
-            `response: ${error.message}. Falling back to network.`);
-        }
+          if (process.env.NODE_ENV !== 'production') {
+            logger.debug(`Unable to respond to navigation request with ` +
+            `cached response: ${error.message}. Falling back to network.`);
+          }
 
-        // This might still fail if the browser is offline...
-        return fetch(cachedAssetUrl);
-      });
+          // This might still fail if the browser is offline...
+          return fetch(cachedAssetUrl);
+        });
 
     const route = new NavigationRoute(handler, {
       whitelist: options.whitelist,

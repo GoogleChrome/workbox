@@ -173,7 +173,7 @@ class StaleWhileRevalidate {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('StaleWhileRevalidate', request));
+          messages.strategyStart('StaleWhileRevalidate', request));
       for (let log of logs) {
         logger.log(log);
       }

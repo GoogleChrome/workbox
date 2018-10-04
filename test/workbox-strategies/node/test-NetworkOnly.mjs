@@ -111,8 +111,8 @@ describe(`[workbox-strategies] NetworkOnly.handle()`, function() {
 
     const networkOnly = new NetworkOnly();
     await expectError(
-      () => networkOnly.handle({event}),
-      'no-response'
+        () => networkOnly.handle({event}),
+        'no-response'
     );
   });
 
