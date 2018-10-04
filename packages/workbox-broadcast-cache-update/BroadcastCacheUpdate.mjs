@@ -204,7 +204,7 @@ class BroadcastCacheUpdate {
           logger.debug(`Received WINDOW_READY event: `, event);
         }
         // Resolve any pending deferreds.
-        for (const [, deferred] of this._navigationEventsDeferreds.entries()) {
+        for (const deferred of this._navigationEventsDeferreds.values()) {
           deferred.resolve();
         }
         this._navigationEventsDeferreds.clear();
