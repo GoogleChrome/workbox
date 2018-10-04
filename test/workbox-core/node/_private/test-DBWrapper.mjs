@@ -71,7 +71,7 @@ const createTestDb = async () => {
       postsStore.createIndex('userEmail', 'userEmail', {unique: false});
 
       const commentsStore = db.createObjectStore(
-          'comments', {autoIncrement: true});
+        'comments', {autoIncrement: true});
       commentsStore.createIndex('userEmail', 'userEmail', {unique: false});
       commentsStore.createIndex('postId', 'postId', {unique: false});
     },
@@ -167,54 +167,54 @@ describe(`DBWrapper`, function() {
     });
 
     it(`throws if blocked for more than the timeout period when openning`,
-        async function() {
+      async function() {
       // Lessen the open timeout to make the tests faster.
-      sandbox.stub(DBWrapper.prototype, 'OPEN_TIMEOUT').value(100);
+        sandbox.stub(DBWrapper.prototype, 'OPEN_TIMEOUT').value(100);
 
-      // Open a connection and don't close it on version change.
-      await new DBWrapper('db', 1, {onversionchange: () => {}}).open();
+        // Open a connection and don't close it on version change.
+        await new DBWrapper('db', 1, {onversionchange: () => {}}).open();
 
-      // Open a request for a new version with an old version still open.
-      // This will be blocked since the older version is still open.
-      const err = await catchAsyncError(new DBWrapper('db', 2).open());
-      expect(err.message).to.match(/blocked/);
-    });
+        // Open a request for a new version with an old version still open.
+        // This will be blocked since the older version is still open.
+        const err = await catchAsyncError(new DBWrapper('db', 2).open());
+        expect(err.message).to.match(/blocked/);
+      });
 
     it(`times out even in cases where the onblocked handler doesn't file`,
-        async function() {
+      async function() {
       // Lessen the open timeout to make the tests faster.
-      sandbox.stub(DBWrapper.prototype, 'OPEN_TIMEOUT').value(100);
+        sandbox.stub(DBWrapper.prototype, 'OPEN_TIMEOUT').value(100);
 
-      // Open a connection and don't close it on version change.
-      await new DBWrapper('db', 1, {onversionchange: () => {}}).open();
+        // Open a connection and don't close it on version change.
+        await new DBWrapper('db', 1, {onversionchange: () => {}}).open();
 
-      // Open two requests for newer versions while the old version is open.
-      // The first request will received the `blocked` event, but the second
-      // request will not received any event entil the first request is
-      // processed. In the event that the first request never gets unblocked,
-      // the second request will never get an event. This test asserts that
-      // both requests reject after a timeout period.
-      const err1 = await catchAsyncError(new DBWrapper('db', 2).open());
-      const err2 = await catchAsyncError(new DBWrapper('db', 2).open());
-      expect(err1.message).to.match(/blocked/);
-      expect(err2.message).to.match(/blocked/);
-    });
+        // Open two requests for newer versions while the old version is open.
+        // The first request will received the `blocked` event, but the second
+        // request will not received any event entil the first request is
+        // processed. In the event that the first request never gets unblocked,
+        // the second request will never get an event. This test asserts that
+        // both requests reject after a timeout period.
+        const err1 = await catchAsyncError(new DBWrapper('db', 2).open());
+        const err2 = await catchAsyncError(new DBWrapper('db', 2).open());
+        expect(err1.message).to.match(/blocked/);
+        expect(err2.message).to.match(/blocked/);
+      });
   });
 
   describe(`get`, function() {
     it(`gets an entry from the object store for the passed key`,
-        async function() {
-      const db = await createAndPopulateTestDb();
+      async function() {
+        const db = await createAndPopulateTestDb();
 
-      const user = await db.get('users', data.users[0].email);
-      expect(user).to.deep.equal(data.users[0]);
+        const user = await db.get('users', data.users[0].email);
+        expect(user).to.deep.equal(data.users[0]);
 
-      const post = await db.get('posts', 1); // From autoIncrement-ed key
-      expect(post).to.deep.equal(data.posts[0]);
+        const post = await db.get('posts', 1); // From autoIncrement-ed key
+        expect(post).to.deep.equal(data.posts[0]);
 
-      const comment = await db.get('comments', 1); // From autoIncrement-ed key
-      expect(comment).to.deep.equal(data.comments[0]);
-    });
+        const comment = await db.get('comments', 1); // From autoIncrement-ed key
+        expect(comment).to.deep.equal(data.comments[0]);
+      });
 
     it(`returns undefined if no entry is found`, async function() {
       const db = await createAndPopulateTestDb();
@@ -226,51 +226,51 @@ describe(`DBWrapper`, function() {
 
   describe(`add`, function() {
     it(`adds an entry to an object store and returns the key`,
-        async function() {
-      const db = await createTestDb();
+      async function() {
+        const db = await createTestDb();
 
-      // Test an entry with an explicit key.
-      const userKey = await db.add('users', data.users[0]);
-      expect(userKey).to.equal(data.users[0].email);
+        // Test an entry with an explicit key.
+        const userKey = await db.add('users', data.users[0]);
+        expect(userKey).to.equal(data.users[0].email);
 
-      // Test an entry in a store with auto-incrementing keys.
-      const postKey = await db.add('posts', data.posts[0]);
-      expect(postKey).to.equal(1);
+        // Test an entry in a store with auto-incrementing keys.
+        const postKey = await db.add('posts', data.posts[0]);
+        expect(postKey).to.equal(1);
 
-      // Test adding more than one entry to the same store.
-      const commentKey1 = await db.add('comments', data.comments[0]);
-      const commentKey2 = await db.add('comments', data.comments[1]);
-      expect(commentKey1).to.equal(1);
-      expect(commentKey2).to.equal(2);
-    });
+        // Test adding more than one entry to the same store.
+        const commentKey1 = await db.add('comments', data.comments[0]);
+        const commentKey2 = await db.add('comments', data.comments[1]);
+        expect(commentKey1).to.equal(1);
+        expect(commentKey2).to.equal(2);
+      });
 
     it(`throws if a value already exists for the specified key`,
-        async function() {
-      const db = await createAndPopulateTestDb();
+      async function() {
+        const db = await createAndPopulateTestDb();
 
-      expect(await catchAsyncError(db.add('users', data.users[0]))).to.be.ok;
-    });
+        expect(await catchAsyncError(db.add('users', data.users[0]))).to.be.ok;
+      });
   });
 
   describe(`put`, function() {
     it(`puts an entry to an object store and returns the key`,
-        async function() {
-      const db = await createTestDb();
+      async function() {
+        const db = await createTestDb();
 
-      // Test an entry with an explicit key.
-      const userKey = await db.put('users', data.users[0]);
-      expect(userKey).to.equal(data.users[0].email);
+        // Test an entry with an explicit key.
+        const userKey = await db.put('users', data.users[0]);
+        expect(userKey).to.equal(data.users[0].email);
 
-      // Test an entry in a store with auto-incrementing keys.
-      const postKey = await db.put('posts', data.posts[0]);
-      expect(postKey).to.equal(1);
+        // Test an entry in a store with auto-incrementing keys.
+        const postKey = await db.put('posts', data.posts[0]);
+        expect(postKey).to.equal(1);
 
-      // Test adding more than one entry to the same store.
-      const commentKey1 = await db.put('comments', data.comments[0]);
-      const commentKey2 = await db.put('comments', data.comments[1]);
-      expect(commentKey1).to.equal(1);
-      expect(commentKey2).to.equal(2);
-    });
+        // Test adding more than one entry to the same store.
+        const commentKey1 = await db.put('comments', data.comments[0]);
+        const commentKey2 = await db.put('comments', data.comments[1]);
+        expect(commentKey1).to.equal(1);
+        expect(commentKey2).to.equal(2);
+      });
 
     it(`overrides existing values for the specified key`, async function() {
       const db = await createAndPopulateTestDb();
@@ -346,24 +346,24 @@ describe(`DBWrapper`, function() {
     });
 
     it(`uses a getAll polyfill when the native version isn't supported`,
-        async function() {
+      async function() {
       // Fake a browser without getAll support.
-      const originalGetAll = IDBObjectStore.prototype.getAll;
-      delete IDBObjectStore.prototype.getAll;
+        const originalGetAll = IDBObjectStore.prototype.getAll;
+        delete IDBObjectStore.prototype.getAll;
 
-      const db = await createAndPopulateTestDb();
+        const db = await createAndPopulateTestDb();
 
-      const users1 = await db.getAll('users', IDBKeyRange.bound('a', 'm'));
-      const users2 = await db.getAll('users', IDBKeyRange.bound('n', 'z'));
+        const users1 = await db.getAll('users', IDBKeyRange.bound('a', 'm'));
+        const users2 = await db.getAll('users', IDBKeyRange.bound('n', 'z'));
 
-      expect(users1).to.deep.equal(data.users.slice(0, 2));
-      expect(users2).to.deep.equal(data.users.slice(2));
+        expect(users1).to.deep.equal(data.users.slice(0, 2));
+        expect(users2).to.deep.equal(data.users.slice(2));
 
-      // Restore getAll.
-      if (originalGetAll) {
-        IDBObjectStore.prototype.getAll = originalGetAll;
-      }
-    });
+        // Restore getAll.
+        if (originalGetAll) {
+          IDBObjectStore.prototype.getAll = originalGetAll;
+        }
+      });
   });
 
   describe(`getAllMatching`, function() {
@@ -417,63 +417,63 @@ describe(`DBWrapper`, function() {
 
   describe(`transaction`, function() {
     it(`performs a transaction on the specified object stores`,
-        async function() {
-      const db = await createTestDb();
+      async function() {
+        const db = await createTestDb();
 
-      await db.transaction(['users', 'posts'], 'readwrite', (stores) => {
-        stores.users.add(data.users[0]);
-        stores.posts.add(data.posts[0]);
+        await db.transaction(['users', 'posts'], 'readwrite', (stores) => {
+          stores.users.add(data.users[0]);
+          stores.posts.add(data.posts[0]);
+        });
+
+        const users = await db.getAll('users');
+        const posts = await db.getAll('posts');
+
+        expect(users).to.deep.equal(data.users.slice(0, 1));
+        expect(posts).to.deep.equal(data.posts.slice(0, 1));
       });
-
-      const users = await db.getAll('users');
-      const posts = await db.getAll('posts');
-
-      expect(users).to.deep.equal(data.users.slice(0, 1));
-      expect(posts).to.deep.equal(data.posts.slice(0, 1));
-    });
 
     it(`provides a 'complete' function to resolve a transaction with a value`,
-        async function() {
-      const db = await createAndPopulateTestDb();
+      async function() {
+        const db = await createAndPopulateTestDb();
 
-      // Gets the most recent comment from a particular user
-      const comment = await db.transaction(['comments'], 'readwrite',
+        // Gets the most recent comment from a particular user
+        const comment = await db.transaction(['comments'], 'readwrite',
           (stores, complete) => {
-        const postIdIndex = stores.comments.index('userEmail');
-        postIdIndex
-            .openCursor(IDBKeyRange.only(data.users[0].email), 'prev')
-            .onsuccess = (evt) => {
-          const cursor = evt.target.result;
-          complete(cursor ? cursor.value : null);
-        };
+            const postIdIndex = stores.comments.index('userEmail');
+            postIdIndex
+              .openCursor(IDBKeyRange.only(data.users[0].email), 'prev')
+              .onsuccess = (evt) => {
+                const cursor = evt.target.result;
+                complete(cursor ? cursor.value : null);
+              };
+          });
+        expect(comment).to.deep.equal(data.comments[4]);
       });
-      expect(comment).to.deep.equal(data.comments[4]);
-    });
 
     it(`provides an 'abort' function to manually abort a transaction`,
-        async function() {
-      const db = await createTestDb();
+      async function() {
+        const db = await createTestDb();
 
-      const err = await catchAsyncError(db.transaction(
+        const err = await catchAsyncError(db.transaction(
           ['posts', 'comments'], 'readwrite', (stores, complete, abort) => {
-        stores.posts.add(data.posts[0]).onsuccess = (evt) => {
-          const postId = evt.target.result;
-          stores.comments.add({postId}).onsuccess = (evt) => {
-            // Abort if the new key is less than 10 (which should be true).
-            if (evt.target.result < 10) {
-              abort();
-            }
-          };
-        };
-      }));
-      expect(err.message).to.match(/abort/);
+            stores.posts.add(data.posts[0]).onsuccess = (evt) => {
+              const postId = evt.target.result;
+              stores.comments.add({postId}).onsuccess = (evt) => {
+                // Abort if the new key is less than 10 (which should be true).
+                if (evt.target.result < 10) {
+                  abort();
+                }
+              };
+            };
+          }));
+        expect(err.message).to.match(/abort/);
 
-      // Assert the added post and comment were rolled back.
-      const posts = await db.getAll('posts');
-      expect(posts).to.have.lengthOf(0);
-      const comments = await db.getAll('comments');
-      expect(comments).to.have.lengthOf(0);
-    });
+        // Assert the added post and comment were rolled back.
+        const posts = await db.getAll('posts');
+        expect(posts).to.have.lengthOf(0);
+        const comments = await db.getAll('comments');
+        expect(comments).to.have.lengthOf(0);
+      });
 
     it(`throws if the transaction fails`, async function() {
       const db = await createAndPopulateTestDb();
@@ -484,10 +484,10 @@ describe(`DBWrapper`, function() {
       // sandbox.stub(self, 'onerror');
 
       const err = await catchAsyncError(db.transaction(
-          ['users'], 'readwrite', (stores) => {
+        ['users'], 'readwrite', (stores) => {
         // This should fail because the key is already set.
-        stores.users.add(data.users[0]);
-      }));
+          stores.users.add(data.users[0]);
+        }));
       expect(err).to.have.property('message');
     });
   });

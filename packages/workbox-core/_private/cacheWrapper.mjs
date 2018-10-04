@@ -40,12 +40,12 @@ import '../_version.mjs';
  * @memberof module:workbox-core
  */
 const putWrapper = async ({
-    cacheName,
-    request,
-    response,
-    event,
-    plugins = [],
-  } = {}) => {
+  cacheName,
+  request,
+  response,
+  event,
+  plugins = [],
+} = {}) => {
   if (!response) {
     if (process.env.NODE_ENV !== 'production') {
       logger.error(`Cannot cache non-existent response for ` +
@@ -117,7 +117,7 @@ const putWrapper = async ({
  * @param {Object} options
  * @param {string} options.cacheName Name of the cache to match against.
  * @param {Request} options.request The Request that will be used to look up
- *.    cache entries.
+ *     cache entries.
  * @param {Event} [options.event] The event that propted the action.
  * @param {Object} [options.matchOptions] Options passed to cache.match().
  * @param {Array<Object>} [options.plugins=[]] Array of plugins.
@@ -127,11 +127,11 @@ const putWrapper = async ({
  * @memberof module:workbox-core
  */
 const matchWrapper = async ({
-    cacheName,
-    request,
-    event,
-    matchOptions,
-    plugins = []}) => {
+  cacheName,
+  request,
+  event,
+  matchOptions,
+  plugins = []}) => {
   const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
   if (process.env.NODE_ENV !== 'production') {

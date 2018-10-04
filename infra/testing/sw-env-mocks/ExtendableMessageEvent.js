@@ -1,5 +1,5 @@
 /*
- Copyright 2017 Google Inc. All Rights Reserved.
+ Copyright 2018 Google Inc. All Rights Reserved.
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -16,19 +16,15 @@
 
 const ExtendableEvent = require('./ExtendableEvent');
 
-// SyncEvent
-// https://wicg.github.io/BackgroundSync/spec/#sync-event
-class SyncEvent extends ExtendableEvent {
-  constructor(type, init = {}) {
-    super(type, init);
 
-    if (!init.tag) {
-      throw new TypeError(
-        `Failed to construct 'SyncEvent': required member tag is undefined.`);
-    }
+// ExtendableMessageEvent
+// https://w3c.github.io/ServiceWorker/#extendablemessageevent-interface
+class ExtendableMessageEvent extends ExtendableEvent {
+  constructor(type, eventInitDict) {
+    super(type, eventInitDict);
 
-    this.tag = init.tag;
-    this.lastChance = init.lastChance || false;
+    this.data = eventInitDict.data || null;
   }
 }
-module.exports = SyncEvent;
+
+module.exports = ExtendableMessageEvent;

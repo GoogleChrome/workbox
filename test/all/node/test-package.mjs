@@ -16,29 +16,29 @@ describe(`[all] Test package.json`, function() {
     packageFiles.forEach((packagePath) => {
       const pkg = require(packagePath);
       switch (pkg.workbox.packageType) {
-        case 'browser': {
-          const propertiesToCheck = [
-            'main',
-            'module',
-          ];
+      case 'browser': {
+        const propertiesToCheck = [
+          'main',
+          'module',
+        ];
 
-          propertiesToCheck.forEach((propertyName) => {
-            if (!pkg[propertyName]) {
-              throw new Error(`The package.json at '${path.relative(process.cwd(), packagePath)}' isn't exposing a '${propertyName}' property`);
-            }
+        propertiesToCheck.forEach((propertyName) => {
+          if (!pkg[propertyName]) {
+            throw new Error(`The package.json at '${path.relative(process.cwd(), packagePath)}' isn't exposing a '${propertyName}' property`);
+          }
 
-            const fullPath = path.join(path.dirname(packagePath), pkg[propertyName]);
-            if (!fs.existsSync(fullPath)) {
-              throw new Error(`${path.relative(process.cwd(), packagePath)} has an invalid '${propertyName}' property: '${pkg[propertyName]}'`);
-            }
-          });
-          break;
-        }
-        case 'node': {
-          break;
-        }
-        default:
-          throw new Error(`Unknown package.json workbox.packageType: '${pkg.workbox.packageType}' in ${path.relative(process.cwd(), packagePath)}`);
+          const fullPath = path.join(path.dirname(packagePath), pkg[propertyName]);
+          if (!fs.existsSync(fullPath)) {
+            throw new Error(`${path.relative(process.cwd(), packagePath)} has an invalid '${propertyName}' property: '${pkg[propertyName]}'`);
+          }
+        });
+        break;
+      }
+      case 'node': {
+        break;
+      }
+      default:
+        throw new Error(`Unknown package.json workbox.packageType: '${pkg.workbox.packageType}' in ${path.relative(process.cwd(), packagePath)}`);
       }
     });
   });

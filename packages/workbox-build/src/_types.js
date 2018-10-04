@@ -16,7 +16,7 @@
 
 import './_version.mjs';
 
- /**
+/**
  * @typedef {Object} ManifestEntry
  * @property {String} url The URL to the asset in the manifest.
  * @property {String} revision The revision details for the file. This is a

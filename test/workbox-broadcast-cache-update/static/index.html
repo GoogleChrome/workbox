@@ -7,7 +7,7 @@
       window.__test = {};
 
       if ('BroadcastChannel' in self) {
-        const updatesChannel = new BroadcastChannel('bcu-integration-test');
+        const updatesChannel = new BroadcastChannel('workbox');
         updatesChannel.addEventListener('message', (event) => {
           window.__test.message = event.data;
         });

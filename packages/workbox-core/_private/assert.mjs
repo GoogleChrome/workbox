@@ -44,7 +44,7 @@ const isArray = (value, {moduleName, className, funcName, paramName}) => {
 };
 
 const hasMethod = (object, expectedMethod,
-                   {moduleName, className, funcName, paramName}) => {
+  {moduleName, className, funcName, paramName}) => {
   const type = typeof object[expectedMethod];
   if (type !== 'function') {
     throw new WorkboxError('missing-a-method', {paramName, expectedMethod,
@@ -53,7 +53,7 @@ const hasMethod = (object, expectedMethod,
 };
 
 const isType = (object, expectedType,
-                {moduleName, className, funcName, paramName}) => {
+  {moduleName, className, funcName, paramName}) => {
   if (typeof object !== expectedType) {
     throw new WorkboxError('incorrect-type', {paramName, expectedType,
       moduleName, className, funcName});
@@ -61,8 +61,8 @@ const isType = (object, expectedType,
 };
 
 const isInstance = (object, expectedClass,
-                    {moduleName, className, funcName,
-                      paramName, isReturnValueProblem}) => {
+  {moduleName, className, funcName,
+    paramName, isReturnValueProblem}) => {
   if (!(object instanceof expectedClass)) {
     throw new WorkboxError('incorrect-class', {paramName, expectedClass,
       moduleName, className, funcName, isReturnValueProblem});

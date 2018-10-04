@@ -1,6 +1,6 @@
 {
   "name": "workbox-core",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "This module is used by a number of the other Workbox modules to share common code.",
@@ -20,8 +20,7 @@
   },
   "workbox": {
     "browserNamespace": "workbox.core",
-    "packageType": "browser",
-    "includeBabelHelpers": true
+    "packageType": "browser"
   },
   "main": "build/workbox-core.prod.js",
   "module": "index.mjs"

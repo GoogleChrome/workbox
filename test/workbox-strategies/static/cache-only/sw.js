@@ -8,7 +8,7 @@ workbox.routing.registerRoute(
 
 self.addEventListener('install', (event) => event.waitUntil(
   caches.open(workbox.core.cacheNames.runtime)
-  .then((cache) => cache.put('/CacheOnly/InCache/', new Response('Cached')))
-  .then(() => self.skipWaiting()))
+    .then((cache) => cache.put('/CacheOnly/InCache/', new Response('Cached')))
+    .then(() => self.skipWaiting()))
 );
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));

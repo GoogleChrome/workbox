@@ -3,14 +3,14 @@ import {expect} from 'chai';
 describe('workbox-core Exports', function() {
   it('should export only expected values', function() {
     return import('../../../packages/workbox-core/index.mjs')
-    .then((exportedValues) => {
-      expect(Object.keys(exportedValues)).to.deep.equal([
-        'LOG_LEVELS',
-        '_private',
-        'default',
-        'registerQuotaErrorCallback',
-      ]);
-    });
+      .then((exportedValues) => {
+        expect(Object.keys(exportedValues)).to.deep.equal([
+          'LOG_LEVELS',
+          '_private',
+          'default',
+          'registerQuotaErrorCallback',
+        ]);
+      });
   });
 
   describe(`LOG_LEVELS`, function() {

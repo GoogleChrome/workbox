@@ -15,7 +15,7 @@
 
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
-import '../_version.mjs';
+import './_version.mjs';
 
 /**
  * Given two `Response's`, compares several header values to see if they are

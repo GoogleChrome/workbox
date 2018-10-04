@@ -20,13 +20,14 @@ module.exports = {
   rules: {
     "jsdoc/check-types": 2,
     "jsdoc/newline-after-description": 2,
+    'indent': ['error', 2],
   },
   plugins: [
     'jsdoc',
   ],
-  parser: 'babel-eslint',
   overrides: [{
     files: ['test/**/*.{js,mjs}'],
+    parser: 'babel-eslint',
     env: {
       mocha: true,
     },

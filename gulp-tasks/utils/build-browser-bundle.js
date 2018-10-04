@@ -60,7 +60,7 @@ const globals = (moduleId) => {
     if (namespacePathParts[0] !== '_private' || namespacePathParts.length > 2) {
       // Tried to pull in default export of module - this isn't allowed.
     // A specific file must be referenced
-    throw new Error(oneLine`
+      throw new Error(oneLine`
       You cannot use nested files. It must be a top level (and public) file
       or a file under '_private' in a module. Please fix the import:
       '${moduleId}'
@@ -77,10 +77,10 @@ const globals = (moduleId) => {
       pkg.workbox.browserNamespace,
       additionalNamespace,
     ]
-    .filter((value) => {
-      return (value && value.length > 0);
-    })
-    .join('.');
+      .filter((value) => {
+        return (value && value.length > 0);
+      })
+      .join('.');
   } catch (err) {
     logHelper.error(`Unable to get browserNamespace for package: ` +
       `'${packageName}'`);
@@ -136,10 +136,6 @@ module.exports = (packagePath, buildType) => {
 
   const plugins = rollupHelper.getDefaultPlugins(buildType);
 
-  const banner = pkgJson.workbox.includeBabelHelpers ?
-    fs.readFileSync(path.join(__dirname, 'external-helpers.js')) :
-    '';
-
   return rollupStream({
     input: moduleBrowserPath,
     rollup,
@@ -147,7 +143,6 @@ module.exports = (packagePath, buildType) => {
       name: namespace,
       sourcemap: true,
       format: 'iife',
-      banner,
       globals,
     },
     external: externalAndPure,
@@ -172,24 +167,24 @@ module.exports = (packagePath, buildType) => {
       }
     },
   })
-  .on('error', (err) => {
-    const args = [];
-    Object.keys(err).forEach((key) => {
-      args.push(`${key}: ${err[key]}`);
-    });
-    logHelper.error(err, `\n\n${args.join('\n')}`);
-    throw err;
-  })
+    .on('error', (err) => {
+      const args = [];
+      Object.keys(err).forEach((key) => {
+        args.push(`${key}: ${err[key]}`);
+      });
+      logHelper.error(err, `\n\n${args.join('\n')}`);
+      throw err;
+    })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
-  .pipe(source(moduleBrowserPath))
+    .pipe(source(moduleBrowserPath))
   // gulp-sourcemaps don't work with streams so we need
-  .pipe(buffer())
+    .pipe(buffer())
   // This tells gulp-sourcemaps to load the inline sourcemap
-  .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(sourcemaps.init({loadMaps: true}))
   // This renames the output file
-  .pipe(rename(outputFilename))
+    .pipe(rename(outputFilename))
   // This writes the sourcemap alongside the final build file
-  .pipe(sourcemaps.write('.'))
-  .pipe(gulp.dest(outputDirectory));
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(outputDirectory));
 };

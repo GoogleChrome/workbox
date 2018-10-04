@@ -42,7 +42,7 @@ export default {
   },
 
   'incorrect-type': ({expectedType, paramName, moduleName, className,
-                   funcName}) => {
+    funcName}) => {
     if (!expectedType || !paramName || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'incorrect-type' error.`);
     }
@@ -52,7 +52,7 @@ export default {
   },
 
   'incorrect-class': ({expectedClass, paramName, moduleName, className,
-                       funcName, isReturnValueProblem}) => {
+    funcName, isReturnValueProblem}) => {
     if (!expectedClass || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'incorrect-class' error.`);
     }
@@ -69,7 +69,7 @@ export default {
   },
 
   'missing-a-method': ({expectedMethod, paramName, moduleName, className,
-                    funcName}) => {
+    funcName}) => {
     if (!expectedMethod || !paramName || !moduleName || !className
         || !funcName) {
       throw new Error(`Unexpected input to 'missing-a-method' error.`);

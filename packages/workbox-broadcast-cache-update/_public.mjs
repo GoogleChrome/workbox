@@ -17,12 +17,12 @@
 import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.mjs';
 import {Plugin} from './Plugin.mjs';
 import {broadcastUpdate} from './broadcastUpdate.mjs';
-import messageTypes from './messageTypes.mjs';
+import {responsesAreSame} from './responsesAreSame.mjs';
 import './_version.mjs';
 
 export {
   BroadcastCacheUpdate,
   Plugin,
   broadcastUpdate,
-  messageTypes,
+  responsesAreSame,
 };

@@ -142,7 +142,7 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
       expect(fakeDB.createObjectStore.callCount).to.equal(1);
       expect(fakeDB.createObjectStore.args[0][0]).to.equal(DB_NAME);
 
-     expect(fakeDB.deleteObjectStore.callCount).to.equal(0);
+      expect(fakeDB.deleteObjectStore.callCount).to.equal(0);
     });
 
     it('should handle upgrade 1 > 2', () => {
@@ -169,8 +169,8 @@ describe(`[workbox-cache-expiration] CacheTimestampsModel`, function() {
       expect(fakeDB.createObjectStore.callCount).to.equal(1);
       expect(fakeDB.createObjectStore.args[0][0]).to.equal(DB_NAME);
 
-     expect(fakeDB.deleteObjectStore.callCount).to.equal(1);
-     expect(fakeDB.deleteObjectStore.args[0][0]).to.equal('workbox-cache-expiration');
+      expect(fakeDB.deleteObjectStore.callCount).to.equal(1);
+      expect(fakeDB.deleteObjectStore.args[0][0]).to.equal('workbox-cache-expiration');
     });
   });
 });

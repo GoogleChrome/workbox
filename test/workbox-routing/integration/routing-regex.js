@@ -16,9 +16,9 @@ describe(`[workbox-routing] Route via RegExp`, function() {
 
     let response = await global.__workbox.webdriver.executeAsyncScript((testCounter, cb) => {
       fetch(new URL(`/RegExp/${testCounter}/`, location).href)
-      .then((response) => response.text())
-      .then((responseBody) => cb(responseBody))
-      .catch((err) => cb(err.message));
+        .then((response) => response.text())
+        .then((responseBody) => cb(responseBody))
+        .catch((err) => cb(err.message));
     }, testCounter);
 
     expect(response).to.equal(`RegExp.${testServerAddress}/RegExp/${testCounter}/`);
@@ -27,9 +27,9 @@ describe(`[workbox-routing] Route via RegExp`, function() {
 
     response = await global.__workbox.webdriver.executeAsyncScript((testCounter, cb) => {
       fetch(new URL(`/regular-expression/${testCounter}/`, location).href)
-      .then((response) => response.text())
-      .then((responseBody) => cb(responseBody))
-      .catch((err) => cb(err.message));
+        .then((response) => response.text())
+        .then((responseBody) => cb(responseBody))
+        .catch((err) => cb(err.message));
     }, testCounter);
 
     expect(response).to.equal(`regular-expression.${testServerAddress}/regular-expression/${testCounter}/`);
@@ -38,9 +38,9 @@ describe(`[workbox-routing] Route via RegExp`, function() {
 
     response = await global.__workbox.webdriver.executeAsyncScript((testCounter, cb) => {
       fetch(new URL(`/RegExpRoute/RegExp/${testCounter}/`, location).href)
-      .then((response) => response.text())
-      .then((responseBody) => cb(responseBody))
-      .catch((err) => cb(err.message));
+        .then((response) => response.text())
+        .then((responseBody) => cb(responseBody))
+        .catch((err) => cb(err.message));
     }, testCounter);
 
     expect(response).to.equal(`RegExpRoute.RegExp.${testServerAddress}/RegExpRoute/RegExp/${testCounter}/`);
@@ -49,9 +49,9 @@ describe(`[workbox-routing] Route via RegExp`, function() {
 
     response = await global.__workbox.webdriver.executeAsyncScript((testCounter, cb) => {
       fetch(new URL(`/RegExpRoute/regular-expression/${testCounter}/`, location).href)
-      .then((response) => response.text())
-      .then((responseBody) => cb(responseBody))
-      .catch((err) => cb(err.message));
+        .then((response) => response.text())
+        .then((responseBody) => cb(responseBody))
+        .catch((err) => cb(err.message));
     }, testCounter);
 
     expect(response).to.equal(`RegExpRoute.regular-expression.${testServerAddress}/RegExpRoute/regular-expression/${testCounter}/`);
