@@ -18,8 +18,8 @@ import {expect} from 'chai';
 
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
-
 import {StaleWhileRevalidate} from '../../../packages/workbox-strategies/StaleWhileRevalidate.mjs';
+import expectError from '../../../infra/testing/expectError';
 
 describe(`[workbox-strategies] StaleWhileRevalidate.makeRequest()`, function() {
   const sandbox = sinon.createSandbox();
@@ -236,5 +236,18 @@ describe(`[workbox-strategies] StaleWhileRevalidate.handle()`, function() {
 
     expect(matchStub.calledOnce).to.be.true;
     expect(matchStub.calledWith(request, matchOptions)).to.be.true;
+  });
+
+  it(`should throw an error when the network request fails, and there's no cache match`, async function() {
+    sandbox.stub(global, 'fetch').rejects(new Error('Injected error.'));
+
+    const request = new Request('http://example.io/test/');
+    const event = new FetchEvent('fetch', {request});
+
+    const staleWhileRevalidate = new StaleWhileRevalidate();
+    await expectError(
+      () => staleWhileRevalidate.handle({event}),
+      'no-response'
+    );
   });
 });

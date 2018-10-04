@@ -15,10 +15,10 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import expectError from '../../../infra/testing/expectError';
-import {devOnly} from '../../../infra/testing/env-it';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
+import {devOnly} from '../../../infra/testing/env-it';
+import expectError from '../../../infra/testing/expectError';
 
 import {NetworkFirst} from '../../../packages/workbox-strategies/NetworkFirst.mjs';
 
@@ -155,8 +155,10 @@ describe(`[workbox-strategies] NetworkFirst.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const networkFirst = new NetworkFirst();
-    const emptyCacheResponse = await networkFirst.handle({event});
-    expect(emptyCacheResponse).to.not.exist;
+    await expectError(
+      () => networkFirst.handle({event}),
+      'no-response'
+    );
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
@@ -196,7 +198,7 @@ describe(`[workbox-strategies] NetworkFirst.handle()`, function() {
     await compareResponses(populatedCacheResponse, injectedResponse, true);
   });
 
-  it(`should return the network response if the timeout is execeeded, but there is no cached response`, async function() {
+  it(`should return the network response if the timeout is exceeded, but there is no cached response`, async function() {
     const clock = sandbox.useFakeTimers();
 
     const request = new Request('http://example.io/test/');

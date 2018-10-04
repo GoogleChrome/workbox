@@ -13,10 +13,11 @@
  limitations under the License.
 */
 
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
 import messages from './utils/messages.mjs';
 import './_version.mjs';
@@ -27,7 +28,10 @@ import './_version.mjs';
  * [cache-only]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only}
  * request strategy.
  *
- * This class is useful if you want to take advantage of any [Workbox plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}.
+ * This class is useful if you want to take advantage of any
+ * [Workbox plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}.
+ *
+ * If there is no cache match, this will throw a `WorkboxError` exception.
  *
  * @memberof workbox.strategies
  */
@@ -123,6 +127,9 @@ class CacheOnly {
       logger.groupEnd();
     }
 
+    if (!response) {
+      throw new WorkboxError('no-response', {url: request.url});
+    }
     return response;
   }
 }

@@ -19,6 +19,7 @@ import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
 import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
@@ -38,6 +39,9 @@ import './_version.mjs';
  * well as [opaque responses]{@link https://developers.google.com/web/tools/workbox/guides/handle-third-party-requests}.
  * Opaque responses are are cross-origin requests where the response doesn't
  * support [CORS]{@link https://enable-cors.org/}.
+ *
+ * If the network request fails, and there is no cache match, this will throw
+ * a `WorkboxError` exception.
  *
  * @memberof workbox.strategies
  */
@@ -138,7 +142,7 @@ class StaleWhileRevalidate {
       matchOptions: this._matchOptions,
       plugins: this._plugins,
     });
-
+    let error;
     if (response) {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(`Found a cached response in the '${this._cacheName}'` +
@@ -160,7 +164,11 @@ class StaleWhileRevalidate {
         logs.push(`No response found in the '${this._cacheName}' cache. ` +
           `Will wait for the network response.`);
       }
-      response = await fetchAndCachePromise;
+      try {
+        response = await fetchAndCachePromise;
+      } catch (err) {
+        error = err;
+      }
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -173,6 +181,9 @@ class StaleWhileRevalidate {
       logger.groupEnd();
     }
 
+    if (!response) {
+      throw new WorkboxError('no-response', {url: request.url, error});
+    }
     return response;
   }
 

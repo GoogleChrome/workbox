@@ -13,12 +13,13 @@
  limitations under the License.
 */
 
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
 import messages from './utils/messages.mjs';
 import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
@@ -33,6 +34,9 @@ import './_version.mjs';
  * well as [opaque responses]{@link https://developers.google.com/web/tools/workbox/guides/handle-third-party-requests}.
  * Opaque responses are are cross-origin requests where the response doesn't
  * support [CORS]{@link https://enable-cors.org/}.
+ *
+ * If the network request fails, and there is no cache match, this will throw
+ * a `WorkboxError` exception.
  *
  * @memberof workbox.strategies
  */
@@ -175,6 +179,9 @@ class NetworkFirst {
       logger.groupEnd();
     }
 
+    if (!response) {
+      throw new WorkboxError('no-response', {url: request.url});
+    }
     return response;
   }
 

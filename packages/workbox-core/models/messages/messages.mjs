@@ -182,18 +182,22 @@ export default {
       `Please see the docs for ${moduleName}.${className}.${funcName}() for ` +
       `more info.`;
   },
+
   'channel-name-required': () => {
     return `You must provide a channelName to construct a ` +
     `BroadcastCacheUpdate instance.`;
   },
+
   'invalid-responses-are-same-args': () => {
     return `The arguments passed into responsesAreSame() appear to be ` +
       `invalid. Please ensure valid Responses are used.`;
   },
+
   'expire-custom-caches-only': () => {
     return `You must provide a 'cacheName' property when using the ` +
       `expiration plugin with a runtime caching strategy.`;
   },
+
   'unit-must-be-bytes': ({normalizedRangeHeader}) => {
     if (!normalizedRangeHeader) {
       throw new Error(`Unexpected input to 'unit-must-be-bytes' error.`);
@@ -201,6 +205,7 @@ export default {
     return `The 'unit' portion of the Range header must be set to 'bytes'. ` +
       `The Range header provided was "${normalizedRangeHeader}"`;
   },
+
   'single-range-only': ({normalizedRangeHeader}) => {
     if (!normalizedRangeHeader) {
       throw new Error(`Unexpected input to 'single-range-only' error.`);
@@ -209,6 +214,7 @@ export default {
       `value, and optional end value. The Range header provided was ` +
       `"${normalizedRangeHeader}"`;
   },
+
   'invalid-range-values': ({normalizedRangeHeader}) => {
     if (!normalizedRangeHeader) {
       throw new Error(`Unexpected input to 'invalid-range-values' error.`);
@@ -217,19 +223,31 @@ export default {
       `one of those values is needed. The Range header provided was ` +
       `"${normalizedRangeHeader}"`;
   },
+
   'no-range-header': () => {
     return `No Range header was found in the Request provided.`;
   },
+
   'range-not-satisfiable': ({size, start, end}) => {
     return `The start (${start}) and end (${end}) values in the Range are ` +
       `not satisfiable by the cached response, which is ${size} bytes.`;
   },
+
   'attempt-to-cache-non-get-request': ({url, method}) => {
     return `Unable to cache '${url}' because it is a '${method}' request and ` +
       `only 'GET' requests can be cached.`;
   },
+
   'cache-put-with-no-response': ({url}) => {
     return `There was an attempt to cache '${url}' but the response was not ` +
       `defined.`;
+  },
+
+  'no-response': ({url, error}) => {
+    let message = `The strategy could not generate a response for '${url}'.`;
+    if (error) {
+      message += ` The underlying error is ${error}.`;
+    }
+    return message;
   },
 };

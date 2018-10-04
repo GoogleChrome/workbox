@@ -19,6 +19,7 @@ import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
 import messages from './utils/messages.mjs';
 import './_version.mjs';
@@ -30,6 +31,9 @@ import './_version.mjs';
  * A cache first strategy is useful for assets that have been revisioned,
  * such as URLs like `/styles/example.a8f5f1.css`, since they
  * can be cached for long periods of time.
+ *
+ * If the network request fails, and there is no cache match, this will throw
+ * a `WorkboxError` exception.
  *
  * @memberof workbox.strategies
  */
@@ -155,12 +159,9 @@ class CacheFirst {
       logger.groupEnd();
     }
 
-    if (error) {
-      // Don't swallow error as we'll want it to throw and enable catch
-      // handlers in router.
-      throw error;
+    if (!response) {
+      throw new WorkboxError('no-response', {url: request.url, error});
     }
-
     return response;
   }
 

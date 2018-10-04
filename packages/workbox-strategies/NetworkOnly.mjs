@@ -13,10 +13,12 @@
  limitations under the License.
 */
 
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+
 import messages from './utils/messages.mjs';
 import './_version.mjs';
 
@@ -25,7 +27,10 @@ import './_version.mjs';
  * [network-only]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only}
  * request strategy.
  *
- * This class is useful if you want to take advantage of any [Workbox plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}.
+ * This class is useful if you want to take advantage of any
+ * [Workbox plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}.
+ *
+ * If the network request fails, this will throw a `WorkboxError` exception.
  *
  * @memberof workbox.strategies
  */
@@ -127,12 +132,9 @@ class NetworkOnly {
       logger.groupEnd();
     }
 
-    // If there was an error thrown, re-throw it to ensure the Routers
-    // catch handler is triggered.
-    if (error) {
-      throw error;
+    if (!response) {
+      throw new WorkboxError('no-response', {url: request.url, error});
     }
-
     return response;
   }
 }

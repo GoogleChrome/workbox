@@ -17,9 +17,9 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 
 import {_private} from '../../../packages/workbox-core/index.mjs';
-import {compareResponses} from '../utils/response-comparisons.mjs';
-
 import {CacheOnly} from '../../../packages/workbox-strategies/CacheOnly.mjs';
+import {compareResponses} from '../utils/response-comparisons.mjs';
+import expectError from '../../../infra/testing/expectError';
 
 describe(`[workbox-strategies] CacheOnly.makeRequest()`, function() {
   const sandbox = sinon.createSandbox();
@@ -92,9 +92,10 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const cacheOnly = new CacheOnly();
-    const handleResponse = await cacheOnly.handle({event});
-
-    expect(handleResponse).not.to.exist;
+    await expectError(
+      () => cacheOnly.handle({event}),
+      'no-response'
+    );
   });
 
   it(`should return the cached response when the cache is populated`, async function() {
@@ -119,8 +120,10 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
-    const handleResponse = await cacheOnly.handle({event});
-    expect(handleResponse).not.to.exist;
+    await expectError(
+      () => cacheOnly.handle({event}),
+      'no-response'
+    );
   });
 
   it(`should return cached response from custom cache name`, async function() {

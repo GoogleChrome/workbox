@@ -16,9 +16,9 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 
 import {_private} from '../../../packages/workbox-core/index.mjs';
-import {compareResponses} from '../utils/response-comparisons.mjs';
-
 import {CacheFirst} from '../../../packages/workbox-strategies/CacheFirst.mjs';
+import {compareResponses} from '../utils/response-comparisons.mjs';
+import expectError from '../../../infra/testing/expectError';
 
 describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
   const sandbox = sinon.createSandbox();
@@ -338,12 +338,10 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
     });
 
     const cacheFirst = new CacheFirst();
-    try {
-      await cacheFirst.handle({event});
-      throw new Error('Expected an error to be thrown.');
-    } catch (err) {
-      expect(err).to.equal(injectedError);
-    }
+    await expectError(
+      () => cacheFirst.handle({event}),
+      'no-response'
+    );
   });
 
   it(`should use the fetchOptions provided`, async function() {
