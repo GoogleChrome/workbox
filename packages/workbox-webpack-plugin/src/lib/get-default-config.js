@@ -24,8 +24,8 @@ module.exports = () => ({
   exclude: [
     // Exclude source maps.
     /\.map$/,
-    // Exclude anything starting with manifest and ending .js or .json.
-    /^manifest.*\.js(?:on)?$/,
+    // Exclude anything starting with manifest and ending .js.
+    /^manifest.*\.js?$/,
   ],
   excludeChunks: [],
   importsDirectory: '',

@@ -1054,8 +1054,8 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
   });
 
   describe(`[workbox-webpack-plugin] Filtering via test/include/exclude`, function() {
-    it(`should exclude .map and manifest.js(on) files by default`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.7ec1d7f443d1e8c881bf93fee037495a.js';
+    it(`should exclude .map and manifest.js files by default`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.6baa7f185013b0f515babaf6ea5f3ec3.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1108,6 +1108,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           }, {
             revision: 'aef75af28f6de0771a8d6bae84d9e71d',
             url: 'not-ignored.js',
+          }, {
+            revision: '4b1eb3dc48c4e16d49db5b42298fe654',
+            url: 'manifest.json',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
