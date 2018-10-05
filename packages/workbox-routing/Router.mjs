@@ -42,6 +42,43 @@ class Router {
   }
 
   /**
+   * Adds a fetch event listener to respond to events when a route matches
+   * the event's request.
+   */
+  addFetchListener() {
+    self.addEventListener('fetch', (event) => {
+      const {request} = event;
+      const responsePromise = this.handleRequest({request, event});
+      if (responsePromise) {
+        event.respondWith(responsePromise);
+      }
+    });
+  }
+
+  /**
+   * Adds a message event listener for URLs to cache from the window.
+   * This is useful to cache resources loaded prior to when the service worker
+   * started controlling the page.
+   */
+  addCacheListener() {
+    self.addEventListener('message', (event) => {
+      if (event.data.type === 'CACHE_URLS' &&
+          event.data.meta === 'workbox-window') {
+        const {urlsToCache} = event.data.payload;
+
+        if (process.env.NODE_ENV !== 'production') {
+          logger.debug(`Caching URLs from the window`, urlsToCache);
+        }
+
+        for (const url of urlsToCache) {
+          const request = new Request(url);
+          this.handleRequest({request, event});
+        }
+      }
+    });
+  }
+
+  /**
    * Apply the routing rules to a FetchEvent object to get a Response from an
    * appropriate Route's handler.
    *

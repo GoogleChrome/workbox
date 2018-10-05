@@ -10,8 +10,9 @@ import sinon from 'sinon';
 import {expect} from 'chai';
 
 import {logger} from '../../../packages/workbox-core/_private/logger.mjs';
-import defaultRouter from '../../../packages/workbox-routing/_default.mjs';
 import expectError from '../../../infra/testing/expectError';
+import {resetEventListeners} from '../../../infra/testing/sw-env-mocks/event-listeners';
+import {DefaultRouter} from '../../../packages/workbox-routing/DefaultRouter.mjs';
 import {NavigationRoute} from '../../../packages/workbox-routing/NavigationRoute.mjs';
 import {RegExpRoute} from '../../../packages/workbox-routing/RegExpRoute.mjs';
 import {Route} from '../../../packages/workbox-routing/Route.mjs';
@@ -20,13 +21,28 @@ import {devOnly} from '../../../infra/testing/env-it';
 
 describe(`[workbox-routing] Default Router`, function() {
   const sandbox = sinon.createSandbox();
+  let defaultRouter;
 
   beforeEach(function() {
+    defaultRouter = new DefaultRouter();
     sandbox.restore();
+    resetEventListeners();
   });
 
   after(function() {
     sandbox.restore();
+    resetEventListeners();
+  });
+
+  describe(`contructor`, function() {
+    it(`should add fetch and cache message listeners`, function() {
+      sandbox.spy(DefaultRouter.prototype, 'addFetchListener');
+      sandbox.spy(DefaultRouter.prototype, 'addCacheListener');
+
+      new DefaultRouter();
+      expect(DefaultRouter.prototype.addFetchListener.callCount).to.equal(1);
+      expect(DefaultRouter.prototype.addCacheListener.callCount).to.equal(1);
+    });
   });
 
   describe(`registerRoute()`, function() {
@@ -372,44 +388,6 @@ describe(`[workbox-routing] Default Router`, function() {
       expect(fetchStub.calledOnce).to.be.true;
       expect(fetchStub.firstCall.args[0]).to.eql(shellUrl);
       expect(response).to.eql(fakeResponse);
-    });
-  });
-
-  describe(`Fetch Events`, function() {
-    it(`should not call event methods for no route`, function() {
-      sandbox.spy(defaultRouter, 'handleRequest');
-
-      const url = new URL('/random/navigation.html', location);
-      const request = new Request(url);
-      const event = new FetchEvent('fetch', {request});
-      sandbox.stub(event, 'respondWith');
-      self.dispatchEvent(event);
-      expect(defaultRouter.handleRequest.callCount).to.equal(1);
-      expect(event.respondWith.callCount).to.equal(0);
-    });
-
-    it(`should pass Fetch Events to router.handleRequest`, function() {
-      sandbox.spy(defaultRouter, 'handleRequest');
-
-      const injectResponse = new Response(`Injected Response`);
-      defaultRouter.registerRoute(/./, () => injectResponse);
-
-      const url = new URL('/random/navigation.html', location);
-      const request = new Request(url);
-      const event = new FetchEvent('fetch', {request});
-
-      return new Promise((resolve) => {
-        sandbox.stub(event, 'respondWith').callsFake((response) => {
-          expect(response).to.equal(injectResponse);
-          resolve();
-        });
-        self.dispatchEvent(event);
-        expect(defaultRouter.handleRequest.callCount).to.equal(1);
-        expect(defaultRouter.handleRequest.args[0][0].url).to.deep.equal(url);
-        expect(defaultRouter.handleRequest.args[0][0].request).to.equal(request);
-        expect(defaultRouter.handleRequest.args[0][0].event).to.equal(event);
-        expect(event.respondWith.callCount).to.equal(1);
-      });
     });
   });
 });

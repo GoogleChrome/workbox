@@ -12,6 +12,7 @@ import {expect} from 'chai';
 import {Route} from '../../../packages/workbox-routing/Route.mjs';
 import {Router} from '../../../packages/workbox-routing/Router.mjs';
 import expectError from '../../../infra/testing/expectError';
+import {eventsDoneWaiting, resetEventListeners} from '../../../infra/testing/sw-env-mocks/event-listeners';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 
 describe(`[workbox-routing] Router`, function() {
@@ -26,10 +27,12 @@ describe(`[workbox-routing] Router`, function() {
     // a mocha bug where `afterEach` hooks aren't run for skipped tests.
     // https://github.com/mochajs/mocha/issues/2546
     sandbox.restore();
+    resetEventListeners();
   });
 
   after(function() {
     sandbox.restore();
+    resetEventListeners();
   });
 
   describe(`constructor`, function() {
@@ -133,6 +136,82 @@ describe(`[workbox-routing] Router`, function() {
       expect(router._routes.get('GET')).to.have.members([getRoute1, getRoute2]);
       expect(router._routes.get('PUT')).to.have.members([putRoute1, putRoute2]);
       expect(router._routes.get('POST')).to.have.members([postRoute]);
+    });
+  });
+
+  describe(`addFetchListener`, function() {
+    it(`should add a listener to respond to fetch events`, async function() {
+      const router = new Router();
+      const route = new Route(
+          () => true,
+          () => new Response(EXPECTED_RESPONSE_BODY));
+      router.registerRoute(route);
+      router.addFetchListener();
+
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      sandbox.spy(router, 'handleRequest');
+      sandbox.spy(event, 'respondWith');
+
+      self.dispatchEvent(event);
+      expect(router.handleRequest.callCount).to.equal(1);
+      expect(router.handleRequest.args[0][0].request).to.equal(request);
+      expect(router.handleRequest.args[0][0].event).to.equal(event);
+      expect(event.respondWith.callCount).to.equal(1);
+
+      const response = await event.respondWith.args[0][0];
+      expect(await response.text()).to.equal(EXPECTED_RESPONSE_BODY);
+    });
+
+    it(`should not call respondWith when no routes match`, function() {
+      const router = new Router();
+      const route = new Route(
+          () => false,
+          () => new Response(EXPECTED_RESPONSE_BODY));
+      router.registerRoute(route);
+      router.addFetchListener();
+
+      const request = new Request(location.href + '?foo');
+      const event = new FetchEvent('fetch', {request});
+      sandbox.spy(router, 'handleRequest');
+      sandbox.spy(event, 'respondWith');
+
+      self.dispatchEvent(event);
+      expect(router.handleRequest.callCount).to.equal(1);
+      expect(event.respondWith.callCount).to.equal(0);
+    });
+  });
+
+  describe(`addCacheListener`, function() {
+    it(`should add a listener to respond to cache message events`, async function() {
+      const router = new Router();
+      const route = new Route(
+          () => true,
+          () => new Response(EXPECTED_RESPONSE_BODY));
+      router.registerRoute(route);
+      router.addCacheListener();
+
+      const event = new ExtendableMessageEvent('message', {
+        data: {
+          type: 'CACHE_URLS',
+          meta: 'workbox-window',
+          payload: {
+            urlsToCache: ['/one', '/two', '/three'],
+          },
+        },
+      });
+      sandbox.spy(router, 'handleRequest');
+      self.dispatchEvent(event);
+
+      await eventsDoneWaiting();
+
+      expect(router.handleRequest.callCount).to.equal(3);
+      expect(router.handleRequest.args[0][0].request.url).to.equal('/one');
+      expect(router.handleRequest.args[0][0].event).to.equal(event);
+      expect(router.handleRequest.args[1][0].request.url).to.equal('/two');
+      expect(router.handleRequest.args[1][0].event).to.equal(event);
+      expect(router.handleRequest.args[2][0].request.url).to.equal('/three');
+      expect(router.handleRequest.args[2][0].event).to.equal(event);
     });
   });
 
