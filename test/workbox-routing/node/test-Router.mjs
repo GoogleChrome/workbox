@@ -214,8 +214,9 @@ describe(`[workbox-routing] Router`, function() {
       router.setDefaultHandler(() => new Response(EXPECTED_RESPONSE_BODY));
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent('fetch', {request: new Request(self.location)});
-      const response = await router.handleRequest(event);
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      const response = await router.handleRequest({request, event});
 
       const responseBody = await response.text();
 
@@ -241,8 +242,9 @@ describe(`[workbox-routing] Router`, function() {
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent('fetch', {request: new Request(self.location)});
-      const response = await router.handleRequest(event);
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      const response = await router.handleRequest({request, event});
       const responseBody = await response.text();
 
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
@@ -260,8 +262,9 @@ describe(`[workbox-routing] Router`, function() {
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent('fetch', {request: new Request(self.location)});
-      const response = await router.handleRequest(event);
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      const response = await router.handleRequest({request, event});
       const responseBody = await response.text();
 
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
@@ -269,6 +272,24 @@ describe(`[workbox-routing] Router`, function() {
   });
 
   describe(`handleRequest()`, function() {
+    it(`should throw in dev when not passed a request`, async function() {
+      if (process.env.NODE_ENV === 'production') return this.skip();
+
+      const router = new Router();
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+
+      await expectError(
+          () => router.handleRequest({event}),
+          'incorrect-class',
+          (error) => {
+            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+            expect(error.details).to.have.property('className').that.eql('Router');
+            expect(error.details).to.have.property('funcName').that.eql('handleRequest');
+            expect(error.details).to.have.property('paramName').that.eql('options.request');
+          });
+    });
+
     it(`should return a response from the Route's handler when there's a matching route`, async function() {
       const router = new Router();
       const route = new Route(
@@ -278,8 +299,9 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
 
       // route.match() always returns true, so the Request details don't matter.
-      const event = new FetchEvent('fetch', {request: new Request(self.location)});
-      const response = await router.handleRequest(event);
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      const response = await router.handleRequest({request, event});
       const responseBody = await response.text();
 
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
@@ -301,11 +323,52 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route2);
 
       // route.match() always returns true, so the Request details don't matter.
-      const event = new FetchEvent('fetch', {request: new Request(self.location)});
-      const response = await router.handleRequest(event);
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      const response = await router.handleRequest({request, event});
       const responseBody = await response.text();
 
       expect(responseBody).to.eql(response1);
+    });
+
+    it(`should work when no event is passed`, async function() {
+      const router = new Router();
+      const route = new Route(
+          () => true,
+          () => new Response(EXPECTED_RESPONSE_BODY),
+      );
+      router.registerRoute(route);
+
+      // route.match() always returns true, so the Request details don't matter.
+      const request = new Request(location);
+      const response = await router.handleRequest({request});
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
+    });
+
+    it(`should work when request and event.request are different`, async function() {
+      const router = new Router();
+      const route = new Route(
+          () => true,
+          ({url}) => {
+            // Ensure request (not event.request) is passed to the handler.
+            if (url.href !== 'https://unexpected.com') {
+              return new Response(EXPECTED_RESPONSE_BODY);
+            }
+          }
+      );
+      router.registerRoute(route);
+
+      // route.match() always returns true, so the Request details don't matter.
+      const request1 = new Request(location);
+      const request2 = new Request('https://unexpected.com');
+
+      const event = new FetchEvent('fetch', {request: request2});
+      const response = await router.handleRequest({request: request1, event});
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
     it(`should not return a response when there's no matching route and no default handler`, async function() {
@@ -317,8 +380,9 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent('fetch', {request: new Request(self.location)});
-      const response = router.handleRequest(event);
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      const response = await router.handleRequest({request, event});
 
       expect(response).not.to.exist;
     });
@@ -327,10 +391,41 @@ describe(`[workbox-routing] Router`, function() {
       const router = new Router();
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent('fetch', {request: new Request(`example://test.com`)});
-      const response = router.handleRequest(event);
+      const request = new Request(`example://test.com`);
+      const event = new FetchEvent('fetch', {request});
+      const response = router.handleRequest({request, event});
 
       expect(response).not.to.exist;
+    });
+
+    it(`should invoke route handlers with the correct arguments`, async function() {
+      const router = new Router();
+      const match = sandbox.stub()
+          .onCall(0).returns(true)
+          .onCall(1).returns([1, 2, 3]);
+
+      const handler = sandbox.stub().returns(new Response());
+
+      const route = new Route(match, handler);
+      router.registerRoute(route);
+
+      const url = new URL('/one', location);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+
+      await router.handleRequest({request});
+      await router.handleRequest({request, event});
+
+      expect(handler.callCount).to.equal(2);
+      expect(handler.firstCall.args[0].url).to.deep.equal(url);
+      expect(handler.firstCall.args[0].request).to.equal(request);
+      expect(handler.firstCall.args[0].event).to.equal(undefined);
+      expect(handler.firstCall.args[0].params).to.equal(undefined);
+
+      expect(handler.secondCall.args[0].url).to.deep.equal(url);
+      expect(handler.secondCall.args[0].request).to.equal(request);
+      expect(handler.secondCall.args[0].event).to.equal(event);
+      expect(handler.secondCall.args[0].params).to.deep.equal([1, 2, 3]);
     });
 
     it(`should result in params in handler`, function() {
@@ -348,8 +443,9 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent('fetch', {request: new Request(self.location)});
-      router.handleRequest(event);
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      router.handleRequest({request, event});
     });
 
     it(`should result in no params in handler`, function() {
@@ -366,8 +462,9 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent('fetch', {request: new Request(self.location)});
-      router.handleRequest(event);
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      router.handleRequest({request, event});
     });
 
     it(`should result in no params in handler for 'true'`, function() {
@@ -382,15 +479,157 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
 
       // route.match() always returns false, so the Request details don't matter.
-      const event = new FetchEvent('fetch', {request: new Request(self.location)});
-      router.handleRequest(event);
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      router.handleRequest({request, event});
     });
 
     it(`should not throw for router with no-routes set`, function() {
       const router = new Router();
 
-      const event = new FetchEvent('fetch', {request: new Request(self.location)});
-      router.handleRequest(event);
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      router.handleRequest({request, event});
+    });
+  });
+
+  describe(`findMatchingRoute()`, function() {
+    it(`should throw in dev when not passed a URL`, async function() {
+      if (process.env.NODE_ENV === 'production') return this.skip();
+
+      const router = new Router();
+      const url = new URL(location.href);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+
+      await expectError(
+          () => router.findMatchingRoute({request, event}),
+          'incorrect-class',
+          (error) => {
+            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+            expect(error.details).to.have.property('className').that.eql('Router');
+            expect(error.details).to.have.property('funcName').that.eql('findMatchingRoute');
+            expect(error.details).to.have.property('paramName').that.eql('options.url');
+          });
+    });
+
+    it(`should throw in dev when not passed a request`, async function() {
+      if (process.env.NODE_ENV === 'production') return this.skip();
+
+      const router = new Router();
+      const url = new URL(location.href);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+
+      await expectError(
+          () => router.findMatchingRoute({url, event}),
+          'incorrect-class',
+          (error) => {
+            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
+            expect(error.details).to.have.property('className').that.eql('Router');
+            expect(error.details).to.have.property('funcName').that.eql('findMatchingRoute');
+            expect(error.details).to.have.property('paramName').that.eql('options.request');
+          });
+    });
+
+    it(`should return the first matching route`, function() {
+      const router = new Router();
+
+      const match1 = sandbox.stub().returns(false);
+      const route1 = new Route(match1, () => new Response());
+      router.registerRoute(route1);
+
+      const match2 = sandbox.stub().returns(true);
+      const route2 = new Route(match2, () => new Response());
+      router.registerRoute(route2);
+
+      const match3 = sandbox.stub().returns(false);
+      const route3 = new Route(match2, () => new Response());
+      router.registerRoute(route3);
+
+      const url = new URL(location.href);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+
+      const {route} = router.findMatchingRoute({url, request, event});
+
+      expect(match1.callCount).to.equal(1);
+      expect(match2.callCount).to.equal(1);
+      expect(match3.callCount).to.equal(0);
+
+      expect(route).to.equal(route2);
+    });
+
+    it(`should invoke route match functions with the correct arguments`, function() {
+      const router = new Router();
+
+      const match1 = sandbox.stub().returns(false);
+      const route1 = new Route(match1, () => new Response());
+      router.registerRoute(route1);
+
+      const match2 = sandbox.stub().returns(true);
+      const route2 = new Route(match2, () => new Response());
+      router.registerRoute(route2);
+
+      const url = new URL(location.href);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+
+      const {route} = router.findMatchingRoute({url, request, event});
+
+      expect(match1.callCount).to.equal(1);
+      expect(match1.args[0][0].url).to.deep.equal(url);
+      expect(match1.args[0][0].request).to.equal(request);
+      expect(match1.args[0][0].event).to.equal(event);
+
+      expect(match2.callCount).to.equal(1);
+      expect(match2.args[0][0].url).to.deep.equal(url);
+      expect(match2.args[0][0].request).to.equal(request);
+      expect(match2.args[0][0].event).to.equal(event);
+
+      expect(route).to.equal(route2);
+    });
+
+    it(`should return the route and params (if applicable)`, function() {
+      const router = new Router();
+      const match = sandbox.stub()
+          .onCall(0).returns(true)
+          .onCall(1).returns('truthy')
+          .onCall(2).returns([1, 2, 3])
+          .onCall(3).returns([])
+          .onCall(4).returns({a: 1})
+          .onCall(5).returns({});
+
+      const route = new Route(match, () => new Response());
+      router.registerRoute(route);
+
+      const url = new URL(location.href);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+
+      const result1 = router.findMatchingRoute({url, request, event});
+      expect(result1.route).to.equal(route);
+      expect(result1.params).to.equal(undefined);
+
+      const result2 = router.findMatchingRoute({url, request, event});
+      expect(result2.route).to.equal(route);
+      expect(result2.params).to.equal(undefined);
+
+      const result3 = router.findMatchingRoute({url, request, event});
+      expect(result3.route).to.equal(route);
+      expect(result3.params).to.deep.equal([1, 2, 3]);
+
+      const result4 = router.findMatchingRoute({url, request, event});
+      expect(result4.route).to.equal(route);
+      expect(result4.params).to.equal(undefined);
+
+      const result5 = router.findMatchingRoute({url, request, event});
+      expect(result5.route).to.equal(route);
+      expect(result5.params).to.deep.equal({a: 1});
+
+      const result6 = router.findMatchingRoute({url, request, event});
+      expect(result6.route).to.equal(route);
+      expect(result6.params).to.equal(undefined);
     });
   });
 });

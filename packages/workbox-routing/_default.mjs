@@ -191,7 +191,8 @@ const router = new DefaultRouter();
 // By default, register a fetch event listener that will respond to a request
 // only if there's a matching route.
 self.addEventListener('fetch', (event) => {
-  const responsePromise = router.handleRequest(event);
+  const request = event.request;
+  const responsePromise = router.handleRequest({request, event});
   if (responsePromise) {
     event.respondWith(responsePromise);
   }

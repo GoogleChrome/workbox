@@ -19,9 +19,10 @@ describe(`[workbox-strategies] Usages with Router`, function() {
     it(`should show Router and '${StrategyClass.name}' will work together`, function() {
       const router = new Router();
       router.registerRoute(new Route(() => true, new StrategyClass()));
-      return router.handleRequest(new FetchEvent('fetch', {
-        request: new Request(self.location),
-      }));
+
+      const request = new Request(self.location);
+      const event = new FetchEvent('fetch', {request});
+      return router.handleRequest({request, event});
     });
   });
 });
