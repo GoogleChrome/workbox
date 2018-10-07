@@ -23,9 +23,10 @@
   },
   "workbox": {
     "browserNamespace": "workbox.googleAnalytics",
+    "outputFilename": "workbox-offline-ga",
     "packageType": "browser"
   },
-  "main": "build/workbox-google-analytics.prod.js",
+  "main": "build/workbox-offline-ga.prod.js",
   "module": "index.mjs",
   "dependencies": {
     "workbox-background-sync": "^3.6.2",

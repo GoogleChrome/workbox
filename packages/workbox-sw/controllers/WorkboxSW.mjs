@@ -16,7 +16,7 @@ const MODULE_KEY_TO_NAME_MAPPING = {
   cacheableResponse: 'cacheable-response',
   core: 'core',
   expiration: 'cache-expiration',
-  googleAnalytics: 'google-analytics',
+  googleAnalytics: 'offline-ga',
   navigationPreload: 'navigation-preload',
   precaching: 'precaching',
   rangeRequests: 'range-requests',
