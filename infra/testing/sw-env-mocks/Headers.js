@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 // Stub missing/broken Headers API methods in `service-worker-mock`.
 // https://fetch.spec.whatwg.org/#headers-class
 class Headers {

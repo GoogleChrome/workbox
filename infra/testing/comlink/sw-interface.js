@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 importScripts('/__WORKBOX/comlink.js');
 
 // TODO: Standardize on naming, and move over some of the legacy uses of
