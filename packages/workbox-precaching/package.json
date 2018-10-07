@@ -1,7 +1,7 @@
 {
   "name": "workbox-precaching",
   "version": "3.6.2",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "This module efficiently precaches assets.",
   "repository": "googlechrome/workbox",

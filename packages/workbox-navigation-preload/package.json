@@ -1,7 +1,7 @@
 {
   "name": "workbox-navigation-preload",
   "version": "3.6.2",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "This library allows developers to opt-in to using Navigation Preload in their service worker.",
   "repository": "googlechrome/workbox",

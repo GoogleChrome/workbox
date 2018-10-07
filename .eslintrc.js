@@ -107,7 +107,7 @@ module.exports = {
       'header',
     ],
     rules: {
-      'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google Inc.'}]
+      'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google LLC'}]
     }
   }],
 };

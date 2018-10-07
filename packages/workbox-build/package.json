@@ -15,7 +15,7 @@
     "node": ">=4.0.0"
   },
   "author": "Google's Web DevRel Team",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/GoogleChrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
