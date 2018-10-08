@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {initialize} from './initialize.mjs';
+
 import './_version.mjs';
 
-/**
- * @namespace workbox.googleAnalytics
- */
-
-export * from './_public.mjs';
+export {
+  initialize,
+};
