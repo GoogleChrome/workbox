@@ -16,6 +16,7 @@ const {
 } = require('shelving-mock-indexeddb');
 const URLSearchParams = require('url-search-params');
 const Blob = require('./sw-env-mocks/Blob');
+const DOMException = require('./sw-env-mocks/DOMException');
 const Event = require('./sw-env-mocks/Event');
 const {addEventListener, dispatchEvent} = require('./sw-env-mocks/event-listeners');
 const ExtendableEvent = require('./sw-env-mocks/ExtendableEvent');
@@ -39,6 +40,7 @@ global.self = global;
 // Add/fix globals not in 'service-worker-mock'.
 global.addEventListener = addEventListener;
 global.Blob = Blob;
+global.DOMException = DOMException;
 global.dispatchEvent = dispatchEvent;
 global.Event = Event;
 global.ExtendableEvent = ExtendableEvent;

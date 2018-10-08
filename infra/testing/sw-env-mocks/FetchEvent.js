@@ -22,9 +22,17 @@ class FetchEvent extends ExtendableEvent {
     this.request = init.request;
     this.clientId = init.clientId || null;
     this.isReload = init.isReload || false;
+
+    this._respondWithEnteredFlag = false;
   }
 
   respondWith(promise) {
+    if (this._respondWithEnteredFlag) {
+      throw new DOMException(`Failed to execute 'respondWith' on ` +
+          `'FetchEvent': The event has already been responded to.`);
+    }
+    this._respondWithEnteredFlag = true;
+
     this._extendLifetimePromises.add(promise);
   }
 }
