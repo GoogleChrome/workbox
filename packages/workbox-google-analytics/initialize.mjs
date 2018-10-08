@@ -192,10 +192,11 @@ const initialize = (options = {}) => {
     router.registerRoute(route);
   }
 
-  self.addEventListener('fetch', (evt) => {
-    const responsePromise = router.handleRequest(evt);
+  self.addEventListener('fetch', (event) => {
+    const {request} = event;
+    const responsePromise = router.handleRequest({request, event});
     if (responsePromise) {
-      evt.respondWith(responsePromise);
+      event.respondWith(responsePromise);
     }
   });
 };

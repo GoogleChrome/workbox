@@ -49,20 +49,21 @@ describe(`[workbox-routing] Default Router`, function() {
       const route = defaultRouter.registerRoute('/abc', handlerSpy);
       expect(route).to.be.an.instanceof(Route);
 
-      const event = new FetchEvent('fetch', {
-        request: new Request(
-            new URL('/abc', self.location).toString()
-        ),
-      });
-      await defaultRouter.handleRequest(event);
+      const url = new URL('/abc', location);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+
+      await defaultRouter.handleRequest({request, event});
 
       expect(handlerSpy.callCount).to.equal(1);
+      expect(handlerSpy.getCall(0).args[0].url).to.deep.equal(url);
+      expect(handlerSpy.getCall(0).args[0].request).to.equal(request);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(event);
 
       sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(route);
-      await defaultRouter.handleRequest(event);
+      await defaultRouter.handleRequest({request, event});
       expect(handlerSpy.callCount).to.equal(0);
     });
 
@@ -75,34 +76,49 @@ describe(`[workbox-routing] Default Router`, function() {
       const route = defaultRouter.registerRoute(pathname, handlerSpy);
       expect(route).to.be.an.instanceof(Route);
 
-      const sameOriginEvent = new FetchEvent('fetch', {
-        request: new Request(
-            new URL(pathname, self.location).toString()
-        ),
-      });
-      await defaultRouter.handleRequest(sameOriginEvent);
+      const sameOriginUrl = new URL(pathname, location);
+      const sameOriginRequest = new Request(sameOriginUrl);
+      const sameOriginEvent =
+          new FetchEvent('fetch', {request: sameOriginRequest});
 
-      const sameOriginEventNotMatching = new FetchEvent('fetch', {
-        request: new Request(
-            new URL('/does/not/match', self.location).toString()
-        ),
+      await defaultRouter.handleRequest({
+        request: sameOriginRequest,
+        event: sameOriginEvent,
       });
-      await defaultRouter.handleRequest(sameOriginEventNotMatching);
 
-      const crossOriginEvent = new FetchEvent('fetch', {
-        request: new Request(
-            new URL(pathname, crossOrigin).toString()
-        ),
+      const sameOriginUrlNotMatching = new URL('/does/not/match', location);
+      const sameOriginRequestNotMatching =
+          new Request(sameOriginUrlNotMatching);
+      const sameOriginEventNotMatching =
+          new FetchEvent('fetch', {request: sameOriginRequestNotMatching});
+
+      await defaultRouter.handleRequest({
+        request: sameOriginRequestNotMatching,
+        event: sameOriginEventNotMatching,
       });
-      await defaultRouter.handleRequest(crossOriginEvent);
+
+      const crossOriginUrl = new URL(pathname, crossOrigin);
+      const crossOriginRequest = new Request(crossOriginUrl);
+      const crossOriginEvent =
+          new FetchEvent('fetch', {request: crossOriginRequest});
+
+      await defaultRouter.handleRequest({
+        request: crossOriginRequest,
+        event: crossOriginEvent,
+      });
 
       expect(handlerSpy.callCount).to.equal(1);
-      expect(handlerSpy.getCall(0).args[0].event).to.equal(sameOriginEvent);
+      expect(handlerSpy.firstCall.args[0].url).to.deep.equal(sameOriginUrl);
+      expect(handlerSpy.firstCall.args[0].request).to.equal(sameOriginRequest);
+      expect(handlerSpy.firstCall.args[0].event).to.equal(sameOriginEvent);
 
       sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(route);
-      await defaultRouter.handleRequest(sameOriginEvent);
+      await defaultRouter.handleRequest({
+        request: sameOriginRequest,
+        event: crossOriginEvent,
+      });
       expect(handlerSpy.callCount).to.equal(0);
     });
 
@@ -115,27 +131,37 @@ describe(`[workbox-routing] Default Router`, function() {
       const route = defaultRouter.registerRoute(`${crossOrigin}${pathname}`, handlerSpy);
       expect(route).to.be.an.instanceof(Route);
 
-      const sameOriginEvent = new FetchEvent('fetch', {
-        request: new Request(
-            new URL(pathname, self.location).toString()
-        ),
-      });
-      await defaultRouter.handleRequest(sameOriginEvent);
+      const sameOriginUrl = new URL(pathname, location);
+      const sameOriginRequest = new Request(sameOriginUrl);
+      const sameOriginEvent =
+          new FetchEvent('fetch', {request: sameOriginRequest});
 
-      const crossOriginEvent = new FetchEvent('fetch', {
-        request: new Request(
-            new URL(pathname, crossOrigin).toString()
-        ),
+      await defaultRouter.handleRequest({
+        request: sameOriginRequest,
+        event: sameOriginEvent,
       });
-      await defaultRouter.handleRequest(crossOriginEvent);
+
+      const crossOriginUrl = new URL(pathname, crossOrigin);
+      const crossOriginRequest = new Request(crossOriginUrl);
+      const crossOriginEvent =
+          new FetchEvent('fetch', {request: crossOriginRequest});
+
+      await defaultRouter.handleRequest({
+        request: crossOriginRequest,
+        event: crossOriginEvent,
+      });
 
       expect(handlerSpy.callCount).to.equal(1);
-      expect(handlerSpy.getCall(0).args[0].event).to.equal(crossOriginEvent);
-
+      expect(handlerSpy.args[0][0].url).to.deep.equal(crossOriginUrl);
+      expect(handlerSpy.args[0][0].request).to.equal(crossOriginRequest);
+      expect(handlerSpy.args[0][0].event).to.equal(crossOriginEvent);
       sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(route);
-      await defaultRouter.handleRequest(crossOriginEvent);
+      await defaultRouter.handleRequest({
+        request: crossOriginRequest,
+        event: crossOriginEvent,
+      });
       expect(handlerSpy.callCount).to.equal(0);
     });
 
@@ -145,45 +171,46 @@ describe(`[workbox-routing] Default Router`, function() {
       const route = defaultRouter.registerRoute(/.*/, handlerSpy);
       expect(route).to.be.an.instanceof(RegExpRoute);
 
-      const event = new FetchEvent('fetch', {
-        request: new Request(
-            new URL('/', self.location).toString()
-        ),
-      });
-      await defaultRouter.handleRequest(event);
+      const url = new URL('/', location);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+      await defaultRouter.handleRequest({request, event});
 
       expect(handlerSpy.callCount).to.equal(1);
+      expect(handlerSpy.getCall(0).args[0].url).to.deep.equal(url);
+      expect(handlerSpy.getCall(0).args[0].request).to.equal(request);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(event);
 
       sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(route);
-      await defaultRouter.handleRequest(event);
+      await defaultRouter.handleRequest({request, event});
       expect(handlerSpy.callCount).to.equal(0);
     });
 
     it(`should handle a function for input and return a route that can be unregistered.`, async function() {
-      const captureSpy = sandbox.stub().callsFake(() => true);
+      const captureSpy = sandbox.stub().returns(true);
       const handlerSpy = sandbox.spy();
 
       const route = defaultRouter.registerRoute(captureSpy, handlerSpy);
       expect(route).to.be.an.instanceof(Route);
 
-      const event = new FetchEvent('fetch', {
-        request: new Request(
-            new URL('/', self.location).toString()
-        ),
-      });
-      await defaultRouter.handleRequest(event);
+      const url = new URL('/', location);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+
+      await defaultRouter.handleRequest({request, event});
 
       expect(captureSpy.callCount).to.equal(1);
       expect(handlerSpy.callCount).to.equal(1);
+      expect(handlerSpy.getCall(0).args[0].url).to.deep.equal(url);
+      expect(handlerSpy.getCall(0).args[0].request).to.equal(request);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(event);
 
       sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(route);
-      await defaultRouter.handleRequest(event);
+      await defaultRouter.handleRequest({request, event});
       expect(captureSpy.callCount).to.equal(0);
       expect(handlerSpy.callCount).to.equal(0);
     });
@@ -202,21 +229,22 @@ describe(`[workbox-routing] Default Router`, function() {
       const outputRoute = defaultRouter.registerRoute(inputRoute);
       expect(outputRoute).to.equal(inputRoute);
 
-      const event = new FetchEvent('fetch', {
-        request: new Request(
-            new URL('/', self.location).toString()
-        ),
-      });
-      await defaultRouter.handleRequest(event);
+      const url = new URL('/', location);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+
+      await defaultRouter.handleRequest({request, event});
 
       expect(captureSpy.callCount).to.equal(1);
       expect(handlerSpy.callCount).to.equal(1);
+      expect(handlerSpy.getCall(0).args[0].url).to.deep.equal(url);
+      expect(handlerSpy.getCall(0).args[0].request).to.equal(request);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(event);
 
       sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(outputRoute);
-      await defaultRouter.handleRequest(event);
+      await defaultRouter.handleRequest({request, event});
       expect(captureSpy.callCount).to.equal(0);
       expect(handlerSpy.callCount).to.equal(0);
     });
@@ -228,20 +256,20 @@ describe(`[workbox-routing] Default Router`, function() {
       const outputRoute = defaultRouter.registerRoute(inputRoute);
       expect(outputRoute).to.equal(inputRoute);
 
-      const event = new FetchEvent('fetch', {
-        request: new Request(
-            new URL('/', self.location).toString()
-        ),
-      });
-      await defaultRouter.handleRequest(event);
+      const url = new URL('/', location);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
 
+      await defaultRouter.handleRequest({request, event});
       expect(handlerSpy.callCount).to.equal(1);
+      expect(handlerSpy.getCall(0).args[0].url).to.deep.equal(url);
+      expect(handlerSpy.getCall(0).args[0].request).to.equal(request);
       expect(handlerSpy.getCall(0).args[0].event).to.equal(event);
 
       sandbox.resetHistory();
 
       defaultRouter.unregisterRoute(outputRoute);
-      await defaultRouter.handleRequest(event);
+      await defaultRouter.handleRequest({request, event});
       expect(handlerSpy.callCount).to.equal(0);
     });
 
@@ -351,14 +379,13 @@ describe(`[workbox-routing] Default Router`, function() {
     it(`should not call event methods for no route`, function() {
       sandbox.spy(defaultRouter, 'handleRequest');
 
-      const fetchEvent = new FetchEvent('fetch', {
-        request: new Request(new URL('/random/navigation.html', self.location)),
-      });
-      sandbox.stub(fetchEvent, 'respondWith');
-      self.dispatchEvent(fetchEvent);
+      const url = new URL('/random/navigation.html', location);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+      sandbox.stub(event, 'respondWith');
+      self.dispatchEvent(event);
       expect(defaultRouter.handleRequest.callCount).to.equal(1);
-      expect(defaultRouter.handleRequest.args[0][0]).to.equal(fetchEvent);
-      expect(fetchEvent.respondWith.callCount).to.equal(0);
+      expect(event.respondWith.callCount).to.equal(0);
     });
 
     it(`should pass Fetch Events to router.handleRequest`, function() {
@@ -367,19 +394,21 @@ describe(`[workbox-routing] Default Router`, function() {
       const injectResponse = new Response(`Injected Response`);
       defaultRouter.registerRoute(/./, () => injectResponse);
 
-      const fetchEvent = new FetchEvent(
-          'fetch', {
-            request: new Request(new URL('/random/navigation.html', self.location)),
-          });
+      const url = new URL('/random/navigation.html', location);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+
       return new Promise((resolve) => {
-        sandbox.stub(fetchEvent, 'respondWith').callsFake((response) => {
+        sandbox.stub(event, 'respondWith').callsFake((response) => {
           expect(response).to.equal(injectResponse);
           resolve();
         });
-        self.dispatchEvent(fetchEvent);
+        self.dispatchEvent(event);
         expect(defaultRouter.handleRequest.callCount).to.equal(1);
-        expect(defaultRouter.handleRequest.args[0][0]).to.equal(fetchEvent);
-        expect(fetchEvent.respondWith.callCount).to.equal(1);
+        expect(defaultRouter.handleRequest.args[0][0].url).to.deep.equal(url);
+        expect(defaultRouter.handleRequest.args[0][0].request).to.equal(request);
+        expect(defaultRouter.handleRequest.args[0][0].event).to.equal(event);
+        expect(event.respondWith.callCount).to.equal(1);
       });
     });
   });

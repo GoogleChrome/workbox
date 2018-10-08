@@ -56,23 +56,14 @@ class CacheFirst {
    * [Workbox Router]{@link workbox.routing.Router}.
    *
    * @param {Object} options
-   * @param {FetchEvent} options.event The fetch event to run this strategy
-   * against.
+   * @param {Request} options.request The request to run this strategy for.
+   * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event}) {
-    if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(event, FetchEvent, {
-        moduleName: 'workbox-strategies',
-        className: 'CacheFirst',
-        funcName: 'handle',
-        paramName: 'event',
-      });
-    }
-
+  async handle({event, request}) {
     return this.makeRequest({
       event,
-      request: event.request,
+      request: request || event.request,
     });
   }
 
