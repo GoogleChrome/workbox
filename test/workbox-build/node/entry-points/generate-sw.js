@@ -116,7 +116,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
         suppressWarnings: [[]],
@@ -137,7 +137,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
       }});
     });
@@ -152,7 +152,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
 
       // Validate the copied library files.
       const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
@@ -243,7 +243,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
       }});
     });
@@ -283,7 +283,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL], [...importScripts]],
         suppressWarnings: [[]],
@@ -304,7 +304,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
       }});
     });
@@ -326,7 +326,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
         clientsClaim: [[]],
@@ -350,7 +350,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {directoryIndex, ignoreUrlParametersMatching}]],
       }});
     });
@@ -368,7 +368,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
         suppressWarnings: [[]],
@@ -389,7 +389,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         registerNavigationRoute: [[navigateFallback, {
           whitelist: navigateFallbackWhitelist,
@@ -411,7 +411,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
         suppressWarnings: [[]],
@@ -432,7 +432,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'link/webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
       }});
     });
@@ -452,7 +452,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(4);
-      expect(size).to.eql(2352);
+      expect(size).to.eql(2535);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
         suppressWarnings: [[]],
@@ -467,7 +467,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
         }, {
           url: 'link/webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
       }});
     });
@@ -482,7 +482,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
         suppressWarnings: [[]],
@@ -503,7 +503,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         googleAnalyticsInitialize: [[{}]],
       }});
@@ -523,7 +523,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
         suppressWarnings: [[]],
@@ -544,7 +544,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         googleAnalyticsInitialize: [[{
           parameterOverrides: {
@@ -623,7 +623,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
@@ -645,7 +645,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         registerRoute: [[STRING_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
       }});
@@ -687,7 +687,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[{
           cacheName: firstRuntimeCachingOptions.cacheName,
@@ -717,7 +717,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         registerRoute: [
           [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
@@ -771,7 +771,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[runtimeCachingOptions]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
@@ -793,7 +793,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         registerRoute: [
           [REGEXP_URL_PATTERN, handler, DEFAULT_METHOD],

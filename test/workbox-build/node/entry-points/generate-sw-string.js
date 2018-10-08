@@ -174,7 +174,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }].concat(additionalManifestEntries), {}]],
       }});
     });
