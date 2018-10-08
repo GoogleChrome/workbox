@@ -101,13 +101,16 @@ module.exports = {
     },
   }, {
     files: [
+      'gulp-tasks/**/*.{mjs,js}',
+      'infra/**/*.{mjs,js}',
       'packages/**/*.{mjs,js}',
+      'test/**/*.{mjs,js}',
     ],
     plugins: [
       'header',
     ],
     rules: {
-      'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google Inc.'}]
+      'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google LLC'}]
     }
   }],
 };

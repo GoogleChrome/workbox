@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 // Get the data for precached details from IDB via the window.
 module.exports = (dbName) => {
   return global.__workbox.webdriver.executeAsyncScript((dbName, cb) => {

@@ -1,7 +1,7 @@
 {
   "name": "workbox-range-requests",
   "version": "3.6.2",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "This library creates a new Response, given a source Response and a Range header value.",
   "repository": "googlechrome/workbox",

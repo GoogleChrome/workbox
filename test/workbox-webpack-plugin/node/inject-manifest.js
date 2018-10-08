@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const expect = require('chai').expect;
@@ -144,7 +152,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Ensure only one precache-manifest is present on re-compile`, function() {
     it(`should only have one reference to precache-manifest file in 'importScripts'`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.b39ca1abe3989f45413fde6b30bf66ce.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.afaa1016313821cd74bbe81a9cf68406.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -197,9 +205,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-110d00bd401d8778e907.js',
+            url: 'entry2-aa21f43434f29ed0c946.js',
           }, {
-            url: 'entry1-8aeabb1dad51a77ff510.js',
+            url: 'entry1-43ba396bf52f8419e349.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -218,7 +226,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] multiple chunks`, function() {
     it(`should work when called with just swSrc`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.b39ca1abe3989f45413fde6b30bf66ce.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.afaa1016313821cd74bbe81a9cf68406.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -265,9 +273,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-110d00bd401d8778e907.js',
+            url: 'entry2-aa21f43434f29ed0c946.js',
           }, {
-            url: 'entry1-8aeabb1dad51a77ff510.js',
+            url: 'entry1-43ba396bf52f8419e349.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -279,8 +287,8 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should support setting importWorkboxFrom to a chunk's name`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.0ab727619afd560b19a9f5bfd2c50ba7.js';
-      const workboxEntryName = 'workboxEntry-acb97be66d4f295c47bd.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.4b8f8eed0501cb79a5e4c7a1d3ffab4e.js';
+      const workboxEntryName = 'workboxEntry-278b92112247f26eee29.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -329,9 +337,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-80c8ec4fa520b837739f.js',
+            url: 'entry2-3b4a9899eba6f4fd5880.js',
           }, {
-            url: 'entry1-65ad51e0418fe6d0d16b.js',
+            url: 'entry1-46499ea335097c2d5d28.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -343,7 +351,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should support setting importWorkboxFrom to 'local'`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.b39ca1abe3989f45413fde6b30bf66ce.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.afaa1016313821cd74bbe81a9cf68406.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -408,9 +416,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-110d00bd401d8778e907.js',
+            url: 'entry2-aa21f43434f29ed0c946.js',
           }, {
-            url: 'entry1-8aeabb1dad51a77ff510.js',
+            url: 'entry1-43ba396bf52f8419e349.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -422,7 +430,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should support setting importWorkboxFrom to 'local', and respect output.publicPath`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.1d5056cb0b8c8fc37c01f6cd82de3ee2.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.b2ca7948c6274f6b544b6a0da937eba4.js';
       const outputDir = tempy.directory();
       const publicPath = 'https://testing.path/';
       const config = {
@@ -489,9 +497,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: publicPath + 'entry2-2a4f7a7a50ef0ba22617.js',
+            url: publicPath + 'entry2-8d8a1f68d7c9228297f7.js',
           }, {
-            url: publicPath + 'entry1-afdaed1260caa734342e.js',
+            url: publicPath + 'entry1-c73732760e80d16a013d.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -503,7 +511,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should respect output.publicPath if importWorkboxFrom is set to a Webpack chunk name`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.7247bf0bbc5f11658c5a3dfb5bde25b1.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.bbadb5d9c5bcdc1c0edb55897633dd31.js';
       const publicPath = 'https://testing.path/';
       const workboxChunkName = 'workbox-sw-chunk-name';
 
@@ -544,7 +552,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[
               publicPath + FILE_MANIFEST_NAME,
-              `${publicPath}${workboxChunkName}-521326ec02320821ce1a.js`,
+              `${publicPath}${workboxChunkName}-b4583c3e0a4a5742f951.js`,
             ]],
             suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
@@ -557,9 +565,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: publicPath + 'entry2-62e5cdd65853608468dd.js',
+            url: publicPath + 'entry2-25d6cc8b45fddaea2b18.js',
           }, {
-            url: publicPath + 'entry1-b53a11360dd71ca4d75e.js',
+            url: publicPath + 'entry1-7d47d02fbbf24d385c40.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -571,7 +579,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should honor the 'chunks' whitelist config`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.0ab727619afd560b19a9f5bfd2c50ba7.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.4b8f8eed0501cb79a5e4c7a1d3ffab4e.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -620,9 +628,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-80c8ec4fa520b837739f.js',
+            url: 'entry2-3b4a9899eba6f4fd5880.js',
           }, {
-            url: 'entry1-65ad51e0418fe6d0d16b.js',
+            url: 'entry1-46499ea335097c2d5d28.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -634,7 +642,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should honor the 'excludeChunks' blacklist config`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.0ab727619afd560b19a9f5bfd2c50ba7.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.4b8f8eed0501cb79a5e4c7a1d3ffab4e.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -683,9 +691,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-80c8ec4fa520b837739f.js',
+            url: 'entry2-3b4a9899eba6f4fd5880.js',
           }, {
-            url: 'entry1-65ad51e0418fe6d0d16b.js',
+            url: 'entry1-46499ea335097c2d5d28.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -697,7 +705,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should honor setting both the 'chunks' and 'excludeChunks', with the blacklist taking precedence`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.d968dc3de6b4700f035fcfd2f6d9e1c1.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.3ab1df6ebdb6a621237f642455ee53a8.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -747,7 +755,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry1-65ad51e0418fe6d0d16b.js',
+            url: 'entry1-46499ea335097c2d5d28.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -761,7 +769,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] html-webpack-plugin and a single chunk`, function() {
     it(`should work when called with just swSrc`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.8d39ec2607aea8245840df761986dad6.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.d69e64fa976e4523cff05b9fc652c66c.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -809,12 +817,12 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'dbc2f1b29b88e3af1407a7608be20f69',
+            revision: 'ebc41a064b42558847b35b3ec152df5d',
             url: 'index.html',
           }, {
-            url: 'entry2-110d00bd401d8778e907.js',
+            url: 'entry2-aa21f43434f29ed0c946.js',
           }, {
-            url: 'entry1-8aeabb1dad51a77ff510.js',
+            url: 'entry1-43ba396bf52f8419e349.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -826,7 +834,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should honor a custom swDest and publicPath`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.6ac68f5f4c77895e4a29ffe80cfec342.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.2d9e61add181ea83e1472128f9f83dd3.js';
       const SW_DEST = 'custom-sw-dest.js';
       const publicPath = '/testing/';
 
@@ -879,12 +887,12 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'c63f574845712f6fc5d120f9e99505c0',
+            revision: 'e1dfe0f4b815ec55fa14b23d81d0c197',
             url: publicPath + 'index.html',
           }, {
-            url: publicPath + 'entry2-06786966b758acc5bba8.js',
+            url: publicPath + 'entry2-012f54e540de3acc4953.js',
           }, {
-            url: publicPath + 'entry1-6f947b835686029a65bf.js',
+            url: publicPath + 'entry1-ba13ed1ddfea8670e1e0.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -896,7 +904,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should support passing options through to workbox-build.getManifest() to precache additional files`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.0b2c45f75a1a30b044067724d5d0d9fb.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.31755838840b51c1b4eba88c3bbe54bb.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -949,12 +957,12 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'dbc2f1b29b88e3af1407a7608be20f69',
+            revision: 'ebc41a064b42558847b35b3ec152df5d',
             url: 'index.html',
           }, {
-            url: 'entry2-110d00bd401d8778e907.js',
+            url: 'entry2-aa21f43434f29ed0c946.js',
           }, {
-            url: 'entry1-8aeabb1dad51a77ff510.js',
+            url: 'entry1-43ba396bf52f8419e349.js',
           }, {
             revision: '5cfecbd12c9fa32f03eafe27e2ac798e',
             url: '/shell',
@@ -971,7 +979,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] copy-webpack-plugin and a single chunk`, function() {
     it(`should work when called with just swSrc`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.f6ff560a0d90fc5997e3c6211566cfd7.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.1e9aeed006e3e09b241faf4afb8d2cfa.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1019,7 +1027,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'a71a1690cf3d141db4ba',
+            revision: '305798792eeffe140f78',
             url: 'webpackEntry.js',
           }, {
             revision: '884f6853a4fc655e4c2dc0c0f27a227c',
@@ -1055,7 +1063,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Filtering via test/include/exclude`, function() {
     it(`should exclude .map and manifest.js files by default`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.6baa7f185013b0f515babaf6ea5f3ec3.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.82d9f27b442b5218244a0c9491e287c0.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1103,7 +1111,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'a71a1690cf3d141db4ba',
+            revision: '305798792eeffe140f78',
             url: 'webpackEntry.js',
           }, {
             revision: 'aef75af28f6de0771a8d6bae84d9e71d',
@@ -1122,7 +1130,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should allow developers to override the default exclude filter`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.88163dc5f160519be44110c2c9d2f0b7.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.d91063e939edda5be4d6e1093eeac5ec.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1168,10 +1176,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'a71a1690cf3d141db4ba',
+            revision: '305798792eeffe140f78',
             url: 'webpackEntry.js.map',
           }, {
-            revision: 'a71a1690cf3d141db4ba',
+            revision: '305798792eeffe140f78',
             url: 'webpackEntry.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
@@ -1322,7 +1330,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] swDest variations`, function() {
     it(`should work when swDest is an absolute path`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.d47fa1b48905d6942559b5807adc9c79.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.aec0313ed4dacd1c4b8981f195bf9f33.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1368,7 +1376,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'a71a1690cf3d141db4ba',
+            revision: '305798792eeffe140f78',
             url: 'webpackEntry.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
@@ -1383,7 +1391,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Reporting webpack warnings`, function() {
     it(`should add warnings from the workbox-build methods to compilation.warnings`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.d5bf7d4c02fd3a7c0c7a7ea85616aad4.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.a4dd3e7398938bcb6409dcaea4ae8ec1.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1416,7 +1424,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
         try {
           const statsJson = stats.toJson('verbose');
-          expect(statsJson.warnings).to.have.lengthOf(6);
+          expect(statsJson.warnings).to.have.lengthOf(7);
 
           const swFile = path.join(outputDir, path.basename(SW_SRC));
 
@@ -1437,16 +1445,13 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'edeab2a4c398a3f25d7b92bedea10d31',
-            url: 'webpackEntry.js',
-          }, {
             revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
             url: 'page-2.html',
           }, {
             revision: '544658ab25ee8762dc241e8b1c5ed96d',
             url: 'page-1.html',
           }, {
-            url: 'entry1-5dac94ada0ec0d6e325c.js',
+            url: 'entry1-534729ef1c2ff611b64f.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -1458,7 +1463,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should add a warning when various glob-related options are set`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.01a9603fb6b682f58e762e7c56908293.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.753ba80b7b356860e9c3f460962cdc00.js';
       const outputDir = tempy.directory();
       const globOptionsToWarnAbout = [
         'globDirectory',
@@ -1529,7 +1534,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
             url: 'index.html',
           }, {
-            url: 'entry1-5dac94ada0ec0d6e325c.js',
+            url: 'entry1-534729ef1c2ff611b64f.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -1541,7 +1546,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should add a warning when certain options are used, but globPatterns isn't set`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.8e9067f6cf460472279bdcea2b06d22c.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.0588874b96c8001cce24ccd935d947f0.js';
       const outputDir = tempy.directory();
       const optionsToWarnAboutWhenGlobPatternsIsNotSet = [
         'dontCacheBustUrlsMatching',
@@ -1601,7 +1606,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry1-5dac94ada0ec0d6e325c.js',
+            url: 'entry1-534729ef1c2ff611b64f.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -1615,7 +1620,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Customizing output paths and names`, function() {
     it(`should allow overriding precacheManifestFilename`, function(done) {
-      const FILE_MANIFEST_NAME = 'custom-name.8e9067f6cf460472279bdcea2b06d22c.js';
+      const FILE_MANIFEST_NAME = 'custom-name.0588874b96c8001cce24ccd935d947f0.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1664,7 +1669,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry1-5dac94ada0ec0d6e325c.js',
+            url: 'entry1-534729ef1c2ff611b64f.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -1676,7 +1681,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should allow setting importsDirectory`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.8e9067f6cf460472279bdcea2b06d22c.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.0588874b96c8001cce24ccd935d947f0.js';
       const outputDir = tempy.directory();
       const importsDirectory = path.join('one', 'two');
       const config = {
@@ -1727,7 +1732,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry1-5dac94ada0ec0d6e325c.js',
+            url: 'entry1-534729ef1c2ff611b64f.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -1739,7 +1744,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should allow setting importsDirectory, publicPath, and importWorkboxFrom: 'local'`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.3fa4b0ec2d654242fa39a17bbed207b8.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.ef6ef924c8c87cec1daeb65a41ca7b54.js';
       const outputDir = tempy.directory();
       const importsDirectory = path.join('one', 'two');
       const publicPath = '/testing/';
@@ -1810,7 +1815,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: publicPath + 'entry1-5849069f3e4ba95218db.js',
+            url: publicPath + 'entry1-4357f117964871c288d9.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
