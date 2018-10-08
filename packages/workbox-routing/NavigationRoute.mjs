@@ -74,7 +74,6 @@ class NavigationRoute extends Route {
    * @param {Object} options
    * @param {URL} options.url
    * @param {Request} options.request
-   * @param {Event} [options.event]
    * @return {boolean}
    *
    * @private
