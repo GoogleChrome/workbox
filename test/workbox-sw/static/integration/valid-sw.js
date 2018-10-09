@@ -7,6 +7,9 @@
 */
 
 importScripts('/__WORKBOX/buildFile/workbox-sw');
+importScripts('/infra/testing/comlink/sw-interface.js');
+
+workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
 
 // TODO: Find some way to autogenerate this list.
 const namespaces = [

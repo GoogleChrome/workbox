@@ -8,13 +8,11 @@
 
 import {expect} from 'chai';
 import sinon from 'sinon';
-import path from 'path';
-import fs from 'fs-extra';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 import WorkboxSW from '../../../packages/workbox-sw/controllers/WorkboxSW.mjs';
-import getPackagesOfType from '../../../gulp-tasks/utils/get-packages-of-type';
+import {getPackages} from '../../../gulp-tasks/utils/get-packages';
+import {outputFilenameToPkgMap} from '../../../gulp-tasks/utils/output-filename-to-package-map';
 
-const ROOT_DIR = path.join(__dirname, '..', '..', '..');
 
 describe(`[workbox-sw] WorkboxSW`, function() {
   let sandbox = sinon.createSandbox();
@@ -30,11 +28,12 @@ describe(`[workbox-sw] WorkboxSW`, function() {
         return;
       }
 
-      const packageName = match[1];
-      const pkgJson = fs.readJSONSync(path.join(ROOT_DIR, 'packages', packageName, 'package.json'));
-      const namespace = pkgJson.workbox.browserNamespace.split('.')[1];
+      const outputFilename = match[1];
+      const pkg = outputFilenameToPkgMap[outputFilename];
+
+      const namespace = pkg.workbox.browserNamespace.split('.')[1];
       self.workbox[namespace] = {
-        injectedMsg: `Injected value for ${packageName}.`,
+        injectedMsg: `Injected value for ${pkg.name}.`,
       };
     });
   });
@@ -231,12 +230,9 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
   });
 
-  const browserPackages = getPackagesOfType(ROOT_DIR, 'browser');
-  browserPackages.forEach((pkgName) => {
-    const pkg = fs.readJSONSync(path.join(ROOT_DIR, 'packages', pkgName, 'package.json'));
-    if (pkg.workbox.browserNamespace === 'workbox') {
-      return;
-    }
+  getPackages({type: 'browser'}).forEach((pkg) => {
+    // Don't test workbox-sw, which exports the `workbox` namespace.
+    if (pkg.workbox.browserNamespace === 'workbox') return;
 
     describe(`get ${pkg.workbox.browserNamespace}`, function() {
       it(`should return ${pkg.workbox.browserNamespace}`, function() {

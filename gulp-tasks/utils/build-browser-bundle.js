@@ -120,16 +120,18 @@ module.exports = (packagePath, buildType) => {
     return Promise.reject(ERROR_NO_NAMSPACE + ' ' + packageName);
   }
 
-  let outputFilename = `${packageName}.${buildType.slice(0, 4)}.js`;
+  let outputFilename = pkgJson.workbox.outputFilename || packageName;
   if (pkgJson.workbox.prodOnly) {
     // Bail out early if this is a non-prod build.
     if (buildType !== constants.BUILD_TYPES.prod) {
       return Promise.resolve();
     }
-    // If it is a prod build, then we don't have to bother including the
-    // buildType in the filename, since there is no dev build.
-    outputFilename = `${packageName}.js`;
+  } else {
+    // Prod-only builds (above) don't need the build type, but when there's a
+    // dev and prod build we have to include it.
+    outputFilename += `.${buildType.slice(0, 4)}`;
   }
+  outputFilename += '.js';
 
   const namespace = pkgJson.workbox.browserNamespace;
   const outputDirectory = path.join(packagePath,

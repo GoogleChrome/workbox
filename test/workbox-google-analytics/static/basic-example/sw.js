@@ -6,13 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-/* globals workbox */
+importScripts('/__WORKBOX/buildFile/workbox-sw');
+importScripts('/infra/testing/comlink/sw-interface.js');
 
-importScripts('/__WORKBOX/buildFile/workbox-core');
-importScripts('/__WORKBOX/buildFile/workbox-background-sync');
-importScripts('/__WORKBOX/buildFile/workbox-routing');
-importScripts('/__WORKBOX/buildFile/workbox-strategies');
-importScripts('/__WORKBOX/buildFile/workbox-google-analytics');
+workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
 
 // Spy on .fetch() calls from inside the service worker.
 // If `simulateOffline` is set to true, throw a network error.
