@@ -13,7 +13,7 @@ const archiver = require('archiver');
 const oneLine = require('common-tags').oneLine;
 
 const constants = require('./constants');
-const {getPackages} = require('./get-packages');
+const {outputFilenameToPkgMap} = require('./output-filename-to-package-map');
 const logHelper = require('../../infra/utils/log-helper');
 const spawn = require('./spawn-promise-wrapper');
 
@@ -106,10 +106,8 @@ const groupBuildFiles = async (tagName, gitBranch) => {
 
     const sourceCodePath = path.join(getBuildPath(tagName), SOURCE_CODE_DIR);
 
-    const browserPackages = getPackages({
-      type: 'browser',
-      root: sourceCodePath,
-    });
+    const browserPackages = Object.values(outputFilenameToPkgMap)
+        .map((item) => item.name);
 
     const pattern = path.posix.join(
         sourceCodePath, 'packages', `{${browserPackages.join(',')}}`,
