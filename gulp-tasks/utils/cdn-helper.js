@@ -83,7 +83,7 @@ class CDNHelper {
     for (const filePath of filePaths) {
       const destination =
         `${this._getReleaseTagPath(tagName)}/${path.basename(filePath)}`;
-        
+
       try {
         await bucket.upload(filePath, {
           destination,
