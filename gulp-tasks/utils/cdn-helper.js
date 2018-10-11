@@ -10,7 +10,7 @@ const {oneLine} = require('common-tags');
 const fs = require('fs-extra');
 const glob = require('glob');
 const path = require('path');
-const storage = require('@google-cloud/storage');
+const {Storage} = require('@google-cloud/storage');
 
 const cdnDetails = require('../../cdn-details.json');
 const logHelper = require('../../infra/utils/log-helper');
@@ -44,7 +44,7 @@ class CDNHelper {
         throw new Error(errorMessage);
       }
 
-      this._gcs = storage({
+      this._gcs = new Storage({
         projectId: PROJECT_ID,
         keyFilename: SERVICE_ACCOUNT_PATH,
       });

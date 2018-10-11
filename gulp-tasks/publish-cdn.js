@@ -46,7 +46,7 @@ const handleCDNUpload = async (tagName, gitBranch) => {
   const publishUrls = await cdnUploadHelper.upload(
       friendlyTagName, buildFilesDir);
 
-  logHelper.log(`The following URLs are now avaiable:`);
+  logHelper.log(`The following URLs are now available:`);
   publishUrls.forEach((url) => {
     // Only print out the js files just for cleaner logs.
     if (path.extname(url) === '.map') {
