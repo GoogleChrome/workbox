@@ -8,6 +8,7 @@
 
 import '../_version.mjs';
 
+
 /**
  * A class that wraps common IndexedDB functionality in a promise-based API.
  * It exposes all the underlying power and functionality of IndexedDB, but
@@ -15,14 +16,14 @@ import '../_version.mjs';
  *
  * @private
  */
-class DBWrapper {
+export class DBWrapper {
   /**
    * @param {string} name
    * @param {number} version
    * @param {Object=} [callback]
-   * @param {function(this:DBWrapper, Event)} [callbacks.onupgradeneeded]
-   * @param {function(this:DBWrapper, Event)} [callbacks.onversionchange]
-   *     Defaults to DBWrapper.prototype._onversionchange when not specified.
+   * @param {!Function} [callbacks.onupgradeneeded]
+   * @param {!Function} [callbacks.onversionchange] Defaults to
+   *     DBWrapper.prototype._onversionchange when not specified.
    */
   constructor(name, version, {
     onupgradeneeded,
@@ -38,12 +39,17 @@ class DBWrapper {
   }
 
   /**
+   * Returns the IDBDatabase instance (not normally needed).
+   */
+  get db() {
+    return this._db;
+  }
+
+  /**
    * Opens a connected to an IDBDatabase, invokes any onupgradedneeded
    * callback, and added an onversionchange callback to the database.
    *
    * @return {IDBDatabase}
-   *
-   * @private
    */
   async open() {
     if (this._db) return;
@@ -61,7 +67,7 @@ class DBWrapper {
       }, this.OPEN_TIMEOUT);
 
       const openRequest = indexedDB.open(this._name, this._version);
-      openRequest.onerror = (evt) => reject(openRequest.error);
+      openRequest.onerror = () => reject(openRequest.error);
       openRequest.onupgradeneeded = (evt) => {
         if (openRequestTimedOut) {
           openRequest.transaction.abort();
@@ -70,8 +76,8 @@ class DBWrapper {
           this._onupgradeneeded(evt);
         }
       };
-      openRequest.onsuccess = (evt) => {
-        const db = evt.target.result;
+      openRequest.onsuccess = ({target}) => {
+        const db = target.result;
         if (openRequestTimedOut) {
           db.close();
         } else {
@@ -85,90 +91,43 @@ class DBWrapper {
   }
 
   /**
-   * Delegates to the native `get()` method for the object store.
-   *
-   * @param {string} storeName The name of the object store to put the value.
-   * @param {...*} args The values passed to the delegated method.
-   * @return {*} The key of the entry.
-   *
-   * @private
-   */
-  async get(storeName, ...args) {
-    return await this._call('get', storeName, 'readonly', ...args);
-  }
-
-  /**
-   * Delegates to the native `add()` method for the object store.
-   *
-   * @param {string} storeName The name of the object store to put the value.
-   * @param {...*} args The values passed to the delegated method.
-   * @return {*} The key of the entry.
-   *
-   * @private
-   */
-  async add(storeName, ...args) {
-    return await this._call('add', storeName, 'readwrite', ...args);
-  }
-
-  /**
-   * Delegates to the native `put()` method for the object store.
-   *
-   * @param {string} storeName The name of the object store to put the value.
-   * @param {...*} args The values passed to the delegated method.
-   * @return {*} The key of the entry.
-   *
-   * @private
-   */
-  async put(storeName, ...args) {
-    return await this._call('put', storeName, 'readwrite', ...args);
-  }
-
-  /**
-   * Delegates to the native `delete()` method for the object store.
+   * Polyfills the native `getKey()` method. Note, this is overridden at
+   * runtime if the browser supports the native method.
    *
    * @param {string} storeName
-   * @param {...*} args The values passed to the delegated method.
-   *
-   * @private
+   * @param {*} query
+   * @return {Array}
    */
-  async delete(storeName, ...args) {
-    await this._call('delete', storeName, 'readwrite', ...args);
+  async getKey(storeName, query) {
+    return (await this.getAllKeys(storeName, query, 1))[0];
   }
 
   /**
-   * Deletes the underlying database, ensuring that any open connections are
-   * closed first.
-   *
-   * @private
-   */
-  async deleteDatabase() {
-    this.close();
-    this._db = null;
-    await new Promise((resolve, reject) => {
-      const request = indexedDB.deleteDatabase(this._name);
-      request.onerror = (evt) => reject(evt.target.error);
-      request.onblocked = () => reject(new Error('Deletion was blocked.'));
-      request.onsuccess = () => resolve();
-    });
-  }
-
-  /**
-   * Delegates to the native `getAll()` or polyfills it via the `find()`
-   * method in older browsers.
+   * Polyfills the native `getAll()` method. Note, this is overridden at
+   * runtime if the browser supports the native method.
    *
    * @param {string} storeName
    * @param {*} query
    * @param {number} count
    * @return {Array}
-   *
-   * @private
    */
   async getAll(storeName, query, count) {
-    if ('getAll' in IDBObjectStore.prototype) {
-      return await this._call('getAll', storeName, 'readonly', query, count);
-    } else {
-      return await this.getAllMatching(storeName, {query, count});
-    }
+    return await this.getAllMatching(storeName, {query, count});
+  }
+
+
+  /**
+   * Polyfills the native `getAllKeys()` method. Note, this is overridden at
+   * runtime if the browser supports the native method.
+   *
+   * @param {string} storeName
+   * @param {*} query
+   * @param {number} count
+   * @return {Array}
+   */
+  async getAllKeys(storeName, query, count) {
+    return (await this.getAllMatching(
+        storeName, {query, count, includeKeys: true})).map(({key}) => key);
   }
 
   /**
@@ -178,34 +137,33 @@ class DBWrapper {
    *
    * @param {string} storeName
    * @param {Object} [opts]
-   * @param {IDBCursorDirection} [opts.direction]
-   * @param {*} [opts.query]
    * @param {string} [opts.index] The index to use (if specified).
+   * @param {*} [opts.query]
+   * @param {IDBCursorDirection} [opts.direction]
    * @param {number} [opts.count] The max number of results to return.
    * @param {boolean} [opts.includeKeys] When true, the structure of the
    *     returned objects is changed from an array of values to an array of
    *     objects in the form {key, primaryKey, value}.
    * @return {Array}
-   *
-   * @private
    */
-  async getAllMatching(storeName, opts = {}) {
-    return await this.transaction([storeName], 'readonly', (stores, done) => {
-      const store = stores[storeName];
-      const target = opts.index ? store.index(opts.index) : store;
+  async getAllMatching(storeName, {
+    index,
+    query = null, // IE errors if query === `undefined`.
+    direction = 'next',
+    count,
+    includeKeys,
+  } = {}) {
+    return await this.transaction([storeName], 'readonly', (txn, done) => {
+      const store = txn.objectStore(storeName);
+      const target = index ? store.index(index) : store;
       const results = [];
 
-      // Passing `undefined` arguments to Edge's `openCursor(...)` causes
-      // 'DOMException: DataError'
-      // Details in issue: https://github.com/GoogleChrome/workbox/issues/1509
-      const query = opts.query || null;
-      const direction = opts.direction || 'next';
-      target.openCursor(query, direction).onsuccess = (evt) => {
-        const cursor = evt.target.result;
+      target.openCursor(query, direction).onsuccess = ({target}) => {
+        const cursor = target.result;
         if (cursor) {
           const {primaryKey, key, value} = cursor;
-          results.push(opts.includeKeys ? {primaryKey, key, value} : value);
-          if (opts.count && results.length >= opts.count) {
+          results.push(includeKeys ? {primaryKey, key, value} : value);
+          if (count && results.length >= count) {
             done(results);
           } else {
             cursor.continue();
@@ -221,41 +179,27 @@ class DBWrapper {
    * Accepts a list of stores, a transaction type, and a callback and
    * performs a transaction. A promise is returned that resolves to whatever
    * value the callback chooses. The callback holds all the transaction logic
-   * and is invoked with three arguments:
-   *   1. An object mapping object store names to IDBObjectStore values.
+   * and is invoked with two arguments:
+   *   1. The IDBTransaction object
    *   2. A `done` function, that's used to resolve the promise when
-   *      when the transaction is done.
-   *   3. An `abort` function that can be called to abort the transaction
-   *      at any time.
+   *      when the transaction is done, if passed a value, the promise is
+   *      resolved to that value.
    *
    * @param {Array<string>} storeNames An array of object store names
    *     involved in the transaction.
    * @param {string} type Can be `readonly` or `readwrite`.
-   * @param {function(Object, function(), function(*)):?IDBRequest} callback
+   * @param {!Function} callback
    * @return {*} The result of the transaction ran by the callback.
-   *
-   * @private
    */
   async transaction(storeNames, type, callback) {
     await this.open();
-    const result = await new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       const txn = this._db.transaction(storeNames, type);
-      const done = (value) => resolve(value);
-      const abort = () => {
-        reject(new Error('The transaction was manually aborted'));
-        txn.abort();
-      };
-      txn.onerror = (evt) => reject(evt.target.error);
-      txn.onabort = (evt) => reject(evt.target.error);
+      txn.onabort = ({target}) => reject(target.error);
       txn.oncomplete = () => resolve();
 
-      const stores = {};
-      for (const storeName of storeNames) {
-        stores[storeName] = txn.objectStore(storeName);
-      }
-      callback(stores, done, abort);
+      callback(txn, (value) => resolve(value));
     });
-    return result;
   }
 
   /**
@@ -266,14 +210,11 @@ class DBWrapper {
    * @param {string} type Can be `readonly` or `readwrite`.
    * @param {...*} args The list of args to pass to the native method.
    * @return {*} The result of the transaction.
-   *
-   * @private
    */
   async _call(method, storeName, type, ...args) {
-    await this.open();
-    const callback = (stores, done) => {
-      stores[storeName][method](...args).onsuccess = (evt) => {
-        done(evt.target.result);
+    const callback = (txn, done) => {
+      txn.objectStore(storeName)[method](...args).onsuccess = ({target}) => {
+        done(target.result);
       };
     };
 
@@ -283,12 +224,8 @@ class DBWrapper {
   /**
    * The default onversionchange handler, which closes the database so other
    * connections can open without being blocked.
-   *
-   * @param {Event} evt
-   *
-   * @private
    */
-  _onversionchange(evt) {
+  _onversionchange() {
     this.close();
   }
 
@@ -302,8 +239,6 @@ class DBWrapper {
    * The primary use case for needing to close a connection is when another
    * reference (typically in another tab) needs to upgrade it and would be
    * blocked by the current, open connection.
-   *
-   * @private
    */
   close() {
     if (this._db) this._db.close();
@@ -314,4 +249,18 @@ class DBWrapper {
 // or global basis.
 DBWrapper.prototype.OPEN_TIMEOUT = 2000;
 
-export {DBWrapper};
+// Wrap native IDBObjectStore methods according to their mode.
+const methodsToWrap = {
+  'readonly': ['get', 'count', 'getKey', 'getAll', 'getAllKeys'],
+  'readwrite': ['add', 'put', 'clear', 'delete'],
+};
+for (const [mode, methods] of Object.entries(methodsToWrap)) {
+  for (const method of methods) {
+    if (method in IDBObjectStore.prototype) {
+      // Don't use arrow functions here since we're outside of the class.
+      DBWrapper.prototype[method] = async function(storeName, ...args) {
+        return await this._call(method, storeName, mode, ...args);
+      };
+    }
+  }
+}
