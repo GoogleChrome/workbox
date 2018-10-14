@@ -7,7 +7,8 @@
 */
 
 import {expect} from 'chai';
-import sinon from 'sinon';
+import expectError from '../../../../infra/testing/expectError';
+import {devOnly} from '../../../../infra/testing/env-it';
 import StorableRequest from
   '../../../../packages/workbox-background-sync/models/StorableRequest.mjs';
 
@@ -27,20 +28,20 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
 
       const storableRequest = await StorableRequest.fromRequest(request);
 
-      expect(storableRequest.url).to.equal('/foo');
-      expect(storableRequest.requestInit.method).to.equal('POST');
-      expect(storableRequest.requestInit.body).to.be.instanceOf(Blob);
-      expect(storableRequest.requestInit.body.size).to.equal(10);
-      expect(storableRequest.requestInit.mode).to.equal('no-cors');
-      expect(storableRequest.requestInit.headers['x-foo']).to.equal('bar');
-      expect(storableRequest.requestInit.headers['x-qux']).to.equal('baz');
+      expect(storableRequest._requestData.url).to.equal('/foo');
+      expect(storableRequest._requestData.method).to.equal('POST');
+      expect(storableRequest._requestData.body).to.be.instanceOf(Blob);
+      expect(storableRequest._requestData.body.size).to.equal(10);
+      expect(storableRequest._requestData.mode).to.equal('no-cors');
+      expect(storableRequest._requestData.headers['x-foo']).to.equal('bar');
+      expect(storableRequest._requestData.headers['x-qux']).to.equal('baz');
     });
   });
 
   describe(`constructor`, function() {
     it(`sets the passed properties on the instance`, function() {
-      const url = '/foo';
-      const requestInit = {
+      const requestData = {
+        url: '/foo',
         method: 'POST',
         body: 'it worked!',
         mode: 'no-cors',
@@ -50,39 +51,25 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
         },
       };
 
-      const storableRequest = new StorableRequest({url, requestInit});
-
-      expect(storableRequest.url).to.equal(url);
-      expect(storableRequest.requestInit).to.equal(requestInit);
-      expect(storableRequest.timestamp).not.to.be.undefined;
-    });
-  });
-
-  describe(`get timestamp`, function() {
-    it(`returns the time when the instance was created`, async function() {
-      const clock = sinon.useFakeTimers({now: Date.now()});
-      const storableRequest =
-          await StorableRequest.fromRequest(new Request('/foo'));
-
-      expect(storableRequest.timestamp).to.equal(Date.now());
-
-      clock.restore();
+      const storableRequest = new StorableRequest(requestData);
+      expect(storableRequest._requestData).to.deep.equal(requestData);
     });
 
-    it(`uses the passed timestamp if specified`, function() {
-      const storableRequest = new StorableRequest({
-        url: '/foo',
-        requestInit: {},
-        timestamp: 1234,
-      });
+    devOnly.it(`throws if not given a requestData object`, function() {
+      return expectError(() => {
+        new StorableRequest();
+      }, 'incorrect-type');
+    });
 
-      expect(storableRequest.timestamp).to.equal(1234);
+    devOnly.it(`throws if not given a URL in the requestData object`, function() {
+      return expectError(() => {
+        new StorableRequest({});
+      }, 'incorrect-type');
     });
   });
 
   describe(`toObject`, function() {
     it(`converts the instance to a plain object`, async function() {
-      const clock = sinon.useFakeTimers({now: Date.now()});
       const storableRequest = await StorableRequest.fromRequest(
           new Request('/foo', {
             method: 'POST',
@@ -94,19 +81,16 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
             },
           }));
 
-      const requestObj = storableRequest.toObject();
+      const requestData = storableRequest.toObject();
 
-      expect(Object.getPrototypeOf(requestObj)).to.equal(Object.prototype);
-      expect(requestObj.url).to.equal('/foo');
-      expect(requestObj.requestInit.method).to.equal('POST');
-      expect(requestObj.requestInit.body).to.be.instanceOf(Blob);
-      expect(requestObj.requestInit.body.size).to.equal(10);
-      expect(requestObj.requestInit.mode).to.equal('no-cors');
-      expect(requestObj.requestInit.headers['x-foo']).to.equal('bar');
-      expect(requestObj.requestInit.headers['x-qux']).to.equal('baz');
-      expect(requestObj.timestamp).to.equal(Date.now());
-
-      clock.restore();
+      expect(Object.getPrototypeOf(requestData)).to.equal(Object.prototype);
+      expect(requestData.url).to.equal('/foo');
+      expect(requestData.method).to.equal('POST');
+      expect(requestData.body).to.be.instanceOf(Blob);
+      expect(requestData.body.size).to.equal(10);
+      expect(requestData.mode).to.equal('no-cors');
+      expect(requestData.headers['x-foo']).to.equal('bar');
+      expect(requestData.headers['x-qux']).to.equal('baz');
     });
   });
 
@@ -138,28 +122,23 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
   describe(`clone`, function() {
     it(`creates a new instance with the same values`, async function() {
       const original = new StorableRequest({
-        timestamp: 123456,
         url: '/foo',
-        requestInit: {
-          body: new Blob(['it worked!']),
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'x-foo': 'bar',
-            'x-qux': 'baz',
-          },
+        body: new Blob(['it worked!']),
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'x-foo': 'bar',
+          'x-qux': 'baz',
         },
       });
       const clone = original.clone();
 
-      expect(original.url).to.equal(clone.url);
-      expect(original.timestamp).to.equal(clone.timestamp);
-      expect(original.requestInit).to.deep.equal(clone.requestInit);
+      expect(original._requestData).to.deep.equal(clone._requestData);
 
       // Ensure clone was not shallow.
-      expect(original.requestInit.body).to.not.equal(clone.requestInit.body);
-      expect(original.requestInit.headers).to.not.equal(
-          clone.requestInit.headers);
+      expect(original._requestData.body).to.not.equal(clone._requestData.body);
+      expect(original._requestData.headers).to.not.equal(
+          clone._requestData.headers);
     });
   });
 });
