@@ -7,6 +7,7 @@
 */
 
 import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
+import {deleteDatabase} from 'workbox-core/_private/deleteDatabase.mjs';
 import '../_version.mjs';
 
 const URL_KEY = 'url';
@@ -108,7 +109,7 @@ class CacheTimestampsModel {
    * Removes the underlying IndexedDB object store entirely.
    */
   async delete() {
-    await this._db.deleteDatabase();
+    await deleteDatabase(this._cacheName);
     this._db = null;
   }
 }
