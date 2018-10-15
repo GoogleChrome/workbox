@@ -32,7 +32,7 @@ class Plugin {
    * @private
    */
   async fetchDidFail({request}) {
-    await this._queue.addRequest(request);
+    await this._queue.pushRequest({request});
   }
 }
 

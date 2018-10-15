@@ -8,6 +8,8 @@
 
 import {Plugin} from 'workbox-background-sync/Plugin.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
 import {Route} from 'workbox-routing/Route.mjs';
 import {Router} from 'workbox-routing/Router.mjs';
 import {NetworkFirst} from 'workbox-strategies/NetworkFirst.mjs';
@@ -24,26 +26,6 @@ import {
 import './_version.mjs';
 
 /**
- * Promisifies the FileReader API to await a text response from a Blob.
- *
- * @param {Blob} blob
- * @return {Promise<string>}
- *
- * @private
- */
-const getTextFromBlob = async (blob) => {
-  // This usage of `return await new Promise...` is intentional to work around
-  // a bug in the transpiled/minified output.
-  // See https://github.com/GoogleChrome/workbox/issues/1186
-  return await new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.onerror = () => reject(reader.error);
-    reader.readAsText(blob);
-  });
-};
-
-/**
  * Creates the requestWillDequeue callback to be used with the background
  * sync queue plugin. The callback takes the failed request and adds the
  * `qt` param based on the current time, as well as applies any other
@@ -54,50 +36,69 @@ const getTextFromBlob = async (blob) => {
  *
  * @private
  */
-const createRequestWillReplayCallback = (config) => {
-  return async (storableRequest) => {
-    let {url, requestInit, timestamp} = storableRequest;
-    url = new URL(url);
+const createOnSyncCallback = (config) => {
+  return async (queue) => {
+    let entry;
+    while (entry = await queue.shiftRequest()) {
+      const {request, timestamp} = entry;
+      const url = new URL(request.url);
 
-    // Measurement protocol requests can set their payload parameters in either
-    // the URL query string (for GET requests) or the POST body.
-    let params;
-    if (requestInit.body) {
-      const payload = requestInit.body instanceof Blob ?
-        await getTextFromBlob(requestInit.body) : requestInit.body;
+      try {
+        // Measurement protocol requests can set their payload parameters in
+        // either the URL query string (for GET requests) or the POST body.
+        const params = request.method === 'POST' ?
+            new URLSearchParams(await request.text()) : url.searchParams;
 
-      params = new URLSearchParams(payload);
-    } else {
-      params = url.searchParams;
-    }
+        // Calculate the qt param, accounting for the fact that an existing
+        // qt param may be present and should be updated rather than replaced.
+        const originalHitTime = timestamp - (Number(params.get('qt')) || 0);
+        const queueTime = Date.now() - originalHitTime;
 
-    // Calculate the qt param, accounting for the fact that an existing
-    // qt param may be present and should be updated rather than replaced.
-    const originalHitTime = timestamp - (Number(params.get('qt')) || 0);
-    const queueTime = Date.now() - originalHitTime;
+        // Set the qt param prior to applying hitFilter or parameterOverrides.
+        params.set('qt', queueTime);
 
-    // Set the qt param prior to applying the hitFilter or parameterOverrides.
-    params.set('qt', queueTime);
+        // Apply `paramterOverrideds`, if set.
+        if (config.parameterOverrides) {
+          for (const param of Object.keys(config.parameterOverrides)) {
+            const value = config.parameterOverrides[param];
+            params.set(param, value);
+          }
+        }
 
-    if (config.parameterOverrides) {
-      for (const param of Object.keys(config.parameterOverrides)) {
-        const value = config.parameterOverrides[param];
-        params.set(param, value);
+        // Apply `hitFilter`, if set.
+        if (typeof config.hitFilter === 'function') {
+          config.hitFilter.call(null, params);
+        }
+
+        // Retry the fetch. Ignore URL search params form the URL as they're
+        // now in the post body.
+        await fetch(new Request(url.origin + url.pathname, {
+          body: params.toString(),
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'omit',
+          headers: {'Content-Type': 'text/plain'},
+        }));
+
+
+        if (process.env.NODE_ENV !== 'production') {
+          logger.log(`Request for '${getFriendlyURL(url.href)}'` +
+             `has been replayed`);
+        }
+      } catch (err) {
+        await queue.unshiftRequest(entry);
+
+        if (process.env.NODE_ENV !== 'production') {
+          logger.log(`Request for '${getFriendlyURL(url.href)}'` +
+             `failed to replay, putting it back in the queue.`);
+        }
+        return;
       }
     }
-
-    if (typeof config.hitFilter === 'function') {
-      config.hitFilter.call(null, params);
+    if (process.env.NODE_ENV !== 'production') {
+      logger.log(`All Google Analytics request successfully replayed; ` +
+          `the queue is now empty!`);
     }
-
-    requestInit.body = params.toString();
-    requestInit.method = 'POST';
-    requestInit.mode = 'cors';
-    requestInit.credentials = 'omit';
-    requestInit.headers = {'Content-Type': 'text/plain'};
-
-    // Ignore URL search params as they're now in the post body.
-    storableRequest.url = `${url.origin}${url.pathname}`;
   };
 };
 
@@ -176,9 +177,7 @@ const initialize = (options = {}) => {
 
   const queuePlugin = new Plugin(QUEUE_NAME, {
     maxRetentionTime: MAX_RETENTION_TIME,
-    callbacks: {
-      requestWillReplay: createRequestWillReplayCallback(options),
-    },
+    onSync: createOnSyncCallback(options),
   });
 
   const routes = [

@@ -690,7 +690,7 @@ describe(`migrateDb`, function() {
         expect(v1Spy.callCount).to.equal(1);
         next();
         done();
-      }
+      },
     };
 
     migrateDb({oldVersion: 0, newVersion: 2}, migrationFunctions);
@@ -720,7 +720,7 @@ describe(`migrateDb`, function() {
         expect(v1Spy.callCount).to.equal(1);
         next();
         done();
-      }
+      },
     };
 
     migrateDb({oldVersion: 1, newVersion: 2}, migrationFunctions);

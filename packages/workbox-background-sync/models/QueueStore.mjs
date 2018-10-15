@@ -156,7 +156,7 @@ export class QueueStore {
     let oldEntries = [];
 
     migrateDb(event, {
-      v1: (done) => {
+      v1: (next) => {
         // When migrating from version 0, this will not exist.
         if (db.objectStoreNames.contains(OBJECT_STORE_NAME)) {
           // Get any existing entries in the v1 requests store
@@ -169,14 +169,14 @@ export class QueueStore {
               cursor.continue();
             } else {
               db.deleteObjectStore(OBJECT_STORE_NAME);
-              done();
+              next();
             }
           };
         } else {
-          done();
+          next();
         }
       },
-      v2: (done) => {
+      v2: (next) => {
         // Creates v2 of the requests store and adds back any existing
         // entries in the new format.
         const objStore = db.createObjectStore(OBJECT_STORE_NAME, {
@@ -197,7 +197,7 @@ export class QueueStore {
             objStore.add({queueName, timestamp, requestData});
           }
         }
-        done();
+        next();
       },
     });
   }

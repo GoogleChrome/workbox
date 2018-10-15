@@ -221,7 +221,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   it(`should add failed hits to a background sync queue`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'addRequest');
+    sandbox.spy(Queue.prototype, 'pushRequest');
 
     initialize();
 
@@ -241,16 +241,16 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     await eventsDoneWaiting();
 
-    const [call1Args, call2Args] = Queue.prototype.addRequest.args;
-    expect(call1Args[0].url).to.equal(`https://` +
+    const [call1Args, call2Args] = Queue.prototype.pushRequest.args;
+    expect(call1Args[0].request.url).to.equal(`https://` +
         `${GOOGLE_ANALYTICS_HOST}/collect?${PAYLOAD}`);
-    expect(call2Args[0].url).to.equal(`https://` +
+    expect(call2Args[0].request.url).to.equal(`https://` +
         `${GOOGLE_ANALYTICS_HOST}/collect`);
   });
 
   it(`should add the qt param to replayed hits`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'addRequest');
+    sandbox.spy(Queue.prototype, 'pushRequest');
     const clock = sandbox.useFakeTimers({toFake: ['Date']});
 
     initialize();
@@ -277,11 +277,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
-    const [queue] = Queue.prototype.addRequest.thisValues;
-
     clock.tick(100);
 
-    await queue.replayRequests();
+    self.dispatchEvent(new SyncEvent('sync', {
+      tag: `workbox-background-sync:workbox-google-analytics`,
+    }));
+
+    await eventsDoneWaiting();
 
     expect(self.fetch.callCount).to.equal(2);
 
@@ -305,7 +307,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   it(`should update an existing qt param`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'addRequest');
+    sandbox.spy(Queue.prototype, 'pushRequest');
     const clock = sandbox.useFakeTimers({toFake: ['Date']});
 
     initialize();
@@ -332,10 +334,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
-    const [queue] = Queue.prototype.addRequest.thisValues;
-
     clock.tick(100);
-    await queue.replayRequests();
+
+    self.dispatchEvent(new SyncEvent('sync', {
+      tag: `workbox-background-sync:workbox-google-analytics`,
+    }));
+
+    await eventsDoneWaiting();
 
     expect(self.fetch.callCount).to.equal(2);
 
@@ -350,7 +355,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   it(`should add parameterOverrides to replayed hits`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'addRequest');
+    sandbox.spy(Queue.prototype, 'pushRequest');
 
     initialize({
       parameterOverrides: {
@@ -378,8 +383,11 @@ describe(`[workbox-google-analytics] initialize`, function() {
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
-    const [queue] = Queue.prototype.addRequest.thisValues;
-    await queue.replayRequests();
+    self.dispatchEvent(new SyncEvent('sync', {
+      tag: `workbox-background-sync:workbox-google-analytics`,
+    }));
+
+    await eventsDoneWaiting();
 
     expect(self.fetch.callCount).to.equal(2);
 
@@ -400,7 +408,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   it(`should apply the hitFilter to replayed hits`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'addRequest');
+    sandbox.spy(Queue.prototype, 'pushRequest');
 
     initialize({
       hitFilter: (params) => {
@@ -429,8 +437,11 @@ describe(`[workbox-google-analytics] initialize`, function() {
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
-    const [queue] = Queue.prototype.addRequest.thisValues;
-    await queue.replayRequests();
+    self.dispatchEvent(new SyncEvent('sync', {
+      tag: `workbox-background-sync:workbox-google-analytics`,
+    }));
+
+    await eventsDoneWaiting();
 
     expect(self.fetch.callCount).to.equal(2);
 

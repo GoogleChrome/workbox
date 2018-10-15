@@ -6,8 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-importScripts('/__WORKBOX/buildFile/workbox-core');
-importScripts('/__WORKBOX/buildFile/workbox-background-sync');
+importScripts('/__WORKBOX/buildFile/workbox-sw');
+importScripts('/infra/testing/comlink/sw-interface.js');
+
+workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
 
 /* globals workbox */
 
@@ -17,7 +19,7 @@ self.addEventListener('fetch', (event) => {
   const pathname = new URL(event.request.url).pathname;
   if (pathname === '/test/workbox-background-sync/static/basic-example/example.txt') {
     const queuePromise = (async () => {
-      await queue.addRequest(event.request);
+      await queue.pushRequest({request: event.request});
       // This is a horrible hack :(
       // In non-sync supporting browsers we only replay requests when the SW starts up
       // but there is no API to force close a service worker, so just force a replay in
