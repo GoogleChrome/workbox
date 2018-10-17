@@ -78,6 +78,7 @@ class Plugin {
 
     this._config = config;
     this._maxAgeSeconds = config.maxAgeSeconds;
+    this._diffTimestamp = 0;//the diff time between local and server
     this._cacheExpirations = new Map();
 
     if (config.purgeOnQuotaError) {
@@ -163,7 +164,7 @@ class Plugin {
     // If we have a valid headerTime, then our response is fresh iff the
     // headerTime plus maxAgeSeconds is greater than the current time.
     const now = Date.now();
-    return dateHeaderTimestamp >= now - (this._maxAgeSeconds * 1000);
+    return dateHeaderTimestamp - this._diffTimestamp >= now - (this._maxAgeSeconds * 1000);
   }
 
   /**
@@ -203,7 +204,12 @@ class Plugin {
    *
    * @private
    */
-  async cacheDidUpdate({cacheName, request}) {
+  async cacheDidUpdate({cacheName, request, newResponse}) {
+    //Local and server time are out of sync (this._config.syncTime = false default)
+    if (this._config.syncTime) {
+      this._diffTimestamp = this._getDateHeaderTimestamp(newResponse) - Date.now();
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       assert.isType(cacheName, 'string', {
         moduleName: 'workbox-cache-expiration',
