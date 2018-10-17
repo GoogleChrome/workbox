@@ -487,14 +487,14 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(request.credentials).to.eql('same-origin');
     });
 
-    it(`it should fail installation when a 4xx or 5xx response is received`, async function() {
+    it(`it should fail installation when a response with a status of 400 is received`, async function() {
       sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
         status: 400,
       }));
 
       const precacheController = new PrecacheController();
       const cacheList = [
-        '/will-fail.html',
+        '/will-be-error.html',
       ];
       precacheController.addToCacheList(cacheList);
 
@@ -517,6 +517,30 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       // This should succeed.
       await precacheController.install();
+    });
+
+    it(`it should successfully install when a response with a status of 400 is received, if a cacheWillUpdate plugin allows it`, async function() {
+      sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
+        status: 400,
+      }));
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        '/will-be-error.html',
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      const plugins = [{
+        cacheWillUpdate: ({response}) => {
+          if (response.status === 400) {
+            return response;
+          }
+          return null;
+        },
+      }];
+
+      // This should succeed.
+      await precacheController.install({plugins});
     });
   });
 
