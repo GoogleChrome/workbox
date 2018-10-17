@@ -37,7 +37,7 @@ import './_version.mjs';
  * @private
  */
 const createOnSyncCallback = (config) => {
-  return async (queue) => {
+  return async ({queue}) => {
     let entry;
     while (entry = await queue.shiftRequest()) {
       const {request, timestamp} = entry;

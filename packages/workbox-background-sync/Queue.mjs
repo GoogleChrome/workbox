@@ -33,10 +33,11 @@ class Queue {
    *     in IndexedDB specific to this instance. An error will be thrown if
    *     a duplicate name is detected.
    * @param {Object} [options]
-   * @param {Function} [options.onSync] A function that gets invoked
-   *     with the queue instance whenever the 'sync' event fires. You can use
-   *     this callback to customize the replay behavior of the queue. When not
-   *     set the `replayRequests()` method is called.
+   * @param {Function} [options.onSync] A function that gets invoked whenever
+   *     the 'sync' event fires. The function is invoked with an object
+   *     containing the `queue` property (referencing this instance), and you
+   *     can use the callback to customize the replay behavior of the queue.
+   *.    When not set the `replayRequests()` method is called.
    * @param {number} [options.maxRetentionTime=7 days] The amount of time (in
    *     minutes) a request may be retried. After this amount of time has
    *     passed, the request will be deleted from the queue.
@@ -276,7 +277,7 @@ class Queue {
             logger.log(`Background sync for tag '${event.tag}'` +
                 `has been received`);
           }
-          event.waitUntil(this._onSync(this));
+          event.waitUntil(this._onSync({queue: this}));
         }
       });
     } else {
@@ -285,7 +286,7 @@ class Queue {
       }
       // If the browser doesn't support background sync, retry
       // every time the service worker starts up as a fallback.
-      this._onSync(this);
+      this._onSync({queue: this});
     }
   }
 

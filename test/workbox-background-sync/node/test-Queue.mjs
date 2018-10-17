@@ -78,7 +78,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       }));
 
       expect(onSync.callCount).to.equal(1);
-      expect(onSync.firstCall.args[0]).to.equal(queue);
+      expect(onSync.firstCall.args[0].queue).to.equal(queue);
     });
 
     it(`defaults to calling replayRequests when no onSync function is passed`, async function() {
@@ -100,7 +100,8 @@ describe(`[workbox-background-sync] Queue`, function() {
       }));
 
       expect(Queue.prototype.replayRequests.callCount).to.equal(1);
-      expect(Queue.prototype.replayRequests.firstCall.args[0]).to.equal(queue);
+      expect(Queue.prototype.replayRequests.firstCall.args[0].queue)
+          .to.equal(queue);
     });
 
     it(`tries to run the sync logic on instantiation in browsers that don't support the sync event`, async function() {
