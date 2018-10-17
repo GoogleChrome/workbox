@@ -207,7 +207,8 @@ class Plugin {
   async cacheDidUpdate({cacheName, request, newResponse}) {
     //Local and server time are out of sync (this._config.syncTime = false default)
     if (this._config.syncTime) {
-      this._diffTimestamp = this._getDateHeaderTimestamp(newResponse) - Date.now();
+      const _dateHeaderTimestamp = this._getDateHeaderTimestamp(newResponse);
+      this._diffTimestamp = _dateHeaderTimestamp ? _dateHeaderTimestamp - Date.now() : 0;
     }
 
     if (process.env.NODE_ENV !== 'production') {
