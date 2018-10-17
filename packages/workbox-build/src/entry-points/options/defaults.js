@@ -25,6 +25,7 @@ module.exports = {
   maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
   navigateFallback: undefined,
   offlineGoogleAnalytics: false,
+  syncTime: false,
   purgeOnQuotaError: false,
   skipWaiting: false,
 };
