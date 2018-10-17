@@ -85,9 +85,9 @@ class CacheExpiration {
       if (config.syncTime) {
         assert.isType(config.syncTime, 'boolean', {
           moduleName: 'workbox-cache-expiration',
-          className: 'Plugin',
+          className: 'CacheExpiration',
           funcName: 'constructor',
-          paramName: 'config.maxAgeSeconds',
+          paramName: 'config.syncTime',
         });
       }
     }

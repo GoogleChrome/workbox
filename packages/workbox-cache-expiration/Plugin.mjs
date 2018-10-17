@@ -83,7 +83,7 @@ class Plugin {
           moduleName: 'workbox-cache-expiration',
           className: 'Plugin',
           funcName: 'constructor',
-          paramName: 'config.maxAgeSeconds',
+          paramName: 'config.syncTime',
         });
       }
     }
