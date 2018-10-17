@@ -39,8 +39,11 @@ class CacheExpiration {
    * Entries used the least will be removed as the maximum is reached.
    * @param {number} [config.maxAgeSeconds] The maximum age of an entry before
    * it's treated as stale and removed.
+   * @param {boolean} [config.syncTime]  Local and server time are out of sync
+   * (this._config.syncTime = false default)
+   * @param {number} diffTimestamp the diff time between local and server
    */
-  constructor(cacheName, config = {}) {
+  constructor(cacheName, config = {}, diffTimestamp = 0) {
     if (process.env.NODE_ENV !== 'production') {
       assert.isType(cacheName, 'string', {
         moduleName: 'workbox-cache-expiration',
@@ -78,11 +81,21 @@ class CacheExpiration {
 
         // TODO: Assert is positive
       }
+
+      if (config.syncTime) {
+        assert.isType(config.syncTime, 'boolean', {
+          moduleName: 'workbox-cache-expiration',
+          className: 'Plugin',
+          funcName: 'constructor',
+          paramName: 'config.maxAgeSeconds',
+        });
+      }
     }
 
     this._isRunning = false;
     this._rerunRequested = false;
     this._maxEntries = config.maxEntries;
+    this._diffTimestamp = diffTimestamp;//the diff time between local and server
     this._maxAgeSeconds = config.maxAgeSeconds;
     this._cacheName = cacheName;
     this._timestampModel = new CacheTimestampsModel(cacheName);
@@ -161,7 +174,7 @@ class CacheExpiration {
       return [];
     }
 
-    const expireOlderThan = expireFromTimestamp - (this._maxAgeSeconds * 1000);
+    const expireOlderThan = expireFromTimestamp - (this._maxAgeSeconds * 1000) - this._diffTimestamp;
     const timestamps = await this._timestampModel.getAllTimestamps();
     const expiredUrls = [];
     timestamps.forEach((timestampDetails) => {
@@ -262,7 +275,7 @@ class CacheExpiration {
     urlObject.hash = '';
 
     const timestamp = await this._timestampModel.getTimestamp(urlObject.href);
-    const expireOlderThan = Date.now() - (this._maxAgeSeconds * 1000);
+    const expireOlderThan = Date.now() - (this._maxAgeSeconds * 1000) - this._diffTimestamp;
     return (timestamp < expireOlderThan);
   }
 

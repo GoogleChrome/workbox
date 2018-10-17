@@ -46,6 +46,9 @@ class Plugin {
    * it's treated as stale and removed.
    * @param {boolean} [config.purgeOnQuotaError] Whether to opt this cache in to
    * automatic deletion if the available storage quota has been exceeded.
+   * @param {boolean} [config.syncTime]  Local and server time are out of sync
+   * (this._config.syncTime = false default)
+   *
    */
   constructor(config = {}) {
     if (process.env.NODE_ENV !== 'production') {
@@ -68,6 +71,15 @@ class Plugin {
 
       if (config.maxAgeSeconds) {
         assert.isType(config.maxAgeSeconds, 'number', {
+          moduleName: 'workbox-cache-expiration',
+          className: 'Plugin',
+          funcName: 'constructor',
+          paramName: 'config.maxAgeSeconds',
+        });
+      }
+
+      if (config.syncTime) {
+        assert.isType(config.syncTime, 'boolean', {
           moduleName: 'workbox-cache-expiration',
           className: 'Plugin',
           funcName: 'constructor',
@@ -102,7 +114,7 @@ class Plugin {
 
     let cacheExpiration = this._cacheExpirations.get(cacheName);
     if (!cacheExpiration) {
-      cacheExpiration = new CacheExpiration(cacheName, this._config);
+      cacheExpiration = new CacheExpiration(cacheName, this._config, this._diffTimestamp);
       this._cacheExpirations.set(cacheName, cacheExpiration);
     }
     return cacheExpiration;
