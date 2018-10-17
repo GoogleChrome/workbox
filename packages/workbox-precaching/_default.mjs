@@ -151,17 +151,22 @@ moduleExports.precache = (entries) => {
 
   installActivateListenersAdded = true;
   self.addEventListener('install', (event) => {
-    event.waitUntil(precacheController.install({
-      event,
-      plugins,
-      suppressWarnings,
-    }));
+    event.waitUntil(
+        precacheController.install({event, plugins, suppressWarnings})
+            .catch((error) => {
+              if (process.env.NODE_ENV !== 'production') {
+                logger.error(`Service worker installation failed. It will ` +
+                `be retried automatically during the next navigation.`);
+              }
+              // Re-throw the error to ensure installation fails.
+              throw error;
+            })
+    );
   });
   self.addEventListener('activate', (event) => {
-    event.waitUntil(precacheController.activate({
-      event,
-      plugins,
-    }));
+    event.waitUntil(
+        precacheController.activate({event, plugins})
+    );
   });
 };
 

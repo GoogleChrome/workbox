@@ -242,4 +242,9 @@ export default {
     }
     return message;
   },
+
+  'bad-precaching-response': ({url, status}) => {
+    return `The precaching request for '${url}' failed with an HTTP ` +
+      `status of ${status}.`;
+  },
 };

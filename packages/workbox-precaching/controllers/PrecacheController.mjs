@@ -157,11 +157,9 @@ class PrecacheController {
     }
 
     // Empty the temporary cache.
-    // NOTE: We remove all entries instead of deleting the cache as the cache
-    // may be marked for deletion but still exist until a later stage
-    // resulting in unexpected behavior of being deletect when all references
-    // are dropped.
-    // https://github.com/GoogleChrome/workbox/issues/1368
+    // NOTE: We remove all entries instead of calling caches.delete(), as the
+    // cache may be marked for deletion but still exist.
+    // See https://github.com/GoogleChrome/workbox/issues/1368
     const tempCache = await caches.open(this._getTempCacheName());
     const requests = await tempCache.keys();
     await Promise.all(requests.map((request) => {
@@ -260,6 +258,17 @@ class PrecacheController {
       fetchOptions: null,
       plugins,
     });
+
+    // Consider this a failure, leading to the `install` handler failing, if
+    // we have a clear error. We can't just check response.ok since that will be
+    // false for opaque responses, and (at least for now) we are going to
+    // consider those valid.
+    if (response.status >= 400) {
+      throw new WorkboxError('bad-precaching-response', {
+        url: precacheEntry._networkRequest.url,
+        status: response.status,
+      });
+    }
 
     if (response.redirected) {
       response = await cleanRedirect(response);
