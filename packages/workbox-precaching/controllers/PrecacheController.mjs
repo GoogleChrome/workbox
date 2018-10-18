@@ -157,11 +157,9 @@ class PrecacheController {
     }
 
     // Empty the temporary cache.
-    // NOTE: We remove all entries instead of deleting the cache as the cache
-    // may be marked for deletion but still exist until a later stage
-    // resulting in unexpected behavior of being deletect when all references
-    // are dropped.
-    // https://github.com/GoogleChrome/workbox/issues/1368
+    // NOTE: We remove all entries instead of calling caches.delete(), as the
+    // cache may be marked for deletion but still exist.
+    // See https://github.com/GoogleChrome/workbox/issues/1368
     const tempCache = await caches.open(this._getTempCacheName());
     const requests = await tempCache.keys();
     await Promise.all(requests.map((request) => {
@@ -239,8 +237,13 @@ class PrecacheController {
   }
 
   /**
-   * Requests the entry and saves it to the cache if the response
-   * is valid.
+   * Requests the entry and saves it to the cache if the response is valid.
+   * By default, any response with a status code of less than 400 (including
+   * opaque responses) is considered valid.
+   *
+   * If you need to use custom criteria to determine what's valid and what
+   * isn't, then pass in an item in `options.plugins` that implements the
+   * `cacheWillUpdate()` lifecycle event.
    *
    * @private
    * @param {Object} options
@@ -260,6 +263,32 @@ class PrecacheController {
       fetchOptions: null,
       plugins,
     });
+
+    // Allow developers to override the default logic about what is and isn't
+    // valid by passing in a plugin implementing cacheWillUpdate(), e.g.
+    // a workbox.cacheableResponse.Plugin instance.
+    let cacheWillUpdateCallback;
+    for (const plugin of (plugins || [])) {
+      if ('cacheWillUpdate' in plugin) {
+        cacheWillUpdateCallback = plugin.cacheWillUpdate;
+      }
+    }
+
+    const isValidResponse = cacheWillUpdateCallback ?
+      // Use a callback if provided. It returns a truthy value if valid.
+      cacheWillUpdateCallback({response}) :
+      // Otherwise, default to considering any response status under 400 valid.
+      // This includes, by default, considering opaque responses valid.
+      response.status < 400;
+
+    // Consider this a failure, leading to the `install` handler failing, if
+    // we get back an invalid response.
+    if (!isValidResponse) {
+      throw new WorkboxError('bad-precaching-response', {
+        url: precacheEntry._networkRequest.url,
+        status: response.status,
+      });
+    }
 
     if (response.redirected) {
       response = await cleanRedirect(response);

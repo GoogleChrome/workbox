@@ -486,6 +486,62 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const {request} = fetchWrapper.fetch.args[0][0];
       expect(request.credentials).to.eql('same-origin');
     });
+
+    it(`it should fail installation when a response with a status of 400 is received`, async function() {
+      sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
+        status: 400,
+      }));
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        '/will-be-error.html',
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      return expectError(
+          () => precacheController.install(),
+          'bad-precaching-response'
+      );
+    });
+
+    it(`it should successfully install when an opaque response is received`, async function() {
+      sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
+        status: 0,
+      }));
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        '/will-be-opaque.html',
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      // This should succeed.
+      await precacheController.install();
+    });
+
+    it(`it should successfully install when a response with a status of 400 is received, if a cacheWillUpdate plugin allows it`, async function() {
+      sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
+        status: 400,
+      }));
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        '/will-be-error.html',
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      const plugins = [{
+        cacheWillUpdate: ({response}) => {
+          if (response.status === 400) {
+            return response;
+          }
+          return null;
+        },
+      }];
+
+      // This should succeed.
+      await precacheController.install({plugins});
+    });
   });
 
   describe(`activate()`, function() {
