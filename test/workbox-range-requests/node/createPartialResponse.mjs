@@ -59,5 +59,13 @@ describe(`[workbox-range-requests] createPartialResponse`, function() {
       const expectedBlob = constructBlob(101);
       expect(responseBlob._text).to.eql(expectedBlob._text);
     });
+
+    it(`should handle being passed a Response with a status of 206 by returning it as-is`, async function() {
+      const originalPartialResponse = new Response('expected text', {status: 206});
+      const createdPartialResponse = await createPartialResponse(VALID_REQUEST, originalPartialResponse);
+
+      // We should get back the exact same response.
+      expect(createdPartialResponse).to.eql(originalPartialResponse);
+    });
   });
 });
