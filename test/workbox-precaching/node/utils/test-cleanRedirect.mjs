@@ -29,4 +29,19 @@ describe(`[workbox-precaching] cleanRedirect()`, function() {
     const cleanedResponseBody = await cleanedResponse.text();
     expect(cleanedResponseBody).to.equal('Blob Body');
   });
+
+  it(`should use the statusText, status, and headers from the original response`, async function() {
+    const headers = {
+      'x-test': 1,
+    };
+    const statusText = 'Non-Authoritative';
+    const status = 203;
+
+    const response = new Response('', {headers, statusText, status});
+    const clonedResponse = await cleanRedirect(response);
+
+    expect(response.headers).to.eql(clonedResponse.headers);
+    expect(response.status).to.eql(clonedResponse.status);
+    expect(response.statusText).to.eql(clonedResponse.statusText);
+  });
 });
