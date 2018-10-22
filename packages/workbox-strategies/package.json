@@ -1,6 +1,6 @@
 {
   "name": "workbox-strategies",
-  "version": "3.6.2",
+  "version": "3.6.3",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "A service worker helper library implementing common caching strategies.",
@@ -27,6 +27,6 @@
   "main": "build/workbox-strategies.prod.js",
   "module": "index.mjs",
   "dependencies": {
-    "workbox-core": "^3.6.2"
+    "workbox-core": "^3.6.3"
   }
 }

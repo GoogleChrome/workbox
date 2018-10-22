@@ -1,6 +1,6 @@
 {
   "name": "workbox-google-analytics",
-  "version": "3.6.2",
+  "version": "3.6.3",
   "license": "Apache-2.0",
   "author": "Google's Web DevRel Team",
   "description": "Queues failed requests and uses the Background Sync API to replay them when the network is available",
@@ -28,9 +28,9 @@
   "main": "build/workbox-google-analytics.prod.js",
   "module": "index.mjs",
   "dependencies": {
-    "workbox-background-sync": "^3.6.2",
-    "workbox-core": "^3.6.2",
-    "workbox-routing": "^3.6.2",
-    "workbox-strategies": "^3.6.2"
+    "workbox-background-sync": "^3.6.3",
+    "workbox-core": "^3.6.3",
+    "workbox-routing": "^3.6.3",
+    "workbox-strategies": "^3.6.3"
   }
 }
