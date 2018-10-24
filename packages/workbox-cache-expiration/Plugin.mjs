@@ -90,7 +90,7 @@ class Plugin {
 
     this._config = config;
     this._maxAgeSeconds = config.maxAgeSeconds;
-    this._diffTimestamp = 0;//the diff time between local and server
+    this._diffTimestamp = 0;//the diff time(ms) between local and server
     this._cacheExpirations = new Map();
 
     if (config.purgeOnQuotaError) {
@@ -114,7 +114,7 @@ class Plugin {
 
     let cacheExpiration = this._cacheExpirations.get(cacheName);
     if (!cacheExpiration) {
-      cacheExpiration = new CacheExpiration(cacheName, this._config, this._diffTimestamp);
+      cacheExpiration = new CacheExpiration(cacheName, this._config);
       this._cacheExpirations.set(cacheName, cacheExpiration);
     }
     return cacheExpiration;

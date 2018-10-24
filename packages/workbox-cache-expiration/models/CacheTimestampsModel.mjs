@@ -60,8 +60,8 @@ class CacheTimestampsModel {
     }
 
     db
-    .createObjectStore(this._storeName, {keyPath: URL_KEY})
-    .createIndex(TIMESTAMP_KEY, TIMESTAMP_KEY, {unique: false});
+      .createObjectStore(this._storeName, {keyPath: URL_KEY})
+      .createIndex(TIMESTAMP_KEY, TIMESTAMP_KEY, {unique: false});
   }
 
   /**
@@ -81,6 +81,10 @@ class CacheTimestampsModel {
    * Get all of the timestamps in the indexedDB.
    *
    * @return {Array<Objects>}
+   *  [{
+   *      url:string,
+   *      timestamps:number
+   *  }]
    *
    * @private
    */
