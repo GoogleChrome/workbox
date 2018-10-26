@@ -602,7 +602,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       // Make sure we print some debug info.
       expect(logger.log.callCount).to.equal(0);
 
-      
       // Then, precache the same URLs, but two with different revisions.
       const precacheControllerTwo = new PrecacheController();
       const cacheListTwo = [
