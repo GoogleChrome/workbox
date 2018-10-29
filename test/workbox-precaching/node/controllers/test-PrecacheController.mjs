@@ -548,9 +548,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     it(`should remove out of date entry`, async function() {
       const cache = await caches.open(cacheNames.getPrecacheName());
 
-      /*
-      First precache some entries
-      */
+      // First precache some entries.
       const precacheControllerOne = new PrecacheController();
       const cacheListOne = [
         {url: '/scripts/index.js', revision: '1234'},
@@ -583,9 +581,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     it(`should remove out of date entries`, async function() {
       const cache = await caches.open(cacheNames.getPrecacheName());
 
-      /*
-      First precache some entries
-      */
+      // First, precache some entries.
       const precacheControllerOne = new PrecacheController();
       const cacheListOne = [
         '/index.1234.html',
@@ -606,9 +602,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       // Make sure we print some debug info.
       expect(logger.log.callCount).to.equal(0);
 
-      /*
-      THEN precache the same URLs but two with different revisions
-      */
+      // Then, precache the same URLs, but two with different revisions.
       const precacheControllerTwo = new PrecacheController();
       const cacheListTwo = [
         '/index.4321.html',
@@ -630,7 +624,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       const keysTwo = await cache.keys();
       // Precaching can't determine that 'index.1234.html' and 'index.4321.html'
-      // represent the same URL, so the cache ould contain both at this point
+      // represent the same URL, so the cache could contain both at this point
       // since they are technically different URLs
       // It would be in the activate event that 'index.1234.html' would
       // be removed from the cache and indexedDB.
@@ -691,6 +685,14 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheController.activate();
 
       const hasCache = await caches.has(cacheNames.getPrecacheName());
+      expect(hasCache).to.equal(false);
+    });
+
+    it(`should delete the temporary cache after activation`, async function() {
+      const precacheController = new PrecacheController();
+      await precacheController.activate();
+
+      const hasCache = await caches.has(precacheController._getTempCacheName());
       expect(hasCache).to.equal(false);
     });
 

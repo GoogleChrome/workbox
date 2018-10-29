@@ -222,6 +222,10 @@ class PrecacheController {
       await tempCache.delete(request);
     }
 
+    // Remove the temporary Cache object, now that all the entries are copied.
+    // See https://github.com/GoogleChrome/workbox/issues/1735
+    await caches.delete(this._getTempCacheName());
+
     return this._cleanup();
   }
 
