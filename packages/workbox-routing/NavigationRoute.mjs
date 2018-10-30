@@ -85,12 +85,14 @@ class NavigationRoute extends Route {
 
     const pathnameAndSearch = url.pathname + url.search;
 
-    if (this._blacklist.some((regExp) => regExp.test(pathnameAndSearch))) {
-      if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`The navigation route is not being used, since the ` +
-          `request URL matches both the whitelist and blacklist.`);
+    for (const regExp of this._blacklist) {
+      if (regExp.test(pathnameAndSearch)) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.log(`The navigation route is not being used, since the ` +
+              `URL matches this blacklist pattern: ${regExp}`);
+        }
+        return false;
       }
-      return false;
     }
 
     if (this._whitelist.some((regExp) => regExp.test(pathnameAndSearch))) {
@@ -98,15 +100,12 @@ class NavigationRoute extends Route {
         logger.debug(`The navigation route is being used.`);
       }
       return true;
-    } else {
-      if (process.env.NODE_ENV !== 'production') {
-        logger.debug(
-            `The navigation route is not being used, since the ` +
-          `URL being navigated to doesn't match the whitelist.`
-        );
-      }
     }
 
+    if (process.env.NODE_ENV !== 'production') {
+      logger.log(`The navigation route is not being used, since the URL ` +
+          `being navigated to doesn't match the whitelist.`);
+    }
     return false;
   }
 }
