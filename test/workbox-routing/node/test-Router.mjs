@@ -133,9 +133,9 @@ describe(`[workbox-routing] Router`, function() {
         router.registerRoute(route);
       }
 
-      expect(router._routes.get('GET')).to.have.members([getRoute1, getRoute2]);
-      expect(router._routes.get('PUT')).to.have.members([putRoute1, putRoute2]);
-      expect(router._routes.get('POST')).to.have.members([postRoute]);
+      expect(router.routes.get('GET')).to.have.members([getRoute1, getRoute2]);
+      expect(router.routes.get('PUT')).to.have.members([putRoute1, putRoute2]);
+      expect(router.routes.get('POST')).to.have.members([postRoute]);
     });
   });
 
@@ -238,9 +238,9 @@ describe(`[workbox-routing] Router`, function() {
       router.unregisterRoute(getRoute2);
       router.unregisterRoute(putRoute2);
 
-      expect(router._routes.get('GET')).to.have.members([getRoute1]);
-      expect(router._routes.get('PUT')).to.have.members([putRoute1]);
-      expect(router._routes.get('POST')).to.have.members([postRoute]);
+      expect(router.routes.get('GET')).to.have.members([getRoute1]);
+      expect(router.routes.get('PUT')).to.have.members([putRoute1]);
+      expect(router.routes.get('POST')).to.have.members([postRoute]);
     });
 
     it(`should throw when called with a route with a method for which there isn't an array of routes`, function() {
