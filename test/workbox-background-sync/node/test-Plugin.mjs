@@ -35,15 +35,14 @@ describe(`[workbox-background-sync] Plugin`, function() {
       expect(queuePlugin._queue).to.be.instanceOf(Queue);
     });
 
-    it(`should implement fetchDidFail and add requests to the queue`,
-        async function() {
-          sandbox.stub(Queue.prototype, 'addRequest');
-          const queuePlugin = new Plugin('foo');
+    it(`should implement fetchDidFail and add requests to the queue`, async function() {
+      const stub = sandbox.stub(Queue.prototype, 'pushRequest');
+      const queuePlugin = new Plugin('foo');
 
-          queuePlugin.fetchDidFail({request: new Request('/')});
-          expect(Queue.prototype.addRequest.calledOnce).to.be.true;
-          expect(Queue.prototype.addRequest.calledWith(
-              sinon.match.instanceOf(Request))).to.be.true;
-        });
+      queuePlugin.fetchDidFail({request: new Request('/one')});
+      expect(stub.callCount).to.equal(1);
+      expect(stub.args[0][0].request.url).to.equal('/one');
+      expect(stub.args[0][0].request).to.be.instanceOf(Request);
+    });
   });
 });

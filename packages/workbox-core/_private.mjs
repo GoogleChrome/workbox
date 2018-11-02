@@ -9,6 +9,7 @@
 // We either expose defaults or we expose every named export.
 import {DBWrapper} from './_private/DBWrapper.mjs';
 import {deleteDatabase} from './_private/deleteDatabase.mjs';
+import {migrateDb} from './_private/migrateDb.mjs';
 import {WorkboxError} from './_private/WorkboxError.mjs';
 import {assert} from './_private/assert.mjs';
 import {cacheNames} from './_private/cacheNames.mjs';
@@ -22,6 +23,7 @@ import './_version.mjs';
 export {
   DBWrapper,
   deleteDatabase,
+  migrateDb,
   WorkboxError,
   assert,
   cacheNames,

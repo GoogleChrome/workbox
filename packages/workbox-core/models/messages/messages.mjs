@@ -127,8 +127,8 @@ export default {
       `registered.`;
   },
 
-  'queue-replay-failed': ({name, count}) => {
-    return `${count} requests failed, while trying to replay Queue: ${name}.`;
+  'queue-replay-failed': ({name}) => {
+    return `Replaying the background sync queue '${name}' failed.`;
   },
 
   'duplicate-queue-name': ({name}) => {
