@@ -36,9 +36,16 @@ class Router {
    * Initializes a new Router.
    */
   constructor() {
-    // _routes will contain a mapping of HTTP method name ('GET', etc.) to an
-    // array of all the corresponding Route instances that are registered.
     this._routes = new Map();
+  }
+
+  /**
+   * @return {Map<string, Array<workbox.routing.Route>>} routes A `Map` of HTTP
+   * method name ('GET', etc.) to an array of all the corresponding `Route`
+   * instances that are registered.
+   */
+  get routes() {
+    return this._routes;
   }
 
   /**

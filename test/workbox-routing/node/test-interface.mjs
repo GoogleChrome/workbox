@@ -52,4 +52,11 @@ describe(`[workbox-routing] Module Interface`, function() {
       ]);
     });
   });
+
+  describe('Router instances', function() {
+    it(`should expose a 'routes' property`, function() {
+      const router = new routingModule.Router();
+      expect(router).to.have.property('routes');
+    });
+  });
 });
