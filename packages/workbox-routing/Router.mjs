@@ -30,16 +30,22 @@ import './_version.mjs';
  * be used to respond to the request.
  *
  * @memberof workbox.routing
- * @property {Map<string, Array<workbox.routing.Route>>} routes A `Map` of HTTP
- * method name ('GET', etc.) to an array of all the corresponding `Route`
- * instances that are registered.
  */
 class Router {
   /**
    * Initializes a new Router.
    */
   constructor() {
-    this.routes = new Map();
+    this._routes = new Map();
+  }
+
+  /**
+   * @return {Map<string, Array<workbox.routing.Route>>} routes A `Map` of HTTP
+   * method name ('GET', etc.) to an array of all the corresponding `Route`
+   * instances that are registered.
+   */
+  get routes() {
+    return this._routes;
   }
 
   /**
@@ -228,7 +234,7 @@ class Router {
       });
     }
 
-    const routes = this.routes.get(request.method) || [];
+    const routes = this._routes.get(request.method) || [];
     for (const route of routes) {
       let params;
       let matchResult = route.match({url, request, event});
@@ -318,13 +324,13 @@ class Router {
       });
     }
 
-    if (!this.routes.has(route.method)) {
-      this.routes.set(route.method, []);
+    if (!this._routes.has(route.method)) {
+      this._routes.set(route.method, []);
     }
 
     // Give precedence to all of the earlier routes by adding this additional
     // route to the end of the array.
-    this.routes.get(route.method).push(route);
+    this._routes.get(route.method).push(route);
   }
 
   /**
@@ -333,7 +339,7 @@ class Router {
    * @param {workbox.routing.Route} route The route to unregister.
    */
   unregisterRoute(route) {
-    if (!this.routes.has(route.method)) {
+    if (!this._routes.has(route.method)) {
       throw new WorkboxError(
           'unregister-route-but-not-found-with-method', {
             method: route.method,
@@ -341,9 +347,9 @@ class Router {
       );
     }
 
-    const routeIndex = this.routes.get(route.method).indexOf(route);
+    const routeIndex = this._routes.get(route.method).indexOf(route);
     if (routeIndex > -1) {
-      this.routes.get(route.method).splice(routeIndex, 1);
+      this._routes.get(route.method).splice(routeIndex, 1);
     } else {
       throw new WorkboxError('unregister-route-route-not-registered');
     }
