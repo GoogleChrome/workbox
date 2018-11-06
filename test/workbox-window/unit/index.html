@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2018 Google Inc. All Rights Reserved.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Tests</title>
+
+  <script>self.process = self.process || {env: {NODE_ENV: 'dev'}};</script>
+
+  <link href="/node_modules/mocha/mocha.css" rel="stylesheet">
+  <script src="/node_modules/mocha/mocha.js"></script>
+  <script src="/node_modules/sinon/pkg/sinon.js"></script>
+  <script src="/node_modules/chai/chai.js"></script>
+
+  <style>
+  /*
+  body {
+    background: #444;
+    color: #eee;
+  }
+  */
+  </style>
+</head>
+<body>
+  <div id="mocha"></div>
+
+  <script>
+  mocha.ui('bdd');
+  mocha.timeout(5000);
+
+  // Expose chai's expect globally.
+  self.expect = chai.expect;
+  </script>
+
+  <script type="module" src="test-Workbox.mjs"></script>
+
+  <script>
+  addEventListener('load', function() {
+    var runner = mocha.run();
+    var failedTests = [];
+
+    runner.on('end', function(){
+      window.mochaResults = runner.stats;
+      window.mochaResults.reports = failedTests;
+    });
+
+    runner.on('fail', function(test, err){
+      var flattenTitles = function(test){
+        var titles = [];
+        while (test.parent.title){
+          titles.push(test.parent.title);
+          test = test.parent;
+        }
+        return titles.reverse();
+      };
+
+      failedTests.push({
+        name: test.title,
+        result: false,
+        message: err.message,
+        stack: err.stack,
+        titles: flattenTitles(test)
+      });
+    });
+  }, {once: true});
+  </script>
+</body>
+</html>

@@ -49,8 +49,12 @@ module.exports = async (swUrl) => {
     }
 
     navigator.serviceWorker.register(swUrl).then((registration) => {
+      debugger;
+
       return _onStateChangePromise(registration, 'activated');
     }).then(() => {
+      debugger;
+
       // Ensure the page is being controlled by the SW.
       if (navigator.serviceWorker.controller &&
           navigator.serviceWorker.controller.scriptURL === swUrl) {

@@ -78,7 +78,7 @@ class Router {
         }
 
         for (const url of urlsToCache) {
-          const request = new Request(url);
+          const request = new Request(url, {mode: 'no-cors'});
           this.handleRequest({request, event});
         }
       }

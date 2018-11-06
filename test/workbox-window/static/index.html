@@ -1,0 +1,29 @@
+<html>
+<head>
+  <title>workbox-window</title>
+  <script>self.process = self.process || {env: {NODE_ENV: 'dev'}};</script>
+</head>
+<body>
+  <p>You need to manually register sw.js</p>
+
+  <script type="module">
+  import {Workbox} from '../../../packages/workbox-window/Workbox.mjs';
+  // import {Workbox} from '/__WORKBOX/buildFile/workbox-window'
+
+  // Expose on the global object so it can be referenced by webdriver.
+  window.Workbox = Workbox;
+
+  const wb = new Workbox('sw.js');
+  wb.register();
+
+  // (async () => {
+  //   window.reg = await navigator.serviceWorker.register('sw.js');
+
+  //   reg.addEventListener('updatefound', () => {
+  //     console.log('updatefound', reg.installing);
+  //   });
+  // })();
+
+  </script>
+</body>
+</html>

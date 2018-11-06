@@ -29,7 +29,8 @@ gulp.task('build-packages:clean', gulp.series(
 
 gulp.task('build-packages:build', gulp.parallel(
     'build-node-packages',
-    'build-browser-packages'
+    'build-browser-packages',
+    'build-window-packages'
 ));
 
 gulp.task('build-packages', gulp.series(

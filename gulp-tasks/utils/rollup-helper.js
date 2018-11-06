@@ -35,6 +35,7 @@ module.exports = {
     let minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {
       const terserOptions = {
+        module: true,
         mangle: {
           properties: {
             reserved: [
