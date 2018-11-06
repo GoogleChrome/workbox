@@ -44,7 +44,7 @@ gulp.task('publish-assets', gulp.series([
 
 gulp.task('publish', gulp.series([
   'publish:signin',
-  // 'test',
+  'test',
   'publish-lerna',
   () => {
     logHelper.log(`The release was successful!\n\n`);
