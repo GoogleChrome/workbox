@@ -7,10 +7,10 @@
 */
 
 import {createPartialResponse} from './createPartialResponse.mjs';
-import {Plugin} from './Plugin.mjs';
+import {RangeRequestPlugin} from './Plugin.mjs';
 import './_version.mjs';
 
 export {
   createPartialResponse,
-  Plugin,
+  RangeRequestPlugin,
 };

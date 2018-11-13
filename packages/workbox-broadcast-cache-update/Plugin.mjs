@@ -16,7 +16,7 @@ import './_version.mjs';
  *
  * @memberof workbox.broadcastUpdate
  */
-class Plugin {
+class BroadcastCacheUpdatePlugin {
   /**
    * Construct a BroadcastCacheUpdate instance with the passed options and
    * calls its `notifyIfUpdated()` method whenever the plugin's
@@ -55,19 +55,19 @@ class Plugin {
     if (process.env.NODE_ENV !== 'production') {
       assert.isType(cacheName, 'string', {
         moduleName: 'workbox-broadcast-cache-update',
-        className: 'Plugin',
+        className: 'BroadcastCacheUpdatePlugin',
         funcName: 'cacheDidUpdate',
         paramName: 'cacheName',
       });
       assert.isInstance(newResponse, Response, {
         moduleName: 'workbox-broadcast-cache-update',
-        className: 'Plugin',
+        className: 'BroadcastCacheUpdatePlugin',
         funcName: 'cacheDidUpdate',
         paramName: 'newResponse',
       });
       assert.isInstance(request, Request, {
         moduleName: 'workbox-broadcast-cache-update',
-        className: 'Plugin',
+        className: 'BroadcastCacheUpdatePlugin',
         funcName: 'cacheDidUpdate',
         paramName: 'request',
       });
@@ -87,4 +87,4 @@ class Plugin {
   }
 }
 
-export {Plugin};
+export {BroadcastCacheUpdatePlugin};

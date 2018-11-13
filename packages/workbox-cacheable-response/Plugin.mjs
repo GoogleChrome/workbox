@@ -16,7 +16,7 @@ import './_version.mjs';
  *
  * @memberof workbox.cacheableResponse
  */
-class Plugin {
+class CacheableResponsePlugin {
   /**
    * To construct a new cacheable response Plugin instance you must provide at
    * least one of the `config` properties.
@@ -49,4 +49,4 @@ class Plugin {
   }
 }
 
-export {Plugin};
+export {CacheableResponsePlugin};

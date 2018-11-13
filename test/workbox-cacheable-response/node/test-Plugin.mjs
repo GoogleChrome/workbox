@@ -10,7 +10,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 
 import {CacheableResponse} from '../../../packages/workbox-cacheable-response/CacheableResponse.mjs';
-import {Plugin} from '../../../packages/workbox-cacheable-response/Plugin.mjs';
+import {CacheableResponsePlugin as Plugin} from '../../../packages/workbox-cacheable-response/Plugin.mjs';
 
 describe(`[workbox-cacheable-response] Plugin`, function() {
   const STATUSES = [200];

@@ -7,10 +7,10 @@
 */
 
 import {CacheableResponse} from './CacheableResponse.mjs';
-import {Plugin} from './Plugin.mjs';
+import {CacheableResponsePlugin} from './Plugin.mjs';
 import './_version.mjs';
 
 export {
   CacheableResponse,
-  Plugin,
+  CacheableResponsePlugin,
 };

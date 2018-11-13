@@ -10,7 +10,7 @@ import {expect} from 'chai';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import sinon from 'sinon';
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
-import {Plugin} from '../../../packages/workbox-background-sync/Plugin.mjs';
+import {BackgroundSyncPlugin as Plugin} from '../../../packages/workbox-background-sync/Plugin.mjs';
 
 describe(`[workbox-background-sync] Plugin`, function() {
   const sandbox = sinon.createSandbox();

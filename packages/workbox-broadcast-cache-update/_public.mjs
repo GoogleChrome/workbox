@@ -7,14 +7,14 @@
 */
 
 import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.mjs';
-import {Plugin} from './Plugin.mjs';
+import {BroadcastCacheUpdatePlugin} from './Plugin.mjs';
 import {broadcastUpdate} from './broadcastUpdate.mjs';
 import {responsesAreSame} from './responsesAreSame.mjs';
 import './_version.mjs';
 
 export {
   BroadcastCacheUpdate,
-  Plugin,
+  BroadcastCacheUpdatePlugin,
   broadcastUpdate,
   responsesAreSame,
 };

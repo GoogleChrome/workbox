@@ -12,7 +12,7 @@ import sinon from 'sinon';
 import expectError from '../../../infra/testing/expectError';
 import {devOnly} from '../../../infra/testing/env-it';
 
-import {Plugin} from '../../../packages/workbox-cache-expiration/Plugin.mjs';
+import {ExpirationPlugin as Plugin} from '../../../packages/workbox-cache-expiration/Plugin.mjs';
 import {CacheExpiration} from '../../../packages/workbox-cache-expiration/CacheExpiration.mjs';
 import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
 import {executeQuotaErrorCallbacks} from '../../../packages/workbox-core/_private/quota.mjs';

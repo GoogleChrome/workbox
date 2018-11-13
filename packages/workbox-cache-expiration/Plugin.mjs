@@ -32,7 +32,7 @@ import './_version.mjs';
  *
  * @memberof workbox.expiration
  */
-class Plugin {
+class ExpirationPlugin {
   /**
    * @param {Object} config
    * @param {number} [config.maxEntries] The maximum number of entries to cache.
@@ -47,7 +47,7 @@ class Plugin {
       if (!(config.maxEntries || config.maxAgeSeconds)) {
         throw new WorkboxError('max-entries-or-age-required', {
           moduleName: 'workbox-cache-expiration',
-          className: 'Plugin',
+          className: 'ExpirationPlugin',
           funcName: 'constructor',
         });
       }
@@ -55,7 +55,7 @@ class Plugin {
       if (config.maxEntries) {
         assert.isType(config.maxEntries, 'number', {
           moduleName: 'workbox-cache-expiration',
-          className: 'Plugin',
+          className: 'ExpirationPlugin',
           funcName: 'constructor',
           paramName: 'config.maxEntries',
         });
@@ -64,7 +64,7 @@ class Plugin {
       if (config.maxAgeSeconds) {
         assert.isType(config.maxAgeSeconds, 'number', {
           moduleName: 'workbox-cache-expiration',
-          className: 'Plugin',
+          className: 'ExpirationPlugin',
           funcName: 'constructor',
           paramName: 'config.maxAgeSeconds',
         });
@@ -202,13 +202,13 @@ class Plugin {
     if (process.env.NODE_ENV !== 'production') {
       assert.isType(cacheName, 'string', {
         moduleName: 'workbox-cache-expiration',
-        className: 'Plugin',
+        className: 'ExpirationPlugin',
         funcName: 'cacheDidUpdate',
         paramName: 'cacheName',
       });
       assert.isInstance(request, Request, {
         moduleName: 'workbox-cache-expiration',
-        className: 'Plugin',
+        className: 'ExpirationPlugin',
         funcName: 'cacheDidUpdate',
         paramName: 'request',
       });
@@ -249,4 +249,4 @@ class Plugin {
   }
 }
 
-export {Plugin};
+export {ExpirationPlugin};

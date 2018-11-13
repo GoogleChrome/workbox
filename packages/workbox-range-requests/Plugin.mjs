@@ -19,7 +19,7 @@ import './_version.mjs';
  *
  * @memberof workbox.rangeRequests
  */
-class Plugin {
+class RangeRequestPlugin {
   /**
    * @param {Object} options
    * @param {Request} options.request The original request, which may or may not
@@ -44,4 +44,4 @@ class Plugin {
   }
 }
 
-export {Plugin};
+export {RangeRequestPlugin};

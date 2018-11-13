@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Plugin} from 'workbox-background-sync/Plugin.mjs';
+import {BackgroundSyncPlugin} from 'workbox-background-sync/Plugin.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
@@ -175,7 +175,7 @@ const createGtagJsRoute = (cacheName) => {
 const initialize = (options = {}) => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
 
-  const queuePlugin = new Plugin(QUEUE_NAME, {
+  const queuePlugin = new BackgroundSyncPlugin(QUEUE_NAME, {
     maxRetentionTime: MAX_RETENTION_TIME,
     onSync: createOnSyncCallback(options),
   });

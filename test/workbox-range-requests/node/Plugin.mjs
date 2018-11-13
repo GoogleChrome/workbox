@@ -8,7 +8,7 @@
 
 import {expect} from 'chai';
 
-import {Plugin} from '../../../packages/workbox-range-requests/Plugin.mjs';
+import {RangeRequestPlugin as Plugin} from '../../../packages/workbox-range-requests/Plugin.mjs';
 
 describe(`[workbox-range-requests] Plugin`, function() {
   it(`should construct with no values`, function() {

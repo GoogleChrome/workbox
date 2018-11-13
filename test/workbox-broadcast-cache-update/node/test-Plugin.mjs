@@ -12,7 +12,7 @@ import {expect} from 'chai';
 import expectError from '../../../infra/testing/expectError';
 import {devOnly} from '../../../infra/testing/env-it';
 
-import {Plugin} from '../../../packages/workbox-broadcast-cache-update/Plugin.mjs';
+import {BroadcastCacheUpdatePlugin as Plugin} from '../../../packages/workbox-broadcast-cache-update/Plugin.mjs';
 
 describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
   const sandbox = sinon.createSandbox();
