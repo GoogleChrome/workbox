@@ -8,17 +8,17 @@
 
 import {expect} from 'chai';
 
-import {RangeRequestPlugin as Plugin} from '../../../packages/workbox-range-requests/Plugin.mjs';
+import {RangeRequestPlugin} from '../../../packages/workbox-range-requests/RangeRequestPlugin.mjs';
 
 describe(`[workbox-range-requests] Plugin`, function() {
   it(`should construct with no values`, function() {
-    new Plugin();
+    new RangeRequestPlugin();
   });
 
   it(`should return an untouched response if there's no Range: request header`, async function() {
     const response = new Response();
 
-    const plugin = new Plugin();
+    const plugin = new RangeRequestPlugin();
     const resultResponse = await plugin.cachedResponseWillBeUsed({
       request: new Request('/'),
       cachedResponse: response,
@@ -29,7 +29,7 @@ describe(`[workbox-range-requests] Plugin`, function() {
   it(`should return partial response response if there's a valid Range: request header`, async function() {
     const response = new Response('hello, world.');
 
-    const plugin = new Plugin();
+    const plugin = new RangeRequestPlugin();
     const resultResponse = await plugin.cachedResponseWillBeUsed({
       request: new Request('/', {
         headers: {
@@ -46,7 +46,7 @@ describe(`[workbox-range-requests] Plugin`, function() {
 
   it(`should return null when the cachedResponse is null`, async function() {
     const cachedResponse = null;
-    const plugin = new Plugin();
+    const plugin = new RangeRequestPlugin();
     const resultResponse = await plugin.cachedResponseWillBeUsed({
       request: new Request('/', {
         headers: {

@@ -12,7 +12,7 @@ import {expect} from 'chai';
 import expectError from '../../../infra/testing/expectError';
 import {devOnly} from '../../../infra/testing/env-it';
 
-import {BroadcastCacheUpdatePlugin as Plugin} from '../../../packages/workbox-broadcast-cache-update/Plugin.mjs';
+import {BroadcastCacheUpdatePlugin} from '../../../packages/workbox-broadcast-cache-update/BroadcastCacheUpdatePlugin.mjs';
 
 describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
   const sandbox = sinon.createSandbox();
@@ -28,7 +28,7 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
   describe(`cacheDidUpdate`, function() {
     devOnly.it(`should throw when called and cacheName is missing`, function() {
       return expectError(() => {
-        const bcuPlugin = new Plugin();
+        const bcuPlugin = new BroadcastCacheUpdatePlugin();
         const oldResponse = new Response();
         const newResponse = new Response();
         bcuPlugin.cacheDidUpdate({oldResponse, newResponse});
@@ -37,7 +37,7 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
 
     devOnly.it(`should throw when called and newResponse is missing`, function() {
       return expectError(() => {
-        const bcuPlugin = new Plugin();
+        const bcuPlugin = new BroadcastCacheUpdatePlugin();
         const cacheName = 'cache-name';
         const oldResponse = new Response();
         bcuPlugin.cacheDidUpdate({cacheName, oldResponse});
@@ -45,7 +45,7 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
     });
 
     it(`should not throw when called with valid parameters`, function() {
-      const bcuPlugin = new Plugin();
+      const bcuPlugin = new BroadcastCacheUpdatePlugin();
       sandbox.spy(bcuPlugin._broadcastUpdate, 'notifyIfUpdated');
 
       const cacheName = 'cache-name';
@@ -58,7 +58,7 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
     });
 
     it(`should notify and pass all options`, function() {
-      const bcuPlugin = new Plugin();
+      const bcuPlugin = new BroadcastCacheUpdatePlugin();
       sandbox.spy(bcuPlugin._broadcastUpdate, 'notifyIfUpdated');
 
       const cacheName = 'cache-name';
@@ -86,7 +86,7 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
     });
 
     it(`should not notify when no oldResponse supplied`, function() {
-      const bcuPlugin = new Plugin();
+      const bcuPlugin = new BroadcastCacheUpdatePlugin();
       sandbox.spy(bcuPlugin._broadcastUpdate, 'notifyIfUpdated');
 
       const cacheName = 'cache-name';

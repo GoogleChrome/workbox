@@ -10,7 +10,7 @@ import {expect} from 'chai';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import sinon from 'sinon';
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
-import {BackgroundSyncPlugin as Plugin} from '../../../packages/workbox-background-sync/Plugin.mjs';
+import {BackgroundSyncPlugin} from '../../../packages/workbox-background-sync/BackgroundSyncPlugin.mjs';
 
 describe(`[workbox-background-sync] Plugin`, function() {
   const sandbox = sinon.createSandbox();
@@ -31,13 +31,13 @@ describe(`[workbox-background-sync] Plugin`, function() {
 
   describe(`constructor`, function() {
     it(`should store a Queue instance`, async function() {
-      const queuePlugin = new Plugin('foo');
+      const queuePlugin = new BackgroundSyncPlugin('foo');
       expect(queuePlugin._queue).to.be.instanceOf(Queue);
     });
 
     it(`should implement fetchDidFail and add requests to the queue`, async function() {
       const stub = sandbox.stub(Queue.prototype, 'pushRequest');
-      const queuePlugin = new Plugin('foo');
+      const queuePlugin = new BackgroundSyncPlugin('foo');
 
       queuePlugin.fetchDidFail({request: new Request('/one')});
       expect(stub.callCount).to.equal(1);

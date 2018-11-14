@@ -10,7 +10,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 
 import {CacheableResponse} from '../../../packages/workbox-cacheable-response/CacheableResponse.mjs';
-import {CacheableResponsePlugin as Plugin} from '../../../packages/workbox-cacheable-response/Plugin.mjs';
+import {CacheableResponsePlugin} from '../../../packages/workbox-cacheable-response/CacheableResponsePlugin.mjs';
 
 describe(`[workbox-cacheable-response] Plugin`, function() {
   const STATUSES = [200];
@@ -27,13 +27,13 @@ describe(`[workbox-cacheable-response] Plugin`, function() {
 
   describe(`constructor`, function() {
     it(`should construct a properly-configured internal CacheableResponse instance`, function() {
-      const cacheableResponsePlugin = new Plugin({statuses: STATUSES});
+      const cacheableResponsePlugin = new CacheableResponsePlugin({statuses: STATUSES});
       expect(cacheableResponsePlugin._cacheableResponse).to.be.instanceOf(CacheableResponse);
       expect(cacheableResponsePlugin._cacheableResponse._statuses).to.eql(STATUSES);
     });
 
     it(`should expose cacheWillUpdate, which calls cacheableResponse.isResponseCacheable()`, function() {
-      const cacheableResponsePlugin = new Plugin({statuses: STATUSES});
+      const cacheableResponsePlugin = new CacheableResponsePlugin({statuses: STATUSES});
       const isResponseCacheableSpy = sandbox.spy(cacheableResponsePlugin._cacheableResponse, 'isResponseCacheable');
       const response = new Response('');
       cacheableResponsePlugin.cacheWillUpdate({response});
@@ -45,7 +45,7 @@ describe(`[workbox-cacheable-response] Plugin`, function() {
 
   describe(`cacheWillUpdate`, function() {
     it(`should return null for non-cachable response`, function() {
-      const cacheableResponsePlugin = new Plugin({statuses: STATUSES});
+      const cacheableResponsePlugin = new CacheableResponsePlugin({statuses: STATUSES});
       sandbox.stub(cacheableResponsePlugin._cacheableResponse, 'isResponseCacheable').callsFake(() => false);
       expect(cacheableResponsePlugin.cacheWillUpdate({
         response: new Response(),
