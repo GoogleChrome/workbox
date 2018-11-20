@@ -111,7 +111,16 @@ class InjectManifest {
       importScriptsArray.push(...workboxSWImports);
     }
 
-    const originalSWString = await readFileWrapper(readFile, this.config.swSrc);
+    let originalSWString;
+    /**
+     * Check if the mentioned file name is in the webpack assets itself
+     * or fallback to filesystem.
+     */
+    if (compilation.assets['sw.js']) {
+      originalSWString = compilation.assets['sw.js'].source();
+    } else {
+      originalSWString = await readFileWrapper(readFile, this.config.swSrc);
+    }
 
     // compilation.fileDependencies needs absolute paths.
     const absoluteSwSrc = path.resolve(this.config.swSrc);
@@ -140,6 +149,13 @@ ${originalSWString}
 `;
 
     const relSwDest = relativeToOutputPath(compilation, this.config.swDest);
+    /**
+     * Delete if this file already exist,
+     * this is the case where source is also a webpack asset.
+     */
+    if (compilation.assets[relSwDest]) {
+      delete compilation.assets[relSwDest];
+    }
     compilation.assets[relSwDest] = convertStringToAsset(postInjectionSWString);
   }
 
