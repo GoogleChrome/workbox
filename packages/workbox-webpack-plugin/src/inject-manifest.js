@@ -117,7 +117,7 @@ class InjectManifest {
      * or fallback to filesystem.
      */
     if (compilation.assets['sw.js']) {
-      originalSWString = compilation.assets['sw.js'].source();
+      originalSWString = compilation.assets[this.config.swSrc].source();
     } else {
       originalSWString = await readFileWrapper(readFile, this.config.swSrc);
     }
