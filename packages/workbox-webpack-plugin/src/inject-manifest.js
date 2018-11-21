@@ -116,7 +116,7 @@ class InjectManifest {
      * Check if the mentioned file name is in the webpack assets itself
      * or fallback to filesystem.
      */
-    if (compilation.assets['sw.js']) {
+    if (compilation.assets[this.config.swSrc]) {
       originalSWString = compilation.assets[this.config.swSrc].source();
     } else {
       originalSWString = await readFileWrapper(readFile, this.config.swSrc);
