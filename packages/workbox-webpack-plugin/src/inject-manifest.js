@@ -17,6 +17,7 @@
 const assert = require('assert');
 const path = require('path');
 const {getManifest} = require('workbox-build');
+const {ConcatSource} = require('webpack-sources');
 
 const convertStringToAsset = require('./lib/convert-string-to-asset');
 const getDefaultConfig = require('./lib/get-default-config');
@@ -51,13 +52,16 @@ class InjectManifest {
    * for all supported options and defaults.
    */
   constructor(config = {}) {
-    assert(typeof config.swSrc === 'string', `swSrc must be set to the path ` +
-      `to an existing service worker file.`);
+    assert(typeof config.swSrc === 'string' ||
+      typeof config.swDest === 'string',
+      `Either swSrc or swDest should be set to the path ` +
+      `of an existing service worker file.`);
 
     this.config = Object.assign(getDefaultConfig(), {
-      // Default to using the same filename as the swSrc file, since that's
-      // provided here. (In GenerateSW, that's not available.)
-      swDest: path.basename(config.swSrc),
+      // If swDest is not set, default to using the same filename
+      // as the swSrc file, since that's provided here. (In GenerateSW,
+      // that's not available.)
+      swDest: config.swDest || path.basename(config.swSrc),
     }, config);
   }
 
@@ -119,20 +123,6 @@ class InjectManifest {
       importScriptsArray.push(...workboxSWImports);
     }
 
-    const originalSWString = await readFileWrapper(readFile, this.config.swSrc);
-
-    // compilation.fileDependencies needs absolute paths.
-    const absoluteSwSrc = path.resolve(this.config.swSrc);
-    if (Array.isArray(compilation.fileDependencies)) {
-      // webpack v3
-      if (compilation.fileDependencies.indexOf(absoluteSwSrc) === -1) {
-        compilation.fileDependencies.push(absoluteSwSrc);
-      }
-    } else if ('add' in compilation.fileDependencies) {
-      // webpack v4; no need to check for membership first, since it's a Set.
-      compilation.fileDependencies.add(absoluteSwSrc);
-    }
-
     const importScriptsString = importScriptsArray
       .map(JSON.stringify)
       .join(', ');
@@ -144,11 +134,40 @@ class InjectManifest {
 
     const postInjectionSWString = `importScripts(${importScriptsString});
 ${setConfigString}
-${originalSWString}
 `;
 
     const relSwDest = relativeToOutputPath(compilation, this.config.swDest);
-    compilation.assets[relSwDest] = convertStringToAsset(postInjectionSWString);
+
+    if (this.config.swSrc) {
+      // We're adding a new source file to the build:
+      const originalSWString = await readFileWrapper(
+        readFile, this.config.swSrc);
+
+      // compilation.fileDependencies needs absolute paths.
+      const absoluteSwSrc = path.resolve(this.config.swSrc);
+      if (Array.isArray(compilation.fileDependencies)) {
+        // webpack v3
+        if (compilation.fileDependencies.indexOf(absoluteSwSrc) === -1) {
+          compilation.fileDependencies.push(absoluteSwSrc);
+        }
+      } else if ('add' in compilation.fileDependencies) {
+        // webpack v4; no need to check for membership first, since it's a Set.
+        compilation.fileDependencies.add(absoluteSwSrc);
+      }
+      compilation.assets[relSwDest] = convertStringToAsset(
+        postInjectionSWString + originalSWString
+      );
+    } else {
+      assert(!!compilation.assets[relSwDest],
+        `If swSrc is not set, swDest must be the path ` +
+        `of an existing output file to update`);
+
+      // We're transforming an existing source file:
+      compilation.assets[relSwDest] = new ConcatSource(
+        postInjectionSWString,
+        compilation.assets[relSwDest]
+      );
+    }
   }
 
   /**
