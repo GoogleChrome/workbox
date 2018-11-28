@@ -178,5 +178,43 @@ describe(`workbox-core fetchWrapper`, function() {
       const fetchRequest = global.fetch.args[0][0];
       expect(fetchRequest.url).to.equal('/test/failingRequest/1');
     });
+
+    it(`should call the fetchDidSucceed method in plugins`, async function() {
+      const originalRequest = new Request('/testing');
+
+      sandbox.stub(global, 'fetch').resolves(new Response('', {
+        headers: {
+          'x-count': 1,
+        },
+      }));
+
+      const fetchDidSucceed = sandbox.stub().callsFake(({response}) => {
+        const count = response.headers.get('x-count');
+        return new Response('', {
+          headers: {
+            'x-count': count + 1,
+          },
+        });
+      });
+
+      const finalResponse = await fetchWrapper.fetch({
+        request: originalRequest,
+        plugins: [
+          // Two plugins, both with the same callback.
+          {fetchDidSucceed},
+          {fetchDidSucceed},
+        ],
+      });
+
+      expect(fetchDidSucceed.callCount).to.eql(2);
+
+      for (const args of fetchDidSucceed.args) {
+        expect(args[0].request).to.be.instanceOf(Request);
+        expect(args[0].response).to.be.instanceOf(Response);
+      }
+
+      const finalCount = finalResponse.headers.get('x-count');
+      expect(finalCount).to.eql(3);
+    });
   });
 });

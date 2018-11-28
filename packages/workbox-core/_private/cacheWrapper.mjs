@@ -133,7 +133,8 @@ const matchWrapper = async ({
       logger.debug(`No cached response found in '${cacheName}'.`);
     }
   }
-  for (let plugin of plugins) {
+
+  for (const plugin of plugins) {
     if (pluginEvents.CACHED_RESPONSE_WILL_BE_USED in plugin) {
       cachedResponse = await plugin[pluginEvents.CACHED_RESPONSE_WILL_BE_USED]
           .call(plugin, {
@@ -154,6 +155,7 @@ const matchWrapper = async ({
       }
     }
   }
+
   return cachedResponse;
 };
 
