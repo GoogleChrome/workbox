@@ -13,6 +13,11 @@ const makeServiceWorkerEnv = require('service-worker-mock');
 const sinon = require('sinon');
 const vm = require('vm');
 
+// See https://github.com/chaijs/chai/issues/697
+function stringifyFunctionsInArray(arr) {
+  return arr.map((item) => typeof item === 'function' ? item.toString() : item);
+}
+
 function setupSpiesAndContext() {
   const cacheableResponsePluginSpy = sinon.spy();
   class CacheableResponsePlugin {
@@ -89,7 +94,9 @@ function setupSpiesAndContext() {
 function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
   for (const [method, spy] of Object.entries(methodsToSpies)) {
     if (spy.called) {
-      expect(spy.args).to.deep.equal(expectedMethodCalls[method],
+      const args = spy.args.map(
+          (arg) => Array.isArray(arg) ? stringifyFunctionsInArray(arg) : arg);
+      expect(args).to.deep.equal(expectedMethodCalls[method],
           `while testing method calls for ${method}`);
     } else {
       expect(expectedMethodCalls[method],

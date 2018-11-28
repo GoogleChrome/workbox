@@ -32,7 +32,7 @@ module.exports = baseSchema.keys({
         'POST',
         'PUT'
     ),
-    urlPattern: [regExpObject, joi.string()],
+    urlPattern: [regExpObject, joi.string(), joi.func()],
     handler: [joi.func(), joi.string().valid(
         'cacheFirst',
         'cacheOnly',
