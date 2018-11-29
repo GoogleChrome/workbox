@@ -32,5 +32,6 @@ module.exports = (manifestEntries) => {
   // There's a hash created of the serialized JSON data, and we want the hash to
   // be the same if the data is the same, without any sort-order variation.
   const entriesJson = stringify(sortedEntries, {space: 2});
-  return `self.${PRECACHE_MANIFEST_VAR} = ${entriesJson};`;
+  return `self.${PRECACHE_MANIFEST_VAR} = (self.${PRECACHE_MANIFEST_VAR} || ` +
+      `[]).concat(${entriesJson});`;
 };
