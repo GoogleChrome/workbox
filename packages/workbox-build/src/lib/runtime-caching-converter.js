@@ -94,7 +94,7 @@ function getOptionsString(options = {}) {
       // expiration and cacheableResponse
       default: {
         pluginCode = `new ${pluginString}(${stringifyWithoutComments(
-          pluginConfig
+            pluginConfig
         )})`;
       }
     }
