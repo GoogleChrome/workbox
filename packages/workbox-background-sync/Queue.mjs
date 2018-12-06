@@ -182,7 +182,7 @@ class Queue {
     await this._queueStore[`${operation}Entry`](entry);
     await this.registerSync();
     if (process.env.NODE_ENV !== 'production') {
-      logger.log(`Request for '${getFriendlyURL(storableRequest.url)}' has ` +
+      logger.log(`Request for '${getFriendlyURL(request.url)}' has ` +
           `been added to background sync queue '${this._name}'.`);
     }
   }
