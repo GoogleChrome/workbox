@@ -7,10 +7,10 @@
 */
 
 import {CacheExpiration} from './CacheExpiration.mjs';
-import {ExpirationPlugin} from './ExpirationPlugin.mjs';
+import {ExpirationPlugin as Plugin} from './ExpirationPlugin.mjs';
 import './_version.mjs';
 
 export {
   CacheExpiration,
-  ExpirationPlugin,
+  Plugin,
 };

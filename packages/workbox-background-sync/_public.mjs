@@ -7,10 +7,10 @@
 */
 
 import {Queue} from './Queue.mjs';
-import {BackgroundSyncPlugin} from './BackgroundSyncPlugin.mjs';
+import {BackgroundSyncPlugin as Plugin} from './BackgroundSyncPlugin.mjs';
 import './_version.mjs';
 
 export {
   Queue,
-  BackgroundSyncPlugin,
+  Plugin,
 };
