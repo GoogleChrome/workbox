@@ -132,9 +132,8 @@ module.exports = (runtimeCaching = []) => {
       throw new Error(errors['invalid-network-timeout-seconds']);
     }
 
-    // urlPattern might be either a string or a RegExp object.
-    // If it's a string, it needs to be quoted. If it's a RegExp, it should
-    // be used as-is.
+    // urlPattern might be a string, a RegExp object, or a function.
+    // If it's a string, it needs to be quoted.
     const matcher = typeof entry.urlPattern === 'string' ?
       JSON.stringify(entry.urlPattern) :
       entry.urlPattern;

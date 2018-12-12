@@ -560,6 +560,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     const REGEXP_URL_PATTERN = /test/;
     const STRING_URL_PATTERN = '/test';
     const STRING_HANDLER = 'cacheFirst';
+    const FUNCTION_URL_PATTERN = (params) => true;
 
     it(`should reject when 'urlPattern' is missing from 'runtimeCaching'`, async function() {
       const handler = STRING_HANDLER;
@@ -648,6 +649,51 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         registerRoute: [[STRING_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+      }});
+    });
+
+    it(`should support a single function 'urlPattern' and a string 'handler'`, async function() {
+      const swDest = tempy.file();
+      const runtimeCaching = [{
+        urlPattern: FUNCTION_URL_PATTERN,
+        handler: STRING_HANDLER,
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {
+        runtimeCaching,
+        swDest,
+      });
+
+      const {count, size, warnings} = await generateSW(options);
+      expect(warnings).to.be.empty;
+      expect(count).to.eql(6);
+      expect(size).to.eql(2604);
+      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
+        [STRING_HANDLER]: [[]],
+        importScripts: [[WORKBOX_SW_CDN_URL]],
+        suppressWarnings: [[]],
+        precacheAndRoute: [[[{
+          url: 'index.html',
+          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+        }, {
+          url: 'page-1.html',
+          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        }, {
+          url: 'page-2.html',
+          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        }, {
+          url: 'styles/stylesheet-1.css',
+          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        }, {
+          url: 'styles/stylesheet-2.css',
+          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        }, {
+          url: 'webpackEntry.js',
+          revision: '5b652181a25e96f255d0490203d3c47e',
+        }], {}]],
+        // We need to stringify the function to get it to pass validation.
+        // The service-worker-runtime.js validator will do the same.
+        // See https://github.com/chaijs/chai/issues/697
+        registerRoute: [[FUNCTION_URL_PATTERN.toString(), STRING_HANDLER, DEFAULT_METHOD]],
       }});
     });
 
