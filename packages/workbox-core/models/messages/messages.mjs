@@ -85,9 +85,9 @@ export default {
     }
 
     return `Two of the entries passed to ` +
-      `'workbox-precaching.PrecacheController.addToCacheList()' had matching ` +
-      `URLs but different revision details. This means workbox-precaching ` +
-      `is unable to determine cache the asset correctly. Please remove one ` +
+      `'workbox-precaching.PrecacheController.addToCacheList()' had the URL ` +
+      `${firstEntry._entryId} but different revision details. Workbox is ` +
+      `is unable to cache and version the asset correctly. Please remove one ` +
       `of the entries.`;
   },
 
