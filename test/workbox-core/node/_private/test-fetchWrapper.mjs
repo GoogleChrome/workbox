@@ -197,7 +197,10 @@ describe(`workbox-core fetchWrapper`, function() {
         });
       });
 
+      const event = new FetchEvent('fetch', {request: originalRequest});
+
       const finalResponse = await fetchWrapper.fetch({
+        event,
         request: originalRequest,
         plugins: [
           // Two plugins, both with the same callback.
