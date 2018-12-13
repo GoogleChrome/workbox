@@ -43,6 +43,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     const keys = await runInSW('cachesKeys');
     expect(keys).to.eql([
       'workbox-precache-http://localhost:3004/test/workbox-precaching/static/precache-and-update/',
+      'workbox-precache-http://localhost:3004/test/workbox-precaching/static/precache-and-update/-temp',
     ]);
 
     // Check that the cached requests are what we expect for sw-1.js
