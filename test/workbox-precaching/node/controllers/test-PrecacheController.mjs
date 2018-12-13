@@ -688,12 +688,12 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(hasCache).to.equal(false);
     });
 
-    it(`should delete the temporary cache after activation`, async function() {
+    it(`should not delete the temporary cache after activation`, async function() {
       const precacheController = new PrecacheController();
       await precacheController.activate();
 
       const hasCache = await caches.has(precacheController._getTempCacheName());
-      expect(hasCache).to.equal(false);
+      expect(hasCache).to.equal(true);
     });
 
     prodOnly.it(`shouldn't log anything in production`, async function() {
