@@ -211,6 +211,7 @@ describe(`workbox-core fetchWrapper`, function() {
       for (const args of fetchDidSucceed.args) {
         expect(args[0].request).to.be.instanceOf(Request);
         expect(args[0].response).to.be.instanceOf(Response);
+        expect(args[0].event).to.be.instanceOf(FetchEvent);
       }
 
       const finalCount = finalResponse.headers.get('x-count');

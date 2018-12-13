@@ -113,6 +113,7 @@ const wrappedFetch = async ({
       if (pluginEvents.FETCH_DID_SUCCEED in plugin) {
         fetchResponse = await plugin[pluginEvents.FETCH_DID_SUCCEED]
             .call(plugin, {
+              event,
               request: pluginFilteredRequest,
               response: fetchResponse,
             });
