@@ -41,7 +41,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
 
     // Check that only the precache cache was created.
     const keys = await runInSW('cachesKeys');
-    expect(keys).sort().to.eql([
+    expect(keys.sort()).to.eql([
       'workbox-precache-http://localhost:3004/test/workbox-precaching/static/precache-and-update/',
       'workbox-precache-http://localhost:3004/test/workbox-precaching/static/precache-and-update/-temp',
     ]);
