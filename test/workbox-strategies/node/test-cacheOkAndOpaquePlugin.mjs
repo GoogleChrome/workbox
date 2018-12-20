@@ -10,12 +10,14 @@ import {expect} from 'chai';
 import plugin from '../../../packages/workbox-strategies/plugins/cacheOkAndOpaquePlugin.mjs';
 
 describe(`[workbox-strategies] cacheOkAndOpaquePlugin`, function() {
-  it(`should return null if status is not ok and status is not opaque`, function() {
-    const response = new Response('Hello', {
-      status: 404,
+  for (const status of [206, 404]) {
+    it(`should return null when status is ${status}`, function() {
+      const response = new Response('Hello', {
+        status,
+      });
+      expect(plugin.cacheWillUpdate({response})).to.equal(null);
     });
-    expect(plugin.cacheWillUpdate({response})).to.equal(null);
-  });
+  }
 
   it(`should return Response if status is opaque`, function() {
     const response = new Response('Hello', {
