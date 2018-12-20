@@ -92,7 +92,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     // Activate the second service worker
     await activateAndControlSW(SW_2_URL);
     // Add a slight delay for the caching operation to complete.
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Ensure that the new assets were requested and cache busted.
     if (needsCacheBustSearchParam) {
