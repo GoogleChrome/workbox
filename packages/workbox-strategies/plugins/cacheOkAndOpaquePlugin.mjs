@@ -10,8 +10,8 @@ import '../_version.mjs';
 
 export default {
   /**
-   * Return return a response (i.e. allow caching) if the
-   * response is ok (i.e. 200) or is opaque.
+   * Returns a valid response (to allow caching) if the status is 200 (OK) or
+   * 0 (opaque).
    *
    * @param {Object} options
    * @param {Response} options.response
@@ -20,7 +20,7 @@ export default {
    * @private
    */
   cacheWillUpdate: ({response}) => {
-    if (response.ok || response.status === 0) {
+    if (response.status === 200 || response.status === 0) {
       return response;
     }
     return null;

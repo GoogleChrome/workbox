@@ -161,7 +161,7 @@ const matchWrapper = async ({
 
 /**
  * This method will call cacheWillUpdate on the available plugins (or use
- * response.ok) to determine if the Response is safe and valid to cache.
+ * status === 200) to determine if the Response is safe and valid to cache.
  *
  * @param {Object} options
  * @param {Request} options.request
@@ -204,7 +204,7 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
 
   if (!pluginsUsed) {
     if (process.env.NODE_ENV !== 'production') {
-      if (!responseToCache.ok) {
+      if (!responseToCache.status === 200) {
         if (responseToCache.status === 0) {
           logger.warn(`The response for '${request.url}' is an opaque ` +
             `response. The caching strategy that you're using will not ` +
@@ -216,7 +216,7 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
         }
       }
     }
-    responseToCache = responseToCache.ok ? responseToCache : null;
+    responseToCache = responseToCache.status === 200 ? responseToCache : null;
   }
 
   return responseToCache ? responseToCache : null;
