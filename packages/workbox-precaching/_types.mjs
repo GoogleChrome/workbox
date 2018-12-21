@@ -34,7 +34,7 @@ import './_version.mjs';
 /**
  * @typedef {Object} PrecacheEntry
  * @property {string} url URL to precache.
- * @property {string} revision Revision information for the URL.
+ * @property {string} [revision] Revision information for the URL.
  *
  * @memberof workbox.precaching
  */
@@ -51,7 +51,7 @@ import './_version.mjs';
  * @param {Object} context
  * @param {URL} context.url The request's URL.
  * @return {Array<URL>} To add additional urls to test, return an Array of
- * URL's. Please note that these **should not be Strings**, but URL objects.
+ * URL's. Please note that these **should not be strings**, but URL objects.
  *
  * @memberof workbox.precaching
  */

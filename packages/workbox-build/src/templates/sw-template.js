@@ -45,7 +45,6 @@ workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
 <% } else { %>
 if (Array.isArray(self.__precacheManifest)) {
-  workbox.precaching.suppressWarnings();
   workbox.precaching.precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
 }
 <% } %>

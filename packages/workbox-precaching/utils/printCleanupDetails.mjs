@@ -7,47 +7,32 @@
 */
 
 import {logger} from 'workbox-core/_private/logger.mjs';
+
 import '../_version.mjs';
 
-const logGroup = (groupTitle, urls) => {
+const logGroup = (groupTitle, requests) => {
   logger.groupCollapsed(groupTitle);
 
-  urls.forEach((url) => {
-    logger.log(url);
-  });
+  for (const request of requests) {
+    logger.log(request.url);
+  }
 
   logger.groupEnd();
 };
 
 /**
- * @param {Array<string>} deletedCacheRequests
- * @param {Array<string>} deletedRevisionDetails
+ * @param {Array<Request>} deletedCacheRequests
  *
  * @private
  * @memberof module:workbox-precachig
  */
-export default (deletedCacheRequests, deletedRevisionDetails) => {
-  if (deletedCacheRequests.length === 0 &&
-    deletedRevisionDetails.length === 0) {
-    return;
+export default (deletedCacheRequests) => {
+  const deletionCount = deletedCacheRequests.length;
+  if (deletionCount > 0) {
+    logger.groupCollapsed(`During precaching cleanup, ` +
+        `${deletionCount} cached ` +
+        `request${deletionCount === 1 ? ' was' : 's were'} deleted.`);
+    logGroup('Deleted Cache Requests', deletedCacheRequests);
+    logger.groupEnd();
   }
-
-  const cacheDeleteCount = deletedCacheRequests.length;
-  const revisionDeleteCount = deletedRevisionDetails.length;
-
-  const cacheDeleteText =
-    `${cacheDeleteCount} cached ` +
-    `request${cacheDeleteCount === 1 ? ' was' : 's were'} deleted`;
-  const revisionDeleteText =
-    `${revisionDeleteCount} ` +
-    `${revisionDeleteCount === 1 ? 'entry' : 'entries'} ` +
-    `${revisionDeleteCount === 1 ? 'was' : 'were'} deleted from IndexedDB.`;
-
-  logger.groupCollapsed(`During precaching cleanup, ${cacheDeleteText} ` +
-  `and ${revisionDeleteText}`);
-
-  logGroup('Deleted Cache Requests', deletedCacheRequests);
-  logGroup('Revision Details Deleted from DB', deletedRevisionDetails);
-
-  logger.groupEnd();
 };

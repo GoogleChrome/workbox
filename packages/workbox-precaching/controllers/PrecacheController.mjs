@@ -6,17 +6,17 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
-import PrecacheEntry from '../models/PrecacheEntry.mjs';
-import PrecachedDetailsModel from '../models/PrecachedDetailsModel.mjs';
-import showWarningsIfNeeded from '../utils/showWarningsIfNeeded.mjs';
-import printInstallDetails from '../utils/printInstallDetails.mjs';
-import printCleanupDetails from '../utils/printCleanupDetails.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
+import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+
 import cleanRedirect from '../utils/cleanRedirect.mjs';
+import createCacheKey from '../utils/createCacheKey.mjs';
+import printCleanupDetails from '../utils/printCleanupDetails.mjs';
+import printInstallDetails from '../utils/printInstallDetails.mjs';
+
 import '../_version.mjs';
 
 /**
@@ -28,12 +28,12 @@ class PrecacheController {
   /**
    * Create a new PrecacheController.
    *
-   * @param {string} cacheName
+   * @param {string} [cacheName] An optional name for the cache, to override
+   * the default precache name.
    */
   constructor(cacheName) {
     this._cacheName = cacheNames.getPrecacheName(cacheName);
-    this._entriesToCacheMap = new Map();
-    this._precacheDetailsModel = new PrecachedDetailsModel(this._cacheName);
+    this._urlsToCacheKeys = new Map();
   }
 
   /**
@@ -42,8 +42,7 @@ class PrecacheController {
    *
    * @param {
    * Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>
-   * } entries Array of entries to
-   * precache.
+   * } entries Array of entries to precache.
    */
   addToCacheList(entries) {
     if (process.env.NODE_ENV !== 'production') {
@@ -55,97 +54,24 @@ class PrecacheController {
       });
     }
 
-    entries.map((userEntry) => {
-      this._addEntryToCacheList(
-          this._parseEntry(userEntry)
-      );
-    });
-  }
-
-  /**
-   * This method returns a precache entry.
-   *
-   * @private
-   * @param {string|Object} input
-   * @return {PrecacheEntry}
-   */
-  _parseEntry(input) {
-    switch (typeof input) {
-      case 'string': {
-        if (process.env.NODE_ENV !== 'production') {
-          if (input.length === 0) {
-            throw new WorkboxError(
-                'add-to-cache-list-unexpected-type', {
-                  entry: input,
-                }
-            );
-          }
-        }
-
-        return new PrecacheEntry(input, input, input);
-      }
-      case 'object': {
-        if (process.env.NODE_ENV !== 'production') {
-          if (!input || !input.url) {
-            throw new WorkboxError(
-                'add-to-cache-list-unexpected-type', {
-                  entry: input,
-                }
-            );
-          }
-        }
-
-        return new PrecacheEntry(
-            input, input.url, input.revision || input.url, !!input.revision);
-      }
-      default:
-        throw new WorkboxError('add-to-cache-list-unexpected-type', {
-          entry: input,
-        });
+    for (const entry of entries) {
+      const {cacheKey, url} = createCacheKey(entry);
+      this._urlsToCacheKeys.set(url, cacheKey);
     }
   }
 
   /**
-   * Adds an entry to the precache list, accounting for possible duplicates.
-   *
-   * @private
-   * @param {PrecacheEntry} entryToAdd
-   */
-  _addEntryToCacheList(entryToAdd) {
-    // Check if the entry is already part of the map
-    const existingEntry = this._entriesToCacheMap.get(entryToAdd._entryId);
-    if (!existingEntry) {
-      this._entriesToCacheMap.set(entryToAdd._entryId, entryToAdd);
-      return;
-    }
-
-    // Duplicates are fine, but make sure the revision information
-    // is the same.
-    if (existingEntry._revision !== entryToAdd._revision) {
-      throw new WorkboxError('add-to-cache-list-conflicting-entries', {
-        firstEntry: existingEntry._originalInput,
-        secondEntry: entryToAdd._originalInput,
-      });
-    }
-  }
-
-  /**
-   * Call this method from a service work install event to start
-   * precaching assets.
+   * Call this method from the service worker install event to precache new and
+   * updated assets.
    *
    * @param {Object} options
-   * @param {boolean} [options.suppressWarnings] Suppress warning messages.
    * @param {Event} [options.event] The install event (if needed).
    * @param {Array<Object>} [options.plugins] Plugins to be used for fetching
-   *     and caching during install.
+   * and caching during install.
    * @return {Promise<workbox.precaching.InstallResult>}
    */
-  async install({suppressWarnings = false, event, plugins} = {}) {
+  async install({event, plugins} = {}) {
     if (process.env.NODE_ENV !== 'production') {
-      if (suppressWarnings !== true) {
-        showWarningsIfNeeded(this._entriesToCacheMap);
-      }
-
       if (plugins) {
         assert.isArray(plugins, {
           moduleName: 'workbox-precaching',
@@ -156,88 +82,63 @@ class PrecacheController {
       }
     }
 
-    // Empty the temporary cache.
-    // NOTE: We remove all entries instead of calling caches.delete(), as the
-    // cache may be marked for deletion but still exist.
-    // See https://github.com/GoogleChrome/workbox/issues/1368
-    const tempCache = await caches.open(this._getTempCacheName());
-    const requests = await tempCache.keys();
-    await Promise.all(requests.map((request) => {
-      return tempCache.delete(request);
-    }));
+    const urlsToPrecache = [];
+    const urlsAlreadyPrecached = [];
 
-    const entriesToPrecache = [];
-    const entriesAlreadyPrecached = [];
+    const cache = await caches.open(this._cacheName);
+    const alreadyCachedRequests = await cache.keys();
+    const alreadyCachedUrls = new Set(alreadyCachedRequests.map(
+        (request) => request.url));
 
-    for (const precacheEntry of this._entriesToCacheMap.values()) {
-      if (await this._precacheDetailsModel._isEntryCached(
-          this._cacheName, precacheEntry)) {
-        entriesAlreadyPrecached.push(precacheEntry);
+    for (const cacheKey of this._urlsToCacheKeys.values()) {
+      if (alreadyCachedUrls.has(cacheKey)) {
+        urlsAlreadyPrecached.push(cacheKey);
       } else {
-        entriesToPrecache.push(precacheEntry);
+        urlsToPrecache.push(cacheKey);
       }
     }
 
-    // Wait for all requests to be cached.
-    await Promise.all(entriesToPrecache.map((precacheEntry) => {
-      return this._cacheEntryInTemp({event, plugins, precacheEntry});
-    }));
+    const precacheRequests = urlsToPrecache.map((url) => {
+      return this._addUrlToCache({event, plugins, url});
+    });
+    await Promise.all(precacheRequests);
 
     if (process.env.NODE_ENV !== 'production') {
-      printInstallDetails(entriesToPrecache, entriesAlreadyPrecached);
+      printInstallDetails(urlsToPrecache, urlsAlreadyPrecached);
     }
 
     return {
-      updatedEntries: entriesToPrecache,
-      notUpdatedEntries: entriesAlreadyPrecached,
+      updatedUrls: urlsToPrecache,
+      notUpdatedUrls: urlsAlreadyPrecached,
     };
   }
 
   /**
-   * Takes the current set of temporary files and moves them to the final
-   * cache, deleting the temporary cache once copying is complete.
+   * Call this method from the service worker activate event to delete assets
+   * that are no longer present in the current precache manifest.
    *
-   * @param {Object} options
-   * @param {Array<Object>} options.plugins Plugins to be used for fetching
-   * and caching during install.
-   * @return {
-   * Promise<workbox.precaching.CleanupResult>}
-   * Resolves with an object containing details of the deleted cache requests
-   * and precache revision details.
+   * @return {Promise<workbox.precaching.CleanupResult>} Resolves with an object
+   * containing details of the deleted cache requests and precache revision
+   * details.
    */
-  async activate(options = {}) {
-    const tempCache = await caches.open(this._getTempCacheName());
+  async activate() {
+    const cache = await caches.open(this._cacheName);
+    const currentlyCachedRequests = await cache.keys();
+    const expectedCacheKeys = new Set(this._urlsToCacheKeys.values());
 
-    const requests = await tempCache.keys();
-    // Process each request/response one at a time, deleting the temporary entry
-    // when done, to help avoid triggering quota errors.
-    for (const request of requests) {
-      const response = await tempCache.match(request);
-      await cacheWrapper.put({
-        cacheName: this._cacheName,
-        request,
-        response,
-        plugins: options.plugins,
-      });
-      await tempCache.delete(request);
+    const deletedCacheRequests = [];
+    for (const request of currentlyCachedRequests) {
+      if (!expectedCacheKeys.has(request.url)) {
+        await cache.delete(request);
+        deletedCacheRequests.push(request);
+      }
     }
 
-    // Remove the temporary Cache object, now that all the entries are copied.
-    // See https://github.com/GoogleChrome/workbox/issues/1735
-    await caches.delete(this._getTempCacheName());
+    if (process.env.NODE_ENV !== 'production') {
+      printCleanupDetails(deletedCacheRequests);
+    }
 
-    return this._cleanup();
-  }
-
-  /**
-   * Returns the name of the temporary cache.
-   *
-   * @return {string}
-   *
-   * @private
-   */
-  _getTempCacheName() {
-    return `${this._cacheName}-temp`;
+    return {deletedCacheRequests};
   }
 
   /**
@@ -251,21 +152,17 @@ class PrecacheController {
    *
    * @private
    * @param {Object} options
-   * @param {BaseCacheEntry} options.precacheEntry The entry to fetch and cache.
+   * @param {string} options.url The URL to fetch and cache.
    * @param {Event} [options.event] The install event (if passed).
    * @param {Array<Object>} [options.plugins] An array of plugins to apply to
-   *     fetch and caching.
-   * @return {Promise<boolean>} Returns a promise that resolves once the entry
-   *     has been fetched and cached or skipped if no update is needed. The
-   *     promise resolves with true if the entry was cached / updated and
-   *     false if the entry is already cached and up-to-date.
+   * fetch and caching.
    */
-  async _cacheEntryInTemp({precacheEntry, event, plugins}) {
+  async _addUrlToCache({url, event, plugins}) {
+    const request = new Request(url, {credentials: 'same-origin'});
     let response = await fetchWrapper.fetch({
-      request: precacheEntry._networkRequest,
       event,
-      fetchOptions: null,
       plugins,
+      request,
     });
 
     // Allow developers to override the default logic about what is and isn't
@@ -289,7 +186,7 @@ class PrecacheController {
     // we get back an invalid response.
     if (!isValidResponse) {
       throw new WorkboxError('bad-precaching-response', {
-        url: precacheEntry._networkRequest.url,
+        url,
         status: response.status,
       });
     }
@@ -299,119 +196,36 @@ class PrecacheController {
     }
 
     await cacheWrapper.put({
-      cacheName: this._getTempCacheName(),
-      request: precacheEntry._cacheRequest,
-      response,
       event,
       plugins,
-    });
-
-    await this._precacheDetailsModel._addEntry(precacheEntry);
-
-    return true;
-  }
-
-  /**
-   * Compare the URLs and determines which assets are no longer required
-   * in the cache.
-   *
-   * This should be called in the service worker activate event.
-   *
-   * @return {
-   * Promise<workbox.precaching.CleanupResult>}
-   * Resolves with an object containing details of the deleted cache requests
-   * and precache revision details.
-   *
-   * @private
-   */
-  async _cleanup() {
-    const expectedCacheUrls = [];
-    this._entriesToCacheMap.forEach((entry) => {
-      const fullUrl = new URL(entry._cacheRequest.url, location).toString();
-      expectedCacheUrls.push(fullUrl);
-    });
-
-    const [deletedCacheRequests, deletedRevisionDetails] = await Promise.all([
-      this._cleanupCache(expectedCacheUrls),
-      this._cleanupDetailsModel(expectedCacheUrls),
-    ]);
-
-    if (process.env.NODE_ENV !== 'production') {
-      printCleanupDetails(deletedCacheRequests, deletedRevisionDetails);
-    }
-
-    return {
-      deletedCacheRequests,
-      deletedRevisionDetails,
-    };
-  }
-
-  /**
-   * Goes through all the cache entries and removes any that are
-   * outdated.
-   *
-   * @private
-   * @param {Array<string>} expectedCacheUrls Array of URLs that are
-   * expected to be cached.
-   * @return {Promise<Array<string>>} Resolves to an array of URLs
-   * of cached requests that were deleted.
-   */
-  async _cleanupCache(expectedCacheUrls) {
-    if (!await caches.has(this._cacheName)) {
-      // Cache doesn't exist, so nothing to delete
-      return [];
-    }
-
-    const cache = await caches.open(this._cacheName);
-    const cachedRequests = await cache.keys();
-    const cachedRequestsToDelete = cachedRequests.filter((cachedRequest) => {
-      return !expectedCacheUrls.includes(
-          new URL(cachedRequest.url, location).toString()
-      );
-    });
-
-    await Promise.all(
-        cachedRequestsToDelete.map((cacheUrl) => cache.delete(cacheUrl))
-    );
-
-    return cachedRequestsToDelete.map((request) => request.url);
-  }
-
-  /**
-   * Goes through all entries in indexedDB and removes any that are outdated.
-   *
-   * @private
-   * @param {Array<string>} expectedCacheUrls Array of URLs that are
-   * expected to be cached.
-   * @return {Promise<Array<string>>} Resolves to an array of URLs removed
-   * from indexedDB.
-   */
-  async _cleanupDetailsModel(expectedCacheUrls) {
-    const revisionedEntries = await this._precacheDetailsModel._getAllEntries();
-    const detailsToDelete = revisionedEntries
-        .filter((entry) => {
-          const fullUrl = new URL(entry.value.url, location).toString();
-          return !expectedCacheUrls.includes(fullUrl);
-        });
-
-    await Promise.all(
-        detailsToDelete.map(
-            (entry) => this._precacheDetailsModel._deleteEntry(entry.primaryKey)
-        )
-    );
-    return detailsToDelete.map((entry) => {
-      return entry.value.url;
+      request,
+      response,
+      cacheName: this._cacheName,
     });
   }
 
   /**
-   * Returns an array of fully qualified URL's that will be precached.
+   * Returns an array of fully qualified URLs that have been precached (without
+   * any versioning information);
    *
    * @return {Array<string>} An array of URLs.
    */
   getCachedUrls() {
-    return Array.from(this._entriesToCacheMap.keys())
-        .map((url) => new URL(url, location).href);
+    return Array.from(this._urlsToCacheKeys.keys());
+  }
+
+  /**
+   * Returns the cache key used for storing a given URL. If that URL is
+   * unversioned, like `/index.html', then the cache key will be the original
+   * URL with a search parameter appended to it.
+   *
+   * @param {string} url A URL whose cache key you want to look up.
+   * @return {string} The versioned URL that corresponds to a cache key
+   * for the original URL, or undefined if that URL isn't precached.
+   */
+  getCacheKeyForUrl(url) {
+    const urlObject = new URL(url, location);
+    return this._urlsToCacheKeys.get(urlObject.href);
   }
 }
 

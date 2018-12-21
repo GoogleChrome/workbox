@@ -8,9 +8,12 @@
 
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+
 import PrecacheController from './controllers/PrecacheController.mjs';
+import removeIgnoredSearchParams from './utils/removeIgnoredSearchParams.mjs';
+
 import './_version.mjs';
 
 if (process.env.NODE_ENV !== 'production') {
@@ -24,35 +27,6 @@ let plugins = [];
 
 const cacheName = cacheNames.getPrecacheName();
 const precacheController = new PrecacheController(cacheName);
-
-const _removeIgnoreUrlParams = (origUrlObject, ignoreUrlParametersMatching) => {
-  // Exclude initial '?'
-  const searchString = origUrlObject.search.slice(1);
-
-  // Split into an array of 'key=value' strings
-  const keyValueStrings = searchString.split('&');
-  const keyValuePairs = keyValueStrings.map((keyValueString) => {
-    // Split each 'key=value' string into a [key, value] array
-    return keyValueString.split('=');
-  });
-  const filteredKeyValuesPairs = keyValuePairs.filter((keyValuePair) => {
-    return ignoreUrlParametersMatching
-        .every((ignoredRegex) => {
-        // Return true iff the key doesn't match any of the regexes.
-          return !ignoredRegex.test(keyValuePair[0]);
-        });
-  });
-  const filteredStrings = filteredKeyValuesPairs.map((keyValuePair) => {
-    // Join each [key, value] array into a 'key=value' string
-    return keyValuePair.join('=');
-  });
-
-  // Join the array of 'key=value' strings into a string with '&' in
-  // between each
-  const urlClone = new URL(origUrlObject);
-  urlClone.search = filteredStrings.join('&');
-  return urlClone;
-};
 
 /**
  * This function will take the request URL and manipulate it based on the
@@ -76,9 +50,8 @@ const _getPrecachedUrl = (url, {
   // Change '/some-url#123' => '/some-url'
   urlObject.hash = '';
 
-  const urlWithoutIgnoredParams = _removeIgnoreUrlParams(
-      urlObject, ignoreUrlParametersMatching
-  );
+  const urlWithoutIgnoredParams = removeIgnoredSearchParams(
+      urlObject, ignoreUrlParametersMatching);
 
   let urlsToAttempt = [
     // Test the URL that was fetched
@@ -196,7 +169,6 @@ moduleExports.precache = (entries) => {
  */
 moduleExports.addRoute = (options) => {
   if (fetchListenersAdded) {
-    // TODO: Throw error here.
     return;
   }
 
@@ -238,8 +210,6 @@ moduleExports.addRoute = (options) => {
           getFriendlyURL(event.request.url));
         logger.log(`Serving the precached url: ${precachedUrl}`);
 
-        // The Request and Response objects contains a great deal of
-        // information, hide it under a group in case developers want to see it.
         logger.groupCollapsed(`View request details here.`);
         logger.unprefixed.log(event.request);
         logger.groupEnd();
@@ -273,19 +243,6 @@ moduleExports.addRoute = (options) => {
 moduleExports.precacheAndRoute = (entries, options) => {
   moduleExports.precache(entries);
   moduleExports.addRoute(options);
-};
-
-/**
- * Warnings will be logged if any of the precached assets are entered without
- * a `revision` property. This is extremely dangerous if the URL's aren't
- * revisioned. However, the warnings can be supressed with this method.
- *
- * @param {boolean} suppress
- *
- * @alias workbox.precaching.suppressWarnings
- */
-moduleExports.suppressWarnings = (suppress) => {
-  suppressWarnings = suppress;
 };
 
 /**
