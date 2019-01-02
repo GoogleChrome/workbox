@@ -203,13 +203,11 @@ class PrecacheController {
   }
 
   /**
-   * Returns an array of fully qualified URLs that have been precached (without
-   * any versioning information);
-   *
-   * @return {Array<string>} An array of URLs.
+   * @return {Map<string, string>} The mapping of original URL to the
+   * corresponding cache key.
    */
-  getCachedUrls() {
-    return Array.from(this._urlsToCacheKeys.keys());
+  getUrlsToCacheKeys() {
+    return this._urlsToCacheKeys;
   }
 
   /**

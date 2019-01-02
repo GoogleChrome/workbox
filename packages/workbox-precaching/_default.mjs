@@ -29,68 +29,65 @@ const cacheName = cacheNames.getPrecacheName();
 const precacheController = new PrecacheController(cacheName);
 
 /**
+ * Generator function that yields possible variations on the original URL to
+ * check, one at a time.
+ *
+ * @param {string} url
+ * @param {Object} options
+ */
+function* variationsToCheck(url, {
+  ignoreUrlParametersMatching = [/^utm_/],
+  directoryIndex = 'index.html',
+  cleanUrls = true,
+  urlManipulation = null,
+} = {}) {
+  const urlObject = new URL(url, location);
+  urlObject.hash = '';
+  yield urlObject.href;
+
+  const urlWithoutIgnoredParams = removeIgnoredSearchParams(
+      urlObject, ignoreUrlParametersMatching);
+  yield urlWithoutIgnoredParams.href;
+
+  if (directoryIndex && urlWithoutIgnoredParams.pathname.endsWith('/')) {
+    const directoryUrl = new URL(urlWithoutIgnoredParams);
+    directoryUrl.pathname += directoryIndex;
+    yield directoryUrl.href;
+  }
+
+  if (cleanUrls) {
+    const cleanUrl = new URL(urlWithoutIgnoredParams);
+    cleanUrl.pathname += '.html';
+    yield cleanUrl.href;
+  }
+
+  if (urlManipulation) {
+    const additionalUrls = urlManipulation({url: urlObject});
+    for (const urlToAttempt of additionalUrls) {
+      yield urlToAttempt;
+    }
+  }
+}
+
+/**
  * This function will take the request URL and manipulate it based on the
  * configuration options.
  *
  * @param {string} url
  * @param {Object} options
- * @return {string|null} Returns the URL in the cache that matches the request
- * if available, other null.
+ * @return {string} Returns the URL in the cache that matches the request,
+ * if possible.
  *
  * @private
  */
-const _getPrecachedUrl = (url, {
-  ignoreUrlParametersMatching = [/^utm_/],
-  directoryIndex = 'index.html',
-  cleanUrls = true,
-  urlManipulation = null,
-} = {}) => {
-  const urlObject = new URL(url, location);
-
-  // Change '/some-url#123' => '/some-url'
-  urlObject.hash = '';
-
-  const urlWithoutIgnoredParams = removeIgnoredSearchParams(
-      urlObject, ignoreUrlParametersMatching);
-
-  let urlsToAttempt = [
-    // Test the URL that was fetched
-    urlObject,
-    // Test the URL without search params
-    urlWithoutIgnoredParams.href,
-  ];
-
-  // Test the URL with a directory index
-  if (directoryIndex && urlWithoutIgnoredParams.pathname.endsWith('/')) {
-    const directoryUrl = new URL(urlWithoutIgnoredParams);
-    directoryUrl.pathname += directoryIndex;
-    urlsToAttempt.push(directoryUrl);
-  }
-
-  // Test the URL with a '.html' extension
-  if (cleanUrls) {
-    const cleanUrl = new URL(urlWithoutIgnoredParams);
-    cleanUrl.pathname += '.html';
-    urlsToAttempt.push(cleanUrl);
-  }
-
-  if (urlManipulation) {
-    const additionalUrls = urlManipulation({url: urlObject});
-    urlsToAttempt = urlsToAttempt.concat(additionalUrls);
-  }
-
-  const cachedUrls = precacheController.getCachedUrls();
-  for (const possibleUrl of urlsToAttempt) {
-    if (cachedUrls.includes(possibleUrl.href)) {
-      if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`Precaching found a match for ` +
-          getFriendlyURL(possibleUrl.toString()));
+const _getCacheKeyForUrl = (url, options) => {
+  for (const possibleUrl of variationsToCheck(url, options)) {
+    for (const [url, key] of precacheController.getUrlsToCacheKeys()) {
+      if (url === possibleUrl) {
+        return key;
       }
-      return precacheController.getCacheKeyForUrl(possibleUrl.href);
     }
   }
-
-  return null;
 };
 
 const moduleExports = {};
@@ -174,7 +171,7 @@ moduleExports.addRoute = (options) => {
   fetchListenersAdded = true;
 
   self.addEventListener('fetch', (event) => {
-    const precachedUrl = _getPrecachedUrl(event.request.url, options);
+    const precachedUrl = _getCacheKeyForUrl(event.request.url, options);
     if (!precachedUrl) {
       if (process.env.NODE_ENV !== 'production') {
         logger.debug(`Precaching did not find a match for ` +

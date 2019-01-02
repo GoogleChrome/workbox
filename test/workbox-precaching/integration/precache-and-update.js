@@ -82,10 +82,10 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     global.__workbox.server.stopCountingRequests(requestCounter);
     requestCounter = global.__workbox.server.startCountingRequests();
 
-    await global.__workbox.webdriver.get(`${baseUrl}index.html`);
+    await global.__workbox.webdriver.get(baseUrl);
 
-    // Ensure the HTML page is returned from cache and not network
-    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/index.html')).to.eql(0);
+    // Ensure the HTML page is returned from cache and not network.
+    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/')).to.eql(0);
     // Ensure the now deleted index.css file is returned from network and not cache.
     expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/styles/index.css')).to.equal(1);
 
