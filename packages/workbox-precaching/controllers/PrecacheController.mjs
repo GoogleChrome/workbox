@@ -117,28 +117,26 @@ class PrecacheController {
    * Call this method from the service worker activate event to delete assets
    * that are no longer present in the current precache manifest.
    *
-   * @return {Promise<workbox.precaching.CleanupResult>} Resolves with an object
-   * containing details of the deleted cache requests and precache revision
-   * details.
+   * @return {Promise<workbox.precaching.CleanupResult>}
    */
   async activate() {
     const cache = await caches.open(this._cacheName);
     const currentlyCachedRequests = await cache.keys();
     const expectedCacheKeys = new Set(this._urlsToCacheKeys.values());
 
-    const deletedCacheRequests = [];
+    const deletedUrls = [];
     for (const request of currentlyCachedRequests) {
       if (!expectedCacheKeys.has(request.url)) {
         await cache.delete(request);
-        deletedCacheRequests.push(request);
+        deletedUrls.push(request.url);
       }
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      printCleanupDetails(deletedCacheRequests);
+      printCleanupDetails(deletedUrls);
     }
 
-    return {deletedCacheRequests};
+    return {deletedUrls};
   }
 
   /**

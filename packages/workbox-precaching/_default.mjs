@@ -57,7 +57,7 @@ const _getPrecachedUrl = (url, {
     // Test the URL that was fetched
     urlObject,
     // Test the URL without search params
-    urlWithoutIgnoredParams,
+    urlWithoutIgnoredParams.href,
   ];
 
   // Test the URL with a directory index
@@ -81,13 +81,12 @@ const _getPrecachedUrl = (url, {
 
   const cachedUrls = precacheController.getCachedUrls();
   for (const possibleUrl of urlsToAttempt) {
-    if (cachedUrls.indexOf(possibleUrl.href) !== -1) {
-      // It's a perfect match
+    if (cachedUrls.includes(possibleUrl.href)) {
       if (process.env.NODE_ENV !== 'production') {
         logger.debug(`Precaching found a match for ` +
           getFriendlyURL(possibleUrl.toString()));
       }
-      return possibleUrl.href;
+      return precacheController.getCacheKeyForUrl(possibleUrl.href);
     }
   }
 
@@ -104,8 +103,8 @@ const moduleExports = {};
  *
  * This method can be called multiple times.
  *
- * Please note: This method **will not** serve any of the cached files for you,
- * it only precaches files. To respond to a network request you call
+ * Please note: This method **will not** serve any of the cached files for you.
+ * It only precaches files. To respond to a network request you call
  * [addRoute()]{@link module:workbox-precaching.addRoute}.
  *
  * If you have a single array of files to precache, you can just call
@@ -123,6 +122,7 @@ moduleExports.precache = (entries) => {
   }
 
   installActivateListenersAdded = true;
+
   self.addEventListener('install', (event) => {
     event.waitUntil(
         precacheController.install({event, plugins, suppressWarnings})
@@ -136,10 +136,9 @@ moduleExports.precache = (entries) => {
             })
     );
   });
+
   self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        precacheController.activate({event, plugins})
-    );
+    event.waitUntil(precacheController.activate({event, plugins}));
   });
 };
 
@@ -173,11 +172,12 @@ moduleExports.addRoute = (options) => {
   }
 
   fetchListenersAdded = true;
+
   self.addEventListener('fetch', (event) => {
     const precachedUrl = _getPrecachedUrl(event.request.url, options);
     if (!precachedUrl) {
       if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`Precaching found no match for ` +
+        logger.debug(`Precaching did not find a match for ` +
           getFriendlyURL(event.request.url));
       }
       return;
@@ -222,6 +222,7 @@ moduleExports.addRoute = (options) => {
         return response;
       });
     }
+
     event.respondWith(responsePromise);
   });
 };

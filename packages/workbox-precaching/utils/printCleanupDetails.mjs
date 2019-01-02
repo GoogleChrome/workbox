@@ -10,29 +10,29 @@ import {logger} from 'workbox-core/_private/logger.mjs';
 
 import '../_version.mjs';
 
-const logGroup = (groupTitle, requests) => {
+const logGroup = (groupTitle, deletedUrls) => {
   logger.groupCollapsed(groupTitle);
 
-  for (const request of requests) {
-    logger.log(request.url);
+  for (const url of deletedUrls) {
+    logger.log(url);
   }
 
   logger.groupEnd();
 };
 
 /**
- * @param {Array<Request>} deletedCacheRequests
+ * @param {Array<string>} deletedUrls
  *
  * @private
- * @memberof module:workbox-precachig
+ * @memberof module:workbox-precaching
  */
-export default (deletedCacheRequests) => {
-  const deletionCount = deletedCacheRequests.length;
+export default (deletedUrls) => {
+  const deletionCount = deletedUrls.length;
   if (deletionCount > 0) {
     logger.groupCollapsed(`During precaching cleanup, ` +
         `${deletionCount} cached ` +
         `request${deletionCount === 1 ? ' was' : 's were'} deleted.`);
-    logGroup('Deleted Cache Requests', deletedCacheRequests);
+    logGroup('Deleted Cache Requests', deletedUrls);
     logger.groupEnd();
   }
 };

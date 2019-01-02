@@ -15,8 +15,7 @@ import '../_version.mjs';
  * @param {Array<RegExp>} ignoreUrlParametersMatching RegExps to test against
  * each search parameter name. Matches mean that the search parameter should be
  * ignored.
- * @return {string} A string representation of the URL with any ignored search
- * parameters removed.
+ * @return {URL} The URL with any ignored search parameters removed.
  */
 export default function(urlObject, ignoreUrlParametersMatching) {
   // Convert the iterable into an array at the start of the loop to make sure
@@ -27,5 +26,5 @@ export default function(urlObject, ignoreUrlParametersMatching) {
     }
   }
 
-  return urlObject.href;
+  return urlObject;
 }
