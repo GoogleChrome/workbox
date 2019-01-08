@@ -528,4 +528,20 @@ describe(`[workbox-precaching] default export`, function() {
       expect(addEventListenerSpy.firstCall.args[0]).to.eql('activate');
     });
   });
+
+  describe(`getCacheKeyForUrl()`, function() {
+    it(`should return the expected cache keys for various URLs`, async function() {
+      precaching.precache([
+        '/one',
+        {url: '/two', revision: '1234'},
+      ]);
+
+      expect(precaching.getCacheKeyForUrl('/one'))
+          .to.eql('https://example.com/one');
+      expect(precaching.getCacheKeyForUrl('https://example.com/two'))
+          .to.eql('https://example.com/two?_wbRevision=1234');
+      expect(precaching.getCacheKeyForUrl('/not-precached'))
+          .to.not.exist;
+    });
+  });
 });

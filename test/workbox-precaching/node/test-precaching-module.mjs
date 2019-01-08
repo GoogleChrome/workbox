@@ -41,6 +41,7 @@ describe(`[workbox-precaching] Module`, function() {
         'addPlugins',
         'addRoute',
         'cleanupOutdatedCaches',
+        'getCacheKeyForUrl',
         'precache',
         'precacheAndRoute',
       ]);
