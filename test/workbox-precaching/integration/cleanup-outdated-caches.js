@@ -30,17 +30,16 @@ describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
           .catch((err) => cb(err.message));
     });
 
-    expect(preActivateKeys).to.have.members([
-      'workbox-precache-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/',
-    ]);
+    expect(preActivateKeys).to.include('workbox-precache-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
+    expect(preActivateKeys).to.not.include('workbox-precache-v4-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
+
 
     // Register the first service worker.
     await activateAndControlSW(`${baseUrl}sw.js`);
 
-    // Check that only the current precache cache is present.
     const postActivateKeys = await runInSW('cachesKeys');
-    expect(postActivateKeys).to.have.members([
-      'workbox-precache-v4-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/',
-    ]);
+    expect(postActivateKeys).to.not.include('workbox-precache-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
+    expect(postActivateKeys).to.include('workbox-precache-v4-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
+
   });
 });
