@@ -12,7 +12,7 @@ import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
 
 import PrecacheController from './controllers/PrecacheController.mjs';
-import removeIgnoredSearchParams from './utils/removeIgnoredSearchParams.mjs';
+import generateUrlVariations from './utils/generateUrlVariations.mjs';
 
 import './_version.mjs';
 
@@ -29,47 +29,6 @@ const cacheName = cacheNames.getPrecacheName();
 const precacheController = new PrecacheController(cacheName);
 
 /**
- * Generator function that yields possible variations on the original URL to
- * check, one at a time.
- *
- * @param {string} url
- * @param {Object} options
- */
-function* variationsToCheck(url, {
-  ignoreUrlParametersMatching = [/^utm_/],
-  directoryIndex = 'index.html',
-  cleanUrls = true,
-  urlManipulation = null,
-} = {}) {
-  const urlObject = new URL(url, location);
-  urlObject.hash = '';
-  yield urlObject.href;
-
-  const urlWithoutIgnoredParams = removeIgnoredSearchParams(
-      urlObject, ignoreUrlParametersMatching);
-  yield urlWithoutIgnoredParams.href;
-
-  if (directoryIndex && urlWithoutIgnoredParams.pathname.endsWith('/')) {
-    const directoryUrl = new URL(urlWithoutIgnoredParams);
-    directoryUrl.pathname += directoryIndex;
-    yield directoryUrl.href;
-  }
-
-  if (cleanUrls) {
-    const cleanUrl = new URL(urlWithoutIgnoredParams);
-    cleanUrl.pathname += '.html';
-    yield cleanUrl.href;
-  }
-
-  if (urlManipulation) {
-    const additionalUrls = urlManipulation({url: urlObject});
-    for (const urlToAttempt of additionalUrls) {
-      yield urlToAttempt;
-    }
-  }
-}
-
-/**
  * This function will take the request URL and manipulate it based on the
  * configuration options.
  *
@@ -81,11 +40,11 @@ function* variationsToCheck(url, {
  * @private
  */
 const _getCacheKeyForUrl = (url, options) => {
-  for (const possibleUrl of variationsToCheck(url, options)) {
-    for (const [url, key] of precacheController.getUrlsToCacheKeys()) {
-      if (url === possibleUrl) {
-        return key;
-      }
+  const urlsToCacheKeys = precacheController.getUrlsToCacheKeys();
+  for (const possibleUrl of generateUrlVariations(url, options)) {
+    const possibleCacheKey = urlsToCacheKeys.get(possibleUrl);
+    if (possibleCacheKey) {
+      return possibleCacheKey;
     }
   }
 };
@@ -163,7 +122,12 @@ moduleExports.precache = (entries) => {
  *
  * @alias workbox.precaching.addRoute
  */
-moduleExports.addRoute = (options) => {
+moduleExports.addRoute = ({
+  ignoreUrlParametersMatching = [/^utm_/],
+  directoryIndex = 'index.html',
+  cleanUrls = true,
+  urlManipulation = null,
+} = {}) => {
   if (fetchListenersAdded) {
     return;
   }
@@ -171,7 +135,12 @@ moduleExports.addRoute = (options) => {
   fetchListenersAdded = true;
 
   self.addEventListener('fetch', (event) => {
-    const precachedUrl = _getCacheKeyForUrl(event.request.url, options);
+    const precachedUrl = _getCacheKeyForUrl(event.request.url, {
+      cleanUrls,
+      directoryIndex,
+      ignoreUrlParametersMatching,
+      urlManipulation,
+    });
     if (!precachedUrl) {
       if (process.env.NODE_ENV !== 'production') {
         logger.debug(`Precaching did not find a match for ` +

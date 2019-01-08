@@ -23,6 +23,10 @@ const REVISION_SEARCH_PARAM = '_wbRevision';
  * @memberof module:workbox-precaching
  */
 export default function(entry) {
+  if (!entry) {
+    throw new WorkboxError('add-to-cache-list-unexpected-type', {entry});
+  }
+
   // If a precache manifest entry is a string, it's assumed to be a versioned
   // URL, like '/app.abcd1234.js'. Return as-is.
   if (typeof entry === 'string') {

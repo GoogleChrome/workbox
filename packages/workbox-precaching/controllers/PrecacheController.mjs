@@ -22,7 +22,7 @@ import '../_version.mjs';
 /**
  * Performs efficient precaching of assets.
  *
- * @memberof workbox.precaching
+ * @memberof module:workbox-precaching
  */
 class PrecacheController {
   /**
@@ -56,6 +56,13 @@ class PrecacheController {
 
     for (const entry of entries) {
       const {cacheKey, url} = createCacheKey(entry);
+      if (this._urlsToCacheKeys.has(url) &&
+          this._urlsToCacheKeys.get(url) !== cacheKey) {
+        throw new WorkboxError('add-to-cache-list-conflicting-entries', {
+          firstEntry: this._urlsToCacheKeys.get(url),
+          secondEntry: cacheKey,
+        });
+      }
       this._urlsToCacheKeys.set(url, cacheKey);
     }
   }
@@ -208,6 +215,13 @@ class PrecacheController {
    */
   getUrlsToCacheKeys() {
     return this._urlsToCacheKeys;
+  }
+
+  /**
+   * @return {Array<string>} All of the URLs that have been precached.
+   */
+  getCachedUrls() {
+    return [...this._urlsToCacheKeys.keys()];
   }
 
   /**

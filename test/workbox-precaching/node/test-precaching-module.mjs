@@ -41,7 +41,6 @@ describe(`[workbox-precaching] Module`, function() {
         'precache',
         'addRoute',
         'precacheAndRoute',
-        'suppressWarnings',
         'addPlugins',
       ]);
     });
