@@ -160,7 +160,7 @@ moduleExports.addRoute = ({
           // Fall back to the network if we don't have a cached response
           // (perhaps due to manual cache cleanup).
           if (process.env.NODE_ENV !== 'production') {
-            logger.debug(`The precached response for ` +
+            logger.warn(`The precached response for ` +
             `${getFriendlyURL(precachedUrl)} in ${cacheName} was not found. ` +
             `Falling back to the network instead.`);
           }

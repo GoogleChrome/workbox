@@ -16,6 +16,9 @@ import '../_version.mjs';
  * each search parameter name. Matches mean that the search parameter should be
  * ignored.
  * @return {URL} The URL with any ignored search parameters removed.
+ *
+ * @private
+ * @memberof module:workbox-precaching
  */
 export default function(urlObject, ignoreUrlParametersMatching) {
   // Convert the iterable into an array at the start of the loop to make sure
