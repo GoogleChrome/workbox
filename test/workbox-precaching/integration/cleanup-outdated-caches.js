@@ -40,6 +40,5 @@ describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
     const postActivateKeys = await runInSW('cachesKeys');
     expect(postActivateKeys).to.not.include('workbox-precache-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
     expect(postActivateKeys).to.include('workbox-precache-v4-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
-
   });
 });
