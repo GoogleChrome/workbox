@@ -518,4 +518,14 @@ describe(`[workbox-precaching] default export`, function() {
       ]);
     });
   });
+
+  describe(`cleanupOutdatedCaches()`, function() {
+    it(`should add an activate listener`, async function() {
+      const addEventListenerSpy = sandbox.spy(self, 'addEventListener');
+      precaching.cleanupOutdatedCaches();
+
+      expect(addEventListenerSpy.calledOnce).to.be.true;
+      expect(addEventListenerSpy.firstCall.args[0]).to.eql('activate');
+    });
+  });
 });

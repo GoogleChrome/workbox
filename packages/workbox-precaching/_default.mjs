@@ -12,6 +12,7 @@ import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
 
 import PrecacheController from './controllers/PrecacheController.mjs';
+import cleanupOutdatedCaches from './utils/cleanupOutdatedCaches.mjs';
 import generateUrlVariations from './utils/generateUrlVariations.mjs';
 
 import './_version.mjs';
@@ -221,6 +222,23 @@ moduleExports.precacheAndRoute = (entries, options) => {
  */
 moduleExports.addPlugins = (newPlugins) => {
   plugins = plugins.concat(newPlugins);
+};
+
+/**
+ * Adds an `activate` event listener which will clean up incompatible
+ * precaches that were created by older versions of Workbox.
+ *
+ * @memberof module:workbox-precaching
+ */
+moduleExports.cleanupOutdatedCaches = () => {
+  self.addEventListener('activate', (event) => {
+    event.waitUntil(cleanupOutdatedCaches(cacheName).then((cachesDeleted) => {
+      if (cachesDeleted.length > 0) {
+        logger.log(`The following out-of-date precaches were cleaned up ` +
+        `automatically ${cachesDeleted}`);
+      }
+    }));
+  });
 };
 
 export default moduleExports;
