@@ -69,6 +69,31 @@ describe(`workbox-core fetchWrapper`, function() {
       expect(fetchOptions).to.deep.equal(exampleOptions);
     });
 
+    it(`should convert 'navigate' requests to 'same-origin' when fetchOptions is used`, async function() {
+      const fetchStub = sandbox.stub(global, 'fetch').resolves(new Response());
+
+      const fetchOptions = {
+        headers: {
+          'X-Test': 'Header',
+        },
+      };
+
+      const request = new Request('/test/navigateFetchOptions', {
+        mode: 'navigate',
+      });
+
+      await fetchWrapper.fetch({
+        fetchOptions,
+        request,
+      });
+
+      expect(fetchStub.calledOnce).to.be.true;
+      expect(fetchStub.firstCall.args[0]).to.be.instanceOf(Request);
+      expect(fetchStub.firstCall.args[0].url).to.eql(request.url);
+      expect(fetchStub.firstCall.args[0].mode).to.eql('same-origin');
+      expect(fetchStub.firstCall.args[1]).to.eql(fetchOptions);
+    });
+
     it(`should call requestWillFetch method in plugins and use the returned request`, async function() {
       const fetchStub = sandbox.stub(global, 'fetch').callsFake(() => new Response());
 

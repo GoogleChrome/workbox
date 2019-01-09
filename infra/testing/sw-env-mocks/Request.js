@@ -9,18 +9,24 @@
 const Blob = require('./Blob');
 const Headers = require('./Headers');
 
-
 // Stub missing/broken Request API methods in `service-worker-mock`.
 // https://fetch.spec.whatwg.org/#request-class
 class Request {
-  constructor(url, options = {}) {
-    if (url instanceof Request) {
-      options = url;
-      url = options.url;
+  constructor(urlOrRequest, options = {}) {
+    let url = urlOrRequest;
+    if (urlOrRequest instanceof Request) {
+      url = urlOrRequest.url;
+      options = Object.assign({}, {
+        body: urlOrRequest.body,
+        credentials: urlOrRequest.credentials,
+        headers: urlOrRequest.headers,
+        method: urlOrRequest.method,
+        mode: urlOrRequest.mode,
+      }, options);
     }
 
     if (!url) {
-      throw new TypeError(`Invalid url: ${url}`);
+      throw new TypeError(`Invalid url: ${urlOrRequest}`);
     }
 
     this.url = url;
@@ -57,7 +63,7 @@ class Request {
       throw new TypeError('Already read');
     } else {
       this.bodyUsed = true;
-      // Limitionation: this assumes the stored Blob is text-based.
+      // Limitation: this assumes the stored Blob is text-based.
       return this._body._text;
     }
   }

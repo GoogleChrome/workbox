@@ -99,10 +99,20 @@ const wrappedFetch = async ({
   // The request can be altered by plugins with `requestWillFetch` making
   // the original request (Most likely from a `fetch` event) to be different
   // to the Request we make. Pass both to `fetchDidFail` to aid debugging.
-  const pluginFilteredRequest = request.clone();
+  let pluginFilteredRequest = request.clone();
 
   try {
-    let fetchResponse = await fetch(request, fetchOptions);
+    let fetchResponse;
+
+    // See https://github.com/GoogleChrome/workbox/issues/1796
+    if (request.mode === 'navigate' && fetchOptions &&
+         Object.keys(fetchOptions).length > 0) {
+      pluginFilteredRequest = new Request(request, {mode: 'same-origin'});
+      fetchResponse = await fetch(pluginFilteredRequest, fetchOptions);
+    } else {
+      fetchResponse = await fetch(request, fetchOptions);
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       logger.debug(`Network request for `+
       `'${getFriendlyURL(request.url)}' returned a response with ` +
