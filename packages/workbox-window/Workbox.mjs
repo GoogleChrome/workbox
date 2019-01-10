@@ -11,16 +11,30 @@ import {logger} from './utils/logger.mjs';
 import './_version.mjs';
 
 
+// The time a SW must be in the waiting phase before we can conclude
+// `skipWaiting()` wasn't called. This 200 amount wasn't scientifically
+// chosen, but it seems to avoid false positives in my testing.
+const WAITING_TIMEOUT_DURATION = 200;
+
+// The amount of time after a registration that we can reasonably conclude
+// that the registration didn't trigger an update.
+const REGISTRATION_TIMEOUT_DURATION = 60000;
+
+/**
+ * Returns true if two URLs have the same `.href` property. The URLS can be
+ * relative, and if they are the current location href is used to resolve URLs.
+ *
+ * @param {string} url1
+ * @param {string} url2
+ * @return {boolean}
+ */
 const urlsMatch = (url1, url2) => {
   return new URL(url1, location).href === new URL(url2, location).href;
 };
 
-
 /**
  * A class to aid in handling service worker registration, updates, and
  * reacting to service worker lifecycle events.
- *
-
  */
 export class Workbox extends EventTargetShim {
   /**
@@ -78,7 +92,7 @@ export class Workbox extends EventTargetShim {
       await new Promise((res) => addEventListener('load', res));
     }
 
-    // Create a local reference for better minification/
+    // Create a local reference for better minification.
     let reg;
 
     try {
@@ -165,10 +179,9 @@ export class Workbox extends EventTargetShim {
     // property as a way to see if `.register()` has been called.
     this._registrationTime = performance.now();
 
-    // Expose and return the registration object.
+    // Expose the registration object.
     this._registration = reg;
   }
-
 
   /**
    * Resolves with a reference to a service worker that matches the script URL
@@ -248,10 +261,11 @@ export class Workbox extends EventTargetShim {
         // - and if the first `updatefound` event fired more than 1 minute
         //   after the `register()` call,
         // - then assume that `updatefound` event *wasn't* triggered by us.
-        (this._sw && performance.now() > this._registrationTime + 60000) ?
-        // If any of the above are not true, we assume the update was
-        // triggered by this instance.
-        true : false;
+        (this._sw && performance.now() >
+            this._registrationTime + REGISTRATION_TIMEOUT_DURATION) ?
+                // If any of the above are not true, we assume the update was
+                // triggered by this instance.
+                true : false;
 
     if (updateLikelyTriggeredExternally) {
       this._externalSw = updatedSw;
@@ -376,7 +390,7 @@ export class Workbox extends EventTargetShim {
           if (state === 'installed' && this._registration.waiting === sw) {
             onWaiting();
           }
-        }, 100);
+        }, WAITING_TIMEOUT_DURATION);
         break;
       case 'activating':
         this._dispatchEvent('activating', sw);

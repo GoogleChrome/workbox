@@ -6,9 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-/* global Workbox, sinon */
-/* eslint-disable no-console */
-
 
 const {expect} = require('chai');
 const templateData = require('../../../infra/testing/server/template-data');

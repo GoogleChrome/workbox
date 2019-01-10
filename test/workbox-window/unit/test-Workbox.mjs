@@ -7,10 +7,6 @@
 */
 
 
-/* global expect, sinon */
-/* eslint-disable no-console */
-
-
 import {Workbox} from '/__WORKBOX/buildFile/workbox-window';
 
 const isDev = () => {

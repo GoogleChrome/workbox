@@ -11,11 +11,14 @@ module.exports = {
     sourceType: 'module',
   },
   globals: {
-    workbox: false,
-    WorkboxSW: false,
-    SyncEvent: false,
     BroadcastChannel: false,
     Comlink: false,
+    expect: true,
+    sinon: false,
+    SyncEvent: false,
+    workbox: false,
+    Workbox: true,
+    WorkboxSW: false,
   },
   rules: {
     "jsdoc/check-types": 2,
@@ -111,6 +114,14 @@ module.exports = {
     ],
     rules: {
       'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google LLC'}]
+    }
+  }, {
+    files: [
+      'test/workbox-window/integration/test.js',
+      'test/workbox-window/unit/test-Workbox.mjs',
+    ],
+    rules: {
+      'no-console': 0,
     }
   }],
 };

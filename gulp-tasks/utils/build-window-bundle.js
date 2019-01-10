@@ -9,7 +9,6 @@
 const buffer = require('vinyl-buffer');
 const fs = require('fs-extra');
 const gulp = require('gulp');
-const oneLine = require('common-tags').oneLine;
 const path = require('path');
 const rename = require('gulp-rename');
 const rollup = require('rollup');
@@ -42,22 +41,13 @@ module.exports = (packagePath, buildType) => {
   const outputDirectory = path.join(
       packagePath, constants.PACKAGE_BUILD_DIRNAME);
 
-  logHelper.log(oneLine`
-    Building Window Bundle: ${logHelper.highlight(outputFilename)}`);
+  logHelper.log(
+      `Building Window Bundle: ${logHelper.highlight(outputFilename)}`);
 
+  // TODO(philipwalton): ensure all loaded workbox modules conform to
+  // the same conventions we document to external developers. This can be
+  // done with a Rollup plugin that validates them.
   const plugins = rollupHelper.getDefaultPlugins(buildType, {module: true});
-
-  const validateModules = () => {
-    return {
-      name: 'validate-modules',
-      load: (id) => {
-        // TODO(philipwalton): ensure all loaded workbox modules conform to
-        // the same conventions we document to external developers
-        return null; // Do nothing if all checks pass.
-      },
-    };
-  };
-  plugins.push(validateModules());
 
   return rollupStream({
     input: moduleBrowserPath,
