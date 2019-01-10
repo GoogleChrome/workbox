@@ -15,7 +15,7 @@ import '../_version.mjs';
  * @private
  * @memberof module:workbox-precaching
  */
-const cleanRedirect = async (response) => {
+export async function cleanRedirect(response) {
   const clonedResponse = response.clone();
 
   // Not all browsers support the Response.body stream, so fall back
@@ -32,6 +32,4 @@ const cleanRedirect = async (response) => {
     status: clonedResponse.status,
     statusText: clonedResponse.statusText,
   });
-};
-
-export default cleanRedirect;
+}

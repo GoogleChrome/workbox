@@ -26,7 +26,7 @@ const logGroup = (groupTitle, deletedUrls) => {
  * @private
  * @memberof module:workbox-precaching
  */
-export default (deletedUrls) => {
+export function printCleanupDetails(deletedUrls) {
   const deletionCount = deletedUrls.length;
   if (deletionCount > 0) {
     logger.groupCollapsed(`During precaching cleanup, ` +
@@ -35,4 +35,4 @@ export default (deletedUrls) => {
     logGroup('Deleted Cache Requests', deletedUrls);
     logger.groupEnd();
   }
-};
+}

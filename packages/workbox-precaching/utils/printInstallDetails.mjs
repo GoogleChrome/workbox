@@ -37,7 +37,7 @@ function _nestedGroup(groupTitle, urls) {
  * @private
  * @memberof module:workbox-precaching
  */
-export default (urlsToPrecache, urlsAlreadyPrecached) => {
+export function printInstallDetails(urlsToPrecache, urlsAlreadyPrecached) {
   const precachedCount = urlsToPrecache.length;
   const alreadyPrecachedCount = urlsAlreadyPrecached.length;
 
@@ -56,4 +56,4 @@ export default (urlsToPrecache, urlsAlreadyPrecached) => {
     _nestedGroup(`View previously precached URLs.`, urlsAlreadyPrecached);
     logger.groupEnd();
   }
-};
+}

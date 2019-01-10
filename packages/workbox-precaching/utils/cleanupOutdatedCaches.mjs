@@ -11,9 +11,10 @@ import '../_version.mjs';
 const SUBSTRING_TO_FIND = '-precache-';
 
 /**
- * Can be called as part of the `activate` event to clean up incompatible
- * precaches that were created by older versions of Workbox, by a service
- * worker registered under the current scope.
+ * Cleans up incompatible precaches that were created by older versions of
+ * Workbox, by a service worker registered under the current scope.
+ *
+ * This is meant to be called as part of the `activate` event.
  *
  * This should be safe to use as long as you don't include `substringToFind`
  * (defaulting to `-precache-`) in your non-precache cache names.
@@ -27,7 +28,7 @@ const SUBSTRING_TO_FIND = '-precache-';
  * @private
  * @memberof module:workbox-precaching
  */
-export default async function(currentPrecacheName,
+export async function cleanupOutdatedCaches(currentPrecacheName,
     substringToFind = SUBSTRING_TO_FIND) {
   const cacheNames = await caches.keys();
 

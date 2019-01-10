@@ -1,5 +1,5 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2019 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
@@ -9,7 +9,7 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import cleanupOutdatedCaches from '../../../../packages/workbox-precaching/utils/cleanupOutdatedCaches.mjs';
+import {cleanupOutdatedCaches} from '../../../../packages/workbox-precaching/utils/cleanupOutdatedCaches.mjs';
 
 describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
   const CACHE_NAME = 'expected-precache-name';

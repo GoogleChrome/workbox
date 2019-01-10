@@ -11,7 +11,7 @@ import {expect} from 'chai';
 
 import {devOnly} from '../../../../infra/testing/env-it';
 import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
-import printInstallDetails from '../../../../packages/workbox-precaching/utils/printInstallDetails.mjs';
+import {printInstallDetails} from '../../../../packages/workbox-precaching/utils/printInstallDetails.mjs';
 
 describe(`[workbox-precaching] printInstallDetails`, function() {
   let sandbox = sinon.createSandbox();

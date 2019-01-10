@@ -20,7 +20,8 @@ import '../_version.mjs';
  * @private
  * @memberof module:workbox-precaching
  */
-export default function(urlObject, ignoreUrlParametersMatching) {
+export function removeIgnoredSearchParams(urlObject,
+    ignoreUrlParametersMatching) {
   // Convert the iterable into an array at the start of the loop to make sure
   // deletion doesn't mess up iteration.
   for (const paramName of [...urlObject.searchParams.keys()]) {

@@ -539,7 +539,7 @@ describe(`[workbox-precaching] default export`, function() {
       expect(precaching.getCacheKeyForUrl('/one'))
           .to.eql('https://example.com/one');
       expect(precaching.getCacheKeyForUrl('https://example.com/two'))
-          .to.eql('https://example.com/two?_wbRevision=1234');
+          .to.eql('https://example.com/two?__WB_REVISION__=1234');
       expect(precaching.getCacheKeyForUrl('/not-precached'))
           .to.not.exist;
     });

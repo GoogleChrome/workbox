@@ -40,12 +40,12 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     // Check that the cached requests are what we expect for sw-1.js
     let cachedRequests = await runInSW('cacheUrls', cacheName);
     expect(cachedRequests).to.have.members([
-      'http://localhost:3004/test/workbox-precaching/static/precache-and-update/index.html?_wbRevision=1',
-      'http://localhost:3004/test/workbox-precaching/static/precache-and-update/styles/index.css?_wbRevision=1',
+      'http://localhost:3004/test/workbox-precaching/static/precache-and-update/index.html?__WB_REVISION__=1',
+      'http://localhost:3004/test/workbox-precaching/static/precache-and-update/styles/index.css?__WB_REVISION__=1',
     ]);
 
-    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/styles/index.css?_wbRevision=1')).to.equal(1);
-    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/index.html?_wbRevision=1')).to.equal(1);
+    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/styles/index.css?__WB_REVISION__=1')).to.equal(1);
+    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/index.html?__WB_REVISION__=1')).to.equal(1);
 
     // Unregister the old counter, and start a new count.
     global.__workbox.server.stopCountingRequests(requestCounter);
@@ -67,14 +67,14 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     // Add a slight delay for the caching operation to complete.
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/index.html?_wbRevision=2')).to.equal(1);
+    expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/index.html?__WB_REVISION__=2')).to.equal(1);
     expect(requestCounter.getUrlCount('/test/workbox-precaching/static/precache-and-update/hashed-file.abcd1234.txt')).to.equal(1);
 
     // Check that the cached entries were deleted / added as expected when
     // updating from sw-1.js to sw-2.js
     cachedRequests = await runInSW('cacheUrls', cacheName);
     expect(cachedRequests).to.have.members([
-      'http://localhost:3004/test/workbox-precaching/static/precache-and-update/index.html?_wbRevision=2',
+      'http://localhost:3004/test/workbox-precaching/static/precache-and-update/index.html?__WB_REVISION__=2',
       'http://localhost:3004/test/workbox-precaching/static/precache-and-update/hashed-file.abcd1234.txt',
     ]);
 

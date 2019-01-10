@@ -159,10 +159,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheController.addToCacheList(inputObjects);
 
       expect([...precacheController._urlsToCacheKeys.values()]).to.eql([
-        'https://example.com/?_wbRevision=123',
-        'https://example.com/hello.html?_wbRevision=123',
-        'https://example.com/styles/hello.css?_wbRevision=123',
-        'https://example.com/scripts/controllers/hello.js?_wbRevision=123',
+        'https://example.com/?__WB_REVISION__=123',
+        'https://example.com/hello.html?__WB_REVISION__=123',
+        'https://example.com/styles/hello.css?__WB_REVISION__=123',
+        'https://example.com/scripts/controllers/hello.js?__WB_REVISION__=123',
       ]);
     });
 
@@ -194,8 +194,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         ];
         precacheController.addToCacheList(inputObjects);
       }, 'add-to-cache-list-conflicting-entries', (err) => {
-        expect(err.details.firstEntry).to.eql('https://example.com/duplicate.html?_wbRevision=123');
-        expect(err.details.secondEntry).to.eql('https://example.com/duplicate.html?_wbRevision=456');
+        expect(err.details.firstEntry).to.eql('https://example.com/duplicate.html?__WB_REVISION__=123');
+        expect(err.details.secondEntry).to.eql('https://example.com/duplicate.html?__WB_REVISION__=456');
       });
     });
   });
@@ -230,8 +230,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const expectedCacheKeys = [
         'https://example.com/index.1234.html',
         'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?_wbRevision=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&_wbRevision=1234',
+        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
+        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
       ];
       for (const key of expectedCacheKeys) {
         const cachedResponse = await cache.match(key);
@@ -291,8 +291,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(keys.length).to.equal(cacheList.length);
 
       const expectedCacheKeys = [
-        'https://example.com/index.html?_wbRevision=1234',
-        'https://example.com/scripts/index.js?_wbRevision=1234',
+        'https://example.com/index.html?__WB_REVISION__=1234',
+        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
       ];
       for (const key of expectedCacheKeys) {
         const cachedResponse = await cache.match(key);
@@ -320,8 +320,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const initialExpectedCacheKeys = [
         'https://example.com/index.1234.html',
         'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?_wbRevision=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&_wbRevision=1234',
+        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
+        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
       ];
 
       expect(initialInstallInfo.updatedUrls).to.have.members(initialExpectedCacheKeys);
@@ -363,11 +363,11 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const updateInstallInfo = await updatePrecacheController.install();
       expect(updateInstallInfo.updatedUrls).to.have.members([
         'https://example.com/index.4321.html',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&_wbRevision=4321',
+        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321',
       ]);
       expect(updateInstallInfo.notUpdatedUrls).to.have.members([
         'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?_wbRevision=1234',
+        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
       ]);
 
       // The cache mock needs the cache to be re-opened to have up-to-date keys.
@@ -378,9 +378,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         'https://example.com/index.1234.html',
         'https://example.com/index.4321.html',
         'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?_wbRevision=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&_wbRevision=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&_wbRevision=4321',
+        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
+        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
+        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321',
       ]);
 
       if (process.env.NODE_ENV != 'production') {
@@ -391,14 +391,14 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const updateActivateInfo = await updatePrecacheController.activate();
       expect(updateActivateInfo.deletedUrls).to.have.members([
         'https://example.com/index.1234.html',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&_wbRevision=1234',
+        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
       ]);
 
       const expectedPostActivateUpdateCacheKeys = [
         'https://example.com/index.4321.html',
         'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?_wbRevision=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&_wbRevision=4321',
+        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
+        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321',
       ];
 
       // The cache mock needs the cache to be re-opened to have up-to-date keys.
@@ -540,7 +540,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       const cleanupDetailsTwo = await precacheControllerTwo.activate();
       expect(cleanupDetailsTwo.deletedUrls.length).to.equal(1);
-      expect(cleanupDetailsTwo.deletedUrls[0]).to.eql('https://example.com/scripts/index.js?_wbRevision=1234');
+      expect(cleanupDetailsTwo.deletedUrls[0]).to.eql('https://example.com/scripts/index.js?__WB_REVISION__=1234');
 
       const keysTwo = await cache.keys();
       expect(keysTwo.length).to.equal(cacheListTwo.length);
@@ -583,7 +583,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const cleanupDetailsTwo = await precacheControllerTwo.activate();
       expect(cleanupDetailsTwo.deletedUrls).to.deep.equal([
         'https://example.com/index.1234.html',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&_wbRevision=1234',
+        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
       ]);
 
       const keysTwo = await cache.keys();
@@ -592,8 +592,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const expectedCacheKeys2 = [
         'https://example.com/index.4321.html',
         'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?_wbRevision=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&_wbRevision=4321',
+        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
+        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321',
       ];
       for (const key of expectedCacheKeys2) {
         const cachedResponse = await cache.match(key);

@@ -11,7 +11,7 @@ import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import '../_version.mjs';
 
 // Name of the search parameter used to store revision info.
-const REVISION_SEARCH_PARAM = '_wbRevision';
+const REVISION_SEARCH_PARAM = '__WB_REVISION__';
 
 /**
  * Converts a manifest entry into a versioned URL suitable for precaching.
@@ -22,7 +22,7 @@ const REVISION_SEARCH_PARAM = '_wbRevision';
  * @private
  * @memberof module:workbox-precaching
  */
-export default function(entry) {
+export function createCacheKey(entry) {
   if (!entry) {
     throw new WorkboxError('add-to-cache-list-unexpected-type', {entry});
   }

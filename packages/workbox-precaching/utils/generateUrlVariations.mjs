@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import removeIgnoredSearchParams from './removeIgnoredSearchParams.mjs';
+import {removeIgnoredSearchParams} from './removeIgnoredSearchParams.mjs';
 
 import '../_version.mjs';
 
@@ -20,7 +20,7 @@ import '../_version.mjs';
  * @private
  * @memberof module:workbox-precaching
  */
-export default function* (url, {
+export function* generateUrlVariations(url, {
   ignoreUrlParametersMatching,
   directoryIndex,
   cleanUrls,

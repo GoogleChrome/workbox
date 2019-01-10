@@ -12,10 +12,10 @@ import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
-import cleanRedirect from '../utils/cleanRedirect.mjs';
-import createCacheKey from '../utils/createCacheKey.mjs';
-import printCleanupDetails from '../utils/printCleanupDetails.mjs';
-import printInstallDetails from '../utils/printInstallDetails.mjs';
+import {cleanRedirect} from '../utils/cleanRedirect.mjs';
+import {createCacheKey} from '../utils/createCacheKey.mjs';
+import {printCleanupDetails} from '../utils/printCleanupDetails.mjs';
+import {printInstallDetails} from '../utils/printInstallDetails.mjs';
 
 import '../_version.mjs';
 
@@ -68,8 +68,8 @@ class PrecacheController {
   }
 
   /**
-   * Call this method from the service worker install event to precache new and
-   * updated assets.
+   * Precaches new and updated assets. Call this method from the service worker
+   * install event.
    *
    * @param {Object} options
    * @param {Event} [options.event] The install event (if needed).
@@ -121,8 +121,8 @@ class PrecacheController {
   }
 
   /**
-   * Call this method from the service worker activate event to delete assets
-   * that are no longer present in the current precache manifest.
+   * Deletes assets that are no longer present in the current precache manifest.
+   * Call this method from the service worker activate event.
    *
    * @return {Promise<workbox.precaching.CleanupResult>}
    */
@@ -210,15 +210,20 @@ class PrecacheController {
   }
 
   /**
-   * @return {Map<string, string>} The mapping of original URL to the
-   * corresponding cache key.
+   * Returns a mapping of a precached URL to the corresponding cache key, taking
+   * into account the revision information for the URL.
+   *
+   * @return {Map<string, string>} A URL to cache key mapping.
    */
   getUrlsToCacheKeys() {
     return this._urlsToCacheKeys;
   }
 
   /**
-   * @return {Array<string>} All of the URLs that have been precached.
+   * Returns a list of all the URLs that have been precached by the current
+   * service worker.
+   *
+   * @return {Array<string>} The precached URLs.
    */
   getCachedUrls() {
     return [...this._urlsToCacheKeys.keys()];
