@@ -53,19 +53,35 @@ const getLastWindowHandle = async () => {
  * @param {Object} options
  * @return {string}
  */
-const openNewTab = async (url, {switchToWindow = true} = {}) => {
+const openNewTab = async (url) => {
   await webdriver.executeAsyncScript((url, cb) => {
     window.open(url);
     cb();
   }, url);
 
   const lastHandle = await getLastWindowHandle();
-  if (switchToWindow) {
-    await webdriver.switchTo().window(lastHandle);
-  }
+  await webdriver.switchTo().window(lastHandle);
 
   // Return the handle of the window that was just opened.
   return lastHandle;
+};
+
+/**
+ * Waits for the current window to load if it's not already loaded.
+ */
+const windowLoaded = async () => {
+  // Wait for the window to load, so the `Workbox` global is available.
+  await executeAsyncAndCatch(async (cb) => {
+    try {
+      if (document.readyState === 'complete') {
+        cb();
+      } else {
+        addEventListener('load', () => cb());
+      }
+    } catch (error) {
+      cb({error: error.stack});
+    }
+  });
 };
 
 /**
@@ -132,6 +148,7 @@ describe(`[workbox-window] Workbox`, function() {
   beforeEach(async function() {
     templateData.assign({version: '1'});
     await webdriver.get(testPath);
+    await windowLoaded();
   });
 
   afterEach(async function() {
@@ -231,6 +248,8 @@ describe(`[workbox-window] Workbox`, function() {
       templateData.assign({version: '2'});
 
       await openNewTab(testPath);
+      await windowLoaded();
+
       await executeAsyncAndCatch(async (cb) => {
         try {
           const wb = new Workbox('sw-clients-claim.tmp.js');
