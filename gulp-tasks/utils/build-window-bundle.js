@@ -73,14 +73,12 @@ module.exports = (packagePath, buildType) => {
         throw new Error(`Unhandled Rollup Warning: ${warning}`);
       }
     },
-  }).on('error', (err) => {
-    const args = [];
-    Object.keys(err).forEach((key) => {
-      args.push(`${key}: ${err[key]}`);
-    });
-    logHelper.error(err, `\n\n${args.join('\n')}`);
-    throw err;
   })
+      .on('error', (err) => {
+        const args = Object.keys(err).map((key) => `${key}: ${err[key]}`);
+        logHelper.error(err, `\n\n${args.join('\n')}`);
+        throw err;
+      })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
       .pipe(source(moduleBrowserPath))

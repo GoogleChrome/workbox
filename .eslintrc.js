@@ -41,10 +41,13 @@ module.exports = {
     },
   }, {
     files: [
+      'infra/testing/webdriver/executeAsyncAndCatch.js',
+      'infra/utils/log-helper.js',
       'packages/workbox-core/_private/logger.mjs',
       'packages/workbox-sw/_default.mjs',
-      'infra/utils/log-helper.js',
       'packages/workbox-cli/src/lib/logger.js',
+      'test/workbox-window/integration/test.js',
+      'test/workbox-window/unit/test-Workbox.mjs',
     ],
     rules: {
       'no-console': 0,
@@ -114,14 +117,6 @@ module.exports = {
     ],
     rules: {
       'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google LLC'}]
-    }
-  }, {
-    files: [
-      'test/workbox-window/integration/test.js',
-      'test/workbox-window/unit/test-Workbox.mjs',
-    ],
-    rules: {
-      'no-console': 0,
     }
   }],
 };

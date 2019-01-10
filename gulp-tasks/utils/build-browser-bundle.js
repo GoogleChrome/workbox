@@ -178,10 +178,7 @@ module.exports = (packagePath, buildType) => {
     },
   })
       .on('error', (err) => {
-        const args = [];
-        Object.keys(err).forEach((key) => {
-          args.push(`${key}: ${err[key]}`);
-        });
+        const args = Object.keys(err).map((key) => `${key}: ${err[key]}`);
         logHelper.error(err, `\n\n${args.join('\n')}`);
         throw err;
       })

@@ -10,94 +10,14 @@
 const {expect} = require('chai');
 const templateData = require('../../../infra/testing/server/template-data');
 const waitUntil = require('../../../infra/testing/wait-until');
+const {executeAsyncAndCatch} = require('../../../infra/testing/webdriver/executeAsyncAndCatch');
+const {getLastWindowHandle} = require('../../../infra/testing/webdriver/getLastWindowHandle');
+const {openNewTab} = require('../../../infra/testing/webdriver/openNewTab');
+const {unregisterAllSws} = require('../../../infra/testing/webdriver/unregisterAllSws');
+const {windowLoaded} = require('../../../infra/testing/webdriver/windowLoaded');
 
 // Store local references of these globals.
 const {webdriver, server} = global.__workbox;
-
-/**
- * Executes the passed function (and args) async and logs any errors that
- * occur. Errors are assumed to be passed to the callback as an object
- * with the `error` property.
- *
- * @param {...*} args
- * @return {*}
- */
-const executeAsyncAndCatch = async (...args) => {
-  const result = await webdriver.executeAsyncScript(...args);
-
-  if (result && result.error) {
-    console.error(result.error);
-    throw new Error('Error executing async script');
-  }
-  return result;
-};
-
-/**
- * Gets the window handle of the last openned tab.
- *
- * @return {string}
- */
-const getLastWindowHandle = async () => {
-  const allHandles = await webdriver.getAllWindowHandles();
-  return allHandles[allHandles.length - 1];
-};
-
-/**
- * Opens a new window for the passed URL. If no URL is passed, a blank page
- * is opened.
- *
- * @param {string} url
- * @param {Object} options
- * @return {string}
- */
-const openNewTab = async (url) => {
-  await webdriver.executeAsyncScript((url, cb) => {
-    window.open(url);
-    cb();
-  }, url);
-
-  const lastHandle = await getLastWindowHandle();
-  await webdriver.switchTo().window(lastHandle);
-
-  // Return the handle of the window that was just opened.
-  return lastHandle;
-};
-
-/**
- * Waits for the current window to load if it's not already loaded.
- */
-const windowLoaded = async () => {
-  // Wait for the window to load, so the `Workbox` global is available.
-  await executeAsyncAndCatch(async (cb) => {
-    try {
-      if (document.readyState === 'complete') {
-        cb();
-      } else {
-        addEventListener('load', () => cb());
-      }
-    } catch (error) {
-      cb({error: error.stack});
-    }
-  });
-};
-
-/**
- * Unregisters any active SWs so the next page load can start clean.
- * Note: a new page load is needed before controlling SWs stop being active.
- */
-const unregisterAllSws = async () => {
-  await executeAsyncAndCatch(async (cb) => {
-    try {
-      const regs = await navigator.serviceWorker.getRegistrations();
-      for (const reg of regs) {
-        await reg.unregister();
-      }
-      cb();
-    } catch (error) {
-      cb({error: error.stack});
-    }
-  });
-};
 
 const testServerOrigin = server.getAddress();
 const testPath = `${testServerOrigin}/test/workbox-window/static/`;

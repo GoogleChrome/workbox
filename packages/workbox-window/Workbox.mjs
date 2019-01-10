@@ -45,7 +45,7 @@ export class Workbox extends EventTargetShim {
    *
    * @param {string} scriptUrl The service worker script associated with this
    *     instance.
-   * @param {Object} options The service worker options associated with this
+   * @param {Object} [options] The service worker options associated with this
    *     instance.
    */
   constructor(scriptUrl, options = {}) {
@@ -53,15 +53,19 @@ export class Workbox extends EventTargetShim {
 
     this._scriptUrl = scriptUrl;
     this._swOptions = options;
-
-    // this._registration = null;
-    // this._sw = null;
-    // this._externalSw = null;
-    // this._controllingSw = null;
     this._updateFoundCount = 0;
 
     // A promise that will be resolved once we have a SW reference.
     this._swPromise = new Promise((res) => this._swPromiseResolver = res);
+
+    // Instance variables initially not set.
+    // this._broadcastChannel;
+    // this._controllingSw;
+    // this._externalSw;
+    // this._registration;
+    // this._registrationTime;
+    // this._sw;
+    // this._waitingTimeout;
 
     // Bind event handler callbacks.
     this._onMessage = this._onMessage.bind(this);
@@ -141,7 +145,8 @@ export class Workbox extends EventTargetShim {
         } else {
           logger.debug('A service worker with a different script URL is ' +
               'currently controlling the page.');
-          logger.debug('Fetching the new script...');
+          logger.debug('The browser is now fetching the new ' +
+              'service worker script...');
         }
       }
 

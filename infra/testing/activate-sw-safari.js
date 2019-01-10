@@ -6,6 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
+// TODO(philipwalton): remove this in favor of using workbox-window.
 module.exports = async (swUrl) => {
   // First step: Wait for the page to activate
   let error = await global.__workbox.webdriver.executeAsyncScript((swUrl, cb) => {
