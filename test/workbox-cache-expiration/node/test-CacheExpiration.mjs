@@ -71,12 +71,12 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
 
       const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
 
-      let expiredUrls = await expirationManager._findOldEntries(currentTimestamp);
-      expect(expiredUrls).to.deep.equal([]);
+      let expiredURLs = await expirationManager._findOldEntries(currentTimestamp);
+      expect(expiredURLs).to.deep.equal([]);
 
       // The plus one is to ensure it expires
-      expiredUrls = await expirationManager._findOldEntries(currentTimestamp + maxAgeSeconds * 1000 + 1);
-      expect(expiredUrls).to.deep.equal(['https://example.com/']);
+      expiredURLs = await expirationManager._findOldEntries(currentTimestamp + maxAgeSeconds * 1000 + 1);
+      expect(expiredURLs).to.deep.equal(['https://example.com/']);
     });
   });
 
@@ -98,26 +98,26 @@ describe(`[workbox-cache-expiration] CacheExpiration`, function() {
       const expirationManager = new CacheExpiration(cacheName, {maxEntries});
 
       // No entries added, should be empty
-      let extraUrls = await expirationManager._findExtraEntries();
-      expect(extraUrls).to.deep.equal([]);
+      let extraURLs = await expirationManager._findExtraEntries();
+      expect(extraURLs).to.deep.equal([]);
 
       await timestampModel.setTimestamp('/second-earliest', secondEarlistTimestamp);
 
       // Added one entry, max is one, return empty array
-      extraUrls = await expirationManager._findExtraEntries();
-      expect(extraUrls).to.deep.equal([]);
+      extraURLs = await expirationManager._findExtraEntries();
+      expect(extraURLs).to.deep.equal([]);
 
       await timestampModel.setTimestamp('/latest', latestTimestamp);
 
       // Added two entries, max is one, return one entry
-      extraUrls = await expirationManager._findExtraEntries();
-      expect(extraUrls).to.deep.equal(['https://example.com/second-earliest']);
+      extraURLs = await expirationManager._findExtraEntries();
+      expect(extraURLs).to.deep.equal(['https://example.com/second-earliest']);
 
       await timestampModel.setTimestamp('/earliest', earliestTimestamp);
 
       // Added three entries, max is one, return two entries
-      extraUrls = await expirationManager._findExtraEntries();
-      expect(extraUrls).to.deep.equal(['https://example.com/earliest', 'https://example.com/second-earliest']);
+      extraURLs = await expirationManager._findExtraEntries();
+      expect(extraURLs).to.deep.equal(['https://example.com/earliest', 'https://example.com/second-earliest']);
     });
   });
 

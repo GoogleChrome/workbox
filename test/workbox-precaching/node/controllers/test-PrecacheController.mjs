@@ -131,12 +131,12 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       it(`should remove duplicate ${groupName}`, async function() {
         const precacheController = new PrecacheController();
 
-        const inputUrls = [
+        const inputURLs = [
           ...inputGroup,
           ...inputGroup,
         ];
 
-        precacheController.addToCacheList(inputUrls);
+        precacheController.addToCacheList(inputURLs);
 
         expect([...precacheController._urlsToCacheKeys.values()]).to.eql([
           'https://example.com/',
@@ -220,8 +220,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       logger.log.resetHistory();
 
       const updateInfo = await precacheController.install();
-      expect(updateInfo.updatedUrls.length).to.equal(cacheList.length);
-      expect(updateInfo.notUpdatedUrls.length).to.equal(0);
+      expect(updateInfo.updatedURLs.length).to.equal(cacheList.length);
+      expect(updateInfo.notUpdatedURLs.length).to.equal(0);
 
       const cache = await caches.open(cacheNames.getPrecacheName());
       const keys = await cache.keys();
@@ -324,8 +324,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
       ];
 
-      expect(initialInstallInfo.updatedUrls).to.have.members(initialExpectedCacheKeys);
-      expect(initialInstallInfo.notUpdatedUrls).to.be.empty;
+      expect(initialInstallInfo.updatedURLs).to.have.members(initialExpectedCacheKeys);
+      expect(initialInstallInfo.notUpdatedURLs).to.be.empty;
 
       if (process.env.NODE_ENV != 'production') {
         // Make sure we print some debug info.
@@ -338,7 +338,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(initialCacheKeys.map((r) => r.url)).to.have.members(initialExpectedCacheKeys);
 
       const initialActivateInfo = await initialPrecacheController.activate();
-      expect(initialActivateInfo.deletedUrls).to.be.empty;
+      expect(initialActivateInfo.deletedURLs).to.be.empty;
 
       // Make sure the files are cached after activation.
       for (const key of initialExpectedCacheKeys) {
@@ -361,11 +361,11 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       logger.log.resetHistory();
 
       const updateInstallInfo = await updatePrecacheController.install();
-      expect(updateInstallInfo.updatedUrls).to.have.members([
+      expect(updateInstallInfo.updatedURLs).to.have.members([
         'https://example.com/index.4321.html',
         'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321',
       ]);
-      expect(updateInstallInfo.notUpdatedUrls).to.have.members([
+      expect(updateInstallInfo.notUpdatedURLs).to.have.members([
         'https://example.com/example.1234.css',
         'https://example.com/scripts/index.js?__WB_REVISION__=1234',
       ]);
@@ -389,7 +389,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       }
 
       const updateActivateInfo = await updatePrecacheController.activate();
-      expect(updateActivateInfo.deletedUrls).to.have.members([
+      expect(updateActivateInfo.deletedURLs).to.have.members([
         'https://example.com/index.1234.html',
         'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
       ]);
@@ -531,7 +531,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerOne.install();
 
       const cleanupDetailsOne = await precacheControllerOne.activate();
-      expect(cleanupDetailsOne.deletedUrls.length).to.equal(0);
+      expect(cleanupDetailsOne.deletedURLs.length).to.equal(0);
 
       const precacheControllerTwo = new PrecacheController();
       const cacheListTwo = [];
@@ -539,8 +539,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheControllerTwo.install();
 
       const cleanupDetailsTwo = await precacheControllerTwo.activate();
-      expect(cleanupDetailsTwo.deletedUrls.length).to.equal(1);
-      expect(cleanupDetailsTwo.deletedUrls[0]).to.eql('https://example.com/scripts/index.js?__WB_REVISION__=1234');
+      expect(cleanupDetailsTwo.deletedURLs.length).to.equal(1);
+      expect(cleanupDetailsTwo.deletedURLs[0]).to.eql('https://example.com/scripts/index.js?__WB_REVISION__=1234');
 
       const keysTwo = await cache.keys();
       expect(keysTwo.length).to.equal(cacheListTwo.length);
@@ -564,7 +564,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       logger.log.resetHistory();
 
       const cleanupDetailsOne = await precacheControllerOne.activate();
-      expect(cleanupDetailsOne.deletedUrls.length).to.equal(0);
+      expect(cleanupDetailsOne.deletedURLs.length).to.equal(0);
 
       // Then, precache the same URLs, but two with different revisions.
       const precacheControllerTwo = new PrecacheController();
@@ -581,7 +581,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       logger.log.resetHistory();
 
       const cleanupDetailsTwo = await precacheControllerTwo.activate();
-      expect(cleanupDetailsTwo.deletedUrls).to.deep.equal([
+      expect(cleanupDetailsTwo.deletedURLs).to.deep.equal([
         'https://example.com/index.1234.html',
         'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
       ]);
@@ -640,7 +640,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
   });
 
-  describe(`getCachedUrls()`, function() {
+  describe(`getCachedURLs()`, function() {
     it(`should return the cached URLs`, function() {
       const precacheController = new PrecacheController();
       const cacheList = [
@@ -651,7 +651,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       ];
       precacheController.addToCacheList(cacheList);
 
-      const urls = precacheController.getCachedUrls();
+      const urls = precacheController.getCachedURLs();
       expect(urls).to.deep.equal([
         new URL('/index.1234.html', location).toString(),
         new URL('/example.1234.css', location).toString(),

@@ -14,18 +14,18 @@ const runInSW = require('../../../infra/testing/comlink/node-interface');
 const waitUntil = require('../../../infra/testing/wait-until');
 
 describe(`cacheableResponse.Plugin`, function() {
-  const baseUrl = `${global.__workbox.server.getAddress()}/test/workbox-cacheable-response/static/cacheable-response-plugin/`;
+  const baseURL = `${global.__workbox.server.getAddress()}/test/workbox-cacheable-response/static/cacheable-response-plugin/`;
 
   beforeEach(async function() {
     // Navigate to our test page and clear all caches before this test runs.
-    await cleanSWEnv(global.__workbox.webdriver, `${baseUrl}integration.html`);
+    await cleanSWEnv(global.__workbox.webdriver, `${baseURL}integration.html`);
   });
 
   it(`should load a page and cache entries`, async function() {
-    const swUrl = `${baseUrl}sw.js`;
+    const swURL = `${baseURL}sw.js`;
 
     // Wait for the service worker to register and activate.
-    await activateAndControlSW(swUrl);
+    await activateAndControlSW(swURL);
 
     let error = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(`example-1.txt`).then(() => cb()).catch((err) => cb(err.message));
@@ -46,9 +46,9 @@ describe(`cacheableResponse.Plugin`, function() {
       'cacheable-response-cache',
     ]);
 
-    let cachedRequests = await runInSW('cacheUrls', keys[0]);
+    let cachedRequests = await runInSW('cacheURLs', keys[0]);
     expect(cachedRequests).to.eql([
-      `${baseUrl}example-1.txt`,
+      `${baseURL}example-1.txt`,
     ]);
   });
 });

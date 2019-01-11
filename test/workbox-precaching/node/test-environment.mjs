@@ -43,7 +43,7 @@ describe(`[workbox-precaching] WorkboxPrecaching`, function() {
     });
 
     devOnly.it(`should not throw when in SW in dev`, async function() {
-      sandbox.stub(assert, 'isSwEnv').callsFake(() => true);
+      sandbox.stub(assert, 'isSWEnv').callsFake(() => true);
 
       await import('../../../packages/workbox-precaching/index.mjs');
     });

@@ -20,10 +20,10 @@ import '../_version.mjs';
  * @private
  * @memberof module:workbox-precaching
  */
-export function* generateUrlVariations(url, {
-  ignoreUrlParametersMatching,
+export function* generateURLVariations(url, {
+  ignoreURLParametersMatching,
   directoryIndex,
-  cleanUrls,
+  cleanURLs,
   urlManipulation,
 } = {}) {
   const urlObject = new URL(url, location);
@@ -31,24 +31,24 @@ export function* generateUrlVariations(url, {
   yield urlObject.href;
 
   const urlWithoutIgnoredParams = removeIgnoredSearchParams(
-      urlObject, ignoreUrlParametersMatching);
+      urlObject, ignoreURLParametersMatching);
   yield urlWithoutIgnoredParams.href;
 
   if (directoryIndex && urlWithoutIgnoredParams.pathname.endsWith('/')) {
-    const directoryUrl = new URL(urlWithoutIgnoredParams);
-    directoryUrl.pathname += directoryIndex;
-    yield directoryUrl.href;
+    const directoryURL = new URL(urlWithoutIgnoredParams);
+    directoryURL.pathname += directoryIndex;
+    yield directoryURL.href;
   }
 
-  if (cleanUrls) {
-    const cleanUrl = new URL(urlWithoutIgnoredParams);
-    cleanUrl.pathname += '.html';
-    yield cleanUrl.href;
+  if (cleanURLs) {
+    const cleanURL = new URL(urlWithoutIgnoredParams);
+    cleanURL.pathname += '.html';
+    yield cleanURL.href;
   }
 
   if (urlManipulation) {
-    const additionalUrls = urlManipulation({url: urlObject});
-    for (const urlToAttempt of additionalUrls) {
+    const additionalURLs = urlManipulation({url: urlObject});
+    for (const urlToAttempt of additionalURLs) {
       yield urlToAttempt.href;
     }
   }

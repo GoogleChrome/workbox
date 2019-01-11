@@ -22,7 +22,7 @@ describe(`[workbox-routing] Module Interface`, function() {
     // Won't be needed after https://github.com/pinterest/service-workers/pull/44
     // is fixed
     if (process.env.NODE_ENV !== 'production') {
-      sandbox.stub(assert, 'isSwEnv').callsFake(() => true);
+      sandbox.stub(assert, 'isSWEnv').callsFake(() => true);
     }
 
     // tmp here is to avoid @std/esm weirdness

@@ -37,8 +37,8 @@ const nextEvent = (obj, eventType) => {
 const uniq = (() => {
   let timestamp = Date.now();
   let uid = 0;
-  return (scriptUrl) => {
-    const url = new URL(scriptUrl, location);
+  return (scriptURL) => {
+    const url = new URL(scriptURL, location);
     url.searchParams.set('v', `${++uid}-${timestamp}`);
 
     return url.toString();
@@ -46,12 +46,12 @@ const uniq = (() => {
 })();
 
 
-const stubAlreadyControllingSw = async () => {
-  const scriptUrl = uniq('sw-clients-claim.tmp.js');
-  await navigator.serviceWorker.register(scriptUrl);
+const stubAlreadyControllingSW = async () => {
+  const scriptURL = uniq('sw-clients-claim.tmp.js');
+  await navigator.serviceWorker.register(scriptURL);
   await waitUntil(() => {
     return navigator.serviceWorker.controller &&
-        navigator.serviceWorker.controller.scriptURL.endsWith(scriptUrl);
+        navigator.serviceWorker.controller.scriptURL.endsWith(scriptURL);
   });
 };
 
@@ -67,7 +67,7 @@ describe(`[workbox-window] Workbox`, function() {
   // assert fresh-install behavior. Anything that does must be tested with
   // integration tests.
   beforeEach(async function() {
-    await stubAlreadyControllingSw();
+    await stubAlreadyControllingSW();
 
     sandbox.restore();
     sandbox.stub(console, 'debug');
@@ -106,15 +106,15 @@ describe(`[workbox-window] Workbox`, function() {
       sandbox.spy(navigator.serviceWorker, 'register');
       sandbox.spy(self, 'addEventListener');
 
-      const scriptUrl = uniq('sw-no-skip-waiting.tmp.js');
-      const wb = new Workbox(scriptUrl);
+      const scriptURL = uniq('sw-no-skip-waiting.tmp.js');
+      const wb = new Workbox(scriptURL);
       await wb.register();
 
       // Not calling addEventListener means Workbox properly detected that
       // the window was already loaded
       expect(self.addEventListener.calledWith('load')).to.not.equal(true);
       expect(navigator.serviceWorker.register.callCount).to.equal(1);
-      expect(navigator.serviceWorker.register.args[0][0]).to.equal(scriptUrl);
+      expect(navigator.serviceWorker.register.args[0][0]).to.equal(scriptURL);
     });
 
     it(`defers registration until after load by default`, async function() {
@@ -165,21 +165,21 @@ describe(`[workbox-window] Workbox`, function() {
 
     it(`notifies the SW that the window is ready if the registered SW is already controlling the page`, async function() {
       // Gets the URL of the currently controlling SW.
-      const controllingSw = navigator.serviceWorker.controller;
-      sandbox.stub(controllingSw, 'postMessage');
+      const controllingSW = navigator.serviceWorker.controller;
+      sandbox.stub(controllingSW, 'postMessage');
 
-      await new Workbox(controllingSw.scriptURL).register();
+      await new Workbox(controllingSW.scriptURL).register();
 
-      expect(controllingSw.postMessage.callCount).to.equal(1);
-      expect(controllingSw.postMessage.args[0][0]).to.deep.equal({
+      expect(controllingSW.postMessage.callCount).to.equal(1);
+      expect(controllingSW.postMessage.args[0][0]).to.deep.equal({
         type: 'WINDOW_READY',
         meta: 'workbox-window',
       });
 
       // Test that no message is sent if the SW wasn't already controlling the
       // page at registration time.
-      await new Workbox(controllingSw.scriptURL + '&nocache').register();
-      expect(controllingSw.postMessage.callCount).to.equal(1);
+      await new Workbox(controllingSW.scriptURL + '&nocache').register();
+      expect(controllingSW.postMessage.callCount).to.equal(1);
     });
 
     describe(`logs in development-only`, function() {
@@ -187,9 +187,9 @@ describe(`[workbox-window] Workbox`, function() {
         if (!isDev()) this.skip();
 
         // Gets the URL of the currently controlling SW.
-        const swUrl = navigator.serviceWorker.controller.scriptURL;
+        const swURL = navigator.serviceWorker.controller.scriptURL;
 
-        const wb = new Workbox(swUrl);
+        const wb = new Workbox(swURL);
         await wb.register();
 
         expect(console.debug.callCount).to.equal(1);
@@ -271,16 +271,16 @@ describe(`[workbox-window] Workbox`, function() {
     });
   });
 
-  describe(`getSw`, function() {
+  describe(`getSW`, function() {
     it(`resolves as soon as it has a reference to the SW registered by this instance`, async function() {
       const wb = new Workbox(uniq('sw-skip-waiting-deferred.tmp.js'));
 
       // Intentionally do not await `register()`, so we can test that
-      // `getSw()` does in its implementation.
+      // `getSW()` does in its implementation.
       wb.register();
 
       const reg = await navigator.serviceWorker.getRegistration();
-      const sw = await wb.getSw();
+      const sw = await wb.getSW();
 
       // This SW defers calling skip waiting, so our SW should match the
       // installing service worker.
@@ -288,14 +288,14 @@ describe(`[workbox-window] Workbox`, function() {
     });
 
     it(`resolves before updating if a SW with the same script URL is already active`, async function() {
-      const scriptUrl = navigator.serviceWorker.controller.scriptURL;
-      const wb = new Workbox(scriptUrl);
+      const scriptURL = navigator.serviceWorker.controller.scriptURL;
+      const wb = new Workbox(scriptURL);
 
       // Registering using the same script URL that's already active won't
       // trigger an update.
       wb.register();
 
-      const sw = await wb.getSw();
+      const sw = await wb.getSW();
       expect(sw).to.equal(navigator.serviceWorker.controller);
     });
 
@@ -303,12 +303,12 @@ describe(`[workbox-window] Workbox`, function() {
       const wb = new Workbox(uniq('sw-clients-claim.tmp.js'));
       wb.register();
 
-      const sw = await wb.getSw();
+      const sw = await wb.getSW();
       expect(sw.state).to.equal('installing');
     });
   });
 
-  describe(`messageSw`, function() {
+  describe(`messageSW`, function() {
     it(`postMessages the registered service worker`, async function() {
       const wb = new Workbox(uniq('sw-message-reply.js'));
       await wb.register();
@@ -316,7 +316,7 @@ describe(`[workbox-window] Workbox`, function() {
       const messageSpy = sandbox.spy();
       navigator.serviceWorker.addEventListener('message', messageSpy);
 
-      wb.messageSw({type: 'POST_MESSAGE_BACK'});
+      wb.messageSW({type: 'POST_MESSAGE_BACK'});
       await waitUntil(() => messageSpy.called);
 
       expect(messageSpy.args[0][0].data).to.equal('postMessage from SW!');
@@ -326,7 +326,7 @@ describe(`[workbox-window] Workbox`, function() {
       const wb = new Workbox(uniq('sw-message-reply.js'));
       wb.register();
 
-      const response = await wb.messageSw({type: 'RESPOND_TO_MESSAGE'});
+      const response = await wb.messageSW({type: 'RESPOND_TO_MESSAGE'});
       expect(response).to.equal('Reply from SW!');
     });
 
@@ -334,7 +334,7 @@ describe(`[workbox-window] Workbox`, function() {
       const wb = new Workbox(uniq('sw-message-reply.js'));
       setTimeout(() => wb.register(), 100);
 
-      const response = await wb.messageSw({type: 'RESPOND_TO_MESSAGE'});
+      const response = await wb.messageSW({type: 'RESPOND_TO_MESSAGE'});
       expect(response).to.equal('Reply from SW!');
     });
   });
@@ -344,12 +344,12 @@ describe(`[workbox-window] Workbox`, function() {
       it(`fires when a postMessage is received from the SW`, async function() {
         const wb = new Workbox(uniq('sw-message-reply.js'));
         await wb.register();
-        await wb.getSw();
+        await wb.getSW();
 
         const messageSpy = sandbox.spy();
         wb.addEventListener('message', messageSpy);
 
-        wb.messageSw({type: 'POST_MESSAGE_BACK'});
+        wb.messageSW({type: 'POST_MESSAGE_BACK'});
         await nextEvent(wb, 'message');
 
         expect(messageSpy.args[0][0]).to.equal('postMessage from SW!');
@@ -360,12 +360,12 @@ describe(`[workbox-window] Workbox`, function() {
 
         const wb = new Workbox(uniq('sw-message-reply.js'));
         await wb.register();
-        await wb.getSw();
+        await wb.getSW();
 
         const messageSpy = sandbox.spy();
         wb.addEventListener('message', messageSpy);
 
-        wb.messageSw({type: 'BROADCAST_BACK'});
+        wb.messageSW({type: 'BROADCAST_BACK'});
         await nextEvent(wb, 'message');
 
         expect(messageSpy.args[0][0]).to.equal('BroadcastChannel from SW!');
@@ -374,9 +374,9 @@ describe(`[workbox-window] Workbox`, function() {
 
     describe(`installed`, function() {
       it(`fires the first time the registered SW is installed`, async function() {
-        const scritUrl = uniq('sw-clients-claim.tmp.js');
+        const scritURL = uniq('sw-clients-claim.tmp.js');
 
-        const wb1 = new Workbox(scritUrl);
+        const wb1 = new Workbox(scritURL);
         const installed1Spy = sandbox.spy();
         wb1.addEventListener('installed', installed1Spy);
         await wb1.register();
@@ -384,7 +384,7 @@ describe(`[workbox-window] Workbox`, function() {
 
         // Create a second instance for the same SW script so it won't be
         // installed this time.
-        const wb2 = new Workbox(scritUrl);
+        const wb2 = new Workbox(scritURL);
         const installed2Spy = sandbox.spy();
         wb2.addEventListener('installed', installed2Spy);
         await wb2.register();
@@ -398,12 +398,12 @@ describe(`[workbox-window] Workbox`, function() {
         await nextEvent(wb3, 'installed');
 
         expect(installed1Spy.callCount).to.equal(1);
-        expect(installed1Spy.args[0][0]).to.equal(await wb1.getSw());
+        expect(installed1Spy.args[0][0]).to.equal(await wb1.getSW());
 
         expect(installed2Spy.callCount).to.equal(0);
 
         expect(installed3Spy.callCount).to.equal(1);
-        expect(installed3Spy.args[0][0]).to.equal(await wb3.getSw());
+        expect(installed3Spy.args[0][0]).to.equal(await wb3.getSW());
       });
     });
 
@@ -428,12 +428,12 @@ describe(`[workbox-window] Workbox`, function() {
         await nextEvent(wb3, 'waiting');
 
         expect(waiting1Spy.callCount).to.equal(1);
-        expect(waiting1Spy.args[0][0]).to.equal(await wb1.getSw());
+        expect(waiting1Spy.args[0][0]).to.equal(await wb1.getSW());
 
         expect(waiting2Spy.callCount).to.equal(0);
 
         expect(waiting3Spy.callCount).to.equal(1);
-        expect(waiting3Spy.args[0][0]).to.equal(await wb3.getSw());
+        expect(waiting3Spy.args[0][0]).to.equal(await wb3.getSW());
       });
     });
 
@@ -457,12 +457,12 @@ describe(`[workbox-window] Workbox`, function() {
         await nextEvent(wb3, 'activated');
 
         expect(activated1Spy.callCount).to.equal(1);
-        expect(activated1Spy.args[0][0]).to.equal(await wb1.getSw());
+        expect(activated1Spy.args[0][0]).to.equal(await wb1.getSW());
 
         expect(activated2Spy.callCount).to.equal(0);
 
         expect(activated3Spy.callCount).to.equal(1);
-        expect(activated3Spy.args[0][0]).to.equal(await wb3.getSw());
+        expect(activated3Spy.args[0][0]).to.equal(await wb3.getSW());
       });
     });
 
@@ -492,12 +492,12 @@ describe(`[workbox-window] Workbox`, function() {
         // integration tests.
 
         expect(controlling1Spy.callCount).to.equal(1);
-        expect(controlling1Spy.args[0][0]).to.equal(await wb1.getSw());
+        expect(controlling1Spy.args[0][0]).to.equal(await wb1.getSW());
 
         expect(controlling2Spy.callCount).to.equal(0);
 
         expect(controlling3Spy.callCount).to.equal(1);
-        expect(controlling3Spy.args[0][0]).to.equal(await wb3.getSw());
+        expect(controlling3Spy.args[0][0]).to.equal(await wb3.getSW());
       });
     });
 
@@ -516,7 +516,7 @@ describe(`[workbox-window] Workbox`, function() {
         await nextEvent(wb2, 'installed');
 
         expect(externalInstalled1Spy.callCount).to.equal(1);
-        expect(externalInstalled1Spy.args[0][0]).to.equal(await wb2.getSw());
+        expect(externalInstalled1Spy.args[0][0]).to.equal(await wb2.getSW());
 
         // Assert the same method on the second instance isn't called.
         expect(externalInstalled2Spy.callCount).to.equal(0);
@@ -543,7 +543,7 @@ describe(`[workbox-window] Workbox`, function() {
 
         expect(waiting1Spy.callCount).to.equal(0);
         expect(externalWaiting1Spy.callCount).to.equal(1);
-        expect(externalWaiting1Spy.args[0][0]).to.equal(await wb2.getSw());
+        expect(externalWaiting1Spy.args[0][0]).to.equal(await wb2.getSW());
 
         expect(waiting2Spy.callCount).to.equal(1);
         expect(externalWaiting2Spy.callCount).to.equal(0);
@@ -566,7 +566,7 @@ describe(`[workbox-window] Workbox`, function() {
         await nextEvent(wb2, 'activated');
 
         expect(externalActivated1Spy.callCount).to.equal(1);
-        expect(externalActivated1Spy.args[0][0]).to.equal(await wb2.getSw());
+        expect(externalActivated1Spy.args[0][0]).to.equal(await wb2.getSW());
 
         // Assert the same method on the second instance isn't called.
         expect(externalActivated2Spy.callCount).to.equal(0);

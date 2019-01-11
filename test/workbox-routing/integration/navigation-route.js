@@ -12,22 +12,22 @@ const activateAndControlSW = require('../../../infra/testing/activate-and-contro
 
 describe(`[workbox-routing] Route via NavigationRoute`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
-  const testingUrl = `${testServerAddress}/test/workbox-routing/static/routing-navigation/`;
-  const swUrl = `${testingUrl}sw.js`;
+  const testingURL = `${testServerAddress}/test/workbox-routing/static/routing-navigation/`;
+  const swURL = `${testingURL}sw.js`;
 
   it(`should load a page and route requests`, async function() {
     // Load the page and wait for the first service worker to register and activate.
-    await global.__workbox.webdriver.get(testingUrl);
-    await activateAndControlSW(swUrl);
+    await global.__workbox.webdriver.get(testingURL);
+    await activateAndControlSW(swURL);
 
-    const nestedUrl = `${testingUrl}TestNavigationURL`;
+    const nestedURL = `${testingURL}TestNavigationURL`;
 
-    await global.__workbox.webdriver.get(nestedUrl);
+    await global.__workbox.webdriver.get(nestedURL);
 
     const bodyText = await global.__workbox.webdriver.executeScript(() => {
       return document.body.textContent;
     });
 
-    expect(bodyText).to.equal(`NavigationRoute.${nestedUrl}`);
+    expect(bodyText).to.equal(`NavigationRoute.${nestedURL}`);
   });
 });

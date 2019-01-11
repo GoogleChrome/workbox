@@ -30,7 +30,7 @@ describe(`[workbox-broadcast-cache-update] broadcastUpdate`, function() {
       meta: CACHE_UPDATED_MESSAGE_META,
       payload: {
         cacheName,
-        updatedUrl: url,
+        updatedURL: url,
       },
     });
   });

@@ -94,11 +94,11 @@ class PrecacheController {
 
     const cache = await caches.open(this._cacheName);
     const alreadyCachedRequests = await cache.keys();
-    const alreadyCachedUrls = new Set(alreadyCachedRequests.map(
+    const alreadyCachedURLs = new Set(alreadyCachedRequests.map(
         (request) => request.url));
 
     for (const cacheKey of this._urlsToCacheKeys.values()) {
-      if (alreadyCachedUrls.has(cacheKey)) {
+      if (alreadyCachedURLs.has(cacheKey)) {
         urlsAlreadyPrecached.push(cacheKey);
       } else {
         urlsToPrecache.push(cacheKey);
@@ -106,7 +106,7 @@ class PrecacheController {
     }
 
     const precacheRequests = urlsToPrecache.map((url) => {
-      return this._addUrlToCache({event, plugins, url});
+      return this._addURLToCache({event, plugins, url});
     });
     await Promise.all(precacheRequests);
 
@@ -115,8 +115,8 @@ class PrecacheController {
     }
 
     return {
-      updatedUrls: urlsToPrecache,
-      notUpdatedUrls: urlsAlreadyPrecached,
+      updatedURLs: urlsToPrecache,
+      notUpdatedURLs: urlsAlreadyPrecached,
     };
   }
 
@@ -131,19 +131,19 @@ class PrecacheController {
     const currentlyCachedRequests = await cache.keys();
     const expectedCacheKeys = new Set(this._urlsToCacheKeys.values());
 
-    const deletedUrls = [];
+    const deletedURLs = [];
     for (const request of currentlyCachedRequests) {
       if (!expectedCacheKeys.has(request.url)) {
         await cache.delete(request);
-        deletedUrls.push(request.url);
+        deletedURLs.push(request.url);
       }
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      printCleanupDetails(deletedUrls);
+      printCleanupDetails(deletedURLs);
     }
 
-    return {deletedUrls};
+    return {deletedURLs};
   }
 
   /**
@@ -162,7 +162,7 @@ class PrecacheController {
    * @param {Array<Object>} [options.plugins] An array of plugins to apply to
    * fetch and caching.
    */
-  async _addUrlToCache({url, event, plugins}) {
+  async _addURLToCache({url, event, plugins}) {
     const request = new Request(url, {credentials: 'same-origin'});
     let response = await fetchWrapper.fetch({
       event,
@@ -215,7 +215,7 @@ class PrecacheController {
    *
    * @return {Map<string, string>} A URL to cache key mapping.
    */
-  getUrlsToCacheKeys() {
+  getURLsToCacheKeys() {
     return this._urlsToCacheKeys;
   }
 
@@ -225,7 +225,7 @@ class PrecacheController {
    *
    * @return {Array<string>} The precached URLs.
    */
-  getCachedUrls() {
+  getCachedURLs() {
     return [...this._urlsToCacheKeys.keys()];
   }
 
@@ -238,7 +238,7 @@ class PrecacheController {
    * @return {string} The versioned URL that corresponds to a cache key
    * for the original URL, or undefined if that URL isn't precached.
    */
-  getCacheKeyForUrl(url) {
+  getCacheKeyForURL(url) {
     const urlObject = new URL(url, location);
     return this._urlsToCacheKeys.get(urlObject.href);
   }

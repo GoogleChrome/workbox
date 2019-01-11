@@ -13,12 +13,12 @@ import {logger} from 'workbox-core/_private/logger.mjs';
 
 import PrecacheController from './controllers/PrecacheController.mjs';
 import {cleanupOutdatedCaches} from './utils/cleanupOutdatedCaches.mjs';
-import {generateUrlVariations} from './utils/generateUrlVariations.mjs';
+import {generateURLVariations} from './utils/generateURLVariations.mjs';
 
 import './_version.mjs';
 
 if (process.env.NODE_ENV !== 'production') {
-  assert.isSwEnv('workbox-precaching');
+  assert.isSWEnv('workbox-precaching');
 }
 
 let installActivateListenersAdded = false;
@@ -40,10 +40,10 @@ const precacheController = new PrecacheController(cacheName);
  *
  * @private
  */
-const _getCacheKeyForUrl = (url, options) => {
-  const urlsToCacheKeys = precacheController.getUrlsToCacheKeys();
-  for (const possibleUrl of generateUrlVariations(url, options)) {
-    const possibleCacheKey = urlsToCacheKeys.get(possibleUrl);
+const _getCacheKeyForURL = (url, options) => {
+  const urlsToCacheKeys = precacheController.getURLsToCacheKeys();
+  for (const possibleURL of generateURLVariations(url, options)) {
+    const possibleCacheKey = urlsToCacheKeys.get(possibleURL);
     if (possibleCacheKey) {
       return possibleCacheKey;
     }
@@ -113,9 +113,9 @@ moduleExports.precache = (entries) => {
  * @param {string} [options.directoryIndex=index.html] The `directoryIndex` will
  * check cache entries for a URLs ending with '/' to see if there is a hit when
  * appending the `directoryIndex` value.
- * @param {Array<RegExp>} [options.ignoreUrlParametersMatching=[/^utm_/]] An
+ * @param {Array<RegExp>} [options.ignoreURLParametersMatching=[/^utm_/]] An
  * array of regex's to remove search params when looking for a cache match.
- * @param {boolean} [options.cleanUrls=true] The `cleanUrls` option will
+ * @param {boolean} [options.cleanURLs=true] The `cleanURLs` option will
  * check the cache for the URL with a `.html` added to the end of the end.
  * @param {workbox.precaching~urlManipulation} [options.urlManipulation]
  * This is a function that should take a URL and return an array of
@@ -124,9 +124,9 @@ moduleExports.precache = (entries) => {
  * @alias workbox.precaching.addRoute
  */
 moduleExports.addRoute = ({
-  ignoreUrlParametersMatching = [/^utm_/],
+  ignoreURLParametersMatching = [/^utm_/],
   directoryIndex = 'index.html',
-  cleanUrls = true,
+  cleanURLs = true,
   urlManipulation = null,
 } = {}) => {
   if (fetchListenersAdded) {
@@ -136,13 +136,13 @@ moduleExports.addRoute = ({
   fetchListenersAdded = true;
 
   self.addEventListener('fetch', (event) => {
-    const precachedUrl = _getCacheKeyForUrl(event.request.url, {
-      cleanUrls,
+    const precachedURL = _getCacheKeyForURL(event.request.url, {
+      cleanURLs,
       directoryIndex,
-      ignoreUrlParametersMatching,
+      ignoreURLParametersMatching,
       urlManipulation,
     });
-    if (!precachedUrl) {
+    if (!precachedURL) {
       if (process.env.NODE_ENV !== 'production') {
         logger.debug(`Precaching did not find a match for ` +
           getFriendlyURL(event.request.url));
@@ -152,7 +152,7 @@ moduleExports.addRoute = ({
 
     let responsePromise = caches.open(cacheName)
         .then((cache) => {
-          return cache.match(precachedUrl);
+          return cache.match(precachedURL);
         }).then((cachedResponse) => {
           if (cachedResponse) {
             return cachedResponse;
@@ -162,11 +162,11 @@ moduleExports.addRoute = ({
           // (perhaps due to manual cache cleanup).
           if (process.env.NODE_ENV !== 'production') {
             logger.warn(`The precached response for ` +
-            `${getFriendlyURL(precachedUrl)} in ${cacheName} was not found. ` +
+            `${getFriendlyURL(precachedURL)} in ${cacheName} was not found. ` +
             `Falling back to the network instead.`);
           }
 
-          return fetch(precachedUrl);
+          return fetch(precachedURL);
         });
 
     if (process.env.NODE_ENV !== 'production') {
@@ -175,7 +175,7 @@ moduleExports.addRoute = ({
         // print the routing details to the console.
         logger.groupCollapsed(`Precaching is responding to: ` +
           getFriendlyURL(event.request.url));
-        logger.log(`Serving the precached url: ${precachedUrl}`);
+        logger.log(`Serving the precached url: ${precachedURL}`);
 
         logger.groupCollapsed(`View request details here.`);
         logger.unprefixed.log(event.request);
@@ -258,10 +258,10 @@ moduleExports.cleanupOutdatedCaches = () => {
  * @param {string} url The URL whose cache key to look up.
  * @return {string} The cache key that corresponds to that URL.
  *
- * @alias workbox.precaching.getCacheKeyForUrl
+ * @alias workbox.precaching.getCacheKeyForURL
  */
-moduleExports.getCacheKeyForUrl = (url) => {
-  return precacheController.getCacheKeyForUrl(url);
+moduleExports.getCacheKeyForURL = (url) => {
+  return precacheController.getCacheKeyForURL(url);
 };
 
 export default moduleExports;

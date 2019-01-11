@@ -48,36 +48,36 @@ describe(`[workbox-routing] RegExpRoute`, function() {
   });
 
   it(`should properly match URLs`, function() {
-    const matchingUrl = new URL(PATH, SAME_ORIGIN_URL);
-    const nonMatchingUrl = new URL('/does/not/match', SAME_ORIGIN_URL);
-    const crossOriginUrl = new URL(PATH, CROSS_ORIGIN_URL);
+    const matchingURL = new URL(PATH, SAME_ORIGIN_URL);
+    const nonMatchingURL = new URL('/does/not/match', SAME_ORIGIN_URL);
+    const crossOriginURL = new URL(PATH, CROSS_ORIGIN_URL);
     const regExp = new RegExp(PATH);
 
     const route = new RegExpRoute(regExp, HANDLER);
-    expect(route.match({url: matchingUrl})).to.be.ok;
-    expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
+    expect(route.match({url: matchingURL})).to.be.ok;
+    expect(route.match({url: nonMatchingURL})).not.to.be.ok;
     // This route will not match because while the RegExp matches, the match
     // doesn't occur at the start of the cross-origin URL.
-    expect(route.match({url: crossOriginUrl})).not.to.be.ok;
+    expect(route.match({url: crossOriginURL})).not.to.be.ok;
   });
 
   it(`should properly match cross-origin URLs with wildcards`, function() {
-    const matchingUrl = new URL('https://fonts.googleapis.com/icon?family=Material+Icons');
-    const matchingUrl2 = new URL('https://code.getmdl.io/1.2.1/material.indigo-pink.min.css');
+    const matchingURL = new URL('https://fonts.googleapis.com/icon?family=Material+Icons');
+    const matchingURL2 = new URL('https://code.getmdl.io/1.2.1/material.indigo-pink.min.css');
 
     const route = new RegExpRoute(/.*\.(?:googleapis|getmdl)\.(?:com|io)\/.*/, HANDLER);
-    expect(route.match({url: matchingUrl})).to.be.ok;
-    expect(route.match({url: matchingUrl2})).to.be.ok;
+    expect(route.match({url: matchingURL})).to.be.ok;
+    expect(route.match({url: matchingURL2})).to.be.ok;
   });
 
   it(`should properly match cross-origin URLs without wildcards`, function() {
-    const matchingUrl = new URL(PATH, CROSS_ORIGIN_URL);
-    const nonMatchingUrl = new URL('/does/not/match', CROSS_ORIGIN_URL);
-    const crossOriginRegExp = new RegExp(matchingUrl.href);
+    const matchingURL = new URL(PATH, CROSS_ORIGIN_URL);
+    const nonMatchingURL = new URL('/does/not/match', CROSS_ORIGIN_URL);
+    const crossOriginRegExp = new RegExp(matchingURL.href);
 
     const route = new RegExpRoute(crossOriginRegExp, HANDLER);
-    expect(route.match({url: matchingUrl})).to.be.ok;
-    expect(route.match({url: nonMatchingUrl})).not.to.be.ok;
+    expect(route.match({url: matchingURL})).to.be.ok;
+    expect(route.match({url: nonMatchingURL})).not.to.be.ok;
   });
 
   it(`should properly match URLs with capture groups`, function() {
@@ -85,16 +85,16 @@ describe(`[workbox-routing] RegExpRoute`, function() {
     const value2 = 'value2';
 
     const captureGroupRegExp = new RegExp('/(\\w+)/dummy/(\\w+)');
-    const captureGroupMatchingUrl = new URL(`/${value1}/dummy/${value2}`, SAME_ORIGIN_URL);
-    const captureGroupNonMatchingUrl = new URL(`/${value1}/${value2}`, SAME_ORIGIN_URL);
+    const captureGroupMatchingURL = new URL(`/${value1}/dummy/${value2}`, SAME_ORIGIN_URL);
+    const captureGroupNonMatchingURL = new URL(`/${value1}/${value2}`, SAME_ORIGIN_URL);
 
     const route = new RegExpRoute(captureGroupRegExp, HANDLER);
 
-    const match = route.match({url: captureGroupMatchingUrl});
+    const match = route.match({url: captureGroupMatchingURL});
     expect(match.length).to.equal(2);
     expect(match[0]).to.equal(value1);
     expect(match[1]).to.equal(value2);
 
-    expect(route.match({url: captureGroupNonMatchingUrl})).not.to.be.ok;
+    expect(route.match({url: captureGroupNonMatchingURL})).not.to.be.ok;
   });
 });

@@ -13,7 +13,7 @@ const waitUntil = require('../../../infra/testing/wait-until');
 const {executeAsyncAndCatch} = require('../../../infra/testing/webdriver/executeAsyncAndCatch');
 const {getLastWindowHandle} = require('../../../infra/testing/webdriver/getLastWindowHandle');
 const {openNewTab} = require('../../../infra/testing/webdriver/openNewTab');
-const {unregisterAllSws} = require('../../../infra/testing/webdriver/unregisterAllSws');
+const {unregisterAllSWs} = require('../../../infra/testing/webdriver/unregisterAllSWs');
 const {windowLoaded} = require('../../../infra/testing/webdriver/windowLoaded');
 
 // Store local references of these globals.
@@ -69,7 +69,7 @@ describe(`[workbox-window] Workbox`, function() {
   });
 
   afterEach(async function() {
-    await unregisterAllSws();
+    await unregisterAllSWs();
   });
 
   describe('register', () => {
@@ -82,13 +82,13 @@ describe(`[workbox-window] Workbox`, function() {
           const reg = await navigator.serviceWorker.getRegistration();
           const sw = reg.installing || reg.waiting || reg.active;
 
-          cb({scriptUrl: sw.scriptURL});
+          cb({scriptURL: sw.scriptURL});
         } catch (error) {
           cb({error: error.stack});
         }
       });
 
-      expect(result.scriptUrl).to.equal(`${testPath}sw-clients-claim.tmp.js`);
+      expect(result.scriptURL).to.equal(`${testPath}sw-clients-claim.tmp.js`);
     });
 
     it(`reports all events for a new SW registration`, async function() {
@@ -151,8 +151,8 @@ describe(`[workbox-window] Workbox`, function() {
           wb.addEventListener('waiting', self.__spies.waitingSpy);
           wb.addEventListener('activated', self.__spies.activatedSpy);
           wb.addEventListener('controlling', self.__spies.controllingSpy);
-          wb.addEventListener('externalInstalled', self.__spies.externalInstalledSpy);
-          wb.addEventListener('externalActivated', self.__spies.externalActivatedSpy);
+          wb.addEventListener('externalinstalled', self.__spies.externalInstalledSpy);
+          wb.addEventListener('externalactivated', self.__spies.externalActivatedSpy);
 
           // Resolve this execution block once the SW is controlling.
           wb.addEventListener('controlling', () => cb());

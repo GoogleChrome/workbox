@@ -13,7 +13,7 @@ const {executeAsyncAndCatch} = require('./executeAsyncAndCatch');
  * Unregisters any active SWs so the next page load can start clean.
  * Note: a new page load is needed before controlling SWs stop being active.
  */
-const unregisterAllSws = async () => {
+const unregisterAllSWs = async () => {
   await executeAsyncAndCatch(async (cb) => {
     try {
       const regs = await navigator.serviceWorker.getRegistrations();
@@ -27,4 +27,4 @@ const unregisterAllSws = async () => {
   });
 };
 
-module.exports = {unregisterAllSws};
+module.exports = {unregisterAllSWs};
