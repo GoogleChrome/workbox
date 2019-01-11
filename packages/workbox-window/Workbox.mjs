@@ -24,6 +24,7 @@ const REGISTRATION_TIMEOUT_DURATION = 60000;
  * Returns true if two URLs have the same `.href` property. The URLS can be
  * relative, and if they are the current location href is used to resolve URLs.
  *
+ * @private
  * @param {string} url1
  * @param {string} url2
  * @return {boolean}
