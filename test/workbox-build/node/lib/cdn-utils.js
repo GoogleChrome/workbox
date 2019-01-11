@@ -19,31 +19,31 @@ describe(`[workbox-build] lib/cdn-utils.js`, function() {
     expect(url).to.eql(CDN_ORIGIN);
   });
 
-  it(`getModuleUrl() should throw when moduleName is undefined`, function() {
+  it(`getModuleURL() should throw when moduleName is undefined`, function() {
     expect(
-        () => cdnUtils.getModuleUrl()
+        () => cdnUtils.getModuleURL()
     ).to.throw(errors['no-module-name']);
   });
 
-  it(`getModuleUrl('workbox-sw', 'dev') should throw`, function() {
+  it(`getModuleURL('workbox-sw', 'dev') should throw`, function() {
     expect(
-        () => cdnUtils.getModuleUrl('workbox-sw', 'dev')
+        () => cdnUtils.getModuleURL('workbox-sw', 'dev')
     ).to.throw('workbox-sw');
   });
 
-  it(`getModuleUrl(moduleName) should return the expected URL`, function() {
+  it(`getModuleURL(moduleName) should return the expected URL`, function() {
     const moduleName = 'workbox-sw';
-    const url = cdnUtils.getModuleUrl(moduleName);
+    const url = cdnUtils.getModuleURL(moduleName);
 
     expect(url.startsWith(CDN_ORIGIN)).to.be.true;
     expect(url.includes(moduleName)).to.be.true;
   });
 
-  it(`getModuleUrl('workbox-routing', buildType) should return the expected URL`, function() {
+  it(`getModuleURL('workbox-routing', buildType) should return the expected URL`, function() {
     const moduleName = 'workbox-routing';
     const buildType = 'prod';
 
-    const url = cdnUtils.getModuleUrl(moduleName, buildType);
+    const url = cdnUtils.getModuleURL(moduleName, buildType);
 
     expect(url.startsWith(CDN_ORIGIN)).to.be.true;
     expect(url.includes(moduleName)).to.be.true;

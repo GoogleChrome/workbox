@@ -25,10 +25,10 @@ module.exports = async (options = {}) => {
 
 as part of a build process. See https://goo.gl/fdTQBf for details.`);
 
-  const configDocsUrl = options.injectManifest ?
+  const configDocsURL = options.injectManifest ?
     'https://goo.gl/8bs14N' :
     'https://goo.gl/gVo87N';
 
   logger.log(ol`You can further customize your service worker by making changes
-    to ${configLocation}. See ${configDocsUrl} for details.`);
+    to ${configLocation}. See ${configDocsURL} for details.`);
 };

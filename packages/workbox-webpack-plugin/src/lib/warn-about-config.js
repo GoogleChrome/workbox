@@ -7,7 +7,7 @@
 */
 
 module.exports = (config) => {
-  const moreInfoUrl = 'https://goo.gl/EQ4Rhm';
+  const moreInfoURL = 'https://goo.gl/EQ4Rhm';
 
   const globOptions = [
     'globDirectory',
@@ -22,14 +22,14 @@ module.exports = (config) => {
     return `You're using the following Workbox configuration option` +
       `${usedGlobOptions.length === 1 ? '' : 's'}: ` +
       `[${usedGlobOptions.join(', ')}]. In Workbox v3 and later, this is ` +
-      `usually not needed. Please see ${moreInfoUrl} for more info.`;
+      `usually not needed. Please see ${moreInfoURL} for more info.`;
   }
 
   const optionsToWarnAboutWhenGlobPatternsIsNotSet = [
-    'dontCacheBustUrlsMatching',
+    'dontCacheBustURLsMatching',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
-    'modifyUrlPrefix',
+    'modifyURLPrefix',
   ];
 
   const usedNoopOptions = optionsToWarnAboutWhenGlobPatternsIsNotSet
@@ -39,7 +39,7 @@ module.exports = (config) => {
       `${usedGlobOptions.length === 1 ? '' : 's'}: ` +
       `[${usedNoopOptions.join(', ')}]. This will not have any effect, as ` +
       `it will only modify files that are matched via 'globPatterns'. You ` +
-      `can remove them from your config, and learn more at ${moreInfoUrl}`;
+      `can remove them from your config, and learn more at ${moreInfoURL}`;
   }
 
   return null;

@@ -21,7 +21,7 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     hash: 'hash1',
   };
 
-  it(`should return empty info when neither globDirectory nor templatedUrls are provided`, async function() {
+  it(`should return empty info when neither globDirectory nor templatedURLs are provided`, async function() {
     const getFileManifestEntries = require(MODULE_PATH);
 
     const {count, size, manifestEntries} = await getFileManifestEntries({});
@@ -49,7 +49,7 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     }]);
   });
 
-  it(`should throw when a templatedUrl matches a globbed file`, async function() {
+  it(`should throw when a templatedURL matches a globbed file`, async function() {
     const getFileManifestEntries = proxyquire(MODULE_PATH, {
       './get-file-details': () => [FILE],
     });
@@ -58,7 +58,7 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
       await getFileManifestEntries({
         globDirectory: GLOB_DIRECTORY,
         globPatterns: GLOB_PATTERNS,
-        templatedUrls: {
+        templatedURLs: {
           [FILE.file]: '',
         },
       });
@@ -79,7 +79,7 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     const {warnings} = await getFileManifestEntries({
       globDirectory: GLOB_DIRECTORY,
       globPatterns: GLOB_PATTERNS,
-      templatedUrls: {
+      templatedURLs: {
         [FILE.file]: '',
       },
     });
@@ -87,12 +87,12 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     expect(warnings).to.eql([warningMessage]);
   });
 
-  it(`should throw when a templatedUrl contains a pattern that doesn't match anything`, async function() {
+  it(`should throw when a templatedURL contains a pattern that doesn't match anything`, async function() {
     const getFileManifestEntries = require(MODULE_PATH);
 
     try {
       await getFileManifestEntries({
-        templatedUrls: {
+        templatedURLs: {
           [FILE.file]: GLOB_PATTERNS,
         },
       });
@@ -102,7 +102,7 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     }
   });
 
-  it(`should return results that take both glob patterns and templatedUrls into account`, async function() {
+  it(`should return results that take both glob patterns and templatedURLs into account`, async function() {
     const url1 = '/path/to/url1';
     const url2 = '/path/to/url2';
     const stringValue = 'string';
@@ -114,7 +114,7 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     const {count, size, manifestEntries} = await getFileManifestEntries({
       globDirectory: GLOB_DIRECTORY,
       globPatterns: GLOB_PATTERNS,
-      templatedUrls: {
+      templatedURLs: {
         [url1]: GLOB_PATTERNS,
         [url2]: stringValue,
       },

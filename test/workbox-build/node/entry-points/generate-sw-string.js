@@ -25,23 +25,23 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'dontCacheBustUrlsMatching',
+    'dontCacheBustURLsMatching',
     'globDirectory',
     'globFollow',
     'globIgnores',
     'globPatterns',
     'globStrict',
-    'ignoreUrlParametersMatching',
+    'ignoreURLParametersMatching',
     'injectionPointRegexp',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
-    'modifyUrlPrefix',
+    'modifyURLPrefix',
     'navigateFallback',
     'navigateFallbackWhitelist',
     'offlineGoogleAnalytics',
     'runtimeCaching',
     'skipWaiting',
-    'templatedUrls',
+    'templatedURLs',
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
     'importWorkboxFrom',
@@ -182,12 +182,12 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     it(`should use defaults when all the required parameters are present, with additional WorkboxSW() configuration`, async function() {
       const cacheId = 'test';
       const directoryIndex = 'test.html';
-      const ignoreUrlParametersMatching = [/test1/, /test2/];
+      const ignoreURLParametersMatching = [/test1/, /test2/];
 
       const workboxOptions = {
         cacheId,
         directoryIndex,
-        ignoreUrlParametersMatching,
+        ignoreURLParametersMatching,
         clientsClaim: true,
         skipWaiting: true,
       };
@@ -201,7 +201,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         setCacheNameDetails: [[{prefix: cacheId}]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         suppressWarnings: [[]],
-        precacheAndRoute: [[[], {directoryIndex, ignoreUrlParametersMatching}]],
+        precacheAndRoute: [[[], {directoryIndex, ignoreURLParametersMatching}]],
       }});
     });
 

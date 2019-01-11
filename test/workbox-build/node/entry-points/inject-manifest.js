@@ -28,7 +28,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
     'swSrc',
   ];
   const SUPPORTED_PARAMS = [
-    'dontCacheBustUrlsMatching',
+    'dontCacheBustURLsMatching',
     'globFollow',
     'globIgnores',
     'globPatterns',
@@ -36,14 +36,14 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
     'injectionPointRegexp',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
-    'modifyUrlPrefix',
-    'templatedUrls',
+    'modifyURLPrefix',
+    'templatedURLs',
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'ignoreUrlParametersMatching',
+    'ignoreURLParametersMatching',
     'importScripts',
     'importWorkboxFrom',
     'navigateFallback',
@@ -295,7 +295,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
           url: 'webpackEntry.js',
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {
-          cleanUrls: true,
+          cleanURLs: true,
         }]],
       }});
     });

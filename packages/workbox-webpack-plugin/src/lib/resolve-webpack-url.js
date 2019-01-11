@@ -12,7 +12,7 @@
  * Use publicPath + filePath instead of url.resolve(publicPath, filePath) see:
  * https://webpack.js.org/configuration/output/#output-publicpath
  *
- * @function resolveWebpackUrl
+ * @function resolveWebpackURL
  * @param {Array<string>} paths File paths to join
  * @return {string} Joined file path
  *
