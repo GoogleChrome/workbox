@@ -6,14 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from './assert.mjs';
-import {getFriendlyURL} from './getFriendlyURL.mjs';
-import {logger} from './logger.mjs';
-import {executeQuotaErrorCallbacks} from './quota.mjs';
-import {WorkboxError} from './WorkboxError.mjs';
 import {pluginEvents} from '../models/pluginEvents.mjs';
 import {pluginUtils} from '../utils/pluginUtils.mjs';
+import {WorkboxError} from './WorkboxError.mjs';
+import {assert} from './assert.mjs';
+import {executeQuotaErrorCallbacks} from './quota.mjs';
+import {getFriendlyURL} from './getFriendlyURL.mjs';
+import {logger} from './logger.mjs';
 import '../_version.mjs';
+
 
 /**
  * Wrapper around cache.put().

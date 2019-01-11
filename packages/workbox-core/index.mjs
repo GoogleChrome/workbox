@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {registerQuotaErrorCallback} from './registerQuotaErrorCallback.mjs';
 import * as _private from './_private.mjs';
 import {clientClaim} from './clientClaim.mjs';
 import {getCacheNames} from './getCacheNames.mjs';
-import {registerQuotaErrorCallback} from './registerQuotaErrorCallback.mjs';
 import {setCacheNameDetails} from './setCacheNameDetails.mjs';
 import {skipWaiting} from './skipWaiting.mjs';
 import './_version.mjs';
