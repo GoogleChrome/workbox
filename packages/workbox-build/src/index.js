@@ -11,7 +11,7 @@ const generateSW = require('./entry-points/generate-sw');
 const generateSWString = require('./entry-points/generate-sw-string');
 const getManifest = require('./entry-points/get-manifest');
 const injectManifest = require('./entry-points/inject-manifest');
-const {getModuleUrl} = require('./lib/cdn-utils');
+const {getModuleURL} = require('./lib/cdn-utils');
 
 /**
  * This Node module can be used to generate a list of assets that should be
@@ -36,7 +36,7 @@ const {getModuleUrl} = require('./lib/cdn-utils');
  * service worker file and are okay with including the manifest yourself.
  * See [getManifest()]{@link module:workbox-build.getManifest}.
  *
- * @property {Array<RegExp>} [ignoreUrlParametersMatching=[/^utm_/]] Any
+ * @property {Array<RegExp>} [ignoreURLParametersMatching=[/^utm_/]] Any
  * search parameter names that match against one of the regex's in this array
  * will be removed before looking for a precache match.
  *
@@ -75,6 +75,6 @@ module.exports = {
   generateSW,
   generateSWString,
   getManifest,
-  getModuleUrl,
+  getModuleURL,
   injectManifest,
 };

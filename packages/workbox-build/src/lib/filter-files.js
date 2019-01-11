@@ -7,8 +7,8 @@
 */
 
 const maximumSizeTransform = require('./maximum-size-transform');
-const modifyUrlPrefixTranform = require('./modify-url-prefix-transform');
-const noRevisionForUrlsMatchingTransform =
+const modifyURLPrefixTranform = require('./modify-url-prefix-transform');
+const noRevisionForURLsMatchingTransform =
   require('./no-revision-for-urls-matching-transform');
 
 /**
@@ -62,11 +62,11 @@ const noRevisionForUrlsMatchingTransform =
  */
 
 module.exports = ({
-  dontCacheBustUrlsMatching,
+  dontCacheBustURLsMatching,
   fileDetails,
   manifestTransforms,
   maximumFileSizeToCacheInBytes,
-  modifyUrlPrefix,
+  modifyURLPrefix,
 }) => {
   let allWarnings = [];
 
@@ -86,13 +86,13 @@ module.exports = ({
     transformsToApply.push(maximumSizeTransform(maximumFileSizeToCacheInBytes));
   }
 
-  if (modifyUrlPrefix) {
-    transformsToApply.push(modifyUrlPrefixTranform(modifyUrlPrefix));
+  if (modifyURLPrefix) {
+    transformsToApply.push(modifyURLPrefixTranform(modifyURLPrefix));
   }
 
-  if (dontCacheBustUrlsMatching) {
+  if (dontCacheBustURLsMatching) {
     transformsToApply.push(
-        noRevisionForUrlsMatchingTransform(dontCacheBustUrlsMatching));
+        noRevisionForURLsMatchingTransform(dontCacheBustURLsMatching));
   }
 
   // Any additional manifestTransforms that were passed will be applied last.

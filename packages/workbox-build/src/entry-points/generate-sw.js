@@ -44,8 +44,8 @@ async function generateSW(config) {
 
   // Do nothing if importWorkboxFrom is set to 'disabled'. Otherwise, check:
   if (options.importWorkboxFrom === 'cdn') {
-    const cdnUrl = cdnUtils.getModuleUrl('workbox-sw');
-    options.workboxSWImport = cdnUrl;
+    const cdnURL = cdnUtils.getModuleURL('workbox-sw');
+    options.workboxSWImport = cdnURL;
   } else if (options.importWorkboxFrom === 'local') {
     // Copy over the dev + prod version of all of the core libraries.
     const workboxDirectoryName = await copyWorkboxLibraries(destDirectory);

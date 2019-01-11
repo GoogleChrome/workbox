@@ -8,7 +8,7 @@
 
 const crypto = require('crypto');
 
-module.exports = (compositeUrl, dependencyDetails) => {
+module.exports = (compositeURL, dependencyDetails) => {
   let totalSize = 0;
   let compositeHash = '';
 
@@ -22,7 +22,7 @@ module.exports = (compositeUrl, dependencyDetails) => {
   const hashOfHashes = md5.digest('hex');
 
   return {
-    file: compositeUrl,
+    file: compositeURL,
     hash: hashOfHashes,
     size: totalSize,
   };
