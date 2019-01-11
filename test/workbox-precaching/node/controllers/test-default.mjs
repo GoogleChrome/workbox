@@ -31,7 +31,7 @@ describe(`[workbox-precaching] default export`, function() {
   });
 
   describe(`precache()`, function() {
-    it(`should only install and activate listeners once`, function() {
+    it(`should only add install and activate listeners once`, function() {
       sandbox.stub(self, 'addEventListener');
 
       precaching.precache(['/']);
@@ -334,7 +334,7 @@ describe(`[workbox-precaching] default export`, function() {
       expect(response).to.not.exist;
     });
 
-    it(`should use custom urlManipulation function`, async function() {
+    it(`should use a custom urlManipulation function`, async function() {
       let fetchCb;
       sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
         if (eventName === 'fetch') {
@@ -346,14 +346,13 @@ describe(`[workbox-precaching] default export`, function() {
 
       const cachedResponse = new Response('Injected Response');
       const cache = await caches.open(core.cacheNames.precache);
-      cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
+      await cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
 
       precaching.addRoute({
         urlManipulation: ({url}) => {
           expect(url.pathname).to.equal('/');
-
           const customUrl = new URL(url);
-          customUrl.pathname = '123.html';
+          customUrl.pathname = PRECACHED_FILE;
           return [
             customUrl,
           ];
@@ -468,32 +467,6 @@ describe(`[workbox-precaching] default export`, function() {
     });
   });
 
-  describe(`suppressWarnings()`, function() {
-    it(`should suppress warnings during install`, async function() {
-      let eventCallbacks = {};
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        eventCallbacks[eventName] = cb;
-      });
-      sandbox.spy(PrecacheController.prototype, 'install');
-
-      const precacheArgs = ['/'];
-
-      precaching.precache(precacheArgs);
-      precaching.suppressWarnings(true);
-
-      const installEvent = new ExtendableEvent('install');
-      let installPromise;
-      installEvent.waitUntil = (promise) => {
-        installPromise = promise;
-      };
-      eventCallbacks['install'](installEvent);
-
-      await installPromise;
-
-      expect(PrecacheController.prototype.install.args[0][0].suppressWarnings).to.equal(true);
-    });
-  });
-
   describe(`addPlugins()`, function() {
     it(`should add plugins during install and activate`, async function() {
       let eventCallbacks = {};
@@ -543,6 +516,32 @@ describe(`[workbox-precaching] default export`, function() {
         plugin1,
         plugin2,
       ]);
+    });
+  });
+
+  describe(`cleanupOutdatedCaches()`, function() {
+    it(`should add an activate listener`, async function() {
+      const addEventListenerSpy = sandbox.spy(self, 'addEventListener');
+      precaching.cleanupOutdatedCaches();
+
+      expect(addEventListenerSpy.calledOnce).to.be.true;
+      expect(addEventListenerSpy.firstCall.args[0]).to.eql('activate');
+    });
+  });
+
+  describe(`getCacheKeyForUrl()`, function() {
+    it(`should return the expected cache keys for various URLs`, async function() {
+      precaching.precache([
+        '/one',
+        {url: '/two', revision: '1234'},
+      ]);
+
+      expect(precaching.getCacheKeyForUrl('/one'))
+          .to.eql('https://example.com/one');
+      expect(precaching.getCacheKeyForUrl('https://example.com/two'))
+          .to.eql('https://example.com/two?__WB_REVISION__=1234');
+      expect(precaching.getCacheKeyForUrl('/not-precached'))
+          .to.not.exist;
     });
   });
 });

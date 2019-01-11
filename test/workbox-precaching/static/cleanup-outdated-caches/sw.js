@@ -1,24 +1,22 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2019 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
   https://opensource.org/licenses/MIT.
 */
 
-importScripts('/__WORKBOX/buildFile/workbox-core');
-importScripts('/__WORKBOX/buildFile/workbox-precaching');
+importScripts('/__WORKBOX/buildFile/workbox-sw');
 importScripts('/infra/testing/comlink/sw-interface.js');
 
-workbox.precaching.precache([
-  {
-    url: 'index.html',
-    revision: '2',
-  },
-  'hashed-file.abcd1234.txt',
-]);
+workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
 
-workbox.precaching.addRoute();
+workbox.precaching.precache([{
+  url: 'test.txt',
+  revision: '1',
+}]);
+
+workbox.precaching.cleanupOutdatedCaches();
 
 self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));

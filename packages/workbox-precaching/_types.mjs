@@ -10,23 +10,18 @@ import './_version.mjs';
 
 /**
  * @typedef {Object} InstallResult
- * @property {
- * Array<workbox.precaching.PrecacheEntry|string>
- * } updatedEntries List of entries
- * supplied for precaching that were precached.
- * @property {Array<workbox.precaching.PrecacheEntry|string>}
- * notUpdatedEntries List of entries
- * supplied for precaching that were already precached.
+ * @property {Array<string>} updatedUrls List of URLs that were updated during
+ * installation.
+ * @property {Array<string>} notUpdatedUrls List of URLs that were already up to
+ * date.
  *
  * @memberof workbox.precaching
  */
 
 /**
  * @typedef {Object} CleanupResult
- * @property {Array<string>} deletedCacheRequests List of URLs that were
- * deleted from the precache cache.
- * @property {Array<string>} deletedRevisionDetails
- * List of URLs that were deleted from the precache cache.
+ * @property {Array<string>} deletedCacheRequests List of URLs that were deleted
+ * while cleaning up the cache.
  *
  * @memberof workbox.precaching
  */
@@ -34,7 +29,7 @@ import './_version.mjs';
 /**
  * @typedef {Object} PrecacheEntry
  * @property {string} url URL to precache.
- * @property {string} revision Revision information for the URL.
+ * @property {string} [revision] Revision information for the URL.
  *
  * @memberof workbox.precaching
  */
@@ -51,7 +46,7 @@ import './_version.mjs';
  * @param {Object} context
  * @param {URL} context.url The request's URL.
  * @return {Array<URL>} To add additional urls to test, return an Array of
- * URL's. Please note that these **should not be Strings**, but URL objects.
+ * URLs. Please note that these **should not be strings**, but URL objects.
  *
  * @memberof workbox.precaching
  */

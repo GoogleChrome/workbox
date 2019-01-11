@@ -8,9 +8,13 @@
 
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+
 import PrecacheController from './controllers/PrecacheController.mjs';
+import {cleanupOutdatedCaches} from './utils/cleanupOutdatedCaches.mjs';
+import {generateUrlVariations} from './utils/generateUrlVariations.mjs';
+
 import './_version.mjs';
 
 if (process.env.NODE_ENV !== 'production') {
@@ -25,100 +29,25 @@ let plugins = [];
 const cacheName = cacheNames.getPrecacheName();
 const precacheController = new PrecacheController(cacheName);
 
-const _removeIgnoreUrlParams = (origUrlObject, ignoreUrlParametersMatching) => {
-  // Exclude initial '?'
-  const searchString = origUrlObject.search.slice(1);
-
-  // Split into an array of 'key=value' strings
-  const keyValueStrings = searchString.split('&');
-  const keyValuePairs = keyValueStrings.map((keyValueString) => {
-    // Split each 'key=value' string into a [key, value] array
-    return keyValueString.split('=');
-  });
-  const filteredKeyValuesPairs = keyValuePairs.filter((keyValuePair) => {
-    return ignoreUrlParametersMatching
-        .every((ignoredRegex) => {
-        // Return true iff the key doesn't match any of the regexes.
-          return !ignoredRegex.test(keyValuePair[0]);
-        });
-  });
-  const filteredStrings = filteredKeyValuesPairs.map((keyValuePair) => {
-    // Join each [key, value] array into a 'key=value' string
-    return keyValuePair.join('=');
-  });
-
-  // Join the array of 'key=value' strings into a string with '&' in
-  // between each
-  const urlClone = new URL(origUrlObject);
-  urlClone.search = filteredStrings.join('&');
-  return urlClone;
-};
-
 /**
  * This function will take the request URL and manipulate it based on the
  * configuration options.
  *
  * @param {string} url
  * @param {Object} options
- * @return {string|null} Returns the URL in the cache that matches the request
- * if available, other null.
+ * @return {string} Returns the URL in the cache that matches the request,
+ * if possible.
  *
  * @private
  */
-const _getPrecachedUrl = (url, {
-  ignoreUrlParametersMatching = [/^utm_/],
-  directoryIndex = 'index.html',
-  cleanUrls = true,
-  urlManipulation = null,
-} = {}) => {
-  const urlObject = new URL(url, location);
-
-  // Change '/some-url#123' => '/some-url'
-  urlObject.hash = '';
-
-  const urlWithoutIgnoredParams = _removeIgnoreUrlParams(
-      urlObject, ignoreUrlParametersMatching
-  );
-
-  let urlsToAttempt = [
-    // Test the URL that was fetched
-    urlObject,
-    // Test the URL without search params
-    urlWithoutIgnoredParams,
-  ];
-
-  // Test the URL with a directory index
-  if (directoryIndex && urlWithoutIgnoredParams.pathname.endsWith('/')) {
-    const directoryUrl = new URL(urlWithoutIgnoredParams);
-    directoryUrl.pathname += directoryIndex;
-    urlsToAttempt.push(directoryUrl);
-  }
-
-  // Test the URL with a '.html' extension
-  if (cleanUrls) {
-    const cleanUrl = new URL(urlWithoutIgnoredParams);
-    cleanUrl.pathname += '.html';
-    urlsToAttempt.push(cleanUrl);
-  }
-
-  if (urlManipulation) {
-    const additionalUrls = urlManipulation({url: urlObject});
-    urlsToAttempt = urlsToAttempt.concat(additionalUrls);
-  }
-
-  const cachedUrls = precacheController.getCachedUrls();
-  for (const possibleUrl of urlsToAttempt) {
-    if (cachedUrls.indexOf(possibleUrl.href) !== -1) {
-      // It's a perfect match
-      if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`Precaching found a match for ` +
-          getFriendlyURL(possibleUrl.toString()));
-      }
-      return possibleUrl.href;
+const _getCacheKeyForUrl = (url, options) => {
+  const urlsToCacheKeys = precacheController.getUrlsToCacheKeys();
+  for (const possibleUrl of generateUrlVariations(url, options)) {
+    const possibleCacheKey = urlsToCacheKeys.get(possibleUrl);
+    if (possibleCacheKey) {
+      return possibleCacheKey;
     }
   }
-
-  return null;
 };
 
 const moduleExports = {};
@@ -131,8 +60,8 @@ const moduleExports = {};
  *
  * This method can be called multiple times.
  *
- * Please note: This method **will not** serve any of the cached files for you,
- * it only precaches files. To respond to a network request you call
+ * Please note: This method **will not** serve any of the cached files for you.
+ * It only precaches files. To respond to a network request you call
  * [addRoute()]{@link module:workbox-precaching.addRoute}.
  *
  * If you have a single array of files to precache, you can just call
@@ -150,6 +79,7 @@ moduleExports.precache = (entries) => {
   }
 
   installActivateListenersAdded = true;
+
   self.addEventListener('install', (event) => {
     event.waitUntil(
         precacheController.install({event, plugins, suppressWarnings})
@@ -163,10 +93,9 @@ moduleExports.precache = (entries) => {
             })
     );
   });
+
   self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        precacheController.activate({event, plugins})
-    );
+    event.waitUntil(precacheController.activate({event, plugins}));
   });
 };
 
@@ -194,18 +123,28 @@ moduleExports.precache = (entries) => {
  *
  * @alias workbox.precaching.addRoute
  */
-moduleExports.addRoute = (options) => {
+moduleExports.addRoute = ({
+  ignoreUrlParametersMatching = [/^utm_/],
+  directoryIndex = 'index.html',
+  cleanUrls = true,
+  urlManipulation = null,
+} = {}) => {
   if (fetchListenersAdded) {
-    // TODO: Throw error here.
     return;
   }
 
   fetchListenersAdded = true;
+
   self.addEventListener('fetch', (event) => {
-    const precachedUrl = _getPrecachedUrl(event.request.url, options);
+    const precachedUrl = _getCacheKeyForUrl(event.request.url, {
+      cleanUrls,
+      directoryIndex,
+      ignoreUrlParametersMatching,
+      urlManipulation,
+    });
     if (!precachedUrl) {
       if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`Precaching found no match for ` +
+        logger.debug(`Precaching did not find a match for ` +
           getFriendlyURL(event.request.url));
       }
       return;
@@ -222,7 +161,7 @@ moduleExports.addRoute = (options) => {
           // Fall back to the network if we don't have a cached response
           // (perhaps due to manual cache cleanup).
           if (process.env.NODE_ENV !== 'production') {
-            logger.debug(`The precached response for ` +
+            logger.warn(`The precached response for ` +
             `${getFriendlyURL(precachedUrl)} in ${cacheName} was not found. ` +
             `Falling back to the network instead.`);
           }
@@ -238,8 +177,6 @@ moduleExports.addRoute = (options) => {
           getFriendlyURL(event.request.url));
         logger.log(`Serving the precached url: ${precachedUrl}`);
 
-        // The Request and Response objects contains a great deal of
-        // information, hide it under a group in case developers want to see it.
         logger.groupCollapsed(`View request details here.`);
         logger.unprefixed.log(event.request);
         logger.groupEnd();
@@ -252,6 +189,7 @@ moduleExports.addRoute = (options) => {
         return response;
       });
     }
+
     event.respondWith(responsePromise);
   });
 };
@@ -276,20 +214,7 @@ moduleExports.precacheAndRoute = (entries, options) => {
 };
 
 /**
- * Warnings will be logged if any of the precached assets are entered without
- * a `revision` property. This is extremely dangerous if the URL's aren't
- * revisioned. However, the warnings can be supressed with this method.
- *
- * @param {boolean} suppress
- *
- * @alias workbox.precaching.suppressWarnings
- */
-moduleExports.suppressWarnings = (suppress) => {
-  suppressWarnings = suppress;
-};
-
-/**
- * Add plugins to precaching.
+ * Adds plugins to precaching.
  *
  * @param {Array<Object>} newPlugins
  *
@@ -297,6 +222,46 @@ moduleExports.suppressWarnings = (suppress) => {
  */
 moduleExports.addPlugins = (newPlugins) => {
   plugins = plugins.concat(newPlugins);
+};
+
+/**
+ * Adds an `activate` event listener which will clean up incompatible
+ * precaches that were created by older versions of Workbox.
+ *
+ * @alias workbox.precaching.cleanupOutdatedCaches
+ */
+moduleExports.cleanupOutdatedCaches = () => {
+  self.addEventListener('activate', (event) => {
+    event.waitUntil(cleanupOutdatedCaches(cacheName).then((cachesDeleted) => {
+      if (cachesDeleted.length > 0) {
+        logger.log(`The following out-of-date precaches were cleaned up ` +
+        `automatically:`, cachesDeleted);
+      }
+    }));
+  });
+};
+
+/**
+ * Takes in a URL, and returns the corresponding URL that could be used to
+ * lookup the entry in the precache.
+ *
+ * If a relative URL is provided, the location of the service worker file will
+ * be used as the base.
+ *
+ * For precached entries without revision information, the cache key will be the
+ * same as the original URL.
+ *
+ * For precached entries with revision information, the cache key will be the
+ * original URL with the addition of a query parameter used for keeping track of
+ * the revision info.
+ *
+ * @param {string} url The URL whose cache key to look up.
+ * @return {string} The cache key that corresponds to that URL.
+ *
+ * @alias workbox.precaching.getCacheKeyForUrl
+ */
+moduleExports.getCacheKeyForUrl = (url) => {
+  return precacheController.getCacheKeyForUrl(url);
 };
 
 export default moduleExports;

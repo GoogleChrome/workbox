@@ -9,11 +9,11 @@
 import '../_version.mjs';
 
 const _cacheNameDetails = {
-  prefix: 'workbox',
-  suffix: self.registration.scope,
   googleAnalytics: 'googleAnalytics',
-  precache: 'precache',
+  precache: 'precache-v2',
+  prefix: 'workbox',
   runtime: 'runtime',
+  suffix: self.registration.scope,
 };
 
 const _createCacheName = (cacheName) => {

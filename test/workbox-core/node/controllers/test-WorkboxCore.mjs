@@ -82,7 +82,7 @@ describe(`workbox-core WorkboxCore`, function() {
 
     it('should return expected defaults', function() {
       // Scope be default is '/' from 'service-worker-mock'
-      expect(core.cacheNames.precache).to.equal(`workbox-precache-/`);
+      expect(core.cacheNames.precache).to.equal(`workbox-precache-v2-/`);
       expect(core.cacheNames.runtime).to.equal(`workbox-runtime-/`);
     });
 
