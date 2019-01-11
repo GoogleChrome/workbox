@@ -31,7 +31,7 @@ describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
     });
 
     expect(preActivateKeys).to.include('workbox-precache-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
-    expect(preActivateKeys).to.not.include('workbox-precache-v4-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
+    expect(preActivateKeys).to.not.include('workbox-precache-v2-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
 
 
     // Register the first service worker.
@@ -39,6 +39,6 @@ describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
 
     const postActivateKeys = await runInSW('cachesKeys');
     expect(postActivateKeys).to.not.include('workbox-precache-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
-    expect(postActivateKeys).to.include('workbox-precache-v4-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
+    expect(postActivateKeys).to.include('workbox-precache-v2-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');
   });
 });

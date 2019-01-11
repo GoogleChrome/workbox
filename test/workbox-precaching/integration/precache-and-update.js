@@ -24,7 +24,7 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     const SW_1_URL = `${baseUrl}sw-1.js`;
     const SW_2_URL = `${baseUrl}sw-2.js`;
 
-    const cacheName = 'workbox-precache-v4-http://localhost:3004/test/workbox-precaching/static/precache-and-update/';
+    const cacheName = 'workbox-precache-v2-http://localhost:3004/test/workbox-precaching/static/precache-and-update/';
 
     let requestCounter = global.__workbox.server.startCountingRequests();
 

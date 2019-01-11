@@ -10,7 +10,7 @@ import '../_version.mjs';
 
 const _cacheNameDetails = {
   googleAnalytics: 'googleAnalytics',
-  precache: 'precache-v4',
+  precache: 'precache-v2',
   prefix: 'workbox',
   runtime: 'runtime',
   suffix: self.registration.scope,
