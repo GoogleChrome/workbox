@@ -11,7 +11,7 @@ import {logger} from 'workbox-core/_private/logger.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 
-import normalizeHandler from './utils/normalizeHandler.mjs';
+import {normalizeHandler} from './utils/normalizeHandler.mjs';
 import './_version.mjs';
 
 /**
@@ -31,7 +31,7 @@ import './_version.mjs';
  *
  * @memberof workbox.routing
  */
-class Router {
+export class Router {
   /**
    * Initializes a new Router.
    */
@@ -356,4 +356,3 @@ class Router {
   }
 }
 
-export {Router};

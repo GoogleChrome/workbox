@@ -6,15 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
-import defaultExport from './_default.mjs';
+
+import {NavigationRoute} from './NavigationRoute.mjs';
+import {RegExpRoute} from './RegExpRoute.mjs';
+import {registerNavigationRoute} from './registerNavigationRoute.mjs';
+import {registerRoute} from './registerRoute.mjs';
+import {Route} from './Route.mjs';
+import {Router} from './Router.mjs';
 import './_version.mjs';
 
-/**
- * @namespace workbox.routing
- * @borrows workbox.routing.Router#setCatchHandler as setCatchHandler
- * @borrows workbox.routing.Router#setDefaultHandler as setDefaultHandler
- * @borrows workbox.routing.Router#unregisterRoute as unregisterRoute
- */
-
-export * from './_public.mjs';
-export default defaultExport;
+export {
+  NavigationRoute,
+  RegExpRoute,
+  registerNavigationRoute,
+  registerRoute,
+  Route,
+  Router,
+};
