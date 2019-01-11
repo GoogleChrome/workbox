@@ -13,7 +13,7 @@ module.exports = {
   globPatterns: ['**/*.{js,css,html}'],
   globStrict: true,
   importWorkboxFrom: 'cdn',
-  injectionPointRegexp: /(\.precacheAndRoute\()\s*\[\s*\]\s*(\)|,)/,
+  injectionPointRegexp: /(precacheAndRoute\()\s*\[\s*\]\s*(\)|,)/,
   maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
   navigateFallback: undefined,
   offlineGoogleAnalytics: false,
