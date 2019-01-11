@@ -23,7 +23,6 @@ if (process.env.NODE_ENV !== 'production') {
 
 let installActivateListenersAdded = false;
 let fetchListenersAdded = false;
-let suppressWarnings = false;
 let plugins = [];
 
 const cacheName = cacheNames.getPrecacheName();
@@ -82,7 +81,7 @@ moduleExports.precache = (entries) => {
 
   self.addEventListener('install', (event) => {
     event.waitUntil(
-        precacheController.install({event, plugins, suppressWarnings})
+        precacheController.install({event, plugins})
             .catch((error) => {
               if (process.env.NODE_ENV !== 'production') {
                 logger.error(`Service worker installation failed. It will ` +

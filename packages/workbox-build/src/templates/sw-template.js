@@ -41,7 +41,6 @@ importScripts(
  * See https://goo.gl/S9QRab
  */
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
-workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
 <% } else { %>
 if (Array.isArray(self.__precacheManifest)) {
