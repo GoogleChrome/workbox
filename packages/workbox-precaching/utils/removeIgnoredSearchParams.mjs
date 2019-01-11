@@ -12,7 +12,7 @@ import '../_version.mjs';
  * Removes any URL search parameters that should be ignored.
  *
  * @param {URL} urlObject The original URL.
- * @param {Array<RegExp>} ignoreUrlParametersMatching RegExps to test against
+ * @param {Array<RegExp>} ignoreURLParametersMatching RegExps to test against
  * each search parameter name. Matches mean that the search parameter should be
  * ignored.
  * @return {URL} The URL with any ignored search parameters removed.
@@ -21,11 +21,11 @@ import '../_version.mjs';
  * @memberof module:workbox-precaching
  */
 export function removeIgnoredSearchParams(urlObject,
-    ignoreUrlParametersMatching) {
+    ignoreURLParametersMatching) {
   // Convert the iterable into an array at the start of the loop to make sure
   // deletion doesn't mess up iteration.
   for (const paramName of [...urlObject.searchParams.keys()]) {
-    if (ignoreUrlParametersMatching.some((regExp) => regExp.test(paramName))) {
+    if (ignoreURLParametersMatching.some((regExp) => regExp.test(paramName))) {
       urlObject.searchParams.delete(paramName);
     }
   }

@@ -123,14 +123,14 @@ describe(`[workbox-background-sync] Queue`, function() {
       sandbox.spy(QueueStore.prototype, 'pushEntry');
 
       const queue = new Queue('a');
-      const requestUrl = 'https://example.com';
+      const requestURL = 'https://example.com';
       const requestInit = {
         method: 'POST',
         body: 'testing...',
         headers: {'x-foo': 'bar'},
         mode: 'cors',
       };
-      const request = new Request(requestUrl, requestInit);
+      const request = new Request(requestURL, requestInit);
       const timestamp = 1234;
       const metadata = {meta: 'data'};
 
@@ -139,7 +139,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       expect(QueueStore.prototype.pushEntry.callCount).to.equal(1);
 
       const args = QueueStore.prototype.pushEntry.firstCall.args;
-      expect(args[0].requestData.url).to.equal(requestUrl);
+      expect(args[0].requestData.url).to.equal(requestURL);
       expect(args[0].requestData.method).to.equal(requestInit.method);
       expect(args[0].requestData.headers).to.deep.equal(requestInit.headers);
       expect(args[0].requestData.mode).to.deep.equal(requestInit.mode);
@@ -201,14 +201,14 @@ describe(`[workbox-background-sync] Queue`, function() {
       sandbox.spy(QueueStore.prototype, 'unshiftEntry');
 
       const queue = new Queue('a');
-      const requestUrl = 'https://example.com';
+      const requestURL = 'https://example.com';
       const requestInit = {
         method: 'POST',
         body: 'testing...',
         headers: {'x-foo': 'bar'},
         mode: 'cors',
       };
-      const request = new Request(requestUrl, requestInit);
+      const request = new Request(requestURL, requestInit);
       const timestamp = 1234;
       const metadata = {meta: 'data'};
 
@@ -217,7 +217,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       expect(QueueStore.prototype.unshiftEntry.callCount).to.equal(1);
 
       const args = QueueStore.prototype.unshiftEntry.firstCall.args;
-      expect(args[0].requestData.url).to.equal(requestUrl);
+      expect(args[0].requestData.url).to.equal(requestURL);
       expect(args[0].requestData.method).to.equal(requestInit.method);
       expect(args[0].requestData.headers).to.deep.equal(requestInit.headers);
       expect(args[0].requestData.mode).to.deep.equal(requestInit.mode);
@@ -277,7 +277,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       sandbox.spy(QueueStore.prototype, 'shiftEntry');
 
       const queue = new Queue('a');
-      const requestUrl = 'https://example.com';
+      const requestURL = 'https://example.com';
       const requestInit = {
         method: 'POST',
         body: 'testing...',
@@ -285,14 +285,14 @@ describe(`[workbox-background-sync] Queue`, function() {
         mode: 'cors',
       };
 
-      await queue.pushRequest({request: new Request(requestUrl, requestInit)});
+      await queue.pushRequest({request: new Request(requestURL, requestInit)});
       // Add a second request to ensure the first one is returned.
       await queue.pushRequest({request: new Request('/two')});
 
       const {request} = await queue.shiftRequest();
 
       expect(QueueStore.prototype.shiftEntry.callCount).to.equal(1);
-      expect(request.url).to.equal(requestUrl);
+      expect(request.url).to.equal(requestURL);
       expect(request.method).to.equal(requestInit.method);
       expect(request.mode).to.deep.equal(requestInit.mode);
       expect(await request.text()).to.equal(requestInit.body);
@@ -337,7 +337,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       sandbox.spy(QueueStore.prototype, 'popEntry');
 
       const queue = new Queue('a');
-      const requestUrl = 'https://example.com';
+      const requestURL = 'https://example.com';
       const requestInit = {
         method: 'POST',
         body: 'testing...',
@@ -347,12 +347,12 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       // Add a second request to ensure the last one is returned.
       await queue.pushRequest({request: new Request('/two')});
-      await queue.pushRequest({request: new Request(requestUrl, requestInit)});
+      await queue.pushRequest({request: new Request(requestURL, requestInit)});
 
       const {request} = await queue.popRequest();
 
       expect(QueueStore.prototype.popEntry.callCount).to.equal(1);
-      expect(request.url).to.equal(requestUrl);
+      expect(request.url).to.equal(requestURL);
       expect(request.method).to.equal(requestInit.method);
       expect(request.mode).to.deep.equal(requestInit.mode);
       expect(await request.text()).to.equal(requestInit.body);

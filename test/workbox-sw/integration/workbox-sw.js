@@ -19,10 +19,10 @@ describe(`WorkboxSW interface`, function() {
   };
 
   const testServerAddress = global.__workbox.server.getAddress();
-  const testPageUrl = `${testServerAddress}/test/workbox-sw/static/integration/`;
+  const testPageURL = `${testServerAddress}/test/workbox-sw/static/integration/`;
 
   before(async function() {
-    await global.__workbox.webdriver.get(testPageUrl);
+    await global.__workbox.webdriver.get(testPageURL);
   });
 
   it(`should fail to activate an invalid SW which loads non-existent modules`, async function() {

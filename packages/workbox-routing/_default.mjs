@@ -12,7 +12,7 @@ import './_version.mjs';
 
 
 if (process.env.NODE_ENV !== 'production') {
-  assert.isSwEnv('workbox-routing');
+  assert.isSWEnv('workbox-routing');
 }
 
 export default new DefaultRouter();

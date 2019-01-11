@@ -12,7 +12,7 @@ import '../_version.mjs';
 /*
  * This method returns true if the current context is a service worker.
  */
-const isSwEnv = (moduleName) => {
+const isSWEnv = (moduleName) => {
   if (!('ServiceWorkerGlobalScope' in self)) {
     throw new WorkboxError('not-in-sw', {moduleName});
   }
@@ -93,7 +93,7 @@ const finalAssertExports = process.env.NODE_ENV === 'production' ? null : {
   isArray,
   isInstance,
   isOneOf,
-  isSwEnv,
+  isSWEnv,
   isType,
   isArrayOfClass,
 };

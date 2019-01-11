@@ -54,11 +54,11 @@ export function createCacheKey(entry) {
 
   // Otherwise, construct a properly versioned URL using the custom Workbox
   // search parameter along with the revision info.
-  const originalUrl = new URL(url, location);
-  const cacheKeyUrl = new URL(url, location);
-  cacheKeyUrl.searchParams.set(REVISION_SEARCH_PARAM, revision);
+  const originalURL = new URL(url, location);
+  const cacheKeyURL = new URL(url, location);
+  cacheKeyURL.searchParams.set(REVISION_SEARCH_PARAM, revision);
   return {
-    cacheKey: cacheKeyUrl.href,
-    url: originalUrl.href,
+    cacheKey: cacheKeyURL.href,
+    url: originalURL.href,
   };
 }

@@ -153,7 +153,7 @@ describe(`[workbox-precaching] default export`, function() {
       cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
 
       precaching.addRoute({
-        ignoreUrlParametersMatching: [/ignoreMe/],
+        ignoreURLParametersMatching: [/ignoreMe/],
       });
       precaching.precache([`/?${SEARCH_1}&${SEARCH_2}`]);
 
@@ -189,7 +189,7 @@ describe(`[workbox-precaching] default export`, function() {
       cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
 
       precaching.addRoute({
-        ignoreUrlParametersMatching: [/ignoreMe/],
+        ignoreURLParametersMatching: [/ignoreMe/],
       });
       precaching.precache([`/?${SEARCH_1}&${SEARCH_2}`]);
 
@@ -271,7 +271,7 @@ describe(`[workbox-precaching] default export`, function() {
       expect(response).to.equal(cachedResponse);
     });
 
-    it(`should use the cleanUrls of 'about.html'`, async function() {
+    it(`should use the cleanURLs of 'about.html'`, async function() {
       let fetchCb;
       sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
         if (eventName === 'fetch') {
@@ -302,7 +302,7 @@ describe(`[workbox-precaching] default export`, function() {
       expect(response).to.equal(cachedResponse);
     });
 
-    it(`should *not* use the cleanUrls of 'about.html' if set to false`, async function() {
+    it(`should *not* use the cleanURLs of 'about.html' if set to false`, async function() {
       let fetchCb;
       sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
         if (eventName === 'fetch') {
@@ -317,7 +317,7 @@ describe(`[workbox-precaching] default export`, function() {
       cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
 
       precaching.addRoute({
-        cleanUrls: false,
+        cleanURLs: false,
       });
       precaching.precache([`/${PRECACHED_FILE}`]);
 
@@ -351,10 +351,10 @@ describe(`[workbox-precaching] default export`, function() {
       precaching.addRoute({
         urlManipulation: ({url}) => {
           expect(url.pathname).to.equal('/');
-          const customUrl = new URL(url);
-          customUrl.pathname = PRECACHED_FILE;
+          const customURL = new URL(url);
+          customURL.pathname = PRECACHED_FILE;
           return [
-            customUrl,
+            customURL,
           ];
         },
       });
@@ -455,7 +455,7 @@ describe(`[workbox-precaching] default export`, function() {
 
       const precacheArgs = ['/'];
       const routeOptions = {
-        ignoreUrlParametersMatching: [/utm_/],
+        ignoreURLParametersMatching: [/utm_/],
         directoryIndex: 'example.html',
       };
       precaching.precacheAndRoute(precacheArgs, routeOptions);
@@ -529,18 +529,18 @@ describe(`[workbox-precaching] default export`, function() {
     });
   });
 
-  describe(`getCacheKeyForUrl()`, function() {
+  describe(`getCacheKeyForURL()`, function() {
     it(`should return the expected cache keys for various URLs`, async function() {
       precaching.precache([
         '/one',
         {url: '/two', revision: '1234'},
       ]);
 
-      expect(precaching.getCacheKeyForUrl('/one'))
+      expect(precaching.getCacheKeyForURL('/one'))
           .to.eql('https://example.com/one');
-      expect(precaching.getCacheKeyForUrl('https://example.com/two'))
+      expect(precaching.getCacheKeyForURL('https://example.com/two'))
           .to.eql('https://example.com/two?__WB_REVISION__=1234');
-      expect(precaching.getCacheKeyForUrl('/not-precached'))
+      expect(precaching.getCacheKeyForURL('/not-precached'))
           .to.not.exist;
     });
   });

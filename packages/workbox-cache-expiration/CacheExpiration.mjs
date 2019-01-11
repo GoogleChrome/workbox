@@ -100,24 +100,24 @@ class CacheExpiration {
 
     // Use a Set to remove any duplicates following the concatenation, then
     // convert back into an array.
-    const allUrls = [...new Set(oldEntries.concat(extraEntries))];
+    const allURLs = [...new Set(oldEntries.concat(extraEntries))];
 
     await Promise.all([
-      this._deleteFromCache(allUrls),
-      this._deleteFromIDB(allUrls),
+      this._deleteFromCache(allURLs),
+      this._deleteFromIDB(allURLs),
     ]);
 
     if (process.env.NODE_ENV !== 'production') {
       // TODO: break apart entries deleted due to expiration vs size restraints
-      if (allUrls.length > 0) {
+      if (allURLs.length > 0) {
         logger.groupCollapsed(
-            `Expired ${allUrls.length} ` +
-          `${allUrls.length === 1 ? 'entry' : 'entries'} and removed ` +
-          `${allUrls.length === 1 ? 'it' : 'them'} from the ` +
+            `Expired ${allURLs.length} ` +
+          `${allURLs.length === 1 ? 'entry' : 'entries'} and removed ` +
+          `${allURLs.length === 1 ? 'it' : 'them'} from the ` +
           `'${this._cacheName}' cache.`);
         logger.log(
-            `Expired the following ${allUrls.length === 1 ? 'URL' : 'URLs'}:`);
-        allUrls.forEach((url) => logger.log(`    ${url}`));
+            `Expired the following ${allURLs.length === 1 ? 'URL' : 'URLs'}:`);
+        allURLs.forEach((url) => logger.log(`    ${url}`));
         logger.groupEnd();
       } else {
         logger.debug(`Cache expiration ran and found no entries to remove.`);
@@ -155,14 +155,14 @@ class CacheExpiration {
 
     const expireOlderThan = expireFromTimestamp - (this._maxAgeSeconds * 1000);
     const timestamps = await this._timestampModel.getAllTimestamps();
-    const expiredUrls = [];
+    const expiredURLs = [];
     timestamps.forEach((timestampDetails) => {
       if (timestampDetails.timestamp < expireOlderThan) {
-        expiredUrls.push(timestampDetails.url);
+        expiredURLs.push(timestampDetails.url);
       }
     });
 
-    return expiredUrls;
+    return expiredURLs;
   }
 
   /**
@@ -171,7 +171,7 @@ class CacheExpiration {
    * @private
    */
   async _findExtraEntries() {
-    const extraUrls = [];
+    const extraURLs = [];
 
     if (!this._maxEntries) {
       return [];
@@ -180,10 +180,10 @@ class CacheExpiration {
     const timestamps = await this._timestampModel.getAllTimestamps();
     while (timestamps.length > this._maxEntries) {
       const lastUsed = timestamps.shift();
-      extraUrls.push(lastUsed.url);
+      extraURLs.push(lastUsed.url);
     }
 
-    return extraUrls;
+    return extraURLs;
   }
 
   /**
@@ -205,7 +205,7 @@ class CacheExpiration {
    */
   async _deleteFromIDB(urls) {
     for (const url of urls) {
-      await this._timestampModel.deleteUrl(url);
+      await this._timestampModel.deleteURL(url);
     }
   }
 

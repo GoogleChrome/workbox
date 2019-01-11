@@ -16,8 +16,8 @@ describe(`[workbox-core] getFriendlyURL()`, function() {
   });
 
   it(`should return short URL for local origin '<local origin>/hi'`, function() {
-    const fullUrl = new URL('/hi', self.location).toString();
-    const url = getFriendlyURL(fullUrl);
+    const fullURL = new URL('/hi', self.location).toString();
+    const url = getFriendlyURL(fullURL);
     expect(url).to.equal('/hi');
   });
 

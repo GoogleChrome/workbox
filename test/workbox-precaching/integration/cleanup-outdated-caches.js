@@ -13,11 +13,11 @@ const cleanSWEnv = require('../../../infra/testing/clean-sw');
 const runInSW = require('../../../infra/testing/comlink/node-interface');
 
 describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
-  const baseUrl = `${global.__workbox.server.getAddress()}/test/workbox-precaching/static/cleanup-outdated-caches/`;
+  const baseURL = `${global.__workbox.server.getAddress()}/test/workbox-precaching/static/cleanup-outdated-caches/`;
 
   beforeEach(async function() {
     // Navigate to our test page and clear all caches before this test runs.
-    await cleanSWEnv(global.__workbox.webdriver, `${baseUrl}integration.html`);
+    await cleanSWEnv(global.__workbox.webdriver, `${baseURL}integration.html`);
   });
 
   it(`should clean up outdated precached after activation`, async function() {
@@ -35,7 +35,7 @@ describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
 
 
     // Register the first service worker.
-    await activateAndControlSW(`${baseUrl}sw.js`);
+    await activateAndControlSW(`${baseURL}sw.js`);
 
     const postActivateKeys = await runInSW('cachesKeys');
     expect(postActivateKeys).to.not.include('workbox-precache-http://localhost:3004/test/workbox-precaching/static/cleanup-outdated-caches/');

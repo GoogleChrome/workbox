@@ -10,9 +10,9 @@ import './_version.mjs';
 
 /**
  * @typedef {Object} InstallResult
- * @property {Array<string>} updatedUrls List of URLs that were updated during
+ * @property {Array<string>} updatedURLs List of URLs that were updated during
  * installation.
- * @property {Array<string>} notUpdatedUrls List of URLs that were already up to
+ * @property {Array<string>} notUpdatedURLs List of URLs that were already up to
  * date.
  *
  * @memberof workbox.precaching

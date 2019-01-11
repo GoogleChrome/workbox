@@ -14,8 +14,8 @@ const activateAndControlSW = require('../../../infra/testing/activate-and-contro
 describe(`[workbox-google-analytics] Load and use Google Analytics`, function() {
   const driver = global.__workbox.webdriver;
   const testServerAddress = global.__workbox.server.getAddress();
-  const testingUrl = `${testServerAddress}/test/workbox-google-analytics/static/basic-example/`;
-  const swUrl = `${testingUrl}sw.js`;
+  const testingURL = `${testServerAddress}/test/workbox-google-analytics/static/basic-example/`;
+  const swURL = `${testingURL}sw.js`;
 
   /**
    * Sends a mesage to the service worker via postMessage and invokes the
@@ -26,7 +26,7 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`, function() 
    * @param {Function} done The callback automatically passed via webdriver's
    *     `executeAsyncScript()` method.
    */
-  const messageSw = (data, done) => {
+  const messageSW = (data, done) => {
     let messageChannel = new MessageChannel();
     messageChannel.port1.onmessage = (evt) => done(evt.data);
     navigator.serviceWorker.controller.postMessage(
@@ -35,14 +35,14 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`, function() 
 
   before(async function() {
     // Load the page and wait for the first service worker to activate.
-    await driver.get(testingUrl);
+    await driver.get(testingURL);
 
-    await activateAndControlSW(swUrl);
+    await activateAndControlSW(swURL);
   });
 
   beforeEach(async function() {
     // Reset the spied requests array.
-    await driver.executeAsyncScript(messageSw, {
+    await driver.executeAsyncScript(messageSW, {
       action: 'clear-spied-requests',
     });
   });
@@ -75,13 +75,13 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`, function() 
       });
     });
 
-    let requests = await driver.executeAsyncScript(messageSw, {
+    let requests = await driver.executeAsyncScript(messageSW, {
       action: 'get-spied-requests',
     });
     expect(requests).to.have.lengthOf(1);
 
     // Reset the spied requests array.
-    await driver.executeAsyncScript(messageSw, {
+    await driver.executeAsyncScript(messageSW, {
       action: 'clear-spied-requests',
     });
 
@@ -107,19 +107,19 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`, function() 
 
     // Get all spied requests and ensure there haven't been any (since we're
     // offline).
-    requests = await driver.executeAsyncScript(messageSw, {
+    requests = await driver.executeAsyncScript(messageSW, {
       action: 'get-spied-requests',
     });
     expect(requests).to.have.lengthOf(0);
 
     // Uncheck the "simulate offline" checkbox and then trigger a sync.
     await simulateOfflineEl.click();
-    await driver.executeAsyncScript(messageSw, {
+    await driver.executeAsyncScript(messageSW, {
       action: 'dispatch-sync-event',
     });
 
     // Ensure only 2 requests have replayed, since only 2 of them were to GA.
-    requests = await driver.executeAsyncScript(messageSw, {
+    requests = await driver.executeAsyncScript(messageSW, {
       action: 'get-spied-requests',
     });
     expect(requests).to.have.lengthOf(2);

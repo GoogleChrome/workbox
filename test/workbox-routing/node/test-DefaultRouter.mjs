@@ -92,8 +92,8 @@ describe(`[workbox-routing] Default Router`, function() {
       const route = defaultRouter.registerRoute(pathname, handlerSpy);
       expect(route).to.be.an.instanceof(Route);
 
-      const sameOriginUrl = new URL(pathname, location);
-      const sameOriginRequest = new Request(sameOriginUrl);
+      const sameOriginURL = new URL(pathname, location);
+      const sameOriginRequest = new Request(sameOriginURL);
       const sameOriginEvent =
           new FetchEvent('fetch', {request: sameOriginRequest});
 
@@ -102,9 +102,9 @@ describe(`[workbox-routing] Default Router`, function() {
         event: sameOriginEvent,
       });
 
-      const sameOriginUrlNotMatching = new URL('/does/not/match', location);
+      const sameOriginURLNotMatching = new URL('/does/not/match', location);
       const sameOriginRequestNotMatching =
-          new Request(sameOriginUrlNotMatching);
+          new Request(sameOriginURLNotMatching);
       const sameOriginEventNotMatching =
           new FetchEvent('fetch', {request: sameOriginRequestNotMatching});
 
@@ -113,8 +113,8 @@ describe(`[workbox-routing] Default Router`, function() {
         event: sameOriginEventNotMatching,
       });
 
-      const crossOriginUrl = new URL(pathname, crossOrigin);
-      const crossOriginRequest = new Request(crossOriginUrl);
+      const crossOriginURL = new URL(pathname, crossOrigin);
+      const crossOriginRequest = new Request(crossOriginURL);
       const crossOriginEvent =
           new FetchEvent('fetch', {request: crossOriginRequest});
 
@@ -124,7 +124,7 @@ describe(`[workbox-routing] Default Router`, function() {
       });
 
       expect(handlerSpy.callCount).to.equal(1);
-      expect(handlerSpy.firstCall.args[0].url).to.deep.equal(sameOriginUrl);
+      expect(handlerSpy.firstCall.args[0].url).to.deep.equal(sameOriginURL);
       expect(handlerSpy.firstCall.args[0].request).to.equal(sameOriginRequest);
       expect(handlerSpy.firstCall.args[0].event).to.equal(sameOriginEvent);
 
@@ -147,8 +147,8 @@ describe(`[workbox-routing] Default Router`, function() {
       const route = defaultRouter.registerRoute(`${crossOrigin}${pathname}`, handlerSpy);
       expect(route).to.be.an.instanceof(Route);
 
-      const sameOriginUrl = new URL(pathname, location);
-      const sameOriginRequest = new Request(sameOriginUrl);
+      const sameOriginURL = new URL(pathname, location);
+      const sameOriginRequest = new Request(sameOriginURL);
       const sameOriginEvent =
           new FetchEvent('fetch', {request: sameOriginRequest});
 
@@ -157,8 +157,8 @@ describe(`[workbox-routing] Default Router`, function() {
         event: sameOriginEvent,
       });
 
-      const crossOriginUrl = new URL(pathname, crossOrigin);
-      const crossOriginRequest = new Request(crossOriginUrl);
+      const crossOriginURL = new URL(pathname, crossOrigin);
+      const crossOriginRequest = new Request(crossOriginURL);
       const crossOriginEvent =
           new FetchEvent('fetch', {request: crossOriginRequest});
 
@@ -168,7 +168,7 @@ describe(`[workbox-routing] Default Router`, function() {
       });
 
       expect(handlerSpy.callCount).to.equal(1);
-      expect(handlerSpy.args[0][0].url).to.deep.equal(crossOriginUrl);
+      expect(handlerSpy.args[0][0].url).to.deep.equal(crossOriginURL);
       expect(handlerSpy.args[0][0].request).to.equal(crossOriginRequest);
       expect(handlerSpy.args[0][0].event).to.equal(crossOriginEvent);
       sandbox.resetHistory();
@@ -374,9 +374,9 @@ describe(`[workbox-routing] Default Router`, function() {
       const fetchStub = sandbox.stub(self, 'fetch').returns(fakeResponse);
 
       const cacheName = 'does-not-exist';
-      const shellUrl = '/does-not-exist.html';
+      const shellURL = '/does-not-exist.html';
 
-      const route = defaultRouter.registerNavigationRoute(shellUrl, {
+      const route = defaultRouter.registerNavigationRoute(shellURL, {
         cacheName,
       });
       const response = await route.handler.handle(new FetchEvent('fetch', {
@@ -386,7 +386,7 @@ describe(`[workbox-routing] Default Router`, function() {
       }));
 
       expect(fetchStub.calledOnce).to.be.true;
-      expect(fetchStub.firstCall.args[0]).to.eql(shellUrl);
+      expect(fetchStub.firstCall.args[0]).to.eql(shellURL);
       expect(response).to.eql(fakeResponse);
     });
   });

@@ -32,7 +32,7 @@ import './_version.mjs';
  *   meta: 'workbox-broadcast-cache-update',
  *   payload: {
  *     cacheName: 'the-cache-name',
- *     updatedUrl: 'https://example.com/'
+ *     updatedURL: 'https://example.com/'
  *   }
  * }
  * ```
@@ -71,7 +71,7 @@ const broadcastUpdate = async ({channel, cacheName, url}) => {
     meta: CACHE_UPDATED_MESSAGE_META,
     payload: {
       cacheName: cacheName,
-      updatedUrl: url,
+      updatedURL: url,
     },
   };
 

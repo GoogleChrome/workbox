@@ -14,18 +14,18 @@ const runInSW = require('../../../infra/testing/comlink/node-interface');
 const waitUntil = require('../../../infra/testing/wait-until');
 
 describe(`[workbox-strategies] NetworkFirst Requests`, function() {
-  const baseUrl = `${global.__workbox.server.getAddress()}/test/workbox-strategies/static/network-first/`;
+  const baseURL = `${global.__workbox.server.getAddress()}/test/workbox-strategies/static/network-first/`;
 
   beforeEach(async function() {
     // Navigate to our test page and clear all caches before this test runs.
-    await cleanSWEnv(global.__workbox.webdriver, `${baseUrl}integration.html`);
+    await cleanSWEnv(global.__workbox.webdriver, `${baseURL}integration.html`);
   });
 
   it(`should respond with a non-cached entry but stash request in a cache`, async function() {
-    const swUrl = `${baseUrl}sw.js`;
+    const swURL = `${baseURL}sw.js`;
 
     // Wait for the service worker to register and activate.
-    await activateAndControlSW(swUrl);
+    await activateAndControlSW(swURL);
 
     const cacheName = 'network-first';
 

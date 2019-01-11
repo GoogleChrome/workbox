@@ -12,12 +12,12 @@ const activateAndControlSW = require('../../../infra/testing/activate-and-contro
 
 describe(`[workbox-streams] Integration Tests`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
-  const testingUrl = `${testServerAddress}/test/workbox-streams/static/`;
-  const swUrl = `${testingUrl}sw.js`;
+  const testingURL = `${testServerAddress}/test/workbox-streams/static/`;
+  const swURL = `${testingURL}sw.js`;
 
   before(async function() {
-    await global.__workbox.webdriver.get(testingUrl);
-    await activateAndControlSW(swUrl);
+    await global.__workbox.webdriver.get(testingURL);
+    await activateAndControlSW(swURL);
   });
 
   for (const testCase of ['concatenate', 'concatenateToResponse', 'strategy']) {

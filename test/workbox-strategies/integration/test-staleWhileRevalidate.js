@@ -14,18 +14,18 @@ const runInSW = require('../../../infra/testing/comlink/node-interface');
 const waitUntil = require('../../../infra/testing/wait-until');
 
 describe(`[workbox-strategies] StaleWhileRevalidate Requests`, function() {
-  const baseUrl = `${global.__workbox.server.getAddress()}/test/workbox-strategies/static/stale-while-revalidate/`;
+  const baseURL = `${global.__workbox.server.getAddress()}/test/workbox-strategies/static/stale-while-revalidate/`;
 
   beforeEach(async function() {
     // Navigate to our test page and clear all caches before this test runs.
-    await cleanSWEnv(global.__workbox.webdriver, `${baseUrl}integration.html`);
+    await cleanSWEnv(global.__workbox.webdriver, `${baseURL}integration.html`);
   });
 
   it(`should respond with cached entry and update it`, async function() {
-    const swUrl = `${baseUrl}sw.js`;
+    const swURL = `${baseURL}sw.js`;
 
     // Wait for the service worker to register and activate.
-    await activateAndControlSW(swUrl);
+    await activateAndControlSW(swURL);
 
     const cacheName = 'stale-while-revalidate';
 

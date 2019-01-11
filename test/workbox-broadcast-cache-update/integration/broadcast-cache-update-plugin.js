@@ -12,13 +12,13 @@ const activateAndControlSW = require('../../../infra/testing/activate-and-contro
 
 describe(`broadcastCacheUpdate.Plugin`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
-  const testingUrl = `${testServerAddress}/test/workbox-broadcast-cache-update/static/`;
-  const swUrl = `${testingUrl}sw.js`;
-  const apiUrl = `${testServerAddress}/__WORKBOX/uniqueETag`;
+  const testingURL = `${testServerAddress}/test/workbox-broadcast-cache-update/static/`;
+  const swURL = `${testingURL}sw.js`;
+  const apiURL = `${testServerAddress}/__WORKBOX/uniqueETag`;
 
   it(`should broadcast a message on the expected channel when there's a cache update`, async function() {
-    await global.__workbox.webdriver.get(testingUrl);
-    await activateAndControlSW(swUrl);
+    await global.__workbox.webdriver.get(testingURL);
+    await activateAndControlSW(swURL);
 
     const supported = await global.__workbox.webdriver.executeScript(() => {
       return 'BroadcastChannel' in window;
@@ -29,13 +29,13 @@ describe(`broadcastCacheUpdate.Plugin`, function() {
       return;
     }
 
-    const err = await global.__workbox.webdriver.executeAsyncScript((apiUrl, cb) => {
-      // There's already a cached entry for apiUrl created by the
+    const err = await global.__workbox.webdriver.executeAsyncScript((apiURL, cb) => {
+      // There's already a cached entry for apiURL created by the
       // service worker's install handler.
-      fetch(apiUrl)
+      fetch(apiURL)
           .then(() => cb())
           .catch((err) => cb(err.message));
-    }, apiUrl);
+    }, apiURL);
 
     expect(err).to.not.exist;
 
@@ -53,7 +53,7 @@ describe(`broadcastCacheUpdate.Plugin`, function() {
       meta: 'workbox-broadcast-cache-update',
       payload: {
         cacheName: 'bcu-integration-test',
-        updatedUrl: apiUrl,
+        updatedURL: apiURL,
       },
       type: 'CACHE_UPDATED',
     });

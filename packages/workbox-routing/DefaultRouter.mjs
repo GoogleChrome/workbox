@@ -60,7 +60,7 @@ class DefaultRouter extends Router {
     let route;
 
     if (typeof capture === 'string') {
-      const captureUrl = new URL(capture, location);
+      const captureURL = new URL(capture, location);
 
       if (process.env.NODE_ENV !== 'production') {
         if (!(capture.startsWith('/') || capture.startsWith('http'))) {
@@ -75,7 +75,7 @@ class DefaultRouter extends Router {
         // We want to check if Express-style wildcards are in the pathname only.
         // TODO: Remove this log message in v4.
         const valueToCheck = capture.startsWith('http') ?
-          captureUrl.pathname :
+          captureURL.pathname :
           capture;
         // See https://github.com/pillarjs/path-to-regexp#parameters
         const wildcards = '[*:?+]';
@@ -90,8 +90,8 @@ class DefaultRouter extends Router {
 
       const matchCallback = ({url}) => {
         if (process.env.NODE_ENV !== 'production') {
-          if ((url.pathname === captureUrl.pathname) &&
-              (url.origin !== captureUrl.origin)) {
+          if ((url.pathname === captureURL.pathname) &&
+              (url.origin !== captureURL.origin)) {
             logger.debug(
                 `${capture} only partially matches the cross-origin URL ` +
               `${url}. This route will only handle cross-origin requests ` +
@@ -100,7 +100,7 @@ class DefaultRouter extends Router {
           }
         }
 
-        return url.href === captureUrl.href;
+        return url.href === captureURL.href;
       };
 
       route = new Route(matchCallback, handler, method);
@@ -134,7 +134,7 @@ class DefaultRouter extends Router {
    * [Router.registerRoute()]{@link workbox.routing.Router#registerRoute}
    * .
    *
-   * @param {string} cachedAssetUrl
+   * @param {string} cachedAssetURL
    * @param {Object} [options]
    * @param {string} [options.cacheName] Cache name to store and retrieve
    * requests. Defaults to precache cache name provided by
@@ -150,18 +150,18 @@ class DefaultRouter extends Router {
    *
    * @alias workbox.routing.registerNavigationRoute
    */
-  registerNavigationRoute(cachedAssetUrl, options = {}) {
+  registerNavigationRoute(cachedAssetURL, options = {}) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(cachedAssetUrl, 'string', {
+      assert.isType(cachedAssetURL, 'string', {
         moduleName: 'workbox-routing',
         className: '[default export]',
         funcName: 'registerNavigationRoute',
-        paramName: 'cachedAssetUrl',
+        paramName: 'cachedAssetURL',
       });
     }
 
     const cacheName = cacheNames.getPrecacheName(options.cacheName);
-    const handler = () => caches.match(cachedAssetUrl, {cacheName})
+    const handler = () => caches.match(cachedAssetURL, {cacheName})
         .then((response) => {
           if (response) {
             return response;
@@ -169,7 +169,7 @@ class DefaultRouter extends Router {
           // This shouldn't normally happen, but there are edge cases:
           // https://github.com/GoogleChrome/workbox/issues/1441
           throw new Error(`The cache ${cacheName} did not have an entry for ` +
-          `${cachedAssetUrl}.`);
+          `${cachedAssetURL}.`);
         }).catch((error) => {
         // If there's either a cache miss, or the caches.match() call threw
         // an exception, then attempt to fulfill the navigation request with
@@ -181,7 +181,7 @@ class DefaultRouter extends Router {
           }
 
           // This might still fail if the browser is offline...
-          return fetch(cachedAssetUrl);
+          return fetch(cachedAssetURL);
         });
 
     const route = new NavigationRoute(handler, {
