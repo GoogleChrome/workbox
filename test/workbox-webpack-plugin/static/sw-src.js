@@ -6,5 +6,4 @@
   https://opensource.org/licenses/MIT.
 */
 
-workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute([], {});

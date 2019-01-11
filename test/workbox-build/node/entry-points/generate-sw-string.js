@@ -109,7 +109,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
       }});
     });
@@ -132,7 +131,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       swString = `self.__precacheManifest = ${JSON.stringify(additionalManifestEntries)};${swString}`;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...importScripts]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[additionalManifestEntries, {}]],
       }});
     });
@@ -156,7 +154,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       swString = `self.__precacheManifest = ${JSON.stringify(additionalManifestEntries)};${swString}`;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...importScripts]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -200,7 +197,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         skipWaiting: [[]],
         setCacheNameDetails: [[{prefix: cacheId}]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {directoryIndex, ignoreUrlParametersMatching}]],
       }});
     });
@@ -215,7 +211,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         registerNavigationRoute: [[navigateFallback]],
       }});
@@ -233,7 +228,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         registerNavigationRoute: [[navigateFallback, {
           whitelist: navigateFallbackWhitelist,
@@ -250,7 +244,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         googleAnalyticsInitialize: [[{}]],
       }});
@@ -269,7 +262,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         googleAnalyticsInitialize: [[{
           parameterOverrides: {
@@ -346,7 +338,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         registerRoute: [[STRING_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
       }});
@@ -364,7 +355,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         registerRoute: [[REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
       }});
@@ -385,7 +375,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[], []],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         registerRoute: [
           [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
@@ -450,7 +439,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         cacheableResponsePlugin: [[runtimeCachingOptions.cacheableResponse]],
         cacheExpirationPlugin: [[runtimeCachingOptions.expiration]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         registerRoute: [[REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
       }});
@@ -498,7 +486,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         cacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
         cacheExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         registerRoute: [
           [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
