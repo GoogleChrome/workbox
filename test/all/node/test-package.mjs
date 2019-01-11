@@ -42,6 +42,9 @@ describe(`[all] Test package.json`, function() {
           });
           break;
         }
+        case 'window': {
+          break;
+        }
         case 'node': {
           break;
         }

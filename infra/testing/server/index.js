@@ -7,6 +7,7 @@
 */
 
 const express = require('express');
+const nunjucks = require('nunjucks');
 const path = require('path');
 const requireDir = require('require-dir');
 const serveIndex = require('serve-index');
@@ -22,8 +23,11 @@ let server;
 
 function initApp() {
   app = express();
-  requestCounters = new Set();
 
+  // Configure nunjucks to work with express routes.
+  nunjucks.configure(path.join(__dirname, 'templates'), {express: app});
+
+  requestCounters = new Set();
   app.use((req, res, next) => {
     for (const requestCounter of requestCounters) {
       requestCounter.count(req);

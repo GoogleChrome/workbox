@@ -8,6 +8,7 @@
 
 const activateSWSafari = require('./activate-sw-safari');
 
+// TODO(philipwalton): remove this in favor of using workbox-window.
 module.exports = async (swUrl) => {
   if (global.__workbox.seleniumBrowser.getId() === 'safari') {
     return activateSWSafari(swUrl);

@@ -68,12 +68,14 @@ const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
 
     const testFiles = glob.sync(path.posix.join(__dirname, '..', testPath,
         '*.js'));
-    await runFiles(testFiles);
 
-    process.env.NODE_ENV = originalNodeEnv;
+    await runFiles(testFiles);
   } catch (err) {
-    process.env.NODE_ENV = originalNodeEnv;
+    // Log the error, so it's easier to debug failures.
+    console.error(err); // eslint-disable-line no-console
     throw new Error(`'gulp test-integration' discovered errors.`);
+  } finally {
+    process.env.NODE_ENV = originalNodeEnv;
   }
 };
 

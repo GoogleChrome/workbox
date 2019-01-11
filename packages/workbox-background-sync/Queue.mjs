@@ -37,7 +37,7 @@ class Queue {
    *     the 'sync' event fires. The function is invoked with an object
    *     containing the `queue` property (referencing this instance), and you
    *     can use the callback to customize the replay behavior of the queue.
-   *.    When not set the `replayRequests()` method is called.
+   *     When not set the `replayRequests()` method is called.
    * @param {number} [options.maxRetentionTime=7 days] The amount of time (in
    *     minutes) a request may be retried. After this amount of time has
    *     passed, the request will be deleted from the queue.

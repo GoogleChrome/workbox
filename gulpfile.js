@@ -32,6 +32,7 @@ global.cliOptions = options;
 const gulpTaskFiles = [
   'build-node-packages',
   'build-browser-packages',
+  'build-window-packages',
   'build-packages',
   'build',
   'lint',

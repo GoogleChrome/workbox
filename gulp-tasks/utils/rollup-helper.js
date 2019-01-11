@@ -17,7 +17,7 @@ module.exports = {
   // Every use of rollup should have minification and the replace
   // plugin set up and used to ensure as consist set of tests
   // as possible.
-  getDefaultPlugins: (buildType) => {
+  getDefaultPlugins: (buildType, {module = false} = {}) => {
     const plugins = [];
 
     const babelConfig = {
@@ -35,6 +35,7 @@ module.exports = {
     let minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {
       const terserOptions = {
+        module,
         mangle: {
           properties: {
             reserved: [

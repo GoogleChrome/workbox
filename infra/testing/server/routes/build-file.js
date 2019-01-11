@@ -31,7 +31,7 @@ async function handler(req, res) {
   }
 
   if (extension) {
-    fileName = fileName.replace(/\.js$/, `.${extension}`);
+    fileName = fileName.replace(/\.m?js$/, `.${extension}`);
   }
 
   const filePath = path.resolve(__dirname, buildPath, fileName);
