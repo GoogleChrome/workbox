@@ -6,10 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import {registerQuotaErrorCallback} from './_private/quota.mjs';
+import './_version.mjs';
 
-export const pluginUtils = {
-  filter: (plugins, callbackName) => {
-    return plugins.filter((plugin) => callbackName in plugin);
-  },
-};
+
+export {registerQuotaErrorCallback};

@@ -8,7 +8,8 @@
 
 import '../../_version.mjs';
 
-export default {
+
+export const messages = {
   'invalid-value': ({paramName, validValueDescription, value}) => {
     if (!paramName || !validValueDescription) {
       throw new Error(`Unexpected input to 'invalid-value' error.`);

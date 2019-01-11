@@ -8,7 +8,8 @@
 
 import '../_version.mjs';
 
-export default {
+
+export const pluginEvents = {
   CACHE_DID_UPDATE: 'cacheDidUpdate',
   CACHE_WILL_UPDATE: 'cacheWillUpdate',
   CACHED_RESPONSE_WILL_BE_USED: 'cachedResponseWillBeUsed',
