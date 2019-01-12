@@ -21,6 +21,7 @@ import {
   GTM_HOST,
   ANALYTICS_JS_PATH,
   GTAG_JS_PATH,
+  GTM_JS_PATH,
   COLLECT_PATHS_REGEX,
 } from './utils/constants.mjs';
 import './_version.mjs';
@@ -158,6 +159,22 @@ const createGtagJsRoute = (cacheName) => {
 };
 
 /**
+ * Creates a route with a network first strategy for the gtm.js script.
+ *
+ * @param {string} cacheName
+ * @return {Route} The created route.
+ *
+ * @private
+ */
+const createGtmJsRoute = (cacheName) => {
+  const match = ({url}) => url.hostname === GTM_HOST &&
+      url.pathname === GTM_JS_PATH;
+  const handler = new NetworkFirst({cacheName});
+
+  return new Route(match, handler, 'GET');
+};
+
+/**
  * @param {Object=} [options]
  * @param {Object} [options.cacheName] The cache name to store and retrieve
  *     analytics.js. Defaults to the cache names provided by `workbox-core`.
@@ -182,6 +199,7 @@ const initialize = (options = {}) => {
   });
 
   const routes = [
+    createGtmJsRoute(cacheName),
     createAnalyticsJsRoute(cacheName),
     createGtagJsRoute(cacheName),
     ...createCollectRoutes(queuePlugin),
