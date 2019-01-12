@@ -31,7 +31,7 @@ const MODULE_KEY_TO_NAME_MAPPING = {
  *
  * @private
  */
-class WorkboxSW {
+export class WorkboxSW {
   /**
    * Creates a proxy that automatically loads workbox namespaces on demand.
    *
@@ -172,5 +172,3 @@ class WorkboxSW {
     return pathParts.join('/');
   }
 }
-
-export default WorkboxSW;

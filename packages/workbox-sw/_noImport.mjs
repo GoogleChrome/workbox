@@ -6,10 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {initialize} from './initialize.mjs';
-
 import './_version.mjs';
 
-export {
-  initialize,
-};
+// TODO(philipwalton): link to the bundling documentation when ready.
+throw new Error('Do not import `workbox-sw` via bundlers.');

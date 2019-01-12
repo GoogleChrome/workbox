@@ -66,7 +66,7 @@ const globals = (moduleId) => {
   if (namespacePathParts.length > 1) {
     if (namespacePathParts[0] !== '_private' || namespacePathParts.length > 2) {
       // Tried to pull in default export of module - this isn't allowed.
-    // A specific file must be referenced
+      // A specific file must be referenced
       throw new Error(oneLine`
           You cannot use nested files. It must be a top level (and public) file
           or a file under '_private' in a module. Please fix the import:

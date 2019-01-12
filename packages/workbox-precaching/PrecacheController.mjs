@@ -12,19 +12,19 @@ import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
-import {cleanRedirect} from '../utils/cleanRedirect.mjs';
-import {createCacheKey} from '../utils/createCacheKey.mjs';
-import {printCleanupDetails} from '../utils/printCleanupDetails.mjs';
-import {printInstallDetails} from '../utils/printInstallDetails.mjs';
+import {cleanRedirect} from './utils/cleanRedirect.mjs';
+import {createCacheKey} from './utils/createCacheKey.mjs';
+import {printCleanupDetails} from './utils/printCleanupDetails.mjs';
+import {printInstallDetails} from './utils/printInstallDetails.mjs';
 
-import '../_version.mjs';
+import './_version.mjs';
 
 /**
  * Performs efficient precaching of assets.
  *
  * @memberof module:workbox-precaching
  */
-class PrecacheController {
+export class PrecacheController {
   /**
    * Create a new PrecacheController.
    *
@@ -243,5 +243,3 @@ class PrecacheController {
     return this._urlsToCacheKeys.get(urlObject.href);
   }
 }
-
-export default PrecacheController;

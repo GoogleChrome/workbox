@@ -28,7 +28,7 @@ const SUBSTRING_TO_FIND = '-precache-';
  * @private
  * @memberof module:workbox-precaching
  */
-export async function cleanupOutdatedCaches(currentPrecacheName,
+export async function deleteOutdatedCaches(currentPrecacheName,
     substringToFind = SUBSTRING_TO_FIND) {
   const cacheNames = await caches.keys();
 

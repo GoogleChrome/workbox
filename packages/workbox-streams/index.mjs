@@ -6,10 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {concatenate} from './concatenate.mjs';
+import {concatenateToResponse} from './concatenateToResponse.mjs';
+import {isSupported} from './isSupported.mjs';
+import {strategy} from './strategy.mjs';
 import './_version.mjs';
+
 
 /**
  * @namespace workbox.streams
  */
 
-export * from './_public.mjs';
+export {
+  concatenate,
+  concatenateToResponse,
+  isSupported,
+  strategy,
+};

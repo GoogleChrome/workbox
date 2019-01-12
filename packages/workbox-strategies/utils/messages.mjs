@@ -17,7 +17,7 @@ const getFriendlyURL = (url) => {
   return urlObj.href;
 };
 
-export default {
+export const messages = {
   strategyStart: (strategyName, request) => `Using ${strategyName} to ` +
     `respond to '${getFriendlyURL(request.url)}'`,
   printFinalResponse: (response) => {

@@ -6,14 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-/**
- * This module is a single import that can be used to dynamically import
- * additional Workbox modules with no effort.
- *
- * @namespace workbox
- */
-
-import defaultExport from './_default.mjs';
+import {WorkboxSW} from './controllers/WorkboxSW.mjs';
 import './_version.mjs';
 
-export default defaultExport;
+// NOTE: workbox-sw needs to use a default export rather than named exports
+// because it's a proxy. But it's OK for workbox-sw to break from the
+// convention of only using named exports because workbox-sw should never be
+// imported by module bundlers (since workbox-sw is a script loader, and anyone
+// using a bundler to build their SW wouldn't need it).
+export default new WorkboxSW();

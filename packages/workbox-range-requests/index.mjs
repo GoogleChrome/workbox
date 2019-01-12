@@ -6,10 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {createPartialResponse} from './createPartialResponse.mjs';
+import {Plugin} from './Plugin.mjs';
+import './_version.mjs';
+
+
 /**
  * @namespace workbox.rangeRequests
  */
 
-import './_version.mjs';
-
-export * from './_public.mjs';
+export {
+  createPartialResponse,
+  Plugin,
+};
