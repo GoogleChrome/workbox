@@ -32,8 +32,8 @@ describe(`[all] Window and SW packages`, function() {
 
   it(`should have top level files for every export in index.mjs (and vise-versa)`, async function() {
     for (const pkg of windowAndBrowserPackages) {
-      const packagePath = path.posix.join(__dirname, '..', '..', '..', 'packages', pkg.name);
-      const indexFile = path.posix.join(packagePath, 'index.mjs');
+      const packagePath = path.join(__dirname, '..', '..', '..', 'packages', pkg.name);
+      const indexFile = path.join(packagePath, 'index.mjs');
       const moduleExports = await import(indexFile);
 
       const publicFiles = glob.sync('*.mjs', {
