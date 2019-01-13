@@ -16,5 +16,7 @@ import './_version.mjs';
  * @alias workbox.core.skipWaiting
  */
 export const skipWaiting = () => {
-  addEventListener('install', () => skipWaiting());
+  // We need to explicitly call `self.skipWaiting()` here because we're
+  // shadowing `skipWaiting` with this local function.
+  addEventListener('install', () => self.skipWaiting());
 };

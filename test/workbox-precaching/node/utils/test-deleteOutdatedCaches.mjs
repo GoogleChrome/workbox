@@ -9,9 +9,9 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import {cleanupOutdatedCaches} from '../../../../packages/workbox-precaching/utils/cleanupOutdatedCaches.mjs';
+import {deleteOutdatedCaches} from '../../../../packages/workbox-precaching/utils/deleteOutdatedCaches.mjs';
 
-describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
+describe(`[workbox-precaching] utils/deleteOutdatedCaches()`, function() {
   const CACHE_NAME = 'expected-precache-name';
 
   const sandbox = sinon.createSandbox();
@@ -20,11 +20,15 @@ describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
     sandbox.restore();
   });
 
+  after(function() {
+    sandbox.restore();
+  });
+
   it(`should not do anything when there are no caches`, async function() {
     sandbox.stub(caches, 'keys').resolves([]);
     const cachesDeleteStub = sandbox.stub(caches, 'delete').resolves();
 
-    const cachesDeleted = await cleanupOutdatedCaches(CACHE_NAME);
+    const cachesDeleted = await deleteOutdatedCaches(CACHE_NAME);
 
     expect(cachesDeleted).to.be.empty;
     expect(cachesDeleteStub.notCalled).to.be.true;
@@ -34,7 +38,7 @@ describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
     sandbox.stub(caches, 'keys').resolves([CACHE_NAME]);
     const cachesDeleteStub = sandbox.stub(caches, 'delete').resolves();
 
-    const cachesDeleted = await cleanupOutdatedCaches(CACHE_NAME);
+    const cachesDeleted = await deleteOutdatedCaches(CACHE_NAME);
 
     expect(cachesDeleted).to.be.empty;
     expect(cachesDeleteStub.notCalled).to.be.true;
@@ -48,7 +52,7 @@ describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
     ]);
     const cachesDeleteStub = sandbox.stub(caches, 'delete').resolves();
 
-    const cachesDeleted = await cleanupOutdatedCaches(CACHE_NAME);
+    const cachesDeleted = await deleteOutdatedCaches(CACHE_NAME);
 
     expect(cachesDeleted).to.have.members([
       `this-precache-should-be-deleted1-${self.registration.scope}`,
@@ -67,7 +71,7 @@ describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
     ]);
     const cachesDeleteStub = sandbox.stub(caches, 'delete').resolves();
 
-    const cachesDeleted = await cleanupOutdatedCaches(CACHE_NAME);
+    const cachesDeleted = await deleteOutdatedCaches(CACHE_NAME);
 
     expect(cachesDeleted).to.have.members([
       `this-precache-should-be-deleted-${self.registration.scope}`,
@@ -85,7 +89,7 @@ describe(`[workbox-precaching] cleanupOutdatedCaches()`, function() {
     ]);
     const cachesDeleteStub = sandbox.stub(caches, 'delete').resolves();
 
-    const cachesDeleted = await cleanupOutdatedCaches(CACHE_NAME, '-PRECACHE-');
+    const cachesDeleted = await deleteOutdatedCaches(CACHE_NAME, '-PRECACHE-');
 
     expect(cachesDeleted).to.have.members([
       `this-PRECACHE-should-be-deleted1-${self.registration.scope}`,

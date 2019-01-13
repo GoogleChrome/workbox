@@ -11,6 +11,10 @@ import '../_version.mjs';
 const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
 
 const MODULE_KEY_TO_NAME_MAPPING = {
+  // TODO(philipwalton): add jsdoc tags to associate these with their module.
+  // @name backgroundSync
+  // @memberof workbox
+  // @see module:workbox-background-sync
   backgroundSync: 'background-sync',
   broadcastUpdate: 'broadcast-cache-update',
   cacheableResponse: 'cacheable-response',
@@ -88,26 +92,6 @@ export class WorkboxSW {
     } else {
       throw new Error('Config must be set before accessing workbox.* modules');
     }
-  }
-
-  /**
-   * Force a service worker to become active, instead of waiting. This is
-   * normally used in conjunction with `clientsClaim()`.
-   *
-   * @alias workbox.skipWaiting
-   */
-  skipWaiting() {
-    self.addEventListener('install', () => self.skipWaiting());
-  }
-
-  /**
-   * Claim any currently available clients once the service worker
-   * becomes active. This is normally used in conjunction with `skipWaiting()`.
-   *
-   * @alias workbox.clientsClaim
-   */
-  clientsClaim() {
-    self.addEventListener('activate', () => self.clients.claim());
   }
 
   /**

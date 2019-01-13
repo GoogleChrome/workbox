@@ -7,16 +7,14 @@
 */
 
 import {expect} from 'chai';
+import * as strategies from '../../../packages/workbox-strategies/index.mjs';
 
-import {CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate} from '../../../packages/workbox-strategies/_public.mjs';
-import strategies from '../../../packages/workbox-strategies/_default.mjs';
-
-describe(`[workbox-strategies] Default Export`, function() {
+describe(`[workbox-strategies] index`, function() {
   const CUSTOM_PLUGIN = {};
   describe(`cacheFirst()`, function() {
     it(`should return a CacheFirst instance`, function() {
       const strategy = strategies.cacheFirst();
-      expect(strategy).to.be.an.instanceof(CacheFirst);
+      expect(strategy).to.be.an.instanceof(strategies.CacheFirst);
     });
 
     it(`should allow extra plugins`, function() {
@@ -31,7 +29,7 @@ describe(`[workbox-strategies] Default Export`, function() {
   describe(`cacheOnly()`, function() {
     it(`should return a CacheOnly instance`, function() {
       const strategy = strategies.cacheOnly();
-      expect(strategy).to.be.an.instanceof(CacheOnly);
+      expect(strategy).to.be.an.instanceof(strategies.CacheOnly);
     });
 
     it(`should allow extra plugins`, function() {
@@ -46,7 +44,7 @@ describe(`[workbox-strategies] Default Export`, function() {
   describe(`networkFirst()`, function() {
     it(`should return a NetworkFirst instance`, function() {
       const strategy = strategies.networkFirst();
-      expect(strategy).to.be.an.instanceof(NetworkFirst);
+      expect(strategy).to.be.an.instanceof(strategies.NetworkFirst);
     });
 
     it(`should allow extra plugins`, function() {
@@ -62,7 +60,7 @@ describe(`[workbox-strategies] Default Export`, function() {
   describe(`networkOnly()`, function() {
     it(`should return a NetworkOnly instance`, function() {
       const strategy = strategies.networkOnly();
-      expect(strategy).to.be.an.instanceof(NetworkOnly);
+      expect(strategy).to.be.an.instanceof(strategies.NetworkOnly);
     });
 
     it(`should allow extra plugins`, function() {
@@ -77,7 +75,7 @@ describe(`[workbox-strategies] Default Export`, function() {
   describe(`staleWhileRevalidate()`, function() {
     it(`should return a StaleWhileRevalidate instance`, function() {
       const strategy = strategies.staleWhileRevalidate();
-      expect(strategy).to.be.an.instanceof(StaleWhileRevalidate);
+      expect(strategy).to.be.an.instanceof(strategies.StaleWhileRevalidate);
     });
 
     it(`should allow extra plugins`, function() {

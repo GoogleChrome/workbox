@@ -17,6 +17,8 @@ import './_version.mjs';
  *
  * @alias workbox.precaching.addPlugins
  */
-export const addPlugins = (newPlugins) => {
+const addPlugins = (newPlugins) => {
   precachePlugins.add(newPlugins);
 };
+
+export {addPlugins};

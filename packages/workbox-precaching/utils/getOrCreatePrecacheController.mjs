@@ -14,6 +14,7 @@ let precacheController;
 
 /**
  * @return {PrecacheController}
+ * @private
  */
 export const getOrCreatePrecacheController = () => {
   if (!precacheController) {

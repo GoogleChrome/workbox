@@ -19,7 +19,7 @@ describe(`[workbox-routing] SW environment`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
-    clearRequire.all();
+    clearRequire(MODULE_PATH);
   });
 
   afterEach(function() {

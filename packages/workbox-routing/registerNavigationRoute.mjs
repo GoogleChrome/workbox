@@ -15,7 +15,7 @@ import './_version.mjs';
 
 
 /**
- * Register a route that will return a precached file for a navigation
+ * Registers a route that will return a precached file for a navigation
  * request. This is useful for the
  * [application shell pattern]{@link https://developers.google.com/web/fundamentals/architecture/app-shell}.
  *

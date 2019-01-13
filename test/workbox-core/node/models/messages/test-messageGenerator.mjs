@@ -10,7 +10,7 @@ import {expect} from 'chai';
 
 import constants from '../../../../../gulp-tasks/utils/constants.js';
 
-import messageGenerator from '../../../../../packages/workbox-core/models/messages/messageGenerator.mjs';
+import {messageGenerator} from '../../../../../packages/workbox-core/models/messages/messageGenerator.mjs';
 
 describe(`[workbox-core] messageGenerator`, function() {
   const detailsObj = {

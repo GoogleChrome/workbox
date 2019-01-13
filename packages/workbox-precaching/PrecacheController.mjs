@@ -19,12 +19,13 @@ import {printInstallDetails} from './utils/printInstallDetails.mjs';
 
 import './_version.mjs';
 
+
 /**
  * Performs efficient precaching of assets.
  *
  * @memberof module:workbox-precaching
  */
-export class PrecacheController {
+class PrecacheController {
   /**
    * Create a new PrecacheController.
    *
@@ -243,3 +244,5 @@ export class PrecacheController {
     return this._urlsToCacheKeys.get(urlObject.href);
   }
 }
+
+export {PrecacheController};

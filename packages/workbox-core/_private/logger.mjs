@@ -8,7 +8,9 @@
 import '../_version.mjs';
 
 
-const logger = process.env.NODE_ENV === 'production' ? console : (() => {
+const logger = process.env.NODE_ENV === 'production' ? null : (() => {
+  let inGroup = false;
+
   const methodToColorMap = {
     debug: `#7f8c8d`, // Gray
     log: `#2ecc71`, // Green
@@ -36,9 +38,17 @@ const logger = process.env.NODE_ENV === 'production' ? console : (() => {
       `padding: 2px 0.5em`,
     ];
 
-    const logPrefix = ['%cworkbox', styles.join(';')];
+    // When in a group, the workbox prefix is not displayed.
+    const logPrefix = inGroup ? [] : ['%cworkbox', styles.join(';')];
 
     console[method](...logPrefix, ...args);
+
+    if (method === 'groupCollapsed') {
+      inGroup = true;
+    }
+    if (method === 'groupEnd') {
+      inGroup = false;
+    }
   };
 
   const api = {};

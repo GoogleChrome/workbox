@@ -83,6 +83,7 @@ const staleWhileRevalidate = deprecate('staleWhileRevalidate');
  *
  * @namespace workbox.strategies
  */
+
 export {
   CacheFirst,
   CacheOnly,

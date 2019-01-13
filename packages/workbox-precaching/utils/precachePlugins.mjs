@@ -17,7 +17,7 @@ export const precachePlugins = {
    * @private
    */
   get() {
-    return [...plugins];
+    return plugins;
   },
 
   /*

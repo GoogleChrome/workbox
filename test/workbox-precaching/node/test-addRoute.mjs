@@ -1,5 +1,5 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2019 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
@@ -9,78 +9,35 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 import clearRequire from 'clear-require';
+import {cacheNames} from '../../../packages/workbox-core/cacheNames.mjs';
 
-import core from '../../../../packages/workbox-core/index.mjs';
-import PrecacheController from '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
 
-describe(`[workbox-precaching] default export`, function() {
+describe(`[workbox-precaching] addRoute()`, function() {
   const sandbox = sinon.createSandbox();
-  let precaching;
+  let precache;
+  let addRoute;
 
   beforeEach(async function() {
     sandbox.restore();
 
-    clearRequire('../../../../packages/workbox-precaching/_default.mjs');
+    const basePath = '../../../packages/workbox-precaching/';
 
-    const module = await import('../../../../packages/workbox-precaching/_default.mjs');
-    precaching = module.default;
+    // Clear the require cache and then re-import needed modules to assure
+    // local variables are reset before each run.
+    clearRequire.match(new RegExp('workbox-precaching'));
+    addRoute = (await import(`${basePath}addRoute.mjs`)).addRoute;
+    precache = (await import(`${basePath}precache.mjs`)).precache;
   });
 
   after(function() {
     sandbox.restore();
   });
 
-  describe(`precache()`, function() {
-    it(`should only add install and activate listeners once`, function() {
-      sandbox.stub(self, 'addEventListener');
-
-      precaching.precache(['/']);
-      precaching.precache(['/2']);
-
-      expect(self.addEventListener.callCount).to.equal(2);
-      expect(self.addEventListener.args[0][0]).to.equal('install');
-      expect(self.addEventListener.args[1][0]).to.equal('activate');
-    });
-
-    it(`should call install and activate on install and activate`, async function() {
-      let eventCallbacks = {};
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        eventCallbacks[eventName] = cb;
-      });
-      sandbox.spy(PrecacheController.prototype, 'install');
-      sandbox.spy(PrecacheController.prototype, 'activate');
-
-      expect(PrecacheController.prototype.install.callCount).to.equal(0);
-
-      precaching.precache(['/']);
-
-      const installEvent = new ExtendableEvent('install');
-      let controllerInstallPromise;
-      installEvent.waitUntil = (promise) => {
-        controllerInstallPromise = promise;
-      };
-      eventCallbacks['install'](installEvent);
-
-      await controllerInstallPromise;
-      expect(PrecacheController.prototype.install.callCount).to.equal(1);
-
-      const activateEvent = new ExtendableEvent('activate');
-      let controllerActivatePromise;
-      activateEvent.waitUntil = (promise) => {
-        controllerActivatePromise = promise;
-      };
-      eventCallbacks['activate'](installEvent);
-
-      await controllerActivatePromise;
-      expect(PrecacheController.prototype.activate.callCount).to.equal(1);
-    });
-  });
-
   describe(`addRoute()`, function() {
     it(`should add a fetch listener when called`, function() {
       sandbox.stub(self, 'addEventListener');
 
-      precaching.addRoute();
+      addRoute();
 
       expect(self.addEventListener.callCount).to.equal(1);
       expect(self.addEventListener.args[0][0]).to.equal('fetch');
@@ -89,8 +46,8 @@ describe(`[workbox-precaching] default export`, function() {
     it(`should not allow adding route twice`, function() {
       sandbox.stub(self, 'addEventListener');
 
-      precaching.addRoute();
-      precaching.addRoute();
+      addRoute();
+      addRoute();
 
       expect(self.addEventListener.callCount).to.equal(1);
       expect(self.addEventListener.args[0][0]).to.equal('fetch');
@@ -104,11 +61,11 @@ describe(`[workbox-precaching] default export`, function() {
         }
       });
 
-      precaching.addRoute();
-      precaching.precache(['/']);
+      addRoute();
+      precache(['/']);
 
       const cachedResponse = new Response('Injected Response');
-      const cache = await caches.open(core.cacheNames.precache);
+      const cache = await caches.open(cacheNames.precache);
       cache.put(new URL('/', location).href, cachedResponse);
 
       const fetchEvent = new FetchEvent('fetch', {
@@ -149,13 +106,13 @@ describe(`[workbox-precaching] default export`, function() {
       const SEARCH_IGNORE = 'ignoreMe=ignore';
 
       const cachedResponse = new Response('Injected Response');
-      const cache = await caches.open(core.cacheNames.precache);
+      const cache = await caches.open(cacheNames.precache);
       cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
 
-      precaching.addRoute({
+      addRoute({
         ignoreURLParametersMatching: [/ignoreMe/],
       });
-      precaching.precache([`/?${SEARCH_1}&${SEARCH_2}`]);
+      precache([`/?${SEARCH_1}&${SEARCH_2}`]);
 
       const fetchEvent = new FetchEvent('fetch', {
         request: new Request(`/?${SEARCH_IGNORE}&${SEARCH_1}&${SEARCH_2}`),
@@ -185,13 +142,13 @@ describe(`[workbox-precaching] default export`, function() {
       const SEARCH_IGNORE = 'ignoreMe=ignore';
 
       const cachedResponse = new Response('Injected Response');
-      const cache = await caches.open(core.cacheNames.precache);
+      const cache = await caches.open(cacheNames.precache);
       cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
 
-      precaching.addRoute({
+      addRoute({
         ignoreURLParametersMatching: [/ignoreMe/],
       });
-      precaching.precache([`/?${SEARCH_1}&${SEARCH_2}`]);
+      precache([`/?${SEARCH_1}&${SEARCH_2}`]);
 
       const fetchEvent = new FetchEvent('fetch', {
         request: new Request(`/?${SEARCH_2}&${SEARCH_IGNORE}&${SEARCH_1}`),
@@ -218,13 +175,13 @@ describe(`[workbox-precaching] default export`, function() {
       const DIRECTORY_INDEX = 'test-index.html';
 
       const cachedResponse = new Response('Injected Response');
-      const cache = await caches.open(core.cacheNames.precache);
+      const cache = await caches.open(cacheNames.precache);
       cache.put(new URL(`/${DIRECTORY_INDEX}`, location).href, cachedResponse);
 
-      precaching.addRoute({
+      addRoute({
         directoryIndex: DIRECTORY_INDEX,
       });
-      precaching.precache([`/${DIRECTORY_INDEX}`]);
+      precache([`/${DIRECTORY_INDEX}`]);
 
       const fetchEvent = new FetchEvent('fetch', {
         request: new Request(`/`),
@@ -251,11 +208,11 @@ describe(`[workbox-precaching] default export`, function() {
       const DIRECTORY_INDEX = 'index.html';
 
       const cachedResponse = new Response('Injected Response');
-      const cache = await caches.open(core.cacheNames.precache);
+      const cache = await caches.open(cacheNames.precache);
       cache.put(new URL(`/${DIRECTORY_INDEX}`, location).href, cachedResponse);
 
-      precaching.addRoute();
-      precaching.precache([`/${DIRECTORY_INDEX}`]);
+      addRoute();
+      precache([`/${DIRECTORY_INDEX}`]);
 
       const fetchEvent = new FetchEvent('fetch', {
         request: new Request(`/`),
@@ -282,11 +239,11 @@ describe(`[workbox-precaching] default export`, function() {
       const PRECACHED_FILE = 'about.html';
 
       const cachedResponse = new Response('Injected Response');
-      const cache = await caches.open(core.cacheNames.precache);
+      const cache = await caches.open(cacheNames.precache);
       cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
 
-      precaching.addRoute();
-      precaching.precache([`/${PRECACHED_FILE}`]);
+      addRoute();
+      precache([`/${PRECACHED_FILE}`]);
 
       const fetchEvent = new FetchEvent('fetch', {
         request: new Request(`/about`),
@@ -313,13 +270,13 @@ describe(`[workbox-precaching] default export`, function() {
       const PRECACHED_FILE = 'about.html';
 
       const cachedResponse = new Response('Injected Response');
-      const cache = await caches.open(core.cacheNames.precache);
+      const cache = await caches.open(cacheNames.precache);
       cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
 
-      precaching.addRoute({
+      addRoute({
         cleanURLs: false,
       });
-      precaching.precache([`/${PRECACHED_FILE}`]);
+      precache([`/${PRECACHED_FILE}`]);
 
       const fetchEvent = new FetchEvent('fetch', {
         request: new Request(`/about`),
@@ -345,10 +302,10 @@ describe(`[workbox-precaching] default export`, function() {
       const PRECACHED_FILE = '123.html';
 
       const cachedResponse = new Response('Injected Response');
-      const cache = await caches.open(core.cacheNames.precache);
+      const cache = await caches.open(cacheNames.precache);
       await cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
 
-      precaching.addRoute({
+      addRoute({
         urlManipulation: ({url}) => {
           expect(url.pathname).to.equal('/');
           const customURL = new URL(url);
@@ -358,7 +315,7 @@ describe(`[workbox-precaching] default export`, function() {
           ];
         },
       });
-      precaching.precache([`/${PRECACHED_FILE}`]);
+      precache([`/${PRECACHED_FILE}`]);
 
       const fetchEvent = new FetchEvent('fetch', {
         request: new Request(`/`),
@@ -383,11 +340,11 @@ describe(`[workbox-precaching] default export`, function() {
       });
 
       const cachedResponse = new Response('Injected Response');
-      const cache = await caches.open(core.cacheNames.precache);
+      const cache = await caches.open(cacheNames.precache);
       cache.put(new URL(`/something-else.html`, location).href, cachedResponse);
 
-      precaching.addRoute();
-      precaching.precache([`/something-else.html`]);
+      addRoute();
+      precache([`/something-else.html`]);
 
       const fetchEvent = new FetchEvent('fetch', {
         request: new Request(`/`),
@@ -415,10 +372,10 @@ describe(`[workbox-precaching] default export`, function() {
         }
       });
 
-      precaching.addRoute();
+      addRoute();
       // Because the install handler is not called in this test, there won't be
       // a cache entry for url, even though precache() is called.
-      precaching.precache([url]);
+      precache([url]);
 
       const fetchEvent = new FetchEvent('fetch', {
         request: new Request(url),
@@ -433,115 +390,6 @@ describe(`[workbox-precaching] default export`, function() {
 
       expect(fetchStub.calledOnce).to.be.true;
       expect(response).to.eql(fetchResponse);
-    });
-  });
-
-  describe(`precacheAndRoute()`, function() {
-    it(`should call precache() and addRoute() without args`, function() {
-      sandbox.stub(precaching, 'precache');
-      sandbox.stub(precaching, 'addRoute');
-
-      precaching.precacheAndRoute();
-
-      expect(precaching.precache.callCount).to.equal(1);
-      expect(precaching.precache.args[0]).to.deep.equal([undefined]);
-      expect(precaching.addRoute.callCount).to.equal(1);
-      expect(precaching.addRoute.args[0]).to.deep.equal([undefined]);
-    });
-
-    it(`should call precache() and addRoute() with args`, function() {
-      sandbox.stub(precaching, 'precache');
-      sandbox.stub(precaching, 'addRoute');
-
-      const precacheArgs = ['/'];
-      const routeOptions = {
-        ignoreURLParametersMatching: [/utm_/],
-        directoryIndex: 'example.html',
-      };
-      precaching.precacheAndRoute(precacheArgs, routeOptions);
-
-      expect(precaching.precache.callCount).to.equal(1);
-      expect(precaching.precache.args[0][0]).to.equal(precacheArgs);
-      expect(precaching.addRoute.callCount).to.equal(1);
-      expect(precaching.addRoute.args[0][0]).to.equal(routeOptions);
-    });
-  });
-
-  describe(`addPlugins()`, function() {
-    it(`should add plugins during install and activate`, async function() {
-      let eventCallbacks = {};
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        eventCallbacks[eventName] = cb;
-      });
-      sandbox.spy(PrecacheController.prototype, 'install');
-      sandbox.spy(PrecacheController.prototype, 'activate');
-
-      const precacheArgs = ['/'];
-
-      const plugin1 = {
-        name: 'plugin1',
-      };
-      const plugin2 = {
-        name: 'plugin2',
-      };
-
-      precaching.precache(precacheArgs);
-      precaching.addPlugins([plugin1]);
-      precaching.addPlugins([plugin2]);
-
-      const installEvent = new ExtendableEvent('install');
-      let installPromise;
-      installEvent.waitUntil = (promise) => {
-        installPromise = promise;
-      };
-      eventCallbacks['install'](installEvent);
-
-      await installPromise;
-
-      expect(PrecacheController.prototype.install.args[0][0].plugins).to.deep.equal([
-        plugin1,
-        plugin2,
-      ]);
-
-      const activateEvent = new ExtendableEvent('activate');
-      let activatePromise;
-      activateEvent.waitUntil = (promise) => {
-        activatePromise = promise;
-      };
-      eventCallbacks['activate'](activateEvent);
-
-      await activatePromise;
-
-      expect(PrecacheController.prototype.activate.args[0][0].plugins).to.deep.equal([
-        plugin1,
-        plugin2,
-      ]);
-    });
-  });
-
-  describe(`cleanupOutdatedCaches()`, function() {
-    it(`should add an activate listener`, async function() {
-      const addEventListenerSpy = sandbox.spy(self, 'addEventListener');
-      precaching.cleanupOutdatedCaches();
-
-      expect(addEventListenerSpy.calledOnce).to.be.true;
-      expect(addEventListenerSpy.firstCall.args[0]).to.eql('activate');
-    });
-  });
-
-  describe(`getCacheKeyForURL()`, function() {
-    it(`should return the expected cache keys for various URLs`, async function() {
-      precaching.precache([
-        '/one',
-        {url: '/two', revision: '1234'},
-      ]);
-
-      expect(precaching.getCacheKeyForURL('/one'))
-          .to.eql('https://example.com/one');
-      expect(precaching.getCacheKeyForURL('https://example.com/two'))
-          .to.eql('https://example.com/two?__WB_REVISION__=1234');
-      expect(precaching.getCacheKeyForURL('/not-precached'))
-          .to.not.exist;
     });
   });
 });

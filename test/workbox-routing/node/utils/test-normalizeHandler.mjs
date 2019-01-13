@@ -7,8 +7,8 @@
 */
 
 import {expect} from 'chai';
-import expectError from '../../../infra/testing/expectError.js';
-import normalizeHandler from '../../../packages/workbox-routing/utils/normalizeHandler.mjs';
+import expectError from '../../../../infra/testing/expectError.js';
+import {normalizeHandler} from '../../../../packages/workbox-routing/utils/normalizeHandler.mjs';
 
 const handler = {
   handle: () => {},
@@ -18,7 +18,7 @@ const functionHandler = () => {};
 const invalidHandlerObject = {};
 const invalidHandlerString = 'INVALID';
 
-describe(`workbox-routing: _normalizeHandler`, function() {
+describe(`workbox-routing: utils/normalizeHandler`, function() {
   it(`should properly normalize an object that exposes a handle method in dev`, async function() {
     if (process.env.NODE_ENV == 'production') return this.skip();
 

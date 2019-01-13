@@ -9,17 +9,16 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 
-import {prodOnly, devOnly} from '../../../../infra/testing/env-it';
-import expectError from '../../../../infra/testing/expectError';
-import generateTestVariants from '../../../../infra/testing/generate-variant-tests';
+import {devOnly} from '../../../infra/testing/env-it';
+import expectError from '../../../infra/testing/expectError';
+import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 
-import {_private} from '../../../../packages/workbox-core/index.mjs';
-import {cacheWrapper} from '../../../../packages/workbox-core/_private/cacheWrapper.mjs';
-import {fetchWrapper} from '../../../../packages/workbox-core/_private/fetchWrapper.mjs';
-import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
-import PrecacheController from '../../../../packages/workbox-precaching/controllers/PrecacheController.mjs';
+import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
+import {cacheWrapper} from '../../../packages/workbox-core/_private/cacheWrapper.mjs';
+import {fetchWrapper} from '../../../packages/workbox-core/_private/fetchWrapper.mjs';
+import {logger} from '../../../packages/workbox-core/_private/logger.mjs';
+import {PrecacheController} from '../../../packages/workbox-precaching/PrecacheController.mjs';
 
-const {cacheNames} = _private;
 
 describe(`[workbox-precaching] PrecacheController`, function() {
   const sandbox = sinon.createSandbox();
@@ -65,7 +64,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       undefined,
     ];
     generateTestVariants(`should throw when passing in non-array values in dev`, badTopLevelInputs, async function(variant) {
-      if (process.env.NODE_ENV == 'production') return this.skip();
+      if (process.env.NODE_ENV === 'production') return this.skip();
 
       const precacheController = new PrecacheController();
       return expectError(() => {
@@ -216,8 +215,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       ];
       precacheController.addToCacheList(cacheList);
 
-      // Reset as addToCacheList will log.
-      logger.log.resetHistory();
+      if (process.env.NODE_ENV !== 'production') {
+        // Reset as addToCacheList will log.
+        logger.log.resetHistory();
+      }
 
       const updateInfo = await precacheController.install();
       expect(updateInfo.updatedURLs.length).to.equal(cacheList.length);
@@ -242,19 +243,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         // Make sure we print some debug info.
         expect(logger.log.callCount).to.be.gt(0);
       }
-    });
-
-    prodOnly.it('should not log install details in production', async function() {
-      const precacheController = new PrecacheController();
-      precacheController.addToCacheList([
-        '/index.1234.html',
-        {url: '/example.1234.css'},
-        {url: '/scripts/index.js', revision: '1234'},
-      ]);
-
-      await precacheController.install();
-
-      expect(logger.log.callCount).to.equal(0);
     });
 
     it(`should clean redirected precache entries`, async function() {
@@ -313,7 +301,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       initialPrecacheController.addToCacheList(initialCacheList);
 
       // Reset as addToCacheList will log.
-      logger.log.resetHistory();
+      if (process.env.NODE_ENV !== 'production') {
+        logger.log.resetHistory();
+      }
 
       const initialInstallInfo = await initialPrecacheController.install();
 
@@ -357,8 +347,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       updatePrecacheController.addToCacheList(updateCacheList);
 
-      // Reset as addToCacheList will log.
-      logger.log.resetHistory();
+      if (process.env.NODE_ENV !== 'production') {
+        // Reset as addToCacheList will log.
+        logger.log.resetHistory();
+      }
 
       const updateInstallInfo = await updatePrecacheController.install();
       expect(updateInstallInfo.updatedURLs).to.have.members([
@@ -560,8 +552,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheControllerOne.addToCacheList(cacheList1);
       await precacheControllerOne.install();
 
-      // Reset, as addToCacheList and install will log.
-      logger.log.resetHistory();
+      if (process.env.NODE_ENV !== 'production') {
+        // Reset, as addToCacheList and install will log.
+        logger.log.resetHistory();
+      }
 
       const cleanupDetailsOne = await precacheControllerOne.activate();
       expect(cleanupDetailsOne.deletedURLs.length).to.equal(0);
@@ -577,8 +571,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheControllerTwo.addToCacheList(cacheListTwo);
       await precacheControllerTwo.install();
 
-      // Reset as addToCacheList and install will log.
-      logger.log.resetHistory();
+      if (process.env.NODE_ENV !== 'production') {
+        // Reset as addToCacheList and install will log.
+        logger.log.resetHistory();
+      }
 
       const cleanupDetailsTwo = await precacheControllerTwo.activate();
       expect(cleanupDetailsTwo.deletedURLs).to.deep.equal([
@@ -600,43 +596,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         expect(cachedResponse, `${key} is not cached`).to.exist;
       }
 
-      // Make sure we print some debug info.
-      if (process.env.NODE_ENV === 'production') {
-        expect(logger.log.callCount).to.equal(0);
-      } else {
+      // Make sure we print some log info.
+      if (process.env.NODE_ENV !== 'production') {
         expect(logger.log.callCount).to.be.gt(0);
       }
-    });
-
-    prodOnly.it(`shouldn't log anything in production`, async function() {
-      const precacheControllerOne = new PrecacheController();
-      const cacheList1 = [
-        '/index.1234.html',
-        {url: '/example.1234.css'},
-        {url: '/scripts/index.js', revision: '1234'},
-        {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
-      ];
-      precacheControllerOne.addToCacheList(cacheList1);
-      await precacheControllerOne.install();
-      await precacheControllerOne.activate();
-
-      const precacheControllerTwo = new PrecacheController();
-      const cacheListTwo = [
-        '/index.4321.html',
-        {url: '/example.1234.css'},
-        {url: '/scripts/index.js', revision: '1234'},
-        {url: '/scripts/stress.js?test=search&foo=bar', revision: '4321'},
-      ];
-      precacheControllerTwo.addToCacheList(cacheListTwo);
-      await precacheControllerTwo.install();
-
-      // Reset as addToCacheList and install will log.
-      logger.log.resetHistory();
-
-      await precacheControllerTwo.activate();
-
-      // Make sure we didn't print any debug info.
-      expect(logger.log.callCount).to.equal(0);
     });
   });
 

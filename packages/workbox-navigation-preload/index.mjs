@@ -8,7 +8,7 @@
 
 import {disable} from './disable.mjs';
 import {enable} from './enable.mjs';
-import {isSupported} from './utils/isSupported.mjs';
+import {isSupported} from './isSupported.mjs';
 import './_version.mjs';
 
 

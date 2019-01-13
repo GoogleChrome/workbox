@@ -12,6 +12,10 @@ import '../_version.mjs';
 let defaultRouter;
 
 /**
+ * Creates a new, singleton Router instance if one does not exist. If one
+ * does already exist, that instance is returned.
+ *
+ * @private
  * @return {Router}
  */
 export const getOrCreateDefaultRouter = () => {

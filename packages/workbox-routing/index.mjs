@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {NavigationRoute} from './NavigationRoute.mjs';
 import {RegExpRoute} from './RegExpRoute.mjs';
 import {registerNavigationRoute} from './registerNavigationRoute.mjs';
@@ -14,6 +14,11 @@ import {registerRoute} from './registerRoute.mjs';
 import {Route} from './Route.mjs';
 import {Router} from './Router.mjs';
 import './_version.mjs';
+
+
+if (process.env.NODE_ENV !== 'production') {
+  assert.isSWEnv('workbox-routing');
+}
 
 export {
   NavigationRoute,

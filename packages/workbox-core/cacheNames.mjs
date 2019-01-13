@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {cacheNames} from './_private/cacheNames.mjs';
+import {cacheNames as _cacheNames} from './_private/cacheNames.mjs';
 import './_version.mjs';
 
 
@@ -22,8 +22,14 @@ import './_version.mjs';
  *
  * @alias workbox.core.cacheNames
  */
-export const getCacheNames = {
-  googleAnalytics: cacheNames.getGoogleAnalyticsName(),
-  precache: cacheNames.getPrecacheName(),
-  runtime: cacheNames.getRuntimeName(),
+export const cacheNames = {
+  get googleAnalytics() {
+    return _cacheNames.getGoogleAnalyticsName();
+  },
+  get precache() {
+    return _cacheNames.getPrecacheName();
+  },
+  get runtime() {
+    return _cacheNames.getRuntimeName();
+  },
 };

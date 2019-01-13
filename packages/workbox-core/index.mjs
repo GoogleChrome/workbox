@@ -9,7 +9,7 @@
 import {registerQuotaErrorCallback} from './registerQuotaErrorCallback.mjs';
 import * as _private from './_private.mjs';
 import {clientsClaim} from './clientsClaim.mjs';
-import {getCacheNames} from './getCacheNames.mjs';
+import {cacheNames} from './cacheNames.mjs';
 import {setCacheNameDetails} from './setCacheNameDetails.mjs';
 import {skipWaiting} from './skipWaiting.mjs';
 import './_version.mjs';
@@ -34,7 +34,7 @@ try {
 export {
   _private,
   clientsClaim,
-  getCacheNames,
+  cacheNames,
   registerQuotaErrorCallback,
   setCacheNameDetails,
   skipWaiting,

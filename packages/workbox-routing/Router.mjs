@@ -31,7 +31,7 @@ import './_version.mjs';
  *
  * @memberof workbox.routing
  */
-export class Router {
+class Router {
   /**
    * Initializes a new Router.
    */
@@ -172,7 +172,7 @@ export class Router {
       // The Request and Response objects contains a great deal of information,
       // hide it under a group in case developers want to see it.
       logger.groupCollapsed(`View request details here.`);
-      logger.unprefixed.log(request);
+      logger.log(request);
       logger.groupEnd();
 
       logger.groupEnd();
@@ -194,8 +194,8 @@ export class Router {
           // and may not make sense without the URL
           logger.groupCollapsed(`Error thrown when responding to: ` +
             ` ${getFriendlyURL(url)}. Falling back to Catch Handler.`);
-          logger.unprefixed.error(`Error thrown by:`, route);
-          logger.unprefixed.error(err);
+          logger.error(`Error thrown by:`, route);
+          logger.error(err);
           logger.groupEnd();
         }
         return this._catchHandler.handle({url, event, err});
@@ -356,3 +356,4 @@ export class Router {
   }
 }
 
+export {Router};

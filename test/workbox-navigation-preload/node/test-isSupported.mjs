@@ -11,7 +11,7 @@ import clearRequire from 'clear-require';
 
 describe(`[workbox-navigation-preload] utils/isSupported`, function() {
   const originalSelf = global.self;
-  const MODULE_ID = '../../../../packages/workbox-navigation-preload/utils/isSupported.mjs';
+  const MODULE_ID = '../../../packages/workbox-navigation-preload/isSupported.mjs';
 
   afterEach(function() {
     clearRequire(MODULE_ID);

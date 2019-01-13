@@ -23,7 +23,7 @@ export const messages = {
   printFinalResponse: (response) => {
     if (response) {
       logger.groupCollapsed(`View the final response here.`);
-      logger.unprefixed.log(response);
+      logger.log(response);
       logger.groupEnd();
     }
   },

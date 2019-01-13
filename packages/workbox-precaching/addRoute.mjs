@@ -90,11 +90,11 @@ export const addRoute = ({
           logger.log(`Serving the precached url: ${precachedURL}`);
 
           logger.groupCollapsed(`View request details here.`);
-          logger.unprefixed.log(event.request);
+          logger.log(event.request);
           logger.groupEnd();
 
           logger.groupCollapsed(`View response details here.`);
-          logger.unprefixed.log(response);
+          logger.log(response);
           logger.groupEnd();
 
           logger.groupEnd();
