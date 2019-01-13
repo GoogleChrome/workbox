@@ -35,7 +35,7 @@ class RequestCounter {
     return this.headerCount[headerValue] || 0;
   }
 
-  getUrlCount(url) {
+  getURLCount(url) {
     return this.urlCount[url] || 0;
   }
 }

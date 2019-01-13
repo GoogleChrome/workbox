@@ -37,7 +37,7 @@ const api = {
     });
   },
 
-  cacheUrls: async (cacheName) => {
+  cacheURLs: async (cacheName) => {
     const cache = await caches.open(cacheName);
     const requests = await cache.keys();
     return requests.map((request) => request.url);
