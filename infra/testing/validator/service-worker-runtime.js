@@ -47,7 +47,6 @@ function setupSpiesAndContext() {
     },
     precaching: {
       precacheAndRoute: sinon.spy(),
-      suppressWarnings: sinon.spy(),
     },
     routing: {
       registerNavigationRoute: sinon.spy(),
@@ -85,7 +84,6 @@ function setupSpiesAndContext() {
     setCacheNameDetails: workbox.core.setCacheNameDetails,
     setConfig: workbox.setConfig,
     skipWaiting: workbox.core.skipWaiting,
-    suppressWarnings: workbox.precaching.suppressWarnings,
   };
 
   return {context, methodsToSpies};
