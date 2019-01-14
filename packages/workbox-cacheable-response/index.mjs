@@ -6,10 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {CacheableResponse} from './CacheableResponse.mjs';
+import {Plugin} from './Plugin.mjs';
+import './_version.mjs';
+
+
 /**
  * @namespace workbox.cacheableResponse
  */
 
-import './_version.mjs';
-
-export * from './_public.mjs';
+export {
+  CacheableResponse,
+  Plugin,
+};

@@ -16,7 +16,7 @@ import '../_version.mjs';
  *
  * @private
  */
-export default (handler) => {
+export const normalizeHandler = (handler) => {
   if (handler && typeof handler === 'object') {
     if (process.env.NODE_ENV !== 'production') {
       assert.hasMethod(handler, 'handle', {

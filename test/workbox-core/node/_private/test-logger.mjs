@@ -8,35 +8,37 @@
 
 import {expect} from 'chai';
 import sinon from 'sinon';
-import {devOnly, prodOnly} from '../../../../infra/testing/env-it.js';
-import LOG_LEVELS from '../../../../packages/workbox-core/models/LogLevels.mjs';
+import {prodOnly, devOnly} from '../../../../infra/testing/env-it';
 import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
-import {setLoggerLevel, getDefaultLogLevel} from '../../../../packages/workbox-core/_private/logger.mjs';
+
 
 describe(`workbox-core logger`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
-    // Reset between runs
-    setLoggerLevel(LOG_LEVELS.debug);
+    sandbox.restore();
 
     // Undo the logger stubs setup in infra/testing/auto-stub-logger.mjs
-    Object.keys(logger).forEach((key) => {
-      if (logger[key].restore) {
-        logger[key].restore();
-      }
-    });
-
-    Object.keys(logger.unprefixed).forEach((key) => {
-      if (logger.unprefixed[key].restore) {
-        logger.unprefixed[key].restore();
-      }
-    });
+    // But do this conditionally as logger will be `null` in production node.
+    if (logger) {
+      Object.keys(logger).forEach((key) => {
+        if (logger[key].restore) {
+          logger[key].restore();
+        }
+      });
+    }
   });
 
-  afterEach(function() {
+  after(function() {
     sandbox.restore();
   });
+
+  const consoleLevels = [
+    'debug',
+    'log',
+    'warn',
+    'error',
+  ];
 
   const validateStub = (stub, expectedArgs, isPrefixed) => {
     expect(stub.callCount).to.equal(1);
@@ -52,157 +54,110 @@ describe(`workbox-core logger`, function() {
     expect(calledArgs).to.deep.equal(expectedArgs);
   };
 
-  const groupLogLevel = LOG_LEVELS.error;
-  const logDetails = [
-    {
-      name: 'debug',
-      level: LOG_LEVELS.debug,
-    }, {
-      name: 'log',
-      level: LOG_LEVELS.log,
-    }, {
-      name: 'warn',
-      level: LOG_LEVELS.warn,
-    }, {
-      name: 'error',
-      level: LOG_LEVELS.error,
-    }, {
-      name: 'groupCollapsed',
-      level: groupLogLevel,
-    },
-  ];
-
-  describe(`getLoggerLevel()`, function() {
-    devOnly.it(`should initialise to 'log' log level in dev`, async function() {
-      expect(getDefaultLogLevel()).to.equal(LOG_LEVELS.log);
-    });
-
-    prodOnly.it(`should initialise to 'warn' log level in prod`, async function() {
-      expect(getDefaultLogLevel()).to.equal(LOG_LEVELS.warn);
-    });
+  prodOnly.it('is null in production mode', function() {
+    expect(logger).to.equal(null);
   });
 
-  logDetails.forEach((logDetail) => {
-    describe(`.${logDetail.name}()`, function() {
-      it('should work without input', function() {
-        const stub = sandbox.stub(console, logDetail.name);
+  consoleLevels.forEach((consoleLevel) => {
+    describe(`.${consoleLevel}()`, function() {
+      devOnly.it('should work without input', function() {
+        const stub = sandbox.stub(console, consoleLevel);
 
-        logger[logDetail.name]();
+        logger[consoleLevel]();
 
-        // Restore to avoid upsetting mocha logs.
+        // Restore so mocha tests can properly log.
         sandbox.restore();
 
         validateStub(stub, [], true);
       });
 
-      it(`should work several inputs`, function() {
-        const stub = sandbox.stub(console, logDetail.name);
+      devOnly.it(`should work with several inputs`, function() {
+        const stub = sandbox.stub(console, consoleLevel);
 
         const args = ['', 'test', null, undefined, [], {}];
-        logger[logDetail.name](...args);
+        logger[consoleLevel](...args);
 
-        // Restore to avoid upsetting mocha logs.
+        // Restore so mocha tests can properly log.
         sandbox.restore();
 
         validateStub(stub, args, true);
       });
-
-      const logLevels = Object.keys(LOG_LEVELS);
-      logLevels.forEach((logLevelName) => {
-        it(`should behave correctly with ${logLevelName} log level`, function() {
-          const stub = sandbox.stub(console, logDetail.name);
-
-          setLoggerLevel(LOG_LEVELS[logLevelName]);
-          const args = ['test'];
-          logger[logDetail.name](...args);
-
-          // Restore to avoid upsetting mocha logs.
-          sandbox.restore();
-
-          if (logDetail.level >= LOG_LEVELS[logLevelName] && logLevelName !== 'silent') {
-            validateStub(stub, args, true);
-          } else {
-            expect(stub.callCount).to.equal(0);
-          }
-        });
-      });
-    });
-
-    describe(`.unprefixed.${logDetail.name}()`, function() {
-      it('should work without input', function() {
-        const stub = sandbox.stub(console, logDetail.name);
-
-        logger.unprefixed[logDetail.name]();
-
-        // Restore to avoid upsetting mocha logs.
-        sandbox.restore();
-
-        validateStub(stub, [], false);
-      });
-
-      it(`should work several inputs`, function() {
-        const stub = sandbox.stub(console, logDetail.name);
-
-        const args = ['', 'test', null, undefined, [], {}];
-        logger.unprefixed[logDetail.name](...args);
-
-        // Restore to avoid upsetting mocha logs.
-        sandbox.restore();
-
-        validateStub(stub, args, false);
-      });
-
-      const logLevels = Object.keys(LOG_LEVELS);
-      logLevels.forEach((logLevelName) => {
-        it(`should behave correctly with ${logLevelName} log level`, function() {
-          const stub = sandbox.stub(console, logDetail.name);
-
-          setLoggerLevel(LOG_LEVELS[logLevelName]);
-          const args = ['test'];
-          logger.unprefixed[logDetail.name](...args);
-
-          // Restore to avoid upsetting mocha logs.
-          sandbox.restore();
-
-          if (logDetail.level >= LOG_LEVELS[logLevelName] && logLevelName !== 'silent') {
-            validateStub(stub, args, false);
-          } else {
-            expect(stub.callCount).to.equal(0);
-          }
-        });
-      });
     });
   });
 
-  describe(`.groupEnd()`, function() {
-    it('should work without input', function() {
-      const stub = sandbox.stub(console, 'groupEnd');
+  describe(`.groupCollapsed()`, function() {
+    devOnly.it('should work without input', function() {
+      const stub = sandbox.stub(console, 'groupCollapsed');
+      sandbox.stub(console, 'groupEnd');
 
+      logger.groupCollapsed();
       logger.groupEnd();
 
-      // Restore to avoid upsetting mocha logs.
+      // Restore so mocha tests can properly log.
       sandbox.restore();
 
       expect(stub.callCount).to.equal(1);
     });
 
-    const logLevels = Object.keys(LOG_LEVELS);
-    logLevels.forEach((logLevelName) => {
-      it(`should behave correctly with ${logLevelName} log level`, function() {
-        const stub = sandbox.stub(console, 'groupEnd');
+    devOnly.it(`should work with several inputs`, function() {
+      const stub = sandbox.stub(console, 'groupCollapsed');
+      sandbox.stub(console, 'groupEnd');
 
-        setLoggerLevel(LOG_LEVELS[logLevelName]);
-        logger.groupEnd();
+      const args = ['', 'test', null, undefined, [], {}];
+      logger.groupCollapsed(...args);
+      logger.groupEnd();
 
-        // Restore to avoid upsetting mocha logs.
-        sandbox.restore();
+      // Restore so mocha tests can properly log.
+      sandbox.restore();
 
-        if (groupLogLevel >= LOG_LEVELS[logLevelName] && logLevelName !== 'silent') {
-          expect(stub.callCount).to.equal(1);
-        } else {
-          expect(stub.callCount).to.equal(0);
-        }
-      });
+      validateStub(stub, args, true);
+    });
+
+    devOnly.it(`should not prefix log message until after .groupEnd() is called`, function() {
+      const debugStub = sandbox.stub(console, 'debug');
+      const logStub = sandbox.stub(console, 'log');
+      const warnStub = sandbox.stub(console, 'warn');
+      const errorStub = sandbox.stub(console, 'error');
+      sandbox.stub(console, 'groupCollapsed');
+      sandbox.stub(console, 'groupEnd');
+
+      logger.groupCollapsed();
+      logger.debug();
+      logger.log();
+      logger.warn();
+      logger.error();
+      logger.groupEnd();
+
+      // Restore so mocha tests can properly log.
+      sandbox.restore();
+
+      validateStub(debugStub, [], false);
+      validateStub(logStub, [], false);
+      validateStub(warnStub, [], false);
+      validateStub(errorStub, [], false);
+
+      // After `groupEnd()`, subsequent logs should be prefixed again.
+      const logStub2 = sandbox.stub(console, 'log');
+
+      logger.log();
+
+      // Restore so mocha tests can properly log.
+      sandbox.restore();
+
+      validateStub(logStub2, [], true);
+    });
+  });
+
+  describe(`.groupEnd()`, function() {
+    devOnly.it('should work without input', function() {
+      const stub = sandbox.stub(console, 'groupEnd');
+
+      logger.groupEnd();
+
+      // Restore so mocha tests can properly log.
+      sandbox.restore();
+
+      expect(stub.callCount).to.equal(1);
     });
   });
 });

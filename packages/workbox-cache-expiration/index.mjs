@@ -6,10 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {CacheExpiration} from './CacheExpiration.mjs';
+import {Plugin} from './Plugin.mjs';
+import './_version.mjs';
+
+
 /**
  * @namespace workbox.expiration
  */
 
-import './_version.mjs';
-
-export * from './_public.mjs';
+export {
+  CacheExpiration,
+  Plugin,
+};

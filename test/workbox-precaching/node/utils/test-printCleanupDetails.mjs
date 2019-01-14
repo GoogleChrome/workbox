@@ -24,7 +24,7 @@ describe(`[workbox-precaching] printCleanupDetails`, function() {
     sandbox.restore();
   });
 
-  it(`shouldn't print if nothing was deleted`, function() {
+  devOnly.it(`shouldn't print if nothing was deleted`, function() {
     printCleanupDetails([], []);
 
     expect(logger.log.callCount).to.equal(0);

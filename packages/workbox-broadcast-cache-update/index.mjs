@@ -6,10 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.mjs';
+import {Plugin} from './Plugin.mjs';
+import {broadcastUpdate} from './broadcastUpdate.mjs';
+import {responsesAreSame} from './responsesAreSame.mjs';
+import './_version.mjs';
+
+
 /**
  * @namespace workbox.broadcastUpdate
  */
 
-import './_version.mjs';
-
-export * from './_public.mjs';
+export {
+  BroadcastCacheUpdate,
+  Plugin,
+  broadcastUpdate,
+  responsesAreSame,
+};

@@ -9,7 +9,7 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import {_private} from '../../../packages/workbox-core/index.mjs';
+import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
 import {CacheOnly} from '../../../packages/workbox-strategies/CacheOnly.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
 import expectError from '../../../infra/testing/expectError';
@@ -34,7 +34,7 @@ describe(`[workbox-strategies] CacheOnly.makeRequest()`, function() {
     const request = new Request(url);
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly();
@@ -48,7 +48,7 @@ describe(`[workbox-strategies] CacheOnly.makeRequest()`, function() {
     const request = new Request('http://example.io/test/');
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly();
@@ -96,7 +96,7 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly();
@@ -109,7 +109,7 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
@@ -124,7 +124,7 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName('test-cache-name'));
+    const cache = await caches.open(cacheNames.getRuntimeName('test-cache-name'));
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
@@ -137,7 +137,7 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const pluginResponse = new Response('plugin response');

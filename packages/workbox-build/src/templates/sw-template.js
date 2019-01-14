@@ -31,8 +31,8 @@ importScripts(
 
 <% if (cacheId) { %>workbox.core.setCacheNameDetails({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
 
-<% if (skipWaiting) { %>workbox.skipWaiting();<% } %>
-<% if (clientsClaim) { %>workbox.clientsClaim();<% } %>
+<% if (skipWaiting) { %>workbox.core.skipWaiting();<% } %>
+<% if (clientsClaim) { %>workbox.core.clientsClaim();<% } %>
 
 <% if (Array.isArray(manifestEntries)) {%>
 /**

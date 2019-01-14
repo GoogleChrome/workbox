@@ -10,8 +10,8 @@ import {WorkboxError} from './WorkboxError.mjs';
 import {logger} from './logger.mjs';
 import {assert} from './assert.mjs';
 import {getFriendlyURL} from '../_private/getFriendlyURL.mjs';
-import pluginEvents from '../models/pluginEvents.mjs';
-import pluginUtils from '../utils/pluginUtils.mjs';
+import {pluginEvents} from '../models/pluginEvents.mjs';
+import {pluginUtils} from '../utils/pluginUtils.mjs';
 import '../_version.mjs';
 
 /**

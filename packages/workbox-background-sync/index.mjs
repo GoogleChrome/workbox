@@ -6,10 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {Queue} from './Queue.mjs';
+import {Plugin} from './Plugin.mjs';
 import './_version.mjs';
+
 
 /**
  * @namespace workbox.backgroundSync
  */
 
-export * from './_public.mjs';
+export {
+  Queue,
+  Plugin,
+};

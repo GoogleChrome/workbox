@@ -14,8 +14,8 @@ import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
-import messages from './utils/messages.mjs';
-import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
+import {messages} from './utils/messages.mjs';
+import {cacheOkAndOpaquePlugin} from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
 
 /**

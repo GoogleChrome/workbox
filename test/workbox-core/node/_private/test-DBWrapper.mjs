@@ -123,7 +123,7 @@ const createAndPopulateTestDb = async () => {
 };
 
 
-xdescribe(`DBWrapper`, function() {
+describe(`DBWrapper`, function() {
   beforeEach(async function() {
     // This help when re-running the tests manually after a previous failure
     // where the database didn't get properly closed/deleted.

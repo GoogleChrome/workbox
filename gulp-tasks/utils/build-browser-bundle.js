@@ -26,7 +26,7 @@ const rollupHelper = require('./rollup-helper');
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose
  */
-const ERROR_NO_MODULE_BROWSER = `Could not find the modules browser.mjs file: `;
+const ERROR_NO_MODULE_INDEX = `Could not find the module's index.mjs file: `;
 const ERROR_NO_NAMSPACE = oneLine`
   You must define a 'browserNamespace' parameter in the 'package.json'.
   Example: 'workbox-precaching' would have a browserNamespace param of
@@ -53,26 +53,24 @@ const globals = (moduleId) => {
     return path.basename(importPathPiece, path.extname(importPathPiece));
   });
 
-  let additionalNamespace;
   if (namespacePathParts.length === 0) {
     // Tried to pull in default export of module - this isn't allowed.
     // A specific file must be referenced
     throw new Error(oneLine`
-      You cannot use a module directly - you must specify
-      file, this is to force a best practice for tree shaking (i.e. only
-      pulling in what you use). Please fix the import: '${moduleId}'
-    `);
+        You cannot use a module directly - you must specify
+        file, this is to force a best practice for tree shaking (i.e. only
+        pulling in what you use). Please fix the import: '${moduleId}'`);
   }
 
+  let additionalNamespace;
   if (namespacePathParts.length > 1) {
     if (namespacePathParts[0] !== '_private' || namespacePathParts.length > 2) {
       // Tried to pull in default export of module - this isn't allowed.
-    // A specific file must be referenced
+      // A specific file must be referenced
       throw new Error(oneLine`
-      You cannot use nested files. It must be a top level (and public) file
-      or a file under '_private' in a module. Please fix the import:
-      '${moduleId}'
-    `);
+          You cannot use nested files. It must be a top level (and public) file
+          or a file under '_private' in a module. Please fix the import:
+          '${moduleId}'`);
     }
     additionalNamespace = namespacePathParts[0];
   }
@@ -84,14 +82,10 @@ const globals = (moduleId) => {
     return [
       pkg.workbox.browserNamespace,
       additionalNamespace,
-    ]
-        .filter((value) => {
-          return (value && value.length > 0);
-        })
-        .join('.');
+    ].filter((value) => (value && value.length > 0)).join('.');
   } catch (err) {
     logHelper.error(`Unable to get browserNamespace for package: ` +
-      `'${packageName}'`);
+        `'${packageName}'`);
     logHelper.error(err);
     throw err;
   }
@@ -105,13 +99,13 @@ const externalAndPure = (importPath) => {
 
 module.exports = (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
-  const moduleBrowserPath = path.join(packagePath, `browser.mjs`);
+  const packageIndex = path.join(packagePath, `index.mjs`);
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
-  if (!fs.existsSync(moduleBrowserPath)) {
-    logHelper.error(ERROR_NO_MODULE_BROWSER + packageName);
-    return Promise.reject(ERROR_NO_MODULE_BROWSER + packageName);
+  if (!fs.existsSync(packageIndex)) {
+    logHelper.error(ERROR_NO_MODULE_INDEX + packageName);
+    return Promise.reject(ERROR_NO_MODULE_INDEX + packageName);
   }
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
@@ -147,7 +141,7 @@ module.exports = (packagePath, buildType) => {
   const plugins = rollupHelper.getDefaultPlugins(buildType);
 
   return rollupStream({
-    input: moduleBrowserPath,
+    input: packageIndex,
     rollup,
     output: {
       name: namespace,
@@ -184,7 +178,7 @@ module.exports = (packagePath, buildType) => {
       })
   // We must give the generated stream the same name as the entry file
   // for the sourcemaps to work correctly
-      .pipe(source(moduleBrowserPath))
+      .pipe(source(packageIndex))
   // gulp-sourcemaps don't work with streams so we need
       .pipe(buffer())
   // This tells gulp-sourcemaps to load the inline sourcemap

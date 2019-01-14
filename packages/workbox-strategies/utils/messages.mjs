@@ -17,13 +17,13 @@ const getFriendlyURL = (url) => {
   return urlObj.href;
 };
 
-export default {
+export const messages = {
   strategyStart: (strategyName, request) => `Using ${strategyName} to ` +
     `respond to '${getFriendlyURL(request.url)}'`,
   printFinalResponse: (response) => {
     if (response) {
       logger.groupCollapsed(`View the final response here.`);
-      logger.unprefixed.log(response);
+      logger.log(response);
       logger.groupEnd();
     }
   },

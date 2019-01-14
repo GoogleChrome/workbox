@@ -8,7 +8,8 @@
 
 import '../../_version.mjs';
 
-export default {
+
+export const messages = {
   'invalid-value': ({paramName, validValueDescription, value}) => {
     if (!paramName || !validValueDescription) {
       throw new Error(`Unexpected input to 'invalid-value' error.`);
@@ -166,12 +167,12 @@ export default {
   },
 
   'invalid-string': ({moduleName, className, funcName, paramName}) => {
-    if (!paramName || !moduleName || !className || !funcName) {
+    if (!paramName || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'invalid-string' error.`);
     }
     return `When using strings, the '${paramName}' parameter must start with ` +
       `'http' (for cross-origin matches) or '/' (for same-origin matches). ` +
-      `Please see the docs for ${moduleName}.${className}.${funcName}() for ` +
+      `Please see the docs for ${moduleName}.${funcName}() for ` +
       `more info.`;
   },
 
