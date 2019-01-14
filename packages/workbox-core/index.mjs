@@ -14,14 +14,6 @@ import {setCacheNameDetails} from './setCacheNameDetails.mjs';
 import {skipWaiting} from './skipWaiting.mjs';
 import './_version.mjs';
 
-
-// Give our version strings something to hang off of.
-try {
-  self.workbox.v = self.workbox.v || {};
-} catch (errer) {
-  // NOOP
-}
-
 /**
  * All of the Workbox service worker libraries use workbox-core for shared
  * code as well as setting default values that need to be shared (like cache
