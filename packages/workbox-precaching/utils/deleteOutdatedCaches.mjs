@@ -28,8 +28,9 @@ const SUBSTRING_TO_FIND = '-precache-';
  * @private
  * @memberof module:workbox-precaching
  */
-export async function deleteOutdatedCaches(currentPrecacheName,
-    substringToFind = SUBSTRING_TO_FIND) {
+const deleteOutdatedCaches = async (
+  currentPrecacheName,
+  substringToFind = SUBSTRING_TO_FIND) => {
   const cacheNames = await caches.keys();
 
   const cacheNamesToDelete = cacheNames.filter((cacheName) => {
@@ -39,8 +40,10 @@ export async function deleteOutdatedCaches(currentPrecacheName,
   });
 
   await Promise.all(
-      cacheNamesToDelete.map((cacheName) => caches.delete(cacheName))
-  );
+      cacheNamesToDelete.map((cacheName) => caches.delete(cacheName)));
 
   return cacheNamesToDelete;
-}
+};
+
+export {deleteOutdatedCaches};
+

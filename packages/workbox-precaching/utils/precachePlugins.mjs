@@ -9,7 +9,7 @@
 import '../_version.mjs';
 
 
-let plugins = [];
+const plugins = [];
 
 export const precachePlugins = {
   /*

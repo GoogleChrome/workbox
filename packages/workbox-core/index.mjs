@@ -16,7 +16,6 @@ import './_version.mjs';
 
 
 // Give our version strings something to hang off of.
-// We do this
 try {
   self.workbox.v = self.workbox.v || {};
 } catch (errer) {
