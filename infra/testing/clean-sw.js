@@ -8,8 +8,8 @@
 
 const runInSW = require('./comlink/node-interface');
 
-module.exports = async (webdriver, testingUrl) => {
-  await webdriver.get(testingUrl);
+module.exports = async (webdriver, testingURL) => {
+  await webdriver.get(testingURL);
   try {
     await runInSW('clearAllCaches');
   } catch (ignored) {
@@ -26,5 +26,5 @@ module.exports = async (webdriver, testingUrl) => {
   if (error) {
     throw new Error(error);
   }
-  await webdriver.get(testingUrl);
+  await webdriver.get(testingURL);
 };

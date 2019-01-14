@@ -7,16 +7,16 @@
 */
 
 // TODO(philipwalton): remove this in favor of using workbox-window.
-module.exports = async (swUrl) => {
+module.exports = async (swURL) => {
   // First step: Wait for the page to activate
-  let error = await global.__workbox.webdriver.executeAsyncScript((swUrl, cb) => {
+  let error = await global.__workbox.webdriver.executeAsyncScript((swURL, cb) => {
     const onStateChangePromise = (registration, desiredState) => {
       return new Promise((resolve, reject) => {
         if (desiredState === 'activated' &&
             registration.active &&
             // Checking that the URLs match is needed to fix:
             // https://github.com/GoogleChrome/workbox/issues/1633
-            registration.active.scriptURL === swUrl) {
+            registration.active.scriptURL === swURL) {
           resolve();
           return;
         }
@@ -47,27 +47,27 @@ module.exports = async (swUrl) => {
       });
     };
 
-    navigator.serviceWorker.register(swUrl)
+    navigator.serviceWorker.register(swURL)
         .then((registration) => onStateChangePromise(registration, 'activated'))
         .then(() => cb())
         .catch((err) => cb(err.message));
-  }, swUrl);
+  }, swURL);
 
   if (error) {
     throw error;
   }
 
   // To be 100% certain - ensure the SW is controlling the page.
-  error = await global.__workbox.webdriver.executeAsyncScript((swUrl, cb) => {
+  error = await global.__workbox.webdriver.executeAsyncScript((swURL, cb) => {
     if (navigator.serviceWorker.controller &&
-        navigator.serviceWorker.controller.scriptURL === swUrl) {
+        navigator.serviceWorker.controller.scriptURL === swURL) {
       cb();
     } else if (!navigator.serviceWorker.controller) {
       cb(`There's no service worker controlling the page.`);
     } else {
       cb(`There's an unexpected SW controlling the page: ${navigator.serviceWorker.controller.scriptURL}`);
     }
-  }, swUrl);
+  }, swURL);
 
   if (error) {
     throw error;

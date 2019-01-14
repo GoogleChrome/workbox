@@ -6,14 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-/**
- * This module is a single import that can be used to dynamically import
- * additional Workbox modules with no effort.
- *
- * @namespace workbox
- */
-
-import defaultExport from './_default.mjs';
+import {WorkboxSW} from './controllers/WorkboxSW.mjs';
 import './_version.mjs';
 
-export default defaultExport;
+// Don't export anything, just expose a global.
+self.workbox = new WorkboxSW();

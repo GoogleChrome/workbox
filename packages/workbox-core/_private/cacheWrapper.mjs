@@ -6,15 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import pluginEvents from '../models/pluginEvents.mjs';
-import pluginUtils from '../utils/pluginUtils.mjs';
+import {pluginEvents} from '../models/pluginEvents.mjs';
+import {pluginUtils} from '../utils/pluginUtils.mjs';
 import {WorkboxError} from './WorkboxError.mjs';
 import {assert} from './assert.mjs';
 import {executeQuotaErrorCallbacks} from './quota.mjs';
 import {getFriendlyURL} from './getFriendlyURL.mjs';
 import {logger} from './logger.mjs';
-
 import '../_version.mjs';
+
 
 /**
  * Wrapper around cache.put().
@@ -123,7 +123,8 @@ const matchWrapper = async ({
   request,
   event,
   matchOptions,
-  plugins = []}) => {
+  plugins = [],
+}) => {
   const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
   if (process.env.NODE_ENV !== 'production') {
@@ -222,9 +223,7 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
   return responseToCache ? responseToCache : null;
 };
 
-const cacheWrapper = {
+export const cacheWrapper = {
   put: putWrapper,
   match: matchWrapper,
 };
-
-export {cacheWrapper};

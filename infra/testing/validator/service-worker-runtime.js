@@ -39,7 +39,6 @@ function setupSpiesAndContext() {
     cacheableResponse: {
       Plugin: CacheableResponsePlugin,
     },
-    clientsClaim: sinon.spy(),
     expiration: {
       Plugin: CacheExpirationPlugin,
     },
@@ -54,10 +53,11 @@ function setupSpiesAndContext() {
       registerRoute: sinon.spy(),
     },
     core: {
+      clientsClaim: sinon.spy(),
       setCacheNameDetails: sinon.spy(),
+      skipWaiting: sinon.spy(),
     },
     setConfig: sinon.spy(),
-    skipWaiting: sinon.spy(),
     // To make testing easier, return the name of the strategy.
     strategies: {
       cacheFirst: sinon.stub().returns('cacheFirst'),
@@ -75,7 +75,7 @@ function setupSpiesAndContext() {
     cacheableResponsePlugin: cacheableResponsePluginSpy,
     cacheExpirationPlugin: cacheExpirationPluginSpy,
     cacheFirst: workbox.strategies.cacheFirst,
-    clientsClaim: workbox.clientsClaim,
+    clientsClaim: workbox.core.clientsClaim,
     googleAnalyticsInitialize: workbox.googleAnalytics.initialize,
     networkFirst: workbox.strategies.networkFirst,
     precacheAndRoute: workbox.precaching.precacheAndRoute,
@@ -83,7 +83,8 @@ function setupSpiesAndContext() {
     registerRoute: workbox.routing.registerRoute,
     setCacheNameDetails: workbox.core.setCacheNameDetails,
     setConfig: workbox.setConfig,
-    skipWaiting: workbox.skipWaiting,
+    skipWaiting: workbox.core.skipWaiting,
+    suppressWarnings: workbox.precaching.suppressWarnings,
   };
 
   return {context, methodsToSpies};

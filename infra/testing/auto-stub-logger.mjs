@@ -10,10 +10,11 @@ import sinon from 'sinon';
 import {logger} from '../../packages/workbox-core/_private/logger.mjs';
 
 const sandbox = sinon.createSandbox();
-
 const stubLogger = () => {
-  sandbox.stub(logger);
-  sandbox.stub(logger.unprefixed);
+  // Logger will be `null` in production mode.
+  if (logger) {
+    sandbox.stub(logger);
+  }
 };
 
 // Silence any early messages (Normally caused by logging from an import at

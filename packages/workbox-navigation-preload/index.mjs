@@ -6,10 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {disable} from './disable.mjs';
+import {enable} from './enable.mjs';
+import {isSupported} from './isSupported.mjs';
+import './_version.mjs';
+
+
 /**
  * @namespace workbox.navigationPreload
  */
 
-import './_version.mjs';
-
-export * from './_public.mjs';
+export {
+  disable,
+  enable,
+  isSupported,
+};

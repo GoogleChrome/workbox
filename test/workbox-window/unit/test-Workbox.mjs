@@ -501,17 +501,17 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    describe(`externalInstalled`, function() {
+    describe(`externalinstalled`, function() {
       it(`runs when an external SW is found and installed`, async function() {
         const wb1 = new Workbox(uniq('sw-clients-claim.tmp.js'));
         const externalInstalled1Spy = sandbox.spy();
-        wb1.addEventListener('externalInstalled', externalInstalled1Spy);
+        wb1.addEventListener('externalinstalled', externalInstalled1Spy);
         await wb1.register();
         await nextEvent(wb1, 'controlling');
 
         const wb2 = new Workbox(uniq('sw-no-skip-waiting.tmp.js'));
         const externalInstalled2Spy = sandbox.spy();
-        wb2.addEventListener('externalInstalled', externalInstalled2Spy);
+        wb2.addEventListener('externalinstalled', externalInstalled2Spy);
         await wb2.register();
         await nextEvent(wb2, 'installed');
 
@@ -523,13 +523,13 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    describe(`externalWaiting`, function() {
+    describe(`externalwaiting`, function() {
       it(`runs when an external SW is waiting`, async function() {
         const wb1 = new Workbox(uniq('sw-clients-claim.tmp.js'));
         const waiting1Spy = sandbox.spy();
         wb1.addEventListener('waiting', waiting1Spy);
         const externalWaiting1Spy = sandbox.spy();
-        wb1.addEventListener('externalWaiting', externalWaiting1Spy);
+        wb1.addEventListener('externalwaiting', externalWaiting1Spy);
         await wb1.register();
         await nextEvent(wb1, 'controlling');
 
@@ -537,7 +537,7 @@ describe(`[workbox-window] Workbox`, function() {
         const waiting2Spy = sandbox.spy();
         wb2.addEventListener('waiting', waiting2Spy);
         const externalWaiting2Spy = sandbox.spy();
-        wb2.addEventListener('externalWaiting', externalWaiting2Spy);
+        wb2.addEventListener('externalwaiting', externalWaiting2Spy);
         await wb2.register();
         await nextEvent(wb2, 'waiting');
 
@@ -550,18 +550,18 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    describe(`externalActivated`, function() {
+    describe(`externalactivated`, function() {
       it(`runs when an external SW is found and activated`, async function() {
         const wb1 = new Workbox(uniq('sw-clients-claim.tmp.js'));
         const externalActivated1Spy = sandbox.spy();
-        wb1.addEventListener('externalActivated', externalActivated1Spy);
+        wb1.addEventListener('externalactivated', externalActivated1Spy);
 
         await wb1.register();
         await nextEvent(wb1, 'controlling');
 
         const wb2 = new Workbox(uniq('sw-skip-waiting.tmp.js'));
         const externalActivated2Spy = sandbox.spy();
-        wb2.addEventListener('externalActivated', externalActivated2Spy);
+        wb2.addEventListener('externalactivated', externalActivated2Spy);
         await wb2.register();
         await nextEvent(wb2, 'activated');
 

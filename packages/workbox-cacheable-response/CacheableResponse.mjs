@@ -106,9 +106,9 @@ class CacheableResponse {
           `not meet the criteria for being cached.`);
 
         logger.groupCollapsed(`View cacheability criteria here.`);
-        logger.unprefixed.log(`Cacheable statuses: ` +
+        logger.log(`Cacheable statuses: ` +
           JSON.stringify(this._statuses));
-        logger.unprefixed.log(`Cacheable headers: ` +
+        logger.log(`Cacheable headers: ` +
           JSON.stringify(this._headers, null, 2));
         logger.groupEnd();
 
@@ -118,14 +118,14 @@ class CacheableResponse {
         });
 
         logger.groupCollapsed(`View response status and headers here.`);
-        logger.unprefixed.log(`Response status: ` + response.status);
-        logger.unprefixed.log(`Response headers: ` +
+        logger.log(`Response status: ` + response.status);
+        logger.log(`Response headers: ` +
           JSON.stringify(logFriendlyHeaders, null, 2));
         logger.groupEnd();
 
         logger.groupCollapsed(`View full response details here.`);
-        logger.unprefixed.log(response.headers);
-        logger.unprefixed.log(response);
+        logger.log(response.headers);
+        logger.log(response);
         logger.groupEnd();
 
         logger.groupEnd();
