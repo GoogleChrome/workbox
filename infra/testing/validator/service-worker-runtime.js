@@ -84,7 +84,6 @@ function setupSpiesAndContext() {
     setCacheNameDetails: workbox.core.setCacheNameDetails,
     setConfig: workbox.setConfig,
     skipWaiting: workbox.core.skipWaiting,
-    suppressWarnings: workbox.precaching.suppressWarnings,
   };
 
   return {context, methodsToSpies};
