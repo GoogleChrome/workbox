@@ -111,7 +111,7 @@ const groupBuildFiles = async (tagName, gitBranch) => {
 
     const pattern = path.posix.join(
         sourceCodePath, 'packages', `{${browserPackages.join(',')}}`,
-        constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
+        constants.PACKAGE_BUILD_DIRNAME, '*.{js,mjs,map}');
 
     logHelper.log(oneLine`
       Grouping Build Files into
