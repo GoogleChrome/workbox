@@ -857,4 +857,26 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       }
     });
   });
+
+  describe(`[workbox-build] deprecated options`, function() {
+    const oldOptionsToValue = {
+      dontCacheBustUrlsMatching: /ignored/,
+      ignoreUrlParametersMatching: [/ignored/],
+      modifyUrlPrefix: {
+        'ignored': 'ignored',
+      },
+      templatedUrls: {},
+    };
+
+    for (const [option, value] of Object.entries(oldOptionsToValue)) {
+      it(`should return a warning when ${option} is used`, async function() {
+        const options = Object.assign({}, BASE_OPTIONS, {
+          [option]: value,
+        });
+
+        const {warnings} = await generateSW(options);
+        expect(warnings).to.have.length(1);
+      });
+    }
+  });
 });

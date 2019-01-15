@@ -300,4 +300,25 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       }});
     });
   });
+
+  describe(`[workbox-build] deprecated options`, function() {
+    const oldOptionsToValue = {
+      dontCacheBustUrlsMatching: /ignored/,
+      modifyUrlPrefix: {
+        'ignored': 'ignored',
+      },
+      templatedUrls: {},
+    };
+
+    for (const [option, value] of Object.entries(oldOptionsToValue)) {
+      it(`should return a warning when ${option} is used`, async function() {
+        const options = Object.assign({}, BASE_OPTIONS, {
+          [option]: value,
+        });
+
+        const {warnings} = await injectManifest(options);
+        expect(warnings).to.have.length(1);
+      });
+    }
+  });
 });

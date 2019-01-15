@@ -9,6 +9,7 @@
 const path = require('path');
 
 const cdnUtils = require('../lib/cdn-utils');
+const checkForDeprecatedOptions = require('../lib/checkForDeprecatedOptions');
 const copyWorkboxLibraries = require('../lib/copy-workbox-libraries');
 const generateSWSchema = require('./options/generate-sw-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
@@ -38,6 +39,10 @@ const writeServiceWorkerUsingDefaultTemplate =
  * @memberof module:workbox-build
  */
 async function generateSW(config) {
+  // This check needs to be done before validation, since the deprecated options
+  // will be renamed.
+  const deprecationWarnings = checkForDeprecatedOptions(config);
+
   const options = validate(config, generateSWSchema);
 
   const destDirectory = path.dirname(options.swDest);
@@ -69,6 +74,9 @@ async function generateSW(config) {
   await writeServiceWorkerUsingDefaultTemplate(Object.assign({
     manifestEntries,
   }, options));
+
+  // Add in any deprecation warnings.
+  warnings.push(...deprecationWarnings);
 
   return {count, size, warnings};
 }

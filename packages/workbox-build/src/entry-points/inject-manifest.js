@@ -10,6 +10,7 @@ const assert = require('assert');
 const fse = require('fs-extra');
 const path = require('path');
 
+const checkForDeprecatedOptions = require('../lib/checkForDeprecatedOptions');
 const defaults = require('./options/defaults');
 const errors = require('../lib/errors');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
@@ -38,6 +39,10 @@ const validate = require('./options/validate');
  * @memberof module:workbox-build
  */
 async function injectManifest(config) {
+  // This check needs to be done before validation, since the deprecated options
+  // will be renamed.
+  const deprecationWarnings = checkForDeprecatedOptions(config);
+
   const options = validate(config, injectManifestSchema);
 
   if (path.normalize(config.swSrc) === path.normalize(config.swDest)) {
@@ -78,6 +83,9 @@ async function injectManifest(config) {
   }
 
   await fse.writeFile(config.swDest, swFileContents);
+
+  // Add in any deprecation warnings.
+  warnings.push(...deprecationWarnings);
 
   return {count, size, warnings};
 }

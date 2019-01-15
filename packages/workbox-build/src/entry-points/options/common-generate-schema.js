@@ -66,4 +66,7 @@ module.exports = baseSchema.keys({
     }).with('expiration', 'cacheName'),
   }).requiredKeys('urlPattern', 'handler')),
   skipWaiting: joi.boolean().default(defaults.skipWaiting),
-}).rename('ignoreUrlParametersMatching', 'ignoreURLParametersMatching');
+}).rename('ignoreUrlParametersMatching', 'ignoreURLParametersMatching', {
+  ignoreUndefined: true,
+  override: true,
+});

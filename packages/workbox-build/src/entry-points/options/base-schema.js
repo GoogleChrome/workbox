@@ -26,7 +26,13 @@ module.exports = joi.object().keys({
   // can be either a string or an array of strings.
   templatedURLs: joi.object().pattern(/./,
       [joi.string(), joi.array().items(joi.string())]),
-})
-    .rename('dontCacheBustUrlsMatching', 'dontCacheBustURLsMatching')
-    .rename('modifyUrlPrefix', 'modifyURLPrefix')
-    .rename('templatedUrls', 'templatedURLs');
+}).rename('dontCacheBustUrlsMatching', 'dontCacheBustURLsMatching', {
+  ignoreUndefined: true,
+  override: true,
+}).rename('modifyUrlPrefix', 'modifyURLPrefix', {
+  ignoreUndefined: true,
+  override: true,
+}).rename('templatedUrls', 'templatedURLs', {
+  ignoreUndefined: true,
+  override: true,
+});

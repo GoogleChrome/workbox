@@ -299,4 +299,25 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
       expect(size).to.eql(2535);
     });
   });
+
+  describe(`[workbox-build] deprecated options`, function() {
+    const oldOptionsToValue = {
+      dontCacheBustUrlsMatching: /ignored/,
+      modifyUrlPrefix: {
+        'ignored': 'ignored',
+      },
+      templatedUrls: {},
+    };
+
+    for (const [option, value] of Object.entries(oldOptionsToValue)) {
+      it(`should return a warning when ${option} is used`, async function() {
+        const options = Object.assign({}, BASE_OPTIONS, {
+          [option]: value,
+        });
+
+        const {warnings} = await getManifest(options);
+        expect(warnings).to.have.length(1);
+      });
+    }
+  });
 });
