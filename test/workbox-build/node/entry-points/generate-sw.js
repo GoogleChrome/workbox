@@ -878,5 +878,16 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         expect(warnings).to.have.length(1);
       });
     }
+
+    it(`should warn when a strategy function (lowercase) name is used`, async function() {
+      const runtimeCaching = [{
+        urlPattern: /abc/,
+        handler: 'cacheFirst',
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
+
+      const {warnings} = await generateSW(options);
+      expect(warnings).to.have.length(1);
+    });
   });
 });

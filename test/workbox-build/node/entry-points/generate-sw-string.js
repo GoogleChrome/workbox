@@ -539,5 +539,16 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         expect(warnings).to.have.length(1);
       });
     }
+
+    it(`should warn when a strategy function (lowercase) name is used`, async function() {
+      const runtimeCaching = [{
+        urlPattern: /abc/,
+        handler: 'cacheFirst',
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
+
+      const {warnings} = await generateSWString(options);
+      expect(warnings).to.have.length(1);
+    });
   });
 });
