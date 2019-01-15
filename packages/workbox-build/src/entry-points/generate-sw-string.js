@@ -6,7 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-const checkForDeprecatedOptions = require('../lib/checkForDeprecatedOptions');
+const checkForDeprecatedOptions =
+    require('../lib/check-for-deprecated-options');
 const generateSWStringSchema = require('./options/generate-sw-string-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const populateSWTemplate = require('../lib/populate-sw-template');

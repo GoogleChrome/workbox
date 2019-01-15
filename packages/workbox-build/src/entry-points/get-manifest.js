@@ -6,7 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-const checkForDeprecatedOptions = require('../lib/checkForDeprecatedOptions');
+const checkForDeprecatedOptions =
+    require('../lib/check-for-deprecated-options');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const getManifestSchema = require('./options/get-manifest-schema');
 const validate = require('./options/validate');

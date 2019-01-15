@@ -10,7 +10,8 @@ const assert = require('assert');
 const fse = require('fs-extra');
 const path = require('path');
 
-const checkForDeprecatedOptions = require('../lib/checkForDeprecatedOptions');
+const checkForDeprecatedOptions =
+    require('../lib/check-for-deprecated-options');
 const defaults = require('./options/defaults');
 const errors = require('../lib/errors');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');

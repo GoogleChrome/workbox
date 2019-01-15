@@ -9,7 +9,8 @@
 const path = require('path');
 
 const cdnUtils = require('../lib/cdn-utils');
-const checkForDeprecatedOptions = require('../lib/checkForDeprecatedOptions');
+const checkForDeprecatedOptions =
+    require('../lib/check-for-deprecated-options');
 const copyWorkboxLibraries = require('../lib/copy-workbox-libraries');
 const generateSWSchema = require('./options/generate-sw-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
