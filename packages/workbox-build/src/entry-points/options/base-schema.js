@@ -11,7 +11,7 @@ const joi = require('joi');
 const defaults = require('./defaults');
 const regExpObject = require('./reg-exp-object');
 
-// Define some common constrains used by all methods.
+// Define some common constraints used by all methods.
 module.exports = joi.object().keys({
   dontCacheBustURLsMatching: regExpObject,
   globFollow: joi.boolean().default(defaults.globFollow),
@@ -26,13 +26,4 @@ module.exports = joi.object().keys({
   // can be either a string or an array of strings.
   templatedURLs: joi.object().pattern(/./,
       [joi.string(), joi.array().items(joi.string())]),
-}).rename('dontCacheBustUrlsMatching', 'dontCacheBustURLsMatching', {
-  ignoreUndefined: true,
-  override: true,
-}).rename('modifyUrlPrefix', 'modifyURLPrefix', {
-  ignoreUndefined: true,
-  override: true,
-}).rename('templatedUrls', 'templatedURLs', {
-  ignoreUndefined: true,
-  override: true,
 });
