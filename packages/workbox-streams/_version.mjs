@@ -1,1 +1,1 @@
-try{self.workbox.v['workbox:streams:4.0.0-beta.1']=1;}catch(e){} // eslint-disable-line
+try{self['workbox:streams:4.0.0-beta.1']&&_()}catch(e){}// eslint-disable-line
