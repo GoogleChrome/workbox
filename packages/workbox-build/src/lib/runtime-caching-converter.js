@@ -128,7 +128,7 @@ module.exports = (runtimeCaching = []) => {
     // This validation logic is a bit too gnarly for joi, so it's manually
     // implemented here.
     if (entry.options && entry.options.networkTimeoutSeconds &&
-        entry.handler !== 'networkFirst') {
+        entry.handler !== 'NetworkFirst') {
       throw new Error(errors['invalid-network-timeout-seconds']);
     }
 
@@ -140,9 +140,8 @@ module.exports = (runtimeCaching = []) => {
 
     if (typeof entry.handler === 'string') {
       const optionsString = getOptionsString(entry.options || {});
-
       const strategyString =
-        `workbox.strategies.${entry.handler}(${optionsString})`;
+          `new workbox.strategies.${entry.handler}(${optionsString})`;
 
       return `workbox.routing.registerRoute(` +
         `${matcher}, ${strategyString}, '${method}');\n`;

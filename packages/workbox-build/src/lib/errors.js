@@ -98,7 +98,7 @@ module.exports = {
   'bad-runtime-caching-config': ol`An unknown configuration option was used
     with runtimeCaching:`,
   'invalid-network-timeout-seconds': ol`When using networkTimeoutSeconds, you
-    must set the handler to 'networkFirst'.`,
+    must set the handler to 'NetworkFirst'.`,
   'no-module-name': ol`You must provide a moduleName parameter when calling
     getModuleURL().`,
 };

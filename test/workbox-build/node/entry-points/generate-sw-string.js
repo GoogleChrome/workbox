@@ -276,7 +276,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     const DEFAULT_METHOD = 'GET';
     const STRING_URL_PATTERN = '/test';
     const REGEXP_URL_PATTERN = /test/;
-    const STRING_HANDLER = 'cacheFirst';
+    const STRING_HANDLER = 'CacheFirst';
 
     it(`should reject when 'urlPattern' is missing from 'runtimeCaching'`, async function() {
       const handler = STRING_HANDLER;
@@ -335,11 +335,12 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
 
       const {swString, warnings} = await generateSWString(options);
       expect(warnings).to.be.empty;
+
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         precacheAndRoute: [[[], {}]],
-        registerRoute: [[STRING_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+        registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
 
@@ -356,7 +357,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         [STRING_HANDLER]: [[]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         precacheAndRoute: [[[], {}]],
-        registerRoute: [[REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+        registerRoute: [[REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
 
@@ -377,8 +378,8 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         precacheAndRoute: [[[], {}]],
         registerRoute: [
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
         ],
       }});
     });
@@ -440,7 +441,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         cacheExpirationPlugin: [[runtimeCachingOptions.expiration]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         precacheAndRoute: [[[], {}]],
-        registerRoute: [[REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+        registerRoute: [[REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
 
@@ -488,8 +489,8 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         precacheAndRoute: [[[], {}]],
         registerRoute: [
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
         ],
       }});
     });
@@ -499,7 +500,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching: [{
           urlPattern,
-          handler: 'networkFirst',
+          handler: 'NetworkFirst',
           options: {
             expiration: {
               maxEntries: 5,

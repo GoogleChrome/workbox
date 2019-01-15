@@ -550,7 +550,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     const DEFAULT_METHOD = 'GET';
     const REGEXP_URL_PATTERN = /test/;
     const STRING_URL_PATTERN = '/test';
-    const STRING_HANDLER = 'cacheFirst';
+    const STRING_HANDLER = 'CacheFirst';
     const FUNCTION_URL_PATTERN = (params) => true;
 
     it(`should reject when 'urlPattern' is missing from 'runtimeCaching'`, async function() {
@@ -638,7 +638,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           url: 'webpackEntry.js',
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
-        registerRoute: [[STRING_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+        registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
 
@@ -682,7 +682,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         // We need to stringify the function to get it to pass validation.
         // The service-worker-runtime.js validator will do the same.
         // See https://github.com/chaijs/chai/issues/697
-        registerRoute: [[FUNCTION_URL_PATTERN.toString(), STRING_HANDLER, DEFAULT_METHOD]],
+        registerRoute: [[FUNCTION_URL_PATTERN.toString(), {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
 
@@ -754,20 +754,20 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         registerRoute: [
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
         ],
       }});
     });
 
-    it(`should reject with a ValidationError when 'networkTimeoutSeconds' is used and handler is not 'networkFirst'`, async function() {
+    it(`should reject with a ValidationError when 'networkTimeoutSeconds' is used and handler is not 'NetworkFirst'`, async function() {
       const swDest = tempy.file();
       const runtimeCachingOptions = {
         networkTimeoutSeconds: 1,
       };
       const runtimeCaching = [{
         urlPattern: REGEXP_URL_PATTERN,
-        handler: 'networkOnly',
+        handler: 'NetworkOnly',
         options: runtimeCachingOptions,
       }];
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -783,10 +783,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       }
     });
 
-    it(`should support 'networkTimeoutSeconds' when handler is 'networkFirst'`, async function() {
+    it(`should support 'networkTimeoutSeconds' when handler is 'NetworkFirst'`, async function() {
       const swDest = tempy.file();
       const networkTimeoutSeconds = 1;
-      const handler = 'networkFirst';
+      const handler = 'NetworkFirst';
 
       const runtimeCachingOptions = {
         networkTimeoutSeconds,
@@ -829,7 +829,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         registerRoute: [
-          [REGEXP_URL_PATTERN, handler, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: handler}, DEFAULT_METHOD],
         ],
       }});
     });
@@ -839,7 +839,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching: [{
           urlPattern,
-          handler: 'networkFirst',
+          handler: 'NetworkFirst',
           options: {
             expiration: {
               maxEntries: 5,

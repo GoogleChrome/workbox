@@ -60,8 +60,8 @@ function setupSpiesAndContext() {
     setConfig: sinon.spy(),
     // To make testing easier, return the name of the strategy.
     strategies: {
-      cacheFirst: sinon.stub().returns('cacheFirst'),
-      networkFirst: sinon.stub().returns('networkFirst'),
+      CacheFirst: sinon.stub().returns({name: 'CacheFirst'}),
+      NetworkFirst: sinon.stub().returns({name: 'NetworkFirst'}),
     },
   };
 
@@ -74,10 +74,10 @@ function setupSpiesAndContext() {
     importScripts,
     cacheableResponsePlugin: cacheableResponsePluginSpy,
     cacheExpirationPlugin: cacheExpirationPluginSpy,
-    cacheFirst: workbox.strategies.cacheFirst,
+    CacheFirst: workbox.strategies.CacheFirst,
     clientsClaim: workbox.core.clientsClaim,
     googleAnalyticsInitialize: workbox.googleAnalytics.initialize,
-    networkFirst: workbox.strategies.networkFirst,
+    NetworkFirst: workbox.strategies.NetworkFirst,
     precacheAndRoute: workbox.precaching.precacheAndRoute,
     registerNavigationRoute: workbox.routing.registerNavigationRoute,
     registerRoute: workbox.routing.registerRoute,

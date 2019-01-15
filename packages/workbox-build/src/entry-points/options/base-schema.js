@@ -11,7 +11,7 @@ const joi = require('joi');
 const defaults = require('./defaults');
 const regExpObject = require('./reg-exp-object');
 
-// Define some common constrains used by all methods.
+// Define some common constraints used by all methods.
 module.exports = joi.object().keys({
   dontCacheBustURLsMatching: regExpObject,
   globFollow: joi.boolean().default(defaults.globFollow),

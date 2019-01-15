@@ -33,13 +33,15 @@ module.exports = baseSchema.keys({
         'PUT'
     ),
     urlPattern: [regExpObject, joi.string(), joi.func()],
-    handler: [joi.func(), joi.string().valid(
-        'cacheFirst',
-        'cacheOnly',
-        'networkFirst',
-        'networkOnly',
-        'staleWhileRevalidate'
-    )],
+    handler: [
+      joi.func(),
+      joi.string().valid(
+          'CacheFirst',
+          'CacheOnly',
+          'NetworkFirst',
+          'NetworkOnly',
+          'StaleWhileRevalidate'),
+    ],
     options: joi.object().keys({
       backgroundSync: joi.object().keys({
         name: joi.string().required(),
