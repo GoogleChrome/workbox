@@ -25,23 +25,23 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'dontCacheBustUrlsMatching',
+    'dontCacheBustURLsMatching',
     'globDirectory',
     'globFollow',
     'globIgnores',
     'globPatterns',
     'globStrict',
-    'ignoreUrlParametersMatching',
+    'ignoreURLParametersMatching',
     'injectionPointRegexp',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
-    'modifyUrlPrefix',
+    'modifyURLPrefix',
     'navigateFallback',
     'navigateFallbackWhitelist',
     'offlineGoogleAnalytics',
     'runtimeCaching',
     'skipWaiting',
-    'templatedUrls',
+    'templatedURLs',
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
     'importWorkboxFrom',
@@ -179,12 +179,12 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     it(`should use defaults when all the required parameters are present, with additional WorkboxSW() configuration`, async function() {
       const cacheId = 'test';
       const directoryIndex = 'test.html';
-      const ignoreUrlParametersMatching = [/test1/, /test2/];
+      const ignoreURLParametersMatching = [/test1/, /test2/];
 
       const workboxOptions = {
         cacheId,
         directoryIndex,
-        ignoreUrlParametersMatching,
+        ignoreURLParametersMatching,
         clientsClaim: true,
         skipWaiting: true,
       };
@@ -197,7 +197,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         skipWaiting: [[]],
         setCacheNameDetails: [[{prefix: cacheId}]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        precacheAndRoute: [[[], {directoryIndex, ignoreUrlParametersMatching}]],
+        precacheAndRoute: [[[], {directoryIndex, ignoreURLParametersMatching}]],
       }});
     });
 
@@ -516,5 +516,27 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         expect(error.details[0].context.key).to.eql('expiration');
       }
     });
+  });
+
+  describe(`[workbox-build] deprecated options`, function() {
+    const oldOptionsToValue = {
+      dontCacheBustUrlsMatching: /ignored/,
+      ignoreUrlParametersMatching: [/ignored/],
+      modifyUrlPrefix: {
+        'ignored': 'ignored',
+      },
+      templatedUrls: {},
+    };
+
+    for (const [option, value] of Object.entries(oldOptionsToValue)) {
+      it(`should return a warning when ${option} is used`, async function() {
+        const options = Object.assign({}, BASE_OPTIONS, {
+          [option]: value,
+        });
+
+        const {warnings} = await generateSWString(options);
+        expect(warnings).to.have.length(1);
+      });
+    }
   });
 });

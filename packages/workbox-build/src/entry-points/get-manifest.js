@@ -6,6 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
+const checkForDeprecatedOptions =
+    require('../lib/check-for-deprecated-options');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const getManifestSchema = require('./options/get-manifest-schema');
 const validate = require('./options/validate');
@@ -28,10 +30,18 @@ const validate = require('./options/validate');
  * @memberof module:workbox-build
  */
 async function getManifest(config) {
+  // This check needs to be done before validation, since the deprecated options
+  // will be renamed.
+  const deprecationWarnings = checkForDeprecatedOptions(config);
+
   const options = validate(config, getManifestSchema);
 
   const {manifestEntries, count, size, warnings} =
     await getFileManifestEntries(options);
+
+  // Add in any deprecation warnings.
+  warnings.push(...deprecationWarnings);
+
   return {manifestEntries, count, size, warnings};
 }
 

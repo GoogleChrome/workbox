@@ -46,9 +46,9 @@ describe(`[workbox-build] lib/filter-files.js`, function() {
     }]);
   });
 
-  it(`should remove revision info based on dontCacheBustUrlsMatching`, async function() {
+  it(`should remove revision info based on dontCacheBustURLsMatching`, async function() {
     const {size, count, manifestEntries} = filterFiles({
-      dontCacheBustUrlsMatching: new RegExp(ENTRY1.file),
+      dontCacheBustURLsMatching: new RegExp(ENTRY1.file),
       fileDetails: FILE_DETAILS,
     });
 
@@ -65,11 +65,11 @@ describe(`[workbox-build] lib/filter-files.js`, function() {
     }]);
   });
 
-  it(`should modify the URLs based on modifyUrlPrefix`, async function() {
+  it(`should modify the URLs based on modifyURLPrefix`, async function() {
     const prefix = 'prefix/';
 
     const {size, count, manifestEntries} = filterFiles({
-      modifyUrlPrefix: {
+      modifyURLPrefix: {
         '': prefix,
       },
       fileDetails: FILE_DETAILS,

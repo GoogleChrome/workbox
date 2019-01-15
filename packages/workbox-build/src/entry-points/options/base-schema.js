@@ -13,7 +13,7 @@ const regExpObject = require('./reg-exp-object');
 
 // Define some common constrains used by all methods.
 module.exports = joi.object().keys({
-  dontCacheBustUrlsMatching: regExpObject,
+  dontCacheBustURLsMatching: regExpObject,
   globFollow: joi.boolean().default(defaults.globFollow),
   globIgnores: joi.array().items(joi.string()).default(defaults.globIgnores),
   globPatterns: joi.array().items(joi.string()).default(defaults.globPatterns),
@@ -21,9 +21,18 @@ module.exports = joi.object().keys({
   manifestTransforms: joi.array().items(joi.func().arity(1)),
   maximumFileSizeToCacheInBytes: joi.number().min(1)
       .default(defaults.maximumFileSizeToCacheInBytes),
-  modifyUrlPrefix: joi.object(),
-  // templatedUrls is an object where any property name is valid, and the values
+  modifyURLPrefix: joi.object(),
+  // templatedURLs is an object where any property name is valid, and the values
   // can be either a string or an array of strings.
-  templatedUrls: joi.object().pattern(/./,
+  templatedURLs: joi.object().pattern(/./,
       [joi.string(), joi.array().items(joi.string())]),
+}).rename('dontCacheBustUrlsMatching', 'dontCacheBustURLsMatching', {
+  ignoreUndefined: true,
+  override: true,
+}).rename('modifyUrlPrefix', 'modifyURLPrefix', {
+  ignoreUndefined: true,
+  override: true,
+}).rename('templatedUrls', 'templatedURLs', {
+  ignoreUndefined: true,
+  override: true,
 });

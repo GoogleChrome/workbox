@@ -26,29 +26,29 @@ const escapeRegExp = (string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };
 
-module.exports = (modifyUrlPrefix) => {
-  if (!modifyUrlPrefix ||
-      typeof modifyUrlPrefix !== 'object' ||
-      Array.isArray(modifyUrlPrefix)) {
+module.exports = (modifyURLPrefix) => {
+  if (!modifyURLPrefix ||
+      typeof modifyURLPrefix !== 'object' ||
+      Array.isArray(modifyURLPrefix)) {
     throw new Error(errors['modify-url-prefix-bad-prefixes']);
   }
 
-  // If there are no entries in modifyUrlPrefix, just return an identity
+  // If there are no entries in modifyURLPrefix, just return an identity
   // function as a shortcut.
-  if (Object.keys(modifyUrlPrefix).length === 0) {
+  if (Object.keys(modifyURLPrefix).length === 0) {
     return (entry) => entry;
   }
 
-  Object.keys(modifyUrlPrefix).forEach((key) => {
-    if (typeof modifyUrlPrefix[key] !== 'string') {
+  Object.keys(modifyURLPrefix).forEach((key) => {
+    if (typeof modifyURLPrefix[key] !== 'string') {
       throw new Error(errors['modify-url-prefix-bad-prefixes']);
     }
   });
 
   // Escape the user input so it's safe to use in a regex.
-  const safeModifyUrlPrefixes = Object.keys(modifyUrlPrefix).map(escapeRegExp);
-  // Join all the `modifyUrlPrefix` keys so a single regex can be used.
-  const prefixMatchesStrings = safeModifyUrlPrefixes.join('|');
+  const safeModifyURLPrefixes = Object.keys(modifyURLPrefix).map(escapeRegExp);
+  // Join all the `modifyURLPrefix` keys so a single regex can be used.
+  const prefixMatchesStrings = safeModifyURLPrefixes.join('|');
   // Add `^` to the front the prefix matches so it only matches the start of
   // a string.
   const modifyRegex = new RegExp(`^(${prefixMatchesStrings})`);
@@ -60,7 +60,7 @@ module.exports = (modifyUrlPrefix) => {
       }
 
       entry.url = entry.url.replace(modifyRegex, (match) => {
-        return modifyUrlPrefix[match];
+        return modifyURLPrefix[match];
       });
 
       return entry;

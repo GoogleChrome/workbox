@@ -19,11 +19,11 @@ const webpack = require('webpack');
 const CreateWebpackAssetPlugin = require('../../../infra/testing/create-webpack-asset-plugin');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 const {InjectManifest} = require('../../../packages/workbox-webpack-plugin/src/index');
-const {getModuleUrl} = require('../../../packages/workbox-build/src/lib/cdn-utils');
+const {getModuleURL} = require('../../../packages/workbox-build/src/lib/cdn-utils');
 
 describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
-  const WORKBOX_SW_FILE_NAME = getModuleUrl('workbox-sw');
+  const WORKBOX_SW_FILE_NAME = getModuleURL('workbox-sw');
   const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');
   const SW_SRC = path.join(__dirname, '..', 'static', 'sw-src.js');
   const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
@@ -910,7 +910,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           new InjectManifest({
             swSrc: SW_SRC,
             globDirectory: SRC_DIR,
-            templatedUrls: {
+            templatedURLs: {
               '/shell': ['index.html', 'styles/*.css'],
             },
           }),
@@ -1529,10 +1529,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const FILE_MANIFEST_NAME = 'precache-manifest.7e1d0d5a77c9c05655b6033e320028e3.js';
       const outputDir = tempy.directory();
       const optionsToWarnAboutWhenGlobPatternsIsNotSet = [
-        'dontCacheBustUrlsMatching',
+        'dontCacheBustURLsMatching',
         'manifestTransforms',
         'maximumFileSizeToCacheInBytes',
-        'modifyUrlPrefix',
+        'modifyURLPrefix',
       ];
       const config = {
         mode: 'production',
@@ -1546,10 +1546,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         plugins: [
           new InjectManifest({
             swSrc: SW_SRC,
-            dontCacheBustUrlsMatching: /testing/,
+            dontCacheBustURLsMatching: /testing/,
             manifestTransforms: [],
             maximumFileSizeToCacheInBytes: 1000000,
-            modifyUrlPrefix: {abc: 'def'},
+            modifyURLPrefix: {abc: 'def'},
           }),
         ],
       };

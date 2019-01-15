@@ -54,11 +54,11 @@ describe(`[workbox-build] entry-points/options/validate.js`, function() {
   });
 
   it(`should return the default options, honoring any additional options`, function() {
-    const dontCacheBustUrlsMatching = /test/;
-    const options = validate({dontCacheBustUrlsMatching}, baseSchema);
+    const dontCacheBustURLsMatching = /test/;
+    const options = validate({dontCacheBustURLsMatching}, baseSchema);
 
     expect(options).to.eql({
-      dontCacheBustUrlsMatching,
+      dontCacheBustURLsMatching,
       globFollow: true,
       globIgnores: ['**/node_modules/**/*'],
       globPatterns: ['**/*.{js,css,html}'],

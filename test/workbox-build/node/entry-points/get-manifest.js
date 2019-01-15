@@ -19,7 +19,7 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     globDirectory: SRC_DIR,
   };
   const SUPPORTED_PARAMS = [
-    'dontCacheBustUrlsMatching',
+    'dontCacheBustURLsMatching',
     'globDirectory',
     'globFollow',
     'globIgnores',
@@ -27,14 +27,14 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     'globStrict',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
-    'modifyUrlPrefix',
-    'templatedUrls',
+    'modifyURLPrefix',
+    'templatedURLs',
   ];
   const UNSUPPORTED_PARAMS = [
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'ignoreUrlParametersMatching',
+    'ignoreURLParametersMatching',
     'importScripts',
     'importWorkboxFrom',
     'injectionPointRegexp',
@@ -194,12 +194,12 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
       expect(size).to.eql(101);
     });
 
-    it(`should use defaults when all the required parameters, and 'templatedUrls' are present`, async function() {
+    it(`should use defaults when all the required parameters, and 'templatedURLs' are present`, async function() {
       const url1 = 'url1';
       const url2 = 'url2';
 
       const options = Object.assign({
-        templatedUrls: {
+        templatedURLs: {
           [url1]: ['**/*.html'],
           [url2]: 'string dependency',
         },
@@ -298,5 +298,26 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
       expect(count).to.eql(4);
       expect(size).to.eql(2535);
     });
+  });
+
+  describe(`[workbox-build] deprecated options`, function() {
+    const oldOptionsToValue = {
+      dontCacheBustUrlsMatching: /ignored/,
+      modifyUrlPrefix: {
+        'ignored': 'ignored',
+      },
+      templatedUrls: {},
+    };
+
+    for (const [option, value] of Object.entries(oldOptionsToValue)) {
+      it(`should return a warning when ${option} is used`, async function() {
+        const options = Object.assign({}, BASE_OPTIONS, {
+          [option]: value,
+        });
+
+        const {warnings} = await getManifest(options);
+        expect(warnings).to.have.length(1);
+      });
+    }
   });
 });

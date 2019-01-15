@@ -68,7 +68,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const clientsClaim = true;
     const directoryIndex = 'index.html';
     const handleFetch = true;
-    const ignoreUrlParametersMatching = [/a/, /b/];
+    const ignoreURLParametersMatching = [/a/, /b/];
     const importScripts = ['test.js'];
     const manifestEntries = [{url: '/path/to/index.html', revision: '1234'}];
     const modulePathPrefix = 'testing';
@@ -81,7 +81,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const skipWaiting = true;
     const swTemplate = 'template';
-    const precacheOptionsString = '{\n  "directoryIndex": "index.html",\n  "ignoreUrlParametersMatching": [/a/, /b/]\n}';
+    const precacheOptionsString = '{\n  "directoryIndex": "index.html",\n  "ignoreURLParametersMatching": [/a/, /b/]\n}';
     const workboxSWImport = 'workbox-sw.js';
 
     // There are two stages in templating: creating the active template function
@@ -101,7 +101,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       clientsClaim,
       directoryIndex,
       handleFetch,
-      ignoreUrlParametersMatching,
+      ignoreURLParametersMatching,
       importScripts,
       manifestEntries,
       modulePathPrefix,

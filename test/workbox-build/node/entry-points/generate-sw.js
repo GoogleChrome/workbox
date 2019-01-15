@@ -19,7 +19,7 @@ const generateSW = require('../../../../packages/workbox-build/src/entry-points/
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() {
-  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw');
+  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleURL('workbox-sw');
   const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
@@ -34,23 +34,23 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'dontCacheBustUrlsMatching',
+    'dontCacheBustURLsMatching',
     'globFollow',
     'globIgnores',
     'globPatterns',
     'globStrict',
-    'ignoreUrlParametersMatching',
+    'ignoreURLParametersMatching',
     'importScripts',
     'importWorkboxFrom',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
-    'modifyUrlPrefix',
+    'modifyURLPrefix',
     'offlineGoogleAnalytics',
     'navigateFallback',
     'navigateFallbackWhitelist',
     'runtimeCaching',
     'skipWaiting',
-    'templatedUrls',
+    'templatedURLs',
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
     'injectionPointRegexp',
@@ -309,12 +309,12 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     it(`should use defaults when all the required parameters are present, with additional configuration`, async function() {
       const swDest = tempy.file();
       const directoryIndex = 'test.html';
-      const ignoreUrlParametersMatching = [/test1/, /test2/];
+      const ignoreURLParametersMatching = [/test1/, /test2/];
       const cacheId = 'test';
       const additionalOptions = {
         cacheId,
         directoryIndex,
-        ignoreUrlParametersMatching,
+        ignoreURLParametersMatching,
         clientsClaim: true,
         skipWaiting: true,
       };
@@ -347,7 +347,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         }, {
           url: 'webpackEntry.js',
           revision: '5b652181a25e96f255d0490203d3c47e',
-        }], {directoryIndex, ignoreUrlParametersMatching}]],
+        }], {directoryIndex, ignoreURLParametersMatching}]],
       }});
     });
 
@@ -856,5 +856,27 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         expect(error.details[0].context.key).to.eql('expiration');
       }
     });
+  });
+
+  describe(`[workbox-build] deprecated options`, function() {
+    const oldOptionsToValue = {
+      dontCacheBustUrlsMatching: /ignored/,
+      ignoreUrlParametersMatching: [/ignored/],
+      modifyUrlPrefix: {
+        'ignored': 'ignored',
+      },
+      templatedUrls: {},
+    };
+
+    for (const [option, value] of Object.entries(oldOptionsToValue)) {
+      it(`should return a warning when ${option} is used`, async function() {
+        const options = Object.assign({}, BASE_OPTIONS, {
+          [option]: value,
+        });
+
+        const {warnings} = await generateSW(options);
+        expect(warnings).to.have.length(1);
+      });
+    }
   });
 });

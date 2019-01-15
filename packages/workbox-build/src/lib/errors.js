@@ -42,7 +42,7 @@ module.exports = {
   'invalid-generate-sw-input': ol`The input to generateSW() must be an object.`,
   'invalid-glob-directory': ol`The supplied globDirectory must be a path as a
     string.`,
-  'invalid-dont-cache-bust': ol`The supplied 'dontCacheBustUrlsMatching'
+  'invalid-dont-cache-bust': ol`The supplied 'dontCacheBustURLsMatching'
     parameter must be a RegExp.`,
   'invalid-exclude-files': 'The excluded files should be an array of strings.',
   'invalid-get-manifest-entries-input': ol`The input to
@@ -55,15 +55,15 @@ module.exports = {
     generateFileManifest() must be either 'iife' (the default) or 'es'.`,
   'invalid-static-file-globs': ol`The 'globPatterns' value must be an array
     of strings.`,
-  'invalid-templated-urls': ol`The 'templatedUrls' value should be an object
+  'invalid-templated-urls': ol`The 'templatedURLs' value should be an object
     that maps URLs to either a string, or to an array of glob patterns.`,
-  'templated-url-matches-glob': ol`One of the 'templatedUrls' URLs is already
+  'templated-url-matches-glob': ol`One of the 'templatedURLs' URLs is already
     being tracked via 'globPatterns': `,
   'invalid-glob-ignores': ol`The 'globIgnores' parameter must be an array of
     glob pattern strings.`,
   'manifest-entry-bad-url': ol`The generated manifest contains an entry without
     a URL string. This is likely an error with workbox-build.`,
-  'modify-url-prefix-bad-prefixes': ol`The 'modifyUrlPrefix' parameter must be
+  'modify-url-prefix-bad-prefixes': ol`The 'modifyURLPrefix' parameter must be
     an object with string key value pairs.`,
   'invalid-inject-manifest-arg': ol`The input to 'injectManifest()' must be an
     object.`,
@@ -76,13 +76,13 @@ module.exports = {
   'useless-glob-pattern': ol`One of the glob patterns doesn't match any files.
     Please remove or fix the following: `,
   'bad-template-urls-asset': ol`There was an issue using one of the provided
-    'templatedUrls'.`,
+    'templatedURLs'.`,
   'invalid-runtime-caching': ol`The 'runtimeCaching' parameter must an an
     array of objects with at least a 'urlPattern' and 'handler'.`,
   'static-file-globs-deprecated': ol`'staticFileGlobs' is deprecated.
     Please use 'globPatterns' instead.`,
-  'dynamic-url-deprecated': ol`'dynamicUrlToDependencies' is deprecated.
-    Please use 'templatedUrls' instead.`,
+  'dynamic-url-deprecated': ol`'dynamicURLToDependencies' is deprecated.
+    Please use 'templatedURLs' instead.`,
   'urlPattern-is-required': ol`The 'urlPattern' option is required when using
     'runtimeCaching'.`,
   'handler-is-required': ol`The 'handler' option is required when using
@@ -100,5 +100,5 @@ module.exports = {
   'invalid-network-timeout-seconds': ol`When using networkTimeoutSeconds, you
     must set the handler to 'networkFirst'.`,
   'no-module-name': ol`You must provide a moduleName parameter when calling
-    getModuleUrl().`,
+    getModuleURL().`,
 };

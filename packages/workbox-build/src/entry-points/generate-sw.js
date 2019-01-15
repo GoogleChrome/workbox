@@ -9,6 +9,8 @@
 const path = require('path');
 
 const cdnUtils = require('../lib/cdn-utils');
+const checkForDeprecatedOptions =
+    require('../lib/check-for-deprecated-options');
 const copyWorkboxLibraries = require('../lib/copy-workbox-libraries');
 const generateSWSchema = require('./options/generate-sw-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
@@ -38,14 +40,18 @@ const writeServiceWorkerUsingDefaultTemplate =
  * @memberof module:workbox-build
  */
 async function generateSW(config) {
+  // This check needs to be done before validation, since the deprecated options
+  // will be renamed.
+  const deprecationWarnings = checkForDeprecatedOptions(config);
+
   const options = validate(config, generateSWSchema);
 
   const destDirectory = path.dirname(options.swDest);
 
   // Do nothing if importWorkboxFrom is set to 'disabled'. Otherwise, check:
   if (options.importWorkboxFrom === 'cdn') {
-    const cdnUrl = cdnUtils.getModuleUrl('workbox-sw');
-    options.workboxSWImport = cdnUrl;
+    const cdnURL = cdnUtils.getModuleURL('workbox-sw');
+    options.workboxSWImport = cdnURL;
   } else if (options.importWorkboxFrom === 'local') {
     // Copy over the dev + prod version of all of the core libraries.
     const workboxDirectoryName = await copyWorkboxLibraries(destDirectory);
@@ -69,6 +75,9 @@ async function generateSW(config) {
   await writeServiceWorkerUsingDefaultTemplate(Object.assign({
     manifestEntries,
   }, options));
+
+  // Add in any deprecation warnings.
+  warnings.push(...deprecationWarnings);
 
   return {count, size, warnings};
 }

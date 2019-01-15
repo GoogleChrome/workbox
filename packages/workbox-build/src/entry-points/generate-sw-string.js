@@ -6,6 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
+const checkForDeprecatedOptions =
+    require('../lib/check-for-deprecated-options');
 const generateSWStringSchema = require('./options/generate-sw-string-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const populateSWTemplate = require('../lib/populate-sw-template');
@@ -25,6 +27,10 @@ const validate = require('./options/validate');
  * @memberof module:workbox-build
  */
 async function generateSWString(config) {
+  // This check needs to be done before validation, since the deprecated options
+  // will be renamed.
+  const deprecationWarnings = checkForDeprecatedOptions(config);
+
   const options = validate(config, generateSWStringSchema);
 
   const {manifestEntries, warnings} = await getFileManifestEntries(options);
@@ -32,6 +38,9 @@ async function generateSWString(config) {
   const swString = await populateSWTemplate(Object.assign({
     manifestEntries,
   }, options));
+
+  // Add in any deprecation warnings.
+  warnings.push(...deprecationWarnings);
 
   return {swString, warnings};
 }
