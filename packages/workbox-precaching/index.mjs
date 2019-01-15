@@ -6,8 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
-import defaultPrecachingExport from './_default.mjs';
+import {assert} from 'workbox-core/_private/assert.mjs';
+import {addPlugins} from './addPlugins.mjs';
+import {addRoute} from './addRoute.mjs';
+import {cleanupOutdatedCaches} from './cleanupOutdatedCaches.mjs';
+import {getCacheKeyForURL} from './getCacheKeyForURL.mjs';
+import {precache} from './precache.mjs';
+import {precacheAndRoute} from './precacheAndRoute.mjs';
+import {PrecacheController} from './PrecacheController.mjs';
 import './_version.mjs';
+
+
+if (process.env.NODE_ENV !== 'production') {
+  assert.isSWEnv('workbox-precaching');
+}
 
 /**
  * Most consumers of this module will want to use the
@@ -22,6 +34,12 @@ import './_version.mjs';
  * @namespace workbox.precaching
  */
 
-export * from './_public.mjs';
-
-export default defaultPrecachingExport;
+export {
+  addPlugins,
+  addRoute,
+  cleanupOutdatedCaches,
+  getCacheKeyForURL,
+  precache,
+  precacheAndRoute,
+  PrecacheController,
+};

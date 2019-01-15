@@ -31,8 +31,8 @@ importScripts(
 
 <% if (cacheId) { %>workbox.core.setCacheNameDetails({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
 
-<% if (skipWaiting) { %>workbox.skipWaiting();<% } %>
-<% if (clientsClaim) { %>workbox.clientsClaim();<% } %>
+<% if (skipWaiting) { %>workbox.core.skipWaiting();<% } %>
+<% if (clientsClaim) { %>workbox.core.clientsClaim();<% } %>
 
 <% if (Array.isArray(manifestEntries)) {%>
 /**
@@ -41,7 +41,6 @@ importScripts(
  * See https://goo.gl/S9QRab
  */
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
-workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
 <% } else { %>
 if (Array.isArray(self.__precacheManifest)) {

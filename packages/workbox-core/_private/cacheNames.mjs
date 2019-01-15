@@ -8,6 +8,7 @@
 
 import '../_version.mjs';
 
+
 const _cacheNameDetails = {
   googleAnalytics: 'googleAnalytics',
   precache: 'precache-v2',
@@ -22,7 +23,7 @@ const _createCacheName = (cacheName) => {
       .join('-');
 };
 
-const cacheNames = {
+export const cacheNames = {
   updateDetails: (details) => {
     Object.keys(_cacheNameDetails).forEach((key) => {
       if (typeof details[key] !== 'undefined') {
@@ -40,5 +41,3 @@ const cacheNames = {
     return userCacheName || _createCacheName(_cacheNameDetails.runtime);
   },
 };
-
-export {cacheNames};

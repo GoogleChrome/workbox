@@ -187,7 +187,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -253,7 +252,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -314,7 +312,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [workboxEntryName],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -390,7 +387,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [FILE_MANIFEST_NAME],
             ],
             setConfig: [[{modulePathPrefix}]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -469,7 +465,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [publicPath + FILE_MANIFEST_NAME],
             ],
             setConfig: [[{modulePathPrefix: publicPath + modulePathPrefix}]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -531,7 +526,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -593,7 +587,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -656,7 +649,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -726,7 +718,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
             ],
             clientsClaim: [[]],
             skipWaiting: [[]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[{
               revision: '5cfecbd12c9fa32f03eafe27e2ac798e',
               url: '/shell',
@@ -791,7 +782,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -856,7 +846,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -938,7 +927,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1002,7 +990,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1067,7 +1054,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1136,7 +1122,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1199,7 +1184,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1267,7 +1251,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[{
               revision: '544658ab25ee8762dc241e8b1c5ed96d',
               url: 'page-1.html',
@@ -1346,7 +1329,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[{
               revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
               url: 'index.html',
@@ -1426,7 +1408,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1488,7 +1469,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
                 [WORKBOX_SW_FILE_NAME],
                 [FILE_MANIFEST_NAME],
               ],
-              suppressWarnings: [[]],
               precacheAndRoute: [[[], {}]],
             }});
 
@@ -1549,7 +1529,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
                 [WORKBOX_SW_FILE_NAME],
                 [importsDirectory.replace(path.sep, '/') + '/' + FILE_MANIFEST_NAME],
               ],
-              suppressWarnings: [[]],
               precacheAndRoute: [[[], {}]],
             }});
 
@@ -1631,7 +1610,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
                 [publicPath + importsDirectory.replace(path.sep, '/') + '/' + FILE_MANIFEST_NAME],
               ],
               setConfig: [[{modulePathPrefix: publicPath + importsDirectory.replace(path.sep, '/') + '/' + modulePathPrefix}]],
-              suppressWarnings: [[]],
               precacheAndRoute: [[[], {}]],
             }});
 

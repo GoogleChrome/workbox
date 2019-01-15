@@ -7,7 +7,7 @@
 */
 
 import {expect} from 'chai';
-import plugin from '../../../packages/workbox-strategies/plugins/cacheOkAndOpaquePlugin.mjs';
+import {cacheOkAndOpaquePlugin} from '../../../packages/workbox-strategies/plugins/cacheOkAndOpaquePlugin.mjs';
 
 describe(`[workbox-strategies] cacheOkAndOpaquePlugin`, function() {
   for (const status of [206, 404]) {
@@ -15,7 +15,7 @@ describe(`[workbox-strategies] cacheOkAndOpaquePlugin`, function() {
       const response = new Response('Hello', {
         status,
       });
-      expect(plugin.cacheWillUpdate({response})).to.equal(null);
+      expect(cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(null);
     });
   }
 
@@ -23,13 +23,13 @@ describe(`[workbox-strategies] cacheOkAndOpaquePlugin`, function() {
     const response = new Response('Hello', {
       status: 0,
     });
-    expect(plugin.cacheWillUpdate({response})).to.equal(response);
+    expect(cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(response);
   });
 
   it(`should return Response if status is 200`, function() {
     const response = new Response('Hello', {
       status: 200,
     });
-    expect(plugin.cacheWillUpdate({response})).to.equal(response);
+    expect(cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(response);
   });
 });

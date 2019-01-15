@@ -8,7 +8,7 @@
 
 import '../_version.mjs';
 
-export default {
+export const cacheOkAndOpaquePlugin = {
   /**
    * Returns a valid response (to allow caching) if the status is 200 (OK) or
    * 0 (opaque).

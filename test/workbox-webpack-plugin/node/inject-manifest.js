@@ -194,7 +194,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -262,7 +261,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -326,7 +324,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               workboxEntryName,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -405,7 +402,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               workboxSWImport,
             ]],
             setConfig: [[{modulePathPrefix}]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -486,7 +482,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               publicPath + workboxSWImport,
             ]],
             setConfig: [[{modulePathPrefix: publicPath + modulePathPrefix}]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -554,7 +549,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               publicPath + FILE_MANIFEST_NAME,
               `${publicPath}${workboxChunkName}-b4583c3e0a4a5742f951.js`,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -617,7 +611,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -680,7 +673,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -744,7 +736,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -806,7 +797,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -876,7 +866,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               publicPath + FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -946,7 +935,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1016,7 +1004,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1100,7 +1087,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1165,7 +1151,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1231,7 +1216,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1301,7 +1285,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1365,7 +1348,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1434,7 +1416,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1514,7 +1495,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1595,7 +1575,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1658,7 +1637,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                 FILE_MANIFEST_NAME,
                 WORKBOX_SW_FILE_NAME,
               ]],
-              suppressWarnings: [[]],
               precacheAndRoute: [[[], {}]],
             }});
 
@@ -1720,7 +1698,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                 importsDirectory.replace(path.sep, '/') + '/' + FILE_MANIFEST_NAME,
                 WORKBOX_SW_FILE_NAME,
               ]],
-              suppressWarnings: [[]],
               precacheAndRoute: [[[], {}]],
             }});
 
@@ -1803,7 +1780,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                 publicPath + importsDirectory.replace(path.sep, '/') + '/' + workboxSWImport,
               ]],
               setConfig: [[{modulePathPrefix: publicPath + importsDirectory.replace(path.sep, '/') + '/' + modulePathPrefix}]],
-              suppressWarnings: [[]],
               precacheAndRoute: [[[], {}]],
             }});
 

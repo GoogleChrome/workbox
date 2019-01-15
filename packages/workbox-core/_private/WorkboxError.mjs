@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import messageGenerator from '../models/messages/messageGenerator.mjs';
+import {messageGenerator} from '../models/messages/messageGenerator.mjs';
 import '../_version.mjs';
 
 /**

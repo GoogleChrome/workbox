@@ -119,7 +119,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -225,7 +224,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [workboxSWImport],
         setConfig: [[{modulePathPrefix}]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -286,7 +284,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL], [...importScripts]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -332,7 +329,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         clientsClaim: [[]],
         skipWaiting: [[]],
         setCacheNameDetails: [[{prefix: cacheId}]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -371,7 +367,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -414,7 +409,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'link/index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -455,7 +449,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2535);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'link/index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -485,7 +478,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -526,7 +518,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -628,7 +619,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -670,7 +660,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -745,7 +734,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         cacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
         cacheExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -821,7 +809,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[runtimeCachingOptions]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',

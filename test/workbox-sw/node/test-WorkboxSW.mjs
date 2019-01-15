@@ -9,7 +9,7 @@
 import {expect} from 'chai';
 import sinon from 'sinon';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
-import WorkboxSW from '../../../packages/workbox-sw/controllers/WorkboxSW.mjs';
+import {WorkboxSW} from '../../../packages/workbox-sw/controllers/WorkboxSW.mjs';
 import {getPackages} from '../../../gulp-tasks/utils/get-packages';
 import {outputFilenameToPkgMap} from '../../../gulp-tasks/utils/output-filename-to-package-map';
 
@@ -107,42 +107,6 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       self.workbox.setConfig();
 
       expect(self.workbox._options).to.equal(originalOptions);
-    });
-  });
-
-  describe(`skipWaiting`, function() {
-    it('should add event listener and call skipWaiting', function(done) {
-      const skipWaitingSpy = sandbox.spy(self, 'skipWaiting');
-
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        expect(eventName).to.equal('install');
-
-        cb();
-
-        expect(skipWaitingSpy.callCount).to.equal(1);
-        done();
-      });
-
-      self.workbox = new WorkboxSW();
-      self.workbox.skipWaiting();
-    });
-  });
-
-  describe(`clientsClaim`, function() {
-    it('should add event listener and call clientsClaim', function(done) {
-      const clientsClaimSpy = sandbox.spy(self.clients, 'claim');
-
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        expect(eventName).to.equal('activate');
-
-        cb();
-
-        expect(clientsClaimSpy.callCount).to.equal(1);
-        done();
-      });
-
-      self.workbox = new WorkboxSW();
-      self.workbox.clientsClaim();
     });
   });
 

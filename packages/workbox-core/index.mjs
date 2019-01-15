@@ -6,12 +6,21 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {registerQuotaErrorCallback} from './_private/quota.mjs';
+import {registerQuotaErrorCallback} from './registerQuotaErrorCallback.mjs';
 import * as _private from './_private.mjs';
-import defaultExport from './_default.mjs';
-import LOG_LEVELS from './models/LogLevels.mjs';
-
+import {clientsClaim} from './clientsClaim.mjs';
+import {cacheNames} from './cacheNames.mjs';
+import {setCacheNameDetails} from './setCacheNameDetails.mjs';
+import {skipWaiting} from './skipWaiting.mjs';
 import './_version.mjs';
+
+
+// Give our version strings something to hang off of.
+try {
+  self.workbox.v = self.workbox.v || {};
+} catch (errer) {
+  // NOOP
+}
 
 /**
  * All of the Workbox service worker libraries use workbox-core for shared
@@ -21,17 +30,11 @@ import './_version.mjs';
  * @namespace workbox.core
  */
 
-/**
- * Utilities that are shared with other Workbox modules.
- *
- * @alias workbox.core._private
- * @private
- */
-
 export {
   _private,
-  LOG_LEVELS,
+  clientsClaim,
+  cacheNames,
   registerQuotaErrorCallback,
+  setCacheNameDetails,
+  skipWaiting,
 };
-
-export default defaultExport;
