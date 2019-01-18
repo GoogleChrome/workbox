@@ -17,7 +17,7 @@ module.exports = ({
   cacheId,
   clientsClaim,
   directoryIndex,
-  ignoreUrlParametersMatching,
+  ignoreURLParametersMatching,
   importScripts,
   manifestEntries,
   modulePathPrefix,
@@ -34,17 +34,17 @@ module.exports = ({
     directoryIndex,
     // An array of RegExp objects can't be serialized by JSON.stringify()'s
     // default behavior, so if it's given, convert it manually.
-    ignoreUrlParametersMatching: ignoreUrlParametersMatching ?
+    ignoreURLParametersMatching: ignoreURLParametersMatching ?
       [] :
       undefined,
   };
 
   let precacheOptionsString = JSON.stringify(precacheOptions, null, 2);
-  if (ignoreUrlParametersMatching) {
+  if (ignoreURLParametersMatching) {
     precacheOptionsString = precacheOptionsString.replace(
-        `"ignoreUrlParametersMatching": []`,
-        `"ignoreUrlParametersMatching": [` +
-      `${ignoreUrlParametersMatching.join(', ')}]`
+        `"ignoreURLParametersMatching": []`,
+        `"ignoreURLParametersMatching": [` +
+      `${ignoreURLParametersMatching.join(', ')}]`
     );
   }
 

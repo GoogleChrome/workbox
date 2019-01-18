@@ -54,28 +54,29 @@ describe(`workbox-core cacheWrapper`, function() {
       expect(cacheResponse).to.equal(putResponse);
     });
 
-    it(`should not cache opaque responses by default`, async function() {
-      const testCache = await caches.open('TEST-CACHE');
-      const cacheOpenStub = sandbox.stub(global.caches, 'open');
-      const cachePutStub = sandbox.stub(testCache, 'put');
-      cacheOpenStub.callsFake(async (cacheName) => {
-        return testCache;
-      });
-      const putRequest = new Request('/test/string');
-      const putResponse = new Response('Response for /test/string', {
-        // The mock doesn't allow a status of zero due to a bug
-        // so mock to 1.
-        status: 1,
-      });
-      await cacheWrapper.put({
-        cacheName: 'TODO-CHANGE-ME',
-        request: putRequest,
-        response: putResponse,
-      });
+    // This covers opaque responses (0) and partial content responses (206).
+    for (const status of [0, 206]) {
+      it(`should not cache response.status of ${status} by default`, async function() {
+        const cacheName = 'test-cache';
+        const testCache = await caches.open(cacheName);
+        const cacheOpenStub = sandbox.stub(global.caches, 'open').resolves(testCache);
+        const cachePutSpy = sandbox.spy(testCache, 'put');
 
-      expect(cacheOpenStub.callCount).to.equal(0);
-      expect(cachePutStub.callCount).to.equal(0);
-    });
+        const putRequest = new Request('/test/string');
+        const putResponse = new Response('', {
+          status,
+        });
+
+        await cacheWrapper.put({
+          cacheName,
+          request: putRequest,
+          response: putResponse,
+        });
+
+        expect(cacheOpenStub.callCount).to.equal(0);
+        expect(cachePutSpy.callCount).to.equal(0);
+      });
+    }
 
     devOnly.it(`should not cache POST responses`, async function() {
       const testCache = await caches.open('TEST-CACHE');

@@ -101,7 +101,7 @@ class CacheTimestampsModel {
    *
    * @private
    */
-  async deleteUrl(url) {
+  async deleteURL(url) {
     await this._db.delete(this._storeName, new URL(url, location).href);
   }
 

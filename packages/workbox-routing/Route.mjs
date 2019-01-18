@@ -9,7 +9,7 @@
 import {assert} from 'workbox-core/_private/assert.mjs';
 
 import {defaultMethod, validMethods} from './utils/constants.mjs';
-import normalizeHandler from './utils/normalizeHandler.mjs';
+import {normalizeHandler} from './utils/normalizeHandler.mjs';
 import './_version.mjs';
 
 /**

@@ -14,14 +14,14 @@ const runInSW = require('../../../infra/testing/comlink/node-interface');
 
 describe(`navigationPreload.enable`, function() {
   const staticPath = `/test/workbox-navigation-preload/static/`;
-  const baseUrl = global.__workbox.server.getAddress() + staticPath;
-  const integrationUrl = `${baseUrl}integration.html`;
-  const integrationUrlPath = `${staticPath}integration.html`;
+  const baseURL = global.__workbox.server.getAddress() + staticPath;
+  const integrationURL = `${baseURL}integration.html`;
+  const integrationURLPath = `${staticPath}integration.html`;
 
   let requestCounter;
   beforeEach(async function() {
     // Navigate to our test page and clear all caches before this test runs.
-    await cleanSWEnv(global.__workbox.webdriver, integrationUrl);
+    await cleanSWEnv(global.__workbox.webdriver, integrationURL);
     requestCounter = global.__workbox.server.startCountingRequests('Service-Worker-Navigation-Preload');
   });
   afterEach(function() {
@@ -29,17 +29,17 @@ describe(`navigationPreload.enable`, function() {
   });
 
   it(`should make a network request if navigation preload is supported`, async function() {
-    await activateAndControlSW(`${baseUrl}sw-default-header.js`);
+    await activateAndControlSW(`${baseURL}sw-default-header.js`);
 
     const isEnabled = await runInSW('isNavigationPreloadSupported');
 
-    expect(requestCounter.getUrlCount(integrationUrlPath)).to.eql(0);
+    expect(requestCounter.getURLCount(integrationURLPath)).to.eql(0);
 
-    await global.__workbox.webdriver.get(integrationUrl);
+    await global.__workbox.webdriver.get(integrationURL);
 
     // If navigation preload is enabled, there should be 1 request. Otherwise,
     // no requests.
-    expect(requestCounter.getUrlCount(integrationUrlPath)).to.eql(isEnabled ? 1 : 0);
+    expect(requestCounter.getURLCount(integrationURLPath)).to.eql(isEnabled ? 1 : 0);
 
     // Check to make sure that the correct header value was sent if navigation
     // preload is enabled.
@@ -47,17 +47,17 @@ describe(`navigationPreload.enable`, function() {
   });
 
   it(`should make a network request if navigation preload is supported, with a custom header value`, async function() {
-    await activateAndControlSW(`${baseUrl}sw-custom-header.js`);
+    await activateAndControlSW(`${baseURL}sw-custom-header.js`);
 
     const isEnabled = await runInSW('isNavigationPreloadSupported');
 
-    expect(requestCounter.getUrlCount(integrationUrlPath)).to.eql(0);
+    expect(requestCounter.getURLCount(integrationURLPath)).to.eql(0);
 
-    await global.__workbox.webdriver.get(integrationUrl);
+    await global.__workbox.webdriver.get(integrationURL);
 
     // If navigation preload is enabled, there should be 1 request. Otherwise,
     // no requests.
-    expect(requestCounter.getUrlCount(integrationUrlPath)).to.eql(isEnabled ? 1 : 0);
+    expect(requestCounter.getURLCount(integrationURLPath)).to.eql(isEnabled ? 1 : 0);
 
     // Check to make sure that the correct header value was sent if navigation
     // preload is enabled.

@@ -10,8 +10,8 @@ import {WorkboxError} from './WorkboxError.mjs';
 import {logger} from './logger.mjs';
 import {assert} from './assert.mjs';
 import {getFriendlyURL} from '../_private/getFriendlyURL.mjs';
-import pluginEvents from '../models/pluginEvents.mjs';
-import pluginUtils from '../utils/pluginUtils.mjs';
+import {pluginEvents} from '../models/pluginEvents.mjs';
+import {pluginUtils} from '../utils/pluginUtils.mjs';
 import '../_version.mjs';
 
 /**
@@ -99,15 +99,47 @@ const wrappedFetch = async ({
   // The request can be altered by plugins with `requestWillFetch` making
   // the original request (Most likely from a `fetch` event) to be different
   // to the Request we make. Pass both to `fetchDidFail` to aid debugging.
-  const pluginFilteredRequest = request.clone();
+  let pluginFilteredRequest = request.clone();
 
   try {
-    const fetchResponse = await fetch(request, fetchOptions);
+    let fetchResponse;
+
+    // See https://github.com/GoogleChrome/workbox/issues/1796
+    if (request.mode === 'navigate' && fetchOptions &&
+         Object.keys(fetchOptions).length > 0) {
+      pluginFilteredRequest = new Request(request, {mode: 'same-origin'});
+      fetchResponse = await fetch(pluginFilteredRequest, fetchOptions);
+    } else {
+      fetchResponse = await fetch(request, fetchOptions);
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       logger.debug(`Network request for `+
       `'${getFriendlyURL(request.url)}' returned a response with ` +
       `status '${fetchResponse.status}'.`);
     }
+
+    for (const plugin of plugins) {
+      if (pluginEvents.FETCH_DID_SUCCEED in plugin) {
+        fetchResponse = await plugin[pluginEvents.FETCH_DID_SUCCEED]
+            .call(plugin, {
+              event,
+              request: pluginFilteredRequest,
+              response: fetchResponse,
+            });
+
+        if (process.env.NODE_ENV !== 'production') {
+          if (fetchResponse) {
+            assert.isInstance(fetchResponse, Response, {
+              moduleName: 'Plugin',
+              funcName: pluginEvents.FETCH_DID_SUCCEED,
+              isReturnValueProblem: true,
+            });
+          }
+        }
+      }
+    }
+
     return fetchResponse;
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
@@ -115,7 +147,7 @@ const wrappedFetch = async ({
       `'${getFriendlyURL(request.url)}' threw an error.`, error);
     }
 
-    for (let plugin of failedFetchPlugins) {
+    for (const plugin of failedFetchPlugins) {
       await plugin[pluginEvents.FETCH_DID_FAIL].call(plugin, {
         error,
         event,

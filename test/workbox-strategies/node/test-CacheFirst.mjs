@@ -9,7 +9,7 @@
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import {_private} from '../../../packages/workbox-core/index.mjs';
+import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
 import {CacheFirst} from '../../../packages/workbox-strategies/CacheFirst.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
 import expectError from '../../../infra/testing/expectError';
@@ -53,7 +53,7 @@ describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
 
     // Wait until cache.put is finished.
     await cachePromise;
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     const firstCachedResponse = await cache.match(request);
 
     await compareResponses(firstCachedResponse, fetchResponse, true);
@@ -95,7 +95,7 @@ describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
 
     // Wait until cache.put is finished.
     await cachePromise;
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     const firstCachedResponse = await cache.match(request);
 
     await compareResponses(firstCachedResponse, fetchResponse, true);
@@ -156,7 +156,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
 
     // Wait until cache.put is finished.
     await cachePromise;
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     const firstCachedResponse = await cache.match(request);
 
     await compareResponses(firstCachedResponse, fetchResponse, true);
@@ -220,7 +220,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
 
     // Wait until cache.put is finished.
     await cachePromise;
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     const firstCachedResponse = await cache.match(request);
 
     expect(firstCachedResponse).to.equal(null);
@@ -255,7 +255,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
 
     // Wait until cache.put is finished.
     await cachePromise;
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     const firstCachedResponse = await cache.match(request);
 
     await compareResponses(firstHandleResponse, firstCachedResponse, true);
@@ -266,7 +266,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const pluginResponse = new Response('plugin response');
@@ -299,7 +299,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
     });
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheFirst = new CacheFirst({

@@ -26,7 +26,7 @@
       gtag('js', new Date());
       gtag('config', 'UA-12345-1', {send_page_view: false});
 
-      const messageSw = (data) => {
+      const messageSW = (data) => {
         return new Promise((resolve) => {
           var messageChannel = new MessageChannel();
           messageChannel.port1.onmessage = (evt) => resolve(evt.data);
@@ -52,22 +52,22 @@
       };
 
       document.getElementById('dispatch-sync-event').onclick = () => {
-        messageSw({action: 'dispatch-sync-event'});
+        messageSW({action: 'dispatch-sync-event'});
       }
 
       document.getElementById('simulate-offline').onclick = (evt) => {
-        messageSw({
+        messageSW({
           action: 'simulate-offline',
           value: evt.target.checked,
         });
       }
 
       document.getElementById('clear-spied-requests').onclick = (evt) => {
-        messageSw({action: 'clear-spied-requests'});
+        messageSW({action: 'clear-spied-requests'});
       }
 
       document.getElementById('log-spied-requests').onclick = async (evt) => {
-        const requests = await messageSw({action: 'get-spied-requests'});
+        const requests = await messageSW({action: 'get-spied-requests'});
         console.log(requests);
       };
     </script>

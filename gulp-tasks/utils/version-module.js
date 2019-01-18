@@ -21,7 +21,7 @@ const getDetails = (packagePath) => {
 
 module.exports = (packagePath, buildType) => {
   const versionString =
-    `try{self.workbox.v['${getDetails(packagePath)}']=1;}catch(e){} ` +
+    `try{self['${getDetails(packagePath)}']&&_()}catch(e){}` +
     `// eslint-disable-line`;
   return fs.writeFile(path.join(packagePath, '_version.mjs'), versionString);
 };

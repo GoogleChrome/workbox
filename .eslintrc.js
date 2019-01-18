@@ -11,11 +11,14 @@ module.exports = {
     sourceType: 'module',
   },
   globals: {
-    workbox: false,
-    WorkboxSW: false,
-    SyncEvent: false,
     BroadcastChannel: false,
     Comlink: false,
+    expect: true,
+    sinon: false,
+    SyncEvent: false,
+    workbox: false,
+    Workbox: true,
+    WorkboxSW: false,
   },
   rules: {
     "jsdoc/check-types": 2,
@@ -38,10 +41,13 @@ module.exports = {
     },
   }, {
     files: [
+      'infra/testing/webdriver/executeAsyncAndCatch.js',
+      'infra/utils/log-helper.js',
       'packages/workbox-core/_private/logger.mjs',
       'packages/workbox-sw/_default.mjs',
-      'infra/utils/log-helper.js',
       'packages/workbox-cli/src/lib/logger.js',
+      'test/workbox-window/integration/test.js',
+      'test/workbox-window/unit/test-Workbox.mjs',
     ],
     rules: {
       'no-console': 0,

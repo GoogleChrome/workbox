@@ -12,7 +12,7 @@ import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
-import messages from './utils/messages.mjs';
+import {messages} from './utils/messages.mjs';
 import './_version.mjs';
 
 

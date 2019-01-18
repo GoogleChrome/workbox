@@ -8,7 +8,8 @@
 
 import '../../_version.mjs';
 
-export default {
+
+export const messages = {
   'invalid-value': ({paramName, validValueDescription, value}) => {
     if (!paramName || !validValueDescription) {
       throw new Error(`Unexpected input to 'invalid-value' error.`);
@@ -85,9 +86,9 @@ export default {
     }
 
     return `Two of the entries passed to ` +
-      `'workbox-precaching.PrecacheController.addToCacheList()' had matching ` +
-      `URLs but different revision details. This means workbox-precaching ` +
-      `is unable to determine cache the asset correctly. Please remove one ` +
+      `'workbox-precaching.PrecacheController.addToCacheList()' had the URL ` +
+      `${firstEntry._entryId} but different revision details. Workbox is ` +
+      `is unable to cache and version the asset correctly. Please remove one ` +
       `of the entries.`;
   },
 
@@ -166,12 +167,12 @@ export default {
   },
 
   'invalid-string': ({moduleName, className, funcName, paramName}) => {
-    if (!paramName || !moduleName || !className || !funcName) {
+    if (!paramName || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'invalid-string' error.`);
     }
     return `When using strings, the '${paramName}' parameter must start with ` +
       `'http' (for cross-origin matches) or '/' (for same-origin matches). ` +
-      `Please see the docs for ${moduleName}.${className}.${funcName}() for ` +
+      `Please see the docs for ${moduleName}.${funcName}() for ` +
       `more info.`;
   },
 

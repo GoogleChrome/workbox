@@ -90,9 +90,9 @@ async function createPartialResponse(request, originalResponse) {
       logger.warn(`Unable to construct a partial response; returning a ` +
         `416 Range Not Satisfiable response instead.`);
       logger.groupCollapsed(`View details here.`);
-      logger.unprefixed.log(error);
-      logger.unprefixed.log(request);
-      logger.unprefixed.log(originalResponse);
+      logger.log(error);
+      logger.log(request);
+      logger.log(originalResponse);
       logger.groupEnd();
     }
 

@@ -11,7 +11,7 @@ import {expect} from 'chai';
 
 import {devOnly} from '../../../../infra/testing/env-it';
 import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
-import printCleanupDetails from '../../../../packages/workbox-precaching/utils/printCleanupDetails.mjs';
+import {printCleanupDetails} from '../../../../packages/workbox-precaching/utils/printCleanupDetails.mjs';
 
 describe(`[workbox-precaching] printCleanupDetails`, function() {
   let sandbox = sinon.createSandbox();
@@ -24,7 +24,7 @@ describe(`[workbox-precaching] printCleanupDetails`, function() {
     sandbox.restore();
   });
 
-  it(`shouldn't print if nothing was deleted`, function() {
+  devOnly.it(`shouldn't print if nothing was deleted`, function() {
     printCleanupDetails([], []);
 
     expect(logger.log.callCount).to.equal(0);

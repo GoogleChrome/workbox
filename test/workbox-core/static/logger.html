@@ -21,29 +21,9 @@
   };
 </script>
 
-<script src="../../../../packages/workbox-core/build/browser/workbox-core.dev.js"></script>
+<script src="/__WORKBOX/buildFile/workbox-core"></script>
 <script>
   const logger = workbox.core._private.logger;
-
-  workbox.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
-
-  const currentLevel = document.querySelector('.js-current-level');
-  switch(workbox.core.logLevel) {
-    case 0:
-      currentLevel.textContent = 'Debug';
-      break;
-    case 1:
-      currentLevel.textContent = 'Log';
-      break;
-    case 2:
-      currentLevel.textContent = 'Warn';
-      break;
-    case 3:
-      currentLevel.textContent = 'Error';
-      break;
-    default:
-      throw new Error('Unexpected log level: ' + workbox.core.logLevel);
-  }
 
   const SIMPLE_OUTPUT_TESTS = [
     // String

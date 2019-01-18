@@ -8,8 +8,8 @@
 
 import '../_version.mjs';
 
-export default {
-  filter: (plugins, callbackname) => {
-    return plugins.filter((plugin) => callbackname in plugin);
+export const pluginUtils = {
+  filter: (plugins, callbackName) => {
+    return plugins.filter((plugin) => callbackName in plugin);
   },
 };

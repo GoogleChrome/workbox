@@ -12,13 +12,13 @@ const activateAndControlSW = require('../../../infra/testing/activate-and-contro
 
 describe(`[workbox-routing] Route via RegExp`, function() {
   const testServerAddress = global.__workbox.server.getAddress();
-  const testingUrl = `${testServerAddress}/test/workbox-routing/static/routing-regex/`;
-  const swUrl = `${testingUrl}sw.js`;
+  const testingURL = `${testServerAddress}/test/workbox-routing/static/routing-regex/`;
+  const swURL = `${testingURL}sw.js`;
 
   it(`should load a page and route requests`, async function() {
     // Load the page and wait for the first service worker to register and activate.
-    await global.__workbox.webdriver.get(testingUrl);
-    await activateAndControlSW(swUrl);
+    await global.__workbox.webdriver.get(testingURL);
+    await activateAndControlSW(swURL);
 
     let testCounter = 0;
 

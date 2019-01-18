@@ -8,7 +8,6 @@
 
 importScripts('/__WORKBOX/buildFile/workbox-core');
 importScripts('/__WORKBOX/buildFile/workbox-precaching');
-importScripts('messenger.js');
 importScripts('/infra/testing/comlink/sw-interface.js');
 
 workbox.precaching.precache([

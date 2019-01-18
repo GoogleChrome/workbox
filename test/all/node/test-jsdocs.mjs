@@ -39,8 +39,8 @@ describe('[all] JSDocs', function() {
       throw new Error('There should be **no** globals in the JSDocs.');
     }
 
-    // On some occassions module.exports can leak into JSDocs and breaks
-    // in the final template.
+    // On some occasions, module.exports can leak into JSDocs, and breaks
+    // into the final template.
     expect(docs.indexOf('index-all.html')).to.not.equal(-1);
     const indexAllContents = fs.readFileSync(path.join(docsPath, 'index-all.html'))
         .toString();

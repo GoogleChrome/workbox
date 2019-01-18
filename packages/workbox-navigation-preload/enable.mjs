@@ -8,7 +8,7 @@
 
 import {logger} from 'workbox-core/_private/logger.mjs';
 
-import {isSupported} from './utils/isSupported.mjs';
+import {isSupported} from './isSupported.mjs';
 
 import './_version.mjs';
 

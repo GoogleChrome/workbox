@@ -6,15 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import pluginEvents from '../models/pluginEvents.mjs';
-import pluginUtils from '../utils/pluginUtils.mjs';
+import {pluginEvents} from '../models/pluginEvents.mjs';
+import {pluginUtils} from '../utils/pluginUtils.mjs';
 import {WorkboxError} from './WorkboxError.mjs';
 import {assert} from './assert.mjs';
 import {executeQuotaErrorCallbacks} from './quota.mjs';
 import {getFriendlyURL} from './getFriendlyURL.mjs';
 import {logger} from './logger.mjs';
-
 import '../_version.mjs';
+
 
 /**
  * Wrapper around cache.put().
@@ -123,7 +123,8 @@ const matchWrapper = async ({
   request,
   event,
   matchOptions,
-  plugins = []}) => {
+  plugins = [],
+}) => {
   const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
   if (process.env.NODE_ENV !== 'production') {
@@ -133,7 +134,8 @@ const matchWrapper = async ({
       logger.debug(`No cached response found in '${cacheName}'.`);
     }
   }
-  for (let plugin of plugins) {
+
+  for (const plugin of plugins) {
     if (pluginEvents.CACHED_RESPONSE_WILL_BE_USED in plugin) {
       cachedResponse = await plugin[pluginEvents.CACHED_RESPONSE_WILL_BE_USED]
           .call(plugin, {
@@ -154,12 +156,13 @@ const matchWrapper = async ({
       }
     }
   }
+
   return cachedResponse;
 };
 
 /**
  * This method will call cacheWillUpdate on the available plugins (or use
- * response.ok) to determine if the Response is safe and valid to cache.
+ * status === 200) to determine if the Response is safe and valid to cache.
  *
  * @param {Object} options
  * @param {Request} options.request
@@ -202,7 +205,7 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
 
   if (!pluginsUsed) {
     if (process.env.NODE_ENV !== 'production') {
-      if (!responseToCache.ok) {
+      if (!responseToCache.status === 200) {
         if (responseToCache.status === 0) {
           logger.warn(`The response for '${request.url}' is an opaque ` +
             `response. The caching strategy that you're using will not ` +
@@ -214,15 +217,13 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
         }
       }
     }
-    responseToCache = responseToCache.ok ? responseToCache : null;
+    responseToCache = responseToCache.status === 200 ? responseToCache : null;
   }
 
   return responseToCache ? responseToCache : null;
 };
 
-const cacheWrapper = {
+export const cacheWrapper = {
   put: putWrapper,
   match: matchWrapper,
 };
-
-export {cacheWrapper};

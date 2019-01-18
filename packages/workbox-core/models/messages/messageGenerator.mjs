@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import messages from './messages.mjs';
+import {messages} from './messages.mjs';
 import '../../_version.mjs';
 
 const fallback = (code, ...args) => {
@@ -26,7 +26,5 @@ const generatorFunction = (code, ...args) => {
   return message(...args);
 };
 
-const exportedValue = (process.env.NODE_ENV === 'production') ?
-  fallback : generatorFunction;
-
-export default exportedValue;
+export const messageGenerator = (process.env.NODE_ENV === 'production') ?
+    fallback : generatorFunction;

@@ -9,7 +9,7 @@
 const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
 
 const getAssetHash = require('./get-asset-hash');
-const resolveWebpackUrl = require('./resolve-webpack-url');
+const resolveWebpackURL = require('./resolve-webpack-url');
 
 /**
  * A single manifest entry that Workbox can precache.
@@ -178,8 +178,8 @@ function getManifestEntriesFromCompilation(compilation, config) {
       continue;
     }
 
-    const publicUrl = resolveWebpackUrl(publicPath, file);
-    const manifestEntry = getEntry(knownHashes, publicUrl, metadata.hash);
+    const publicURL = resolveWebpackURL(publicPath, file);
+    const manifestEntry = getEntry(knownHashes, publicURL, metadata.hash);
     manifestEntries.push(manifestEntry);
   }
   return manifestEntries;

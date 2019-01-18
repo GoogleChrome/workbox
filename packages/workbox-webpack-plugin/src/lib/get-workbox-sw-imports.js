@@ -7,7 +7,7 @@
 */
 
 const path = require('path');
-const {copyWorkboxLibraries, getModuleUrl} = require('workbox-build');
+const {copyWorkboxLibraries, getModuleURL} = require('workbox-build');
 
 /**
  * @param {Object} compilation The webpack compilation.
@@ -23,7 +23,7 @@ const {copyWorkboxLibraries, getModuleUrl} = require('workbox-build');
 async function getWorkboxSWImport(compilation, config) {
   switch (config.importWorkboxFrom) {
     case 'cdn': {
-      return [getModuleUrl('workbox-sw')];
+      return [getModuleURL('workbox-sw')];
     }
 
     case 'local': {

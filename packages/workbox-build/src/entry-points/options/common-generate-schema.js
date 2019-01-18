@@ -17,7 +17,7 @@ module.exports = baseSchema.keys({
   cacheId: joi.string(),
   clientsClaim: joi.boolean().default(defaults.clientsClaim),
   directoryIndex: joi.string(),
-  ignoreUrlParametersMatching: joi.array().items(regExpObject),
+  ignoreURLParametersMatching: joi.array().items(regExpObject),
   navigateFallback: joi.string().default(defaults.navigateFallback),
   navigateFallbackBlacklist: joi.array().items(regExpObject),
   navigateFallbackWhitelist: joi.array().items(regExpObject),
@@ -32,14 +32,16 @@ module.exports = baseSchema.keys({
         'POST',
         'PUT'
     ),
-    urlPattern: [regExpObject, joi.string()],
-    handler: [joi.func(), joi.string().valid(
-        'cacheFirst',
-        'cacheOnly',
-        'networkFirst',
-        'networkOnly',
-        'staleWhileRevalidate'
-    )],
+    urlPattern: [regExpObject, joi.string(), joi.func()],
+    handler: [
+      joi.func(),
+      joi.string().valid(
+          'CacheFirst',
+          'CacheOnly',
+          'NetworkFirst',
+          'NetworkOnly',
+          'StaleWhileRevalidate'),
+    ],
     options: joi.object().keys({
       backgroundSync: joi.object().keys({
         name: joi.string().required(),
@@ -66,4 +68,7 @@ module.exports = baseSchema.keys({
     }).with('expiration', 'cacheName'),
   }).requiredKeys('urlPattern', 'handler')),
   skipWaiting: joi.boolean().default(defaults.skipWaiting),
+}).rename('ignoreUrlParametersMatching', 'ignoreURLParametersMatching', {
+  ignoreUndefined: true,
+  override: true,
 });

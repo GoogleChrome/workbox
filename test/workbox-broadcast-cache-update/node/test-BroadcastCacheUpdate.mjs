@@ -122,7 +122,7 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
         type: CACHE_UPDATED_MESSAGE_TYPE,
         meta: CACHE_UPDATED_MESSAGE_META,
         payload: {
-          updatedUrl: '/',
+          updatedURL: '/',
           cacheName: 'cache-name',
         },
       });
@@ -174,7 +174,7 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
         type: CACHE_UPDATED_MESSAGE_TYPE,
         meta: CACHE_UPDATED_MESSAGE_META,
         payload: {
-          updatedUrl: '/',
+          updatedURL: '/',
           cacheName: 'cache-name',
         },
       };

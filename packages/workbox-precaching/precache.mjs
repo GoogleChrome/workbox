@@ -1,0 +1,64 @@
+/*
+  Copyright 2019 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {getOrCreatePrecacheController}
+  from './utils/getOrCreatePrecacheController.mjs';
+import {precachePlugins} from './utils/precachePlugins.mjs';
+import './_version.mjs';
+
+
+let listenersAdded = false;
+
+/**
+ * Adds items to the precache list, removing any duplicates and
+ * stores the files in the
+ * ["precache cache"]{@link module:workbox-core.cacheNames} when the service
+ * worker installs.
+ *
+ * This method can be called multiple times.
+ *
+ * Please note: This method **will not** serve any of the cached files for you.
+ * It only precaches files. To respond to a network request you call
+ * [addRoute()]{@link module:workbox-precaching.addRoute}.
+ *
+ * If you have a single array of files to precache, you can just call
+ * [precacheAndRoute()]{@link module:workbox-precaching.precacheAndRoute}.
+ *
+ * @param {Array<Object|string>} entries Array of entries to precache.
+ *
+ * @alias workbox.precaching.precache
+ */
+export const precache = (entries) => {
+  const precacheController = getOrCreatePrecacheController();
+  precacheController.addToCacheList(entries);
+
+  if (!listenersAdded && entries.length > 0) {
+    const plugins = precachePlugins.get();
+
+    self.addEventListener('install', (event) => {
+      event.waitUntil(
+          precacheController.install({event, plugins})
+              .catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                  logger.error(`Service worker installation failed. It will ` +
+                  `be retried automatically during the next navigation.`);
+                }
+                // Re-throw the error to ensure installation fails.
+                throw error;
+              })
+      );
+    });
+
+    self.addEventListener('activate', (event) => {
+      event.waitUntil(precacheController.activate({event, plugins}));
+    });
+
+    listenersAdded = true;
+  }
+};

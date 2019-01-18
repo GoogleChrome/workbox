@@ -11,6 +11,7 @@ const stripComments = require('strip-comments');
 
 module.exports = (obj) => {
   return objectStringify(obj, {
-    transform: (_obj, _prop, str) => stripComments(str),
+    transform: (_obj, _prop, str) =>
+      typeof _obj[_prop] === 'function' ? stripComments(str) : str,
   });
 };

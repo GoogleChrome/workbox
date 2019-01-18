@@ -9,7 +9,7 @@
 const inquirer = require('inquirer');
 const ol = require('common-tags').oneLine;
 
-const assertValidSwSrc = require('../assert-valid-sw-src');
+const assertValidSWSrc = require('../assert-valid-sw-src');
 
 // The key used for the question/answer.
 const name = 'swSrc';
@@ -31,7 +31,7 @@ module.exports = async () => {
   const answers = await askQuestion();
   const swSrc = answers[name].trim();
 
-  await assertValidSwSrc(swSrc);
+  await assertValidSWSrc(swSrc);
 
   return swSrc;
 };

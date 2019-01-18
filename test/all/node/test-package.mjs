@@ -42,6 +42,9 @@ describe(`[all] Test package.json`, function() {
           });
           break;
         }
+        case 'window': {
+          break;
+        }
         case 'node': {
           break;
         }
@@ -52,7 +55,7 @@ describe(`[all] Test package.json`, function() {
   });
 
   it(`should import _version.mjs in each .mjs file`, function() {
-    const importRegex = /import\s+'[./]*_version.mjs';/;
+    const importRegex = /import\s+'[./]+_version\.mjs';/;
 
     // Find directories with package.json file
     const packageFiles = glob.sync('packages/*/package.json', {

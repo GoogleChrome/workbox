@@ -6,4 +6,4 @@
   https://opensource.org/licenses/MIT.
 */
 
-workbox.precaching.precacheAndRoute([], {cleanUrls: true});
+workbox.precaching.precacheAndRoute([], {cleanURLs: true});

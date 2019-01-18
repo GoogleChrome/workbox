@@ -14,14 +14,14 @@ const runInSW = require('../../../infra/testing/comlink/node-interface');
 
 describe(`navigationPreload.disable`, function() {
   const staticPath = `/test/workbox-navigation-preload/static/`;
-  const baseUrl = global.__workbox.server.getAddress() + staticPath;
-  const integrationUrl = `${baseUrl}integration.html`;
-  const integrationUrlPath = `${staticPath}integration.html`;
+  const baseURL = global.__workbox.server.getAddress() + staticPath;
+  const integrationURL = `${baseURL}integration.html`;
+  const integrationURLPath = `${staticPath}integration.html`;
 
   let requestCounter;
   beforeEach(async function() {
     // Navigate to our test page and clear all caches before this test runs.
-    await cleanSWEnv(global.__workbox.webdriver, integrationUrl);
+    await cleanSWEnv(global.__workbox.webdriver, integrationURL);
     requestCounter = global.__workbox.server.startCountingRequests('Service-Worker-Navigation-Preload');
   });
   afterEach(function() {
@@ -29,7 +29,7 @@ describe(`navigationPreload.disable`, function() {
   });
 
   it(`should support disabling previously enabled navigation preload`, async function() {
-    await activateAndControlSW(`${baseUrl}sw-default-header.js`);
+    await activateAndControlSW(`${baseURL}sw-default-header.js`);
 
     const isEnabled = await runInSW('isNavigationPreloadSupported');
 
@@ -39,20 +39,20 @@ describe(`navigationPreload.disable`, function() {
       return this.skip();
     }
 
-    expect(requestCounter.getUrlCount(integrationUrlPath)).to.eql(0);
+    expect(requestCounter.getURLCount(integrationURLPath)).to.eql(0);
 
-    await global.__workbox.webdriver.get(integrationUrl);
+    await global.__workbox.webdriver.get(integrationURL);
 
-    expect(requestCounter.getUrlCount(integrationUrlPath)).to.eql(1);
+    expect(requestCounter.getURLCount(integrationURLPath)).to.eql(1);
 
     // Active the new service worker that has navigation preload disabled.
-    await activateAndControlSW(`${baseUrl}sw-disable.js`);
+    await activateAndControlSW(`${baseURL}sw-disable.js`);
 
-    await global.__workbox.webdriver.get(integrationUrl);
+    await global.__workbox.webdriver.get(integrationURL);
 
     // With navigation preload now disabled, the synthetic response from the
     // service worker should fulfill the navigation request, and the server
     // won't get another HTTP request.
-    expect(requestCounter.getUrlCount(integrationUrlPath)).to.eql(1);
+    expect(requestCounter.getURLCount(integrationURLPath)).to.eql(1);
   });
 });

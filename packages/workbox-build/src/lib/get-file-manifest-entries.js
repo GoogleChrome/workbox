@@ -16,7 +16,7 @@ const getFileDetails = require('./get-file-details');
 const getStringDetails = require('./get-string-details');
 
 module.exports = async ({
-  dontCacheBustUrlsMatching,
+  dontCacheBustURLsMatching,
   globDirectory,
   globFollow,
   globIgnores,
@@ -24,9 +24,9 @@ module.exports = async ({
   globStrict,
   manifestTransforms,
   maximumFileSizeToCacheInBytes,
-  modifyUrlPrefix,
+  modifyURLPrefix,
   swDest,
-  templatedUrls,
+  templatedURLs,
 }) => {
   const warnings = [];
   // Initialize to an empty array so that we can still pass something to
@@ -67,11 +67,11 @@ module.exports = async ({
     }
   }
 
-  if (templatedUrls) {
-    for (let url of Object.keys(templatedUrls)) {
+  if (templatedURLs) {
+    for (let url of Object.keys(templatedURLs)) {
       assert(!fileSet.has(url), errors['templated-url-matches-glob']);
 
-      const dependencies = templatedUrls[url];
+      const dependencies = templatedURLs[url];
       if (Array.isArray(dependencies)) {
         const details = dependencies.reduce((previous, globPattern) => {
           try {
@@ -99,7 +99,7 @@ module.exports = async ({
   }
 
   const filteredFiles = filterFiles({fileDetails,
-    maximumFileSizeToCacheInBytes, modifyUrlPrefix, dontCacheBustUrlsMatching,
+    maximumFileSizeToCacheInBytes, modifyURLPrefix, dontCacheBustURLsMatching,
     manifestTransforms});
 
   if (warnings.length > 0) {

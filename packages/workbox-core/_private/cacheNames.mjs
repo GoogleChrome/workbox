@@ -8,12 +8,13 @@
 
 import '../_version.mjs';
 
+
 const _cacheNameDetails = {
-  prefix: 'workbox',
-  suffix: self.registration.scope,
   googleAnalytics: 'googleAnalytics',
-  precache: 'precache',
+  precache: 'precache-v2',
+  prefix: 'workbox',
   runtime: 'runtime',
+  suffix: self.registration.scope,
 };
 
 const _createCacheName = (cacheName) => {
@@ -22,7 +23,7 @@ const _createCacheName = (cacheName) => {
       .join('-');
 };
 
-const cacheNames = {
+export const cacheNames = {
   updateDetails: (details) => {
     Object.keys(_cacheNameDetails).forEach((key) => {
       if (typeof details[key] !== 'undefined') {
@@ -40,5 +41,3 @@ const cacheNames = {
     return userCacheName || _createCacheName(_cacheNameDetails.runtime);
   },
 };
-
-export {cacheNames};
