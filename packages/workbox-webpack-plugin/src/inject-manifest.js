@@ -149,13 +149,6 @@ ${originalSWString}
 `;
 
     const relSwDest = relativeToOutputPath(compilation, this.config.swDest);
-    /**
-     * Delete if this file already exist,
-     * this is the case where source is also a webpack asset.
-     */
-    if (compilation.assets[relSwDest]) {
-      delete compilation.assets[relSwDest];
-    }
     compilation.assets[relSwDest] = convertStringToAsset(postInjectionSWString);
   }
 
