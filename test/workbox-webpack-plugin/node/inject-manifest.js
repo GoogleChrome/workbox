@@ -1822,8 +1822,8 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           }),
         ],
         optimization: {
-          minimize: false
-        }
+          minimize: false,
+        },
       };
 
       const compiler = webpack(config);
