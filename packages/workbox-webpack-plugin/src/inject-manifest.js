@@ -111,7 +111,16 @@ class InjectManifest {
       importScriptsArray.push(...workboxSWImports);
     }
 
-    const originalSWString = await readFileWrapper(readFile, this.config.swSrc);
+    let originalSWString;
+    /**
+     * Check if the mentioned file name is in the webpack assets itself
+     * or fallback to filesystem.
+     */
+    if (compilation.assets[this.config.swSrc]) {
+      originalSWString = compilation.assets[this.config.swSrc].source();
+    } else {
+      originalSWString = await readFileWrapper(readFile, this.config.swSrc);
+    }
 
     // compilation.fileDependencies needs absolute paths.
     const absoluteSwSrc = path.resolve(this.config.swSrc);

@@ -1801,5 +1801,53 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         }
       });
     });
+    it(`should allow swSrc to be a webpack generated asset`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.547bb595d8b69f77af45d81ddbd95fa1.js';
+      const outputDir = tempy.directory();
+      const publicPath = '/testing/';
+      const config = {
+        mode: 'production',
+        entry: {
+          sw: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          publicPath,
+          filename: '[name].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: 'sw.js',
+            swDest: 'service-worker.js',
+          }),
+        ],
+        optimization: {
+          minimize: false,
+        },
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
+          // Check if service-worker.js is being written fine
+          const swSrcContents = await fse.readFile(path.join(outputDir, 'sw.js'), 'utf-8');
+          const swDestContents = await fse.readFile(path.join(outputDir, 'service-worker.js'), 'utf-8');
+          const expectedString = `importScripts("${publicPath}${FILE_MANIFEST_NAME}", ` +
+            `"${WORKBOX_SW_FILE_NAME}");\n\n` +
+            swSrcContents + '\n';
+          expect(expectedString).to.be.equal(swDestContents);
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
   });
 });
