@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = {https://github.com/oscarg933/pwatter/releases/tag/aura
   extends: ['eslint:recommended', 'google'],
   env: {
     serviceworker: true,
