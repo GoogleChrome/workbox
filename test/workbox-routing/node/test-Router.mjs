@@ -213,6 +213,42 @@ describe(`[workbox-routing] Router`, function() {
       expect(router.handleRequest.args[2][0].request.url).to.equal('/three');
       expect(router.handleRequest.args[2][0].event).to.equal(event);
     });
+
+    it(`should accept URL strings or request URL+requestInit tuples`, async function() {
+      const router = new Router();
+      const route = new Route(
+          () => true,
+          () => new Response(EXPECTED_RESPONSE_BODY));
+      router.registerRoute(route);
+      router.addCacheListener();
+
+      const event = new ExtendableMessageEvent('message', {
+        data: {
+          type: 'CACHE_URLS',
+          meta: 'workbox-window',
+          payload: {
+            urlsToCache: [
+              '/one',
+              ['/two', {mode: 'no-cors'}],
+              '/three',
+            ],
+          },
+        },
+      });
+      sandbox.spy(router, 'handleRequest');
+      self.dispatchEvent(event);
+
+      await eventsDoneWaiting();
+
+      expect(router.handleRequest.callCount).to.equal(3);
+      expect(router.handleRequest.args[0][0].request.url).to.equal('/one');
+      expect(router.handleRequest.args[0][0].event).to.equal(event);
+      expect(router.handleRequest.args[1][0].request.url).to.equal('/two');
+      expect(router.handleRequest.args[1][0].request.mode).to.equal('no-cors');
+      expect(router.handleRequest.args[1][0].event).to.equal(event);
+      expect(router.handleRequest.args[2][0].request.url).to.equal('/three');
+      expect(router.handleRequest.args[2][0].event).to.equal(event);
+    });
   });
 
   describe(`unregisterRoute()`, function() {

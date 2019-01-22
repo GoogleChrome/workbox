@@ -64,21 +64,42 @@ class Router {
 
   /**
    * Adds a message event listener for URLs to cache from the window.
-   * This is useful to cache resources loaded prior to when the service worker
-   * started controlling the page.
+   * This is useful to cache resources loaded on the page prior to when the
+   * service worker started controlling it.
+   *
+   * The format of the message data sent from the window should be as follows.
+   * Where the `urlsToCache` array may consist of URL strings or an array of
+   * URL string + `requestInit` object (the same as you'd pass to `fetch()`).
+   *
+   * ```
+   * {
+   *   type: 'CACHE_URLS',
+   *   meta: 'workbox-window',
+   *   payload: {
+   *     urlsToCache: [
+   *       './script1.js',
+   *       './script2.js',
+   *       ['./script3.js', {mode: 'no-cors'}],
+   *     ],
+   *   },
+   * }
+   * ```
    */
   addCacheListener() {
     self.addEventListener('message', (event) => {
-      if (event.data.type === 'CACHE_URLS' &&
-          event.data.meta === 'workbox-window') {
-        const {urlsToCache} = event.data.payload;
+      const {type, meta, payload} = event.data;
 
+      if (type === 'CACHE_URLS' && meta === 'workbox-window') {
         if (process.env.NODE_ENV !== 'production') {
-          logger.debug(`Caching URLs from the window`, urlsToCache);
+          logger.debug(`Caching URLs from the window`, payload.urlsToCache);
         }
 
-        for (const url of urlsToCache) {
-          const request = new Request(url);
+        for (let entry of payload.urlsToCache) {
+          if (typeof entry === 'string') {
+            entry = [entry];
+          }
+
+          const request = new Request(...entry);
           this.handleRequest({request, event});
         }
       }
