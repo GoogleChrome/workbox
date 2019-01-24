@@ -19,6 +19,7 @@ import {
   GTM_HOST,
   ANALYTICS_JS_PATH,
   GTAG_JS_PATH,
+  GTM_JS_PATH,
 } from '../../../packages/workbox-google-analytics/utils/constants.mjs';
 
 const PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
@@ -68,6 +69,21 @@ describe(`[workbox-google-analytics] initialize`, function() {
           `https://${GTM_HOST}${GTAG_JS_PATH}?id=UA-XXXXX-Y`, {
             mode: 'no-cors',
           }),
+    }));
+
+    expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
+  });
+
+  it(`should register a handler to cache the gtm.js script`, function() {
+    sandbox.spy(NetworkFirst.prototype, 'handle');
+
+    googleAnalytics.initialize();
+
+    self.dispatchEvent(new FetchEvent('fetch', {
+      request: new Request(
+          `https://${GTM_HOST}${GTM_JS_PATH}?id=GTM-XXXX`, {
+        mode: 'no-cors',
+      }),
     }));
 
     expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
