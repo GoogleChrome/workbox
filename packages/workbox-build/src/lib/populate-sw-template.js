@@ -15,6 +15,7 @@ const stringifyWithoutComments = require('./stringify-without-comments');
 
 module.exports = ({
   cacheId,
+  cleanupOutdatedCaches,
   clientsClaim,
   directoryIndex,
   ignoreURLParametersMatching,
@@ -63,6 +64,7 @@ module.exports = ({
   try {
     const populatedTemplate = template(swTemplate)({
       cacheId,
+      cleanupOutdatedCaches,
       clientsClaim,
       importScripts,
       manifestEntries,
