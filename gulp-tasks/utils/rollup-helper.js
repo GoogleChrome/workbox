@@ -8,6 +8,7 @@
 
 const babel = require('rollup-plugin-babel');
 const replace = require('rollup-plugin-replace');
+const resolve = require('rollup-plugin-node-resolve');
 const terserPlugin = require('rollup-plugin-terser').terser;
 
 const constants = require('./constants');
@@ -18,7 +19,7 @@ module.exports = {
   // plugin set up and used to ensure as consist set of tests
   // as possible.
   getDefaultPlugins: (buildType, {module = false} = {}) => {
-    const plugins = [];
+    const plugins = [resolve()];
 
     const babelConfig = {
       presets: [['@babel/preset-env', {

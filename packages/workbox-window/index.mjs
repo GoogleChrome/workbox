@@ -6,6 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {messageSW} from './messageSW.mjs';
+import {Workbox} from './Workbox.mjs';
 import './_version.mjs';
 
-export {Workbox} from './Workbox.mjs';
+
+/**
+ * @module workbox-window
+ */
+export {
+  Workbox,
+  messageSW,
+};
