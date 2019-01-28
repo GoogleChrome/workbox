@@ -102,6 +102,8 @@ class Workbox extends EventTargetShim {
       this._controllingDeferred.resolve(this._compatibleControllingSW);
 
       this._reportWindowReady(this._compatibleControllingSW);
+      this._compatibleControllingSW.addEventListener(
+          'statechange', this._onStateChange);
     }
 
     if (process.env.NODE_ENV !== 'production') {

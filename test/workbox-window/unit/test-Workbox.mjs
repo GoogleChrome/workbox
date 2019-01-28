@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-
 import {Workbox} from '/__WORKBOX/buildFile/workbox-window';
+
 
 const isDev = () => {
   return self.process && self.process.env &&
@@ -289,7 +289,7 @@ describe(`[workbox-window] Workbox`, function() {
 
         const wb = new Workbox({scriptURL: uniq('sw-clients-claim.tmp.js')});
         await wb.register();
-        await nextEvent(wb, 'controlling');
+        await wb.active;
 
         await wb.register();
         expect(console.error.callCount).to.equal(1);
@@ -700,13 +700,52 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
+    describe(`redundant`, function() {
+      it(`runs if the registered SW becomes redundant`, async function() {
+        const wb1 = new Workbox({scriptURL: uniq('sw-clients-claim.tmp.js')});
+        const redundantSpy = sandbox.spy();
+        wb1.addEventListener('redundant', redundantSpy);
+
+        await wb1.register();
+        await wb1.controlling;
+
+        const wb2 = new Workbox({scriptURL: uniq('sw-skip-waiting.tmp.js')});
+
+        await wb2.register();
+        await wb2.controlling;
+
+        expect(redundantSpy.callCount).to.equal(1);
+        expect(redundantSpy.args[0][0]).to.equal(await wb1.getSW());
+      });
+
+      it(`runs in the case where the registered SW was already controlling`, async function() {
+        const controllerBeforeTest = navigator.serviceWorker.controller;
+        const scriptURL = controllerBeforeTest.scriptURL;
+        const wb1 = new Workbox({scriptURL});
+
+        const redundantSpy = sandbox.spy();
+        wb1.addEventListener('redundant', redundantSpy);
+
+        await wb1.register();
+        await wb1.controlling;
+
+        const wb2 = new Workbox({scriptURL: uniq('sw-skip-waiting.tmp.js')});
+
+        await wb2.register();
+        await wb2.controlling;
+
+        expect(redundantSpy.callCount).to.equal(1);
+        expect(redundantSpy.args[0][0]).to.equal(await wb1.getSW());
+      });
+    });
+
     describe(`externalinstalled`, function() {
       it(`runs when an external SW is found and installed`, async function() {
         const wb1 = new Workbox({scriptURL: uniq('sw-clients-claim.tmp.js')});
         const externalInstalled1Spy = sandbox.spy();
         wb1.addEventListener('externalinstalled', externalInstalled1Spy);
         await wb1.register();
-        await nextEvent(wb1, 'controlling');
+        await wb1.controlling;
 
         const wb2 = new Workbox({scriptURL: uniq('sw-no-skip-waiting.tmp.js')});
         const externalInstalled2Spy = sandbox.spy();
@@ -756,13 +795,13 @@ describe(`[workbox-window] Workbox`, function() {
         wb1.addEventListener('externalactivated', externalActivated1Spy);
 
         await wb1.register();
-        await nextEvent(wb1, 'controlling');
+        await wb1.controlling;
 
         const wb2 = new Workbox({scriptURL: uniq('sw-skip-waiting.tmp.js')});
         const externalActivated2Spy = sandbox.spy();
         wb2.addEventListener('externalactivated', externalActivated2Spy);
         await wb2.register();
-        await nextEvent(wb2, 'activated');
+        await wb2.active;
 
         expect(externalActivated1Spy.callCount).to.equal(1);
         expect(externalActivated1Spy.args[0][0]).to.equal(await wb2.getSW());
