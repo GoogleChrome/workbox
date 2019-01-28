@@ -666,7 +666,7 @@ describe(`[workbox-window] Workbox`, function() {
     });
 
     describe(`controlling`, function() {
-      it(`runs when the registered SW is first controlling`, async function() {
+      it(`runs the first time the registered SW is controlling`, async function() {
         const wb1 = new Workbox({scriptURL: uniq('sw-clients-claim.tmp.js')});
         const controlling1Spy = sandbox.spy();
         wb1.addEventListener('controlling', controlling1Spy);
@@ -684,6 +684,12 @@ describe(`[workbox-window] Workbox`, function() {
         await wb3.register();
         await nextEvent(wb3, 'controlling');
 
+        // NOTE(philipwalton): because these unit tests always start with a
+        // controlling SW, this test doesn't really cover the case where a SW
+        // is active but not yet controlling the page (which can happen
+        // the first time a page registers a SW). This case is tested in the
+        // integration tests.
+
         expect(controlling1Spy.callCount).to.equal(1);
         expect(controlling1Spy.args[0][0]).to.equal(await wb1.getSW());
 
@@ -691,35 +697,6 @@ describe(`[workbox-window] Workbox`, function() {
 
         expect(controlling3Spy.callCount).to.equal(1);
         expect(controlling3Spy.args[0][0]).to.equal(await wb3.getSW());
-      });
-
-      it(`doesn't run in cases where the SW is active but not controlling (first install)`, async function() {
-        // Stub no controller, which simulates what would happen the first
-        // time a SW is installed.
-        // TODO(philipwalton): we'll also need to stub the `controllerchange`
-        // event if we add that to the library.
-        Object.defineProperty(navigator.serviceWorker, 'controller', {
-          configurable: true,
-          value: undefined,
-        });
-
-        const wb = new Workbox({scriptURL: uniq('sw-skip-waiting.tmp.js')});
-
-        const activatedSpy = sandbox.spy();
-        wb.addEventListener('activated', activatedSpy);
-        const controllingSpy = sandbox.spy();
-        wb.addEventListener('controlling', controllingSpy);
-
-        await wb.register();
-        await nextEvent(wb, 'activated');
-
-        expect(activatedSpy.callCount).to.equal(1);
-        expect(activatedSpy.args[0][0]).to.equal(await wb.getSW());
-
-        expect(controllingSpy.callCount).to.equal(0);
-
-        // Restore `navigator.serviceWorker.controller`.
-        delete navigator.serviceWorker.controller;
       });
     });
 
