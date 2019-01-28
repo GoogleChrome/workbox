@@ -10,6 +10,7 @@ import {Deferred} from 'workbox-core/_private/Deferred.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
 import {messageSW} from './messageSW.mjs';
 import {EventTargetShim} from './utils/EventTargetShim.mjs';
+import {urlsMatch} from './utils/urlsMatch.mjs';
 import './_version.mjs';
 
 
@@ -25,19 +26,6 @@ const GET_VERSION_TIMEOUT_DURATION = 1000;
 // The amount of time after a registration that we can reasonably conclude
 // that the registration didn't trigger an update.
 const REGISTRATION_TIMEOUT_DURATION = 60000;
-
-/**
- * Returns true if two URLs have the same `.href` property. The URLS can be
- * relative, and if they are the current location href is used to resolve URLs.
- *
- * @private
- * @param {string} url1
- * @param {string} url2
- * @return {boolean}
- */
-const urlsMatch = (url1, url2) => {
-  return new URL(url1, location).href === new URL(url2, location).href;
-};
 
 /**
  * A class to aid in handling service worker registration, updates, and
