@@ -15,6 +15,7 @@ const regExpObject = require('./reg-exp-object');
 // Add some constraints that apply to both generateSW and generateSWString.
 module.exports = baseSchema.keys({
   cacheId: joi.string(),
+  cleanupOutdatedCaches: joi.boolean().default(defaults.cleanupOutdatedCaches),
   clientsClaim: joi.boolean().default(defaults.clientsClaim),
   directoryIndex: joi.string(),
   ignoreURLParametersMatching: joi.array().items(regExpObject),

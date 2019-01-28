@@ -47,6 +47,7 @@ function setupSpiesAndContext() {
     },
     precaching: {
       precacheAndRoute: sinon.spy(),
+      cleanupOutdatedCaches: sinon.spy(),
     },
     routing: {
       registerNavigationRoute: sinon.spy(),
@@ -73,6 +74,7 @@ function setupSpiesAndContext() {
   const methodsToSpies = {
     importScripts,
     cacheableResponsePlugin: cacheableResponsePluginSpy,
+    cleanupOutdatedCaches: workbox.precaching.cleanupOutdatedCaches,
     cacheExpirationPlugin: cacheExpirationPluginSpy,
     CacheFirst: workbox.strategies.CacheFirst,
     clientsClaim: workbox.core.clientsClaim,

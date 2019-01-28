@@ -688,6 +688,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // it should be enough to confirm that they're being interpreted
           // by workbox-build.generateSWString() properly.
           new GenerateSW({
+            cleanupOutdatedCaches: true,
             clientsClaim: true,
             skipWaiting: true,
             globDirectory: SRC_DIR,
@@ -716,6 +717,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               [WORKBOX_SW_FILE_NAME],
               [FILE_MANIFEST_NAME],
             ],
+            cleanupOutdatedCaches: [[]],
             clientsClaim: [[]],
             skipWaiting: [[]],
             precacheAndRoute: [[[{

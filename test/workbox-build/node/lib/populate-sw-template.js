@@ -48,6 +48,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
     expect(innerStub.args[0]).to.eql([{
       cacheId: undefined,
+      cleanupOutdatedCaches: undefined,
       clientsClaim: undefined,
       importScripts: undefined,
       manifestEntries: undefined,
@@ -65,6 +66,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
 
   it(`should pass the expected options to the template`, function() {
     const cacheId = 'test-cache-id';
+    const cleanupOutdatedCaches = true;
     const clientsClaim = true;
     const directoryIndex = 'index.html';
     const handleFetch = true;
@@ -98,6 +100,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
 
     populateSWTemplate({
       cacheId,
+      cleanupOutdatedCaches,
       clientsClaim,
       directoryIndex,
       handleFetch,
@@ -117,6 +120,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     expect(templateCreationStub.alwaysCalledWith(swTemplate)).to.be.true;
     expect(templatePopulationStub.args[0]).to.eql([{
       cacheId,
+      cleanupOutdatedCaches,
       clientsClaim,
       importScripts,
       manifestEntries,
@@ -160,6 +164,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
     expect(innerStub.args[0]).to.eql([{
       cacheId: undefined,
+      cleanupOutdatedCaches: undefined,
       clientsClaim: undefined,
       importScripts: undefined,
       manifestEntries: undefined,

@@ -47,6 +47,7 @@ if (Array.isArray(self.__precacheManifest)) {
   workbox.precaching.precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
 }
 <% } %>
+<% if (cleanupOutdatedCaches) { %>workbox.precaching.cleanupOutdatedCaches();<% } %>
 <% if (navigateFallback) { %>workbox.routing.registerNavigationRoute(<%= JSON.stringify(navigateFallback) %><% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
   <% if (navigateFallbackWhitelist) { %>whitelist: [<%= navigateFallbackWhitelist %>],<% } %>
   <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>

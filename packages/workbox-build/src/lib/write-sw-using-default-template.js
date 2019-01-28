@@ -14,6 +14,7 @@ const populateSWTemplate = require('./populate-sw-template');
 
 module.exports = async ({
   cacheId,
+  cleanupOutdatedCaches,
   clientsClaim,
   directoryIndex,
   handleFetch,
@@ -39,6 +40,7 @@ module.exports = async ({
 
   const populatedTemplate = populateSWTemplate({
     cacheId,
+    cleanupOutdatedCaches,
     clientsClaim,
     directoryIndex,
     handleFetch,

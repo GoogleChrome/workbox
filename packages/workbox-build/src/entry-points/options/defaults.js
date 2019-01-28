@@ -7,6 +7,7 @@
 */
 
 module.exports = {
+  cleanupOutdatedCaches: false,
   clientsClaim: false,
   globFollow: true,
   globIgnores: ['**/node_modules/**/*'],
