@@ -55,6 +55,7 @@
     "archiver": "^3.0.0",
     "babel-eslint": "^9.0.0",
     "babylon": "^6.18.0",
+    "body-parser": "^1.18.3",
     "bytes": "^3.0.0",
     "chai": "^4.1.2",
     "chalk": "^2.4.1",
