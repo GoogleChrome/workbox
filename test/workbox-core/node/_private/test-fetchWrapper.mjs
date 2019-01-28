@@ -69,7 +69,8 @@ describe(`workbox-core fetchWrapper`, function() {
       expect(fetchOptions).to.deep.equal(exampleOptions);
     });
 
-    it(`should convert 'navigate' requests to 'same-origin' when fetchOptions is used`, async function() {
+    it(`should ignore fetchOptions when request.mode === 'navigate'`, async function() {
+      // See https://github.com/GoogleChrome/workbox/issues/1796
       const fetchStub = sandbox.stub(global, 'fetch').resolves(new Response());
 
       const fetchOptions = {
@@ -90,8 +91,8 @@ describe(`workbox-core fetchWrapper`, function() {
       expect(fetchStub.calledOnce).to.be.true;
       expect(fetchStub.firstCall.args[0]).to.be.instanceOf(Request);
       expect(fetchStub.firstCall.args[0].url).to.eql(request.url);
-      expect(fetchStub.firstCall.args[0].mode).to.eql('same-origin');
-      expect(fetchStub.firstCall.args[1]).to.eql(fetchOptions);
+      expect(fetchStub.firstCall.args[0].mode).to.eql('navigate');
+      expect(fetchStub.firstCall.args[1]).not.to.exist;
     });
 
     it(`should call requestWillFetch method in plugins and use the returned request`, async function() {

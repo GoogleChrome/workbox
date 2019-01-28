@@ -105,10 +105,8 @@ const wrappedFetch = async ({
     let fetchResponse;
 
     // See https://github.com/GoogleChrome/workbox/issues/1796
-    if (request.mode === 'navigate' && fetchOptions &&
-         Object.keys(fetchOptions).length > 0) {
-      pluginFilteredRequest = new Request(request, {mode: 'same-origin'});
-      fetchResponse = await fetch(pluginFilteredRequest, fetchOptions);
+    if (request.mode === 'navigate') {
+      fetchResponse = await fetch(request);
     } else {
       fetchResponse = await fetch(request, fetchOptions);
     }
