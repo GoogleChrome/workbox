@@ -386,7 +386,7 @@ class Workbox extends EventTargetShim {
     const eventPrefix = isExternal ? 'external' : '';
 
     this.dispatchEvent(new WorkboxEvent(
-        isExternal + state, {sw, originalEvent}));
+        eventPrefix + state, {sw, originalEvent}));
 
     if (state === 'installed') {
       // This timeout is used to ignore cases where the service worker calls
