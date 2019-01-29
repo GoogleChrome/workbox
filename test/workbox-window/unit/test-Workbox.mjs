@@ -79,6 +79,16 @@ const updateVersion = async (version, scriptURL) => {
   throw new Error('No updated version found after 10 retries');
 };
 
+const assertMatchesWorkboxEvent = (event, props) => {
+  for (const [key, value] of Object.entries(props)) {
+    if (key === 'originalEvent') {
+      expect(event.originalEvent.type).to.equal(value.type);
+    } else {
+      expect(event[key]).to.equal(value);
+    }
+  }
+};
+
 const sandbox = sinon.createSandbox();
 
 describe(`[workbox-window] Workbox`, function() {
@@ -551,7 +561,12 @@ describe(`[workbox-window] Workbox`, function() {
         wb.messageSW({type: 'POST_MESSAGE_BACK'});
         await nextEvent(wb, 'message');
 
-        expect(messageSpy.args[0][0]).to.equal('postMessage from SW!');
+        assertMatchesWorkboxEvent(messageSpy.args[0][0], {
+          type: 'message',
+          target: wb,
+          data: 'postMessage from SW!',
+          originalEvent: {type: 'message'},
+        });
       });
 
       it(`fires when a BroadcastChannel message for the workbox tag is received`, async function() {
@@ -567,7 +582,12 @@ describe(`[workbox-window] Workbox`, function() {
         wb.messageSW({type: 'BROADCAST_BACK'});
         await nextEvent(wb, 'message');
 
-        expect(messageSpy.args[0][0]).to.equal('BroadcastChannel from SW!');
+        assertMatchesWorkboxEvent(messageSpy.args[0][0], {
+          type: 'message',
+          target: wb,
+          data: 'BroadcastChannel from SW!',
+          originalEvent: {type: 'message'},
+        });
       });
     });
 
@@ -597,12 +617,22 @@ describe(`[workbox-window] Workbox`, function() {
         await nextEvent(wb3, 'installed');
 
         expect(installed1Spy.callCount).to.equal(1);
-        expect(installed1Spy.args[0][0]).to.equal(await wb1.getSW());
+        assertMatchesWorkboxEvent(installed1Spy.args[0][0], {
+          type: 'installed',
+          target: wb1,
+          sw: await wb1.getSW(),
+          originalEvent: {type: 'statechange'},
+        });
 
         expect(installed2Spy.callCount).to.equal(0);
 
         expect(installed3Spy.callCount).to.equal(1);
-        expect(installed3Spy.args[0][0]).to.equal(await wb3.getSW());
+        assertMatchesWorkboxEvent(installed3Spy.args[0][0], {
+          type: 'installed',
+          target: wb3,
+          sw: await wb3.getSW(),
+          originalEvent: {type: 'statechange'},
+        });
       });
     });
 
@@ -627,12 +657,22 @@ describe(`[workbox-window] Workbox`, function() {
         await nextEvent(wb3, 'waiting');
 
         expect(waiting1Spy.callCount).to.equal(1);
-        expect(waiting1Spy.args[0][0]).to.equal(await wb1.getSW());
+        assertMatchesWorkboxEvent(waiting1Spy.args[0][0], {
+          type: 'waiting',
+          target: wb1,
+          sw: await wb1.getSW(),
+          originalEvent: {type: 'statechange'},
+        });
 
         expect(waiting2Spy.callCount).to.equal(0);
 
         expect(waiting3Spy.callCount).to.equal(1);
-        expect(waiting3Spy.args[0][0]).to.equal(await wb3.getSW());
+        assertMatchesWorkboxEvent(waiting3Spy.args[0][0], {
+          type: 'waiting',
+          target: wb3,
+          sw: await wb3.getSW(),
+          originalEvent: {type: 'statechange'},
+        });
       });
     });
 
@@ -656,12 +696,22 @@ describe(`[workbox-window] Workbox`, function() {
         await nextEvent(wb3, 'activated');
 
         expect(activated1Spy.callCount).to.equal(1);
-        expect(activated1Spy.args[0][0]).to.equal(await wb1.getSW());
+        assertMatchesWorkboxEvent(activated1Spy.args[0][0], {
+          type: 'activated',
+          target: wb1,
+          sw: await wb1.getSW(),
+          originalEvent: {type: 'statechange'},
+        });
 
         expect(activated2Spy.callCount).to.equal(0);
 
         expect(activated3Spy.callCount).to.equal(1);
-        expect(activated3Spy.args[0][0]).to.equal(await wb3.getSW());
+        assertMatchesWorkboxEvent(activated3Spy.args[0][0], {
+          type: 'activated',
+          target: wb3,
+          sw: await wb3.getSW(),
+          originalEvent: {type: 'statechange'},
+        });
       });
     });
 
@@ -691,12 +741,22 @@ describe(`[workbox-window] Workbox`, function() {
         // integration tests.
 
         expect(controlling1Spy.callCount).to.equal(1);
-        expect(controlling1Spy.args[0][0]).to.equal(await wb1.getSW());
+        assertMatchesWorkboxEvent(controlling1Spy.args[0][0], {
+          type: 'controlling',
+          target: wb1,
+          sw: await wb1.getSW(),
+          originalEvent: {type: 'controllerchange'},
+        });
 
         expect(controlling2Spy.callCount).to.equal(0);
 
         expect(controlling3Spy.callCount).to.equal(1);
-        expect(controlling3Spy.args[0][0]).to.equal(await wb3.getSW());
+        assertMatchesWorkboxEvent(controlling3Spy.args[0][0], {
+          type: 'controlling',
+          target: wb3,
+          sw: await wb3.getSW(),
+          originalEvent: {type: 'controllerchange'},
+        });
       });
     });
 
@@ -715,7 +775,12 @@ describe(`[workbox-window] Workbox`, function() {
         await wb2.controlling;
 
         expect(redundantSpy.callCount).to.equal(1);
-        expect(redundantSpy.args[0][0]).to.equal(await wb1.getSW());
+        assertMatchesWorkboxEvent(redundantSpy.args[0][0], {
+          type: 'redundant',
+          target: wb1,
+          sw: await wb1.getSW(),
+          originalEvent: {type: 'statechange'},
+        });
       });
 
       it(`runs in the case where the registered SW was already controlling`, async function() {
@@ -735,7 +800,12 @@ describe(`[workbox-window] Workbox`, function() {
         await wb2.controlling;
 
         expect(redundantSpy.callCount).to.equal(1);
-        expect(redundantSpy.args[0][0]).to.equal(await wb1.getSW());
+        assertMatchesWorkboxEvent(redundantSpy.args[0][0], {
+          type: 'redundant',
+          target: wb1,
+          sw: await wb1.getSW(),
+          originalEvent: {type: 'statechange'},
+        });
       });
     });
 
@@ -754,7 +824,12 @@ describe(`[workbox-window] Workbox`, function() {
         await nextEvent(wb2, 'installed');
 
         expect(externalInstalled1Spy.callCount).to.equal(1);
-        expect(externalInstalled1Spy.args[0][0]).to.equal(await wb2.getSW());
+        assertMatchesWorkboxEvent(externalInstalled1Spy.args[0][0], {
+          type: 'externalinstalled',
+          target: wb1,
+          sw: await wb2.getSW(),
+          originalEvent: {type: 'statechange'},
+        });
 
         // Assert the same method on the second instance isn't called.
         expect(externalInstalled2Spy.callCount).to.equal(0);
@@ -781,7 +856,12 @@ describe(`[workbox-window] Workbox`, function() {
 
         expect(waiting1Spy.callCount).to.equal(0);
         expect(externalWaiting1Spy.callCount).to.equal(1);
-        expect(externalWaiting1Spy.args[0][0]).to.equal(await wb2.getSW());
+        assertMatchesWorkboxEvent(externalWaiting1Spy.args[0][0], {
+          type: 'externalwaiting',
+          target: wb1,
+          sw: await wb2.getSW(),
+          originalEvent: {type: 'statechange'},
+        });
 
         expect(waiting2Spy.callCount).to.equal(1);
         expect(externalWaiting2Spy.callCount).to.equal(0);
@@ -804,7 +884,12 @@ describe(`[workbox-window] Workbox`, function() {
         await wb2.active;
 
         expect(externalActivated1Spy.callCount).to.equal(1);
-        expect(externalActivated1Spy.args[0][0]).to.equal(await wb2.getSW());
+        assertMatchesWorkboxEvent(externalActivated1Spy.args[0][0], {
+          type: 'externalactivated',
+          target: wb1,
+          sw: await wb2.getSW(),
+          originalEvent: {type: 'statechange'},
+        });
 
         // Assert the same method on the second instance isn't called.
         expect(externalActivated2Spy.callCount).to.equal(0);

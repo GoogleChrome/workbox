@@ -11,6 +11,7 @@ import {logger} from 'workbox-core/_private/logger.mjs';
 import {messageSW} from './messageSW.mjs';
 import {EventTargetShim} from './utils/EventTargetShim.mjs';
 import {urlsMatch} from './utils/urlsMatch.mjs';
+import {WorkboxEvent} from './utils/WorkboxEvent.mjs';
 import './_version.mjs';
 
 
@@ -379,10 +380,10 @@ class Workbox extends EventTargetShim {
 
   /**
    * @private
-   * @param {Event} event
+   * @param {Event} originalEvent
    */
-  _onStateChange(event) {
-    const sw = event.target;
+  _onStateChange(originalEvent) {
+    const sw = originalEvent.target;
     const {state} = sw;
     const isExternal = sw === this._externalSW;
 
@@ -392,12 +393,13 @@ class Workbox extends EventTargetShim {
           logger.warn('An external service worker has installed. ' +
               'You may want to suggest users reload this page.');
         }
-        this._dispatchEvent('externalinstalled', sw);
+        this.dispatchEvent(new WorkboxEvent(
+            'externalinstalled', {sw, originalEvent}));
       } else {
         if (process.env.NODE_ENV !== 'production') {
           logger.log('Registered service worker installed.');
         }
-        this._dispatchEvent('installed', sw);
+        this.dispatchEvent(new WorkboxEvent('installed', {sw, originalEvent}));
       }
     };
 
@@ -407,19 +409,21 @@ class Workbox extends EventTargetShim {
           logger.warn('An external service worker has installed but is ' +
               'waiting for this client to close before activating...');
         }
-        this._dispatchEvent('externalwaiting', sw);
+        this.dispatchEvent(new WorkboxEvent(
+            'externalwaiting', {sw, originalEvent}));
       } else {
         if (process.env.NODE_ENV !== 'production') {
           logger.warn('The service worker has installed but is waiting for ' +
               'existing clients to close before activating...');
         }
-        this._dispatchEvent('waiting', sw);
+        this.dispatchEvent(new WorkboxEvent('waiting', {sw, originalEvent}));
       }
     };
 
     const onActivated = () => {
       if (isExternal) {
-        this._dispatchEvent('externalactivated', sw);
+        this.dispatchEvent(new WorkboxEvent(
+            'externalactivated', {sw, originalEvent}));
         if (process.env.NODE_ENV !== 'production') {
           logger.warn('An external service worker has activated.');
         }
@@ -427,7 +431,7 @@ class Workbox extends EventTargetShim {
         if (process.env.NODE_ENV !== 'production') {
           logger.log('Registered service worker activated.');
         }
-        this._dispatchEvent('activated', sw);
+        this.dispatchEvent(new WorkboxEvent('activated', {sw, originalEvent}));
         this._activeDeferred.resolve(sw);
       }
     };
@@ -437,7 +441,7 @@ class Workbox extends EventTargetShim {
         if (process.env.NODE_ENV !== 'production') {
           logger.log('Registered service worker now redundant!');
         }
-        this._dispatchEvent('redundant', sw);
+        this.dispatchEvent(new WorkboxEvent('redundant', {sw, originalEvent}));
       }
       sw.removeEventListener('statechange', this._onStateChange);
     };
@@ -462,7 +466,7 @@ class Workbox extends EventTargetShim {
         }, WAITING_TIMEOUT_DURATION);
         break;
       case 'activating':
-        this._dispatchEvent('activating', sw);
+        this.dispatchEvent(new WorkboxEvent('activating', {sw, originalEvent}));
 
         clearTimeout(this._waitingTimeout);
         break;
@@ -486,24 +490,26 @@ class Workbox extends EventTargetShim {
 
   /**
    * @private
-   * @param {Event} event
+   * @param {Event} originalEvent
    */
-  _onControllerChange(event) {
-    if (this._sw === navigator.serviceWorker.controller) {
+  _onControllerChange(originalEvent) {
+    const sw = this._sw;
+    if (sw === navigator.serviceWorker.controller) {
       if (process.env.NODE_ENV !== 'production') {
         logger.log('Registered service worker now controlling this page.');
       }
-      this._dispatchEvent('controlling', this._sw);
-      this._controllingDeferred.resolve(this._sw);
+      this.dispatchEvent(new WorkboxEvent('controlling', {sw, originalEvent}));
+      this._controllingDeferred.resolve(sw);
     }
   }
 
   /**
    * @private
-   * @param {Event} event
+   * @param {Event} originalEvent
    */
-  _onMessage(event) {
-    this._dispatchEvent('message', event.data);
+  _onMessage(originalEvent) {
+    const {data} = originalEvent;
+    this.dispatchEvent(new WorkboxEvent('message', {data, originalEvent}));
   }
 }
 
