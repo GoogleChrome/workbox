@@ -62,6 +62,7 @@ class Workbox extends EventTargetShim {
     this._onMessage = this._onMessage.bind(this);
     this._onStateChange = this._onStateChange.bind(this);
     this._onUpdateFound = this._onUpdateFound.bind(this);
+    this._onControllerChange = this._onControllerChange.bind(this);
   }
 
   /**
@@ -103,7 +104,7 @@ class Workbox extends EventTargetShim {
 
       this._reportWindowReady(this._compatibleControllingSW);
       this._compatibleControllingSW.addEventListener(
-          'statechange', this._onStateChange);
+          'statechange', this._onStateChange, {once: true});
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -147,6 +148,8 @@ class Workbox extends EventTargetShim {
     }
 
     this._registration.addEventListener('updatefound', this._onUpdateFound);
+    navigator.serviceWorker.addEventListener(
+        'controllerchange', this._onControllerChange, {once: true});
 
     // Add message listeners.
     if ('BroadcastChannel' in self) {
@@ -429,16 +432,6 @@ class Workbox extends EventTargetShim {
       }
     };
 
-    const onControlling = () => {
-      if (!isExternal) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.log('Registered service worker now controlling this page.');
-        }
-        this._dispatchEvent('controlling', sw);
-        this._controllingDeferred.resolve(sw);
-      }
-    };
-
     const onRedundant = () => {
       if (!isExternal) {
         if (process.env.NODE_ENV !== 'production') {
@@ -475,25 +468,33 @@ class Workbox extends EventTargetShim {
         break;
       case 'activated':
         onActivated();
-        if (sw === navigator.serviceWorker.controller) {
-          onControlling();
-        } else {
-          if (process.env.NODE_ENV !== 'production') {
-            // These conditionals are nested to the minifier can strip out
-            // out this entire code block in prod builds.
-            if (!isExternal) {
-              logger.warn('The registered service worker is active but not ' +
-                  'yet controlling the page. Reload or run `clients.claim()` ' +
-                  'in the service worker.');
-            }
+        if (process.env.NODE_ENV !== 'production') {
+          // These conditionals are nested to the minifier can strip out
+          // out this entire code block in prod builds.
+          if (!isExternal && sw !== navigator.serviceWorker.controller) {
+            logger.warn('The registered service worker is active but not ' +
+                'yet controlling the page. Reload or run `clients.claim()` ' +
+                'in the service worker.');
           }
-          navigator.serviceWorker.addEventListener(
-              'controllerchange', onControlling, {once: true});
         }
         break;
       case 'redundant':
         onRedundant();
         break;
+    }
+  }
+
+  /**
+   * @private
+   * @param {Event} event
+   */
+  _onControllerChange(event) {
+    if (this._sw === navigator.serviceWorker.controller) {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.log('Registered service worker now controlling this page.');
+      }
+      this._dispatchEvent('controlling', this._sw);
+      this._controllingDeferred.resolve(this._sw);
     }
   }
 
