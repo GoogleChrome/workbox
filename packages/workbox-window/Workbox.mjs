@@ -352,9 +352,6 @@ class Workbox extends EventTargetShim {
     } else {
       // If the update was not triggered externally we know the installing
       // SW is the one we registered, so we set it.
-      // NOTE: if there was a controlling SW at registration time with the
-      // same script URL, this assignment will override that, but we can still
-      // access that SW via the `_controller` property.
       this._sw = installingSW;
       this._swDeferred.resolve(installingSW);
 
@@ -386,105 +383,72 @@ class Workbox extends EventTargetShim {
     const sw = originalEvent.target;
     const {state} = sw;
     const isExternal = sw === this._externalSW;
+    const eventPrefix = isExternal ? 'external' : '';
 
-    const onInstalled = () => {
-      if (isExternal) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn('An external service worker has installed. ' +
-              'You may want to suggest users reload this page.');
-        }
-        this.dispatchEvent(new WorkboxEvent(
-            'externalinstalled', {sw, originalEvent}));
-      } else {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.log('Registered service worker installed.');
-        }
-        this.dispatchEvent(new WorkboxEvent('installed', {sw, originalEvent}));
-      }
-    };
+    this.dispatchEvent(new WorkboxEvent(
+        isExternal + state, {sw, originalEvent}));
 
-    const onWaiting = () => {
-      if (isExternal) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn('An external service worker has installed but is ' +
-              'waiting for this client to close before activating...');
-        }
-        this.dispatchEvent(new WorkboxEvent(
-            'externalwaiting', {sw, originalEvent}));
-      } else {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn('The service worker has installed but is waiting for ' +
-              'existing clients to close before activating...');
-        }
-        this.dispatchEvent(new WorkboxEvent('waiting', {sw, originalEvent}));
-      }
-    };
+    if (state === 'installed') {
+      // This timeout is used to ignore cases where the service worker calls
+      // `skipWaiting()` in the install event, thus moving it directly in the
+      // activating state. (Since all service workers *must* go through the
+      // waiting phase, the only way to detect `skipWaiting()` called in the
+      // install event is to observe that the time spent in the waiting phase
+      // is very short.)
+      // NOTE: we don't need separate timeouts for the own and external SWs
+      // since they can't go through these phases at the same time.
+      this._waitingTimeout = setTimeout(() => {
+        // Ensure the SW is still waiting (it may now be redundant).
+        if (state === 'installed' && this._registration.waiting === sw) {
+          this.dispatchEvent(new WorkboxEvent(
+              eventPrefix + 'waiting', {sw, originalEvent}));
 
-    const onActivated = () => {
-      if (isExternal) {
-        this.dispatchEvent(new WorkboxEvent(
-            'externalactivated', {sw, originalEvent}));
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn('An external service worker has activated.');
+          if (process.env.NODE_ENV !== 'production') {
+            if (isExternal) {
+              logger.warn('An external service worker has installed but is ' +
+                  'waiting for this client to close before activating...');
+            } else {
+              logger.warn('The service worker has installed but is waiting ' +
+                  ' for existing clients to close before activating...');
+            }
+          }
         }
-      } else {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.log('Registered service worker activated.');
-        }
-        this.dispatchEvent(new WorkboxEvent('activated', {sw, originalEvent}));
+      }, WAITING_TIMEOUT_DURATION);
+    } else if (state === 'activating') {
+      clearTimeout(this._waitingTimeout);
+      if (!isExternal) {
         this._activeDeferred.resolve(sw);
       }
-    };
+    }
 
-    const onRedundant = () => {
-      if (!isExternal) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.log('Registered service worker now redundant!');
-        }
-        this.dispatchEvent(new WorkboxEvent('redundant', {sw, originalEvent}));
+    if (process.env.NODE_ENV !== 'production') {
+      switch (state) {
+        case 'installed':
+          if (isExternal) {
+            logger.warn('An external service worker has installed. ' +
+                'You may want to suggest users reload this page.');
+          } else {
+            logger.log('Registered service worker installed.');
+          }
+          break;
+        case 'activated':
+          if (isExternal) {
+            logger.warn('An external service worker has activated.');
+          } else {
+            logger.log('Registered service worker activated.');
+            if (sw !== navigator.serviceWorker.controller) {
+              logger.warn('The registered service worker is active but ' +
+                  'not yet controlling the page. Reload or run ' +
+                  '`clients.claim()` in the service worker.');
+            }
+          }
+          break;
+        case 'redundant':
+          if (!isExternal) {
+            logger.log('Registered service worker now redundant!');
+          }
+          break;
       }
-      sw.removeEventListener('statechange', this._onStateChange);
-    };
-
-    switch (state) {
-      case 'installed':
-        onInstalled();
-
-        // This timeout is used to ignore cases where the service worker calls
-        // `skipWaiting()` in the install event, thus moving it directly in the
-        // activating state. (Since all service workers *must* go through the
-        // waiting phase, the only way to detect `skipWaiting()` called in the
-        // install event is to observe that the time spent in the waiting phase
-        // is very short.)
-        // NOTE: we don't need separate timeouts for the new and updated SWs
-        // since they can't go through these phases at the same time.
-        this._waitingTimeout = setTimeout(() => {
-          // Ensure the SW is still waiting (it may now be redundant).
-          if (state === 'installed' && this._registration.waiting === sw) {
-            onWaiting();
-          }
-        }, WAITING_TIMEOUT_DURATION);
-        break;
-      case 'activating':
-        this.dispatchEvent(new WorkboxEvent('activating', {sw, originalEvent}));
-
-        clearTimeout(this._waitingTimeout);
-        break;
-      case 'activated':
-        onActivated();
-        if (process.env.NODE_ENV !== 'production') {
-          // These conditionals are nested to the minifier can strip out
-          // out this entire code block in prod builds.
-          if (!isExternal && sw !== navigator.serviceWorker.controller) {
-            logger.warn('The registered service worker is active but not ' +
-                'yet controlling the page. Reload or run `clients.claim()` ' +
-                'in the service worker.');
-          }
-        }
-        break;
-      case 'redundant':
-        onRedundant();
-        break;
     }
   }
 

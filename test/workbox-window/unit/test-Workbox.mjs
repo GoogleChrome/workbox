@@ -881,7 +881,7 @@ describe(`[workbox-window] Workbox`, function() {
         const externalActivated2Spy = sandbox.spy();
         wb2.addEventListener('externalactivated', externalActivated2Spy);
         await wb2.register();
-        await wb2.active;
+        await nextEvent(wb2, 'activated');
 
         expect(externalActivated1Spy.callCount).to.equal(1);
         assertMatchesWorkboxEvent(externalActivated1Spy.args[0][0], {
