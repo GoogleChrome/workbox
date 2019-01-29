@@ -10,12 +10,12 @@ import '../_version.mjs';
 
 
 /**
- * A minimal EventTarget class shim.
- * This is used if the browser doesn't natively support constructable
- * EventTarget objects.
+ * A minimal `EventTarget` shim.
+ * This is necessary because not all browsers support constructable
+ * `EventTarget`, so using a real `EventTarget` will error.
  * @private
  */
-export class EventTargetShim {
+class EventTargetShim {
   /**
    * Creates an event listener registry
    */
@@ -40,11 +40,12 @@ export class EventTargetShim {
   }
 
   /**
-   * @param {string} type
-   * @param {*} arg
+   * @param {Event} event
    */
-  _dispatchEvent(type, arg) {
-    this._getEventListenersByType(type).forEach((listener) => listener(arg));
+  dispatchEvent(event) {
+    event.target = this;
+    this._getEventListenersByType(event.type).forEach(
+        (listener) => listener(event));
   }
 
   /**
@@ -59,3 +60,5 @@ export class EventTargetShim {
         (this._eventListenerRegistry[type] || new Set());
   }
 }
+
+export {EventTargetShim};

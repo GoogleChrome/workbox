@@ -6,6 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
+const bodyParser = require('body-parser');
 const express = require('express');
 const nunjucks = require('nunjucks');
 const path = require('path');
@@ -27,6 +28,9 @@ function initApp() {
   // Configure nunjucks to work with express routes.
   nunjucks.configure(path.join(__dirname, 'templates'), {express: app});
 
+  // Exposed the `.body` property on requests for application/json.
+  app.use(bodyParser.json());
+
   requestCounters = new Set();
   app.use((req, res, next) => {
     for (const requestCounter of requestCounters) {
@@ -36,8 +40,8 @@ function initApp() {
   });
 
   const routes = Object.values(requireDir('./routes'));
-  for (const {match, handler} of routes) {
-    app.get(match, handler);
+  for (const {match, handler, method} of routes) {
+    app[method || 'get'](match, handler);
   }
 
   const staticDir = path.resolve(__dirname, '..', '..', '..');

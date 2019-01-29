@@ -6,8 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {Deferred} from 'workbox-core/_private/Deferred.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {messageSW} from './messageSW.mjs';
 import {EventTargetShim} from './utils/EventTargetShim.mjs';
-import {logger} from './utils/logger.mjs';
+import {urlsMatch} from './utils/urlsMatch.mjs';
+import {WorkboxEvent} from './utils/WorkboxEvent.mjs';
 import './_version.mjs';
 
 
@@ -16,28 +20,21 @@ import './_version.mjs';
 // chosen, but it seems to avoid false positives in my testing.
 const WAITING_TIMEOUT_DURATION = 200;
 
+// The amount of time to wait for a `messageSW` response from a controlling SW.
+// If this amount of time passes, the assumption is there's no mesage listener.
+const GET_VERSION_TIMEOUT_DURATION = 1000;
+
 // The amount of time after a registration that we can reasonably conclude
 // that the registration didn't trigger an update.
 const REGISTRATION_TIMEOUT_DURATION = 60000;
 
 /**
- * Returns true if two URLs have the same `.href` property. The URLS can be
- * relative, and if they are the current location href is used to resolve URLs.
- *
- * @private
- * @param {string} url1
- * @param {string} url2
- * @return {boolean}
- */
-const urlsMatch = (url1, url2) => {
-  return new URL(url1, location).href === new URL(url2, location).href;
-};
-
-/**
  * A class to aid in handling service worker registration, updates, and
  * reacting to service worker lifecycle events.
+ *
+ * @memberof module:workbox-window
  */
-export class Workbox extends EventTargetShim {
+class Workbox extends EventTargetShim {
   /**
    * Creates a new Workbox instance with a script URL and service worker
    * options. The script URL and options are the same as those used when
@@ -49,29 +46,24 @@ export class Workbox extends EventTargetShim {
    * @param {Object} [options] The service worker options associated with this
    *     instance.
    */
-  constructor(scriptURL, options = {}) {
+  constructor({scriptURL, scriptVersion = null, registerOptions = {}} = {}) {
     super();
 
     this._scriptURL = scriptURL;
-    this._swOptions = options;
+    this._scriptVersion = scriptVersion;
+    this._registerOptions = registerOptions;
     this._updateFoundCount = 0;
 
-    // A promise that will be resolved once we have a SW reference.
-    this._swPromise = new Promise((res) => this._swPromiseResolver = res);
-
-    // Instance variables initially not set.
-    // this._broadcastChannel;
-    // this._controllingSW;
-    // this._externalSW;
-    // this._registration;
-    // this._registrationTime;
-    // this._sw;
-    // this._waitingTimeout;
+    // Deferreds we can resolve later.
+    this._swDeferred = new Deferred();
+    this._activeDeferred = new Deferred();
+    this._controllingDeferred = new Deferred();
 
     // Bind event handler callbacks.
     this._onMessage = this._onMessage.bind(this);
     this._onStateChange = this._onStateChange.bind(this);
     this._onUpdateFound = this._onUpdateFound.bind(this);
+    this._onControllerChange = this._onControllerChange.bind(this);
   }
 
   /**
@@ -97,71 +89,56 @@ export class Workbox extends EventTargetShim {
       await new Promise((res) => addEventListener('load', res));
     }
 
-    // Create a local reference for better minification.
-    let reg;
+    // Before registering, attempt to determine if a SW is already controlling
+    // the page, and if that SW script (and version, if specified) matches this
+    // instance's script.
+    this._compatibleControllingSW = await this._getControllingSWIfCompatible();
 
-    try {
-      reg = await navigator.serviceWorker.register(
-          this._scriptURL, this._swOptions);
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        logger.error(error);
-      }
-      // Re-throw the error.
-      throw error;
-    }
+    this._registration = await this._registerScript();
 
-    // Determine if there's already an active SW with the same script URL.
-    // If there is, set it on the instance in the event that the registration
-    // doesn't trigger an update.
-    const activeSW = reg.active;
-    if (activeSW && urlsMatch(activeSW.scriptURL, this._scriptURL)) {
-      this._sw = activeSW;
-      this._swPromiseResolver(activeSW);
-    }
+    // Only resolve deferreds now if we know we have a compatible controller.
+    if (this._compatibleControllingSW) {
+      this._sw = this._compatibleControllingSW;
+      this._swDeferred.resolve(this._compatibleControllingSW);
+      this._activeDeferred.resolve(this._compatibleControllingSW);
+      this._controllingDeferred.resolve(this._compatibleControllingSW);
 
-    // We set this at registration time rather than instantiation time
-    // in the unlikely event that a page creates multiple Workbox instances
-    // but staggers their registration.
-    this._controllingSW = navigator.serviceWorker.controller;
-
-    // If a SW with the same URL was already controlling the page, let it know
-    // the window is ready to receive messages.
-    if (this._controllingSW &&
-        urlsMatch(this._controllingSW.scriptURL, this._scriptURL)) {
-      this._controllingSW.postMessage({
-        type: 'WINDOW_READY',
-        meta: 'workbox-window',
-      });
+      this._reportWindowReady(this._compatibleControllingSW);
+      this._compatibleControllingSW.addEventListener(
+          'statechange', this._onStateChange, {once: true});
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      logger.log('Successfully registered service worker.');
+      logger.log('Successfully registered service worker.', this._scriptURL);
 
-      if (this._controllingSW) {
-        if (urlsMatch(this._controllingSW.scriptURL, this._scriptURL)) {
-          logger.debug('A service worker with the same script URL is ' +
-              'already controlling this page. This service worker will ' +
-              'remain active unless an update is found.');
-        } else {
+      if (navigator.serviceWorker.controller) {
+        if (this._compatibleControllingSW) {
+          logger.debug('A service worker with the same script URL ' +
+              (this._scriptVersion ? 'and version ' : '') +
+              'is already controlling this page.');
+        } else if (!urlsMatch(
+            navigator.serviceWorker.controller.scriptURL, this._scriptURL)) {
           logger.debug('A service worker with a different script URL is ' +
-              'currently controlling the page.');
-          logger.debug('The browser is now fetching the new ' +
-              'service worker script...');
+              'currently controlling the page. The browser is now fetching ' +
+              'the new script now...');
+        } else {
+          logger.debug('An older version of your service worker script is ' +
+              'currently controlling the page. The browser is fetching the ' +
+              'new script now...');
         }
       }
 
       // If there's an active and waiting service worker before the
       // `updatefound` event fires, it means there was a waiting service worker
       // in the queue before this one was registered.
-      if (reg.waiting && reg.active) {
-        logger.warn('A service worker was already waiting to activate before ' +
-            'this service worker was registered...');
+      if (this._registration.waiting && this._registration.active) {
+        logger.warn('A service worker was already waiting to activate ' +
+            'before this script was registered...');
       }
 
       const currentPageIsOutOfScope = () => {
         const scopeURL = new URL(
-            this._swOptions.scope || this._scriptURL, document.baseURI);
+            this._registerOptions.scope || this._scriptURL, document.baseURI);
         const scopeURLBasePath = new URL('./', scopeURL.href).pathname;
         return !location.pathname.startsWith(scopeURLBasePath);
       };
@@ -171,7 +148,9 @@ export class Workbox extends EventTargetShim {
       }
     }
 
-    reg.addEventListener('updatefound', this._onUpdateFound);
+    this._registration.addEventListener('updatefound', this._onUpdateFound);
+    navigator.serviceWorker.addEventListener(
+        'controllerchange', this._onControllerChange, {once: true});
 
     // Add message listeners.
     if ('BroadcastChannel' in self) {
@@ -180,18 +159,41 @@ export class Workbox extends EventTargetShim {
     }
     navigator.serviceWorker.addEventListener('message', this._onMessage);
 
-    // Keep track of when registration happened, so it can be used in the
-    // `this._onUpdateFound` heuristic. Also use the presence of this
-    // property as a way to see if `.register()` has been called.
-    this._registrationTime = performance.now();
+    return this._registration;
+  }
 
-    // Expose the registration object.
-    this._registration = reg;
+  /**
+   * Resolves to the service worker registered by this instance as soon as it
+   * is active. If a service worker was already controlling at registration
+   * time then it will resolve to that if the script URLs (and optionally
+   * script versions) match, otherwise it will wait until an update is found
+   * and activates.
+   *
+   * @return {Promise<ServiceWorker>}
+   */
+  get active() {
+    return this._activeDeferred.promise;
+  }
+
+  /**
+   * Resolves to the service worker registered by this instance as soon as it
+   * is controlling the page. If a service worker was already controlling at
+   * registration time then it will resolve to that if the script URLs (and
+   * optionally script versions) match, otherwise it will wait until an update
+   * is found and starts controlling the page.
+   * Note: the first time a service worker is installed it will active but
+   * not start controlling the page unless `clients.claim()` is called in the
+   * service worker.
+   *
+   * @return {Promise<ServiceWorker>}
+   */
+  get controlling() {
+    return this._controllingDeferred.promise;
   }
 
   /**
    * Resolves with a reference to a service worker that matches the script URL
-   * of this instance, as soon as it’s available.
+   * of this instance, as soon as it's available.
    *
    * If, at registration time, there’s already an active service worker with a
    * matching script URL, that will be what is resolved. If there’s no active
@@ -202,14 +204,7 @@ export class Workbox extends EventTargetShim {
    * @return {Promise<ServiceWorker>}
    */
   async getSW() {
-    await this._swPromise;
-    return await new Promise((res) => {
-      if (this._sw) {
-        res(this._sw);
-      } else {
-        this.addEventListener('installing', (sw) => res(sw));
-      }
-    });
+    return this._swDeferred.promise;
   }
 
   /**
@@ -234,10 +229,85 @@ export class Workbox extends EventTargetShim {
   }
 
   /**
+   * Checks for a service worker already controlling the page and returns
+   * it if its script URL (and optionally script version) match. The
+   * script version is determined by sending a message to the controlling
+   * service worker and waiting for a response. If no response is returned
+   * the service worker is assumed to not have a version.
+   *
+   * @private
+   * @return {ServiceWorker|undefined}
+   */
+  async _getControllingSWIfCompatible() {
+    const controller = navigator.serviceWorker.controller;
+
+    if (controller && urlsMatch(controller.scriptURL, this._scriptURL)) {
+      // If the URLs match and no script version is specified, assume the
+      // SW is the same. NOTE: without a script version, this isn't a
+      // particularly good test. Using a script version is encouraged if
+      // you need to send messages to your service worker on all page loads.
+      if (!this._scriptVersion) {
+        return controller;
+      }
+
+      // Message the SW to get its version, but use a timeout in case it
+      // doesn't support responding to messages.
+      const swVersion = await messageSW(controller, {
+        type: 'GET_VERSION',
+        meta: 'workbox-window',
+      }, GET_VERSION_TIMEOUT_DURATION);
+
+      if (swVersion === this._scriptVersion) {
+        return controller;
+      }
+    }
+  }
+
+  /**
+   * Registers a service worker for this instances script URL and register
+   * options and tracks the time registration was complete.
+   *
+   * @private
+   */
+  async _registerScript() {
+    try {
+      const reg = await navigator.serviceWorker.register(
+          this._scriptURL, this._registerOptions);
+
+      // Keep track of when registration happened, so it can be used in the
+      // `this._onUpdateFound` heuristic. Also use the presence of this
+      // property as a way to see if `.register()` has been called.
+      this._registrationTime = performance.now();
+
+      return reg;
+    } catch (error) {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.error(error);
+      }
+      // Re-throw the error.
+      throw error;
+    }
+  }
+
+
+  /**
+   * Sends a message to the passed service worker that the window is ready.
+   *
+   * @param {ServiceWorker} sw
+   * @private
+   */
+  _reportWindowReady(sw) {
+    messageSW(sw, {
+      type: 'WINDOW_READY',
+      meta: 'workbox-window',
+    });
+  }
+
+  /**
    * @private
    */
   _onUpdateFound() {
-    const updatedSW = this._registration.installing;
+    const installingSW = this._registration.installing;
 
     // If the script URL passed to `navigator.serviceWorker.register()` is
     // different from the current controlling SW's script URL, we know any
@@ -254,42 +324,41 @@ export class Workbox extends EventTargetShim {
     let updateLikelyTriggeredExternally =
         // Since we enforce only calling `register()` once, and since we don't
         // add the `updatefound` event listener until the `register()` call, if
-        // the `updatedSW` property is already set then it means this method
-        // has already been called once, so a second call must be external.
+        // `_updateFoundCount` is > 0 then it means this method has already
+        // been called, thus this SW must be external
         this._updateFoundCount > 0 ||
-        // If the script URL registered is different from the script URL of the
-        // installing SW, we know it's definitely not from our registration.
-        !urlsMatch(updatedSW.scriptURL, this._scriptURL) ||
-        // If the registered script URL and installing SW script URL are the
-        // same, then we have to use a heuristic to determine if our
-        // registration triggered this update. The heuristic is follows:
-        // - If there's currently an active SW with the same script URL,
-        // - and if the first `updatefound` event fired more than 1 minute
-        //   after the `register()` call,
-        // - then assume that `updatefound` event *wasn't* triggered by us.
-        (this._sw && performance.now() >
+        // If the script URL of the installing SW is different from this
+        // instance's script URL, we know it's definitely not from our
+        // registration.
+        !urlsMatch(installingSW.scriptURL, this._scriptURL) ||
+        // If we already have a compatible controlling SW, and if the
+        // `scriptVersion` options was set, then it's fairly safe to assume
+        // any update is from an external register.
+        (this._scriptVersion && this._compatibleControllingSW) ||
+
+        // If all of the above are false, then we use a time-based heuristic:
+        // Any `updatefound` event that occurs long after our registration is
+        // assumed to be external.
+        (performance.now() >
             this._registrationTime + REGISTRATION_TIMEOUT_DURATION) ?
                 // If any of the above are not true, we assume the update was
                 // triggered by this instance.
                 true : false;
 
     if (updateLikelyTriggeredExternally) {
-      this._externalSW = updatedSW;
+      this._externalSW = installingSW;
       this._registration.removeEventListener(
           'updatefound', this._onUpdateFound);
     } else {
       // If the update was not triggered externally we know the installing
       // SW is the one we registered, so we set it.
-      // NOTE: if there was a controlling SW at registration time with the
-      // same script URL, this assignment will override that, but we can still
-      // access that SW via the `_controllingSW` property.
-      this._sw = updatedSW;
-      this._swPromiseResolver(updatedSW);
+      this._sw = installingSW;
+      this._swDeferred.resolve(installingSW);
 
       // The `installing` state isn't something we have a dedicated
       // callback for, but we do log messages for it in development.
       if (process.env.NODE_ENV !== 'production') {
-        if (this._controllingSW) {
+        if (navigator.serviceWorker.controller) {
           logger.log('Updated service worker found. Installing now...');
         } else {
           logger.log('Service worker is installing...');
@@ -303,135 +372,109 @@ export class Workbox extends EventTargetShim {
 
     // Add a `statechange` listener regardless of whether this update was
     // triggered externally, since we have callbacks for both.
-    updatedSW.addEventListener('statechange', this._onStateChange);
+    installingSW.addEventListener('statechange', this._onStateChange);
   }
 
   /**
    * @private
-   * @param {Event} event
+   * @param {Event} originalEvent
    */
-  _onStateChange(event) {
-    const sw = event.target;
+  _onStateChange(originalEvent) {
+    const sw = originalEvent.target;
     const {state} = sw;
     const isExternal = sw === this._externalSW;
+    const eventPrefix = isExternal ? 'external' : '';
 
-    const onInstalled = () => {
-      if (isExternal) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn('An external service worker has installed. ' +
-              'You may want to suggest users reload this page.');
-        }
-        this._dispatchEvent('externalinstalled', sw);
-      } else {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.log('Registered service worker installed.');
-        }
-        this._dispatchEvent('installed', sw);
-      }
-    };
+    this.dispatchEvent(new WorkboxEvent(
+        eventPrefix + state, {sw, originalEvent}));
 
-    const onWaiting = () => {
-      if (isExternal) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn('An external service worker has installed but is ' +
-              'waiting for this client to close before activating...');
-        }
-        this._dispatchEvent('externalwaiting', sw);
-      } else {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn('The service worker has installed but is waiting for ' +
-              'existing clients to close before activating...');
-        }
-        this._dispatchEvent('waiting', sw);
-      }
-    };
+    if (state === 'installed') {
+      // This timeout is used to ignore cases where the service worker calls
+      // `skipWaiting()` in the install event, thus moving it directly in the
+      // activating state. (Since all service workers *must* go through the
+      // waiting phase, the only way to detect `skipWaiting()` called in the
+      // install event is to observe that the time spent in the waiting phase
+      // is very short.)
+      // NOTE: we don't need separate timeouts for the own and external SWs
+      // since they can't go through these phases at the same time.
+      this._waitingTimeout = setTimeout(() => {
+        // Ensure the SW is still waiting (it may now be redundant).
+        if (state === 'installed' && this._registration.waiting === sw) {
+          this.dispatchEvent(new WorkboxEvent(
+              eventPrefix + 'waiting', {sw, originalEvent}));
 
-    const onActivated = () => {
-      if (isExternal) {
-        this._dispatchEvent('externalactivated', sw);
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn('An external service worker has activated.');
-        }
-      } else {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.log('Registered service worker activated.');
-        }
-        this._dispatchEvent('activated', sw);
-      }
-    };
-
-    const onControlling = () => {
-      if (!isExternal) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.log('Registered service worker now controlling this page.');
-        }
-        this._dispatchEvent('controlling', sw);
-      }
-    };
-
-    const onRedundant = () => {
-      if (!isExternal) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.log('Registered service worker now redundant!');
-        }
-        this._dispatchEvent('redundant', sw);
-      }
-      sw.removeEventListener('statechange', this._onStateChange);
-    };
-
-    switch (state) {
-      case 'installed':
-        onInstalled();
-
-        // This timeout is used to ignore cases where the service worker calls
-        // `skipWaiting()` in the install event, thus moving it directly in the
-        // activating state. (Since all service workers *must* go through the
-        // waiting phase, the only way to detect `skipWaiting()` called in the
-        // install event is to observe that the time spent in the waiting phase
-        // is very short.)
-        // NOTE: we don't need separate timeouts for the new and updated SWs
-        // since they can't go through these phases at the same time.
-        this._waitingTimeout = setTimeout(() => {
-          // Ensure the SW is still waiting (it may now be redundant).
-          if (state === 'installed' && this._registration.waiting === sw) {
-            onWaiting();
-          }
-        }, WAITING_TIMEOUT_DURATION);
-        break;
-      case 'activating':
-        this._dispatchEvent('activating', sw);
-
-        clearTimeout(this._waitingTimeout);
-        break;
-      case 'activated':
-        onActivated();
-        if (sw === navigator.serviceWorker.controller) {
-          onControlling();
-        } else {
           if (process.env.NODE_ENV !== 'production') {
-            // These conditionals are nested to the minifier can strip out
-            // out this entire code block in prod builds.
-            if (!isExternal) {
-              logger.warn('The registered service worker is active but not ' +
-                  'yet controlling the page. Reload or run `clients.claim()` ' +
-                  'in the service worker.');
+            if (isExternal) {
+              logger.warn('An external service worker has installed but is ' +
+                  'waiting for this client to close before activating...');
+            } else {
+              logger.warn('The service worker has installed but is waiting ' +
+                  ' for existing clients to close before activating...');
             }
           }
-          navigator.serviceWorker.addEventListener(
-              'controllerchange', onControlling, {once: true});
         }
-        break;
-      case 'redundant':
-        onRedundant();
-        break;
+      }, WAITING_TIMEOUT_DURATION);
+    } else if (state === 'activating') {
+      clearTimeout(this._waitingTimeout);
+      if (!isExternal) {
+        this._activeDeferred.resolve(sw);
+      }
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      switch (state) {
+        case 'installed':
+          if (isExternal) {
+            logger.warn('An external service worker has installed. ' +
+                'You may want to suggest users reload this page.');
+          } else {
+            logger.log('Registered service worker installed.');
+          }
+          break;
+        case 'activated':
+          if (isExternal) {
+            logger.warn('An external service worker has activated.');
+          } else {
+            logger.log('Registered service worker activated.');
+            if (sw !== navigator.serviceWorker.controller) {
+              logger.warn('The registered service worker is active but ' +
+                  'not yet controlling the page. Reload or run ' +
+                  '`clients.claim()` in the service worker.');
+            }
+          }
+          break;
+        case 'redundant':
+          if (!isExternal) {
+            logger.log('Registered service worker now redundant!');
+          }
+          break;
+      }
     }
   }
 
   /**
    * @private
-   * @param {Event} event
+   * @param {Event} originalEvent
    */
-  _onMessage(event) {
-    this._dispatchEvent('message', event.data);
+  _onControllerChange(originalEvent) {
+    const sw = this._sw;
+    if (sw === navigator.serviceWorker.controller) {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.log('Registered service worker now controlling this page.');
+      }
+      this.dispatchEvent(new WorkboxEvent('controlling', {sw, originalEvent}));
+      this._controllingDeferred.resolve(sw);
+    }
+  }
+
+  /**
+   * @private
+   * @param {Event} originalEvent
+   */
+  _onMessage(originalEvent) {
+    const {data} = originalEvent;
+    this.dispatchEvent(new WorkboxEvent('message', {data, originalEvent}));
   }
 }
+
+export {Workbox};
