@@ -1,1 +1,1 @@
-try{self['workbox:cache-expiration:4.0.0-beta.1']&&_()}catch(e){}// eslint-disable-line
+try{self['workbox:cache-expiration:4.0.0-beta.2']&&_()}catch(e){}// eslint-disable-line
