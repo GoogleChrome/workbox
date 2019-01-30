@@ -10,6 +10,8 @@ const expect = require('chai').expect;
 const qs = require('qs');
 const {By} = require('selenium-webdriver');
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
+const waitUntil = require('../../../infra/testing/wait-until');
+
 
 describe(`[workbox-google-analytics] Load and use Google Analytics`, function() {
   const driver = global.__workbox.webdriver;
@@ -101,6 +103,7 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`, function() 
         event_callback: () => done(),
       });
     });
+    // This request should not match GA routes, so it shouldn't be replayed.
     await driver.executeAsyncScript((done) => {
       fetch('https://httpbin.org/get').then(() => done());
     });
@@ -112,17 +115,17 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`, function() 
     });
     expect(requests).to.have.lengthOf(0);
 
-    // Uncheck the "simulate offline" checkbox and then trigger a sync.
+    // Uncheck the "simulate offline" checkbox, which should let queued
+    // requests start to replay successfully.
     await simulateOfflineEl.click();
-    await driver.executeAsyncScript(messageSW, {
-      action: 'dispatch-sync-event',
-    });
 
-    // Ensure only 2 requests have replayed, since only 2 of them were to GA.
-    requests = await driver.executeAsyncScript(messageSW, {
-      action: 'get-spied-requests',
-    });
-    expect(requests).to.have.lengthOf(2);
+    // Wait until all expected requests have replayed.
+    await waitUntil(async () => {
+      requests = await driver.executeAsyncScript(messageSW, {
+        action: 'get-spied-requests',
+      });
+      return requests.length === 2;
+    }, 25, 200);
 
     // Parse the request bodies to set the params as an object and convert the
     // qt param to a number.
@@ -131,7 +134,6 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`, function() 
       request.params.qt = Number(request.params.qt);
       request.originalTime = request.timestamp - request.params.qt;
     }
-
 
     expect(requests[0].params.ea).to.equal('beacon');
     expect(requests[1].params.ea).to.equal('pixel');

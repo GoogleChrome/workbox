@@ -11,6 +11,10 @@ importScripts('/infra/testing/comlink/sw-interface.js');
 
 workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
 
+const sleep = async (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 // Spy on .fetch() calls from inside the service worker.
 // If `simulateOffline` is set to true, throw a network error.
 let simulateOffline = false;
@@ -18,7 +22,10 @@ let spiedRequests = [];
 const originalFetch = self.fetch;
 self.fetch = async (...args) => {
   if (simulateOffline) {
-    throw Response.error();
+    // Simulate network latency, so the sync event doesn't just fire
+    // in an endless loop.
+    await sleep(100);
+    throw new Error('Simulated network error');
   }
   const clone = args[0] instanceof Request ?
     args[0].clone() : new Request(args[0]);
@@ -44,20 +51,6 @@ self.addEventListener('message', (evt) => {
       break;
     case 'get-spied-requests':
       evt.ports[0].postMessage(spiedRequests);
-      break;
-    case 'dispatch-sync-event':
-      {
-      // Override `.waitUntil` so we can signal when the sync is done.
-        const originalSyncEventWaitUntil = SyncEvent.prototype.waitUntil;
-        SyncEvent.prototype.waitUntil = (promise) => {
-          return promise.then(() => evt.ports[0].postMessage(null));
-        };
-
-        self.dispatchEvent(new SyncEvent('sync', {
-          tag: 'workbox-background-sync:workbox-google-analytics',
-        }));
-        SyncEvent.prototype.waitUntil = originalSyncEventWaitUntil;
-      }
       break;
   }
 });

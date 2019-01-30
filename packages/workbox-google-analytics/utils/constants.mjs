@@ -14,6 +14,7 @@ export const GOOGLE_ANALYTICS_HOST = 'www.google-analytics.com';
 export const GTM_HOST = 'www.googletagmanager.com';
 export const ANALYTICS_JS_PATH = '/analytics.js';
 export const GTAG_JS_PATH = '/gtag/js';
+export const GTM_JS_PATH = '/gtm.js';
 export const COLLECT_DEFAULT_PATH = '/collect';
 
 // This RegExp matches all known Measurement Protocol single-hit collect
