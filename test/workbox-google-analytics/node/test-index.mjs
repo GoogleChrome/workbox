@@ -77,13 +77,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
   it(`should register a handler to cache the gtm.js script`, function() {
     sandbox.spy(NetworkFirst.prototype, 'handle');
 
-    googleAnalytics.initialize();
+    initialize();
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(
           `https://${GTM_HOST}${GTM_JS_PATH}?id=GTM-XXXX`, {
-        mode: 'no-cors',
-      }),
+            mode: 'no-cors',
+          }),
     }));
 
     expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
