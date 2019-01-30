@@ -91,9 +91,12 @@ export class QueueStore {
       });
     }
 
-    const firstEntry = await this._db.get(OBJECT_STORE_NAME);
+    const [firstEntry] = await this._db.getAllMatching(OBJECT_STORE_NAME, {
+      count: 1,
+    });
+
     if (firstEntry) {
-    // Pick an ID one less than the lowest ID in the object store.
+      // Pick an ID one less than the lowest ID in the object store.
       entry.id = firstEntry.id - 1;
     } else {
       delete entry.id;

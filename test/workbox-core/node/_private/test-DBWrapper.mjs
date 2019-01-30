@@ -193,15 +193,18 @@ describe(`DBWrapper`, function() {
             const txn = evt.target.transaction;
 
             const objStore = txn.objectStore('users');
-            objStore.get().onsuccess = (event) => {
-              const firstUser = event.target.result;
-              // Delete the object store and recreate it with new config.
-              db.deleteObjectStore('users');
-              db.createObjectStore('users', {
-                keyPath: 'id',
-                autoIncrement: true,
-              });
-              objStore.add(firstUser);
+            objStore.openCursor().onsuccess = ({target}) => {
+              const cursor = target.result;
+              if (cursor) {
+                const firstUser = cursor.value;
+                // Delete the object store and recreate it with new config.
+                db.deleteObjectStore('users');
+                db.createObjectStore('users', {
+                  keyPath: 'id',
+                  autoIncrement: true,
+                });
+                objStore.add(firstUser);
+              }
             };
           }
         },

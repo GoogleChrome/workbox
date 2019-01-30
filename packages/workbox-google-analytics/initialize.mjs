@@ -47,7 +47,8 @@ const createOnSyncCallback = (config) => {
         // Measurement protocol requests can set their payload parameters in
         // either the URL query string (for GET requests) or the POST body.
         const params = request.method === 'POST' ?
-            new URLSearchParams(await request.text()) : url.searchParams;
+            new URLSearchParams(await request.clone().text()) :
+            url.searchParams;
 
         // Calculate the qt param, accounting for the fact that an existing
         // qt param may be present and should be updated rather than replaced.
@@ -70,7 +71,7 @@ const createOnSyncCallback = (config) => {
           config.hitFilter.call(null, params);
         }
 
-        // Retry the fetch. Ignore URL search params form the URL as they're
+        // Retry the fetch. Ignore URL search params from the URL as they're
         // now in the post body.
         await fetch(new Request(url.origin + url.pathname, {
           body: params.toString(),
