@@ -48,7 +48,7 @@ if (Array.isArray(self.__precacheManifest)) {
 }
 <% } %>
 <% if (cleanupOutdatedCaches) { %>workbox.precaching.cleanupOutdatedCaches();<% } %>
-<% if (navigateFallback) { %>workbox.routing.registerNavigationRoute(<%= JSON.stringify(navigateFallback) %><% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
+<% if (navigateFallback) { %>workbox.routing.registerNavigationRoute(workbox.precaching.getCacheKeyForUrl(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
   <% if (navigateFallbackWhitelist) { %>whitelist: [<%= navigateFallbackWhitelist %>],<% } %>
   <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>
 }<% } %>);<% } %>

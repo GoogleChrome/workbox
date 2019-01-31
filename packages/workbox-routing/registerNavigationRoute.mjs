@@ -19,13 +19,18 @@ import './_version.mjs';
  * request. This is useful for the
  * [application shell pattern]{@link https://developers.google.com/web/fundamentals/architecture/app-shell}.
  *
+ * When determining the URL of the precached HTML document, you will likely need
+ * to call `workbox.precaching.getCacheKeyForURL(originalUrl)`, to account for
+ * the fact that Workbox's precaching naming conventions often results in URL
+ * cache keys that contain extra revisioning info.
+ *
  * This method will generate a
  * [NavigationRoute]{@link workbox.routing.NavigationRoute}
  * and call
  * [Router.registerRoute()]{@link workbox.routing.Router#registerRoute} on a
  * singleton Router instance.
  *
- * @param {string} cachedAssetUrl
+ * @param {string} cachedAssetUrl The cache key to use for the HTML file.
  * @param {Object} [options]
  * @param {string} [options.cacheName] Cache name to store and retrieve
  * requests. Defaults to precache cache name provided by
