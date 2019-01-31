@@ -183,7 +183,7 @@ class PrecacheController {
 
     const isValidResponse = cacheWillUpdateCallback ?
       // Use a callback if provided. It returns a truthy value if valid.
-      cacheWillUpdateCallback({response}) :
+      cacheWillUpdateCallback({event, request, response}) :
       // Otherwise, default to considering any response status under 400 valid.
       // This includes, by default, considering opaque responses valid.
       response.status < 400;

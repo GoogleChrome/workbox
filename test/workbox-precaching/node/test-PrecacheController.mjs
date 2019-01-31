@@ -497,7 +497,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheController.addToCacheList(cacheList);
 
       const plugins = [{
-        cacheWillUpdate: ({response}) => {
+        cacheWillUpdate: ({request, response}) => {
+          expect(request).to.exist;
+
           if (response.status === 400) {
             return response;
           }
