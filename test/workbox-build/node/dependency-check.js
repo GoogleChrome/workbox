@@ -33,6 +33,7 @@ describe(`[workbox-build] Test Dependencies`, function() {
           'workbox-strategies',
           'workbox-streams',
           'workbox-sw',
+          'workbox-window',
         ],
       }, (unusedDeps) => {
         if (unusedDeps.dependencies.length > 0) {
