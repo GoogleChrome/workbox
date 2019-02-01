@@ -23,9 +23,9 @@ class AggregateSizePlugin extends PluginInterface {
 
   async run({afterPath} = {}) {
     const packagesToAggregate = [
-      `workbox-cache-expiration`,
       `workbox-cacheable-response`,
       `workbox-core`,
+      `workbox-expiration`,
       `workbox-precaching`,
       `workbox-routing`,
       `workbox-strategies`,

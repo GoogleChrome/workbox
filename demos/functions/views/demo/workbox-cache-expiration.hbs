@@ -40,7 +40,7 @@
   };
 
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/demo/workbox-cache-expiration/sw.js')
+    navigator.serviceWorker.register('/demo/workbox-expiration/sw.js')
     .then((reg) => {
       for (let i = 0; i < 5; i++) {
         const entryBtn = document.querySelector(`.entry-${i + 1}`);

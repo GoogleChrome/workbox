@@ -6,12 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
+import camelCase from 'camelcase';
+import {oneLine as ol} from 'common-tags';
 import glob from 'glob';
 import path from 'path';
 import fs from 'fs-extra';
 import {expect} from 'chai';
 
 import constants from '../../../gulp-tasks/utils/constants';
+import {getPackages} from '../../../gulp-tasks/utils/get-packages';
 import pkgPathToName from '../../../gulp-tasks/utils/pkg-path-to-name';
 
 describe(`[all] Test package.json`, function() {
@@ -177,5 +180,26 @@ describe(`[all] Test package.json`, function() {
         }
       });
     });
+  });
+
+  it(`should only use a namespace that matches its package name`, function() {
+    const pkgs = getPackages({type: 'browser'});
+
+    for (const pkg of pkgs) {
+      // These rules don't apply to workbox-sw
+      if (pkg.name === 'workbox-sw') continue;
+
+      // Remove the `workbox-` prefix.
+      const pkgNameSuffix = pkg.name.replace(/^workbox-/, '');
+
+      // Remvoe the `workbox.` prefix.
+      const pkgNamespaceSuffix = pkg.workbox.browserNamespace.replace(/^workbox\./, '');
+
+      if (camelCase(pkgNameSuffix) !== pkgNamespaceSuffix) {
+        throw new Error(ol`Invalid browser namespace:
+            ${pkg.workbox.browserNamespace}. The browser namespace must include
+            the package name camelCased (${camelCase(pkgNameSuffix)}).`);
+      }
+    }
   });
 });

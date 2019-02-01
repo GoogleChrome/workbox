@@ -16,10 +16,10 @@ const MODULE_KEY_TO_NAME_MAPPING = {
   // @memberof workbox
   // @see module:workbox-background-sync
   backgroundSync: 'background-sync',
-  broadcastUpdate: 'broadcast-cache-update',
+  broadcastUpdate: 'broadcast-update',
   cacheableResponse: 'cacheable-response',
   core: 'core',
-  expiration: 'cache-expiration',
+  expiration: 'expiration',
   googleAnalytics: 'offline-ga',
   navigationPreload: 'navigation-preload',
   precaching: 'precaching',
