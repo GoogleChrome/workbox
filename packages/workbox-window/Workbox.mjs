@@ -20,10 +20,6 @@ import './_version.mjs';
 // chosen, but it seems to avoid false positives in my testing.
 const WAITING_TIMEOUT_DURATION = 200;
 
-// The amount of time to wait for a `messageSW` response from a controlling SW.
-// If this amount of time passes, the assumption is there's no mesage listener.
-const GET_VERSION_TIMEOUT_DURATION = 1000;
-
 // The amount of time after a registration that we can reasonably conclude
 // that the registration didn't trigger an update.
 const REGISTRATION_TIMEOUT_DURATION = 60000;
@@ -43,14 +39,13 @@ class Workbox extends EventTargetShim {
    *
    * @param {string} scriptURL The service worker script associated with this
    *     instance.
-   * @param {Object} [options] The service worker options associated with this
-   *     instance.
+   * @param {Object} [registerOptions] The service worker options associated
+   *     with this instance.
    */
-  constructor({scriptURL, scriptVersion = null, registerOptions = {}} = {}) {
+  constructor(scriptURL, registerOptions = {}) {
     super();
 
     this._scriptURL = scriptURL;
-    this._scriptVersion = scriptVersion;
     this._registerOptions = registerOptions;
     this._updateFoundCount = 0;
 
@@ -114,17 +109,11 @@ class Workbox extends EventTargetShim {
       if (navigator.serviceWorker.controller) {
         if (this._compatibleControllingSW) {
           logger.debug('A service worker with the same script URL ' +
-              (this._scriptVersion ? 'and version ' : '') +
               'is already controlling this page.');
-        } else if (!urlsMatch(
-            navigator.serviceWorker.controller.scriptURL, this._scriptURL)) {
+        } else {
           logger.debug('A service worker with a different script URL is ' +
               'currently controlling the page. The browser is now fetching ' +
               'the new script now...');
-        } else {
-          logger.debug('An older version of your service worker script is ' +
-              'currently controlling the page. The browser is fetching the ' +
-              'new script now...');
         }
       }
 
@@ -246,20 +235,7 @@ class Workbox extends EventTargetShim {
       // SW is the same. NOTE: without a script version, this isn't a
       // particularly good test. Using a script version is encouraged if
       // you need to send messages to your service worker on all page loads.
-      if (!this._scriptVersion) {
-        return controller;
-      }
-
-      // Message the SW to get its version, but use a timeout in case it
-      // doesn't support responding to messages.
-      const swVersion = await messageSW(controller, {
-        type: 'GET_VERSION',
-        meta: 'workbox-window',
-      }, GET_VERSION_TIMEOUT_DURATION);
-
-      if (swVersion === this._scriptVersion) {
-        return controller;
-      }
+      return controller;
     }
   }
 
@@ -331,11 +307,6 @@ class Workbox extends EventTargetShim {
         // instance's script URL, we know it's definitely not from our
         // registration.
         !urlsMatch(installingSW.scriptURL, this._scriptURL) ||
-        // If we already have a compatible controlling SW, and if the
-        // `scriptVersion` options was set, then it's fairly safe to assume
-        // any update is from an external register.
-        (this._scriptVersion && this._compatibleControllingSW) ||
-
         // If all of the above are false, then we use a time-based heuristic:
         // Any `updatefound` event that occurs long after our registration is
         // assumed to be external.

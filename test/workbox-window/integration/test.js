@@ -76,7 +76,7 @@ describe(`[workbox-window] Workbox`, function() {
     it(`registers a new service worker`, async function() {
       const result = await executeAsyncAndCatch(async (cb) => {
         try {
-          const wb = new Workbox({scriptURL: 'sw-clients-claim.tmp.js'});
+          const wb = new Workbox('sw-clients-claim.tmp.js');
           await wb.register();
 
           const reg = await navigator.serviceWorker.getRegistration();
@@ -94,7 +94,7 @@ describe(`[workbox-window] Workbox`, function() {
     it(`reports all events for a new SW registration`, async function() {
       const result = await executeAsyncAndCatch(async (cb) => {
         try {
-          const wb = new Workbox({scriptURL: 'sw-clients-claim.tmp.js'});
+          const wb = new Workbox('sw-clients-claim.tmp.js');
           await wb.register();
 
           const installedSpy = sinon.spy();
@@ -133,7 +133,7 @@ describe(`[workbox-window] Workbox`, function() {
 
       await executeAsyncAndCatch(async (cb) => {
         try {
-          const wb = new Workbox({scriptURL: 'sw-clients-claim.tmp.js'});
+          const wb = new Workbox('sw-clients-claim.tmp.js');
           await wb.register();
 
           // Use a global variable so these are accessible to future
@@ -169,7 +169,7 @@ describe(`[workbox-window] Workbox`, function() {
 
       await executeAsyncAndCatch(async (cb) => {
         try {
-          const wb = new Workbox({scriptURL: 'sw-clients-claim.tmp.js'});
+          const wb = new Workbox('sw-clients-claim.tmp.js');
           await wb.register();
 
           // Resolve this execution block once the SW has activated.
@@ -214,7 +214,7 @@ describe(`[workbox-window] Workbox`, function() {
       // ready messages are only sent to controlling SWs with matching URLs.
       await executeAsyncAndCatch(async (cb) => {
         try {
-          const wb = new Workbox({scriptURL: 'sw-window-ready.js'});
+          const wb = new Workbox('sw-window-ready.js');
           await wb.register();
 
           wb.addEventListener('controlling', () => cb());
@@ -233,7 +233,7 @@ describe(`[workbox-window] Workbox`, function() {
             });
           });
 
-          const wb = new Workbox({scriptURL: 'sw-window-ready.js'});
+          const wb = new Workbox('sw-window-ready.js');
           wb.register();
 
           await readyMessageReceived;
