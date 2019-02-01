@@ -21,10 +21,10 @@ describe(`[workbox-build] Test Dependencies`, function() {
         ignoreMatches: [
           '@babel/runtime',
           'workbox-background-sync',
-          'workbox-broadcast-cache-update',
-          'workbox-cache-expiration',
+          'workbox-broadcast-update',
           'workbox-cacheable-response',
           'workbox-core',
+          'workbox-expiration',
           'workbox-google-analytics',
           'workbox-navigation-preload',
           'workbox-precaching',

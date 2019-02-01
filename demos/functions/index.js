@@ -8,10 +8,10 @@ const cdnDetails = require('./cdn-details.json');
 
 const workboxModules = [
   'workbox-background-sync',
-  'workbox-broadcast-cache-update',
-  'workbox-cache-expiration',
+  'workbox-broadcast-update',
   'workbox-cacheable-response',
   'workbox-core',
+  'workbox-expiration',
   'workbox-google-analytics',
   'workbox-precaching',
   'workbox-range-requests',
