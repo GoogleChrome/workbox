@@ -110,7 +110,7 @@ describe(`[workbox-expiration] Plugin`, function() {
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'expireEntries');
 
-      expect(plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse})).to.eql(cachedResponse);
+      expect(plugin.cachedResponseWillBeUsed({request: new Request('/'), cacheName: 'test-cache', cachedResponse})).to.eql(cachedResponse);
       expect(expirationManager.expireEntries.callCount).to.equal(1);
     });
 
@@ -130,7 +130,7 @@ describe(`[workbox-expiration] Plugin`, function() {
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'expireEntries');
 
-      expect(plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse})).to.eql(null);
+      expect(plugin.cachedResponseWillBeUsed({request: new Request('/'), cacheName: 'test-cache', cachedResponse})).to.eql(null);
       expect(expirationManager.expireEntries.callCount).to.equal(1);
     });
 
@@ -141,6 +141,22 @@ describe(`[workbox-expiration] Plugin`, function() {
       sandbox.spy(expirationManager, 'expireEntries');
 
       expect(plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse: null})).to.eql(null);
+    });
+
+    it(`should update the timestamp for the request URL`, function() {
+      const plugin = new Plugin({maxEntries: 10});
+
+      const expirationManager = plugin._getCacheExpiration('test-cache');
+      sandbox.spy(expirationManager, 'updateTimestamp');
+
+      plugin.cachedResponseWillBeUsed({
+        request: new Request('/one'),
+        cacheName: 'test-cache',
+        cachedResponse: new Response(''),
+      });
+
+      expect(expirationManager.updateTimestamp.callCount).to.equal(1);
+      expect(expirationManager.updateTimestamp.args[0][0]).to.equal('/one');
     });
   });
 
