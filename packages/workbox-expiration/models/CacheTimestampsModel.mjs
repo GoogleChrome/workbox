@@ -10,8 +10,17 @@ import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
 import {deleteDatabase} from 'workbox-core/_private/deleteDatabase.mjs';
 import '../_version.mjs';
 
-const URL_KEY = 'url';
-const TIMESTAMP_KEY = 'timestamp';
+
+const DB_NAME = 'workbox-expiration';
+const OBJECT_STORE_NAME = 'cache-entries';
+
+const normalizeURL = (unNormalizedUrl) => {
+  const url = new URL(unNormalizedUrl, location);
+  url.hash = '';
+
+  return url.href;
+};
+
 
 /**
  * Returns the timestamp model.
@@ -26,35 +35,38 @@ class CacheTimestampsModel {
    * @private
    */
   constructor(cacheName) {
-    // TODO Check cacheName
-
     this._cacheName = cacheName;
-    this._storeName = cacheName;
 
-    this._db = new DBWrapper(this._cacheName, 2, {
-      onupgradeneeded: (evt) => this._handleUpgrade(evt),
+    this._db = new DBWrapper(DB_NAME, 1, {
+      onupgradeneeded: (event) => this._handleUpgrade(event),
     });
   }
 
   /**
    * Should perform an upgrade of indexedDB.
    *
-   * @param {Event} evt
+   * @param {Event} event
    *
    * @private
    */
-  _handleUpgrade(evt) {
-    const db = evt.target.result;
-    if (evt.oldVersion < 2) {
-      // Remove old databases.
-      if (db.objectStoreNames.contains('workbox-cache-expiration')) {
-        db.deleteObjectStore('workbox-cache-expiration');
-      }
-    }
+  _handleUpgrade(event) {
+    const db = event.target.result;
 
-    db
-        .createObjectStore(this._storeName, {keyPath: URL_KEY})
-        .createIndex(TIMESTAMP_KEY, TIMESTAMP_KEY, {unique: false});
+    // TODO(philipwalton): EdgeHTML doesn't support arrays as a keyPath, so we
+    // have to use the `id` keyPath here and create our own values (a
+    // concatenation of `url + cacheName`) instead of simply using
+    // `keyPath: ['url', 'cacheName']`, which is supported in other browsers.
+    const objStore = db.createObjectStore(OBJECT_STORE_NAME, {keyPath: 'id'});
+
+    // TODO(philipwalton): once we don't have to support EdgeHTML, we can
+    // create a single index with the keyPath `['cacheName', 'timestamp']`
+    // instead of doing both these indexes.
+    objStore.createIndex('cacheName', 'cacheName', {unique: false});
+    objStore.createIndex('timestamp', 'timestamp', {unique: false});
+
+    // Previous versions of `workbox-expiration` used `this._cacheName`
+    // as the IDBDatabase name.
+    deleteDatabase(this._cacheName);
   }
 
   /**
@@ -64,22 +76,16 @@ class CacheTimestampsModel {
    * @private
    */
   async setTimestamp(url, timestamp) {
-    await this._db.put(this._storeName, {
-      [URL_KEY]: new URL(url, location).href,
-      [TIMESTAMP_KEY]: timestamp,
-    });
-  }
+    url = normalizeURL(url);
 
-  /**
-   * Get all of the timestamps in the indexedDB.
-   *
-   * @return {Array<Objects>}
-   *
-   * @private
-   */
-  async getAllTimestamps() {
-    return await this._db.getAllMatching(this._storeName, {
-      index: TIMESTAMP_KEY,
+    await this._db.put(OBJECT_STORE_NAME, {
+      url,
+      timestamp,
+      cacheName: this._cacheName,
+      // Creating an ID from the URL and cache name won't be necessary once
+      // Edge switches to Chromium and all browsers we support work with
+      // array keyPaths.
+      id: this._getId(url),
     });
   }
 
@@ -92,26 +98,67 @@ class CacheTimestampsModel {
    * @private
    */
   async getTimestamp(url) {
-    const timestampObject = await this._db.get(this._storeName, url);
-    return timestampObject.timestamp;
+    const entry = await this._db.get(OBJECT_STORE_NAME, this._getId(url));
+    return entry.timestamp;
   }
 
   /**
-   * @param {string} url
+   * Iterates through all the entries in the object store (from newest to
+   * oldest) and removes entries once either `maxCount` is reached or the
+   * entry's timestamp is less than `minTimestamp`.
+   *
+   * @param {number} minTimestamp
+   * @param {number} maxCount
    *
    * @private
    */
-  async deleteURL(url) {
-    await this._db.delete(this._storeName, new URL(url, location).href);
+  async expireEntries(minTimestamp, maxCount) {
+    return await this._db.transaction(
+        OBJECT_STORE_NAME, 'readwrite', (txn, done) => {
+          const store = txn.objectStore(OBJECT_STORE_NAME);
+          const entriesDeleted = [];
+          let entriesNotDeletedCount = 0;
+
+          store.index('timestamp')
+              .openCursor(null, 'prev')
+              .onsuccess = ({target}) => {
+                const cursor = target.result;
+                if (cursor) {
+                  const result = cursor.value;
+                  // TODO(philipwalton): once we can use a multi-key index, we
+                  // won't have to check `cacheName` here.
+                  if (result.cacheName === this._cacheName) {
+                    // Delete an entry if it's older than the max age or
+                    // if we already have the max number allowed.
+                    if ((minTimestamp && result.timestamp < minTimestamp) ||
+                        (maxCount && entriesNotDeletedCount >= maxCount)) {
+                      cursor.delete();
+                      // We only need to return the URL, not the whole entry.
+                      entriesDeleted.push(cursor.value.url);
+                    } else {
+                      entriesNotDeletedCount++;
+                    }
+                  }
+                  cursor.continue();
+                } else {
+                  done(entriesDeleted);
+                }
+              };
+        });
   }
 
   /**
-   * Removes the underlying IndexedDB object store entirely.
+   * Takes a URL and returns an ID that will be unique in the object store.
+   *
+   * @param {string} url
+   * @return {string}
    */
-  async delete() {
-    await deleteDatabase(this._cacheName);
-    this._db = null;
+  _getId(url) {
+    // Creating an ID from the URL and cache name won't be necessary once
+    // Edge switches to Chromium and all browsers we support work with
+    // array keyPaths.
+    return this._cacheName + '|' + normalizeURL(url);
   }
 }
 
-export default CacheTimestampsModel;
+export {CacheTimestampsModel};

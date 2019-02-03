@@ -10,7 +10,7 @@ import {expect} from 'chai';
 import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import * as sinon from 'sinon';
 
-import CacheTimestampsModel from '../../../packages/workbox-expiration/models/CacheTimestampsModel.mjs';
+import {CacheTimestampsModel} from '../../../packages/workbox-expiration/models/CacheTimestampsModel.mjs';
 import {DBWrapper} from '../../../packages/workbox-core/_private/DBWrapper.mjs';
 
 describe(`[workbox-expiration] CacheTimestampsModel`, function() {
@@ -26,6 +26,84 @@ describe(`[workbox-expiration] CacheTimestampsModel`, function() {
     iDBReset();
   });
 
+  const createDb = async () => {
+    return new DBWrapper('workbox-expiration', 1, {
+      onupgradeneeded: (event) => {
+        const db = event.target.result;
+        const objStore = db.createObjectStore('cache-entries', {keyPath: 'id'});
+        objStore.createIndex('cacheName', 'cacheName', {unique: false});
+        objStore.createIndex('timestamp', 'timestamp', {unique: false});
+      },
+    });
+  };
+
+  const createAndPopulateDb = async () => {
+    const db = await createDb();
+
+    await db.add('cache-entries', {
+      id: 'cache-one|https://example.com/1',
+      url: 'https://example.com/1',
+      cacheName: 'cache-one',
+      timestamp: 10,
+    });
+    await db.add('cache-entries', {
+      id: 'cache-one|https://example.com/2',
+      url: 'https://example.com/2',
+      cacheName: 'cache-one',
+      timestamp: 9,
+    });
+    await db.add('cache-entries', {
+      id: 'cache-one|https://example.com/3',
+      url: 'https://example.com/3',
+      cacheName: 'cache-one',
+      timestamp: 8,
+    });
+    await db.add('cache-entries', {
+      id: 'cache-one|https://example.com/4',
+      url: 'https://example.com/4',
+      cacheName: 'cache-one',
+      timestamp: 7,
+    });
+    await db.add('cache-entries', {
+      id: 'cache-one|https://example.com/5',
+      url: 'https://example.com/5',
+      cacheName: 'cache-one',
+      timestamp: 6,
+    });
+    await db.add('cache-entries', {
+      id: 'cache-two|https://example.com/1',
+      url: 'https://example.com/1',
+      cacheName: 'cache-two',
+      timestamp: 10,
+    });
+    await db.add('cache-entries', {
+      id: 'cache-two|https://example.com/2',
+      url: 'https://example.com/2',
+      cacheName: 'cache-two',
+      timestamp: 9,
+    });
+    await db.add('cache-entries', {
+      id: 'cache-two|https://example.com/3',
+      url: 'https://example.com/3',
+      cacheName: 'cache-two',
+      timestamp: 8,
+    });
+    await db.add('cache-entries', {
+      id: 'cache-three|https://example.com/4',
+      url: 'https://example.com/4',
+      cacheName: 'cache-three',
+      timestamp: 7,
+    });
+    await db.add('cache-entries', {
+      id: 'cache-three|https://example.com/5',
+      url: 'https://example.com/5',
+      cacheName: 'cache-three',
+      timestamp: 6,
+    });
+
+    return db;
+  };
+
   describe(`constructor`, function() {
     it(`should constructor with a cacheName`, function() {
       new CacheTimestampsModel('test-cache');
@@ -34,153 +112,128 @@ describe(`[workbox-expiration] CacheTimestampsModel`, function() {
     // TODO Test bad input
   });
 
-  describe(`setTimestamp()`, function() {
-    it(`should set the timestamp for new entry`, async function() {
-      const model = new CacheTimestampsModel('test-cache');
-      const timestamp = Date.now();
-      await model.setTimestamp('/', timestamp);
+  describe(`expireEntries()`, function() {
+    it(`should remove and return entries with timestamps below minTimestamp`, async function() {
+      const db = await createAndPopulateDb();
 
-      const timestamps =
-          await new DBWrapper('test-cache', 2).getAll('test-cache');
+      const model1 = new CacheTimestampsModel('cache-one');
+      const removedEntries1 = await model1.expireEntries(8);
+      expect(removedEntries1).to.deep.equal([
+        'https://example.com/4',
+        'https://example.com/5',
+      ]);
+      expect(await db.count('cache-entries')).to.equal(8);
 
-      expect(timestamps).to.deep.equal([{
-        url: 'https://example.com/',
-        timestamp,
-      }]);
+      const model2 = new CacheTimestampsModel('cache-two');
+      const removedEntries2 = await model2.expireEntries(9);
+      expect(removedEntries2).to.deep.equal([
+        'https://example.com/3',
+      ]);
+      expect(await db.count('cache-entries')).to.equal(7);
+    });
+
+    it(`should remove and return the oldest entries greater than maxCount`, async function() {
+      const db = await createAndPopulateDb();
+
+      const model1 = new CacheTimestampsModel('cache-one');
+      const removedEntries1 = await model1.expireEntries(null, 2);
+      expect(removedEntries1).to.deep.equal([
+        'https://example.com/3',
+        'https://example.com/4',
+        'https://example.com/5',
+      ]);
+      expect(await db.count('cache-entries')).to.equal(7);
+
+      const model2 = new CacheTimestampsModel('cache-two');
+      const removedEntries2 = await model2.expireEntries(null, 1);
+      expect(removedEntries2).to.deep.equal([
+        'https://example.com/2',
+        'https://example.com/3',
+      ]);
+      expect(await db.count('cache-entries')).to.equal(5);
+    });
+
+    it(`should work with minTimestamp and maxCount`, async function() {
+      const db = await createAndPopulateDb();
+
+      const model1 = new CacheTimestampsModel('cache-one');
+
+      // This example tests minTimestamp being more restrictive.
+      const removedEntries1 = await model1.expireEntries(9, 4);
+      expect(removedEntries1).to.deep.equal([
+        'https://example.com/3',
+        'https://example.com/4',
+        'https://example.com/5',
+      ]);
+      expect(await db.count('cache-entries')).to.equal(7);
+
+      const model2 = new CacheTimestampsModel('cache-two');
+
+      // This example tests maxCount being more restrictive.
+      const removedEntries2 = await model2.expireEntries(5, 2);
+      expect(removedEntries2).to.deep.equal([
+        'https://example.com/3',
+      ]);
+      expect(await db.count('cache-entries')).to.equal(6);
+    });
+
+    it(`should return an empty array if nothing matches`, async function() {
+      const db = await createAndPopulateDb();
+
+      const model = new CacheTimestampsModel('cache-one');
+
+      // This example tests minTimestamp being more restrictive.
+      const removedEntries = await model.expireEntries(5, 5);
+      expect(removedEntries).to.deep.equal([]);
+      expect(await db.count('cache-entries')).to.equal(10);
     });
   });
 
-  describe(`getAllTimestamps`, function() {
-    it(`should return timestamps`, async function() {
-      const timestamp = Date.now();
+  describe(`setTimestamp`, async function() {
+    it(`should put entries in the database`, async function() {
+      const db = await createDb();
 
-      const model = new CacheTimestampsModel('test-cache');
-      await model._db.put('test-cache', {url: '/', timestamp});
+      const model1 = new CacheTimestampsModel('cache-one');
+      const model2 = new CacheTimestampsModel('cache-two');
 
-      const timestamps = await model.getAllTimestamps();
-      expect(timestamps).to.deep.equal([{
-        url: '/',
-        timestamp: timestamp,
-      }]);
-    });
+      await model1.setTimestamp('/1', 100);
+      await model1.setTimestamp('/2', 200);
+      await model2.setTimestamp('/1', 300);
 
-    it(`should return timestamps in order or oldest timestamp first`, async function() {
-      const timestamp = Date.now();
-
-      const model = new CacheTimestampsModel('test-cache');
-      const db = model._db;
-      await db.put('test-cache', {url: '/10', timestamp});
-      await db.put('test-cache', {url: '/8', timestamp: timestamp - 2000});
-      await db.put('test-cache', {url: '/9', timestamp: timestamp - 1000});
-      await db.put('test-cache', {url: '/5', timestamp: timestamp - 5000});
-      await db.put('test-cache', {url: '/1', timestamp: timestamp - 9000});
-      await db.put('test-cache', {url: '/4', timestamp: timestamp - 6000});
-      await db.put('test-cache', {url: '/3', timestamp: timestamp - 7000});
-      await db.put('test-cache', {url: '/7', timestamp: timestamp - 3000});
-      await db.put('test-cache', {url: '/6', timestamp: timestamp - 4000});
-      await db.put('test-cache', {url: '/2', timestamp: timestamp - 8000});
-
-      const timestamps = await model.getAllTimestamps();
-      expect(timestamps).to.deep.equal([
+      expect(await db.getAll('cache-entries')).to.deep.equal([
         {
-          url: '/1',
-          timestamp: timestamp - 9000,
+          id: 'cache-one|https://example.com/1',
+          url: 'https://example.com/1',
+          cacheName: 'cache-one',
+          timestamp: 100,
         },
         {
-          url: '/2',
-          timestamp: timestamp - 8000,
+          id: 'cache-one|https://example.com/2',
+          url: 'https://example.com/2',
+          cacheName: 'cache-one',
+          timestamp: 200,
         },
         {
-          url: '/3',
-          timestamp: timestamp - 7000,
-        },
-        {
-          url: '/4',
-          timestamp: timestamp - 6000,
-        },
-        {
-          url: '/5',
-          timestamp: timestamp - 5000,
-        },
-        {
-          url: '/6',
-          timestamp: timestamp - 4000,
-        },
-        {
-          url: '/7',
-          timestamp: timestamp - 3000,
-        },
-        {
-          url: '/8',
-          timestamp: timestamp - 2000,
-        },
-        {
-          url: '/9',
-          timestamp: timestamp - 1000,
-        },
-        {
-          url: '/10',
-          timestamp: timestamp,
+          id: 'cache-two|https://example.com/1',
+          url: 'https://example.com/1',
+          cacheName: 'cache-two',
+          timestamp: 300,
         },
       ]);
     });
   });
 
-  describe('_handleUpgrade', function() {
-    it('should handle upgrade 0 (Doesnt exist)', () => {
-      const objectStoreNames = [];
-      const fakeDB = {
-        objectStoreNames: {
-          contains: (name) => objectStoreNames.indexOf(name) !== -1,
-        },
-        createIndex: sandbox.spy(),
-        deleteObjectStore: sandbox.spy(),
-        createObjectStore: sandbox.stub().callsFake(() => fakeDB),
-      };
+  describe(`getTimestamp`, async function() {
+    it(`should get an entry from the database by 'url'`, async function() {
+      await createAndPopulateDb();
 
-      const DB_NAME = 'test';
-      const model = new CacheTimestampsModel(DB_NAME);
-      model._handleUpgrade({
-        target: {
-          result: fakeDB,
-        },
-      });
+      const model1 = new CacheTimestampsModel('cache-one');
+      const model2 = new CacheTimestampsModel('cache-two');
+      const model3 = new CacheTimestampsModel('cache-three');
 
-      // Assert only create called
-      expect(fakeDB.createObjectStore.callCount).to.equal(1);
-      expect(fakeDB.createObjectStore.args[0][0]).to.equal(DB_NAME);
-
-      expect(fakeDB.deleteObjectStore.callCount).to.equal(0);
-    });
-
-    it('should handle upgrade 1 > 2', () => {
-      // NOTE: reference the old package name, since that's what the
-      // IDBObjectStore was using.
-      const objectStoreNames = ['workbox-cache-expiration'];
-      const fakeDB = {
-        objectStoreNames: {
-          contains: (name) => objectStoreNames.indexOf(name) !== -1,
-        },
-        createIndex: sandbox.spy(),
-        deleteObjectStore: sandbox.spy(),
-        createObjectStore: sandbox.stub().callsFake(() => fakeDB),
-      };
-
-      const DB_NAME = 'test';
-      const model = new CacheTimestampsModel(DB_NAME);
-      model._handleUpgrade({
-        oldVersion: 1,
-        target: {
-          result: fakeDB,
-        },
-      });
-
-      // Assert only create called
-      expect(fakeDB.createObjectStore.callCount).to.equal(1);
-      expect(fakeDB.createObjectStore.args[0][0]).to.equal(DB_NAME);
-
-      expect(fakeDB.deleteObjectStore.callCount).to.equal(1);
-      expect(fakeDB.deleteObjectStore.args[0][0]).to.equal('workbox-cache-expiration');
+      expect(await model1.getTimestamp('/2')).to.equal(9);
+      expect(await model2.getTimestamp('/1')).to.equal(10);
+      expect(await model3.getTimestamp('/5')).to.equal(6);
     });
   });
 });

@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import CacheTimestampsModel from './models/CacheTimestampsModel.mjs';
+import {CacheTimestampsModel} from './models/CacheTimestampsModel.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
@@ -90,34 +90,28 @@ class CacheExpiration {
     }
     this._isRunning = true;
 
-    const now = Date.now();
+    const minTimestamp = this._maxAgeSeconds ?
+        Date.now() - this._maxAgeSeconds : undefined;
 
-    // First, expire old entries, if maxAgeSeconds is set.
-    const oldEntries = await this._findOldEntries(now);
+    const urlsExpired = await this._timestampModel.expireEntries(
+        minTimestamp, this._maxEntries);
 
-    // Once that's done, check for the maximum size.
-    const extraEntries = await this._findExtraEntries();
-
-    // Use a Set to remove any duplicates following the concatenation, then
-    // convert back into an array.
-    const allURLs = [...new Set(oldEntries.concat(extraEntries))];
-
-    await Promise.all([
-      this._deleteFromCache(allURLs),
-      this._deleteFromIDB(allURLs),
-    ]);
+    // Delete URLs from the cache
+    const cache = await caches.open(this._cacheName);
+    for (const url of urlsExpired) {
+      await cache.delete(url);
+    }
 
     if (process.env.NODE_ENV !== 'production') {
-      // TODO: break apart entries deleted due to expiration vs size restraints
-      if (allURLs.length > 0) {
+      if (urlsExpired.length > 0) {
         logger.groupCollapsed(
-            `Expired ${allURLs.length} ` +
-          `${allURLs.length === 1 ? 'entry' : 'entries'} and removed ` +
-          `${allURLs.length === 1 ? 'it' : 'them'} from the ` +
+            `Expired ${urlsExpired.length} ` +
+          `${urlsExpired.length === 1 ? 'entry' : 'entries'} and removed ` +
+          `${urlsExpired.length === 1 ? 'it' : 'them'} from the ` +
           `'${this._cacheName}' cache.`);
-        logger.log(
-            `Expired the following ${allURLs.length === 1 ? 'URL' : 'URLs'}:`);
-        allURLs.forEach((url) => logger.log(`    ${url}`));
+        logger.log(`Expired the following ${urlsExpired.length === 1 ?
+            'URL' : 'URLs'}:`);
+        urlsExpired.forEach((url) => logger.log(`    ${url}`));
         logger.groupEnd();
       } else {
         logger.debug(`Cache expiration ran and found no entries to remove.`);
@@ -128,84 +122,6 @@ class CacheExpiration {
     if (this._rerunRequested) {
       this._rerunRequested = false;
       this.expireEntries();
-    }
-  }
-
-  /**
-   * Expires entries based on the maximum age.
-   *
-   * @param {number} expireFromTimestamp A timestamp.
-   * @return {Promise<Array<string>>} A list of the URLs that were expired.
-   *
-   * @private
-   */
-  async _findOldEntries(expireFromTimestamp) {
-    if (process.env.NODE_ENV !== 'production') {
-      assert.isType(expireFromTimestamp, 'number', {
-        moduleName: 'workbox-expiration',
-        className: 'CacheExpiration',
-        funcName: '_findOldEntries',
-        paramName: 'expireFromTimestamp',
-      });
-    }
-
-    if (!this._maxAgeSeconds) {
-      return [];
-    }
-
-    const expireOlderThan = expireFromTimestamp - (this._maxAgeSeconds * 1000);
-    const timestamps = await this._timestampModel.getAllTimestamps();
-    const expiredURLs = [];
-    timestamps.forEach((timestampDetails) => {
-      if (timestampDetails.timestamp < expireOlderThan) {
-        expiredURLs.push(timestampDetails.url);
-      }
-    });
-
-    return expiredURLs;
-  }
-
-  /**
-   * @return {Promise<Array>}
-   *
-   * @private
-   */
-  async _findExtraEntries() {
-    const extraURLs = [];
-
-    if (!this._maxEntries) {
-      return [];
-    }
-
-    const timestamps = await this._timestampModel.getAllTimestamps();
-    while (timestamps.length > this._maxEntries) {
-      const lastUsed = timestamps.shift();
-      extraURLs.push(lastUsed.url);
-    }
-
-    return extraURLs;
-  }
-
-  /**
-   * @param {Array<string>} urls Array of URLs to delete from cache.
-   *
-   * @private
-   */
-  async _deleteFromCache(urls) {
-    const cache = await caches.open(this._cacheName);
-    for (const url of urls) {
-      await cache.delete(url);
-    }
-  }
-
-  /**
-   * @param {Array<string>} urls Array of URLs to delete from IDB
-   *
-   * @private
-   */
-  async _deleteFromIDB(urls) {
-    for (const url of urls) {
-      await this._timestampModel.deleteURL(url);
     }
   }
 
@@ -226,10 +142,7 @@ class CacheExpiration {
       });
     }
 
-    const urlObject = new URL(url, location);
-    urlObject.hash = '';
-
-    await this._timestampModel.setTimestamp(urlObject.href, Date.now());
+    await this._timestampModel.setTimestamp(url, Date.now());
   }
 
   /**
@@ -244,16 +157,16 @@ class CacheExpiration {
    * @return {boolean}
    */
   async isURLExpired(url) {
-    if (!this._maxAgeSeconds) {
-      throw new WorkboxError(`expired-test-without-max-age`, {
-        methodName: 'isURLExpired',
-        paramName: 'maxAgeSeconds',
-      });
+    if (process.env.NODE_ENV !== 'production') {
+      if (!this._maxAgeSeconds) {
+        throw new WorkboxError(`expired-test-without-max-age`, {
+          methodName: 'isURLExpired',
+          paramName: 'maxAgeSeconds',
+        });
+      }
     }
-    const urlObject = new URL(url, location);
-    urlObject.hash = '';
 
-    const timestamp = await this._timestampModel.getTimestamp(urlObject.href);
+    const timestamp = await this._timestampModel.getTimestamp(url);
     const expireOlderThan = Date.now() - (this._maxAgeSeconds * 1000);
     return (timestamp < expireOlderThan);
   }
@@ -266,7 +179,7 @@ class CacheExpiration {
     // Make sure we don't attempt another rerun if we're called in the middle of
     // a cache expiration.
     this._rerunRequested = false;
-    await this._timestampModel.delete();
+    await this._timestampModel.expireEntries(0, 0); // Expires all entries.
   }
 }
 

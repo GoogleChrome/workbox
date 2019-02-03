@@ -103,7 +103,7 @@
     "semver": "^5.5.1",
     "serve-index": "^1.9.1",
     "service-worker-mock": "^1.9.3",
-    "shelving-mock-indexeddb": "github:philipwalton/shelving-mock-indexeddb#c7b3b002472597ee75b027011049737a06460261",
+    "shelving-mock-indexeddb": "github:philipwalton/shelving-mock-indexeddb#2379a818f8a45873903166d1bdb4ff3dbfbc550d",
     "sinon": "^6.3.4",
     "tempy": "^0.2.1",
     "url-search-params": "^1.1.0",
