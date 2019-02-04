@@ -91,7 +91,7 @@ class CacheExpiration {
     this._isRunning = true;
 
     const minTimestamp = this._maxAgeSeconds ?
-        Date.now() - this._maxAgeSeconds : undefined;
+        Date.now() - (this._maxAgeSeconds * 1000) : undefined;
 
     const urlsExpired = await this._timestampModel.expireEntries(
         minTimestamp, this._maxEntries);

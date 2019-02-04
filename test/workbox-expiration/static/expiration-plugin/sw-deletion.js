@@ -21,7 +21,7 @@ const cacheName = 'expiration-plugin-deletion';
 
 workbox.routing.registerRoute(
     /.*.txt/,
-    workbox.strategies.cacheFirst({
+    new workbox.strategies.CacheFirst({
       cacheName,
       plugins: [
         expirationPlugin,
