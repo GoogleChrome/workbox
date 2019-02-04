@@ -73,30 +73,58 @@ describe(`[workbox-expiration] CacheExpiration`, function() {
       });
 
       const cacheName = 'expire-and-delete';
-      const maxAgeSeconds = 10;
-      const currentTimestamp = Date.now();
       const cache = await caches.open(cacheName);
+      const expirationManager = new CacheExpiration(cacheName, {
+        maxAgeSeconds: 10,
+      });
 
       const timestampModel = new CacheTimestampsModel(cacheName);
-      await timestampModel.setTimestamp('/', currentTimestamp);
-      cache.put('https://example.com/', new Response('Injected request'));
+      await timestampModel.setTimestamp('/one', Date.now());
+      cache.put('https://example.com/one', new Response('Injected request'));
 
-      const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
+      clock.tick(5000);
 
+      // Add another entry after 5 seconds.
+      await timestampModel.setTimestamp('/two', Date.now());
+      cache.put('https://example.com/two', new Response('Injected request'));
+
+      // Ensure both entries are still present after an initial expire.
       await expirationManager.expireEntries();
 
-      clock.tick(maxAgeSeconds * 1000 + 1);
+      const db = await getDb();
+      let timestamps = await db.getAll('cache-entries');
+      expect(timestamps).to.have.lengthOf(2);
+      expect(timestamps[0].url).to.equal('https://example.com/one');
+      expect(timestamps[1].url).to.equal('https://example.com/two');
 
-      // The plus one is to ensure it expires
+      let cachedRequests = await cache.keys();
+      expect(cachedRequests).to.have.lengthOf(2);
+      expect(cachedRequests[0].url).to.equal('https://example.com/one');
+      expect(cachedRequests[1].url).to.equal('https://example.com/two');
+
+      // Tick the clock 6 seconds, so the first entry should now be expired.
+      clock.tick(6000);
+      await expirationManager.expireEntries();
+
+      timestamps = await db.getAll('cache-entries');
+      expect(timestamps).to.have.lengthOf(1);
+      expect(timestamps[0].url).to.equal('https://example.com/two');
+
+      // Check cache is empty
+      cachedRequests = await cache.keys();
+      expect(cachedRequests).to.have.lengthOf(1);
+      expect(cachedRequests[0].url).to.equal('https://example.com/two');
+
+      // Tick the clock 5 more seconds, so all entries should be expired.
+      clock.tick(5000);
       await expirationManager.expireEntries();
 
       // Check IDB is empty
-      const db = await getDb();
-      const timestamps = await db.getAll('cache-entries');
+      timestamps = await db.getAll('cache-entries');
       expect(timestamps).to.deep.equal([]);
 
       // Check cache is empty
-      const cachedRequests = await cache.keys();
+      cachedRequests = await cache.keys();
       expect(cachedRequests).to.deep.equal([]);
     });
 
