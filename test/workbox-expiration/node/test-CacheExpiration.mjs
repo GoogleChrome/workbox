@@ -231,7 +231,7 @@ describe(`[workbox-expiration] CacheExpiration`, function() {
   });
 
   describe(`isURLExpired()`, function() {
-    it(`should throw when called without maxAgeSeconds`, function() {
+    devOnly.it(`should throw when called without maxAgeSeconds`, function() {
       const expirationManager = new CacheExpiration('test-cache', {maxEntries: 1});
       return expectError(() => {
         return expirationManager.isURLExpired();
