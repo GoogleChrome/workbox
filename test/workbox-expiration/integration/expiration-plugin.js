@@ -143,7 +143,7 @@ describe(`expiration.Plugin`, function() {
       'expiration-plugin-deletion',
     ]);
 
-    let existence = await runInSW('doesDbExist', 'expiration-plugin-deletion');
+    let existence = await runInSW('doesDbExist', 'workbox-expiration');
     expect(existence).to.be.true;
 
     error = await global.__workbox.webdriver.executeAsyncScript((cb) => {
@@ -156,11 +156,16 @@ describe(`expiration.Plugin`, function() {
       throw new Error(error);
     }
 
-    // After cleanup, there shouldn't be any cache keys or IndexedDB dbs.
+    // After cleanup, there shouldn't be any cache keys or IndexedDB entries
+    // with the cacheName 'expiration-plugin-deletion'.
     keys = await runInSW('cachesKeys');
     expect(keys).to.deep.equal([]);
 
-    existence = await runInSW('doesDbExist', 'expiration-plugin-deletion');
-    expect(existence).to.be.false;
+    const entries = (await runInSW('getObjectStoreEntries',
+        'workbox-expiration', 'cache-entries')).filter((entry) => {
+      return entry.cacheName === 'expiration-plugin-deletion';
+    });
+
+    expect(entries).to.deep.equal([]);
   });
 });
