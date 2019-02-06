@@ -14,7 +14,7 @@ importScripts('/infra/testing/comlink/sw-interface.js');
 
 workbox.routing.registerRoute(
     /.*.txt/,
-    workbox.strategies.cacheFirst({
+    new workbox.strategies.CacheFirst({
       cacheName: 'expiration-plugin-max-age-seconds',
       plugins: [
         new workbox.expiration.Plugin({

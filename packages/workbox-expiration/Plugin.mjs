@@ -6,12 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {CacheExpiration} from './CacheExpiration.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {registerQuotaErrorCallback} from 'workbox-core/index.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {registerQuotaErrorCallback}
+  from 'workbox-core/registerQuotaErrorCallback.mjs';
 
+import {CacheExpiration} from './CacheExpiration.mjs';
 import './_version.mjs';
 
 /**
@@ -104,7 +107,7 @@ class Plugin {
 
   /**
    * A "lifecycle" callback that will be triggered automatically by the
-   * `workbox.runtimeCaching` handlers when a `Response` is about to be returned
+   * `workbox.strategies` handlers when a `Response` is about to be returned
    * from a [Cache](https://developer.mozilla.org/en-US/docs/Web/API/Cache) to
    * the handler. It allows the `Response` to be inspected for freshness and
    * prevents it from being used if the `Response`'s `Date` header value is
@@ -119,7 +122,7 @@ class Plugin {
    *
    * @private
    */
-  cachedResponseWillBeUsed({cacheName, cachedResponse}) {
+  cachedResponseWillBeUsed({event, request, cacheName, cachedResponse}) {
     if (!cachedResponse) {
       return null;
     }
@@ -130,6 +133,20 @@ class Plugin {
     // expired, it'll only be used once.
     const cacheExpiration = this._getCacheExpiration(cacheName);
     cacheExpiration.expireEntries();
+
+    // Update the metadata for the request URL to the current timestamp,
+    // but don't `await` it as we don't want to block the response.
+    const updateTimestampDone = cacheExpiration.updateTimestamp(request.url);
+    if (event) {
+      try {
+        event.waitUntil(updateTimestampDone);
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.warn(`Unable to ensure service worker stays alive when ` +
+            `updating cache entry for '${getFriendlyURL(event.request.url)}'.`);
+        }
+      }
+    }
 
     return isFresh ? cachedResponse : null;
   }
@@ -190,7 +207,7 @@ class Plugin {
 
   /**
    * A "lifecycle" callback that will be triggered automatically by the
-   * `workbox.runtimeCaching` handlers when an entry is added to a cache.
+   * `workbox.strategies` handlers when an entry is added to a cache.
    *
    * @param {Object} options
    * @param {string} options.cacheName Name of the cache that was updated.
@@ -224,7 +241,7 @@ class Plugin {
    * This is a helper method that performs two operations:
    *
    * - Deletes *all* the underlying Cache instances associated with this plugin
-   * instance, by calling caches.delete() on you behalf.
+   * instance, by calling caches.delete() on your behalf.
    * - Deletes the metadata from IndexedDB used to keep track of expiration
    * details for each Cache instance.
    *

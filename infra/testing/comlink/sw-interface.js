@@ -37,6 +37,21 @@ const api = {
     });
   },
 
+  getObjectStoreEntries: (dbName, objStoreName) => {
+    return new Promise((resolve) => {
+      const result = indexedDB.open(dbName);
+      result.onsuccess = (event) => {
+        const db = event.target.result;
+        db.transaction(objStoreName)
+            .objectStore(objStoreName)
+            .getAll()
+            .onsuccess = (event) => {
+              resolve(event.target.result);
+            };
+      };
+    });
+  },
+
   cacheURLs: async (cacheName) => {
     const cache = await caches.open(cacheName);
     const requests = await cache.keys();
