@@ -210,7 +210,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const {swString, warnings} = await generateSWString(options);
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
-        getCacheKeyForUrl: [[navigateFallback]],
+        getCacheKeyForURL: [[navigateFallback]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         precacheAndRoute: [[[], {}]],
         registerNavigationRoute: [['/urlWithCacheKey']],
@@ -228,7 +228,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const {swString, warnings} = await generateSWString(options);
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
-        getCacheKeyForUrl: [[navigateFallback]],
+        getCacheKeyForURL: [[navigateFallback]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
         precacheAndRoute: [[[], {}]],
         registerNavigationRoute: [['/urlWithCacheKey', {

@@ -47,7 +47,7 @@ function setupSpiesAndContext() {
     },
     precaching: {
       // To make testing easier, hardcode this fake URL return value.
-      getCacheKeyForUrl: sinon.stub().returns('/urlWithCacheKey'),
+      getCacheKeyForURL: sinon.stub().returns('/urlWithCacheKey'),
       precacheAndRoute: sinon.spy(),
       cleanupOutdatedCaches: sinon.spy(),
     },
@@ -80,7 +80,7 @@ function setupSpiesAndContext() {
     cacheExpirationPlugin: cacheExpirationPluginSpy,
     CacheFirst: workbox.strategies.CacheFirst,
     clientsClaim: workbox.core.clientsClaim,
-    getCacheKeyForUrl: workbox.precaching.getCacheKeyForUrl,
+    getCacheKeyForURL: workbox.precaching.getCacheKeyForURL,
     googleAnalyticsInitialize: workbox.googleAnalytics.initialize,
     NetworkFirst: workbox.strategies.NetworkFirst,
     precacheAndRoute: workbox.precaching.precacheAndRoute,
