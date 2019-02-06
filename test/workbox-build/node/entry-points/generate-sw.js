@@ -366,7 +366,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        getCacheKeyForUrl: [[navigateFallback]],
+        getCacheKeyForURL: [[navigateFallback]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
         precacheAndRoute: [[[{
           url: 'index.html',
