@@ -6,13 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {CacheExpiration} from './CacheExpiration.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {registerQuotaErrorCallback}
   from 'workbox-core/registerQuotaErrorCallback.mjs';
 
+import {CacheExpiration} from './CacheExpiration.mjs';
 import './_version.mjs';
 
 /**
@@ -136,7 +138,14 @@ class Plugin {
     // but don't `await` it as we don't want to block the response.
     const updateTimestampDone = cacheExpiration.updateTimestamp(request.url);
     if (event) {
-      event.waitUntil(updateTimestampDone);
+      try {
+        event.waitUntil(updateTimestampDone);
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.warn(`Unable to ensure service worker stays alive when ` +
+            `updating cache entry for '${getFriendlyURL(event.request.url)}'.`);
+        }
+      }
     }
 
     return isFresh ? cachedResponse : null;
@@ -163,7 +172,7 @@ class Plugin {
       return true;
     }
 
-    // If we have a valid headerTime, then our response is fresh if the
+    // If we have a valid headerTime, then our response is fresh iff the
     // headerTime plus maxAgeSeconds is greater than the current time.
     const now = Date.now();
     return dateHeaderTimestamp >= now - (this._maxAgeSeconds * 1000);
