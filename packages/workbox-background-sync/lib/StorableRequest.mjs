@@ -29,7 +29,7 @@ const serializableProperties = [
  *
  * @private
  */
-export default class StorableRequest {
+class StorableRequest {
   /**
    * Converts a Request object to a plain object that can be structured
    * cloned or JSON-stringified.
@@ -134,3 +134,5 @@ export default class StorableRequest {
     return new StorableRequest(this.toObject());
   }
 }
+
+export {StorableRequest};

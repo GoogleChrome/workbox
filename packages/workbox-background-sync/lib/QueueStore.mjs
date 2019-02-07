@@ -9,8 +9,7 @@
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
 import {migrateDb} from 'workbox-core/_private/migrateDb.mjs';
-import {DB_NAME, DB_VERSION, OBJECT_STORE_NAME, INDEXED_PROP}
-  from '../utils/constants.mjs';
+import {DB_NAME, DB_VERSION, OBJECT_STORE_NAME, INDEXED_PROP} from '../lib/constants.mjs';
 
 import '../_version.mjs';
 

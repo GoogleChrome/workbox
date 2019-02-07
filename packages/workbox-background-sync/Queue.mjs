@@ -10,9 +10,9 @@ import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {QueueStore} from './models/QueueStore.mjs';
-import StorableRequest from './models/StorableRequest.mjs';
-import {TAG_PREFIX, MAX_RETENTION_TIME} from './utils/constants.mjs';
+import {QueueStore} from './lib/QueueStore.mjs';
+import {StorableRequest} from './lib/StorableRequest.mjs';
+import {TAG_PREFIX, MAX_RETENTION_TIME} from './lib/constants.mjs';
 import './_version.mjs';
 
 const queueNames = new Set();
