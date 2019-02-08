@@ -81,7 +81,7 @@ export class DBWrapper {
         if (openRequestTimedOut) {
           db.close();
         } else {
-          db.onversionchange = this._onversionchange;
+          db.onversionchange = this._onversionchange.bind(this);
           resolve(db);
         }
       };
@@ -241,7 +241,10 @@ export class DBWrapper {
    * blocked by the current, open connection.
    */
   close() {
-    if (this._db) this._db.close();
+    if (this._db) {
+      this._db.close();
+      this._db = null;
+    }
   }
 }
 

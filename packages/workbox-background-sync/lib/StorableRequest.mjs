@@ -47,9 +47,11 @@ class StorableRequest {
 
     // Set the body if present.
     if (request.method !== 'GET') {
-      // Use blob to support non-text request bodies,
-      // and clone first in case the caller still needs the request.
-      requestData.body = await request.clone().blob();
+      // Use ArrayBuffer to support non-text request bodies.
+      // NOTE: we can't use Blobs becuse Safari doesn't support storing
+      // Blobs in IndexedDB in some cases:
+      // https://github.com/dfahlander/Dexie.js/issues/618#issuecomment-398348457
+      requestData.body = await request.clone().arrayBuffer();
     }
 
     // Convert the headers from an iterable to an object.
@@ -106,7 +108,7 @@ class StorableRequest {
     const requestData = Object.assign({}, this._requestData);
     requestData.headers = Object.assign({}, this._requestData.headers);
     if (requestData.body) {
-      requestData.body = requestData.body.slice();
+      requestData.body = requestData.body.slice(0);
     }
 
     return requestData;

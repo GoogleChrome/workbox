@@ -7,10 +7,8 @@
 */
 
 import {expect} from 'chai';
+import {StorableRequest} from '../../../../packages/workbox-background-sync/lib/StorableRequest.mjs';
 import expectError from '../../../../infra/testing/expectError';
-import {devOnly} from '../../../../infra/testing/env-it';
-import StorableRequest from
-  '../../../../packages/workbox-background-sync/models/StorableRequest.mjs';
 
 
 describe(`[workbox-background-sync] StorableRequest`, function() {
@@ -19,7 +17,7 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
       const request = new Request('/foo', {
         method: 'POST',
         body: 'it worked!',
-        mode: 'no-cors',
+        mode: 'cors',
         headers: {
           'x-foo': 'bar',
           'x-qux': 'baz',
@@ -27,12 +25,12 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
       });
 
       const storableRequest = await StorableRequest.fromRequest(request);
-
-      expect(storableRequest._requestData.url).to.equal('/foo');
+      expect(storableRequest._requestData.url).to.equal(`${location.origin}/foo`);
       expect(storableRequest._requestData.method).to.equal('POST');
-      expect(storableRequest._requestData.body).to.be.instanceOf(Blob);
-      expect(storableRequest._requestData.body.size).to.equal(10);
-      expect(storableRequest._requestData.mode).to.equal('no-cors');
+      expect(storableRequest._requestData.body).to.be.instanceOf(ArrayBuffer);
+      expect(storableRequest._requestData.body.byteLength).to.equal(10);
+
+      expect(storableRequest._requestData.mode).to.equal('cors');
       expect(storableRequest._requestData.headers['x-foo']).to.equal('bar');
       expect(storableRequest._requestData.headers['x-qux']).to.equal('baz');
     });
@@ -44,7 +42,7 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
         url: '/foo',
         method: 'POST',
         body: 'it worked!',
-        mode: 'no-cors',
+        mode: 'cors',
         headers: {
           'x-foo': 'bar',
           'x-qux': 'baz',
@@ -55,13 +53,17 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
       expect(storableRequest._requestData).to.deep.equal(requestData);
     });
 
-    devOnly.it(`throws if not given a requestData object`, function() {
+    it(`throws if not given a requestData object`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       return expectError(() => {
         new StorableRequest();
       }, 'incorrect-type');
     });
 
-    devOnly.it(`throws if not given a URL in the requestData object`, function() {
+    it(`throws if not given a URL in the requestData object`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       return expectError(() => {
         new StorableRequest({});
       }, 'incorrect-type');
@@ -74,7 +76,7 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
           new Request('/foo', {
             method: 'POST',
             body: 'it worked!',
-            mode: 'no-cors',
+            mode: 'cors',
             headers: {
               'x-foo': 'bar',
               'x-qux': 'baz',
@@ -84,11 +86,11 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
       const requestData = storableRequest.toObject();
 
       expect(Object.getPrototypeOf(requestData)).to.equal(Object.prototype);
-      expect(requestData.url).to.equal('/foo');
+      expect(requestData.url).to.equal(`${location.origin}/foo`);
       expect(requestData.method).to.equal('POST');
-      expect(requestData.body).to.be.instanceOf(Blob);
-      expect(requestData.body.size).to.equal(10);
-      expect(requestData.mode).to.equal('no-cors');
+      expect(requestData.body).to.be.instanceOf(ArrayBuffer);
+      expect(requestData.body.byteLength).to.equal(10);
+      expect(requestData.mode).to.equal('cors');
       expect(requestData.headers['x-foo']).to.equal('bar');
       expect(requestData.headers['x-qux']).to.equal('baz');
     });
@@ -100,7 +102,7 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
           new Request('/foo', {
             method: 'POST',
             body: 'it worked!',
-            mode: 'no-cors',
+            mode: 'cors',
             headers: {
               'x-foo': 'bar',
               'x-qux': 'baz',
@@ -110,10 +112,10 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
       const request = storableRequest.toRequest();
 
       expect(Object.getPrototypeOf(request)).to.equal(Request.prototype);
-      expect(request.url).to.equal('/foo');
+      expect(request.url).to.equal(`${location.origin}/foo`);
       expect(request.method).to.equal('POST');
-      expect(await request.blob()).to.be.instanceOf(Blob);
-      expect(request.mode).to.equal('no-cors');
+      expect(await request.clone().text()).to.equal('it worked!');
+      expect(request.mode).to.equal('cors');
       expect(request.headers.get('x-foo')).to.equal('bar');
       expect(request.headers.get('x-qux')).to.equal('baz');
     });
@@ -125,7 +127,7 @@ describe(`[workbox-background-sync] StorableRequest`, function() {
         url: '/foo',
         body: new Blob(['it worked!']),
         method: 'POST',
-        mode: 'no-cors',
+        mode: 'cors',
         headers: {
           'x-foo': 'bar',
           'x-qux': 'baz',

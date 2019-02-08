@@ -12,8 +12,11 @@ import {assert} from 'workbox-core/_private/assert.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {QueueStore} from './lib/QueueStore.mjs';
 import {StorableRequest} from './lib/StorableRequest.mjs';
-import {TAG_PREFIX, MAX_RETENTION_TIME} from './lib/constants.mjs';
 import './_version.mjs';
+
+
+const TAG_PREFIX = 'workbox-background-sync';
+const MAX_RETENTION_TIME = 60 * 24 * 7; // 7 days in minutes
 
 const queueNames = new Set();
 
