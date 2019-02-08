@@ -31,7 +31,7 @@ const deprecate = (strategy) => {
       const strategyCtrName = strategy[0].toUpperCase() + strategy.slice(1);
       logger.warn(`The 'workbox.strategies.${strategy}()' function has been ` +
           `deprecated and will be removed in a future version of Workbox.\n` +
-          `Please use 'new workbox.strategies.${strategyCtrName}()'' instead.`);
+          `Please use 'new workbox.strategies.${strategyCtrName}()' instead.`);
     }
     return new StrategyCtr(options);
   };
