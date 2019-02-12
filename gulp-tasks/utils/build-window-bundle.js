@@ -61,7 +61,7 @@ module.exports = async (packagePath, buildType) => {
     }
   };
 
-  const bundle = await rollup({
+  const mjsBundle = await rollup({
     input: moduleBrowserPath,
     plugins: rollupHelper.getDefaultPlugins(buildType, 'esm', false),
     onwarn,
@@ -73,9 +73,15 @@ module.exports = async (packagePath, buildType) => {
     onwarn,
   });
 
+  const umdBundle = await rollup({
+    input: moduleBrowserPath,
+    plugins: rollupHelper.getDefaultPlugins(buildType, 'umd', true),
+    onwarn,
+  });
+
   // Generate both a native module and a UMD module (for compat).
   await Promise.all([
-    bundle.write({
+    mjsBundle.write({
       file: path.join(outputDirectory, esmFilename),
       sourcemap: true,
       format: 'esm',
@@ -85,7 +91,7 @@ module.exports = async (packagePath, buildType) => {
       sourcemap: true,
       format: 'esm',
     }),
-    bundle.write({
+    umdBundle.write({
       file: path.join(outputDirectory, umdFilename),
       sourcemap: true,
       format: 'umd',
