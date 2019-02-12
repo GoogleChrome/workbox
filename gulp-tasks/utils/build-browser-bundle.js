@@ -6,17 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-const buffer = require('vinyl-buffer');
 const fs = require('fs-extra');
-const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
 const path = require('path');
-const rename = require('gulp-rename');
-const rollup = require('rollup');
-const rollupStream = require('rollup-stream');
-const source = require('vinyl-source-stream');
-const sourcemaps = require('gulp-sourcemaps');
-
+const {rollup} = require('rollup');
 const constants = require('./constants');
 const logHelper = require('../../infra/utils/log-helper');
 const pkgPathToName = require('./pkg-path-to-name');
@@ -97,7 +90,7 @@ const externalAndPure = (importPath) => {
   return (importPath.indexOf('workbox-') === 0);
 };
 
-module.exports = (packagePath, buildType) => {
+module.exports = async (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
   const packageIndex = path.join(packagePath, `index.mjs`);
 
@@ -140,15 +133,8 @@ module.exports = (packagePath, buildType) => {
 
   const plugins = rollupHelper.getDefaultPlugins(buildType);
 
-  return rollupStream({
+  const bundle = await rollup({
     input: packageIndex,
-    rollup,
-    output: {
-      name: namespace,
-      sourcemap: true,
-      format: 'iife',
-      globals,
-    },
     external: externalAndPure,
     treeshake: {
       pureExternalModules: externalAndPure,
@@ -170,22 +156,13 @@ module.exports = (packagePath, buildType) => {
         throw new Error(`Unhandled Rollup Warning: ${warning}`);
       }
     },
-  })
-      .on('error', (err) => {
-        const args = Object.keys(err).map((key) => `${key}: ${err[key]}`);
-        logHelper.error(err, `\n\n${args.join('\n')}`);
-        throw err;
-      })
-  // We must give the generated stream the same name as the entry file
-  // for the sourcemaps to work correctly
-      .pipe(source(packageIndex))
-  // gulp-sourcemaps don't work with streams so we need
-      .pipe(buffer())
-  // This tells gulp-sourcemaps to load the inline sourcemap
-      .pipe(sourcemaps.init({loadMaps: true}))
-  // This renames the output file
-      .pipe(rename(outputFilename))
-  // This writes the sourcemap alongside the final build file
-      .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest(outputDirectory));
+  });
+
+  await bundle.write({
+    file: path.join(outputDirectory, outputFilename),
+    name: namespace,
+    sourcemap: true,
+    format: 'iife',
+    globals,
+  });
 };

@@ -22,9 +22,10 @@
     "prepare": "npm run build"
   },
   "workbox": {
-    "packageType": "window"
+    "packageType": "window",
+    "primaryBuild": "build/workbox-window.prod.mjs"
   },
-  "main": "build/workbox-window.prod.mjs",
+  "main": "build/workbox-window.prod.umd.js",
   "module": "index.mjs",
   "dependencies": {
     "workbox-core": "^4.0.0-rc.0"

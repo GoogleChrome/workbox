@@ -52,10 +52,8 @@ describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
       const expectedPath = path.join(destDir, workboxDirectory);
       expect(expectedPath).to.eql(ensureDirStub.args[0][0]);
 
-      // This reflects the number of library files that were copied over:
-      // - both prod and dev builds (except for workbox-sw.js, which is a single build)
-      // - source maps for each
-      expect(copyStub.callCount).to.eql(54);
+      // The total number of package build directories that were copied:
+      expect(copyStub.callCount).to.eql(14);
     });
   }
 });

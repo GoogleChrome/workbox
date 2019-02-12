@@ -22,7 +22,7 @@ async function handler(req, res) {
   const packagePath = path.join(ROOT_DIR, 'packages', pkg.name);
   const buildPath = path.dirname(path.join(packagePath, pkg.main));
 
-  let fileName = path.basename(pkg.main);
+  let fileName = path.basename(pkg.workbox.primaryBuild || pkg.main);
 
   if (buildType) {
     fileName = fileName.replace('.prod.', `.${buildType}.`);

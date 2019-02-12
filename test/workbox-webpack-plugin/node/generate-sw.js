@@ -77,6 +77,14 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     'workbox-streams.prod.js.map',
     'workbox-sw.js',
     'workbox-sw.js.map',
+    'workbox-window.dev.mjs',
+    'workbox-window.dev.mjs.map',
+    'workbox-window.dev.umd.js',
+    'workbox-window.dev.umd.js.map',
+    'workbox-window.prod.mjs',
+    'workbox-window.prod.mjs.map',
+    'workbox-window.prod.umd.js',
+    'workbox-window.prod.umd.js.map',
   ];
 
   describe(`[workbox-webpack-plugin] runtime errors`, function() {
@@ -365,7 +373,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(statsJson.warnings).to.have.lengthOf(0);
 
           // Validate the copied library files.
-          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
+          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.+(js|mjs)*`,
               {cwd: outputDir});
 
           const modulePathPrefix = path.dirname(libraryFiles[0]);
@@ -442,7 +450,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(statsJson.warnings).to.have.lengthOf(0);
 
           // Validate the copied library files.
-          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
+          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.+(js|mjs)*`,
               {cwd: outputDir});
 
           const modulePathPrefix = path.dirname(libraryFiles[0]);
@@ -1589,7 +1597,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           const swFile = path.join(outputDir, 'service-worker.js');
 
           // Validate the copied library files.
-          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
+          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.+(js|mjs)*`,
               {cwd: path.join(outputDir, importsDirectory)});
 
           const modulePathPrefix = path.dirname(libraryFiles[0]);

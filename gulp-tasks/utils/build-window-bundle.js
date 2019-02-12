@@ -6,16 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-const buffer = require('vinyl-buffer');
 const fs = require('fs-extra');
-const gulp = require('gulp');
 const path = require('path');
-const rename = require('gulp-rename');
-const rollup = require('rollup');
-const rollupStream = require('rollup-stream');
-const source = require('vinyl-source-stream');
-const sourcemaps = require('gulp-sourcemaps');
-
+const {rollup} = require('rollup');
 const constants = require('./constants');
 const logHelper = require('../../infra/utils/log-helper');
 const pkgPathToName = require('./pkg-path-to-name');
@@ -26,7 +19,7 @@ const ERROR_NO_MODULE_BROWSER =
   `Could not find the module's index.mjs file: `;
 
 
-module.exports = (packagePath, buildType) => {
+module.exports = async (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
   const moduleBrowserPath = path.join(packagePath, `index.mjs`);
 
@@ -37,25 +30,24 @@ module.exports = (packagePath, buildType) => {
     return Promise.reject(ERROR_NO_MODULE_BROWSER + packageName);
   }
 
-  const outputFilename = `${packageName}.${buildType.slice(0, 4)}.mjs`;
   const outputDirectory = path.join(
       packagePath, constants.PACKAGE_BUILD_DIRNAME);
 
+  const esFilename = `${packageName}.${buildType.slice(0, 4)}.mjs`;
+  const umdFilename = `${packageName}.${buildType.slice(0, 4)}.umd.js`;
+
   logHelper.log(
-      `Building Window Bundle: ${logHelper.highlight(outputFilename)}`);
+      `Building window module bundle: ${logHelper.highlight(esFilename)}`);
+  logHelper.log(
+      `Building window UMD bundle: ${logHelper.highlight(umdFilename)}`);
 
   // TODO(philipwalton): ensure all loaded workbox modules conform to
   // the same conventions we document to external developers. This can be
   // done with a Rollup plugin that validates them.
   const plugins = rollupHelper.getDefaultPlugins(buildType, {module: true});
 
-  return rollupStream({
+  const bundle = await rollup({
     input: moduleBrowserPath,
-    rollup,
-    output: {
-      sourcemap: true,
-      format: 'es',
-    },
     plugins,
     onwarn: (warning) => {
       if (buildType === constants.BUILD_TYPES.prod &&
@@ -73,22 +65,20 @@ module.exports = (packagePath, buildType) => {
         throw new Error(`Unhandled Rollup Warning: ${warning}`);
       }
     },
-  })
-      .on('error', (err) => {
-        const args = Object.keys(err).map((key) => `${key}: ${err[key]}`);
-        logHelper.error(err, `\n\n${args.join('\n')}`);
-        throw err;
-      })
-  // We must give the generated stream the same name as the entry file
-  // for the sourcemaps to work correctly
-      .pipe(source(moduleBrowserPath))
-  // gulp-sourcemaps don't work with streams so we need
-      .pipe(buffer())
-  // This tells gulp-sourcemaps to load the inline sourcemap
-      .pipe(sourcemaps.init({loadMaps: true}))
-  // This renames the output file
-      .pipe(rename(outputFilename))
-  // This writes the sourcemap alongside the final build file
-      .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest(outputDirectory));
+  });
+
+  // Generate both a native module and a UMD module (for compat).
+  await Promise.all([
+    bundle.write({
+      file: path.join(outputDirectory, esFilename),
+      sourcemap: true,
+      format: 'es',
+    }),
+    bundle.write({
+      file: path.join(outputDirectory, umdFilename),
+      sourcemap: true,
+      format: 'umd',
+      name: 'workbox',
+    }),
+  ]);
 };

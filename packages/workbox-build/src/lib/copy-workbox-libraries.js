@@ -8,16 +8,11 @@
 
 const fse = require('fs-extra');
 const path = require('path');
-
 const errors = require('./errors');
-const useBuildType = require('./use-build-type');
+
 
 // Used to filter the libraries to copy based on our package.json dependencies.
 const WORKBOX_PREFIX = 'workbox-';
-const BUILD_TYPES = [
-  'dev',
-  'prod',
-];
 
 /**
  * This copies over a set of runtime libraries used by Workbox into a
@@ -53,23 +48,8 @@ module.exports = async (destDirectory) => {
   const librariesToCopy = Object.keys(thisPkg.dependencies).filter(
       (dependency) => dependency.startsWith(WORKBOX_PREFIX));
   for (const library of librariesToCopy) {
-    const pkg = require(`${library}/package.json`);
-    const defaultPathToLibrary = require.resolve(`${library}/${pkg.main}`);
-
-    for (const buildType of BUILD_TYPES) {
-      // Special-case logic for workbox-sw, which only has a single build type.
-      // This prevents a race condition with two identical copy promises;
-      // see https://github.com/GoogleChrome/workbox/issues/1180
-      if (library === 'workbox-sw' && buildType === BUILD_TYPES[0]) {
-        continue;
-      }
-
-      const srcPath = useBuildType(defaultPathToLibrary, buildType);
-      const destPath = path.join(workboxDirectoryPath,
-          path.basename(srcPath));
-      copyPromises.push(fse.copy(srcPath, destPath));
-      copyPromises.push(fse.copy(`${srcPath}.map`, `${destPath}.map`));
-    }
+    copyPromises.push(fse.copy(
+        path.join('packages', library, 'build'), workboxDirectoryPath));
   }
 
   try {
