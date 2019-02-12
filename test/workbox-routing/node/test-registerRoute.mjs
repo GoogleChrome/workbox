@@ -43,7 +43,7 @@ describe(`[workbox-routing] registerRoute()`, function() {
     sandbox.restore();
   });
 
-  it(`should create a default router and add event listeners if one doens't exist`, function() {
+  it(`should create a default router and add event listeners if one doesn't exist`, function() {
     sandbox.spy(Router.prototype, 'addFetchListener');
     sandbox.spy(Router.prototype, 'addCacheListener');
 
