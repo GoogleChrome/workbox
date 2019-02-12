@@ -154,7 +154,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
 
       // Validate the copied library files.
-      const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
+      const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.+(js|mjs)*`,
           {cwd: path.dirname(swDest)});
 
       const modulePathPrefix = path.dirname(libraryFiles[0]);
@@ -211,8 +211,15 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         'workbox-streams.prod.js.map',
         'workbox-sw.js',
         'workbox-sw.js.map',
+        'workbox-window.dev.mjs',
+        'workbox-window.dev.mjs.map',
+        'workbox-window.dev.umd.js',
+        'workbox-window.dev.umd.js.map',
+        'workbox-window.prod.mjs',
+        'workbox-window.prod.mjs.map',
+        'workbox-window.prod.umd.js',
+        'workbox-window.prod.umd.js.map',
       ]);
-
 
       // The correct importScripts path should use the versioned name of the
       // parent workbox libraries directory. We don't know that version ahead
