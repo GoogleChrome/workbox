@@ -7,14 +7,17 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.mjs';
+
 import {NavigationRoute} from './NavigationRoute.mjs';
 import {RegExpRoute} from './RegExpRoute.mjs';
 import {registerNavigationRoute} from './registerNavigationRoute.mjs';
 import {registerRoute} from './registerRoute.mjs';
 import {Route} from './Route.mjs';
 import {Router} from './Router.mjs';
-import './_version.mjs';
+import {setCatchHandler} from './setCatchHandler.mjs';
+import {setDefaultHandler} from './setDefaultHandler.mjs';
 
+import './_version.mjs';
 
 if (process.env.NODE_ENV !== 'production') {
   assert.isSWEnv('workbox-routing');
@@ -27,4 +30,6 @@ export {
   registerRoute,
   Route,
   Router,
+  setCatchHandler,
+  setDefaultHandler,
 };
