@@ -48,8 +48,12 @@ module.exports = async (destDirectory) => {
   const librariesToCopy = Object.keys(thisPkg.dependencies).filter(
       (dependency) => dependency.startsWith(WORKBOX_PREFIX));
   for (const library of librariesToCopy) {
-    copyPromises.push(fse.copy(
-        path.join('packages', library, 'build'), workboxDirectoryPath));
+    const mainFilePath = require.resolve(library);
+    const srcPath = path.dirname(mainFilePath);
+
+    // fse.copy() copies all the files in a directory, not the directory itself.
+    // See https://github.com/jprichardson/node-fs-extra/blob/master/docs/copy.md#copysrc-dest-options-callback
+    copyPromises.push(fse.copy(srcPath, workboxDirectoryPath));
   }
 
   try {
