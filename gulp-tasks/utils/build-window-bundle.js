@@ -33,48 +33,65 @@ module.exports = async (packagePath, buildType) => {
   const outputDirectory = path.join(
       packagePath, constants.PACKAGE_BUILD_DIRNAME);
 
-  const esFilename = `${packageName}.${buildType.slice(0, 4)}.mjs`;
+  const esmFilename = `${packageName}.${buildType.slice(0, 4)}.mjs`;
+  const esmLegacyFilename = `${packageName}.${buildType.slice(0, 4)}.es5.mjs`;
   const umdFilename = `${packageName}.${buildType.slice(0, 4)}.umd.js`;
 
-  logHelper.log(
-      `Building window module bundle: ${logHelper.highlight(esFilename)}`);
-  logHelper.log(
-      `Building window UMD bundle: ${logHelper.highlight(umdFilename)}`);
+  logHelper.log('Building window module bundle: ' +
+      logHelper.highlight(esmFilename));
+  logHelper.log('Building window module bundle (es5): ' +
+      logHelper.highlight(esmLegacyFilename));
+  logHelper.log('Building window UMD bundle: ' +
+      logHelper.highlight(umdFilename));
 
-  // TODO(philipwalton): ensure all loaded workbox modules conform to
-  // the same conventions we document to external developers. This can be
-  // done with a Rollup plugin that validates them.
-  const plugins = rollupHelper.getDefaultPlugins(buildType, {module: true});
+  const onwarn = (warning) => {
+    if (buildType === constants.BUILD_TYPES.prod &&
+      warning.code === 'UNUSED_EXTERNAL_IMPORT') {
+      // This can occur when using rollup-plugin-replace.
+      logHelper.warn(`[${warning.code}] ${warning.message}`);
+      return;
+    }
 
-  const bundle = await rollup({
+    // The final builds should have no warnings.
+    if (warning.code && warning.message) {
+      throw new Error(`Unhandled Rollup Warning: [${warning.code}] ` +
+        `${warning.message}`);
+    } else {
+      throw new Error(`Unhandled Rollup Warning: ${warning}`);
+    }
+  };
+
+  const mjsBundle = await rollup({
     input: moduleBrowserPath,
-    plugins,
-    onwarn: (warning) => {
-      if (buildType === constants.BUILD_TYPES.prod &&
-        warning.code === 'UNUSED_EXTERNAL_IMPORT') {
-        // This can occur when using rollup-plugin-replace.
-        logHelper.warn(`[${warning.code}] ${warning.message}`);
-        return;
-      }
+    plugins: rollupHelper.getDefaultPlugins(buildType, 'esm', false),
+    onwarn,
+  });
 
-      // The final builds should have no warnings.
-      if (warning.code && warning.message) {
-        throw new Error(`Unhandled Rollup Warning: [${warning.code}] ` +
-          `${warning.message}`);
-      } else {
-        throw new Error(`Unhandled Rollup Warning: ${warning}`);
-      }
-    },
+  const es5Bundle = await rollup({
+    input: moduleBrowserPath,
+    plugins: rollupHelper.getDefaultPlugins(buildType, 'esm', true),
+    onwarn,
+  });
+
+  const umdBundle = await rollup({
+    input: moduleBrowserPath,
+    plugins: rollupHelper.getDefaultPlugins(buildType, 'umd', true),
+    onwarn,
   });
 
   // Generate both a native module and a UMD module (for compat).
   await Promise.all([
-    bundle.write({
-      file: path.join(outputDirectory, esFilename),
+    mjsBundle.write({
+      file: path.join(outputDirectory, esmFilename),
       sourcemap: true,
-      format: 'es',
+      format: 'esm',
     }),
-    bundle.write({
+    es5Bundle.write({
+      file: path.join(outputDirectory, esmLegacyFilename),
+      sourcemap: true,
+      format: 'esm',
+    }),
+    umdBundle.write({
       file: path.join(outputDirectory, umdFilename),
       sourcemap: true,
       format: 'umd',

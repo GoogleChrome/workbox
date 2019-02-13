@@ -26,7 +26,7 @@
     "primaryBuild": "build/workbox-window.prod.mjs"
   },
   "main": "build/workbox-window.prod.umd.js",
-  "module": "index.mjs",
+  "module": "build/workbox-window.prod.es5.mjs",
   "dependencies": {
     "workbox-core": "^4.0.0-rc.0"
   }

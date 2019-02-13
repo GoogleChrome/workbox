@@ -87,7 +87,7 @@ class Workbox extends EventTargetShim {
     // Before registering, attempt to determine if a SW is already controlling
     // the page, and if that SW script (and version, if specified) matches this
     // instance's script.
-    this._compatibleControllingSW = await this._getControllingSWIfCompatible();
+    this._compatibleControllingSW = this._getControllingSWIfCompatible();
 
     this._registration = await this._registerScript();
 
@@ -227,7 +227,7 @@ class Workbox extends EventTargetShim {
    * @private
    * @return {ServiceWorker|undefined}
    */
-  async _getControllingSWIfCompatible() {
+  _getControllingSWIfCompatible() {
     const controller = navigator.serviceWorker.controller;
 
     if (controller && urlsMatch(controller.scriptURL, this._scriptURL)) {

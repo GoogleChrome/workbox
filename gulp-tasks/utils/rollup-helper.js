@@ -6,6 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
+const asyncToPromises = require('babel-plugin-transform-async-to-promises');
 const babel = require('rollup-plugin-babel');
 const replace = require('rollup-plugin-replace');
 const resolve = require('rollup-plugin-node-resolve');
@@ -14,29 +15,38 @@ const terserPlugin = require('rollup-plugin-terser').terser;
 const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');
 
+
 module.exports = {
   // Every use of rollup should have minification and the replace
   // plugin set up and used to ensure as consist set of tests
   // as possible.
-  getDefaultPlugins: (buildType, {module = false} = {}) => {
+  getDefaultPlugins: (buildType, buildFormat = 'iife', es5 = false) => {
     const plugins = [resolve()];
 
     const babelConfig = {
       presets: [['@babel/preset-env', {
         targets: {
-          // This corresponds to the version of Chromium used by
-          // Samsung Internet 6.x, which is the minimum non-evergreen browser
-          // we currently support.
-          browsers: ['chrome >= 56'],
+          browsers: es5 ?
+              // If es5 is true, target IE11
+              // https://github.com/browserslist/browserslist#queries
+              ['ie 11'] :
+              // This corresponds to the version of Chromium used by
+              // Samsung Internet 6.x, which is the minimum non-evergreen
+              // browser we currently support.
+              ['chrome >= 56'],
         },
+        loose: true,
       }]],
     };
+    if (es5) {
+      babelConfig.plugins = [asyncToPromises];
+    }
     plugins.push(babel(babelConfig));
 
     let minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {
       const terserOptions = {
-        module,
+        module: buildFormat === 'esm' ? true : false,
         mangle: {
           properties: {
             reserved: [
@@ -57,9 +67,7 @@ module.exports = {
           },
         },
       };
-      plugins.push(
-          terserPlugin(terserOptions),
-      );
+      plugins.push(terserPlugin(terserOptions));
     }
 
     // This is what the build should be
