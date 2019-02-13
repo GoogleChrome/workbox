@@ -59,7 +59,7 @@ async function generateSW(config) {
     // The Workbox library files should not be precached, since they're cached
     // automatically by virtue of being used with importScripts().
     options.globIgnores = [
-      `**/${workboxDirectoryName}/*.js*`,
+      `**/${workboxDirectoryName}/*.+(js|mjs)*`,
     ].concat(options.globIgnores || []);
 
     const workboxSWPkg = require(`workbox-sw/package.json`);
