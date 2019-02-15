@@ -28,6 +28,16 @@ const REGISTRATION_TIMEOUT_DURATION = 60000;
  * A class to aid in handling service worker registration, updates, and
  * reacting to service worker lifecycle events.
  *
+ * @fires [message]{@link module:workbox-window.Workbox#message}
+ * @fires [installed]{@link module:workbox-window.Workbox#installed}
+ * @fires [waiting]{@link module:workbox-window.Workbox#waiting}
+ * @fires [controlling]{@link module:workbox-window.Workbox#controlling}
+ * @fires [activated]{@link module:workbox-window.Workbox#activated}
+ * @fires [redundant]{@link module:workbox-window.Workbox#redundant}
+ * @fires [externalinstalled]{@link module:workbox-window.Workbox#externalinstalled}
+ * @fires [externalwaiting]{@link module:workbox-window.Workbox#externalwaiting}
+ * @fires [externalactivated]{@link module:workbox-window.Workbox#externalactivated}
+ *
  * @memberof module:workbox-window
  */
 class Workbox extends EventTargetShim {
@@ -84,6 +94,10 @@ class Workbox extends EventTargetShim {
       await new Promise((res) => addEventListener('load', res));
     }
 
+    // Set this flag to true if any service worker was controlling the page
+    // at registration time.
+    this._isUpdate = Boolean(navigator.serviceWorker.controller);
+
     // Before registering, attempt to determine if a SW is already controlling
     // the page, and if that SW script (and version, if specified) matches this
     // instance's script.
@@ -103,6 +117,27 @@ class Workbox extends EventTargetShim {
           'statechange', this._onStateChange, {once: true});
     }
 
+    // If there's a waiting service worker with a matching URL before the
+    // `updatefound` event fires, it likely means the this site is open
+    // in another tab, or the user refreshed the page without unloading it
+    // first.
+    // https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#waiting
+    if (this._registration.waiting &&
+        urlsMatch(this._registration.waiting.scriptURL, this._scriptURL)) {
+      // Run this in the next microtask, so any code that adds an event
+      // listener after awaiting `register()` will get this event.
+      Promise.resolve().then(() => {
+        this.dispatchEvent(new WorkboxEvent('waiting', {
+          sw: this._registration.waiting,
+          wasWaitingBeforeRegister: true,
+        }));
+        if (process.env.NODE_ENV !== 'production') {
+          logger.warn('A service worker was already waiting to activate ' +
+              'before this script was registered...');
+        }
+      });
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       logger.log('Successfully registered service worker.', this._scriptURL);
 
@@ -115,14 +150,6 @@ class Workbox extends EventTargetShim {
               'currently controlling the page. The browser is now fetching ' +
               'the new script now...');
         }
-      }
-
-      // If there's an active and waiting service worker before the
-      // `updatefound` event fires, it means there was a waiting service worker
-      // in the queue before this one was registered.
-      if (this._registration.waiting && this._registration.active) {
-        logger.warn('A service worker was already waiting to activate ' +
-            'before this script was registered...');
       }
 
       const currentPageIsOutOfScope = () => {
@@ -356,8 +383,13 @@ class Workbox extends EventTargetShim {
     const isExternal = sw === this._externalSW;
     const eventPrefix = isExternal ? 'external' : '';
 
+    const eventProps = {sw, originalEvent};
+    if (!isExternal && this._isUpdate) {
+      eventProps.isUpdate = true;
+    }
+
     this.dispatchEvent(new WorkboxEvent(
-        eventPrefix + state, {sw, originalEvent}));
+        eventPrefix + state, eventProps));
 
     if (state === 'installed') {
       // This timeout is used to ignore cases where the service worker calls
@@ -372,7 +404,7 @@ class Workbox extends EventTargetShim {
         // Ensure the SW is still waiting (it may now be redundant).
         if (state === 'installed' && this._registration.waiting === sw) {
           this.dispatchEvent(new WorkboxEvent(
-              eventPrefix + 'waiting', {sw, originalEvent}));
+              eventPrefix + 'waiting', eventProps));
 
           if (process.env.NODE_ENV !== 'production') {
             if (isExternal) {
@@ -380,7 +412,7 @@ class Workbox extends EventTargetShim {
                   'waiting for this client to close before activating...');
             } else {
               logger.warn('The service worker has installed but is waiting ' +
-                  ' for existing clients to close before activating...');
+                  'for existing clients to close before activating...');
             }
           }
         }
@@ -430,10 +462,10 @@ class Workbox extends EventTargetShim {
   _onControllerChange(originalEvent) {
     const sw = this._sw;
     if (sw === navigator.serviceWorker.controller) {
+      this.dispatchEvent(new WorkboxEvent('controlling', {sw, originalEvent}));
       if (process.env.NODE_ENV !== 'production') {
         logger.log('Registered service worker now controlling this page.');
       }
-      this.dispatchEvent(new WorkboxEvent('controlling', {sw, originalEvent}));
       this._controllingDeferred.resolve(sw);
     }
   }
@@ -447,5 +479,161 @@ class Workbox extends EventTargetShim {
     this.dispatchEvent(new WorkboxEvent('message', {data, originalEvent}));
   }
 }
+
+// The jsdoc comments below outline the events this instance may dispatch:
+// -----------------------------------------------------------------------
+
+/**
+ * The `message` event is dispatched any time a `postMessage` (or a
+ * `BroadcastChannel` message with the `workbox` channel name) is received.
+ *
+ * @event module:workbox-window.Workbox#message
+ * @type {WorkboxEvent}
+ * @property {*} data The `data` property from the original `message` event.
+ * @property {Event} originalEvent The original [`message`]{@link https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent}
+ *     event.
+ * @property {string} type `message`.
+ * @property {Workbox} target The `Workbox` instance.
+ */
+
+/**
+ * The `installed` event is dispatched if the state of a
+ * [`Workbox`]{@link module:workbox-window.Workbox} instance's
+ * [registered service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw}
+ * changes to `installed`.
+ *
+ * Then can happen either the very first time a service worker is installed,
+ * or after an update to the current service worker is found. In the case
+ * of an update being found, the event's `isUpdate` property will be `true`.
+ *
+ * @event module:workbox-window.Workbox#installed
+ * @type {WorkboxEvent}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
+ *     event.
+ * @property {boolean|undefined} isUpdate True if a service worker was already
+ *     controlling when this `Workbox` instance called `register()`.
+ * @property {string} type `installed`.
+ * @property {Workbox} target The `Workbox` instance.
+ */
+
+/**
+ * The `waiting` event is dispatched if the state of a
+ * [`Workbox`]{@link module:workbox-window.Workbox} instance's
+ * [registered service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw}
+ * changes to `installed` and then doesn't immediately change to `activating`.
+ * It may also be dispatched if a service worker with the same
+ * [`scriptURL`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/scriptURL}
+ * was already waiting when the [`register()`]{@link module:workbox-window.Workbox#register}
+ * method was called.
+ *
+ * @event module:workbox-window.Workbox#waiting
+ * @type {WorkboxEvent}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event} originalEvent The native `controllerchange` event
+ * @property {boolean|undefined} isUpdate True if a service worker was already
+ *     controlling when this `Workbox` instance called `register()`.
+ * @property {boolean|undefined} wasWaitingBeforeRegister True if a service worker with
+ *     a matching `scriptURL` was already waiting when this `Workbox`
+ *     instance called `register()`.
+ * @property {string} type `waiting`.
+ * @property {Workbox} target The `Workbox` instance.
+ */
+
+/**
+ * The `controlling` event is dispatched if a
+ * [`controllerchange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/oncontrollerchange}
+ * fires on the service worker [container]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer}
+ * and the [`scriptURL`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/scriptURL}
+ * of the new [controller]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/controller}
+ * matches the `scriptURL` of the `Workbox` instance's
+ * [registered service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw}.
+ *
+ * @event module:workbox-window.Workbox#controlling
+ * @type {WorkboxEvent}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event} originalEvent The original [`controllerchange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/oncontrollerchange}
+ *     event.
+ * @property {boolean|undefined} isUpdate True if a service worker was already
+ *     controlling when this service worker was registered.
+ * @property {string} type `controlling`.
+ * @property {Workbox} target The `Workbox` instance.
+ */
+
+/**
+ * The `activated` event is dispatched if the state of a
+ * [`Workbox`]{@link module:workbox-window.Workbox} instance's
+ * [registered service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw}
+ * changes to `activated`.
+ *
+ * @event module:workbox-window.Workbox#activated
+ * @type {WorkboxEvent}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
+ *     event.
+ * @property {boolean|undefined} isUpdate True if a service worker was already
+ *     controlling when this `Workbox` instance called `register()`.
+ * @property {string} type `activated`.
+ * @property {Workbox} target The `Workbox` instance.
+ */
+
+/**
+ * The `redundant` event is dispatched if the state of a
+ * [`Workbox`]{@link module:workbox-window.Workbox} instance's
+ * [registered service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw}
+ * changes to `redundant`.
+ *
+ * @event module:workbox-window.Workbox#redundant
+ * @type {WorkboxEvent}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
+ *     event.
+ * @property {boolean|undefined} isUpdate True if a service worker was already
+ *     controlling when this `Workbox` instance called `register()`.
+ * @property {string} type `redundant`.
+ * @property {Workbox} target The `Workbox` instance.
+ */
+
+/**
+ * The `externalinstalled` event is dispatched if the state of an
+ * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-external-sw}
+ * changes to `installed`.
+ *
+ * @event module:workbox-window.Workbox#externalinstalled
+ * @type {WorkboxEvent}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
+ *     event.
+ * @property {string} type `externalinstalled`.
+ * @property {Workbox} target The `Workbox` instance.
+ */
+
+/**
+ * The `externalwaiting` event is dispatched if the state of an
+ * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-external-sw}
+ * changes to `waiting`.
+ *
+ * @event module:workbox-window.Workbox#externalwaiting
+ * @type {WorkboxEvent}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event|undefined} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
+ *     event.
+ * @property {string} type `externalwaiting`.
+ * @property {Workbox} target The `Workbox` instance.
+ */
+
+/**
+ * The `externalactivated` event is dispatched if the state of an
+ * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-external-sw}
+ * changes to `activated`.
+ *
+ * @event module:workbox-window.Workbox#externalactivated
+ * @type {WorkboxEvent}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
+ *     event.
+ * @property {string} type `externalactivated`.
+ * @property {Workbox} target The `Workbox` instance.
+ */
 
 export {Workbox};

@@ -109,6 +109,7 @@ describe(`[workbox-window] Workbox`, function() {
 
           wb.addEventListener('activated', () => {
             cb({
+              isUpdate: installedSpy.args[0][0].isUpdate,
               installedSpyCallCount: installedSpy.callCount,
               waitingSpyCallCount: waitingSpy.callCount,
               controllingSpyCallCount: controllingSpy.callCount,
@@ -120,12 +121,63 @@ describe(`[workbox-window] Workbox`, function() {
         }
       });
 
+      // Test for truthiness because some browsers structure clone
+      // `undefined` to `null`.
+      expect(result.isUpdate).to.not.be.ok;
       expect(result.installedSpyCallCount).to.equal(1);
       expect(result.activatedSpyCallCount).to.equal(1);
       expect(result.controllingSpyCallCount).to.equal(1);
 
       //  A new installation shouldn't enter the waiting phase.
       expect(result.waitingSpyCallCount).to.equal(0);
+    });
+
+    it(`reports all events for an updated SW registration`, async function() {
+      const result = await executeAsyncAndCatch(async (cb) => {
+        try {
+          const wb1 = new Workbox('sw-clients-claim.tmp.js?v=1');
+          const redundantSpy = sinon.spy();
+          wb1.addEventListener('redundant', redundantSpy);
+
+          await wb1.register();
+          await wb1.controlling;
+
+          const wb2 = new Workbox('sw-clients-claim.tmp.js?v=2');
+          await wb2.register();
+
+          const installedSpy = sinon.spy();
+          const waitingSpy = sinon.spy();
+          const activatedSpy = sinon.spy();
+          const controllingSpy = sinon.spy();
+
+          wb2.addEventListener('installed', installedSpy);
+          wb2.addEventListener('waiting', waitingSpy);
+          wb2.addEventListener('controlling', controllingSpy);
+          wb2.addEventListener('activated', activatedSpy);
+
+          wb2.addEventListener('activated', () => {
+            cb({
+              wb1IsUpdate: redundantSpy.args[0][0].isUpdate,
+              wb2IsUpdate: installedSpy.args[0][0].isUpdate,
+              installedSpyCallCount: installedSpy.callCount,
+              waitingSpyCallCount: waitingSpy.callCount,
+              controllingSpyCallCount: controllingSpy.callCount,
+              activatedSpyCallCount: activatedSpy.callCount,
+            });
+          });
+        } catch (error) {
+          cb({error: error.stack});
+        }
+      });
+
+      // Test for truthiness because some browsers structure clone
+      // `undefined` to `null`.
+      expect(result.wb1IsUpdate).to.not.be.ok;
+      expect(result.wb2IsUpdate).to.equal(true);
+      expect(result.installedSpyCallCount).to.equal(1);
+      expect(result.waitingSpyCallCount).to.equal(0);
+      expect(result.activatedSpyCallCount).to.equal(1);
+      expect(result.controllingSpyCallCount).to.equal(1);
     });
 
     it(`reports all events for an external SW registration`, async function() {

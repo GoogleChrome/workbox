@@ -21,8 +21,15 @@ module.exports = {
     WorkboxSW: false,
   },
   rules: {
-    "jsdoc/check-types": 2,
-    "jsdoc/newline-after-description": 2,
+    'jsdoc/check-types': 2,
+    'jsdoc/newline-after-description': 2,
+    'max-len': [2, {
+      code: 80,
+      tabWidth: 2,
+      ignoreComments: true,
+      ignoreUrls: true,
+      ignorePattern: '^\\s*import',
+    }],
   },
   plugins: [
     'jsdoc',
