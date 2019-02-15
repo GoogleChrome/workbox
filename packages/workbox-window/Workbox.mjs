@@ -131,8 +131,10 @@ class Workbox extends EventTargetShim {
           sw: this._registration.waiting,
           wasWaitingBeforeRegister: true,
         }));
-        logger.warn('A service worker was already waiting to activate ' +
-            'before this script was registered...');
+        if (process.env.NODE_ENV !== 'production') {
+          logger.warn('A service worker was already waiting to activate ' +
+              'before this script was registered...');
+        }
       });
     }
 
