@@ -81,7 +81,7 @@ const updateVersion = async (version, scriptURL) => {
 
 const assertMatchesWorkboxEvent = (event, props) => {
   for (const [key, value] of Object.entries(props)) {
-    if (key === 'originalEvent') {
+    if (key === 'originalEvent' && typeof value !== 'undefined') {
       expect(event.originalEvent.type).to.equal(value.type);
     } else {
       expect(event[key]).to.equal(value);
@@ -486,6 +486,7 @@ describe(`[workbox-window] Workbox`, function() {
         const wb1 = new Workbox(scriptURL);
         const installed1Spy = sandbox.spy();
         wb1.addEventListener('installed', installed1Spy);
+
         await wb1.register();
         await nextEvent(wb1, 'installed');
 
@@ -496,8 +497,8 @@ describe(`[workbox-window] Workbox`, function() {
         wb2.addEventListener('installed', installed2Spy);
         await wb2.register();
 
-        // Create a third instace for a different stip to assert the callback
-        // runs again, but only for own instances.
+        // Create a third instance for a different script to assert the
+        // callback runs again, but only for own instances.
         const wb3 = new Workbox(uniq('sw-clients-claim.tmp.js'));
         const installed3Spy = sandbox.spy();
         wb3.addEventListener('installed', installed3Spy);
@@ -510,6 +511,7 @@ describe(`[workbox-window] Workbox`, function() {
           target: wb1,
           sw: await wb1.getSW(),
           originalEvent: {type: 'statechange'},
+          isUpdate: true,
         });
 
         expect(installed2Spy.callCount).to.equal(0);
@@ -520,6 +522,7 @@ describe(`[workbox-window] Workbox`, function() {
           target: wb3,
           sw: await wb3.getSW(),
           originalEvent: {type: 'statechange'},
+          isUpdate: true,
         });
       });
     });
@@ -550,8 +553,10 @@ describe(`[workbox-window] Workbox`, function() {
           target: wb1,
           sw: await wb1.getSW(),
           originalEvent: {type: 'statechange'},
+          wasWaitingBeforeRegister: undefined,
         });
 
+        console.log(waiting2Spy.args);
         expect(waiting2Spy.callCount).to.equal(0);
 
         expect(waiting3Spy.callCount).to.equal(1);
@@ -560,6 +565,33 @@ describe(`[workbox-window] Workbox`, function() {
           target: wb3,
           sw: await wb3.getSW(),
           originalEvent: {type: 'statechange'},
+          wasWaitingBeforeRegister: undefined,
+        });
+      });
+
+      it(`runs if a service worker was already waiting at registration time`, async function() {
+        const scriptURL = uniq('sw-no-skip-waiting.tmp.js');
+
+        const wb1 = new Workbox(scriptURL);
+        await wb1.register();
+        await nextEvent(wb1, 'waiting');
+
+        // Register a new instance for the already waiting script.
+        const wb2 = new Workbox(scriptURL);
+        const waiting2Spy = sandbox.spy();
+        wb2.addEventListener('waiting', waiting2Spy);
+        await wb2.register();
+
+        console.log(waiting2Spy.args);
+
+        expect(waiting2Spy.callCount).to.equal(1);
+        assertMatchesWorkboxEvent(waiting2Spy.args[0][0], {
+          type: 'waiting',
+          target: wb2,
+          sw: await wb1.getSW(),
+          originalEvent: undefined,
+          isUpdate: undefined,
+          wasWaitingBeforeRegister: true,
         });
       });
     });
