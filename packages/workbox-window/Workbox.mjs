@@ -412,7 +412,7 @@ class Workbox extends EventTargetShim {
                   'waiting for this client to close before activating...');
             } else {
               logger.warn('The service worker has installed but is waiting ' +
-                  ' for existing clients to close before activating...');
+                  'for existing clients to close before activating...');
             }
           }
         }
