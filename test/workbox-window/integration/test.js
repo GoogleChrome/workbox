@@ -121,7 +121,9 @@ describe(`[workbox-window] Workbox`, function() {
         }
       });
 
-      expect(result.isUpdate).to.equal(undefined);
+      // Test for truthiness because some browsers structure clone
+      // `undefined` to `null`.
+      expect(result.isUpdate).to.not.be.ok;
       expect(result.installedSpyCallCount).to.equal(1);
       expect(result.activatedSpyCallCount).to.equal(1);
       expect(result.controllingSpyCallCount).to.equal(1);
@@ -168,7 +170,9 @@ describe(`[workbox-window] Workbox`, function() {
         }
       });
 
-      expect(result.wb1IsUpdate).to.equal(undefined);
+      // Test for truthiness because some browsers structure clone
+      // `undefined` to `null`.
+      expect(result.wb1IsUpdate).to.not.be.ok;
       expect(result.wb2IsUpdate).to.equal(true);
       expect(result.installedSpyCallCount).to.equal(1);
       expect(result.waitingSpyCallCount).to.equal(0);
