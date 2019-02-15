@@ -28,6 +28,11 @@ const REGISTRATION_TIMEOUT_DURATION = 60000;
  * A class to aid in handling service worker registration, updates, and
  * reacting to service worker lifecycle events.
  *
+ * @fires {@link module:workbox-window.Workbox#installed|installed}
+ * @fires {@link module:workbox-window.Workbox#waiting|waiting}
+ * @fires {@link module:workbox-window.Workbox#controlling|controlling}
+ * @fires {@link module:workbox-window.Workbox#activated|activated}
+ *
  * @memberof module:workbox-window
  */
 class Workbox extends EventTargetShim {
@@ -447,5 +452,99 @@ class Workbox extends EventTargetShim {
     this.dispatchEvent(new WorkboxEvent('message', {data, originalEvent}));
   }
 }
+
+// The jsdoc comments below outline the events this instance may dispatch:
+// -----------------------------------------------------------------------
+
+/**
+ * The `installed` event is dispatched on a [`Workbox`]{@link module:workbox-window.Workbox}
+ * instance after it calls [`register()`]{@link module:workbox-window.Workbox#register}
+ * if all of the following conditions are met:
+ *   - An [updatefound]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/onupdatefound}
+ *     event is dispatched on the current [registration]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration},
+ *     and a new service worker starts installing.
+ *   - The installing service worker's [`scriptURL`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/scriptURL}
+ *     matches the `Workbox` instance's `scriptURL`.
+ *   - The installing service worker's [state]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/state}
+ *     changes to `installed`.
+ *
+ * @event module:workbox-window.Workbox#installed
+ * @type {Event}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
+ *     event.
+ * @property {boolean} isUpdate True if a service worker was already
+  *    controlling when this `Workbox` instance called `register()`.
+ */
+
+/**
+ * The `waiting` event is dispatched on a [`Workbox`]{@link module:workbox-window.Workbox}
+ * instance after it calls [`register()`]{@link module:workbox-window.Workbox#register}
+ * if all of the following conditions are met:
+ *   - An [updatefound]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/onupdatefound}
+ *     event is dispatched on the current [registration]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration},
+ *     and a new service worker starts installing.
+ *   - The installing service worker's [`scriptURL`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/scriptURL}
+ *     matches the `Workbox` instance's `scriptURL`.
+ *   - The installing service worker's [state]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/state}
+ *     is `installed`.
+ *   - The installing service worker's state does not immediately change to
+ *     `activating`.
+ *
+ * @event module:workbox-window.Workbox#waiting
+ * @type {Event}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event} originalEvent The native `controllerchange` event
+ * @property {boolean} isUpdate True if a service worker was already
+ *     controlling when this `Workbox` instance called `register()`.
+ * @property {boolean} wasWaitingBeforeRegister True if a service worker with
+ *     a matching `scriptURL` was already waiting when this `Workbox`
+ *     instance called `register()`.
+ */
+
+/**
+ * The `controlling` event is dispatched on a [`Workbox`]{@link module:workbox-window.Workbox}
+ * instance after it calls [`register()`]{@link module:workbox-window.Workbox#register}
+ * if all of the following conditions are met:
+ *   - An [updatefound]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/onupdatefound}
+ *     event is dispatched on the current [registration]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration},
+ *     and a new service worker starts installing.
+ *   - The installing service worker's [`scriptURL`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/scriptURL}
+ *     matches the `Workbox` instance's `scriptURL`.
+ *   - A [`controllerchange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/oncontrollerchange}
+ *     event is dispatched on the service worker [container]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer}
+ *   - The [`scriptURL`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/scriptURL}
+ *     of the new [controller]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/controller}
+ *     matches the `Workbox` instance's `scriptURL`.
+ *
+ * @event module:workbox-window.Workbox#controlling
+ * @type {WorkboxEvent}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event} originalEvent The original [`controllerchange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/oncontrollerchange}
+ *     event.
+ * @property {boolean} isUpdate True if a service worker was already
+ *     controlling when this service worker was registered.
+ */
+
+/**
+ * The `activated` event is dispatched on a [`Workbox`]{@link module:workbox-window.Workbox}
+ * instance after it calls [`register()`]{@link module:workbox-window.Workbox#register}
+ * if all of the following conditions are met:
+ *   - An [updatefound]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/onupdatefound}
+ *     event is dispatched on the current [registration]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration},
+ *     and a new service worker starts installing.
+ *   - The installing service worker's [`scriptURL`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/scriptURL}
+ *     matches the `Workbox` instance's `scriptURL`.
+ *   - The installing service worker's [state]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/state}
+ *     is `activated`.
+ *
+ * @event module:workbox-window.Workbox#activated
+ * @type {Event}
+ * @property {ServiceWorker} sw The service worker instance.
+ * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
+ *     event.
+ * @property {boolean} isUpdate True if a service worker was already
+  *     controlling when this `Workbox` instance called `register()`.
+ */
 
 export {Workbox};
