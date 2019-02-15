@@ -117,6 +117,25 @@ class Workbox extends EventTargetShim {
           'statechange', this._onStateChange, {once: true});
     }
 
+    // If there's a waiting service worker with a matching URL before the
+    // `updatefound` event fires, it likely means the this site is open
+    // in another tab, or the user refreshed the page without unloading it
+    // first.
+    // https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#waiting
+    if (this._registration.waiting &&
+        urlsMatch(this._registration.waiting.scriptURL, this._scriptURL)) {
+      // Run this in the next microtask, so any code that adds an event
+      // listener after awaiting `register()` will get this event.
+      Promise.resolve().then(() => {
+        this.dispatchEvent(new WorkboxEvent('waiting', {
+          sw: this._registration.waiting,
+          wasWaitingBeforeRegister: true,
+        }));
+        logger.warn('A service worker was already waiting to activate ' +
+            'before this script was registered...');
+      });
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       logger.log('Successfully registered service worker.', this._scriptURL);
 
@@ -129,25 +148,6 @@ class Workbox extends EventTargetShim {
               'currently controlling the page. The browser is now fetching ' +
               'the new script now...');
         }
-      }
-
-      // If there's a waiting service worker with a matching URL before the
-      // `updatefound` event fires, it likely means the this site is open
-      // in another tab, or the user refreshed the page without unloading it
-      // first.
-      // https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#waiting
-      if (this._registration.waiting &&
-          urlsMatch(this._registration.waiting.scriptURL, this._scriptURL)) {
-        // Run this in the next microtask, so any code that adds an event
-        // listener after awaiting `register()` will get this event.
-        Promise.resolve().then(() => {
-          this.dispatchEvent(new WorkboxEvent('waiting', {
-            sw: this._registration.waiting,
-            wasWaitingBeforeRegister: true,
-          }));
-          logger.warn('A service worker was already waiting to activate ' +
-              'before this script was registered...');
-        });
       }
 
       const currentPageIsOutOfScope = () => {
