@@ -74,7 +74,6 @@ class Router {
    * ```
    * {
    *   type: 'CACHE_URLS',
-   *   meta: 'workbox-window',
    *   payload: {
    *     urlsToCache: [
    *       './script1.js',
@@ -86,21 +85,27 @@ class Router {
    * ```
    */
   addCacheListener() {
-    self.addEventListener('message', (event) => {
-      const {type, meta, payload} = event.data;
+    self.addEventListener('message', async (event) => {
+      const {type, payload} = event.data;
 
-      if (type === 'CACHE_URLS' && meta === 'workbox-window') {
+      if (type === 'CACHE_URLS') {
         if (process.env.NODE_ENV !== 'production') {
           logger.debug(`Caching URLs from the window`, payload.urlsToCache);
         }
 
-        for (let entry of payload.urlsToCache) {
+        const requestPromises = payload.urlsToCache.map((entry) => {
           if (typeof entry === 'string') {
             entry = [entry];
           }
 
           const request = new Request(...entry);
-          this.handleRequest({request, event});
+          return this.handleRequest({request, event});
+        });
+
+        // If a MessageChannel was used, reply to the message on success.
+        if (event.ports) {
+          await requestPromises;
+          event.ports[0].postMessage(true);
         }
       }
     });

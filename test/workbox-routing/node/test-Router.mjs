@@ -194,12 +194,13 @@ describe(`[workbox-routing] Router`, function() {
       const event = new ExtendableMessageEvent('message', {
         data: {
           type: 'CACHE_URLS',
-          meta: 'workbox-window',
           payload: {
             urlsToCache: ['/one', '/two', '/three'],
           },
         },
       });
+      event.ports = [{postMessage: sinon.spy()}];
+
       sandbox.spy(router, 'handleRequest');
       self.dispatchEvent(event);
 
@@ -212,6 +213,7 @@ describe(`[workbox-routing] Router`, function() {
       expect(router.handleRequest.args[1][0].event).to.equal(event);
       expect(router.handleRequest.args[2][0].request.url).to.equal('/three');
       expect(router.handleRequest.args[2][0].event).to.equal(event);
+      expect(event.ports[0].postMessage.callCount).to.equal(1);
     });
 
     it(`should accept URL strings or request URL+requestInit tuples`, async function() {
@@ -225,7 +227,6 @@ describe(`[workbox-routing] Router`, function() {
       const event = new ExtendableMessageEvent('message', {
         data: {
           type: 'CACHE_URLS',
-          meta: 'workbox-window',
           payload: {
             urlsToCache: [
               '/one',
