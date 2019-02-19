@@ -1,14 +1,15 @@
-const buffer = require('vinyl-buffer');
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const fs = require('fs-extra');
-const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
 const path = require('path');
-const rename = require('gulp-rename');
-const rollup = require('rollup');
-const rollupStream = require('rollup-stream');
-const source = require('vinyl-source-stream');
-const sourcemaps = require('gulp-sourcemaps');
-
+const {rollup} = require('rollup');
 const constants = require('./constants');
 const logHelper = require('../../infra/utils/log-helper');
 const pkgPathToName = require('./pkg-path-to-name');
@@ -18,7 +19,7 @@ const rollupHelper = require('./rollup-helper');
  * To test sourcemaps are valid and working, use:
  * http://paulirish.github.io/source-map-visualization/#custom-choose
  */
-const ERROR_NO_MODULE_BROWSER = `Could not find the modules browser.mjs file: `;
+const ERROR_NO_MODULE_INDEX = `Could not find the module's index.mjs file: `;
 const ERROR_NO_NAMSPACE = oneLine`
   You must define a 'browserNamespace' parameter in the 'package.json'.
   Example: 'workbox-precaching' would have a browserNamespace param of
@@ -45,26 +46,24 @@ const globals = (moduleId) => {
     return path.basename(importPathPiece, path.extname(importPathPiece));
   });
 
-  let additionalNamespace;
   if (namespacePathParts.length === 0) {
     // Tried to pull in default export of module - this isn't allowed.
     // A specific file must be referenced
     throw new Error(oneLine`
-      You cannot use a module directly - you must specify
-      file, this is to force a best practice for tree shaking (i.e. only
-      pulling in what you use). Please fix the import: '${moduleId}'
-    `);
+        You cannot use a module directly - you must specify
+        file, this is to force a best practice for tree shaking (i.e. only
+        pulling in what you use). Please fix the import: '${moduleId}'`);
   }
 
+  let additionalNamespace;
   if (namespacePathParts.length > 1) {
     if (namespacePathParts[0] !== '_private' || namespacePathParts.length > 2) {
       // Tried to pull in default export of module - this isn't allowed.
-    // A specific file must be referenced
-    throw new Error(oneLine`
-      You cannot use nested files. It must be a top level (and public) file
-      or a file under '_private' in a module. Please fix the import:
-      '${moduleId}'
-    `);
+      // A specific file must be referenced
+      throw new Error(oneLine`
+          You cannot use nested files. It must be a top level (and public) file
+          or a file under '_private' in a module. Please fix the import:
+          '${moduleId}'`);
     }
     additionalNamespace = namespacePathParts[0];
   }
@@ -76,14 +75,10 @@ const globals = (moduleId) => {
     return [
       pkg.workbox.browserNamespace,
       additionalNamespace,
-    ]
-    .filter((value) => {
-      return (value && value.length > 0);
-    })
-    .join('.');
+    ].filter((value) => (value && value.length > 0)).join('.');
   } catch (err) {
     logHelper.error(`Unable to get browserNamespace for package: ` +
-      `'${packageName}'`);
+        `'${packageName}'`);
     logHelper.error(err);
     throw err;
   }
@@ -95,15 +90,15 @@ const externalAndPure = (importPath) => {
   return (importPath.indexOf('workbox-') === 0);
 };
 
-module.exports = (packagePath, buildType) => {
+module.exports = async (packagePath, buildType) => {
   const packageName = pkgPathToName(packagePath);
-  const moduleBrowserPath = path.join(packagePath, `browser.mjs`);
+  const packageIndex = path.join(packagePath, `index.mjs`);
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
-  if (!fs.existsSync(moduleBrowserPath)) {
-    logHelper.error(ERROR_NO_MODULE_BROWSER + packageName);
-    return Promise.reject(ERROR_NO_MODULE_BROWSER + packageName);
+  if (!fs.existsSync(packageIndex)) {
+    logHelper.error(ERROR_NO_MODULE_INDEX + packageName);
+    return Promise.reject(ERROR_NO_MODULE_INDEX + packageName);
   }
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
@@ -112,20 +107,22 @@ module.exports = (packagePath, buildType) => {
     return Promise.reject(ERROR_NO_NAMSPACE + ' ' + packageName);
   }
 
-  let outputFilename = `${packageName}.${buildType.slice(0, 4)}.js`;
+  let outputFilename = pkgJson.workbox.outputFilename || packageName;
   if (pkgJson.workbox.prodOnly) {
     // Bail out early if this is a non-prod build.
     if (buildType !== constants.BUILD_TYPES.prod) {
       return Promise.resolve();
     }
-    // If it is a prod build, then we don't have to bother including the
-    // buildType in the filename, since there is no dev build.
-    outputFilename = `${packageName}.js`;
+  } else {
+    // Prod-only builds (above) don't need the build type, but when there's a
+    // dev and prod build we have to include it.
+    outputFilename += `.${buildType.slice(0, 4)}`;
   }
+  outputFilename += '.js';
 
   const namespace = pkgJson.workbox.browserNamespace;
   const outputDirectory = path.join(packagePath,
-    constants.PACKAGE_BUILD_DIRNAME);
+      constants.PACKAGE_BUILD_DIRNAME);
 
   logHelper.log(oneLine`
     Building Browser Bundle for
@@ -136,20 +133,8 @@ module.exports = (packagePath, buildType) => {
 
   const plugins = rollupHelper.getDefaultPlugins(buildType);
 
-  const banner = pkgJson.workbox.includeBabelHelpers ?
-    fs.readFileSync(path.join(__dirname, 'external-helpers.js')) :
-    '';
-
-  return rollupStream({
-    input: moduleBrowserPath,
-    rollup,
-    output: {
-      name: namespace,
-      sourcemap: true,
-      format: 'iife',
-      banner,
-      globals,
-    },
+  const bundle = await rollup({
+    input: packageIndex,
     external: externalAndPure,
     treeshake: {
       pureExternalModules: externalAndPure,
@@ -171,25 +156,13 @@ module.exports = (packagePath, buildType) => {
         throw new Error(`Unhandled Rollup Warning: ${warning}`);
       }
     },
-  })
-  .on('error', (err) => {
-    const args = [];
-    Object.keys(err).forEach((key) => {
-      args.push(`${key}: ${err[key]}`);
-    });
-    logHelper.error(err, `\n\n${args.join('\n')}`);
-    throw err;
-  })
-  // We must give the generated stream the same name as the entry file
-  // for the sourcemaps to work correctly
-  .pipe(source(moduleBrowserPath))
-  // gulp-sourcemaps don't work with streams so we need
-  .pipe(buffer())
-  // This tells gulp-sourcemaps to load the inline sourcemap
-  .pipe(sourcemaps.init({loadMaps: true}))
-  // This renames the output file
-  .pipe(rename(outputFilename))
-  // This writes the sourcemap alongside the final build file
-  .pipe(sourcemaps.write('.'))
-  .pipe(gulp.dest(outputDirectory));
+  });
+
+  await bundle.write({
+    file: path.join(outputDirectory, outputFilename),
+    name: namespace,
+    sourcemap: true,
+    format: 'iife',
+    globals,
+  });
 };

@@ -1,22 +1,14 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 const maximumSizeTransform = require('./maximum-size-transform');
-const modifyUrlPrefixTranform = require('./modify-url-prefix-transform');
-const noRevisionForUrlsMatchingTransform =
+const modifyURLPrefixTranform = require('./modify-url-prefix-transform');
+const noRevisionForURLsMatchingTransform =
   require('./no-revision-for-urls-matching-transform');
 
 /**
@@ -70,11 +62,11 @@ const noRevisionForUrlsMatchingTransform =
  */
 
 module.exports = ({
-  dontCacheBustUrlsMatching,
+  dontCacheBustURLsMatching,
   fileDetails,
   manifestTransforms,
   maximumFileSizeToCacheInBytes,
-  modifyUrlPrefix,
+  modifyURLPrefix,
 }) => {
   let allWarnings = [];
 
@@ -94,13 +86,13 @@ module.exports = ({
     transformsToApply.push(maximumSizeTransform(maximumFileSizeToCacheInBytes));
   }
 
-  if (modifyUrlPrefix) {
-    transformsToApply.push(modifyUrlPrefixTranform(modifyUrlPrefix));
+  if (modifyURLPrefix) {
+    transformsToApply.push(modifyURLPrefixTranform(modifyURLPrefix));
   }
 
-  if (dontCacheBustUrlsMatching) {
+  if (dontCacheBustURLsMatching) {
     transformsToApply.push(
-      noRevisionForUrlsMatchingTransform(dontCacheBustUrlsMatching));
+        noRevisionForURLsMatchingTransform(dontCacheBustURLsMatching));
   }
 
   // Any additional manifestTransforms that were passed will be applied last.

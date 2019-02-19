@@ -1,23 +1,16 @@
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
-**/
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
 
 const assert = require('assert');
 const ol = require('common-tags').oneLine;
 const path = require('path');
 const prettyBytes = require('pretty-bytes');
+const watch = require('glob-watcher');
 const workboxBuild = require('workbox-build');
 
 const constants = require('./lib/constants');
@@ -25,6 +18,36 @@ const errors = require('./lib/errors');
 const logger = require('./lib/logger');
 const readConfig = require('./lib/read-config');
 const runWizard = require('./lib/run-wizard');
+
+/**
+ * Runs the specified build command with the provided configuration.
+ *
+ * @param {Object} options
+ */
+async function runBuildCommand({command, config, watch}) {
+  try {
+    const {size, count, warnings} = await workboxBuild[command](config);
+
+    for (const warning of warnings) {
+      logger.warn(warning);
+    }
+
+    logger.log(`The service worker was written to ${config.swDest}\n` +
+      `${count} files will be precached, totalling ${prettyBytes(size)}.`);
+
+    if (watch) {
+      logger.log(`\nWatching for changes...`);
+    }
+  } catch (error) {
+    // See https://github.com/hapijs/joi/blob/v11.3.4/API.md#errors
+    if (typeof error.annotate === 'function') {
+      throw new Error(
+          `${errors['config-validation-failed']}\n${error.annotate()}`);
+    }
+    logger.error(errors['workbox-build-runtime-error']);
+    throw error;
+  }
+}
 
 module.exports = async (params = {}) => {
   // This should not be a user-visible error, unless meow() messes something up.
@@ -55,9 +78,9 @@ module.exports = async (params = {}) => {
 
     case 'generateSW':
     case 'injectManifest': {
-      // TODO: Confirm that this works with Windows paths.
       const configPath = path.resolve(process.cwd(),
-        option || constants.defaultConfigFile);
+          option || constants.defaultConfigFile);
+
       let config;
       try {
         config = readConfig(configPath);
@@ -67,23 +90,21 @@ module.exports = async (params = {}) => {
       }
 
       logger.log(`Using configuration from ${configPath}.`);
-      try {
-        const {size, count, warnings} = await workboxBuild[command](config);
 
-        for (const warning of warnings) {
-          logger.warn(warning);
+      // Determine whether we're in --watch mode, or one-off mode.
+      if (params.flags && params.flags.watch) {
+        const options = {ignoreInitial: false};
+        if (config.globIgnores) {
+          options.ignored = config.globIgnores;
+        }
+        if (config.globDirectory) {
+          options.cwd = config.globDirectory;
         }
 
-        logger.log(`The service worker was written to ${config.swDest}\n` +
-          `${count} files will be precached, totalling ${prettyBytes(size)}.`);
-      } catch (error) {
-        // See https://github.com/hapijs/joi/blob/v11.3.4/API.md#errors
-        if (typeof error.annotate === 'function') {
-          throw new Error(
-            `${errors['config-validation-failed']}\n${error.annotate()}`);
-        }
-        logger.error(errors['workbox-build-runtime-error']);
-        throw error;
+        watch(config.globPatterns, options,
+            () => runBuildCommand({command, config, watch: true}));
+      } else {
+        await runBuildCommand({command, config, watch: false});
       }
       break;
     }

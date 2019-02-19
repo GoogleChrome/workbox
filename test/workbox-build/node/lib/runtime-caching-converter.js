@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const vm = require('vm');
@@ -33,11 +41,11 @@ function validate(runtimeCachingOptions, convertedOptions) {
         registerRoute: sinon.spy(),
       },
       strategies: {
-        cacheFirst: sinon.spy(),
-        cacheOnly: sinon.spy(),
-        networkFirst: sinon.spy(),
-        networkOnly: sinon.spy(),
-        staleWhileRevalidate: sinon.spy(),
+        CacheFirst: sinon.spy(),
+        CacheOnly: sinon.spy(),
+        NetworkFirst: sinon.spy(),
+        NetworkOnly: sinon.spy(),
+        StaleWhileRevalidate: sinon.spy(),
       },
     },
   };
@@ -68,7 +76,7 @@ function validate(runtimeCachingOptions, convertedOptions) {
       const options = runtimeCachingOption.options;
       if (options.networkTimeoutSeconds) {
         expect(options.networkTimeoutSeconds)
-          .to.eql(strategiesOptions.networkTimeoutSeconds);
+            .to.eql(strategiesOptions.networkTimeoutSeconds);
       }
 
       if (options.cacheName) {
@@ -94,13 +102,13 @@ function validate(runtimeCachingOptions, convertedOptions) {
       if (options.backgroundSync) {
         if ('options' in options.backgroundSync) {
           expect(
-            globalScope.workbox.backgroundSync.Plugin.calledWith(
-              options.backgroundSync.name, options.backgroundSync.options)
+              globalScope.workbox.backgroundSync.Plugin.calledWith(
+                  options.backgroundSync.name, options.backgroundSync.options)
           ).to.be.true;
         } else {
           expect(
-            globalScope.workbox.backgroundSync.Plugin.calledWith(
-              options.backgroundSync.name)
+              globalScope.workbox.backgroundSync.Plugin.calledWith(
+                  options.backgroundSync.name)
           ).to.be.true;
         }
       }
@@ -108,13 +116,13 @@ function validate(runtimeCachingOptions, convertedOptions) {
       if (options.broadcastUpdate) {
         if ('options' in options.broadcastUpdate) {
           expect(
-            globalScope.workbox.broadcastUpdate.Plugin.calledWith(
-              options.broadcastUpdate.channelName, options.broadcastUpdate.options)
+              globalScope.workbox.broadcastUpdate.Plugin.calledWith(
+                  options.broadcastUpdate.channelName, options.broadcastUpdate.options)
           ).to.be.true;
         } else {
           expect(
-            globalScope.workbox.broadcastUpdate.Plugin.calledWith(
-              options.broadcastUpdate.channelName)
+              globalScope.workbox.broadcastUpdate.Plugin.calledWith(
+                  options.broadcastUpdate.channelName)
           ).to.be.true;
         }
       }
@@ -125,7 +133,7 @@ function validate(runtimeCachingOptions, convertedOptions) {
 describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function() {
   it(`should throw when urlPattern isn't set`, function() {
     const runtimeCachingOptions = [{
-      handler: 'cacheFirst',
+      handler: 'CacheFirst',
     }];
 
     expect(() => {
@@ -152,7 +160,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
   it(`should support a single option with a RegExp urlPattern, using mostly defaults`, function() {
     const runtimeCachingOptions = [{
       urlPattern: /xyz/,
-      handler: 'cacheFirst',
+      handler: 'CacheFirst',
     }];
 
     const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
@@ -163,7 +171,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
   it(`should support multiple options, each setting multiple properties`, function() {
     const runtimeCachingOptions = [{
       urlPattern: /abc/,
-      handler: 'networkFirst',
+      handler: 'NetworkFirst',
       options: {
         networkTimeoutSeconds: 20,
         cacheName: 'abc-cache',
@@ -185,7 +193,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       },
     }, {
       urlPattern: '/test',
-      handler: 'staleWhileRevalidate',
+      handler: 'StaleWhileRevalidate',
       options: {
         expiration: {
           maxEntries: 10,
@@ -218,7 +226,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
   it(`should support a string urlPattern, using mostly defaults`, function() {
     const runtimeCachingOptions = [{
       urlPattern: '/path/to/file',
-      handler: 'cacheFirst',
+      handler: 'CacheFirst',
     }];
 
     const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
@@ -238,7 +246,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
   it(`should support registering non-GET methods`, function() {
     const runtimeCachingOptions = [{
       urlPattern: /abc/,
-      handler: 'cacheFirst',
+      handler: 'CacheFirst',
       method: 'POST',
     }];
 
@@ -248,23 +256,23 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
 
   it(`should support custom plugins`, function() {
     const runtimeCachingOptions = [{
-        urlPattern: /abc/,
-        handler: 'cacheFirst',
-        options: {
-          plugins: [{
-            cacheWillUpdate: async ({request, response}) => {
-                return response;
-              },
-              cacheDidUpdate: async ({cacheName, request, oldResponse, newResponse}) => {},
-              cachedResponseWillBeUsed: async ({cacheName, request, matchOptions, cachedResponse}) => {
-                return cachedResponse;
-              },
-              requestWillFetch: async ({request}) => {
-                return request;
-              },
-              fetchDidFail: async ({originalRequest, request, error}) => {},
-          }],
-        },
+      urlPattern: /abc/,
+      handler: 'CacheFirst',
+      options: {
+        plugins: [{
+          cacheWillUpdate: async ({request, response}) => {
+            return response;
+          },
+          cacheDidUpdate: async ({cacheName, request, oldResponse, newResponse}) => {},
+          cachedResponseWillBeUsed: async ({cacheName, request, matchOptions, cachedResponse}) => {
+            return cachedResponse;
+          },
+          requestWillFetch: async ({request}) => {
+            return request;
+          },
+          fetchDidFail: async ({originalRequest, request, error}) => {},
+        }],
+      },
     }];
 
     const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
@@ -277,20 +285,20 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
 
   it(`should strip comments on custom plugins`, function() {
     const runtimeCachingOptions = [{
-        urlPattern: /abc/,
-        handler: 'cacheFirst',
-        options: {
-          plugins: [{
-            cacheWillUpdate: async ({request, response}) => {
-                // Commenting
-                return response;
-            },
-            cachedResponseWillBeUsed: async ({cacheName, request, matchOptions, cachedResponse}) => {
-                /* Commenting */
-                return cachedResponse;
-            },
-          }],
-        },
+      urlPattern: /abc/,
+      handler: 'CacheFirst',
+      options: {
+        plugins: [{
+          cacheWillUpdate: async ({request, response}) => {
+            // Commenting
+            return response;
+          },
+          cachedResponseWillBeUsed: async ({cacheName, request, matchOptions, cachedResponse}) => {
+            /* Commenting */
+            return cachedResponse;
+          },
+        }],
+      },
     }];
 
     const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
@@ -300,21 +308,21 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
 
   it(`should keep contents with // that are not comments`, function() {
     const runtimeCachingOptions = [{
-        urlPattern: /abc/,
-        handler: 'cacheFirst',
-        options: {
-          plugins: [{
-            cacheWillUpdate: async ({request, response}) => {
-                // Commenting
+      urlPattern: /abc/,
+      handler: 'CacheFirst',
+      options: {
+        plugins: [{
+          cacheWillUpdate: async ({request, response}) => {
+            // Commenting
 
-                if (request.url === 'https://test.com') {
-                    return null;
-                }
+            if (request.url === 'https://test.com') {
+              return null;
+            }
 
-                return response;
-            },
-          }],
-        },
+            return response;
+          },
+        }],
+      },
     }];
 
     const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);

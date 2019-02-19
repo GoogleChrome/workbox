@@ -1,22 +1,16 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 const path = require('path');
 
 const cdnUtils = require('../lib/cdn-utils');
+const checkForDeprecatedOptions =
+    require('../lib/check-for-deprecated-options');
 const copyWorkboxLibraries = require('../lib/copy-workbox-libraries');
 const generateSWSchema = require('./options/generate-sw-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
@@ -46,14 +40,18 @@ const writeServiceWorkerUsingDefaultTemplate =
  * @memberof module:workbox-build
  */
 async function generateSW(config) {
+  // This check needs to be done before validation, since the deprecated options
+  // will be renamed.
+  const deprecationWarnings = checkForDeprecatedOptions(config);
+
   const options = validate(config, generateSWSchema);
 
   const destDirectory = path.dirname(options.swDest);
 
   // Do nothing if importWorkboxFrom is set to 'disabled'. Otherwise, check:
   if (options.importWorkboxFrom === 'cdn') {
-    const cdnUrl = cdnUtils.getModuleUrl('workbox-sw');
-    options.workboxSWImport = cdnUrl;
+    const cdnURL = cdnUtils.getModuleURL('workbox-sw');
+    options.workboxSWImport = cdnURL;
   } else if (options.importWorkboxFrom === 'local') {
     // Copy over the dev + prod version of all of the core libraries.
     const workboxDirectoryName = await copyWorkboxLibraries(destDirectory);
@@ -61,7 +59,7 @@ async function generateSW(config) {
     // The Workbox library files should not be precached, since they're cached
     // automatically by virtue of being used with importScripts().
     options.globIgnores = [
-      `**/${workboxDirectoryName}/*.js*`,
+      `**/${workboxDirectoryName}/*.+(js|mjs)*`,
     ].concat(options.globIgnores || []);
 
     const workboxSWPkg = require(`workbox-sw/package.json`);
@@ -77,6 +75,9 @@ async function generateSW(config) {
   await writeServiceWorkerUsingDefaultTemplate(Object.assign({
     manifestEntries,
   }, options));
+
+  // Add in any deprecation warnings.
+  warnings.push(...deprecationWarnings);
 
   return {count, size, warnings};
 }

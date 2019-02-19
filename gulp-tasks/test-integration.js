@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
 const glob = require('glob');
@@ -36,7 +44,7 @@ const runFiles = (filePaths) => {
 };
 
 const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
-                                       webdriver) => {
+  webdriver) => {
   logHelper.log(oneLine`
     Running Integration test on ${logHelper.highlight(testPath)}
     with NODE_ENV '${nodeEnv}'
@@ -59,13 +67,15 @@ const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
     };
 
     const testFiles = glob.sync(path.posix.join(__dirname, '..', testPath,
-      '*.js'));
-    await runFiles(testFiles);
+        '*.js'));
 
-    process.env.NODE_ENV = originalNodeEnv;
+    await runFiles(testFiles);
   } catch (err) {
-    process.env.NODE_ENV = originalNodeEnv;
+    // Log the error, so it's easier to debug failures.
+    console.error(err); // eslint-disable-line no-console
     throw new Error(`'gulp test-integration' discovered errors.`);
+  } finally {
+    process.env.NODE_ENV = originalNodeEnv;
   }
 };
 
@@ -81,7 +91,7 @@ const runIntegrationForBrowser = async (browser) => {
       const nodeEnv = constants.BUILD_TYPES[buildKey];
       try {
         await runIntegrationTestSuite(packageToTest, nodeEnv, browser,
-          webdriver);
+            webdriver);
       } catch (error) {
         await seleniumAssistant.killWebDriver(webdriver);
         throw error;

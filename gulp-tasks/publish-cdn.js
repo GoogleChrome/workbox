@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const gulp = require('gulp');
 const path = require('path');
 
@@ -36,9 +44,9 @@ const handleCDNUpload = async (tagName, gitBranch) => {
 
   logHelper.log(`Uploading '${tagName}' to CDN as ${friendlyTagName}.`);
   const publishUrls = await cdnUploadHelper.upload(
-    friendlyTagName, buildFilesDir);
+      friendlyTagName, buildFilesDir);
 
-  logHelper.log(`The following URLs are now avaiable:`);
+  logHelper.log(`The following URLs are now available:`);
   publishUrls.forEach((url) => {
     // Only print out the js files just for cleaner logs.
     if (path.extname(url) === '.map') {
@@ -66,5 +74,5 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
 });
 
 gulp.task('publish-cdn', gulp.series(
-  'publish-cdn:generate-from-tags',
+    'publish-cdn:generate-from-tags',
 ));

@@ -1,17 +1,9 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 const ol = require('common-tags').oneLine;
@@ -24,7 +16,7 @@ const stringifyWithoutComments = require('./stringify-without-comments');
  * into a string that would configure equivalent `workbox-sw` behavior.
  *
  * @param {Object} options See
- *        https://googlechrome.github.io/sw-toolbox/api.html#options
+ *        https://googlechromelabs.github.io/sw-toolbox/api.html#options
  * @return {string} A JSON string representing the equivalent options.
  *
  * @private
@@ -40,8 +32,12 @@ function getOptionsString(options = {}) {
   // Pull handler-specific config from the options object, since they are
   // not directly used to construct a Plugin instance. If set, need to be
   // passed as options to the handler constructor instead.
-  const handlerOptionKeys =
-      ['cacheName', 'networkTimeoutSeconds', 'fetchOptions', 'matchOptions'];
+  const handlerOptionKeys = [
+    'cacheName',
+    'networkTimeoutSeconds',
+    'fetchOptions',
+    'matchOptions',
+  ];
   const handlerOptions = {};
   for (const key of handlerOptionKeys) {
     if (key in options) {
@@ -70,13 +66,13 @@ function getOptionsString(options = {}) {
 
     let pluginCode;
     switch (pluginName) {
-      // Special case logic for plugins that have a required parameter, and then
-      // an additional optional config parameter.
+    // Special case logic for plugins that have a required parameter, and then
+    // an additional optional config parameter.
       case 'backgroundSync': {
         const name = pluginConfig.name;
         pluginCode = `new ${pluginString}(${JSON.stringify(name)}`;
         if ('options' in pluginConfig) {
-          pluginCode += `, ${JSON.stringify(pluginConfig.options)}`;
+          pluginCode += `, ${stringifyWithoutComments(pluginConfig.options)}`;
         }
         pluginCode += `)`;
 
@@ -87,7 +83,7 @@ function getOptionsString(options = {}) {
         const channelName = pluginConfig.channelName;
         pluginCode = `new ${pluginString}(${JSON.stringify(channelName)}`;
         if ('options' in pluginConfig) {
-          pluginCode += `, ${JSON.stringify(pluginConfig.options)}`;
+          pluginCode += `, ${stringifyWithoutComments(pluginConfig.options)}`;
         }
         pluginCode += `)`;
 
@@ -97,7 +93,9 @@ function getOptionsString(options = {}) {
       // For plugins that just pass in an Object to the constructor, like
       // expiration and cacheableResponse
       default: {
-        pluginCode = `new ${pluginString}(${JSON.stringify(pluginConfig)})`;
+        pluginCode = `new ${pluginString}(${stringifyWithoutComments(
+            pluginConfig
+        )})`;
       }
     }
 
@@ -130,22 +128,20 @@ module.exports = (runtimeCaching = []) => {
     // This validation logic is a bit too gnarly for joi, so it's manually
     // implemented here.
     if (entry.options && entry.options.networkTimeoutSeconds &&
-        entry.handler !== 'networkFirst') {
+        entry.handler !== 'NetworkFirst') {
       throw new Error(errors['invalid-network-timeout-seconds']);
     }
 
-    // urlPattern might be either a string or a RegExp object.
-    // If it's a string, it needs to be quoted. If it's a RegExp, it should
-    // be used as-is.
+    // urlPattern might be a string, a RegExp object, or a function.
+    // If it's a string, it needs to be quoted.
     const matcher = typeof entry.urlPattern === 'string' ?
       JSON.stringify(entry.urlPattern) :
       entry.urlPattern;
 
     if (typeof entry.handler === 'string') {
       const optionsString = getOptionsString(entry.options || {});
-
       const strategyString =
-        `workbox.strategies.${entry.handler}(${optionsString})`;
+          `new workbox.strategies.${entry.handler}(${optionsString})`;
 
       return `workbox.routing.registerRoute(` +
         `${matcher}, ${strategyString}, '${method}');\n`;

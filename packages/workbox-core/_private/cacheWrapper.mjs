@@ -1,28 +1,20 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
-import pluginEvents from '../models/pluginEvents.mjs';
-import pluginUtils from '../utils/pluginUtils.mjs';
+import {pluginEvents} from '../models/pluginEvents.mjs';
+import {pluginUtils} from '../utils/pluginUtils.mjs';
 import {WorkboxError} from './WorkboxError.mjs';
 import {assert} from './assert.mjs';
 import {executeQuotaErrorCallbacks} from './quota.mjs';
 import {getFriendlyURL} from './getFriendlyURL.mjs';
 import {logger} from './logger.mjs';
-
 import '../_version.mjs';
+
 
 /**
  * Wrapper around cache.put().
@@ -40,12 +32,12 @@ import '../_version.mjs';
  * @memberof module:workbox-core
  */
 const putWrapper = async ({
-    cacheName,
-    request,
-    response,
-    event,
-    plugins = [],
-  } = {}) => {
+  cacheName,
+  request,
+  response,
+  event,
+  plugins = [],
+} = {}) => {
   if (!response) {
     if (process.env.NODE_ENV !== 'production') {
       logger.error(`Cannot cache non-existent response for ` +
@@ -80,7 +72,7 @@ const putWrapper = async ({
   const cache = await caches.open(cacheName);
 
   const updatePlugins = pluginUtils.filter(
-    plugins, pluginEvents.CACHE_DID_UPDATE);
+      plugins, pluginEvents.CACHE_DID_UPDATE);
 
   let oldResponse = updatePlugins.length > 0 ?
     await matchWrapper({cacheName, request}) : null;
@@ -117,7 +109,7 @@ const putWrapper = async ({
  * @param {Object} options
  * @param {string} options.cacheName Name of the cache to match against.
  * @param {Request} options.request The Request that will be used to look up
- *.    cache entries.
+ *     cache entries.
  * @param {Event} [options.event] The event that propted the action.
  * @param {Object} [options.matchOptions] Options passed to cache.match().
  * @param {Array<Object>} [options.plugins=[]] Array of plugins.
@@ -127,11 +119,12 @@ const putWrapper = async ({
  * @memberof module:workbox-core
  */
 const matchWrapper = async ({
-    cacheName,
-    request,
-    event,
-    matchOptions,
-    plugins = []}) => {
+  cacheName,
+  request,
+  event,
+  matchOptions,
+  plugins = [],
+}) => {
   const cache = await caches.open(cacheName);
   let cachedResponse = await cache.match(request, matchOptions);
   if (process.env.NODE_ENV !== 'production') {
@@ -141,16 +134,17 @@ const matchWrapper = async ({
       logger.debug(`No cached response found in '${cacheName}'.`);
     }
   }
-  for (let plugin of plugins) {
+
+  for (const plugin of plugins) {
     if (pluginEvents.CACHED_RESPONSE_WILL_BE_USED in plugin) {
       cachedResponse = await plugin[pluginEvents.CACHED_RESPONSE_WILL_BE_USED]
-        .call(plugin, {
-          cacheName,
-          request,
-          event,
-          matchOptions,
-          cachedResponse,
-        });
+          .call(plugin, {
+            cacheName,
+            request,
+            event,
+            matchOptions,
+            cachedResponse,
+          });
       if (process.env.NODE_ENV !== 'production') {
         if (cachedResponse) {
           assert.isInstance(cachedResponse, Response, {
@@ -162,12 +156,13 @@ const matchWrapper = async ({
       }
     }
   }
+
   return cachedResponse;
 };
 
 /**
  * This method will call cacheWillUpdate on the available plugins (or use
- * response.ok) to determine if the Response is safe and valid to cache.
+ * status === 200) to determine if the Response is safe and valid to cache.
  *
  * @param {Object} options
  * @param {Request} options.request
@@ -186,11 +181,11 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
     if (pluginEvents.CACHE_WILL_UPDATE in plugin) {
       pluginsUsed = true;
       responseToCache = await plugin[pluginEvents.CACHE_WILL_UPDATE]
-        .call(plugin, {
-          request,
-          response: responseToCache,
-          event,
-        });
+          .call(plugin, {
+            request,
+            response: responseToCache,
+            event,
+          });
 
       if (process.env.NODE_ENV !== 'production') {
         if (responseToCache) {
@@ -210,7 +205,7 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
 
   if (!pluginsUsed) {
     if (process.env.NODE_ENV !== 'production') {
-      if (!responseToCache.ok) {
+      if (!responseToCache.status === 200) {
         if (responseToCache.status === 0) {
           logger.warn(`The response for '${request.url}' is an opaque ` +
             `response. The caching strategy that you're using will not ` +
@@ -222,15 +217,13 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
         }
       }
     }
-    responseToCache = responseToCache.ok ? responseToCache : null;
+    responseToCache = responseToCache.status === 200 ? responseToCache : null;
   }
 
   return responseToCache ? responseToCache : null;
 };
 
-const cacheWrapper = {
+export const cacheWrapper = {
   put: putWrapper,
   match: matchWrapper,
 };
-
-export {cacheWrapper};

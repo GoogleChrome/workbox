@@ -1,17 +1,9 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 const {generateSWString} = require('workbox-build');
@@ -66,7 +58,7 @@ class GenerateSW {
     }
 
     const workboxSWImports = await getWorkboxSWImports(
-      compilation, this.config);
+        compilation, this.config);
     const entries = getManifestEntriesFromCompilation(compilation, this.config);
     const importScriptsArray = [].concat(this.config.importScripts);
 
@@ -75,9 +67,9 @@ class GenerateSW {
     const manifestHash = getAssetHash(manifestAsset);
 
     const manifestFilename = formatManifestFilename(
-      this.config.precacheManifestFilename, manifestHash);
+        this.config.precacheManifestFilename, manifestHash);
     const pathToManifestFile = relativeToOutputPath(
-      compilation, path.join(this.config.importsDirectory, manifestFilename));
+        compilation, path.join(this.config.importsDirectory, manifestFilename));
     compilation.assets[pathToManifestFile] = manifestAsset;
 
     importScriptsArray.push((compilation.options.output.publicPath || '') +
@@ -121,15 +113,15 @@ class GenerateSW {
     if ('hooks' in compiler) {
       // We're in webpack 4+.
       compiler.hooks.emit.tapPromise(
-        this.constructor.name,
-        (compilation) => this.handleEmit(compilation)
+          this.constructor.name,
+          (compilation) => this.handleEmit(compilation)
       );
     } else {
       // We're in webpack 2 or 3.
       compiler.plugin('emit', (compilation, callback) => {
         this.handleEmit(compilation)
-          .then(callback)
-          .catch(callback);
+            .then(callback)
+            .catch(callback);
       });
     }
   }

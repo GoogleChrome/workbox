@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const expect = require('chai').expect;
 const path = require('path');
 const tempy = require('tempy');
@@ -20,7 +28,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
     'swSrc',
   ];
   const SUPPORTED_PARAMS = [
-    'dontCacheBustUrlsMatching',
+    'dontCacheBustURLsMatching',
     'globFollow',
     'globIgnores',
     'globPatterns',
@@ -28,14 +36,14 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
     'injectionPointRegexp',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
-    'modifyUrlPrefix',
-    'templatedUrls',
+    'modifyURLPrefix',
+    'templatedURLs',
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'ignoreUrlParametersMatching',
+    'ignoreURLParametersMatching',
     'importScripts',
     'importWorkboxFrom',
     'navigateFallback',
@@ -159,7 +167,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       const {count, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         precacheAndRoute: [[[{
           url: 'index.html',
@@ -178,7 +186,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }]]],
       }});
     });
@@ -193,7 +201,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       const {count, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./sample-import.js']],
         precacheAndRoute: [[[{
@@ -213,7 +221,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }]], [[
           '/extra-assets/example.1234.css',
           '/extra-assets/example-2.1234.js',
@@ -232,7 +240,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       const {count, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         precacheAndRoute: [[[{
           url: 'index.html',
@@ -251,7 +259,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }]]],
       }});
     });
@@ -266,30 +274,51 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       const {count, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-          precacheAndRoute: [[[{
-            url: 'index.html',
-            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
-          }, {
-            url: 'page-1.html',
-            revision: '544658ab25ee8762dc241e8b1c5ed96d',
-          }, {
-            url: 'page-2.html',
-            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-          }, {
-            url: 'styles/stylesheet-1.css',
-            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-          }, {
-            url: 'styles/stylesheet-2.css',
-            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-          }, {
-            url: 'webpackEntry.js',
-            revision: 'd41d8cd98f00b204e9800998ecf8427e',
-          }], {
-            cleanUrls: true,
-          }]],
-        }});
+        precacheAndRoute: [[[{
+          url: 'index.html',
+          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+        }, {
+          url: 'page-1.html',
+          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        }, {
+          url: 'page-2.html',
+          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        }, {
+          url: 'styles/stylesheet-1.css',
+          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        }, {
+          url: 'styles/stylesheet-2.css',
+          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        }, {
+          url: 'webpackEntry.js',
+          revision: '5b652181a25e96f255d0490203d3c47e',
+        }], {
+          cleanURLs: true,
+        }]],
+      }});
     });
+  });
+
+  describe(`[workbox-build] deprecated options`, function() {
+    const oldOptionsToValue = {
+      dontCacheBustUrlsMatching: /ignored/,
+      modifyUrlPrefix: {
+        'ignored': 'ignored',
+      },
+      templatedUrls: {},
+    };
+
+    for (const [option, value] of Object.entries(oldOptionsToValue)) {
+      it(`should return a warning when ${option} is used`, async function() {
+        const options = Object.assign({}, BASE_OPTIONS, {
+          [option]: value,
+        });
+
+        const {warnings} = await injectManifest(options);
+        expect(warnings).to.have.length(1);
+      });
+    }
   });
 });

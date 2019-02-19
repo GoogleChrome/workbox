@@ -1,23 +1,18 @@
 /*
- Copyright 2018 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
-import messages from './utils/messages.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+
+import {messages} from './utils/messages.mjs';
 import './_version.mjs';
 
 /**
@@ -25,7 +20,10 @@ import './_version.mjs';
  * [network-only]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only}
  * request strategy.
  *
- * This class is useful if you want to take advantage of any [Workbox plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}.
+ * This class is useful if you want to take advantage of any
+ * [Workbox plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}.
+ *
+ * If the network request fails, this will throw a `WorkboxError` exception.
  *
  * @memberof workbox.strategies
  */
@@ -53,23 +51,14 @@ class NetworkOnly {
    * [Workbox Router]{@link workbox.routing.Router}.
    *
    * @param {Object} options
-   * @param {FetchEvent} options.event The fetch event to run this strategy
-   * against.
+   * @param {Request} options.request The request to run this strategy for.
+   * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event}) {
-    if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(event, FetchEvent, {
-        moduleName: 'workbox-strategies',
-        className: 'NetworkOnly',
-        funcName: 'handle',
-        paramName: 'event',
-      });
-    }
-
+  async handle({event, request}) {
     return this.makeRequest({
       event,
-      request: event.request,
+      request: request || event.request,
     });
   }
 
@@ -117,7 +106,7 @@ class NetworkOnly {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('NetworkOnly', request));
+          messages.strategyStart('NetworkOnly', request));
       if (response) {
         logger.log(`Got response from network.`);
       } else {
@@ -127,12 +116,9 @@ class NetworkOnly {
       logger.groupEnd();
     }
 
-    // If there was an error thrown, re-throw it to ensure the Routers
-    // catch handler is triggered.
-    if (error) {
-      throw error;
+    if (!response) {
+      throw new WorkboxError('no-response', {url: request.url, error});
     }
-
     return response;
   }
 }

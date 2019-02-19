@@ -1,9 +1,22 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const assert = require('assert');
 const expect = require('chai').expect;
 const fse = require('fs-extra');
 const makeServiceWorkerEnv = require('service-worker-mock');
 const sinon = require('sinon');
 const vm = require('vm');
+
+// See https://github.com/chaijs/chai/issues/697
+function stringifyFunctionsInArray(arr) {
+  return arr.map((item) => typeof item === 'function' ? item.toString() : item);
+}
 
 function setupSpiesAndContext() {
   const cacheableResponsePluginSpy = sinon.spy();
@@ -26,7 +39,6 @@ function setupSpiesAndContext() {
     cacheableResponse: {
       Plugin: CacheableResponsePlugin,
     },
-    clientsClaim: sinon.spy(),
     expiration: {
       Plugin: CacheExpirationPlugin,
     },
@@ -34,22 +46,25 @@ function setupSpiesAndContext() {
       initialize: sinon.spy(),
     },
     precaching: {
+      // To make testing easier, hardcode this fake URL return value.
+      getCacheKeyForURL: sinon.stub().returns('/urlWithCacheKey'),
       precacheAndRoute: sinon.spy(),
-      suppressWarnings: sinon.spy(),
+      cleanupOutdatedCaches: sinon.spy(),
     },
     routing: {
       registerNavigationRoute: sinon.spy(),
       registerRoute: sinon.spy(),
     },
     core: {
+      clientsClaim: sinon.spy(),
       setCacheNameDetails: sinon.spy(),
+      skipWaiting: sinon.spy(),
     },
     setConfig: sinon.spy(),
-    skipWaiting: sinon.spy(),
     // To make testing easier, return the name of the strategy.
     strategies: {
-      cacheFirst: sinon.stub().returns('cacheFirst'),
-      networkFirst: sinon.stub().returns('networkFirst'),
+      CacheFirst: sinon.stub().returns({name: 'CacheFirst'}),
+      NetworkFirst: sinon.stub().returns({name: 'NetworkFirst'}),
     },
   };
 
@@ -61,18 +76,19 @@ function setupSpiesAndContext() {
   const methodsToSpies = {
     importScripts,
     cacheableResponsePlugin: cacheableResponsePluginSpy,
+    cleanupOutdatedCaches: workbox.precaching.cleanupOutdatedCaches,
     cacheExpirationPlugin: cacheExpirationPluginSpy,
-    cacheFirst: workbox.strategies.cacheFirst,
-    clientsClaim: workbox.clientsClaim,
+    CacheFirst: workbox.strategies.CacheFirst,
+    clientsClaim: workbox.core.clientsClaim,
+    getCacheKeyForURL: workbox.precaching.getCacheKeyForURL,
     googleAnalyticsInitialize: workbox.googleAnalytics.initialize,
-    networkFirst: workbox.strategies.networkFirst,
+    NetworkFirst: workbox.strategies.NetworkFirst,
     precacheAndRoute: workbox.precaching.precacheAndRoute,
     registerNavigationRoute: workbox.routing.registerNavigationRoute,
     registerRoute: workbox.routing.registerRoute,
     setCacheNameDetails: workbox.core.setCacheNameDetails,
     setConfig: workbox.setConfig,
-    skipWaiting: workbox.skipWaiting,
-    suppressWarnings: workbox.precaching.suppressWarnings,
+    skipWaiting: workbox.core.skipWaiting,
   };
 
   return {context, methodsToSpies};
@@ -81,11 +97,13 @@ function setupSpiesAndContext() {
 function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
   for (const [method, spy] of Object.entries(methodsToSpies)) {
     if (spy.called) {
-      expect(spy.args).to.deep.equal(expectedMethodCalls[method],
-        `while testing method calls for ${method}`);
+      const args = spy.args.map(
+          (arg) => Array.isArray(arg) ? stringifyFunctionsInArray(arg) : arg);
+      expect(args).to.deep.equal(expectedMethodCalls[method],
+          `while testing method calls for ${method}`);
     } else {
       expect(expectedMethodCalls[method],
-        `while testing method calls for ${method}`).to.be.undefined;
+          `while testing method calls for ${method}`).to.be.undefined;
     }
   }
 }
@@ -107,7 +125,7 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
  */
 module.exports = async ({swFile, swString, expectedMethodCalls}) => {
   assert((swFile || swString) && !(swFile && swString),
-    `Set swFile or swString, but not both.`);
+      `Set swFile or swString, but not both.`);
 
   if (swFile) {
     swString = await fse.readFile(swFile, 'utf8');

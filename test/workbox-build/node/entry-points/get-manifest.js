@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const expect = require('chai').expect;
 const fse = require('fs-extra');
 const path = require('path');
@@ -11,7 +19,7 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     globDirectory: SRC_DIR,
   };
   const SUPPORTED_PARAMS = [
-    'dontCacheBustUrlsMatching',
+    'dontCacheBustURLsMatching',
     'globDirectory',
     'globFollow',
     'globIgnores',
@@ -19,14 +27,14 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     'globStrict',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
-    'modifyUrlPrefix',
-    'templatedUrls',
+    'modifyURLPrefix',
+    'templatedURLs',
   ];
   const UNSUPPORTED_PARAMS = [
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'ignoreUrlParametersMatching',
+    'ignoreURLParametersMatching',
     'importScripts',
     'importWorkboxFrom',
     'injectionPointRegexp',
@@ -95,10 +103,10 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         revision: '884f6853a4fc655e4c2dc0c0f27a227c',
       }, {
         url: 'webpackEntry.js',
-        revision: 'd41d8cd98f00b204e9800998ecf8427e',
+        revision: '5b652181a25e96f255d0490203d3c47e',
       }]);
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
     });
 
     it(`should use defaults when all the required parameters, and 'globPatterns' are present`, async function() {
@@ -119,10 +127,10 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
       }, {
         url: 'webpackEntry.js',
-        revision: 'd41d8cd98f00b204e9800998ecf8427e',
+        revision: '5b652181a25e96f255d0490203d3c47e',
       }]);
       expect(count).to.eql(4);
-      expect(size).to.eql(2352);
+      expect(size).to.eql(2535);
     });
 
     it(`should use defaults when all the required parameters, and 'globIgnores' are present`, async function() {
@@ -156,33 +164,42 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         revision: '934823cbc67ccf0d67aa2a2eeb798f12',
       }, {
         url: 'webpackEntry.js',
-        revision: 'd41d8cd98f00b204e9800998ecf8427e',
+        revision: '5b652181a25e96f255d0490203d3c47e',
       }]);
       expect(count).to.eql(2);
-      expect(size).to.eql(34);
+      expect(size).to.eql(217);
     });
 
     it(`should use defaults when all the required parameters, and 'maximumFileSizeToCacheInBytes' are present`, async function() {
       const options = Object.assign({
-        maximumFileSizeToCacheInBytes: 10,
+        maximumFileSizeToCacheInBytes: 50,
       }, BASE_OPTIONS);
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
-      expect(warnings).to.have.lengthOf(5);
+      expect(warnings).to.have.lengthOf(2);
       expect(manifestEntries).to.deep.equal([{
-        url: 'webpackEntry.js',
-        revision: 'd41d8cd98f00b204e9800998ecf8427e',
+        revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        url: 'page-1.html',
+      }, {
+        revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        url: 'page-2.html',
+      }, {
+        revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        url: 'styles/stylesheet-1.css',
+      }, {
+        revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        url: 'styles/stylesheet-2.css',
       }]);
-      expect(count).to.eql(1);
-      expect(size).to.eql(0);
+      expect(count).to.eql(4);
+      expect(size).to.eql(101);
     });
 
-    it(`should use defaults when all the required parameters, and 'templatedUrls' are present`, async function() {
+    it(`should use defaults when all the required parameters, and 'templatedURLs' are present`, async function() {
       const url1 = 'url1';
       const url2 = 'url2';
 
       const options = Object.assign({
-        templatedUrls: {
+        templatedURLs: {
           [url1]: ['**/*.html'],
           [url2]: 'string dependency',
         },
@@ -207,7 +224,7 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         revision: '884f6853a4fc655e4c2dc0c0f27a227c',
       }, {
         url: 'webpackEntry.js',
-        revision: 'd41d8cd98f00b204e9800998ecf8427e',
+        revision: '5b652181a25e96f255d0490203d3c47e',
       }, {
         url: 'url1',
         revision: '69a043d97513b7015bf4bd95df3e308e',
@@ -216,7 +233,7 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         revision: 'c154bc7cdfbfbfb73e23f853bd8fcec0',
       }]);
       expect(count).to.eql(8);
-      expect(size).to.eql(4790);
+      expect(size).to.eql(4973);
     });
 
     it(`should use defaults when all the required parameters, and 'manifestTransforms' are present`, async function() {
@@ -276,10 +293,31 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
         revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
       }, {
         url: 'link/webpackEntry.js',
-        revision: 'd41d8cd98f00b204e9800998ecf8427e',
+        revision: '5b652181a25e96f255d0490203d3c47e',
       }]);
       expect(count).to.eql(4);
-      expect(size).to.eql(2352);
+      expect(size).to.eql(2535);
     });
+  });
+
+  describe(`[workbox-build] deprecated options`, function() {
+    const oldOptionsToValue = {
+      dontCacheBustUrlsMatching: /ignored/,
+      modifyUrlPrefix: {
+        'ignored': 'ignored',
+      },
+      templatedUrls: {},
+    };
+
+    for (const [option, value] of Object.entries(oldOptionsToValue)) {
+      it(`should return a warning when ${option} is used`, async function() {
+        const options = Object.assign({}, BASE_OPTIONS, {
+          [option]: value,
+        });
+
+        const {warnings} = await getManifest(options);
+        expect(warnings).to.have.length(1);
+      });
+    }
   });
 });

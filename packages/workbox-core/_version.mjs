@@ -1,1 +1,1 @@
-try{self.workbox.v['workbox:core:3.6.3']=1;}catch(e){} // eslint-disable-line
+try{self['workbox:core:4.0.0-rc.3']&&_()}catch(e){}// eslint-disable-line

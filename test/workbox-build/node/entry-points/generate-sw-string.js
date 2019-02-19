@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const expect = require('chai').expect;
 const path = require('path');
 
@@ -17,23 +25,23 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'dontCacheBustUrlsMatching',
+    'dontCacheBustURLsMatching',
     'globDirectory',
     'globFollow',
     'globIgnores',
     'globPatterns',
     'globStrict',
-    'ignoreUrlParametersMatching',
+    'ignoreURLParametersMatching',
     'injectionPointRegexp',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
-    'modifyUrlPrefix',
+    'modifyURLPrefix',
     'navigateFallback',
     'navigateFallbackWhitelist',
     'offlineGoogleAnalytics',
     'runtimeCaching',
     'skipWaiting',
-    'templatedUrls',
+    'templatedURLs',
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
     'importWorkboxFrom',
@@ -101,7 +109,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
       }});
     });
@@ -124,7 +131,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       swString = `self.__precacheManifest = ${JSON.stringify(additionalManifestEntries)};${swString}`;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...importScripts]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[additionalManifestEntries, {}]],
       }});
     });
@@ -148,7 +154,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       swString = `self.__precacheManifest = ${JSON.stringify(additionalManifestEntries)};${swString}`;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...importScripts]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -166,7 +171,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }].concat(additionalManifestEntries), {}]],
       }});
     });
@@ -174,12 +179,12 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     it(`should use defaults when all the required parameters are present, with additional WorkboxSW() configuration`, async function() {
       const cacheId = 'test';
       const directoryIndex = 'test.html';
-      const ignoreUrlParametersMatching = [/test1/, /test2/];
+      const ignoreURLParametersMatching = [/test1/, /test2/];
 
       const workboxOptions = {
         cacheId,
         directoryIndex,
-        ignoreUrlParametersMatching,
+        ignoreURLParametersMatching,
         clientsClaim: true,
         skipWaiting: true,
       };
@@ -192,8 +197,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         skipWaiting: [[]],
         setCacheNameDetails: [[{prefix: cacheId}]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
-        precacheAndRoute: [[[], {directoryIndex, ignoreUrlParametersMatching}]],
+        precacheAndRoute: [[[], {directoryIndex, ignoreURLParametersMatching}]],
       }});
     });
 
@@ -206,10 +210,10 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const {swString, warnings} = await generateSWString(options);
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
+        getCacheKeyForURL: [[navigateFallback]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
-        registerNavigationRoute: [[navigateFallback]],
+        registerNavigationRoute: [['/urlWithCacheKey']],
       }});
     });
 
@@ -224,10 +228,10 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const {swString, warnings} = await generateSWString(options);
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
+        getCacheKeyForURL: [[navigateFallback]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
-        registerNavigationRoute: [[navigateFallback, {
+        registerNavigationRoute: [['/urlWithCacheKey', {
           whitelist: navigateFallbackWhitelist,
         }]],
       }});
@@ -242,7 +246,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         googleAnalyticsInitialize: [[{}]],
       }});
@@ -261,7 +264,6 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       expect(warnings).to.be.empty;
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         googleAnalyticsInitialize: [[{
           parameterOverrides: {
@@ -276,7 +278,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     const DEFAULT_METHOD = 'GET';
     const STRING_URL_PATTERN = '/test';
     const REGEXP_URL_PATTERN = /test/;
-    const STRING_HANDLER = 'cacheFirst';
+    const STRING_HANDLER = 'CacheFirst';
 
     it(`should reject when 'urlPattern' is missing from 'runtimeCaching'`, async function() {
       const handler = STRING_HANDLER;
@@ -335,12 +337,12 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
 
       const {swString, warnings} = await generateSWString(options);
       expect(warnings).to.be.empty;
+
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
-        registerRoute: [[STRING_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+        registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
 
@@ -356,9 +358,8 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
-        registerRoute: [[REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+        registerRoute: [[REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
 
@@ -377,11 +378,10 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
         [STRING_HANDLER]: [[], []],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         registerRoute: [
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
         ],
       }});
     });
@@ -442,9 +442,8 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         cacheableResponsePlugin: [[runtimeCachingOptions.cacheableResponse]],
         cacheExpirationPlugin: [[runtimeCachingOptions.expiration]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
-        registerRoute: [[REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+        registerRoute: [[REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
 
@@ -490,11 +489,10 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         cacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
         cacheExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
         importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[], {}]],
         registerRoute: [
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
         ],
       }});
     });
@@ -504,7 +502,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching: [{
           urlPattern,
-          handler: 'networkFirst',
+          handler: 'NetworkFirst',
           options: {
             expiration: {
               maxEntries: 5,
@@ -520,6 +518,39 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         expect(error.name).to.eql('ValidationError');
         expect(error.details[0].context.key).to.eql('expiration');
       }
+    });
+  });
+
+  describe(`[workbox-build] deprecated options`, function() {
+    const oldOptionsToValue = {
+      dontCacheBustUrlsMatching: /ignored/,
+      ignoreUrlParametersMatching: [/ignored/],
+      modifyUrlPrefix: {
+        'ignored': 'ignored',
+      },
+      templatedUrls: {},
+    };
+
+    for (const [option, value] of Object.entries(oldOptionsToValue)) {
+      it(`should return a warning when ${option} is used`, async function() {
+        const options = Object.assign({}, BASE_OPTIONS, {
+          [option]: value,
+        });
+
+        const {warnings} = await generateSWString(options);
+        expect(warnings).to.have.length(1);
+      });
+    }
+
+    it(`should warn when a strategy function (lowercase) name is used`, async function() {
+      const runtimeCaching = [{
+        urlPattern: /abc/,
+        handler: 'cacheFirst',
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
+
+      const {warnings} = await generateSWString(options);
+      expect(warnings).to.have.length(1);
     });
   });
 });

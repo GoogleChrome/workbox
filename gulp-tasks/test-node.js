@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
 const glob = require('glob');
@@ -54,15 +62,15 @@ const runNodeTestsWithEnv = async (testGroup, nodeEnv) => {
 };
 
 gulp.task('test-node:prod', gulp.series(
-  () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.prod),
+    () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.prod),
 ));
 
 gulp.task('test-node:dev', gulp.series(
-  () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.dev),
+    () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.dev),
 ));
 
 gulp.task('test-node:all', gulp.series(
-  () => runNodeTestsWithEnv('all', constants.BUILD_TYPES.prod),
+    () => runNodeTestsWithEnv('all', constants.BUILD_TYPES.prod),
 ));
 
 gulp.task('test-node:clean', () => {
@@ -75,16 +83,16 @@ gulp.task('test-node:coverage', () => {
     runOptions.push('--');
     runOptions.push('--include');
     runOptions.push(
-      path.posix.join('packages', global.packageOrStar, '**', '*')
+        path.posix.join('packages', global.packageOrStar, '**', '*')
     );
   }
   return spawn(getNpmCmd(), runOptions);
 });
 
 gulp.task('test-node', gulp.series(
-  'test-node:clean',
-  'test-node:dev',
-  'test-node:prod',
-  'test-node:all',
-  'test-node:coverage',
+    'test-node:clean',
+    'test-node:dev',
+    'test-node:prod',
+    'test-node:all',
+    'test-node:coverage',
 ));

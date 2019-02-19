@@ -1,18 +1,46 @@
-import {reset} from 'shelving-mock-indexeddb';
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 import {expect} from 'chai';
 import sinon from 'sinon';
-
 import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
+import {deleteDatabase} from '../../../../packages/workbox-core/_private/deleteDatabase.mjs';
+import {migrateDb} from '../../../../packages/workbox-core/_private/migrateDb.mjs';
 
 
 const catchAsyncError = async (promiseOrFn) => {
+  // Hack alert! Since Mocha will fail any test if it sees an uncaughtException,
+  // we have to remove all listeners added to the process if we want to test
+  // that an uncaughtException is thrown.
+  const listeners = process.listeners('uncaughtException');
+  process.removeAllListeners('uncaughtException');
+
+  const uncaughtExceptionPromise = new Promise((resolve, reject) => {
+    process.once('uncaughtException', (error) => reject(error));
+  });
+
+  const asyncErrorPromise = typeof promiseOrFn === 'function' ?
+      promiseOrFn() : promiseOrFn;
+
   try {
-    await (typeof promiseOrFn === 'function' ? promiseOrFn() : promiseOrFn);
-    throw new Error('Expected error never thrown');
-  } catch (err) {
-    return err;
+    await Promise.race([uncaughtExceptionPromise, asyncErrorPromise]);
+    return;
+  } catch (error) {
+    return error;
+  } finally {
+    // Re-add the listeners so everything goes back to normal.
+    for (const listener of listeners) {
+      process.on('uncaughtException', listener);
+    }
   }
 };
+
+const sandbox = sinon.createSandbox();
 
 const data = {
   // keyPath: email, index: email (unique)
@@ -62,7 +90,7 @@ const data = {
 };
 
 const createTestDb = async () => {
-  return await new DBWrapper('db', 1, {
+  const db = new DBWrapper('db', 1, {
     onupgradeneeded: (evt) => {
       const db = evt.target.result;
       db.createObjectStore('users', {keyPath: 'email'});
@@ -76,27 +104,34 @@ const createTestDb = async () => {
       commentsStore.createIndex('postId', 'postId', {unique: false});
     },
   });
+
+  await db.open();
+  return db;
 };
 
 const createAndPopulateTestDb = async () => {
   const db = await createTestDb();
-
-  await db.transaction(Object.keys(data), 'readwrite', (stores) => {
+  await db.transaction(Object.keys(data), 'readwrite', (txn) => {
     for (const [storeName, storeEntries] of Object.entries(data)) {
+      const store = txn.objectStore(storeName);
       for (const entry of storeEntries) {
-        stores[storeName].add(entry);
+        store.add(entry);
       }
     }
   });
   return db;
 };
 
-describe(`DBWrapper`, function() {
-  const sandbox = sinon.createSandbox();
 
-  afterEach(async function() {
+describe(`DBWrapper`, function() {
+  beforeEach(async function() {
+    // This help when re-running the tests manually after a previous failure
+    // where the database didn't get properly closed/deleted.
+    const db = await new DBWrapper('db', 999).open();
+    db.close();
+    await deleteDatabase('db');
+
     sandbox.restore();
-    reset();
   });
 
   describe(`constructor`, function() {
@@ -106,7 +141,8 @@ describe(`DBWrapper`, function() {
       expect(db._name).to.equal('db');
       expect(db._version).to.equal(1);
       expect(db._onupgradeneeded).to.be.undefined;
-      expect(db._onversionchange).to.equal(DBWrapper.prototype._onversionchange);
+      expect(db._onversionchange).to.equal(
+          DBWrapper.prototype._onversionchange);
     });
 
     it('lets you specify callbacks', function() {
@@ -146,47 +182,92 @@ describe(`DBWrapper`, function() {
       }))).to.be.true;
     });
 
+    it(`can upgrade from a lower (non-zero) version`, async function() {
+      const db = await createAndPopulateTestDb();
+      await db.close();
+
+      const dbv2 = new DBWrapper('db', 2, {
+        onupgradeneeded: (evt) => {
+          if (evt.oldVersion === 1 && evt.newVersion === 2) {
+            const db = evt.target.result;
+            const txn = evt.target.transaction;
+
+            const objStore = txn.objectStore('users');
+            objStore.openCursor().onsuccess = ({target}) => {
+              const cursor = target.result;
+              if (cursor) {
+                const firstUser = cursor.value;
+                // Delete the object store and recreate it with new config.
+                db.deleteObjectStore('users');
+                db.createObjectStore('users', {
+                  keyPath: 'id',
+                  autoIncrement: true,
+                });
+                objStore.add(firstUser);
+              }
+            };
+          }
+        },
+      });
+
+      await dbv2.open();
+    });
+
     it(`sets the onversionchange callback`, async function() {
       const onversionchange = () => {};
+
       const db = await new DBWrapper('db', 1, {onversionchange}).open();
 
       expect(db._db.onversionchange).to.equal(db._onversionchange);
+
+      // Make sure to close the DB manually since we're overwriting the
+      // onversionchange callback (which usually closes the DB).
+      db.close();
     });
 
-    // Note: doesn't work in node
-    it.skip(`throws if there's an error opening the connection`, async function() {
+    it(`throws if there's an error opening the connection`, async function() {
       await new DBWrapper('db', 2).open();
 
       // Stop the event from bubbling to the global object
       // and firing the global onerror handler.
       // https://github.com/w3c/IndexedDB/issues/49
-      sandbox.stub(self, 'onerror');
+      if ('onerror' in self) {
+        sandbox.stub(self, 'onerror');
+      }
 
       const err = await catchAsyncError(new DBWrapper('db', 1).open());
-      expect(err.message).to.match(/version/);
+
+      expect(err).to.not.be.undefined;
+      expect(err.name).to.equal('VersionError');
     });
 
-    it(`throws if blocked for more than the timeout period when openning`,
-        async function() {
+    it(`throws if blocked for more than the timeout period when openning`, async function() {
       // Lessen the open timeout to make the tests faster.
       sandbox.stub(DBWrapper.prototype, 'OPEN_TIMEOUT').value(100);
 
       // Open a connection and don't close it on version change.
-      await new DBWrapper('db', 1, {onversionchange: () => {}}).open();
+      const db = await new DBWrapper('db', 1, {
+        onversionchange: () => {},
+      }).open();
 
       // Open a request for a new version with an old version still open.
       // This will be blocked since the older version is still open.
       const err = await catchAsyncError(new DBWrapper('db', 2).open());
       expect(err.message).to.match(/blocked/);
+
+      // Make sure to close the DB manually since we're overwriting the
+      // onversionchange callback (which usually closes the DB).
+      db.close();
     });
 
-    it(`times out even in cases where the onblocked handler doesn't file`,
-        async function() {
+    it(`times out even in cases where the onblocked handler doesn't file`, async function() {
       // Lessen the open timeout to make the tests faster.
       sandbox.stub(DBWrapper.prototype, 'OPEN_TIMEOUT').value(100);
 
       // Open a connection and don't close it on version change.
-      await new DBWrapper('db', 1, {onversionchange: () => {}}).open();
+      const db = await new DBWrapper('db', 1, {
+        onversionchange: () => {},
+      }).open();
 
       // Open two requests for newer versions while the old version is open.
       // The first request will received the `blocked` event, but the second
@@ -198,12 +279,26 @@ describe(`DBWrapper`, function() {
       const err2 = await catchAsyncError(new DBWrapper('db', 2).open());
       expect(err1.message).to.match(/blocked/);
       expect(err2.message).to.match(/blocked/);
+
+      // Make sure to close the DB manually since we're overwriting the
+      // onversionchange callback (which usually closes the DB).
+      db.close();
+    });
+  });
+
+  describe(`get db`, function() {
+    it(`returns the IDBDatabase object (after it's first openned)`, async function() {
+      const db = await createTestDb();
+      await db.open();
+
+      expect(db.db).to.be.an.instanceOf(IDBDatabase);
+      expect(db.db.name).to.equal(db._name);
+      expect(db.db.version).to.equal(db._version);
     });
   });
 
   describe(`get`, function() {
-    it(`gets an entry from the object store for the passed key`,
-        async function() {
+    it(`gets an entry from the object store for the passed key`, async function() {
       const db = await createAndPopulateTestDb();
 
       const user = await db.get('users', data.users[0].email);
@@ -225,8 +320,7 @@ describe(`DBWrapper`, function() {
   });
 
   describe(`add`, function() {
-    it(`adds an entry to an object store and returns the key`,
-        async function() {
+    it(`adds an entry to an object store and returns the key`, async function() {
       const db = await createTestDb();
 
       // Test an entry with an explicit key.
@@ -244,8 +338,7 @@ describe(`DBWrapper`, function() {
       expect(commentKey2).to.equal(2);
     });
 
-    it(`throws if a value already exists for the specified key`,
-        async function() {
+    it(`throws if a value already exists for the specified key`, async function() {
       const db = await createAndPopulateTestDb();
 
       expect(await catchAsyncError(db.add('users', data.users[0]))).to.be.ok;
@@ -253,8 +346,7 @@ describe(`DBWrapper`, function() {
   });
 
   describe(`put`, function() {
-    it(`puts an entry to an object store and returns the key`,
-        async function() {
+    it(`puts an entry to an object store and returns the key`, async function() {
       const db = await createTestDb();
 
       // Test an entry with an explicit key.
@@ -297,6 +389,29 @@ describe(`DBWrapper`, function() {
     });
   });
 
+  describe(`count`, function() {
+    it(`returns the number of entries in an object store`, async function() {
+      const db = await createAndPopulateTestDb();
+
+      const count = await db.count('users');
+      expect(count).to.equal(data.users.length);
+    });
+  });
+
+  describe(`clear`, function() {
+    it(`clears all entries from an object store`, async function() {
+      const db = await createAndPopulateTestDb();
+
+      const users = await db.getAll('users');
+      expect(users).to.deep.equal(data.users);
+
+      await db.clear('users');
+
+      const usersLeft = await db.getAll('users');
+      expect(usersLeft).to.deep.equal([]);
+    });
+  });
+
   describe(`delete`, function() {
     it(`deletes an entry from an object store`, async function() {
       const db = await createAndPopulateTestDb();
@@ -308,6 +423,22 @@ describe(`DBWrapper`, function() {
 
       const usersLeft = await db.getAll('users');
       expect(usersLeft).to.deep.equal(data.users.slice(1));
+    });
+  });
+
+  describe(`getKey`, function() {
+    it(`returns the key of the first matching entry for the query`, async function() {
+      const db = await createAndPopulateTestDb();
+
+      const userKey = await db.getKey('users', IDBKeyRange.bound('i', 'k'));
+      expect(userKey).to.deep.equal(data.users[1].email);
+    });
+
+    it(`returns undefined if no key is found`, async function() {
+      const db = await createAndPopulateTestDb();
+
+      const userKey = await db.getKey('users', IDBKeyRange.bound('e', 'e'));
+      expect(userKey).to.deep.equal(undefined);
     });
   });
 
@@ -344,25 +475,46 @@ describe(`DBWrapper`, function() {
       expect(users1).to.deep.equal(data.users.slice(0, 1));
       expect(users2).to.deep.equal(data.users.slice(0, 2));
     });
+  });
 
-    it(`uses a getAll polyfill when the native version isn't supported`,
-        async function() {
-      // Fake a browser without getAll support.
-      const originalGetAll = IDBObjectStore.prototype.getAll;
-      delete IDBObjectStore.prototype.getAll;
-
+  describe(`getAllKeys`, function() {
+    it(`returns the keys of all entries in an object store`, async function() {
       const db = await createAndPopulateTestDb();
 
-      const users1 = await db.getAll('users', IDBKeyRange.bound('a', 'm'));
-      const users2 = await db.getAll('users', IDBKeyRange.bound('n', 'z'));
+      const users = await db.getAllKeys('users');
+      expect(users).to.deep.equal(data.users.map(({email}) => email));
 
-      expect(users1).to.deep.equal(data.users.slice(0, 2));
-      expect(users2).to.deep.equal(data.users.slice(2));
+      const posts = await db.getAllKeys('posts');
+      expect(posts).to.deep.equal([1, 2, 3, 4, 5, 6]);
 
-      // Restore getAll.
-      if (originalGetAll) {
-        IDBObjectStore.prototype.getAll = originalGetAll;
-      }
+      const comments = await db.getAllKeys('comments');
+      expect(comments).to.deep.equal([1, 2, 3, 4, 5]);
+    });
+
+    it(`supports an optional query parameter`, async function() {
+      const db = await createAndPopulateTestDb();
+
+      const users1 = await db.getAllKeys('users', IDBKeyRange.bound('a', 'm'));
+      const users2 = await db.getAllKeys('users', IDBKeyRange.bound('n', 'z'));
+
+      expect(users1).to.deep.equal(
+          data.users.slice(0, 2).map(({email}) => email));
+      expect(users2).to.deep.equal(
+          data.users.slice(2).map(({email}) => email));
+    });
+
+    it(`supports an optional count parameter`, async function() {
+      const db = await createAndPopulateTestDb();
+
+      const users1 = await db.getAllKeys(
+          'users', IDBKeyRange.bound('a', 'z'), 1);
+      const users2 = await db.getAllKeys(
+          'users', IDBKeyRange.bound('a', 'z'), 2);
+
+      expect(users1).to.deep.equal(
+          data.users.slice(0, 1).map(({email}) => email));
+      expect(users2).to.deep.equal(
+          data.users.slice(0, 2).map(({email}) => email));
     });
   });
 
@@ -416,13 +568,12 @@ describe(`DBWrapper`, function() {
   });
 
   describe(`transaction`, function() {
-    it(`performs a transaction on the specified object stores`,
-        async function() {
+    it(`performs a transaction on the specified object stores`, async function() {
       const db = await createTestDb();
 
-      await db.transaction(['users', 'posts'], 'readwrite', (stores) => {
-        stores.users.add(data.users[0]);
-        stores.posts.add(data.posts[0]);
+      await db.transaction(['users', 'posts'], 'readwrite', (txn) => {
+        txn.objectStore('users').add(data.users[0]);
+        txn.objectStore('posts').add(data.posts[0]);
       });
 
       const users = await db.getAll('users');
@@ -432,47 +583,21 @@ describe(`DBWrapper`, function() {
       expect(posts).to.deep.equal(data.posts.slice(0, 1));
     });
 
-    it(`provides a 'complete' function to resolve a transaction with a value`,
-        async function() {
+    it(`provides a 'done' function to resolve a transaction with a value`, async function() {
       const db = await createAndPopulateTestDb();
 
       // Gets the most recent comment from a particular user
       const comment = await db.transaction(['comments'], 'readwrite',
-          (stores, complete) => {
-        const postIdIndex = stores.comments.index('userEmail');
-        postIdIndex
-            .openCursor(IDBKeyRange.only(data.users[0].email), 'prev')
-            .onsuccess = (evt) => {
-          const cursor = evt.target.result;
-          complete(cursor ? cursor.value : null);
-        };
-      });
+          (txn, done) => {
+            const postIdIndex = txn.objectStore('comments').index('userEmail');
+            postIdIndex
+                .openCursor(IDBKeyRange.only(data.users[0].email), 'prev')
+                .onsuccess = (evt) => {
+                  const cursor = evt.target.result;
+                  done(cursor ? cursor.value : null);
+                };
+          });
       expect(comment).to.deep.equal(data.comments[4]);
-    });
-
-    it(`provides an 'abort' function to manually abort a transaction`,
-        async function() {
-      const db = await createTestDb();
-
-      const err = await catchAsyncError(db.transaction(
-          ['posts', 'comments'], 'readwrite', (stores, complete, abort) => {
-        stores.posts.add(data.posts[0]).onsuccess = (evt) => {
-          const postId = evt.target.result;
-          stores.comments.add({postId}).onsuccess = (evt) => {
-            // Abort if the new key is less than 10 (which should be true).
-            if (evt.target.result < 10) {
-              abort();
-            }
-          };
-        };
-      }));
-      expect(err.message).to.match(/abort/);
-
-      // Assert the added post and comment were rolled back.
-      const posts = await db.getAll('posts');
-      expect(posts).to.have.lengthOf(0);
-      const comments = await db.getAll('comments');
-      expect(comments).to.have.lengthOf(0);
     });
 
     it(`throws if the transaction fails`, async function() {
@@ -481,22 +606,21 @@ describe(`DBWrapper`, function() {
       // Stop the event from bubbling to the global object
       // and firing the global onerror handler.
       // https://github.com/w3c/IndexedDB/issues/49
-      // sandbox.stub(self, 'onerror');
+      if ('onerror' in self) {
+        sandbox.stub(self, 'onerror');
+      }
 
       const err = await catchAsyncError(db.transaction(
-          ['users'], 'readwrite', (stores) => {
-        // This should fail because the key is already set.
-        stores.users.add(data.users[0]);
-      }));
-      expect(err).to.have.property('message');
+          ['users'], 'readwrite', (txn) => {
+            // This should fail because the key is already set.
+            txn.objectStore('users').add(data.users[0]);
+          }));
+      expect(err).to.not.be.undefined;
     });
   });
 
   describe(`close`, function() {
-    // TODO(philipwalton): shelving-mock-indexeddb doesn't define a prototype
-    // for IDBDatabase, so we can't spy on it here, but this passes in
-    // browser tests.
-    it.skip(`closes a connection to a database`, async function() {
+    it(`closes a connection to a database`, async function() {
       sandbox.spy(IDBDatabase.prototype, 'close');
 
       const db = await createTestDb();
@@ -506,5 +630,102 @@ describe(`DBWrapper`, function() {
 
       expect(IDBDatabase.prototype.close.calledOnce).to.be.true;
     });
+  });
+});
+
+describe(`deleteDatabase`, function() {
+  beforeEach(async function() {
+    sandbox.restore();
+  });
+
+  it(`deletes a database`, async function() {
+    sandbox.spy(indexedDB, 'deleteDatabase');
+
+    await createTestDb();
+    await deleteDatabase('db');
+
+    expect(indexedDB.deleteDatabase.calledOnce).to.be.true;
+  });
+
+  it(`throws when an error occurs`, async function() {
+    const fakeError = new Error();
+    sandbox.stub(indexedDB, 'deleteDatabase').callsFake(() => {
+      const result = {};
+      // Asynchronously call onerror.
+      setTimeout(() => result.onerror({target: {error: fakeError}}), 0);
+      return result;
+    });
+
+    await createTestDb();
+    const err = await catchAsyncError(deleteDatabase('db'));
+    expect(err).to.equal(fakeError);
+  });
+});
+
+describe(`migrateDb`, function() {
+  beforeEach(async function() {
+    sandbox.restore();
+  });
+
+  it(`calls a series of versioned functions in order based on the event data`, function(done) {
+    const v0Spy = sandbox.spy();
+    const v1Spy = sandbox.spy();
+    const v2Spy = sandbox.spy();
+
+    const migrationFunctions = {
+      v0: (next) => {
+        v0Spy();
+        expect(v1Spy.callCount).to.equal(0);
+        expect(v2Spy.callCount).to.equal(0);
+        next();
+      },
+      v1: (next) => {
+        setTimeout(() => {
+          v1Spy();
+          expect(v0Spy.callCount).to.equal(1);
+          expect(v2Spy.callCount).to.equal(0);
+          next();
+        }, 0);
+      },
+      v2: (next) => {
+        v2Spy();
+        expect(v0Spy.callCount).to.equal(1);
+        expect(v1Spy.callCount).to.equal(1);
+        next();
+        done();
+      },
+    };
+
+    migrateDb({oldVersion: 0, newVersion: 2}, migrationFunctions);
+  });
+
+  it(`only calls the migration functions for the relevant versions`, function(done) {
+    const v0Spy = sandbox.spy();
+    const v1Spy = sandbox.spy();
+    const v2Spy = sandbox.spy();
+
+    const migrationFunctions = {
+      v0: (next) => {
+        v0Spy();
+        next();
+      },
+      v1: (next) => {
+        setTimeout(() => {
+          v1Spy();
+          expect(v0Spy.callCount).to.equal(0);
+          expect(v2Spy.callCount).to.equal(0);
+          next();
+        }, 0);
+      },
+      v2: (next) => {
+        v2Spy();
+        expect(v0Spy.callCount).to.equal(0);
+        expect(v1Spy.callCount).to.equal(1);
+        next();
+        done();
+      },
+    };
+
+    migrateDb({oldVersion: 1, newVersion: 2}, migrationFunctions);
   });
 });

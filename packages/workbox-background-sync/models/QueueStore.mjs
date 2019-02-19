@@ -1,22 +1,19 @@
 /*
- Copyright 2017 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
-import StorableRequest from './StorableRequest.mjs';
-import {DB_NAME, OBJECT_STORE_NAME, INDEXED_PROP} from '../utils/constants.mjs';
+import {migrateDb} from 'workbox-core/_private/migrateDb.mjs';
+import {DB_NAME, DB_VERSION, OBJECT_STORE_NAME, INDEXED_PROP}
+  from '../utils/constants.mjs';
+
 import '../_version.mjs';
+
 
 /**
  * A class to manage storing requests from a Queue in IndexedbDB,
@@ -29,54 +26,182 @@ export class QueueStore {
    * Associates this instance with a Queue instance, so entries added can be
    * identified by their queue name.
    *
-   * @param {Queue} queue
-   *
+   * @param {string} queueName
    * @private
    */
-  constructor(queue) {
-    this._queue = queue;
-    this._db = new DBWrapper(DB_NAME, 1, {
-      onupgradeneeded: (evt) => evt.target.result
-          .createObjectStore(OBJECT_STORE_NAME, {autoIncrement: true})
-          .createIndex(INDEXED_PROP, INDEXED_PROP, {unique: false}),
+  constructor(queueName) {
+    this._queueName = queueName;
+    this._db = new DBWrapper(DB_NAME, DB_VERSION, {
+      onupgradeneeded: (evt) => this._upgradeDb(evt),
     });
   }
 
   /**
-   * Takes a StorableRequest instance, converts it to an object and adds it
-   * as an entry in the object store.
+   * Append an entry last in the queue.
    *
-   * @param {StorableRequest} storableRequest
-   *
-   * @private
+   * @param {Object} entry
+   * @param {Object} entry.requestData
+   * @param {number} [entry.timestamp]
+   * @param {Object} [entry.metadata]
    */
-  async addEntry(storableRequest) {
-    await this._db.add(OBJECT_STORE_NAME, {
-      queueName: this._queue.name,
-      storableRequest: storableRequest.toObject(),
-    });
+  async pushEntry(entry) {
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isType(entry, 'object', {
+        moduleName: 'workbox-background-sync',
+        className: 'QueueStore',
+        funcName: 'pushEntry',
+        paramName: 'entry',
+      });
+      assert.isType(entry.requestData, 'object', {
+        moduleName: 'workbox-background-sync',
+        className: 'QueueStore',
+        funcName: 'pushEntry',
+        paramName: 'entry.requestData',
+      });
+    }
+
+    // Don't specify an ID since one is automatically generated.
+    delete entry.id;
+    entry.queueName = this._queueName;
+
+    await this._db.add(OBJECT_STORE_NAME, entry);
   }
 
   /**
-   * Gets the oldest entry in the object store, removes it, and returns the
-   * value as a StorableRequest instance. If no entry exists, it returns
-   * undefined.
+   * Preppend an entry first in the queue.
    *
-   * @return {StorableRequest|undefined}
-   *
-   * @private
+   * @param {Object} entry
+   * @param {Object} entry.requestData
+   * @param {number} [entry.timestamp]
+   * @param {Object} [entry.metadata]
    */
-  async getAndRemoveOldestEntry() {
-    const [entry] = await this._db.getAllMatching(OBJECT_STORE_NAME, {
-      index: INDEXED_PROP,
-      query: IDBKeyRange.only(this._queue.name),
+  async unshiftEntry(entry) {
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isType(entry, 'object', {
+        moduleName: 'workbox-background-sync',
+        className: 'QueueStore',
+        funcName: 'unshiftEntry',
+        paramName: 'entry',
+      });
+      assert.isType(entry.requestData, 'object', {
+        moduleName: 'workbox-background-sync',
+        className: 'QueueStore',
+        funcName: 'unshiftEntry',
+        paramName: 'entry.requestData',
+      });
+    }
+
+    const [firstEntry] = await this._db.getAllMatching(OBJECT_STORE_NAME, {
       count: 1,
-      includeKeys: true,
+    });
+
+    if (firstEntry) {
+      // Pick an ID one less than the lowest ID in the object store.
+      entry.id = firstEntry.id - 1;
+    } else {
+      delete entry.id;
+    }
+    entry.queueName = this._queueName;
+
+    await this._db.add(OBJECT_STORE_NAME, entry);
+  }
+
+  /**
+   * Removes and returns the last entry in the queue matching the `queueName`.
+   *
+   * @return {Promise<Object>}
+   */
+  async popEntry() {
+    return this._removeEntry({direction: 'prev'});
+  }
+
+  /**
+   * Removes and returns the first entry in the queue matching the `queueName`.
+   *
+   * @return {Promise<Object>}
+   */
+  async shiftEntry() {
+    return this._removeEntry({direction: 'next'});
+  }
+
+  /**
+   * Removes and returns the first or last entry in the queue (based on the
+   * `direction` argument) matching the `queueName`.
+   *
+   * @return {Promise<Object>}
+   */
+  async _removeEntry({direction}) {
+    const [entry] = await this._db.getAllMatching(OBJECT_STORE_NAME, {
+      direction,
+      index: INDEXED_PROP,
+      query: IDBKeyRange.only(this._queueName),
+      count: 1,
     });
 
     if (entry) {
-      await this._db.delete(OBJECT_STORE_NAME, entry.primaryKey);
-      return new StorableRequest(entry.value.storableRequest);
+      await this._db.delete(OBJECT_STORE_NAME, entry.id);
+
+      // Dont' expose the ID or queueName;
+      delete entry.id;
+      delete entry.queueName;
+      return entry;
     }
+  }
+
+  /**
+   * Upgrades the database given an `upgradeneeded` event.
+   *
+   * @param {Event} event
+   */
+  _upgradeDb(event) {
+    const db = event.target.result;
+    const txn = event.target.transaction;
+    let oldEntries = [];
+
+    migrateDb(event, {
+      v1: (next) => {
+        // When migrating from version 0, this will not exist.
+        if (db.objectStoreNames.contains(OBJECT_STORE_NAME)) {
+          // Get any existing entries in the v1 requests store
+          // and then delete it.
+          const objStore = txn.objectStore(OBJECT_STORE_NAME);
+          objStore.openCursor().onsuccess = ({target}) => {
+            const cursor = target.result;
+            if (cursor) {
+              oldEntries.push(cursor.value);
+              cursor.continue();
+            } else {
+              db.deleteObjectStore(OBJECT_STORE_NAME);
+              next();
+            }
+          };
+        } else {
+          next();
+        }
+      },
+      v2: (next) => {
+        // Creates v2 of the requests store and adds back any existing
+        // entries in the new format.
+        const objStore = db.createObjectStore(OBJECT_STORE_NAME, {
+          autoIncrement: true,
+          keyPath: 'id',
+        });
+        objStore.createIndex(INDEXED_PROP, INDEXED_PROP, {unique: false});
+
+        if (oldEntries.length) {
+          for (const {queueName, storableRequest} of oldEntries) {
+            // Move the timestamp from `storableRequest` to the top level.
+            const timestamp = storableRequest.timestamp;
+
+            // Reformat the storable request data
+            const requestData = Object.assign(
+                storableRequest.requestInit, {url: storableRequest.url});
+
+            objStore.add({queueName, timestamp, requestData});
+          }
+        }
+        next();
+      },
+    });
   }
 }

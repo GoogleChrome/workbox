@@ -1,15 +1,10 @@
 /*
- Copyright 2017 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- http://www.apache.org/licenses/LICENSE-2.0
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
 
 const sinon = require('sinon');
 const serviceWorkerMock = require('service-worker-mock');
@@ -21,9 +16,11 @@ const {
 } = require('shelving-mock-indexeddb');
 const URLSearchParams = require('url-search-params');
 const Blob = require('./sw-env-mocks/Blob');
+const DOMException = require('./sw-env-mocks/DOMException');
 const Event = require('./sw-env-mocks/Event');
 const {addEventListener, dispatchEvent} = require('./sw-env-mocks/event-listeners');
 const ExtendableEvent = require('./sw-env-mocks/ExtendableEvent');
+const ExtendableMessageEvent = require('./sw-env-mocks/ExtendableMessageEvent');
 const fetch = require('./sw-env-mocks/fetch');
 const FetchEvent = require('./sw-env-mocks/FetchEvent');
 const FileReader = require('./sw-env-mocks/FileReader');
@@ -43,9 +40,11 @@ global.self = global;
 // Add/fix globals not in 'service-worker-mock'.
 global.addEventListener = addEventListener;
 global.Blob = Blob;
+global.DOMException = DOMException;
 global.dispatchEvent = dispatchEvent;
 global.Event = Event;
 global.ExtendableEvent = ExtendableEvent;
+global.ExtendableMessageEvent = ExtendableMessageEvent;
 global.fetch = fetch;
 global.FetchEvent = FetchEvent;
 global.FileReader = FileReader;

@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 import path from 'path';
 import glob from 'glob';
 import {expect} from 'chai';
@@ -31,11 +39,11 @@ describe('[all] JSDocs', function() {
       throw new Error('There should be **no** globals in the JSDocs.');
     }
 
-    // On some occassions module.exports can leak into JSDocs and breaks
-    // in the final template.
+    // On some occasions, module.exports can leak into JSDocs, and breaks
+    // into the final template.
     expect(docs.indexOf('index-all.html')).to.not.equal(-1);
     const indexAllContents = fs.readFileSync(path.join(docsPath, 'index-all.html'))
-      .toString();
+        .toString();
     if (indexAllContents.indexOf('<a href="module.html#.exports">module.exports</a>') !== -1) {
       throw new Error('There is a stray `module.exports` in the docs. ' +
         'Find and fix this issue.');

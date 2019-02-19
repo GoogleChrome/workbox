@@ -1,16 +1,9 @@
 /*
- Copyright 2017 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 import {assert} from 'workbox-core/_private/assert.mjs';
@@ -18,7 +11,7 @@ import {logger} from 'workbox-core/_private/logger.mjs';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 
-import normalizeHandler from './utils/normalizeHandler.mjs';
+import {normalizeHandler} from './utils/normalizeHandler.mjs';
 import './_version.mjs';
 
 /**
@@ -43,49 +36,117 @@ class Router {
    * Initializes a new Router.
    */
   constructor() {
-    // _routes will contain a mapping of HTTP method name ('GET', etc.) to an
-    // array of all the corresponding Route instances that are registered.
     this._routes = new Map();
+  }
+
+  /**
+   * @return {Map<string, Array<workbox.routing.Route>>} routes A `Map` of HTTP
+   * method name ('GET', etc.) to an array of all the corresponding `Route`
+   * instances that are registered.
+   */
+  get routes() {
+    return this._routes;
+  }
+
+  /**
+   * Adds a fetch event listener to respond to events when a route matches
+   * the event's request.
+   */
+  addFetchListener() {
+    self.addEventListener('fetch', (event) => {
+      const {request} = event;
+      const responsePromise = this.handleRequest({request, event});
+      if (responsePromise) {
+        event.respondWith(responsePromise);
+      }
+    });
+  }
+
+  /**
+   * Adds a message event listener for URLs to cache from the window.
+   * This is useful to cache resources loaded on the page prior to when the
+   * service worker started controlling it.
+   *
+   * The format of the message data sent from the window should be as follows.
+   * Where the `urlsToCache` array may consist of URL strings or an array of
+   * URL string + `requestInit` object (the same as you'd pass to `fetch()`).
+   *
+   * ```
+   * {
+   *   type: 'CACHE_URLS',
+   *   payload: {
+   *     urlsToCache: [
+   *       './script1.js',
+   *       './script2.js',
+   *       ['./script3.js', {mode: 'no-cors'}],
+   *     ],
+   *   },
+   * }
+   * ```
+   */
+  addCacheListener() {
+    self.addEventListener('message', async (event) => {
+      const {type, payload} = event.data;
+
+      if (type === 'CACHE_URLS') {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.debug(`Caching URLs from the window`, payload.urlsToCache);
+        }
+
+        const requestPromises = payload.urlsToCache.map((entry) => {
+          if (typeof entry === 'string') {
+            entry = [entry];
+          }
+
+          const request = new Request(...entry);
+          return this.handleRequest({request, event});
+        });
+
+        // If a MessageChannel was used, reply to the message on success.
+        if (event.ports) {
+          await requestPromises;
+          event.ports[0].postMessage(true);
+        }
+      }
+    });
   }
 
   /**
    * Apply the routing rules to a FetchEvent object to get a Response from an
    * appropriate Route's handler.
    *
-   * @param {FetchEvent} event The event from a service worker's 'fetch' event
-   * listener.
+   * @param {Object} options
+   * @param {Request} options.request The request to handle (this is usually
+   *     from a fetch event, but it does not have to be).
+   * @param {FetchEvent} [options.event] The event that triggered the request,
+   *     if applicable.
    * @return {Promise<Response>|undefined} A promise is returned if a
-   * registered route can handle the FetchEvent's request. If there is no
-   * matching route and there's no `defaultHandler`, `undefined` is returned.
+   *     registered route can handle the request. If there is no matching
+   *     route and there's no `defaultHandler`, `undefined` is returned.
    */
-  handleRequest(event) {
+  handleRequest({request, event}) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(event, FetchEvent, {
+      assert.isInstance(request, Request, {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'handleRequest',
-        paramName: 'event',
+        paramName: 'options.request',
       });
     }
 
-    const url = new URL(event.request.url);
+    const url = new URL(request.url, location);
     if (!url.protocol.startsWith('http')) {
       if (process.env.NODE_ENV !== 'production') {
         logger.debug(
-          `Workbox Router only supports URLs that start with 'http'.`);
+            `Workbox Router only supports URLs that start with 'http'.`);
       }
       return;
     }
 
-    let route = null;
-    let handler = null;
-    let params = null;
-    let debugMessages = [];
+    let {params, route} = this.findMatchingRoute({url, request, event});
+    let handler = route && route.handler;
 
-    const result = this._findHandlerAndParams(event, url);
-    handler = result.handler;
-    params = result.params;
-    route = result.route;
+    let debugMessages = [];
     if (process.env.NODE_ENV !== 'production') {
       if (handler) {
         debugMessages.push([
@@ -137,7 +198,7 @@ class Router {
       // The Request and Response objects contains a great deal of information,
       // hide it under a group in case developers want to see it.
       logger.groupCollapsed(`View request details here.`);
-      logger.unprefixed.log(event.request);
+      logger.log(request);
       logger.groupEnd();
 
       logger.groupEnd();
@@ -147,7 +208,7 @@ class Router {
     // error. It should still callback to the catch handler.
     let responsePromise;
     try {
-      responsePromise = handler.handle({url, event, params});
+      responsePromise = handler.handle({url, request, event, params});
     } catch (err) {
       responsePromise = Promise.reject(err);
     }
@@ -159,8 +220,8 @@ class Router {
           // and may not make sense without the URL
           logger.groupCollapsed(`Error thrown when responding to: ` +
             ` ${getFriendlyURL(url)}. Falling back to Catch Handler.`);
-          logger.unprefixed.error(`Error thrown by:`, route);
-          logger.unprefixed.error(err);
+          logger.error(`Error thrown by:`, route);
+          logger.error(err);
           logger.groupEnd();
         }
         return this._catchHandler.handle({url, event, err});
@@ -171,43 +232,54 @@ class Router {
   }
 
   /**
-   * Checks the incoming `event.request` against the registered routes, and if
-   * there's a match, returns the corresponding handler along with any params
-   * generated by the match.
+   * Checks a request and URL (and optionally an event) against the list of
+   * registered routes, and if there's a match, returns the corresponding
+   * route along with any params generated by the match.
    *
-   * @param {FetchEvent} event
-   * @param {URL} url
-   * @return {Object} Returns an object with `handler` and `params` properties.
-   * They are populated if a matching route was found or `undefined` otherwise.
-   *
-   * @private
+   * @param {Object} options
+   * @param {URL} options.url
+   * @param {Request} options.request The request to match.
+   * @param {FetchEvent} [options.event] The corresponding event (unless N/A).
+   * @return {Object} An object with `route` and `params` properties.
+   *     They are populated if a matching route was found or `undefined`
+   *     otherwise.
    */
-  _findHandlerAndParams(event, url) {
-    const routes = this._routes.get(event.request.method) || [];
-    for (const route of routes) {
-      let matchResult = route.match({url, event});
-      if (matchResult) {
-        if (Array.isArray(matchResult) && matchResult.length === 0) {
-          // Instead of passing an empty array in as params, use undefined.
-          matchResult = undefined;
-        } else if ((matchResult.constructor === Object &&
-          Object.keys(matchResult).length === 0) || matchResult === true) {
-          // Instead of passing an empty object in as params, use undefined.
-          matchResult = undefined;
-        }
-
-        // Break out of the loop and return the appropriate values as soon as
-        // we have a match.
-        return {
-          route,
-          params: matchResult,
-          handler: route.handler,
-        };
-      }
+  findMatchingRoute({url, request, event}) {
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(url, URL, {
+        moduleName: 'workbox-routing',
+        className: 'Router',
+        funcName: 'findMatchingRoute',
+        paramName: 'options.url',
+      });
+      assert.isInstance(request, Request, {
+        moduleName: 'workbox-routing',
+        className: 'Router',
+        funcName: 'findMatchingRoute',
+        paramName: 'options.request',
+      });
     }
 
-    // If we didn't have a match, then return undefined values.
-    return {handler: undefined, params: undefined};
+    const routes = this._routes.get(request.method) || [];
+    for (const route of routes) {
+      let params;
+      let matchResult = route.match({url, request, event});
+      if (matchResult) {
+        if (Array.isArray(matchResult) && matchResult.length > 0) {
+          // Instead of passing an empty array in as params, use undefined.
+          params = matchResult;
+        } else if ((matchResult.constructor === Object &&
+            Object.keys(matchResult).length > 0)) {
+          // Instead of passing an empty object in as params, use undefined.
+          params = matchResult;
+        }
+
+        // Return early if have a match.
+        return {route, params};
+      }
+    }
+    // If no match was found above, return and empty object.
+    return {};
   }
 
   /**
@@ -295,9 +367,9 @@ class Router {
   unregisterRoute(route) {
     if (!this._routes.has(route.method)) {
       throw new WorkboxError(
-        'unregister-route-but-not-found-with-method', {
-          method: route.method,
-        }
+          'unregister-route-but-not-found-with-method', {
+            method: route.method,
+          }
       );
     }
 

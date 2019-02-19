@@ -1,16 +1,9 @@
 /*
- Copyright 2017 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 import {expect} from 'chai';
@@ -20,12 +13,13 @@ import {eventsDoneWaiting, resetEventListeners} from '../../../infra/testing/sw-
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
 import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
 import {NetworkFirst, NetworkOnly} from '../../../packages/workbox-strategies/index.mjs';
-import * as googleAnalytics from '../../../packages/workbox-google-analytics/index.mjs';
+import {initialize} from '../../../packages/workbox-google-analytics/initialize.mjs';
 import {
   GOOGLE_ANALYTICS_HOST,
   GTM_HOST,
   ANALYTICS_JS_PATH,
   GTAG_JS_PATH,
+  GTM_JS_PATH,
 } from '../../../packages/workbox-google-analytics/utils/constants.mjs';
 
 const PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
@@ -53,13 +47,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
   it(`should register a handler to cache the analytics.js script`, function() {
     sandbox.spy(NetworkFirst.prototype, 'handle');
 
-    googleAnalytics.initialize();
+    initialize();
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(
           `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
-        mode: 'no-cors',
-      }),
+            mode: 'no-cors',
+          }),
     }));
 
     expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
@@ -68,25 +62,40 @@ describe(`[workbox-google-analytics] initialize`, function() {
   it(`should register a handler to cache the gtag.js script`, function() {
     sandbox.spy(NetworkFirst.prototype, 'handle');
 
-    googleAnalytics.initialize();
+    initialize();
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(
           `https://${GTM_HOST}${GTAG_JS_PATH}?id=UA-XXXXX-Y`, {
-        mode: 'no-cors',
-      }),
+            mode: 'no-cors',
+          }),
+    }));
+
+    expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
+  });
+
+  it(`should register a handler to cache the gtm.js script`, function() {
+    sandbox.spy(NetworkFirst.prototype, 'handle');
+
+    initialize();
+
+    self.dispatchEvent(new FetchEvent('fetch', {
+      request: new Request(
+          `https://${GTM_HOST}${GTM_JS_PATH}?id=GTM-XXXX`, {
+            mode: 'no-cors',
+          }),
     }));
 
     expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
   });
 
   it(`should accept an optional cache name`, async function() {
-    googleAnalytics.initialize({cacheName: 'foobar'});
+    initialize({cacheName: 'foobar'});
 
     const analyticsJsRequest = new Request(
         `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
-      mode: 'no-cors',
-    });
+          mode: 'no-cors',
+        });
 
     self.dispatchEvent(new FetchEvent('fetch', {request: analyticsJsRequest}));
 
@@ -102,12 +111,12 @@ describe(`[workbox-google-analytics] initialize`, function() {
   });
 
   it(`should use the default cache name when not specified`, async function() {
-    googleAnalytics.initialize();
+    initialize();
 
     const analyticsJsRequest = new Request(
         `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
-      mode: 'no-cors',
-    });
+          mode: 'no-cors',
+        });
 
     self.dispatchEvent(new FetchEvent('fetch', {request: analyticsJsRequest}));
 
@@ -126,7 +135,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
   it(`should register GET/POST routes for collect endpoints`, function() {
     sandbox.spy(NetworkOnly.prototype, 'handle');
 
-    googleAnalytics.initialize();
+    initialize();
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
@@ -170,7 +179,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
   it(`should not alter successful hit payloads`, async function() {
     sandbox.spy(self, 'fetch');
 
-    googleAnalytics.initialize();
+    initialize();
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
@@ -199,7 +208,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
   it(`should not alter hit paths`, async function() {
     sandbox.spy(self, 'fetch');
 
-    googleAnalytics.initialize();
+    initialize();
 
     // Test the /r/collect endpoint
     self.dispatchEvent(new FetchEvent('fetch', {
@@ -228,9 +237,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   it(`should add failed hits to a background sync queue`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'addRequest');
+    sandbox.spy(Queue.prototype, 'pushRequest');
 
-    googleAnalytics.initialize();
+    initialize();
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
@@ -248,19 +257,19 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     await eventsDoneWaiting();
 
-    const [call1Args, call2Args] = Queue.prototype.addRequest.args;
-    expect(call1Args[0].url).to.equal(`https://` +
+    const [call1Args, call2Args] = Queue.prototype.pushRequest.args;
+    expect(call1Args[0].request.url).to.equal(`https://` +
         `${GOOGLE_ANALYTICS_HOST}/collect?${PAYLOAD}`);
-    expect(call2Args[0].url).to.equal(`https://` +
+    expect(call2Args[0].request.url).to.equal(`https://` +
         `${GOOGLE_ANALYTICS_HOST}/collect`);
   });
 
   it(`should add the qt param to replayed hits`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'addRequest');
+    sandbox.spy(Queue.prototype, 'pushRequest');
     const clock = sandbox.useFakeTimers({toFake: ['Date']});
 
-    googleAnalytics.initialize();
+    initialize();
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
@@ -284,11 +293,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
-    const [queue] = Queue.prototype.addRequest.thisValues;
-
     clock.tick(100);
 
-    await queue.replayRequests();
+    self.dispatchEvent(new SyncEvent('sync', {
+      tag: `workbox-background-sync:workbox-google-analytics`,
+    }));
+
+    await eventsDoneWaiting();
 
     expect(self.fetch.callCount).to.equal(2);
 
@@ -312,10 +323,10 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   it(`should update an existing qt param`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'addRequest');
+    sandbox.spy(Queue.prototype, 'pushRequest');
     const clock = sandbox.useFakeTimers({toFake: ['Date']});
 
-    googleAnalytics.initialize();
+    initialize();
 
     self.dispatchEvent(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
@@ -339,10 +350,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
-    const [queue] = Queue.prototype.addRequest.thisValues;
-
     clock.tick(100);
-    await queue.replayRequests();
+
+    self.dispatchEvent(new SyncEvent('sync', {
+      tag: `workbox-background-sync:workbox-google-analytics`,
+    }));
+
+    await eventsDoneWaiting();
 
     expect(self.fetch.callCount).to.equal(2);
 
@@ -357,9 +371,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   it(`should add parameterOverrides to replayed hits`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'addRequest');
+    sandbox.spy(Queue.prototype, 'pushRequest');
 
-    googleAnalytics.initialize({
+    initialize({
       parameterOverrides: {
         cd1: 'replay',
         cm1: 1,
@@ -385,8 +399,11 @@ describe(`[workbox-google-analytics] initialize`, function() {
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
-    const [queue] = Queue.prototype.addRequest.thisValues;
-    await queue.replayRequests();
+    self.dispatchEvent(new SyncEvent('sync', {
+      tag: `workbox-background-sync:workbox-google-analytics`,
+    }));
+
+    await eventsDoneWaiting();
 
     expect(self.fetch.callCount).to.equal(2);
 
@@ -407,9 +424,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   it(`should apply the hitFilter to replayed hits`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'addRequest');
+    sandbox.spy(Queue.prototype, 'pushRequest');
 
-    googleAnalytics.initialize({
+    initialize({
       hitFilter: (params) => {
         if (params.get('foo') === '1') {
           params.set('foo', 'bar');
@@ -436,8 +453,11 @@ describe(`[workbox-google-analytics] initialize`, function() {
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
-    const [queue] = Queue.prototype.addRequest.thisValues;
-    await queue.replayRequests();
+    self.dispatchEvent(new SyncEvent('sync', {
+      tag: `workbox-background-sync:workbox-google-analytics`,
+    }));
+
+    await eventsDoneWaiting();
 
     expect(self.fetch.callCount).to.equal(2);
 

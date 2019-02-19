@@ -1,9 +1,16 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 import {expect} from 'chai';
 import expectError from '../../../infra/testing/expectError.js';
 import {devOnly} from '../../../infra/testing/env-it';
 import {NavigationRoute} from '../../../packages/workbox-routing/NavigationRoute.mjs';
 
-const match = () => {};
 const handler = {
   handle: () => {},
 };
@@ -14,30 +21,30 @@ const invalidHandlerObject = {};
 describe(`[workbox-routing] NavigationRoute`, function() {
   devOnly.it(`should throw when called without a valid handler parameter in dev`, async function() {
     await expectError(
-      () => new NavigationRoute(),
-      'incorrect-type',
-      (error) => {
-        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-        expect(error.details).to.have.property('className').that.equals('Route');
-        expect(error.details).to.have.property('funcName').that.equals('constructor');
-        expect(error.details).to.have.property('paramName').that.equals('handler');
-      }
+        () => new NavigationRoute(),
+        'incorrect-type',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+          expect(error.details).to.have.property('className').that.equals('Route');
+          expect(error.details).to.have.property('funcName').that.equals('constructor');
+          expect(error.details).to.have.property('paramName').that.equals('handler');
+        }
     );
 
     await expectError(
-      () => new NavigationRoute(invalidHandlerObject),
-      'missing-a-method',
-      (error) => {
-        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-        expect(error.details).to.have.property('className').that.equals('Route');
-        expect(error.details).to.have.property('funcName').that.equals('constructor');
-        expect(error.details).to.have.property('paramName').that.equals('handler');
-      }
+        () => new NavigationRoute(invalidHandlerObject),
+        'missing-a-method',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+          expect(error.details).to.have.property('className').that.equals('Route');
+          expect(error.details).to.have.property('funcName').that.equals('constructor');
+          expect(error.details).to.have.property('paramName').that.equals('handler');
+        }
     );
   });
 
   it(`should not throw when called with valid handler in dev`, function() {
-    expect(() => new NavigationRoute(match, handler)).not.to.throw();
+    expect(() => new NavigationRoute(handler)).not.to.throw();
   });
 
   it(`should not throw when called with a valid function handler`, function() {
@@ -56,10 +63,10 @@ describe(`[workbox-routing] NavigationRoute`, function() {
     ];
     const navigationRoute = new NavigationRoute(handler);
     urls.forEach((url) => {
-      const request = new Request(url, {
-        mode: 'navigate',
-      });
-      expect(navigationRoute.match({event: {request}, url})).to.equal(true);
+      const request = new Request(url);
+      Object.defineProperty(request, 'mode', {value: 'navigate'});
+
+      expect(navigationRoute.match({request, url})).to.equal(true);
     });
   });
 
@@ -71,74 +78,68 @@ describe(`[workbox-routing] NavigationRoute`, function() {
     const navigationRoute = new NavigationRoute(handler);
     urls.forEach((url) => {
       const request = new Request(url);
-      expect(navigationRoute.match({event: {request}, url})).to.equal(false);
+      expect(navigationRoute.match({request, url})).to.equal(false);
     });
   });
 
   it(`should not include urls in blacklist that completely match`, function() {
     const url = new URL('/testing/path.html', self.location);
-    const request = new Request(url, {
-      mode: 'navigate',
-    });
+    const request = new Request(url);
+    Object.defineProperty(request, 'mode', {value: 'navigate'});
 
     const navigationRoute = new NavigationRoute(handler, {
       blacklist: [/\/testing\/.*/],
     });
 
-    expect(navigationRoute.match({event: {request}, url})).to.equal(false);
+    expect(navigationRoute.match({request, url})).to.equal(false);
   });
 
   it(`should blacklist urls with search params that result in partial match with regex`, function() {
     const url = new URL('/testing/path.html?test=hello', self.location);
-    const request = new Request(url, {
-      mode: 'navigate',
-    });
+    const request = new Request(url);
+    Object.defineProperty(request, 'mode', {value: 'navigate'});
 
     const navigationRoute = new NavigationRoute(handler, {
       blacklist: [/\/testing\/path.html/],
     });
 
-    expect(navigationRoute.match({event: {request}, url})).to.equal(false);
+    expect(navigationRoute.match({request, url})).to.equal(false);
   });
 
   it(`should only match urls in custom whitelist`, function() {
     let url = new URL('/testing/path.html?test=hello', self.location);
-    let request = new Request(url, {
-      mode: 'navigate',
-    });
+    let request = new Request(url);
+    Object.defineProperty(request, 'mode', {value: 'navigate'});
 
     const navigationRoute = new NavigationRoute(handler, {
       whitelist: [/\/testing\/path.html/],
     });
 
-    expect(navigationRoute.match({event: {request}, url})).to.equal(true);
+    expect(navigationRoute.match({request, url})).to.equal(true);
 
     url = new URL('/other/path.html?test=hello', self.location);
-    request = new Request(url, {
-      mode: 'navigate',
-    });
+    request = new Request(url);
+    Object.defineProperty(request, 'mode', {value: 'navigate'});
 
-    expect(navigationRoute.match({event: {request}, url})).to.equal(false);
+    expect(navigationRoute.match({request, url})).to.equal(false);
   });
 
   it(`should take blacklist as priority`, function() {
     let url = new URL('/testing/path.html?test=hello', self.location);
-    let request = new Request(url, {
-      mode: 'navigate',
-    });
+    let request = new Request(url);
+    Object.defineProperty(request, 'mode', {value: 'navigate'});
 
     const navigationRoute = new NavigationRoute(handler, {
       whitelist: [/\/testing\/.*/],
       blacklist: [/\/testing\/path.html/],
     });
 
-    expect(navigationRoute.match({event: {request}, url})).to.equal(false);
+    expect(navigationRoute.match({request, url})).to.equal(false);
 
     url = new URL('/testing/index.html?test=hello', self.location);
-    request = new Request(url, {
-      mode: 'navigate',
-    });
+    request = new Request(url);
+    Object.defineProperty(request, 'mode', {value: 'navigate'});
 
-    expect(navigationRoute.match({event: {request}, url})).to.equal(true);
+    expect(navigationRoute.match({request, url})).to.equal(true);
   });
 });

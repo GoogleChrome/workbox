@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 import {CacheFirst} from '../../../packages/workbox-strategies/CacheFirst.mjs';
 import {CacheOnly} from '../../../packages/workbox-strategies/CacheOnly.mjs';
 import {NetworkFirst} from '../../../packages/workbox-strategies/NetworkFirst.mjs';
@@ -11,9 +19,10 @@ describe(`[workbox-strategies] Usages with Router`, function() {
     it(`should show Router and '${StrategyClass.name}' will work together`, function() {
       const router = new Router();
       router.registerRoute(new Route(() => true, new StrategyClass()));
-      return router.handleRequest(new FetchEvent('fetch', {
-        request: new Request(self.location),
-      }));
+
+      const request = new Request(self.location);
+      const event = new FetchEvent('fetch', {request});
+      return router.handleRequest({request, event});
     });
   });
 });

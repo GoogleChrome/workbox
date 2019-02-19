@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 import {expect} from 'chai';
 
 import {createPartialResponse} from '../../../packages/workbox-range-requests/createPartialResponse.mjs';
@@ -50,6 +58,14 @@ describe(`[workbox-range-requests] createPartialResponse`, function() {
       const responseBlob = await response.blob();
       const expectedBlob = constructBlob(101);
       expect(responseBlob._text).to.eql(expectedBlob._text);
+    });
+
+    it(`should handle being passed a Response with a status of 206 by returning it as-is`, async function() {
+      const originalPartialResponse = new Response('expected text', {status: 206});
+      const createdPartialResponse = await createPartialResponse(VALID_REQUEST, originalPartialResponse);
+
+      // We should get back the exact same response.
+      expect(createdPartialResponse).to.eql(originalPartialResponse);
     });
   });
 });

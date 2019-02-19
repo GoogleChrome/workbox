@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs-extra');
@@ -9,11 +17,11 @@ const spawn = require('./utils/spawn-promise-wrapper');
 
 gulp.task('demos:groupBuildFiles', async () => {
   const pattern = path.posix.join(
-    __dirname, '..', 'packages', '**',
-    constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
+      __dirname, '..', 'packages', '**',
+      constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
 
   const localBuildPath = path.join(__dirname, '..', 'demos', 'public',
-    constants.LOCAL_BUILDS_DIR);
+      constants.LOCAL_BUILDS_DIR);
   await fs.remove(localBuildPath);
   await fs.ensureDir(localBuildPath);
 
@@ -22,8 +30,8 @@ gulp.task('demos:groupBuildFiles', async () => {
   const filesToIncludeInBundle = glob.sync(pattern);
   for (const fileToInclude of filesToIncludeInBundle) {
     await fs.ensureSymlink(
-      fileToInclude,
-      path.join(localBuildPath, path.basename(fileToInclude)),
+        fileToInclude,
+        path.join(localBuildPath, path.basename(fileToInclude)),
     );
   }
 });

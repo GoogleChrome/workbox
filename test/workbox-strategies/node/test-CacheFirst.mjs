@@ -1,24 +1,18 @@
 /*
- Copyright 2016 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
+
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import {_private} from '../../../packages/workbox-core/index.mjs';
-import {compareResponses} from '../utils/response-comparisons.mjs';
-
+import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
 import {CacheFirst} from '../../../packages/workbox-strategies/CacheFirst.mjs';
+import {compareResponses} from '../utils/response-comparisons.mjs';
+import expectError from '../../../infra/testing/expectError';
 
 describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
   const sandbox = sinon.createSandbox();
@@ -59,7 +53,7 @@ describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
 
     // Wait until cache.put is finished.
     await cachePromise;
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     const firstCachedResponse = await cache.match(request);
 
     await compareResponses(firstCachedResponse, fetchResponse, true);
@@ -101,7 +95,7 @@ describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
 
     // Wait until cache.put is finished.
     await cachePromise;
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     const firstCachedResponse = await cache.match(request);
 
     await compareResponses(firstCachedResponse, fetchResponse, true);
@@ -162,7 +156,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
 
     // Wait until cache.put is finished.
     await cachePromise;
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     const firstCachedResponse = await cache.match(request);
 
     await compareResponses(firstCachedResponse, fetchResponse, true);
@@ -226,7 +220,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
 
     // Wait until cache.put is finished.
     await cachePromise;
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     const firstCachedResponse = await cache.match(request);
 
     expect(firstCachedResponse).to.equal(null);
@@ -261,7 +255,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
 
     // Wait until cache.put is finished.
     await cachePromise;
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     const firstCachedResponse = await cache.match(request);
 
     await compareResponses(firstHandleResponse, firstCachedResponse, true);
@@ -272,7 +266,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const pluginResponse = new Response('plugin response');
@@ -305,7 +299,7 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
     });
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheFirst = new CacheFirst({
@@ -338,12 +332,10 @@ describe(`[workbox-strategies] CacheFirst.handle()`, function() {
     });
 
     const cacheFirst = new CacheFirst();
-    try {
-      await cacheFirst.handle({event});
-      throw new Error('Expected an error to be thrown.');
-    } catch (err) {
-      expect(err).to.equal(injectedError);
-    }
+    await expectError(
+        () => cacheFirst.handle({event}),
+        'no-response'
+    );
   });
 
   it(`should use the fetchOptions provided`, async function() {

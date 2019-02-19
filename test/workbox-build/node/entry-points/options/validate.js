@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const expect = require('chai').expect;
 
 const baseSchema = require('../../../../../packages/workbox-build/src/entry-points/options/base-schema');
@@ -15,7 +23,7 @@ describe(`[workbox-build] entry-points/options/validate.js`, function() {
   for (const badInput of badInputs) {
     it(`should throw a ValidationError when passed bad input: ${JSON.stringify(badInput)}`, function() {
       expect(
-        () => validate(badInput, baseSchema)
+          () => validate(badInput, baseSchema)
       ).to.throw().with.property('name', 'ValidationError');
     });
   }
@@ -46,11 +54,11 @@ describe(`[workbox-build] entry-points/options/validate.js`, function() {
   });
 
   it(`should return the default options, honoring any additional options`, function() {
-    const dontCacheBustUrlsMatching = /test/;
-    const options = validate({dontCacheBustUrlsMatching}, baseSchema);
+    const dontCacheBustURLsMatching = /test/;
+    const options = validate({dontCacheBustURLsMatching}, baseSchema);
 
     expect(options).to.eql({
-      dontCacheBustUrlsMatching,
+      dontCacheBustURLsMatching,
       globFollow: true,
       globIgnores: ['**/node_modules/**/*'],
       globPatterns: ['**/*.{js,css,html}'],

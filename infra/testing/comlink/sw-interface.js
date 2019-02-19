@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 importScripts('/__WORKBOX/comlink.js');
 
 // TODO: Standardize on naming, and move over some of the legacy uses of
@@ -29,7 +37,22 @@ const api = {
     });
   },
 
-  cacheUrls: async (cacheName) => {
+  getObjectStoreEntries: (dbName, objStoreName) => {
+    return new Promise((resolve) => {
+      const result = indexedDB.open(dbName);
+      result.onsuccess = (event) => {
+        const db = event.target.result;
+        db.transaction(objStoreName)
+            .objectStore(objStoreName)
+            .getAll()
+            .onsuccess = (event) => {
+              resolve(event.target.result);
+            };
+      };
+    });
+  },
+
+  cacheURLs: async (cacheName) => {
     const cache = await caches.open(cacheName);
     const requests = await cache.keys();
     return requests.map((request) => request.url);

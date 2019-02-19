@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs-extra');
@@ -15,7 +23,7 @@ gulp.task('publish-demos:updateCDNDetails', () => {
     latestUrl: getVersionsCDNUrl(),
   };
   const filePath = path.join(__dirname, '..', 'demos',
-    'functions', 'cdn-details.json');
+      'functions', 'cdn-details.json');
 
   return fs.writeJSON(filePath, details);
 });
@@ -28,7 +36,7 @@ gulp.task('publish-demos:deploy', () => {
 
 gulp.task('publish-demos:clean', () => {
   return fs.remove(
-    path.join(__dirname, '..', 'demos', 'public', constants.LOCAL_BUILDS_DIR)
+      path.join(__dirname, '..', 'demos', 'public', constants.LOCAL_BUILDS_DIR)
   );
 });
 

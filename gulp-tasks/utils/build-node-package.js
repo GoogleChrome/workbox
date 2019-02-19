@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const babel = require('gulp-babel');
 const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
@@ -10,7 +18,7 @@ const pkgPathToName = require('./pkg-path-to-name');
 module.exports = (packagePath) => {
   const packageName = pkgPathToName(packagePath);
   const outputDirectory = path.join(packagePath,
-    constants.PACKAGE_BUILD_DIRNAME);
+      constants.PACKAGE_BUILD_DIRNAME);
 
   logHelper.log(oneLine`
     Building Node Package for
@@ -18,12 +26,12 @@ module.exports = (packagePath) => {
   `);
 
   return gulp.src(`${packagePath}/src/**`).pipe(babel({
-    only: /\.js$/,
+    only: [/\.js$/],
     presets: [
-      ['env', {
+      ['@babel/preset-env', {
         targets: {
           // Change this when our minimum required node version changes.
-          node: '4.0',
+          node: '6.0',
         },
       }],
     ],
@@ -32,7 +40,7 @@ module.exports = (packagePath) => {
       // are only included in our Rollup bundles once, even if they're used
       // in multiple source files.
       // See https://github.com/rollup/rollup-plugin-babel#helpers
-      'transform-runtime',
+      '@babel/transform-runtime',
     ],
   })).pipe(gulp.dest(outputDirectory));
 };

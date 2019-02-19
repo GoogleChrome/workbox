@@ -1,16 +1,9 @@
 /*
- Copyright 2017 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 import {expect} from 'chai';
@@ -19,17 +12,17 @@ import sinon from 'sinon';
 import expectError from '../../../infra/testing/expectError';
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
 import {QueueStore} from
-    '../../../packages/workbox-background-sync/models/QueueStore.mjs';
-import {DB_NAME, OBJECT_STORE_NAME} from
-    '../../../packages/workbox-background-sync/utils/constants.mjs';
+  '../../../packages/workbox-background-sync/models/QueueStore.mjs';
+import {DB_NAME, DB_VERSION, OBJECT_STORE_NAME} from
+  '../../../packages/workbox-background-sync/utils/constants.mjs';
 import {DBWrapper} from '../../../packages/workbox-core/_private/DBWrapper.mjs';
 import {resetEventListeners} from
-    '../../../infra/testing/sw-env-mocks/event-listeners.js';
+  '../../../infra/testing/sw-env-mocks/event-listeners.js';
 
 const MINUTES = 60 * 1000;
 
 const getObjectStoreEntries = async () => {
-  return await new DBWrapper(DB_NAME, 1).getAll(OBJECT_STORE_NAME);
+  return await new DBWrapper(DB_NAME, DB_VERSION).getAll(OBJECT_STORE_NAME);
 };
 
 describe(`[workbox-background-sync] Queue`, function() {
@@ -51,8 +44,7 @@ describe(`[workbox-background-sync] Queue`, function() {
   });
 
   describe(`constructor`, function() {
-    it(`should throw if two queues are created with the same name`,
-        async function() {
+    it(`throws if two queues are created with the same name`, async function() {
       expect(() => {
         new Queue('foo');
         new Queue('bar');
@@ -67,12 +59,11 @@ describe(`[workbox-background-sync] Queue`, function() {
       }).not.to.throw();
     });
 
-    it(`should add a sync event listener that replays the queue when the ` +
-        `event is dispatched`, async function() {
+    it(`adds a sync event listener runs the onSync function when a sync event is dispatched`, async function() {
       sandbox.spy(self, 'addEventListener');
-      sandbox.stub(Queue.prototype, 'replayRequests');
+      const onSync = sandbox.spy();
 
-      new Queue('foo');
+      const queue = new Queue('foo', {onSync});
 
       expect(self.addEventListener.calledOnce).to.be.true;
       expect(self.addEventListener.calledWith('sync')).to.be.true;
@@ -86,110 +77,318 @@ describe(`[workbox-background-sync] Queue`, function() {
         tag: 'workbox-background-sync:bar',
       }));
 
-      expect(Queue.prototype.replayRequests.calledOnce).to.be.true;
+      expect(onSync.callCount).to.equal(1);
+      expect(onSync.firstCall.args[0].queue).to.equal(queue);
     });
 
-    it(`should try to replay the queue on SW startup in browsers that ` +
-        `don't support the sync event`, async function() {
+    it(`defaults to calling replayRequests when no onSync function is passed`, async function() {
+      sandbox.spy(self, 'addEventListener');
+      sandbox.stub(Queue.prototype, 'replayRequests');
+
+      const queue = new Queue('foo');
+
+      expect(self.addEventListener.calledOnce).to.be.true;
+      expect(self.addEventListener.calledWith('sync')).to.be.true;
+
+      self.dispatchEvent(new SyncEvent('sync', {
+        tag: 'workbox-background-sync:foo',
+      }));
+
+      // replayRequests should not be called for this due to incorrect tag name
+      self.dispatchEvent(new SyncEvent('sync', {
+        tag: 'workbox-background-sync:bar',
+      }));
+
+      expect(Queue.prototype.replayRequests.callCount).to.equal(1);
+      expect(Queue.prototype.replayRequests.firstCall.args[0].queue)
+          .to.equal(queue);
+    });
+
+    it(`tries to run the sync logic on instantiation in browsers that don't support the sync event`, async function() {
       // Delete the SyncManager interface to mock a non-supporting browser.
       const originalSyncManager = registration.sync;
       delete registration.sync;
 
-      sandbox.stub(Queue.prototype, 'replayRequests');
+      const onSync = sandbox.spy();
 
-      new Queue('foo');
-
-      expect(Queue.prototype.replayRequests.calledOnce).to.be.true;
-
+      new Queue('foo', {onSync});
       registration.sync = originalSyncManager;
+
+      expect(onSync.calledOnce).to.be.true;
     });
   });
 
-  describe(`addRequest`, function() {
-    it(`should serialize the request and store it in IndexedDB`,
-        async function() {
-      const now = Date.now();
-      const queue = new Queue('foo');
-      const requestUrl = 'https://example.com';
+  describe(`pushRequest`, function() {
+    it(`should add the request to the end QueueStore instance`, async function() {
+      sandbox.spy(QueueStore.prototype, 'pushEntry');
+
+      const queue = new Queue('a');
+      const requestURL = 'https://example.com';
       const requestInit = {
         method: 'POST',
         body: 'testing...',
         headers: {'x-foo': 'bar'},
         mode: 'cors',
       };
-      const request = new Request(requestUrl, requestInit);
+      const request = new Request(requestURL, requestInit);
+      const timestamp = 1234;
+      const metadata = {meta: 'data'};
 
-      await queue.addRequest(request);
+      await queue.pushRequest({request, timestamp, metadata});
 
-      const entries = await getObjectStoreEntries();
-      expect(entries).to.have.lengthOf(1);
-      expect(entries[0].storableRequest.url).to.equal(requestUrl);
-      expect(entries[0].storableRequest.timestamp).to.be.at.least(now);
-      expect(entries[0].storableRequest.requestInit).to.have.keys([
-        'method',
-        'body',
-        'headers',
-        'mode',
-        'credentials',
-      ]);
+      expect(QueueStore.prototype.pushEntry.callCount).to.equal(1);
+
+      const args = QueueStore.prototype.pushEntry.firstCall.args;
+      expect(args[0].requestData.url).to.equal(requestURL);
+      expect(args[0].requestData.method).to.equal(requestInit.method);
+      expect(args[0].requestData.headers).to.deep.equal(requestInit.headers);
+      expect(args[0].requestData.mode).to.deep.equal(requestInit.mode);
+      expect(args[0].requestData.body).to.be.instanceOf(Blob);
+      expect(args[0].timestamp).to.equal(timestamp);
+      expect(args[0].metadata).to.deep.equal(metadata);
     });
 
-    it(`should register to receive sync events for a unique tag`,
-        async function() {
+    it(`should not require metadata`, async function() {
+      sandbox.spy(QueueStore.prototype, 'pushEntry');
+
+      const queue = new Queue('a');
+      const request = new Request('https://example.com');
+
+      await queue.pushRequest({request});
+
+      expect(QueueStore.prototype.pushEntry.callCount).to.equal(1);
+
+      const args = QueueStore.prototype.pushEntry.firstCall.args;
+      expect(args[0].metadata).to.be.undefined;
+    });
+
+    it(`should use the current time as the timestamp when not specified`, async function() {
+      sandbox.spy(QueueStore.prototype, 'pushEntry');
+
+      sandbox.useFakeTimers({
+        toFake: ['Date'],
+        now: 1234,
+      });
+
+      const queue = new Queue('a');
+      const request = new Request('https://example.com');
+
+      await queue.pushRequest({request});
+
+      expect(QueueStore.prototype.pushEntry.callCount).to.equal(1);
+
+      const args = QueueStore.prototype.pushEntry.firstCall.args;
+      expect(args[0].timestamp).to.equal(1234);
+    });
+
+    it(`should register to receive sync events for a unique tag`, async function() {
       sandbox.stub(self.registration, 'sync').value({
         register: sinon.stub().resolves(),
       });
 
       const queue = new Queue('foo');
-      const requestUrl = 'https://example.com';
+
+      await queue.pushRequest({request: new Request('/')});
+
+      expect(self.registration.sync.register.calledOnce).to.be.true;
+      expect(self.registration.sync.register.calledWith(
+          'workbox-background-sync:foo')).to.be.true;
+    });
+  });
+
+  describe(`unshiftRequest`, function() {
+    it(`should add the request to the beginning of the QueueStore`, async function() {
+      sandbox.spy(QueueStore.prototype, 'unshiftEntry');
+
+      const queue = new Queue('a');
+      const requestURL = 'https://example.com';
       const requestInit = {
         method: 'POST',
         body: 'testing...',
         headers: {'x-foo': 'bar'},
         mode: 'cors',
       };
-      const request = new Request(requestUrl, requestInit);
+      const request = new Request(requestURL, requestInit);
+      const timestamp = 1234;
+      const metadata = {meta: 'data'};
 
-      await queue.addRequest(request);
+      await queue.unshiftRequest({request, timestamp, metadata});
+
+      expect(QueueStore.prototype.unshiftEntry.callCount).to.equal(1);
+
+      const args = QueueStore.prototype.unshiftEntry.firstCall.args;
+      expect(args[0].requestData.url).to.equal(requestURL);
+      expect(args[0].requestData.method).to.equal(requestInit.method);
+      expect(args[0].requestData.headers).to.deep.equal(requestInit.headers);
+      expect(args[0].requestData.mode).to.deep.equal(requestInit.mode);
+      expect(args[0].requestData.body).to.be.instanceOf(Blob);
+      expect(args[0].timestamp).to.equal(timestamp);
+      expect(args[0].metadata).to.deep.equal(metadata);
+    });
+
+    it(`should not require metadata`, async function() {
+      sandbox.spy(QueueStore.prototype, 'unshiftEntry');
+
+      const queue = new Queue('a');
+      const request = new Request('https://example.com');
+
+      await queue.unshiftRequest({request});
+
+      expect(QueueStore.prototype.unshiftEntry.callCount).to.equal(1);
+
+      const args = QueueStore.prototype.unshiftEntry.firstCall.args;
+      expect(args[0].metadata).to.be.undefined;
+    });
+
+    it(`should use the current time as the timestamp when not specified`, async function() {
+      sandbox.spy(QueueStore.prototype, 'unshiftEntry');
+
+      const queue = new Queue('a');
+      const request = new Request('https://example.com');
+
+      const startTime = Date.now();
+      await queue.unshiftRequest({request});
+      const endTime = Date.now();
+
+      expect(QueueStore.prototype.unshiftEntry.callCount).to.equal(1);
+
+      const args = QueueStore.prototype.unshiftEntry.firstCall.args;
+      expect(args[0].timestamp >= startTime).to.be.ok;
+      expect(args[0].timestamp <= endTime).to.be.ok;
+    });
+
+    it(`should register to receive sync events for a unique tag`, async function() {
+      sandbox.stub(self.registration, 'sync').value({
+        register: sinon.stub().resolves(),
+      });
+
+      const queue = new Queue('foo');
+
+      await queue.unshiftRequest({request: new Request('/')});
 
       expect(self.registration.sync.register.calledOnce).to.be.true;
       expect(self.registration.sync.register.calledWith(
           'workbox-background-sync:foo')).to.be.true;
     });
+  });
 
-    it(`should invoke the requestWillEnqueue callback`, async function() {
-      const queue = new Queue('foo', {
-        callbacks: {
-          requestWillEnqueue: (storableRequest) => {
-            storableRequest.url += '?q=foo';
-          },
-        },
-      });
+  describe(`shiftRequest`, function() {
+    it(`gets and removes the first request in the QueueStore instance`, async function() {
+      sandbox.spy(QueueStore.prototype, 'shiftEntry');
 
-      const request = new Request('/');
-      await queue.addRequest(request);
+      const queue = new Queue('a');
+      const requestURL = 'https://example.com';
+      const requestInit = {
+        method: 'POST',
+        body: 'testing...',
+        headers: {'x-foo': 'bar'},
+        mode: 'cors',
+      };
 
-      const entries = await getObjectStoreEntries();
-      expect(entries).to.have.lengthOf(1);
-      expect(entries[0].storableRequest.url).to.equal('/?q=foo');
+      await queue.pushRequest({request: new Request(requestURL, requestInit)});
+      // Add a second request to ensure the first one is returned.
+      await queue.pushRequest({request: new Request('/two')});
+
+      const {request} = await queue.shiftRequest();
+
+      expect(QueueStore.prototype.shiftEntry.callCount).to.equal(1);
+      expect(request.url).to.equal(requestURL);
+      expect(request.method).to.equal(requestInit.method);
+      expect(request.mode).to.deep.equal(requestInit.mode);
+      expect(await request.text()).to.equal(requestInit.body);
+      expect(request.headers.get('x-foo')).to.equal(
+          requestInit.headers['x-foo']);
     });
 
-    it(`should support modifying the stored request via requestWillEnqueue`,
-        async function() {
-      const requestWillEnqueue = sinon.spy();
-      const queue = new Queue('foo', {
-        callbacks: {requestWillEnqueue},
+    it(`returns the timestamp and any passed metadata along with the request`, async function() {
+      const queue = new Queue('a');
+
+      await queue.pushRequest({
+        metadata: {meta: 'data'},
+        request: new Request('/one'),
       });
 
-      const request = new Request('/');
-      await queue.addRequest(request);
+      const {request, metadata} = await queue.shiftRequest();
 
-      expect(requestWillEnqueue.calledOnce).to.be.true;
-      expect(requestWillEnqueue.calledWith(sinon.match({
-        url: '/',
-        timestamp: sinon.match.number,
-        requestInit: sinon.match.object,
-      }))).to.be.true;
+      expect(request.url).to.equal('/one');
+      expect(metadata).to.deep.equal({meta: 'data'});
+    });
+
+    it(`does not return requests that have expired`, async function() {
+      const queue = new Queue('a');
+
+      await queue.pushRequest({request: new Request('/one'), timestamp: 12});
+      await queue.pushRequest({request: new Request('/two')});
+      await queue.pushRequest({request: new Request('/three'), timestamp: 34});
+      await queue.pushRequest({request: new Request('/four')});
+
+      const entry1 = await queue.shiftRequest();
+      const entry2 = await queue.shiftRequest();
+      const entry3 = await queue.shiftRequest();
+
+      expect(entry1.request.url).to.equal('/two');
+      expect(entry2.request.url).to.equal('/four');
+      expect(entry3).to.be.undefined;
+    });
+  });
+
+  describe(`popRequest`, function() {
+    it(`gets and removes the last request in the QueueStore instance`, async function() {
+      sandbox.spy(QueueStore.prototype, 'popEntry');
+
+      const queue = new Queue('a');
+      const requestURL = 'https://example.com';
+      const requestInit = {
+        method: 'POST',
+        body: 'testing...',
+        headers: {'x-foo': 'bar'},
+        mode: 'cors',
+      };
+
+      // Add a second request to ensure the last one is returned.
+      await queue.pushRequest({request: new Request('/two')});
+      await queue.pushRequest({request: new Request(requestURL, requestInit)});
+
+      const {request} = await queue.popRequest();
+
+      expect(QueueStore.prototype.popEntry.callCount).to.equal(1);
+      expect(request.url).to.equal(requestURL);
+      expect(request.method).to.equal(requestInit.method);
+      expect(request.mode).to.deep.equal(requestInit.mode);
+      expect(await request.text()).to.equal(requestInit.body);
+      expect(request.headers.get('x-foo')).to.equal(
+          requestInit.headers['x-foo']);
+    });
+
+    it(`returns the timestamp and any passed metadata along with the request`, async function() {
+      const queue = new Queue('a');
+
+      await queue.pushRequest({
+        metadata: {meta: 'data'},
+        request: new Request('/one'),
+      });
+
+      const {request, metadata} = await queue.popRequest();
+
+      expect(request.url).to.equal('/one');
+      expect(metadata).to.deep.equal({meta: 'data'});
+    });
+
+    it(`does not return requests that have expired`, async function() {
+      const queue = new Queue('a');
+
+      await queue.pushRequest({request: new Request('/one'), timestamp: 12});
+      await queue.pushRequest({request: new Request('/two')});
+      await queue.pushRequest({request: new Request('/three'), timestamp: 34});
+      await queue.pushRequest({request: new Request('/four')});
+
+      const entry1 = await queue.popRequest();
+      const entry2 = await queue.popRequest();
+      const entry3 = await queue.popRequest();
+
+      expect(entry1.request.url).to.equal('/four');
+      expect(entry2.request.url).to.equal('/two');
+      expect(entry3).to.be.undefined;
     });
   });
 
@@ -202,11 +401,11 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       // Add requests for both queues to ensure only the requests from
       // the matching queue are replayed.
-      await queue1.addRequest(new Request('/one'));
-      await queue2.addRequest(new Request('/two'));
-      await queue1.addRequest(new Request('/three'));
-      await queue2.addRequest(new Request('/four'));
-      await queue1.addRequest(new Request('/five'));
+      await queue1.pushRequest({request: new Request('/one')});
+      await queue2.pushRequest({request: new Request('/two')});
+      await queue1.pushRequest({request: new Request('/three')});
+      await queue2.pushRequest({request: new Request('/four')});
+      await queue1.pushRequest({request: new Request('/five')});
 
       await queue1.replayRequests();
 
@@ -244,23 +443,22 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       // Add requests for both queues to ensure only the requests from
       // the matching queue are replayed.
-      await queue1.addRequest(new Request('/one'));
-      await queue2.addRequest(new Request('/two'));
-      await queue1.addRequest(new Request('/three'));
-      await queue2.addRequest(new Request('/four'));
-      await queue1.addRequest(new Request('/five'));
+      await queue1.pushRequest({request: new Request('/one')});
+      await queue2.pushRequest({request: new Request('/two')});
+      await queue1.pushRequest({request: new Request('/three')});
+      await queue2.pushRequest({request: new Request('/four')});
+      await queue1.pushRequest({request: new Request('/five')});
 
       await queue1.replayRequests();
       expect(self.fetch.callCount).to.equal(3);
 
       const entries = await getObjectStoreEntries();
       expect(entries.length).to.equal(2);
-      expect(entries[0].storableRequest.url).to.equal('/two');
-      expect(entries[1].storableRequest.url).to.equal('/four');
+      expect(entries[0].requestData.url).to.equal('/two');
+      expect(entries[1].requestData.url).to.equal('/four');
     });
 
-    it(`should ignore (and remove) requests if maxRetentionTime has passed`,
-        async function() {
+    it(`should ignore (and remove) requests if maxRetentionTime has passed`, async function() {
       sandbox.spy(self, 'fetch');
       const clock = sandbox.useFakeTimers({
         now: Date.now(),
@@ -271,12 +469,12 @@ describe(`[workbox-background-sync] Queue`, function() {
         maxRetentionTime: 1,
       });
 
-      await queue.addRequest(new Request('/one'));
-      await queue.addRequest(new Request('/two'));
+      await queue.pushRequest({request: new Request('/one')});
+      await queue.pushRequest({request: new Request('/two')});
 
       clock.tick(1 * MINUTES + 1); // One minute and 1ms.
 
-      await queue.addRequest(new Request('/three'));
+      await queue.pushRequest({request: new Request('/three')});
       await queue.replayRequests();
 
       expect(self.fetch.calledOnce).to.be.true;
@@ -289,33 +487,30 @@ describe(`[workbox-background-sync] Queue`, function() {
       expect(entries.length).to.equal(0);
     });
 
-    it(`should keep a request in the queue if re-fetching fails`,
-        async function() {
+    it(`should stop replaying if a request fails`, async function() {
       sandbox.stub(self, 'fetch')
-          .onCall(1).rejects(new Error())
           .onCall(3).rejects(new Error())
           .callThrough();
 
       const queue = new Queue('foo');
 
-      await queue.addRequest(new Request('/one'));
-      await queue.addRequest(new Request('/two'));
-      await queue.addRequest(new Request('/three'));
-      await queue.addRequest(new Request('/four'));
-      await queue.addRequest(new Request('/five'));
+      await queue.pushRequest({request: new Request('/one')});
+      await queue.pushRequest({request: new Request('/two')});
+      await queue.pushRequest({request: new Request('/three')});
+      await queue.pushRequest({request: new Request('/four')});
+      await queue.pushRequest({request: new Request('/five')});
 
       await expectError(() => {
-        return queue.replayRequests(); // The 2nd and 4th requests should fail.
+        return queue.replayRequests(); // The 4th requests should fail.
       }, 'queue-replay-failed');
 
       const entries = await getObjectStoreEntries();
       expect(entries.length).to.equal(2);
-      expect(entries[0].storableRequest.url).to.equal('/two');
-      expect(entries[1].storableRequest.url).to.equal('/four');
+      expect(entries[0].requestData.url).to.equal('/four');
+      expect(entries[1].requestData.url).to.equal('/five');
     });
 
-    it(`should throw WorkboxError if re-fetching fails`,
-        async function() {
+    it(`should throw WorkboxError if re-fetching fails`, async function() {
       sandbox.stub(self, 'fetch')
           .onCall(1).rejects(new Error())
           .callThrough();
@@ -325,153 +520,28 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       // Add requests for both queues to ensure only the requests from
       // the matching queue are replayed.
-      await queue.addRequest(new Request('/one'));
-      await queue.addRequest(new Request(failureURL));
+      await queue.pushRequest({request: new Request('/one')});
+      await queue.pushRequest({request: new Request(failureURL)});
 
       await expectError(() => {
         return queue.replayRequests();
       }, 'queue-replay-failed');
-    });
-
-    it(`should invoke all replay callbacks`, async function() {
-      const requestWillReplay = sinon.spy();
-      const queueDidReplay = sinon.spy();
-
-      const queue = new Queue('foo', {
-        callbacks: {
-          requestWillReplay,
-          queueDidReplay,
-        },
-      });
-
-      await queue.addRequest(new Request('/one'));
-      await queue.addRequest(new Request('/two'));
-      await queue.replayRequests();
-
-      expect(requestWillReplay.calledTwice).to.be.true;
-      expect(requestWillReplay.getCall(0).calledWith(sinon.match({
-        url: '/one',
-        timestamp: sinon.match.number,
-        requestInit: sinon.match.object,
-      }))).to.be.true;
-      expect(requestWillReplay.getCall(1).calledWith(sinon.match({
-        url: '/two',
-        timestamp: sinon.match.number,
-        requestInit: sinon.match.object,
-      }))).to.be.true;
-
-      expect(queueDidReplay.calledOnce).to.be.true;
-      expect(queueDidReplay.calledWith(sinon.match([
-        sinon.match({
-          request: sinon.match.instanceOf(Request).and(
-              sinon.match({url: '/one'})),
-          response: sinon.match.instanceOf(Response),
-        }),
-        sinon.match({
-          request: sinon.match.instanceOf(Request).and(
-              sinon.match({url: '/two'})),
-          response: sinon.match.instanceOf(Response),
-        }),
-      ]))).to.be.true;
-
-      requestWillReplay.resetHistory();
-      queueDidReplay.resetHistory();
-
-      sandbox.stub(self, 'fetch')
-          .onCall(1).rejects(new Error())
-          .callThrough();
-
-      await queue.addRequest(new Request('/three'));
-      await queue.addRequest(new Request('/four'));
-      await expectError(() => {
-        return queue.replayRequests();
-      }, 'queue-replay-failed');
-
-      expect(requestWillReplay.calledTwice).to.be.true;
-
-      expect(queueDidReplay.calledOnce).to.be.true;
-      expect(queueDidReplay.calledWith(sinon.match([
-        sinon.match({
-          request: sinon.match.instanceOf(Request).and(
-              sinon.match({url: '/three'})),
-          response: sinon.match.instanceOf(Response),
-        }),
-        sinon.match({
-          request: sinon.match.instanceOf(Request).and(
-              sinon.match({url: '/four'})),
-          error: sinon.match.instanceOf(Error),
-        }),
-      ]))).to.be.true;
-    });
-
-    it(`should support modifying the request via the requestWillReplay`,
-        async function() {
-      sandbox.spy(self, 'fetch');
-
-      const requestWillReplay = (storableRequest) => {
-        storableRequest.url += '?q=foo';
-      };
-
-      const queue = new Queue('foo', {
-        callbacks: {requestWillReplay},
-      });
-
-      await queue.addRequest(new Request('/one'));
-      await queue.addRequest(new Request('/two'));
-      await queue.replayRequests();
-
-      expect(self.fetch.calledTwice).to.be.true;
-      expect(self.fetch.getCall(0).calledWith(sinon.match({
-        url: '/one?q=foo',
-      }))).to.be.true;
-      expect(self.fetch.getCall(1).calledWith(sinon.match({
-        url: '/two?q=foo',
-      }))).to.be.true;
-    });
-
-    it(`should store the original request if a modified request replay fails`,
-        async function() {
-      sandbox.stub(self, 'fetch').rejects();
-      sandbox.spy(QueueStore.prototype, 'addEntry');
-
-      const requestWillReplay = (storableRequest) => {
-        storableRequest.url += '?q=foo';
-        storableRequest.requestInit.headers['x-foo'] = 'bar';
-      };
-
-      const queue = new Queue('foo', {
-        callbacks: {requestWillReplay},
-      });
-
-      await queue.addRequest(new Request('/one'));
-      await queue.addRequest(new Request('/two'));
-
-
-      await expectError(() => {
-        return queue.replayRequests();
-      }, 'queue-replay-failed');
-
-      // Ensure the re-enqueued requests are the same as the originals.
-      expect(QueueStore.prototype.addEntry.getCall(0).args).to.deep.equal(
-          QueueStore.prototype.addEntry.getCall(2).args);
-      expect(QueueStore.prototype.addEntry.getCall(1).args).to.deep.equal(
-          QueueStore.prototype.addEntry.getCall(3).args);
     });
   });
 
-  describe(`_registerSync()`, function() {
-    it(`should support _registerSync() in supporting browsers`, async function() {
+  describe(`registerSync()`, function() {
+    it(`should support registerSync() in supporting browsers`, async function() {
       const queue = new Queue('foo');
-      await queue._registerSync();
+      await queue.registerSync();
     });
 
-    it(`should support _registerSync() in non-supporting browsers`, async function() {
+    it(`should support registerSync() in non-supporting browsers`, async function() {
       // Delete the SyncManager interface to mock a non-supporting browser.
       const originalSyncManager = registration.sync;
       delete registration.sync;
 
       const queue = new Queue('foo');
-      await queue._registerSync();
+      await queue.registerSync();
 
       registration.sync = originalSyncManager;
     });
@@ -482,7 +552,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       });
 
       const queue = new Queue('foo');
-      await queue._registerSync();
+      await queue.registerSync();
     });
   });
 });

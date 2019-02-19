@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 import {expect} from 'chai';
 import sinon from 'sinon';
 
@@ -59,6 +67,32 @@ describe(`workbox-core fetchWrapper`, function() {
       expect(fetchRequest.url).to.equal('/test/fetchOptions');
       const fetchOptions = stub.args[0][1];
       expect(fetchOptions).to.deep.equal(exampleOptions);
+    });
+
+    it(`should ignore fetchOptions when request.mode === 'navigate'`, async function() {
+      // See https://github.com/GoogleChrome/workbox/issues/1796
+      const fetchStub = sandbox.stub(global, 'fetch').resolves(new Response());
+
+      const fetchOptions = {
+        headers: {
+          'X-Test': 'Header',
+        },
+      };
+
+      const request = new Request('/test/navigateFetchOptions', {
+        mode: 'navigate',
+      });
+
+      await fetchWrapper.fetch({
+        fetchOptions,
+        request,
+      });
+
+      expect(fetchStub.calledOnce).to.be.true;
+      expect(fetchStub.firstCall.args[0]).to.be.instanceOf(Request);
+      expect(fetchStub.firstCall.args[0].url).to.eql(request.url);
+      expect(fetchStub.firstCall.args[0].mode).to.eql('navigate');
+      expect(fetchStub.firstCall.args[1]).not.to.exist;
     });
 
     it(`should call requestWillFetch method in plugins and use the returned request`, async function() {
@@ -169,6 +203,48 @@ describe(`workbox-core fetchWrapper`, function() {
 
       const fetchRequest = global.fetch.args[0][0];
       expect(fetchRequest.url).to.equal('/test/failingRequest/1');
+    });
+
+    it(`should call the fetchDidSucceed method in plugins`, async function() {
+      const originalRequest = new Request('/testing');
+
+      sandbox.stub(global, 'fetch').resolves(new Response('', {
+        headers: {
+          'x-count': 1,
+        },
+      }));
+
+      const fetchDidSucceed = sandbox.stub().callsFake(({response}) => {
+        const count = response.headers.get('x-count');
+        return new Response('', {
+          headers: {
+            'x-count': count + 1,
+          },
+        });
+      });
+
+      const event = new FetchEvent('fetch', {request: originalRequest});
+
+      const finalResponse = await fetchWrapper.fetch({
+        event,
+        request: originalRequest,
+        plugins: [
+          // Two plugins, both with the same callback.
+          {fetchDidSucceed},
+          {fetchDidSucceed},
+        ],
+      });
+
+      expect(fetchDidSucceed.callCount).to.eql(2);
+
+      for (const args of fetchDidSucceed.args) {
+        expect(args[0].request).to.be.instanceOf(Request);
+        expect(args[0].response).to.be.instanceOf(Response);
+        expect(args[0].event).to.be.instanceOf(FetchEvent);
+      }
+
+      const finalCount = finalResponse.headers.get('x-count');
+      expect(finalCount).to.eql(3);
     });
   });
 });

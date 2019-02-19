@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 import {expect} from 'chai';
 import expectError from '../../../infra/testing/expectError.js';
 import {Route} from '../../../packages/workbox-routing/Route.mjs';
@@ -17,13 +25,13 @@ describe(`workbox-routing: Route`, function() {
     if (process.env.NODE_ENV === 'production') return this.skip();
 
     await expectError(
-      () => new Route(),
-      'incorrect-type',
-      (error) => {
-        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-        expect(error.details).to.have.property('className').that.equals('Route');
-        expect(error.details).to.have.property('funcName').that.equals('constructor');
-      }
+        () => new Route(),
+        'incorrect-type',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+          expect(error.details).to.have.property('className').that.equals('Route');
+          expect(error.details).to.have.property('funcName').that.equals('constructor');
+        }
     );
   });
 
@@ -31,25 +39,25 @@ describe(`workbox-routing: Route`, function() {
     if (process.env.NODE_ENV === 'production') return this.skip();
 
     await expectError(
-      () => new Route(match),
-      'incorrect-type',
-      (error) => {
-        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-        expect(error.details).to.have.property('className').that.equals('Route');
-        expect(error.details).to.have.property('funcName').that.equals('constructor');
-        expect(error.details).to.have.property('paramName').that.equals('handler');
-      }
+        () => new Route(match),
+        'incorrect-type',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+          expect(error.details).to.have.property('className').that.equals('Route');
+          expect(error.details).to.have.property('funcName').that.equals('constructor');
+          expect(error.details).to.have.property('paramName').that.equals('handler');
+        }
     );
 
     await expectError(
-      () => new Route(match, invalidHandlerObject),
-      'missing-a-method',
-      (error) => {
-        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-        expect(error.details).to.have.property('className').that.equals('Route');
-        expect(error.details).to.have.property('funcName').that.equals('constructor');
-        expect(error.details).to.have.property('paramName').that.equals('handler');
-      }
+        () => new Route(match, invalidHandlerObject),
+        'missing-a-method',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+          expect(error.details).to.have.property('className').that.equals('Route');
+          expect(error.details).to.have.property('funcName').that.equals('constructor');
+          expect(error.details).to.have.property('paramName').that.equals('handler');
+        }
     );
   });
 
@@ -57,14 +65,14 @@ describe(`workbox-routing: Route`, function() {
     if (process.env.NODE_ENV === 'production') return this.skip();
 
     await expectError(
-      () => new Route(null, handler),
-      'incorrect-type',
-      (error) => {
-        expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-        expect(error.details).to.have.property('className').that.equals('Route');
-        expect(error.details).to.have.property('funcName').that.equals('constructor');
-        expect(error.details).to.have.property('paramName').that.equals('match');
-      }
+        () => new Route(null, handler),
+        'incorrect-type',
+        (error) => {
+          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
+          expect(error.details).to.have.property('className').that.equals('Route');
+          expect(error.details).to.have.property('funcName').that.equals('constructor');
+          expect(error.details).to.have.property('paramName').that.equals('match');
+        }
     );
   });
 
@@ -84,9 +92,9 @@ describe(`workbox-routing: Route`, function() {
     if (process.env.NODE_ENV === 'production') return this.skip();
 
     await expectError(
-      () => new Route(match, handler, invalidMethod),
-      'invalid-value',
-      (error) => expect(error.details).to.have.property('paramName').that.equals('method')
+        () => new Route(match, handler, invalidMethod),
+        'invalid-value',
+        (error) => expect(error.details).to.have.property('paramName').that.equals('method')
     );
   });
 

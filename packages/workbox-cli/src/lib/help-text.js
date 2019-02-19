@@ -1,18 +1,10 @@
-/**
- * Copyright 2017 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
-**/
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
 
 module.exports = `Usage:
 $ workbox <command> [options]
@@ -26,16 +18,22 @@ Commands:
     If --injectManifest is provided, the wizard will ask
     questions needed for the injectManifest use case.
 
-  generateSW [<path/to/config.js>]
+  generateSW [<path/to/config.js>] [--watch]
     Creates a new service worker file based on the options
     in the config file (defaults to workbox-config.js).
+    If --watch is provided, the CLI will stay running, and will
+    rebuild the service worker each time a file in the precache
+    manifest changes.
     See https://goo.gl/gVo87N
 
-  injectManifest [<path/to/config.js>]
+  injectManifest [<path/to/config.js>] [--watch]
     Takes an existing service worker file and creates a
-    copy of it with a precaching manifest "injected" into
-    it. The precaching manifest is generated based on the
+    copy of it with a precache manifest "injected" into
+    it. The precache manifest is generated based on the
     options in the config file (defaults to workbox-config.js).
+    If --watch is provided, the CLI will stay running, and will
+    rebuild the service worker each time a file in the precache
+    manifest changes.
     See https://goo.gl/8bs14N
 
   copyLibraries <path/to/parent/dir>
@@ -54,7 +52,7 @@ Config file:
 Examples:
   $ workbox wizard
   $ workbox wizard --injectManifest
-  $ workbox generateSW
+  $ workbox generateSW --watch
   $ workbox injectManifest configs/workbox-dev-config.js
   $ workbox copyLibraries build/
 `;

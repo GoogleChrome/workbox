@@ -1,17 +1,9 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 const joi = require('joi');
@@ -23,31 +15,34 @@ const regExpObject = require('./reg-exp-object');
 // Add some constraints that apply to both generateSW and generateSWString.
 module.exports = baseSchema.keys({
   cacheId: joi.string(),
+  cleanupOutdatedCaches: joi.boolean().default(defaults.cleanupOutdatedCaches),
   clientsClaim: joi.boolean().default(defaults.clientsClaim),
   directoryIndex: joi.string(),
-  ignoreUrlParametersMatching: joi.array().items(regExpObject),
+  ignoreURLParametersMatching: joi.array().items(regExpObject),
   navigateFallback: joi.string().default(defaults.navigateFallback),
   navigateFallbackBlacklist: joi.array().items(regExpObject),
   navigateFallbackWhitelist: joi.array().items(regExpObject),
   offlineGoogleAnalytics: joi.alternatives().try(joi.boolean(), joi.object())
-    .default(defaults.offlineGoogleAnalytics),
+      .default(defaults.offlineGoogleAnalytics),
   runtimeCaching: joi.array().items(joi.object().keys({
     method: joi.string().valid(
-      'DELETE',
-      'GET',
-      'HEAD',
-      'PATCH',
-      'POST',
-      'PUT'
+        'DELETE',
+        'GET',
+        'HEAD',
+        'PATCH',
+        'POST',
+        'PUT'
     ),
-    urlPattern: [regExpObject, joi.string()],
-    handler: [joi.func(), joi.string().valid(
-      'cacheFirst',
-      'cacheOnly',
-      'networkFirst',
-      'networkOnly',
-      'staleWhileRevalidate'
-    )],
+    urlPattern: [regExpObject, joi.string(), joi.func()],
+    handler: [
+      joi.func(),
+      joi.string().valid(
+          'CacheFirst',
+          'CacheOnly',
+          'NetworkFirst',
+          'NetworkOnly',
+          'StaleWhileRevalidate'),
+    ],
     options: joi.object().keys({
       backgroundSync: joi.object().keys({
         name: joi.string().required(),
@@ -74,4 +69,7 @@ module.exports = baseSchema.keys({
     }).with('expiration', 'cacheName'),
   }).requiredKeys('urlPattern', 'handler')),
   skipWaiting: joi.boolean().default(defaults.skipWaiting),
+}).rename('ignoreUrlParametersMatching', 'ignoreURLParametersMatching', {
+  ignoreUndefined: true,
+  override: true,
 });

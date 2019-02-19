@@ -1,17 +1,9 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 import '../_version.mjs';
@@ -19,12 +11,16 @@ import '../_version.mjs';
 const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
 
 const MODULE_KEY_TO_NAME_MAPPING = {
+  // TODO(philipwalton): add jsdoc tags to associate these with their module.
+  // @name backgroundSync
+  // @memberof workbox
+  // @see module:workbox-background-sync
   backgroundSync: 'background-sync',
-  broadcastUpdate: 'broadcast-cache-update',
+  broadcastUpdate: 'broadcast-update',
   cacheableResponse: 'cacheable-response',
   core: 'core',
-  expiration: 'cache-expiration',
-  googleAnalytics: 'google-analytics',
+  expiration: 'expiration',
+  googleAnalytics: 'offline-ga',
   navigationPreload: 'navigation-preload',
   precaching: 'precaching',
   rangeRequests: 'range-requests',
@@ -39,7 +35,7 @@ const MODULE_KEY_TO_NAME_MAPPING = {
  *
  * @private
  */
-class WorkboxSW {
+export class WorkboxSW {
   /**
    * Creates a proxy that automatically loads workbox namespaces on demand.
    *
@@ -99,26 +95,6 @@ class WorkboxSW {
   }
 
   /**
-   * Force a service worker to become active, instead of waiting. This is
-   * normally used in conjunction with `clientsClaim()`.
-   *
-   * @alias workbox.skipWaiting
-   */
-  skipWaiting() {
-    self.addEventListener('install', () => self.skipWaiting());
-  }
-
-  /**
-   * Claim any currently available clients once the service worker
-   * becomes active. This is normally used in conjunction with `skipWaiting()`.
-   *
-   * @alias workbox.clientsClaim
-   */
-  clientsClaim() {
-    self.addEventListener('activate', () => self.clients.claim());
-  }
-
-  /**
    * Load a Workbox module by passing in the appropriate module name.
    *
    * This is not generally needed unless you know there are modules that are
@@ -140,7 +116,7 @@ class WorkboxSW {
       // We can't rely on workbox-core being loaded so using console
       // eslint-disable-next-line
       console.error(
-        `Unable to import module '${moduleName}' from '${modulePath}'.`);
+          `Unable to import module '${moduleName}' from '${modulePath}'.`);
       throw err;
     }
   }
@@ -180,5 +156,3 @@ class WorkboxSW {
     return pathParts.join('/');
   }
 }
-
-export default WorkboxSW;

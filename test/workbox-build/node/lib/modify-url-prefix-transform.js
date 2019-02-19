@@ -1,7 +1,15 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const expect = require('chai').expect;
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
-const modifyUrlPrefix = require('../../../../packages/workbox-build/src/lib/modify-url-prefix-transform');
+const modifyURLPrefix = require('../../../../packages/workbox-build/src/lib/modify-url-prefix-transform');
 
 describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
   function getManifest() {
@@ -27,15 +35,15 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
       '/example-2/multi-section/1234': '/example-2-altered/5678',
     };
 
-    const transform = modifyUrlPrefix(modifications);
+    const transform = modifyURLPrefix(modifications);
     for (const badInput of badInputs) {
       expect(
-        () => transform([{url: badInput}])
+          () => transform([{url: badInput}])
       ).to.throw(errors['manifest-entry-bad-url']);
     }
   });
 
-  it(`should handle bad modifyUrlPrefix input`, function() {
+  it(`should handle bad modifyURLPrefix input`, function() {
     const badInputs = [
       null,
       undefined,
@@ -50,7 +58,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
 
     for (const badInput of badInputs) {
       expect(
-        () => modifyUrlPrefix(badInput)
+          () => modifyURLPrefix(badInput)
       ).to.throw(errors['modify-url-prefix-bad-prefixes']);
     }
   });
@@ -60,7 +68,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
       '/first-match': '',
     };
 
-    const transform = modifyUrlPrefix(modifications);
+    const transform = modifyURLPrefix(modifications);
     expect(transform(getManifest())).to.eql({manifest: [{
       url: '/12345/hello',
     }, {
@@ -73,7 +81,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
       '': '/public',
     };
 
-    const transform = modifyUrlPrefix(modifications);
+    const transform = modifyURLPrefix(modifications);
     expect(transform(getManifest())).to.eql({manifest: [{
       url: '/public/first-match/12345/hello',
     }, {
@@ -87,7 +95,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
       '/second-match': '/third-match',
     };
 
-    const transform = modifyUrlPrefix(modifications);
+    const transform = modifyURLPrefix(modifications);
     expect(transform(getManifest())).to.eql({manifest: [{
       url: '/second-match/12345/hello',
     }, {
@@ -100,7 +108,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
       '/hello': '/altered',
     };
 
-    const transform = modifyUrlPrefix(modifications);
+    const transform = modifyURLPrefix(modifications);
     expect(transform(getManifest())).to.eql({manifest: getManifest()});
   });
 });

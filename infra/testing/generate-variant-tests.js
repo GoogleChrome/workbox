@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 /**
  * @callback VariantCallback
  * @param {Object} variant
@@ -19,11 +27,11 @@ const generateVariantTests = (itTitle, variants, func) => {
     // We are using function() {} here and NOT ARROW FUNCTIONS
     // to work with Mocha's binding for tests.
     it(`${itTitle}. Variant: '${JSON.stringify(variant)}'`,
-      function() {
+        function() {
         // Use .call to get the correct `this` binding needed by mocha.
         // eslint-disable-next-line no-invalid-this
-        return func.call(this, variant);
-      }
+          return func.call(this, variant);
+        }
     );
   });
 };

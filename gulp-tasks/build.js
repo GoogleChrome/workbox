@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const gulp = require('gulp');
 const lernaWrapper = require('./utils/lerna-wrapper');
 const fs = require('fs-extra');
@@ -11,8 +19,8 @@ gulp.task('lerna-bootstrap', () => {
 
   // If it's not a star, we can scope the build to a specific project.
   return lernaWrapper.bootstrap(
-    '--include-filtered-dependencies',
-    '--scope', global.packageOrStar
+      '--include-filtered-dependencies',
+      '--scope', global.packageOrStar
   );
 });
 
@@ -21,17 +29,17 @@ gulp.task('lerna-bootstrap', () => {
 // Make sure this runs **before** lerna-bootstrap.
 gulp.task('build:update-cdn-details', async function() {
   const cdnDetails = await fs.readJSON(path.join(
-    __dirname, '..', 'cdn-details.json'
+      __dirname, '..', 'cdn-details.json'
   ));
 
   const lernaPkg = await fs.readJSON(path.join(
-    __dirname, '..', 'lerna.json'
+      __dirname, '..', 'lerna.json'
   ));
 
   cdnDetails.latestVersion = lernaPkg.version;
 
   const workboxBuildPath = path.join(
-    __dirname, '..', 'packages', 'workbox-build', 'src', 'cdn-details.json'
+      __dirname, '..', 'packages', 'workbox-build', 'src', 'cdn-details.json'
   );
 
   await fs.writeJson(workboxBuildPath, cdnDetails, {
@@ -40,6 +48,6 @@ gulp.task('build:update-cdn-details', async function() {
 });
 
 gulp.task('build', gulp.series(
-  'build:update-cdn-details',
-  'lerna-bootstrap',
+    'build:update-cdn-details',
+    'lerna-bootstrap',
 ));

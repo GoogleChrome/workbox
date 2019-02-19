@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const expect = require('chai').expect;
 const fse = require('fs-extra');
 const glob = require('glob');
@@ -11,7 +19,7 @@ const generateSW = require('../../../../packages/workbox-build/src/entry-points/
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() {
-  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleUrl('workbox-sw');
+  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleURL('workbox-sw');
   const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
@@ -26,23 +34,23 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'dontCacheBustUrlsMatching',
+    'dontCacheBustURLsMatching',
     'globFollow',
     'globIgnores',
     'globPatterns',
     'globStrict',
-    'ignoreUrlParametersMatching',
+    'ignoreURLParametersMatching',
     'importScripts',
     'importWorkboxFrom',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
-    'modifyUrlPrefix',
+    'modifyURLPrefix',
     'offlineGoogleAnalytics',
     'navigateFallback',
     'navigateFallbackWhitelist',
     'runtimeCaching',
     'skipWaiting',
-    'templatedUrls',
+    'templatedURLs',
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
     'injectionPointRegexp',
@@ -108,10 +116,9 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -129,7 +136,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
       }});
     });
@@ -144,11 +151,11 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
 
       // Validate the copied library files.
-      const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
-        {cwd: path.dirname(swDest)});
+      const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.+(js|mjs)*`,
+          {cwd: path.dirname(swDest)});
 
       const modulePathPrefix = path.dirname(libraryFiles[0]);
 
@@ -158,14 +165,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         'workbox-background-sync.dev.js.map',
         'workbox-background-sync.prod.js',
         'workbox-background-sync.prod.js.map',
-        'workbox-broadcast-cache-update.dev.js',
-        'workbox-broadcast-cache-update.dev.js.map',
-        'workbox-broadcast-cache-update.prod.js',
-        'workbox-broadcast-cache-update.prod.js.map',
-        'workbox-cache-expiration.dev.js',
-        'workbox-cache-expiration.dev.js.map',
-        'workbox-cache-expiration.prod.js',
-        'workbox-cache-expiration.prod.js.map',
+        'workbox-broadcast-update.dev.js',
+        'workbox-broadcast-update.dev.js.map',
+        'workbox-broadcast-update.prod.js',
+        'workbox-broadcast-update.prod.js.map',
         'workbox-cacheable-response.dev.js',
         'workbox-cacheable-response.dev.js.map',
         'workbox-cacheable-response.prod.js',
@@ -174,14 +177,18 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         'workbox-core.dev.js.map',
         'workbox-core.prod.js',
         'workbox-core.prod.js.map',
-        'workbox-google-analytics.dev.js',
-        'workbox-google-analytics.dev.js.map',
-        'workbox-google-analytics.prod.js',
-        'workbox-google-analytics.prod.js.map',
+        'workbox-expiration.dev.js',
+        'workbox-expiration.dev.js.map',
+        'workbox-expiration.prod.js',
+        'workbox-expiration.prod.js.map',
         'workbox-navigation-preload.dev.js',
         'workbox-navigation-preload.dev.js.map',
         'workbox-navigation-preload.prod.js',
         'workbox-navigation-preload.prod.js.map',
+        'workbox-offline-ga.dev.js',
+        'workbox-offline-ga.dev.js.map',
+        'workbox-offline-ga.prod.js',
+        'workbox-offline-ga.prod.js.map',
         'workbox-precaching.dev.js',
         'workbox-precaching.dev.js.map',
         'workbox-precaching.prod.js',
@@ -204,20 +211,30 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         'workbox-streams.prod.js.map',
         'workbox-sw.js',
         'workbox-sw.js.map',
+        'workbox-window.dev.es5.mjs',
+        'workbox-window.dev.es5.mjs.map',
+        'workbox-window.dev.mjs',
+        'workbox-window.dev.mjs.map',
+        'workbox-window.dev.umd.js',
+        'workbox-window.dev.umd.js.map',
+        'workbox-window.prod.es5.mjs',
+        'workbox-window.prod.es5.mjs.map',
+        'workbox-window.prod.mjs',
+        'workbox-window.prod.mjs.map',
+        'workbox-window.prod.umd.js',
+        'workbox-window.prod.umd.js.map',
       ]);
-
 
       // The correct importScripts path should use the versioned name of the
       // parent workbox libraries directory. We don't know that version ahead
       // of time, so we ensure that there's a match based on what actually
       // got copied over.
       const workboxSWImport = libraryFiles.filter(
-        (file) => file.endsWith('workbox-sw.js'));
+          (file) => file.endsWith('workbox-sw.js'));
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [workboxSWImport],
         setConfig: [[{modulePathPrefix}]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -235,7 +252,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
       }});
     });
@@ -275,10 +292,9 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL], [...importScripts]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -296,7 +312,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
       }});
     });
@@ -304,12 +320,12 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     it(`should use defaults when all the required parameters are present, with additional configuration`, async function() {
       const swDest = tempy.file();
       const directoryIndex = 'test.html';
-      const ignoreUrlParametersMatching = [/test1/, /test2/];
+      const ignoreURLParametersMatching = [/test1/, /test2/];
       const cacheId = 'test';
       const additionalOptions = {
         cacheId,
         directoryIndex,
-        ignoreUrlParametersMatching,
+        ignoreURLParametersMatching,
         clientsClaim: true,
         skipWaiting: true,
       };
@@ -318,13 +334,12 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
         clientsClaim: [[]],
         skipWaiting: [[]],
         setCacheNameDetails: [[{prefix: cacheId}]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -342,8 +357,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
-        }], {directoryIndex, ignoreUrlParametersMatching}]],
+          revision: '5b652181a25e96f255d0490203d3c47e',
+        }], {directoryIndex, ignoreURLParametersMatching}]],
       }});
     });
 
@@ -360,10 +375,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
+        getCacheKeyForURL: [[navigateFallback]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -381,9 +396,9 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
-        registerNavigationRoute: [[navigateFallback, {
+        registerNavigationRoute: [['/urlWithCacheKey', {
           whitelist: navigateFallbackWhitelist,
         }]],
       }});
@@ -403,10 +418,9 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'link/index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -424,7 +438,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'link/webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
       }});
     });
@@ -444,10 +458,9 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(4);
-      expect(size).to.eql(2352);
+      expect(size).to.eql(2535);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'link/index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -459,7 +472,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
         }, {
           url: 'link/webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
       }});
     });
@@ -474,10 +487,9 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -495,7 +507,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         googleAnalyticsInitialize: [[{}]],
       }});
@@ -515,10 +527,9 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -536,7 +547,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         googleAnalyticsInitialize: [[{
           parameterOverrides: {
@@ -551,7 +562,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     const DEFAULT_METHOD = 'GET';
     const REGEXP_URL_PATTERN = /test/;
     const STRING_URL_PATTERN = '/test';
-    const STRING_HANDLER = 'cacheFirst';
+    const STRING_HANDLER = 'CacheFirst';
+    const FUNCTION_URL_PATTERN = (params) => true;
 
     it(`should reject when 'urlPattern' is missing from 'runtimeCaching'`, async function() {
       const handler = STRING_HANDLER;
@@ -615,11 +627,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -637,9 +648,53 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
-        registerRoute: [[STRING_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD]],
+        registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
+      }});
+    });
+
+    it(`should support a single function 'urlPattern' and a string 'handler'`, async function() {
+      const swDest = tempy.file();
+      const runtimeCaching = [{
+        urlPattern: FUNCTION_URL_PATTERN,
+        handler: STRING_HANDLER,
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {
+        runtimeCaching,
+        swDest,
+      });
+
+      const {count, size, warnings} = await generateSW(options);
+      expect(warnings).to.be.empty;
+      expect(count).to.eql(6);
+      expect(size).to.eql(2604);
+      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
+        [STRING_HANDLER]: [[]],
+        importScripts: [[WORKBOX_SW_CDN_URL]],
+        precacheAndRoute: [[[{
+          url: 'index.html',
+          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+        }, {
+          url: 'page-1.html',
+          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        }, {
+          url: 'page-2.html',
+          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        }, {
+          url: 'styles/stylesheet-1.css',
+          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        }, {
+          url: 'styles/stylesheet-2.css',
+          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        }, {
+          url: 'webpackEntry.js',
+          revision: '5b652181a25e96f255d0490203d3c47e',
+        }], {}]],
+        // We need to stringify the function to get it to pass validation.
+        // The service-worker-runtime.js validator will do the same.
+        // See https://github.com/chaijs/chai/issues/697
+        registerRoute: [[FUNCTION_URL_PATTERN.toString(), {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
 
@@ -679,7 +734,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[{
           cacheName: firstRuntimeCachingOptions.cacheName,
@@ -691,7 +746,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         cacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
         cacheExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -709,23 +763,23 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         registerRoute: [
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
-          [REGEXP_URL_PATTERN, STRING_HANDLER, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
         ],
       }});
     });
 
-    it(`should reject with a ValidationError when 'networkTimeoutSeconds' is used and handler is not 'networkFirst'`, async function() {
+    it(`should reject with a ValidationError when 'networkTimeoutSeconds' is used and handler is not 'NetworkFirst'`, async function() {
       const swDest = tempy.file();
       const runtimeCachingOptions = {
         networkTimeoutSeconds: 1,
       };
       const runtimeCaching = [{
         urlPattern: REGEXP_URL_PATTERN,
-        handler: 'networkOnly',
+        handler: 'NetworkOnly',
         options: runtimeCachingOptions,
       }];
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -741,10 +795,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       }
     });
 
-    it(`should support 'networkTimeoutSeconds' when handler is 'networkFirst'`, async function() {
+    it(`should support 'networkTimeoutSeconds' when handler is 'NetworkFirst'`, async function() {
       const swDest = tempy.file();
       const networkTimeoutSeconds = 1;
-      const handler = 'networkFirst';
+      const handler = 'NetworkFirst';
 
       const runtimeCachingOptions = {
         networkTimeoutSeconds,
@@ -763,11 +817,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2421);
+      expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[runtimeCachingOptions]],
         importScripts: [[WORKBOX_SW_CDN_URL]],
-        suppressWarnings: [[]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -785,10 +838,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '884f6853a4fc655e4c2dc0c0f27a227c',
         }, {
           url: 'webpackEntry.js',
-          revision: 'd41d8cd98f00b204e9800998ecf8427e',
+          revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
         registerRoute: [
-          [REGEXP_URL_PATTERN, handler, DEFAULT_METHOD],
+          [REGEXP_URL_PATTERN, {name: handler}, DEFAULT_METHOD],
         ],
       }});
     });
@@ -798,7 +851,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching: [{
           urlPattern,
-          handler: 'networkFirst',
+          handler: 'NetworkFirst',
           options: {
             expiration: {
               maxEntries: 5,
@@ -814,6 +867,39 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         expect(error.name).to.eql('ValidationError');
         expect(error.details[0].context.key).to.eql('expiration');
       }
+    });
+  });
+
+  describe(`[workbox-build] deprecated options`, function() {
+    const oldOptionsToValue = {
+      dontCacheBustUrlsMatching: /ignored/,
+      ignoreUrlParametersMatching: [/ignored/],
+      modifyUrlPrefix: {
+        'ignored': 'ignored',
+      },
+      templatedUrls: {},
+    };
+
+    for (const [option, value] of Object.entries(oldOptionsToValue)) {
+      it(`should return a warning when ${option} is used`, async function() {
+        const options = Object.assign({}, BASE_OPTIONS, {
+          [option]: value,
+        });
+
+        const {warnings} = await generateSW(options);
+        expect(warnings).to.have.length(1);
+      });
+    }
+
+    it(`should warn when a strategy function (lowercase) name is used`, async function() {
+      const runtimeCaching = [{
+        urlPattern: /abc/,
+        handler: 'cacheFirst',
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
+
+      const {warnings} = await generateSW(options);
+      expect(warnings).to.have.length(1);
     });
   });
 });

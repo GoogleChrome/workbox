@@ -1,40 +1,52 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
+const asyncToPromises = require('babel-plugin-transform-async-to-promises');
 const babel = require('rollup-plugin-babel');
-const minify = require('uglify-es').minify;
 const replace = require('rollup-plugin-replace');
-const uglifyPlugin = require('rollup-plugin-uglify').uglify;
+const resolve = require('rollup-plugin-node-resolve');
+const terserPlugin = require('rollup-plugin-terser').terser;
 
 const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');
+
 
 module.exports = {
   // Every use of rollup should have minification and the replace
   // plugin set up and used to ensure as consist set of tests
   // as possible.
-  getDefaultPlugins: (buildType) => {
-    const plugins = [];
+  getDefaultPlugins: (buildType, buildFormat = 'iife', es5 = false) => {
+    const plugins = [resolve()];
 
     const babelConfig = {
-      presets: [['env', {
+      presets: [['@babel/preset-env', {
         targets: {
-          // This corresponds to the version of Chroumium used by
-          // Samsung Internet 5.x, which is the minimum non-evergreen browser
-          // we currently support.
-          browsers: ['chrome >= 51'],
+          browsers: es5 ?
+              // If es5 is true, target IE11
+              // https://github.com/browserslist/browserslist#queries
+              ['ie 11'] :
+              // This corresponds to the version of Chromium used by
+              // Samsung Internet 6.x, which is the minimum non-evergreen
+              // browser we currently support.
+              ['chrome >= 56'],
         },
-        modules: false,
+        loose: true,
       }]],
-      // This will result in references to `babelHelpers.asyncToGenerators()`
-      // in the transpiled code. The declaration of this method lives in the
-      // external-helpers.js file and is injected by Rollup once into the
-      // workbox-core bundle.
-      plugins: ['external-helpers'],
-      externalHelpers: true,
     };
+    if (es5) {
+      babelConfig.plugins = [asyncToPromises];
+    }
     plugins.push(babel(babelConfig));
 
     let minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {
-      const uglifyOptions = {
+      const terserOptions = {
+        module: buildFormat === 'esm' ? true : false,
         mangle: {
           properties: {
             reserved: [
@@ -55,9 +67,7 @@ module.exports = {
           },
         },
       };
-      plugins.push(
-        uglifyPlugin(uglifyOptions, minify),
-      );
+      plugins.push(terserPlugin(terserOptions));
     }
 
     // This is what the build should be

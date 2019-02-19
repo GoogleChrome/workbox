@@ -1,17 +1,9 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 const assert = require('assert');
@@ -23,11 +15,11 @@ const getCDNOrigin = () => {
   return `${cdn.origin}/${cdn.bucketName}/${cdn.releasesDir}`;
 };
 
-const getVersionedCDNUrl = () => {
+const getVersionedCDNURL = () => {
   return `${getCDNOrigin()}/${cdn.latestVersion}`;
 };
 
-const getModuleUrl = (moduleName, buildType) => {
+const getModuleURL = (moduleName, buildType) => {
   assert(moduleName, errors['no-module-name']);
 
   if (buildType) {
@@ -37,12 +29,12 @@ const getModuleUrl = (moduleName, buildType) => {
       // without creating an entry in errors.js.
       throw Error(`The 'dev' build of ${moduleName} is not available.`);
     }
-    return `${getVersionedCDNUrl()}/${moduleName}.${buildType.slice(0, 4)}.js`;
+    return `${getVersionedCDNURL()}/${moduleName}.${buildType.slice(0, 4)}.js`;
   }
-  return `${getVersionedCDNUrl()}/${moduleName}.js`;
+  return `${getVersionedCDNURL()}/${moduleName}.js`;
 };
 
 module.exports = {
   getCDNOrigin,
-  getModuleUrl,
+  getModuleURL,
 };

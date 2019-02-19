@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const {oneLine} = require('common-tags');
 const {PluginInterface} = require('pr-bot');
 const bytes = require('bytes');
@@ -15,9 +23,9 @@ class AggregateSizePlugin extends PluginInterface {
 
   async run({afterPath} = {}) {
     const packagesToAggregate = [
-      `workbox-cache-expiration`,
       `workbox-cacheable-response`,
       `workbox-core`,
+      `workbox-expiration`,
       `workbox-precaching`,
       `workbox-routing`,
       `workbox-strategies`,

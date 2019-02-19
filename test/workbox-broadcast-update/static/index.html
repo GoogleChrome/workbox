@@ -1,0 +1,17 @@
+<html>
+  <head>
+  </head>
+  <body>
+    <p>You need to manually register sw.js</p>
+    <script>
+      window.__test = {};
+
+      if ('BroadcastChannel' in self) {
+        const updatesChannel = new BroadcastChannel('workbox');
+        updatesChannel.addEventListener('message', (event) => {
+          window.__test.message = event.data;
+        });
+      }
+    </script>
+  </body>
+  </html>

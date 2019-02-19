@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const gulp = require('gulp');
 const path = require('path');
 const fs = require('fs-extra');
@@ -9,7 +17,7 @@ const constants = require('./utils/constants');
 
 gulp.task('publish:clean', () => {
   return fs.remove(path.join(__dirname, '..',
-    constants.GENERATED_RELEASE_FILES_DIRNAME));
+      constants.GENERATED_RELEASE_FILES_DIRNAME));
 });
 
 gulp.task('publish:signin', async () => {

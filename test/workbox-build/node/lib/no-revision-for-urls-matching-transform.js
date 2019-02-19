@@ -1,7 +1,15 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const expect = require('chai').expect;
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
-const noRevisionForUrlsMatching = require('../../../../packages/workbox-build/src/lib/no-revision-for-urls-matching-transform');
+const noRevisionForURLsMatching = require('../../../../packages/workbox-build/src/lib/no-revision-for-urls-matching-transform');
 
 describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, function() {
   const MANIFEST = [{
@@ -24,15 +32,15 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
       [],
     ];
 
-    const transform = noRevisionForUrlsMatching(/ignored/);
+    const transform = noRevisionForURLsMatching(/ignored/);
     for (const badInput of badInputs) {
       expect(
-        () => transform([{url: badInput}])
+          () => transform([{url: badInput}])
       ).to.throw(errors['manifest-entry-bad-url']);
     }
   });
 
-  it(`should handle bad dontCacheBustUrlsMatching input`, function() {
+  it(`should handle bad dontCacheBustURLsMatching input`, function() {
     const badInputs = [
       null,
       undefined,
@@ -47,13 +55,13 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
 
     for (const badInput of badInputs) {
       expect(
-        () => noRevisionForUrlsMatching(badInput)
+          () => noRevisionForURLsMatching(badInput)
       ).to.throw(errors['invalid-dont-cache-bust']);
     }
   });
 
   it(`should remove revision info from a single matching entry`, function() {
-    const transform = noRevisionForUrlsMatching(/first-match/);
+    const transform = noRevisionForURLsMatching(/first-match/);
     expect(transform(MANIFEST)).to.eql({manifest: [{
       url: '/first-match/12345/hello',
     }, {
@@ -65,7 +73,7 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
   });
 
   it(`should remove revision info from multiple matching entries`, function() {
-    const transform = noRevisionForUrlsMatching(/12345/);
+    const transform = noRevisionForURLsMatching(/12345/);
     expect(transform(MANIFEST)).to.eql({manifest: [{
       url: '/first-match/12345/hello',
     }, {
@@ -76,7 +84,7 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
   });
 
   it(`should do nothing when there's a match for an entry without a revision`, function() {
-    const transform = noRevisionForUrlsMatching(/third-match/);
+    const transform = noRevisionForURLsMatching(/third-match/);
     expect(transform(MANIFEST)).to.eql({manifest: MANIFEST});
   });
 });

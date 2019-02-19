@@ -1,27 +1,21 @@
 /*
- Copyright 2018 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
+import {assert} from 'workbox-core/_private/assert.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
-import messages from './utils/messages.mjs';
-import cacheOkAndOpaquePlugin from './plugins/cacheOkAndOpaquePlugin.mjs';
+import {messages} from './utils/messages.mjs';
+import {cacheOkAndOpaquePlugin} from './plugins/cacheOkAndOpaquePlugin.mjs';
 import './_version.mjs';
 
 /**
@@ -33,6 +27,9 @@ import './_version.mjs';
  * well as [opaque responses]{@link https://developers.google.com/web/tools/workbox/guides/handle-third-party-requests}.
  * Opaque responses are are cross-origin requests where the response doesn't
  * support [CORS]{@link https://enable-cors.org/}.
+ *
+ * If the network request fails, and there is no cache match, this will throw
+ * a `WorkboxError` exception.
  *
  * @memberof workbox.strategies
  */
@@ -90,23 +87,14 @@ class NetworkFirst {
    * [Workbox Router]{@link workbox.routing.Router}.
    *
    * @param {Object} options
-   * @param {FetchEvent} options.event The fetch event to run this strategy
-   * against.
+   * @param {Request} options.request The request to run this strategy for.
+   * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event}) {
-    if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(event, FetchEvent, {
-        moduleName: 'workbox-strategies',
-        className: 'NetworkFirst',
-        funcName: 'handle',
-        paramName: 'event',
-      });
-    }
-
+  async handle({event, request}) {
     return this.makeRequest({
       event,
-      request: event.request,
+      request: request || event.request,
     });
   }
 
@@ -167,7 +155,7 @@ class NetworkFirst {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('NetworkFirst', request));
+          messages.strategyStart('NetworkFirst', request));
       for (let log of logs) {
         logger.log(log);
       }
@@ -175,6 +163,9 @@ class NetworkFirst {
       logger.groupEnd();
     }
 
+    if (!response) {
+      throw new WorkboxError('no-response', {url: request.url});
+    }
     return response;
   }
 
@@ -200,8 +191,8 @@ class NetworkFirst {
       };
 
       timeoutId = setTimeout(
-        onNetworkTimeout,
-        this._networkTimeoutSeconds * 1000,
+          onNetworkTimeout,
+          this._networkTimeoutSeconds * 1000,
       );
     });
 

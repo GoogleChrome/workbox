@@ -1,12 +1,18 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 import {expect} from 'chai';
 import sinon from 'sinon';
-import path from 'path';
-import fs from 'fs-extra';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
-import WorkboxSW from '../../../packages/workbox-sw/controllers/WorkboxSW.mjs';
-import getPackagesOfType from '../../../gulp-tasks/utils/get-packages-of-type';
+import {WorkboxSW} from '../../../packages/workbox-sw/controllers/WorkboxSW.mjs';
+import {getPackages} from '../../../gulp-tasks/utils/get-packages';
+import {outputFilenameToPkgMap} from '../../../gulp-tasks/utils/output-filename-to-package-map';
 
-const ROOT_DIR = path.join(__dirname, '..', '..', '..');
 
 describe(`[workbox-sw] WorkboxSW`, function() {
   let sandbox = sinon.createSandbox();
@@ -22,11 +28,12 @@ describe(`[workbox-sw] WorkboxSW`, function() {
         return;
       }
 
-      const packageName = match[1];
-      const pkgJson = fs.readJSONSync(path.join(ROOT_DIR, 'packages', packageName, 'package.json'));
-      const namespace = pkgJson.workbox.browserNamespace.split('.')[1];
+      const outputFilename = match[1];
+      const pkg = outputFilenameToPkgMap[outputFilename];
+
+      const namespace = pkg.workbox.browserNamespace.split('.')[1];
       self.workbox[namespace] = {
-        injectedMsg: `Injected value for ${packageName}.`,
+        injectedMsg: `Injected value for ${pkg.name}.`,
       };
     });
   });
@@ -100,42 +107,6 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       self.workbox.setConfig();
 
       expect(self.workbox._options).to.equal(originalOptions);
-    });
-  });
-
-  describe(`skipWaiting`, function() {
-    it('should add event listener and call skipWaiting', function(done) {
-      const skipWaitingSpy = sandbox.spy(self, 'skipWaiting');
-
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        expect(eventName).to.equal('install');
-
-        cb();
-
-        expect(skipWaitingSpy.callCount).to.equal(1);
-        done();
-      });
-
-      self.workbox = new WorkboxSW();
-      self.workbox.skipWaiting();
-    });
-  });
-
-  describe(`clientsClaim`, function() {
-    it('should add event listener and call clientsClaim', function(done) {
-      const clientsClaimSpy = sandbox.spy(self.clients, 'claim');
-
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        expect(eventName).to.equal('activate');
-
-        cb();
-
-        expect(clientsClaimSpy.callCount).to.equal(1);
-        done();
-      });
-
-      self.workbox = new WorkboxSW();
-      self.workbox.clientsClaim();
     });
   });
 
@@ -223,12 +194,9 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
   });
 
-  const browserPackages = getPackagesOfType(ROOT_DIR, 'browser');
-  browserPackages.forEach((pkgName) => {
-    const pkg = fs.readJSONSync(path.join(ROOT_DIR, 'packages', pkgName, 'package.json'));
-    if (pkg.workbox.browserNamespace === 'workbox') {
-      return;
-    }
+  getPackages({type: 'browser'}).forEach((pkg) => {
+    // Don't test workbox-sw, which exports the `workbox` namespace.
+    if (pkg.workbox.browserNamespace === 'workbox') return;
 
     describe(`get ${pkg.workbox.browserNamespace}`, function() {
       it(`should return ${pkg.workbox.browserNamespace}`, function() {

@@ -1,17 +1,9 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 const assert = require('assert');
@@ -24,7 +16,7 @@ const getFileDetails = require('./get-file-details');
 const getStringDetails = require('./get-string-details');
 
 module.exports = async ({
-  dontCacheBustUrlsMatching,
+  dontCacheBustURLsMatching,
   globDirectory,
   globFollow,
   globIgnores,
@@ -32,9 +24,9 @@ module.exports = async ({
   globStrict,
   manifestTransforms,
   maximumFileSizeToCacheInBytes,
-  modifyUrlPrefix,
+  modifyURLPrefix,
   swDest,
-  templatedUrls,
+  templatedURLs,
 }) => {
   const warnings = [];
   // Initialize to an empty array so that we can still pass something to
@@ -75,11 +67,11 @@ module.exports = async ({
     }
   }
 
-  if (templatedUrls) {
-    for (let url of Object.keys(templatedUrls)) {
+  if (templatedURLs) {
+    for (let url of Object.keys(templatedURLs)) {
       assert(!fileSet.has(url), errors['templated-url-matches-glob']);
 
-      const dependencies = templatedUrls[url];
+      const dependencies = templatedURLs[url];
       if (Array.isArray(dependencies)) {
         const details = dependencies.reduce((previous, globPattern) => {
           try {
@@ -107,7 +99,7 @@ module.exports = async ({
   }
 
   const filteredFiles = filterFiles({fileDetails,
-    maximumFileSizeToCacheInBytes, modifyUrlPrefix, dontCacheBustUrlsMatching,
+    maximumFileSizeToCacheInBytes, modifyURLPrefix, dontCacheBustURLsMatching,
     manifestTransforms});
 
   if (warnings.length > 0) {

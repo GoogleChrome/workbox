@@ -1,16 +1,9 @@
 /*
- Copyright 2017 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 import {expect} from 'chai';
@@ -42,15 +35,14 @@ describe(`[workbox-background-sync] Plugin`, function() {
       expect(queuePlugin._queue).to.be.instanceOf(Queue);
     });
 
-    it(`should implement fetchDidFail and add requests to the queue`,
-        async function() {
-      sandbox.stub(Queue.prototype, 'addRequest');
+    it(`should implement fetchDidFail and add requests to the queue`, async function() {
+      const stub = sandbox.stub(Queue.prototype, 'pushRequest');
       const queuePlugin = new Plugin('foo');
 
-      queuePlugin.fetchDidFail({request: new Request('/')});
-      expect(Queue.prototype.addRequest.calledOnce).to.be.true;
-      expect(Queue.prototype.addRequest.calledWith(
-          sinon.match.instanceOf(Request))).to.be.true;
+      queuePlugin.fetchDidFail({request: new Request('/one')});
+      expect(stub.callCount).to.equal(1);
+      expect(stub.args[0][0].request.url).to.equal('/one');
+      expect(stub.args[0][0].request).to.be.instanceOf(Request);
     });
   });
 });

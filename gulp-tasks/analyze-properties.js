@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const gulp = require('gulp');
 
 const AnalyseBuildForProperties = require('./utils/analyse-properties');
@@ -11,4 +19,4 @@ gulp.task('analyze-properties:run', async () => {
 });
 
 gulp.task('analyze-properties',
-  gulp.series(['build', 'analyze-properties:run']));
+    gulp.series(['build', 'analyze-properties:run']));

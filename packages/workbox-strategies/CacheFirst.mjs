@@ -1,16 +1,9 @@
 /*
- Copyright 2018 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 import {assert} from 'workbox-core/_private/assert.mjs';
@@ -19,8 +12,9 @@ import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
 
-import messages from './utils/messages.mjs';
+import {messages} from './utils/messages.mjs';
 import './_version.mjs';
 
 /**
@@ -30,6 +24,9 @@ import './_version.mjs';
  * A cache first strategy is useful for assets that have been revisioned,
  * such as URLs like `/styles/example.a8f5f1.css`, since they
  * can be cached for long periods of time.
+ *
+ * If the network request fails, and there is no cache match, this will throw
+ * a `WorkboxError` exception.
  *
  * @memberof workbox.strategies
  */
@@ -59,23 +56,14 @@ class CacheFirst {
    * [Workbox Router]{@link workbox.routing.Router}.
    *
    * @param {Object} options
-   * @param {FetchEvent} options.event The fetch event to run this strategy
-   * against.
+   * @param {Request} options.request The request to run this strategy for.
+   * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event}) {
-    if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(event, FetchEvent, {
-        moduleName: 'workbox-strategies',
-        className: 'CacheFirst',
-        funcName: 'handle',
-        paramName: 'event',
-      });
-    }
-
+  async handle({event, request}) {
     return this.makeRequest({
       event,
-      request: event.request,
+      request: request || event.request,
     });
   }
 
@@ -122,7 +110,7 @@ class CacheFirst {
     if (!response) {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(
-          `No response found in the '${this._cacheName}' cache. ` +
+            `No response found in the '${this._cacheName}' cache. ` +
           `Will respond with a network request.`);
       }
       try {
@@ -141,13 +129,13 @@ class CacheFirst {
     } else {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(
-          `Found a cached response in the '${this._cacheName}' cache.`);
+            `Found a cached response in the '${this._cacheName}' cache.`);
       }
     }
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-        messages.strategyStart('CacheFirst', request));
+          messages.strategyStart('CacheFirst', request));
       for (let log of logs) {
         logger.log(log);
       }
@@ -155,12 +143,9 @@ class CacheFirst {
       logger.groupEnd();
     }
 
-    if (error) {
-      // Don't swallow error as we'll want it to throw and enable catch
-      // handlers in router.
-      throw error;
+    if (!response) {
+      throw new WorkboxError('no-response', {url: request.url, error});
     }
-
     return response;
   }
 

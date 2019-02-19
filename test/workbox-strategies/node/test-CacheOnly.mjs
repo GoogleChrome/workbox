@@ -1,25 +1,18 @@
 /*
- Copyright 2016 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import {_private} from '../../../packages/workbox-core/index.mjs';
-import {compareResponses} from '../utils/response-comparisons.mjs';
-
+import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
 import {CacheOnly} from '../../../packages/workbox-strategies/CacheOnly.mjs';
+import {compareResponses} from '../utils/response-comparisons.mjs';
+import expectError from '../../../infra/testing/expectError';
 
 describe(`[workbox-strategies] CacheOnly.makeRequest()`, function() {
   const sandbox = sinon.createSandbox();
@@ -41,7 +34,7 @@ describe(`[workbox-strategies] CacheOnly.makeRequest()`, function() {
     const request = new Request(url);
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly();
@@ -55,7 +48,7 @@ describe(`[workbox-strategies] CacheOnly.makeRequest()`, function() {
     const request = new Request('http://example.io/test/');
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly();
@@ -92,9 +85,10 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const cacheOnly = new CacheOnly();
-    const handleResponse = await cacheOnly.handle({event});
-
-    expect(handleResponse).not.to.exist;
+    await expectError(
+        () => cacheOnly.handle({event}),
+        'no-response'
+    );
   });
 
   it(`should return the cached response when the cache is populated`, async function() {
@@ -102,7 +96,7 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly();
@@ -115,12 +109,14 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
-    const handleResponse = await cacheOnly.handle({event});
-    expect(handleResponse).not.to.exist;
+    await expectError(
+        () => cacheOnly.handle({event}),
+        'no-response'
+    );
   });
 
   it(`should return cached response from custom cache name`, async function() {
@@ -128,7 +124,7 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName('test-cache-name'));
+    const cache = await caches.open(cacheNames.getRuntimeName('test-cache-name'));
     await cache.put(request, injectedResponse.clone());
 
     const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
@@ -141,7 +137,7 @@ describe(`[workbox-strategies] CacheOnly.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const injectedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
+    const cache = await caches.open(cacheNames.getRuntimeName());
     await cache.put(request, injectedResponse.clone());
 
     const pluginResponse = new Response('plugin response');

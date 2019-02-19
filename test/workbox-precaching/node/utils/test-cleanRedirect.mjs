@@ -1,7 +1,15 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import cleanRedirect from '../../../../packages/workbox-precaching/utils/cleanRedirect.mjs';
+import {cleanRedirect} from '../../../../packages/workbox-precaching/utils/cleanRedirect.mjs';
 
 describe(`[workbox-precaching] cleanRedirect()`, function() {
   const sandbox = sinon.createSandbox();

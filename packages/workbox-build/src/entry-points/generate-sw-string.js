@@ -1,19 +1,13 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
+const checkForDeprecatedOptions =
+    require('../lib/check-for-deprecated-options');
 const generateSWStringSchema = require('./options/generate-sw-string-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const populateSWTemplate = require('../lib/populate-sw-template');
@@ -33,6 +27,10 @@ const validate = require('./options/validate');
  * @memberof module:workbox-build
  */
 async function generateSWString(config) {
+  // This check needs to be done before validation, since the deprecated options
+  // will be renamed.
+  const deprecationWarnings = checkForDeprecatedOptions(config);
+
   const options = validate(config, generateSWStringSchema);
 
   const {manifestEntries, warnings} = await getFileManifestEntries(options);
@@ -40,6 +38,9 @@ async function generateSWString(config) {
   const swString = await populateSWTemplate(Object.assign({
     manifestEntries,
   }, options));
+
+  // Add in any deprecation warnings.
+  warnings.push(...deprecationWarnings);
 
   return {swString, warnings};
 }

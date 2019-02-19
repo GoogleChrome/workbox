@@ -1,15 +1,23 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const expect = require('chai').expect;
 const qs = require('qs');
 const {By} = require('selenium-webdriver');
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
+const waitUntil = require('../../../infra/testing/wait-until');
 
-describe(`[workbox-google-analytics] Load and use Google Analytics`,
-    function() {
+
+describe(`[workbox-google-analytics] Load and use Google Analytics`, function() {
   const driver = global.__workbox.webdriver;
   const testServerAddress = global.__workbox.server.getAddress();
-  const testingUrl =
-    `${testServerAddress}/test/workbox-google-analytics/static/basic-example/`;
-  const swUrl = `${testingUrl}sw.js`;
+  const testingURL = `${testServerAddress}/test/workbox-google-analytics/static/basic-example/`;
+  const swURL = `${testingURL}sw.js`;
 
   /**
    * Sends a mesage to the service worker via postMessage and invokes the
@@ -20,7 +28,7 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`,
    * @param {Function} done The callback automatically passed via webdriver's
    *     `executeAsyncScript()` method.
    */
-  const messageSw = (data, done) => {
+  const messageSW = (data, done) => {
     let messageChannel = new MessageChannel();
     messageChannel.port1.onmessage = (evt) => done(evt.data);
     navigator.serviceWorker.controller.postMessage(
@@ -29,14 +37,14 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`,
 
   before(async function() {
     // Load the page and wait for the first service worker to activate.
-    await driver.get(testingUrl);
+    await driver.get(testingURL);
 
-    await activateAndControlSW(swUrl);
+    await activateAndControlSW(swURL);
   });
 
   beforeEach(async function() {
     // Reset the spied requests array.
-    await driver.executeAsyncScript(messageSw, {
+    await driver.executeAsyncScript(messageSW, {
       action: 'clear-spied-requests',
     });
   });
@@ -53,10 +61,10 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`,
   it(`replay failed Google Analytics hits`, async function() {
     // Skip this test in browsers that don't support background sync.
     // TODO(philipwalton): figure out a way to work around this.
-    const browserSuppotsSync = await driver.executeScript(() => {
+    const browserSupportsSync = await driver.executeScript(() => {
       return 'SyncManager' in window;
     });
-    if (!browserSuppotsSync) this.skip();
+    if (!browserSupportsSync) this.skip();
 
     const simulateOfflineEl =
         await driver.findElement(By.id('simulate-offline'));
@@ -69,13 +77,13 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`,
       });
     });
 
-    let requests = await driver.executeAsyncScript(messageSw, {
+    let requests = await driver.executeAsyncScript(messageSW, {
       action: 'get-spied-requests',
     });
     expect(requests).to.have.lengthOf(1);
 
     // Reset the spied requests array.
-    await driver.executeAsyncScript(messageSw, {
+    await driver.executeAsyncScript(messageSW, {
       action: 'clear-spied-requests',
     });
 
@@ -95,28 +103,29 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`,
         event_callback: () => done(),
       });
     });
+    // This request should not match GA routes, so it shouldn't be replayed.
     await driver.executeAsyncScript((done) => {
       fetch('https://httpbin.org/get').then(() => done());
     });
 
     // Get all spied requests and ensure there haven't been any (since we're
     // offline).
-    requests = await driver.executeAsyncScript(messageSw, {
+    requests = await driver.executeAsyncScript(messageSW, {
       action: 'get-spied-requests',
     });
     expect(requests).to.have.lengthOf(0);
 
-    // Uncheck the "simulate offline" checkbox and then trigger a sync.
+    // Uncheck the "simulate offline" checkbox, which should let queued
+    // requests start to replay successfully.
     await simulateOfflineEl.click();
-    await driver.executeAsyncScript(messageSw, {
-      action: 'dispatch-sync-event',
-    });
 
-    // Ensure only 2 requests have replayed, since only 2 of them were to GA.
-    requests = await driver.executeAsyncScript(messageSw, {
-      action: 'get-spied-requests',
-    });
-    expect(requests).to.have.lengthOf(2);
+    // Wait until all expected requests have replayed.
+    await waitUntil(async () => {
+      requests = await driver.executeAsyncScript(messageSW, {
+        action: 'get-spied-requests',
+      });
+      return requests.length === 2;
+    }, 25, 200);
 
     // Parse the request bodies to set the params as an object and convert the
     // qt param to a number.

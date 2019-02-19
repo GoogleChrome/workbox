@@ -11,22 +11,32 @@ module.exports = {
     sourceType: 'module',
   },
   globals: {
-    workbox: false,
-    WorkboxSW: false,
-    SyncEvent: false,
     BroadcastChannel: false,
     Comlink: false,
+    expect: true,
+    sinon: false,
+    SyncEvent: false,
+    workbox: false,
+    Workbox: true,
+    WorkboxSW: false,
   },
   rules: {
-    "jsdoc/check-types": 2,
-    "jsdoc/newline-after-description": 2,
+    'jsdoc/check-types': 2,
+    'jsdoc/newline-after-description': 2,
+    'max-len': [2, {
+      code: 80,
+      tabWidth: 2,
+      ignoreComments: true,
+      ignoreUrls: true,
+      ignorePattern: '^\\s*import',
+    }],
   },
   plugins: [
     'jsdoc',
   ],
-  parser: 'babel-eslint',
   overrides: [{
     files: ['test/**/*.{js,mjs}'],
+    parser: 'babel-eslint',
     env: {
       mocha: true,
     },
@@ -38,10 +48,13 @@ module.exports = {
     },
   }, {
     files: [
+      'infra/testing/webdriver/executeAsyncAndCatch.js',
+      'infra/utils/log-helper.js',
       'packages/workbox-core/_private/logger.mjs',
       'packages/workbox-sw/_default.mjs',
-      'infra/utils/log-helper.js',
       'packages/workbox-cli/src/lib/logger.js',
+      'test/workbox-window/integration/test.js',
+      'test/workbox-window/unit/test-Workbox.mjs',
     ],
     rules: {
       'no-console': 0,
@@ -101,13 +114,16 @@ module.exports = {
     },
   }, {
     files: [
+      'gulp-tasks/**/*.{mjs,js}',
+      'infra/**/*.{mjs,js}',
       'packages/**/*.{mjs,js}',
+      'test/**/*.{mjs,js}',
     ],
     plugins: [
       'header',
     ],
     rules: {
-      'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google Inc.'}]
+      'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google LLC'}]
     }
   }],
 };

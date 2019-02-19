@@ -1,11 +1,20 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const activateSWSafari = require('./activate-sw-safari');
 
-module.exports = async (swUrl) => {
+// TODO(philipwalton): remove this in favor of using workbox-window.
+module.exports = async (swURL) => {
   if (global.__workbox.seleniumBrowser.getId() === 'safari') {
-    return activateSWSafari(swUrl);
+    return activateSWSafari(swURL);
   }
 
-  const error = await global.__workbox.webdriver.executeAsyncScript((swUrl, cb) => {
+  const error = await global.__workbox.webdriver.executeAsyncScript((swURL, cb) => {
     function _onStateChangePromise(registration, desiredState) {
       return new Promise((resolve, reject) => {
         if (desiredState === 'activated' && registration.active) {
@@ -40,24 +49,24 @@ module.exports = async (swUrl) => {
       });
     }
 
-    navigator.serviceWorker.register(swUrl).then((registration) => {
+    navigator.serviceWorker.register(swURL).then((registration) => {
       return _onStateChangePromise(registration, 'activated');
     }).then(() => {
       // Ensure the page is being controlled by the SW.
       if (navigator.serviceWorker.controller &&
-          navigator.serviceWorker.controller.scriptURL === swUrl) {
+          navigator.serviceWorker.controller.scriptURL === swURL) {
         return;
       } else {
         return new Promise((resolve) => {
           navigator.serviceWorker.addEventListener('controllerchange', () => {
-            if (navigator.serviceWorker.controller.scriptURL === swUrl) {
+            if (navigator.serviceWorker.controller.scriptURL === swURL) {
               resolve();
             }
           });
         });
       }
     }).then(() => cb()).catch((error) => cb(error.message));
-  }, swUrl);
+  }, swURL);
 
   if (error) {
     throw new Error(error);

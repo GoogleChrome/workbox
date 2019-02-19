@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 importScripts('/__WORKBOX/buildFile/workbox-core');
 importScripts('/__WORKBOX/buildFile/workbox-routing');
 importScripts('/__WORKBOX/buildFile/workbox-streams');
@@ -38,9 +46,9 @@ self.addEventListener('fetch', (event) => {
 });
 
 workbox.routing.registerRoute(
-  new RegExp('strategy$'),
-  workbox.streams.strategy(getSourceFunctions(), {
-    'content-type': 'text/plain',
-    'x-test-case': 'strategy',
-  })
+    new RegExp('strategy$'),
+    workbox.streams.strategy(getSourceFunctions(), {
+      'content-type': 'text/plain',
+      'x-test-case': 'strategy',
+    })
 );

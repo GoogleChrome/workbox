@@ -1,17 +1,10 @@
 /*
- Copyright 2016 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
 
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
@@ -69,7 +62,7 @@ class NavigationRoute extends Route {
       });
     }
 
-    super((...args) => this._match(...args), handler);
+    super((options) => this._match(options), handler);
 
     this._whitelist = whitelist;
     this._blacklist = blacklist;
@@ -79,25 +72,27 @@ class NavigationRoute extends Route {
    * Routes match handler.
    *
    * @param {Object} options
-   * @param {FetchEvent} options.event
    * @param {URL} options.url
+   * @param {Request} options.request
    * @return {boolean}
    *
    * @private
    */
-  _match({event, url}) {
-    if (event.request.mode !== 'navigate') {
+  _match({url, request}) {
+    if (request.mode !== 'navigate') {
       return false;
     }
 
     const pathnameAndSearch = url.pathname + url.search;
 
-    if (this._blacklist.some((regExp) => regExp.test(pathnameAndSearch))) {
-      if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`The navigation route is not being used, since the ` +
-          `request URL matches both the whitelist and blacklist.`);
+    for (const regExp of this._blacklist) {
+      if (regExp.test(pathnameAndSearch)) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.log(`The navigation route is not being used, since the ` +
+              `URL matches this blacklist pattern: ${regExp}`);
+        }
+        return false;
       }
-      return false;
     }
 
     if (this._whitelist.some((regExp) => regExp.test(pathnameAndSearch))) {
@@ -105,15 +100,12 @@ class NavigationRoute extends Route {
         logger.debug(`The navigation route is being used.`);
       }
       return true;
-    } else {
-      if (process.env.NODE_ENV !== 'production') {
-        logger.debug(
-          `The navigation route is not being used, since the ` +
-          `URL being navigated to doesn't match the whitelist.`
-        );
-      }
     }
 
+    if (process.env.NODE_ENV !== 'production') {
+      logger.log(`The navigation route is not being used, since the URL ` +
+          `being navigated to doesn't match the whitelist.`);
+    }
     return false;
   }
 }

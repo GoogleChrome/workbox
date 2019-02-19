@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const fs = require('fs-extra');
 const path = require('path');
 const glob = require('glob');
@@ -5,7 +13,7 @@ const archiver = require('archiver');
 const oneLine = require('common-tags').oneLine;
 
 const constants = require('./constants');
-const getPackagesOfType = require('./get-packages-of-type');
+const {outputFilenameToPkgMap} = require('./output-filename-to-package-map');
 const logHelper = require('../../infra/utils/log-helper');
 const spawn = require('./spawn-promise-wrapper');
 
@@ -24,7 +32,7 @@ const doesDirectoryExist = async (directoryPath) => {
 
 const getBuildPath = (tagName) => {
   const tempReleasePath = path.join(
-    __dirname, '..', '..', constants.GENERATED_RELEASE_FILES_DIRNAME);
+      __dirname, '..', '..', constants.GENERATED_RELEASE_FILES_DIRNAME);
   return path.join(tempReleasePath, tagName);
 };
 
@@ -98,11 +106,12 @@ const groupBuildFiles = async (tagName, gitBranch) => {
 
     const sourceCodePath = path.join(getBuildPath(tagName), SOURCE_CODE_DIR);
 
-    const browserPackages = getPackagesOfType(sourceCodePath, 'browser');
+    const browserPackages = Object.values(outputFilenameToPkgMap)
+        .map((item) => item.name);
 
     const pattern = path.posix.join(
-      sourceCodePath, 'packages', `{${browserPackages.join(',')}}`,
-      constants.PACKAGE_BUILD_DIRNAME, '*.{js,map}');
+        sourceCodePath, 'packages', `{${browserPackages.join(',')}}`,
+        constants.PACKAGE_BUILD_DIRNAME, '*.{js,mjs,map}');
 
     logHelper.log(oneLine`
       Grouping Build Files into
@@ -114,8 +123,8 @@ const groupBuildFiles = async (tagName, gitBranch) => {
     const filesToIncludeInBundle = glob.sync(pattern);
     for (const fileToInclude of filesToIncludeInBundle) {
       await fs.copy(
-        fileToInclude,
-        path.join(groupedBuildFiles, path.basename(fileToInclude)),
+          fileToInclude,
+          path.join(groupedBuildFiles, path.basename(fileToInclude)),
       );
     }
   } else {

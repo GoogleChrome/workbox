@@ -1,61 +1,38 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 import {logger} from 'workbox-core/_private/logger.mjs';
+
 import '../_version.mjs';
 
-const logGroup = (groupTitle, urls) => {
+const logGroup = (groupTitle, deletedURLs) => {
   logger.groupCollapsed(groupTitle);
 
-  urls.forEach((url) => {
+  for (const url of deletedURLs) {
     logger.log(url);
-  });
+  }
 
   logger.groupEnd();
 };
 
 /**
- * @param {Array<string>} deletedCacheRequests
- * @param {Array<string>} deletedRevisionDetails
+ * @param {Array<string>} deletedURLs
  *
  * @private
- * @memberof module:workbox-precachig
+ * @memberof module:workbox-precaching
  */
-export default (deletedCacheRequests, deletedRevisionDetails) => {
-  if (deletedCacheRequests.length === 0 &&
-    deletedRevisionDetails.length === 0) {
-    return;
+export function printCleanupDetails(deletedURLs) {
+  const deletionCount = deletedURLs.length;
+  if (deletionCount > 0) {
+    logger.groupCollapsed(`During precaching cleanup, ` +
+        `${deletionCount} cached ` +
+        `request${deletionCount === 1 ? ' was' : 's were'} deleted.`);
+    logGroup('Deleted Cache Requests', deletedURLs);
+    logger.groupEnd();
   }
-
-  const cacheDeleteCount = deletedCacheRequests.length;
-  const revisionDeleteCount = deletedRevisionDetails.length;
-
-  const cacheDeleteText =
-    `${cacheDeleteCount} cached ` +
-    `request${cacheDeleteCount === 1 ? ' was' : 's were'} deleted`;
-  const revisionDeleteText =
-    `${revisionDeleteCount} ` +
-    `${revisionDeleteCount === 1 ? 'entry' : 'entries'} ` +
-    `${revisionDeleteCount === 1 ? 'was' : 'were'} deleted from IndexedDB.`;
-
-  logger.groupCollapsed(
-    `During precaching cleanup, ${cacheDeleteText} and ${revisionDeleteText}`);
-
-  logGroup('Deleted Cache Requests', deletedCacheRequests);
-  logGroup('Revision Details Deleted from DB', deletedRevisionDetails);
-
-  logger.groupEnd();
-};
+}

@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const gulp = require('gulp');
 const path = require('path');
 const semver = require('semver');
@@ -9,36 +17,36 @@ const logHelper = require('../infra/utils/log-helper');
 
 const publishReleaseOnGithub =
   async (tagName, releaseInfo, tarPath, zipPath) => {
-  if (!releaseInfo) {
-    const releaseData = await githubHelper.createRelease({
-      tag_name: tagName,
-      draft: true,
-      name: `Workbox ${tagName}`,
-      prerelease: semver.prerelease(tagName) !== null,
+    if (!releaseInfo) {
+      const releaseData = await githubHelper.createRelease({
+        tag_name: tagName,
+        draft: true,
+        name: `Workbox ${tagName}`,
+        prerelease: semver.prerelease(tagName) !== null,
+      });
+      releaseInfo = releaseData.data;
+    }
+
+    const tarBuffer = await fs.readFile(tarPath);
+    await githubHelper.uploadAsset({
+      url: releaseInfo.upload_url,
+      file: tarBuffer,
+      contentType: 'application/gzip',
+      contentLength: tarBuffer.length,
+      name: path.basename(tarPath),
+      label: path.basename(tarPath),
     });
-    releaseInfo = releaseData.data;
-  }
 
-  const tarBuffer = await fs.readFile(tarPath);
-  await githubHelper.uploadAsset({
-    url: releaseInfo.upload_url,
-    file: tarBuffer,
-    contentType: 'application/gzip',
-    contentLength: tarBuffer.length,
-    name: path.basename(tarPath),
-    label: path.basename(tarPath),
-  });
-
-  const zipBuffer = await fs.readFile(zipPath);
-  await githubHelper.uploadAsset({
-    url: releaseInfo.upload_url,
-    file: zipBuffer,
-    contentType: 'application/zip',
-    contentLength: zipBuffer.length,
-    name: path.basename(zipPath),
-    label: path.basename(zipPath),
-  });
-};
+    const zipBuffer = await fs.readFile(zipPath);
+    await githubHelper.uploadAsset({
+      url: releaseInfo.upload_url,
+      file: zipBuffer,
+      contentType: 'application/zip',
+      contentLength: zipBuffer.length,
+      name: path.basename(zipPath),
+      label: path.basename(zipPath),
+    });
+  };
 
 const handleGithubRelease = async (tagName, gitBranch, releaseInfo) => {
   logHelper.log(`Creating GitHub release ${logHelper.highlight(tagName)}.`);
@@ -68,7 +76,7 @@ gulp.task('publish-github:generate-from-tags', async () => {
   const allTags = await githubHelper.getTags();
   const taggedReleases = await githubHelper.getTaggedReleases();
   const tagsToBuild = await filterTagsWithReleaseBundles(
-    allTags, taggedReleases);
+      allTags, taggedReleases);
 
   if (tagsToBuild.length === 0) {
     logHelper.log(`No tags missing from GitHub.`);
@@ -77,10 +85,10 @@ gulp.task('publish-github:generate-from-tags', async () => {
 
   for (let tagInfo of tagsToBuild) {
     await handleGithubRelease(
-      tagInfo.name, tagInfo.name, taggedReleases[tagInfo.name]);
+        tagInfo.name, tagInfo.name, taggedReleases[tagInfo.name]);
   }
 });
 
 gulp.task('publish-github', gulp.series(
-  'publish-github:generate-from-tags',
+    'publish-github:generate-from-tags',
 ));

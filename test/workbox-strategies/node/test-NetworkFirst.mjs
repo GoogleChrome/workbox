@@ -1,24 +1,18 @@
 /*
- Copyright 2016 Google Inc. All Rights Reserved.
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+  Copyright 2018 Google LLC
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
+
 import sinon from 'sinon';
 import {expect} from 'chai';
 
-import expectError from '../../../infra/testing/expectError';
-import {devOnly} from '../../../infra/testing/env-it';
 import {_private} from '../../../packages/workbox-core/index.mjs';
 import {compareResponses} from '../utils/response-comparisons.mjs';
+import {devOnly} from '../../../infra/testing/env-it';
+import expectError from '../../../infra/testing/expectError';
 
 import {NetworkFirst} from '../../../packages/workbox-strategies/NetworkFirst.mjs';
 
@@ -155,8 +149,10 @@ describe(`[workbox-strategies] NetworkFirst.handle()`, function() {
     const event = new FetchEvent('fetch', {request});
 
     const networkFirst = new NetworkFirst();
-    const emptyCacheResponse = await networkFirst.handle({event});
-    expect(emptyCacheResponse).to.not.exist;
+    await expectError(
+        () => networkFirst.handle({event}),
+        'no-response'
+    );
 
     const injectedResponse = new Response('response body');
     const cache = await caches.open(_private.cacheNames.getRuntimeName());
@@ -196,7 +192,7 @@ describe(`[workbox-strategies] NetworkFirst.handle()`, function() {
     await compareResponses(populatedCacheResponse, injectedResponse, true);
   });
 
-  it(`should return the network response if the timeout is execeeded, but there is no cached response`, async function() {
+  it(`should return the network response if the timeout is exceeded, but there is no cached response`, async function() {
     const clock = sandbox.useFakeTimers();
 
     const request = new Request('http://example.io/test/');
@@ -208,8 +204,8 @@ describe(`[workbox-strategies] NetworkFirst.handle()`, function() {
     sandbox.stub(global, 'fetch').callsFake(() => {
       return new Promise((resolve) => {
         setTimeout(
-          () => resolve(networkResponse),
-          (networkTimeoutSeconds + 1) * 1000
+            () => resolve(networkResponse),
+            (networkTimeoutSeconds + 1) * 1000
         );
       });
     });

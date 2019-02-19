@@ -26,7 +26,7 @@
   };
 
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/demo/workbox-broadcast-cache-update/sw.js')
+    navigator.serviceWorker.register('/demo/workbox-broadcast-update/sw.js')
     .then((reg) => {
       triggerBroadcast.addEventListener('click', () => {
         const message = {

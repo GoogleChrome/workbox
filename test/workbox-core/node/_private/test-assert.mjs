@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 import sinon from 'sinon';
 import {expect} from 'chai';
 import expectError from '../../../../infra/testing/expectError';
@@ -11,7 +19,7 @@ describe(`workbox-core  assert`, function() {
     });
   });
 
-  describe(`isSwEnv`, function() {
+  describe(`isSWEnv`, function() {
     let sandbox;
     before(function() {
       sandbox = sinon.createSandbox();
@@ -25,7 +33,7 @@ describe(`workbox-core  assert`, function() {
       const originalServiceWorkerGlobalScope = global.ServiceWorkerGlobalScope;
       delete global.ServiceWorkerGlobalScope;
 
-      await expectError(() => assert.isSwEnv('example-module'), 'not-in-sw');
+      await expectError(() => assert.isSWEnv('example-module'), 'not-in-sw');
 
       global.ServiceWorkerGlobalScope = originalServiceWorkerGlobalScope;
     });
@@ -33,12 +41,12 @@ describe(`workbox-core  assert`, function() {
     devOnly.it(`should return false if self is not an instance of ServiceWorkerGlobalScope`, function() {
       sandbox.stub(global, 'self').value({});
 
-      return expectError(() => assert.isSwEnv('example-module'), 'not-in-sw');
+      return expectError(() => assert.isSWEnv('example-module'), 'not-in-sw');
     });
 
     devOnly.it(`should not throw is self is an instance of ServiceWorkerGlobalScope`, function() {
       sandbox.stub(global, 'self').value(new ServiceWorkerGlobalScope());
-      assert.isSwEnv('example-module');
+      assert.isSWEnv('example-module');
     });
   });
 

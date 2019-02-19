@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const expect = require('chai').expect;
 const path = require('path');
 const proxyquire = require('proxyquire');
@@ -75,7 +83,7 @@ describe(`[workbox-cli] app.js`, function() {
         } catch (error) {
           expect(loggerErrorStub.calledOnce).to.be.true;
           expect(
-            loggerErrorStub.alwaysCalledWithExactly(errors['invalid-common-js-module'])
+              loggerErrorStub.alwaysCalledWithExactly(errors['invalid-common-js-module'])
           ).to.be.true;
 
           // Windows will log with backslashes that need escaping
@@ -142,7 +150,7 @@ describe(`[workbox-cli] app.js`, function() {
         } catch (error) {
           expect(loggerErrorStub.calledOnce).to.be.true;
           expect(
-            loggerErrorStub.alwaysCalledWithExactly(errors['workbox-build-runtime-error'])
+              loggerErrorStub.alwaysCalledWithExactly(errors['workbox-build-runtime-error'])
           ).to.be.true;
           expect(error).to.eql(PROXIED_ERROR);
         }

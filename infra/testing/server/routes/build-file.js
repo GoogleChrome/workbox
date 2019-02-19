@@ -1,18 +1,28 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const path = require('path');
-
 const constants = require('../../../../gulp-tasks/utils/constants');
+const {outputFilenameToPkgMap} = require('../../../../gulp-tasks/utils/output-filename-to-package-map');
 
-const match = '/__WORKBOX/buildFile/:moduleInfo';
+
+const ROOT_DIR = path.join(__dirname, '..', '..', '..', '..');
+const match = '/__WORKBOX/buildFile/:packageFile';
 
 async function handler(req, res) {
-  const {moduleInfo} = req.params;
-  const [moduleName, buildType, extension] = moduleInfo.split('.', 3);
+  const {packageFile} = req.params;
+  const [outputFilename, buildType, extension] = packageFile.split('.', 3);
 
-  const packagePath = `../../../../packages/${moduleName}`;
-  const {main} = require(`${packagePath}/package.json`);
+  const pkg = outputFilenameToPkgMap[outputFilename];
+  const packagePath = path.join(ROOT_DIR, 'packages', pkg.name);
+  const buildPath = path.dirname(path.join(packagePath, pkg.main));
 
-  const buildPath = path.dirname(path.join(packagePath, main));
-  let fileName = path.basename(main);
+  let fileName = path.basename(pkg.workbox.primaryBuild || pkg.main);
 
   if (buildType) {
     fileName = fileName.replace('.prod.', `.${buildType}.`);
@@ -21,7 +31,7 @@ async function handler(req, res) {
   }
 
   if (extension) {
-    fileName = fileName.replace(/\.js$/, `.${extension}`);
+    fileName = fileName.replace(/\.m?js$/, `.${extension}`);
   }
 
   const filePath = path.resolve(__dirname, buildPath, fileName);

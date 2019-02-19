@@ -1,21 +1,13 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 const path = require('path');
-const {copyWorkboxLibraries, getModuleUrl} = require('workbox-build');
+const {copyWorkboxLibraries, getModuleURL} = require('workbox-build');
 
 /**
  * @param {Object} compilation The webpack compilation.
@@ -31,18 +23,18 @@ const {copyWorkboxLibraries, getModuleUrl} = require('workbox-build');
 async function getWorkboxSWImport(compilation, config) {
   switch (config.importWorkboxFrom) {
     case 'cdn': {
-      return [getModuleUrl('workbox-sw')];
+      return [getModuleURL('workbox-sw')];
     }
 
     case 'local': {
-      // This will create a local copy of the Workbox runtime libraries in
-      // the output directory, independent of the webpack build pipeline.
-      // In general, this should work, but one thing to keep in mind is that
-      // when using the webpack-dev-server, the output will be created on
-      // disk, rather than in the in-memory filesystem. (webpack-dev-server will
-      // still be able to serve the runtime libraries from disk.)
+    // This will create a local copy of the Workbox runtime libraries in
+    // the output directory, independent of the webpack build pipeline.
+    // In general, this should work, but one thing to keep in mind is that
+    // when using the webpack-dev-server, the output will be created on
+    // disk, rather than in the in-memory filesystem. (webpack-dev-server will
+    // still be able to serve the runtime libraries from disk.)
       const wbDir = await copyWorkboxLibraries(path.join(
-        compilation.options.output.path, config.importsDirectory));
+          compilation.options.output.path, config.importsDirectory));
 
       // We need to set this extra option in the config to ensure that the
       // workbox library loader knows where to get the local libraries from.
@@ -58,11 +50,11 @@ async function getWorkboxSWImport(compilation, config) {
     }
 
     default: {
-      // If importWorkboxFrom is anything else, then treat it as the name of
-      // a webpack chunk that corresponds to the custom compilation of the
-      // Workbox code.
+    // If importWorkboxFrom is anything else, then treat it as the name of
+    // a webpack chunk that corresponds to the custom compilation of the
+    // Workbox code.
       for (const chunk of compilation.chunks) {
-        // Make sure that we actually have a chunk with the appropriate name.
+      // Make sure that we actually have a chunk with the appropriate name.
         if (chunk.name === config.importWorkboxFrom) {
           config.excludeChunks.push(chunk.name);
           return chunk.files.map((file) => {

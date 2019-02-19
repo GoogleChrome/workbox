@@ -1,0 +1,33 @@
+{
+  "name": "workbox-window",
+  "version": "4.0.0-rc.3",
+  "license": "MIT",
+  "author": "Google's Web DevRel Team",
+  "description": "Simplifies communications with Workbox packages running in the service worker",
+  "repository": "googlechrome/workbox",
+  "bugs": "https://github.com/googlechrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox",
+  "keywords": [
+    "workbox",
+    "workboxjs",
+    "service worker",
+    "sw",
+    "window",
+    "message",
+    "postMessage"
+  ],
+  "scripts": {
+    "build": "gulp build-packages --package workbox-window",
+    "version": "npm run build",
+    "prepare": "npm run build"
+  },
+  "workbox": {
+    "packageType": "window",
+    "primaryBuild": "build/workbox-window.prod.mjs"
+  },
+  "main": "build/workbox-window.prod.umd.js",
+  "module": "build/workbox-window.prod.es5.mjs",
+  "dependencies": {
+    "workbox-core": "^4.0.0-rc.3"
+  }
+}

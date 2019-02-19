@@ -1,22 +1,15 @@
 /*
-  Copyright 2017 Google Inc.
+  Copyright 2018 Google LLC
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      https://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
 */
 
 import '../../_version.mjs';
 
-export default {
+
+export const messages = {
   'invalid-value': ({paramName, validValueDescription, value}) => {
     if (!paramName || !validValueDescription) {
       throw new Error(`Unexpected input to 'invalid-value' error.`);
@@ -42,7 +35,7 @@ export default {
   },
 
   'incorrect-type': ({expectedType, paramName, moduleName, className,
-                   funcName}) => {
+    funcName}) => {
     if (!expectedType || !paramName || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'incorrect-type' error.`);
     }
@@ -52,7 +45,7 @@ export default {
   },
 
   'incorrect-class': ({expectedClass, paramName, moduleName, className,
-                       funcName, isReturnValueProblem}) => {
+    funcName, isReturnValueProblem}) => {
     if (!expectedClass || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'incorrect-class' error.`);
     }
@@ -69,7 +62,7 @@ export default {
   },
 
   'missing-a-method': ({expectedMethod, paramName, moduleName, className,
-                    funcName}) => {
+    funcName}) => {
     if (!expectedMethod || !paramName || !moduleName || !className
         || !funcName) {
       throw new Error(`Unexpected input to 'missing-a-method' error.`);
@@ -93,9 +86,9 @@ export default {
     }
 
     return `Two of the entries passed to ` +
-      `'workbox-precaching.PrecacheController.addToCacheList()' had matching ` +
-      `URLs but different revision details. This means workbox-precaching ` +
-      `is unable to determine cache the asset correctly. Please remove one ` +
+      `'workbox-precaching.PrecacheController.addToCacheList()' had the URL ` +
+      `${firstEntry._entryId} but different revision details. Workbox is ` +
+      `is unable to cache and version the asset correctly. Please remove one ` +
       `of the entries.`;
   },
 
@@ -112,7 +105,7 @@ export default {
   'invalid-cache-name': ({cacheNameId, value}) => {
     if (!cacheNameId) {
       throw new Error(
-        `Expected a 'cacheNameId' for error 'invalid-cache-name'`);
+          `Expected a 'cacheNameId' for error 'invalid-cache-name'`);
     }
 
     return `You must provide a name containing at least one character for ` +
@@ -135,8 +128,8 @@ export default {
       `registered.`;
   },
 
-  'queue-replay-failed': ({name, count}) => {
-    return `${count} requests failed, while trying to replay Queue: ${name}.`;
+  'queue-replay-failed': ({name}) => {
+    return `Replaying the background sync queue '${name}' failed.`;
   },
 
   'duplicate-queue-name': ({name}) => {
@@ -174,26 +167,30 @@ export default {
   },
 
   'invalid-string': ({moduleName, className, funcName, paramName}) => {
-    if (!paramName || !moduleName || !className || !funcName) {
+    if (!paramName || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'invalid-string' error.`);
     }
     return `When using strings, the '${paramName}' parameter must start with ` +
       `'http' (for cross-origin matches) or '/' (for same-origin matches). ` +
-      `Please see the docs for ${moduleName}.${className}.${funcName}() for ` +
+      `Please see the docs for ${moduleName}.${funcName}() for ` +
       `more info.`;
   },
+
   'channel-name-required': () => {
     return `You must provide a channelName to construct a ` +
     `BroadcastCacheUpdate instance.`;
   },
+
   'invalid-responses-are-same-args': () => {
     return `The arguments passed into responsesAreSame() appear to be ` +
       `invalid. Please ensure valid Responses are used.`;
   },
+
   'expire-custom-caches-only': () => {
     return `You must provide a 'cacheName' property when using the ` +
       `expiration plugin with a runtime caching strategy.`;
   },
+
   'unit-must-be-bytes': ({normalizedRangeHeader}) => {
     if (!normalizedRangeHeader) {
       throw new Error(`Unexpected input to 'unit-must-be-bytes' error.`);
@@ -201,6 +198,7 @@ export default {
     return `The 'unit' portion of the Range header must be set to 'bytes'. ` +
       `The Range header provided was "${normalizedRangeHeader}"`;
   },
+
   'single-range-only': ({normalizedRangeHeader}) => {
     if (!normalizedRangeHeader) {
       throw new Error(`Unexpected input to 'single-range-only' error.`);
@@ -209,6 +207,7 @@ export default {
       `value, and optional end value. The Range header provided was ` +
       `"${normalizedRangeHeader}"`;
   },
+
   'invalid-range-values': ({normalizedRangeHeader}) => {
     if (!normalizedRangeHeader) {
       throw new Error(`Unexpected input to 'invalid-range-values' error.`);
@@ -217,19 +216,36 @@ export default {
       `one of those values is needed. The Range header provided was ` +
       `"${normalizedRangeHeader}"`;
   },
+
   'no-range-header': () => {
     return `No Range header was found in the Request provided.`;
   },
+
   'range-not-satisfiable': ({size, start, end}) => {
     return `The start (${start}) and end (${end}) values in the Range are ` +
       `not satisfiable by the cached response, which is ${size} bytes.`;
   },
+
   'attempt-to-cache-non-get-request': ({url, method}) => {
     return `Unable to cache '${url}' because it is a '${method}' request and ` +
       `only 'GET' requests can be cached.`;
   },
+
   'cache-put-with-no-response': ({url}) => {
     return `There was an attempt to cache '${url}' but the response was not ` +
       `defined.`;
+  },
+
+  'no-response': ({url, error}) => {
+    let message = `The strategy could not generate a response for '${url}'.`;
+    if (error) {
+      message += ` The underlying error is ${error}.`;
+    }
+    return message;
+  },
+
+  'bad-precaching-response': ({url, status}) => {
+    return `The precaching request for '${url}' failed with an HTTP ` +
+      `status of ${status}.`;
   },
 };

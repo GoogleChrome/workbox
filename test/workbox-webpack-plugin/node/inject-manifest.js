@@ -1,3 +1,11 @@
+/*
+  Copyright 2018 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const expect = require('chai').expect;
@@ -11,11 +19,11 @@ const webpack = require('webpack');
 const CreateWebpackAssetPlugin = require('../../../infra/testing/create-webpack-asset-plugin');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 const {InjectManifest} = require('../../../packages/workbox-webpack-plugin/src/index');
-const {getModuleUrl} = require('../../../packages/workbox-build/src/lib/cdn-utils');
+const {getModuleURL} = require('../../../packages/workbox-build/src/lib/cdn-utils');
 
 describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
-  const WORKBOX_SW_FILE_NAME = getModuleUrl('workbox-sw');
+  const WORKBOX_SW_FILE_NAME = getModuleURL('workbox-sw');
   const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');
   const SW_SRC = path.join(__dirname, '..', 'static', 'sw-src.js');
   const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
@@ -24,14 +32,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     'workbox-background-sync.dev.js.map',
     'workbox-background-sync.prod.js',
     'workbox-background-sync.prod.js.map',
-    'workbox-broadcast-cache-update.dev.js',
-    'workbox-broadcast-cache-update.dev.js.map',
-    'workbox-broadcast-cache-update.prod.js',
-    'workbox-broadcast-cache-update.prod.js.map',
-    'workbox-cache-expiration.dev.js',
-    'workbox-cache-expiration.dev.js.map',
-    'workbox-cache-expiration.prod.js',
-    'workbox-cache-expiration.prod.js.map',
+    'workbox-broadcast-update.dev.js',
+    'workbox-broadcast-update.dev.js.map',
+    'workbox-broadcast-update.prod.js',
+    'workbox-broadcast-update.prod.js.map',
     'workbox-cacheable-response.dev.js',
     'workbox-cacheable-response.dev.js.map',
     'workbox-cacheable-response.prod.js',
@@ -40,14 +44,18 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     'workbox-core.dev.js.map',
     'workbox-core.prod.js',
     'workbox-core.prod.js.map',
-    'workbox-google-analytics.dev.js',
-    'workbox-google-analytics.dev.js.map',
-    'workbox-google-analytics.prod.js',
-    'workbox-google-analytics.prod.js.map',
+    'workbox-expiration.dev.js',
+    'workbox-expiration.dev.js.map',
+    'workbox-expiration.prod.js',
+    'workbox-expiration.prod.js.map',
     'workbox-navigation-preload.dev.js',
     'workbox-navigation-preload.dev.js.map',
     'workbox-navigation-preload.prod.js',
     'workbox-navigation-preload.prod.js.map',
+    'workbox-offline-ga.dev.js',
+    'workbox-offline-ga.dev.js.map',
+    'workbox-offline-ga.prod.js',
+    'workbox-offline-ga.prod.js.map',
     'workbox-precaching.dev.js',
     'workbox-precaching.dev.js.map',
     'workbox-precaching.prod.js',
@@ -70,6 +78,18 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     'workbox-streams.prod.js.map',
     'workbox-sw.js',
     'workbox-sw.js.map',
+    'workbox-window.dev.es5.mjs',
+    'workbox-window.dev.es5.mjs.map',
+    'workbox-window.dev.mjs',
+    'workbox-window.dev.mjs.map',
+    'workbox-window.dev.umd.js',
+    'workbox-window.dev.umd.js.map',
+    'workbox-window.prod.es5.mjs',
+    'workbox-window.prod.es5.mjs.map',
+    'workbox-window.prod.mjs',
+    'workbox-window.prod.mjs.map',
+    'workbox-window.prod.umd.js',
+    'workbox-window.prod.umd.js.map',
   ];
 
   describe(`[workbox-webpack-plugin] runtime errors`, function() {
@@ -144,7 +164,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Ensure only one precache-manifest is present on re-compile`, function() {
     it(`should only have one reference to precache-manifest file in 'importScripts'`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.4c11550bccf162f8794b06643206e503.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.ea23e32058279c8eaa936321febd3c34.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -186,7 +206,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -197,9 +216,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-5a4c87613fbde10651f6.js',
+            url: 'entry2-aa21f43434f29ed0c946.js',
           }, {
-            url: 'entry1-ce45d9c6da215d7d95f2.js',
+            url: 'entry1-43ba396bf52f8419e349.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -218,7 +237,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] multiple chunks`, function() {
     it(`should work when called with just swSrc`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.4c11550bccf162f8794b06643206e503.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.ea23e32058279c8eaa936321febd3c34.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -254,7 +273,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -265,9 +283,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-5a4c87613fbde10651f6.js',
+            url: 'entry2-aa21f43434f29ed0c946.js',
           }, {
-            url: 'entry1-ce45d9c6da215d7d95f2.js',
+            url: 'entry1-43ba396bf52f8419e349.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -279,8 +297,8 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should support setting importWorkboxFrom to a chunk's name`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.eacec6c6d48006b8617972c6b13374b6.js';
-      const workboxEntryName = 'workboxEntry-78da3632cf982f0cf0f7.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.87c9951460ef50e83fd20b5ac561ab50.js';
+      const workboxEntryName = 'workboxEntry-278b92112247f26eee29.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -314,13 +332,12 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [[
-                FILE_MANIFEST_NAME,
-                workboxEntryName,
-              ]],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[], {}]],
-            }});
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              workboxEntryName,
+            ]],
+            precacheAndRoute: [[[], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
@@ -329,9 +346,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-553465495851c32de4d2.js',
+            url: 'entry2-3b4a9899eba6f4fd5880.js',
           }, {
-            url: 'entry1-1a591fa4690f3cf99fea.js',
+            url: 'entry1-46499ea335097c2d5d28.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -343,7 +360,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should support setting importWorkboxFrom to 'local'`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.4c11550bccf162f8794b06643206e503.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.ea23e32058279c8eaa936321febd3c34.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -375,8 +392,8 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           expect(statsJson.warnings).to.have.lengthOf(0);
 
           // Validate the copied library files.
-          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
-            {cwd: outputDir});
+          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.+(js|mjs)*`,
+              {cwd: outputDir});
 
           const modulePathPrefix = path.dirname(libraryFiles[0]);
 
@@ -388,7 +405,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           // of time, so we ensure that there's a match based on what actually
           // got copied over.
           const workboxSWImport = libraryFiles.filter(
-            (file) => file.endsWith('workbox-sw.js'))[0];
+              (file) => file.endsWith('workbox-sw.js'))[0];
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -397,7 +414,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               workboxSWImport,
             ]],
             setConfig: [[{modulePathPrefix}]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -408,9 +424,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-5a4c87613fbde10651f6.js',
+            url: 'entry2-aa21f43434f29ed0c946.js',
           }, {
-            url: 'entry1-ce45d9c6da215d7d95f2.js',
+            url: 'entry1-43ba396bf52f8419e349.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -422,7 +438,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should support setting importWorkboxFrom to 'local', and respect output.publicPath`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.b005c57742a9100a2caeb911f894572c.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.dc5b6abaf9a513e11137a4aff3f47050.js';
       const outputDir = tempy.directory();
       const publicPath = 'https://testing.path/';
       const config = {
@@ -456,8 +472,8 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           expect(statsJson.warnings).to.have.lengthOf(0);
 
           // Validate the copied library files.
-          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
-            {cwd: outputDir});
+          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.+(js|mjs)*`,
+              {cwd: outputDir});
 
           const modulePathPrefix = path.dirname(libraryFiles[0]);
 
@@ -469,7 +485,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           // of time, so we ensure that there's a match based on what actually
           // got copied over.
           const workboxSWImport = libraryFiles.filter(
-            (file) => file.endsWith('workbox-sw.js'))[0];
+              (file) => file.endsWith('workbox-sw.js'))[0];
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -478,7 +494,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               publicPath + workboxSWImport,
             ]],
             setConfig: [[{modulePathPrefix: publicPath + modulePathPrefix}]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -489,9 +504,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: publicPath + 'entry2-78a95b5e8b5919f59a5b.js',
+            url: publicPath + 'entry2-8d8a1f68d7c9228297f7.js',
           }, {
-            url: publicPath + 'entry1-a1ea3f0159fa64197cbd.js',
+            url: publicPath + 'entry1-c73732760e80d16a013d.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -503,7 +518,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should respect output.publicPath if importWorkboxFrom is set to a Webpack chunk name`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.0ac73adc5f0a01ceb25e37aa68cf21cb.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.ded2225bd7265f8d8b1b4f84e8a8dd48.js';
       const publicPath = 'https://testing.path/';
       const workboxChunkName = 'workbox-sw-chunk-name';
 
@@ -544,9 +559,8 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[
               publicPath + FILE_MANIFEST_NAME,
-              `${publicPath}${workboxChunkName}-791ceb87ebd3fc41011c.js`,
+              `${publicPath}${workboxChunkName}-b4583c3e0a4a5742f951.js`,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -557,9 +571,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: publicPath + 'entry2-8a7fe5b8acaa31149217.js',
+            url: publicPath + 'entry2-25d6cc8b45fddaea2b18.js',
           }, {
-            url: publicPath + 'entry1-7859a0429711eaa8e12b.js',
+            url: publicPath + 'entry1-7d47d02fbbf24d385c40.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -571,7 +585,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should honor the 'chunks' whitelist config`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.eacec6c6d48006b8617972c6b13374b6.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.87c9951460ef50e83fd20b5ac561ab50.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -609,7 +623,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -620,9 +633,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-553465495851c32de4d2.js',
+            url: 'entry2-3b4a9899eba6f4fd5880.js',
           }, {
-            url: 'entry1-1a591fa4690f3cf99fea.js',
+            url: 'entry1-46499ea335097c2d5d28.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -634,7 +647,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should honor the 'excludeChunks' blacklist config`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.eacec6c6d48006b8617972c6b13374b6.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.87c9951460ef50e83fd20b5ac561ab50.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -672,7 +685,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -683,9 +695,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry2-553465495851c32de4d2.js',
+            url: 'entry2-3b4a9899eba6f4fd5880.js',
           }, {
-            url: 'entry1-1a591fa4690f3cf99fea.js',
+            url: 'entry1-46499ea335097c2d5d28.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -697,7 +709,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should honor setting both the 'chunks' and 'excludeChunks', with the blacklist taking precedence`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.c806f80daeee0a15fbb2f6cb3c103a8d.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.5c1807bea92497c4ce2edfd648c76fda.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -736,7 +748,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -747,7 +758,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry1-1a591fa4690f3cf99fea.js',
+            url: 'entry1-46499ea335097c2d5d28.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -761,7 +772,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] html-webpack-plugin and a single chunk`, function() {
     it(`should work when called with just swSrc`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.f524307d846078ed0470d4465270e3f9.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.961b2e55574237e7ea932b7963bc3d1d.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -798,7 +809,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -809,12 +819,12 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: '3a76f7206accf372126fcc0057d87f64',
+            revision: 'ebc41a064b42558847b35b3ec152df5d',
             url: 'index.html',
           }, {
-            url: 'entry2-5a4c87613fbde10651f6.js',
+            url: 'entry2-aa21f43434f29ed0c946.js',
           }, {
-            url: 'entry1-ce45d9c6da215d7d95f2.js',
+            url: 'entry1-43ba396bf52f8419e349.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -826,7 +836,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should honor a custom swDest and publicPath`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.98082157243b69476b088588489c5ada.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.da79ba969df6446c897126b408d9a81b.js';
       const SW_DEST = 'custom-sw-dest.js';
       const publicPath = '/testing/';
 
@@ -868,7 +878,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               publicPath + FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -879,12 +888,12 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: '644a3c5c3f782cf64b0d5d595efd1d34',
+            revision: 'e1dfe0f4b815ec55fa14b23d81d0c197',
             url: publicPath + 'index.html',
           }, {
-            url: publicPath + 'entry2-7bcd5a4fa1ca82f2a4a5.js',
+            url: publicPath + 'entry2-012f54e540de3acc4953.js',
           }, {
-            url: publicPath + 'entry1-b3853a9ece4290728c47.js',
+            url: publicPath + 'entry1-ba13ed1ddfea8670e1e0.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -896,7 +905,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should support passing options through to workbox-build.getManifest() to precache additional files`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.b5f75861570d968592b1e8ef6648d518.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.2c342c632321f089da494c0700873e9b.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -913,7 +922,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           new InjectManifest({
             swSrc: SW_SRC,
             globDirectory: SRC_DIR,
-            templatedUrls: {
+            templatedURLs: {
               '/shell': ['index.html', 'styles/*.css'],
             },
           }),
@@ -938,7 +947,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -949,12 +957,12 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: '3a76f7206accf372126fcc0057d87f64',
+            revision: 'ebc41a064b42558847b35b3ec152df5d',
             url: 'index.html',
           }, {
-            url: 'entry2-5a4c87613fbde10651f6.js',
+            url: 'entry2-aa21f43434f29ed0c946.js',
           }, {
-            url: 'entry1-ce45d9c6da215d7d95f2.js',
+            url: 'entry1-43ba396bf52f8419e349.js',
           }, {
             revision: '5cfecbd12c9fa32f03eafe27e2ac798e',
             url: '/shell',
@@ -971,7 +979,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] copy-webpack-plugin and a single chunk`, function() {
     it(`should work when called with just swSrc`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.05511437b22dae1f1ea61d7a15a7d31e.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.2b3d18c77655489eaa6adb2851e7e476.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1008,7 +1016,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1019,7 +1026,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: '8e2b32ad3840dbe57ac7',
+            revision: '305798792eeffe140f78',
             url: 'webpackEntry.js',
           }, {
             revision: '884f6853a4fc655e4c2dc0c0f27a227c',
@@ -1054,8 +1061,8 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
   });
 
   describe(`[workbox-webpack-plugin] Filtering via test/include/exclude`, function() {
-    it(`should exclude .map and manifest.js(on) files by default`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.d0ef0c3e1e09e18378873d5d6f51e407.js';
+    it(`should exclude .map and manifest.js files by default`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.49af80607fd27ad2046d94148ac9cb2d.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1092,7 +1099,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1103,11 +1109,14 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: '8e2b32ad3840dbe57ac7',
+            revision: '305798792eeffe140f78',
             url: 'webpackEntry.js',
           }, {
             revision: 'aef75af28f6de0771a8d6bae84d9e71d',
             url: 'not-ignored.js',
+          }, {
+            revision: '4b1eb3dc48c4e16d49db5b42298fe654',
+            url: 'manifest.json',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -1119,7 +1128,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should allow developers to override the default exclude filter`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.bb0cd0d1cd7020c08efeff8c5f6c08e1.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.1431038c0e75c1cf68c4206fb9230140.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1154,7 +1163,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1165,10 +1173,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: '8e2b32ad3840dbe57ac7',
+            revision: '305798792eeffe140f78',
             url: 'webpackEntry.js.map',
           }, {
-            revision: '8e2b32ad3840dbe57ac7',
+            revision: '305798792eeffe140f78',
             url: 'webpackEntry.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
@@ -1181,7 +1189,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should allow developers to whitelist via include`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.1242f9e007897f035a52e56690ff17a6.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.92ba19475051a5dc73f5693dc05fd39d.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1220,7 +1228,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1250,7 +1257,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should allow developers to combine the test and exclude filters`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.83df65831eb442f8ad5fbeb8edecc558.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.a586dc93ba1a7f63f945e7d6f1e08676.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1290,7 +1297,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1319,7 +1325,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] swDest variations`, function() {
     it(`should work when swDest is an absolute path`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.df88bfed7ed575069dcee5f99197384a.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.29f0f9b0fb8d84f04161b18c20c18fee.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1354,7 +1360,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               FILE_MANIFEST_NAME,
               WORKBOX_SW_FILE_NAME,
             ]],
-            suppressWarnings: [[]],
             precacheAndRoute: [[[], {}]],
           }});
 
@@ -1365,7 +1370,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: '8e2b32ad3840dbe57ac7',
+            revision: '305798792eeffe140f78',
             url: 'webpackEntry.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
@@ -1380,7 +1385,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Reporting webpack warnings`, function() {
     it(`should add warnings from the workbox-build methods to compilation.warnings`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.9bd4873a6faffe873e16cae27bab7f9d.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.9a3d0d52f056554b3e5ae55e6aa95869.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1413,19 +1418,18 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
         try {
           const statsJson = stats.toJson('verbose');
-          expect(statsJson.warnings).to.have.lengthOf(6);
+          expect(statsJson.warnings).to.have.lengthOf(7);
 
           const swFile = path.join(outputDir, path.basename(SW_SRC));
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [[
-                FILE_MANIFEST_NAME,
-                WORKBOX_SW_FILE_NAME,
-              ]],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[], {}]],
-            }});
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            precacheAndRoute: [[[], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
@@ -1434,16 +1438,13 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            revision: 'edeab2a4c398a3f25d7b92bedea10d31',
-            url: 'webpackEntry.js',
-          }, {
             revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
             url: 'page-2.html',
           }, {
             revision: '544658ab25ee8762dc241e8b1c5ed96d',
             url: 'page-1.html',
           }, {
-            url: 'entry1-d2ce609f3441db03d3fe.js',
+            url: 'entry1-534729ef1c2ff611b64f.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -1455,7 +1456,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should add a warning when various glob-related options are set`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.8a424c606fbf006a6a338e285a5d0fbc.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.75e9cd918a5c9e42c04de9def4ad4193.js';
       const outputDir = tempy.directory();
       const globOptionsToWarnAbout = [
         'globDirectory',
@@ -1502,13 +1503,12 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [[
-                FILE_MANIFEST_NAME,
-                WORKBOX_SW_FILE_NAME,
-              ]],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[], {}]],
-            }});
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            precacheAndRoute: [[[], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
@@ -1526,7 +1526,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
             url: 'index.html',
           }, {
-            url: 'entry1-d2ce609f3441db03d3fe.js',
+            url: 'entry1-534729ef1c2ff611b64f.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -1538,13 +1538,13 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should add a warning when certain options are used, but globPatterns isn't set`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.5676ff527f1631235bc13ece43a3e94f.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.7e1d0d5a77c9c05655b6033e320028e3.js';
       const outputDir = tempy.directory();
       const optionsToWarnAboutWhenGlobPatternsIsNotSet = [
-        'dontCacheBustUrlsMatching',
+        'dontCacheBustURLsMatching',
         'manifestTransforms',
         'maximumFileSizeToCacheInBytes',
-        'modifyUrlPrefix',
+        'modifyURLPrefix',
       ];
       const config = {
         mode: 'production',
@@ -1558,10 +1558,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         plugins: [
           new InjectManifest({
             swSrc: SW_SRC,
-            dontCacheBustUrlsMatching: /testing/,
+            dontCacheBustURLsMatching: /testing/,
             manifestTransforms: [],
             maximumFileSizeToCacheInBytes: 1000000,
-            modifyUrlPrefix: {abc: 'def'},
+            modifyURLPrefix: {abc: 'def'},
           }),
         ],
       };
@@ -1583,13 +1583,12 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-              importScripts: [[
-                FILE_MANIFEST_NAME,
-                WORKBOX_SW_FILE_NAME,
-              ]],
-              suppressWarnings: [[]],
-              precacheAndRoute: [[[], {}]],
-            }});
+            importScripts: [[
+              FILE_MANIFEST_NAME,
+              WORKBOX_SW_FILE_NAME,
+            ]],
+            precacheAndRoute: [[[], {}]],
+          }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
@@ -1598,7 +1597,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry1-d2ce609f3441db03d3fe.js',
+            url: 'entry1-534729ef1c2ff611b64f.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -1612,7 +1611,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Customizing output paths and names`, function() {
     it(`should allow overriding precacheManifestFilename`, function(done) {
-      const FILE_MANIFEST_NAME = 'custom-name.5676ff527f1631235bc13ece43a3e94f.js';
+      const FILE_MANIFEST_NAME = 'custom-name.7e1d0d5a77c9c05655b6033e320028e3.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1650,7 +1649,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                 FILE_MANIFEST_NAME,
                 WORKBOX_SW_FILE_NAME,
               ]],
-              suppressWarnings: [[]],
               precacheAndRoute: [[[], {}]],
             }});
 
@@ -1661,7 +1659,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry1-d2ce609f3441db03d3fe.js',
+            url: 'entry1-534729ef1c2ff611b64f.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -1673,7 +1671,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should allow setting importsDirectory`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.5676ff527f1631235bc13ece43a3e94f.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.7e1d0d5a77c9c05655b6033e320028e3.js';
       const outputDir = tempy.directory();
       const importsDirectory = path.join('one', 'two');
       const config = {
@@ -1712,19 +1710,18 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                 importsDirectory.replace(path.sep, '/') + '/' + FILE_MANIFEST_NAME,
                 WORKBOX_SW_FILE_NAME,
               ]],
-              suppressWarnings: [[]],
               precacheAndRoute: [[[], {}]],
             }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
           const manifestFileContents = await fse.readFile(
-            path.join(outputDir, importsDirectory, FILE_MANIFEST_NAME), 'utf-8');
+              path.join(outputDir, importsDirectory, FILE_MANIFEST_NAME), 'utf-8');
           const context = {self: {}};
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: 'entry1-d2ce609f3441db03d3fe.js',
+            url: 'entry1-534729ef1c2ff611b64f.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
@@ -1736,7 +1733,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
 
     it(`should allow setting importsDirectory, publicPath, and importWorkboxFrom: 'local'`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.3fad63252afa60dbb83e835c49fc2c0d.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.0a5a96f075807fd5ebca92528f0a5156.js';
       const outputDir = tempy.directory();
       const importsDirectory = path.join('one', 'two');
       const publicPath = '/testing/';
@@ -1772,8 +1769,8 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           const swFile = path.join(outputDir, path.basename(SW_SRC));
 
           // Validate the copied library files.
-          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.js*`,
-            {cwd: path.join(outputDir, importsDirectory)});
+          const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.+(js|mjs)*`,
+              {cwd: path.join(outputDir, importsDirectory)});
 
           const modulePathPrefix = path.dirname(libraryFiles[0]);
 
@@ -1785,7 +1782,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           // of time, so we ensure that there's a match based on what actually
           // got copied over.
           const workboxSWImport = libraryFiles.filter(
-            (file) => file.endsWith('workbox-sw.js'))[0];
+              (file) => file.endsWith('workbox-sw.js'))[0];
 
           // First, validate that the generated service-worker.js meets some basic assumptions.
           await validateServiceWorkerRuntime({
@@ -1795,22 +1792,69 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                 publicPath + importsDirectory.replace(path.sep, '/') + '/' + workboxSWImport,
               ]],
               setConfig: [[{modulePathPrefix: publicPath + importsDirectory.replace(path.sep, '/') + '/' + modulePathPrefix}]],
-              suppressWarnings: [[]],
               precacheAndRoute: [[[], {}]],
             }});
 
           // Next, test the generated manifest to ensure that it contains
           // exactly the entries that we expect.
           const manifestFileContents = await fse.readFile(
-            path.join(outputDir, importsDirectory, FILE_MANIFEST_NAME), 'utf-8');
+              path.join(outputDir, importsDirectory, FILE_MANIFEST_NAME), 'utf-8');
           const context = {self: {}};
           vm.runInNewContext(manifestFileContents, context);
 
           const expectedEntries = [{
-            url: publicPath + 'entry1-2b3c5d8b864eb85659fe.js',
+            url: publicPath + 'entry1-4357f117964871c288d9.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
 
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+    it(`should allow swSrc to be a webpack generated asset`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.547bb595d8b69f77af45d81ddbd95fa1.js';
+      const outputDir = tempy.directory();
+      const publicPath = '/testing/';
+      const config = {
+        mode: 'production',
+        entry: {
+          sw: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          publicPath,
+          filename: '[name].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: 'sw.js',
+            swDest: 'service-worker.js',
+          }),
+        ],
+        optimization: {
+          minimize: false,
+        },
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
+          // Check if service-worker.js is being written fine
+          const swSrcContents = await fse.readFile(path.join(outputDir, 'sw.js'), 'utf-8');
+          const swDestContents = await fse.readFile(path.join(outputDir, 'service-worker.js'), 'utf-8');
+          const expectedString = `importScripts("${publicPath}${FILE_MANIFEST_NAME}", ` +
+            `"${WORKBOX_SW_FILE_NAME}");\n\n` +
+            swSrcContents + '\n';
+          expect(expectedString).to.be.equal(swDestContents);
           done();
         } catch (error) {
           done(error);
