@@ -1,6 +1,6 @@
 {
   "name": "workbox-window",
-  "version": "4.0.0-rc.2",
+  "version": "4.0.0-rc.3",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "Simplifies communications with Workbox packages running in the service worker",
@@ -28,6 +28,6 @@
   "main": "build/workbox-window.prod.umd.js",
   "module": "build/workbox-window.prod.es5.mjs",
   "dependencies": {
-    "workbox-core": "^4.0.0-rc.2"
+    "workbox-core": "^4.0.0-rc.3"
   }
 }
