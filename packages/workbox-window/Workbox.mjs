@@ -447,7 +447,9 @@ class Workbox extends EventTargetShim {
           }
           break;
         case 'redundant':
-          if (!isExternal) {
+          if (sw === this._compatibleControllingSW) {
+            logger.log('Previously controlling service worker now redundant!');
+          } else if (!isExternal) {
             logger.log('Registered service worker now redundant!');
           }
           break;
