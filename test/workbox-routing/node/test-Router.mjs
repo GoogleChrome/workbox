@@ -200,6 +200,7 @@ describe(`[workbox-routing] Router`, function() {
         },
       });
       event.ports = [{postMessage: sinon.spy()}];
+      sinon.spy(event, 'waitUntil');
 
       sandbox.spy(router, 'handleRequest');
       self.dispatchEvent(event);
@@ -208,11 +209,10 @@ describe(`[workbox-routing] Router`, function() {
 
       expect(router.handleRequest.callCount).to.equal(3);
       expect(router.handleRequest.args[0][0].request.url).to.equal('/one');
-      expect(router.handleRequest.args[0][0].event).to.equal(event);
       expect(router.handleRequest.args[1][0].request.url).to.equal('/two');
-      expect(router.handleRequest.args[1][0].event).to.equal(event);
       expect(router.handleRequest.args[2][0].request.url).to.equal('/three');
-      expect(router.handleRequest.args[2][0].event).to.equal(event);
+      expect(event.waitUntil.callCount).to.equal(1);
+      expect(event.waitUntil.args[0][0]).to.be.instanceOf(Promise);
       expect(event.ports[0].postMessage.callCount).to.equal(1);
     });
 
@@ -243,12 +243,9 @@ describe(`[workbox-routing] Router`, function() {
 
       expect(router.handleRequest.callCount).to.equal(3);
       expect(router.handleRequest.args[0][0].request.url).to.equal('/one');
-      expect(router.handleRequest.args[0][0].event).to.equal(event);
       expect(router.handleRequest.args[1][0].request.url).to.equal('/two');
       expect(router.handleRequest.args[1][0].request.mode).to.equal('no-cors');
-      expect(router.handleRequest.args[1][0].event).to.equal(event);
       expect(router.handleRequest.args[2][0].request.url).to.equal('/three');
-      expect(router.handleRequest.args[2][0].event).to.equal(event);
     });
   });
 

@@ -93,14 +93,16 @@ class Router {
           logger.debug(`Caching URLs from the window`, payload.urlsToCache);
         }
 
-        const requestPromises = payload.urlsToCache.map((entry) => {
+        const requestPromises = Promise.all(payload.urlsToCache.map((entry) => {
           if (typeof entry === 'string') {
             entry = [entry];
           }
 
           const request = new Request(...entry);
-          return this.handleRequest({request, event});
-        });
+          return this.handleRequest({request});
+        }));
+
+        event.waitUntil(requestPromises);
 
         // If a MessageChannel was used, reply to the message on success.
         if (event.ports) {
