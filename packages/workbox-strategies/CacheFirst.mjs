@@ -182,7 +182,7 @@ class CacheFirst {
       } catch (error) {
         if (process.env.NODE_ENV !== 'production') {
           logger.warn(`Unable to ensure service worker stays alive when ` +
-            `updating cache for '${getFriendlyURL(event.request.url)}'.`);
+            `updating cache for '${getFriendlyURL(request.url)}'.`);
         }
       }
     }
