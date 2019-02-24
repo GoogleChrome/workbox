@@ -247,6 +247,23 @@ describe(`[workbox-routing] Router`, function() {
       expect(router.handleRequest.args[1][0].request.mode).to.equal('no-cors');
       expect(router.handleRequest.args[2][0].request.url).to.equal('/three');
     });
+
+    it(`should do nothing for non CACHE_URLS message types`, async function() {
+      const router = new Router();
+      const route = new Route(
+          () => true,
+          () => new Response(EXPECTED_RESPONSE_BODY));
+      router.registerRoute(route);
+      router.addCacheListener();
+
+      const event = new ExtendableMessageEvent('message');
+      sandbox.spy(router, 'handleRequest');
+
+      self.dispatchEvent(event);
+      await eventsDoneWaiting();
+
+      expect(router.handleRequest.callCount).to.equal(0);
+    });
   });
 
   describe(`unregisterRoute()`, function() {
