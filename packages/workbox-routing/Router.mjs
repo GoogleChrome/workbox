@@ -86,9 +86,9 @@ class Router {
    */
   addCacheListener() {
     self.addEventListener('message', async (event) => {
-      const {type, payload} = event.data;
+      if (event.data && event.data.type === 'CACHE_URLS') {
+        const {payload} = event.data;
 
-      if (type === 'CACHE_URLS') {
         if (process.env.NODE_ENV !== 'production') {
           logger.debug(`Caching URLs from the window`, payload.urlsToCache);
         }
