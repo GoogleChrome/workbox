@@ -266,6 +266,30 @@ describe(`workbox-core cacheWrapper`, function() {
   });
 
   describe(`.match()`, function() {
+    it(`should use the matchOptions that were provided to put()`, async function() {
+      const matchOptions = {
+        ignoreSearch: true,
+      };
+      const cacheName = 'test-cache';
+
+      const testCache = await caches.open(cacheName);
+      sandbox.stub(global.caches, 'open').resolves(testCache);
+      const matchSpy = sandbox.spy(testCache, 'match');
+
+      await cacheWrapper.put({
+        cacheName,
+        matchOptions,
+        plugins: [{
+          cacheDidUpdate: () => {},
+        }],
+        request: new Request('/test/request'),
+        response: new Response('test'),
+      });
+
+      expect(matchSpy.calledOnce).to.be.true;
+      expect(matchSpy.args[0][1]).to.eql(matchOptions);
+    });
+
     it(`should call cachedResponseWillBeUsed`, async function() {
       const options = {};
       const matchCacheName = 'MATCH-CACHE-NAME';
