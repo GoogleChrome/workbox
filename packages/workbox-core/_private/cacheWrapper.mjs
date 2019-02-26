@@ -19,7 +19,8 @@ import '../_version.mjs';
 /**
  * Wrapper around cache.put().
  *
- * Will call `cacheDidUpdate` on plugins if the cache was updated.
+ * Will call `cacheDidUpdate` on plugins if the cache was updated, using
+ * `matchOptions` when determining what the old entry is.
  *
  * @param {Object} options
  * @param {string} options.cacheName
@@ -27,6 +28,7 @@ import '../_version.mjs';
  * @param {Response} options.response
  * @param {Event} [options.event]
  * @param {Array<Object>} [options.plugins=[]]
+ * @param {Object} [options.matchOptions]
  *
  * @private
  * @memberof module:workbox-core
@@ -37,6 +39,7 @@ const putWrapper = async ({
   response,
   event,
   plugins = [],
+  matchOptions,
 } = {}) => {
   if (!response) {
     if (process.env.NODE_ENV !== 'production') {
@@ -75,7 +78,7 @@ const putWrapper = async ({
       plugins, pluginEvents.CACHE_DID_UPDATE);
 
   let oldResponse = updatePlugins.length > 0 ?
-    await matchWrapper({cacheName, request}) : null;
+    await matchWrapper({cacheName, request, matchOptions}) : null;
 
   if (process.env.NODE_ENV !== 'production') {
     logger.debug(`Updating the '${cacheName}' cache with a new Response for ` +

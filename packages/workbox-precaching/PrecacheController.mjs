@@ -207,6 +207,9 @@ class PrecacheController {
       request,
       response,
       cacheName: this._cacheName,
+      matchOptions: {
+        ignoreSearch: true,
+      },
     });
   }
 

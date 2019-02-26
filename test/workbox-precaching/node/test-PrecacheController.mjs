@@ -430,6 +430,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       expect(fetchWrapper.fetch.args[0][0].plugins).to.equal(testPlugins);
       expect(cacheWrapper.put.args[0][0].plugins).to.equal(testPlugins);
+      expect(cacheWrapper.put.args[0][0].matchOptions).to.eql({
+        ignoreSearch: true,
+      });
 
       await precacheController.activate({
         plugins: testPlugins,
