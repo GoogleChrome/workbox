@@ -9,5 +9,9 @@
 import {WorkboxSW} from './controllers/WorkboxSW.mjs';
 import './_version.mjs';
 
+/**
+ * @namespace workbox
+ */
+
 // Don't export anything, just expose a global.
 self.workbox = new WorkboxSW();
