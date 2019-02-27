@@ -1,1 +1,1 @@
-try{self['workbox:background-sync:4.0.0-rc.3']&&_()}catch(e){}// eslint-disable-line
+try{self['workbox:background-sync:4.0.0-rc.4']&&_()}catch(e){}// eslint-disable-line
