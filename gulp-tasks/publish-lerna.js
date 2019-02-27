@@ -18,7 +18,7 @@ gulp.task('publish-lerna', () => {
     'publish',
 
     // The following flags can be used if publishing non-stable versions
-    '--preid=beta',
-    '--npm-tag', 'beta',
+    // '--preid=beta',
+    // '--npm-tag', 'beta',
   ]);
 });
