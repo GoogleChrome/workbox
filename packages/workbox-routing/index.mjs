@@ -23,6 +23,10 @@ if (process.env.NODE_ENV !== 'production') {
   assert.isSWEnv('workbox-routing');
 }
 
+/**
+ * @namespace workbox.routing
+ */
+
 export {
   NavigationRoute,
   RegExpRoute,
