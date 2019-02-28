@@ -1,0 +1,28 @@
+sudo: required
+dist: trusty
+language: node_js
+
+cache:
+  directories:
+    - "$HOME/.npm"
+    - ~/.selenium-assistant
+
+node_js:
+  - '10'
+
+# Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
+before_script:
+  - npm install -g gulp-cli
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start || echo \"Unable to start virtual display.\""
+  - sleep 3 # give xvfb some time to start
+
+install:
+  - npm ci
+
+script:
+  - gulp test
+
+after_success:
+  - npm run coveralls
+  - npm run bot
