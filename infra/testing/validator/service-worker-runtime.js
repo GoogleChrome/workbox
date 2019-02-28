@@ -35,6 +35,8 @@ function setupSpiesAndContext() {
 
   const importScripts = sinon.spy();
 
+  const addEventListener = sinon.stub();
+
   const workbox = {
     cacheableResponse: {
       Plugin: CacheableResponsePlugin,
@@ -69,9 +71,10 @@ function setupSpiesAndContext() {
   };
 
   const context = Object.assign({
-    workbox,
     importScripts,
+    workbox,
   }, makeServiceWorkerEnv());
+  context.self.addEventListener = addEventListener;
 
   const methodsToSpies = {
     importScripts,
@@ -91,7 +94,7 @@ function setupSpiesAndContext() {
     skipWaiting: workbox.core.skipWaiting,
   };
 
-  return {context, methodsToSpies};
+  return {addEventListener, context, methodsToSpies};
 }
 
 function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
@@ -123,7 +126,12 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
  * @param {Object} expectedMethodCalls
  * @return {Promise} Resolves if all of the expected method calls were made.
  */
-module.exports = async ({swFile, swString, expectedMethodCalls}) => {
+module.exports = async ({
+  addEventListenerValidation,
+  expectedMethodCalls,
+  swFile,
+  swString,
+}) => {
   assert((swFile || swString) && !(swFile && swString),
       `Set swFile or swString, but not both.`);
 
@@ -131,9 +139,14 @@ module.exports = async ({swFile, swString, expectedMethodCalls}) => {
     swString = await fse.readFile(swFile, 'utf8');
   }
 
-  const {context, methodsToSpies} = setupSpiesAndContext();
+  const {addEventListener, context, methodsToSpies} = setupSpiesAndContext();
 
   vm.runInNewContext(swString, context);
 
   validateMethodCalls({methodsToSpies, expectedMethodCalls});
+
+  // Optionally check the usage of addEventListener().
+  if (addEventListenerValidation) {
+    addEventListenerValidation(addEventListener);
+  }
 };
