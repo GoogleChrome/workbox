@@ -442,8 +442,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
 
     it(`it should use the proper 'this' when calling a cacheWillUpdate plugin`, async function() {
-      sandbox.spy(cacheWrapper, 'put');
-
       const precacheController = new PrecacheController();
       const cacheList = [
         '/index.1234.html',
@@ -452,18 +450,17 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       class TestPlugin {
         cacheWillUpdate({response}) {
-          expect(this).to.be.an.instanceof(TestPlugin);
           return response;
         }
       }
-
-      const plugins = [new TestPlugin()];
+      const pluginInstance = new TestPlugin();
+      const cacheWillUpdateSpy = sandbox.spy(pluginInstance, 'cacheWillUpdate');
 
       await precacheController.install({
-        plugins,
+        plugins: [pluginInstance],
       });
 
-      expect(cacheWrapper.put.args[0][0].plugins).to.equal(plugins);
+      expect(cacheWillUpdateSpy.thisValues[0]).to.be.an.instanceof(TestPlugin);
     });
 
     it(`it should set credentials: 'same-origin' on the precaching requests`, async function() {
