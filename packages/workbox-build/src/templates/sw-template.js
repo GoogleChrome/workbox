@@ -31,7 +31,15 @@ importScripts(
 
 <% if (cacheId) { %>workbox.core.setCacheNameDetails({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
 
-<% if (skipWaiting) { %>workbox.core.skipWaiting();<% } %>
+<% if (skipWaiting) { %>
+workbox.core.skipWaiting();
+<% } else { %>
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+<% } %>
 <% if (clientsClaim) { %>workbox.core.clientsClaim();<% } %>
 
 <% if (Array.isArray(manifestEntries)) {%>
