@@ -12,7 +12,6 @@ import expectError from '../../../infra/testing/expectError';
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
 import {QueueStore} from '../../../packages/workbox-background-sync/lib/QueueStore.mjs';
 import {DBWrapper} from '../../../packages/workbox-core/_private/DBWrapper.mjs';
-import {deleteDatabase} from '../../../packages/workbox-core/_private/deleteDatabase.mjs';
 
 
 const MINUTES = 60 * 1000;
@@ -21,15 +20,37 @@ const getObjectStoreEntries = async () => {
   return await new DBWrapper('workbox-background-sync', 3).getAll('requests');
 };
 
-const createSyncEvent = (tag) => {
+const createSyncEventStub = (tag) => {
   const event = new SyncEvent('sync', {tag});
 
-  // Safari doesn't recognize prototype methods when extending Event for
-  // some reason.
-  if (!event.waitUntil) {
-    event.waitUntil = SyncEvent.prototype.waitUntil;
+  // Default to resolving in the next microtask.
+  let done = Promise.resolve();
+
+  // Browsers will throw if code tries to call `waitUntil()` on a user-created
+  // sync event, so we have to stub it.
+  event.waitUntil = (promise) => {
+    // If `waitUntil` is called, defer `done` until after it resolves.
+    if (promise) {
+      done = promise.then(done);
+    }
+  };
+
+  return {event, done};
+};
+
+const clearIndexedDBEntries = async () => {
+  // Open a conection to the database (at whatever version exists) and
+  // clear out all object stores. This strategy is used because deleting
+  // databases inside service worker is flaky in FF and Safari.
+  // TODO(philipwalton): the version is not needed in real browsers, so it
+  // can be removed when we move away from running tests in node.
+  const db = await new DBWrapper('workbox-background-sync', 3).open();
+
+  // Edge cannot convert a DOMStringList to an array via `[...list]`.
+  for (const store of Array.from(db.db.objectStoreNames)) {
+    await db.clear(store);
   }
-  return event;
+  await db.close();
 };
 
 
@@ -37,9 +58,20 @@ describe(`Queue`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
-    sandbox.restore();
     Queue._queueNames.clear();
-    await deleteDatabase('workbox-background-sync');
+    await clearIndexedDBEntries();
+
+    // Don't actually register for a sync event in any test, as it could
+    // make the tests non-deterministic.
+    if ('sync' in registration) {
+      sandbox.stub(registration.sync, 'register');
+    }
+
+    sandbox.stub(Queue.prototype, 'replayRequests');
+  });
+
+  afterEach(function() {
+    sandbox.restore();
   });
 
   describe(`constructor`, function() {
@@ -67,10 +99,14 @@ describe(`Queue`, function() {
       expect(self.addEventListener.calledOnce).to.be.true;
       expect(self.addEventListener.calledWith('sync')).to.be.true;
 
-      self.dispatchEvent(createSyncEvent('workbox-background-sync:foo'));
+      const sync1 = createSyncEventStub('workbox-background-sync:foo');
+      self.dispatchEvent(sync1.event);
+      await sync1.done;
 
-      // replayRequests should not be called for this due to incorrect tag name
-      self.dispatchEvent(createSyncEvent('workbox-background-sync:bar'));
+      // `onSync` should not be called because the tag won't match.
+      const sync2 = createSyncEventStub('workbox-background-sync:bar');
+      self.dispatchEvent(sync2.event);
+      await sync2.done;
 
       expect(onSync.callCount).to.equal(1);
       expect(onSync.firstCall.args[0].queue).to.equal(queue);
@@ -78,18 +114,23 @@ describe(`Queue`, function() {
 
     it(`defaults to calling replayRequests when no onSync function is passed`, async function() {
       sandbox.spy(self, 'addEventListener');
-      sandbox.stub(Queue.prototype, 'replayRequests');
 
       const queue = new Queue('foo');
 
       expect(self.addEventListener.calledOnce).to.be.true;
       expect(self.addEventListener.calledWith('sync')).to.be.true;
 
-      self.dispatchEvent(createSyncEvent('workbox-background-sync:foo'));
+      const sync1 = createSyncEventStub('workbox-background-sync:foo');
+      self.dispatchEvent(sync1.event);
+      await sync1.done;
 
-      // replayRequests should not be called for this due to incorrect tag name
-      self.dispatchEvent(createSyncEvent('workbox-background-sync:bar'));
+      // `replayRequests` should not be called because the tag won't match.
+      const sync2 = createSyncEventStub('workbox-background-sync:bar');
+      self.dispatchEvent(sync2.event);
+      await sync2.done;
 
+      // `replayRequsets` is stubbed in beforeEach, so we don't have to
+      // re-stub in this test, and we can just assert it was called.
       expect(Queue.prototype.replayRequests.callCount).to.equal(1);
       expect(Queue.prototype.replayRequests.firstCall.args[0].queue)
           .to.equal(queue);
@@ -385,8 +426,13 @@ describe(`Queue`, function() {
   });
 
   describe(`replayRequests`, function() {
+    beforeEach(function() {
+      // Unstub replayRequests for all tests in this group.
+      Queue.prototype.replayRequests.restore();
+    });
+
     it(`should try to re-fetch all requests in the queue`, async function() {
-      sandbox.spy(self, 'fetch');
+      sandbox.stub(self, 'fetch');
 
       const queue1 = new Queue('foo');
       const queue2 = new Queue('bar');
@@ -522,32 +568,21 @@ describe(`Queue`, function() {
   });
 
   describe(`registerSync()`, function() {
-    it(`should support registerSync() in supporting browsers`, async function() {
-      const queue = new Queue('foo');
+    it(`should succeed regardless of browser support for sync`, async function() {
+      const queue = new Queue('a');
       await queue.registerSync();
-    });
-
-    it(`should support registerSync() in non-supporting browsers`, async function() {
-      // Delete the SyncManager interface to mock a non-supporting browser.
-      const originalSyncManager = registration.sync;
-      delete registration.sync;
-
-      // We need to set the `onSync` function to a no-op, otherwise creating
-      // the Queue instance in a non-supporting browser will try to access
-      // IndexedDB and we don't have a way to await that completion.
-      const onSync = sandbox.spy();
-      const queue = new Queue('foo', {onSync});
-      await queue.registerSync();
-
-      registration.sync = originalSyncManager;
     });
 
     it(`should handle thrown errors in sync registration`, async function() {
+      if (!('sync' in registration)) this.skip();
+
+      registration.sync.register.restore();
+
       sandbox.stub(registration.sync, 'register').callsFake(() => {
         return Promise.reject(new Error('Injected Error'));
       });
 
-      const queue = new Queue('foo');
+      const queue = new Queue('a');
       await queue.registerSync();
     });
   });

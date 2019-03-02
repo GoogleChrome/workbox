@@ -10,7 +10,6 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 import {deleteDatabase} from '../../../../packages/workbox-core/_private/deleteDatabase.mjs';
-import {migrateDb} from '../../../../packages/workbox-core/_private/migrateDb.mjs';
 
 
 const catchAsyncError = async (promiseOrFn) => {
@@ -214,11 +213,12 @@ describe(`DBWrapper`, function() {
     });
 
     it(`sets the onversionchange callback`, async function() {
-      const onversionchange = () => {};
+      const onversionchange = sandbox.spy();
 
       const db = await new DBWrapper('db', 1, {onversionchange}).open();
 
-      expect(db._db.onversionchange).to.equal(db._onversionchange);
+      db._db.onversionchange();
+      expect(onversionchange.callCount).to.equal(1);
 
       // Make sure to close the DB manually since we're overwriting the
       // onversionchange callback (which usually closes the DB).
@@ -659,73 +659,5 @@ describe(`deleteDatabase`, function() {
     await createTestDb();
     const err = await catchAsyncError(deleteDatabase('db'));
     expect(err).to.equal(fakeError);
-  });
-});
-
-describe(`migrateDb`, function() {
-  beforeEach(async function() {
-    sandbox.restore();
-  });
-
-  it(`calls a series of versioned functions in order based on the event data`, function(done) {
-    const v0Spy = sandbox.spy();
-    const v1Spy = sandbox.spy();
-    const v2Spy = sandbox.spy();
-
-    const migrationFunctions = {
-      v0: (next) => {
-        v0Spy();
-        expect(v1Spy.callCount).to.equal(0);
-        expect(v2Spy.callCount).to.equal(0);
-        next();
-      },
-      v1: (next) => {
-        setTimeout(() => {
-          v1Spy();
-          expect(v0Spy.callCount).to.equal(1);
-          expect(v2Spy.callCount).to.equal(0);
-          next();
-        }, 0);
-      },
-      v2: (next) => {
-        v2Spy();
-        expect(v0Spy.callCount).to.equal(1);
-        expect(v1Spy.callCount).to.equal(1);
-        next();
-        done();
-      },
-    };
-
-    migrateDb({oldVersion: 0, newVersion: 2}, migrationFunctions);
-  });
-
-  it(`only calls the migration functions for the relevant versions`, function(done) {
-    const v0Spy = sandbox.spy();
-    const v1Spy = sandbox.spy();
-    const v2Spy = sandbox.spy();
-
-    const migrationFunctions = {
-      v0: (next) => {
-        v0Spy();
-        next();
-      },
-      v1: (next) => {
-        setTimeout(() => {
-          v1Spy();
-          expect(v0Spy.callCount).to.equal(0);
-          expect(v2Spy.callCount).to.equal(0);
-          next();
-        }, 0);
-      },
-      v2: (next) => {
-        v2Spy();
-        expect(v0Spy.callCount).to.equal(0);
-        expect(v1Spy.callCount).to.equal(1);
-        next();
-        done();
-      },
-    };
-
-    migrateDb({oldVersion: 1, newVersion: 2}, migrationFunctions);
   });
 });

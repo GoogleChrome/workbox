@@ -6,14 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
-const Blob = require('./Blob');
+const Body = require('./Body');
 const Headers = require('./Headers');
+
 
 // Stub missing/broken Response API methods in `service-worker-mock`.
 // https://fetch.spec.whatwg.org/#response-class
-class Response {
+class Response extends Body {
   constructor(body, options = {}) {
-    this._body = new Blob([body]);
+    super();
+
+    this._body = body;
+
     this.status = typeof options.status === 'number' ? options.status : 200;
     this.ok = this.status >= 200 && this.status < 300;
     this.statusText = options.statusText || 'OK';
@@ -30,25 +34,6 @@ class Response {
         `Response body is already used`);
     } else {
       return new Response(this._body, this);
-    }
-  }
-
-  async blob() {
-    if (this.bodyUsed) {
-      throw new TypeError('Already read');
-    } else {
-      this.bodyUsed = true;
-      return this._body;
-    }
-  }
-
-  async text() {
-    if (this.bodyUsed) {
-      throw new TypeError('Already read');
-    } else {
-      this.bodyUsed = true;
-      // Limitionation: this assumes the stored Blob is text-based.
-      return this._body._text;
     }
   }
 }

@@ -156,7 +156,7 @@ describe(`[workbox-expiration] Plugin`, function() {
       });
 
       expect(expirationManager.updateTimestamp.callCount).to.equal(1);
-      expect(expirationManager.updateTimestamp.args[0][0]).to.equal('/one');
+      expect(expirationManager.updateTimestamp.args[0][0]).to.equal(`${location.origin}/one`);
     });
   });
 

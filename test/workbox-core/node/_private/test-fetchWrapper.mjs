@@ -34,7 +34,7 @@ describe(`workbox-core fetchWrapper`, function() {
 
       expect(stub.callCount).to.equal(1);
       const fetchRequest = stub.args[0][0];
-      expect(fetchRequest.url).to.equal('/test/string');
+      expect(fetchRequest.url).to.equal(`${location.origin}/test/string`);
     });
 
     it(`should work with Request instance`, async function() {
@@ -44,7 +44,7 @@ describe(`workbox-core fetchWrapper`, function() {
 
       expect(stub.callCount).to.equal(1);
       const fetchRequest = stub.args[0][0];
-      expect(fetchRequest.url).to.equal('/test/request');
+      expect(fetchRequest.url).to.equal(`${location.origin}/test/request`);
     });
 
     it(`should use fetchOptions`, async function() {
@@ -64,7 +64,7 @@ describe(`workbox-core fetchWrapper`, function() {
 
       expect(stub.callCount).to.equal(1);
       const fetchRequest = stub.args[0][0];
-      expect(fetchRequest.url).to.equal('/test/fetchOptions');
+      expect(fetchRequest.url).to.equal(`${location.origin}/test/fetchOptions`);
       const fetchOptions = stub.args[0][1];
       expect(fetchOptions).to.deep.equal(exampleOptions);
     });
@@ -129,7 +129,7 @@ describe(`workbox-core fetchWrapper`, function() {
       expect(fetchStub.callCount).to.equal(1);
 
       const fetchRequest = fetchStub.args[0][0];
-      expect(fetchRequest.url).to.equal('/test/requestWillFetch/2');
+      expect(fetchRequest.url).to.equal(`${location.origin}/test/requestWillFetch/2`);
     });
 
     it(`should throw a meaningful error on bad requestWillFetch plugin`, async function() {
@@ -162,8 +162,8 @@ describe(`workbox-core fetchWrapper`, function() {
 
       const secondPlugin = {
         fetchDidFail: sandbox.stub().callsFake(({originalRequest, request, event, error}) => {
-          expect(originalRequest.url).to.equal('/test/failingRequest/0');
-          expect(request.url).to.equal('/test/failingRequest/1');
+          expect(originalRequest.url).to.equal(`${location.origin}/test/failingRequest/0`);
+          expect(request.url).to.equal(`${location.origin}/test/failingRequest/1`);
           expect(error.message).to.equal('Injected Error.');
         }),
       };
@@ -175,8 +175,8 @@ describe(`workbox-core fetchWrapper`, function() {
         fetchDidFail: sandbox.stub().callsFake(({originalRequest, request, event, error}) => {
           // This should be called first
           expect(secondPlugin.fetchDidFail.callCount).to.equal(0);
-          expect(originalRequest.url).to.equal('/test/failingRequest/0');
-          expect(request.url).to.equal('/test/failingRequest/1');
+          expect(originalRequest.url).to.equal(`${location.origin}/test/failingRequest/0`);
+          expect(request.url).to.equal(`${location.origin}/test/failingRequest/1`);
           expect(error.message).to.equal('Injected Error.');
         }),
       };
@@ -202,7 +202,7 @@ describe(`workbox-core fetchWrapper`, function() {
       expect(global.fetch.callCount).to.equal(1);
 
       const fetchRequest = global.fetch.args[0][0];
-      expect(fetchRequest.url).to.equal('/test/failingRequest/1');
+      expect(fetchRequest.url).to.equal(`${location.origin}/test/failingRequest/1`);
     });
 
     it(`should call the fetchDidSucceed method in plugins`, async function() {

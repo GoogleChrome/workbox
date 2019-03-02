@@ -6,13 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-const Blob = require('./Blob');
+const Body = require('./Body');
 const Headers = require('./Headers');
+
 
 // Stub missing/broken Request API methods in `service-worker-mock`.
 // https://fetch.spec.whatwg.org/#request-class
-class Request {
+class Request extends Body {
   constructor(urlOrRequest, options = {}) {
+    super();
+
     let url = urlOrRequest;
     if (urlOrRequest instanceof Request) {
       url = urlOrRequest.url;
@@ -29,15 +32,15 @@ class Request {
       throw new TypeError(`Invalid url: ${urlOrRequest}`);
     }
 
-    this.url = url;
+    this.url = new URL(url, location).href;
     this.method = options.method || 'GET';
     this.mode = options.mode || 'cors';
     // See https://fetch.spec.whatwg.org/#concept-request-credentials-mode
-    this.credentials = options.credentials || (this.mode === 'navigate' ?
-      'include' : 'omit');
+    this.credentials = options.credentials ||
+        (this.mode === 'navigate' ? 'include' : 'omit');
     this.headers = new Headers(options.headers);
 
-    this._body = new Blob('body' in options ? [options.body] : []);
+    this._body = options.body;
   }
 
   clone() {
@@ -46,25 +49,6 @@ class Request {
           `Request body is already used`);
     } else {
       return new Request(this.url, Object.assign({body: this._body}, this));
-    }
-  }
-
-  async blob() {
-    if (this.bodyUsed) {
-      throw new TypeError('Already read');
-    } else {
-      this.bodyUsed = true;
-      return this._body;
-    }
-  }
-
-  async text() {
-    if (this.bodyUsed) {
-      throw new TypeError('Already read');
-    } else {
-      this.bodyUsed = true;
-      // Limitation: this assumes the stored Blob is text-based.
-      return this._body._text;
     }
   }
 }

@@ -208,9 +208,9 @@ describe(`[workbox-routing] Router`, function() {
       await eventsDoneWaiting();
 
       expect(router.handleRequest.callCount).to.equal(3);
-      expect(router.handleRequest.args[0][0].request.url).to.equal('/one');
-      expect(router.handleRequest.args[1][0].request.url).to.equal('/two');
-      expect(router.handleRequest.args[2][0].request.url).to.equal('/three');
+      expect(router.handleRequest.args[0][0].request.url).to.equal(`${location.origin}/one`);
+      expect(router.handleRequest.args[1][0].request.url).to.equal(`${location.origin}/two`);
+      expect(router.handleRequest.args[2][0].request.url).to.equal(`${location.origin}/three`);
       expect(event.waitUntil.callCount).to.equal(1);
       expect(event.waitUntil.args[0][0]).to.be.instanceOf(Promise);
       expect(event.ports[0].postMessage.callCount).to.equal(1);
@@ -242,10 +242,10 @@ describe(`[workbox-routing] Router`, function() {
       await eventsDoneWaiting();
 
       expect(router.handleRequest.callCount).to.equal(3);
-      expect(router.handleRequest.args[0][0].request.url).to.equal('/one');
-      expect(router.handleRequest.args[1][0].request.url).to.equal('/two');
+      expect(router.handleRequest.args[0][0].request.url).to.equal(`${location.origin}/one`);
+      expect(router.handleRequest.args[1][0].request.url).to.equal(`${location.origin}/two`);
       expect(router.handleRequest.args[1][0].request.mode).to.equal('no-cors');
-      expect(router.handleRequest.args[2][0].request.url).to.equal('/three');
+      expect(router.handleRequest.args[2][0].request.url).to.equal(`${location.origin}/three`);
     });
 
     it(`should do nothing for non CACHE_URLS message types`, async function() {
