@@ -7,40 +7,71 @@
 */
 
 import {expect} from 'chai';
-import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import sinon from 'sinon';
 import expectError from '../../../infra/testing/expectError';
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
-import {QueueStore} from
-  '../../../packages/workbox-background-sync/models/QueueStore.mjs';
-import {DB_NAME, DB_VERSION, OBJECT_STORE_NAME} from
-  '../../../packages/workbox-background-sync/utils/constants.mjs';
+import {QueueStore} from '../../../packages/workbox-background-sync/lib/QueueStore.mjs';
 import {DBWrapper} from '../../../packages/workbox-core/_private/DBWrapper.mjs';
-import {resetEventListeners} from
-  '../../../infra/testing/sw-env-mocks/event-listeners.js';
+
 
 const MINUTES = 60 * 1000;
 
 const getObjectStoreEntries = async () => {
-  return await new DBWrapper(DB_NAME, DB_VERSION).getAll(OBJECT_STORE_NAME);
+  return await new DBWrapper('workbox-background-sync', 3).getAll('requests');
 };
 
-describe(`[workbox-background-sync] Queue`, function() {
-  const sandbox = sinon.createSandbox();
+const createSyncEventStub = (tag) => {
+  const event = new SyncEvent('sync', {tag});
 
-  const reset = () => {
-    sandbox.restore();
-    Queue._queueNames.clear();
-    iDBReset();
-    resetEventListeners();
+  // Default to resolving in the next microtask.
+  let done = Promise.resolve();
+
+  // Browsers will throw if code tries to call `waitUntil()` on a user-created
+  // sync event, so we have to stub it.
+  event.waitUntil = (promise) => {
+    // If `waitUntil` is called, defer `done` until after it resolves.
+    if (promise) {
+      done = promise.then(done);
+    }
   };
 
+  return {event, done};
+};
+
+const clearIndexedDBEntries = async () => {
+  // Open a conection to the database (at whatever version exists) and
+  // clear out all object stores. This strategy is used because deleting
+  // databases inside service worker is flaky in FF and Safari.
+  // TODO(philipwalton): the version is not needed in real browsers, so it
+  // can be removed when we move away from running tests in node.
+  const db = await new DBWrapper('workbox-background-sync', 3).open();
+
+  // Edge cannot convert a DOMStringList to an array via `[...list]`.
+  for (const store of Array.from(db.db.objectStoreNames)) {
+    await db.clear(store);
+  }
+  await db.close();
+};
+
+
+describe(`Queue`, function() {
+  const sandbox = sinon.createSandbox();
+
   beforeEach(async function() {
-    reset();
+    Queue._queueNames.clear();
+    await clearIndexedDBEntries();
+
+    // Don't actually register for a sync event in any test, as it could
+    // make the tests non-deterministic.
+    if ('sync' in registration) {
+      sandbox.stub(registration.sync, 'register');
+    }
+
+    sandbox.stub(Queue.prototype, 'replayRequests');
   });
 
-  after(async function() {
-    reset();
+  afterEach(function() {
+    sandbox.restore();
   });
 
   describe(`constructor`, function() {
@@ -68,14 +99,14 @@ describe(`[workbox-background-sync] Queue`, function() {
       expect(self.addEventListener.calledOnce).to.be.true;
       expect(self.addEventListener.calledWith('sync')).to.be.true;
 
-      self.dispatchEvent(new SyncEvent('sync', {
-        tag: 'workbox-background-sync:foo',
-      }));
+      const sync1 = createSyncEventStub('workbox-background-sync:foo');
+      self.dispatchEvent(sync1.event);
+      await sync1.done;
 
-      // replayRequests should not be called for this due to incorrect tag name
-      self.dispatchEvent(new SyncEvent('sync', {
-        tag: 'workbox-background-sync:bar',
-      }));
+      // `onSync` should not be called because the tag won't match.
+      const sync2 = createSyncEventStub('workbox-background-sync:bar');
+      self.dispatchEvent(sync2.event);
+      await sync2.done;
 
       expect(onSync.callCount).to.equal(1);
       expect(onSync.firstCall.args[0].queue).to.equal(queue);
@@ -83,22 +114,23 @@ describe(`[workbox-background-sync] Queue`, function() {
 
     it(`defaults to calling replayRequests when no onSync function is passed`, async function() {
       sandbox.spy(self, 'addEventListener');
-      sandbox.stub(Queue.prototype, 'replayRequests');
 
       const queue = new Queue('foo');
 
       expect(self.addEventListener.calledOnce).to.be.true;
       expect(self.addEventListener.calledWith('sync')).to.be.true;
 
-      self.dispatchEvent(new SyncEvent('sync', {
-        tag: 'workbox-background-sync:foo',
-      }));
+      const sync1 = createSyncEventStub('workbox-background-sync:foo');
+      self.dispatchEvent(sync1.event);
+      await sync1.done;
 
-      // replayRequests should not be called for this due to incorrect tag name
-      self.dispatchEvent(new SyncEvent('sync', {
-        tag: 'workbox-background-sync:bar',
-      }));
+      // `replayRequests` should not be called because the tag won't match.
+      const sync2 = createSyncEventStub('workbox-background-sync:bar');
+      self.dispatchEvent(sync2.event);
+      await sync2.done;
 
+      // `replayRequsets` is stubbed in beforeEach, so we don't have to
+      // re-stub in this test, and we can just assert it was called.
       expect(Queue.prototype.replayRequests.callCount).to.equal(1);
       expect(Queue.prototype.replayRequests.firstCall.args[0].queue)
           .to.equal(queue);
@@ -123,7 +155,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       sandbox.spy(QueueStore.prototype, 'pushEntry');
 
       const queue = new Queue('a');
-      const requestURL = 'https://example.com';
+      const requestURL = 'https://example.com/';
       const requestInit = {
         method: 'POST',
         body: 'testing...',
@@ -141,9 +173,9 @@ describe(`[workbox-background-sync] Queue`, function() {
       const args = QueueStore.prototype.pushEntry.firstCall.args;
       expect(args[0].requestData.url).to.equal(requestURL);
       expect(args[0].requestData.method).to.equal(requestInit.method);
-      expect(args[0].requestData.headers).to.deep.equal(requestInit.headers);
+      expect(args[0].requestData.headers['x-foo']).to.equal(requestInit.headers['x-foo']);
       expect(args[0].requestData.mode).to.deep.equal(requestInit.mode);
-      expect(args[0].requestData.body).to.be.instanceOf(Blob);
+      expect(args[0].requestData.body).to.be.instanceOf(ArrayBuffer);
       expect(args[0].timestamp).to.equal(timestamp);
       expect(args[0].metadata).to.deep.equal(metadata);
     });
@@ -152,7 +184,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       sandbox.spy(QueueStore.prototype, 'pushEntry');
 
       const queue = new Queue('a');
-      const request = new Request('https://example.com');
+      const request = new Request('https://example.com/');
 
       await queue.pushRequest({request});
 
@@ -171,7 +203,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       });
 
       const queue = new Queue('a');
-      const request = new Request('https://example.com');
+      const request = new Request('https://example.com/');
 
       await queue.pushRequest({request});
 
@@ -201,7 +233,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       sandbox.spy(QueueStore.prototype, 'unshiftEntry');
 
       const queue = new Queue('a');
-      const requestURL = 'https://example.com';
+      const requestURL = 'https://example.com/';
       const requestInit = {
         method: 'POST',
         body: 'testing...',
@@ -219,9 +251,9 @@ describe(`[workbox-background-sync] Queue`, function() {
       const args = QueueStore.prototype.unshiftEntry.firstCall.args;
       expect(args[0].requestData.url).to.equal(requestURL);
       expect(args[0].requestData.method).to.equal(requestInit.method);
-      expect(args[0].requestData.headers).to.deep.equal(requestInit.headers);
+      expect(args[0].requestData.headers['x-foo']).to.equal(requestInit.headers['x-foo']);
       expect(args[0].requestData.mode).to.deep.equal(requestInit.mode);
-      expect(args[0].requestData.body).to.be.instanceOf(Blob);
+      expect(args[0].requestData.body).to.be.instanceOf(ArrayBuffer);
       expect(args[0].timestamp).to.equal(timestamp);
       expect(args[0].metadata).to.deep.equal(metadata);
     });
@@ -230,7 +262,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       sandbox.spy(QueueStore.prototype, 'unshiftEntry');
 
       const queue = new Queue('a');
-      const request = new Request('https://example.com');
+      const request = new Request('https://example.com/');
 
       await queue.unshiftRequest({request});
 
@@ -244,7 +276,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       sandbox.spy(QueueStore.prototype, 'unshiftEntry');
 
       const queue = new Queue('a');
-      const request = new Request('https://example.com');
+      const request = new Request('https://example.com/');
 
       const startTime = Date.now();
       await queue.unshiftRequest({request});
@@ -277,7 +309,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       sandbox.spy(QueueStore.prototype, 'shiftEntry');
 
       const queue = new Queue('a');
-      const requestURL = 'https://example.com';
+      const requestURL = 'https://example.com/';
       const requestInit = {
         method: 'POST',
         body: 'testing...',
@@ -286,6 +318,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       };
 
       await queue.pushRequest({request: new Request(requestURL, requestInit)});
+
       // Add a second request to ensure the first one is returned.
       await queue.pushRequest({request: new Request('/two')});
 
@@ -310,7 +343,7 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       const {request, metadata} = await queue.shiftRequest();
 
-      expect(request.url).to.equal('/one');
+      expect(request.url).to.equal(`${location.origin}/one`);
       expect(metadata).to.deep.equal({meta: 'data'});
     });
 
@@ -326,8 +359,8 @@ describe(`[workbox-background-sync] Queue`, function() {
       const entry2 = await queue.shiftRequest();
       const entry3 = await queue.shiftRequest();
 
-      expect(entry1.request.url).to.equal('/two');
-      expect(entry2.request.url).to.equal('/four');
+      expect(entry1.request.url).to.equal(`${location.origin}/two`);
+      expect(entry2.request.url).to.equal(`${location.origin}/four`);
       expect(entry3).to.be.undefined;
     });
   });
@@ -337,7 +370,7 @@ describe(`[workbox-background-sync] Queue`, function() {
       sandbox.spy(QueueStore.prototype, 'popEntry');
 
       const queue = new Queue('a');
-      const requestURL = 'https://example.com';
+      const requestURL = 'https://example.com/';
       const requestInit = {
         method: 'POST',
         body: 'testing...',
@@ -370,7 +403,7 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       const {request, metadata} = await queue.popRequest();
 
-      expect(request.url).to.equal('/one');
+      expect(request.url).to.equal(`${location.origin}/one`);
       expect(metadata).to.deep.equal({meta: 'data'});
     });
 
@@ -386,15 +419,20 @@ describe(`[workbox-background-sync] Queue`, function() {
       const entry2 = await queue.popRequest();
       const entry3 = await queue.popRequest();
 
-      expect(entry1.request.url).to.equal('/four');
-      expect(entry2.request.url).to.equal('/two');
+      expect(entry1.request.url).to.equal(`${location.origin}/four`);
+      expect(entry2.request.url).to.equal(`${location.origin}/two`);
       expect(entry3).to.be.undefined;
     });
   });
 
   describe(`replayRequests`, function() {
+    beforeEach(function() {
+      // Unstub replayRequests for all tests in this group.
+      Queue.prototype.replayRequests.restore();
+    });
+
     it(`should try to re-fetch all requests in the queue`, async function() {
-      sandbox.spy(self, 'fetch');
+      sandbox.stub(self, 'fetch');
 
       const queue1 = new Queue('foo');
       const queue2 = new Queue('bar');
@@ -412,26 +450,26 @@ describe(`[workbox-background-sync] Queue`, function() {
       expect(self.fetch.callCount).to.equal(3);
 
       expect(self.fetch.getCall(0).calledWith(sinon.match({
-        url: '/one',
+        url: `${location.origin}/one`,
       }))).to.be.true;
 
       expect(self.fetch.getCall(1).calledWith(sinon.match({
-        url: '/three',
+        url: `${location.origin}/three`,
       }))).to.be.true;
 
       expect(self.fetch.getCall(2).calledWith(sinon.match({
-        url: '/five',
+        url: `${location.origin}/five`,
       }))).to.be.true;
 
       await queue2.replayRequests();
       expect(self.fetch.callCount).to.equal(5);
 
       expect(self.fetch.getCall(3).calledWith(sinon.match({
-        url: '/two',
+        url: `${location.origin}/two`,
       }))).to.be.true;
 
       expect(self.fetch.getCall(4).calledWith(sinon.match({
-        url: '/four',
+        url: `${location.origin}/four`,
       }))).to.be.true;
     });
 
@@ -454,8 +492,8 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       const entries = await getObjectStoreEntries();
       expect(entries.length).to.equal(2);
-      expect(entries[0].requestData.url).to.equal('/two');
-      expect(entries[1].requestData.url).to.equal('/four');
+      expect(entries[0].requestData.url).to.equal(`${location.origin}/two`);
+      expect(entries[1].requestData.url).to.equal(`${location.origin}/four`);
     });
 
     it(`should ignore (and remove) requests if maxRetentionTime has passed`, async function() {
@@ -479,7 +517,7 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       expect(self.fetch.calledOnce).to.be.true;
       expect(self.fetch.calledWith(sinon.match({
-        url: '/three',
+        url: `${location.origin}/three`,
       }))).to.be.true;
 
       const entries = await getObjectStoreEntries();
@@ -506,8 +544,8 @@ describe(`[workbox-background-sync] Queue`, function() {
 
       const entries = await getObjectStoreEntries();
       expect(entries.length).to.equal(2);
-      expect(entries[0].requestData.url).to.equal('/four');
-      expect(entries[1].requestData.url).to.equal('/five');
+      expect(entries[0].requestData.url).to.equal(`${location.origin}/four`);
+      expect(entries[1].requestData.url).to.equal(`${location.origin}/five`);
     });
 
     it(`should throw WorkboxError if re-fetching fails`, async function() {
@@ -530,28 +568,21 @@ describe(`[workbox-background-sync] Queue`, function() {
   });
 
   describe(`registerSync()`, function() {
-    it(`should support registerSync() in supporting browsers`, async function() {
-      const queue = new Queue('foo');
+    it(`should succeed regardless of browser support for sync`, async function() {
+      const queue = new Queue('a');
       await queue.registerSync();
-    });
-
-    it(`should support registerSync() in non-supporting browsers`, async function() {
-      // Delete the SyncManager interface to mock a non-supporting browser.
-      const originalSyncManager = registration.sync;
-      delete registration.sync;
-
-      const queue = new Queue('foo');
-      await queue.registerSync();
-
-      registration.sync = originalSyncManager;
     });
 
     it(`should handle thrown errors in sync registration`, async function() {
+      if (!('sync' in registration)) this.skip();
+
+      registration.sync.register.restore();
+
       sandbox.stub(registration.sync, 'register').callsFake(() => {
         return Promise.reject(new Error('Injected Error'));
       });
 
-      const queue = new Queue('foo');
+      const queue = new Queue('a');
       await queue.registerSync();
     });
   });

@@ -8,12 +8,13 @@
 
 import {assert} from 'workbox-core/_private/assert.mjs';
 import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
-import {migrateDb} from 'workbox-core/_private/migrateDb.mjs';
-import {DB_NAME, DB_VERSION, OBJECT_STORE_NAME, INDEXED_PROP}
-  from '../utils/constants.mjs';
-
 import '../_version.mjs';
 
+
+const DB_VERSION = 3;
+const DB_NAME = 'workbox-background-sync';
+const OBJECT_STORE_NAME = 'requests';
+const INDEXED_PROP = 'queueName';
 
 /**
  * A class to manage storing requests from a Queue in IndexedbDB,
@@ -155,53 +156,15 @@ export class QueueStore {
    */
   _upgradeDb(event) {
     const db = event.target.result;
-    const txn = event.target.transaction;
-    let oldEntries = [];
 
-    migrateDb(event, {
-      v1: (next) => {
-        // When migrating from version 0, this will not exist.
-        if (db.objectStoreNames.contains(OBJECT_STORE_NAME)) {
-          // Get any existing entries in the v1 requests store
-          // and then delete it.
-          const objStore = txn.objectStore(OBJECT_STORE_NAME);
-          objStore.openCursor().onsuccess = ({target}) => {
-            const cursor = target.result;
-            if (cursor) {
-              oldEntries.push(cursor.value);
-              cursor.continue();
-            } else {
-              db.deleteObjectStore(OBJECT_STORE_NAME);
-              next();
-            }
-          };
-        } else {
-          next();
-        }
-      },
-      v2: (next) => {
-        // Creates v2 of the requests store and adds back any existing
-        // entries in the new format.
-        const objStore = db.createObjectStore(OBJECT_STORE_NAME, {
-          autoIncrement: true,
-          keyPath: 'id',
-        });
-        objStore.createIndex(INDEXED_PROP, INDEXED_PROP, {unique: false});
+    if (event.oldVersion > 0 && event.oldVersion < DB_VERSION) {
+      db.deleteObjectStore(OBJECT_STORE_NAME);
+    }
 
-        if (oldEntries.length) {
-          for (const {queueName, storableRequest} of oldEntries) {
-            // Move the timestamp from `storableRequest` to the top level.
-            const timestamp = storableRequest.timestamp;
-
-            // Reformat the storable request data
-            const requestData = Object.assign(
-                storableRequest.requestInit, {url: storableRequest.url});
-
-            objStore.add({queueName, timestamp, requestData});
-          }
-        }
-        next();
-      },
+    const objStore = db.createObjectStore(OBJECT_STORE_NAME, {
+      autoIncrement: true,
+      keyPath: 'id',
     });
+    objStore.createIndex(INDEXED_PROP, INDEXED_PROP, {unique: false});
   }
 }
