@@ -21,15 +21,15 @@ module.exports = {
     WorkboxSW: false,
   },
   rules: {
-    "jsdoc/check-types": 2,
-    "jsdoc/newline-after-description": 2,
-    "max-len": [2, {
-      code: 80,
-      tabWidth: 2,
-      ignoreComments: true,
-      "ignorePattern": "^\\s*import",
-      "ignoreUrls": true
-    }]
+    'jsdoc/check-types': 2,
+    'jsdoc/newline-after-description': 2,
+    'max-len': [2, {
+      'code': 80,
+      'tabWidth': 2,
+      'ignoreComments': true,
+      'ignorePattern': '^\\s*import',
+      'ignoreUrls': true,
+    }],
   },
   plugins: [
     'jsdoc',
@@ -41,7 +41,7 @@ module.exports = {
       mocha: true,
     },
     globals: {
-      expectError: false
+      expectError: false,
     },
     rules: {
       'max-len': 0,
@@ -72,7 +72,7 @@ module.exports = {
   }, {
     files: [
       'gulp-tasks/**/*.js',
-      'infra/**/*.js'
+      'infra/**/*.js',
     ],
     rules: {
       'valid-jsdoc': 0,
@@ -83,8 +83,8 @@ module.exports = {
       'infra/testing/**/*',
     ],
     env: {
-      'mocha': true
-    }
+      'mocha': true,
+    },
   }, {
     files: [
       'test/workbox-build/static/**/*.js',
@@ -100,8 +100,8 @@ module.exports = {
     rules: {
       'max-len': 0,
     },
-  }
-  , {
+  },
+  {
     files: [
       'packages/workbox-sw/**/*',
     ],
@@ -126,7 +126,7 @@ module.exports = {
       'header',
     ],
     rules: {
-      'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google LLC'}]
-    }
+      'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google LLC'}],
+    },
   }],
 };
