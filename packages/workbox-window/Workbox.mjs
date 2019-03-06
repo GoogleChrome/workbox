@@ -220,7 +220,9 @@ class Workbox extends EventTargetShim {
    * @return {Promise<ServiceWorker>}
    */
   async getSW() {
-    return this._swDeferred.promise;
+    // If `this._sw` is set, resolve with that as we want `getSW()` to
+    // return the correct (new) service worker if an update is found.
+    return this._sw || this._swDeferred.promise;
   }
 
   /**

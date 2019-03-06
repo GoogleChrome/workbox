@@ -403,6 +403,35 @@ describe(`[workbox-window] Workbox`, function() {
       const sw = await wb.getSW();
       expect(sw.state).to.equal('installing');
     });
+
+    it(`resolves to the new SW after an update is found`, async function() {
+      const scriptURL = navigator.serviceWorker.controller.scriptURL;
+
+      // Update the SW after it's controlling so both an original compatible
+      // controller is found **and** and update is found. We need to assert
+      // that the `getSW()` method resolves to the correct SW in both cases.
+      await updateVersion('2.0.0', scriptURL);
+
+      const wb = new Workbox(scriptURL);
+
+      // Registering using the same script URL that's already active won't
+      // trigger an update.
+      const regPromise = wb.register();
+
+      const controllingSW = await wb.getSW();
+      expect(controllingSW).to.equal(navigator.serviceWorker.controller);
+
+      const reg = await regPromise;
+
+      // Force an update check.
+      reg.update();
+
+      await nextEvent(wb, 'controlling');
+
+      const installedSW = await wb.getSW();
+      expect(installedSW).to.equal(reg.active);
+      expect(installedSW).to.not.equal(controllingSW);
+    });
   });
 
   describe(`messageSW`, function() {
