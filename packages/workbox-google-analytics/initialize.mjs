@@ -94,7 +94,7 @@ const createOnSyncCallback = (config) => {
           logger.log(`Request for '${getFriendlyURL(url.href)}'` +
              `failed to replay, putting it back in the queue.`);
         }
-        return;
+        throw err;
       }
     }
     if (process.env.NODE_ENV !== 'production') {

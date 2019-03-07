@@ -52,6 +52,20 @@ self.addEventListener('message', (evt) => {
     case 'get-spied-requests':
       evt.ports[0].postMessage(spiedRequests);
       break;
+    case 'dispatch-sync-event':
+    {
+      // Override `.waitUntil` so we can signal when the sync is done.
+      const originalSyncEventWaitUntil = SyncEvent.prototype.waitUntil;
+      SyncEvent.prototype.waitUntil = (promise) => {
+        return promise.then(() => evt.ports[0].postMessage(null));
+      };
+
+      self.dispatchEvent(new SyncEvent('sync', {
+        tag: 'workbox-background-sync:workbox-google-analytics',
+      }));
+      SyncEvent.prototype.waitUntil = originalSyncEventWaitUntil;
+      break;
+    }
   }
 });
 

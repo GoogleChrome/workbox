@@ -7,6 +7,7 @@
 */
 
 import {expect} from 'chai';
+import {reset as iDBReset} from 'shelving-mock-indexeddb';
 import sinon from 'sinon';
 import expectError from '../../../infra/testing/expectError';
 import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
@@ -21,45 +22,52 @@ const getObjectStoreEntries = async () => {
 };
 
 const createSyncEventStub = (tag) => {
-  const event = new SyncEvent('sync', {tag});
+  const ret = {
+    event: new SyncEvent('sync', {tag}),
+    // Default to resolving in the next microtask.
+    done: Promise.resolve(),
 
-  // Default to resolving in the next microtask.
-  let done = Promise.resolve();
+  };
 
   // Browsers will throw if code tries to call `waitUntil()` on a user-created
   // sync event, so we have to stub it.
-  event.waitUntil = (promise) => {
+  ret.event.waitUntil = (promise) => {
     // If `waitUntil` is called, defer `done` until after it resolves.
     if (promise) {
-      done = promise.then(done);
+      // Catch failures since all we care about is finished.
+      ret.done = promise.catch(() => undefined).then(ret.done);
     }
   };
 
-  return {event, done};
+  return ret;
 };
 
-const clearIndexedDBEntries = async () => {
-  // Open a conection to the database (at whatever version exists) and
-  // clear out all object stores. This strategy is used because deleting
-  // databases inside service worker is flaky in FF and Safari.
-  // TODO(philipwalton): the version is not needed in real browsers, so it
-  // can be removed when we move away from running tests in node.
-  const db = await new DBWrapper('workbox-background-sync', 3).open();
+// TODO(philipwalton): uncomment once we move away from the IDB mocks.
+// const clearIndexedDBEntries = async () => {
+//   // Open a conection to the database (at whatever version exists) and
+//   // clear out all object stores. This strategy is used because deleting
+//   // databases inside service worker is flaky in FF and Safari.
+//   // TODO(philipwalton): the version is not needed in real browsers, so it
+//   // can be removed when we move away from running tests in node.
+//   const db = await new DBWrapper('workbox-background-sync').open();
 
-  // Edge cannot convert a DOMStringList to an array via `[...list]`.
-  for (const store of Array.from(db.db.objectStoreNames)) {
-    await db.clear(store);
-  }
-  await db.close();
-};
-
+//   // Edge cannot convert a DOMStringList to an array via `[...list]`.
+//   for (const store of Array.from(db.db.objectStoreNames)) {
+//     await db.clear(store);
+//   }
+//   await db.close();
+// };
 
 describe(`Queue`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     Queue._queueNames.clear();
-    await clearIndexedDBEntries();
+
+    // TODO(philipwalton): remove `iDBReset()` and re-add
+    // `clearIndexedDBEntries()` once we move away from the mocks.
+    // await clearIndexedDBEntries();
+    iDBReset();
 
     // Don't actually register for a sync event in any test, as it could
     // make the tests non-deterministic.
@@ -90,7 +98,7 @@ describe(`Queue`, function() {
       }).not.to.throw();
     });
 
-    it(`adds a sync event listener runs the onSync function when a sync event is dispatched`, async function() {
+    it(`adds a sync event listener that runs the onSync function when a sync event is dispatched`, async function() {
       sandbox.spy(self, 'addEventListener');
       const onSync = sandbox.spy();
 
@@ -134,6 +142,58 @@ describe(`Queue`, function() {
       expect(Queue.prototype.replayRequests.callCount).to.equal(1);
       expect(Queue.prototype.replayRequests.firstCall.args[0].queue)
           .to.equal(queue);
+    });
+
+    it(`registers a tag if entries were added to the queue during a successful sync`, async function() {
+      const onSync = sandbox.stub().callsFake(async ({queue}) => {
+        await queue.pushRequest({request: new Request('/one')});
+        await queue.pushRequest({request: new Request('/two')});
+        await queue.pushRequest({request: new Request('/three')});
+      });
+
+      const queue = new Queue('foo', {onSync});
+      sandbox.spy(queue, 'registerSync');
+
+      const sync1 = createSyncEventStub('workbox-background-sync:foo');
+      self.dispatchEvent(sync1.event);
+      await sync1.done;
+
+      expect(queue.registerSync.callCount).to.equal(1);
+    });
+
+    it(`doesn't re-register after a sync event fails`, async function() {
+      const onSync = sandbox.stub().callsFake(async ({queue}) => {
+        await queue.pushRequest({request: new Request('/one')});
+        throw new Error('sync failed');
+      });
+
+      const queue = new Queue('foo', {onSync});
+      sandbox.spy(queue, 'registerSync');
+
+      const sync1 = createSyncEventStub('workbox-background-sync:foo');
+      self.dispatchEvent(sync1.event);
+
+      await sync1.done;
+
+      expect(queue.registerSync.callCount).to.equal(0);
+    });
+
+    it(`re-registers a tag after a sync event fails if event.lastChance is true`, async function() {
+      const onSync = sandbox.stub().callsFake(async ({queue}) => {
+        await queue.pushRequest({request: new Request('/one')});
+        throw new Error('sync failed');
+      });
+
+      const queue = new Queue('foo', {onSync});
+      sandbox.spy(queue, 'registerSync');
+
+      const sync1 = createSyncEventStub('workbox-background-sync:foo');
+      sync1.event.lastChance = true;
+      self.dispatchEvent(sync1.event);
+
+      await sync1.done;
+
+      expect(queue.registerSync.callCount).to.equal(1);
     });
 
     it(`tries to run the sync logic on instantiation in browsers that don't support the sync event`, async function() {
