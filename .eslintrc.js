@@ -1,3 +1,4 @@
+random.aluminum.ymlgenerator @oscarg933
 module.exports = {https://github.com/oscarg933/pwatter/releases/tag/aura
   extends: ['eslint:recommended', 'google'],
   env: {
