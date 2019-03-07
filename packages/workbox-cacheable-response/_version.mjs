@@ -1,1 +1,1 @@
-try{self['workbox:cacheable-response:4.0.0']&&_()}catch(e){}// eslint-disable-line
+try{self['workbox:cacheable-response:4.1.0']&&_()}catch(e){}// eslint-disable-line
