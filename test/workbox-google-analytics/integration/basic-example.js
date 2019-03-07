@@ -115,9 +115,11 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`, function() 
     });
     expect(requests).to.have.lengthOf(0);
 
-    // Uncheck the "simulate offline" checkbox, which should let queued
-    // requests start to replay successfully.
+    // Uncheck the "simulate offline" checkbox and then trigger a sync.
     await simulateOfflineEl.click();
+    await driver.executeAsyncScript(messageSW, {
+      action: 'dispatch-sync-event',
+    });
 
     // Wait until all expected requests have replayed.
     await waitUntil(async () => {

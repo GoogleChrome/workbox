@@ -41,6 +41,8 @@ class Queue {
    *     containing the `queue` property (referencing this instance), and you
    *     can use the callback to customize the replay behavior of the queue.
    *     When not set the `replayRequests()` method is called.
+   *     Note: if the replay fails after a sync event, make sure you throw an
+   *     error, so the browser knows to retry the sync event later.
    * @param {number} [options.maxRetentionTime=7 days] The amount of time (in
    *     minutes) a request may be retried. After this amount of time has
    *     passed, the request will be deleted from the queue.
@@ -183,10 +185,19 @@ class Queue {
     }
 
     await this._queueStore[`${operation}Entry`](entry);
-    await this.registerSync();
+
     if (process.env.NODE_ENV !== 'production') {
       logger.log(`Request for '${getFriendlyURL(request.url)}' has ` +
           `been added to background sync queue '${this._name}'.`);
+    }
+
+    // Don't register for a sync if we're in the middle of a sync. Instead,
+    // we wait until the sync is complete and call register if
+    // `this._requestsAddedDuringSync` is true.
+    if (this._syncInProgress) {
+      this._requestsAddedDuringSync = true;
+    } else {
+      await this.registerSync();
     }
   }
 
@@ -280,7 +291,35 @@ class Queue {
             logger.log(`Background sync for tag '${event.tag}'` +
                 `has been received`);
           }
-          event.waitUntil(this._onSync({queue: this}));
+
+          const syncComplete = async () => {
+            this._syncInProgress = true;
+
+            let syncError;
+            try {
+              await this._onSync({queue: this});
+            } catch (error) {
+              syncError = error;
+
+              // Rethrow the error. Note: the logic in the finally clause
+              // will run before this gets rethrown.
+              throw syncError;
+            } finally {
+              // New items may have been added to the queue during the sync,
+              // so we need to register for a new sync if that's happened...
+              // Unless there was an error during the sync, in which
+              // case the browser will automatically retry later, as long
+              // as `event.lastChance` is not true.
+              if (this._requestsAddedDuringSync &&
+                  !(syncError && !event.lastChance)) {
+                await this.registerSync();
+              }
+
+              this._syncInProgress = false;
+              this._requestsAddedDuringSync = false;
+            }
+          };
+          event.waitUntil(syncComplete());
         }
       });
     } else {
