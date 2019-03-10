@@ -10,8 +10,8 @@ import './_version.mjs';
 
 
 /**
- * Sends a data object to a service worker via `postMessage` and resolves
- * and resolves with a response (if any).
+ * Sends a data object to a service worker via `postMessage` and resolves with
+ * a response (if any).
  *
  * A response can be set in a message handler in the service worker by
  * calling `event.ports[0].postMessage(...)`, which will resolve the promise
