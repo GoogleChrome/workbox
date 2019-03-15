@@ -36,7 +36,7 @@ class EventTargetShim {
    * @param {Function} listener
    */
   removeEventListener(type, listener) {
-    this._getEventListenersByType(type).remove(listener);
+    this._getEventListenersByType(type).delete(listener);
   }
 
   /**
