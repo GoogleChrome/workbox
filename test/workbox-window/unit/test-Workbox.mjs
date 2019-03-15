@@ -868,5 +868,30 @@ describe(`[workbox-window] Workbox`, function() {
         expect(externalActivated2Spy.callCount).to.equal(0);
       });
     });
+
+    describe(`removeEventListener()`, function() {
+      it(`will register and then unregister event listeners of a given type`, function() {
+        const eventType = 'testEventType';
+        const event = {type: eventType};
+        const eventListener1 = sandbox.stub();
+        const eventListener2 = sandbox.stub();
+
+        const wb = new Workbox(uniq('sw-clients-claim.tmp.js'));
+        wb.addEventListener(eventType, eventListener1);
+        wb.addEventListener(eventType, eventListener2);
+
+        wb.dispatchEvent(event);
+        expect(eventListener1.calledOnceWith(event)).to.be.true;
+        expect(eventListener2.calledOnceWith(event)).to.be.true;
+
+        wb.removeEventListener(eventType, eventListener2);
+        wb.dispatchEvent(event);
+
+        // The remaining stub should be called again.
+        expect(eventListener1.calledTwice).to.be.true;
+        // Make sure the removed stub was called only once.
+        expect(eventListener2.calledOnce).to.be.true;
+      });
+    });
   });
 });
