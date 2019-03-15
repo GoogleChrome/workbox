@@ -384,7 +384,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(sw).to.equal(reg.installing);
     });
 
-    it(`resolves before updating if a SW with the same script URL is already active`, async function() {
+    it(`resolves before updating if a SW with the same script URL is already controlling`, async function() {
       const scriptURL = navigator.serviceWorker.controller.scriptURL;
       const wb = new Workbox(scriptURL);
 
@@ -396,7 +396,31 @@ describe(`[workbox-window] Workbox`, function() {
       expect(sw).to.equal(navigator.serviceWorker.controller);
     });
 
-    it(`resolves as soon as an an update is found (if no active SW exists)`, async function() {
+    it(`resolves before updating if a SW with the same script URL is already waiting to install`, async function() {
+      const scriptURL = uniq('sw-no-skip-waiting.tmp.js');
+
+      const wb1 = new Workbox(scriptURL);
+      const reg1 = await wb1.register();
+
+      await nextEvent(wb1, 'waiting');
+      expect(reg1.waiting.scriptURL).to.equal(scriptURL);
+
+      // Stub the controlling SW's scriptURL so it matches the SW that is
+      // about to be waiting. This is done to assert that if a matching
+      // controller *and* waiting SW are found at registration time, the
+      // `getSW()` method resolves to the waiting SW.
+      sandbox.stub(navigator.serviceWorker.controller, 'scriptURL')
+          .value(scriptURL);
+
+      const wb2 = new Workbox(scriptURL);
+      const reg2Promise = wb2.register();
+
+      const sw = await wb2.getSW();
+      const reg2 = await reg2Promise;
+      expect(sw).to.equal(reg2.waiting);
+    });
+
+    it(`resolves as soon as an an update is found (if not already resolved)`, async function() {
       const wb = new Workbox(uniq('sw-clients-claim.tmp.js'));
       wb.register();
 
