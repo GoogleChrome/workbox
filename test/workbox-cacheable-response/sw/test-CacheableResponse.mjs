@@ -6,13 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
+import {CacheableResponse} from 'workbox-cacheable-response/CacheableResponse.mjs';
 
-import {CacheableResponse} from '../../../packages/workbox-cacheable-response/CacheableResponse.mjs';
-import expectError from '../../../infra/testing/expectError';
-import {devOnly} from '../../../infra/testing/env-it';
 
-describe(`[workbox-cacheable-response] CacheableResponse`, function() {
+describe(`CacheableResponse`, function() {
   const VALID_STATUS = 418;
   const INVALID_STATUS = 500;
   const VALID_STATUSES = [VALID_STATUS];
@@ -21,7 +18,9 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
   };
 
   describe(`constructor`, function() {
-    devOnly.it(`should throw with no config`, async function() {
+    it(`should throw with no config`, async function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       await expectError(() => {
         new CacheableResponse();
       }, 'statuses-or-headers-required', (err) => {
@@ -31,7 +30,9 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
       });
     });
 
-    devOnly.it(`should throw with bad config.statuses`, async function() {
+    it(`should throw with bad config.statuses`, async function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       await expectError(() => {
         new CacheableResponse({statuses: 'bad input'});
       }, 'not-an-array', (err) => {
@@ -42,7 +43,9 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
       });
     });
 
-    devOnly.it(`should throw with bad config.headers`, async function() {
+    it(`should throw with bad config.headers`, async function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       await expectError(() => {
         new CacheableResponse({headers: 'bad input'});
       }, 'incorrect-type', (err) => {
@@ -77,7 +80,9 @@ describe(`[workbox-cacheable-response] CacheableResponse`, function() {
   });
 
   describe(`isResponseCacheable`, function() {
-    devOnly.it(`should throw when passed bad input`, async function() {
+    it(`should throw when passed bad input`, async function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       const cacheableResponse = new CacheableResponse({statuses: VALID_STATUSES});
       await expectError(() => {
         cacheableResponse.isResponseCacheable(null);
