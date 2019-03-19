@@ -105,7 +105,11 @@ class BroadcastCacheUpdate {
           }
           await this._windowReadyOrTimeout(event);
         }
-        await broadcastUpdate({channel: this._getChannel(), cacheName, url});
+        await this._broadcastUpdate({
+          channel: this._getChannel(),
+          cacheName,
+          url,
+        });
       };
 
       // Send the update and ensure the SW stays alive until it's sent.
@@ -124,6 +128,17 @@ class BroadcastCacheUpdate {
       }
       return done;
     }
+  }
+
+  /**
+   * NOTE: this is exposed on the instance primarily so it can be spied on
+   * in tests.
+   *
+   * @param {Object} opts
+   * @private
+   */
+  async _broadcastUpdate(opts) {
+    await broadcastUpdate(opts);
   }
 
   /**

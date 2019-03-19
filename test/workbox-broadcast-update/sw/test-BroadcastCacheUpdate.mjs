@@ -6,22 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import * as sinon from 'sinon';
-
-import waitUntil from '../../../infra/testing/wait-until';
-
-import {Deferred} from '../../../packages/workbox-core/_private/Deferred.mjs';
-import {BroadcastCacheUpdate} from '../../../packages/workbox-broadcast-update/BroadcastCacheUpdate.mjs';
+import {Deferred} from 'workbox-core/_private/Deferred.mjs';
+import {BroadcastCacheUpdate} from 'workbox-broadcast-update/BroadcastCacheUpdate.mjs';
 import {
   CACHE_UPDATED_MESSAGE_META,
   CACHE_UPDATED_MESSAGE_TYPE,
   DEFAULT_BROADCAST_CHANNEL_NAME,
   DEFAULT_DEFER_NOTIFICATION_TIMEOUT,
   DEFAULT_HEADERS_TO_CHECK,
-} from '../../../packages/workbox-broadcast-update/utils/constants.mjs';
+} from 'workbox-broadcast-update/utils/constants.mjs';
 
-describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
+
+describe(`BroadcastCacheUpdate`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
@@ -103,8 +99,7 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
   describe(`notifyIfUpdated()`, function() {
     it(`should broadcast update if responses are different`, async function() {
       const bcu = new BroadcastCacheUpdate();
-      const channel = bcu._getChannel();
-      sandbox.spy(channel, 'postMessage');
+      sandbox.spy(bcu, '_broadcastUpdate');
 
       await bcu.notifyIfUpdated({
         oldResponse: new Response('', {
@@ -117,21 +112,14 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
         cacheName: 'cache-name',
       });
 
-      expect(channel.postMessage.callCount).to.equal(1);
-      expect(channel.postMessage.args[0][0]).to.deep.equal({
-        type: CACHE_UPDATED_MESSAGE_TYPE,
-        meta: CACHE_UPDATED_MESSAGE_META,
-        payload: {
-          updatedURL: '/',
-          cacheName: 'cache-name',
-        },
-      });
+      expect(bcu._broadcastUpdate.callCount).to.equal(1);
+      expect(bcu._broadcastUpdate.args[0][0].url).to.equal('/');
+      expect(bcu._broadcastUpdate.args[0][0].cacheName).to.equal('cache-name');
     });
 
     it(`should not broadcast update if responses are the same`, async function() {
       const bcu = new BroadcastCacheUpdate();
-      const channel = bcu._getChannel();
-      sandbox.spy(channel, 'postMessage');
+      sandbox.spy(bcu, '_broadcastUpdate');
 
       await bcu.notifyIfUpdated({
         oldResponse: new Response('', {
@@ -144,7 +132,7 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
         cacheName: 'cache-name',
       });
 
-      expect(channel.postMessage.callCount).to.equal(0);
+      expect(bcu._broadcastUpdate.callCount).to.equal(0);
     });
 
     it(`should postMessage window clients in browsers that don't support BroadcastChannel`, async function() {
@@ -223,8 +211,8 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
     it(`should wait to broadcast on navigation requests`, function() {
       const bcu = new BroadcastCacheUpdate();
 
-      sandbox.spy(bcu._getChannel(), 'postMessage');
       sandbox.spy(bcu, '_windowReadyOrTimeout');
+      sandbox.spy(bcu, '_broadcastUpdate');
 
       bcu.notifyIfUpdated({
         oldResponse: new Response('', {
@@ -237,7 +225,7 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
         cacheName: 'cache-name',
       });
 
-      expect(bcu._getChannel().postMessage.callCount).to.equal(1);
+      expect(bcu._broadcastUpdate.callCount).to.equal(1);
       expect(bcu._windowReadyOrTimeout.callCount).to.equal(0);
 
       // Stub a navigation request.
@@ -266,12 +254,14 @@ describe(`[workbox-broadcast-cache-udpate] BroadcastCacheUpdate`, function() {
         self.dispatchEvent(messageEvent);
       }, 0);
 
-      return waitUntil(() => bcu._getChannel().postMessage.callCount === 2);
+      return waitUntil(() => bcu._broadcastUpdate.callCount === 2);
     });
   });
 
   describe(`_getChannel`, function() {
     it(`should not create more than one channel per instance`, function() {
+      if (!('BroadcastChannel' in self)) this.skip();
+
       const channelName = 'channel-name';
       const bcu = new BroadcastCacheUpdate({channelName});
       const broadcastChannel = bcu._getChannel();
