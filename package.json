@@ -105,6 +105,7 @@
     "sinon": "^6.3.4",
     "tempy": "^0.2.1",
     "url-search-params": "^1.1.0",
-    "webpack": "^4.19.1"
+    "webpack": "^4.19.1",
+    "worker-plugin": "^3.1.0"
   }
 }
