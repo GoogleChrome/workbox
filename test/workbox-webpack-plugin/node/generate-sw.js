@@ -8,6 +8,7 @@
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WorkerPlugin = require('worker-plugin');
 const expect = require('chai').expect;
 const fse = require('fs-extra');
 const glob = require('glob');
@@ -1638,6 +1639,53 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
             url: publicPath + 'entry1-4357f117964871c288d9.js',
           }];
           expect(context.self.__precacheManifest).to.eql(expectedEntries);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  describe(`[workbox-webpack-plugin] WASM Code`, function() {
+    // See https://github.com/GoogleChrome/workbox/issues/1916
+    it(`should support projects that bundle WASM code`, function(done) {
+      const indexFilename = 'index.js';
+      const outputDir = tempy.directory();
+      const srcDir = path.join(__dirname, '..', 'static', 'wasm-project');
+      const config = {
+        mode: 'production',
+        entry: {
+          index: path.join(srcDir, indexFilename),
+        },
+        output: {
+          filename: '[name].js',
+          globalObject: 'self',
+          path: outputDir,
+        },
+        plugins: [
+          new WorkerPlugin(),
+          new GenerateSW(),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
+          // Bundling WASM into a Worker seems to lead to different hashes in
+          // different environments. Instead of hardcoding hash checks, just
+          // confirm that we output the expected number of files, which will
+          // only be true if the build was successful.
+          const files = glob.sync(`${outputDir}/*`);
+          expect(files).to.have.length(6);
 
           done();
         } catch (error) {
