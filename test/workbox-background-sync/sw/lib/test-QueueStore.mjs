@@ -6,12 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
 import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
 import {deleteDatabase} from '../../../../packages/workbox-core/_private/deleteDatabase.mjs';
 import {QueueStore} from '../../../../packages/workbox-background-sync/lib/QueueStore.mjs';
 import {StorableRequest} from '../../../../packages/workbox-background-sync/lib/StorableRequest.mjs';
-import expectError from '../../../../infra/testing/expectError';
 
 
 const getObjectStoreEntries = async () => {

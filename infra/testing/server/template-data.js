@@ -9,7 +9,9 @@
 // We have to use a global variable instead of a local variable because
 // at the moment we're using `clear-require` to reset all modules between
 // tests, which means all local variables get reset, but globals persist.
-global.__templateData = {};
+global.__templateData = {
+  ENV: process.env.NODE_ENV,
+};
 
 const get = () => {
   return Object.assign({}, global.__templateData);

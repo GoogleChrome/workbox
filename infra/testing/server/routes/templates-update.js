@@ -8,6 +8,9 @@
 
 const templateData = require('../template-data');
 
+
+// An endpoint to update template data from within tests. Any JSON in the
+// POST body will be merged with the existing template data.
 const match = '/__WORKBOX/updateTemplate';
 
 async function handler(req, res) {

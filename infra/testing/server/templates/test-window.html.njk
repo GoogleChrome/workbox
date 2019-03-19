@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2019 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Workbox Unit Tests</title>
+
+  <!-- Tests can reference the environment, so it needs to be defined.  -->
+  <script>
+    self.process = self.process || {
+      env: {
+        NODE_ENV: '{{ ENV }}',
+      },
+    };
+  </script>
+
+  <link href="/node_modules/mocha/mocha.css" rel="stylesheet">
+  <script src="/node_modules/mocha/mocha.js"></script>
+  <script src="/node_modules/sinon/pkg/sinon.js"></script>
+  <script src="/node_modules/chai/chai.js"></script>
+</head>
+<body>
+  <div id="mocha"></div>
+
+  <script>
+  mocha.ui('bdd');
+  mocha.timeout(5000);
+
+  // Expose chai's expect globally.
+  self.expect = chai.expect;
+
+  self.expectError = async (func, errorName, finalCb) => {
+    let caughtError = null;
+    try {
+      const result = func();
+      if (result && result instanceof Promise) {
+        await result;
+      }
+    } catch (err) {
+      caughtError = err;
+    }
+
+    if (!caughtError) {
+      throw new Error('Expected error to be thrown but function ran correctly.');
+    }
+
+    if (caughtError.constructor.name !== 'WorkboxError') {
+      console.warn(`Unexpected error thrown.`, caughtError);
+    }
+
+    expect(caughtError.constructor.name).to.equal('WorkboxError');
+    expect(caughtError.name).to.equal(errorName);
+
+    if (finalCb) {
+      return finalCb(caughtError);
+    }
+  };
+  </script>
+
+  <script>
+  addEventListener('load', () => {
+    const runner = mocha.run();
+    const reports = [];
+
+    runner.on('fail', (test, err) => {
+      console.error(err.stack);
+
+      const flattenTitles = (test) => {
+        const titles = [test.title];
+        while (test.parent.title){
+          titles.push(test.parent.title);
+          test = test.parent;
+        }
+        return titles.reverse().join(' ');
+      };
+
+      reports.push({
+        name: flattenTitles(test),
+        result: false,
+        message: err.message,
+        stack: err.stack,
+      });
+    });
+
+    runner.on('end', () => {
+      window.mochaResults = runner.stats;
+      window.mochaResults.reports = reports;
+    });
+  }, {once: true});
+  </script>
+
+  {% block tests %}
+    {% for testModule in testModules %}
+      <script type="module" src="{{ testModule }}"></script>
+    {% endfor %}
+  {% endblock %}
+
+</body>
+</html>

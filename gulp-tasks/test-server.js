@@ -31,12 +31,7 @@ const startServer = () => {
   return testServer.start();
 };
 
-gulp.task('test-server:prod', () => {
-  process.env.NODE_ENV = constants.BUILD_TYPES.prod;
-  startServer();
-});
-
 gulp.task('test-server', () => {
-  process.env.NODE_ENV = constants.BUILD_TYPES.dev;
+  process.env.NODE_ENV = process.env.NODE_ENV || constants.BUILD_TYPES.dev;
   startServer();
 });

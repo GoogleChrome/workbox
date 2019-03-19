@@ -6,9 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
 import {StorableRequest} from '../../../../packages/workbox-background-sync/lib/StorableRequest.mjs';
-import expectError from '../../../../infra/testing/expectError';
 
 
 describe(`[workbox-background-sync] StorableRequest`, function() {
