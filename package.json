@@ -107,18 +107,6 @@
     "sinon": "^6.3.4",
     "tempy": "^0.2.1",
     "url-search-params": "^1.1.0",
-    "webpack": "^4.19.1",
-    "workbox-background-sync": "file:./packages/workbox-background-sync",
-    "workbox-core": "file:./packages/workbox-core",
-    "workbox-expiration": "file:./packages/workbox-expiration",
-    "workbox-google-analytics": "file:./packages/workbox-google-analytics",
-    "workbox-navigation-preload": "file:./packages/workbox-navigation-preload",
-    "workbox-precaching": "file:./packages/workbox-precaching",
-    "workbox-range-requests": "file:./packages/workbox-range-requests",
-    "workbox-routing": "file:./packages/workbox-routing",
-    "workbox-strategies": "file:./packages/workbox-strategies",
-    "workbox-streams": "file:./packages/workbox-streams",
-    "workbox-sw": "file:./packages/workbox-sw",
-    "workbox-window": "file:./packages/workbox-window"
+    "webpack": "^4.19.1"
   }
 }

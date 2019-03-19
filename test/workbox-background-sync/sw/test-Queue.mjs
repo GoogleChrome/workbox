@@ -45,8 +45,6 @@ const clearIndexedDBEntries = async () => {
   // Open a conection to the database (at whatever version exists) and
   // clear out all object stores. This strategy is used because deleting
   // databases inside service worker is flaky in FF and Safari.
-  // TODO(philipwalton): the version is not needed in real browsers, so it
-  // can be removed when we move away from running tests in node.
   const db = await new DBWrapper('workbox-background-sync').open();
 
   // Edge cannot convert a DOMStringList to an array via `[...list]`.

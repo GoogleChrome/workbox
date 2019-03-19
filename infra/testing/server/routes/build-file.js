@@ -19,7 +19,7 @@ async function handler(req, res) {
 
 
   let file;
-  if (packageFile.includes( '.')) {
+  if (packageFile.includes('.')) {
     file = path.join(pkgDir, 'build', packageFile);
   } else {
     const pkg = outputFilenameToPkgMap[packageFile];

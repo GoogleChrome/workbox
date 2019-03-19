@@ -49,7 +49,7 @@ mocha.setup({
 
 addEventListener('message', (event) => {
   if (event.data && event.data.type === 'RUN_TESTS') {
-    const testsComplete = new Promise((resolve, reject) => {
+    const testsComplete = new Promise((resolve) => {
       const reports = [];
       const runner = mocha.run();
 
@@ -71,7 +71,7 @@ addEventListener('message', (event) => {
         });
       });
 
-      runner.on('end', async (...args) => {
+      runner.on('end', async () => {
         const results = runner.stats;
         results.reports = reports;
         event.ports[0].postMessage(results);

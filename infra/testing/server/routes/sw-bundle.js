@@ -20,7 +20,11 @@ async function handler(req, res) {
     input: `./test/${req.params.package}/sw/**/test-*.mjs`,
     plugins: [
       multiEntry(),
-      resolve(),
+      resolve({
+        customResolveOptions: {
+          moduleDirectory: 'packages',
+        },
+      }),
       replace({
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       }),

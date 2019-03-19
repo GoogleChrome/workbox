@@ -39,7 +39,7 @@
 
     (async () => {
       // // Randomize the test URL so every test run forces a new SW install.
-      const wb = new Workbox('test-sw-runner.js.njk?v=' + Math.random());
+      const wb = new Workbox('test-sw-runner.js.njk?v={{ uniqueID() }}');
       await wb.register();
 
       self.mochaResults = await wb.messageSW({type: 'RUN_TESTS'});
