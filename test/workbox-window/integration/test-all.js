@@ -6,58 +6,25 @@
   https://opensource.org/licenses/MIT.
 */
 
-
 const {expect} = require('chai');
 const templateData = require('../../../infra/testing/server/template-data');
-const waitUntil = require('../../../infra/testing/wait-until');
 const {executeAsyncAndCatch} = require('../../../infra/testing/webdriver/executeAsyncAndCatch');
 const {getLastWindowHandle} = require('../../../infra/testing/webdriver/getLastWindowHandle');
 const {openNewTab} = require('../../../infra/testing/webdriver/openNewTab');
+const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
 const {unregisterAllSWs} = require('../../../infra/testing/webdriver/unregisterAllSWs');
 const {windowLoaded} = require('../../../infra/testing/webdriver/windowLoaded');
+
 
 // Store local references of these globals.
 const {webdriver, server} = global.__workbox;
 
 const testServerOrigin = server.getAddress();
 const testPath = `${testServerOrigin}/test/workbox-window/static/`;
-const unitTestPath = `${testServerOrigin}/test/workbox-window/unit/`;
 
 describe(`[workbox-window]`, function() {
-  it(`passes all unit tests`, async function() {
-    // Don't retry failed unit tests.
-    this.retries(0);
-
-    await webdriver.get(unitTestPath);
-
-    // In dev mode, stub the environment variables.
-    if (process.env.NODE_ENV !== 'production') {
-      await webdriver.executeScript(() => {
-        self.process = {env: {NODE_ENV: 'dev'}};
-        console.info(self.process);
-      });
-    }
-
-    // Wait until the mocha tests are finished.
-    await waitUntil(async () => {
-      return await webdriver.executeScript(() => self.mochaResults);
-    }, 120, 500); // Retry for 60 seconds.
-
-    const results = await webdriver.executeScript(() => self.mochaResults);
-
-    if (results.failures > 0) {
-      console.log(`\n${results.failures} test failure(s):`);
-
-      for (const report of results.reports) {
-        console.log('');
-        console.log('Name     : ', report.name);
-        console.log('Message  : ', report.message);
-        console.log('Error    : ', report.stack);
-      }
-      console.log('');
-
-      throw new Error('Unit tests failed, see logs above for details');
-    }
+  it(`passes all window unit tests`, async function() {
+    await runUnitTests('/test/workbox-window/window/');
   });
 });
 
@@ -76,7 +43,7 @@ describe(`[workbox-window] Workbox`, function() {
     it(`registers a new service worker`, async function() {
       const result = await executeAsyncAndCatch(async (cb) => {
         try {
-          const wb = new Workbox('sw-clients-claim.tmp.js');
+          const wb = new Workbox('sw-clients-claim.js.njk');
           await wb.register();
 
           const reg = await navigator.serviceWorker.getRegistration();
@@ -88,13 +55,13 @@ describe(`[workbox-window] Workbox`, function() {
         }
       });
 
-      expect(result.scriptURL).to.equal(`${testPath}sw-clients-claim.tmp.js`);
+      expect(result.scriptURL).to.equal(`${testPath}sw-clients-claim.js.njk`);
     });
 
     it(`reports all events for a new SW registration`, async function() {
       const result = await executeAsyncAndCatch(async (cb) => {
         try {
-          const wb = new Workbox('sw-clients-claim.tmp.js');
+          const wb = new Workbox('sw-clients-claim.js.njk');
           await wb.register();
 
           const installedSpy = sinon.spy();
@@ -135,14 +102,14 @@ describe(`[workbox-window] Workbox`, function() {
     it(`reports all events for an updated SW registration`, async function() {
       const result = await executeAsyncAndCatch(async (cb) => {
         try {
-          const wb1 = new Workbox('sw-clients-claim.tmp.js?v=1');
+          const wb1 = new Workbox('sw-clients-claim.js.njk?v=1');
           const redundantSpy = sinon.spy();
           wb1.addEventListener('redundant', redundantSpy);
 
           await wb1.register();
           await wb1.controlling;
 
-          const wb2 = new Workbox('sw-clients-claim.tmp.js?v=2');
+          const wb2 = new Workbox('sw-clients-claim.js.njk?v=2');
           await wb2.register();
 
           const installedSpy = sinon.spy();
@@ -185,7 +152,7 @@ describe(`[workbox-window] Workbox`, function() {
 
       await executeAsyncAndCatch(async (cb) => {
         try {
-          const wb = new Workbox('sw-clients-claim.tmp.js');
+          const wb = new Workbox('sw-clients-claim.js.njk');
           await wb.register();
 
           // Use a global variable so these are accessible to future
@@ -221,7 +188,7 @@ describe(`[workbox-window] Workbox`, function() {
 
       await executeAsyncAndCatch(async (cb) => {
         try {
-          const wb = new Workbox('sw-clients-claim.tmp.js');
+          const wb = new Workbox('sw-clients-claim.js.njk');
           await wb.register();
 
           // Resolve this execution block once the SW has activated.

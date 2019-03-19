@@ -1,0 +1,86 @@
+/*
+  Copyright 2019 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+
+importScripts(
+    '/node_modules/mocha/mocha.js',
+    '/node_modules/chai/chai.js',
+    '/node_modules/sinon/pkg/sinon-no-sourcemaps.js'
+);
+
+self.expect = chai.expect;
+
+self.expectError = async (func, errorName, finalCb) => {
+  let caughtError = null;
+  try {
+    const result = func();
+    if (result && result instanceof Promise) {
+      await result;
+    }
+  } catch (err) {
+    caughtError = err;
+  }
+
+  if (!caughtError) {
+    throw new Error('Expected error to be thrown but function ran correctly.');
+  }
+
+  if (caughtError.constructor.name !== 'WorkboxError') {
+    console.warn(`Unexpected error thrown.`, caughtError);
+  }
+
+  expect(caughtError.constructor.name).to.equal('WorkboxError');
+  expect(caughtError.name).to.equal(errorName);
+
+  if (finalCb) {
+    return finalCb(caughtError);
+  }
+};
+
+mocha.setup({
+  ui: 'bdd',
+  timeout: 5000,
+  reporter: null,
+});
+
+addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'RUN_TESTS') {
+    const testsComplete = new Promise((resolve) => {
+      const reports = [];
+      const runner = mocha.run();
+
+      runner.on('fail', (test, err) => {
+        const flattenTitles = (test) => {
+          const titles = [test.title];
+          while (test.parent.title) {
+            titles.push(test.parent.title);
+            test = test.parent;
+          }
+          return titles.reverse().join(' ');
+        };
+
+        reports.push({
+          name: flattenTitles(test),
+          result: false,
+          message: err.message,
+          stack: err.stack,
+        });
+      });
+
+      runner.on('end', async () => {
+        const results = runner.stats;
+        results.reports = reports;
+        event.ports[0].postMessage(results);
+        resolve(results);
+      });
+    });
+
+    event.waitUntil(testsComplete);
+  }
+});
+
+importScripts('sw-bundle.js');

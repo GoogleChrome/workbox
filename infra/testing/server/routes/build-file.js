@@ -7,35 +7,39 @@
 */
 
 const path = require('path');
-const constants = require('../../../../gulp-tasks/utils/constants');
 const {outputFilenameToPkgMap} = require('../../../../gulp-tasks/utils/output-filename-to-package-map');
 
 
-const ROOT_DIR = path.join(__dirname, '..', '..', '..', '..');
 const match = '/__WORKBOX/buildFile/:packageFile';
 
 async function handler(req, res) {
   const {packageFile} = req.params;
-  const [outputFilename, buildType, extension] = packageFile.split('.', 3);
+  const pkg = outputFilenameToPkgMap[packageFile.split('.')[0]];
+  const pkgDir = path.resolve('packages', pkg.name);
 
-  const pkg = outputFilenameToPkgMap[outputFilename];
-  const packagePath = path.join(ROOT_DIR, 'packages', pkg.name);
-  const buildPath = path.dirname(path.join(packagePath, pkg.main));
 
-  let fileName = path.basename(pkg.workbox.primaryBuild || pkg.main);
+  let file;
+  if (packageFile.includes('.')) {
+    file = path.join(pkgDir, 'build', packageFile);
+  } else {
+    const pkg = outputFilenameToPkgMap[packageFile];
 
-  if (buildType) {
-    fileName = fileName.replace('.prod.', `.${buildType}.`);
-  } else if (process.env.NODE_ENV === constants.BUILD_TYPES.dev) {
-    fileName = fileName.replace('.prod.', '.dev.');
+    // If the pkg.module references something in the build directory, use
+    // that, otherwise use pkg.main.
+    if (pkg.module && pkg.module.startsWith('build/')) {
+      file = path.join(pkgDir, pkg.module);
+    } else {
+      file = path.join(pkgDir, pkg.main);
+    }
+
+    // When not specifying a dev or prod build via the filename,
+    // we default to the value of NODE_ENV.
+    if (process.env.NODE_ENV !== 'production') {
+      file = file.replace('.prod.', '.dev.');
+    }
   }
 
-  if (extension) {
-    fileName = fileName.replace(/\.m?js$/, `.${extension}`);
-  }
-
-  const filePath = path.resolve(__dirname, buildPath, fileName);
-  res.sendFile(filePath);
+  res.sendFile(file);
 }
 
 module.exports = {

@@ -158,7 +158,9 @@ export class QueueStore {
     const db = event.target.result;
 
     if (event.oldVersion > 0 && event.oldVersion < DB_VERSION) {
-      db.deleteObjectStore(OBJECT_STORE_NAME);
+      if (db.objectStoreNames.contains(OBJECT_STORE_NAME)) {
+        db.deleteObjectStore(OBJECT_STORE_NAME);
+      }
     }
 
     const objStore = db.createObjectStore(OBJECT_STORE_NAME, {

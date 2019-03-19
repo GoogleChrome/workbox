@@ -7,30 +7,40 @@
 */
 
 const expect = require('chai').expect;
-
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 const waitUntil = require('../../../infra/testing/wait-until');
+const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
+
+
+// Store local references of these globals.
+const {webdriver, server} = global.__workbox;
+
+describe(`[workbox-background-sync]`, function() {
+  it(`passes all SW unit tests`, async function() {
+    await runUnitTests('/test/workbox-background-sync/sw/');
+  });
+});
 
 describe(`[workbox-background-sync] Load and use Background Sync`, function() {
-  const testServerAddress = global.__workbox.server.getAddress();
+  const testServerAddress = server.getAddress();
   const testingURL = `${testServerAddress}/test/workbox-background-sync/static/basic-example/`;
   const swURL = `${testingURL}sw.js`;
 
   let requestCounter;
   beforeEach(function() {
-    requestCounter = global.__workbox.server.startCountingRequests();
+    requestCounter = server.startCountingRequests();
   });
   afterEach(function() {
-    global.__workbox.server.stopCountingRequests(requestCounter);
+    server.stopCountingRequests(requestCounter);
   });
 
   it(`should load a page with service worker`, async function() {
     // Load the page and wait for the first service worker to register and activate.
-    await global.__workbox.webdriver.get(testingURL);
+    await webdriver.get(testingURL);
     await activateAndControlSW(swURL);
 
     const url = `/test/workbox-background-sync/static/basic-example/example.txt`;
-    const err = await global.__workbox.webdriver.executeAsyncScript((url, cb) => {
+    const err = await webdriver.executeAsyncScript((url, cb) => {
       return fetch(url).then(() => cb()).catch((err) => cb(err.message));
     }, url);
 

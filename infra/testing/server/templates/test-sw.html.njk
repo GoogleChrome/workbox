@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!--
+  Copyright 2019 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Workbox SW Unit Tests</title>
+  <style>
+    body {
+      font: 1em/1.4 sans-serif;
+      margin: 1em;
+    }
+    #results {
+      color: hsl(150, 100%, 40%);
+      font-size: 1.33em;
+    }
+  </style>
+</head>
+<body>
+  <h2>Service Worker Test Runner</h2>
+  <p>Running tests for the following modules:</p>
+  <ul>
+    {% block tests %}
+      {% for testModule in testModules %}
+        <li><code>{{ testModule }}"</code></li>
+      {% endfor %}
+    {% endblock %}
+  </ul>
+  <p>Open the console to see progress...</p>
+  <p><strong id="results"></strong></p>
+
+  <script type="module">
+    import {Workbox} from '/__WORKBOX/buildFile/workbox-window';
+
+    (async () => {
+      // // Randomize the test URL so every test run forces a new SW install.
+      const wb = new Workbox('test-sw-runner.js.njk?v={{ uniqueID() }}');
+      await wb.register();
+
+      self.mochaResults = await wb.messageSW({type: 'RUN_TESTS'});
+      if (self.mochaResults.failures === 0) {
+        const styles = [
+          `color: hsl(150, 100%, 40%)`,
+          `font-weight: bold`,
+          `font-size: 1.5em`,
+          `padding: .25em 0`,
+        ];
+        console.log('%cAll TESTS PASS!', styles.join(';'));
+        document.getElementById('results').textContent = 'ALL TESTS PASS!';
+      }
+    })();
+  </script>
+</body>
+</html>

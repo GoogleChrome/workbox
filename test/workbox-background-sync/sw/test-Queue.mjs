@@ -6,13 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import {reset as iDBReset} from 'shelving-mock-indexeddb';
-import sinon from 'sinon';
-import expectError from '../../../infra/testing/expectError';
-import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
-import {QueueStore} from '../../../packages/workbox-background-sync/lib/QueueStore.mjs';
-import {DBWrapper} from '../../../packages/workbox-core/_private/DBWrapper.mjs';
+import {Queue} from 'workbox-background-sync/Queue.mjs';
+import {QueueStore} from 'workbox-background-sync/lib/QueueStore.mjs';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
 
 
 const MINUTES = 60 * 1000;
@@ -22,11 +19,14 @@ const getObjectStoreEntries = async () => {
 };
 
 const createSyncEventStub = (tag) => {
+  const extendLifetimePromises = [];
+
   const ret = {
     event: new SyncEvent('sync', {tag}),
     // Default to resolving in the next microtask.
-    done: Promise.resolve(),
-
+    get done() {
+      return Promise.all(extendLifetimePromises);
+    },
   };
 
   // Browsers will throw if code tries to call `waitUntil()` on a user-created
@@ -34,40 +34,34 @@ const createSyncEventStub = (tag) => {
   ret.event.waitUntil = (promise) => {
     // If `waitUntil` is called, defer `done` until after it resolves.
     if (promise) {
-      // Catch failures since all we care about is finished.
-      ret.done = promise.catch(() => undefined).then(ret.done);
+      extendLifetimePromises.push(promise.catch((e) => e));
     }
   };
 
   return ret;
 };
 
-// TODO(philipwalton): uncomment once we move away from the IDB mocks.
-// const clearIndexedDBEntries = async () => {
-//   // Open a conection to the database (at whatever version exists) and
-//   // clear out all object stores. This strategy is used because deleting
-//   // databases inside service worker is flaky in FF and Safari.
-//   // TODO(philipwalton): the version is not needed in real browsers, so it
-//   // can be removed when we move away from running tests in node.
-//   const db = await new DBWrapper('workbox-background-sync').open();
+const clearIndexedDBEntries = async () => {
+  // Open a conection to the database (at whatever version exists) and
+  // clear out all object stores. This strategy is used because deleting
+  // databases inside service worker is flaky in FF and Safari.
+  const db = await new DBWrapper('workbox-background-sync').open();
 
-//   // Edge cannot convert a DOMStringList to an array via `[...list]`.
-//   for (const store of Array.from(db.db.objectStoreNames)) {
-//     await db.clear(store);
-//   }
-//   await db.close();
-// };
+  // Edge cannot convert a DOMStringList to an array via `[...list]`.
+  for (const store of Array.from(db.db.objectStoreNames)) {
+    await db.clear(store);
+  }
+  await db.close();
+};
 
 describe(`Queue`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
+    sandbox.restore();
+    sandbox.stub(logger);
     Queue._queueNames.clear();
-
-    // TODO(philipwalton): remove `iDBReset()` and re-add
-    // `clearIndexedDBEntries()` once we move away from the mocks.
-    // await clearIndexedDBEntries();
-    iDBReset();
+    await clearIndexedDBEntries();
 
     // Don't actually register for a sync event in any test, as it could
     // make the tests non-deterministic.
@@ -98,7 +92,9 @@ describe(`Queue`, function() {
       }).not.to.throw();
     });
 
-    it(`adds a sync event listener that runs the onSync function when a sync event is dispatched`, async function() {
+    it(`adds a sync event listener (if supported) that runs the onSync function when a sync event is dispatched`, async function() {
+      if (!('sync' in registration)) this.skip();
+
       sandbox.spy(self, 'addEventListener');
       const onSync = sandbox.spy();
 
@@ -120,7 +116,9 @@ describe(`Queue`, function() {
       expect(onSync.firstCall.args[0].queue).to.equal(queue);
     });
 
-    it(`defaults to calling replayRequests when no onSync function is passed`, async function() {
+    it(`defaults to calling replayRequests (if supported) when no onSync function is passed`, async function() {
+      if (!('sync' in registration)) this.skip();
+
       sandbox.spy(self, 'addEventListener');
 
       const queue = new Queue('foo');
@@ -144,7 +142,9 @@ describe(`Queue`, function() {
           .to.equal(queue);
     });
 
-    it(`registers a tag if entries were added to the queue during a successful sync`, async function() {
+    it(`registers a tag (if supported) if entries were added to the queue during a successful sync`, async function() {
+      if (!('sync' in registration)) this.skip();
+
       const onSync = sandbox.stub().callsFake(async ({queue}) => {
         await queue.pushRequest({request: new Request('/one')});
         await queue.pushRequest({request: new Request('/two')});
@@ -162,6 +162,8 @@ describe(`Queue`, function() {
     });
 
     it(`doesn't re-register after a sync event fails`, async function() {
+      if (!('sync' in registration)) this.skip();
+
       const onSync = sandbox.stub().callsFake(async ({queue}) => {
         await queue.pushRequest({request: new Request('/one')});
         throw new Error('sync failed');
@@ -171,14 +173,16 @@ describe(`Queue`, function() {
       sandbox.spy(queue, 'registerSync');
 
       const sync1 = createSyncEventStub('workbox-background-sync:foo');
-      self.dispatchEvent(sync1.event);
 
+      self.dispatchEvent(sync1.event);
       await sync1.done;
 
       expect(queue.registerSync.callCount).to.equal(0);
     });
 
     it(`re-registers a tag after a sync event fails if event.lastChance is true`, async function() {
+      if (!('sync' in registration)) this.skip();
+
       const onSync = sandbox.stub().callsFake(async ({queue}) => {
         await queue.pushRequest({request: new Request('/one')});
         throw new Error('sync failed');
@@ -188,7 +192,7 @@ describe(`Queue`, function() {
       sandbox.spy(queue, 'registerSync');
 
       const sync1 = createSyncEventStub('workbox-background-sync:foo');
-      sync1.event.lastChance = true;
+      sandbox.stub(sync1.event, 'lastChance').value(true);
       self.dispatchEvent(sync1.event);
 
       await sync1.done;
@@ -196,17 +200,15 @@ describe(`Queue`, function() {
       expect(queue.registerSync.callCount).to.equal(1);
     });
 
-    it(`tries to run the sync logic on instantiation in browsers that don't support the sync event`, async function() {
-      // Delete the SyncManager interface to mock a non-supporting browser.
-      const originalSyncManager = registration.sync;
-      delete registration.sync;
-
+    it(`tries to run the sync logic on instantiation iff the browser doesn't support Background Sync`, async function() {
       const onSync = sandbox.spy();
-
       new Queue('foo', {onSync});
-      registration.sync = originalSyncManager;
 
-      expect(onSync.calledOnce).to.be.true;
+      if ('sync' in registration) {
+        expect(onSync.calledOnce).to.be.false;
+      } else {
+        expect(onSync.calledOnce).to.be.true;
+      }
     });
   });
 
@@ -274,14 +276,13 @@ describe(`Queue`, function() {
     });
 
     it(`should register to receive sync events for a unique tag`, async function() {
-      sandbox.stub(self.registration, 'sync').value({
-        register: sinon.stub().resolves(),
-      });
+      if (!('sync' in registration)) this.skip();
 
       const queue = new Queue('foo');
 
       await queue.pushRequest({request: new Request('/')});
 
+      // self.registration.sync.register is stubbed in `beforeEach()`.
       expect(self.registration.sync.register.calledOnce).to.be.true;
       expect(self.registration.sync.register.calledWith(
           'workbox-background-sync:foo')).to.be.true;
@@ -350,14 +351,13 @@ describe(`Queue`, function() {
     });
 
     it(`should register to receive sync events for a unique tag`, async function() {
-      sandbox.stub(self.registration, 'sync').value({
-        register: sinon.stub().resolves(),
-      });
+      if (!('sync' in registration)) this.skip();
 
       const queue = new Queue('foo');
 
       await queue.unshiftRequest({request: new Request('/')});
 
+      // self.registration.sync.register is stubbed in `beforeEach()`.
       expect(self.registration.sync.register.calledOnce).to.be.true;
       expect(self.registration.sync.register.calledWith(
           'workbox-background-sync:foo')).to.be.true;
