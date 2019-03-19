@@ -6,19 +6,17 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-
-import {devOnly} from '../../../infra/testing/env-it';
-import expectError from '../../../infra/testing/expectError';
-
 import {responsesAreSame} from '../../../packages/workbox-broadcast-update/responsesAreSame.mjs';
 
-describe(`[workbox-broadcast-update] responsesAreSame`, function() {
+
+describe(`responsesAreSame`, function() {
   const firstHeaderName = 'x-first-header';
   const secondHeaderName = 'x-second-header';
   const headersToCheck = [firstHeaderName, secondHeaderName];
 
-  devOnly.it(`should throw when responsesAreSame() is called without any parameters`, function() {
+  it(`should throw when responsesAreSame() is called without any parameters`, function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     return expectError(() => {
       responsesAreSame();
     }, 'invalid-responses-are-same-args');

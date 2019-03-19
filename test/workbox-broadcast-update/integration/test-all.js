@@ -7,20 +7,30 @@
 */
 
 const expect = require('chai').expect;
-
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
+const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
 
-describe(`broadcastUpdate.Plugin`, function() {
-  const testServerAddress = global.__workbox.server.getAddress();
+
+// Store local references of these globals.
+const {webdriver, server} = global.__workbox;
+
+describe(`[workbox-broadcast-update]`, function() {
+  it(`passes all SW unit tests`, async function() {
+    await runUnitTests('/test/workbox-broadcast-update/sw/');
+  });
+});
+
+describe(`[workbox-broadcast-update] Plugin`, function() {
+  const testServerAddress = server.getAddress();
   const testingURL = `${testServerAddress}/test/workbox-broadcast-update/static/`;
   const swURL = `${testingURL}sw.js`;
   const apiURL = `${testServerAddress}/__WORKBOX/uniqueETag`;
 
   it(`should broadcast a message on the expected channel when there's a cache update`, async function() {
-    await global.__workbox.webdriver.get(testingURL);
+    await webdriver.get(testingURL);
     await activateAndControlSW(swURL);
 
-    const supported = await global.__workbox.webdriver.executeScript(() => {
+    const supported = await webdriver.executeScript(() => {
       return 'BroadcastChannel' in window;
     });
 
@@ -29,7 +39,7 @@ describe(`broadcastUpdate.Plugin`, function() {
       return;
     }
 
-    const err = await global.__workbox.webdriver.executeAsyncScript((apiURL, cb) => {
+    const err = await webdriver.executeAsyncScript((apiURL, cb) => {
       // There's already a cached entry for apiURL created by the
       // service worker's install handler.
       fetch(apiURL)
@@ -39,13 +49,13 @@ describe(`broadcastUpdate.Plugin`, function() {
 
     expect(err).to.not.exist;
 
-    await global.__workbox.webdriver.wait(() => {
-      return global.__workbox.webdriver.executeScript(() => {
+    await webdriver.wait(() => {
+      return webdriver.executeScript(() => {
         return typeof window.__test.message !== 'undefined';
       });
     });
 
-    const updateMessageEventData = await global.__workbox.webdriver.executeScript(() => {
+    const updateMessageEventData = await webdriver.executeScript(() => {
       return window.__test.message;
     });
 

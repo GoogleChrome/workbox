@@ -6,15 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import * as sinon from 'sinon';
-import {expect} from 'chai';
-
-import expectError from '../../../infra/testing/expectError';
-import {devOnly} from '../../../infra/testing/env-it';
-
 import {Plugin} from '../../../packages/workbox-broadcast-update/Plugin.mjs';
 
-describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
+
+describe(`Plugin`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
@@ -26,7 +21,9 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
   });
 
   describe(`cacheDidUpdate`, function() {
-    devOnly.it(`should throw when called and cacheName is missing`, function() {
+    it(`should throw when called and cacheName is missing`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       return expectError(() => {
         const bcuPlugin = new Plugin();
         const oldResponse = new Response();
@@ -35,7 +32,9 @@ describe(`[workbox-broadcast-cache-udpate] Plugin`, function() {
       }, 'incorrect-type');
     });
 
-    devOnly.it(`should throw when called and newResponse is missing`, function() {
+    it(`should throw when called and newResponse is missing`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       return expectError(() => {
         const bcuPlugin = new Plugin();
         const cacheName = 'cache-name';

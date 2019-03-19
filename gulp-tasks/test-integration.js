@@ -69,6 +69,7 @@ const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
     // Use a whitelist while we're migrating node tests to browser tests.
     let testMatcher;
     if (testPath.includes('workbox-background-sync') ||
+        testPath.includes('workbox-broadcast-update') ||
         testPath.includes('workbox-window')) {
       testMatcher = 'test-*.js';
     } else {

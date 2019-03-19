@@ -42,6 +42,7 @@ module.exports = {
     },
     globals: {
       expectError: false,
+      waitUntil: false,
     },
     rules: {
       'max-len': 0,

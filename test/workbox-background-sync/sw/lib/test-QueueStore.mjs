@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
-import {deleteDatabase} from '../../../../packages/workbox-core/_private/deleteDatabase.mjs';
-import {QueueStore} from '../../../../packages/workbox-background-sync/lib/QueueStore.mjs';
-import {StorableRequest} from '../../../../packages/workbox-background-sync/lib/StorableRequest.mjs';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
+import {deleteDatabase} from 'workbox-core/_private/deleteDatabase.mjs';
+import {QueueStore} from 'workbox-background-sync/lib/QueueStore.mjs';
+import {StorableRequest} from 'workbox-background-sync/lib/StorableRequest.mjs';
 
 
 const getObjectStoreEntries = async () => {
