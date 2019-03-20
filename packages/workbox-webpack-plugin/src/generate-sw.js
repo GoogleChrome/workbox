@@ -62,9 +62,7 @@ class GenerateSW {
     const entries = getManifestEntriesFromCompilation(compilation, this.config);
     const importScriptsArray = [].concat(this.config.importScripts);
 
-    const sortedEntries = entries.sort((a, b) =>
-        a.url === b.url ? 0 : (a.url > b.url ? 1 : -1));
-    const manifestString = stringifyManifest(sortedEntries);
+    const manifestString = stringifyManifest(entries);
     const manifestAsset = convertStringToAsset(manifestString);
     const manifestHash = getAssetHash(manifestAsset);
 
