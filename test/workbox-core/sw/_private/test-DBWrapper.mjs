@@ -6,36 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
-import {DBWrapper} from '../../../../packages/workbox-core/_private/DBWrapper.mjs';
-import {deleteDatabase} from '../../../../packages/workbox-core/_private/deleteDatabase.mjs';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
+import {deleteDatabase} from 'workbox-core/_private/deleteDatabase.mjs';
 
 
 const catchAsyncError = async (promiseOrFn) => {
-  // Hack alert! Since Mocha will fail any test if it sees an uncaughtException,
-  // we have to remove all listeners added to the process if we want to test
-  // that an uncaughtException is thrown.
-  const listeners = process.listeners('uncaughtException');
-  process.removeAllListeners('uncaughtException');
-
-  const uncaughtExceptionPromise = new Promise((resolve, reject) => {
-    process.once('uncaughtException', (error) => reject(error));
-  });
-
-  const asyncErrorPromise = typeof promiseOrFn === 'function' ?
-      promiseOrFn() : promiseOrFn;
-
   try {
-    await Promise.race([uncaughtExceptionPromise, asyncErrorPromise]);
-    return;
-  } catch (error) {
-    return error;
-  } finally {
-    // Re-add the listeners so everything goes back to normal.
-    for (const listener of listeners) {
-      process.on('uncaughtException', listener);
-    }
+    await (typeof promiseOrFn === 'function' ? promiseOrFn() : promiseOrFn);
+    throw new Error('Expected error never thrown');
+  } catch (err) {
+    return err;
   }
 };
 
@@ -129,7 +109,9 @@ describe(`DBWrapper`, function() {
     const db = await new DBWrapper('db', 999).open();
     db.close();
     await deleteDatabase('db');
+  });
 
+  afterEach(function() {
     sandbox.restore();
   });
 
@@ -191,18 +173,18 @@ describe(`DBWrapper`, function() {
             const db = evt.target.result;
             const txn = evt.target.transaction;
 
-            const objStore = txn.objectStore('users');
-            objStore.openCursor().onsuccess = ({target}) => {
+            const oldObjStore = txn.objectStore('users');
+            oldObjStore.openCursor().onsuccess = ({target}) => {
               const cursor = target.result;
               if (cursor) {
                 const firstUser = cursor.value;
                 // Delete the object store and recreate it with new config.
                 db.deleteObjectStore('users');
-                db.createObjectStore('users', {
+                const newObjStore = db.createObjectStore('users', {
                   keyPath: 'id',
                   autoIncrement: true,
                 });
-                objStore.add(firstUser);
+                newObjStore.add(firstUser);
               }
             };
           }

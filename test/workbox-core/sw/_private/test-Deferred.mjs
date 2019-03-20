@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import {Deferred} from '../../../../packages/workbox-core/_private/Deferred.mjs';
+import {Deferred} from 'workbox-core/_private/Deferred.mjs';
 
-describe(`[workbox-core] Deferred`, function() {
+
+describe(`Deferred`, function() {
   describe(`constructor`, function() {
     it(`should create a promise and expose its resolve and reject functions as methods`, function() {
       expect(new Deferred().promise).to.be.an.instanceof(Promise);

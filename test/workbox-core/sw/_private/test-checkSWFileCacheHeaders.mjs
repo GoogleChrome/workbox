@@ -6,18 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
-
-import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
-import {checkSWFileCacheHeaders} from '../../../../packages/workbox-core/_private/checkSWFileCacheHeaders.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {checkSWFileCacheHeaders} from 'workbox-core/_private/checkSWFileCacheHeaders.mjs';
 import {devOnly} from '../../../../infra/testing/env-it';
 
-describe(`workbox-core checkSWFileCacheHeaders`, function() {
-  let sandbox;
 
-  before(function() {
-    sandbox = sinon.createSandbox();
+describe(`checkSWFileCacheHeaders`, function() {
+  let sandbox = sinon.createSandbox();
+
+  beforeEach(function() {
+    if (process.env.NODE_ENV !== 'production') {
+      sandbox.stub(logger);
+    }
   });
 
   afterEach(function() {

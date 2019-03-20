@@ -6,13 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
-import expectError from '../../../../infra/testing/expectError';
+import {assert} from 'workbox-core/_private/assert';
 import {devOnly, prodOnly} from '../../../../infra/testing/env-it';
-import {assert} from '../../../../packages/workbox-core/_private/assert';
 
-describe(`workbox-core  assert`, function() {
+
+describe(`assert`, function() {
   describe(`Production Environment`, function() {
     prodOnly.it(`should return null`, function() {
       expect(assert).to.equal(null);
@@ -30,22 +28,21 @@ describe(`workbox-core  assert`, function() {
     });
 
     devOnly.it(`should throw if ServiceWorkerGlobalScope is not defined`, async function() {
-      const originalServiceWorkerGlobalScope = global.ServiceWorkerGlobalScope;
-      delete global.ServiceWorkerGlobalScope;
+      const originalServiceWorkerGlobalScope = self.ServiceWorkerGlobalScope;
+      delete self.ServiceWorkerGlobalScope;
 
       await expectError(() => assert.isSWEnv('example-module'), 'not-in-sw');
 
-      global.ServiceWorkerGlobalScope = originalServiceWorkerGlobalScope;
+      self.ServiceWorkerGlobalScope = originalServiceWorkerGlobalScope;
     });
 
     devOnly.it(`should return false if self is not an instance of ServiceWorkerGlobalScope`, function() {
-      sandbox.stub(global, 'self').value({});
+      sandbox.stub(self, 'self').value({});
 
       return expectError(() => assert.isSWEnv('example-module'), 'not-in-sw');
     });
 
-    devOnly.it(`should not throw is self is an instance of ServiceWorkerGlobalScope`, function() {
-      sandbox.stub(global, 'self').value(new ServiceWorkerGlobalScope());
+    devOnly.it(`should not throw if self is an instance of ServiceWorkerGlobalScope`, function() {
       assert.isSWEnv('example-module');
     });
   });

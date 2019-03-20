@@ -6,19 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
+import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 
-import expectError from '../../../../infra/testing/expectError';
 
-import {fetchWrapper} from '../../../../packages/workbox-core/_private/fetchWrapper.mjs';
-
-describe(`workbox-core fetchWrapper`, function() {
-  let sandbox;
-
-  before(function() {
-    sandbox = sinon.createSandbox();
-  });
+describe(`fetchWrapper`, function() {
+  let sandbox = sinon.createSandbox();
 
   afterEach(function() {
     sandbox.restore();
@@ -28,7 +20,7 @@ describe(`workbox-core fetchWrapper`, function() {
     // TODO Add Error Case Tests (I.e. bad input)
 
     it(`should work with request string`, async function() {
-      const stub = sandbox.stub(global, 'fetch').callsFake(() => new Response());
+      const stub = sandbox.stub(self, 'fetch').callsFake(() => new Response());
 
       await fetchWrapper.fetch({request: '/test/string'});
 
@@ -38,7 +30,7 @@ describe(`workbox-core fetchWrapper`, function() {
     });
 
     it(`should work with Request instance`, async function() {
-      const stub = sandbox.stub(global, 'fetch').callsFake(() => new Response());
+      const stub = sandbox.stub(self, 'fetch').callsFake(() => new Response());
 
       await fetchWrapper.fetch({request: new Request('/test/request')});
 
@@ -48,7 +40,7 @@ describe(`workbox-core fetchWrapper`, function() {
     });
 
     it(`should use fetchOptions`, async function() {
-      const stub = sandbox.stub(global, 'fetch').callsFake(() => new Response());
+      const stub = sandbox.stub(self, 'fetch').callsFake(() => new Response());
 
       const exampleOptions = {
         method: 'Post',
@@ -71,7 +63,7 @@ describe(`workbox-core fetchWrapper`, function() {
 
     it(`should ignore fetchOptions when request.mode === 'navigate'`, async function() {
       // See https://github.com/GoogleChrome/workbox/issues/1796
-      const fetchStub = sandbox.stub(global, 'fetch').resolves(new Response());
+      const fetchStub = sandbox.stub(self, 'fetch').resolves(new Response());
 
       const fetchOptions = {
         headers: {
@@ -79,9 +71,10 @@ describe(`workbox-core fetchWrapper`, function() {
         },
       };
 
-      const request = new Request('/test/navigateFetchOptions', {
-        mode: 'navigate',
-      });
+      const request = new Request('/test/navigateFetchOptions');
+      // You normally can't generate a navigation request programmatically,
+      // but we can fake it with `Object.defineProperty()` after creation.
+      Object.defineProperty(request, 'mode', {value: 'navigate'});
 
       await fetchWrapper.fetch({
         fetchOptions,
@@ -96,7 +89,7 @@ describe(`workbox-core fetchWrapper`, function() {
     });
 
     it(`should call requestWillFetch method in plugins and use the returned request`, async function() {
-      const fetchStub = sandbox.stub(global, 'fetch').callsFake(() => new Response());
+      const fetchStub = sandbox.stub(self, 'fetch').callsFake(() => new Response());
 
       const stub1 = sandbox.stub().returns(new Request('/test/requestWillFetch/1'));
       const stub2 = sandbox.stub().returns(new Request('/test/requestWillFetch/2'));
@@ -133,7 +126,7 @@ describe(`workbox-core fetchWrapper`, function() {
     });
 
     it(`should throw a meaningful error on bad requestWillFetch plugin`, async function() {
-      const fetchStub = sandbox.stub(global, 'fetch').callsFake(() => new Response());
+      const fetchStub = sandbox.stub(self, 'fetch').callsFake(() => new Response());
       const errorPlugin = {
         requestWillFetch: (request) => {
           throw new Error('Injected Error from Test.');
@@ -156,7 +149,7 @@ describe(`workbox-core fetchWrapper`, function() {
     });
 
     it(`should call fetchDidFail method in plugins`, async function() {
-      sandbox.stub(global, 'fetch').callsFake(() => {
+      sandbox.stub(self, 'fetch').callsFake(() => {
         return Promise.reject(new Error('Injected Error.'));
       });
 
@@ -199,23 +192,23 @@ describe(`workbox-core fetchWrapper`, function() {
 
       expect(firstPlugin.fetchDidFail.callCount).equal(1);
       expect(secondPlugin.fetchDidFail.callCount).equal(1);
-      expect(global.fetch.callCount).to.equal(1);
+      expect(self.fetch.callCount).to.equal(1);
 
-      const fetchRequest = global.fetch.args[0][0];
+      const fetchRequest = self.fetch.args[0][0];
       expect(fetchRequest.url).to.equal(`${location.origin}/test/failingRequest/1`);
     });
 
     it(`should call the fetchDidSucceed method in plugins`, async function() {
       const originalRequest = new Request('/testing');
 
-      sandbox.stub(global, 'fetch').resolves(new Response('', {
+      sandbox.stub(self, 'fetch').resolves(new Response('', {
         headers: {
           'x-count': 1,
         },
       }));
 
       const fetchDidSucceed = sandbox.stub().callsFake(({response}) => {
-        const count = response.headers.get('x-count');
+        const count = Number(response.headers.get('x-count'));
         return new Response('', {
           headers: {
             'x-count': count + 1,
@@ -244,7 +237,7 @@ describe(`workbox-core fetchWrapper`, function() {
       }
 
       const finalCount = finalResponse.headers.get('x-count');
-      expect(finalCount).to.eql(3);
+      expect(finalCount).to.equal('3');
     });
   });
 });

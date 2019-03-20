@@ -6,13 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
+import {logger} from 'workbox-core/_private/logger.mjs';
 import {prodOnly, devOnly} from '../../../../infra/testing/env-it';
-import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
 
 
-describe(`workbox-core logger`, function() {
+describe.skip(`logger`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {

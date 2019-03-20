@@ -6,36 +6,28 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
-import {skipWaiting} from '../../../packages/workbox-core/skipWaiting.mjs';
+import {skipWaiting} from 'workbox-core/skipWaiting.mjs';
 
 
-describe(`[workbox-core] clientsClaim`, function() {
-  let sandbox = sinon.createSandbox();
-
-  beforeEach(function() {
-    sandbox.restore();
-  });
+describe(`skipWaiting`, function() {
+  const sandbox = sinon.createSandbox();
 
   after(function() {
     sandbox.restore();
   });
 
-  describe(`skipWaiting`, function() {
-    it('should add an install event listener that calls skipWaiting', function(done) {
-      const skipWaitingSpy = sandbox.spy(self, 'skipWaiting');
+  it('should add an install event listener that calls skipWaiting', function(done) {
+    const skipWaitingSpy = sandbox.spy(self, 'skipWaiting');
 
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        expect(eventName).to.equal('install');
+    sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+      expect(eventName).to.equal('install');
 
-        cb();
+      cb();
 
-        expect(skipWaitingSpy.callCount).to.equal(1);
-        done();
-      });
-
-      skipWaiting();
+      expect(skipWaitingSpy.callCount).to.equal(1);
+      done();
     });
+
+    skipWaiting();
   });
 });

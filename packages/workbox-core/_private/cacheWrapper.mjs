@@ -64,10 +64,10 @@ const putWrapper = async ({
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    if (responseToCache.method && responseToCache.method !== 'GET') {
+    if (request.method && request.method !== 'GET') {
       throw new WorkboxError('attempt-to-cache-non-get-request', {
         url: getFriendlyURL(request.url),
-        method: responseToCache.method,
+        method: request.method,
       });
     }
   }

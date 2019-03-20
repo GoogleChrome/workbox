@@ -10,6 +10,7 @@ const {rollup} = require('rollup');
 const replace = require('rollup-plugin-replace');
 const resolve = require('rollup-plugin-node-resolve');
 const multiEntry = require('rollup-plugin-multi-entry');
+const commonjs = require('rollup-plugin-commonjs');
 
 
 const match = '/test/:package/*/sw-bundle.js';
@@ -24,6 +25,11 @@ async function handler(req, res) {
         customResolveOptions: {
           moduleDirectory: 'packages',
         },
+      }),
+      // TODO(philipwalton): some of our shared testing helpers use commonjs
+      // so we have to support this for the time being.
+      commonjs({
+        exclude: '*.mjs',
       }),
       replace({
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),

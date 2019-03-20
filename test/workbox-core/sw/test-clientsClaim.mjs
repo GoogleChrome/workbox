@@ -6,36 +6,25 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
-import {clientsClaim} from '../../../packages/workbox-core/clientsClaim.mjs';
+import {clientsClaim} from 'workbox-core/clientsClaim.mjs';
 
 
-describe(`[workbox-core] clientsClaim`, function() {
-  let sandbox = sinon.createSandbox();
+describe(`clientsClaim`, function() {
+  const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  afterEach(function() {
     sandbox.restore();
   });
 
-  after(function() {
-    sandbox.restore();
-  });
+  it('should add an activate event listener that calls clientsClaim', function() {
+    const clientsClaimSpy = sandbox.stub(self.clients, 'claim');
 
-  describe(`clientsClaim`, function() {
-    it('should add an activate event listener that calls clientsClaim', function(done) {
-      const clientsClaimSpy = sandbox.spy(self.clients, 'claim');
-
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        expect(eventName).to.equal('activate');
-
-        cb();
-
-        expect(clientsClaimSpy.callCount).to.equal(1);
-        done();
-      });
-
-      clientsClaim();
+    sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
+      expect(eventName).to.equal('activate');
+      cb();
+      expect(clientsClaimSpy.callCount).to.equal(1);
     });
+
+    clientsClaim();
   });
 });

@@ -6,18 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-
-import expectError from '../../../infra/testing/expectError';
+import {cacheNames} from 'workbox-core/cacheNames.mjs';
+import {setCacheNameDetails} from 'workbox-core/setCacheNameDetails.mjs';
 import generateVariantTests from '../../../infra/testing/generate-variant-tests';
-import {devOnly} from '../../../infra/testing/env-it.js';
-import constants from '../../../gulp-tasks/utils/constants.js';
-
-import {cacheNames} from '../../../packages/workbox-core/cacheNames.mjs';
-import {setCacheNameDetails} from '../../../packages/workbox-core/setCacheNameDetails.mjs';
 
 
-describe(`[workbox-core] cacheNames`, function() {
+describe(`cacheNames`, function() {
   afterEach(function() {
     // TODO(gauntface): there should be a way to get access to the current
     // (or default) prefix and suffix values so they can be restored here.
@@ -32,16 +26,16 @@ describe(`[workbox-core] cacheNames`, function() {
 
   it('should return expected defaults', function() {
     // Scope be default is '/' from 'service-worker-mock'
-    expect(cacheNames.precache).to.equal(`workbox-precache-v2-/`);
-    expect(cacheNames.runtime).to.equal(`workbox-runtime-/`);
+    expect(cacheNames.precache).to.equal(`workbox-precache-v2-${self.registration.scope}`);
+    expect(cacheNames.runtime).to.equal(`workbox-runtime-${self.registration.scope}`);
   });
 
   it('should allow customising the prefix', function() {
     setCacheNameDetails({prefix: 'test-prefix'});
 
     // Scope by default is '/' from 'service-worker-mock'
-    expect(cacheNames.precache).to.equal(`test-prefix-precache-/`);
-    expect(cacheNames.runtime).to.equal(`test-prefix-runtime-/`);
+    expect(cacheNames.precache).to.equal(`test-prefix-precache-${self.registration.scope}`);
+    expect(cacheNames.runtime).to.equal(`test-prefix-runtime-${self.registration.scope}`);
   });
 
   it('should allow customising the suffix', function() {
@@ -57,22 +51,22 @@ describe(`[workbox-core] cacheNames`, function() {
     setCacheNameDetails({precache: 'test-precache'});
 
     // Scope be default is '/' from 'service-worker-mock'
-    expect(cacheNames.precache).to.equal(`workbox-test-precache-/`);
+    expect(cacheNames.precache).to.equal(`workbox-test-precache-${self.registration.scope}`);
   });
 
   it('should allow customising the runtime name', function() {
     setCacheNameDetails({runtime: 'test-runtime'});
 
     // Scope be default is '/' from 'service-worker-mock'
-    expect(cacheNames.precache).to.equal(`workbox-precache-/`);
-    expect(cacheNames.runtime).to.equal(`workbox-test-runtime-/`);
+    expect(cacheNames.precache).to.equal(`workbox-precache-${self.registration.scope}`);
+    expect(cacheNames.runtime).to.equal(`workbox-test-runtime-${self.registration.scope}`);
   });
 
   it('should allow customising the googleAnalytics name', function() {
     setCacheNameDetails({googleAnalytics: 'test-ga'});
 
     // Scope be default is '/' from 'service-worker-mock'
-    expect(cacheNames.googleAnalytics).to.equal(`workbox-test-ga-/`);
+    expect(cacheNames.googleAnalytics).to.equal(`workbox-test-ga-${self.registration.scope}`);
   });
 
   it('should allow customising all', function() {
@@ -105,7 +99,9 @@ describe(`[workbox-core] cacheNames`, function() {
     expect(cacheNames.googleAnalytics).to.equal(`test-ga`);
   });
 
-  devOnly.it('should not allow precache to be an empty string in dev', function() {
+  it('should not allow precache to be an empty string in dev', function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     return expectError(() => {
       setCacheNameDetails({
         precache: '',
@@ -114,7 +110,9 @@ describe(`[workbox-core] cacheNames`, function() {
   });
 
 
-  devOnly.it('should not allow runtime to be an empty string in dev', function() {
+  it('should not allow runtime to be an empty string in dev', function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     return expectError(() => {
       setCacheNameDetails({
         runtime: '',
@@ -122,7 +120,9 @@ describe(`[workbox-core] cacheNames`, function() {
     }, 'invalid-cache-name');
   });
 
-  devOnly.it('should not allow googleAnalytics to be an empty string in dev', function() {
+  it('should not allow googleAnalytics to be an empty string in dev', function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     return expectError(() => {
       setCacheNameDetails({
         googleAnalytics: '',
@@ -139,7 +139,7 @@ describe(`[workbox-core] cacheNames`, function() {
     false,
   ];
   generateVariantTests(`should handle bad prefix values in dev`, badValues, function(variant) {
-    if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     return expectError(() => {
       setCacheNameDetails({
@@ -149,7 +149,7 @@ describe(`[workbox-core] cacheNames`, function() {
   });
 
   generateVariantTests(`should handle bad suffix values in dev`, badValues, function(variant) {
-    if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     return expectError(() => {
       setCacheNameDetails({
@@ -159,7 +159,7 @@ describe(`[workbox-core] cacheNames`, function() {
   });
 
   generateVariantTests(`should handle bad precache values in dev`, badValues, function(variant) {
-    if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     return expectError(() => {
       setCacheNameDetails({
@@ -169,7 +169,7 @@ describe(`[workbox-core] cacheNames`, function() {
   });
 
   generateVariantTests(`should handle bad runtime values in dev`, badValues, function(variant) {
-    if (process.env.NODE_ENV === constants.BUILD_TYPES.prod) return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     return expectError(() => {
       setCacheNameDetails({
@@ -179,7 +179,7 @@ describe(`[workbox-core] cacheNames`, function() {
   });
 
   generateVariantTests(`should not throw in prod`, badValues, function(variant) {
-    if (process.env.NODE_ENV !== constants.BUILD_TYPES.prod) return this.skip();
+    if (process.env.NODE_ENV !== 'production') return this.skip();
 
     setCacheNameDetails({
       prefix: variant,

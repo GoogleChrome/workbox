@@ -6,19 +6,19 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
-
-import expectError from '../../../../infra/testing/expectError';
-import {cacheWrapper} from '../../../../packages/workbox-core/_private/cacheWrapper.mjs';
+import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
+import {registerQuotaErrorCallback} from 'workbox-core/_private/quota.mjs';
 import {devOnly} from '../../../../infra/testing/env-it';
-import {registerQuotaErrorCallback} from '../../../../packages/workbox-core/_private/quota.mjs';
 
-describe(`workbox-core cacheWrapper`, function() {
-  let sandbox;
 
-  before(function() {
-    sandbox = sinon.createSandbox();
+describe(`cacheWrapper`, function() {
+  let sandbox = sinon.createSandbox();
+
+  beforeEach(async function() {
+    const cacheKeys = await caches.keys();
+    for (const cacheKey of cacheKeys) {
+      await caches.delete(cacheKey);
+    }
   });
 
   afterEach(function() {
@@ -30,7 +30,7 @@ describe(`workbox-core cacheWrapper`, function() {
 
     it(`should work with a request and response`, async function() {
       const testCache = await caches.open('TEST-CACHE');
-      const cacheOpenStub = sandbox.stub(global.caches, 'open');
+      const cacheOpenStub = sandbox.stub(self.caches, 'open');
       const cachePutStub = sandbox.stub(testCache, 'put');
       cacheOpenStub.callsFake(async (cacheName) => {
         return testCache;
@@ -59,13 +59,15 @@ describe(`workbox-core cacheWrapper`, function() {
       it(`should not cache response.status of ${status} by default`, async function() {
         const cacheName = 'test-cache';
         const testCache = await caches.open(cacheName);
-        const cacheOpenStub = sandbox.stub(global.caches, 'open').resolves(testCache);
+        const cacheOpenStub = sandbox.stub(self.caches, 'open').resolves(testCache);
         const cachePutSpy = sandbox.spy(testCache, 'put');
 
         const putRequest = new Request('/test/string');
-        const putResponse = new Response('', {
-          status,
-        });
+
+        const putResponse = new Response('');
+        // You normally can't generate a 0 response status programmatically,
+        // but we can fake it with `Object.defineProperty()` after creation.
+        Object.defineProperty(putResponse, 'status', {value: status});
 
         await cacheWrapper.put({
           cacheName,
@@ -78,17 +80,17 @@ describe(`workbox-core cacheWrapper`, function() {
       });
     }
 
-    devOnly.it(`should not cache POST responses`, async function() {
+    devOnly.it(`should not cache POST requests`, async function() {
       const testCache = await caches.open('TEST-CACHE');
-      const cacheOpenStub = sandbox.stub(global.caches, 'open');
+      const cacheOpenStub = sandbox.stub(self.caches, 'open');
       const cachePutStub = sandbox.stub(testCache, 'put');
       cacheOpenStub.callsFake(async (cacheName) => {
         return testCache;
       });
-      const putRequest = new Request('/test/string');
-      const putResponse = new Response('Response for /test/string', {
+      const putRequest = new Request('/test/string', {
         method: 'POST',
       });
+      const putResponse = new Response('Response for /test/string');
 
       await expectError(async () => {
         await cacheWrapper.put({
@@ -111,12 +113,14 @@ describe(`workbox-core cacheWrapper`, function() {
         cacheDidUpdate: () => {},
       };
 
-
       const spyOne = sandbox.spy(firstPlugin, 'cacheDidUpdate');
       const spyTwo = sandbox.spy(secondPlugin, 'cacheDidUpdate');
 
       const putRequest = new Request('/test/string');
-      const putResponse = new Response('Response for /test/string');
+      const putResponse = new Response('Response for /test/string', {
+        headers: {'x-id': '1'},
+      });
+
       await cacheWrapper.put({
         cacheName: 'TODO-CHANGE-ME',
         request: putRequest,
@@ -132,18 +136,19 @@ describe(`workbox-core cacheWrapper`, function() {
 
       [spyOne, spyTwo].forEach((pluginSpy) => {
         expect(pluginSpy.callCount).to.equal(1);
-        expect(pluginSpy.calledWith(sinon.match({
-          cacheName: 'TODO-CHANGE-ME',
-          request: putRequest,
-          oldResponse: null,
-          newResponse: putResponse,
-        }))).to.be.true;
+        expect(pluginSpy.args[0][0].cacheName).to.equal('TODO-CHANGE-ME');
+        expect(pluginSpy.args[0][0].request).to.equal(putRequest);
+        expect(pluginSpy.args[0][0].oldResponse).to.equal(undefined);
+        expect(pluginSpy.args[0][0].newResponse).to.equal(putResponse);
 
         // Reset so the spies are clean for next step in the test.
         pluginSpy.resetHistory();
       });
 
-      const putResponseUpdate = new Response('Response for /test/string number 2');
+      const putResponseUpdate = new Response('Response for /test/string number 2', {
+        headers: {'x-id': '2'},
+      });
+
       await cacheWrapper.put({
         cacheName: 'TODO-CHANGE-ME',
         request: putRequest,
@@ -159,12 +164,10 @@ describe(`workbox-core cacheWrapper`, function() {
 
       [spyOne, spyTwo].forEach((pluginSpy) => {
         expect(pluginSpy.callCount).to.equal(1);
-        expect(pluginSpy.calledWith(sinon.match({
-          cacheName: 'TODO-CHANGE-ME',
-          request: putRequest,
-          oldResponse: putResponse,
-          newResponse: putResponseUpdate,
-        }))).to.be.true;
+        expect(pluginSpy.args[0][0].cacheName).to.equal('TODO-CHANGE-ME');
+        expect(pluginSpy.args[0][0].request).to.equal(putRequest);
+        expect(pluginSpy.args[0][0].oldResponse.headers.get('x-id')).to.equal('1');
+        expect(pluginSpy.args[0][0].newResponse.headers.get('x-id')).to.equal('2');
       });
     });
 
@@ -225,7 +228,7 @@ describe(`workbox-core cacheWrapper`, function() {
 
       const cacheName = 'test-cache';
       const testCache = await caches.open(cacheName);
-      sandbox.stub(global.caches, 'open').returns(Promise.resolve(testCache));
+      sandbox.stub(self.caches, 'open').returns(Promise.resolve(testCache));
       sandbox.stub(testCache, 'put').throws('QuotaExceededError');
 
       try {
@@ -248,7 +251,7 @@ describe(`workbox-core cacheWrapper`, function() {
 
       const cacheName = 'test-cache';
       const testCache = await caches.open(cacheName);
-      sandbox.stub(global.caches, 'open').returns(Promise.resolve(testCache));
+      sandbox.stub(self.caches, 'open').returns(Promise.resolve(testCache));
       sandbox.stub(testCache, 'put').throws('NetworkError');
 
       try {
@@ -273,7 +276,7 @@ describe(`workbox-core cacheWrapper`, function() {
       const cacheName = 'test-cache';
 
       const testCache = await caches.open(cacheName);
-      sandbox.stub(global.caches, 'open').resolves(testCache);
+      sandbox.stub(self.caches, 'open').resolves(testCache);
       const matchSpy = sandbox.spy(testCache, 'match');
 
       await cacheWrapper.put({
@@ -294,10 +297,17 @@ describe(`workbox-core cacheWrapper`, function() {
       const options = {};
       const matchCacheName = 'MATCH-CACHE-NAME';
       const matchRequest = new Request('/test/string');
-      const matchResponse = new Response('Response for /test/string');
+      const matchResponse = new Response('Response for /test/string', {
+        headers: {'x-id': '1'},
+      });
 
-      const firstPluginResponse = new Response('Response for /test/string/1');
-      const secondPluginResponse = new Response('Response for /test/string/2');
+      const firstPluginResponse = new Response('Response for /test/string/1', {
+        headers: {'x-id': '2'},
+      });
+      const secondPluginResponse = new Response('Response for /test/string/2', {
+        headers: {'x-id': '3'},
+      });
+
       const firstPlugin = {
         cachedResponseWillBeUsed: ({
           cacheName,
@@ -308,7 +318,9 @@ describe(`workbox-core cacheWrapper`, function() {
           expect(request).to.equal(matchRequest);
           expect(cacheName).to.equal(matchCacheName);
           expect(matchOptions).to.equal(options);
-          expect(cachedResponse).to.equal(matchResponse);
+          expect(cachedResponse.headers.get('x-id'))
+              .to.equal(matchResponse.headers.get('x-id'));
+
           return firstPluginResponse;
         },
       };
@@ -323,7 +335,8 @@ describe(`workbox-core cacheWrapper`, function() {
           expect(request).to.equal(matchRequest);
           expect(cacheName).to.equal(matchCacheName);
           expect(matchOptions).to.equal(options);
-          expect(cachedResponse).to.equal(firstPluginResponse);
+          expect(cachedResponse.headers.get('x-id'))
+              .to.equal(firstPluginResponse.headers.get('x-id'));
           return secondPluginResponse;
         },
       };
@@ -347,7 +360,8 @@ describe(`workbox-core cacheWrapper`, function() {
         ],
       });
 
-      expect(result).to.equal(secondPluginResponse);
+      expect(result.headers.get('x-id'))
+          .to.equal(secondPluginResponse.headers.get('x-id'));
       expect(spyOne.callCount).to.equal(1);
       expect(spyTwo.callCount).to.equal(1);
     });
