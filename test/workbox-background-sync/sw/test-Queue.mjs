@@ -58,6 +58,7 @@ describe(`Queue`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
+    sandbox.restore();
     if (process.env.NODE_ENV !== 'production') {
       sandbox.stub(logger);
     }
