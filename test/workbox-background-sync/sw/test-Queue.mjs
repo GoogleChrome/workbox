@@ -58,8 +58,9 @@ describe(`Queue`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
-    sandbox.restore();
-    sandbox.stub(logger);
+    if (process.env.NODE_ENV !== 'production') {
+      sandbox.stub(logger);
+    }
     Queue._queueNames.clear();
     await clearIndexedDBEntries();
 

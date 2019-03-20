@@ -112,7 +112,7 @@ describe(`[workbox-window] Workbox`, function() {
     sandbox.spy(console, 'error');
   });
 
-  after(async function() {
+  afterEach(async function() {
     sandbox.restore();
   });
 
