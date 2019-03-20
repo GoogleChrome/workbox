@@ -15,7 +15,8 @@
     "caching",
     "cache",
     "range",
-    "media"
+    "media",
+    "workbox-plugin"
   ],
   "scripts": {
     "build": "gulp build-packages --package workbox-range-requests",
