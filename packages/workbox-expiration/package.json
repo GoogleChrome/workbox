@@ -11,7 +11,8 @@
     "workbox",
     "workboxjs",
     "service worker",
-    "sw"
+    "sw",
+    "workbox-plugin"
   ],
   "scripts": {
     "build": "gulp build-packages --package workbox-expiration",

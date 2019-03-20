@@ -13,7 +13,8 @@
     "service worker",
     "sw",
     "background",
-    "sync"
+    "sync",
+    "workbox-plugin"
   ],
   "scripts": {
     "build": "gulp build-packages --package workbox-background-sync",
