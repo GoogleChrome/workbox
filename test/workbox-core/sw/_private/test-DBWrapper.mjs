@@ -116,7 +116,7 @@ describe(`DBWrapper`, function() {
   });
 
   describe(`constructor`, function() {
-    it('sets instance values from the options', function() {
+    it(`sets instance values from the options`, function() {
       const db = new DBWrapper('db', 1);
 
       expect(db._name).to.equal('db');
@@ -126,7 +126,7 @@ describe(`DBWrapper`, function() {
           DBWrapper.prototype._onversionchange);
     });
 
-    it('lets you specify callbacks', function() {
+    it(`lets you specify callbacks`, function() {
       const onupgradeneeded = () => {};
       const onversionchange = () => {};
 

@@ -8,7 +8,6 @@
 
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {registerQuotaErrorCallback} from 'workbox-core/_private/quota.mjs';
-import {devOnly} from '../../../../infra/testing/env-it';
 
 
 describe(`cacheWrapper`, function() {
@@ -80,7 +79,9 @@ describe(`cacheWrapper`, function() {
       });
     }
 
-    devOnly.it(`should not cache POST requests`, async function() {
+    it(`should throw when trying to cache POST requests in dev mode`, async function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       const testCache = await caches.open('TEST-CACHE');
       const cacheOpenStub = sandbox.stub(self.caches, 'open');
       const cachePutStub = sandbox.stub(testCache, 'put');

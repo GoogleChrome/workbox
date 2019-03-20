@@ -7,14 +7,13 @@
 */
 
 import {assert} from 'workbox-core/_private/assert';
-import {devOnly, prodOnly} from '../../../../infra/testing/env-it';
 
 
 describe(`assert`, function() {
-  describe(`Production Environment`, function() {
-    prodOnly.it(`should return null`, function() {
+  it(`should be null in production mode`, function() {
+    if (process.env.NODE_ENV === 'production') {
       expect(assert).to.equal(null);
-    });
+    }
   });
 
   describe(`isSWEnv`, function() {
@@ -27,7 +26,9 @@ describe(`assert`, function() {
       sandbox.restore();
     });
 
-    devOnly.it(`should throw if ServiceWorkerGlobalScope is not defined`, async function() {
+    it(`should throw if ServiceWorkerGlobalScope is not defined`, async function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       const originalServiceWorkerGlobalScope = self.ServiceWorkerGlobalScope;
       delete self.ServiceWorkerGlobalScope;
 
@@ -36,19 +37,25 @@ describe(`assert`, function() {
       self.ServiceWorkerGlobalScope = originalServiceWorkerGlobalScope;
     });
 
-    devOnly.it(`should return false if self is not an instance of ServiceWorkerGlobalScope`, function() {
+    it(`should return false if self is not an instance of ServiceWorkerGlobalScope`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       sandbox.stub(self, 'self').value({});
 
       return expectError(() => assert.isSWEnv('example-module'), 'not-in-sw');
     });
 
-    devOnly.it(`should not throw if self is an instance of ServiceWorkerGlobalScope`, function() {
+    it(`should not throw if self is an instance of ServiceWorkerGlobalScope`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       assert.isSWEnv('example-module');
     });
   });
 
   describe(`isArray`, function() {
-    devOnly.it(`shouldn't throw when given an array`, function() {
+    it(`shouldn't throw when given an array`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       assert.isArray([], {
         moduleName: 'module',
         className: 'class',
@@ -57,7 +64,9 @@ describe(`assert`, function() {
       });
     });
 
-    devOnly.it(`should throw when value isn't an array`, function() {
+    it(`should throw when value isn't an array`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       return expectError(() => {
         assert.isArray({}, {
           moduleName: 'module',
@@ -70,7 +79,9 @@ describe(`assert`, function() {
   });
 
   describe(`isArrayOfClass`, function() {
-    devOnly.it(`shouldn't throw when given an array same Class`, function() {
+    it(`shouldn't throw when given an array same Class`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       class TestClass {}
       assert.isArrayOfClass([new TestClass(), new TestClass(), new TestClass()], TestClass, {
         moduleName: 'module',
@@ -80,7 +91,9 @@ describe(`assert`, function() {
       });
     });
 
-    devOnly.it(`should throw when value isn't an array of Class`, function() {
+    it(`should throw when value isn't an array of Class`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       class TestClass {}
       class NotTestClass {}
       return expectError(() => {
@@ -93,7 +106,9 @@ describe(`assert`, function() {
       }, 'not-array-of-class');
     });
 
-    devOnly.it(`should throw when value isn't an array`, function() {
+    it(`should throw when value isn't an array`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       class TestClass {}
       return expectError(() => {
         assert.isArrayOfClass({}, TestClass, {
@@ -107,7 +122,9 @@ describe(`assert`, function() {
   });
 
   describe(`hasMethod`, function() {
-    devOnly.it(`should throw when it has no method`, function() {
+    it(`should throw when it has no method`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       return expectError(() => {
         assert.hasMethod({}, 'methodName', {
           moduleName: 'module',
@@ -118,7 +135,9 @@ describe(`assert`, function() {
       }, 'missing-a-method');
     });
 
-    devOnly.it(`should throw when it has no method`, function() {
+    it(`should throw when it has no method`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       assert.hasMethod({methodName: () => {}}, 'methodName', {
         moduleName: 'module',
         className: 'class',
@@ -129,7 +148,9 @@ describe(`assert`, function() {
   });
 
   describe(`isInstance`, function() {
-    devOnly.it(`should throw when it is not an instance`, function() {
+    it(`should throw when it is not an instance`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       class Example {}
       return expectError(() => {
         assert.isInstance({}, Example, {
@@ -141,7 +162,9 @@ describe(`assert`, function() {
       }, 'incorrect-class');
     });
 
-    devOnly.it(`should not throw when it is an instance`, function() {
+    it(`should not throw when it is an instance`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       class Example {}
       assert.isInstance(new Example(), Example, {
         moduleName: 'module',
@@ -153,7 +176,9 @@ describe(`assert`, function() {
   });
 
   describe(`isOneOf`, function() {
-    devOnly.it(`should throw when it is not an instance`, function() {
+    it(`should throw when it is not an instance`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       return expectError(() => {
         assert.isOneOf('not-ok', ['ok-value'], {
           moduleName: 'module',
@@ -164,7 +189,9 @@ describe(`assert`, function() {
       }, 'invalid-value');
     });
 
-    devOnly.it(`should throw when it is not an instance`, function() {
+    it(`should throw when it is not an instance`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       assert.isOneOf('ok-value', ['ok-value'], {
         moduleName: 'module',
         className: 'class',

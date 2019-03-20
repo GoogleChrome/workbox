@@ -16,7 +16,7 @@ describe(`skipWaiting`, function() {
     sandbox.restore();
   });
 
-  it('should add an install event listener that calls skipWaiting', function(done) {
+  it(`should add an install event listener that calls skipWaiting`, function(done) {
     const skipWaitingSpy = sandbox.spy(self, 'skipWaiting');
 
     sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
