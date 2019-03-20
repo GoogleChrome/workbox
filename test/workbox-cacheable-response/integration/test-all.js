@@ -7,18 +7,28 @@
 */
 
 const expect = require('chai').expect;
-
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 const cleanSWEnv = require('../../../infra/testing/clean-sw');
 const runInSW = require('../../../infra/testing/comlink/node-interface');
 const waitUntil = require('../../../infra/testing/wait-until');
+const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
 
-describe(`cacheableResponse.Plugin`, function() {
-  const baseURL = `${global.__workbox.server.getAddress()}/test/workbox-cacheable-response/static/cacheable-response-plugin/`;
+
+// Store local references of these globals.
+const {webdriver, server} = global.__workbox;
+
+describe(`[workbox-cacheable-response]`, function() {
+  it(`passes all SW unit tests`, async function() {
+    await runUnitTests('/test/workbox-broadcast-update/sw/');
+  });
+});
+
+describe(`[workbox-cacheable-response] Plugin`, function() {
+  const baseURL = `${server.getAddress()}/test/workbox-cacheable-response/static/cacheable-response-plugin/`;
 
   beforeEach(async function() {
     // Navigate to our test page and clear all caches before this test runs.
-    await cleanSWEnv(global.__workbox.webdriver, `${baseURL}integration.html`);
+    await cleanSWEnv(webdriver, `${baseURL}integration.html`);
   });
 
   it(`should load a page and cache entries`, async function() {
@@ -27,7 +37,7 @@ describe(`cacheableResponse.Plugin`, function() {
     // Wait for the service worker to register and activate.
     await activateAndControlSW(swURL);
 
-    let error = await global.__workbox.webdriver.executeAsyncScript((cb) => {
+    let error = await webdriver.executeAsyncScript((cb) => {
       fetch(`example-1.txt`).then(() => cb()).catch((err) => cb(err.message));
     });
     if (error) {

@@ -6,13 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
+import {CacheableResponse} from 'workbox-cacheable-response/CacheableResponse.mjs';
+import {Plugin} from 'workbox-cacheable-response/Plugin.mjs';
 
-import {CacheableResponse} from '../../../packages/workbox-cacheable-response/CacheableResponse.mjs';
-import {Plugin} from '../../../packages/workbox-cacheable-response/Plugin.mjs';
 
-describe(`[workbox-cacheable-response] Plugin`, function() {
+describe(`Plugin`, function() {
   const STATUSES = [200];
 
   const sandbox = sinon.createSandbox();
