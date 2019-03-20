@@ -6,8 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-const constants = require('../../gulp-tasks/utils/constants');
-
 module.exports = {
   devOnly: {
     it: function(title, cb) {
@@ -15,7 +13,7 @@ module.exports = {
       // a function that expects done.
       if (cb.length === 1) {
         it(title, function(done) {
-          if (process.env.NODE_ENV !== constants.BUILD_TYPES.dev) {
+          if (process.env.NODE_ENV === 'production') {
             return this.skip();
           }
 
@@ -23,7 +21,7 @@ module.exports = {
         });
       } else {
         it(title, function() {
-          if (process.env.NODE_ENV !== constants.BUILD_TYPES.dev) {
+          if (process.env.NODE_ENV === 'production') {
             return this.skip();
           }
 
@@ -39,7 +37,7 @@ module.exports = {
       // a function that expects done.
       if (cb.length === 1) {
         it(title, function(done) {
-          if (process.env.NODE_ENV !== constants.BUILD_TYPES.prod) {
+          if (process.env.NODE_ENV !== 'production') {
             return this.skip();
           }
 
@@ -47,7 +45,7 @@ module.exports = {
         });
       } else {
         it(title, function() {
-          if (process.env.NODE_ENV !== constants.BUILD_TYPES.prod) {
+          if (process.env.NODE_ENV !== 'production') {
             return this.skip();
           }
 

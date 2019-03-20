@@ -10,12 +10,16 @@ const {rollup} = require('rollup');
 const replace = require('rollup-plugin-replace');
 const resolve = require('rollup-plugin-node-resolve');
 const multiEntry = require('rollup-plugin-multi-entry');
+const commonjs = require('rollup-plugin-commonjs');
 
 
 const match = '/test/:package/*/sw-bundle.js';
-let cache;
+
+let caches = {};
 
 async function handler(req, res) {
+  const env = process.env.NODE_ENV || 'development';
+
   const bundle = await rollup({
     input: `./test/${req.params.package}/sw/**/test-*.mjs`,
     plugins: [
@@ -25,15 +29,22 @@ async function handler(req, res) {
           moduleDirectory: 'packages',
         },
       }),
+      // TODO(philipwalton): some of our shared testing helpers use commonjs
+      // so we have to support this for the time being.
+      commonjs({
+        exclude: '*.mjs',
+      }),
       replace({
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+        'process.env.NODE_ENV': JSON.stringify(env),
       }),
     ],
-    cache,
+    cache: caches[env],
   });
 
-  // Update the cache so subsequent bundles are faster.
-  cache = bundle.cache;
+  // Update the cache so subsequent bundles are faster, and make sure it
+  // keep the dev/prod caches separate since the source files won't change
+  // between those builds, but the outputs will.
+  caches[env] = bundle.cache;
 
   const {output} = await bundle.generate({format: 'iife'});
 

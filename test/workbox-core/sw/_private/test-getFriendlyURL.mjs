@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import {getFriendlyURL} from '../../../../packages/workbox-core/_private/getFriendlyURL.mjs';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
 
-describe(`[workbox-core] getFriendlyURL()`, function() {
+
+describe(`getFriendlyURL()`, function() {
   it(`should return short URL for local origin '/'`, function() {
     const url = getFriendlyURL('/');
     expect(url).to.equal('/');

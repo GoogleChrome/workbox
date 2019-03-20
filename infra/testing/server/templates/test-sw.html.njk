@@ -15,9 +15,13 @@
       font: 1em/1.4 sans-serif;
       margin: 1em;
     }
-    #results {
+    #success {
       color: hsl(150, 100%, 40%);
       font-size: 1.33em;
+      font-weight: bold;
+    }
+    #errors {
+      color: hsl(0, 100%, 40%);
     }
   </style>
 </head>
@@ -32,7 +36,8 @@
     {% endblock %}
   </ul>
   <p>Open the console to see progress...</p>
-  <p><strong id="results"></strong></p>
+  <p id="success"></p>
+  <pre id="errors"></pre>
 
   <script type="module">
     import {Workbox} from '/__WORKBOX/buildFile/workbox-window.prod.mjs';
@@ -51,7 +56,13 @@
           `padding: .25em 0`,
         ];
         console.log('%cAll TESTS PASS!', styles.join(';'));
-        document.getElementById('results').textContent = 'ALL TESTS PASS!';
+        document.getElementById('success').textContent = 'ALL TESTS PASS!';
+      } else {
+        const errors = self.mochaResults.reports.map((report) => {
+          return `${report.name}\n${report.stack}`;
+        }).join('\n\n');
+
+        document.getElementById('errors').textContent = errors
       }
     })();
   </script>

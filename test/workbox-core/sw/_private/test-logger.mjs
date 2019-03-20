@@ -6,13 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
-import {prodOnly, devOnly} from '../../../../infra/testing/env-it';
-import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
 
 
-describe(`workbox-core logger`, function() {
+describe(`logger`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
@@ -54,13 +51,17 @@ describe(`workbox-core logger`, function() {
     expect(calledArgs).to.deep.equal(expectedArgs);
   };
 
-  prodOnly.it('is null in production mode', function() {
+  it(`should be null in production mode`, function() {
+    if (process.env.NODE_ENV !== 'production') this.skip();
+
     expect(logger).to.equal(null);
   });
 
   consoleLevels.forEach((consoleLevel) => {
     describe(`.${consoleLevel}()`, function() {
-      devOnly.it('should work without input', function() {
+      it(`should work without input`, function() {
+        if (process.env.NODE_ENV === 'production') this.skip();
+
         const stub = sandbox.stub(console, consoleLevel);
 
         logger[consoleLevel]();
@@ -71,7 +72,9 @@ describe(`workbox-core logger`, function() {
         validateStub(stub, [], true);
       });
 
-      devOnly.it(`should work with several inputs`, function() {
+      it(`should work with several inputs`, function() {
+        if (process.env.NODE_ENV === 'production') this.skip();
+
         const stub = sandbox.stub(console, consoleLevel);
 
         const args = ['', 'test', null, undefined, [], {}];
@@ -86,7 +89,9 @@ describe(`workbox-core logger`, function() {
   });
 
   describe(`.groupCollapsed()`, function() {
-    devOnly.it('should work without input', function() {
+    it(`should work without input`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       const stub = sandbox.stub(console, 'groupCollapsed');
       sandbox.stub(console, 'groupEnd');
 
@@ -99,7 +104,9 @@ describe(`workbox-core logger`, function() {
       expect(stub.callCount).to.equal(1);
     });
 
-    devOnly.it(`should work with several inputs`, function() {
+    it(`should work with several inputs`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       const stub = sandbox.stub(console, 'groupCollapsed');
       sandbox.stub(console, 'groupEnd');
 
@@ -113,7 +120,9 @@ describe(`workbox-core logger`, function() {
       validateStub(stub, args, true);
     });
 
-    devOnly.it(`should not prefix log message until after .groupEnd() is called`, function() {
+    it(`should not prefix log message until after .groupEnd() is called`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       const debugStub = sandbox.stub(console, 'debug');
       const logStub = sandbox.stub(console, 'log');
       const warnStub = sandbox.stub(console, 'warn');
@@ -149,7 +158,9 @@ describe(`workbox-core logger`, function() {
   });
 
   describe(`.groupEnd()`, function() {
-    devOnly.it('should work without input', function() {
+    it(`should work without input`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       const stub = sandbox.stub(console, 'groupEnd');
 
       logger.groupEnd();

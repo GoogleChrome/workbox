@@ -6,25 +6,26 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {checkSWFileCacheHeaders} from 'workbox-core/_private/checkSWFileCacheHeaders.mjs';
 
-import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
-import {checkSWFileCacheHeaders} from '../../../../packages/workbox-core/_private/checkSWFileCacheHeaders.mjs';
-import {devOnly} from '../../../../infra/testing/env-it';
 
-describe(`workbox-core checkSWFileCacheHeaders`, function() {
-  let sandbox;
+describe(`checkSWFileCacheHeaders`, function() {
+  let sandbox = sinon.createSandbox();
 
-  before(function() {
-    sandbox = sinon.createSandbox();
+  beforeEach(function() {
+    if (process.env.NODE_ENV !== 'production') {
+      sandbox.stub(logger);
+    }
   });
 
   afterEach(function() {
     sandbox.restore();
   });
 
-  devOnly.it('should handle bad response', async () => {
+  it(`should handle bad response`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     sandbox.stub(self, 'fetch').callsFake(async () => {
       return new Response('Not Found.', {
         status: 404,
@@ -36,7 +37,9 @@ describe(`workbox-core checkSWFileCacheHeaders`, function() {
     expect(logger.warn.callCount).to.equal(0);
   });
 
-  devOnly.it('should handle no cache-control header', async () => {
+  it(`should handle no cache-control header`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     sandbox.stub(self, 'fetch').callsFake(async () => {
       return new Response('OK');
     });
@@ -46,7 +49,9 @@ describe(`workbox-core checkSWFileCacheHeaders`, function() {
     expect(logger.warn.callCount).to.equal(0);
   });
 
-  devOnly.it('should log for bad cache-control header', async () => {
+  it(`should log for bad cache-control header`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     sandbox.stub(self, 'fetch').callsFake(async () => {
       return new Response('OK', {
         headers: {
@@ -60,7 +65,9 @@ describe(`workbox-core checkSWFileCacheHeaders`, function() {
     expect(logger.warn.callCount).to.equal(1);
   });
 
-  devOnly.it('should handle unexpected max-age cache-control header', async () => {
+  it(`should handle unexpected max-age cache-control header`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     sandbox.stub(self, 'fetch').callsFake(async () => {
       return new Response('OK', {
         headers: {
@@ -74,7 +81,9 @@ describe(`workbox-core checkSWFileCacheHeaders`, function() {
     expect(logger.warn.callCount).to.equal(1);
   });
 
-  devOnly.it('should NOT log for max-age=0 cache-control header', async () => {
+  it(`should NOT log for max-age=0 cache-control header`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     sandbox.stub(self, 'fetch').callsFake(async () => {
       return new Response('OK', {
         headers: {
@@ -88,7 +97,9 @@ describe(`workbox-core checkSWFileCacheHeaders`, function() {
     expect(logger.warn.callCount).to.equal(0);
   });
 
-  devOnly.it('should NOT log for no-cache cache-control header', async () => {
+  it(`should NOT log for no-cache cache-control header`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     sandbox.stub(self, 'fetch').callsFake(async () => {
       return new Response('OK', {
         headers: {
@@ -102,7 +113,9 @@ describe(`workbox-core checkSWFileCacheHeaders`, function() {
     expect(logger.warn.callCount).to.equal(0);
   });
 
-  devOnly.it('should NOT log for no-store cache-control header', async () => {
+  it(`should NOT log for no-store cache-control header`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     sandbox.stub(self, 'fetch').callsFake(async () => {
       return new Response('OK', {
         headers: {
