@@ -38,6 +38,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     'modifyURLPrefix',
     'navigateFallback',
     'navigateFallbackWhitelist',
+    'navigationPreload',
     'offlineGoogleAnalytics',
     'runtimeCaching',
     'skipWaiting',
@@ -234,6 +235,20 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         registerNavigationRoute: [['/urlWithCacheKey', {
           whitelist: navigateFallbackWhitelist,
         }]],
+      }});
+    });
+
+    it(`should use defaults when all the required parameters are present, with 'navigationPreload' set to true`, async function() {
+      const options = Object.assign({}, BASE_OPTIONS, {
+        navigationPreload: true,
+      });
+
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
+        importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
+        precacheAndRoute: [[[], {}]],
+        navigationPreloadEnable: [[]],
       }});
     });
 
