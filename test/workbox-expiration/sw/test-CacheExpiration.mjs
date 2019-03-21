@@ -6,38 +6,30 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
-import {reset as iDBReset} from 'shelving-mock-indexeddb';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
+import {CacheTimestampsModel} from 'workbox-expiration/models/CacheTimestampsModel.mjs';
+import {CacheExpiration} from 'workbox-expiration/CacheExpiration.mjs';
 
-import expectError from '../../../infra/testing/expectError';
-import {devOnly} from '../../../infra/testing/env-it';
 
-import {DBWrapper} from '../../../packages/workbox-core/_private/DBWrapper.mjs';
-import {CacheTimestampsModel} from '../../../packages/workbox-expiration/models/CacheTimestampsModel.mjs';
-import {CacheExpiration} from '../../../packages/workbox-expiration/CacheExpiration.mjs';
+describe(`CacheExpiration`, function() {
+  const sandbox = sinon.createSandbox();
+  const db = new DBWrapper('workbox-expiration', 1, {
+    onupgradeneeded: CacheTimestampsModel.prototype._handleUpgrade,
+  });
 
-describe(`[workbox-expiration] CacheExpiration`, function() {
-  let sandbox = sinon.createSandbox();
+  beforeEach(async function() {
+    await db.clear('cache-entries');
 
-  const getDb = async () => {
-    // Throw in the upgradeneeded callback because in these tests we only
-    // want to be getting a connection to the DB, not creating it.
-    return new DBWrapper('workbox-expiration', 1, {
-      onupgradeneeded: () => {
-        throw new Error(`DB 'workbox-expiration' expected to already be open.`);
-      },
-    });
-  };
+    const cacheKeys = await caches.keys();
+    for (const cacheKey of cacheKeys) {
+      await caches.delete(cacheKey);
+    }
 
-  beforeEach(function() {
     sandbox.restore();
-    iDBReset();
   });
 
   after(function() {
     sandbox.restore();
-    iDBReset();
   });
 
   describe(`constructor`, function() {
@@ -57,7 +49,9 @@ describe(`[workbox-expiration] CacheExpiration`, function() {
       expect(expirationManager._maxAgeSeconds).to.equal(2);
     });
 
-    devOnly.it(`should throw with no config`, function() {
+    it(`should throw with no config`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       return expectError(() => {
         new CacheExpiration('my-cache');
       }, 'max-entries-or-age-required');
@@ -80,27 +74,26 @@ describe(`[workbox-expiration] CacheExpiration`, function() {
 
       const timestampModel = new CacheTimestampsModel(cacheName);
       await timestampModel.setTimestamp('/one', Date.now());
-      cache.put('https://example.com/one', new Response('Injected request'));
+      cache.put(`${location.origin}/one`, new Response('Injected request'));
 
       clock.tick(5000);
 
       // Add another entry after 5 seconds.
       await timestampModel.setTimestamp('/two', Date.now());
-      cache.put('https://example.com/two', new Response('Injected request'));
+      cache.put(`${location.origin}/two`, new Response('Injected request'));
 
       // Ensure both entries are still present after an initial expire.
       await expirationManager.expireEntries();
 
-      const db = await getDb();
       let timestamps = await db.getAll('cache-entries');
       expect(timestamps).to.have.lengthOf(2);
-      expect(timestamps[0].url).to.equal('https://example.com/one');
-      expect(timestamps[1].url).to.equal('https://example.com/two');
+      expect(timestamps[0].url).to.equal(`${location.origin}/one`);
+      expect(timestamps[1].url).to.equal(`${location.origin}/two`);
 
       let cachedRequests = await cache.keys();
       expect(cachedRequests).to.have.lengthOf(2);
-      expect(cachedRequests[0].url).to.equal('https://example.com/one');
-      expect(cachedRequests[1].url).to.equal('https://example.com/two');
+      expect(cachedRequests[0].url).to.equal(`${location.origin}/one`);
+      expect(cachedRequests[1].url).to.equal(`${location.origin}/two`);
 
       // Tick the clock 6 seconds, so the first entry should now be expired.
       clock.tick(6000);
@@ -108,12 +101,12 @@ describe(`[workbox-expiration] CacheExpiration`, function() {
 
       timestamps = await db.getAll('cache-entries');
       expect(timestamps).to.have.lengthOf(1);
-      expect(timestamps[0].url).to.equal('https://example.com/two');
+      expect(timestamps[0].url).to.equal(`${location.origin}/two`);
 
       // Check cache is empty
       cachedRequests = await cache.keys();
       expect(cachedRequests).to.have.lengthOf(1);
-      expect(cachedRequests[0].url).to.equal('https://example.com/two');
+      expect(cachedRequests[0].url).to.equal(`${location.origin}/two`);
 
       // Tick the clock 5 more seconds, so all entries should be expired.
       clock.tick(5000);
@@ -136,7 +129,7 @@ describe(`[workbox-expiration] CacheExpiration`, function() {
 
       const timestampModel = new CacheTimestampsModel(cacheName);
       await timestampModel.setTimestamp('/first', currentTimestamp);
-      cache.put('https://example.com/first', new Response('Injected request'));
+      cache.put(`${location.origin}/first`, new Response('Injected request'));
 
       const expirationManager = new CacheExpiration(cacheName, {maxEntries});
 
@@ -144,24 +137,23 @@ describe(`[workbox-expiration] CacheExpiration`, function() {
 
       // Add entry and ensure it is removed
       await timestampModel.setTimestamp('/second', currentTimestamp - 1000);
-      cache.put('https://example.com/second', new Response('Injected request'));
+      cache.put(`${location.origin}/second`, new Response('Injected request'));
 
       await expirationManager.expireEntries();
 
       // Check that IDB has /first
-      const db = await getDb();
       let timestamps = await db.getAll('cache-entries');
 
       expect(timestamps).to.have.lengthOf(1);
-      expect(timestamps[0].url).to.equal('https://example.com/first');
+      expect(timestamps[0].url).to.equal(`${location.origin}/first`);
       expect(timestamps[0].timestamp).to.equal(currentTimestamp);
 
       // Check cache has /first
       let cachedRequests = await cache.keys();
-      expect(cachedRequests.map((req) => req.url)).to.deep.equal(['https://example.com/first']);
+      expect(cachedRequests.map((req) => req.url)).to.deep.equal([`${location.origin}/first`]);
 
       await timestampModel.setTimestamp('/third', currentTimestamp + 1000);
-      cache.put('https://example.com/third', new Response('Injected request'));
+      cache.put(`${location.origin}/third`, new Response('Injected request'));
 
       await expirationManager.expireEntries();
 
@@ -169,12 +161,12 @@ describe(`[workbox-expiration] CacheExpiration`, function() {
       timestamps = await db.getAll('cache-entries');
 
       expect(timestamps).to.have.lengthOf(1);
-      expect(timestamps[0].url).to.equal('https://example.com/third');
+      expect(timestamps[0].url).to.equal(`${location.origin}/third`);
       expect(timestamps[0].timestamp).to.equal(currentTimestamp + 1000);
 
       // Check cache has /third
       cachedRequests = await cache.keys();
-      expect(cachedRequests.map((req) => req.url)).to.deep.equal(['https://example.com/third']);
+      expect(cachedRequests.map((req) => req.url)).to.deep.equal([`${location.origin}/third`]);
     });
 
     it(`should queue up expireEntries calls`, async function() {
@@ -209,8 +201,8 @@ describe(`[workbox-expiration] CacheExpiration`, function() {
       const timestampModel = new CacheTimestampsModel(cacheName);
       await timestampModel.setTimestamp('/1', currentTimestamp);
       await timestampModel.setTimestamp('/2', currentTimestamp);
-      cache.put('https://example.com/1', new Response('Injected request'));
-      cache.put('https://example.com/2', new Response('Injected request'));
+      cache.put(`${location.origin}/1`, new Response('Injected request'));
+      cache.put(`${location.origin}/2`, new Response('Injected request'));
 
       const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
 
@@ -222,7 +214,6 @@ describe(`[workbox-expiration] CacheExpiration`, function() {
       await expirationManager.expireEntries();
 
       // Check that IDB is empty
-      const db = await getDb();
       const timestamps = await db.getAll('cache-entries');
       expect(timestamps).to.deep.equal([]);
 
@@ -249,17 +240,18 @@ describe(`[workbox-expiration] CacheExpiration`, function() {
       const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
       await expirationManager.updateTimestamp('/');
 
-      const db = await getDb();
       const timestamps = await db.getAll('cache-entries');
 
       expect(timestamps).to.have.lengthOf(1);
-      expect(timestamps[0].url).to.equal('https://example.com/');
+      expect(timestamps[0].url).to.equal(`${location.origin}/`);
       expect(timestamps[0].timestamp).to.equal(currentTimestamp + 1000);
     });
   });
 
   describe(`isURLExpired()`, function() {
-    devOnly.it(`should throw when called without maxAgeSeconds`, function() {
+    it(`should throw when called without maxAgeSeconds`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       const expirationManager = new CacheExpiration('test-cache', {maxEntries: 1});
       return expectError(() => {
         return expirationManager.isURLExpired();

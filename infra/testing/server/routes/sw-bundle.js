@@ -14,8 +14,7 @@ const commonjs = require('rollup-plugin-commonjs');
 
 
 const match = '/test/:package/*/sw-bundle.js';
-
-let caches = {};
+const caches = {};
 
 async function handler(req, res) {
   const env = process.env.NODE_ENV || 'development';

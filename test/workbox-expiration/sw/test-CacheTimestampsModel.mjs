@@ -6,97 +6,83 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import {reset as iDBReset} from 'shelving-mock-indexeddb';
-import * as sinon from 'sinon';
+import {CacheTimestampsModel} from 'workbox-expiration/models/CacheTimestampsModel.mjs';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
 
-import {CacheTimestampsModel} from '../../../packages/workbox-expiration/models/CacheTimestampsModel.mjs';
-import {DBWrapper} from '../../../packages/workbox-core/_private/DBWrapper.mjs';
 
-describe(`[workbox-expiration] CacheTimestampsModel`, function() {
+describe(`CacheTimestampsModel`, function() {
   const sandbox = sinon.createSandbox();
+  const db = new DBWrapper('workbox-expiration', 1, {
+    onupgradeneeded: CacheTimestampsModel.prototype._handleUpgrade,
+  });
 
-  beforeEach(function() {
+  beforeEach(async function() {
     sandbox.restore();
-    iDBReset();
+    await db.clear('cache-entries');
   });
 
   after(function() {
     sandbox.restore();
-    iDBReset();
   });
 
-  const createDb = async () => {
-    return new DBWrapper('workbox-expiration', 1, {
-      onupgradeneeded: (event) => {
-        const db = event.target.result;
-        const objStore = db.createObjectStore('cache-entries', {keyPath: 'id'});
-        objStore.createIndex('cacheName', 'cacheName', {unique: false});
-        objStore.createIndex('timestamp', 'timestamp', {unique: false});
-      },
-    });
-  };
-
-  const createAndPopulateDb = async () => {
-    const db = await createDb();
-
+  const populateDb = async () => {
     await db.add('cache-entries', {
-      id: 'cache-one|https://example.com/1',
-      url: 'https://example.com/1',
+      id: `cache-one|${location.origin}/1`,
+      url: `${location.origin}/1`,
       cacheName: 'cache-one',
       timestamp: 10,
     });
     await db.add('cache-entries', {
-      id: 'cache-one|https://example.com/2',
-      url: 'https://example.com/2',
+      id: `cache-one|${location.origin}/2`,
+      url: `${location.origin}/2`,
       cacheName: 'cache-one',
       timestamp: 9,
     });
     await db.add('cache-entries', {
-      id: 'cache-one|https://example.com/3',
-      url: 'https://example.com/3',
+      id: `cache-one|${location.origin}/3`,
+      url: `${location.origin}/3`,
       cacheName: 'cache-one',
       timestamp: 8,
     });
     await db.add('cache-entries', {
-      id: 'cache-one|https://example.com/4',
-      url: 'https://example.com/4',
+      id: `cache-one|${location.origin}/4`,
+      url: `${location.origin}/4`,
       cacheName: 'cache-one',
       timestamp: 7,
     });
     await db.add('cache-entries', {
-      id: 'cache-one|https://example.com/5',
-      url: 'https://example.com/5',
+      id: `cache-one|${location.origin}/5`,
+      url: `${location.origin}/5`,
       cacheName: 'cache-one',
       timestamp: 6,
     });
     await db.add('cache-entries', {
-      id: 'cache-two|https://example.com/1',
-      url: 'https://example.com/1',
+      id: `cache-two|${location.origin}/1`,
+      url: `${location.origin}/1`,
       cacheName: 'cache-two',
       timestamp: 10,
     });
     await db.add('cache-entries', {
-      id: 'cache-two|https://example.com/2',
-      url: 'https://example.com/2',
+      id: `cache-two|${location.origin}/2`,
+      url: `${location.origin}/2`,
       cacheName: 'cache-two',
       timestamp: 9,
     });
     await db.add('cache-entries', {
-      id: 'cache-two|https://example.com/3',
-      url: 'https://example.com/3',
+      id: `cache-two|${location.origin}/3`,
+      url: `${location.origin}/3`,
       cacheName: 'cache-two',
       timestamp: 8,
     });
     await db.add('cache-entries', {
-      id: 'cache-three|https://example.com/4',
-      url: 'https://example.com/4',
+      id: `cache-three|${location.origin}/4`,
+      url: `${location.origin}/4`,
       cacheName: 'cache-three',
       timestamp: 7,
     });
     await db.add('cache-entries', {
-      id: 'cache-three|https://example.com/5',
-      url: 'https://example.com/5',
+      id: `cache-three|${location.origin}/5`,
+      url: `${location.origin}/5`,
       cacheName: 'cache-three',
       timestamp: 6,
     });
@@ -114,56 +100,56 @@ describe(`[workbox-expiration] CacheTimestampsModel`, function() {
 
   describe(`expireEntries()`, function() {
     it(`should remove and return entries with timestamps below minTimestamp`, async function() {
-      const db = await createAndPopulateDb();
+      await populateDb();
 
       const model1 = new CacheTimestampsModel('cache-one');
       const removedEntries1 = await model1.expireEntries(8);
       expect(removedEntries1).to.deep.equal([
-        'https://example.com/4',
-        'https://example.com/5',
+        `${location.origin}/4`,
+        `${location.origin}/5`,
       ]);
       expect(await db.count('cache-entries')).to.equal(8);
 
       const model2 = new CacheTimestampsModel('cache-two');
       const removedEntries2 = await model2.expireEntries(9);
       expect(removedEntries2).to.deep.equal([
-        'https://example.com/3',
+        `${location.origin}/3`,
       ]);
       expect(await db.count('cache-entries')).to.equal(7);
     });
 
     it(`should remove and return the oldest entries greater than maxCount`, async function() {
-      const db = await createAndPopulateDb();
+      await populateDb();
 
       const model1 = new CacheTimestampsModel('cache-one');
       const removedEntries1 = await model1.expireEntries(null, 2);
       expect(removedEntries1).to.deep.equal([
-        'https://example.com/3',
-        'https://example.com/4',
-        'https://example.com/5',
+        `${location.origin}/3`,
+        `${location.origin}/4`,
+        `${location.origin}/5`,
       ]);
       expect(await db.count('cache-entries')).to.equal(7);
 
       const model2 = new CacheTimestampsModel('cache-two');
       const removedEntries2 = await model2.expireEntries(null, 1);
       expect(removedEntries2).to.deep.equal([
-        'https://example.com/2',
-        'https://example.com/3',
+        `${location.origin}/2`,
+        `${location.origin}/3`,
       ]);
       expect(await db.count('cache-entries')).to.equal(5);
     });
 
     it(`should work with minTimestamp and maxCount`, async function() {
-      const db = await createAndPopulateDb();
+      await populateDb();
 
       const model1 = new CacheTimestampsModel('cache-one');
 
       // This example tests minTimestamp being more restrictive.
       const removedEntries1 = await model1.expireEntries(9, 4);
       expect(removedEntries1).to.deep.equal([
-        'https://example.com/3',
-        'https://example.com/4',
-        'https://example.com/5',
+        `${location.origin}/3`,
+        `${location.origin}/4`,
+        `${location.origin}/5`,
       ]);
       expect(await db.count('cache-entries')).to.equal(7);
 
@@ -172,13 +158,13 @@ describe(`[workbox-expiration] CacheTimestampsModel`, function() {
       // This example tests maxCount being more restrictive.
       const removedEntries2 = await model2.expireEntries(5, 2);
       expect(removedEntries2).to.deep.equal([
-        'https://example.com/3',
+        `${location.origin}/3`,
       ]);
       expect(await db.count('cache-entries')).to.equal(6);
     });
 
     it(`should return an empty array if nothing matches`, async function() {
-      const db = await createAndPopulateDb();
+      await populateDb();
 
       const model = new CacheTimestampsModel('cache-one');
 
@@ -191,8 +177,6 @@ describe(`[workbox-expiration] CacheTimestampsModel`, function() {
 
   describe(`setTimestamp`, async function() {
     it(`should put entries in the database`, async function() {
-      const db = await createDb();
-
       const model1 = new CacheTimestampsModel('cache-one');
       const model2 = new CacheTimestampsModel('cache-two');
 
@@ -202,20 +186,20 @@ describe(`[workbox-expiration] CacheTimestampsModel`, function() {
 
       expect(await db.getAll('cache-entries')).to.deep.equal([
         {
-          id: 'cache-one|https://example.com/1',
-          url: 'https://example.com/1',
+          id: `cache-one|${location.origin}/1`,
+          url: `${location.origin}/1`,
           cacheName: 'cache-one',
           timestamp: 100,
         },
         {
-          id: 'cache-one|https://example.com/2',
-          url: 'https://example.com/2',
+          id: `cache-one|${location.origin}/2`,
+          url: `${location.origin}/2`,
           cacheName: 'cache-one',
           timestamp: 200,
         },
         {
-          id: 'cache-two|https://example.com/1',
-          url: 'https://example.com/1',
+          id: `cache-two|${location.origin}/1`,
+          url: `${location.origin}/1`,
           cacheName: 'cache-two',
           timestamp: 300,
         },
@@ -225,7 +209,7 @@ describe(`[workbox-expiration] CacheTimestampsModel`, function() {
 
   describe(`getTimestamp`, async function() {
     it(`should get an entry from the database by 'url'`, async function() {
-      await createAndPopulateDb();
+      await populateDb();
 
       const model1 = new CacheTimestampsModel('cache-one');
       const model2 = new CacheTimestampsModel('cache-two');
