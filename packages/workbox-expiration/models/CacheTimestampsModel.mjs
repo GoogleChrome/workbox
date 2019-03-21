@@ -113,10 +113,10 @@ class CacheTimestampsModel {
    * @private
    */
   async expireEntries(minTimestamp, maxCount) {
-    return await this._db.transaction(
+    const entriesToDelete = await this._db.transaction(
         OBJECT_STORE_NAME, 'readwrite', (txn, done) => {
           const store = txn.objectStore(OBJECT_STORE_NAME);
-          const entriesDeleted = [];
+          const entriesToDelete = [];
           let entriesNotDeletedCount = 0;
 
           store.index('timestamp')
@@ -132,19 +132,38 @@ class CacheTimestampsModel {
                     // if we already have the max number allowed.
                     if ((minTimestamp && result.timestamp < minTimestamp) ||
                         (maxCount && entriesNotDeletedCount >= maxCount)) {
-                      cursor.delete();
+                      // TODO(philipwalton): we should be able to delete the
+                      // entry right here, but doing so causes an iteration
+                      // bug in Safari stable (fixed in TP). Instead we can
+                      // store the keys of the entries to delete, and then
+                      // delete the separate transactions.
+                      // https://github.com/GoogleChrome/workbox/issues/1978
+                      // cursor.delete();
+
                       // We only need to return the URL, not the whole entry.
-                      entriesDeleted.push(cursor.value.url);
+                      entriesToDelete.push(cursor.value);
                     } else {
                       entriesNotDeletedCount++;
                     }
                   }
                   cursor.continue();
                 } else {
-                  done(entriesDeleted);
+                  done(entriesToDelete);
                 }
               };
         });
+
+    // TODO(philipwalton): once the Safari bug in the following issue is fixed,
+    // we should be able to remove this loop and do the entry deletion in the
+    // cursor loop above:
+    // https://github.com/GoogleChrome/workbox/issues/1978
+    const urlsDeleted = [];
+    for (const entry of entriesToDelete) {
+      await this._db.delete(OBJECT_STORE_NAME, entry.id);
+      urlsDeleted.push(entry.url);
+    }
+
+    return urlsDeleted;
   }
 
   /**

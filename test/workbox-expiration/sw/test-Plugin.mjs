@@ -6,18 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
+import {Plugin} from 'workbox-expiration/Plugin.mjs';
+import {CacheExpiration} from 'workbox-expiration/CacheExpiration.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {executeQuotaErrorCallbacks} from 'workbox-core/_private/quota.mjs';
 
-import expectError from '../../../infra/testing/expectError';
-import {devOnly} from '../../../infra/testing/env-it';
 
-import {Plugin} from '../../../packages/workbox-expiration/Plugin.mjs';
-import {CacheExpiration} from '../../../packages/workbox-expiration/CacheExpiration.mjs';
-import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
-import {executeQuotaErrorCallbacks} from '../../../packages/workbox-core/_private/quota.mjs';
-
-describe(`[workbox-expiration] Plugin`, function() {
+describe(`Plugin`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
@@ -29,13 +24,17 @@ describe(`[workbox-expiration] Plugin`, function() {
   });
 
   describe(`constructor`, function() {
-    devOnly.it(`should throw for no config`, function() {
+    it(`should throw for no config`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       return expectError(() => {
         new Plugin();
       }, 'max-entries-or-age-required');
     });
 
-    devOnly.it(`should throw for non-number maxEntries`, function() {
+    it(`should throw for non-number maxEntries`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       return expectError(() => {
         new Plugin({
           maxEntries: 'Hi',
@@ -43,7 +42,9 @@ describe(`[workbox-expiration] Plugin`, function() {
       }, 'incorrect-type');
     });
 
-    devOnly.it(`should throw for non-number maxAgeSeconds`, function() {
+    it(`should throw for non-number maxAgeSeconds`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       return expectError(() => {
         new Plugin({
           maxAgeSeconds: 'Hi',
