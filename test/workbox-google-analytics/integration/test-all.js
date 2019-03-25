@@ -11,11 +11,20 @@ const qs = require('qs');
 const {By} = require('selenium-webdriver');
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 const waitUntil = require('../../../infra/testing/wait-until');
+const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
 
 
-describe(`[workbox-google-analytics] Load and use Google Analytics`, function() {
-  const driver = global.__workbox.webdriver;
-  const testServerAddress = global.__workbox.server.getAddress();
+// Store local references of these globals.
+const {webdriver, server} = global.__workbox;
+
+describe(`[workbox-google-analytics]`, function() {
+  it(`passes all SW unit tests`, async function() {
+    await runUnitTests('/test/workbox-google-analytics/sw/');
+  });
+});
+
+describe(`[workbox-google-analytics] initialize`, function() {
+  const testServerAddress = server.getAddress();
   const testingURL = `${testServerAddress}/test/workbox-google-analytics/static/basic-example/`;
   const swURL = `${testingURL}sw.js`;
 
@@ -37,20 +46,20 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`, function() 
 
   before(async function() {
     // Load the page and wait for the first service worker to activate.
-    await driver.get(testingURL);
+    await webdriver.get(testingURL);
 
     await activateAndControlSW(swURL);
   });
 
   beforeEach(async function() {
     // Reset the spied requests array.
-    await driver.executeAsyncScript(messageSW, {
+    await webdriver.executeAsyncScript(messageSW, {
       action: 'clear-spied-requests',
     });
   });
 
   it(`should load a page with service worker`, async function() {
-    const err = await driver.executeAsyncScript((done) => {
+    const err = await webdriver.executeAsyncScript((done) => {
       fetch('https://www.google-analytics.com/analytics.js', {mode: 'no-cors'})
           .then(() => done(), (err) => done(err.message));
     });
@@ -61,42 +70,42 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`, function() 
   it(`replay failed Google Analytics hits`, async function() {
     // Skip this test in browsers that don't support background sync.
     // TODO(philipwalton): figure out a way to work around this.
-    const browserSupportsSync = await driver.executeScript(() => {
+    const browserSupportsSync = await webdriver.executeScript(() => {
       return 'SyncManager' in window;
     });
     if (!browserSupportsSync) this.skip();
 
     const simulateOfflineEl =
-        await driver.findElement(By.id('simulate-offline'));
+        await webdriver.findElement(By.id('simulate-offline'));
 
     // Send a hit while online to ensure regular requests work.
-    await driver.executeAsyncScript((done) => {
+    await webdriver.executeAsyncScript((done) => {
       window.gtag('event', 'beacon', {
         transport_type: 'beacon',
         event_callback: () => done(),
       });
     });
 
-    let requests = await driver.executeAsyncScript(messageSW, {
+    let requests = await webdriver.executeAsyncScript(messageSW, {
       action: 'get-spied-requests',
     });
     expect(requests).to.have.lengthOf(1);
 
     // Reset the spied requests array.
-    await driver.executeAsyncScript(messageSW, {
+    await webdriver.executeAsyncScript(messageSW, {
       action: 'clear-spied-requests',
     });
 
     // Check the "simulate offline" checkbox and make some requests.
     await simulateOfflineEl.click();
-    await driver.executeAsyncScript((done) => {
+    await webdriver.executeAsyncScript((done) => {
       window.gtag('event', 'beacon', {
         transport_type: 'beacon',
         event_label: Date.now(),
         event_callback: () => done(),
       });
     });
-    await driver.executeAsyncScript((done) => {
+    await webdriver.executeAsyncScript((done) => {
       window.gtag('event', 'pixel', {
         transport_type: 'image',
         event_label: Date.now(),
@@ -104,26 +113,26 @@ describe(`[workbox-google-analytics] Load and use Google Analytics`, function() 
       });
     });
     // This request should not match GA routes, so it shouldn't be replayed.
-    await driver.executeAsyncScript((done) => {
+    await webdriver.executeAsyncScript((done) => {
       fetch('https://httpbin.org/get').then(() => done());
     });
 
     // Get all spied requests and ensure there haven't been any (since we're
     // offline).
-    requests = await driver.executeAsyncScript(messageSW, {
+    requests = await webdriver.executeAsyncScript(messageSW, {
       action: 'get-spied-requests',
     });
     expect(requests).to.have.lengthOf(0);
 
     // Uncheck the "simulate offline" checkbox and then trigger a sync.
     await simulateOfflineEl.click();
-    await driver.executeAsyncScript(messageSW, {
+    await webdriver.executeAsyncScript(messageSW, {
       action: 'dispatch-sync-event',
     });
 
     // Wait until all expected requests have replayed.
     await waitUntil(async () => {
-      requests = await driver.executeAsyncScript(messageSW, {
+      requests = await webdriver.executeAsyncScript(messageSW, {
         action: 'get-spied-requests',
       });
       return requests.length === 2;
