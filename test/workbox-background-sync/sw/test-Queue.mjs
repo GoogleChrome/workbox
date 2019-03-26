@@ -10,60 +10,29 @@ import {Queue} from 'workbox-background-sync/Queue.mjs';
 import {QueueStore} from 'workbox-background-sync/lib/QueueStore.mjs';
 import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
+import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
 
 const MINUTES = 60 * 1000;
 
-const getObjectStoreEntries = async () => {
-  return await new DBWrapper('workbox-background-sync', 3).getAll('requests');
-};
-
-const createSyncEventStub = (tag) => {
-  const extendLifetimePromises = [];
-
-  const ret = {
-    event: new SyncEvent('sync', {tag}),
-    // Default to resolving in the next microtask.
-    get done() {
-      return Promise.all(extendLifetimePromises);
-    },
-  };
-
-  // Browsers will throw if code tries to call `waitUntil()` on a user-created
-  // sync event, so we have to stub it.
-  ret.event.waitUntil = (promise) => {
-    // If `waitUntil` is called, defer `done` until after it resolves.
-    if (promise) {
-      extendLifetimePromises.push(promise.catch((e) => e));
-    }
-  };
-
-  return ret;
-};
-
-const clearIndexedDBEntries = async () => {
-  // Open a conection to the database (at whatever version exists) and
-  // clear out all object stores. This strategy is used because deleting
-  // databases inside service worker is flaky in FF and Safari.
-  const db = await new DBWrapper('workbox-background-sync').open();
-
-  // Edge cannot convert a DOMStringList to an array via `[...list]`.
-  for (const store of Array.from(db.db.objectStoreNames)) {
-    await db.clear(store);
-  }
-  await db.close();
-};
 
 describe(`Queue`, function() {
   const sandbox = sinon.createSandbox();
+  const db = new DBWrapper('workbox-background-sync', 3, {
+    onupgradeneeded: QueueStore.prototype._upgradeDb,
+  });
 
   beforeEach(async function() {
+    Queue._queueNames.clear();
+    await db.clear('requests');
     sandbox.restore();
+
+    // Spy on all added event listeners so they can be removed.
+    sandbox.spy(self, 'addEventListener');
+
     if (process.env.NODE_ENV !== 'production') {
       sandbox.stub(logger);
     }
-    Queue._queueNames.clear();
-    await clearIndexedDBEntries();
 
     // Don't actually register for a sync event in any test, as it could
     // make the tests non-deterministic.
@@ -75,6 +44,9 @@ describe(`Queue`, function() {
   });
 
   afterEach(function() {
+    for (const args of self.addEventListener.args) {
+      self.removeEventListener(...args);
+    }
     sandbox.restore();
   });
 
@@ -97,22 +69,22 @@ describe(`Queue`, function() {
     it(`adds a sync event listener (if supported) that runs the onSync function when a sync event is dispatched`, async function() {
       if (!('sync' in registration)) this.skip();
 
-      sandbox.spy(self, 'addEventListener');
       const onSync = sandbox.spy();
 
       const queue = new Queue('foo', {onSync});
 
+      // `addEventListener` is spied on in the beforeEach hook.
       expect(self.addEventListener.calledOnce).to.be.true;
       expect(self.addEventListener.calledWith('sync')).to.be.true;
 
-      const sync1 = createSyncEventStub('workbox-background-sync:foo');
-      self.dispatchEvent(sync1.event);
-      await sync1.done;
+      await dispatchAndWaitUntilDone(new SyncEvent('sync', {
+        tag: 'workbox-background-sync:foo',
+      }));
 
       // `onSync` should not be called because the tag won't match.
-      const sync2 = createSyncEventStub('workbox-background-sync:bar');
-      self.dispatchEvent(sync2.event);
-      await sync2.done;
+      await dispatchAndWaitUntilDone(new SyncEvent('sync', {
+        tag: 'workbox-background-sync:bar',
+      }));
 
       expect(onSync.callCount).to.equal(1);
       expect(onSync.firstCall.args[0].queue).to.equal(queue);
@@ -121,21 +93,20 @@ describe(`Queue`, function() {
     it(`defaults to calling replayRequests (if supported) when no onSync function is passed`, async function() {
       if (!('sync' in registration)) this.skip();
 
-      sandbox.spy(self, 'addEventListener');
-
       const queue = new Queue('foo');
 
+      // `addEventListener` is spied on in the beforeEach hook.
       expect(self.addEventListener.calledOnce).to.be.true;
       expect(self.addEventListener.calledWith('sync')).to.be.true;
 
-      const sync1 = createSyncEventStub('workbox-background-sync:foo');
-      self.dispatchEvent(sync1.event);
-      await sync1.done;
+      await dispatchAndWaitUntilDone(new SyncEvent('sync', {
+        tag: 'workbox-background-sync:foo',
+      }));
 
       // `replayRequests` should not be called because the tag won't match.
-      const sync2 = createSyncEventStub('workbox-background-sync:bar');
-      self.dispatchEvent(sync2.event);
-      await sync2.done;
+      await dispatchAndWaitUntilDone(new SyncEvent('sync', {
+        tag: 'workbox-background-sync:bar',
+      }));
 
       // `replayRequsets` is stubbed in beforeEach, so we don't have to
       // re-stub in this test, and we can just assert it was called.
@@ -156,9 +127,9 @@ describe(`Queue`, function() {
       const queue = new Queue('foo', {onSync});
       sandbox.spy(queue, 'registerSync');
 
-      const sync1 = createSyncEventStub('workbox-background-sync:foo');
-      self.dispatchEvent(sync1.event);
-      await sync1.done;
+      await dispatchAndWaitUntilDone(new SyncEvent('sync', {
+        tag: 'workbox-background-sync:foo',
+      }));
 
       expect(queue.registerSync.callCount).to.equal(1);
     });
@@ -166,18 +137,17 @@ describe(`Queue`, function() {
     it(`doesn't re-register after a sync event fails`, async function() {
       if (!('sync' in registration)) this.skip();
 
-      const onSync = sandbox.stub().callsFake(async ({queue}) => {
+      const onSync = async ({queue}) => {
         await queue.pushRequest({request: new Request('/one')});
         throw new Error('sync failed');
-      });
+      };
 
       const queue = new Queue('foo', {onSync});
       sandbox.spy(queue, 'registerSync');
 
-      const sync1 = createSyncEventStub('workbox-background-sync:foo');
-
-      self.dispatchEvent(sync1.event);
-      await sync1.done;
+      await dispatchAndWaitUntilDone(new SyncEvent('sync', {
+        tag: 'workbox-background-sync:foo',
+      }));
 
       expect(queue.registerSync.callCount).to.equal(0);
     });
@@ -185,19 +155,19 @@ describe(`Queue`, function() {
     it(`re-registers a tag after a sync event fails if event.lastChance is true`, async function() {
       if (!('sync' in registration)) this.skip();
 
-      const onSync = sandbox.stub().callsFake(async ({queue}) => {
+      const onSync = async ({queue}) => {
         await queue.pushRequest({request: new Request('/one')});
         throw new Error('sync failed');
-      });
+      };
 
       const queue = new Queue('foo', {onSync});
       sandbox.spy(queue, 'registerSync');
 
-      const sync1 = createSyncEventStub('workbox-background-sync:foo');
-      sandbox.stub(sync1.event, 'lastChance').value(true);
-      self.dispatchEvent(sync1.event);
-
-      await sync1.done;
+      const syncEvent = new SyncEvent('sync', {
+        tag: 'workbox-background-sync:foo',
+      });
+      sandbox.stub(syncEvent, 'lastChance').value(true);
+      await dispatchAndWaitUntilDone(syncEvent);
 
       expect(queue.registerSync.callCount).to.equal(1);
     });
@@ -552,7 +522,7 @@ describe(`Queue`, function() {
       await queue1.replayRequests();
       expect(self.fetch.callCount).to.equal(3);
 
-      const entries = await getObjectStoreEntries();
+      const entries = await db.getAll('requests');
       expect(entries.length).to.equal(2);
       expect(entries[0].requestData.url).to.equal(`${location.origin}/two`);
       expect(entries[1].requestData.url).to.equal(`${location.origin}/four`);
@@ -582,7 +552,7 @@ describe(`Queue`, function() {
         url: `${location.origin}/three`,
       }))).to.be.true;
 
-      const entries = await getObjectStoreEntries();
+      const entries = await db.getAll('requests');
       // Assert that the two requests not replayed were deleted.
       expect(entries.length).to.equal(0);
     });
@@ -604,7 +574,7 @@ describe(`Queue`, function() {
         return queue.replayRequests(); // The 4th requests should fail.
       }, 'queue-replay-failed');
 
-      const entries = await getObjectStoreEntries();
+      const entries = await db.getAll('requests');
       expect(entries.length).to.equal(2);
       expect(entries[0].requestData.url).to.equal(`${location.origin}/four`);
       expect(entries[1].requestData.url).to.equal(`${location.origin}/five`);
