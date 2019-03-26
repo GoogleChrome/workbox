@@ -278,7 +278,7 @@ describe(`initialize`, function() {
 
   it(`should add the qt param to replayed hits`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'pushRequest');
+    const pushRequestSpy = sandbox.spy(Queue.prototype, 'pushRequest');
     const clock = sandbox.useFakeTimers({toFake: ['Date']});
 
     initialize();
@@ -311,7 +311,9 @@ describe(`initialize`, function() {
         tag: `workbox-background-sync:workbox-google-analytics`,
       }));
     } else {
-      const queue = Queue.prototype.pushRequest.thisValues[0];
+      // Get the `this` context of the underlying Queue instance in order
+      // to manually replay it.
+      const queue = pushRequestSpy.thisValues[0];
       await queue._onSync({queue});
     }
 
@@ -337,7 +339,7 @@ describe(`initialize`, function() {
 
   it(`should update an existing qt param`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'pushRequest');
+    const pushRequestSpy = sandbox.spy(Queue.prototype, 'pushRequest');
     const clock = sandbox.useFakeTimers({toFake: ['Date']});
 
     initialize();
@@ -370,7 +372,9 @@ describe(`initialize`, function() {
         tag: `workbox-background-sync:workbox-google-analytics`,
       }));
     } else {
-      const queue = Queue.prototype.pushRequest.thisValues[0];
+      // Get the `this` context of the underlying Queue instance in order
+      // to manually replay it.
+      const queue = pushRequestSpy.thisValues[0];
       await queue._onSync({queue});
     }
 
@@ -387,7 +391,7 @@ describe(`initialize`, function() {
 
   it(`should add parameterOverrides to replayed hits`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'pushRequest');
+    const pushRequestSpy = sandbox.spy(Queue.prototype, 'pushRequest');
 
     initialize({
       parameterOverrides: {
@@ -420,7 +424,9 @@ describe(`initialize`, function() {
         tag: `workbox-background-sync:workbox-google-analytics`,
       }));
     } else {
-      const queue = Queue.prototype.pushRequest.thisValues[0];
+      // Get the `this` context of the underlying Queue instance in order
+      // to manually replay it.
+      const queue = pushRequestSpy.thisValues[0];
       await queue._onSync({queue});
     }
 
