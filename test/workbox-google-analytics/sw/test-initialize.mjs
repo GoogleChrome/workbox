@@ -6,50 +6,63 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
-import {reset as iDBReset} from 'shelving-mock-indexeddb';
-import {eventsDoneWaiting, resetEventListeners} from '../../../infra/testing/sw-env-mocks/event-listeners.js';
-import {Queue} from '../../../packages/workbox-background-sync/Queue.mjs';
-import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
-import {NetworkFirst, NetworkOnly} from '../../../packages/workbox-strategies/index.mjs';
-import {initialize} from '../../../packages/workbox-google-analytics/initialize.mjs';
+import {Queue} from 'workbox-background-sync/Queue.mjs';
+import {QueueStore} from 'workbox-background-sync/lib/QueueStore.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
+import {initialize} from 'workbox-google-analytics/initialize.mjs';
 import {
   GOOGLE_ANALYTICS_HOST,
   GTM_HOST,
   ANALYTICS_JS_PATH,
   GTAG_JS_PATH,
   GTM_JS_PATH,
-} from '../../../packages/workbox-google-analytics/utils/constants.mjs';
+} from 'workbox-google-analytics/utils/constants.mjs';
+import {NetworkFirst} from 'workbox-strategies/NetworkFirst.mjs';
+import {NetworkOnly} from 'workbox-strategies/NetworkOnly.mjs';
+import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
+
 
 const PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
-describe(`[workbox-google-analytics] initialize`, function() {
+describe(`initialize`, function() {
   const sandbox = sinon.createSandbox();
-  const reset = async () => {
+  const db = new DBWrapper('workbox-background-sync', 3, {
+    onupgradeneeded: QueueStore.prototype._upgradeDb,
+  });
+
+  beforeEach(async function() {
     Queue._queueNames.clear();
-    resetEventListeners();
     sandbox.restore();
-    iDBReset();
+    await db.clear('requests');
 
     const usedCaches = await caches.keys();
     await Promise.all(usedCaches.map((cacheName) => caches.delete(cacheName)));
-  };
 
-  beforeEach(async function() {
-    await reset();
+    // Spy on all added event listeners so they can be removed.
+    sandbox.spy(self, 'addEventListener');
+
+    // Don't actually register for a sync event in any test, as it could
+    // make them non-deterministic.
+    if ('sync' in registration) {
+      sandbox.stub(registration.sync, 'register');
+    }
   });
 
-  after(async function() {
-    await reset();
+  afterEach(function() {
+    for (const args of self.addEventListener.args) {
+      self.removeEventListener(...args);
+    }
+
+    sandbox.restore();
   });
 
-  it(`should register a handler to cache the analytics.js script`, function() {
+  it(`should register a handler to cache the analytics.js script`, async function() {
     sandbox.spy(NetworkFirst.prototype, 'handle');
 
     initialize();
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(
           `https://${GOOGLE_ANALYTICS_HOST}${ANALYTICS_JS_PATH}`, {
             mode: 'no-cors',
@@ -59,12 +72,12 @@ describe(`[workbox-google-analytics] initialize`, function() {
     expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
   });
 
-  it(`should register a handler to cache the gtag.js script`, function() {
+  it(`should register a handler to cache the gtag.js script`, async function() {
     sandbox.spy(NetworkFirst.prototype, 'handle');
 
     initialize();
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(
           `https://${GTM_HOST}${GTAG_JS_PATH}?id=UA-XXXXX-Y`, {
             mode: 'no-cors',
@@ -74,12 +87,12 @@ describe(`[workbox-google-analytics] initialize`, function() {
     expect(NetworkFirst.prototype.handle.calledOnce).to.be.true;
   });
 
-  it(`should register a handler to cache the gtm.js script`, function() {
+  it(`should register a handler to cache the gtm.js script`, async function() {
     sandbox.spy(NetworkFirst.prototype, 'handle');
 
     initialize();
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(
           `https://${GTM_HOST}${GTM_JS_PATH}?id=GTM-XXXX`, {
             mode: 'no-cors',
@@ -97,9 +110,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
           mode: 'no-cors',
         });
 
-    self.dispatchEvent(new FetchEvent('fetch', {request: analyticsJsRequest}));
-
-    await eventsDoneWaiting();
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
+      request: analyticsJsRequest,
+    }));
 
     const usedCaches = await caches.keys();
     expect(usedCaches).to.have.lengthOf(1);
@@ -107,6 +120,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     const cache = await caches.open('foobar');
     const cachedResponse = await cache.match(analyticsJsRequest);
+
     expect(cachedResponse).to.be.instanceOf(Response);
   });
 
@@ -118,9 +132,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
           mode: 'no-cors',
         });
 
-    self.dispatchEvent(new FetchEvent('fetch', {request: analyticsJsRequest}));
-
-    await eventsDoneWaiting();
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
+      request: analyticsJsRequest,
+    }));
 
     const defaultCacheName = cacheNames.getGoogleAnalyticsName();
     const usedCaches = await caches.keys();
@@ -132,12 +146,12 @@ describe(`[workbox-google-analytics] initialize`, function() {
     expect(cachedResponse).to.be.instanceOf(Response);
   });
 
-  it(`should register GET/POST routes for collect endpoints`, function() {
+  it(`should register GET/POST routes for collect endpoints`, async function() {
     sandbox.spy(NetworkOnly.prototype, 'handle');
 
     initialize();
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
           `/collect?${PAYLOAD}`, {
         method: 'GET',
@@ -146,7 +160,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     expect(NetworkOnly.prototype.handle.callCount).to.equal(1);
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
         method: 'POST',
         body: PAYLOAD,
@@ -156,7 +170,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
     expect(NetworkOnly.prototype.handle.callCount).to.equal(2);
 
     // Test the experimental /r/collect endpoint
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
           `/r/collect?${PAYLOAD}`, {
         method: 'GET',
@@ -166,7 +180,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
     expect(NetworkOnly.prototype.handle.callCount).to.equal(3);
 
     // Test the experimental /r/collect endpoint
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/r/collect`, {
         method: 'POST',
         body: PAYLOAD,
@@ -181,7 +195,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     initialize();
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
           `/collect?${PAYLOAD}`, {
         method: 'GET',
@@ -192,17 +206,17 @@ describe(`[workbox-google-analytics] initialize`, function() {
     expect(self.fetch.firstCall.args[0].url).to.equal(`https://` +
         `${GOOGLE_ANALYTICS_HOST}/collect?${PAYLOAD}`);
 
-    self.dispatchEvent(new FetchEvent('fetch', {
-      request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
-        method: 'POST',
-        body: PAYLOAD,
-      }),
-    }));
+    const request = new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
+      method: 'POST',
+      body: PAYLOAD,
+    });
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {request}));
 
     expect(self.fetch.calledTwice).to.be.true;
 
-    const bodyText = await self.fetch.secondCall.args[0].text();
-    expect(bodyText).to.equal(PAYLOAD);
+    // We can't compare payload bodies after the fetch has run, but if the
+    // fetch succeeds and sends the request, we know the body wasn't altered.
+    expect(self.fetch.secondCall.args[0]).to.equal(request);
   });
 
   it(`should not alter hit paths`, async function() {
@@ -211,7 +225,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
     initialize();
 
     // Test the /r/collect endpoint
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
           `/r/collect?${PAYLOAD}`, {
         method: 'GET',
@@ -223,7 +237,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
         `${GOOGLE_ANALYTICS_HOST}/r/collect?${PAYLOAD}`);
 
     // Test the /r/collect endpoint
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/r/collect`, {
         method: 'POST',
         body: PAYLOAD,
@@ -241,21 +255,19 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     initialize();
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
           `/collect?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
         method: 'POST',
         body: PAYLOAD,
       }),
     }));
-
-    await eventsDoneWaiting();
 
     const [call1Args, call2Args] = Queue.prototype.pushRequest.args;
     expect(call1Args[0].request.url).to.equal(`https://` +
@@ -266,40 +278,44 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   it(`should add the qt param to replayed hits`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'pushRequest');
+    const pushRequestSpy = sandbox.spy(Queue.prototype, 'pushRequest');
     const clock = sandbox.useFakeTimers({toFake: ['Date']});
 
     initialize();
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
           `/collect?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
 
-    await eventsDoneWaiting();
     clock.tick(100);
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/r/collect`, {
         method: 'POST',
         body: PAYLOAD,
       }),
     }));
 
-    await eventsDoneWaiting();
-
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
     clock.tick(100);
 
-    self.dispatchEvent(new SyncEvent('sync', {
-      tag: `workbox-background-sync:workbox-google-analytics`,
-    }));
-
-    await eventsDoneWaiting();
+    // Manually trigger the `onSync` callback in both sync and non-sync
+    // supporting browsers.
+    if ('sync' in registration) {
+      await dispatchAndWaitUntilDone(new SyncEvent('sync', {
+        tag: `workbox-background-sync:workbox-google-analytics`,
+      }));
+    } else {
+      // Get the `this` context of the underlying Queue instance in order
+      // to manually replay it.
+      const queue = pushRequestSpy.thisValues[0];
+      await queue._onSync({queue});
+    }
 
     expect(self.fetch.callCount).to.equal(2);
 
@@ -323,40 +339,44 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   it(`should update an existing qt param`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'pushRequest');
+    const pushRequestSpy = sandbox.spy(Queue.prototype, 'pushRequest');
     const clock = sandbox.useFakeTimers({toFake: ['Date']});
 
     initialize();
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
           `/collect?${PAYLOAD}&qt=1000`, {
         method: 'GET',
       }),
     }));
 
-    await eventsDoneWaiting();
     clock.tick(100);
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/r/collect`, {
         method: 'POST',
         body: `${PAYLOAD}&qt=3000`,
       }),
     }));
 
-    await eventsDoneWaiting();
-
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
     clock.tick(100);
 
-    self.dispatchEvent(new SyncEvent('sync', {
-      tag: `workbox-background-sync:workbox-google-analytics`,
-    }));
-
-    await eventsDoneWaiting();
+    // Manually trigger the `onSync` callback in both sync and non-sync
+    // supporting browsers.
+    if ('sync' in registration) {
+      await dispatchAndWaitUntilDone(new SyncEvent('sync', {
+        tag: `workbox-background-sync:workbox-google-analytics`,
+      }));
+    } else {
+      // Get the `this` context of the underlying Queue instance in order
+      // to manually replay it.
+      const queue = pushRequestSpy.thisValues[0];
+      await queue._onSync({queue});
+    }
 
     expect(self.fetch.callCount).to.equal(2);
 
@@ -371,7 +391,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
   it(`should add parameterOverrides to replayed hits`, async function() {
     sandbox.stub(self, 'fetch').rejects();
-    sandbox.spy(Queue.prototype, 'pushRequest');
+    const pushRequestSpy = sandbox.spy(Queue.prototype, 'pushRequest');
 
     initialize({
       parameterOverrides: {
@@ -380,30 +400,35 @@ describe(`[workbox-google-analytics] initialize`, function() {
       },
     });
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
           `/collect?${PAYLOAD}`, {
         method: 'GET',
       }),
     }));
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
         method: 'POST',
         body: PAYLOAD,
       }),
     }));
 
-    await eventsDoneWaiting();
-
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
-    self.dispatchEvent(new SyncEvent('sync', {
-      tag: `workbox-background-sync:workbox-google-analytics`,
-    }));
-
-    await eventsDoneWaiting();
+    // Manually trigger the `onSync` callback in both sync and non-sync
+    // supporting browsers.
+    if ('sync' in registration) {
+      await dispatchAndWaitUntilDone(new SyncEvent('sync', {
+        tag: `workbox-background-sync:workbox-google-analytics`,
+      }));
+    } else {
+      // Get the `this` context of the underlying Queue instance in order
+      // to manually replay it.
+      const queue = pushRequestSpy.thisValues[0];
+      await queue._onSync({queue});
+    }
 
     expect(self.fetch.callCount).to.equal(2);
 
@@ -434,30 +459,33 @@ describe(`[workbox-google-analytics] initialize`, function() {
       },
     });
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}` +
           `/collect?${PAYLOAD}&foo=1`, {
         method: 'GET',
       }),
     }));
 
-    self.dispatchEvent(new FetchEvent('fetch', {
+    await dispatchAndWaitUntilDone(new FetchEvent('fetch', {
       request: new Request(`https://${GOOGLE_ANALYTICS_HOST}/collect`, {
         method: 'POST',
         body: PAYLOAD + '&foo=2',
       }),
     }));
 
-    await eventsDoneWaiting();
-
     self.fetch.restore();
     sandbox.stub(self, 'fetch').resolves(new Response('', {status: 200}));
 
-    self.dispatchEvent(new SyncEvent('sync', {
-      tag: `workbox-background-sync:workbox-google-analytics`,
-    }));
-
-    await eventsDoneWaiting();
+    // Manually trigger the `onSync` callback in both sync and non-sync
+    // supporting browsers.
+    if ('sync' in registration) {
+      await dispatchAndWaitUntilDone(new SyncEvent('sync', {
+        tag: `workbox-background-sync:workbox-google-analytics`,
+      }));
+    } else {
+      const queue = Queue.prototype.pushRequest.thisValues[0];
+      await queue._onSync({queue});
+    }
 
     expect(self.fetch.callCount).to.equal(2);
 
