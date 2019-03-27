@@ -68,7 +68,10 @@ module.exports = baseSchema.keys({
       fetchOptions: joi.object(),
       matchOptions: joi.object(),
     }).with('expiration', 'cacheName'),
-  }).requiredKeys('urlPattern', 'handler')),
+  }).requiredKeys('urlPattern', 'handler')).when('navigationPreload', {
+    is: true,
+    then: joi.required(),
+  }),
   skipWaiting: joi.boolean().default(defaults.skipWaiting),
 }).rename('ignoreUrlParametersMatching', 'ignoreURLParametersMatching', {
   ignoreUndefined: true,
