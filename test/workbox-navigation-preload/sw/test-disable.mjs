@@ -6,41 +6,70 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import clearRequire from 'clear-require';
-import sinon from 'sinon';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {disable} from 'workbox-navigation-preload/disable.mjs';
+import {isSupported} from 'workbox-navigation-preload/isSupported.mjs';
+import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
-describe(`[workbox-navigation-preload] disable`, function() {
-  const originalSelf = global.self;
-  const MODULE_ID = '../../../packages/workbox-navigation-preload/disable.mjs';
+
+describe(`disable`, function() {
+  const sandbox = sinon.createSandbox();
+
+  beforeEach(async function() {
+    sandbox.restore();
+
+    // Spy on all added event listeners so they can be removed.
+    sandbox.spy(self, 'addEventListener');
+
+    if (isSupported()) {
+      // Don't actually disable navigation preload.
+      sandbox.stub(self.registration.navigationPreload, 'disable').resolves();
+    }
+  });
 
   afterEach(function() {
-    clearRequire(MODULE_ID);
-    global.self = originalSelf;
+    for (const args of self.addEventListener.args) {
+      self.removeEventListener(...args);
+    }
+    sandbox.restore();
   });
 
-  it(`should not call addEventListener when navigation preload isn't supported`, async function() {
-    global.self = {
-      addEventListener: sinon.stub(),
-    };
-
-    const {disable} = await import(MODULE_ID);
+  it(`should call addEventListener iff navigation preload is supported`, async function() {
     disable();
 
-    expect(global.self.addEventListener.called).to.be.false;
+    if (isSupported()) {
+      expect(self.addEventListener.callCount).to.equal(1);
+      expect(self.addEventListener.args[0][0]).to.equal('activate');
+    } else {
+      expect(self.addEventListener.callCount).to.equal(0);
+    }
   });
 
-  it(`should call addEventListener when navigation preload is supported`, async function() {
-    global.self = {
-      addEventListener: sinon.stub(),
-      registration: {
-        navigationPreload: {},
-      },
-    };
+  it(`should disable navigation preload if supported`, async function() {
+    if (!isSupported()) this.skip();
 
-    const {disable} = await import(MODULE_ID);
     disable();
 
-    expect(global.self.addEventListener.calledOnce).to.be.true;
+    await dispatchAndWaitUntilDone(new ExtendableEvent('activate'));
+
+    // This method is stubbed in the beforeEach hook.
+    expect(self.registration.navigationPreload.disable.callCount).to.equal(1);
+  });
+
+  it(`should log a confirmation message in development`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
+    sandbox.spy(logger, 'log');
+
+    disable();
+
+    await dispatchAndWaitUntilDone(new ExtendableEvent('activate'));
+
+    expect(logger.log.callCount).to.equal(1);
+    if (isSupported()) {
+      expect(logger.log.args[0][0]).to.match(/disabled/);
+    } else {
+      expect(logger.log.args[0][0]).to.match(/not supported/);
+    }
   });
 });
