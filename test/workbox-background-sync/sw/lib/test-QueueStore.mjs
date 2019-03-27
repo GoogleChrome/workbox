@@ -12,13 +12,13 @@ import {QueueStore} from 'workbox-background-sync/lib/QueueStore.mjs';
 import {StorableRequest} from 'workbox-background-sync/lib/StorableRequest.mjs';
 
 
-const getObjectStoreEntries = async () => {
-  return await new DBWrapper('workbox-background-sync', 3).getAll('requests');
-};
-
 describe(`QueueStore`, function() {
+  const db = new DBWrapper('workbox-background-sync', 3, {
+    onupgradeneeded: QueueStore.prototype._upgradeDb,
+  });
+
   beforeEach(async function() {
-    await deleteDatabase('workbox-background-sync');
+    await db.clear('requests');
   });
 
   describe(`constructor`, function() {
@@ -26,34 +26,53 @@ describe(`QueueStore`, function() {
       const queueStore = new QueueStore('foo');
       expect(queueStore._queueName).to.equal('foo');
     });
+
+    it(`should create a DBWrapper instance that references the _upgradeDb method`, function() {
+      const queueStore = new QueueStore('foo');
+      expect(queueStore._db._onupgradeneeded).to.equal(queueStore._upgradeDb);
+    });
   });
 
   describe(`_upgradeDb`, function() {
+    const v3Entry = {
+      queueName: 'a',
+      metadata: {
+        one: '1',
+        two: '2',
+      },
+      timestamp: 123,
+      requestData: {
+        url: `${location.origin}/one`,
+        requestInit: {
+          mode: 'cors',
+        },
+      },
+    };
+
     it(`should handle upgrading from no previous version`, async function() {
-      const queueStore = new QueueStore('a');
-
-      const sr1 = await StorableRequest.fromRequest(new Request('/one'));
-      const sr2 = await StorableRequest.fromRequest(new Request('/two'));
-
-      await queueStore.pushEntry({
-        requestData: sr1.toObject(),
-      });
-      await queueStore.pushEntry({
-        requestData: sr2.toObject(),
+      const dbv3 = new DBWrapper('workbox-background-sync-from-v3', 3, {
+        onupgradeneeded: QueueStore.prototype._upgradeDb,
       });
 
-      const entries = await getObjectStoreEntries();
-      expect(entries).to.have.lengthOf(2);
+      let entries = await dbv3.getAll('requests');
+      expect(entries.length).to.equal(0);
+
+      await dbv3.add('requests', v3Entry);
+
+      entries = await dbv3.getAll('requests');
       expect(entries[0].id).to.equal(1);
-      expect(entries[0].queueName).to.equal('a');
-      expect(entries[0].requestData.url).to.equal(`${location.origin}/one`);
-      expect(entries[1].id).to.equal(2);
-      expect(entries[1].queueName).to.equal('a');
-      expect(entries[1].requestData.url).to.equal(`${location.origin}/two`);
+      expect(entries[0].timestamp).to.equal(v3Entry.timestamp);
+      expect(entries[0].metadata).to.deep.equal(v3Entry.metadata);
+      expect(entries[0].queueName).to.equal(v3Entry.queueName);
+      expect(entries[0].requestData).to.deep.equal(v3Entry.requestData);
+
+      await deleteDatabase('workbox-background-sync-from-v3');
     });
 
     it(`should handle upgrading from version 1`, async function() {
-      const dbv1 = new DBWrapper('workbox-background-sync', 1, {
+      await deleteDatabase('workbox-background-sync-from-v1');
+
+      const dbv1 = new DBWrapper('workbox-background-sync-from-v1', 1, {
         onupgradeneeded: (event) => event.target.result
             .createObjectStore('requests', {autoIncrement: true})
             .createIndex('queueName', 'queueName', {unique: false}),
@@ -94,30 +113,29 @@ describe(`QueueStore`, function() {
         },
       });
 
-      const sr = await StorableRequest.fromRequest(new Request('/four'));
-      const requestData = sr.toObject();
-      const timestamp = Date.now();
-      const metadata = {a: '1'};
+      const dbv3 = new DBWrapper('workbox-background-sync-from-v1', 3, {
+        onupgradeneeded: QueueStore.prototype._upgradeDb,
+      });
 
-      // Creating the new `QueueStore` and pushing a new entry should trigger
-      // the database open (and thus the upgrade logic).
-      const queueStore = new QueueStore('a');
-      queueStore.pushEntry({requestData, timestamp, metadata});
+      let entries = await dbv3.getAll('requests');
+      expect(entries.length).to.equal(0);
 
-      const entries = await getObjectStoreEntries();
+      await dbv3.add('requests', v3Entry);
 
-      // All the old entries should have been removed.
-      expect(entries).to.have.lengthOf(1);
-
+      entries = await dbv3.getAll('requests');
       expect(entries[0].id).to.equal(1);
-      expect(entries[0].timestamp).to.equal(timestamp);
-      expect(entries[0].metadata).to.deep.equal(metadata);
-      expect(entries[0].queueName).to.equal('a');
-      expect(entries[0].requestData.url).to.equal(`${location.origin}/four`);
+      expect(entries[0].timestamp).to.equal(v3Entry.timestamp);
+      expect(entries[0].metadata).to.deep.equal(v3Entry.metadata);
+      expect(entries[0].queueName).to.equal(v3Entry.queueName);
+      expect(entries[0].requestData).to.deep.equal(v3Entry.requestData);
+
+      await deleteDatabase('workbox-background-sync-from-v2');
     });
 
     it(`should handle upgrading from version 2`, async function() {
-      const dbv2 = new DBWrapper('workbox-background-sync', 2, {
+      await deleteDatabase('workbox-background-sync-from-v2');
+
+      const dbv2 = new DBWrapper('workbox-background-sync-from-v2', 2, {
         onupgradeneeded: (event) => event.target.result
             .createObjectStore('requests', {
               autoIncrement: true,
@@ -155,23 +173,23 @@ describe(`QueueStore`, function() {
         },
       });
 
-      const sr = await StorableRequest.fromRequest(new Request('/four'));
-      const requestData = sr.toObject();
-      const timestamp = Date.now();
-      const metadata = {a: '1'};
+      const dbv3 = new DBWrapper('workbox-background-sync-from-v2', 3, {
+        onupgradeneeded: QueueStore.prototype._upgradeDb,
+      });
 
-      // Creating the new `QueueStore` and pushing a new entry should trigger
-      // the database open (and thus the upgrade logic).
-      const queueStore = new QueueStore('a');
-      queueStore.pushEntry({requestData, timestamp, metadata});
+      let entries = await dbv3.getAll('requests');
+      expect(entries.length).to.equal(0);
 
-      const entries = await getObjectStoreEntries();
+      await dbv3.add('requests', v3Entry);
 
+      entries = await dbv3.getAll('requests');
       expect(entries[0].id).to.equal(1);
-      expect(entries[0].timestamp).to.equal(timestamp);
-      expect(entries[0].metadata).to.deep.equal(metadata);
-      expect(entries[0].queueName).to.equal('a');
-      expect(entries[0].requestData.url).to.equal(`${location.origin}/four`);
+      expect(entries[0].timestamp).to.equal(v3Entry.timestamp);
+      expect(entries[0].metadata).to.deep.equal(v3Entry.metadata);
+      expect(entries[0].queueName).to.equal(v3Entry.queueName);
+      expect(entries[0].requestData).to.deep.equal(v3Entry.requestData);
+
+      await deleteDatabase('workbox-background-sync-from-v2');
     });
   });
 
@@ -191,6 +209,10 @@ describe(`QueueStore`, function() {
         timestamp: 1000,
         metadata: {name: 'meta1'},
       });
+
+      let entries = await db.getAll('requests');
+      const firstId = entries[0].id;
+
       await queueStore2.pushEntry({
         requestData: sr2.toObject(),
         timestamp: 2000,
@@ -212,30 +234,29 @@ describe(`QueueStore`, function() {
         metadata: {name: 'meta5'},
       });
 
-      const entries = await getObjectStoreEntries();
-
+      entries = await db.getAll('requests');
       expect(entries).to.have.lengthOf(5);
-      expect(entries[0].id).to.equal(1);
+      expect(entries[0].id).to.equal(firstId);
       expect(entries[0].queueName).to.equal('a');
       expect(entries[0].requestData.url).to.equal(`${location.origin}/one`);
       expect(entries[0].timestamp).to.equal(1000);
       expect(entries[0].metadata).to.deep.equal({name: 'meta1'});
-      expect(entries[1].id).to.equal(2);
+      expect(entries[1].id).to.equal(firstId + 1);
       expect(entries[1].queueName).to.equal('b');
       expect(entries[1].requestData.url).to.equal(`${location.origin}/two`);
       expect(entries[1].timestamp).to.equal(2000);
       expect(entries[1].metadata).to.deep.equal({name: 'meta2'});
-      expect(entries[2].id).to.equal(3);
+      expect(entries[2].id).to.equal(firstId + 2);
       expect(entries[2].queueName).to.equal('b');
       expect(entries[2].requestData.url).to.equal(`${location.origin}/three`);
       expect(entries[2].timestamp).to.equal(3000);
       expect(entries[2].metadata).to.deep.equal({name: 'meta3'});
-      expect(entries[3].id).to.equal(4);
+      expect(entries[3].id).to.equal(firstId + 3);
       expect(entries[3].queueName).to.equal('b');
       expect(entries[3].requestData.url).to.equal(`${location.origin}/four`);
       expect(entries[3].timestamp).to.equal(4000);
       expect(entries[3].metadata).to.deep.equal({name: 'meta4'});
-      expect(entries[4].id).to.equal(5);
+      expect(entries[4].id).to.equal(firstId + 4);
       expect(entries[4].queueName).to.equal('a');
       expect(entries[4].requestData.url).to.equal(`${location.origin}/five`);
       expect(entries[4].timestamp).to.equal(5000);
@@ -272,11 +293,15 @@ describe(`QueueStore`, function() {
       const sr4 = await StorableRequest.fromRequest(new Request('/four'));
       const sr5 = await StorableRequest.fromRequest(new Request('/five'));
 
-      await queueStore1.unshiftEntry({
+      await queueStore1.pushEntry({
         requestData: sr1.toObject(),
         timestamp: 1000,
         metadata: {name: 'meta1'},
       });
+
+      let entries = await db.getAll('requests');
+      const firstId = entries[0].id;
+
       await queueStore2.unshiftEntry({
         requestData: sr2.toObject(),
         timestamp: 2000,
@@ -297,29 +322,30 @@ describe(`QueueStore`, function() {
         timestamp: 5000,
         metadata: {name: 'meta5'},
       });
-      const entries = await getObjectStoreEntries();
+
+      entries = await db.getAll('requests');
       expect(entries).to.have.lengthOf(5);
-      expect(entries[0].id).to.equal(-3);
+      expect(entries[0].id).to.equal(firstId - 4);
       expect(entries[0].timestamp).to.equal(5000);
       expect(entries[0].metadata).to.deep.equal({name: 'meta5'});
       expect(entries[0].queueName).to.equal('a');
       expect(entries[0].requestData.url).to.equal(`${location.origin}/five`);
-      expect(entries[1].id).to.equal(-2);
+      expect(entries[1].id).to.equal(firstId - 3);
       expect(entries[1].timestamp).to.equal(4000);
       expect(entries[1].metadata).to.deep.equal({name: 'meta4'});
       expect(entries[1].queueName).to.equal('b');
       expect(entries[1].requestData.url).to.equal(`${location.origin}/four`);
-      expect(entries[2].id).to.equal(-1);
+      expect(entries[2].id).to.equal(firstId - 2);
       expect(entries[2].timestamp).to.equal(3000);
       expect(entries[2].metadata).to.deep.equal({name: 'meta3'});
       expect(entries[2].queueName).to.equal('b');
       expect(entries[2].requestData.url).to.equal(`${location.origin}/three`);
-      expect(entries[3].id).to.equal(0);
+      expect(entries[3].id).to.equal(firstId - 1);
       expect(entries[3].timestamp).to.equal(2000);
       expect(entries[3].metadata).to.deep.equal({name: 'meta2'});
       expect(entries[3].queueName).to.equal('b');
       expect(entries[3].requestData.url).to.equal(`${location.origin}/two`);
-      expect(entries[4].id).to.equal(1);
+      expect(entries[4].id).to.equal(firstId);
       expect(entries[4].timestamp).to.equal(1000);
       expect(entries[4].metadata).to.deep.equal({name: 'meta1'});
       expect(entries[4].queueName).to.equal('a');
@@ -361,6 +387,10 @@ describe(`QueueStore`, function() {
         timestamp: 1000,
         metadata: {name: 'meta1'},
       });
+
+      let entries = await db.getAll('requests');
+      const firstId = entries[0].id;
+
       await queueStore2.pushEntry({
         requestData: sr2.toObject(),
         timestamp: 2000,
@@ -382,7 +412,7 @@ describe(`QueueStore`, function() {
         metadata: {name: 'meta5'},
       });
 
-      let entries = await getObjectStoreEntries();
+      entries = await db.getAll('requests');
       expect(entries).to.have.lengthOf(5);
 
       const sr2a = await queueStore2.shiftEntry();
@@ -393,12 +423,12 @@ describe(`QueueStore`, function() {
       expect(sr2a.id).to.be.undefined;
       expect(sr2a.queueName).to.be.undefined;
 
-      entries = await getObjectStoreEntries();
+      entries = await db.getAll('requests');
       expect(entries).to.have.lengthOf(4);
-      expect(entries[0].id).to.equal(1);
-      expect(entries[1].id).to.equal(3);
-      expect(entries[2].id).to.equal(4);
-      expect(entries[3].id).to.equal(5);
+      expect(entries[0].id).to.equal(firstId);
+      expect(entries[1].id).to.equal(firstId + 2);
+      expect(entries[2].id).to.equal(firstId + 3);
+      expect(entries[3].id).to.equal(firstId + 4);
 
       const sr1a = await queueStore1.shiftEntry();
       expect(sr1a.requestData).to.deep.equal(sr1.toObject());
@@ -408,11 +438,11 @@ describe(`QueueStore`, function() {
       expect(sr1a.id).to.be.undefined;
       expect(sr1a.queueName).to.be.undefined;
 
-      entries = await getObjectStoreEntries();
+      entries = await db.getAll('requests');
       expect(entries).to.have.lengthOf(3);
-      expect(entries[0].id).to.equal(3);
-      expect(entries[1].id).to.equal(4);
-      expect(entries[2].id).to.equal(5);
+      expect(entries[0].id).to.equal(firstId + 2);
+      expect(entries[1].id).to.equal(firstId + 3);
+      expect(entries[2].id).to.equal(firstId + 4);
     });
   });
 
@@ -432,6 +462,10 @@ describe(`QueueStore`, function() {
         timestamp: 1000,
         metadata: {name: 'meta1'},
       });
+
+      let entries = await db.getAll('requests');
+      const firstId = entries[0].id;
+
       await queueStore2.pushEntry({
         requestData: sr2.toObject(),
         timestamp: 2000,
@@ -453,7 +487,7 @@ describe(`QueueStore`, function() {
         metadata: {name: 'meta5'},
       });
 
-      let entries = await getObjectStoreEntries();
+      entries = await db.getAll('requests');
       expect(entries).to.have.lengthOf(5);
 
       const sr4a = await queueStore2.popEntry();
@@ -464,18 +498,18 @@ describe(`QueueStore`, function() {
       expect(sr4a.id).to.be.undefined;
       expect(sr4a.queueName).to.be.undefined;
 
-      entries = await getObjectStoreEntries();
+      entries = await db.getAll('requests');
       expect(entries).to.have.lengthOf(4);
-      expect(entries[0].id).to.equal(1);
+      expect(entries[0].id).to.equal(firstId);
       expect(entries[0].queueName).to.equal('a');
       expect(entries[0].requestData.url).to.equal(`${location.origin}/one`);
-      expect(entries[1].id).to.equal(2);
+      expect(entries[1].id).to.equal(firstId + 1);
       expect(entries[1].queueName).to.equal('b');
       expect(entries[1].requestData.url).to.equal(`${location.origin}/two`);
-      expect(entries[2].id).to.equal(3);
+      expect(entries[2].id).to.equal(firstId + 2);
       expect(entries[2].queueName).to.equal('b');
       expect(entries[2].requestData.url).to.equal(`${location.origin}/three`);
-      expect(entries[3].id).to.equal(5);
+      expect(entries[3].id).to.equal(firstId + 4);
       expect(entries[3].queueName).to.equal('a');
       expect(entries[3].requestData.url).to.equal(`${location.origin}/five`);
 
@@ -487,11 +521,11 @@ describe(`QueueStore`, function() {
       expect(sr5a.id).to.be.undefined;
       expect(sr5a.queueName).to.be.undefined;
 
-      entries = await getObjectStoreEntries();
+      entries = await db.getAll('requests');
       expect(entries).to.have.lengthOf(3);
-      expect(entries[0].id).to.equal(1);
-      expect(entries[1].id).to.equal(2);
-      expect(entries[2].id).to.equal(3);
+      expect(entries[0].id).to.equal(firstId);
+      expect(entries[1].id).to.equal(firstId + 1);
+      expect(entries[2].id).to.equal(firstId + 2);
     });
   });
 });

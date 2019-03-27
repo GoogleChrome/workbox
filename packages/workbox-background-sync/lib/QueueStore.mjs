@@ -33,7 +33,7 @@ export class QueueStore {
   constructor(queueName) {
     this._queueName = queueName;
     this._db = new DBWrapper(DB_NAME, DB_VERSION, {
-      onupgradeneeded: (evt) => this._upgradeDb(evt),
+      onupgradeneeded: this._upgradeDb,
     });
   }
 
