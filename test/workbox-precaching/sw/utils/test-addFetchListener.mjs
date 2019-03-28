@@ -51,7 +51,7 @@ describe(`addFetchListener()`, function() {
 
     const cachedResponse = new Response('Injected Response');
     const cache = await caches.open(cacheNames.precache);
-    cache.put(new URL('/', location).href, cachedResponse);
+    await cache.put(new URL('/', location).href, cachedResponse);
 
     const fetchEvent1 = new FetchEvent('fetch', {request: new Request('/')});
     const fetchResponse1 = await dispatchAndWaitForResponse(fetchEvent1);
@@ -74,7 +74,7 @@ describe(`addFetchListener()`, function() {
 
     const cachedResponse = new Response('Injected Response');
     const cache = await caches.open(cacheNames.precache);
-    cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
+    await cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
 
     addFetchListener({
       ignoreURLParametersMatching: [/ignoreMe/],
@@ -98,7 +98,7 @@ describe(`addFetchListener()`, function() {
 
     const cachedResponse = new Response('Injected Response');
     const cache = await caches.open(cacheNames.precache);
-    cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
+    await cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
 
     addFetchListener({
       ignoreURLParametersMatching: [/ignoreMe/],
@@ -119,7 +119,7 @@ describe(`addFetchListener()`, function() {
 
     const cachedResponse = new Response('Injected Response');
     const cache = await caches.open(cacheNames.precache);
-    cache.put(new URL(`/${DIRECTORY_INDEX}`, location).href, cachedResponse);
+    await cache.put(new URL(`/${DIRECTORY_INDEX}`, location).href, cachedResponse);
 
     addFetchListener({
       directoryIndex: DIRECTORY_INDEX,
@@ -141,7 +141,7 @@ describe(`addFetchListener()`, function() {
 
     const cachedResponse = new Response('Injected Response');
     const cache = await caches.open(cacheNames.precache);
-    cache.put(new URL(`/${DIRECTORY_INDEX}`, location).href, cachedResponse);
+    await cache.put(new URL(`/${DIRECTORY_INDEX}`, location).href, cachedResponse);
 
     addFetchListener();
     precache([`/${DIRECTORY_INDEX}`]);
@@ -161,7 +161,7 @@ describe(`addFetchListener()`, function() {
 
     const cachedResponse = new Response('Injected Response');
     const cache = await caches.open(cacheNames.precache);
-    cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
+    await cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
 
     addFetchListener();
     precache([`/${PRECACHED_FILE}`]);
@@ -180,7 +180,7 @@ describe(`addFetchListener()`, function() {
 
     const cachedResponse = new Response('Injected Response');
     const cache = await caches.open(cacheNames.precache);
-    cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
+    await cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
 
     addFetchListener({
       cleanURLs: false,
@@ -226,7 +226,7 @@ describe(`addFetchListener()`, function() {
   it(`should return null if there is no match`, async function() {
     const cachedResponse = new Response('Injected Response');
     const cache = await caches.open(cacheNames.precache);
-    cache.put(new URL(`/something-else.html`, location).href, cachedResponse);
+    await cache.put(new URL(`/something-else.html`, location).href, cachedResponse);
 
     addFetchListener();
     precache([`/something-else.html`]);
