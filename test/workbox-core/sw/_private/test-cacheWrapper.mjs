@@ -514,7 +514,7 @@ describe(`cacheWrapper`, function() {
       expect(spy.calledOnceWith({
         request,
         mode: 'read',
-      }));
+      })).to.be.true;
     });
   });
 });
