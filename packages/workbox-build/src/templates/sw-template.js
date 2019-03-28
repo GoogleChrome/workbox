@@ -19,6 +19,8 @@ module.exports = `/**
  * See https://goo.gl/2aRDsh
  */
 
+<% if (navigationPreload) { %>workbox.navigationPreload.enable();<% } %>
+
 <% if (workboxSWImport) { %>
 importScripts(<%= JSON.stringify(workboxSWImport) %>);
 <% if (modulePathPrefix) { %>workbox.setConfig({modulePathPrefix: <%= JSON.stringify(modulePathPrefix) %>});<% } %>

@@ -38,6 +38,7 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
     'modifyURLPrefix',
     'navigateFallback',
     'navigateFallbackWhitelist',
+    'navigationPreload',
     'offlineGoogleAnalytics',
     'runtimeCaching',
     'skipWaiting',
@@ -518,6 +519,57 @@ describe(`[workbox-build] entry-points/generate-sw-string.js (End to End)`, func
         expect(error.name).to.eql('ValidationError');
         expect(error.details[0].context.key).to.eql('expiration');
       }
+    });
+  });
+
+  describe(`[workbox-build] behavior with 'navigationPreload'`, function() {
+    it(`should reject with a ValidationError when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function() {
+      const options = Object.assign({}, BASE_OPTIONS, {
+        navigationPreload: true,
+      });
+
+      try {
+        await generateSWString(options);
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.name).to.eql('ValidationError');
+        expect(error.details[0].context.key).to.eql('runtimeCaching');
+      }
+    });
+
+    it(`should reject with a ValidationError when 'navigationPreload' is true and 'runtimeCaching' is malformed`, async function() {
+      const options = Object.assign({}, BASE_OPTIONS, {
+        runtimeCaching: 'invalid',
+        navigationPreload: true,
+      });
+
+      try {
+        await generateSWString(options);
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.name).to.eql('ValidationError');
+        expect(error.details[0].context.key).to.eql('runtimeCaching');
+      }
+    });
+
+    it(`should generate when 'navigationPreload' is true and 'runtimeCaching' is valid`, async function() {
+      const urlPattern = /test/;
+      const handler = 'CacheFirst';
+      const options = Object.assign({}, BASE_OPTIONS, {
+        runtimeCaching: [{urlPattern, handler}],
+        navigationPreload: true,
+      });
+
+      const {swString, warnings} = await generateSWString(options);
+      expect(warnings).to.be.empty;
+
+      await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
+        [handler]: [[]],
+        importScripts: [[...DEFAULT_IMPORT_SCRIPTS]],
+        precacheAndRoute: [[[], {}]],
+        navigationPreloadEnable: [[]],
+        registerRoute: [[urlPattern, {name: handler}, 'GET']],
+      }});
     });
   });
 
