@@ -6,37 +6,42 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {printCleanupDetails} from 'workbox-precaching/utils/printCleanupDetails.mjs';
 
-import {devOnly} from '../../../../infra/testing/env-it';
-import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
-import {printCleanupDetails} from '../../../../packages/workbox-precaching/utils/printCleanupDetails.mjs';
 
-describe(`[workbox-precaching] printCleanupDetails`, function() {
-  let sandbox = sinon.createSandbox();
+describe(`printCleanupDetails()`, function() {
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
+    if (logger) {
+      sandbox.spy(logger, 'log');
+    }
+  });
+
+  afterEach(function() {
     sandbox.restore();
   });
 
-  after(function() {
-    sandbox.restore();
-  });
+  it(`shouldn't print if nothing was deleted`, function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
 
-  devOnly.it(`shouldn't print if nothing was deleted`, function() {
     printCleanupDetails([], []);
 
     expect(logger.log.callCount).to.equal(0);
   });
 
-  devOnly.it(`should print at least one entry was delete`, function() {
+  it(`should print at least one entry was delete`, function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     printCleanupDetails(['/'], ['/']);
 
     expect(logger.log.callCount).to.be.gt(0);
   });
 
-  devOnly.it(`should print strings with multiple entries`, function() {
+  it(`should print strings with multiple entries`, function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     printCleanupDetails(['/', '/2'], ['/', '/2']);
 
     expect(logger.log.callCount).to.be.gt(0);

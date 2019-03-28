@@ -6,12 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
+import {deleteOutdatedCaches} from 'workbox-precaching/utils/deleteOutdatedCaches.mjs';
 
-import {deleteOutdatedCaches} from '../../../../packages/workbox-precaching/utils/deleteOutdatedCaches.mjs';
 
-describe(`[workbox-precaching] utils/deleteOutdatedCaches()`, function() {
+describe(`deleteOutdatedCaches()`, function() {
   const CACHE_NAME = 'expected-precache-name';
 
   const sandbox = sinon.createSandbox();

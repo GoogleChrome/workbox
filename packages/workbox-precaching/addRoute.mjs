@@ -1,15 +1,12 @@
+
 /*
   Copyright 2019 Google LLC
-
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
   https://opensource.org/licenses/MIT.
 */
 
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {getCacheKeyForURL} from './utils/getCacheKeyForURL.mjs';
+import {addFetchListener} from './utils/addFetchListener.mjs';
 import './_version.mjs';
 
 
@@ -39,72 +36,9 @@ let listenerAdded = false;
  *
  * @alias workbox.precaching.addRoute
  */
-export const addRoute = ({
-  ignoreURLParametersMatching = [/^utm_/],
-  directoryIndex = 'index.html',
-  cleanURLs = true,
-  urlManipulation = null,
-} = {}) => {
+export const addRoute = (options) => {
   if (!listenerAdded) {
-    const cacheName = cacheNames.getPrecacheName();
-
-    addEventListener('fetch', (event) => {
-      const precachedURL = getCacheKeyForURL(event.request.url, {
-        cleanURLs,
-        directoryIndex,
-        ignoreURLParametersMatching,
-        urlManipulation,
-      });
-      if (!precachedURL) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.debug(`Precaching did not find a match for ` +
-            getFriendlyURL(event.request.url));
-        }
-        return;
-      }
-
-      let responsePromise = caches.open(cacheName).then((cache) => {
-        return cache.match(precachedURL);
-      }).then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-
-        // Fall back to the network if we don't have a cached response
-        // (perhaps due to manual cache cleanup).
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn(`The precached response for ` +
-          `${getFriendlyURL(precachedURL)} in ${cacheName} was not found. ` +
-          `Falling back to the network instead.`);
-        }
-
-        return fetch(precachedURL);
-      });
-
-      if (process.env.NODE_ENV !== 'production') {
-        responsePromise = responsePromise.then((response) => {
-          // Workbox is going to handle the route.
-          // print the routing details to the console.
-          logger.groupCollapsed(`Precaching is responding to: ` +
-            getFriendlyURL(event.request.url));
-          logger.log(`Serving the precached url: ${precachedURL}`);
-
-          logger.groupCollapsed(`View request details here.`);
-          logger.log(event.request);
-          logger.groupEnd();
-
-          logger.groupCollapsed(`View response details here.`);
-          logger.log(response);
-          logger.groupEnd();
-
-          logger.groupEnd();
-          return response;
-        });
-      }
-
-      event.respondWith(responsePromise);
-    });
-
+    addFetchListener(options);
     listenerAdded = true;
   }
 };

@@ -6,37 +6,25 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
-import clearRequire from 'clear-require';
+import {cleanupOutdatedCaches} from 'workbox-precaching/cleanupOutdatedCaches.mjs';
 
 
-describe(`[workbox-precaching] default export`, function() {
+describe(`cleanupOutdatedCaches()`, function() {
   const sandbox = sinon.createSandbox();
-  let cleanupOutdatedCaches;
 
   beforeEach(async function() {
     sandbox.restore();
-
-    const basePath = '../../../packages/workbox-precaching/';
-
-    // Clear the require cache and then re-import needed modules to assure
-    // local variables are reset before each run.
-    clearRequire.match(new RegExp('workbox-precaching'));
-    cleanupOutdatedCaches = (await import(`${basePath}cleanupOutdatedCaches.mjs`)).cleanupOutdatedCaches;
   });
 
-  after(function() {
+  afterEach(function() {
     sandbox.restore();
   });
 
-  describe(`cleanupOutdatedCaches()`, function() {
-    it(`should add an activate listener`, async function() {
-      const addEventListenerSpy = sandbox.spy(self, 'addEventListener');
-      cleanupOutdatedCaches();
+  it(`should add an activate listener`, async function() {
+    const addEventListenerSpy = sandbox.spy(self, 'addEventListener');
+    cleanupOutdatedCaches();
 
-      expect(addEventListenerSpy.calledOnce).to.be.true;
-      expect(addEventListenerSpy.firstCall.args[0]).to.eql('activate');
-    });
+    expect(addEventListenerSpy.calledOnce).to.be.true;
+    expect(addEventListenerSpy.firstCall.args[0]).to.eql('activate');
   });
 });

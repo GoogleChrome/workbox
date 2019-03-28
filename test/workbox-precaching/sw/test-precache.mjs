@@ -6,78 +6,69 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
-import clearRequire from 'clear-require';
+import {precache} from 'workbox-precaching/precache.mjs';
+import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
+import {getOrCreatePrecacheController} from 'workbox-precaching/utils/getOrCreatePrecacheController.mjs';
+import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
-describe(`[workbox-precaching] precache`, function() {
+
+describe(`precache()`, function() {
   const sandbox = sinon.createSandbox();
-  let precache;
-  let PrecacheController;
 
   beforeEach(async function() {
     sandbox.restore();
 
-    const basePath = '../../../packages/workbox-precaching/';
+    // Spy on all added event listeners so they can be removed.
+    sandbox.spy(self, 'addEventListener');
 
-    // Clear the require cache and then re-import needed modules to assure
-    // local variables are reset before each run.
-    clearRequire.match(new RegExp('workbox-precaching'));
-    precache = (await import(`${basePath}precache.mjs`)).precache;
-    PrecacheController = (await import(`${basePath}PrecacheController.mjs`)).PrecacheController;
+    // Reset the `_urlsToCacheKeys` map on the default PrecacheController.
+    getOrCreatePrecacheController()._urlsToCacheKeys = new Map();
   });
 
-  after(function() {
+  // The `addFetchListener` method adds a listener only the first time it's invoked,
+  // so we can't remove that listener until all tests are run.
+  afterEach(function() {
+    for (const args of self.addEventListener.args) {
+      self.removeEventListener(...args);
+    }
     sandbox.restore();
   });
 
-  describe(`precache()`, function() {
-    it(`should call install and activate on install and activate`, async function() {
-      const eventCallbacks = {};
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        eventCallbacks[eventName] = cb;
-      });
-      sandbox.spy(PrecacheController.prototype, 'install');
-      sandbox.spy(PrecacheController.prototype, 'activate');
+  it(`should call install and activate on install and activate`, async function() {
+    sandbox.spy(PrecacheController.prototype, 'install');
+    sandbox.spy(PrecacheController.prototype, 'activate');
 
-      expect(PrecacheController.prototype.install.callCount).to.equal(0);
+    precache(['/']);
 
-      precache(['/']);
+    await dispatchAndWaitUntilDone(new ExtendableEvent('install'));
+    expect(PrecacheController.prototype.install.callCount).to.equal(1);
+    expect(PrecacheController.prototype.activate.callCount).to.equal(0);
 
-      const installEvent = new ExtendableEvent('install');
-      let controllerInstallPromise;
-      installEvent.waitUntil = (promise) => {
-        controllerInstallPromise = promise;
-      };
+    await dispatchAndWaitUntilDone(new ExtendableEvent('activate'));
+    expect(PrecacheController.prototype.install.callCount).to.equal(1);
+    expect(PrecacheController.prototype.activate.callCount).to.equal(1);
+  });
 
+  it(`should add entries to the default PrecacheController cache list`, async function() {
+    sandbox.spy(PrecacheController.prototype, 'addToCacheList');
 
-      eventCallbacks['install'](installEvent);
+    precache(['/one', '/two', '/three']);
 
-      await controllerInstallPromise;
-      expect(PrecacheController.prototype.install.callCount).to.equal(1);
+    expect(PrecacheController.prototype.addToCacheList.callCount).to.equal(1);
+    expect(PrecacheController.prototype.addToCacheList.args[0][0])
+        .to.deep.equal(['/one', '/two', '/three']);
+  });
 
-      const activateEvent = new ExtendableEvent('activate');
-      let controllerActivatePromise;
-      activateEvent.waitUntil = (promise) => {
-        controllerActivatePromise = promise;
-      };
-      eventCallbacks['activate'](installEvent);
-
-      await controllerActivatePromise;
-      expect(PrecacheController.prototype.activate.callCount).to.equal(1);
-    });
-
-    it(`shouldn't throw when precaching assets`, function() {
-      precache([
-        'index.1234.html',
-        {
-          url: 'test.1234.html',
-        },
-        {
-          url: 'testing.html',
-          revision: '1234',
-        },
-      ]);
-    });
+  it(`shouldn't throw when precaching assets`, function() {
+    precache([
+      'index.1234.html',
+      {
+        url: 'test.1234.html',
+      },
+      {
+        url: 'testing.html',
+        revision: '1234',
+      },
+    ]);
   });
 });

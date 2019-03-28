@@ -6,34 +6,42 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
-
-import {devOnly} from '../../../infra/testing/env-it';
-import expectError from '../../../infra/testing/expectError';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
+import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 
-import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
-import {cacheWrapper} from '../../../packages/workbox-core/_private/cacheWrapper.mjs';
-import {fetchWrapper} from '../../../packages/workbox-core/_private/fetchWrapper.mjs';
-import {logger} from '../../../packages/workbox-core/_private/logger.mjs';
-import {PrecacheController} from '../../../packages/workbox-precaching/PrecacheController.mjs';
 
-
-describe(`[workbox-precaching] PrecacheController`, function() {
+describe(`PrecacheController`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
-    const cacheNames = await caches.keys();
-    await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
-
-    // Run this in the `beforeEach` hook as well as the afterEach hook due to
-    // a mocha bug where `afterEach` hooks aren't run for skipped tests.
-    // https://github.com/mochajs/mocha/issues/2546
     sandbox.restore();
+
+    if (logger) {
+      sandbox.spy(logger, 'log');
+    }
+
+    sandbox.stub(self, 'fetch').callsFake(() => {
+      return Promise.resolve(new Response('stub'));
+    });
+
+    // Spy on all added event listeners so they can be removed.
+    sandbox.spy(self, 'addEventListener');
+
+    // Clear all caches.
+    const cacheKeys = await caches.keys();
+    for (const cacheKey of cacheKeys) {
+      await caches.delete(cacheKey);
+    }
   });
 
-  after(function() {
+  afterEach(function() {
+    for (const args of self.addEventListener.args) {
+      self.removeEventListener(...args);
+    }
     sandbox.restore();
   });
 
@@ -112,7 +120,9 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     Object.keys(unrevisionedEntryGroups).forEach((groupName) => {
       const inputGroup = unrevisionedEntryGroups[groupName];
 
-      devOnly.it(`should add ${groupName} to cache list in dev`, async function() {
+      it(`should add ${groupName} to cache list in dev`, async function() {
+        if (process.env.NODE_ENV === 'production') this.skip();
+
         const precacheController = new PrecacheController();
 
         precacheController.addToCacheList(inputGroup);
@@ -138,10 +148,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         precacheController.addToCacheList(inputURLs);
 
         expect([...precacheController._urlsToCacheKeys.values()]).to.eql([
-          'https://example.com/',
-          'https://example.com/hello.html',
-          'https://example.com/styles/hello.css',
-          'https://example.com/scripts/controllers/hello.js',
+          `${location.origin}/`,
+          `${location.origin}/hello.html`,
+          `${location.origin}/styles/hello.css`,
+          `${location.origin}/scripts/controllers/hello.js`,
         ]);
       });
     });
@@ -158,10 +168,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       precacheController.addToCacheList(inputObjects);
 
       expect([...precacheController._urlsToCacheKeys.values()]).to.eql([
-        'https://example.com/?__WB_REVISION__=123',
-        'https://example.com/hello.html?__WB_REVISION__=123',
-        'https://example.com/styles/hello.css?__WB_REVISION__=123',
-        'https://example.com/scripts/controllers/hello.js?__WB_REVISION__=123',
+        `${location.origin}/?__WB_REVISION__=123`,
+        `${location.origin}/hello.html?__WB_REVISION__=123`,
+        `${location.origin}/styles/hello.css?__WB_REVISION__=123`,
+        `${location.origin}/scripts/controllers/hello.js?__WB_REVISION__=123`,
       ]);
     });
 
@@ -193,8 +203,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
         ];
         precacheController.addToCacheList(inputObjects);
       }, 'add-to-cache-list-conflicting-entries', (err) => {
-        expect(err.details.firstEntry).to.eql('https://example.com/duplicate.html?__WB_REVISION__=123');
-        expect(err.details.secondEntry).to.eql('https://example.com/duplicate.html?__WB_REVISION__=456');
+        expect(err.details.firstEntry).to.eql(`${location.origin}/duplicate.html?__WB_REVISION__=123`);
+        expect(err.details.secondEntry).to.eql(`${location.origin}/duplicate.html?__WB_REVISION__=456`);
       });
     });
   });
@@ -229,27 +239,27 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(keys.length).to.equal(cacheList.length);
 
       const expectedCacheKeys = [
-        'https://example.com/index.1234.html',
-        'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
+        `${location.origin}/index.1234.html`,
+        `${location.origin}/example.1234.css`,
+        `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
       ];
       for (const key of expectedCacheKeys) {
         const cachedResponse = await cache.match(key);
         expect(cachedResponse, `${key} is missing from the cache`).to.exist;
       }
 
-      if (process.env.NODE_ENV != 'production') {
+      if (process.env.NODE_ENV !== 'production') {
         // Make sure we print some debug info.
         expect(logger.log.callCount).to.be.gt(0);
       }
     });
 
     it(`should clean redirected precache entries`, async function() {
-      const fetchStub = sandbox.stub(global, 'fetch');
-      fetchStub.callsFake(() => {
+      self.fetch.restore();
+      sandbox.stub(self, 'fetch').callsFake(() => {
         const response = new Response('Redirected Response');
-        response.redirected = true;
+        sandbox.stub(response, 'redirected').value(true);
         return response;
       });
 
@@ -279,8 +289,8 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       expect(keys.length).to.equal(cacheList.length);
 
       const expectedCacheKeys = [
-        'https://example.com/index.html?__WB_REVISION__=1234',
-        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
+        `${location.origin}/index.html?__WB_REVISION__=1234`,
+        `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
       ];
       for (const key of expectedCacheKeys) {
         const cachedResponse = await cache.match(key);
@@ -308,10 +318,10 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const initialInstallInfo = await initialPrecacheController.install();
 
       const initialExpectedCacheKeys = [
-        'https://example.com/index.1234.html',
-        'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
+        `${location.origin}/index.1234.html`,
+        `${location.origin}/example.1234.css`,
+        `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
       ];
 
       expect(initialInstallInfo.updatedURLs).to.have.members(initialExpectedCacheKeys);
@@ -354,12 +364,12 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       const updateInstallInfo = await updatePrecacheController.install();
       expect(updateInstallInfo.updatedURLs).to.have.members([
-        'https://example.com/index.4321.html',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321',
+        `${location.origin}/index.4321.html`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321`,
       ]);
       expect(updateInstallInfo.notUpdatedURLs).to.have.members([
-        'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
+        `${location.origin}/example.1234.css`,
+        `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
       ]);
 
       // The cache mock needs the cache to be re-opened to have up-to-date keys.
@@ -367,12 +377,12 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const updateCacheKeys = await cache.keys();
       // Get the url field out of each Request object.
       expect(updateCacheKeys.map((r) => r.url)).to.have.members([
-        'https://example.com/index.1234.html',
-        'https://example.com/index.4321.html',
-        'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321',
+        `${location.origin}/index.1234.html`,
+        `${location.origin}/index.4321.html`,
+        `${location.origin}/example.1234.css`,
+        `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321`,
       ]);
 
       if (process.env.NODE_ENV != 'production') {
@@ -382,15 +392,15 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       const updateActivateInfo = await updatePrecacheController.activate();
       expect(updateActivateInfo.deletedURLs).to.have.members([
-        'https://example.com/index.1234.html',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
+        `${location.origin}/index.1234.html`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
       ]);
 
       const expectedPostActivateUpdateCacheKeys = [
-        'https://example.com/index.4321.html',
-        'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321',
+        `${location.origin}/index.4321.html`,
+        `${location.origin}/example.1234.css`,
+        `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321`,
       ];
 
       // The cache mock needs the cache to be re-opened to have up-to-date keys.
@@ -437,7 +447,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       await precacheController.activate({
         plugins: testPlugins,
       });
-
       expect(cacheWrapper.put.args[1][0].plugins).to.equal(testPlugins);
     });
 
@@ -477,7 +486,6 @@ describe(`[workbox-precaching] PrecacheController`, function() {
       const {request} = fetchWrapper.fetch.args[0][0];
       expect(request.credentials).to.eql('same-origin');
     });
-
     it(`it should fail installation when a response with a status of 400 is received`, async function() {
       sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
         status: 400,
@@ -496,9 +504,11 @@ describe(`[workbox-precaching] PrecacheController`, function() {
     });
 
     it(`it should successfully install when an opaque response is received`, async function() {
-      sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
-        status: 0,
-      }));
+      sandbox.stub(fetchWrapper, 'fetch').callsFake(() => {
+        const response = new Response('opaque');
+        sandbox.stub(response, 'status').value(0);
+        return response;
+      });
 
       const precacheController = new PrecacheController();
       const cacheList = [
@@ -559,7 +569,7 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       const cleanupDetailsTwo = await precacheControllerTwo.activate();
       expect(cleanupDetailsTwo.deletedURLs.length).to.equal(1);
-      expect(cleanupDetailsTwo.deletedURLs[0]).to.eql('https://example.com/scripts/index.js?__WB_REVISION__=1234');
+      expect(cleanupDetailsTwo.deletedURLs[0]).to.eql(`${location.origin}/scripts/index.js?__WB_REVISION__=1234`);
 
       const keysTwo = await cache.keys();
       expect(keysTwo.length).to.equal(cacheListTwo.length);
@@ -605,18 +615,18 @@ describe(`[workbox-precaching] PrecacheController`, function() {
 
       const cleanupDetailsTwo = await precacheControllerTwo.activate();
       expect(cleanupDetailsTwo.deletedURLs).to.deep.equal([
-        'https://example.com/index.1234.html',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234',
+        `${location.origin}/index.1234.html`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
       ]);
 
       const keysTwo = await cache.keys();
       expect(keysTwo.length).to.equal(cacheListTwo.length);
 
       const expectedCacheKeys2 = [
-        'https://example.com/index.4321.html',
-        'https://example.com/example.1234.css',
-        'https://example.com/scripts/index.js?__WB_REVISION__=1234',
-        'https://example.com/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321',
+        `${location.origin}/index.4321.html`,
+        `${location.origin}/example.1234.css`,
+        `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321`,
       ];
       for (const key of expectedCacheKeys2) {
         const cachedResponse = await cache.match(key);

@@ -6,40 +6,33 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
-import clearRequire from 'clear-require';
+import {getCacheKeyForURL} from 'workbox-precaching/getCacheKeyForURL.mjs';
+import {precache} from 'workbox-precaching/precache.mjs';
 
 
-describe(`[workbox-precaching] default export`, function() {
+describe(`getCacheKeyForURL()`, function() {
   const sandbox = sinon.createSandbox();
-  let precache;
-  let getCacheKeyForURL;
 
   beforeEach(async function() {
     sandbox.restore();
 
-    const basePath = '../../../packages/workbox-precaching/';
-
-    // Clear the require cache and then re-import needed modules to assure
-    // local variables are reset before each run.
-    clearRequire.match(new RegExp('workbox-precaching'));
-    precache = (await import(`${basePath}precache.mjs`)).precache;
-    getCacheKeyForURL = (await import(`${basePath}getCacheKeyForURL.mjs`)).getCacheKeyForURL;
+    // Spy on all added event listeners so they can be removed.
+    sandbox.spy(self, 'addEventListener');
   });
 
-  after(function() {
+  afterEach(function() {
+    for (const args of self.addEventListener.args) {
+      self.removeEventListener(...args);
+    }
     sandbox.restore();
   });
 
-  describe(`getCacheKeyForURL()`, function() {
-    it(`should return the expected cache keys for various URLs`, async function() {
-      precache(['/one', {url: '/two', revision: '1234'}]);
+  it(`should return the expected cache keys for various URLs`, async function() {
+    precache(['/one', {url: '/two', revision: '1234'}]);
 
-      expect(getCacheKeyForURL('/one')).to.eql('https://example.com/one');
-      expect(getCacheKeyForURL('https://example.com/two'))
-          .to.eql('https://example.com/two?__WB_REVISION__=1234');
-      expect(getCacheKeyForURL('/not-precached')).to.not.exist;
-    });
+    expect(getCacheKeyForURL('/one')).to.eql(`${location.origin}/one`);
+    expect(getCacheKeyForURL(`${location.origin}/two`))
+        .to.eql(`${location.origin}/two?__WB_REVISION__=1234`);
+    expect(getCacheKeyForURL('/not-precached')).to.not.exist;
   });
 });

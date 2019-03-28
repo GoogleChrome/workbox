@@ -6,84 +6,55 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
-import clearRequire from 'clear-require';
+import {addPlugins} from 'workbox-precaching/addPlugins.mjs';
+import {precache} from 'workbox-precaching/precache.mjs';
+import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
+import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
 
-describe(`[workbox-precaching] default export`, function() {
+describe(`addPlugins()`, function() {
   const sandbox = sinon.createSandbox();
-  let precache;
-  let addPlugins;
-  let PrecacheController;
 
   beforeEach(async function() {
     sandbox.restore();
 
-    const basePath = '../../../packages/workbox-precaching/';
-
-    // Clear the require cache and then re-import needed modules to assure
-    // local variables are reset before each run.
-    clearRequire.match(new RegExp('workbox-precaching'));
-    addPlugins = (await import(`${basePath}addPlugins.mjs`)).addPlugins;
-    precache = (await import(`${basePath}precache.mjs`)).precache;
-    PrecacheController = (await import(`${basePath}PrecacheController.mjs`)).PrecacheController;
+    // Spy on all added event listeners so they can be removed.
+    sandbox.spy(self, 'addEventListener');
   });
 
-  after(function() {
+  afterEach(function() {
+    for (const args of self.addEventListener.args) {
+      self.removeEventListener(...args);
+    }
     sandbox.restore();
   });
 
-  describe(`addPlugins()`, function() {
-    it(`should add plugins during install and activate`, async function() {
-      let eventCallbacks = {};
-      sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {
-        eventCallbacks[eventName] = cb;
-      });
-      sandbox.spy(PrecacheController.prototype, 'install');
-      sandbox.spy(PrecacheController.prototype, 'activate');
+  it(`should add plugins during install and activate`, async function() {
+    sandbox.spy(PrecacheController.prototype, 'install');
+    sandbox.spy(PrecacheController.prototype, 'activate');
 
-      const precacheArgs = ['/'];
+    const precacheArgs = ['/'];
+    const plugin1 = {name: 'plugin1'};
+    const plugin2 = {name: 'plugin2'};
 
-      const plugin1 = {
-        name: 'plugin1',
-      };
-      const plugin2 = {
-        name: 'plugin2',
-      };
+    precache(precacheArgs);
+    addPlugins([plugin1]);
+    addPlugins([plugin2]);
 
-      precache(precacheArgs);
+    await dispatchAndWaitUntilDone(new ExtendableEvent('install'));
 
-      addPlugins([plugin1]);
-      addPlugins([plugin2]);
+    expect(PrecacheController.prototype.install.callCount).to.equal(1);
+    expect(PrecacheController.prototype.install.args[0][0].plugins).to.deep.equal([
+      plugin1,
+      plugin2,
+    ]);
 
-      const installEvent = new ExtendableEvent('install');
-      let installPromise;
-      installEvent.waitUntil = (promise) => {
-        installPromise = promise;
-      };
-      eventCallbacks['install'](installEvent);
+    await dispatchAndWaitUntilDone(new ExtendableEvent('activate'));
 
-      await installPromise;
-
-      expect(PrecacheController.prototype.install.args[0][0].plugins).to.deep.equal([
-        plugin1,
-        plugin2,
-      ]);
-
-      const activateEvent = new ExtendableEvent('activate');
-      let activatePromise;
-      activateEvent.waitUntil = (promise) => {
-        activatePromise = promise;
-      };
-      eventCallbacks['activate'](activateEvent);
-
-      await activatePromise;
-
-      expect(PrecacheController.prototype.activate.args[0][0].plugins).to.deep.equal([
-        plugin1,
-        plugin2,
-      ]);
-    });
+    expect(PrecacheController.prototype.activate.callCount).to.equal(1);
+    expect(PrecacheController.prototype.activate.args[0][0].plugins).to.deep.equal([
+      plugin1,
+      plugin2,
+    ]);
   });
 });

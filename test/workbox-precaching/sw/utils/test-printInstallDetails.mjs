@@ -6,25 +6,26 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {printInstallDetails} from 'workbox-precaching/utils/printInstallDetails.mjs';
 
-import {devOnly} from '../../../../infra/testing/env-it';
-import {logger} from '../../../../packages/workbox-core/_private/logger.mjs';
-import {printInstallDetails} from '../../../../packages/workbox-precaching/utils/printInstallDetails.mjs';
 
-describe(`[workbox-precaching] printInstallDetails`, function() {
+describe(`printInstallDetails()`, function() {
   let sandbox = sinon.createSandbox();
 
   beforeEach(function() {
+    if (logger) {
+      sandbox.spy(logger, 'log');
+    }
+  });
+
+  afterEach(function() {
     sandbox.restore();
   });
 
-  after(function() {
-    sandbox.restore();
-  });
+  it(`should print with single update`, function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
 
-  devOnly.it(`should print with single update`, function() {
     printInstallDetails([], ['/index.html']);
 
     expect(logger.log.callCount).to.equal(1);
