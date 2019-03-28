@@ -41,28 +41,6 @@ const putWrapper = async ({
   plugins = [],
   matchOptions,
 } = {}) => {
-  if (!response) {
-    if (process.env.NODE_ENV !== 'production') {
-      logger.error(`Cannot cache non-existent response for ` +
-        `'${getFriendlyURL(request.url)}'.`);
-    }
-
-    throw new WorkboxError('cache-put-with-no-response', {
-      url: getFriendlyURL(request.url),
-    });
-  }
-
-  let responseToCache =
-      await _isResponseSafeToCache({request, response, event, plugins});
-
-  if (!responseToCache) {
-    if (process.env.NODE_ENV !== 'production') {
-      logger.debug(`Response '${getFriendlyURL(request.url)}' will not be ` +
-        `cached.`, responseToCache);
-    }
-    return;
-  }
-
   if (process.env.NODE_ENV !== 'production') {
     if (request.method && request.method !== 'GET') {
       throw new WorkboxError('attempt-to-cache-non-get-request', {
@@ -72,21 +50,51 @@ const putWrapper = async ({
     }
   }
 
+  const effectiveRequest = await _getEffectiveRequest({
+    plugins, request, mode: 'write'});
+
+  if (!response) {
+    if (process.env.NODE_ENV !== 'production') {
+      logger.error(`Cannot cache non-existent response for ` +
+        `'${getFriendlyURL(effectiveRequest.url)}'.`);
+    }
+
+    throw new WorkboxError('cache-put-with-no-response', {
+      url: getFriendlyURL(effectiveRequest.url),
+    });
+  }
+
+  let responseToCache = await _isResponseSafeToCache({
+    event,
+    plugins,
+    response,
+    request: effectiveRequest,
+  });
+
+  if (!responseToCache) {
+    if (process.env.NODE_ENV !== 'production') {
+      logger.debug(`Response '${getFriendlyURL(effectiveRequest.url)}' will ` +
+      `not be cached.`, responseToCache);
+    }
+    return;
+  }
+
   const cache = await caches.open(cacheName);
 
   const updatePlugins = pluginUtils.filter(
       plugins, pluginEvents.CACHE_DID_UPDATE);
 
   let oldResponse = updatePlugins.length > 0 ?
-    await matchWrapper({cacheName, request, matchOptions}) : null;
+      await matchWrapper({cacheName, matchOptions, request: effectiveRequest}) :
+      null;
 
   if (process.env.NODE_ENV !== 'production') {
     logger.debug(`Updating the '${cacheName}' cache with a new Response for ` +
-      `${getFriendlyURL(request.url)}.`);
+      `${getFriendlyURL(effectiveRequest.url)}.`);
   }
 
   try {
-    await cache.put(request, responseToCache);
+    await cache.put(effectiveRequest, responseToCache);
   } catch (error) {
     // See https://developer.mozilla.org/en-US/docs/Web/API/DOMException#exception-QuotaExceededError
     if (error.name === 'QuotaExceededError') {
@@ -98,10 +106,10 @@ const putWrapper = async ({
   for (let plugin of updatePlugins) {
     await plugin[pluginEvents.CACHE_DID_UPDATE].call(plugin, {
       cacheName,
-      request,
       event,
       oldResponse,
       newResponse: responseToCache,
+      request: effectiveRequest,
     });
   }
 };
@@ -129,7 +137,11 @@ const matchWrapper = async ({
   plugins = [],
 }) => {
   const cache = await caches.open(cacheName);
-  let cachedResponse = await cache.match(request, matchOptions);
+
+  const effectiveRequest = await _getEffectiveRequest({
+    plugins, request, mode: 'read'});
+
+  let cachedResponse = await cache.match(effectiveRequest, matchOptions);
   if (process.env.NODE_ENV !== 'production') {
     if (cachedResponse) {
       logger.debug(`Found a cached response in '${cacheName}'.`);
@@ -143,10 +155,10 @@ const matchWrapper = async ({
       cachedResponse = await plugin[pluginEvents.CACHED_RESPONSE_WILL_BE_USED]
           .call(plugin, {
             cacheName,
-            request,
             event,
             matchOptions,
             cachedResponse,
+            request: effectiveRequest,
           });
       if (process.env.NODE_ENV !== 'production') {
         if (cachedResponse) {
@@ -224,6 +236,46 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
   }
 
   return responseToCache ? responseToCache : null;
+};
+
+/**
+ * Checks the list of plugins for the cacheKeyWillBeUsed callback, and
+ * executes any of those callbacks found in sequence. The final `Request` object
+ * returned by the last plugin is treated as the cache key for cache reads
+ * and/or writes.
+ *
+ * @param {Object} options
+ * @param {Request} options.request
+ * @param {string} options.mode
+ * @param {Array<Object>} [options.plugins=[]]
+ * @return {Promise<Request>}
+ *
+ * @private
+ * @memberof module:workbox-core
+ */
+const _getEffectiveRequest = async ({request, mode, plugins}) => {
+  const cacheKeyWillBeUsedPlugins = pluginUtils.filter(
+      plugins, pluginEvents.CACHE_KEY_WILL_BE_USED);
+
+  let effectiveRequest = request;
+  for (const plugin of cacheKeyWillBeUsedPlugins) {
+    effectiveRequest = await plugin[pluginEvents.CACHE_KEY_WILL_BE_USED].call(
+        plugin, {mode, request: effectiveRequest});
+
+    if (typeof effectiveRequest === 'string') {
+      effectiveRequest = new Request(effectiveRequest);
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      assert.isInstance(effectiveRequest, Request, {
+        moduleName: 'Plugin',
+        funcName: pluginEvents.CACHE_KEY_WILL_BE_USED,
+        isReturnValueProblem: true,
+      });
+    }
+  }
+
+  return effectiveRequest;
 };
 
 export const cacheWrapper = {

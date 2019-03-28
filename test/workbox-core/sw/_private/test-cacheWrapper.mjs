@@ -221,6 +221,83 @@ describe(`cacheWrapper`, function() {
       }))).to.be.true;
     });
 
+    it(`should call cacheKeyWillBeUsed`, async function() {
+      const cacheName = 'cacheKeyWillBeUsed-test-cache';
+      const cache = await caches.open(cacheName);
+      sandbox.stub(caches, 'open').resolves(cache);
+      const cachePutStub = sandbox.stub(cache, 'put').resolves();
+
+      const firstPluginReturnValue = new Request('/firstPlugin');
+      const firstPlugin = {
+        cacheKeyWillBeUsed: () => firstPluginReturnValue,
+      };
+
+      const secondPlugin = {
+        // This string will be converted to a Request.
+        cacheKeyWillBeUsed: () => '/secondPlugin',
+      };
+
+      const spyOne = sandbox.spy(firstPlugin, 'cacheKeyWillBeUsed');
+      const spyTwo = sandbox.spy(secondPlugin, 'cacheKeyWillBeUsed');
+
+      const initialRequest = new Request('/noPlugin');
+      const response = new Response('Test response.');
+
+      await cacheWrapper.put({
+        response,
+        cacheName,
+        request: initialRequest,
+        plugins: [
+          firstPlugin,
+          {}, // Intentionally empty to ensure it's filtered out.
+          secondPlugin,
+        ],
+      });
+
+      expect(spyOne.calledOnceWith({
+        mode: 'write',
+        request: initialRequest,
+      })).to.be.true;
+      expect(spyOne.thisValues[0]).to.eql(firstPlugin);
+
+      expect(spyTwo.calledOnceWith({
+        mode: 'write',
+        request: firstPluginReturnValue,
+      })).to.be.true;
+      expect(spyTwo.thisValues[0]).to.eql(secondPlugin);
+
+      expect(cachePutStub.calledOnce).to.be.true;
+      // Check the url of the Request passed to cache.put().
+      expect(cachePutStub.args[0][0].url).to.eql(`${self.location.origin}/secondPlugin`);
+      expect(cachePutStub.args[0][1]).to.eql(response);
+    });
+
+    it(`should throw an error in development when the cacheKeyWillBeUsed return is invalid `, async function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
+      const request = new Request('/');
+      const response = new Response('');
+
+      const plugin = {
+        cacheKeyWillBeUsed: () => null,
+      };
+      const spy = sandbox.spy(plugin, 'cacheKeyWillBeUsed');
+
+      await expectError(async () => {
+        await cacheWrapper.put({
+          cacheName: 'test-cache-name',
+          request,
+          response,
+          plugins: [plugin],
+        });
+      }, 'incorrect-class');
+
+      expect(spy.calledOnceWith({
+        request,
+        mode: 'write',
+      })).to.be.true;
+    });
+
     it(`should call the quota exceeded callbacks when there's a QuotaExceeded error`, async function() {
       const callback1 = sandbox.stub();
       registerQuotaErrorCallback(callback1);
@@ -365,6 +442,79 @@ describe(`cacheWrapper`, function() {
           .to.equal(secondPluginResponse.headers.get('x-id'));
       expect(spyOne.callCount).to.equal(1);
       expect(spyTwo.callCount).to.equal(1);
+    });
+
+    it(`should call cacheKeyWillBeUsed`, async function() {
+      const cacheName = 'cacheKeyWillBeUsed-test-cache';
+      const cache = await caches.open(cacheName);
+      sandbox.stub(caches, 'open').resolves(cache);
+      const cacheMatchStub = sandbox.stub(cache, 'match').resolves(
+          new Response('Test response.'));
+
+      const firstPluginReturnValue = new Request('/firstPlugin');
+      const firstPlugin = {
+        cacheKeyWillBeUsed: () => firstPluginReturnValue,
+      };
+
+      const secondPlugin = {
+        // This string will be converted to a Request.
+        cacheKeyWillBeUsed: () => '/secondPlugin',
+      };
+
+      const spyOne = sandbox.spy(firstPlugin, 'cacheKeyWillBeUsed');
+      const spyTwo = sandbox.spy(secondPlugin, 'cacheKeyWillBeUsed');
+
+      const initialRequest = new Request('/noPlugin');
+
+      await cacheWrapper.match({
+        cacheName,
+        request: initialRequest,
+        plugins: [
+          firstPlugin,
+          {}, // Intentionally empty to ensure it's filtered out.
+          secondPlugin,
+        ],
+      });
+
+      expect(spyOne.calledOnceWith({
+        mode: 'read',
+        request: initialRequest,
+      })).to.be.true;
+      expect(spyOne.thisValues[0]).to.eql(firstPlugin);
+
+      expect(spyTwo.calledOnceWith({
+        mode: 'read',
+        request: firstPluginReturnValue,
+      })).to.be.true;
+      expect(spyTwo.thisValues[0]).to.eql(secondPlugin);
+
+      expect(cacheMatchStub.calledOnce).to.be.true;
+      // Check the url of the Request passed to cache.put().
+      expect(cacheMatchStub.args[0][0].url).to.eql(`${self.location.origin}/secondPlugin`);
+    });
+
+    it(`should throw an error in development when the cacheKeyWillBeUsed return is invalid `, async function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
+      const request = new Request('/');
+
+      const plugin = {
+        cacheKeyWillBeUsed: () => null,
+      };
+      const spy = sandbox.spy(plugin, 'cacheKeyWillBeUsed');
+
+      await expectError(async () => {
+        await cacheWrapper.match({
+          request,
+          cacheName: 'test-cache-name',
+          plugins: [plugin],
+        });
+      }, 'incorrect-class');
+
+      expect(spy.calledOnceWith({
+        request,
+        mode: 'read',
+      })).to.be.true;
     });
   });
 });
