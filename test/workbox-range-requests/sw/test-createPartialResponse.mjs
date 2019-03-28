@@ -6,11 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
+import {createPartialResponse} from 'workbox-range-requests/createPartialResponse.mjs';
 
-import {createPartialResponse} from '../../../packages/workbox-range-requests/createPartialResponse.mjs';
 
-describe(`[workbox-range-requests] createPartialResponse`, function() {
+describe(`createPartialResponse()`, function() {
   // This uses an interface that matches what our Blob mock currently supports.
   // It's *not* the same way we'd use native browser implementation.
   function constructBlob(length) {
@@ -35,29 +34,31 @@ describe(`[workbox-range-requests] createPartialResponse`, function() {
 
     it(`should return a Response with status 416 when the 'request' parameter isn't valid`, async function() {
       const response = await createPartialResponse(null, VALID_RESPONSE);
-      expect(response.status).to.eql(416);
+      expect(response.status).to.equal(416);
     });
 
     it(`should return a Response with status 416 when the 'response' parameter isn't valid`, async function() {
       const response = await createPartialResponse(VALID_REQUEST, null);
-      expect(response.status).to.eql(416);
+      expect(response.status).to.equal(416);
     });
 
     it(`should return a Response with status 416 when there's no Range: header in the request`, async function() {
       const noRangeHeaderRequest = new Request('/');
       const response = await createPartialResponse(noRangeHeaderRequest, VALID_RESPONSE);
-      expect(response.status).to.eql(416);
+      expect(response.status).to.equal(416);
     });
 
     it(`should return the expected Response when it's called with valid parameters`, async function() {
       const response = await createPartialResponse(VALID_REQUEST, VALID_RESPONSE);
-      expect(response.status).to.eql(206);
-      expect(response.headers.get('Content-Length')).to.eql(101);
-      expect(response.headers.get('Content-Range')).to.eql(`bytes 100-200/${SOURCE_BLOB_SIZE}`);
+      expect(response.status).to.equal(206);
+      expect(response.headers.get('Content-Length')).to.equal('101');
+      expect(response.headers.get('Content-Range')).to.equal(`bytes 100-200/${SOURCE_BLOB_SIZE}`);
 
       const responseBlob = await response.blob();
       const expectedBlob = constructBlob(101);
-      expect(responseBlob._text).to.eql(expectedBlob._text);
+
+      expect(await (new Response(responseBlob)).text())
+          .to.equal(await (new Response(expectedBlob)).text());
     });
 
     it(`should handle being passed a Response with a status of 206 by returning it as-is`, async function() {
@@ -65,7 +66,7 @@ describe(`[workbox-range-requests] createPartialResponse`, function() {
       const createdPartialResponse = await createPartialResponse(VALID_REQUEST, originalPartialResponse);
 
       // We should get back the exact same response.
-      expect(createdPartialResponse).to.eql(originalPartialResponse);
+      expect(createdPartialResponse).to.equal(originalPartialResponse);
     });
   });
 });

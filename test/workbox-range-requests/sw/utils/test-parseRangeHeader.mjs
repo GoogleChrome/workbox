@@ -6,14 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
+import {parseRangeHeader} from 'workbox-range-requests/utils/parseRangeHeader.mjs';
 
-import {parseRangeHeader} from '../../../../packages/workbox-range-requests/utils/parseRangeHeader.mjs';
-import expectError from '../../../../infra/testing/expectError';
-import {devOnly} from '../../../../infra/testing/env-it';
 
-describe(`[workbox-range-requests] utils/parseRangeHeader`, function() {
-  devOnly.it(`should throw when it's is called with an invalid 'rangeHeader' parameter`, async function() {
+describe(`parseRangeHeader()`, function() {
+  it(`should throw when it's is called with an invalid 'rangeHeader' parameter`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     const rangeHeader = null;
     await expectError(
         () => parseRangeHeader(rangeHeader),
