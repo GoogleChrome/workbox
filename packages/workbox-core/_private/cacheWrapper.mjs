@@ -65,7 +65,11 @@ const putWrapper = async ({
   }
 
   let responseToCache = await _isResponseSafeToCache({
-    response, event, plugins, request: effectiveRequest});
+    event,
+    plugins,
+    response,
+    request: effectiveRequest,
+  });
 
   if (!responseToCache) {
     if (process.env.NODE_ENV !== 'production') {
@@ -235,7 +239,7 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
 };
 
 /**
- * This checks the list of plugins for the cacheKeyWillBeUsed callback, and
+ * Checks the list of plugins for the cacheKeyWillBeUsed callback, and
  * executes any of those callbacks found in sequence. The final `Request` object
  * returned by the last plugin is treated as the cache key for cache reads
  * and/or writes.

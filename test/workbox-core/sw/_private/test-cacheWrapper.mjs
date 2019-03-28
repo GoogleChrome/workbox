@@ -224,7 +224,7 @@ describe(`cacheWrapper`, function() {
     it(`should call cacheKeyWillBeUsed`, async function() {
       const cacheName = 'cacheKeyWillBeUsed-test-cache';
       const cache = await caches.open(cacheName);
-      sandbox.stub(self.caches, 'open').resolves(cache);
+      sandbox.stub(caches, 'open').resolves(cache);
       const cachePutStub = sandbox.stub(cache, 'put').resolves();
 
       const firstPluginReturnValue = new Request('/firstPlugin');
@@ -295,7 +295,7 @@ describe(`cacheWrapper`, function() {
       expect(spy.calledOnceWith({
         request,
         mode: 'write',
-      }));
+      })).to.be.true;
     });
 
     it(`should call the quota exceeded callbacks when there's a QuotaExceeded error`, async function() {
@@ -447,7 +447,7 @@ describe(`cacheWrapper`, function() {
     it(`should call cacheKeyWillBeUsed`, async function() {
       const cacheName = 'cacheKeyWillBeUsed-test-cache';
       const cache = await caches.open(cacheName);
-      sandbox.stub(self.caches, 'open').resolves(cache);
+      sandbox.stub(caches, 'open').resolves(cache);
       const cacheMatchStub = sandbox.stub(cache, 'match').resolves(
           new Response('Test response.'));
 
