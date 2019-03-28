@@ -11,6 +11,7 @@ import '../_version.mjs';
 
 export const pluginEvents = {
   CACHE_DID_UPDATE: 'cacheDidUpdate',
+  CACHE_KEY_WILL_BE_USED: 'cacheKeyWillBeUsed',
   CACHE_WILL_UPDATE: 'cacheWillUpdate',
   CACHED_RESPONSE_WILL_BE_USED: 'cachedResponseWillBeUsed',
   FETCH_DID_FAIL: 'fetchDidFail',
