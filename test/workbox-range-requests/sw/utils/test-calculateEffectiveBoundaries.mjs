@@ -6,15 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
+import {calculateEffectiveBoundaries} from 'workbox-range-requests/utils/calculateEffectiveBoundaries.mjs';
 
-import {calculateEffectiveBoundaries} from '../../../../packages/workbox-range-requests/utils/calculateEffectiveBoundaries.mjs';
-import expectError from '../../../../infra/testing/expectError';
-import {devOnly} from '../../../../infra/testing/env-it';
 
-describe(`[workbox-range-requests] utils/calculateEffectiveBoundaries`, function() {
-  // This uses an interface that matches what our Blob mock currently supports.
-  // It's *not* the same way we'd use native browser implementation.
+describe(`calculateEffectiveBoundaries()`, function() {
   function constructBlob(length) {
     let string = '';
     for (let i = 0; i < length; i++) {
@@ -26,7 +21,9 @@ describe(`[workbox-range-requests] utils/calculateEffectiveBoundaries`, function
   const SOURCE_BLOB_SIZE = 256;
   const SOURCE_BLOB = constructBlob(SOURCE_BLOB_SIZE);
 
-  devOnly.it(`should throw when it's is called with an invalid 'blob' parameter`, async function() {
+  it(`should throw when it's is called with an invalid 'blob' parameter`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     const invalidBlob = null;
     await expectError(
         () => calculateEffectiveBoundaries(invalidBlob),

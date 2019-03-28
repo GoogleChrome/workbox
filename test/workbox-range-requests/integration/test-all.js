@@ -7,17 +7,27 @@
 */
 
 const expect = require('chai').expect;
-
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 const cleanSWEnv = require('../../../infra/testing/clean-sw');
+const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
 
-describe(`rangeRequests.Plugin`, function() {
-  const testServerAddress = global.__workbox.server.getAddress();
+
+// Store local references of these globals.
+const {webdriver, server} = global.__workbox;
+
+describe(`[workbox-range-requests]`, function() {
+  it(`passes all SW unit tests`, async function() {
+    await runUnitTests('/test/workbox-range-requests/sw/');
+  });
+});
+
+describe(`[workbox-range-requests] Plugin`, function() {
+  const testServerAddress = server.getAddress();
   const testingURL = `${testServerAddress}/test/workbox-range-requests/static/`;
 
   beforeEach(async function() {
     // Navigate to our test page and clear all caches before this test runs.
-    await cleanSWEnv(global.__workbox.webdriver, testingURL);
+    await cleanSWEnv(webdriver, testingURL);
   });
 
   it(`should return a partial response that satisfies the request's Range: header, and an error response when it can't be satisfied`, async function() {
@@ -26,7 +36,7 @@ describe(`rangeRequests.Plugin`, function() {
 
     const dummyURL = `this-file-doesnt-exist.txt`;
 
-    const partialResponseBody = await global.__workbox.webdriver.executeAsyncScript((dummyURL, cb) => {
+    const partialResponseBody = await webdriver.executeAsyncScript((dummyURL, cb) => {
       // Prime the cache, and then make the Range: request.
       fetch(new Request(dummyURL, {headers: {Range: `bytes=5-6`}}))
           .then((response) => response.text())
@@ -38,7 +48,7 @@ describe(`rangeRequests.Plugin`, function() {
     // 11 characters returned in the partial response.
     expect(partialResponseBody).to.eql('56');
 
-    const errorResponseStatus = await global.__workbox.webdriver.executeAsyncScript((dummyURL, cb) => {
+    const errorResponseStatus = await webdriver.executeAsyncScript((dummyURL, cb) => {
       // These are arbitrary large values that extend past the end of the file.
       fetch(new Request(dummyURL, {headers: {Range: `bytes=100-101`}}))
           .then((response) => cb(response.status));

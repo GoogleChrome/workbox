@@ -6,11 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
+import {Plugin} from 'workbox-range-requests/Plugin.mjs';
 
-import {Plugin} from '../../../packages/workbox-range-requests/Plugin.mjs';
 
-describe(`[workbox-range-requests] Plugin`, function() {
+describe(`Plugin`, function() {
   it(`should construct with no values`, function() {
     new Plugin();
   });
