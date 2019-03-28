@@ -6,10 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import expectError from '../../../infra/testing/expectError.js';
-import {devOnly} from '../../../infra/testing/env-it';
-import {NavigationRoute} from '../../../packages/workbox-routing/NavigationRoute.mjs';
+import {NavigationRoute} from 'workbox-routing/NavigationRoute.mjs';
+
 
 const handler = {
   handle: () => {},
@@ -18,8 +16,10 @@ const functionHandler = () => {};
 
 const invalidHandlerObject = {};
 
-describe(`[workbox-routing] NavigationRoute`, function() {
-  devOnly.it(`should throw when called without a valid handler parameter in dev`, async function() {
+describe(`NavigationRoute`, function() {
+  it(`should throw when called without a valid handler parameter in dev`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     await expectError(
         () => new NavigationRoute(),
         'incorrect-type',

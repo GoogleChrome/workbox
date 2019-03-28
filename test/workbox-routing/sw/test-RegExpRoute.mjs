@@ -6,14 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
+import {RegExpRoute} from 'workbox-routing/RegExpRoute.mjs';
 
-import {RegExpRoute} from '../../../packages/workbox-routing/RegExpRoute.mjs';
-import expectError from '../../../infra/testing/expectError.js';
-import {devOnly} from '../../../infra/testing/env-it.js';
 
-describe(`[workbox-routing] RegExpRoute`, function() {
+describe(`RegExpRoute`, function() {
   const SAME_ORIGIN_URL = new URL('https://example.com');
   const CROSS_ORIGIN_URL = new URL('https://cross-origin-example.com');
   const PATH = '/test/path';
@@ -22,14 +18,16 @@ describe(`[workbox-routing] RegExpRoute`, function() {
   const sandbox = sinon.createSandbox();
   beforeEach(function() {
     sandbox.restore();
-    sandbox.stub(global, 'location').value(SAME_ORIGIN_URL);
+    sandbox.stub(self, 'location').value(SAME_ORIGIN_URL);
   });
   after(function() {
     sandbox.restore();
   });
 
   for (const badRegExp of [undefined, null, 123, '123', {}]) {
-    devOnly.it(`should throw when called with a regExp parameter of ${JSON.stringify(badRegExp)} in dev`, async function() {
+    it(`should throw when called with a regExp parameter of ${JSON.stringify(badRegExp)} in dev`, async function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
+
       await expectError(
           () => new RegExpRoute(),
           'incorrect-class',

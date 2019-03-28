@@ -6,67 +6,59 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
-import clearRequire from 'clear-require';
-
-import {logger} from '../../../packages/workbox-core/_private/logger.mjs';
-import expectError from '../../../infra/testing/expectError';
-import {devOnly} from '../../../infra/testing/env-it';
+import {logger} from 'workbox-core/_private/logger.mjs';
+import {getOrCreateDefaultRouter} from 'workbox-routing/utils/getOrCreateDefaultRouter.mjs';
+import {RegExpRoute} from 'workbox-routing/RegExpRoute.mjs';
+import {registerRoute} from 'workbox-routing/registerRoute.mjs';
+import {Route} from 'workbox-routing/Route.mjs';
 
 
-describe(`[workbox-routing] registerRoute()`, function() {
+describe(`registerRoute()`, function() {
   const sandbox = sinon.createSandbox();
-
-  let RegExpRoute;
-  let registerRoute;
-  let Route;
-  let Router;
-  let getOrCreateDefaultRouter;
+  let defaultRouter;
 
   beforeEach(async function() {
     sandbox.restore();
 
-    const basePath = '../../../packages/workbox-routing/';
+    if (logger) {
+      sandbox.stub(logger, 'debug');
+    }
 
-    // Clear the require cache and then re-import needed modules to assure
-    // local variables are reset before each run.
-    clearRequire.match(new RegExp('workbox-routing'));
-    RegExpRoute = (await import(`${basePath}RegExpRoute.mjs`)).RegExpRoute;
-    registerRoute = (await import(`${basePath}registerRoute.mjs`)).registerRoute;
-    Route = (await import(`${basePath}Route.mjs`)).Route;
-    Router = (await import(`${basePath}Router.mjs`)).Router;
-    getOrCreateDefaultRouter = (await import(`${basePath}utils/getOrCreateDefaultRouter.mjs`)).getOrCreateDefaultRouter;
+    // Spy on all added event listeners so they can be removed.
+    sandbox.spy(self, 'addEventListener');
+
+    defaultRouter = getOrCreateDefaultRouter();
+
+    // Spy on all routes added to the default router so they can be removed.
+    sandbox.spy(defaultRouter, 'registerRoute');
   });
 
+  afterEach(function() {
+    for (const args of self.addEventListener.args) {
+      self.removeEventListener(...args);
+    }
+    for (const args of defaultRouter.registerRoute.args) {
+      defaultRouter.unregisterRoute(...args);
+    }
+    sandbox.restore();
+  });
+
+  // This is needed because we're skipping the last test, which for some
+  // reasons seems to be skipping the afterEach hook:
+  // https://github.com/mochajs/mocha/pull/2571#issuecomment-477407091
   after(function() {
     sandbox.restore();
   });
 
-  it(`should create a default router and add event listeners if one doesn't exist`, function() {
-    sandbox.spy(Router.prototype, 'addFetchListener');
-    sandbox.spy(Router.prototype, 'addCacheListener');
-
+  it(`should use the default router instance`, function() {
+    expect(defaultRouter.registerRoute.callCount).to.equal(0);
     registerRoute('/abc', sandbox.spy());
-    expect(Router.prototype.addFetchListener.callCount).to.equal(1);
-    expect(Router.prototype.addCacheListener.callCount).to.equal(1);
+    expect(defaultRouter.registerRoute.callCount).to.equal(1);
   });
 
-  it(`should not create more than one default router`, function() {
-    sandbox.spy(Router.prototype, 'addFetchListener');
-    sandbox.spy(Router.prototype, 'addCacheListener');
+  it(`should throw when using a string that doesn't start with '/' or 'http' is used.`, async function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
 
-    registerRoute('/abc', sandbox.spy());
-    expect(Router.prototype.addFetchListener.callCount).to.equal(1);
-    expect(Router.prototype.addCacheListener.callCount).to.equal(1);
-
-    // After running `registerRoute()` again, no new listeners should be added.
-    registerRoute('/def', sandbox.spy());
-    expect(Router.prototype.addFetchListener.callCount).to.equal(1);
-    expect(Router.prototype.addCacheListener.callCount).to.equal(1);
-  });
-
-  devOnly.it(`should throw when using a string that doesn't start with '/' or 'http' is used.`, async function() {
     await expectError(
         () => registerRoute('invalid-start', sandbox.stub()),
         'invalid-string',
@@ -314,7 +306,9 @@ describe(`[workbox-routing] registerRoute()`, function() {
     expect(handlerSpy.callCount).to.equal(0);
   });
 
-  devOnly.it(`should log for express styles routes`, function() {
+  it(`should log for express styles routes`, function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
     registerRoute('/:example/', () => {});
 
     expect(logger.debug.callCount).to.be.gt(0);
