@@ -53,6 +53,9 @@ function setupSpiesAndContext() {
       precacheAndRoute: sinon.spy(),
       cleanupOutdatedCaches: sinon.spy(),
     },
+    navigationPreload: {
+      enable: sinon.spy(),
+    },
     routing: {
       registerNavigationRoute: sinon.spy(),
       registerRoute: sinon.spy(),
@@ -86,6 +89,7 @@ function setupSpiesAndContext() {
     getCacheKeyForURL: workbox.precaching.getCacheKeyForURL,
     googleAnalyticsInitialize: workbox.googleAnalytics.initialize,
     NetworkFirst: workbox.strategies.NetworkFirst,
+    navigationPreloadEnable: workbox.navigationPreload.enable,
     precacheAndRoute: workbox.precaching.precacheAndRoute,
     registerNavigationRoute: workbox.routing.registerNavigationRoute,
     registerRoute: workbox.routing.registerRoute,

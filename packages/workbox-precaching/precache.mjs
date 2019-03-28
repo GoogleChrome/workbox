@@ -7,13 +7,34 @@
 */
 
 import {logger} from 'workbox-core/_private/logger.mjs';
-import {getOrCreatePrecacheController}
-  from './utils/getOrCreatePrecacheController.mjs';
+import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.mjs';
 import {precachePlugins} from './utils/precachePlugins.mjs';
 import './_version.mjs';
 
 
-let listenersAdded = false;
+const installListener = (event) => {
+  const precacheController = getOrCreatePrecacheController();
+  const plugins = precachePlugins.get();
+
+  event.waitUntil(
+      precacheController.install({event, plugins})
+          .catch((error) => {
+            if (process.env.NODE_ENV !== 'production') {
+              logger.error(`Service worker installation failed. It will ` +
+              `be retried automatically during the next navigation.`);
+            }
+            // Re-throw the error to ensure installation fails.
+            throw error;
+          })
+  );
+};
+
+const activateListener = (event) => {
+  const precacheController = getOrCreatePrecacheController();
+  const plugins = precachePlugins.get();
+
+  event.waitUntil(precacheController.activate({event, plugins}));
+};
 
 /**
  * Adds items to the precache list, removing any duplicates and
@@ -38,27 +59,11 @@ export const precache = (entries) => {
   const precacheController = getOrCreatePrecacheController();
   precacheController.addToCacheList(entries);
 
-  if (!listenersAdded && entries.length > 0) {
-    const plugins = precachePlugins.get();
-
-    self.addEventListener('install', (event) => {
-      event.waitUntil(
-          precacheController.install({event, plugins})
-              .catch((error) => {
-                if (process.env.NODE_ENV !== 'production') {
-                  logger.error(`Service worker installation failed. It will ` +
-                  `be retried automatically during the next navigation.`);
-                }
-                // Re-throw the error to ensure installation fails.
-                throw error;
-              })
-      );
-    });
-
-    self.addEventListener('activate', (event) => {
-      event.waitUntil(precacheController.activate({event, plugins}));
-    });
-
-    listenersAdded = true;
+  if (entries.length > 0) {
+    // NOTE: these listeners will only be added once (even if the `precache()`
+    // method is called multiple times) because event listeners are implemented
+    // as a set, where each listener must be unique.
+    addEventListener('install', installListener);
+    addEventListener('activate', activateListener);
   }
 };

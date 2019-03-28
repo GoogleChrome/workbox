@@ -34,6 +34,13 @@ describe(`enable`, function() {
     sandbox.restore();
   });
 
+  // This is needed because we're skipping the last test, which for some
+  // reasons seems to be skipping the afterEach hook:
+  // https://github.com/mochajs/mocha/pull/2571#issuecomment-477407091
+  after(function() {
+    sandbox.restore();
+  });
+
   it(`should call addEventListener iff navigation preload is supported`, async function() {
     enable();
 

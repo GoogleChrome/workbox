@@ -8,6 +8,7 @@
 
 
 const extendLifetimePromises = new WeakMap();
+const eventResponses = new WeakMap();
 
 export const eventDoneWaiting = async (event) => {
   const promises = extendLifetimePromises.get(event);
@@ -29,6 +30,7 @@ export const watchEvent = (event) => {
 
   if (event instanceof FetchEvent) {
     event.respondWith = (responseOrPromise) => {
+      eventResponses.set(event, responseOrPromise);
       promises.push(Promise.resolve(responseOrPromise));
 
       // TODO(philipwalton): we cannot currently call the native
@@ -43,4 +45,10 @@ export const dispatchAndWaitUntilDone = async (event) => {
   watchEvent(event);
   self.dispatchEvent(event);
   await eventDoneWaiting(event);
+};
+
+export const dispatchAndWaitForResponse = async (event) => {
+  await dispatchAndWaitUntilDone(event);
+  const response = await eventResponses.get(event);
+  return response;
 };

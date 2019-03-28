@@ -9,8 +9,8 @@
 const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
 
 
-describe(`[workbox-navigation-preload]`, function() {
+describe(`[workbox-precaching]`, function() {
   it(`passes all SW unit tests`, async function() {
-    await runUnitTests('/test/workbox-navigation-preload/sw/');
+    await runUnitTests('/test/workbox-precaching/sw/');
   });
 });

@@ -17,6 +17,7 @@ module.exports = {
   injectionPointRegexp: /(precacheAndRoute\()\s*\[\s*\]\s*(\)|,)/,
   maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
   navigateFallback: undefined,
+  navigationPreload: false,
   offlineGoogleAnalytics: false,
   purgeOnQuotaError: false,
   skipWaiting: false,
