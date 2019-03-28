@@ -6,40 +6,36 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import clearRequire from 'clear-require';
-import sinon from 'sinon';
+import {setDefaultHandler} from 'workbox-routing/setDefaultHandler.mjs';
+import {getOrCreateDefaultRouter} from 'workbox-routing/utils/getOrCreateDefaultRouter.mjs';
 
-describe(`[workbox-routing] setDefaultHandler()`, function() {
+describe(`setDefaultHandler()`, function() {
   const sandbox = sinon.createSandbox();
-
-  let setDefaultHandler;
-  let Router;
+  let defaultRouter;
 
   beforeEach(async function() {
     sandbox.restore();
 
-    const basePath = '../../../packages/workbox-routing/';
+    // Spy on all added event listeners so they can be removed.
+    sandbox.spy(self, 'addEventListener');
 
-    // Clear the require cache and then re-import needed modules to assure
-    // local variables are reset before each run.
-    clearRequire.match(new RegExp('workbox-routing'));
-
-    setDefaultHandler = (await import(`${basePath}setDefaultHandler.mjs`)).setDefaultHandler;
-    Router = (await import(`${basePath}Router.mjs`)).Router;
+    defaultRouter = getOrCreateDefaultRouter();
   });
 
-  after(function() {
+  afterEach(function() {
+    for (const args of self.addEventListener.args) {
+      self.removeEventListener(...args);
+    }
     sandbox.restore();
   });
 
   it(`should call setDefaultHandler() on the default router`, function() {
-    sandbox.spy(Router.prototype, 'setDefaultHandler');
+    sandbox.stub(defaultRouter, 'setDefaultHandler');
 
-    const handler = () => new Response('');
-
+    const handler = sandbox.spy();
     setDefaultHandler(handler);
 
-    expect(Router.prototype.setDefaultHandler.calledOnceWith(handler)).to.be.true;
+    expect(defaultRouter.setDefaultHandler.callCount).to.equal(1);
+    expect(defaultRouter.setDefaultHandler.args[0][0]).to.equal(handler);
   });
 });

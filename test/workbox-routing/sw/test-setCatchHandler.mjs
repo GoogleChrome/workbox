@@ -6,40 +6,36 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import clearRequire from 'clear-require';
-import sinon from 'sinon';
+import {setCatchHandler} from 'workbox-routing/setCatchHandler.mjs';
+import {getOrCreateDefaultRouter} from 'workbox-routing/utils/getOrCreateDefaultRouter.mjs';
 
-describe(`[workbox-routing] setCatchHandler()`, function() {
+describe(`setCatchHandler()`, function() {
   const sandbox = sinon.createSandbox();
-
-  let setCatchHandler;
-  let Router;
+  let defaultRouter;
 
   beforeEach(async function() {
     sandbox.restore();
 
-    const basePath = '../../../packages/workbox-routing/';
+    // Spy on all added event listeners so they can be removed.
+    sandbox.spy(self, 'addEventListener');
 
-    // Clear the require cache and then re-import needed modules to assure
-    // local variables are reset before each run.
-    clearRequire.match(new RegExp('workbox-routing'));
-
-    setCatchHandler = (await import(`${basePath}setCatchHandler.mjs`)).setCatchHandler;
-    Router = (await import(`${basePath}Router.mjs`)).Router;
+    defaultRouter = getOrCreateDefaultRouter();
   });
 
-  after(function() {
+  afterEach(function() {
+    for (const args of self.addEventListener.args) {
+      self.removeEventListener(...args);
+    }
     sandbox.restore();
   });
 
   it(`should call setCatchHandler() on the default router`, function() {
-    sandbox.spy(Router.prototype, 'setCatchHandler');
+    sandbox.stub(defaultRouter, 'setCatchHandler');
 
-    const handler = () => new Response('');
-
+    const handler = sandbox.spy();
     setCatchHandler(handler);
 
-    expect(Router.prototype.setCatchHandler.calledOnceWith(handler)).to.be.true;
+    expect(defaultRouter.setCatchHandler.callCount).to.equal(1);
+    expect(defaultRouter.setCatchHandler.args[0][0]).to.equal(handler);
   });
 });

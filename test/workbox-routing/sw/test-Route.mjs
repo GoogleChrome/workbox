@@ -6,9 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import expectError from '../../../infra/testing/expectError.js';
-import {Route} from '../../../packages/workbox-routing/Route.mjs';
+import {Route} from 'workbox-routing/Route.mjs';
+
 
 const match = () => {};
 const handler = {
@@ -20,7 +19,7 @@ const method = 'POST';
 const invalidHandlerObject = {};
 const invalidMethod = 'INVALID';
 
-describe(`workbox-routing: Route`, function() {
+describe(`Route`, function() {
   it(`should throw when called without any parameters in dev`, async function() {
     if (process.env.NODE_ENV === 'production') return this.skip();
 

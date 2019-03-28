@@ -6,9 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import expectError from '../../../../infra/testing/expectError.js';
-import {normalizeHandler} from '../../../../packages/workbox-routing/utils/normalizeHandler.mjs';
+import {normalizeHandler} from 'workbox-routing/utils/normalizeHandler.mjs';
+
 
 const handler = {
   handle: () => {},
@@ -18,23 +17,23 @@ const functionHandler = () => {};
 const invalidHandlerObject = {};
 const invalidHandlerString = 'INVALID';
 
-describe(`workbox-routing: utils/normalizeHandler`, function() {
+describe(`normalizeHandler()`, function() {
   it(`should properly normalize an object that exposes a handle method in dev`, async function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     const normalizedHandler = normalizeHandler(handler);
     expect(normalizedHandler).to.have.property('handle');
   });
 
   it(`should properly normalize a function in dev`, async function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     const normalizedHandler = normalizeHandler(functionHandler);
     expect(normalizedHandler).to.have.property('handle');
   });
 
   it(`should throw when called with an object that doesn't expose a handle method in dev`, async function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     await expectError(
         () => normalizeHandler(invalidHandlerObject),
@@ -49,7 +48,7 @@ describe(`workbox-routing: utils/normalizeHandler`, function() {
   });
 
   it(`should throw when called with something other than a function or an object in dev`, async function() {
-    if (process.env.NODE_ENV == 'production') return this.skip();
+    if (process.env.NODE_ENV === 'production') return this.skip();
 
     await expectError(
         () => normalizeHandler(invalidHandlerString),
@@ -64,14 +63,14 @@ describe(`workbox-routing: utils/normalizeHandler`, function() {
   });
 
   it(`should properly normalize an object that exposes a handle method in production`, async function() {
-    if (process.env.NODE_ENV != 'production') return this.skip();
+    if (process.env.NODE_ENV !== 'production') return this.skip();
 
     const normalizedHandler = normalizeHandler(handler);
     expect(normalizedHandler).to.have.property('handle');
   });
 
   it(`should properly normalize a function in production`, async function() {
-    if (process.env.NODE_ENV != 'production') return this.skip();
+    if (process.env.NODE_ENV !== 'production') return this.skip();
 
     const normalizedHandler = normalizeHandler(functionHandler);
     expect(normalizedHandler).to.have.property('handle');

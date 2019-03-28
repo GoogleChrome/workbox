@@ -105,7 +105,7 @@ class Router {
         event.waitUntil(requestPromises);
 
         // If a MessageChannel was used, reply to the message on success.
-        if (event.ports) {
+        if (event.ports && event.ports[0]) {
           await requestPromises;
           event.ports[0].postMessage(true);
         }

@@ -20,16 +20,16 @@ export const eventDoneWaiting = async (event) => {
   }
 };
 
-export const watchEvent = (event) => {
+export const spyOnEvent = (event) => {
   const promises = [];
   extendLifetimePromises.set(event, promises);
 
-  event.waitUntil = (promise) => {
+  event.waitUntil = sinon.stub().callsFake((promise) => {
     promises.push(promise);
-  };
+  });
 
   if (event instanceof FetchEvent) {
-    event.respondWith = (responseOrPromise) => {
+    event.respondWith = sinon.stub().callsFake((responseOrPromise) => {
       eventResponses.set(event, responseOrPromise);
       promises.push(Promise.resolve(responseOrPromise));
 
@@ -37,12 +37,12 @@ export const watchEvent = (event) => {
       // `respondWith()` due to this bug in Firefix:
       // https://bugzilla.mozilla.org/show_bug.cgi?id=1538756
       // FetchEvent.prototype.respondWith.call(event, responseOrPromise);
-    };
+    });
   }
 };
 
 export const dispatchAndWaitUntilDone = async (event) => {
-  watchEvent(event);
+  spyOnEvent(event);
   self.dispatchEvent(event);
   await eventDoneWaiting(event);
 };

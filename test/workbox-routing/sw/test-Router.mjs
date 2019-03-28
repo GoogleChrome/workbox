@@ -6,16 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
-
-import {Route} from '../../../packages/workbox-routing/Route.mjs';
-import {Router} from '../../../packages/workbox-routing/Router.mjs';
-import expectError from '../../../infra/testing/expectError';
-import {eventsDoneWaiting, resetEventListeners} from '../../../infra/testing/sw-env-mocks/event-listeners';
+import {Route} from 'workbox-routing/Route.mjs';
+import {Router} from 'workbox-routing/Router.mjs';
+import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 
-describe(`[workbox-routing] Router`, function() {
+
+describe(`Router`, function() {
   const sandbox = sinon.createSandbox();
   const MATCH = () => {};
   const HANDLER = {handle: () => {}};
@@ -23,16 +20,17 @@ describe(`[workbox-routing] Router`, function() {
   const EXPECTED_RESPONSE_BODY = 'test body';
 
   beforeEach(async function() {
-    // Run this in the `beforeEach` hook as well as the afterEach hook due to
-    // a mocha bug where `afterEach` hooks aren't run for skipped tests.
-    // https://github.com/mochajs/mocha/issues/2546
     sandbox.restore();
-    resetEventListeners();
+
+    // Spy on all added event listeners so they can be removed.
+    sandbox.spy(self, 'addEventListener');
   });
 
-  after(function() {
+  afterEach(function() {
+    for (const args of self.addEventListener.args) {
+      self.removeEventListener(...args);
+    }
     sandbox.restore();
-    resetEventListeners();
   });
 
   describe(`constructor`, function() {
@@ -148,22 +146,23 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
       router.addFetchListener();
 
-      const request = new Request(location);
-      const event = new FetchEvent('fetch', {request});
       sandbox.spy(router, 'handleRequest');
-      sandbox.spy(event, 'respondWith');
 
-      self.dispatchEvent(event);
+      const request = new Request(location);
+      const fetchEvent = new FetchEvent('fetch', {request});
+
+      await dispatchAndWaitUntilDone(fetchEvent);
+
       expect(router.handleRequest.callCount).to.equal(1);
       expect(router.handleRequest.args[0][0].request).to.equal(request);
-      expect(router.handleRequest.args[0][0].event).to.equal(event);
-      expect(event.respondWith.callCount).to.equal(1);
+      expect(router.handleRequest.args[0][0].event).to.equal(fetchEvent);
+      expect(fetchEvent.respondWith.callCount).to.equal(1);
 
-      const response = await event.respondWith.args[0][0];
+      const response = fetchEvent.respondWith.args[0][0];
       expect(await response.text()).to.equal(EXPECTED_RESPONSE_BODY);
     });
 
-    it(`should not call respondWith when no routes match`, function() {
+    it(`should not call respondWith when no routes match`, async function() {
       const router = new Router();
       const route = new Route(
           () => false,
@@ -171,14 +170,15 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
       router.addFetchListener();
 
-      const request = new Request(location.href + '?foo');
-      const event = new FetchEvent('fetch', {request});
       sandbox.spy(router, 'handleRequest');
-      sandbox.spy(event, 'respondWith');
 
-      self.dispatchEvent(event);
+      const request = new Request(location.href + '?foo');
+      const fetchEvent = new FetchEvent('fetch', {request});
+
+      await dispatchAndWaitUntilDone(fetchEvent);
+
       expect(router.handleRequest.callCount).to.equal(1);
-      expect(event.respondWith.callCount).to.equal(0);
+      expect(fetchEvent.respondWith.callCount).to.equal(0);
     });
   });
 
@@ -191,7 +191,9 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
       router.addCacheListener();
 
-      const event = new ExtendableMessageEvent('message', {
+      sandbox.spy(router, 'handleRequest');
+
+      const messageEvent = new ExtendableMessageEvent('message', {
         data: {
           type: 'CACHE_URLS',
           payload: {
@@ -199,21 +201,17 @@ describe(`[workbox-routing] Router`, function() {
           },
         },
       });
-      event.ports = [{postMessage: sinon.spy()}];
-      sinon.spy(event, 'waitUntil');
+      sandbox.stub(messageEvent, 'ports').value([{postMessage: sinon.spy()}]);
 
-      sandbox.spy(router, 'handleRequest');
-      self.dispatchEvent(event);
-
-      await eventsDoneWaiting();
+      await dispatchAndWaitUntilDone(messageEvent);
 
       expect(router.handleRequest.callCount).to.equal(3);
       expect(router.handleRequest.args[0][0].request.url).to.equal(`${location.origin}/one`);
       expect(router.handleRequest.args[1][0].request.url).to.equal(`${location.origin}/two`);
       expect(router.handleRequest.args[2][0].request.url).to.equal(`${location.origin}/three`);
-      expect(event.waitUntil.callCount).to.equal(1);
-      expect(event.waitUntil.args[0][0]).to.be.instanceOf(Promise);
-      expect(event.ports[0].postMessage.callCount).to.equal(1);
+      expect(messageEvent.waitUntil.callCount).to.equal(1);
+      expect(messageEvent.waitUntil.args[0][0]).to.be.instanceOf(Promise);
+      expect(messageEvent.ports[0].postMessage.callCount).to.equal(1);
     });
 
     it(`should accept URL strings or request URL+requestInit tuples`, async function() {
@@ -224,7 +222,9 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
       router.addCacheListener();
 
-      const event = new ExtendableMessageEvent('message', {
+      sandbox.spy(router, 'handleRequest');
+
+      await dispatchAndWaitUntilDone(new ExtendableMessageEvent('message', {
         data: {
           type: 'CACHE_URLS',
           payload: {
@@ -235,11 +235,7 @@ describe(`[workbox-routing] Router`, function() {
             ],
           },
         },
-      });
-      sandbox.spy(router, 'handleRequest');
-      self.dispatchEvent(event);
-
-      await eventsDoneWaiting();
+      }));
 
       expect(router.handleRequest.callCount).to.equal(3);
       expect(router.handleRequest.args[0][0].request.url).to.equal(`${location.origin}/one`);
@@ -256,11 +252,9 @@ describe(`[workbox-routing] Router`, function() {
       router.registerRoute(route);
       router.addCacheListener();
 
-      const event = new ExtendableMessageEvent('message');
       sandbox.spy(router, 'handleRequest');
 
-      self.dispatchEvent(event);
-      await eventsDoneWaiting();
+      await dispatchAndWaitUntilDone(new ExtendableMessageEvent('message'));
 
       expect(router.handleRequest.callCount).to.equal(0);
     });
