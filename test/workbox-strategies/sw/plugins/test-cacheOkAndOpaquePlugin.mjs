@@ -6,30 +6,26 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import {cacheOkAndOpaquePlugin} from '../../../packages/workbox-strategies/plugins/cacheOkAndOpaquePlugin.mjs';
+import {cacheOkAndOpaquePlugin} from 'workbox-strategies/plugins/cacheOkAndOpaquePlugin.mjs';
+import {generateOpaqueResponse} from '../../../../infra/testing/helpers/generateOpaqueResponse.mjs';
+import {generateUniqueResponse} from '../../../../infra/testing/helpers/generateUniqueResponse.mjs';
 
-describe(`[workbox-strategies] cacheOkAndOpaquePlugin`, function() {
+
+describe(`cacheOkAndOpaquePlugin`, function() {
   for (const status of [206, 404]) {
     it(`should return null when status is ${status}`, function() {
-      const response = new Response('Hello', {
-        status,
-      });
+      const response = generateUniqueResponse({status});
       expect(cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(null);
     });
   }
 
-  it(`should return Response if status is opaque`, function() {
-    const response = new Response('Hello', {
-      status: 0,
-    });
+  it(`should return Response if status is opaque`, async function() {
+    const response = await generateOpaqueResponse();
     expect(cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(response);
   });
 
   it(`should return Response if status is 200`, function() {
-    const response = new Response('Hello', {
-      status: 200,
-    });
+    const response = generateUniqueResponse();
     expect(cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(response);
   });
 });

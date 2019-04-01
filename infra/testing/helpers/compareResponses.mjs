@@ -6,17 +6,17 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
 
-function compareResponses(first, second, shouldBeSame) {
-  const firstClone = first.clone();
-  const secondClone = second.clone();
+const compareResponses = async (first, second, shouldBeSame) => {
+  const firstBody = await first.clone().text();
+  const secondBody = await second.clone().text();
 
-  return Promise.all([firstClone.text(), secondClone.text()])
-      .then(([firstBody, secondBody]) => {
-        return expect(firstBody === secondBody).to.eql(shouldBeSame);
-      });
-}
+  if (shouldBeSame) {
+    expect(firstBody).to.equal(secondBody);
+  } else {
+    expect(firstBody).to.not.equal(secondBody);
+  }
+};
 
 export {
   compareResponses,

@@ -6,15 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {CacheFirst} from 'workbox-strategies/CacheFirst.mjs';
+import {compareResponses} from '../../../infra/testing/helpers/compareResponses.mjs';
+import {eventDoneWaiting, spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
+import {generateOpaqueResponse} from '../../../infra/testing/helpers/generateOpaqueResponse.mjs';
+import {generateUniqueResponse} from '../../../infra/testing/helpers/generateUniqueResponse.mjs';
 
-import {cacheNames} from '../../../packages/workbox-core/_private/cacheNames.mjs';
-import {CacheFirst} from '../../../packages/workbox-strategies/CacheFirst.mjs';
-import {compareResponses} from '../utils/response-comparisons.mjs';
-import expectError from '../../../infra/testing/expectError';
 
-describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
+describe(`CacheFirst`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
@@ -29,341 +29,282 @@ describe(`[workbox-strategies] CacheFirst.makeRequest()`, function() {
     sandbox.restore();
   });
 
-  it(`should be able to make a request when passed a URL string`, async function() {
-    const url = 'http://example.io/test/';
-    const request = new Request(url);
-    const event = new FetchEvent('fetch', {request});
+  describe(`makeRequest()`, function() {
+    it(`should be able to make a request when passed a URL string`, async function() {
+      const url = 'http://example.io/test/';
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
-    const fetchResponse = new Response('Hello Test.');
-    sandbox.stub(global, 'fetch').callsFake((req) => {
-      expect(req.url).to.equal(request.url);
-      return Promise.resolve(fetchResponse);
+      const fetchResponse = generateUniqueResponse();
+      sandbox.stub(self, 'fetch').resolves(fetchResponse);
+
+      const cacheFirst = new CacheFirst();
+      const firstResponse = await cacheFirst.makeRequest({
+        event,
+        request: url,
+      });
+
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const firstCachedResponse = await cache.match(request);
+
+      await compareResponses(firstCachedResponse, fetchResponse, true);
+      await compareResponses(firstResponse, fetchResponse, true);
+
+      // Reset spy state so we can check fetch wasn't called.
+      self.fetch.resetHistory();
+
+      const secondResponse = await cacheFirst.makeRequest({
+        request: url,
+      });
+
+      const secondCachedResponse = await cache.match(request);
+      await compareResponses(firstCachedResponse, secondResponse, true);
+      await compareResponses(firstCachedResponse, secondCachedResponse, true);
+      expect(fetch.callCount).to.equal(0);
     });
 
-    let cachePromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      cachePromise = promise;
+    it(`should be able to make a request when passed a Request object`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      const fetchResponse = generateUniqueResponse();
+      sandbox.stub(self, 'fetch').resolves(fetchResponse);
+
+      const cacheFirst = new CacheFirst();
+      const firstResponse = await cacheFirst.makeRequest({
+        event,
+        request,
+      });
+
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const firstCachedResponse = await cache.match(request);
+
+      await compareResponses(firstCachedResponse, fetchResponse, true);
+      await compareResponses(firstResponse, fetchResponse, true);
+
+      // Reset spy state so we can check fetch wasn't called.
+      self.fetch.resetHistory();
+
+      const secondResponse = await cacheFirst.makeRequest({
+        request,
+      });
+
+      const secondCachedResponse = await cache.match(request);
+      await compareResponses(firstCachedResponse, secondResponse, true);
+      await compareResponses(firstCachedResponse, secondCachedResponse, true);
+      expect(fetch.callCount).to.equal(0);
     });
-
-    const cacheFirst = new CacheFirst();
-    const firstResponse = await cacheFirst.makeRequest({
-      event,
-      request: url,
-    });
-
-    // Wait until cache.put is finished.
-    await cachePromise;
-    const cache = await caches.open(cacheNames.getRuntimeName());
-    const firstCachedResponse = await cache.match(request);
-
-    await compareResponses(firstCachedResponse, fetchResponse, true);
-    await compareResponses(firstResponse, fetchResponse, true);
-
-    // Reset spy state so we can check fetch wasn't called.
-    global.fetch.resetHistory();
-
-    const secondResponse = await cacheFirst.makeRequest({
-      request: url,
-    });
-
-    const secondCachedResponse = await cache.match(request);
-    await compareResponses(firstCachedResponse, secondResponse, true);
-    await compareResponses(firstCachedResponse, secondCachedResponse, true);
-    expect(fetch.callCount).to.equal(0);
   });
 
-  it(`should be able to make a request when passed a Request object`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
+  describe(`handle()`, function() {
+    it(`should be able to fetch and cache a request to default cache`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
-    const fetchResponse = new Response('Hello Test.');
-    sandbox.stub(global, 'fetch').callsFake((req) => {
-      expect(req).to.equal(request);
-      return Promise.resolve(fetchResponse);
+      const fetchResponse = generateUniqueResponse();
+      sandbox.stub(self, 'fetch').resolves(fetchResponse);
+
+      const cacheFirst = new CacheFirst();
+      const firstHandleResponse = await cacheFirst.handle({event});
+
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const firstCachedResponse = await cache.match(request);
+
+      await compareResponses(firstCachedResponse, fetchResponse, true);
+      await compareResponses(firstHandleResponse, fetchResponse, true);
+
+      const secondHandleResponse = await cacheFirst.handle({event});
+
+      // Reset spy state so we can check fetch wasn't called.
+      self.fetch.resetHistory();
+
+      const secondCachedResponse = await cache.match(request);
+      await compareResponses(firstCachedResponse, secondHandleResponse, true);
+      await compareResponses(firstCachedResponse, secondCachedResponse, true);
+      expect(fetch.callCount).to.equal(0);
     });
 
-    let cachePromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      cachePromise = promise;
+    it(`should be able to cache a non-existent request to custom cache`, async function() {
+      const cacheName = 'test-cache-name';
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      const fetchResponse = generateUniqueResponse();
+      sandbox.stub(self, 'fetch').resolves(fetchResponse);
+
+      const cacheFirst = new CacheFirst({
+        cacheName,
+      });
+      const firstHandleResponse = await cacheFirst.handle({event});
+
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheName);
+      const firstCachedResponse = await cache.match(request);
+
+      await compareResponses(firstHandleResponse, firstCachedResponse, true);
     });
 
-    const cacheFirst = new CacheFirst();
-    const firstResponse = await cacheFirst.makeRequest({
-      event,
-      request,
+    it(`should not cache an opaque response by default`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      const fetchResponse = await generateOpaqueResponse();
+      sandbox.stub(self, 'fetch').resolves(fetchResponse);
+
+      const cacheFirst = new CacheFirst();
+      const firstHandleResponse = await cacheFirst.handle({event});
+
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const firstCachedResponse = await cache.match(request);
+
+      expect(firstCachedResponse).to.equal(undefined);
+      expect(firstHandleResponse).to.exist;
     });
 
-    // Wait until cache.put is finished.
-    await cachePromise;
-    const cache = await caches.open(cacheNames.getRuntimeName());
-    const firstCachedResponse = await cache.match(request);
+    it(`should cache an opaque response when a cacheWillUpdate plugin returns true`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
-    await compareResponses(firstCachedResponse, fetchResponse, true);
-    await compareResponses(firstResponse, fetchResponse, true);
+      const fetchResponse = await generateOpaqueResponse();
+      sandbox.stub(self, 'fetch').resolves(fetchResponse);
 
-    // Reset spy state so we can check fetch wasn't called.
-    global.fetch.resetHistory();
-
-    const secondResponse = await cacheFirst.makeRequest({
-      request,
-    });
-
-    const secondCachedResponse = await cache.match(request);
-    await compareResponses(firstCachedResponse, secondResponse, true);
-    await compareResponses(firstCachedResponse, secondCachedResponse, true);
-    expect(fetch.callCount).to.equal(0);
-  });
-});
-
-
-describe(`[workbox-strategies] CacheFirst.handle()`, function() {
-  let sandbox = sinon.createSandbox();
-
-  beforeEach(async function() {
-    let usedCacheNames = await caches.keys();
-    await Promise.all(usedCacheNames.map((cacheName) => {
-      return caches.delete(cacheName);
-    }));
-
-    sandbox.restore();
-  });
-
-  after(async function() {
-    let usedCacheNames = await caches.keys();
-    await Promise.all(usedCacheNames.map((cacheName) => {
-      return caches.delete(cacheName);
-    }));
-
-    sandbox.restore();
-  });
-
-  it(`should be able to fetch and cache a request to default cache`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-
-    const fetchResponse = new Response('Hello Test.');
-    sandbox.stub(global, 'fetch').callsFake((req) => {
-      expect(req).to.equal(request);
-      return Promise.resolve(fetchResponse);
-    });
-    let cachePromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      cachePromise = promise;
-    });
-
-    const cacheFirst = new CacheFirst();
-    const firstHandleResponse = await cacheFirst.handle({event});
-
-    // Wait until cache.put is finished.
-    await cachePromise;
-    const cache = await caches.open(cacheNames.getRuntimeName());
-    const firstCachedResponse = await cache.match(request);
-
-    await compareResponses(firstCachedResponse, fetchResponse, true);
-    await compareResponses(firstHandleResponse, fetchResponse, true);
-
-    const secondHandleResponse = await cacheFirst.handle({event});
-
-    // Reset spy state so we can check fetch wasn't called.
-    global.fetch.resetHistory();
-
-    const secondCachedResponse = await cache.match(request);
-    await compareResponses(firstCachedResponse, secondHandleResponse, true);
-    await compareResponses(firstCachedResponse, secondCachedResponse, true);
-    expect(fetch.callCount).to.equal(0);
-  });
-
-  it(`should be able to cache a non-existent request to custom cache`, async function() {
-    const cacheName = 'test-cache-name';
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-
-    sandbox.stub(global, 'fetch').callsFake((req) => {
-      expect(req).to.equal(request);
-      return Promise.resolve(new Response('Hello Test.'));
-    });
-    let cachePromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      cachePromise = promise;
-    });
-
-    const cacheFirst = new CacheFirst({
-      cacheName,
-    });
-    const firstHandleResponse = await cacheFirst.handle({event});
-
-    // Wait until cache.put is finished.
-    await cachePromise;
-    const cache = await caches.open(cacheName);
-    const firstCachedResponse = await cache.match(request);
-
-    await compareResponses(firstHandleResponse, firstCachedResponse, true);
-  });
-
-  it(`should not cache an opaque response by default`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-
-    sandbox.stub(global, 'fetch').callsFake((req) => {
-      expect(req).to.equal(request);
-      return Promise.resolve(new Response('Hello Test.', {
-        status: 0,
-      }));
-    });
-    let cachePromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      cachePromise = promise;
-    });
-
-    const cacheFirst = new CacheFirst();
-    const firstHandleResponse = await cacheFirst.handle({event});
-
-    // Wait until cache.put is finished.
-    await cachePromise;
-    const cache = await caches.open(cacheNames.getRuntimeName());
-    const firstCachedResponse = await cache.match(request);
-
-    expect(firstCachedResponse).to.equal(null);
-    expect(firstHandleResponse).to.exist;
-  });
-
-  it(`should cache an opaque response when a cacheWillUpdate plugin returns true`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-
-    sandbox.stub(global, 'fetch').callsFake((req) => {
-      expect(req).to.equal(request);
-      return Promise.resolve(new Response('Hello Test.', {
-        status: 0,
-      }));
-    });
-    let cachePromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      cachePromise = promise;
-    });
-
-    const cacheFirst = new CacheFirst({
-      plugins: [
-        {
-          cacheWillUpdate: ({request, response}) => {
-            return response;
+      const cacheFirst = new CacheFirst({
+        plugins: [
+          {
+            cacheWillUpdate: ({request, response}) => {
+              return response;
+            },
           },
-        },
-      ],
+        ],
+      });
+      const firstHandleResponse = await cacheFirst.handle({event});
+
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const firstCachedResponse = await cache.match(request);
+
+      await compareResponses(firstHandleResponse, firstCachedResponse, true);
     });
-    const firstHandleResponse = await cacheFirst.handle({event});
 
-    // Wait until cache.put is finished.
-    await cachePromise;
-    const cache = await caches.open(cacheNames.getRuntimeName());
-    const firstCachedResponse = await cache.match(request);
+    it(`should return the plugin cache response`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
 
-    await compareResponses(firstHandleResponse, firstCachedResponse, true);
-  });
+      const injectedResponse = new Response('response body');
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      await cache.put(request, injectedResponse.clone());
 
-  it(`should return the plugin cache response`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-
-    const injectedResponse = new Response('response body');
-    const cache = await caches.open(cacheNames.getRuntimeName());
-    await cache.put(request, injectedResponse.clone());
-
-    const pluginResponse = new Response('plugin response');
-    const cacheFirst = new CacheFirst({
-      plugins: [
-        {
-          cachedResponseWillBeUsed: () => {
-            return pluginResponse;
+      const pluginResponse = new Response('plugin response');
+      const cacheFirst = new CacheFirst({
+        plugins: [
+          {
+            cachedResponseWillBeUsed: () => {
+              return pluginResponse;
+            },
           },
-        },
-      ],
-    });
-    const firstHandleResponse = await cacheFirst.handle({event});
+        ],
+      });
+      const firstHandleResponse = await cacheFirst.handle({event});
 
-    await compareResponses(firstHandleResponse, pluginResponse, true);
-  });
-
-  it(`should fallback to fetch if the plugin.cacheResponseWillBeUsed returns null`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-
-    const fetchResponse = new Response('Hello Test.');
-    sandbox.stub(global, 'fetch').callsFake((req) => {
-      expect(req).to.equal(request);
-      return Promise.resolve(fetchResponse);
-    });
-    let cachePromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      cachePromise = promise;
+      await compareResponses(firstHandleResponse, pluginResponse, true);
     });
 
-    const injectedResponse = new Response('response body');
-    const cache = await caches.open(cacheNames.getRuntimeName());
-    await cache.put(request, injectedResponse.clone());
+    it(`should fallback to fetch if the plugin.cacheResponseWillBeUsed returns null`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
-    const cacheFirst = new CacheFirst({
-      plugins: [
-        {
-          cachedResponseWillBeUsed: () => {
-            return null;
+      const fetchResponse = generateUniqueResponse();
+      sandbox.stub(self, 'fetch').resolves(fetchResponse);
+
+      const injectedResponse = generateUniqueResponse();
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      await cache.put(request, injectedResponse.clone());
+
+      const cacheFirst = new CacheFirst({
+        plugins: [
+          {
+            cachedResponseWillBeUsed: () => {
+              return null;
+            },
           },
-        },
-      ],
-    });
-    const firstHandleResponse = await cacheFirst.handle({event});
+        ],
+      });
+      const firstHandleResponse = await cacheFirst.handle({event});
 
-    // Wait until cache.put is finished.
-    await cachePromise;
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
 
-    // The cache should be overridden.
-    const firstCachedResponse = await cache.match(request);
+      // The cache should be overridden.
+      const firstCachedResponse = await cache.match(request);
 
-    await compareResponses(firstCachedResponse, fetchResponse, true);
-    await compareResponses(firstHandleResponse, fetchResponse, true);
-  });
-
-  it(`should be able to handle a network error`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-    const injectedError = new Error(`Injected Error.`);
-    sandbox.stub(global, 'fetch').callsFake((req) => {
-      return Promise.reject(injectedError);
+      await compareResponses(firstCachedResponse, fetchResponse, true);
+      await compareResponses(firstHandleResponse, fetchResponse, true);
     });
 
-    const cacheFirst = new CacheFirst();
-    await expectError(
-        () => cacheFirst.handle({event}),
-        'no-response'
-    );
-  });
+    it(`should be able to handle a network error`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
 
-  it(`should use the fetchOptions provided`, async function() {
-    const fetchOptions = {credentials: 'include'};
-    const cacheFirst = new CacheFirst({fetchOptions});
+      const injectedError = new Error(`Injected Error.`);
+      sandbox.stub(self, 'fetch').rejects(injectedError);
 
-    const fetchStub = sandbox.stub(global, 'fetch').resolves(new Response());
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
+      const cacheFirst = new CacheFirst();
+      await expectError(
+          () => cacheFirst.handle({event}),
+          'no-response'
+      );
+    });
 
-    await cacheFirst.handle({event});
+    it(`should use the fetchOptions provided`, async function() {
+      const fetchOptions = {credentials: 'include'};
+      const cacheFirst = new CacheFirst({fetchOptions});
 
-    expect(fetchStub.calledOnce).to.be.true;
-    expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
-  });
+      const fetchStub = sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
 
-  it(`should use the CacheQueryOptions when performing a cache match`, async function() {
-    const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(new Response());
+      await cacheFirst.handle({event});
 
-    const matchOptions = {ignoreSearch: true};
-    const cacheFirst = new CacheFirst({matchOptions});
+      expect(fetchStub.calledOnce).to.be.true;
+      expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
+    });
 
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
+    it(`should use the CacheQueryOptions when performing a cache match`, async function() {
+      const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(generateUniqueResponse());
 
-    await cacheFirst.handle({event});
+      const matchOptions = {ignoreSearch: true};
+      const cacheFirst = new CacheFirst({matchOptions});
 
-    expect(matchStub.calledOnce).to.be.true;
-    expect(matchStub.calledWith(request, matchOptions)).to.be.true;
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+
+      await cacheFirst.handle({event});
+
+      expect(matchStub.calledOnce).to.be.true;
+      expect(matchStub.calledWith(request, matchOptions)).to.be.true;
+    });
   });
 });

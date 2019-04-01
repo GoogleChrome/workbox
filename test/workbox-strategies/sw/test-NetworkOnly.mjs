@@ -6,14 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {NetworkOnly} from 'workbox-strategies/NetworkOnly.mjs';
+import {generateUniqueResponse} from '../../../infra/testing/helpers/generateUniqueResponse.mjs';
 
-import {_private} from '../../../packages/workbox-core/index.mjs';
-import {NetworkOnly} from '../../../packages/workbox-strategies/NetworkOnly.mjs';
-import expectError from '../../../infra/testing/expectError';
 
-describe(`[workbox-strategies] NetworkOnly.makeRequest()`, function() {
+describe(`NetworkOnly`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
@@ -28,127 +26,113 @@ describe(`[workbox-strategies] NetworkOnly.makeRequest()`, function() {
     sandbox.restore();
   });
 
-  it(`should return a response without adding anything to the cache when the network request is successful, when passed a URL string`, async function() {
-    const url = 'http://example.io/test/';
+  describe(`makeRequest()`, function() {
+    it(`should return a response without adding anything to the cache when the network request is successful, when passed a URL string`, async function() {
+      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
-    const networkOnly = new NetworkOnly();
+      const url = 'http://example.io/test/';
+      const networkOnly = new NetworkOnly();
 
-    const handleResponse = await networkOnly.makeRequest({
-      request: url,
-    });
-    expect(handleResponse).to.be.instanceOf(Response);
+      const handleResponse = await networkOnly.makeRequest({
+        request: url,
+      });
+      expect(handleResponse).to.be.instanceOf(Response);
 
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
-    const keys = await cache.keys();
-    expect(keys).to.be.empty;
-  });
-
-  it(`should return a response without adding anything to the cache when the network request is successful, when passed a Request object`, async function() {
-    const request = new Request('http://example.io/test/');
-
-    const networkOnly = new NetworkOnly();
-
-    const handleResponse = await networkOnly.makeRequest({
-      request,
-    });
-    expect(handleResponse).to.be.instanceOf(Response);
-
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
-    const keys = await cache.keys();
-    expect(keys).to.be.empty;
-  });
-});
-
-describe(`[workbox-strategies] NetworkOnly.handle()`, function() {
-  let sandbox = sinon.createSandbox();
-
-  beforeEach(async function() {
-    let usedCacheNames = await caches.keys();
-    await Promise.all(usedCacheNames.map((cacheName) => {
-      return caches.delete(cacheName);
-    }));
-
-    sandbox.restore();
-  });
-
-  after(async function() {
-    let usedCacheNames = await caches.keys();
-    await Promise.all(usedCacheNames.map((cacheName) => {
-      return caches.delete(cacheName);
-    }));
-
-    sandbox.restore();
-  });
-
-  it(`should return a response without adding anything to the cache when the network request is successful`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-
-    const networkOnly = new NetworkOnly();
-
-    const handleResponse = await networkOnly.handle({event});
-    expect(handleResponse).to.be.instanceOf(Response);
-
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
-    const keys = await cache.keys();
-    expect(keys).to.be.empty;
-  });
-
-  it(`should reject when the network request fails`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-
-    sandbox.stub(global, 'fetch').callsFake(() => {
-      return Promise.reject(new Error(`Injected Error`));
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const keys = await cache.keys();
+      expect(keys).to.be.empty;
     });
 
-    const networkOnly = new NetworkOnly();
-    await expectError(
-        () => networkOnly.handle({event}),
-        'no-response'
-    );
+    it(`should return a response without adding anything to the cache when the network request is successful, when passed a Request object`, async function() {
+      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
+
+      const request = new Request('http://example.io/test/');
+      const networkOnly = new NetworkOnly();
+
+      const handleResponse = await networkOnly.makeRequest({
+        request,
+      });
+      expect(handleResponse).to.be.instanceOf(Response);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const keys = await cache.keys();
+      expect(keys).to.be.empty;
+    });
   });
 
-  it(`should use plugins response`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
+  describe(`handle()`, function() {
+    it(`should return a response without adding anything to the cache when the network request is successful`, async function() {
+      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
-    const pluginRequest = new Request('http://something-else.io/test/');
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
 
-    sandbox.stub(global, 'fetch').callsFake((req) => {
-      expect(req).to.equal(pluginRequest);
-      return Promise.resolve(new Response('Injected Response'));
+      const networkOnly = new NetworkOnly();
+
+      const handleResponse = await networkOnly.handle({event});
+      expect(handleResponse).to.be.instanceOf(Response);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const keys = await cache.keys();
+      expect(keys).to.be.empty;
     });
 
-    const networkOnly = new NetworkOnly({
-      plugins: [
-        {
-          requestWillFetch: () => {
-            return pluginRequest;
+    it(`should reject when the network request fails`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+
+      sandbox.stub(self, 'fetch').callsFake(() => {
+        return Promise.reject(new Error(`Injected Error`));
+      });
+
+      const networkOnly = new NetworkOnly();
+      await expectError(
+          () => networkOnly.handle({event}),
+          'no-response'
+      );
+    });
+
+    it(`should use plugins response`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+
+      const pluginRequest = new Request('http://something-else.io/test/');
+
+      sandbox.stub(self, 'fetch').callsFake((req) => {
+        expect(req).to.equal(pluginRequest);
+        return Promise.resolve(new Response('Injected Response'));
+      });
+
+      const networkOnly = new NetworkOnly({
+        plugins: [
+          {
+            requestWillFetch: () => {
+              return pluginRequest;
+            },
           },
-        },
-      ],
+        ],
+      });
+
+      const handleResponse = await networkOnly.handle({event});
+      expect(handleResponse).to.be.instanceOf(Response);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const keys = await cache.keys();
+      expect(keys).to.be.empty;
     });
 
-    const handleResponse = await networkOnly.handle({event});
-    expect(handleResponse).to.be.instanceOf(Response);
+    it(`should use the fetchOptions provided`, async function() {
+      const fetchOptions = {credentials: 'include'};
+      const networkOnly = new NetworkOnly({fetchOptions});
 
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
-    const keys = await cache.keys();
-    expect(keys).to.be.empty;
-  });
+      const fetchStub = sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
 
-  it(`should use the fetchOptions provided`, async function() {
-    const fetchOptions = {credentials: 'include'};
-    const networkOnly = new NetworkOnly({fetchOptions});
+      await networkOnly.handle({event});
 
-    const fetchStub = sandbox.stub(global, 'fetch').resolves(new Response());
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-
-    await networkOnly.handle({event});
-
-    expect(fetchStub.calledOnce).to.be.true;
-    expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
+      expect(fetchStub.calledOnce).to.be.true;
+      expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
+    });
   });
 });

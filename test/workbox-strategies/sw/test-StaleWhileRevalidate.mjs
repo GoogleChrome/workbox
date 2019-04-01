@@ -6,15 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sinon from 'sinon';
-import {expect} from 'chai';
+import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
+import {StaleWhileRevalidate} from 'workbox-strategies/StaleWhileRevalidate.mjs';
+import {compareResponses} from '../../../infra/testing/helpers/compareResponses.mjs';
+import {eventDoneWaiting, spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
+import {generateOpaqueResponse} from '../../../infra/testing/helpers/generateOpaqueResponse.mjs';
+import {generateUniqueResponse} from '../../../infra/testing/helpers/generateUniqueResponse.mjs';
 
-import {_private} from '../../../packages/workbox-core/index.mjs';
-import {compareResponses} from '../utils/response-comparisons.mjs';
-import {StaleWhileRevalidate} from '../../../packages/workbox-strategies/StaleWhileRevalidate.mjs';
-import expectError from '../../../infra/testing/expectError';
 
-describe(`[workbox-strategies] StaleWhileRevalidate.makeRequest()`, function() {
+describe(`StaleWhileRevalidate`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
@@ -29,218 +29,195 @@ describe(`[workbox-strategies] StaleWhileRevalidate.makeRequest()`, function() {
     sandbox.restore();
   });
 
-  it(`should add the initial response to the cache, when passed a URL string`, async function() {
-    const url = 'http://example.io/test/';
-    const request = new Request(url);
-    const event = new FetchEvent('fetch', {request});
-    let cachePromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      cachePromise = promise;
-    });
+  describe(`makeRequest()`, function() {
+    it(`should add the initial response to the cache, when passed a URL string`, async function() {
+      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
-    const staleWhileRevalidate = new StaleWhileRevalidate();
-    const handleResponse = await staleWhileRevalidate.makeRequest({
-      event,
-      request: url,
-    });
+      const url = 'http://example.io/test/';
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
-    await cachePromise;
-
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
-    const cachedResponse = await cache.match(request);
-
-    await compareResponses(cachedResponse, handleResponse, true);
-  });
-
-  it(`should add the initial response to the cache, when passed a Request object`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-    let cachePromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      cachePromise = promise;
-    });
-
-    const staleWhileRevalidate = new StaleWhileRevalidate();
-    const handleResponse = await staleWhileRevalidate.makeRequest({
-      event,
-      request,
-    });
-
-    await cachePromise;
-
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
-    const cachedResponse = await cache.match(request);
-
-    await compareResponses(cachedResponse, handleResponse, true);
-  });
-});
-
-describe(`[workbox-strategies] StaleWhileRevalidate.handle()`, function() {
-  let sandbox = sinon.createSandbox();
-
-  beforeEach(async function() {
-    let usedCacheNames = await caches.keys();
-    await Promise.all(usedCacheNames.map((cacheName) => {
-      return caches.delete(cacheName);
-    }));
-
-    sandbox.restore();
-  });
-
-  after(async function() {
-    let usedCacheNames = await caches.keys();
-    await Promise.all(usedCacheNames.map((cacheName) => {
-      return caches.delete(cacheName);
-    }));
-
-    sandbox.restore();
-  });
-
-  it(`should add the initial response to the cache`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-    let cachePromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      cachePromise = promise;
-    });
-
-    const staleWhileRevalidate = new StaleWhileRevalidate();
-    const handleResponse = await staleWhileRevalidate.handle({event});
-
-    await cachePromise;
-
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
-    const cachedResponse = await cache.match(request);
-
-    await compareResponses(cachedResponse, handleResponse, true);
-  });
-
-  it(`should return the cached response and not update the cache when the network request fails`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-    let waitUntilPromise;
-    let fetchThrewInWaitUntil = false;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      waitUntilPromise = promise.catch(() => {
-        fetchThrewInWaitUntil = true;
+      const staleWhileRevalidate = new StaleWhileRevalidate();
+      const handleResponse = await staleWhileRevalidate.makeRequest({
+        event,
+        request: url,
       });
+
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const cachedResponse = await cache.match(request);
+
+      await compareResponses(cachedResponse, handleResponse, true);
     });
 
-    sandbox.stub(global, 'fetch').callsFake((promise) => {
-      return Promise.reject(new Error(`Inject Error`));
+    it(`should add the initial response to the cache, when passed a Request object`, async function() {
+      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
+
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      const staleWhileRevalidate = new StaleWhileRevalidate();
+      const handleResponse = await staleWhileRevalidate.makeRequest({
+        event,
+        request,
+      });
+
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const cachedResponse = await cache.match(request);
+
+      await compareResponses(cachedResponse, handleResponse, true);
+    });
+  });
+
+  describe(`handle()`, function() {
+    it(`should add the initial response to the cache`, async function() {
+      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
+
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      const staleWhileRevalidate = new StaleWhileRevalidate();
+      const handleResponse = await staleWhileRevalidate.handle({event});
+
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const cachedResponse = await cache.match(request);
+
+      await compareResponses(cachedResponse, handleResponse, true);
     });
 
-    const firstCachedResponse = new Response('response body');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
-    await cache.put(request, firstCachedResponse);
+    it(`should return the cached response and not update the cache when the network request fails`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
-    const staleWhileRevalidate = new StaleWhileRevalidate();
-    const handleResponse = await staleWhileRevalidate.handle({event});
+      sandbox.stub(self, 'fetch').rejects(new Error(`Inject Error`));
 
-    await waitUntilPromise;
-    expect(fetchThrewInWaitUntil).to.equal(true);
+      const firstCachedResponse = new Response('response body');
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      await cache.put(request, firstCachedResponse.clone());
 
-    await compareResponses(firstCachedResponse, handleResponse, true);
-    const secondCachedResponse = await cache.match(request);
-    await compareResponses(firstCachedResponse, secondCachedResponse, true);
-  });
+      const staleWhileRevalidate = new StaleWhileRevalidate();
+      const handleResponse = await staleWhileRevalidate.handle({event});
 
-  it(`should return the cached response and update the cache when the network request succeeds`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-    const firstCachedResponse = new Response('response body 1');
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
-    await cache.put(request, firstCachedResponse);
-    let waitUntilPromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      waitUntilPromise = promise;
+      let fetchThrewInWaitUntil = false;
+      try {
+        await eventDoneWaiting(event, {catchErrors: false});
+      } catch (error) {
+        fetchThrewInWaitUntil = true;
+      } finally {
+        expect(fetchThrewInWaitUntil).to.equal(true);
+      }
+
+      await compareResponses(firstCachedResponse, handleResponse, true);
+      const secondCachedResponse = await cache.match(request);
+      await compareResponses(firstCachedResponse, secondCachedResponse, true);
     });
 
-    const staleWhileRevalidate = new StaleWhileRevalidate();
+    it(`should return the cached response and update the cache when the network request succeeds`, async function() {
+      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
-    const handleResponse = await staleWhileRevalidate.handle({event});
 
-    await waitUntilPromise;
-    await compareResponses(firstCachedResponse, handleResponse, true);
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
-    const secondCachedResponse = await cache.match(request);
-    await compareResponses(firstCachedResponse, secondCachedResponse, false);
-  });
+      const firstCachedResponse = new Response('response body 1');
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      await cache.put(request, firstCachedResponse.clone());
 
-  it(`should update the cache with an the opaque cross-origin network response`, async function() {
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
-    const cache = await caches.open(_private.cacheNames.getRuntimeName());
-    let waitUntilPromise;
-    sandbox.stub(event, 'waitUntil').callsFake((promise) => {
-      waitUntilPromise = promise;
+
+      const staleWhileRevalidate = new StaleWhileRevalidate();
+      const handleResponse = await staleWhileRevalidate.handle({event});
+
+      await eventDoneWaiting(event);
+
+      await compareResponses(firstCachedResponse, handleResponse, true);
+      const secondCachedResponse = await cache.match(request);
+      await compareResponses(firstCachedResponse, secondCachedResponse, false);
     });
-    sandbox.stub(global, 'fetch').callsFake((req) => {
-      return Promise.resolve(new Response('Injected Response', {status: 0}));
+
+    it(`should update the cache with an the opaque cross-origin network response`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      const fetchResponse = await generateOpaqueResponse();
+      sandbox.stub(self, 'fetch').resolves(fetchResponse);
+
+      const staleWhileRevalidate = new StaleWhileRevalidate();
+      const handleResponse = await staleWhileRevalidate.handle({event});
+
+      await eventDoneWaiting(event);
+
+      expect(handleResponse.status).to.eql(0);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const cachedResponse = await cache.match(request);
+      expect(cachedResponse.status).to.eql(0);
     });
 
-    const staleWhileRevalidate = new StaleWhileRevalidate();
-    const handleResponse = await staleWhileRevalidate.handle({event});
-
-    await waitUntilPromise;
-
-    expect(handleResponse.status).to.eql(0);
-
-    const cachedResponse = await cache.match(request);
-    expect(cachedResponse.status).to.eql(0);
-  });
-
-  it(`should allow adding plugins to override cacheOkAndOpaque`, function() {
-    const plugins = [
-      {
-        cacheWillUpdate: () => {},
-      },
-    ];
-    const staleWhileRevalidate = new StaleWhileRevalidate({
-      plugins,
+    it(`should allow adding plugins to override cacheOkAndOpaque`, function() {
+      const plugins = [
+        {
+          cacheWillUpdate: () => {},
+        },
+      ];
+      const staleWhileRevalidate = new StaleWhileRevalidate({
+        plugins,
+      });
+      expect(staleWhileRevalidate._plugins).to.equal(plugins);
     });
-    expect(staleWhileRevalidate._plugins).to.equal(plugins);
-  });
 
-  it(`should use the fetchOptions provided`, async function() {
-    const fetchOptions = {credentials: 'include'};
-    const staleWhileRevalidate = new StaleWhileRevalidate({fetchOptions});
+    it(`should use the fetchOptions provided`, async function() {
+      const fetchOptions = {credentials: 'include'};
+      const staleWhileRevalidate = new StaleWhileRevalidate({fetchOptions});
 
-    const fetchStub = sandbox.stub(global, 'fetch').resolves(new Response());
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
+      const fetchStub = sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
 
-    await staleWhileRevalidate.handle({event});
+      await staleWhileRevalidate.handle({event});
 
-    expect(fetchStub.calledOnce).to.be.true;
-    expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
-  });
+      expect(fetchStub.calledOnce).to.be.true;
+      expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
+    });
 
-  it(`should use the CacheQueryOptions when performing a cache match`, async function() {
-    const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(new Response());
+    it(`should use the CacheQueryOptions when performing a cache match`, async function() {
+      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
-    const matchOptions = {ignoreSearch: true};
-    const staleWhileRevalidate = new StaleWhileRevalidate({matchOptions});
+      const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(generateUniqueResponse());
 
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
+      const matchOptions = {ignoreSearch: true};
+      const staleWhileRevalidate = new StaleWhileRevalidate({matchOptions});
 
-    await staleWhileRevalidate.handle({event});
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
 
-    expect(matchStub.calledOnce).to.be.true;
-    expect(matchStub.calledWith(request, matchOptions)).to.be.true;
-  });
+      await staleWhileRevalidate.handle({event});
 
-  it(`should throw an error when the network request fails, and there's no cache match`, async function() {
-    sandbox.stub(global, 'fetch').rejects(new Error('Injected error.'));
+      expect(matchStub.calledOnce).to.be.true;
+      expect(matchStub.calledWith(request, matchOptions)).to.be.true;
+    });
 
-    const request = new Request('http://example.io/test/');
-    const event = new FetchEvent('fetch', {request});
+    it(`should throw an error when the network request fails, and there's no cache match`, async function() {
+      sandbox.stub(self, 'fetch').rejects(new Error('Injected error.'));
 
-    const staleWhileRevalidate = new StaleWhileRevalidate();
-    await expectError(
-        () => staleWhileRevalidate.handle({event}),
-        'no-response'
-    );
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+
+      const staleWhileRevalidate = new StaleWhileRevalidate();
+      await expectError(
+          () => staleWhileRevalidate.handle({event}),
+          'no-response'
+      );
+    });
   });
 });

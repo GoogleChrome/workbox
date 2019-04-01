@@ -75,6 +75,10 @@ const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
         testPath.includes('workbox-expiration') ||
         testPath.includes('workbox-google-analytics') ||
         testPath.includes('workbox-navigation-preload') ||
+        testPath.includes('workbox-precaching') ||
+        testPath.includes('workbox-range-requests') ||
+        testPath.includes('workbox-routing') ||
+        testPath.includes('workbox-strategies') ||
         testPath.includes('workbox-window')) {
       testMatcher = 'test-*.js';
     } else {
