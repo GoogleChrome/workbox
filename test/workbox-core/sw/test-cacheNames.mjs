@@ -28,6 +28,8 @@ describe(`cacheNames`, function() {
     // Scope be default is '/' from 'service-worker-mock'
     expect(cacheNames.precache).to.equal(`workbox-precache-v2-${self.registration.scope}`);
     expect(cacheNames.runtime).to.equal(`workbox-runtime-${self.registration.scope}`);
+    expect(cacheNames.prefix).to.equal('workbox');
+    expect(cacheNames.suffix).to.equal(self.registration.scope);
   });
 
   it('should allow customising the prefix', function() {
@@ -36,6 +38,7 @@ describe(`cacheNames`, function() {
     // Scope by default is '/' from 'service-worker-mock'
     expect(cacheNames.precache).to.equal(`test-prefix-precache-${self.registration.scope}`);
     expect(cacheNames.runtime).to.equal(`test-prefix-runtime-${self.registration.scope}`);
+    expect(cacheNames.prefix).to.equal('test-prefix');
   });
 
   it('should allow customising the suffix', function() {
@@ -44,6 +47,7 @@ describe(`cacheNames`, function() {
     // Scope be default is '/' from 'service-worker-mock'
     expect(cacheNames.precache).to.equal(`workbox-precache-test-suffix`);
     expect(cacheNames.runtime).to.equal(`workbox-runtime-test-suffix`);
+    expect(cacheNames.suffix).to.equal('test-suffix');
   });
 
 
