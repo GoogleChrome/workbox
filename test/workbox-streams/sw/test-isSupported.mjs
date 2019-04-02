@@ -6,46 +6,17 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import clearRequire from 'clear-require';
+import {isSupported} from 'workbox-streams/isSupported.mjs';
 
-describe(`[workbox-streams] isSupported`, function() {
-  const originalReadableStream = global.ReadableStream;
-  const MODULE_ID = '../../../packages/workbox-streams/isSupported.mjs';
 
-  afterEach(function() {
-    global.ReadableStream = originalReadableStream;
-    clearRequire(MODULE_ID);
-  });
-
+describe(`isSupported`, function() {
   it(`should return true when ReadableStream is available`, async function() {
-    class ReadableStream {
-      constructor() {
-        // no-op
-      }
+    try {
+      new ReadableStream({start() {}});
+
+      expect(isSupported()).to.be.true;
+    } catch (error) {
+      expect(isSupported()).to.be.false;
     }
-    global.ReadableStream = ReadableStream;
-
-    const {isSupported} = await import(MODULE_ID);
-    expect(isSupported()).to.be.true;
-  });
-
-  it(`should return false when ReadableStream is not available`, async function() {
-    global.ReadableStream = undefined;
-
-    const {isSupported} = await import(MODULE_ID);
-    expect(isSupported()).to.be.false;
-  });
-
-  it(`should return false when ReadableStream throws during construction`, async function() {
-    class ReadableStream {
-      constructor() {
-        throw new Error();
-      }
-    }
-    global.ReadableStream = ReadableStream;
-
-    const {isSupported} = await import(MODULE_ID);
-    expect(isSupported()).to.be.false;
   });
 });

@@ -66,27 +66,8 @@ const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
       webdriver,
     };
 
-    // Use a whitelist while we're migrating node tests to browser tests.
-    let testMatcher;
-    if (testPath.includes('workbox-background-sync') ||
-        testPath.includes('workbox-broadcast-update') ||
-        testPath.includes('workbox-cacheable-response') ||
-        testPath.includes('workbox-core') ||
-        testPath.includes('workbox-expiration') ||
-        testPath.includes('workbox-google-analytics') ||
-        testPath.includes('workbox-navigation-preload') ||
-        testPath.includes('workbox-precaching') ||
-        testPath.includes('workbox-range-requests') ||
-        testPath.includes('workbox-routing') ||
-        testPath.includes('workbox-strategies') ||
-        testPath.includes('workbox-window')) {
-      testMatcher = 'test-*.js';
-    } else {
-      testMatcher = '*.js';
-    }
-
     const testFiles = glob.sync(
-        path.posix.join(__dirname, '..', testPath, testMatcher));
+        path.posix.join(__dirname, '..', testPath, 'test-*.js'));
 
     await runFiles(testFiles);
   } catch (err) {

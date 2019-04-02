@@ -7,22 +7,32 @@
 */
 
 const {expect} = require('chai');
-
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
+const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
+
+
+// Store local references of these globals.
+const {webdriver, server} = global.__workbox;
+
+describe(`[workbox-streams]`, function() {
+  it(`passes all SW unit tests`, async function() {
+    await runUnitTests('/test/workbox-streams/sw/');
+  });
+});
 
 describe(`[workbox-streams] Integration Tests`, function() {
-  const testServerAddress = global.__workbox.server.getAddress();
+  const testServerAddress = server.getAddress();
   const testingURL = `${testServerAddress}/test/workbox-streams/static/`;
   const swURL = `${testingURL}sw.js`;
 
   before(async function() {
-    await global.__workbox.webdriver.get(testingURL);
+    await webdriver.get(testingURL);
     await activateAndControlSW(swURL);
   });
 
   for (const testCase of ['concatenate', 'concatenateToResponse', 'strategy']) {
     it(`should return the expected response for the '${testCase}' approach`, async function() {
-      const {text, headers} = await global.__workbox.webdriver.executeAsyncScript(async (testCase, cb) => {
+      const {text, headers} = await webdriver.executeAsyncScript(async (testCase, cb) => {
         try {
           const response = await fetch(new URL(testCase, location));
           const headers = [...response.headers].sort((a, b) => {
