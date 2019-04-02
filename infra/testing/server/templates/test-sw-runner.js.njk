@@ -60,40 +60,52 @@ mocha.setup({
   reporter: null,
 });
 
-addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'RUN_TESTS') {
-    const testsComplete = new Promise((resolve) => {
-      const reports = [];
-      const runner = mocha.run();
+addEventListener('install', (event) => {
+  const testsComplete = new Promise((resolve, reject) => {
+    const reports = [];
+    const runner = mocha.run();
 
-      runner.on('fail', (test, err) => {
-        const flattenTitles = (test) => {
-          const titles = [test.title];
-          while (test.parent.title) {
-            titles.push(test.parent.title);
-            test = test.parent;
-          }
-          return titles.reverse().join(' ');
-        };
+    runner.on('fail', (test, err) => {
+      const flattenTitles = (test) => {
+        const titles = [test.title];
+        while (test.parent.title) {
+          titles.push(test.parent.title);
+          test = test.parent;
+        }
+        return titles.reverse().join(' ');
+      };
 
-        reports.push({
-          name: flattenTitles(test),
-          result: false,
-          message: err.message,
-          stack: err.stack,
-        });
-      });
-
-      runner.on('end', async () => {
-        const results = runner.stats;
-        results.reports = reports;
-        event.ports[0].postMessage(results);
-        resolve(results);
+      reports.push({
+        name: flattenTitles(test),
+        result: false,
+        message: err.message,
+        stack: err.stack,
       });
     });
 
-    event.waitUntil(testsComplete);
-  }
-});
+    runner.on('end', async () => {
+      const results = runner.stats;
+      results.reports = reports;
+
+      const windows = await clients.matchAll({
+        type: 'window',
+        includeUncontrolled: true,
+      });
+
+      for (const win of windows) {
+        win.postMessage(results);
+      }
+
+      // Fail installation if the tests don't pass.
+      if (results.failures) {
+        reject();
+      } else {
+        resolve();
+      }
+    });
+  });
+
+  event.waitUntil(testsComplete);
+}, {once: true}); // Run once since `install` events are dispatched in tests.
 
 importScripts('sw-bundle.js');
