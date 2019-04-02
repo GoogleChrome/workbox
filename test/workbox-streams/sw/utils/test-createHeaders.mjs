@@ -6,13 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
+import {createHeaders} from 'workbox-streams/utils/createHeaders.mjs';
 
-import {createHeaders} from '../../../../packages/workbox-streams/utils/createHeaders.mjs';
 
-describe(`[workbox-streams] utils/createHeaders`, function() {
+describe(`createHeaders`, function() {
   const sandbox = sinon.createSandbox();
+
+  beforeEach(function() {
+    sandbox.restore();
+  });
 
   afterEach(function() {
     sandbox.restore();
@@ -21,11 +23,9 @@ describe(`[workbox-streams] utils/createHeaders`, function() {
   const DEFAULT_CONTENT_TYPE = ['content-type', 'text/html'];
 
   it(`should use the default Content-Type, and construct with an empty object, when headersInit is undefined`, function() {
-    const headersSpy = sandbox.spy(global, 'Headers');
+    const headersSpy = sandbox.spy(self, 'Headers');
     const headers = createHeaders();
-    expect(headers.entries()).to.eql([
-      DEFAULT_CONTENT_TYPE,
-    ]);
+    expect([...headers]).to.eql([DEFAULT_CONTENT_TYPE]);
     expect(headersSpy.calledOnce).to.be.true;
     // See https://github.com/GoogleChrome/workbox/issues/1461
     expect(headersSpy.args[0][0]).to.eql({});
@@ -37,9 +37,10 @@ describe(`[workbox-streams] utils/createHeaders`, function() {
       'x-two': '2',
     };
     const headers = createHeaders(headersInit);
-    expect(headers.entries()).to.eql([
-      ...Object.entries(headersInit),
+
+    expect([...headers]).to.eql([
       DEFAULT_CONTENT_TYPE,
+      ...Object.entries(headersInit),
     ]);
   });
 
@@ -48,6 +49,6 @@ describe(`[workbox-streams] utils/createHeaders`, function() {
       'content-type': 'text/plain',
     };
     const headers = createHeaders(headersInit);
-    expect(headers.entries()).to.eql(Object.entries(headersInit));
+    expect([...headers]).to.eql(Object.entries(headersInit));
   });
 });
