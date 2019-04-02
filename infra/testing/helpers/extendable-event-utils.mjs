@@ -1,5 +1,5 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2019 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
@@ -10,13 +10,16 @@
 const extendLifetimePromises = new WeakMap();
 const eventResponses = new WeakMap();
 
-export const eventDoneWaiting = async (event) => {
+export const eventDoneWaiting = async (event, {catchErrors = true} = {}) => {
   const promises = extendLifetimePromises.get(event);
   let promise;
 
   while (promise = promises.shift()) {
-    // Ignore errors.
-    await promise.catch((e) => e);
+    // Ignore errors by default;
+    if (catchErrors) {
+      promise = promise.catch((e) => e);
+    }
+    await promise;
   }
 };
 
