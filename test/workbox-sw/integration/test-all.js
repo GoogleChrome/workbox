@@ -7,10 +7,21 @@
 */
 
 const expect = require('chai').expect;
+const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
+
+
+// Store local references of these globals.
+const {webdriver, server} = global.__workbox;
+
+describe(`[workbox-sw]`, function() {
+  it(`passes all SW unit tests`, async function() {
+    await runUnitTests('/test/workbox-sw/sw/');
+  });
+});
 
 describe(`WorkboxSW interface`, function() {
   const wasRegistrationSuccessful = (swFile) => {
-    return global.__workbox.webdriver.executeAsyncScript((swFile, cb) => {
+    return webdriver.executeAsyncScript((swFile, cb) => {
       // Invokes cb() with true when registration succeeds, and false otherwise.
       navigator.serviceWorker.register(swFile)
           .then(() => cb(true))
@@ -18,11 +29,11 @@ describe(`WorkboxSW interface`, function() {
     }, swFile);
   };
 
-  const testServerAddress = global.__workbox.server.getAddress();
+  const testServerAddress = server.getAddress();
   const testPageURL = `${testServerAddress}/test/workbox-sw/static/integration/`;
 
   before(async function() {
-    await global.__workbox.webdriver.get(testPageURL);
+    await webdriver.get(testPageURL);
   });
 
   it(`should fail to activate an invalid SW which loads non-existent modules`, async function() {

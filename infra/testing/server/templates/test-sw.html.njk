@@ -45,25 +45,29 @@
     (async () => {
       // // Randomize the test URL so every test run forces a new SW install.
       const wb = new Workbox('test-sw-runner.js.njk?v={{ uniqueID() }}');
-      await wb.register();
 
-      self.mochaResults = await wb.messageSW({type: 'RUN_TESTS'});
-      if (self.mochaResults.failures === 0) {
-        const styles = [
-          `color: hsl(150, 100%, 40%)`,
-          `font-weight: bold`,
-          `font-size: 1.5em`,
-          `padding: .25em 0`,
-        ];
-        console.log('%cAll TESTS PASS!', styles.join(';'));
-        document.getElementById('success').textContent = 'ALL TESTS PASS!';
-      } else {
-        const errors = self.mochaResults.reports.map((report) => {
-          return `${report.name}\n${report.stack}`;
-        }).join('\n\n');
+      wb.addEventListener('message', (event) => {
+        self.mochaResults = event.data;
 
-        document.getElementById('errors').textContent = errors
-      }
+        if (self.mochaResults.failures === 0) {
+          const styles = [
+            `color: hsl(150, 100%, 40%)`,
+            `font-weight: bold`,
+            `font-size: 1.5em`,
+            `padding: .25em 0`,
+          ];
+          console.log('%cAll TESTS PASS!', styles.join(';'));
+          document.getElementById('success').textContent = 'ALL TESTS PASS!';
+        } else {
+          const errors = self.mochaResults.reports.map((report) => {
+            return `${report.name}\n${report.stack}`;
+          }).join('\n\n');
+
+          document.getElementById('errors').textContent = errors
+        }
+      });
+
+      wb.register();
     })();
   </script>
 </body>

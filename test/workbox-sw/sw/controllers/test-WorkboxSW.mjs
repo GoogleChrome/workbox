@@ -6,36 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {expect} from 'chai';
-import sinon from 'sinon';
-import generateTestVariants from '../../../infra/testing/generate-variant-tests';
-import {WorkboxSW} from '../../../packages/workbox-sw/controllers/WorkboxSW.mjs';
-import {getPackages} from '../../../gulp-tasks/utils/get-packages';
-import {outputFilenameToPkgMap} from '../../../gulp-tasks/utils/output-filename-to-package-map';
+import {WorkboxSW} from 'workbox-sw/controllers/WorkboxSW.mjs';
+import generateTestVariants from '../../../../infra/testing/generate-variant-tests';
 
 
-describe(`[workbox-sw] WorkboxSW`, function() {
+describe(`WorkboxSW`, function() {
   let sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();
     delete self.workbox;
-
-    sandbox.stub(self, 'importScripts').callsFake((url) => {
-      // This auto generates a value for self.workbox.<namespace>
-      const match = /WORKBOX_CDN_ROOT_URL\/(.*)\.(?:dev|prod)\.js/.exec(url);
-      if (!match) {
-        return;
-      }
-
-      const outputFilename = match[1];
-      const pkg = outputFilenameToPkgMap[outputFilename];
-
-      const namespace = pkg.workbox.browserNamespace.split('.')[1];
-      self.workbox[namespace] = {
-        injectedMsg: `Injected value for ${pkg.name}.`,
-      };
-    });
   });
 
   after(function() {
@@ -45,6 +25,8 @@ describe(`[workbox-sw] WorkboxSW`, function() {
 
   describe(`constructor`, function() {
     it(`should construct with expect defaults`, function() {
+      sandbox.stub(location, 'hostname').value('example.com');
+
       self.workbox = new WorkboxSW();
       expect(self.workbox._options).to.deep.equal({
         debug: false,
@@ -54,9 +36,7 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
 
     it(`should construct debug true when on localhost`, function() {
-      sandbox.stub(self, 'location').value({
-        hostname: 'localhost',
-      });
+      sandbox.stub(location, 'hostname').value('localhost');
 
       self.workbox = new WorkboxSW();
       expect(self.workbox._options.debug).to.deep.equal(true);
@@ -81,6 +61,8 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
 
     it(`should throw when invoking config after loading a module`, function() {
+      sandbox.stub(self, 'importScripts');
+
       self.workbox = new WorkboxSW();
 
       expect(() => {
@@ -92,11 +74,16 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       // Accessing .core loads workbox-core.
       self.workbox.core;
 
+      expect(importScripts.callCount).to.equal(1);
+      expect(importScripts.args[0][0]).to.equal(`http://custom-cdn.example.com/workbox-modules/v1.0.0/workbox-core.dev.js`);
+
       expect(() => {
         self.workbox.setConfig({
           modulePathPrefix: 'http://custom-cdn.example.com/workbox-modules/v2.0.0/',
         });
       }).to.throw();
+
+      expect(importScripts.callCount).to.equal(1);
     });
 
     it(`should not throw on no config and environment should stay the same`, function() {
@@ -113,12 +100,11 @@ describe(`[workbox-sw] WorkboxSW`, function() {
   describe(`get`, function() {
     it(`should print error message when importScripts fails`, function() {
       const errorMessage = 'Injected error.';
-      self.importScripts.restore();
+
       sandbox.stub(self, 'importScripts').throws(new Error(errorMessage));
       sandbox.stub(console, 'error').callsFake((errMsg) => {
         expect(errMsg.includes('workbox-core')).to.be.true;
-        expect(errMsg.includes(
-            'WORKBOX_CDN_ROOT_URL/workbox-core.prod.js')).to.be.true;
+        expect(errMsg.includes('WORKBOX_CDN_ROOT_URL/workbox-core')).to.be.true;
       });
 
       try {
@@ -134,6 +120,8 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
 
     it(`should use modulePathCb to load modules if provided`, function() {
+      sandbox.stub(self, 'importScripts');
+
       const callbackSpy = sandbox.spy((moduleName, debug) => {
         return `/custom-path/${moduleName}/${debug}`;
       });
@@ -180,6 +168,8 @@ describe(`[workbox-sw] WorkboxSW`, function() {
       },
     ];
     generateTestVariants(`should import using modulePathPrefix`, modulePathVariations, async function(variant) {
+      sandbox.stub(self, 'importScripts');
+
       self.workbox = new WorkboxSW();
 
       self.workbox.setConfig({
@@ -194,16 +184,15 @@ describe(`[workbox-sw] WorkboxSW`, function() {
     });
   });
 
-  getPackages({type: 'browser'}).forEach((pkg) => {
+  BROWSER_NAMESPACES.forEach((namespace) => {
     // Don't test workbox-sw, which exports the `workbox` namespace.
-    if (pkg.workbox.browserNamespace === 'workbox') return;
+    if (namespace === 'workbox') return;
 
-    describe(`get ${pkg.workbox.browserNamespace}`, function() {
-      it(`should return ${pkg.workbox.browserNamespace}`, function() {
-        const namespace = pkg.workbox.browserNamespace.split('.')[1];
+    describe(`get ${namespace}`, function() {
+      it(`should return ${namespace}`, function() {
+        const getter = namespace.split('.')[1];
         self.workbox = new WorkboxSW();
-        expect(self.workbox[namespace]).to.exist;
-        expect(self.workbox[namespace].injectedMsg).to.exist;
+        expect(self.workbox[getter]).to.exist;
       });
     });
   });
