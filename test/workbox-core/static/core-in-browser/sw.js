@@ -19,6 +19,12 @@ if (!workbox.core.cacheNames.precache) {
 if (!workbox.core.cacheNames.runtime) {
   throw new Error(`cacheNames.runtime is not defined`);
 }
+if (!workbox.core.cacheNames.prefix) {
+  throw new Error(`cacheNames.prefix is not defined`);
+}
+if (!workbox.core.cacheNames.suffix) {
+  throw new Error(`cacheNames.suffix is not defined`);
+}
 
 if (!workbox.core.setCacheNameDetails) {
   throw new Error('setCacheNameDetails() is not defined.');

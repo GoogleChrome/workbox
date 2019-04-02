@@ -37,7 +37,13 @@ export const cacheNames = {
   getPrecacheName: (userCacheName) => {
     return userCacheName || _createCacheName(_cacheNameDetails.precache);
   },
+  getPrefix: () => {
+    return _cacheNameDetails.prefix;
+  },
   getRuntimeName: (userCacheName) => {
     return userCacheName || _createCacheName(_cacheNameDetails.runtime);
+  },
+  getSuffix: () => {
+    return _cacheNameDetails.suffix;
   },
 };
