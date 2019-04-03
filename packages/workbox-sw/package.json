@@ -24,6 +24,5 @@
     "prodOnly": true
   },
   "main": "build/workbox-sw.js",
-  "module": "index.mjs",
-  "gitHead": "60f99c8c017b62ffe90b591b7f4be37dc44d92f6"
+  "module": "index.mjs"
 }

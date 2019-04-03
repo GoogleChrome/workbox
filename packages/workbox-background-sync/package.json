@@ -29,6 +29,5 @@
   "module": "index.mjs",
   "dependencies": {
     "workbox-core": "^4.2.0"
-  },
-  "gitHead": "60f99c8c017b62ffe90b591b7f4be37dc44d92f6"
+  }
 }

@@ -39,6 +39,5 @@
   "license": "MIT",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/GoogleChrome/workbox/issues",
-  "homepage": "https://github.com/GoogleChrome/workbox",
-  "gitHead": "60f99c8c017b62ffe90b591b7f4be37dc44d92f6"
+  "homepage": "https://github.com/GoogleChrome/workbox"
 }
