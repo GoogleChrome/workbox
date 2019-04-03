@@ -6,6 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
+// All workbox references must come after the workboxSWImport/importScripts block
+
 module.exports = `/**
  * Welcome to your Workbox-powered service worker!
  *
@@ -19,8 +21,6 @@ module.exports = `/**
  * See https://goo.gl/2aRDsh
  */
 
-<% if (navigationPreload) { %>workbox.navigationPreload.enable();<% } %>
-
 <% if (workboxSWImport) { %>
 importScripts(<%= JSON.stringify(workboxSWImport) %>);
 <% if (modulePathPrefix) { %>workbox.setConfig({modulePathPrefix: <%= JSON.stringify(modulePathPrefix) %>});<% } %>
@@ -30,6 +30,8 @@ importScripts(
   <%= importScripts.map(JSON.stringify).join(',\\n  ') %>
 );
 <% } %>
+
+<% if (navigationPreload) { %>workbox.navigationPreload.enable();<% } %>
 
 <% if (cacheId) { %>workbox.core.setCacheNameDetails({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
 
