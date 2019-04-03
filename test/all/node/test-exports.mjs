@@ -46,7 +46,7 @@ describe(`[all] Window and SW packages`, function() {
         sourceType: 'module',
       });
       for (const node of indexAST.body) {
-        if (node.type === 'ExportDefaultDeclaration"') {
+        if (node.type === 'ExportDefaultDeclaration') {
           throw new Error(`'index.mjs' files cannot contain default exports`);
         }
         if (node.type === 'ExportNamedDeclaration') {
