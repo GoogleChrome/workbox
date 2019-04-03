@@ -6,16 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-import camelCase from 'camelcase';
-import {oneLine as ol} from 'common-tags';
-import glob from 'glob';
-import path from 'path';
-import fs from 'fs-extra';
-import {expect} from 'chai';
+const camelCase = require('camelcase');
+const ol = require('common-tags').oneLine;
+const glob = require('glob');
+const path = require('path');
+const fs = require('fs-extra');
+const {expect} = require('chai');
+const constants = require('../../../gulp-tasks/utils/constants');
+const {getPackages} = require('../../../gulp-tasks/utils/get-packages');
+const pkgPathToName = require('../../../gulp-tasks/utils/pkg-path-to-name');
 
-import constants from '../../../gulp-tasks/utils/constants';
-import {getPackages} from '../../../gulp-tasks/utils/get-packages';
-import pkgPathToName from '../../../gulp-tasks/utils/pkg-path-to-name';
 
 describe(`[all] Test package.json`, function() {
   it(`should expose correct main, browser and module fields`, function() {

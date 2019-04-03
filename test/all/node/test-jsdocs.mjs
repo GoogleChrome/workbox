@@ -6,11 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import path from 'path';
-import glob from 'glob';
-import {expect} from 'chai';
-import fs from 'fs-extra';
-import spawn from '../../../gulp-tasks/utils/spawn-promise-wrapper';
+const {expect} = require('chai');
+const fs = require('fs-extra');
+const glob = require('glob');
+const path = require('path');
+const spawn = require('../../../gulp-tasks/utils/spawn-promise-wrapper');
+
 
 describe('[all] JSDocs', function() {
   it('should run JSDocs and have no unexpected results', async function() {

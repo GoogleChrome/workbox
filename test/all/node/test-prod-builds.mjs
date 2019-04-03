@@ -6,12 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import glob from 'glob';
-import path from 'path';
-import fs from 'fs-extra';
-import {oneLine} from 'common-tags';
-import logHelper from '../../../infra/utils/log-helper';
-import constants from '../../../gulp-tasks/utils/constants';
+const glob = require('glob');
+const path = require('path');
+const fs = require('fs-extra');
+const {oneLine} = require('common-tags');
+const logHelper = require('../../../infra/utils/log-helper');
+const constants = require('../../../gulp-tasks/utils/constants');
+
 
 describe(`[all] prod builds`, function() {
   const buildFiles = glob.sync(`packages/*/${constants.PACKAGE_BUILD_DIRNAME}/*.prod.js`, {

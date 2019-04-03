@@ -6,12 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import path from 'path';
-import glob from 'glob';
-import {getPackages} from '../../../gulp-tasks/utils/get-packages';
+const acorn = require('acorn');
+const {expect} = require('chai');
+const fs = require('fs-extra');
+const path = require('path');
+const glob = require('glob');
+const {getPackages} = require('../../../gulp-tasks/utils/get-packages');
 
 
-const deprecatedModules = {
+const deprecatedPackageExports = {
   'workbox-strategies': [
     'cacheFirst',
     'cacheOnly',
@@ -30,40 +33,44 @@ describe(`[all] Window and SW packages`, function() {
     ...getPackages({type: 'window'}),
   ];
 
-  it(`should have top level files for every export in index.mjs (and vise-versa)`, async function() {
+  it(`should have top a level module for every export in index.mjs (and vise-versa)`, async function() {
     for (const pkg of windowAndBrowserPackages) {
       const packagePath = path.join(__dirname, '..', '..', '..', 'packages', pkg.name);
       const indexFile = path.join(packagePath, 'index.mjs');
-      const moduleExports = await import(indexFile);
+      const indexContents = await fs.readFile(indexFile, 'utf-8');
 
-      const publicFiles = glob.sync('*.mjs', {
-        ignore: ['index.mjs', '_version.mjs', '_types.mjs'],
-        cwd: packagePath,
+      // Use the acorn parser to generate a list of named exports.
+      const namedExports = [];
+      const indexAST = acorn.parse(indexContents, {
+        ecmaVersion: 6,
+        sourceType: 'module',
       });
-
-      // Ensure there's a public export for every top-level file in the package.
-      for (const publicFile of publicFiles) {
-        const expectedExportName = path.basename(publicFile, '.mjs');
-
-        if (!(expectedExportName in moduleExports)) {
-          throw new Error(`Unable to find export '${expectedExportName}' in ${indexFile}`);
+      for (const node of indexAST.body) {
+        if (node.type === 'ExportDefaultDeclaration"') {
+          throw new Error(`'index.mjs' files cannot contain default exports`);
+        }
+        if (node.type === 'ExportNamedDeclaration') {
+          if (node.specifiers.length === 0) {
+            throw new Error(`'index.mjs' files may only contain a single, named-export block`);
+          }
+          for (const specifier of node.specifiers) {
+            namedExports.push(specifier.exported.name);
+          }
         }
       }
 
-      // Ensure there's a top-level file for every non-deprecated export in index.mjs
-      for (const moduleExport of Object.keys(moduleExports)) {
-        const exportedFilename = `${moduleExport}.mjs`;
+      // Inspect the package directory to get a list of top-level, public
+      // module basenames.
+      const topLevelFiles = glob.sync('*.mjs', {
+        ignore: ['index.mjs', '_types.mjs', '_version.mjs'],
+        cwd: packagePath,
+      }).map((file) => path.basename(file, '.mjs'));
 
-        // Deprecated exports don't need a corresponding file.
-        if (deprecatedModules[pkg.name] &&
-            deprecatedModules[pkg.name].includes(moduleExport)) {
-          continue;
-        }
+      const deprecatedExports = deprecatedPackageExports[pkg.name] || [];
 
-        if (!publicFiles.includes(exportedFilename)) {
-          throw new Error(`Unable to find file '${exportedFilename}' in ${pkg.name} root`);
-        }
-      }
+      // Assert there's a 1-to-1 mapping between exports and top-level files.
+      expect(namedExports.sort())
+          .to.deep.equal(topLevelFiles.concat(deprecatedExports).sort());
     }
   });
 });

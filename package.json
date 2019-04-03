@@ -12,10 +12,7 @@
     "lint": "eslint \"**/*.{js,mjs}\" --ignore-path .gitignore",
     "local-jsdoc": "jsdoc",
     "local-lerna": "lerna",
-    "test": "nyc --clean false --require @std/esm --require ./infra/testing/sw-env --silent mocha --timeout 60000 ./infra/testing/auto-stub-logger.mjs"
-  },
-  "@std/esm": {
-    "cjs": true
+    "test": "nyc --clean false --silent mocha --timeout 60000"
   },
   "nyc": {
     "include": [
@@ -51,7 +48,7 @@
     "@babel/preset-env": "^7.1.0",
     "@google-cloud/storage": "^2.0.3",
     "@octokit/rest": "^15.12.0",
-    "@std/esm": "^0.26.0",
+    "acorn": "^6.1.1",
     "archiver": "^3.0.0",
     "babel-eslint": "^9.0.0",
     "babel-plugin-transform-async-to-promises": "^0.8.4",
@@ -104,7 +101,6 @@
     "semver": "^5.5.1",
     "serve-index": "^1.9.1",
     "service-worker-mock": "^1.9.3",
-    "shelving-mock-indexeddb": "github:philipwalton/shelving-mock-indexeddb#2379a818f8a45873903166d1bdb4ff3dbfbc550d",
     "sinon": "^6.3.4",
     "tempy": "^0.2.1",
     "url-search-params": "^1.1.0",
