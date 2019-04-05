@@ -171,6 +171,8 @@ class CacheTimestampsModel {
    *
    * @param {string} url
    * @return {string}
+   *
+   * @private
    */
   _getId(url) {
     // Creating an ID from the URL and cache name won't be necessary once

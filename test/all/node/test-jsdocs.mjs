@@ -43,11 +43,19 @@ describe('[all] JSDocs', function() {
     // On some occasions, module.exports can leak into JSDocs, and breaks
     // into the final template.
     expect(docs.indexOf('index-all.html')).to.not.equal(-1);
-    const indexAllContents = fs.readFileSync(path.join(docsPath, 'index-all.html'))
-        .toString();
+    const indexAllContents = fs.readFileSync(path.join(docsPath, 'index-all.html')).toString();
+
     if (indexAllContents.indexOf('<a href="module.html#.exports">module.exports</a>') !== -1) {
       throw new Error('There is a stray `module.exports` in the docs. ' +
         'Find and fix this issue.');
     }
+
+    // Ensure no methods starting with an underscore are in the docs.
+    // TODO(philipwalton): find a better way to do this than a RegExp...
+    indexAllContents.replace(/<a href="([^"]+)">/g, (match, p1) => {
+      if (p1.includes('_')) {
+        throw new Error(`Private method found in jsdocs: ${p1}`);
+      }
+    });
   });
 });
