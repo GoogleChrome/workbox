@@ -238,7 +238,7 @@ class Queue {
     let entry;
     while (entry = await this.shiftRequest()) {
       try {
-        await fetch(entry.request);
+        await fetch(entry.request.clone());
 
         if (process.env.NODE_ENV !== 'production') {
           logger.log(`Request for '${getFriendlyURL(entry.request.url)}'` +
