@@ -44,6 +44,7 @@ export class QueueStore {
    * @param {Object} entry.requestData
    * @param {number} [entry.timestamp]
    * @param {Object} [entry.metadata]
+   * @private
    */
   async pushEntry(entry) {
     if (process.env.NODE_ENV !== 'production') {
@@ -75,6 +76,7 @@ export class QueueStore {
    * @param {Object} entry.requestData
    * @param {number} [entry.timestamp]
    * @param {Object} [entry.metadata]
+   * @private
    */
   async unshiftEntry(entry) {
     if (process.env.NODE_ENV !== 'production') {
@@ -111,6 +113,7 @@ export class QueueStore {
    * Removes and returns the last entry in the queue matching the `queueName`.
    *
    * @return {Promise<Object>}
+   * @private
    */
   async popEntry() {
     return this._removeEntry({direction: 'prev'});
@@ -120,6 +123,7 @@ export class QueueStore {
    * Removes and returns the first entry in the queue matching the `queueName`.
    *
    * @return {Promise<Object>}
+   * @private
    */
   async shiftEntry() {
     return this._removeEntry({direction: 'next'});
@@ -130,6 +134,7 @@ export class QueueStore {
    * `direction` argument) matching the `queueName`.
    *
    * @return {Promise<Object>}
+   * @private
    */
   async _removeEntry({direction}) {
     const [entry] = await this._db.getAllMatching(OBJECT_STORE_NAME, {
@@ -153,6 +158,7 @@ export class QueueStore {
    * Upgrades the database given an `upgradeneeded` event.
    *
    * @param {Event} event
+   * @private
    */
   _upgradeDb(event) {
     const db = event.target.result;

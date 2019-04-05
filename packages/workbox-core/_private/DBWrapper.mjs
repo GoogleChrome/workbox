@@ -24,6 +24,7 @@ export class DBWrapper {
    * @param {!Function} [callbacks.onupgradeneeded]
    * @param {!Function} [callbacks.onversionchange] Defaults to
    *     DBWrapper.prototype._onversionchange when not specified.
+   * @private
    */
   constructor(name, version, {
     onupgradeneeded,
@@ -40,6 +41,8 @@ export class DBWrapper {
 
   /**
    * Returns the IDBDatabase instance (not normally needed).
+   *
+   * @private
    */
   get db() {
     return this._db;
@@ -50,6 +53,7 @@ export class DBWrapper {
    * callback, and added an onversionchange callback to the database.
    *
    * @return {IDBDatabase}
+   * @private
    */
   async open() {
     if (this._db) return;
@@ -97,6 +101,7 @@ export class DBWrapper {
    * @param {string} storeName
    * @param {*} query
    * @return {Array}
+   * @private
    */
   async getKey(storeName, query) {
     return (await this.getAllKeys(storeName, query, 1))[0];
@@ -110,6 +115,7 @@ export class DBWrapper {
    * @param {*} query
    * @param {number} count
    * @return {Array}
+   * @private
    */
   async getAll(storeName, query, count) {
     return await this.getAllMatching(storeName, {query, count});
@@ -124,6 +130,7 @@ export class DBWrapper {
    * @param {*} query
    * @param {number} count
    * @return {Array}
+   * @private
    */
   async getAllKeys(storeName, query, count) {
     return (await this.getAllMatching(
@@ -145,6 +152,7 @@ export class DBWrapper {
    *     returned objects is changed from an array of values to an array of
    *     objects in the form {key, primaryKey, value}.
    * @return {Array}
+   * @private
    */
   async getAllMatching(storeName, {
     index,
@@ -190,6 +198,7 @@ export class DBWrapper {
    * @param {string} type Can be `readonly` or `readwrite`.
    * @param {!Function} callback
    * @return {*} The result of the transaction ran by the callback.
+   * @private
    */
   async transaction(storeNames, type, callback) {
     await this.open();
@@ -210,6 +219,7 @@ export class DBWrapper {
    * @param {string} type Can be `readonly` or `readwrite`.
    * @param {...*} args The list of args to pass to the native method.
    * @return {*} The result of the transaction.
+   * @private
    */
   async _call(method, storeName, type, ...args) {
     const callback = (txn, done) => {
@@ -224,6 +234,8 @@ export class DBWrapper {
   /**
    * The default onversionchange handler, which closes the database so other
    * connections can open without being blocked.
+   *
+   * @private
    */
   _onversionchange() {
     this.close();
@@ -239,6 +251,8 @@ export class DBWrapper {
    * The primary use case for needing to close a connection is when another
    * reference (typically in another tab) needs to upgrade it and would be
    * blocked by the current, open connection.
+   *
+   * @private
    */
   close() {
     if (this._db) {

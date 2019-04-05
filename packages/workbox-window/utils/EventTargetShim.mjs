@@ -18,6 +18,8 @@ import '../_version.mjs';
 class EventTargetShim {
   /**
    * Creates an event listener registry
+   *
+   * @private
    */
   constructor() {
     // A registry of event types to listeners.
@@ -26,6 +28,7 @@ class EventTargetShim {
   /**
    * @param {string} type
    * @param {Function} listener
+   * @private
    */
   addEventListener(type, listener) {
     this._getEventListenersByType(type).add(listener);
@@ -34,6 +37,7 @@ class EventTargetShim {
   /**
    * @param {string} type
    * @param {Function} listener
+   * @private
    */
   removeEventListener(type, listener) {
     this._getEventListenersByType(type).delete(listener);
@@ -41,6 +45,7 @@ class EventTargetShim {
 
   /**
    * @param {Event} event
+   * @private
    */
   dispatchEvent(event) {
     event.target = this;
@@ -54,6 +59,7 @@ class EventTargetShim {
    *
    * @param {string} type The event type.
    * @return {Set} An array of handler functions.
+   * @private
    */
   _getEventListenersByType(type) {
     return this._eventListenerRegistry[type] =
