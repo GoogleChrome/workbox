@@ -119,9 +119,15 @@ describe(`Queue`, function() {
       if (!('sync' in registration)) this.skip();
 
       const onSync = sandbox.stub().callsFake(async ({queue}) => {
-        await queue.pushRequest({request: new Request('/one')});
-        await queue.pushRequest({request: new Request('/two')});
-        await queue.pushRequest({request: new Request('/three')});
+        await queue.pushRequest({
+          request: new Request('/one', {method: 'POST', body: '...'}),
+        });
+        await queue.pushRequest({
+          request: new Request('/two', {method: 'POST', body: '...'}),
+        });
+        await queue.pushRequest({
+          request: new Request('/three', {method: 'POST', body: '...'}),
+        });
       });
 
       const queue = new Queue('foo', {onSync});
@@ -138,7 +144,9 @@ describe(`Queue`, function() {
       if (!('sync' in registration)) this.skip();
 
       const onSync = async ({queue}) => {
-        await queue.pushRequest({request: new Request('/one')});
+        await queue.pushRequest({
+          request: new Request('/one', {method: 'POST', body: '...'}),
+        });
         throw new Error('sync failed');
       };
 
@@ -156,7 +164,9 @@ describe(`Queue`, function() {
       if (!('sync' in registration)) this.skip();
 
       const onSync = async ({queue}) => {
-        await queue.pushRequest({request: new Request('/one')});
+        await queue.pushRequest({
+          request: new Request('/one', {method: 'POST', body: '...'}),
+        });
         throw new Error('sync failed');
       };
 
@@ -327,7 +337,9 @@ describe(`Queue`, function() {
 
       const queue = new Queue('foo');
 
-      await queue.unshiftRequest({request: new Request('/')});
+      await queue.unshiftRequest({
+        request: new Request('/', {method: 'POST', body: '...'}),
+      });
 
       // self.registration.sync.register is stubbed in `beforeEach()`.
       expect(self.registration.sync.register.calledOnce).to.be.true;
@@ -370,7 +382,7 @@ describe(`Queue`, function() {
 
       await queue.pushRequest({
         metadata: {meta: 'data'},
-        request: new Request('/one'),
+        request: new Request('/one', {method: 'POST', body: '...'}),
       });
 
       const {request, metadata} = await queue.shiftRequest();
@@ -382,10 +394,20 @@ describe(`Queue`, function() {
     it(`does not return requests that have expired`, async function() {
       const queue = new Queue('a');
 
-      await queue.pushRequest({request: new Request('/one'), timestamp: 12});
-      await queue.pushRequest({request: new Request('/two')});
-      await queue.pushRequest({request: new Request('/three'), timestamp: 34});
-      await queue.pushRequest({request: new Request('/four')});
+      await queue.pushRequest({
+        request: new Request('/one', {method: 'POST', body: '...'}),
+        timestamp: 12,
+      });
+      await queue.pushRequest({
+        request: new Request('/two', {method: 'POST', body: '...'}),
+      });
+      await queue.pushRequest({
+        request: new Request('/three', {method: 'POST', body: '...'}),
+        timestamp: 34,
+      });
+      await queue.pushRequest({
+        request: new Request('/four', {method: 'POST', body: '...'}),
+      });
 
       const entry1 = await queue.shiftRequest();
       const entry2 = await queue.shiftRequest();
@@ -411,8 +433,12 @@ describe(`Queue`, function() {
       };
 
       // Add a second request to ensure the last one is returned.
-      await queue.pushRequest({request: new Request('/two')});
-      await queue.pushRequest({request: new Request(requestURL, requestInit)});
+      await queue.pushRequest({
+        request: new Request('/two', {method: 'POST', body: '...'}),
+      });
+      await queue.pushRequest({
+        request: new Request(requestURL, requestInit),
+      });
 
       const {request} = await queue.popRequest();
 
@@ -442,10 +468,20 @@ describe(`Queue`, function() {
     it(`does not return requests that have expired`, async function() {
       const queue = new Queue('a');
 
-      await queue.pushRequest({request: new Request('/one'), timestamp: 12});
-      await queue.pushRequest({request: new Request('/two')});
-      await queue.pushRequest({request: new Request('/three'), timestamp: 34});
-      await queue.pushRequest({request: new Request('/four')});
+      await queue.pushRequest({
+        request: new Request('/one', {method: 'POST', body: '...'}),
+        timestamp: 12,
+      });
+      await queue.pushRequest({
+        request: new Request('/two', {method: 'POST', body: '...'}),
+      });
+      await queue.pushRequest({
+        request: new Request('/three', {method: 'POST', body: '...'}),
+        timestamp: 34,
+      });
+      await queue.pushRequest({
+        request: new Request('/four', {method: 'POST', body: '...'}),
+      });
 
       const entry1 = await queue.popRequest();
       const entry2 = await queue.popRequest();
@@ -471,11 +507,21 @@ describe(`Queue`, function() {
 
       // Add requests for both queues to ensure only the requests from
       // the matching queue are replayed.
-      await queue1.pushRequest({request: new Request('/one')});
-      await queue2.pushRequest({request: new Request('/two')});
-      await queue1.pushRequest({request: new Request('/three')});
-      await queue2.pushRequest({request: new Request('/four')});
-      await queue1.pushRequest({request: new Request('/five')});
+      await queue1.pushRequest({
+        request: new Request('/one', {method: 'POST', body: '...'}),
+      });
+      await queue2.pushRequest({
+        request: new Request('/two', {method: 'POST', body: '...'}),
+      });
+      await queue1.pushRequest({
+        request: new Request('/three', {method: 'POST', body: '...'}),
+      });
+      await queue2.pushRequest({
+        request: new Request('/four', {method: 'POST', body: '...'}),
+      });
+      await queue1.pushRequest({
+        request: new Request('/five', {method: 'POST', body: '...'}),
+      });
 
       await queue1.replayRequests();
 
@@ -513,11 +559,21 @@ describe(`Queue`, function() {
 
       // Add requests for both queues to ensure only the requests from
       // the matching queue are replayed.
-      await queue1.pushRequest({request: new Request('/one')});
-      await queue2.pushRequest({request: new Request('/two')});
-      await queue1.pushRequest({request: new Request('/three')});
-      await queue2.pushRequest({request: new Request('/four')});
-      await queue1.pushRequest({request: new Request('/five')});
+      await queue1.pushRequest({
+        request: new Request('/one', {method: 'POST', body: '...'}),
+      });
+      await queue2.pushRequest({
+        request: new Request('/two', {method: 'POST', body: '...'}),
+      });
+      await queue1.pushRequest({
+        request: new Request('/three', {method: 'POST', body: '...'}),
+      });
+      await queue2.pushRequest({
+        request: new Request('/four', {method: 'POST', body: '...'}),
+      });
+      await queue1.pushRequest({
+        request: new Request('/five', {method: 'POST', body: '...'}),
+      });
 
       await queue1.replayRequests();
       expect(self.fetch.callCount).to.equal(3);
@@ -539,12 +595,17 @@ describe(`Queue`, function() {
         maxRetentionTime: 1,
       });
 
-      await queue.pushRequest({request: new Request('/one')});
-      await queue.pushRequest({request: new Request('/two')});
+      await queue.pushRequest({
+        request: new Request('/one', {method: 'POST', body: '...'}),
+      });
+      await queue.pushRequest({
+        request: new Request('/two', {method: 'POST', body: '...'}),
+      });
 
       clock.tick(1 * MINUTES + 1); // One minute and 1ms.
 
-      await queue.pushRequest({request: new Request('/three')});
+      await queue.pushRequest({
+        request: new Request('/three')});
       await queue.replayRequests();
 
       expect(self.fetch.calledOnce).to.be.true;
@@ -559,16 +620,30 @@ describe(`Queue`, function() {
 
     it(`should stop replaying if a request fails`, async function() {
       sandbox.stub(self, 'fetch')
-          .onCall(3).rejects(new Error())
+          .onCall(3).callsFake(async (request) => {
+            // Use the body to ensure everything is cloned beforehand.
+            await request.text();
+            throw new Error('network error');
+          })
           .callThrough();
 
       const queue = new Queue('foo');
 
-      await queue.pushRequest({request: new Request('/one')});
-      await queue.pushRequest({request: new Request('/two')});
-      await queue.pushRequest({request: new Request('/three')});
-      await queue.pushRequest({request: new Request('/four')});
-      await queue.pushRequest({request: new Request('/five')});
+      await queue.pushRequest({
+        request: new Request('/one', {method: 'POST', body: '...'}),
+      });
+      await queue.pushRequest({
+        request: new Request('/two', {method: 'POST', body: '...'}),
+      });
+      await queue.pushRequest({
+        request: new Request('/three', {method: 'POST', body: '...'}),
+      });
+      await queue.pushRequest({
+        request: new Request('/four', {method: 'POST', body: '...'}),
+      });
+      await queue.pushRequest({
+        request: new Request('/five', {method: 'POST', body: '...'}),
+      });
 
       await expectError(() => {
         return queue.replayRequests(); // The 4th requests should fail.
@@ -582,16 +657,23 @@ describe(`Queue`, function() {
 
     it(`should throw WorkboxError if re-fetching fails`, async function() {
       sandbox.stub(self, 'fetch')
-          .onCall(1).rejects(new Error())
+          .onCall(1).callsFake(async (request) => {
+            // Use the body to ensure everything is cloned beforehand.
+            await request.text();
+            throw new Error('network error');
+          })
           .callThrough();
 
-      const failureURL = '/two';
       const queue = new Queue('foo');
 
       // Add requests for both queues to ensure only the requests from
       // the matching queue are replayed.
-      await queue.pushRequest({request: new Request('/one')});
-      await queue.pushRequest({request: new Request(failureURL)});
+      await queue.pushRequest({
+        request: new Request('/one', {method: 'POST', body: '...'}),
+      });
+      await queue.pushRequest({
+        request: new Request('/two', {method: 'POST', body: '...'}),
+      });
 
       await expectError(() => {
         return queue.replayRequests();
