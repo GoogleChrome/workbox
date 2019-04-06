@@ -10,6 +10,16 @@ import {StorableRequest} from 'workbox-background-sync/lib/StorableRequest.mjs';
 
 
 describe(`StorableRequest`, function() {
+  const sandbox = sinon.createSandbox();
+
+  beforeEach(function() {
+    sandbox.restore();
+  });
+
+  afterEach(function() {
+    sandbox.restore();
+  });
+
   describe(`static fromRequest`, function() {
     it(`should convert a Request to a StorableRequest instance`, async function() {
       const request = new Request('/foo', {
@@ -49,6 +59,18 @@ describe(`StorableRequest`, function() {
 
       const storableRequest = new StorableRequest(requestData);
       expect(storableRequest._requestData).to.deep.equal(requestData);
+    });
+
+    it(`handles navigation requests by converting them to same-origin`, async function() {
+      const requestData = {
+        url: '/api',
+        method: 'POST',
+        body: '{"json":"data"}',
+        mode: 'navigate',
+      };
+
+      const storableRequest = new StorableRequest(requestData);
+      expect(storableRequest._requestData.mode).to.equal('same-origin');
     });
 
     it(`throws if not given a requestData object`, function() {
