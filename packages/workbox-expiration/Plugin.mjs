@@ -31,7 +31,6 @@ import './_version.mjs';
  * used immediately.
  *
  * When using `maxEntries`, the entry least-recently requested will be removed from the cache first.
- * 
  *
  * @memberof workbox.expiration
  */

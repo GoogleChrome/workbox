@@ -700,4 +700,61 @@ describe(`Queue`, function() {
       await queue.registerSync();
     });
   });
+
+  describe(`getAll()`, function() {
+    it(`returns all requests in the QueueStore instance`, async function() {
+      const queue = new Queue('a');
+
+      const request1 = new Request('/one', {method: 'POST', body: '...'});
+      const request2 = new Request('/two', {method: 'POST', body: '...'});
+      const request3 = new Request('/three', {method: 'POST', body: '...'});
+
+      await queue.pushRequest({request: request1});
+      await queue.pushRequest({request: request2});
+      await queue.pushRequest({
+        request: request3,
+        metadata: {meta: 'data'},
+      });
+
+      const entries = await queue.getAll();
+      expect(entries.length).to.equal(3);
+      expect(entries[0].request).to.deep.equal(request1);
+      expect(entries[0].metadata).to.equal(undefined);
+      expect(entries[1].request).to.deep.equal(request2);
+      expect(entries[1].metadata).to.equal(undefined);
+      expect(entries[2].request).to.deep.equal(request3);
+      expect(entries[2].metadata).to.deep.equal({meta: 'data'});
+
+      // Ensure the entries aren't deleted.
+      expect(await db.getAll('requests')).to.have.lengthOf(3);
+    });
+
+    it(`doesn't return expired entries (and it deletes them)`, async function() {
+      const queue = new Queue('a');
+
+      const request1 = new Request('/one', {method: 'POST', body: '...'});
+      const request2 = new Request('/two', {method: 'POST', body: '...'});
+      const request3 = new Request('/three', {method: 'POST', body: '...'});
+
+      await queue.pushRequest({request: request1});
+      await queue.pushRequest({
+        request: request2,
+        timestamp: Date.now() - 1e12,
+      });
+      await queue.pushRequest({
+        request: request3,
+        metadata: {meta: 'data'},
+      });
+
+      const entries = await queue.getAll();
+      expect(entries.length).to.equal(2);
+      expect(entries[0].request).to.deep.equal(request1);
+      expect(entries[0].metadata).to.equal(undefined);
+      expect(entries[1].request).to.deep.equal(request3);
+      expect(entries[1].metadata).to.deep.equal({meta: 'data'});
+
+      // Ensure the expired entry was deleted.
+      expect(await db.getAll('requests')).to.have.lengthOf(2);
+    });
+  });
 });
