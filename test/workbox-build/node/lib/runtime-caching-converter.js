@@ -115,15 +115,14 @@ function validate(runtimeCachingOptions, convertedOptions) {
 
       if (options.broadcastUpdate) {
         if ('options' in options.broadcastUpdate) {
-          expect(
-              globalScope.workbox.broadcastUpdate.Plugin.calledWith(
-                  options.broadcastUpdate.channelName, options.broadcastUpdate.options)
-          ).to.be.true;
+          const expectedOptions = Object.assign(
+              {channelName: options.broadcastUpdate.channelName},
+              options.broadcastUpdate.options);
+          expect(globalScope.workbox.broadcastUpdate.Plugin.calledWith(expectedOptions))
+              .to.be.true;
         } else {
-          expect(
-              globalScope.workbox.broadcastUpdate.Plugin.calledWith(
-                  options.broadcastUpdate.channelName)
-          ).to.be.true;
+          expect(globalScope.workbox.broadcastUpdate.Plugin.calledWith(
+              {channelName: options.broadcastUpdate.channelName})).to.be.true;
         }
       }
     }
