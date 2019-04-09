@@ -172,7 +172,7 @@ class Queue {
     const allEntries = await this._queueStore.getAll();
     const now = Date.now();
 
-    const unexpirtedEntries = [];
+    const unexpiredEntries = [];
     for (const entry of allEntries) {
       // Ignore requests older than maxRetentionTime. Call this function
       // recursively until an unexpired request is found.
@@ -180,11 +180,11 @@ class Queue {
       if (now - entry.timestamp > maxRetentionTimeInMs) {
         await this._queueStore.deleteEntry(entry.id);
       } else {
-        unexpirtedEntries.push(convertEntry(entry));
+        unexpiredEntries.push(convertEntry(entry));
       }
     }
 
-    return unexpirtedEntries;
+    return unexpiredEntries;
   }
 
 
