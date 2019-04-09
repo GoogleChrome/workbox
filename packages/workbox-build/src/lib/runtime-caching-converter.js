@@ -81,11 +81,8 @@ function getOptionsString(options = {}) {
 
       case 'broadcastUpdate': {
         const channelName = pluginConfig.channelName;
-        pluginCode = `new ${pluginString}(${JSON.stringify(channelName)}`;
-        if ('options' in pluginConfig) {
-          pluginCode += `, ${stringifyWithoutComments(pluginConfig.options)}`;
-        }
-        pluginCode += `)`;
+        const opts = Object.assign({channelName}, pluginConfig.options);
+        pluginCode = `new ${pluginString}(${stringifyWithoutComments(opts)})`;
 
         break;
       }
