@@ -163,6 +163,32 @@ class Queue {
   }
 
   /**
+   * Returns all the entries that have not expired (per `maxRetentionTime`).
+   * Any expired entries are removed from the queue.
+   *
+   * @return {Promise<Array<Object>>}
+   */
+  async getAll() {
+    const allEntries = await this._queueStore.getAll();
+    const now = Date.now();
+
+    const unexpiredEntries = [];
+    for (const entry of allEntries) {
+      // Ignore requests older than maxRetentionTime. Call this function
+      // recursively until an unexpired request is found.
+      const maxRetentionTimeInMs = this._maxRetentionTime * 60 * 1000;
+      if (now - entry.timestamp > maxRetentionTimeInMs) {
+        await this._queueStore.deleteEntry(entry.id);
+      } else {
+        unexpiredEntries.push(convertEntry(entry));
+      }
+    }
+
+    return unexpiredEntries;
+  }
+
+
+  /**
    * Adds the entry to the QueueStore and registers for a sync event.
    *
    * @param {Object} entry
@@ -204,7 +230,7 @@ class Queue {
 
   /**
    * Removes and returns the first or last (depending on `operation`) entry
-   * form the QueueStore that's not older than the `maxRetentionTime`.
+   * from the QueueStore that's not older than the `maxRetentionTime`.
    *
    * @param {string} operation ('pop' or 'shift')
    * @return {Object|undefined}
@@ -214,7 +240,7 @@ class Queue {
     const now = Date.now();
     const entry = await this._queueStore[`${operation}Entry`]();
 
-    if (entry ) {
+    if (entry) {
       // Ignore requests older than maxRetentionTime. Call this function
       // recursively until an unexpired request is found.
       const maxRetentionTimeInMs = this._maxRetentionTime * 60 * 1000;
@@ -222,10 +248,7 @@ class Queue {
         return this._removeRequest(operation);
       }
 
-      entry.request = new StorableRequest(entry.requestData).toRequest();
-      delete entry.requestData;
-
-      return entry;
+      return convertEntry(entry);
     }
   }
 
@@ -346,5 +369,26 @@ class Queue {
     return queueNames;
   }
 }
+
+
+/**
+ * Converts a QueueStore entry into the format exposed by Queue. This entails
+ * converting the request data into a real request and omitting the `id` and
+ * `queueName` properties.
+ *
+ * @param {Object} queueStoreEntry
+ * @return {Object}
+ * @private
+ */
+const convertEntry = (queueStoreEntry) => {
+  const queueEntry = {
+    request: new StorableRequest(queueStoreEntry.requestData).toRequest(),
+    timestamp: queueStoreEntry.timestamp,
+  };
+  if (queueStoreEntry.metadata) {
+    queueEntry.metadata = queueStoreEntry.metadata;
+  }
+  return queueEntry;
+};
 
 export {Queue};

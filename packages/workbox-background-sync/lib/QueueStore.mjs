@@ -102,6 +102,7 @@ export class QueueStore {
       // Pick an ID one less than the lowest ID in the object store.
       entry.id = firstEntry.id - 1;
     } else {
+      // Otherwise let the auto-incrementor assign the ID.
       delete entry.id;
     }
     entry.queueName = this._queueName;
@@ -130,6 +131,35 @@ export class QueueStore {
   }
 
   /**
+   * Returns all entries in the store matching the `queueName`.
+   *
+   * @param {Object} options See workbox.backgroundSync.Queue~getAll}
+   * @return {Promise<Array<Object>>}
+   * @private
+   */
+  async getAll() {
+    return await this._db.getAllMatching(OBJECT_STORE_NAME, {
+      index: INDEXED_PROP,
+      query: IDBKeyRange.only(this._queueName),
+    });
+  }
+
+  /**
+   * Deletes the entry for the given ID.
+   *
+   * WARNING: this method does not ensure the deleted enry belongs to this
+   * queue (i.e. matches the `queueName`). But this limitation is acceptable
+   * as this class is not publicly exposed. An additional check would make
+   * this method slower than it needs to be.
+   *
+   * @private
+   * @param {number} id
+   */
+  async deleteEntry(id) {
+    await this._db.delete(OBJECT_STORE_NAME, id);
+  }
+
+  /**
    * Removes and returns the first or last entry in the queue (based on the
    * `direction` argument) matching the `queueName`.
    *
@@ -145,11 +175,7 @@ export class QueueStore {
     });
 
     if (entry) {
-      await this._db.delete(OBJECT_STORE_NAME, entry.id);
-
-      // Dont' expose the ID or queueName;
-      delete entry.id;
-      delete entry.queueName;
+      await this.deleteEntry(entry.id);
       return entry;
     }
   }
