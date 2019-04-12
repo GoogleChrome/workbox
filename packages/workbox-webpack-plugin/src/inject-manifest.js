@@ -22,6 +22,7 @@ const relativeToOutputPath = require('./lib/relative-to-output-path');
 const sanitizeConfig = require('./lib/sanitize-config');
 const stringifyManifest = require('./lib/stringify-manifest');
 const warnAboutConfig = require('./lib/warn-about-config');
+const Terser = require('terser');
 
 /**
  * This class supports taking an existing service worker file which already
@@ -60,6 +61,8 @@ class InjectManifest {
    * @private
    */
   async handleEmit(compilation, readFile) {
+    const isProd = compilation.options.mode === 'production';
+
     const configWarning = warnAboutConfig(this.config);
     if (configWarning) {
       compilation.warnings.push(configWarning);
@@ -92,7 +95,7 @@ class InjectManifest {
       entries = entries.concat(manifestEntries);
     }
 
-    const manifestString = stringifyManifest(entries);
+    const manifestString = stringifyManifest(entries, isProd ? 0 : 2);
     const manifestAsset = convertStringToAsset(manifestString);
     const manifestHash = getAssetHash(manifestAsset);
 
@@ -143,13 +146,21 @@ class InjectManifest {
         `${JSON.stringify(modulePathPrefix)}});`
       : '';
 
-    const postInjectionSWString = `importScripts(${importScriptsString});
+    let postInjectionSWString = `importScripts(${importScriptsString});
 ${setConfigString}
 ${originalSWString}
 `;
 
+    if (isProd) {
+      this.config.terserOptions = this.config.terserOptions || {};
+    }
+
     const relSwDest = relativeToOutputPath(compilation, this.config.swDest);
-    compilation.assets[relSwDest] = convertStringToAsset(postInjectionSWString);
+    compilation.assets[relSwDest] = convertStringToAsset(
+      this.config.terserOptions ?
+      Terser.minify(postInjectionSWString, this.config.terserOptions).code :
+      postInjectionSWString
+    );
   }
 
   /**

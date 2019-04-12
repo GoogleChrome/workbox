@@ -52,6 +52,8 @@ class GenerateSW {
    * @private
    */
   async handleEmit(compilation) {
+    const isProd = compilation.options.mode === 'production';
+
     const configWarning = warnAboutConfig(this.config);
     if (configWarning) {
       compilation.warnings.push(configWarning);
@@ -62,7 +64,7 @@ class GenerateSW {
     const entries = getManifestEntriesFromCompilation(compilation, this.config);
     const importScriptsArray = [].concat(this.config.importScripts);
 
-    const manifestString = stringifyManifest(entries);
+    const manifestString = stringifyManifest(entries, isProd ? 0 : 2);
     const manifestAsset = convertStringToAsset(manifestString);
     const manifestHash = getAssetHash(manifestAsset);
 
@@ -89,6 +91,10 @@ class GenerateSW {
         // code. Just import them first as part of the "main" importScripts().
         importScriptsArray.unshift(...workboxSWImports);
       }
+    }
+
+    if (isProd) {
+      this.config.terserOptions = this.config.terserOptions || {};
     }
 
     const sanitizedConfig = sanitizeConfig.forGenerateSWString(this.config);

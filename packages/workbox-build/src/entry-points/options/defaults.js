@@ -21,4 +21,5 @@ module.exports = {
   offlineGoogleAnalytics: false,
   purgeOnQuotaError: false,
   skipWaiting: false,
+  terserOptions: undefined,
 };

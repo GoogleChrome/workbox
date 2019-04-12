@@ -21,18 +21,19 @@ const PRECACHE_MANIFEST_VAR = '__precacheManifest';
  *
  * @function generateManifestWithWebpack
  * @param {Array<module:workbox-build.ManifestEntry>} manifestEntries
+ * @param {number} space
  * @return {string} service worker manifest file string
  *
  * @private
  */
-module.exports = (manifestEntries) => {
+module.exports = (manifestEntries, space = 2) => {
   const sortedEntries = manifestEntries.sort((a, b) =>
         a.url === b.url ? 0 : (a.url > b.url ? 1 : -1));
   // json-stable-stringify ensures that we get a consistent output, with all
   // the properties of each object sorted.
   // There's a hash created of the serialized JSON data, and we want the hash to
   // be the same if the data is the same, without any sort-order variation.
-  const entriesJson = stringify(sortedEntries, {space: 2});
+  const entriesJson = stringify(sortedEntries, {space});
   return `self.${PRECACHE_MANIFEST_VAR} = (self.${PRECACHE_MANIFEST_VAR} || ` +
       `[]).concat(${entriesJson});`;
 };

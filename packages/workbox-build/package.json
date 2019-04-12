@@ -29,6 +29,7 @@
     "pretty-bytes": "^5.1.0",
     "stringify-object": "^3.3.0",
     "strip-comments": "^1.0.2",
+    "terser": "^3.17.0",
     "workbox-background-sync": "^4.2.0",
     "workbox-broadcast-update": "^4.2.0",
     "workbox-cacheable-response": "^4.2.0",

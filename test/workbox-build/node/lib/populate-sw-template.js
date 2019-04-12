@@ -184,4 +184,29 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       workboxSWImport: undefined,
     }]);
   });
+
+  it('should populate a minified template', function() {
+    const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
+    const swTemplate = 'template';
+    const terserOptions = {
+      'output': {
+        'comments': false,
+      },
+    };
+
+    const innerStub = sinon.stub().returns('');
+    const outerStub = sinon.stub().returns(innerStub);
+    const minifyStub = sinon.stub().returns(function() {});
+    const populateSWTemplate = proxyquire(MODULE_PATH, {
+      'lodash.template': outerStub,
+      './runtime-caching-converter': () => runtimeCachingPlaceholder,
+      '../templates/sw-template': swTemplate,
+      'terser': {
+        'minify': minifyStub,
+      },
+    });
+
+    populateSWTemplate({terserOptions});
+    expect(minifyStub.calledWith(sinon.match.any, terserOptions)).to.be.true;
+  });
 });

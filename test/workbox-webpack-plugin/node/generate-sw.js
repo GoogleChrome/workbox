@@ -160,7 +160,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Ensure only one precache-manifest is present on re-compile`, function() {
     it(`should only have one reference to precache-manifest file in 'importScripts'`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.2c7d9e8048d223b0dd824ea92d3dee5b.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.1d6d062cf0a8a42e85615cd0858a0dee.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -229,9 +229,131 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
   });
 
+  describe(`[workbox-webpack-plugin] Ensure default options`, function() {
+    it(`on production mode should minify the output`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.1d6d062cf0a8a42e85615cd0858a0dee.js';
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW(),
+        ],
+      };
+      let emitCount = 0;
+
+      const compiler = webpack(config);
+      const watching = compiler.watch({
+      }, async (err, stats) => {
+        emitCount += 1;
+
+        if (err) {
+          done(err);
+          return;
+        }
+
+        const swFile = path.join(outputDir, 'service-worker.js');
+
+        try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [
+              [WORKBOX_SW_FILE_NAME],
+              [FILE_MANIFEST_NAME],
+            ],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          const swFileContents = await fse.readFile(swFile, 'utf-8');
+          expect(swFileContents.length).to.greaterThan(0);
+          expect(swFileContents.includes('\n')).to.be.false;
+
+          if (emitCount == 2) {
+            watching.close(done);
+          } else {
+            watching.invalidate(); // triggers second compilation
+          }
+        } catch (error) {
+          watching.close();
+          done(error);
+        }
+      });
+    });
+
+    it(`on development mode should minify the output`, function(done) {
+      const FILE_MANIFEST_NAME = 'precache-manifest.26df55f2e44f87c1634b72ab920eed51.js';
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'development',
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW(),
+        ],
+      };
+      let emitCount = 0;
+
+      const compiler = webpack(config);
+      const watching = compiler.watch({
+      }, async (err, stats) => {
+        emitCount += 1;
+
+        if (err) {
+          done(err);
+          return;
+        }
+
+        const swFile = path.join(outputDir, 'service-worker.js');
+
+        try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [
+              [WORKBOX_SW_FILE_NAME],
+              [FILE_MANIFEST_NAME],
+            ],
+            precacheAndRoute: [[[], {}]],
+          }});
+
+          const swFileContents = await fse.readFile(swFile, 'utf-8');
+          expect(swFileContents.length).to.greaterThan(0);
+          expect(swFileContents.includes('\n')).to.be.true;
+
+          if (emitCount == 2) {
+            watching.close(done);
+          } else {
+            watching.invalidate(); // triggers second compilation
+          }
+        } catch (error) {
+          watching.close();
+          done(error);
+        }
+      });
+    });
+  });
+
   describe(`[workbox-webpack-plugin] multiple chunks`, function() {
     it(`should work when called without any parameters`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.2c7d9e8048d223b0dd824ea92d3dee5b.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.1d6d062cf0a8a42e85615cd0858a0dee.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -289,7 +411,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should support setting importWorkboxFrom to a chunk's name`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.0fa1135d04ed8d11b96b5ee1766f8039.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.0680e28c2974b90919934b0f2f0c36cb.js';
       const workboxEntryName = 'workboxEntry-278b92112247f26eee29.js';
       const outputDir = tempy.directory();
       const config = {
@@ -349,7 +471,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should support setting importWorkboxFrom to 'local'`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.2c7d9e8048d223b0dd824ea92d3dee5b.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.1d6d062cf0a8a42e85615cd0858a0dee.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -424,7 +546,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should support setting importWorkboxFrom to 'local', respecting output.publicPath`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.a88f52568f80d2bc84e728a7f0090bdd.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.a6e767a88ea91201141a7d8acad971af.js';
       const outputDir = tempy.directory();
       const publicPath = '/testing/';
       const config = {
@@ -502,7 +624,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should honor the 'chunks' whitelist config`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.0fa1135d04ed8d11b96b5ee1766f8039.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.0680e28c2974b90919934b0f2f0c36cb.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -563,7 +685,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should honor the 'excludeChunks' blacklist config`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.0fa1135d04ed8d11b96b5ee1766f8039.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.0680e28c2974b90919934b0f2f0c36cb.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -624,7 +746,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should honor setting both the 'chunks' and 'excludeChunks', with the blacklist taking precedence`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.5c1807bea92497c4ce2edfd648c76fda.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.eac9e2f1e1f2afd6cda04f0d69527f73.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -684,7 +806,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should pass through the config to workbox-build.generateSWString()`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.2c7d9e8048d223b0dd824ea92d3dee5b.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.1d6d062cf0a8a42e85615cd0858a0dee.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -762,7 +884,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] html-webpack-plugin and a single chunk`, function() {
     it(`should work when called without any parameters`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.d7198c46af2c1b7f06dc772c4ef0bce3.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.f15e18757ff87412ba30e69ec3d172c1.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -826,7 +948,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] copy-webpack-plugin and a single chunk`, function() {
     it(`should work when called without any parameters`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.1b505772a6cbb2bff44b0edbf001e195.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.08ca46c74dbf09553f3cda6787fafd9a.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -907,7 +1029,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Filtering via test/include/exclude`, function() {
     it(`should exclude .map and manifest.js files by default`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.d52589f037edd1cd3e3483eb8a06f4dc.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.e80ddfca299f8ea1add3196c896ccf6d.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -971,7 +1093,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should allow developers to override the default exclude filter`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.725e7698a72a603812c5e99bd38f4a69.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.14ffaa488d930d2ee026a771235a1ccb.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1031,7 +1153,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should allow developers to whitelist via include`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.123dfc65e79ed36a159a8aade3882019.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.30901dc1ccee9eddc44e6de62a09a068.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1098,7 +1220,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should allow developers to combine the test and exclude filters`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.9acbd1c6112356e638a7c18716c0311e.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.fd9ef34d358b9a0a9c2f1be9c6d2ac3b.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1165,7 +1287,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] swDest variations`, function() {
     it(`should work when swDest is an absolute path`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.29f0f9b0fb8d84f04161b18c20c18fee.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.e42cea3cd7ca387876d0d2ab5aa82617.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1224,7 +1346,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Reporting webpack warnings`, function() {
     it(`should add warnings from the workbox-build methods to compilation.warnings`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.7e1d0d5a77c9c05655b6033e320028e3.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.ff2a8fdf9431c24dc6ad2073a24d59c7.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1294,7 +1416,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should add a warning when various glob-related options are set`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.7e1d0d5a77c9c05655b6033e320028e3.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.ff2a8fdf9431c24dc6ad2073a24d59c7.js';
       const outputDir = tempy.directory();
       const globOptionsToWarnAbout = [
         'globDirectory',
@@ -1375,7 +1497,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should add a warning when certain options are used, but globPatterns isn't set`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.7e1d0d5a77c9c05655b6033e320028e3.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.ff2a8fdf9431c24dc6ad2073a24d59c7.js';
       const outputDir = tempy.directory();
       const optionsToWarnAboutWhenGlobPatternsIsNotSet = [
         'dontCacheBustURLsMatching',
@@ -1447,7 +1569,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Customizing output paths and names`, function() {
     it(`should allow overriding precacheManifestFilename`, function(done) {
-      const FILE_MANIFEST_NAME = 'custom-name.7e1d0d5a77c9c05655b6033e320028e3.js';
+      const FILE_MANIFEST_NAME = 'custom-name.ff2a8fdf9431c24dc6ad2073a24d59c7.js';
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1506,7 +1628,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should allow setting importsDirectory`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.7e1d0d5a77c9c05655b6033e320028e3.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.ff2a8fdf9431c24dc6ad2073a24d59c7.js';
       const outputDir = tempy.directory();
       const importsDirectory = path.join('one', 'two');
       const config = {
@@ -1567,7 +1689,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
 
     it(`should allow setting importsDirectory, publicPath, and importWorkboxFrom: 'local'`, function(done) {
-      const FILE_MANIFEST_NAME = 'precache-manifest.0a5a96f075807fd5ebca92528f0a5156.js';
+      const FILE_MANIFEST_NAME = 'precache-manifest.df7300e63df552b608615eba4357652d.js';
       const outputDir = tempy.directory();
       const importsDirectory = path.join('one', 'two');
       const publicPath = '/testing/';

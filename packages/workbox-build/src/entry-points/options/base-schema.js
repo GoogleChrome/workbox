@@ -26,4 +26,5 @@ module.exports = joi.object().keys({
   // can be either a string or an array of strings.
   templatedURLs: joi.object().pattern(/./,
       [joi.string(), joi.array().items(joi.string())]),
+  terserOptions: joi.object(),
 });

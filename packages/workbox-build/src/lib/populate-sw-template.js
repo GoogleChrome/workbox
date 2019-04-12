@@ -6,6 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
+const Terser = require('terser');
 const template = require('lodash.template');
 const swTemplate = require('../templates/sw-template');
 
@@ -29,6 +30,7 @@ module.exports = ({
   offlineGoogleAnalytics,
   runtimeCaching,
   skipWaiting,
+  terserOptions,
   workboxSWImport,
 }) => {
   // These are all options that can be passed to the precacheAndRoute() method.
@@ -80,6 +82,10 @@ module.exports = ({
       runtimeCaching: runtimeCachingConverter(runtimeCaching),
       workboxSWImport,
     });
+
+    if (terserOptions) {
+      return Terser.minify(populatedTemplate, terserOptions).code;
+    }
 
     // Clean up multiple blank lines.
     return populatedTemplate.replace(/\n{3,}/g, '\n\n').trim() + '\n';

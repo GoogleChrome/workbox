@@ -9,6 +9,7 @@
 const assert = require('assert');
 const fse = require('fs-extra');
 const path = require('path');
+const Terser = require('terser');
 
 const checkForDeprecatedOptions =
     require('../lib/check-for-deprecated-options');
@@ -81,6 +82,10 @@ async function injectManifest(config) {
   } catch (error) {
     throw new Error(errors['unable-to-make-injection-directory'] +
       ` '${error.message}'`);
+  }
+
+  if (options.terserOptions) {
+    swFileContents = Terser.minify(swFileContents, options.terserOptions).code;
   }
 
   await fse.writeFile(config.swDest, swFileContents);
