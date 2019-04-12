@@ -14,6 +14,7 @@ const commonGenerateSchema = require('./common-generate-schema');
 module.exports = commonGenerateSchema.keys({
   globDirectory: joi.string(),
   importScripts: joi.array().items(joi.string()).required(),
+  manifestEntries: joi.array().items(joi.object()).optional(),
   modulePathPrefix: joi.string(),
   workboxSWImport: joi.string(),
 });

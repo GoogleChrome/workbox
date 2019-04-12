@@ -92,19 +92,29 @@ class InjectManifest {
       entries = entries.concat(manifestEntries);
     }
 
+    let postInjectionSWString = '';
     const manifestString = stringifyManifest(entries);
-    const manifestAsset = convertStringToAsset(manifestString);
-    const manifestHash = getAssetHash(manifestAsset);
 
-    const manifestFilename = formatManifestFilename(
-        this.config.precacheManifestFilename, manifestHash);
+    if (this.config.precacheManifestFilename) {
+      const manifestAsset = convertStringToAsset(manifestString);
+      const manifestHash = getAssetHash(manifestAsset);
 
-    const pathToManifestFile = relativeToOutputPath(
-        compilation, path.join(this.config.importsDirectory, manifestFilename));
-    compilation.assets[pathToManifestFile] = manifestAsset;
+      const manifestFilename = formatManifestFilename(
+          this.config.precacheManifestFilename, manifestHash);
 
-    importScriptsArray.push((compilation.options.output.publicPath || '') +
-      pathToManifestFile.split(path.sep).join('/'));
+      const pathToManifestFile = relativeToOutputPath(
+          compilation,
+          path.join(this.config.importsDirectory, manifestFilename)
+      );
+      compilation.assets[pathToManifestFile] = manifestAsset;
+
+      importScriptsArray.push((compilation.options.output.publicPath || '') +
+        pathToManifestFile.split(path.sep).join('/'));
+    } else {
+      if (manifestString) {
+        postInjectionSWString = `${postInjectionSWString}${manifestString}\n`;
+      }
+    }
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
     if (workboxSWImports) {
@@ -143,7 +153,8 @@ class InjectManifest {
         `${JSON.stringify(modulePathPrefix)}});`
       : '';
 
-    const postInjectionSWString = `importScripts(${importScriptsString});
+    postInjectionSWString = `${postInjectionSWString}
+importScripts(${importScriptsString});
 ${setConfigString}
 ${originalSWString}
 `;

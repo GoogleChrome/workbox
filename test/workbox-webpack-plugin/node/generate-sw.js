@@ -1445,6 +1445,55 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
   });
 
+  describe(`[workbox-webpack-plugin] falsy precacheManifestFilename`, function() {
+    it(`should not output manifest file but output to swDest file`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW({
+            precacheManifestFilename: false,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
+          const swFile = path.join(outputDir, 'service-worker.js');
+
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({
+            swFile, expectedMethodCalls: {
+              importScripts: [
+                [WORKBOX_SW_FILE_NAME],
+              ],
+              precacheAndRoute: [[[{url: 'entry1-534729ef1c2ff611b64f.js'}], {}]],
+            }});
+
+          expect((await fse.readdir(outputDir)).length).to.equal(2);
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
   describe(`[workbox-webpack-plugin] Customizing output paths and names`, function() {
     it(`should allow overriding precacheManifestFilename`, function(done) {
       const FILE_MANIFEST_NAME = 'custom-name.7e1d0d5a77c9c05655b6033e320028e3.js';

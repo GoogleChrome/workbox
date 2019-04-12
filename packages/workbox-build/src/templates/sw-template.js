@@ -25,7 +25,7 @@ module.exports = `/**
 importScripts(<%= JSON.stringify(workboxSWImport) %>);
 <% if (modulePathPrefix) { %>workbox.setConfig({modulePathPrefix: <%= JSON.stringify(modulePathPrefix) %>});<% } %>
 <% } %>
-<% if (importScripts) { %>
+<% if ((importScripts || []).length) { %>
 importScripts(
   <%= importScripts.map(JSON.stringify).join(',\\n  ') %>
 );

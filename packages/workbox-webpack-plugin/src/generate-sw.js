@@ -59,21 +59,29 @@ class GenerateSW {
 
     const workboxSWImports = await getWorkboxSWImports(
         compilation, this.config);
-    const entries = getManifestEntriesFromCompilation(compilation, this.config);
+    const manifestEntries =
+      getManifestEntriesFromCompilation(compilation, this.config);
     const importScriptsArray = [].concat(this.config.importScripts);
+    const sanitizedConfig = sanitizeConfig.forGenerateSWString(this.config);
 
-    const manifestString = stringifyManifest(entries);
-    const manifestAsset = convertStringToAsset(manifestString);
-    const manifestHash = getAssetHash(manifestAsset);
+    if (this.config.precacheManifestFilename) {
+      const manifestString = stringifyManifest(manifestEntries);
+      const manifestAsset = convertStringToAsset(manifestString);
+      const manifestHash = getAssetHash(manifestAsset);
 
-    const manifestFilename = formatManifestFilename(
-        this.config.precacheManifestFilename, manifestHash);
-    const pathToManifestFile = relativeToOutputPath(
-        compilation, path.join(this.config.importsDirectory, manifestFilename));
-    compilation.assets[pathToManifestFile] = manifestAsset;
+      const manifestFilename = formatManifestFilename(
+          this.config.precacheManifestFilename, manifestHash);
+      const pathToManifestFile = relativeToOutputPath(
+          compilation,
+          path.join(this.config.importsDirectory, manifestFilename)
+      );
+      compilation.assets[pathToManifestFile] = manifestAsset;
 
-    importScriptsArray.push((compilation.options.output.publicPath || '') +
-      pathToManifestFile.split(path.sep).join('/'));
+      importScriptsArray.push((compilation.options.output.publicPath || '') +
+        pathToManifestFile.split(path.sep).join('/'));
+    } else {
+      sanitizedConfig.manifestEntries = manifestEntries;
+    }
 
     // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
     let workboxSWImport;
@@ -91,7 +99,6 @@ class GenerateSW {
       }
     }
 
-    const sanitizedConfig = sanitizeConfig.forGenerateSWString(this.config);
     // If globPatterns isn't explicitly set, then default to [], instead of
     // the workbox-build.generateSWString() default.
     sanitizedConfig.globPatterns = sanitizedConfig.globPatterns || [];

@@ -1609,7 +1609,59 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] Customizing output paths and names`, function() {
+  describe(`[workbox-webpack-plugin] falsy precacheManifestFilename`, function() {
+    it(`should not output manifest file but output to swDest file`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            precacheManifestFilename: false,
+            swSrc: SW_SRC,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        if (webpackError) {
+          return done(webpackError);
+        }
+
+        try {
+          const statsJson = stats.toJson('verbose');
+          expect(statsJson.warnings).to.have.lengthOf(0);
+
+          const swFile = path.join(outputDir, path.basename(SW_SRC));
+
+          // First, validate that the generated service-worker.js meets some basic assumptions.
+          await validateServiceWorkerRuntime({
+            swFile, expectedMethodCalls: {
+              importScripts: [[
+                WORKBOX_SW_FILE_NAME,
+              ]],
+              precacheAndRoute: [[[], {}]],
+            }});
+
+          const swDestContents = await fse.readFile(swFile, 'utf-8');
+          expect(swDestContents).contains('self.__precacheManifest = (self.__precacheManifest || []).concat([\n  {\n    "url": "entry1-534729ef1c2ff611b64f.js"\n  }\n]);');
+          expect((await fse.readdir(outputDir)).length).to.equal(2);
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  describe.only(`[workbox-webpack-plugin] Customizing output paths and names`, function() {
     it(`should allow overriding precacheManifestFilename`, function(done) {
       const FILE_MANIFEST_NAME = 'custom-name.7e1d0d5a77c9c05655b6033e320028e3.js';
       const outputDir = tempy.directory();
@@ -1851,7 +1903,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           // Check if service-worker.js is being written fine
           const swSrcContents = await fse.readFile(path.join(outputDir, 'sw.js'), 'utf-8');
           const swDestContents = await fse.readFile(path.join(outputDir, 'service-worker.js'), 'utf-8');
-          const expectedString = `importScripts("${publicPath}${FILE_MANIFEST_NAME}", ` +
+          const expectedString = `\nimportScripts("${publicPath}${FILE_MANIFEST_NAME}", ` +
             `"${WORKBOX_SW_FILE_NAME}");\n\n` +
             swSrcContents + '\n';
           expect(expectedString).to.be.equal(swDestContents);
