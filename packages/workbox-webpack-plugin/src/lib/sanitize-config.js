@@ -27,6 +27,7 @@ function forGetManifest(originalConfig) {
     'swDest',
     'swSrc',
     'test',
+    'entry',
   ];
 
   return sanitizeConfig(originalConfig, propertiesToRemove);

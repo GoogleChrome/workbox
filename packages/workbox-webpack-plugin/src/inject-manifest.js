@@ -9,6 +9,7 @@
 const assert = require('assert');
 const path = require('path');
 const {getManifest} = require('workbox-build');
+const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin')
 
 const convertStringToAsset = require('./lib/convert-string-to-asset');
 const getDefaultConfig = require('./lib/get-default-config');
@@ -51,6 +52,48 @@ class InjectManifest {
       // provided here. (In GenerateSW, that's not available.)
       swDest: path.basename(config.swSrc),
     }, config);
+  }
+
+  /**
+   * Shameless copy from
+   * https://github.com/oliviertassinari/serviceworker-webpack-plugin/blob/master/src/index.js#L100-L131
+   *
+   * @param {Object} compilation The webpack compilation.
+   * @param {Function} compiler The function to use when reading files,
+   * derived from compiler.inputFileSystem.
+   * @private
+   */
+  handleMake(compilation, compiler) {
+    const childCompiler = compilation.createChildCompiler(this.constructor.name, {
+      filename: this.config.swDest,
+    })
+
+    const childEntryCompiler = new SingleEntryPlugin(compiler.context, this.config.entry)
+    childEntryCompiler.apply(childCompiler)
+
+    // Fix for "Uncaught TypeError: __webpack_require__(...) is not a function"
+    // Hot module replacement requires that every child compiler has its own
+    // cache. @see https://github.com/ampedandwired/html-webpack-plugin/pull/179
+    childCompiler.hooks.compilation.tap('workbox-plugin-compilation', compilation2 => {
+      if (compilation2.cache) {
+        if (!compilation2.cache[this.constructor.name]) {
+          compilation2.cache[this.constructor.name] = {}
+        }
+        compilation2.cache = compilation2.cache[this.constructor.name]
+      }
+    })
+
+    // Compile and return a promise.
+    return new Promise((resolve, reject) => {
+      childCompiler.runAsChild(err => {
+        if (err) {
+          reject(err)
+          return
+        }
+
+        resolve()
+      })
+    })
   }
 
   /**
@@ -116,6 +159,7 @@ class InjectManifest {
      * Check if the mentioned file name is in the webpack assets itself
      * or fallback to filesystem.
      */
+
     if (compilation.assets[this.config.swSrc]) {
       originalSWString = compilation.assets[this.config.swSrc].source();
     } else {
@@ -162,6 +206,17 @@ ${originalSWString}
         .bind(compiler.inputFileSystem);
     if ('hooks' in compiler) {
       // We're in webpack 4+.
+
+      compiler.hooks.make.tapAsync('workbox-plugin-make', (compilation, callback) => {
+        this.handleMake(compilation, compiler)
+          .then(() => {
+            callback()
+          })
+          .catch(() => {
+            callback(new Error('Something went wrong during the make event.'))
+          })
+      })
+
       compiler.hooks.emit.tapPromise(
           this.constructor.name,
           (compilation) => this.handleEmit(compilation, readFile)
