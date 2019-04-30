@@ -73,4 +73,50 @@ describe(`[all] Window and SW packages`, function() {
           .to.deep.equal(topLevelFiles.concat(deprecatedExports).sort());
     }
   });
+
+  it(`should have top a level module for every export in _private.mjs (and vise-versa)`, async function() {
+    for (const pkg of windowAndBrowserPackages) {
+      const packagePath = path.join(__dirname, '..', '..', '..', 'packages', pkg.name);
+      const privateFile = path.join(packagePath, '_private.mjs');
+
+      // Only some packages have a `_private.mjs` module.
+      if (!fs.existsSync(privateFile)) {
+        continue;
+      }
+
+      const privateContents = await fs.readFile(privateFile, 'utf-8');
+
+      // Use the acorn parser to generate a list of named exports.
+      const namedExports = [];
+      const indexAST = acorn.parse(privateContents, {
+        ecmaVersion: 6,
+        sourceType: 'module',
+      });
+      for (const node of indexAST.body) {
+        if (node.type === 'ExportDefaultDeclaration') {
+          throw new Error(`'_private.mjs' files cannot contain default exports`);
+        }
+        if (node.type === 'ExportNamedDeclaration') {
+          if (node.specifiers.length === 0) {
+            throw new Error(`'_private.mjs' files may only contain a single, named-export block`);
+          }
+          for (const specifier of node.specifiers) {
+            namedExports.push(specifier.exported.name);
+          }
+        }
+      }
+
+      // Inspect the package directory to get a list of top-level, public
+      // module basenames.
+      const privateDirectoryPath = path.join(packagePath, '_private');
+      const topLevelFiles = glob.sync('*.mjs', {cwd: privateDirectoryPath})
+          .map((file) => path.basename(file, '.mjs'));
+
+      const deprecatedExports = deprecatedPackageExports[pkg.name] || [];
+
+      // Assert there's a 1-to-1 mapping between exports and top-level files.
+      expect(namedExports.sort())
+          .to.deep.equal(topLevelFiles.concat(deprecatedExports).sort());
+    }
+  });
 });
