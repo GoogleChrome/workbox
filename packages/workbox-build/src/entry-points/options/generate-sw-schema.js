@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-const joi = require('joi');
+const joi = require('@hapi/joi');
 
 const commonGenerateSchema = require('./common-generate-schema');
 const defaults = require('./defaults');

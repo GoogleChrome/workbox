@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-const joi = require('joi');
+const joi = require('@hapi/joi');
 
 const defaults = require('./defaults');
 const regExpObject = require('./reg-exp-object');

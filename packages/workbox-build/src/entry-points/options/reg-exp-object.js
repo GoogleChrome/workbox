@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-const joi = require('joi');
+const joi = require('@hapi/joi');
 
 module.exports = joi.object().type(RegExp)
     .error(() => 'the value must be a RegExp');
