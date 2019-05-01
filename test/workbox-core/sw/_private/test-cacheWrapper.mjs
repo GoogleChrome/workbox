@@ -7,7 +7,7 @@
 */
 
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
-import {registerQuotaErrorCallback} from 'workbox-core/_private/quota.mjs';
+import {registerQuotaErrorCallback} from 'workbox-core/registerQuotaErrorCallback.mjs';
 
 
 describe(`cacheWrapper`, function() {

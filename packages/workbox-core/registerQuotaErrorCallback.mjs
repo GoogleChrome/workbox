@@ -6,8 +6,33 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {registerQuotaErrorCallback} from './_private/quota.mjs';
+import {logger} from './_private/logger.mjs';
+import {assert} from './_private/assert.mjs';
+import {quotaErrorCallbacks} from './models/quotaErrorCallbacks.mjs';
 import './_version.mjs';
 
+
+/**
+ * Adds a function to the set of quotaErrorCallbacks that will be executed if
+ * there's a quota error.
+ *
+ * @param {Function} callback
+ * @memberof workbox.core
+ */
+function registerQuotaErrorCallback(callback) {
+  if (process.env.NODE_ENV !== 'production') {
+    assert.isType(callback, 'function', {
+      moduleName: 'workbox-core',
+      funcName: 'register',
+      paramName: 'callback',
+    });
+  }
+
+  quotaErrorCallbacks.add(callback);
+
+  if (process.env.NODE_ENV !== 'production') {
+    logger.log('Registered a callback to respond to quota errors.', callback);
+  }
+}
 
 export {registerQuotaErrorCallback};

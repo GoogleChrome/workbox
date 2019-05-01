@@ -9,7 +9,7 @@
 import {Plugin} from 'workbox-expiration/Plugin.mjs';
 import {CacheExpiration} from 'workbox-expiration/CacheExpiration.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {executeQuotaErrorCallbacks} from 'workbox-core/_private/quota.mjs';
+import {executeQuotaErrorCallbacks} from 'workbox-core/_private/executeQuotaErrorCallbacks.mjs';
 
 
 describe(`Plugin`, function() {
