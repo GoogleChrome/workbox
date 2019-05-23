@@ -19,9 +19,16 @@ const getDetails = (packagePath) => {
   return ['workbox', name, pkgJson.version].join(':');
 };
 
-module.exports = (packagePath, buildType) => {
+module.exports = async (packagePath, buildType) => {
   const versionString =
-    `try{self['${getDetails(packagePath)}']&&_()}catch(e){}` +
-    `// eslint-disable-line`;
-  return fs.writeFile(path.join(packagePath, '_version.mjs'), versionString);
+      `try{self['${getDetails(packagePath)}']&&_()}catch(e){}`;
+
+  if (await fs.pathExists(path.join(packagePath, 'src', 'index.ts'))) {
+    const tsVersionString = `// @ts-ignore\n${versionString}`;
+    await fs.writeFile(
+        path.join(packagePath, 'src', '_version.ts'), tsVersionString);
+  }
+
+  const mjsVersionString = `${versionString}// eslint-disable-line`;
+  return fs.writeFile(path.join(packagePath, '_version.mjs'), mjsVersionString);
 };

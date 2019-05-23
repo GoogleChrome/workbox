@@ -39,6 +39,7 @@ describe(`[all] Window and SW packages`, function() {
       const indexFile = path.join(packagePath, 'index.mjs');
       const indexContents = await fs.readFile(indexFile, 'utf-8');
 
+
       // Use the acorn parser to generate a list of named exports.
       const namedExports = [];
       const indexAST = acorn.parse(indexContents, {
@@ -50,9 +51,6 @@ describe(`[all] Window and SW packages`, function() {
           throw new Error(`'index.mjs' files cannot contain default exports`);
         }
         if (node.type === 'ExportNamedDeclaration') {
-          if (node.specifiers.length === 0) {
-            throw new Error(`'index.mjs' files may only contain a single, named-export block`);
-          }
           for (const specifier of node.specifiers) {
             namedExports.push(specifier.exported.name);
           }
