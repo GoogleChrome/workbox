@@ -6,41 +6,65 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version';
 
 
-const _cacheNameDetails = {
+declare var registration : ServiceWorkerRegistration;
+
+export interface CacheNameDetails {
+  googleAnalytics: string; 
+  precache: string; 
+  prefix: string; 
+  runtime: string; 
+  suffix: string;
+}
+
+export interface PartialCacheNameDetails {
+  [propName: string]: string;
+}
+
+export type CacheNameDetailsProp =
+    'googleAnalytics' | 'precache' | 'prefix' | 'runtime' | 'suffix';
+
+
+const _cacheNameDetails: CacheNameDetails = {
   googleAnalytics: 'googleAnalytics',
   precache: 'precache-v2',
   prefix: 'workbox',
   runtime: 'runtime',
-  suffix: self.registration.scope,
+  suffix: registration.scope,
 };
 
-const _createCacheName = (cacheName) => {
+const _createCacheName = (cacheName: string): string => {
   return [_cacheNameDetails.prefix, cacheName, _cacheNameDetails.suffix]
-      .filter((value) => value.length > 0)
+      .filter((value) => value && value.length > 0)
       .join('-');
 };
 
+const eachCacheNameDetail = (fn: Function): void => {
+  for (const key of Object.keys(_cacheNameDetails)) {
+    fn(<CacheNameDetailsProp> key);
+  }
+} 
+
 export const cacheNames = {
-  updateDetails: (details) => {
-    Object.keys(_cacheNameDetails).forEach((key) => {
-      if (typeof details[key] !== 'undefined') {
-        _cacheNameDetails[key] = details[key];
+  updateDetails: (details: PartialCacheNameDetails) => {
+    eachCacheNameDetail((key: CacheNameDetailsProp) => {
+      if (typeof details[key] === 'string') {
+        _cacheNameDetails[key] = <string> details[key];
       }
-    });
+    })
   },
-  getGoogleAnalyticsName: (userCacheName) => {
+  getGoogleAnalyticsName: (userCacheName?: string) => {
     return userCacheName || _createCacheName(_cacheNameDetails.googleAnalytics);
   },
-  getPrecacheName: (userCacheName) => {
+  getPrecacheName: (userCacheName?: string) => {
     return userCacheName || _createCacheName(_cacheNameDetails.precache);
   },
   getPrefix: () => {
     return _cacheNameDetails.prefix;
   },
-  getRuntimeName: (userCacheName) => {
+  getRuntimeName: (userCacheName?: string) => {
     return userCacheName || _createCacheName(_cacheNameDetails.runtime);
   },
   getSuffix: () => {

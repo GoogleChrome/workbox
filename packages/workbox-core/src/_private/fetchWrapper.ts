@@ -6,13 +6,21 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from './WorkboxError.mjs';
-import {logger} from './logger.mjs';
-import {assert} from './assert.mjs';
-import {getFriendlyURL} from '../_private/getFriendlyURL.mjs';
-import {pluginEvents} from '../models/pluginEvents.mjs';
-import {pluginUtils} from '../utils/pluginUtils.mjs';
-import '../_version.mjs';
+import {WorkboxError} from './WorkboxError';
+import {logger} from './logger';
+import {assert} from './assert';
+import {getFriendlyURL} from '../_private/getFriendlyURL';
+import {pluginEvents} from '../models/pluginEvents';
+import {pluginUtils, Plugin} from '../utils/pluginUtils';
+import '../_version';
+
+
+interface WrappedFetchOptions {
+  request: Request | string,
+  event?: FetchEvent | Event,
+  plugins?: Plugin[],
+  fetchOptions?: {}
+}
 
 /**
  * Wrapper around the fetch API.
@@ -33,11 +41,17 @@ const wrappedFetch = async ({
   request,
   fetchOptions,
   event,
-  plugins = []}) => {
+  plugins = [],
+} : WrappedFetchOptions) => {
+
+  if (typeof request === 'string') {
+    request = new Request(request);
+  }
+  
   // We *should* be able to call `await event.preloadResponse` even if it's
   // undefined, but for some reason, doing so leads to errors in our Node unit
   // tests. To work around that, explicitly check preloadResponse's value first.
-  if (event && event.preloadResponse) {
+  if (event instanceof FetchEvent && event.preloadResponse) {
     const possiblePreloadResponse = await event.preloadResponse;
     if (possiblePreloadResponse) {
       if (process.env.NODE_ENV !== 'production') {
@@ -48,14 +62,10 @@ const wrappedFetch = async ({
     }
   }
 
-  if (typeof request === 'string') {
-    request = new Request(request);
-  }
-
   if (process.env.NODE_ENV !== 'production') {
-    assert.isInstance(request, Request, {
-      paramName: request,
-      expectedClass: 'Request',
+    assert && assert.isInstance(request, Request, {
+      paramName: 'request',
+      expectedClass: Request,
       moduleName: 'workbox-core',
       className: 'fetchWrapper',
       funcName: 'wrappedFetch',
@@ -69,19 +79,22 @@ const wrappedFetch = async ({
   // original request before it's either modified by a requestWillFetch
   // plugin or before the original request's body is consumed via fetch().
   const originalRequest = failedFetchPlugins.length > 0 ?
-    request.clone() : null;
+      request.clone() : null;
 
   try {
     for (let plugin of plugins) {
       if (pluginEvents.REQUEST_WILL_FETCH in plugin) {
-        request = await plugin[pluginEvents.REQUEST_WILL_FETCH].call(plugin, {
-          request: request.clone(),
+        const pluginMethod = plugin[pluginEvents.REQUEST_WILL_FETCH];
+        const requestClone = (<Request> request).clone();
+
+        request = <Request> (await pluginMethod.call(plugin, {
+          request: requestClone,
           event,
-        });
+        }));
 
         if (process.env.NODE_ENV !== 'production') {
           if (request) {
-            assert.isInstance(request, Request, {
+            assert && assert.isInstance(request, Request, {
               moduleName: 'Plugin',
               funcName: pluginEvents.CACHED_RESPONSE_WILL_BE_USED,
               isReturnValueProblem: true,
@@ -128,7 +141,7 @@ const wrappedFetch = async ({
 
         if (process.env.NODE_ENV !== 'production') {
           if (fetchResponse) {
-            assert.isInstance(fetchResponse, Response, {
+            assert && assert.isInstance(fetchResponse, Response, {
               moduleName: 'Plugin',
               funcName: pluginEvents.FETCH_DID_SUCCEED,
               isReturnValueProblem: true,
@@ -149,7 +162,7 @@ const wrappedFetch = async ({
       await plugin[pluginEvents.FETCH_DID_FAIL].call(plugin, {
         error,
         event,
-        originalRequest: originalRequest.clone(),
+        originalRequest: originalRequest!.clone(),
         request: pluginFilteredRequest.clone(),
       });
     }

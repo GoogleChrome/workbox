@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version';
 
 
 /**
@@ -17,7 +17,11 @@ import '../_version.mjs';
  *
  * @private
  */
-export class Deferred {
+class Deferred<T> {
+  promise: Promise<T>;
+  resolve: (value?: T) => void;
+  reject: (reason?: any) => void;
+  
   /**
    * Creates a promise and exposes its resolve and reject functions as methods.
    */
@@ -28,3 +32,6 @@ export class Deferred {
     });
   }
 }
+
+
+export {Deferred};

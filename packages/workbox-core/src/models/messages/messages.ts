@@ -6,10 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../../_version.mjs';
+import '../../_version';
 
 
-export const messages = {
+interface MessageParam {
+  [key: string]: any;
+}
+
+interface MessageMap {
+  [messageID: string]: (param: MessageParam) => string;
+}
+
+export const messages : MessageMap = {
   'invalid-value': ({paramName, validValueDescription, value}) => {
     if (!paramName || !validValueDescription) {
       throw new Error(`Unexpected input to 'invalid-value' error.`);
@@ -166,7 +174,7 @@ export const messages = {
       `in ${moduleName}.${className}.${funcName}`;
   },
 
-  'invalid-string': ({moduleName, className, funcName, paramName}) => {
+  'invalid-string': ({moduleName, funcName, paramName}) => {
     if (!paramName || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'invalid-string' error.`);
     }

@@ -6,15 +6,33 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from './WorkboxError.mjs';
-import {assert} from './assert.mjs';
-import {getFriendlyURL} from './getFriendlyURL.mjs';
-import {logger} from './logger.mjs';
-import {executeQuotaErrorCallbacks} from './executeQuotaErrorCallbacks.mjs';
-import {pluginEvents} from '../models/pluginEvents.mjs';
-import {pluginUtils} from '../utils/pluginUtils.mjs';
-import '../_version.mjs';
+import {WorkboxError} from './WorkboxError';
+import {assert} from './assert';
+import {getFriendlyURL} from './getFriendlyURL';
+import {logger} from './logger';
+import {executeQuotaErrorCallbacks} from './executeQuotaErrorCallbacks';
+import {pluginEvents} from '../models/pluginEvents';
+import {pluginUtils, Plugin} from '../utils/pluginUtils';
+import '../_version';
 
+
+interface MatchWrapperOptions {
+  cacheName: string,
+  request: Request,
+  event?: Event,
+  plugins?: [],
+  matchOptions?: {},
+}
+
+interface PutWrapperOptions extends MatchWrapperOptions {
+  response: Response,
+}
+
+interface GetEffectiveRequestOptions {
+  request: Request,
+  mode: string,
+  plugins?: Plugin[],
+}
 
 /**
  * Wrapper around cache.put().
@@ -40,7 +58,7 @@ const putWrapper = async ({
   event,
   plugins = [],
   matchOptions,
-} = {}) => {
+} : PutWrapperOptions) : Promise<void> => {
   if (process.env.NODE_ENV !== 'production') {
     if (request.method && request.method !== 'GET') {
       throw new WorkboxError('attempt-to-cache-non-get-request', {
@@ -135,7 +153,7 @@ const matchWrapper = async ({
   event,
   matchOptions,
   plugins = [],
-}) => {
+} : MatchWrapperOptions) : Promise<Response|undefined> => {
   const cache = await caches.open(cacheName);
 
   const effectiveRequest = await _getEffectiveRequest({
@@ -152,17 +170,20 @@ const matchWrapper = async ({
 
   for (const plugin of plugins) {
     if (pluginEvents.CACHED_RESPONSE_WILL_BE_USED in plugin) {
-      cachedResponse = await plugin[pluginEvents.CACHED_RESPONSE_WILL_BE_USED]
-          .call(plugin, {
-            cacheName,
-            event,
-            matchOptions,
-            cachedResponse,
-            request: effectiveRequest,
-          });
+      const pluginMethod =
+          <Function> plugin[pluginEvents.CACHED_RESPONSE_WILL_BE_USED];
+
+      cachedResponse = await pluginMethod.call(plugin, {
+        cacheName,
+        event,
+        matchOptions,
+        cachedResponse,
+        request: effectiveRequest,
+      });
+
       if (process.env.NODE_ENV !== 'production') {
         if (cachedResponse) {
-          assert.isInstance(cachedResponse, Response, {
+          assert && assert.isInstance(cachedResponse, Response, {
             moduleName: 'Plugin',
             funcName: pluginEvents.CACHED_RESPONSE_WILL_BE_USED,
             isReturnValueProblem: true,
@@ -189,22 +210,33 @@ const matchWrapper = async ({
  * @private
  * @memberof module:workbox-core
  */
-const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
-  let responseToCache = response;
+const _isResponseSafeToCache = async ({
+  request,
+  response,
+  event,
+  plugins = [],
+} : {
+  request: Request,
+  response: Response,
+  event?: Event,
+  plugins?: [],
+}) => {
+  let responseToCache: Response|undefined = response;
   let pluginsUsed = false;
   for (let plugin of plugins) {
     if (pluginEvents.CACHE_WILL_UPDATE in plugin) {
       pluginsUsed = true;
-      responseToCache = await plugin[pluginEvents.CACHE_WILL_UPDATE]
-          .call(plugin, {
-            request,
-            response: responseToCache,
-            event,
-          });
+
+      const pluginMethod = <Function> plugin[pluginEvents.CACHE_WILL_UPDATE];
+      responseToCache = await pluginMethod.call(plugin, {
+        request,
+        response: responseToCache,
+        event,
+      });
 
       if (process.env.NODE_ENV !== 'production') {
         if (responseToCache) {
-          assert.isInstance(responseToCache, Response, {
+          assert && assert.isInstance(responseToCache, Response, {
             moduleName: 'Plugin',
             funcName: pluginEvents.CACHE_WILL_UPDATE,
             isReturnValueProblem: true,
@@ -220,19 +252,23 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
 
   if (!pluginsUsed) {
     if (process.env.NODE_ENV !== 'production') {
-      if (!responseToCache.status === 200) {
-        if (responseToCache.status === 0) {
-          logger.warn(`The response for '${request.url}' is an opaque ` +
-            `response. The caching strategy that you're using will not ` +
-            `cache opaque responses by default.`);
-        } else {
-          logger.debug(`The response for '${request.url}' returned ` +
-          `a status code of '${response.status}' and won't be cached as a ` +
-          `result.`);
+      if (responseToCache) {
+        if (responseToCache.status !== 200) {
+          if (responseToCache.status === 0) {
+            logger.warn(`The response for '${request.url}' is an opaque ` +
+              `response. The caching strategy that you're using will not ` +
+              `cache opaque responses by default.`);
+          } else {
+            logger.debug(`The response for '${request.url}' returned ` +
+            `a status code of '${response.status}' and won't be cached as a ` +
+            `result.`);
+          }
         }
       }
     }
-    responseToCache = responseToCache.status === 200 ? responseToCache : null;
+    
+    responseToCache = responseToCache && responseToCache.status === 200 ?
+        responseToCache : undefined;
   }
 
   return responseToCache ? responseToCache : null;
@@ -253,7 +289,11 @@ const _isResponseSafeToCache = async ({request, response, event, plugins}) => {
  * @private
  * @memberof module:workbox-core
  */
-const _getEffectiveRequest = async ({request, mode, plugins}) => {
+const _getEffectiveRequest = async ({
+  request,
+  mode,
+  plugins = [],
+} : GetEffectiveRequestOptions) => {
   const cacheKeyWillBeUsedPlugins = pluginUtils.filter(
       plugins, pluginEvents.CACHE_KEY_WILL_BE_USED);
 
@@ -267,7 +307,7 @@ const _getEffectiveRequest = async ({request, mode, plugins}) => {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(effectiveRequest, Request, {
+      assert && assert.isInstance(effectiveRequest, Request, {
         moduleName: 'Plugin',
         funcName: pluginEvents.CACHE_KEY_WILL_BE_USED,
         isReturnValueProblem: true,

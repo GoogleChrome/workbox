@@ -6,13 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from '../_private/WorkboxError.mjs';
-import '../_version.mjs';
+import {WorkboxError, WorkboxErrorDetails} from '../_private/WorkboxError';
+import '../_version';
+
 
 /*
  * This method returns true if the current context is a service worker.
  */
-const isSWEnv = (moduleName) => {
+const isSWEnv = (moduleName: string) => {
   if (!('ServiceWorkerGlobalScope' in self)) {
     throw new WorkboxError('not-in-sw', {moduleName});
   }
@@ -24,59 +25,66 @@ const isSWEnv = (moduleName) => {
  * The destructed and restructured object is so it's clear what is
  * needed.
  */
-const isArray = (value, {moduleName, className, funcName, paramName}) => {
+const isArray = (
+  value: [],
+  details: WorkboxErrorDetails,
+) => {
   if (!Array.isArray(value)) {
-    throw new WorkboxError('not-an-array', {
-      moduleName,
-      className,
-      funcName,
-      paramName,
-    });
+    throw new WorkboxError('not-an-array', details);
   }
 };
 
-const hasMethod = (object, expectedMethod,
-    {moduleName, className, funcName, paramName}) => {
+const hasMethod = (
+  object: {[key: string]: any},
+  expectedMethod: string,
+  details: WorkboxErrorDetails,
+) => {
   const type = typeof object[expectedMethod];
   if (type !== 'function') {
-    throw new WorkboxError('missing-a-method', {paramName, expectedMethod,
-      moduleName, className, funcName});
+    details.expectedMethod = expectedMethod;
+    throw new WorkboxError('missing-a-method', details);
   }
 };
 
-const isType = (object, expectedType,
-    {moduleName, className, funcName, paramName}) => {
+const isType = (
+  object: {},
+  expectedType: string,
+  details: WorkboxErrorDetails,
+) => {
   if (typeof object !== expectedType) {
-    throw new WorkboxError('incorrect-type', {paramName, expectedType,
-      moduleName, className, funcName});
+    details.expectedType = expectedType;
+    throw new WorkboxError('incorrect-type', details);
   }
 };
 
-const isInstance = (object, expectedClass,
-    {moduleName, className, funcName,
-      paramName, isReturnValueProblem}) => {
+const isInstance = (
+  object: {},
+  expectedClass: Function,
+  details: WorkboxErrorDetails,
+) => {
   if (!(object instanceof expectedClass)) {
-    throw new WorkboxError('incorrect-class', {paramName, expectedClass,
-      moduleName, className, funcName, isReturnValueProblem});
+    details.expectedClass = expectedClass;
+    throw new WorkboxError('incorrect-class', details);
   }
 };
 
-const isOneOf = (value, validValues, {paramName}) => {
+const isOneOf = (
+  value: any,
+  validValues: any[],
+  details: WorkboxErrorDetails) => {
   if (!validValues.includes(value)) {
-    throw new WorkboxError('invalid-value', {
-      paramName,
-      value,
-      validValueDescription: `Valid values are ${JSON.stringify(validValues)}.`,
-    });
+    details.validValueDescription =
+        `Valid values are ${JSON.stringify(validValues)}.`
+    throw new WorkboxError('invalid-value', details);
   }
 };
 
-const isArrayOfClass = (value, expectedClass,
-    {moduleName, className, funcName, paramName}) => {
-  const error = new WorkboxError('not-array-of-class', {
-    value, expectedClass,
-    moduleName, className, funcName, paramName,
-  });
+const isArrayOfClass = (
+  value: any,
+  expectedClass: Function,
+  details: WorkboxErrorDetails,
+) => {
+  const error = new WorkboxError('not-array-of-class', details);
   if (!Array.isArray(value)) {
     throw error;
   }

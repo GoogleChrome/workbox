@@ -6,8 +6,27 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version';
 
+
+type IDBObjectStoreMethods = 'get' | 'count' | 'getKey' | 'getAll' |
+    'getAllKeys' | 'add' | 'put' | 'clear' | 'delete';
+
+type Query = IDBValidKey | IDBKeyRange | null;
+
+interface DBWrapperOptions {
+  onupgradeneeded?: (event: IDBVersionChangeEvent) => any;
+  onversionchange?: (event: IDBVersionChangeEvent) => any;
+
+}
+
+interface GetAllMatchingOptions {
+  index?: string,
+  query?: Query,
+  direction?: IDBCursorDirection,
+  count?: number,
+  includeKeys?: boolean,
+}
 
 /**
  * A class that wraps common IndexedDB functionality in a promise-based API.
@@ -17,6 +36,22 @@ import '../_version.mjs';
  * @private
  */
 export class DBWrapper {
+  private _name: string;
+  private _version: number;
+  private _onupgradeneeded?: DBWrapperOptions['onupgradeneeded'];
+  private _onversionchange: DBWrapperOptions['onversionchange'];
+  private _db: IDBDatabase | null = null;
+
+  // The following IDBObjectStore methods are shadowed on this class.
+  get: Function;
+  count: Function;
+  add: Function;
+  put: Function;
+  clear: Function;
+  delete: Function;
+
+  OPEN_TIMEOUT: number;
+
   /**
    * @param {string} name
    * @param {number} version
@@ -26,25 +61,23 @@ export class DBWrapper {
    *     DBWrapper.prototype._onversionchange when not specified.
    * @private
    */
-  constructor(name, version, {
+  constructor(name: string, version: number, {
     onupgradeneeded,
-    onversionchange = this._onversionchange,
-  } = {}) {
+    onversionchange,
+  } : DBWrapperOptions = {}) {
     this._name = name;
     this._version = version;
     this._onupgradeneeded = onupgradeneeded;
-    this._onversionchange = onversionchange;
-
-    // If this is null, it means the database isn't open.
-    this._db = null;
+    this._onversionchange = onversionchange || (() => this.close());
   }
 
   /**
    * Returns the IDBDatabase instance (not normally needed).
+   * @return {IDBDatabase|undefined}
    *
    * @private
    */
-  get db() {
+  get db() : IDBDatabase | null {
     return this._db;
   }
 
@@ -72,20 +105,20 @@ export class DBWrapper {
 
       const openRequest = indexedDB.open(this._name, this._version);
       openRequest.onerror = () => reject(openRequest.error);
-      openRequest.onupgradeneeded = (evt) => {
+      openRequest.onupgradeneeded = (evt: IDBVersionChangeEvent) => {
         if (openRequestTimedOut) {
-          openRequest.transaction.abort();
-          evt.target.result.close();
+          openRequest.transaction!.abort();
+          openRequest.result.close();
         } else if (this._onupgradeneeded) {
           this._onupgradeneeded(evt);
         }
       };
-      openRequest.onsuccess = ({target}) => {
-        const db = target.result;
+      openRequest.onsuccess = () => {
+        const db = openRequest.result;
         if (openRequestTimedOut) {
           db.close();
         } else {
-          db.onversionchange = this._onversionchange.bind(this);
+          db.onversionchange = this._onversionchange!.bind(this);
           resolve(db);
         }
       };
@@ -103,7 +136,7 @@ export class DBWrapper {
    * @return {Array}
    * @private
    */
-  async getKey(storeName, query) {
+  async getKey(storeName: string, query: Query) {
     return (await this.getAllKeys(storeName, query, 1))[0];
   }
 
@@ -117,7 +150,7 @@ export class DBWrapper {
    * @return {Array}
    * @private
    */
-  async getAll(storeName, query, count) {
+  async getAll(storeName: string, query?: Query, count?: number) {
     return await this.getAllMatching(storeName, {query, count});
   }
 
@@ -132,9 +165,11 @@ export class DBWrapper {
    * @return {Array}
    * @private
    */
-  async getAllKeys(storeName, query, count) {
-    return (await this.getAllMatching(
-        storeName, {query, count, includeKeys: true})).map(({key}) => key);
+  async getAllKeys(storeName: string, query: Query, count: number) {
+    const entries = await this.getAllMatching(
+        storeName, {query, count, includeKeys: true})
+
+    return entries.map((entry: IDBCursor) => entry.key);
   }
 
   /**
@@ -154,23 +189,23 @@ export class DBWrapper {
    * @return {Array}
    * @private
    */
-  async getAllMatching(storeName, {
+  async getAllMatching(storeName: string, {
     index,
-    query = null, // IE errors if query === `undefined`.
+    query = null, // IE/Edge errors if query === `undefined`.
     direction = 'next',
     count,
-    includeKeys,
-  } = {}) {
+    includeKeys = false,
+  } : GetAllMatchingOptions = {}) : Promise<Array<IDBCursor | any>> {
     return await this.transaction([storeName], 'readonly', (txn, done) => {
       const store = txn.objectStore(storeName);
       const target = index ? store.index(index) : store;
-      const results = [];
+      const results: any[] = [];
+      const request = target.openCursor(query, direction);
 
-      target.openCursor(query, direction).onsuccess = ({target}) => {
-        const cursor = target.result;
+      request.onsuccess = () => {
+        const cursor = request.result;
         if (cursor) {
-          const {primaryKey, key, value} = cursor;
-          results.push(includeKeys ? {primaryKey, key, value} : value);
+          results.push(includeKeys ? cursor : cursor.value);
           if (count && results.length >= count) {
             done(results);
           } else {
@@ -200,14 +235,18 @@ export class DBWrapper {
    * @return {*} The result of the transaction ran by the callback.
    * @private
    */
-  async transaction(storeNames, type, callback) {
+  async transaction(
+    storeNames: string[],
+    type: IDBTransactionMode,
+    callback: (txn: IDBTransaction, done: Function) => void,
+  ) : Promise<any> {
     await this.open();
     return await new Promise((resolve, reject) => {
-      const txn = this._db.transaction(storeNames, type);
-      txn.onabort = ({target}) => reject(target.error);
+      const txn = this._db!.transaction(storeNames, type);
+      txn.onabort = () => reject(txn.error);
       txn.oncomplete = () => resolve();
 
-      callback(txn, (value) => resolve(value));
+      callback(txn, (value: any) => resolve(value));
     });
   }
 
@@ -221,24 +260,20 @@ export class DBWrapper {
    * @return {*} The result of the transaction.
    * @private
    */
-  async _call(method, storeName, type, ...args) {
-    const callback = (txn, done) => {
-      txn.objectStore(storeName)[method](...args).onsuccess = ({target}) => {
-        done(target.result);
-      };
+  async _call(
+    method: IDBObjectStoreMethods,
+    storeName: string,
+    type: IDBTransactionMode,
+    ...args: any[]
+  ) {
+    const callback = (txn: IDBTransaction, done: Function) => {
+      const objStore = txn.objectStore(storeName)
+      const request = <IDBRequest> objStore[method].apply(objStore, args);
+
+      request.onsuccess = () => done(request.result);
     };
 
     return await this.transaction([storeName], type, callback);
-  }
-
-  /**
-   * The default onversionchange handler, which closes the database so other
-   * connections can open without being blocked.
-   *
-   * @private
-   */
-  _onversionchange() {
-    this.close();
   }
 
   /**
@@ -262,22 +297,28 @@ export class DBWrapper {
   }
 }
 
-// Exposed to let users modify the default timeout on a per-instance
-// or global basis.
+// Exposed on the prototype to let users modify the default timeout on a
+// per-instance or global basis.
 DBWrapper.prototype.OPEN_TIMEOUT = 2000;
+
 
 // Wrap native IDBObjectStore methods according to their mode.
 const methodsToWrap = {
-  'readonly': ['get', 'count', 'getKey', 'getAll', 'getAllKeys'],
-  'readwrite': ['add', 'put', 'clear', 'delete'],
+  readonly: ['get', 'count', 'getKey', 'getAll', 'getAllKeys'],
+  readwrite: ['add', 'put', 'clear', 'delete'],
 };
 for (const [mode, methods] of Object.entries(methodsToWrap)) {
   for (const method of methods) {
     if (method in IDBObjectStore.prototype) {
       // Don't use arrow functions here since we're outside of the class.
-      DBWrapper.prototype[method] = async function(storeName, ...args) {
-        return await this._call(method, storeName, mode, ...args);
-      };
+      DBWrapper.prototype[<IDBObjectStoreMethods> method] =
+          async function(storeName: string, ...args: any[]) {
+            return await this._call(
+                <IDBObjectStoreMethods> method,
+                storeName,
+                <IDBTransactionMode> mode,
+                ...args);
+          };
     }
   }
 }

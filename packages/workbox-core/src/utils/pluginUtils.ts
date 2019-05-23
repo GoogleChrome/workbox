@@ -6,10 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version';
+
+export interface Plugin {
+  cacheDidUpdate: Function;
+  cacheKeyWillBeUsed: Function;
+  cacheWillUpdate: Function;
+  cachedResponseWillBeUsed: Function;
+  fetchDidFail: Function;
+  fetchDidSucceed: Function;
+  requestWillFetch: Function;
+}
 
 export const pluginUtils = {
-  filter: (plugins, callbackName) => {
+  filter: (plugins: Plugin[], callbackName: string) => {
     return plugins.filter((plugin) => callbackName in plugin);
   },
 };

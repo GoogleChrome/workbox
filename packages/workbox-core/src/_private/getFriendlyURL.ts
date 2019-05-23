@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version';
 
-const getFriendlyURL = (url) => {
-  const urlObj = new URL(url, location);
+const getFriendlyURL = (url: string) => {
+  const urlObj = new URL(url, location.href);
   if (urlObj.origin === location.origin) {
     return urlObj.pathname;
   }
