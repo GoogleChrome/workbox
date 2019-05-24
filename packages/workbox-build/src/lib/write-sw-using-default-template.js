@@ -39,7 +39,7 @@ module.exports = async ({
       `'${error.message}'`);
   }
 
-  const populatedTemplate = populateSWTemplate({
+  const populatedTemplate = await populateSWTemplate({
     cacheId,
     cleanupOutdatedCaches,
     clientsClaim,

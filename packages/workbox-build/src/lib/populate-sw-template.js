@@ -6,14 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
+const path = require('path');
 const template = require('lodash.template');
 const swTemplate = require('../templates/sw-template');
 
+const bundle = require('./bundle');
 const errors = require('./errors');
 const runtimeCachingConverter = require('./runtime-caching-converter');
 const stringifyWithoutComments = require('./stringify-without-comments');
 
-module.exports = ({
+module.exports = async ({
   cacheId,
   cleanupOutdatedCaches,
   clientsClaim,
@@ -62,6 +64,9 @@ module.exports = ({
       stringifyWithoutComments(offlineGoogleAnalytics);
   }
 
+  const nodeModulesPath = path.posix.resolve(
+      __dirname, '..', '..', 'node_modules');
+
   try {
     const populatedTemplate = template(swTemplate)({
       cacheId,
@@ -74,6 +79,7 @@ module.exports = ({
       navigateFallbackBlacklist,
       navigateFallbackWhitelist,
       navigationPreload,
+      nodeModulesPath,
       offlineAnalyticsConfigString,
       precacheOptionsString,
       skipWaiting,
@@ -81,9 +87,9 @@ module.exports = ({
       workboxSWImport,
     });
 
-    // Clean up multiple blank lines.
-    return populatedTemplate.replace(/\n{3,}/g, '\n\n').trim() + '\n';
+    return await bundle(populatedTemplate);
   } catch (error) {
+    console.log(error);
     throw new Error(
         `${errors['populating-sw-tmpl-failed']} '${error.message}'`);
   }
