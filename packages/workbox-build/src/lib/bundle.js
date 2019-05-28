@@ -6,28 +6,50 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {writeFile} = require('fs-extra');
 const {rollup} = require('rollup');
+const {terser} = require('rollup-plugin-terser');
+const {writeFile} = require('fs-extra');
+const loadz0r = require('rollup-plugin-loadz0r');
+const path = require('path');
+const replace = require('rollup-plugin-replace');
 const resolve = require('rollup-plugin-node-resolve');
 const tempy = require('tempy');
 
-module.exports = async (unbundledCode) => {
-  const temporaryFile = tempy.file({extension: '.mjs'});
+module.exports = async ({unbundledCode, swDest}) => {
+  const temporaryFile = tempy.file({name: path.basename(swDest)});
   await writeFile(temporaryFile, unbundledCode);
 
-  const bundle = await rollup({
-    input: temporaryFile,
-    plugins: [
-      resolve(),
-    ],
-  });
+  const nodeEnv = process.env.NODE_ENV || 'production';
+  const plugins = [
+    replace({
+      'process.env.NODE_ENV': JSON.stringify(nodeEnv),
+    }),
+    resolve(),
+    loadz0r(),
+  ];
 
-  const {output} = await bundle.generate({
-    format: 'iife',
-  });
+  // TODO: babel-preset-env support
 
-  for (const chunkOrAsset of output) {
-    // TODO: Fix to support multiple chunks/assets.
-    return chunkOrAsset.code;
+  if (nodeEnv === 'production') {
+    plugins.push(terser({
+      mangle: {
+        toplevel: true,
+        properties: {
+          regex: /(^_|_$)/,
+        },
+      },
+    }));
   }
+
+  const bundle = await rollup({
+    plugins,
+    input: temporaryFile,
+    manualChunks: (id) => id.includes('workbox') ? 'workbox' : undefined,
+  });
+
+  await bundle.write({
+    dir: path.dirname(swDest),
+    format: 'amd',
+    sourcemap: true,
+  });
 };

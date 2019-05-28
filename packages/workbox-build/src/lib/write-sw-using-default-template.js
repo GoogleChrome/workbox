@@ -6,9 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-const fse = require('fs-extra');
-const path = require('path');
-
+const bundle = require('./bundle');
 const errors = require('./errors');
 const populateSWTemplate = require('./populate-sw-template');
 
@@ -32,14 +30,7 @@ module.exports = async ({
   swDest,
   workboxSWImport,
 }) => {
-  try {
-    await fse.mkdirp(path.dirname(swDest));
-  } catch (error) {
-    throw new Error(`${errors['unable-to-make-sw-directory']}. ` +
-      `'${error.message}'`);
-  }
-
-  const populatedTemplate = await populateSWTemplate({
+  const unbundledCode = await populateSWTemplate({
     cacheId,
     cleanupOutdatedCaches,
     clientsClaim,
@@ -60,12 +51,8 @@ module.exports = async ({
   });
 
   try {
-    await fse.writeFile(swDest, populatedTemplate);
+    await bundle({swDest, unbundledCode});
   } catch (error) {
-    if (error.code === 'EISDIR') {
-      // See https://github.com/GoogleChrome/workbox/issues/612
-      throw new Error(errors['sw-write-failure-directory']);
-    }
     throw new Error(`${errors['sw-write-failure']}. '${error.message}'`);
   }
 };

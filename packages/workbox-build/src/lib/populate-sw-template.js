@@ -10,7 +10,6 @@ const path = require('path');
 const template = require('lodash.template');
 const swTemplate = require('../templates/sw-template');
 
-const bundle = require('./bundle');
 const errors = require('./errors');
 const runtimeCachingConverter = require('./runtime-caching-converter');
 const stringifyWithoutComments = require('./stringify-without-comments');
@@ -68,7 +67,7 @@ module.exports = async ({
       __dirname, '..', '..', 'node_modules');
 
   try {
-    const populatedTemplate = template(swTemplate)({
+    return template(swTemplate)({
       cacheId,
       cleanupOutdatedCaches,
       clientsClaim,
@@ -86,10 +85,7 @@ module.exports = async ({
       runtimeCaching: runtimeCachingConverter(runtimeCaching),
       workboxSWImport,
     });
-
-    return await bundle(populatedTemplate);
   } catch (error) {
-    console.log(error);
     throw new Error(
         `${errors['populating-sw-tmpl-failed']} '${error.message}'`);
   }

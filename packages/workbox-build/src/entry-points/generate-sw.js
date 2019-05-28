@@ -8,10 +8,8 @@
 
 const path = require('path');
 
-const cdnUtils = require('../lib/cdn-utils');
 const checkForDeprecatedOptions =
     require('../lib/check-for-deprecated-options');
-const copyWorkboxLibraries = require('../lib/copy-workbox-libraries');
 const generateSWSchema = require('./options/generate-sw-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const validate = require('./options/validate');
@@ -45,29 +43,6 @@ async function generateSW(config) {
   const deprecationWarnings = checkForDeprecatedOptions(config);
 
   const options = validate(config, generateSWSchema);
-
-  const destDirectory = path.dirname(options.swDest);
-
-  // Do nothing if importWorkboxFrom is set to 'disabled'. Otherwise, check:
-  if (options.importWorkboxFrom === 'cdn') {
-    const cdnURL = cdnUtils.getModuleURL('workbox-sw');
-    options.workboxSWImport = cdnURL;
-  } else if (options.importWorkboxFrom === 'local') {
-    // Copy over the dev + prod version of all of the core libraries.
-    const workboxDirectoryName = await copyWorkboxLibraries(destDirectory);
-
-    // The Workbox library files should not be precached, since they're cached
-    // automatically by virtue of being used with importScripts().
-    options.globIgnores = [
-      `**/${workboxDirectoryName}/*.+(js|mjs)*`,
-    ].concat(options.globIgnores || []);
-
-    const workboxSWPkg = require(`workbox-sw/package.json`);
-    const workboxSWFilename = path.basename(workboxSWPkg.main);
-
-    options.workboxSWImport = `${workboxDirectoryName}/${workboxSWFilename}`;
-    options.modulePathPrefix = workboxDirectoryName;
-  }
 
   const {count, size, manifestEntries, warnings} =
     await getFileManifestEntries(options);
