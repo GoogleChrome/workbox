@@ -11,14 +11,16 @@ const errors = require('./errors');
 const populateSWTemplate = require('./populate-sw-template');
 
 module.exports = async ({
+  babelPresetEnvTargets,
   cacheId,
   cleanupOutdatedCaches,
   clientsClaim,
   directoryIndex,
-  handleFetch,
   ignoreURLParametersMatching,
   importScripts,
+  inlineWorkboxRuntime,
   manifestEntries,
+  mode,
   modulePathPrefix,
   navigateFallback,
   navigateFallbackBlacklist,
@@ -27,15 +29,14 @@ module.exports = async ({
   offlineGoogleAnalytics,
   runtimeCaching,
   skipWaiting,
+  sourcemap,
   swDest,
-  workboxSWImport,
 }) => {
   const unbundledCode = await populateSWTemplate({
     cacheId,
     cleanupOutdatedCaches,
     clientsClaim,
     directoryIndex,
-    handleFetch,
     ignoreURLParametersMatching,
     importScripts,
     manifestEntries,
@@ -47,11 +48,17 @@ module.exports = async ({
     offlineGoogleAnalytics,
     runtimeCaching,
     skipWaiting,
-    workboxSWImport,
   });
 
   try {
-    await bundle({swDest, unbundledCode});
+    await bundle({
+      babelPresetEnvTargets,
+      inlineWorkboxRuntime,
+      mode,
+      sourcemap,
+      swDest,
+      unbundledCode,
+    });
   } catch (error) {
     throw new Error(`${errors['sw-write-failure']}. '${error.message}'`);
   }

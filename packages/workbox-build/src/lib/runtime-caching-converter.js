@@ -47,10 +47,10 @@ function getOptionsString(options = {}) {
   }
 
   const pluginsMapping = {
-    backgroundSync: 'workbox.backgroundSync.Plugin',
-    broadcastUpdate: 'workbox.broadcastUpdate.Plugin',
-    expiration: 'workbox.expiration.Plugin',
-    cacheableResponse: 'workbox.cacheableResponse.Plugin',
+    backgroundSync: 'workboxbackgroundSyncPlugin',
+    broadcastUpdate: 'workboxbroadcastUpdatePlugin',
+    expiration: 'workboxexpirationPlugin',
+    cacheableResponse: 'workboxcacheableResponsePlugin',
   };
 
   for (const [pluginName, pluginConfig] of Object.entries(options)) {
@@ -138,12 +138,12 @@ module.exports = (runtimeCaching = []) => {
     if (typeof entry.handler === 'string') {
       const optionsString = getOptionsString(entry.options || {});
       const strategyString =
-          `new workbox.strategies.${entry.handler}(${optionsString})`;
+          `new workboxstrategies${entry.handler}(${optionsString})`;
 
-      return `workbox.routing.registerRoute(` +
+      return `workboxroutingregisterRoute(` +
         `${matcher}, ${strategyString}, '${method}');\n`;
     } else if (typeof entry.handler === 'function') {
-      return `workbox.routing.registerRoute(` +
+      return `workboxroutingregisterRoute(` +
         `${matcher}, ${entry.handler}, '${method}');\n`;
     }
   }).filter((entry) => Boolean(entry)); // Remove undefined map() return values.

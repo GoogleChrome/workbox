@@ -7,6 +7,7 @@
 */
 
 module.exports = {
+  babelPresetEnvTargets: ['chrome >= 56'],
   cleanupOutdatedCaches: false,
   clientsClaim: false,
   globFollow: true,
@@ -15,10 +16,13 @@ module.exports = {
   globStrict: true,
   importWorkboxFrom: 'cdn',
   injectionPointRegexp: /(precacheAndRoute\()\s*\[\s*\]\s*(\)|,)/,
+  inlineWorkboxRuntime: false,
   maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
+  mode: 'production',
   navigateFallback: undefined,
   navigationPreload: false,
   offlineGoogleAnalytics: false,
-  purgeOnQuotaError: false,
+  purgeOnQuotaError: true,
   skipWaiting: false,
+  sourcemap: true,
 };
