@@ -6,6 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
+const fileSystem = require('fs');
 const generateSWSchema = require('./options/generate-sw-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const validate = require('./options/validate');
@@ -40,6 +41,7 @@ async function generateSW(config) {
     await getFileManifestEntries(options);
 
   await writeServiceWorkerUsingDefaultTemplate(Object.assign({
+    fileSystem,
     manifestEntries,
   }, options));
 

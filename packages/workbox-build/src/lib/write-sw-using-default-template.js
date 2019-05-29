@@ -16,6 +16,7 @@ module.exports = async ({
   cleanupOutdatedCaches,
   clientsClaim,
   directoryIndex,
+  fileSystem,
   ignoreURLParametersMatching,
   importScripts,
   inlineWorkboxRuntime,
@@ -53,6 +54,7 @@ module.exports = async ({
   try {
     await bundle({
       babelPresetEnvTargets,
+      fileSystem,
       inlineWorkboxRuntime,
       mode,
       sourcemap,

@@ -18,12 +18,15 @@ const tempy = require('tempy');
 
 module.exports = async ({
   babelPresetEnvTargets,
+  fileSystem,
   inlineWorkboxRuntime,
   mode,
   sourcemap,
   swDest,
   unbundledCode,
 }) => {
+  // We need to write this to the "real" file system, as Rollup won't read from
+  // a custom file system.
   const temporaryFile = tempy.file({name: path.basename(swDest)});
   await writeFile(temporaryFile, unbundledCode);
 
@@ -67,10 +70,34 @@ module.exports = async ({
 
   const bundle = await rollup(rollupConfig);
 
-  await bundle.write({
+  const {output} = await bundle.generate({
     sourcemap,
-    dir: path.dirname(swDest),
     // Using an external Workbox runtime requires 'amd'.
     format: inlineWorkboxRuntime ? 'iife' : 'amd',
   });
+
+  for (const chunkOrAsset of output) {
+    if (chunkOrAsset.isAsset) {
+      fileSystem.writeFileSync(
+          path.join(path.dirname(swDest), chunkOrAsset.fileName),
+          chunkOrAsset.source
+      );
+    } else {
+      let code = chunkOrAsset.code;
+
+      if (chunkOrAsset.map) {
+        const sourceMapFile = chunkOrAsset.fileName + '.map';
+        code += `//# sourceMappingURL=${sourceMapFile}\n`;
+        fileSystem.writeFileSync(
+            path.join(path.dirname(swDest), sourceMapFile),
+            chunkOrAsset.map
+        );
+      }
+
+      fileSystem.writeFileSync(
+          path.join(path.dirname(swDest), chunkOrAsset.fileName),
+          code
+      );
+    }
+  }
 };
