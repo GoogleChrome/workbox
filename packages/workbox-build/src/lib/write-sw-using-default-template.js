@@ -6,6 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
+const {writeFile} = require('fs-extra');
+const path = require('path');
+
 const bundle = require('./bundle');
 const errors = require('./errors');
 const populateSWTemplate = require('./populate-sw-template');
@@ -16,7 +19,6 @@ module.exports = async ({
   cleanupOutdatedCaches,
   clientsClaim,
   directoryIndex,
-  fileSystem,
   ignoreURLParametersMatching,
   importScripts,
   inlineWorkboxRuntime,
@@ -52,15 +54,19 @@ module.exports = async ({
   });
 
   try {
-    await bundle({
+    const files = await bundle({
       babelPresetEnvTargets,
-      fileSystem,
       inlineWorkboxRuntime,
       mode,
       sourcemap,
       swDest,
       unbundledCode,
     });
+
+    for (const file of files) {
+      await writeFile(
+          path.join(path.dirname(swDest), file.name), file.contents);
+    }
   } catch (error) {
     throw new Error(`${errors['sw-write-failure']}. '${error.message}'`);
   }

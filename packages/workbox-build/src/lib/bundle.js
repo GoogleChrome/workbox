@@ -18,7 +18,6 @@ const tempy = require('tempy');
 
 module.exports = async ({
   babelPresetEnvTargets,
-  fileSystem,
   inlineWorkboxRuntime,
   mode,
   sourcemap,
@@ -76,28 +75,32 @@ module.exports = async ({
     format: inlineWorkboxRuntime ? 'iife' : 'amd',
   });
 
+  const files = [];
   for (const chunkOrAsset of output) {
     if (chunkOrAsset.isAsset) {
-      fileSystem.writeFileSync(
-          path.join(path.dirname(swDest), chunkOrAsset.fileName),
-          chunkOrAsset.source
-      );
+      files.push({
+        name: chunkOrAsset.fileName,
+        contents: chunkOrAsset.source,
+      });
     } else {
       let code = chunkOrAsset.code;
 
       if (chunkOrAsset.map) {
         const sourceMapFile = chunkOrAsset.fileName + '.map';
         code += `//# sourceMappingURL=${sourceMapFile}\n`;
-        fileSystem.writeFileSync(
-            path.join(path.dirname(swDest), sourceMapFile),
-            chunkOrAsset.map
-        );
+
+        files.push({
+          name: sourceMapFile,
+          contents: chunkOrAsset.map,
+        });
       }
 
-      fileSystem.writeFileSync(
-          path.join(path.dirname(swDest), chunkOrAsset.fileName),
-          code
-      );
+      files.push({
+        name: chunkOrAsset.fileName,
+        contents: code,
+      });
     }
   }
+
+  return files;
 };
