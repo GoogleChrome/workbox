@@ -8,7 +8,6 @@
 
 const copyWorkboxLibraries = require('./lib/copy-workbox-libraries');
 const generateSW = require('./entry-points/generate-sw');
-const generateSWString = require('./entry-points/generate-sw-string');
 const getManifest = require('./entry-points/get-manifest');
 const injectManifest = require('./entry-points/inject-manifest');
 const {getModuleURL} = require('./lib/cdn-utils');
@@ -24,9 +23,6 @@ const {getModuleURL} = require('./lib/cdn-utils');
  * 1. Generate a complete service worker with precaching and some basic
  * configurable options, writing the resulting service worker file to disk. See
  * [generateSW()]{@link module:workbox-build.generateSW}.
- * 1. Generate a complete service worker with precaching and some basic
- * configurable options, without writing the results to disk. See
- * [generateSWString()]{@link module:workbox-build.generateSWString}.
  * 1. Inject a manifest into an existing service worker. This allows you
  * to control your own service worker while still taking advantage of
  * [workboxSW.precache()]{@link module:workbox-sw.WorkboxSW#precache} logic.
@@ -73,7 +69,6 @@ const {getModuleURL} = require('./lib/cdn-utils');
 module.exports = {
   copyWorkboxLibraries,
   generateSW,
-  generateSWString,
   getManifest,
   getModuleURL,
   injectManifest,
