@@ -15,14 +15,18 @@ const constants = require('./utils/constants');
 const packageRunnner = require('./utils/package-runner');
 
 const cleanPackage = async (packagePath) => {
-  // Delete generate files from the the TypeScript transpile.
+  // Delete generated files from the the TypeScript transpile.
   if (await fs.pathExists(path.join(packagePath, 'src', 'index.ts'))) {
+    // Store the list of deleted files, so we can delete directories after.
     const deletedPaths = await del([
-      path.join(packagePath, '**/*.+(mjs|d.ts)'),
+      path.posix.join(packagePath, '**/*.+(mjs|d.ts)'),
       // Don't delete files in node_modules
       '!**/node_modules', '!**/node_modules/**/*',
     ]);
 
+    // Any directories in `deletedPaths` that are top-level directories to the
+    // package should also be deleted since those directories should only
+    // contain generated `.mjs` and `.d.ts` files.
     const directoriesToDelete = new Set();
     for (const deletedPath of deletedPaths) {
       const relativePath = path.relative(packagePath, deletedPath);

@@ -57,7 +57,7 @@ let moduleBundleCache;
 
 /**
  * Transpiles a package's source TypeScript files to `.mjs` JavaScript files
- * in the root package directory, along with the correspdonging definition
+ * in the root package directory, along with the corresponding definition
  * files.
  *
  * @param {string} packageName
