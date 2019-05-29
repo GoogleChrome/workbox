@@ -7,24 +7,7 @@
 */
 
 const errors = require('./errors');
-
-/**
- * Escaping user input to be treated as a literal string within a regular
- * expression can be accomplished by simple replacement.
- *
- * From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
- *
- * @private
- * @param  {string} string The string to be used as part of a regular
- *                         expression
- * @return {string}        A string that is safe to use in a regular
- *                         expression.
- *
- * @private
- */
-const escapeRegExp = (string) => {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-};
+const escapeRegExp = require('./escape-regexp');
 
 module.exports = (modifyURLPrefix) => {
   if (!modifyURLPrefix ||

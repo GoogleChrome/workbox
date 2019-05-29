@@ -42,13 +42,17 @@ module.exports = async ({
 
     try {
       fileDetails = globPatterns.reduce((accumulated, globPattern) => {
-        const globbedFileDetails = getFileDetails({
+        const {globbedFileDetails, warning} = getFileDetails({
           globDirectory,
           globFollow,
           globIgnores,
           globPattern,
           globStrict,
         });
+
+        if (warning) {
+          warnings.push(warning);
+        }
 
         globbedFileDetails.forEach((fileDetails) => {
           if (fileSet.has(fileDetails.file)) {

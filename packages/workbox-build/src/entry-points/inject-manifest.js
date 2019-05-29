@@ -10,8 +10,8 @@ const assert = require('assert');
 const fse = require('fs-extra');
 const path = require('path');
 
-const defaults = require('./options/defaults');
 const errors = require('../lib/errors');
+const escapeRegexp = require('../lib/escape-regexp');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const injectManifestSchema = require('./options/inject-manifest-schema');
 const validate = require('./options/validate');
@@ -20,8 +20,8 @@ const validate = require('./options/validate');
  * This method creates a list of URLs to precache, referred to as a "precache
  * manifest", based on the options you provide.
  *
- * The manifest is injected into the `swSrc` file, and the regular expression
- * `injectionPointRegexp` determines where in the file the manifest should go.
+ * The manifest is injected into the `swSrc` file, and the placeholder string
+ * `injectionPoint` determines where in the file the manifest should go.
  *
  * The final service worker file, with the manifest injected, is written to
  * disk at `swDest`.
@@ -44,7 +44,7 @@ async function injectManifest(config) {
     throw new Error(errors['same-src-and-dest']);
   }
 
-  const globalRegexp = new RegExp(options.injectionPointRegexp, 'g');
+  const globalRegexp = new RegExp(escapeRegexp(options.injectionPoint), 'g');
 
   const {count, size, manifestEntries, warnings} =
     await getFileManifestEntries(options);
@@ -57,18 +57,12 @@ async function injectManifest(config) {
 
   const injectionResults = swFileContents.match(globalRegexp);
   assert(injectionResults, errors['injection-point-not-found'] +
-    // Customize the error message when this happens:
-    // - If the default RegExp is used, then include the expected string that
-    //   matches as a hint to the developer.
-    // - If a custom RegExp is used, then just include the raw RegExp.
-    (options.injectionPointRegexp === defaults.injectionPointRegexp ?
-      'workbox.precaching.precacheAndRoute([])' :
-      options.injectionPointRegexp));
+    options.injectionPoint);
   assert(injectionResults.length === 1, errors['multiple-injection-points'] +
-    ` ${options.injectionPointRegexp}`);
+    options.injectionPoint);
 
   const entriesString = JSON.stringify(manifestEntries, null, 2);
-  swFileContents = swFileContents.replace(globalRegexp, `$1${entriesString}$2`);
+  swFileContents = swFileContents.replace(globalRegexp, entriesString);
 
   try {
     await fse.mkdirp(path.dirname(options.swDest));

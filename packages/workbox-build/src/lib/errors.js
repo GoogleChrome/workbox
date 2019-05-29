@@ -70,7 +70,7 @@ module.exports = {
   'injection-point-not-found': ol`Unable to find a place to inject the manifest.
     Please ensure that your service worker file contains the following: `,
   'multiple-injection-points': ol`Please ensure that your 'swSrc' file contains
-    only one match for the RegExp:`,
+    only one match for the following: `,
   'populating-sw-tmpl-failed': ol`Unable to generate service worker from
     template.`,
   'useless-glob-pattern': ol`One of the glob patterns doesn't match any files.
