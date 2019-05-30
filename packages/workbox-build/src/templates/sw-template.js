@@ -18,25 +18,25 @@ module.exports = `/**
  * See https://goo.gl/2aRDsh
  */
 
-import {CacheFirst as workboxstrategiesCacheFirst} from '<%= nodeModulesPath %>/workbox-strategies/CacheFirst.mjs';
-import {CacheOnly as workboxstrategiesCacheOnly} from '<%= nodeModulesPath %>/workbox-strategies/CacheOnly.mjs';
-import {cleanupOutdatedCaches as workboxprecachingcleanupOutdatedCaches} from '<%= nodeModulesPath %>/workbox-precaching/cleanupOutdatedCaches.mjs';
-import {clientsClaim as workboxcoreclientsClaim} from '<%= nodeModulesPath %>/workbox-core/clientsClaim.mjs';
-import {enable as workboxnavigationPreloadenable} from '<%= nodeModulesPath %>/workbox-navigation-preload/enable.mjs';
-import {getCacheKeyForURL as workboxprecachinggetCacheKeyForURL} from '<%= nodeModulesPath %>/workbox-precaching/getCacheKeyForURL.mjs';
-import {initialize as workboxgoogleAnalyticsinitialize} from '<%= nodeModulesPath %>/workbox-google-analytics/initialize.mjs';
-import {NetworkFirst as workboxstrategiesNetworkFirst} from '<%= nodeModulesPath %>/workbox-strategies/NetworkFirst.mjs';
-import {NetworkOnly as workboxstrategiesNetworkOnly} from '<%= nodeModulesPath %>/workbox-strategies/NetworkOnly.mjs';
-import {Plugin as workboxbackgroundSyncPlugin} from '<%= nodeModulesPath %>/workbox-background-sync/Plugin.mjs';
-import {Plugin as workboxbroadcastUpdatePlugin} from '<%= nodeModulesPath %>/workbox-broadcast-update/Plugin.mjs';
-import {Plugin as workboxcacheableResponsePlugin} from '<%= nodeModulesPath %>/workbox-cacheable-response/Plugin.mjs';
-import {Plugin as workboxexpirationPlugin} from '<%= nodeModulesPath %>/workbox-expiration/Plugin.mjs';
-import {precacheAndRoute as workboxprecachingprecacheAndRoute} from '<%= nodeModulesPath %>/workbox-precaching/precacheAndRoute.mjs';
-import {registerNavigationRoute as workboxroutingregisterNavigationRoute} from '<%= nodeModulesPath %>/workbox-routing/registerNavigationRoute.mjs';
-import {registerRoute as workboxroutingregisterRoute} from '<%= nodeModulesPath %>/workbox-routing/registerRoute.mjs';
-import {setCacheNameDetails as workboxcoresetCacheNameDetails} from '<%= nodeModulesPath %>/workbox-core/setCacheNameDetails.mjs';
-import {skipWaiting as workboxcoreskipWaiting} from '<%= nodeModulesPath %>/workbox-core/skipWaiting.mjs';
-import {StaleWhileRevalidate as workboxstrategiesStaleWhileRevalidate} from '<%= nodeModulesPath %>/workbox-strategies/StaleWhileRevalidate.mjs';
+import {CacheFirst as workbox_strategies_CacheFirst} from '<%= nodeModulesPath %>/workbox-strategies/CacheFirst.mjs';
+import {CacheOnly as workbox_strategies_CacheOnly} from '<%= nodeModulesPath %>/workbox-strategies/CacheOnly.mjs';
+import {cleanupOutdatedCaches as workbox_precaching_cleanupOutdatedCaches} from '<%= nodeModulesPath %>/workbox-precaching/cleanupOutdatedCaches.mjs';
+import {clientsClaim as workbox_core_clientsClaim} from '<%= nodeModulesPath %>/workbox-core/clientsClaim.mjs';
+import {enable as workbox_navigationPreload_enable} from '<%= nodeModulesPath %>/workbox-navigation-preload/enable.mjs';
+import {getCacheKeyForURL as workbox_precaching_getCacheKeyForURL} from '<%= nodeModulesPath %>/workbox-precaching/getCacheKeyForURL.mjs';
+import {initialize as workbox_googleAnalytics_initialize} from '<%= nodeModulesPath %>/workbox-google-analytics/initialize.mjs';
+import {NetworkFirst as workbox_strategies_NetworkFirst} from '<%= nodeModulesPath %>/workbox-strategies/NetworkFirst.mjs';
+import {NetworkOnly as workbox_strategies_NetworkOnly} from '<%= nodeModulesPath %>/workbox-strategies/NetworkOnly.mjs';
+import {Plugin as workbox_backgroundSync_Plugin} from '<%= nodeModulesPath %>/workbox-background-sync/Plugin.mjs';
+import {Plugin as workbox_broadcastUpdate_Plugin} from '<%= nodeModulesPath %>/workbox-broadcast-update/Plugin.mjs';
+import {Plugin as workbox_cacheableResponse_Plugin} from '<%= nodeModulesPath %>/workbox-cacheable-response/Plugin.mjs';
+import {Plugin as workbox_expiration_Plugin} from '<%= nodeModulesPath %>/workbox-expiration/Plugin.mjs';
+import {precacheAndRoute as workbox_precaching_precacheAndRoute} from '<%= nodeModulesPath %>/workbox-precaching/precacheAndRoute.mjs';
+import {registerNavigationRoute as workbox_routing_registerNavigationRoute} from '<%= nodeModulesPath %>/workbox-routing/registerNavigationRoute.mjs';
+import {registerRoute as workbox_routing_registerRoute} from '<%= nodeModulesPath %>/workbox-routing/registerRoute.mjs';
+import {setCacheNameDetails as workbox_core_setCacheNameDetails} from '<%= nodeModulesPath %>/workbox-core/setCacheNameDetails.mjs';
+import {skipWaiting as workbox_core_skipWaiting} from '<%= nodeModulesPath %>/workbox-core/skipWaiting.mjs';
+import {StaleWhileRevalidate as workbox_strategies_StaleWhileRevalidate} from '<%= nodeModulesPath %>/workbox-strategies/StaleWhileRevalidate.mjs';
 
 <% if (importScripts) { %>
 importScripts(
@@ -44,12 +44,12 @@ importScripts(
 );
 <% } %>
 
-<% if (navigationPreload) { %>workboxnavigationPreloadenable();<% } %>
+<% if (navigationPreload) { %>workbox_navigationPreload_enable();<% } %>
 
-<% if (cacheId) { %>workboxcoresetCacheNameDetails({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
+<% if (cacheId) { %>workbox_core_setCacheNameDetails({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
 
 <% if (skipWaiting) { %>
-  workboxcoreskipWaiting();
+  workbox_core_skipWaiting();
 <% } else { %>
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
@@ -57,7 +57,7 @@ self.addEventListener('message', (event) => {
   }
 });
 <% } %>
-<% if (clientsClaim) { %>workboxcoreclientsClaim();<% } %>
+<% if (clientsClaim) { %>workbox_core_clientsClaim();<% } %>
 
 <% if (Array.isArray(manifestEntries)) {%>
 /**
@@ -66,18 +66,18 @@ self.addEventListener('message', (event) => {
  * See https://goo.gl/S9QRab
  */
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
-workboxprecachingprecacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
+workbox_precaching_precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
 <% } else { %>
 if (Array.isArray(self.__precacheManifest)) {
-  workboxprecachingprecacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
+  workbox_precaching_precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
 }
 <% } %>
-<% if (cleanupOutdatedCaches) { %>workboxprecachingcleanupOutdatedCaches();<% } %>
-<% if (navigateFallback) { %>workboxroutingregisterNavigationRoute(workboxprecachinggetCacheKeyForURL(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
+<% if (cleanupOutdatedCaches) { %>workbox_precaching_cleanupOutdatedCaches();<% } %>
+<% if (navigateFallback) { %>workbox_routing_registerNavigationRoute(workbox_precaching_getCacheKeyForURL(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
   <% if (navigateFallbackWhitelist) { %>whitelist: [<%= navigateFallbackWhitelist %>],<% } %>
   <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>
 }<% } %>);<% } %>
 
 <% if (runtimeCaching) { runtimeCaching.forEach(runtimeCachingString => {%><%= runtimeCachingString %><% });} %>
 
-<% if (offlineAnalyticsConfigString) { %>workboxgoogleAnalyticsinitialize(<%= offlineAnalyticsConfigString %>);<% } %>`;
+<% if (offlineAnalyticsConfigString) { %>workbox_googleAnalytics_initialize(<%= offlineAnalyticsConfigString %>);<% } %>`;

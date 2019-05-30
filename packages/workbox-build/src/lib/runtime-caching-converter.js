@@ -12,11 +12,11 @@ const errors = require('./errors');
 const stringifyWithoutComments = require('./stringify-without-comments');
 
 /**
- * Given a set of options that configures `sw-toolbox`'s behavior, convert it
- * into a string that would configure equivalent `workbox-sw` behavior.
+ * Given a set of options that configures runtime caching behavior, convert it
+ * to the equivalent Workbox method calls.
  *
  * @param {Object} options See
- *        https://googlechromelabs.github.io/sw-toolbox/api.html#options
+ *        https://developers.google.com/web/tools/workbox/modules/workbox-build#generateSW-runtimeCaching
  * @return {string} A JSON string representing the equivalent options.
  *
  * @private
@@ -47,10 +47,10 @@ function getOptionsString(options = {}) {
   }
 
   const pluginsMapping = {
-    backgroundSync: 'workboxbackgroundSyncPlugin',
-    broadcastUpdate: 'workboxbroadcastUpdatePlugin',
-    expiration: 'workboxexpirationPlugin',
-    cacheableResponse: 'workboxcacheableResponsePlugin',
+    backgroundSync: 'workbox_backgroundSync_Plugin',
+    broadcastUpdate: 'workbox_broadcastUpdate_Plugin',
+    expiration: 'workbox_expiration_Plugin',
+    cacheableResponse: 'workbox_cacheableResponse_Plugin',
   };
 
   for (const [pluginName, pluginConfig] of Object.entries(options)) {
@@ -138,12 +138,12 @@ module.exports = (runtimeCaching = []) => {
     if (typeof entry.handler === 'string') {
       const optionsString = getOptionsString(entry.options || {});
       const strategyString =
-          `new workboxstrategies${entry.handler}(${optionsString})`;
+          `new workbox_strategies_${entry.handler}(${optionsString})`;
 
-      return `workboxroutingregisterRoute(` +
+      return `workbox_routing_registerRoute(` +
         `${matcher}, ${strategyString}, '${method}');\n`;
     } else if (typeof entry.handler === 'function') {
-      return `workboxroutingregisterRoute(` +
+      return `workbox_routing_registerRoute(` +
         `${matcher}, ${entry.handler}, '${method}');\n`;
     }
   }).filter((entry) => Boolean(entry)); // Remove undefined map() return values.
