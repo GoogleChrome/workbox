@@ -24,36 +24,31 @@ function validate(runtimeCachingOptions, convertedOptions) {
   expect(convertedOptions).to.have.lengthOf(runtimeCachingOptions.length);
 
   const globalScope = {
-    workbox: {
-      cacheableResponse: {
-        Plugin: sinon.spy(),
-      },
-      expiration: {
-        Plugin: sinon.spy(),
-      },
-      backgroundSync: {
-        Plugin: sinon.spy(),
-      },
-      broadcastUpdate: {
-        Plugin: sinon.spy(),
-      },
-      routing: {
-        registerRoute: sinon.spy(),
-      },
-      strategies: {
-        CacheFirst: sinon.spy(),
-        CacheOnly: sinon.spy(),
-        NetworkFirst: sinon.spy(),
-        NetworkOnly: sinon.spy(),
-        StaleWhileRevalidate: sinon.spy(),
-      },
-    },
+    workbox_cacheableResponse_Plugin: sinon.spy(),
+    workbox_expiration_Plugin: sinon.spy(),
+    workbox_backgroundSync_Plugin: sinon.spy(),
+    workbox_broadcastUpdate_Plugin: sinon.spy(),
+    workbox_routing_registerRoute: sinon.spy(),
+    workbox_strategies_CacheFirst: sinon.spy(),
+    workbox_strategies_CacheOnly: sinon.spy(),
+    workbox_strategies_NetworkFirst: sinon.spy(),
+    workbox_strategies_NetworkOnly: sinon.spy(),
+    workbox_strategies_StaleWhileRevalidate: sinon.spy(),
+  };
+
+  // Make it easier to find the right spy given a handler name.
+  const handlerMapping = {
+    CacheFirst: globalScope.workbox_strategies_CacheFirst,
+    CacheOnly: globalScope.workbox_strategies_CacheOnly,
+    NetworkFirst: globalScope.workbox_strategies_NetworkFirst,
+    NetworkOnly: globalScope.workbox_strategies_NetworkOnly,
+    StaleWhileRevalidate: globalScope.workbox_strategies_StaleWhileRevalidate,
   };
 
   const script = new vm.Script(convertedOptions.join('\n'));
   script.runInNewContext(globalScope);
   runtimeCachingOptions.forEach((runtimeCachingOption, i) => {
-    const registerRouteCall = globalScope.workbox.routing.registerRoute.getCall(i);
+    const registerRouteCall = globalScope.workbox_routing_registerRoute.getCall(i);
     expect(registerRouteCall.args[0]).to.eql(runtimeCachingOption.urlPattern);
 
     if (runtimeCachingOption.method) {
@@ -69,7 +64,7 @@ function validate(runtimeCachingOptions, convertedOptions) {
 
     // This validation assumes that there's only going to be one call to each
     // named strategy per test.
-    const strategiesCall = globalScope.workbox.strategies[runtimeCachingOption.handler].firstCall;
+    const strategiesCall = handlerMapping[runtimeCachingOption.handler].firstCall;
     const strategiesOptions = strategiesCall.args[0];
 
     if (runtimeCachingOption.options) {
@@ -92,22 +87,22 @@ function validate(runtimeCachingOptions, convertedOptions) {
       }
 
       if (Object.keys(options.expiration).length > 0) {
-        expect(globalScope.workbox.expiration.Plugin.calledWith(options.expiration)).to.be.true;
+        expect(globalScope.workbox_expiration_Plugin.calledWith(options.expiration)).to.be.true;
       }
 
       if (options.cacheableResponse) {
-        expect(globalScope.workbox.cacheableResponse.Plugin.calledWith(options.cacheableResponse)).to.be.true;
+        expect(globalScope.workbox_cacheableResponse_Plugin.calledWith(options.cacheableResponse)).to.be.true;
       }
 
       if (options.backgroundSync) {
         if ('options' in options.backgroundSync) {
           expect(
-              globalScope.workbox.backgroundSync.Plugin.calledWith(
+              globalScope.workbox_backgroundSync_Plugin.calledWith(
                   options.backgroundSync.name, options.backgroundSync.options)
           ).to.be.true;
         } else {
           expect(
-              globalScope.workbox.backgroundSync.Plugin.calledWith(
+              globalScope.workbox_backgroundSync_Plugin.calledWith(
                   options.backgroundSync.name)
           ).to.be.true;
         }
@@ -118,10 +113,10 @@ function validate(runtimeCachingOptions, convertedOptions) {
           const expectedOptions = Object.assign(
               {channelName: options.broadcastUpdate.channelName},
               options.broadcastUpdate.options);
-          expect(globalScope.workbox.broadcastUpdate.Plugin.calledWith(expectedOptions))
+          expect(globalScope.workbox_broadcastUpdate_Plugin.calledWith(expectedOptions))
               .to.be.true;
         } else {
-          expect(globalScope.workbox.broadcastUpdate.Plugin.calledWith(
+          expect(globalScope.workbox_broadcastUpdate_Plugin.calledWith(
               {channelName: options.broadcastUpdate.channelName})).to.be.true;
         }
       }

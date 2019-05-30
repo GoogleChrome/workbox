@@ -42,22 +42,19 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
     }
   });
 
-  it(`should throw when the pattern doesn't match anything`, function() {
+  it(`should return a warning when the pattern doesn't match anything`, function() {
     const getFileDetails = proxyquire(MODULE_PATH, {
       glob: {
         sync: () => [],
       },
     });
 
-    try {
-      getFileDetails({
-        globDirectory: GLOB_DIRECTORY,
-        globPattern: GLOB_PATTERN,
-      });
-      throw new Error('Unexpected success.');
-    } catch (error) {
-      expect(error.message).to.have.string(errors['useless-glob-pattern']);
-    }
+    const {globbedFileDetails, warning} = getFileDetails({
+      globDirectory: GLOB_DIRECTORY,
+      globPattern: GLOB_PATTERN,
+    });
+    expect(globbedFileDetails).to.be.empty;
+    expect(warning).to.have.string(errors['useless-glob-pattern']);
   });
 
   it(`should return array of file details, without null values`, function() {
@@ -81,12 +78,13 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
       },
     });
 
-    const details = getFileDetails({
+    const {globbedFileDetails, warning} = getFileDetails({
       globDirectory: GLOB_DIRECTORY,
       globPattern: GLOB_PATTERN,
     });
 
-    expect(details).to.deep.equal([{
+    expect(warning).to.be.undefined;
+    expect(globbedFileDetails).to.deep.equal([{
       file: FILE1,
       hash: HASH,
       size: SIZE,
