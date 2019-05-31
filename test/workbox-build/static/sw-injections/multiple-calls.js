@@ -15,7 +15,7 @@ const precache = (input) => {
 precache([]);
 
 // The automatic injection will happen here:
-workbox.precaching.precacheAndRoute([]);
+workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
 
 // Then, call precache again:
 workbox.precaching.precacheAndRoute([

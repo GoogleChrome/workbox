@@ -18,7 +18,90 @@ function stringifyFunctionsInArray(arr) {
   return arr.map((item) => typeof item === 'function' ? item.toString() : item);
 }
 
-function setupSpiesAndContext() {
+function setupSpiesAndContextForInjectManifest() {
+  const cacheableResponsePluginSpy = sinon.spy();
+  class CacheableResponsePlugin {
+    constructor(...args) {
+      cacheableResponsePluginSpy(...args);
+    }
+  }
+
+  const cacheExpirationPluginSpy = sinon.spy();
+  class CacheExpirationPlugin {
+    constructor(...args) {
+      cacheExpirationPluginSpy(...args);
+    }
+  }
+
+  const importScripts = sinon.spy();
+
+  const addEventListener = sinon.stub();
+
+  const workbox = {
+    cacheableResponse: {
+      Plugin: CacheableResponsePlugin,
+    },
+    expiration: {
+      Plugin: CacheExpirationPlugin,
+    },
+    googleAnalytics: {
+      initialize: sinon.spy(),
+    },
+    precaching: {
+      // To make testing easier, hardcode this fake URL return value.
+      getCacheKeyForURL: sinon.stub().returns('/urlWithCacheKey'),
+      precacheAndRoute: sinon.spy(),
+      cleanupOutdatedCaches: sinon.spy(),
+    },
+    navigationPreload: {
+      enable: sinon.spy(),
+    },
+    routing: {
+      registerNavigationRoute: sinon.spy(),
+      registerRoute: sinon.spy(),
+    },
+    core: {
+      clientsClaim: sinon.spy(),
+      setCacheNameDetails: sinon.spy(),
+      skipWaiting: sinon.spy(),
+    },
+    setConfig: sinon.spy(),
+    // To make testing easier, return the name of the strategy.
+    strategies: {
+      CacheFirst: sinon.stub().returns({name: 'CacheFirst'}),
+      NetworkFirst: sinon.stub().returns({name: 'NetworkFirst'}),
+    },
+  };
+
+  const context = Object.assign({
+    importScripts,
+    workbox,
+  }, makeServiceWorkerEnv());
+  context.self.addEventListener = addEventListener;
+
+  const methodsToSpies = {
+    importScripts,
+    cacheableResponsePlugin: cacheableResponsePluginSpy,
+    cleanupOutdatedCaches: workbox.precaching.cleanupOutdatedCaches,
+    cacheExpirationPlugin: cacheExpirationPluginSpy,
+    CacheFirst: workbox.strategies.CacheFirst,
+    clientsClaim: workbox.core.clientsClaim,
+    getCacheKeyForURL: workbox.precaching.getCacheKeyForURL,
+    googleAnalyticsInitialize: workbox.googleAnalytics.initialize,
+    NetworkFirst: workbox.strategies.NetworkFirst,
+    navigationPreloadEnable: workbox.navigationPreload.enable,
+    precacheAndRoute: workbox.precaching.precacheAndRoute,
+    registerNavigationRoute: workbox.routing.registerNavigationRoute,
+    registerRoute: workbox.routing.registerRoute,
+    setCacheNameDetails: workbox.core.setCacheNameDetails,
+    setConfig: workbox.setConfig,
+    skipWaiting: workbox.core.skipWaiting,
+  };
+
+  return {addEventListener, context, methodsToSpies};
+}
+
+function setupSpiesAndContextForGenerateSW() {
   const addEventListener = sinon.spy();
   const importScripts = sinon.spy();
 
@@ -82,6 +165,7 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
  */
 module.exports = async ({
   addEventListenerValidation,
+  entryPoint,
   expectedMethodCalls,
   swFile,
   swString,
@@ -93,7 +177,9 @@ module.exports = async ({
     swString = await fse.readFile(swFile, 'utf8');
   }
 
-  const {addEventListener, context, methodsToSpies} = setupSpiesAndContext();
+  const {addEventListener, context, methodsToSpies} = entryPoint === 'injectManifest' ?
+    setupSpiesAndContextForInjectManifest() :
+    setupSpiesAndContextForGenerateSW();
 
   vm.runInNewContext(swString, context);
 

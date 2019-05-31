@@ -873,7 +873,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       });
     }
 
-    it(`should warn when a strategy function (lowercase) name is used`, async function() {
+    it(`should fail validation when a strategy function (lowercase) name is used`, async function() {
       const runtimeCaching = [{
         urlPattern: /abc/,
         handler: 'cacheFirst',

@@ -19,7 +19,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
   const SW_SRC_DIR = path.join(__dirname, '..', '..', 'static', 'sw-injections');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
-    swDest: tempy.file(),
+    swDest: tempy.file({extension: 'js'}),
     swSrc: path.join(SW_SRC_DIR, 'basic.js'),
   };
   const REQUIRED_PARAMS = [
@@ -33,7 +33,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
     'globIgnores',
     'globPatterns',
     'globStrict',
-    'injectionPointRegexp',
+    'injectionPoint',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
     'modifyURLPrefix',
@@ -118,7 +118,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
     });
 
     it(`should throw the expected error when 'swSrc' and 'swDest' are the same path`, async function() {
-      const path = 'same';
+      const path = 'same.js';
       const options = Object.assign({}, BASE_OPTIONS, {
         swSrc: path,
         swDest: path,
@@ -132,7 +132,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       }
     });
 
-    it(`should throw the expected error when there is no match for 'injectionPointRegexp'`, async function() {
+    it(`should throw the expected error when there is no match for 'injectionPoint'`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
         swSrc: path.join(SW_SRC_DIR, 'bad-no-injection.js'),
       });
@@ -145,7 +145,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       }
     });
 
-    it(`should throw the expected error when there are multiple matches for 'injectionPointRegexp'`, async function() {
+    it(`should throw the expected error when there are multiple matches for 'injectionPoint'`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
         swSrc: path.join(SW_SRC_DIR, 'bad-multiple-injection.js'),
       });
@@ -161,38 +161,42 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
 
   describe(`[workbox-build] writing a service worker file`, function() {
     it(`should use defaults when all the required parameters are present`, async function() {
-      const swDest = tempy.file();
+      const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {swDest});
 
       const {count, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
-        }, {
-          url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        }, {
-          url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
-        }]]],
-      }});
+      await validateServiceWorkerRuntime({
+        entryPoint: 'injectManifest',
+        swFile: swDest,
+        expectedMethodCalls: {
+          precacheAndRoute: [[[{
+            url: 'index.html',
+            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          }, {
+            url: 'page-1.html',
+            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          }, {
+            url: 'page-2.html',
+            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          }, {
+            url: 'styles/stylesheet-1.css',
+            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          }, {
+            url: 'styles/stylesheet-2.css',
+            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          }, {
+            url: 'webpackEntry.js',
+            revision: '5b652181a25e96f255d0490203d3c47e',
+          }]]],
+        },
+      });
     });
 
     it(`should use defaults when all the required parameters are present, when workboxSW.precache() is called twice`, async function() {
-      const swDest = tempy.file();
+      const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         swSrc: path.join(SW_SRC_DIR, 'multiple-calls.js'),
@@ -202,38 +206,42 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./sample-import.js']],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
-        }, {
-          url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        }, {
-          url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
-        }]], [[
-          '/extra-assets/example.1234.css',
-          '/extra-assets/example-2.1234.js',
-        ]]],
-      }});
+      await validateServiceWorkerRuntime({
+        entryPoint: 'injectManifest',
+        swFile: swDest,
+        expectedMethodCalls: {
+          importScripts: [['./sample-import.js']],
+          precacheAndRoute: [[[{
+            url: 'index.html',
+            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          }, {
+            url: 'page-1.html',
+            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          }, {
+            url: 'page-2.html',
+            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          }, {
+            url: 'styles/stylesheet-1.css',
+            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          }, {
+            url: 'styles/stylesheet-2.css',
+            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          }, {
+            url: 'webpackEntry.js',
+            revision: '5b652181a25e96f255d0490203d3c47e',
+          }]], [[
+            '/extra-assets/example.1234.css',
+            '/extra-assets/example-2.1234.js',
+          ]]],
+        },
+      });
     });
 
-    it(`should use defaults when all the required parameters are present, when a custom 'injectionPointRegexp' is used`, async function() {
-      const swDest = tempy.file();
+    it(`should use defaults when all the required parameters are present, when a custom 'injectionPoint' is used`, async function() {
+      const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
-        injectionPointRegexp: /(\.precacheAndRoute\()\/\* manifestEntries \*\/(\))/,
+        injectionPoint: 'self.__custom_injection_point',
         swSrc: path.join(SW_SRC_DIR, 'custom-injection-point.js'),
       });
 
@@ -241,31 +249,35 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
-        }, {
-          url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        }, {
-          url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
-        }]]],
-      }});
+      await validateServiceWorkerRuntime({
+        entryPoint: 'injectManifest',
+        swFile: swDest,
+        expectedMethodCalls: {
+          precacheAndRoute: [[[{
+            url: 'index.html',
+            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          }, {
+            url: 'page-1.html',
+            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          }, {
+            url: 'page-2.html',
+            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          }, {
+            url: 'styles/stylesheet-1.css',
+            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          }, {
+            url: 'styles/stylesheet-2.css',
+            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          }, {
+            url: 'webpackEntry.js',
+            revision: '5b652181a25e96f255d0490203d3c47e',
+          }]]],
+        },
+      });
     });
 
-    it(`should support using the default 'injectionPointRegexp' when precacheAndRoute() is called with options`, async function() {
-      const swDest = tempy.file();
+    it(`should support using the default 'injectionPoint' when precacheAndRoute() is called with options`, async function() {
+      const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         swSrc: path.join(SW_SRC_DIR, 'precache-and-route-options.js'),
@@ -275,49 +287,60 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
-        }, {
-          url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        }, {
-          url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
-        }], {
-          cleanURLs: true,
-        }]],
-      }});
+      await validateServiceWorkerRuntime({
+        entryPoint: 'injectManifest',
+        swFile: swDest,
+        expectedMethodCalls: {
+          precacheAndRoute: [[[{
+            url: 'index.html',
+            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          }, {
+            url: 'page-1.html',
+            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          }, {
+            url: 'page-2.html',
+            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          }, {
+            url: 'styles/stylesheet-1.css',
+            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          }, {
+            url: 'styles/stylesheet-2.css',
+            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          }, {
+            url: 'webpackEntry.js',
+            revision: '5b652181a25e96f255d0490203d3c47e',
+          }], {
+            cleanURLs: true,
+          }]],
+        },
+      });
     });
   });
 
-  describe(`[workbox-build] deprecated options`, function() {
+  describe(`[workbox-build] removed options`, function() {
+    // These were deprecated in v4, and formally removed in v5.
     const oldOptionsToValue = {
       dontCacheBustUrlsMatching: /ignored/,
+      ignoreUrlParametersMatching: [/ignored/],
       modifyUrlPrefix: {
-        'ignored': 'ignored',
+        ignored: 'ignored',
       },
       templatedUrls: {},
     };
 
     for (const [option, value] of Object.entries(oldOptionsToValue)) {
-      it(`should return a warning when ${option} is used`, async function() {
+      it(`should fail validation when ${option} is used`, async function() {
         const options = Object.assign({}, BASE_OPTIONS, {
           [option]: value,
         });
 
-        const {warnings} = await injectManifest(options);
-        expect(warnings).to.have.length(1);
+        try {
+          await injectManifest(options);
+          throw new Error('Unexpected success.');
+        } catch (error) {
+          expect(error.name).to.eql('ValidationError');
+          expect(error.details[0].context.key).to.eql(option);
+        }
       });
     }
   });
