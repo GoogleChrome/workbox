@@ -43,7 +43,7 @@ module.exports = async ({
       `'${error.message}'`);
   }
 
-  const unbundledCode = await populateSWTemplate({
+  const unbundledCode = populateSWTemplate({
     cacheId,
     cleanupOutdatedCaches,
     clientsClaim,

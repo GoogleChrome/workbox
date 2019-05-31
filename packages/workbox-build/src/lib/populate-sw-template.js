@@ -14,7 +14,7 @@ const errors = require('./errors');
 const runtimeCachingConverter = require('./runtime-caching-converter');
 const stringifyWithoutComments = require('./stringify-without-comments');
 
-module.exports = async ({
+module.exports = ({
   cacheId,
   cleanupOutdatedCaches,
   clientsClaim,

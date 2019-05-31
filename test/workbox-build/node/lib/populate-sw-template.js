@@ -15,7 +15,7 @@ const errors = require('../../../../packages/workbox-build/src/lib/errors');
 describe(`[workbox-build] lib/populate-sw-template.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/populate-sw-template';
 
-  it(`should throw an error if templating fails`, async function() {
+  it(`should throw an error if templating fails`, function() {
     const populateSWTemplate = proxyquire(MODULE_PATH, {
       'lodash.template': () => {
         throw new Error();
@@ -23,7 +23,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     });
 
     try {
-      await populateSWTemplate({});
+      populateSWTemplate({});
       throw new Error('Unexpected success.');
     } catch (error) {
       expect(error.message).to.have.string(errors['populating-sw-tmpl-failed']);

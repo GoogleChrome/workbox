@@ -104,7 +104,7 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
         name: file2,
         contents: contents2,
       }],
-      './populate-sw-template': async () => '',
+      './populate-sw-template': () => '',
     });
 
     await writeSWUsingDefaultTemplate({swDest});
