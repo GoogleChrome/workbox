@@ -20,5 +20,5 @@ module.exports = commonGenerateSchema.keys({
   inlineWorkboxRuntime: joi.boolean().default(defaults.inlineWorkboxRuntime),
   mode: joi.string().default(process.env.NODE_ENV || defaults.mode),
   sourcemap: joi.boolean().default(defaults.sourcemap),
-  swDest: joi.string().required(),
+  swDest: joi.string().required().regex(/\.js$/),
 });

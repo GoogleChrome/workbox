@@ -30,8 +30,8 @@ module.exports = async ({
   await writeFile(temporaryFile, unbundledCode);
 
   const plugins = [
-    replace({'process.env.NODE_ENV': JSON.stringify(mode)}),
     resolve(),
+    replace({'process.env.NODE_ENV': JSON.stringify(mode)}),
     babel({
       presets: [['@babel/preset-env', {
         targets: {
@@ -72,7 +72,7 @@ module.exports = async ({
   const {output} = await bundle.generate({
     sourcemap,
     // Using an external Workbox runtime requires 'amd'.
-    format: inlineWorkboxRuntime ? 'iife' : 'amd',
+    format: inlineWorkboxRuntime ? 'es' : 'amd',
   });
 
   const files = [];

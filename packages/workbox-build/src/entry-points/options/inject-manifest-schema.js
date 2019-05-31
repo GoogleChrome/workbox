@@ -15,5 +15,5 @@ module.exports = baseSchema.keys({
   globDirectory: joi.string().required(),
   injectionPoint: joi.string().default(defaults.injectionPoint),
   swSrc: joi.string().required(),
-  swDest: joi.string().required(),
+  swDest: joi.string().required().regex(/\.js$/),
 });

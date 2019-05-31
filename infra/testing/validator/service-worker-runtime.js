@@ -10,6 +10,7 @@ const assert = require('assert');
 const expect = require('chai').expect;
 const fse = require('fs-extra');
 const makeServiceWorkerEnv = require('service-worker-mock');
+const path = require('path');
 const sinon = require('sinon');
 const vm = require('vm');
 
@@ -19,86 +20,53 @@ function stringifyFunctionsInArray(arr) {
 }
 
 function setupSpiesAndContext() {
-  const cacheableResponsePluginSpy = sinon.spy();
-  class CacheableResponsePlugin {
-    constructor(...args) {
-      cacheableResponsePluginSpy(...args);
-    }
-  }
-
-  const cacheExpirationPluginSpy = sinon.spy();
-  class CacheExpirationPlugin {
-    constructor(...args) {
-      cacheExpirationPluginSpy(...args);
-    }
-  }
-
+  const addEventListener = sinon.spy();
   const importScripts = sinon.spy();
 
-  const addEventListener = sinon.stub();
-
-  const workbox = {
-    cacheableResponse: {
-      Plugin: CacheableResponsePlugin,
-    },
-    expiration: {
-      Plugin: CacheExpirationPlugin,
-    },
-    googleAnalytics: {
-      initialize: sinon.spy(),
-    },
-    precaching: {
-      // To make testing easier, hardcode this fake URL return value.
-      getCacheKeyForURL: sinon.stub().returns('/urlWithCacheKey'),
-      precacheAndRoute: sinon.spy(),
-      cleanupOutdatedCaches: sinon.spy(),
-    },
-    navigationPreload: {
-      enable: sinon.spy(),
-    },
-    routing: {
-      registerNavigationRoute: sinon.spy(),
-      registerRoute: sinon.spy(),
-    },
-    core: {
-      clientsClaim: sinon.spy(),
-      setCacheNameDetails: sinon.spy(),
-      skipWaiting: sinon.spy(),
-    },
-    setConfig: sinon.spy(),
-    // To make testing easier, return the name of the strategy.
-    strategies: {
-      CacheFirst: sinon.stub().returns({name: 'CacheFirst'}),
-      NetworkFirst: sinon.stub().returns({name: 'NetworkFirst'}),
-    },
+  const workboxContext = {
+    CacheFirst: sinon.stub().returns({name: 'CacheFirst'}),
+    enable: sinon.spy(),
+    getCacheKeyForURL: sinon.stub().returns('/urlWithCacheKey'),
+    initialize: sinon.spy(),
+    NetworkFirst: sinon.stub().returns({name: 'NetworkFirst'}),
+    Plugin: sinon.spy(),
+    Plugin$1: sinon.spy(),
+    Plugin$2: sinon.spy(),
+    precacheAndRoute: sinon.spy(),
+    registerRoute: sinon.spy(),
+    registerNavigationRoute: sinon.spy(),
+    setCacheNameDetails: sinon.spy(),
+    skipWaiting: sinon.spy(),
+    clientsClaim: sinon.spy(),
   };
 
   const context = Object.assign({
     importScripts,
-    workbox,
+    define: (_, scripts, callback) => {
+      importScripts(...scripts);
+      callback(workboxContext);
+    },
   }, makeServiceWorkerEnv());
   context.self.addEventListener = addEventListener;
 
-  const methodsToSpies = {
-    importScripts,
-    cacheableResponsePlugin: cacheableResponsePluginSpy,
-    cleanupOutdatedCaches: workbox.precaching.cleanupOutdatedCaches,
-    cacheExpirationPlugin: cacheExpirationPluginSpy,
-    CacheFirst: workbox.strategies.CacheFirst,
-    clientsClaim: workbox.core.clientsClaim,
-    getCacheKeyForURL: workbox.precaching.getCacheKeyForURL,
-    googleAnalyticsInitialize: workbox.googleAnalytics.initialize,
-    NetworkFirst: workbox.strategies.NetworkFirst,
-    navigationPreloadEnable: workbox.navigationPreload.enable,
-    precacheAndRoute: workbox.precaching.precacheAndRoute,
-    registerNavigationRoute: workbox.routing.registerNavigationRoute,
-    registerRoute: workbox.routing.registerRoute,
-    setCacheNameDetails: workbox.core.setCacheNameDetails,
-    setConfig: workbox.setConfig,
-    skipWaiting: workbox.core.skipWaiting,
-  };
+  // const methodsToSpies = {
+  //   CacheFirst: workboxContext.CacheFirst,
+  //   getCacheKeyForURL: workboxContext.getCacheKeyForURL,
+  //   googleAnalyticsInitialize: workboxContext.initialize,
+  //   importScripts,
+  //   navigationPreloadEnable: workboxContext.enable,
+  //   NetworkFirst: workboxContext.NetworkFirst,
+  //   Plugin: workboxContext.Plugin,
+  //   Plugin$1: workboxContext.Plugin$1,
+  //   precacheAndRoute: workboxContext.precacheAndRoute,
+  //   registerNavigationRoute: workboxContext.registerNavigationRoute,
+  //   registerRoute: workboxContext.registerRoute,
+  //   setCacheNameDetails: workboxContext.setCacheNameDetails,
+  //   skipWaiting: workboxContext.skipWaiting,
+  //   clientsClaim: workboxContext.clientsClaim,
+  // };
 
-  return {addEventListener, context, methodsToSpies};
+  return {addEventListener, context, methodsToSpies: workboxContext};
 }
 
 function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
