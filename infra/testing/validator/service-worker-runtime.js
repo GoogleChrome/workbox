@@ -10,7 +10,6 @@ const assert = require('assert');
 const expect = require('chai').expect;
 const fse = require('fs-extra');
 const makeServiceWorkerEnv = require('service-worker-mock');
-const path = require('path');
 const sinon = require('sinon');
 const vm = require('vm');
 
@@ -25,6 +24,7 @@ function setupSpiesAndContext() {
 
   const workboxContext = {
     CacheFirst: sinon.stub().returns({name: 'CacheFirst'}),
+    clientsClaim: sinon.spy(),
     enable: sinon.spy(),
     getCacheKeyForURL: sinon.stub().returns('/urlWithCacheKey'),
     initialize: sinon.spy(),
@@ -33,11 +33,10 @@ function setupSpiesAndContext() {
     Plugin$1: sinon.spy(),
     Plugin$2: sinon.spy(),
     precacheAndRoute: sinon.spy(),
-    registerRoute: sinon.spy(),
     registerNavigationRoute: sinon.spy(),
+    registerRoute: sinon.spy(),
     setCacheNameDetails: sinon.spy(),
     skipWaiting: sinon.spy(),
-    clientsClaim: sinon.spy(),
   };
 
   const context = Object.assign({
@@ -48,23 +47,6 @@ function setupSpiesAndContext() {
     },
   }, makeServiceWorkerEnv());
   context.self.addEventListener = addEventListener;
-
-  // const methodsToSpies = {
-  //   CacheFirst: workboxContext.CacheFirst,
-  //   getCacheKeyForURL: workboxContext.getCacheKeyForURL,
-  //   googleAnalyticsInitialize: workboxContext.initialize,
-  //   importScripts,
-  //   navigationPreloadEnable: workboxContext.enable,
-  //   NetworkFirst: workboxContext.NetworkFirst,
-  //   Plugin: workboxContext.Plugin,
-  //   Plugin$1: workboxContext.Plugin$1,
-  //   precacheAndRoute: workboxContext.precacheAndRoute,
-  //   registerNavigationRoute: workboxContext.registerNavigationRoute,
-  //   registerRoute: workboxContext.registerRoute,
-  //   setCacheNameDetails: workboxContext.setCacheNameDetails,
-  //   skipWaiting: workboxContext.skipWaiting,
-  //   clientsClaim: workboxContext.clientsClaim,
-  // };
 
   return {addEventListener, context, methodsToSpies: workboxContext};
 }

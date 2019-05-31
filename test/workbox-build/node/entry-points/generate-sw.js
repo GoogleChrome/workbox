@@ -469,7 +469,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     const REGEXP_URL_PATTERN = /test/;
     const STRING_URL_PATTERN = '/test';
     const STRING_HANDLER = 'CacheFirst';
-    const FUNCTION_URL_PATTERN = params => true;
+    const FUNCTION_URL_PATTERN = (params) => true;
 
     it(`should reject when 'urlPattern' is missing from 'runtimeCaching'`, async function() {
       const handler = STRING_HANDLER;
@@ -597,10 +597,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           url: 'webpackEntry.js',
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
-        // We need to stringify the function to get it to pass validation.
-        // The service-worker-runtime.js validator will do the same.
         // See https://github.com/chaijs/chai/issues/697
-        registerRoute: [[FUNCTION_URL_PATTERN.toString(), {name: STRING_HANDLER}, DEFAULT_METHOD]],
+        registerRoute: [['params => true', {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
 
