@@ -8,6 +8,7 @@
 
 const expect = require('chai').expect;
 const fse = require('fs-extra');
+const globby = require('globby');
 const path = require('path');
 const tempy = require('tempy');
 
@@ -111,13 +112,23 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
   describe(`[workbox-build] writing a service worker file`, function() {
     it(`should use defaults when all the required parameters are present`, async function() {
-      const swDest = tempy.file({extension: 'js'});
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {swDest});
 
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const files = await globby('**', {cwd: outputDir});
+      expect(files).to.have.members([
+        'sw.js.map',
+        'sw.js',
+        'workbox-4da4090c.js.map',
+        'workbox-4da4090c.js',
+      ]);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-9eb92ebe']],
         precacheAndRoute: [[[{
@@ -143,7 +154,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should use defaults when all the required parameters are present, with additional importScripts`, async function() {
-      const swDest = tempy.file({extension: 'js'});
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const importScripts = ['manifest.js'];
       const options = Object.assign({}, BASE_OPTIONS, {
         importScripts,
@@ -154,6 +166,15 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const files = await globby('**', {cwd: outputDir});
+      expect(files).to.have.members([
+        'sw.js.map',
+        'sw.js',
+        'workbox-4da4090c.js.map',
+        'workbox-4da4090c.js',
+      ]);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-9eb92ebe'], [...importScripts]],
         precacheAndRoute: [[[{
@@ -179,7 +200,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should use defaults when all the required parameters are present, with additional configuration`, async function() {
-      const swDest = tempy.file({extension: 'js'});
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const directoryIndex = 'test.html';
       const ignoreURLParametersMatching = [/test1/, /test2/];
       const cacheId = 'test';
@@ -196,6 +218,15 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const files = await globby('**', {cwd: outputDir});
+      expect(files).to.have.members([
+        'sw.js.map',
+        'sw.js',
+        'workbox-3ea686f5.js.map',
+        'workbox-3ea686f5.js',
+      ]);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-4a41d90a']],
         clientsClaim: [[]],
@@ -227,7 +258,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should add a 'message' event listener when 'skipWaiting: false'`, async function() {
-      const swDest = tempy.file({extension: 'js'});
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const additionalOptions = {
         skipWaiting: false,
       };
@@ -237,6 +269,15 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const files = await globby('**', {cwd: outputDir});
+      expect(files).to.have.members([
+        'sw.js.map',
+        'sw.js',
+        'workbox-4da4090c.js.map',
+        'workbox-4da4090c.js',
+      ]);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-9eb92ebe']],
         precacheAndRoute: [[[{
@@ -269,7 +310,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should use defaults when all the required parameters are present, with 'navigateFallback' and 'navigateFallbackWhitelist'`, async function() {
-      const swDest = tempy.file({extension: 'js'});
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const navigateFallback = 'test.html';
       const navigateFallbackWhitelist = [/test1/, /test2/];
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -282,6 +324,15 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const files = await globby('**', {cwd: outputDir});
+      expect(files).to.have.members([
+        'sw.js.map',
+        'sw.js',
+        'workbox-cea9ac48.js.map',
+        'workbox-cea9ac48.js',
+      ]);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         getCacheKeyForURL: [[navigateFallback]],
         importScripts: [['./workbox-808eb12e']],
@@ -311,7 +362,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should use defaults when all the required parameters are present, with symlinks`, async function() {
-      const swDest = tempy.file({extension: 'js'});
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const globDirectory = tempy.directory();
 
       await fse.ensureSymlink(GLOB_DIR, path.join(globDirectory, 'link'));
@@ -325,6 +377,15 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const files = await globby('**', {cwd: outputDir});
+      expect(files).to.have.members([
+        'sw.js.map',
+        'sw.js',
+        'workbox-4da4090c.js.map',
+        'workbox-4da4090c.js',
+      ]);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-9eb92ebe']],
         precacheAndRoute: [[[{
@@ -350,7 +411,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should use defaults when all the required parameters are present, with 'globFollow' and  symlinks`, async function() {
-      const swDest = tempy.file({extension: 'js'});
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const globDirectory = tempy.directory();
 
       await fse.ensureSymlink(GLOB_DIR, path.join(globDirectory, 'link'));
@@ -365,6 +427,15 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(warnings).to.be.empty;
       expect(count).to.eql(4);
       expect(size).to.eql(2535);
+
+      const files = await globby('**', {cwd: outputDir});
+      expect(files).to.have.members([
+        'sw.js.map',
+        'sw.js',
+        'workbox-4da4090c.js.map',
+        'workbox-4da4090c.js',
+      ]);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-9eb92ebe']],
         precacheAndRoute: [[[{
@@ -384,7 +455,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to true`, async function() {
-      const swDest = tempy.file({extension: 'js'});
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         offlineGoogleAnalytics: true,
@@ -394,6 +466,15 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const files = await globby('**', {cwd: outputDir});
+      expect(files).to.have.members([
+        'sw.js.map',
+        'sw.js',
+        'workbox-a38d75d1.js.map',
+        'workbox-a38d75d1.js',
+      ]);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-76e7a865']],
         precacheAndRoute: [[[{
@@ -420,7 +501,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to a config`, async function() {
-      const swDest = tempy.file({extension: 'js'});
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         offlineGoogleAnalytics: {
@@ -434,6 +516,15 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const files = await globby('**', {cwd: outputDir});
+      expect(files).to.have.members([
+        'sw.js.map',
+        'sw.js',
+        'workbox-a38d75d1.js.map',
+        'workbox-a38d75d1.js',
+      ]);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-76e7a865']],
         precacheAndRoute: [[[{
@@ -461,6 +552,28 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           },
         }]],
       }});
+    });
+
+    it(`should inline the Workbox runtime when 'inlineWorkboxRuntime' is true`, async function() {
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
+      const options = Object.assign({}, BASE_OPTIONS, {
+        swDest,
+        inlineWorkboxRuntime: true,
+      });
+
+      const {count, size, warnings} = await generateSW(options);
+      expect(warnings).to.be.empty;
+      expect(count).to.eql(6);
+      expect(size).to.eql(2604);
+
+      const files = await globby('**', {cwd: outputDir});
+      expect(files).to.have.members([
+        'sw.js.map',
+        'sw.js',
+      ]);
+
+      // We can't validate the generated sw.js file, unfortunately.
     });
   });
 
