@@ -43,7 +43,7 @@ async function runBuildCommand({command, config, watch}) {
       logger.log(`The service worker files were written to:\n${message}`);
     }
 
-    logger.log(`${count} files will be precached, ` +
+    logger.log(`The service worker will precache ${count} URLs, ` +
         `totaling ${prettyBytes(size)}.`);
 
     if (watch) {
