@@ -40,7 +40,7 @@ const validate = require('./options/validate');
 async function injectManifest(config) {
   const options = validate(config, injectManifestSchema);
 
-  if (path.normalize(config.swSrc) === path.normalize(config.swDest)) {
+  if (path.resolve(config.swSrc) === path.resolve(config.swDest)) {
     throw new Error(errors['same-src-and-dest']);
   }
 

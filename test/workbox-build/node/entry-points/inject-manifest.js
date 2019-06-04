@@ -132,6 +132,23 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       }
     });
 
+    it(`should throw the expected error when a relative 'swSrc' and absolute 'swDest' are the same path`, async function() {
+      const swSrc = 'same.js';
+      const swDest = path.join(process.cwd(), 'same.js');
+
+      const options = Object.assign({}, BASE_OPTIONS, {
+        swSrc,
+        swDest,
+      });
+
+      try {
+        await injectManifest(options);
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.message).to.have.string(errors['same-src-and-dest']);
+      }
+    });
+
     it(`should throw the expected error when there is no match for 'injectionPoint'`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
         swSrc: path.join(SW_SRC_DIR, 'bad-no-injection.js'),
