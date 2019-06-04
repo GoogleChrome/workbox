@@ -71,14 +71,20 @@ module.exports = async ({
       unbundledCode,
     });
 
+    const filePaths = [];
+
     for (const file of files) {
-      await fse.writeFile(path.join(outputDir, file.name), file.contents);
+      const filePath = path.join(outputDir, file.name);
+      filePaths.push(filePath);
+      await fse.writeFile(filePath, file.contents);
     }
+
+    return filePaths;
   } catch (error) {
     if (error.code === 'EISDIR') {
       // See https://github.com/GoogleChrome/workbox/issues/612
       throw new Error(errors['sw-write-failure-directory']);
     }
-    throw new Error(`${errors['sw-write-failure']}. '${error.message}'`);
+    throw new Error(`${errors['sw-write-failure']} '${error.message}'`);
   }
 };

@@ -28,12 +28,12 @@ const validate = require('./options/validate');
  *
  * @param {Object} config Please refer to the
  * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#full_injectmanifest_config).
- * @return {Promise<{count: number, size: number, warnings: Array<string>}>}
- * A promise that resolves once the service worker file has been written to
- * `swDest`. The `size` property contains the aggregate size of all the
- * precached entries, in bytes, and the `count` property contains the total
- * number of precached entries. Any non-fatal warning messages will be returned
- * via `warnings`.
+ * @return {Promise<{count: number, filePaths: Array<string>, size: number, warnings: Array<string>}>}
+ * A promise that resolves once the service worker and related files
+ * (indicated by `filePaths`) has been written to `swDest`. The `size` property
+ * contains the aggregate size of all the precached entries, in bytes, and the
+ * `count` property contains the total number of precached entries. Any
+ * non-fatal warning messages will be returned via `warnings`.
  *
  * @memberof module:workbox-build
  */
@@ -73,7 +73,11 @@ async function injectManifest(config) {
 
   await fse.writeFile(config.swDest, swFileContents);
 
-  return {count, size, warnings};
+  // Wrap the single output file in an array to make the return value consistent
+  // with generateSW.
+  const filePaths = [config.swDest];
+
+  return {count, filePaths, size, warnings};
 }
 
 module.exports = injectManifest;

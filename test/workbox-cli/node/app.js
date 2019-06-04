@@ -27,13 +27,15 @@ describe(`[workbox-cli] app.js`, function() {
     'injectManifest',
   ];
   const WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE = {
-    size: 2,
     count: 1,
+    filePaths: ['ignored1', 'ignored2'],
+    size: 2,
     warnings: [],
   };
   const WORKBOX_BUILD_WITH_WARNINGS_RETURN_VALUE = {
-    size: 2,
     count: 1,
+    filePaths: ['ignored'],
+    size: 2,
     warnings: ['warning'],
   };
 
@@ -176,7 +178,7 @@ describe(`[workbox-cli] app.js`, function() {
         });
 
         await app({input: [command, PROXIED_CONFIG_FILE]});
-        expect(loggerLogStub.calledTwice).to.be.true;
+        expect(loggerLogStub.callCount).to.eql(3);
       });
 
       it(`should call logger.warn() to report warnings, and then logger.log() upon successfully running workbox-build.${command}()`, async function() {
@@ -200,7 +202,7 @@ describe(`[workbox-cli] app.js`, function() {
 
         await app({input: [command, PROXIED_CONFIG_FILE]});
         expect(loggerWarningStub.calledOnce).to.be.true;
-        expect(loggerLogStub.calledTwice).to.be.true;
+        expect(loggerLogStub.callCount).to.eql(3);
       });
 
       it(`should call logger.log() upon successfully running workbox-build.${command}() using the default config file location`, async function() {
@@ -222,7 +224,7 @@ describe(`[workbox-cli] app.js`, function() {
         });
 
         await app({input: [command]});
-        expect(loggerLogStub.calledTwice).to.be.true;
+        expect(loggerLogStub.callCount).to.eql(3);
       });
     }
 

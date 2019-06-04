@@ -164,10 +164,12 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {swDest});
 
-      const {count, size, warnings} = await injectManifest(options);
+      const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+      expect(filePaths).to.have.members([swDest]);
+
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
         swFile: swDest,
@@ -202,10 +204,12 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
         swSrc: path.join(SW_SRC_DIR, 'multiple-calls.js'),
       });
 
-      const {count, size, warnings} = await injectManifest(options);
+      const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+      expect(filePaths).to.have.members([swDest]);
+
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
         swFile: swDest,
@@ -245,10 +249,12 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
         swSrc: path.join(SW_SRC_DIR, 'custom-injection-point.js'),
       });
 
-      const {count, size, warnings} = await injectManifest(options);
+      const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+      expect(filePaths).to.have.members([swDest]);
+
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
         swFile: swDest,
@@ -283,10 +289,12 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
         swSrc: path.join(SW_SRC_DIR, 'precache-and-route-options.js'),
       });
 
-      const {count, size, warnings} = await injectManifest(options);
+      const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+      expect(filePaths).to.have.members([swDest]);
+
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
         swFile: swDest,
