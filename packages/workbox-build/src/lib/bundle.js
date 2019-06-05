@@ -56,6 +56,9 @@ module.exports = async ({
   const rollupConfig = {
     plugins,
     input: temporaryFile,
+    treeshake: {
+      moduleSideEffects: false,
+    },
   };
 
   // Rollup will inline the runtime by default. If we don't want that, we need
