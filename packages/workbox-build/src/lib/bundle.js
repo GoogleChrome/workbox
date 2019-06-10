@@ -12,6 +12,7 @@ const {writeFile} = require('fs-extra');
 const babel = require('rollup-plugin-babel');
 const loadz0r = require('rollup-plugin-loadz0r');
 const path = require('path');
+const presetEnv = require('@babel/preset-env');
 const replace = require('rollup-plugin-replace');
 const resolve = require('rollup-plugin-node-resolve');
 const tempy = require('tempy');
@@ -33,7 +34,7 @@ module.exports = async ({
     resolve(),
     replace({'process.env.NODE_ENV': JSON.stringify(mode)}),
     babel({
-      presets: [['@babel/preset-env', {
+      presets: [[presetEnv, {
         targets: {
           browsers: babelPresetEnvTargets,
         },
