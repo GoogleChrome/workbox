@@ -1,5 +1,5 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2019 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
@@ -10,7 +10,7 @@ const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
+describe(`[workbox-build] lib/bundle.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/bundle';
   let bundle;
   let stubs;
@@ -35,6 +35,7 @@ describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
 
     stubs = {
       rollupStub,
+      '@babel/preset-env': sinon.stub(),
       'fs-extra': {
         writeFile: sinon.stub().resolves(),
       },
@@ -67,7 +68,7 @@ describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
     });
 
     expect(stubs['rollup-plugin-babel'].args).to.eql([[{
-      presets: [['@babel/preset-env', {
+      presets: [[stubs['@babel/preset-env'], {
         targets: {
           browsers: babelPresetEnvTargets,
         },

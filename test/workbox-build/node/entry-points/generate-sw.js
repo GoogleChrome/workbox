@@ -402,8 +402,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(files).to.have.members([
         'sw.js.map',
         'sw.js',
-        'workbox-4da4090c.js.map',
-        'workbox-4da4090c.js',
+        'workbox-b3503050.js.map',
+        'workbox-b3503050.js',
       ]);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
@@ -706,9 +706,11 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       });
 
       const {count, size, warnings} = await generateSW(options);
+
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[{
           cacheName: firstRuntimeCachingOptions.cacheName,

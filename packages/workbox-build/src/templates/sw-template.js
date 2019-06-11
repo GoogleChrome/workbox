@@ -18,25 +18,9 @@ module.exports = `/**
  * See https://goo.gl/2aRDsh
  */
 
-import {CacheFirst as workbox_strategies_CacheFirst} from '<%= nodeModulesPath %>/workbox-strategies/CacheFirst.mjs';
-import {CacheOnly as workbox_strategies_CacheOnly} from '<%= nodeModulesPath %>/workbox-strategies/CacheOnly.mjs';
-import {cleanupOutdatedCaches as workbox_precaching_cleanupOutdatedCaches} from '<%= nodeModulesPath %>/workbox-precaching/cleanupOutdatedCaches.mjs';
-import {clientsClaim as workbox_core_clientsClaim} from '<%= nodeModulesPath %>/workbox-core/clientsClaim.mjs';
-import {enable as workbox_navigationPreload_enable} from '<%= nodeModulesPath %>/workbox-navigation-preload/enable.mjs';
-import {getCacheKeyForURL as workbox_precaching_getCacheKeyForURL} from '<%= nodeModulesPath %>/workbox-precaching/getCacheKeyForURL.mjs';
-import {initialize as workbox_googleAnalytics_initialize} from '<%= nodeModulesPath %>/workbox-google-analytics/initialize.mjs';
-import {NetworkFirst as workbox_strategies_NetworkFirst} from '<%= nodeModulesPath %>/workbox-strategies/NetworkFirst.mjs';
-import {NetworkOnly as workbox_strategies_NetworkOnly} from '<%= nodeModulesPath %>/workbox-strategies/NetworkOnly.mjs';
-import {Plugin as workbox_backgroundSync_Plugin} from '<%= nodeModulesPath %>/workbox-background-sync/Plugin.mjs';
-import {Plugin as workbox_broadcastUpdate_Plugin} from '<%= nodeModulesPath %>/workbox-broadcast-update/Plugin.mjs';
-import {Plugin as workbox_cacheableResponse_Plugin} from '<%= nodeModulesPath %>/workbox-cacheable-response/Plugin.mjs';
-import {Plugin as workbox_expiration_Plugin} from '<%= nodeModulesPath %>/workbox-expiration/Plugin.mjs';
-import {precacheAndRoute as workbox_precaching_precacheAndRoute} from '<%= nodeModulesPath %>/workbox-precaching/precacheAndRoute.mjs';
-import {registerNavigationRoute as workbox_routing_registerNavigationRoute} from '<%= nodeModulesPath %>/workbox-routing/registerNavigationRoute.mjs';
-import {registerRoute as workbox_routing_registerRoute} from '<%= nodeModulesPath %>/workbox-routing/registerRoute.mjs';
-import {setCacheNameDetails as workbox_core_setCacheNameDetails} from '<%= nodeModulesPath %>/workbox-core/setCacheNameDetails.mjs';
-import {skipWaiting as workbox_core_skipWaiting} from '<%= nodeModulesPath %>/workbox-core/skipWaiting.mjs';
-import {StaleWhileRevalidate as workbox_strategies_StaleWhileRevalidate} from '<%= nodeModulesPath %>/workbox-strategies/StaleWhileRevalidate.mjs';
+<% if (workboxModuleImports) { %>
+<%= workboxModuleImports.join(';\\n') %>
+<% } %>
 
 <% if (importScripts) { %>
 importScripts(

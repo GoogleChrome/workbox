@@ -15,7 +15,7 @@ module.exports = {
   globPatterns: ['**/*.{js,css,html}'],
   globStrict: true,
   importWorkboxFrom: 'cdn',
-  injectionPoint: 'self.__WB_MANIFEST',
+  injectionPoint: 'self.__WB_INJECTED_MANIFEST',
   inlineWorkboxRuntime: false,
   maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
   mode: 'production',

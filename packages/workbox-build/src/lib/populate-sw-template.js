@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-const path = require('path');
 const template = require('lodash.template');
 const swTemplate = require('../templates/sw-template');
 
+const createModuleImports = require('./create-module-imports');
 const errors = require('./errors');
 const runtimeCachingConverter = require('./runtime-caching-converter');
 const stringifyWithoutComments = require('./stringify-without-comments');
@@ -22,7 +22,6 @@ module.exports = ({
   ignoreURLParametersMatching,
   importScripts,
   manifestEntries,
-  modulePathPrefix,
   navigateFallback,
   navigateFallbackBlacklist,
   navigateFallbackWhitelist,
@@ -62,8 +61,21 @@ module.exports = ({
       stringifyWithoutComments(offlineGoogleAnalytics);
   }
 
-  const nodeModulesPath = path.posix.resolve(
-      __dirname, '..', '..', 'node_modules');
+  const workboxModuleImports = createModuleImports({
+    cacheId,
+    cleanupOutdatedCaches,
+    clientsClaim,
+    importScripts,
+    manifestEntries,
+    navigateFallback,
+    navigateFallbackBlacklist,
+    navigateFallbackWhitelist,
+    navigationPreload,
+    offlineAnalyticsConfigString,
+    precacheOptionsString,
+    runtimeCaching,
+    skipWaiting,
+  });
 
   try {
     return template(swTemplate)({
@@ -72,15 +84,14 @@ module.exports = ({
       clientsClaim,
       importScripts,
       manifestEntries,
-      modulePathPrefix,
       navigateFallback,
       navigateFallbackBlacklist,
       navigateFallbackWhitelist,
       navigationPreload,
-      nodeModulesPath,
       offlineAnalyticsConfigString,
       precacheOptionsString,
       skipWaiting,
+      workboxModuleImports,
       runtimeCaching: runtimeCachingConverter(runtimeCaching),
     });
   } catch (error) {

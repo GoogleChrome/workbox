@@ -1,5 +1,5 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2019 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
@@ -57,9 +57,6 @@ module.exports = async ({
   const rollupConfig = {
     plugins,
     input: temporaryFile,
-    treeshake: {
-      moduleSideEffects: false,
-    },
   };
 
   // Rollup will inline the runtime by default. If we don't want that, we need

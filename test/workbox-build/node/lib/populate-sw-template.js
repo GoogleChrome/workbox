@@ -34,17 +34,13 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const swTemplate = 'template';
     const precacheOptionsString = '{}';
-    const nodeModulesPath = '/dummy/path';
+    const workboxModuleImports = ['import 1', 'import 2'];
 
     const innerStub = sinon.stub().returns('');
     const outerStub = sinon.stub().returns(innerStub);
     const populateSWTemplate = proxyquire(MODULE_PATH, {
       'lodash.template': outerStub,
-      'path': {
-        posix: {
-          resolve: () => nodeModulesPath,
-        },
-      },
+      './create-module-imports': () => workboxModuleImports,
       './runtime-caching-converter': () => runtimeCachingPlaceholder,
       '../templates/sw-template': swTemplate,
     });
@@ -58,16 +54,15 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       clientsClaim: undefined,
       importScripts: undefined,
       manifestEntries: undefined,
-      modulePathPrefix: undefined,
       navigateFallback: undefined,
       navigateFallbackBlacklist: undefined,
       navigateFallbackWhitelist: undefined,
       navigationPreload: undefined,
-      nodeModulesPath,
       offlineAnalyticsConfigString: undefined,
       precacheOptionsString,
       runtimeCaching: runtimeCachingPlaceholder,
       skipWaiting: undefined,
+      workboxModuleImports,
     }]);
   });
 
@@ -80,7 +75,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const ignoreURLParametersMatching = [/a/, /b/];
     const importScripts = ['test.js'];
     const manifestEntries = [{url: '/path/to/index.html', revision: '1234'}];
-    const modulePathPrefix = 'testing';
     const navigateFallback = '/shell.html';
     const navigateFallbackBlacklist = [/another-test/];
     const navigateFallbackWhitelist = [/test/];
@@ -92,7 +86,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const skipWaiting = true;
     const swTemplate = 'template';
     const precacheOptionsString = '{\n  "directoryIndex": "index.html",\n  "ignoreURLParametersMatching": [/a/, /b/]\n}';
-    const nodeModulesPath = '/dummy/path';
+    const workboxModuleImports = ['import 1', 'import 2'];
 
     // There are two stages in templating: creating the active template function
     // from an initial string, and passing variables to that template function
@@ -102,11 +96,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const templateCreationStub = sinon.stub().returns(templatePopulationStub);
     const populateSWTemplate = proxyquire(MODULE_PATH, {
       'lodash.template': templateCreationStub,
-      'path': {
-        posix: {
-          resolve: () => nodeModulesPath,
-        },
-      },
+      './create-module-imports': () => workboxModuleImports,
       './runtime-caching-converter': () => runtimeCachingPlaceholder,
       '../templates/sw-template': swTemplate,
     });
@@ -120,7 +110,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       ignoreURLParametersMatching,
       importScripts,
       manifestEntries,
-      modulePathPrefix,
       navigateFallback,
       navigateFallbackBlacklist,
       navigateFallbackWhitelist,
@@ -128,6 +117,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       offlineGoogleAnalytics,
       runtimeCaching,
       skipWaiting,
+      workboxModuleImports,
     });
 
     expect(templateCreationStub.alwaysCalledWith(swTemplate)).to.be.true;
@@ -137,16 +127,15 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       clientsClaim,
       importScripts,
       manifestEntries,
-      modulePathPrefix,
       navigateFallback,
       navigateFallbackBlacklist,
       navigateFallbackWhitelist,
       navigationPreload,
-      nodeModulesPath,
       offlineAnalyticsConfigString,
       runtimeCaching: runtimeCachingPlaceholder,
       precacheOptionsString,
       skipWaiting,
+      workboxModuleImports,
     }]);
   });
 
@@ -164,17 +153,13 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       },
     };
     const offlineAnalyticsConfigString = `{\n\tparameterOverrides: {\n\t\tcd1: 'offline'\n\t},\n\thitFilter: (params) => {\n        \n        params.set('cm1', params.get('qt'));\n      }\n}`;
-    const nodeModulesPath = '/dummy/path';
+    const workboxModuleImports = ['import 1', 'import 2'];
 
     const innerStub = sinon.stub().returns('');
     const outerStub = sinon.stub().returns(innerStub);
     const populateSWTemplate = proxyquire(MODULE_PATH, {
       'lodash.template': outerStub,
-      'path': {
-        posix: {
-          resolve: () => nodeModulesPath,
-        },
-      },
+      './create-module-imports': () => workboxModuleImports,
       './runtime-caching-converter': () => runtimeCachingPlaceholder,
       '../templates/sw-template': swTemplate,
     });
@@ -188,16 +173,15 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       clientsClaim: undefined,
       importScripts: undefined,
       manifestEntries: undefined,
-      modulePathPrefix: undefined,
       navigateFallback: undefined,
       navigateFallbackBlacklist: undefined,
       navigateFallbackWhitelist: undefined,
       navigationPreload: undefined,
-      nodeModulesPath,
       offlineAnalyticsConfigString,
       precacheOptionsString,
       runtimeCaching: runtimeCachingPlaceholder,
       skipWaiting: undefined,
+      workboxModuleImports,
     }]);
   });
 });
