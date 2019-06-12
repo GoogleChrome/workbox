@@ -7,5 +7,5 @@
 */
 
 // Multiple entries.
-workbox.precaching.precacheAndRoute(self.__WB_INJECTED_MANIFEST);
-workbox.precaching.precacheAndRoute(self.__WB_INJECTED_MANIFEST);
+workbox.precaching.precacheAndRoute(self.__WB_PRECACHE_MANIFEST);
+workbox.precaching.precacheAndRoute(self.__WB_PRECACHE_MANIFEST);
