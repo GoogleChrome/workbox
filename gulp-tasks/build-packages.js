@@ -19,7 +19,7 @@ const cleanPackage = async (packagePath) => {
   if (await fs.pathExists(path.join(packagePath, 'src', 'index.ts'))) {
     // Store the list of deleted files, so we can delete directories after.
     const deletedPaths = await del([
-      path.posix.join(packagePath, '**/*.+(mjs|d.ts)'),
+      path.posix.join(packagePath, '**/*.+(js|mjs|d.ts)'),
       // Don't delete files in node_modules
       '!**/node_modules', '!**/node_modules/**/*',
     ]);

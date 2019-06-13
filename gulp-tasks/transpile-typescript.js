@@ -21,29 +21,34 @@ const {AsyncDebounce} = require('../infra/utils/AsyncDebounce');
 /**
  * @type {string}
  */
-const packagesDir = path.resolve('packages');
+const packagesDir = path.join(__dirname, '..', 'packages');
+
 
 /**
- * Returns a Rollup plugin that replaces extensions within filenames and
- * imports. This is a bit of a hack, but it's needed until to solve:
+ * Returns a Rollup plugin that generates both `.js` and `.mjs` files for each
+ * `.ts` source file. This is a bit of a hack, but it's needed until to solve:
  * https://github.com/rollup/rollup/issues/2847
- *
- * @param {string} oldExt
- * @param {string} newExt
  */
-const renameImportExtensionsPlugin = (oldExt, newExt) => {
+const generateMjsOutputFiles = () => {
   return {
     generateBundle: (options, bundle) => {
       const importPattern =
-          new RegExp(`((?:import|export)[^']+')([^']+?)\\${oldExt}';`, 'g');
+          new RegExp(`((?:import|export)[^']+')([^']+?)\\.ts';`, 'g');
 
       for (const chunkInfo of Object.values(bundle)) {
         if (chunkInfo.fileName.endsWith('.ts')) {
-          chunkInfo.fileName = chunkInfo.fileName
-              .replace(new RegExp(`\\${oldExt}$`), newExt);
+          // Rename the `.ts` imports and filenames to `.js`;
+          const assetBasename = chunkInfo.fileName.replace(/.ts$/, '');
 
-          chunkInfo.code = chunkInfo.code
-              .replace(importPattern, `$1$2${newExt}';`);
+          chunkInfo.fileName = assetBasename + '.js';
+          chunkInfo.code = chunkInfo.code.replace(importPattern, `$1$2.js';`);
+
+          // Create mirror `.mjs` files for each `.js` file.
+          const mjsSource =
+              `export * from './${path.basename(assetBasename)}.js';`;
+
+          fs.outputFileSync(
+              path.join(options.dir, assetBasename + '.mjs'), mjsSource);
         }
       }
     },
@@ -64,12 +69,12 @@ let moduleBundleCache;
  */
 const transpilePackage = async (packageName) => {
   const packagePath = path.join(packagesDir, packageName);
-
   const input = path.join(packagePath, 'src', 'index.ts');
+
   const plugins = [
     resolve(),
     typescript2(),
-    renameImportExtensionsPlugin('.ts', '.mjs'),
+    generateMjsOutputFiles(),
   ];
 
   const bundle = await rollup({
@@ -97,7 +102,8 @@ const transpilePackage = async (packageName) => {
  * @param {string} packagePath
  */
 const transpilePackagesOrSkip = async (packagePath) => {
-  const packageName = packagePath.split(path.sep).slice(-1)[0];
+  // `packagePath` will be posix style because it comes from `glog()`.
+  const packageName = packagePath.split('/').slice(-1)[0];
 
   if (await fs.pathExists(path.join(packagePath, 'src'))) {
     await queueTranspile(packageName);

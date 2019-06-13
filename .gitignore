@@ -18,6 +18,7 @@ local-builds/
 firebase-debug.log
 .firebase
 
-# Generated `.mjs` files from TypeScript source
+# Generated files from TypeScript source
+packages/workbox-core/**/*.js
 packages/workbox-core/**/*.mjs
 packages/workbox-core/**/*.d.ts

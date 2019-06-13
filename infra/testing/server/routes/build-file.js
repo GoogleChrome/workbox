@@ -24,12 +24,15 @@ async function handler(req, res) {
   } else {
     const pkg = outputFilenameToPkgMap[packageFile];
 
-    // If the pkg.module references something in the build directory, use
-    // that, otherwise use pkg.main.
+    // If the pkg.module or pkg.main references something in the build
+    // directory, use that. Otherwise base the build file on the pkg name.
+
     if (pkg.module && pkg.module.startsWith('build/')) {
       file = path.join(pkgDir, pkg.module);
-    } else {
+    } else if (pkg.main && pkg.main.startsWith('build/')) {
       file = path.join(pkgDir, pkg.main);
+    } else {
+      file = path.join(pkgDir, 'build', `${pkg.name}.prod.js`);
     }
 
     // When not specifying a dev or prod build via the filename,

@@ -10,6 +10,6 @@ import '../_version';
 
 
 // Callbacks to be executed whenever there's a quota error.
-const quotaErrorCallbacks = new Set();
+const quotaErrorCallbacks: Set<Function> = new Set();
 
 export {quotaErrorCallbacks};
