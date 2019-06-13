@@ -11,6 +11,7 @@ const replace = require('rollup-plugin-replace');
 const resolve = require('rollup-plugin-node-resolve');
 const multiEntry = require('rollup-plugin-multi-entry');
 const commonjs = require('rollup-plugin-commonjs');
+const {needsTranspile, queueTranspile} = require('../../../../gulp-tasks/transpile-typescript');
 const {getPackages} = require('../../../../gulp-tasks/utils/get-packages');
 
 
@@ -23,9 +24,15 @@ const caches = {};
 
 async function handler(req, res) {
   const env = process.env.NODE_ENV || 'development';
+  const packageName = req.params.package;
+
+  // Ensure the TypeScript transpile step has completed first.
+  if (needsTranspile(packageName)) {
+    await queueTranspile(packageName);
+  }
 
   const bundle = await rollup({
-    input: `./test/${req.params.package}/sw/**/test-*.mjs`,
+    input: `./test/${packageName}/sw/**/test-*.mjs`,
     plugins: [
       multiEntry(),
       resolve({

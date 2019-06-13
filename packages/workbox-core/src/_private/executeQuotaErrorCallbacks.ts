@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from '../_private/logger.mjs';
-import {quotaErrorCallbacks} from '../models/quotaErrorCallbacks.mjs';
-import '../_version.mjs';
+import {logger} from '../_private/logger';
+import {quotaErrorCallbacks} from '../models/quotaErrorCallbacks';
+import '../_version';
 
 
 /**

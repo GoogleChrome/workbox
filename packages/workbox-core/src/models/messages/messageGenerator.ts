@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {messages} from './messages.mjs';
-import '../../_version.mjs';
+import {messages} from './messages';
+import '../../_version';
 
-const fallback = (code, ...args) => {
+const fallback = (code: string, ...args: any[]) => {
   let msg = code;
   if (args.length > 0) {
     msg += ` :: ${JSON.stringify(args)}`;
@@ -17,13 +17,13 @@ const fallback = (code, ...args) => {
   return msg;
 };
 
-const generatorFunction = (code, ...args) => {
+const generatorFunction = (code: string, details = {}) => {
   const message = messages[code];
   if (!message) {
     throw new Error(`Unable to find message for code '${code}'.`);
   }
 
-  return message(...args);
+  return message(details);
 };
 
 export const messageGenerator = (process.env.NODE_ENV === 'production') ?

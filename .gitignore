@@ -12,7 +12,13 @@ generated-release-files/
 workbox-*.json
 .esm-cache/
 .nyc_output/
+.rpt2_cache/
 docs
 local-builds/
 firebase-debug.log
 .firebase
+
+# Generated files from TypeScript source
+packages/workbox-core/**/*.js
+packages/workbox-core/**/*.mjs
+packages/workbox-core/**/*.d.ts

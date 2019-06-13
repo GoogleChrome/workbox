@@ -14,6 +14,9 @@ const errors = require('./errors');
 // Used to filter the libraries to copy based on our package.json dependencies.
 const WORKBOX_PREFIX = 'workbox-';
 
+// The directory within each package containing the final bundles.
+const BUILD_DIR = 'build';
+
 /**
  * This copies over a set of runtime libraries used by Workbox into a
  * local directory, which should be deployed alongside your service worker file.
@@ -47,13 +50,18 @@ module.exports = async (destDirectory) => {
   const copyPromises = [];
   const librariesToCopy = Object.keys(thisPkg.dependencies).filter(
       (dependency) => dependency.startsWith(WORKBOX_PREFIX));
+
   for (const library of librariesToCopy) {
-    const mainFilePath = require.resolve(library);
-    const srcPath = path.dirname(mainFilePath);
+    // Get the path to the package on the user's filesystem by require-ing
+    // the package's `package.json` file via the node resolution algorithm.
+    const libraryPath = path.dirname(
+        require.resolve(`${library}/package.json`));
+
+    const buildPath = path.join(libraryPath, BUILD_DIR);
 
     // fse.copy() copies all the files in a directory, not the directory itself.
     // See https://github.com/jprichardson/node-fs-extra/blob/master/docs/copy.md#copysrc-dest-options-callback
-    copyPromises.push(fse.copy(srcPath, workboxDirectoryPath));
+    copyPromises.push(fse.copy(buildPath, workboxDirectoryPath));
   }
 
   try {

@@ -122,8 +122,7 @@ describe(`DBWrapper`, function() {
       expect(db._name).to.equal('db');
       expect(db._version).to.equal(1);
       expect(db._onupgradeneeded).to.be.undefined;
-      expect(db._onversionchange).to.equal(
-          DBWrapper.prototype._onversionchange);
+      expect(db._onversionchange).to.be.instanceOf(Function);
     });
 
     it(`lets you specify callbacks`, function() {
@@ -632,10 +631,10 @@ describe(`deleteDatabase`, function() {
   it(`throws when an error occurs`, async function() {
     const fakeError = new Error();
     sandbox.stub(indexedDB, 'deleteDatabase').callsFake(() => {
-      const result = {};
+      const request = {error: fakeError};
       // Asynchronously call onerror.
-      setTimeout(() => result.onerror({target: {error: fakeError}}), 0);
-      return result;
+      setTimeout(() => request.onerror({target: request}), 0);
+      return request;
     });
 
     await createTestDb();

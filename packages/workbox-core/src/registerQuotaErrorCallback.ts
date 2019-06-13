@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from './_private/logger.mjs';
-import {assert} from './_private/assert.mjs';
-import {quotaErrorCallbacks} from './models/quotaErrorCallbacks.mjs';
-import './_version.mjs';
+import {logger} from './_private/logger';
+import {assert} from './_private/assert';
+import {quotaErrorCallbacks} from './models/quotaErrorCallbacks';
+import './_version';
 
 
 /**
@@ -19,9 +19,9 @@ import './_version.mjs';
  * @param {Function} callback
  * @memberof workbox.core
  */
-function registerQuotaErrorCallback(callback) {
+function registerQuotaErrorCallback(callback: Function) {
   if (process.env.NODE_ENV !== 'production') {
-    assert.isType(callback, 'function', {
+    assert && assert.isType(callback, 'function', {
       moduleName: 'workbox-core',
       funcName: 'register',
       paramName: 'callback',

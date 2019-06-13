@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from './_private/assert.mjs';
-import {cacheNames} from './_private/cacheNames.mjs';
-import {WorkboxError} from './_private/WorkboxError.mjs';
-import './_version.mjs';
+import {assert} from './_private/assert';
+import {cacheNames, PartialCacheNameDetails} from './_private/cacheNames';
+import {WorkboxError} from './_private/WorkboxError';
+import './_version';
 
 
 /**
@@ -29,31 +29,31 @@ import './_version.mjs';
  *
  * @alias workbox.core.setCacheNameDetails
  */
-export const setCacheNameDetails = (details) => {
+export const setCacheNameDetails = (details: PartialCacheNameDetails) => {
   if (process.env.NODE_ENV !== 'production') {
     Object.keys(details).forEach((key) => {
-      assert.isType(details[key], 'string', {
+      assert && assert.isType(details[key], 'string', {
         moduleName: 'workbox-core',
         funcName: 'setCacheNameDetails',
         paramName: `details.${key}`,
       });
     });
 
-    if ('precache' in details && details.precache.length === 0) {
+    if ('precache' in details && details.precache!.length === 0) {
       throw new WorkboxError('invalid-cache-name', {
         cacheNameId: 'precache',
         value: details.precache,
       });
     }
 
-    if ('runtime' in details && details.runtime.length === 0) {
+    if ('runtime' in details && details.runtime!.length === 0) {
       throw new WorkboxError('invalid-cache-name', {
         cacheNameId: 'runtime',
         value: details.runtime,
       });
     }
 
-    if ('googleAnalytics' in details && details.googleAnalytics.length === 0) {
+    if ('googleAnalytics' in details && details.googleAnalytics!.length === 0) {
       throw new WorkboxError('invalid-cache-name', {
         cacheNameId: 'googleAnalytics',
         value: details.googleAnalytics,

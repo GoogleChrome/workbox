@@ -58,8 +58,6 @@ describe(`[all] Test package.json`, function() {
   });
 
   it(`should import _version.mjs in each .mjs file`, function() {
-    const importRegex = /import\s+'[./]+_version\.mjs';/;
-
     // Find directories with package.json file
     const packageFiles = glob.sync('packages/*/package.json', {
       ignore: ['packages/*/node_modules/**/*'],
@@ -73,17 +71,23 @@ describe(`[all] Test package.json`, function() {
         return;
       }
 
+      // TODO(philipwalton): remove this once all packages are converted to
+      // typescript or typescript adds `.mjs` support.
+      const ext = 'types' in pkg ? 'js' : 'mjs';
+
       // Glob for all js and mjs files in the package
       const packageName = pkgPathToName(path.dirname(packagePath));
-      const packageFiles = glob.sync(`packages/${packageName}/**/*.{js,mjs}`, {
+      const packageFiles = glob.sync(`packages/${packageName}/**/*.${ext}`, {
         ignore: [
           'packages/*/node_modules/**/*',
-          'packages/*/_version.mjs',
+          `packages/*/_version.${ext}`,
           `packages/*/${constants.PACKAGE_BUILD_DIRNAME}/**/*`,
         ],
         cwd: path.join(__dirname, '..', '..', '..'),
         absolute: true,
       });
+
+      const importRegex = new RegExp(`import\\s+'[./]+_version\\.${ext}';`);
 
       // Find the version in each file.
       packageFiles.forEach((filePath) => {
@@ -155,16 +159,19 @@ describe(`[all] Test package.json`, function() {
         return;
       }
 
-      // Glob for all js and mjs files in the package
+      // TODO(philipwalton): remove this once all packages are converted to
+      // typescript or typescript adds `.mjs` support.
+      const ext = 'types' in pkg ? 'js' : 'mjs';
+
       const packageName = pkgPathToName(path.dirname(packagePath));
-      const packageFiles = glob.sync(`packages/${packageName}/_version.mjs`, {
+      const versionFiles = glob.sync(`packages/${packageName}/_version.${ext}`, {
         ignore: ['packages/*/node_modules/**/*'],
         cwd: path.join(__dirname, '..', '..', '..'),
         absolute: true,
       });
 
       // Find the version in each file.
-      packageFiles.forEach((filePath) => {
+      versionFiles.forEach((filePath) => {
         const fileContents = fs.readFileSync(filePath).toString();
         const results = versionRegex.exec(fileContents);
         if (!results) {

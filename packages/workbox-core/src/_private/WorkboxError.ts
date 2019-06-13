@@ -6,8 +6,29 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {messageGenerator} from '../models/messages/messageGenerator.mjs';
-import '../_version.mjs';
+import {messageGenerator} from '../models/messages/messageGenerator';
+import '../_version';
+
+// TODO(philipwalton): remove once the switch to TypeScript is complete and
+// we no longer need the `assert` module.
+export interface WorkboxErrorDetails {
+  cacheNameId?: string;
+  className?: string;
+  expectedClass?: Function;
+  expectedMethod?: string;
+  expectedType?: string;
+  funcName?: string;
+  isReturnValueProblem?: boolean;
+  method?: string,
+  moduleName?: string;
+  paramName?: string;
+  thrownError?: Error;
+  validValueDescription?: string;
+  value?: string;
+  url?: string;
+}
+
+
 
 /**
  * Workbox errors should be thrown with this class.
@@ -19,6 +40,9 @@ import '../_version.mjs';
  * @private
  */
 class WorkboxError extends Error {
+  name: string;
+  details: WorkboxErrorDetails;
+
   /**
    *
    * @param {string} errorCode The error code that
@@ -27,7 +51,7 @@ class WorkboxError extends Error {
    * that will help developers identify issues should
    * be added as a key on the context object.
    */
-  constructor(errorCode, details) {
+  constructor(errorCode: string, details: WorkboxErrorDetails) {
     let message = messageGenerator(errorCode, details);
 
     super(message);

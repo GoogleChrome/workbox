@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import './_version.mjs';
+import './_version';
 
 
 /**
@@ -16,5 +16,5 @@ import './_version.mjs';
  * @alias workbox.core.clientsClaim
  */
 export const clientsClaim = () => {
-  addEventListener('activate', () => clients.claim());
+  addEventListener('activate', () => self.clients.claim());
 };

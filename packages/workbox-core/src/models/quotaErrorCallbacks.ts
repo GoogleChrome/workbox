@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version';
 
-export const pluginUtils = {
-  filter: (plugins, callbackName) => {
-    return plugins.filter((plugin) => callbackName in plugin);
-  },
-};
+
+// Callbacks to be executed whenever there's a quota error.
+const quotaErrorCallbacks: Set<Function> = new Set();
+
+export {quotaErrorCallbacks};

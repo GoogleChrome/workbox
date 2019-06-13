@@ -6,9 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {checkSWFileCacheHeaders} from './_private/checkSWFileCacheHeaders.mjs';
-import {logger} from '../_private/logger.mjs';
-import '../_version.mjs';
+import {logger} from '../_private/logger';
+import '../_version';
 
 
 // A WorkboxCore instance must be exported before we can use the logger.
@@ -32,8 +31,4 @@ if (process.env.NODE_ENV !== 'production') {
     `${padding}https://github.com/GoogleChrome/workbox/issues/new`
   );
   logger.groupEnd();
-
-  if (typeof checkSWFileCacheHeaders === 'function') {
-    checkSWFileCacheHeaders();
-  }
 }

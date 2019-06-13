@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version';
 
 
 /**
@@ -18,11 +18,11 @@ import '../_version.mjs';
  * @param {string} name The database name.
  * @private
  */
-export const deleteDatabase = async (name) => {
+export const deleteDatabase = async (name: string) => {
   await new Promise((resolve, reject) => {
     const request = indexedDB.deleteDatabase(name);
-    request.onerror = ({target}) => {
-      reject(target.error);
+    request.onerror = () => {
+      reject(request.error);
     };
     request.onblocked = () => {
       reject(new Error('Delete blocked'));

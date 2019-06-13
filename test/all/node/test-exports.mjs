@@ -36,7 +36,12 @@ describe(`[all] Window and SW packages`, function() {
   it(`should have top a level module for every export in index.mjs (and vise-versa)`, async function() {
     for (const pkg of windowAndBrowserPackages) {
       const packagePath = path.join(__dirname, '..', '..', '..', 'packages', pkg.name);
-      const indexFile = path.join(packagePath, 'index.mjs');
+
+      // TODO(philipwalton): remove this once all packages are converted to
+      // typescript or typescript adds `.mjs` support.
+      const ext = 'types' in pkg ? 'js' : 'mjs';
+
+      const indexFile = path.join(packagePath, `index.${ext}`);
       const indexContents = await fs.readFile(indexFile, 'utf-8');
 
       // Use the acorn parser to generate a list of named exports.
@@ -47,12 +52,9 @@ describe(`[all] Window and SW packages`, function() {
       });
       for (const node of indexAST.body) {
         if (node.type === 'ExportDefaultDeclaration') {
-          throw new Error(`'index.mjs' files cannot contain default exports`);
+          throw new Error(`'index.${ext}' files cannot contain default exports`);
         }
         if (node.type === 'ExportNamedDeclaration') {
-          if (node.specifiers.length === 0) {
-            throw new Error(`'index.mjs' files may only contain a single, named-export block`);
-          }
           for (const specifier of node.specifiers) {
             namedExports.push(specifier.exported.name);
           }
@@ -61,10 +63,10 @@ describe(`[all] Window and SW packages`, function() {
 
       // Inspect the package directory to get a list of top-level, public
       // module basenames.
-      const topLevelFiles = glob.sync('*.mjs', {
-        ignore: ['index.mjs', '_types.mjs', '_version.mjs'],
+      const topLevelFiles = glob.sync(`*.${ext}`, {
+        ignore: ['index', '_types', '_version'].map((file) => `${file}.${ext}`),
         cwd: packagePath,
-      }).map((file) => path.basename(file, '.mjs'));
+      }).map((file) => path.basename(file, `.${ext}`));
 
       const deprecatedExports = deprecatedPackageExports[pkg.name] || [];
 
@@ -76,8 +78,12 @@ describe(`[all] Window and SW packages`, function() {
 
   it(`should have top a level module for every export in _private.mjs (and vise-versa)`, async function() {
     for (const pkg of windowAndBrowserPackages) {
+      // TODO(philipwalton): remove this once all packages are converted to
+      // typescript or typescript adds `.mjs` support.
+      const ext = 'types' in pkg ? 'js' : 'mjs';
+
       const packagePath = path.join(__dirname, '..', '..', '..', 'packages', pkg.name);
-      const privateFile = path.join(packagePath, '_private.mjs');
+      const privateFile = path.join(packagePath, `_private.${ext}`);
 
       // Only some packages have a `_private.mjs` module.
       if (!fs.existsSync(privateFile)) {
@@ -94,11 +100,11 @@ describe(`[all] Window and SW packages`, function() {
       });
       for (const node of indexAST.body) {
         if (node.type === 'ExportDefaultDeclaration') {
-          throw new Error(`'_private.mjs' files cannot contain default exports`);
+          throw new Error(`'_private.${ext}' files cannot contain default exports`);
         }
         if (node.type === 'ExportNamedDeclaration') {
           if (node.specifiers.length === 0) {
-            throw new Error(`'_private.mjs' files may only contain a single, named-export block`);
+            throw new Error(`'_private.${ext}' files may only contain a single, named-export block`);
           }
           for (const specifier of node.specifiers) {
             namedExports.push(specifier.exported.name);
@@ -109,8 +115,8 @@ describe(`[all] Window and SW packages`, function() {
       // Inspect the package directory to get a list of top-level, public
       // module basenames.
       const privateDirectoryPath = path.join(packagePath, '_private');
-      const topLevelFiles = glob.sync('*.mjs', {cwd: privateDirectoryPath})
-          .map((file) => path.basename(file, '.mjs'));
+      const topLevelFiles = glob.sync(`*.${ext}`, {cwd: privateDirectoryPath})
+          .map((file) => path.basename(file, `.${ext}`));
 
       const deprecatedExports = deprecatedPackageExports[pkg.name] || [];
 

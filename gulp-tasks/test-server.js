@@ -17,6 +17,8 @@ const handleExit = () => {
 };
 
 const startServer = () => {
+  process.env.NODE_ENV = process.env.NODE_ENV || constants.BUILD_TYPES.dev;
+
   const eventNames = [
     'exit',
     'SIGINT',
@@ -31,7 +33,5 @@ const startServer = () => {
   return testServer.start();
 };
 
-gulp.task('test-server', () => {
-  process.env.NODE_ENV = process.env.NODE_ENV || constants.BUILD_TYPES.dev;
-  startServer();
-});
+gulp.task('test-server', gulp.series(
+    'transpile-typescript', startServer, 'transpile-typescript:watch'));

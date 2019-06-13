@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {cacheNames as _cacheNames} from './_private/cacheNames.mjs';
-import './_version.mjs';
+import {cacheNames as _cacheNames} from './_private/cacheNames';
+import './_version';
 
 
 /**
