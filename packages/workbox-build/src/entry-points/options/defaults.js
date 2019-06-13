@@ -14,7 +14,7 @@ module.exports = {
   globIgnores: ['**/node_modules/**/*'],
   globPatterns: ['**/*.{js,css,html}'],
   globStrict: true,
-  injectionPoint: 'self.__WB_PRECACHE_MANIFEST',
+  injectionPoint: 'self.__WB_MANIFEST',
   inlineWorkboxRuntime: false,
   maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
   mode: 'production',
