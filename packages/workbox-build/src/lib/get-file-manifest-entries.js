@@ -42,13 +42,17 @@ module.exports = async ({
 
     try {
       fileDetails = globPatterns.reduce((accumulated, globPattern) => {
-        const globbedFileDetails = getFileDetails({
+        const {globbedFileDetails, warning} = getFileDetails({
           globDirectory,
           globFollow,
           globIgnores,
           globPattern,
           globStrict,
         });
+
+        if (warning) {
+          warnings.push(warning);
+        }
 
         globbedFileDetails.forEach((fileDetails) => {
           if (fileSet.has(fileDetails.file)) {
@@ -75,13 +79,18 @@ module.exports = async ({
       if (Array.isArray(dependencies)) {
         const details = dependencies.reduce((previous, globPattern) => {
           try {
-            const globbedFileDetails = getFileDetails({
+            const {globbedFileDetails, warning} = getFileDetails({
               globDirectory,
               globFollow,
               globIgnores,
               globPattern,
               globStrict,
             });
+
+            if (warning) {
+              warnings.push(warning);
+            }
+
             return previous.concat(globbedFileDetails);
           } catch (error) {
             const debugObj = {};

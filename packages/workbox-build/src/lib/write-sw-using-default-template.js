@@ -9,19 +9,21 @@
 const fse = require('fs-extra');
 const path = require('path');
 
+const bundle = require('./bundle');
 const errors = require('./errors');
 const populateSWTemplate = require('./populate-sw-template');
 
 module.exports = async ({
+  babelPresetEnvTargets,
   cacheId,
   cleanupOutdatedCaches,
   clientsClaim,
   directoryIndex,
-  handleFetch,
   ignoreURLParametersMatching,
   importScripts,
+  inlineWorkboxRuntime,
   manifestEntries,
-  modulePathPrefix,
+  mode,
   navigateFallback,
   navigateFallbackBlacklist,
   navigateFallbackWhitelist,
@@ -29,26 +31,25 @@ module.exports = async ({
   offlineGoogleAnalytics,
   runtimeCaching,
   skipWaiting,
+  sourcemap,
   swDest,
-  workboxSWImport,
 }) => {
+  const outputDir = path.dirname(swDest);
   try {
-    await fse.mkdirp(path.dirname(swDest));
+    await fse.mkdirp(outputDir);
   } catch (error) {
     throw new Error(`${errors['unable-to-make-sw-directory']}. ` +
       `'${error.message}'`);
   }
 
-  const populatedTemplate = populateSWTemplate({
+  const unbundledCode = populateSWTemplate({
     cacheId,
     cleanupOutdatedCaches,
     clientsClaim,
     directoryIndex,
-    handleFetch,
     ignoreURLParametersMatching,
     importScripts,
     manifestEntries,
-    modulePathPrefix,
     navigateFallback,
     navigateFallbackBlacklist,
     navigateFallbackWhitelist,
@@ -56,16 +57,32 @@ module.exports = async ({
     offlineGoogleAnalytics,
     runtimeCaching,
     skipWaiting,
-    workboxSWImport,
   });
 
   try {
-    await fse.writeFile(swDest, populatedTemplate);
+    const files = await bundle({
+      babelPresetEnvTargets,
+      inlineWorkboxRuntime,
+      mode,
+      sourcemap,
+      swDest,
+      unbundledCode,
+    });
+
+    const filePaths = [];
+
+    for (const file of files) {
+      const filePath = path.join(outputDir, file.name);
+      filePaths.push(filePath);
+      await fse.writeFile(filePath, file.contents);
+    }
+
+    return filePaths;
   } catch (error) {
     if (error.code === 'EISDIR') {
       // See https://github.com/GoogleChrome/workbox/issues/612
       throw new Error(errors['sw-write-failure-directory']);
     }
-    throw new Error(`${errors['sw-write-failure']}. '${error.message}'`);
+    throw new Error(`${errors['sw-write-failure']} '${error.message}'`);
   }
 };

@@ -73,7 +73,4 @@ module.exports = baseSchema.keys({
     then: joi.required(),
   }),
   skipWaiting: joi.boolean().default(defaults.skipWaiting),
-}).rename('ignoreUrlParametersMatching', 'ignoreURLParametersMatching', {
-  ignoreUndefined: true,
-  override: true,
 });

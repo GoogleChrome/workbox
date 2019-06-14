@@ -8,29 +8,28 @@
 
 const expect = require('chai').expect;
 const fse = require('fs-extra');
-const glob = require('glob');
+const globby = require('globby');
 const path = require('path');
 const tempy = require('tempy');
 
-const cdnUtils = require('../../../../packages/workbox-build/src/lib/cdn-utils');
-const copyWorkboxLibraries = require('../../../../packages/workbox-build/src/lib/copy-workbox-libraries');
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 const generateSW = require('../../../../packages/workbox-build/src/entry-points/generate-sw');
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() {
-  const WORKBOX_SW_CDN_URL = cdnUtils.getModuleURL('workbox-sw');
-  const WORKBOX_DIRECTORY_PREFIX = 'workbox-';
   const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
-    swDest: tempy.file(),
+    inlineWorkboxRuntime: false,
+    mode: 'development',
+    swDest: tempy.file({extension: 'js'}),
   };
   const REQUIRED_PARAMS = [
     'globDirectory',
     'swDest',
   ];
   const SUPPORTED_PARAMS = [
+    'babelPresetEnvTargets',
     'cacheId',
     'clientsClaim',
     'directoryIndex',
@@ -41,9 +40,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     'globStrict',
     'ignoreURLParametersMatching',
     'importScripts',
-    'importWorkboxFrom',
+    'inlineWorkboxRuntime',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',
+    'mode',
     'modifyURLPrefix',
     'navigateFallback',
     'navigateFallbackWhitelist',
@@ -51,10 +51,11 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     'offlineGoogleAnalytics',
     'runtimeCaching',
     'skipWaiting',
+    'sourcemap',
     'templatedURLs',
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = [
-    'injectionPointRegexp',
+    'injectionPoint',
     'swSrc',
   ];
 
@@ -111,15 +112,20 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
   describe(`[workbox-build] writing a service worker file`, function() {
     it(`should use defaults when all the required parameters are present`, async function() {
-      const swDest = tempy.file();
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {swDest});
 
-      const {count, size, warnings} = await generateSW(options);
+      const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const globbedFiles = await globby(outputDir);
+      expect(globbedFiles).to.have.members(filePaths);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-9eb92ebe']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -140,162 +146,27 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
       }});
-    });
-
-    it(`should use defaults and make local copies of the Workbox libraries when importWorkboxFrom is 'local'`, async function() {
-      const swDest = path.join(tempy.directory(), 'sw.js');
-      const options = Object.assign({}, BASE_OPTIONS, {
-        swDest,
-        importWorkboxFrom: 'local',
-      });
-
-      const {count, size, warnings} = await generateSW(options);
-      expect(warnings).to.be.empty;
-      expect(count).to.eql(6);
-      expect(size).to.eql(2604);
-
-      // Validate the copied library files.
-      const libraryFiles = glob.sync(`${WORKBOX_DIRECTORY_PREFIX}*/*.+(js|mjs)*`,
-          {cwd: path.dirname(swDest)});
-
-      const modulePathPrefix = path.dirname(libraryFiles[0]);
-
-      const basenames = libraryFiles.map((file) => path.basename(file));
-      expect(basenames).to.eql([
-        'workbox-background-sync.dev.js',
-        'workbox-background-sync.dev.js.map',
-        'workbox-background-sync.prod.js',
-        'workbox-background-sync.prod.js.map',
-        'workbox-broadcast-update.dev.js',
-        'workbox-broadcast-update.dev.js.map',
-        'workbox-broadcast-update.prod.js',
-        'workbox-broadcast-update.prod.js.map',
-        'workbox-cacheable-response.dev.js',
-        'workbox-cacheable-response.dev.js.map',
-        'workbox-cacheable-response.prod.js',
-        'workbox-cacheable-response.prod.js.map',
-        'workbox-core.dev.js',
-        'workbox-core.dev.js.map',
-        'workbox-core.prod.js',
-        'workbox-core.prod.js.map',
-        'workbox-expiration.dev.js',
-        'workbox-expiration.dev.js.map',
-        'workbox-expiration.prod.js',
-        'workbox-expiration.prod.js.map',
-        'workbox-navigation-preload.dev.js',
-        'workbox-navigation-preload.dev.js.map',
-        'workbox-navigation-preload.prod.js',
-        'workbox-navigation-preload.prod.js.map',
-        'workbox-offline-ga.dev.js',
-        'workbox-offline-ga.dev.js.map',
-        'workbox-offline-ga.prod.js',
-        'workbox-offline-ga.prod.js.map',
-        'workbox-precaching.dev.js',
-        'workbox-precaching.dev.js.map',
-        'workbox-precaching.prod.js',
-        'workbox-precaching.prod.js.map',
-        'workbox-range-requests.dev.js',
-        'workbox-range-requests.dev.js.map',
-        'workbox-range-requests.prod.js',
-        'workbox-range-requests.prod.js.map',
-        'workbox-routing.dev.js',
-        'workbox-routing.dev.js.map',
-        'workbox-routing.prod.js',
-        'workbox-routing.prod.js.map',
-        'workbox-strategies.dev.js',
-        'workbox-strategies.dev.js.map',
-        'workbox-strategies.prod.js',
-        'workbox-strategies.prod.js.map',
-        'workbox-streams.dev.js',
-        'workbox-streams.dev.js.map',
-        'workbox-streams.prod.js',
-        'workbox-streams.prod.js.map',
-        'workbox-sw.js',
-        'workbox-sw.js.map',
-        'workbox-window.dev.es5.mjs',
-        'workbox-window.dev.es5.mjs.map',
-        'workbox-window.dev.mjs',
-        'workbox-window.dev.mjs.map',
-        'workbox-window.dev.umd.js',
-        'workbox-window.dev.umd.js.map',
-        'workbox-window.prod.es5.mjs',
-        'workbox-window.prod.es5.mjs.map',
-        'workbox-window.prod.mjs',
-        'workbox-window.prod.mjs.map',
-        'workbox-window.prod.umd.js',
-        'workbox-window.prod.umd.js.map',
-      ]);
-
-      // The correct importScripts path should use the versioned name of the
-      // parent workbox libraries directory. We don't know that version ahead
-      // of time, so we ensure that there's a match based on what actually
-      // got copied over.
-      const workboxSWImport = libraryFiles.filter(
-          (file) => file.endsWith('workbox-sw.js'));
-
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [workboxSWImport],
-        setConfig: [[{modulePathPrefix}]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
-        }, {
-          url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
-        }, {
-          url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
-        }, {
-          url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
-        }], {}]],
-      }});
-    });
-
-    it(`should not include the copied Workbox libraries in the precacheAndRoute manifest`, async function() {
-      const testFileContents = 'test';
-      const globDirectory = tempy.directory();
-      // We need at least one non-Workbox library file in the source directory.
-      await fse.writeFile(path.join(globDirectory, 'index.html'), testFileContents);
-
-      // Make two copies of the Workbox libraries into the source directory, to
-      // test the globIgnore pattern works for both top and sub-directories.
-      await copyWorkboxLibraries(globDirectory);
-      await copyWorkboxLibraries(path.join(globDirectory, 'sub-directory'));
-
-      const swDest = path.join(tempy.directory(), 'sw.js');
-      const options = Object.assign({}, BASE_OPTIONS, {
-        globDirectory,
-        swDest,
-        importWorkboxFrom: 'local',
-      });
-
-      const {count, size, warnings} = await generateSW(options);
-      expect(warnings).to.be.empty;
-      expect(count).to.eql(1);
-      expect(size).to.eql(testFileContents.length);
     });
 
     it(`should use defaults when all the required parameters are present, with additional importScripts`, async function() {
-      const swDest = path.join(tempy.directory(), 'sw.js');
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const importScripts = ['manifest.js'];
       const options = Object.assign({}, BASE_OPTIONS, {
         importScripts,
         swDest,
       });
 
-      const {count, size, warnings} = await generateSW(options);
+      const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const globbedFiles = await globby(outputDir);
+      expect(globbedFiles).to.have.members(filePaths);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[WORKBOX_SW_CDN_URL], [...importScripts]],
+        importScripts: [['./workbox-9eb92ebe'], [...importScripts]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -319,7 +190,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should use defaults when all the required parameters are present, with additional configuration`, async function() {
-      const swDest = tempy.file();
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const directoryIndex = 'test.html';
       const ignoreURLParametersMatching = [/test1/, /test2/];
       const cacheId = 'test';
@@ -332,12 +204,16 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       };
       const options = Object.assign({}, BASE_OPTIONS, additionalOptions, {swDest});
 
-      const {count, size, warnings} = await generateSW(options);
+      const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const globbedFiles = await globby(outputDir);
+      expect(globbedFiles).to.have.members(filePaths);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-4a41d90a']],
         clientsClaim: [[]],
         skipWaiting: [[]],
         setCacheNameDetails: [[{prefix: cacheId}]],
@@ -367,18 +243,23 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should add a 'message' event listener when 'skipWaiting: false'`, async function() {
-      const swDest = tempy.file();
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const additionalOptions = {
         skipWaiting: false,
       };
       const options = Object.assign({}, BASE_OPTIONS, additionalOptions, {swDest});
 
-      const {count, size, warnings} = await generateSW(options);
+      const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const globbedFiles = await globby(outputDir);
+      expect(globbedFiles).to.have.members(filePaths);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-9eb92ebe']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -404,12 +285,13 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         // This isn't the *cleanest* possible way of testing the message event
         // handler, but given the constraints of this node-based environment,
         // it seems the most effective way to ensure the right code gets run.
-        expect(addEventListenerStub.firstCall.args[1].toString()).to.eql(`(event) => {\n  if (event.data && event.data.type === 'SKIP_WAITING') {\n    self.skipWaiting();\n  }\n}`);
+        expect(addEventListenerStub.firstCall.args[1].toString()).to.eql(`event => {\n    if (event.data && event.data.type === 'SKIP_WAITING') {\n      self.skipWaiting();\n    }\n  }`);
       }});
     });
 
     it(`should use defaults when all the required parameters are present, with 'navigateFallback' and 'navigateFallbackWhitelist'`, async function() {
-      const swDest = tempy.file();
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const navigateFallback = 'test.html';
       const navigateFallbackWhitelist = [/test1/, /test2/];
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -418,13 +300,17 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         swDest,
       });
 
-      const {count, size, warnings} = await generateSW(options);
+      const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const globbedFiles = await globby(outputDir);
+      expect(globbedFiles).to.have.members(filePaths);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         getCacheKeyForURL: [[navigateFallback]],
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-808eb12e']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -451,7 +337,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should use defaults when all the required parameters are present, with symlinks`, async function() {
-      const swDest = tempy.file();
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const globDirectory = tempy.directory();
 
       await fse.ensureSymlink(GLOB_DIR, path.join(globDirectory, 'link'));
@@ -461,12 +348,16 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         swDest,
       });
 
-      const {count, size, warnings} = await generateSW(options);
+      const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const globbedFiles = await globby(outputDir);
+      expect(globbedFiles).to.have.members(filePaths);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-9eb92ebe']],
         precacheAndRoute: [[[{
           url: 'link/index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -490,7 +381,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should use defaults when all the required parameters are present, with 'globFollow' and  symlinks`, async function() {
-      const swDest = tempy.file();
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const globDirectory = tempy.directory();
 
       await fse.ensureSymlink(GLOB_DIR, path.join(globDirectory, 'link'));
@@ -505,8 +397,17 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(warnings).to.be.empty;
       expect(count).to.eql(4);
       expect(size).to.eql(2535);
+
+      const files = await globby('**', {cwd: outputDir});
+      expect(files).to.have.members([
+        'sw.js.map',
+        'sw.js',
+        'workbox-b3503050.js.map',
+        'workbox-b3503050.js',
+      ]);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-9eb92ebe']],
         precacheAndRoute: [[[{
           url: 'link/index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -524,18 +425,23 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to true`, async function() {
-      const swDest = tempy.file();
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         offlineGoogleAnalytics: true,
       });
 
-      const {count, size, warnings} = await generateSW(options);
+      const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const globbedFiles = await globby(outputDir);
+      expect(globbedFiles).to.have.members(filePaths);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-76e7a865']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -555,12 +461,13 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           url: 'webpackEntry.js',
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
-        googleAnalyticsInitialize: [[{}]],
+        initialize: [[{}]],
       }});
     });
 
     it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to a config`, async function() {
-      const swDest = tempy.file();
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         offlineGoogleAnalytics: {
@@ -570,12 +477,16 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         },
       });
 
-      const {count, size, warnings} = await generateSW(options);
+      const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
+      const globbedFiles = await globby(outputDir);
+      expect(globbedFiles).to.have.members(filePaths);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-76e7a865']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -595,12 +506,31 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           url: 'webpackEntry.js',
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
-        googleAnalyticsInitialize: [[{
+        initialize: [[{
           parameterOverrides: {
             cd1: 'offline',
           },
         }]],
       }});
+    });
+
+    it(`should inline the Workbox runtime when 'inlineWorkboxRuntime' is true`, async function() {
+      const outputDir = tempy.directory();
+      const swDest = path.join(outputDir, 'sw.js');
+      const options = Object.assign({}, BASE_OPTIONS, {
+        swDest,
+        inlineWorkboxRuntime: true,
+      });
+
+      const {count, filePaths, size, warnings} = await generateSW(options);
+      expect(warnings).to.be.empty;
+      expect(count).to.eql(6);
+      expect(size).to.eql(2604);
+
+      const globbedFiles = await globby(outputDir);
+      expect(globbedFiles).to.have.members(filePaths);
+
+      // We can't validate the generated sw.js file, unfortunately.
     });
   });
 
@@ -660,7 +590,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should support a single string 'urlPattern' and a string 'handler'`, async function() {
-      const swDest = tempy.file();
+      const swDest = tempy.file({extension: 'js'});
       const runtimeCaching = [{
         urlPattern: STRING_URL_PATTERN,
         handler: STRING_HANDLER,
@@ -676,7 +606,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-b880c8c0']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -701,7 +631,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should support a single function 'urlPattern' and a string 'handler'`, async function() {
-      const swDest = tempy.file();
+      const swDest = tempy.file({extension: 'js'});
       const runtimeCaching = [{
         urlPattern: FUNCTION_URL_PATTERN,
         handler: STRING_HANDLER,
@@ -717,7 +647,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-b880c8c0']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -737,15 +667,13 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           url: 'webpackEntry.js',
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
-        // We need to stringify the function to get it to pass validation.
-        // The service-worker-runtime.js validator will do the same.
         // See https://github.com/chaijs/chai/issues/697
-        registerRoute: [[FUNCTION_URL_PATTERN.toString(), {name: STRING_HANDLER}, DEFAULT_METHOD]],
+        registerRoute: [['params => true', {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
 
     it(`should support setting individual 'options' each, for multiple 'runtimeCaching' entries`, async function() {
-      const swDest = tempy.file();
+      const swDest = tempy.file({extension: 'js'});
       const firstRuntimeCachingOptions = {
         cacheName: 'first-cache-name',
         expiration: {
@@ -778,9 +706,11 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       });
 
       const {count, size, warnings} = await generateSW(options);
+
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
+
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[{
           cacheName: firstRuntimeCachingOptions.cacheName,
@@ -789,9 +719,9 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           cacheName: secondRuntimeCachingOptions.cacheName,
           plugins: [{}],
         }]],
-        cacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
-        cacheExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        Plugin: [[firstRuntimeCachingOptions.expiration]],
+        Plugin$1: [[secondRuntimeCachingOptions.cacheableResponse]],
+        importScripts: [['./workbox-aad11b65']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -819,7 +749,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should reject with a ValidationError when 'networkTimeoutSeconds' is used and handler is not 'NetworkFirst'`, async function() {
-      const swDest = tempy.file();
+      const swDest = tempy.file({extension: 'js'});
       const runtimeCachingOptions = {
         networkTimeoutSeconds: 1,
       };
@@ -842,7 +772,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should support 'networkTimeoutSeconds' when handler is 'NetworkFirst'`, async function() {
-      const swDest = tempy.file();
+      const swDest = tempy.file({extension: 'js'});
       const networkTimeoutSeconds = 1;
       const handler = 'NetworkFirst';
 
@@ -866,7 +796,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[runtimeCachingOptions]],
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-44e55206']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -947,7 +877,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     });
 
     it(`should generate when 'navigationPreload' is true and 'runtimeCaching' is valid`, async function() {
-      const swDest = tempy.file();
+      const swDest = tempy.file({extension: 'js'});
       const urlPattern = /test/;
       const handler = 'CacheFirst';
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -962,7 +892,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[]],
-        importScripts: [[WORKBOX_SW_CDN_URL]],
+        importScripts: [['./workbox-1229ecdd']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -982,13 +912,14 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           url: 'webpackEntry.js',
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
-        navigationPreloadEnable: [[]],
+        enable: [[]],
         registerRoute: [[urlPattern, {name: handler}, 'GET']],
       }});
     });
   });
 
-  describe(`[workbox-build] deprecated options`, function() {
+  describe(`[workbox-build] removed options`, function() {
+    // These were deprecated in v4, and formally removed in v5.
     const oldOptionsToValue = {
       dontCacheBustUrlsMatching: /ignored/,
       ignoreUrlParametersMatching: [/ignored/],
@@ -999,25 +930,35 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     };
 
     for (const [option, value] of Object.entries(oldOptionsToValue)) {
-      it(`should return a warning when ${option} is used`, async function() {
+      it(`should fail validation when ${option} is used`, async function() {
         const options = Object.assign({}, BASE_OPTIONS, {
           [option]: value,
         });
 
-        const {warnings} = await generateSW(options);
-        expect(warnings).to.have.length(1);
+        try {
+          await generateSW(options);
+          throw new Error('Unexpected success.');
+        } catch (error) {
+          expect(error.name).to.eql('ValidationError');
+          expect(error.details[0].context.key).to.eql(option);
+        }
       });
     }
 
-    it(`should warn when a strategy function (lowercase) name is used`, async function() {
+    it(`should fail validation when a strategy function (lowercase) name is used`, async function() {
       const runtimeCaching = [{
         urlPattern: /abc/,
         handler: 'cacheFirst',
       }];
       const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
 
-      const {warnings} = await generateSW(options);
-      expect(warnings).to.have.length(1);
+      try {
+        await generateSW(options);
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.name).to.eql('ValidationError');
+        expect(error.details[0].context.key).to.eql('handler');
+      }
     });
   });
 });

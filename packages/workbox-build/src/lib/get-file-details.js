@@ -13,15 +13,16 @@ const errors = require('./errors');
 const getFileSize = require('./get-file-size');
 const getFileHash = require('./get-file-hash');
 
-module.exports = (globOptions) => {
-  const {
-    globDirectory,
-    globFollow,
-    globIgnores,
-    globPattern,
-    globStrict,
-  } = globOptions;
+module.exports = ({
+  globDirectory,
+  globFollow,
+  globIgnores,
+  globPattern,
+  globStrict,
+}) => {
   let globbedFiles;
+  let warning;
+
   try {
     globbedFiles = glob.sync(globPattern, {
       cwd: globDirectory,
@@ -34,8 +35,8 @@ module.exports = (globOptions) => {
   }
 
   if (globbedFiles.length === 0) {
-    throw new Error(errors['useless-glob-pattern'] + ' ' +
-      JSON.stringify({globDirectory, globPattern, globIgnores}, null, 2));
+    warning = errors['useless-glob-pattern'] + ' ' +
+      JSON.stringify({globDirectory, globPattern, globIgnores}, null, 2);
   }
 
   const fileDetails = globbedFiles.map((file) => {
@@ -54,5 +55,7 @@ module.exports = (globOptions) => {
   });
 
   // If !== null, means it's a valid file.
-  return fileDetails.filter((details) => details !== null);
+  const globbedFileDetails = fileDetails.filter((details) => details !== null);
+
+  return {globbedFileDetails, warning};
 };
