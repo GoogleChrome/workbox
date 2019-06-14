@@ -24,32 +24,36 @@ describe(`[workbox-build] lib/create-module-imports.js`, function() {
     moduleRegistry = new ModuleRegistry();
   });
 
-  it(`getImportStatements() should return [] when nothing is used`, function() {
-    expect(moduleRegistry.getImportStatements()).to.be.empty;
+  describe(`getImportStatements()`, function() {
+    it(`should return [] when nothing is used`, function() {
+      expect(moduleRegistry.getImportStatements()).to.be.empty;
+    });
+
+    it(`return the expected output given multiple calls to use()`, function() {
+      const module1Name = moduleRegistry.use('a-b-c', 'd');
+      // Multiple use()s should result in only one entry.
+      moduleRegistry.use('a-b-c', 'd');
+      const module2Name = moduleRegistry.use('x-y', 'z');
+
+      const importStatements = moduleRegistry.getImportStatements();
+
+      expect(importStatements).to.have.members([
+        `import {d as a_b_c_d} from '/path/to/node_modules/a-b-c/d.mjs';`,
+        `import {z as x_y_z} from '/path/to/node_modules/x-y/z.mjs';`,
+      ]);
+
+      expect(importStatements[0]).to.contain(module1Name);
+      expect(importStatements[1]).to.contain(module2Name);
+    });
   });
 
-  it(`getLocalName() should perform the expected transformation`, function() {
-    expect(moduleRegistry.getLocalName('a-b-c', 'd')).to.eql('a_b_c_d');
-  });
+  describe(`getLocalName()`, function() {
+    it(`should return the expected name`, function() {
+      expect(moduleRegistry.getLocalName('a-b-c', 'd')).to.eql('a_b_c_d');
+    });
 
-  it(`use() should return the expected local name`, function() {
-    expect(moduleRegistry.use('a-b-c', 'd')).to.eql('a_b_c_d');
-  });
-
-  it(`use() results in the expected getImportStatements()`, function() {
-    const module1Name = moduleRegistry.use('a-b-c', 'd');
-    // Multiple use()s should result in only one entry.
-    moduleRegistry.use('a-b-c', 'd');
-    const module2Name = moduleRegistry.use('x-y', 'z');
-
-    const importStatements = moduleRegistry.getImportStatements();
-
-    expect(importStatements).to.have.members([
-      `import {d as a_b_c_d} from '/path/to/node_modules/a-b-c/d.mjs';`,
-      `import {z as x_y_z} from '/path/to/node_modules/x-y/z.mjs';`,
-    ]);
-
-    expect(importStatements[0]).to.contain(module1Name);
-    expect(importStatements[1]).to.contain(module2Name);
+    it(`should return the expected name when called via use()`, function() {
+      expect(moduleRegistry.use('a-b-c', 'd')).to.eql('a_b_c_d');
+    });
   });
 });

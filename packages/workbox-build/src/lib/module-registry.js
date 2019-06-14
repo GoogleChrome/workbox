@@ -41,9 +41,6 @@ class ModuleRegistry {
   }
 
   /**
-   * This function returns the corresponding local variable name for a given
-   * pkg + module combination.
-   *
    * @param {string} pkg The workbox package that the module belongs to.
    * @param {string} moduleName The name of the module to import.
    * @return {string} The local variable name that corresponds to that module.
@@ -53,10 +50,6 @@ class ModuleRegistry {
   }
 
   /**
-   * This function registers usage of a given pkg + module combination, ensuring
-   * that the proper import statement is created. The corresponding local
-   * variable name is returned.
-   *
    * @param {string} pkg The workbox package that the module belongs to.
    * @param {string} moduleName The name of the module to import.
    * @return {string} The local variable name that corresponds to that module.
