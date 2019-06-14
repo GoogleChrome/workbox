@@ -18,22 +18,18 @@ module.exports = `/**
  * See https://goo.gl/2aRDsh
  */
 
-<% if (workboxModuleImports) { %>
-<%= workboxModuleImports.join(';\\n') %>
-<% } %>
-
 <% if (importScripts) { %>
 importScripts(
   <%= importScripts.map(JSON.stringify).join(',\\n  ') %>
 );
 <% } %>
 
-<% if (navigationPreload) { %>workbox_navigationPreload_enable();<% } %>
+<% if (navigationPreload) { %><%= use('workbox-navigation-preload', 'enable') %>();<% } %>
 
-<% if (cacheId) { %>workbox_core_setCacheNameDetails({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
+<% if (cacheId) { %><%= use('workbox-core', 'setCacheNameDetails') %>({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
 
 <% if (skipWaiting) { %>
-  workbox_core_skipWaiting();
+<%= use('workbox-core', 'skipWaiting') %>();
 <% } else { %>
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
@@ -41,7 +37,7 @@ self.addEventListener('message', (event) => {
   }
 });
 <% } %>
-<% if (clientsClaim) { %>workbox_core_clientsClaim();<% } %>
+<% if (clientsClaim) { %><%= use('workbox-core', 'clientsClaim') %>();<% } %>
 
 <% if (Array.isArray(manifestEntries)) {%>
 /**
@@ -50,18 +46,18 @@ self.addEventListener('message', (event) => {
  * See https://goo.gl/S9QRab
  */
 self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
-workbox_precaching_precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
+<%= use('workbox-precaching', 'precacheAndRoute') %>(self.__precacheManifest, <%= precacheOptionsString %>);
 <% } else { %>
 if (Array.isArray(self.__precacheManifest)) {
-  workbox_precaching_precacheAndRoute(self.__precacheManifest, <%= precacheOptionsString %>);
+  <%= use('workbox-precaching', 'precacheAndRoute') %>(self.__precacheManifest, <%= precacheOptionsString %>);
 }
 <% } %>
-<% if (cleanupOutdatedCaches) { %>workbox_precaching_cleanupOutdatedCaches();<% } %>
-<% if (navigateFallback) { %>workbox_routing_registerNavigationRoute(workbox_precaching_getCacheKeyForURL(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
+<% if (cleanupOutdatedCaches) { %><%= use('workbox-precaching', 'cleanupOutdatedCaches') %>();<% } %>
+<% if (navigateFallback) { %><%= use('workbox-routing', 'registerNavigationRoute') %>(<%= use('workbox-precaching', 'getCacheKeyForURL') %>(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
   <% if (navigateFallbackWhitelist) { %>whitelist: [<%= navigateFallbackWhitelist %>],<% } %>
   <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>
 }<% } %>);<% } %>
 
 <% if (runtimeCaching) { runtimeCaching.forEach(runtimeCachingString => {%><%= runtimeCachingString %><% });} %>
 
-<% if (offlineAnalyticsConfigString) { %>workbox_googleAnalytics_initialize(<%= offlineAnalyticsConfigString %>);<% } %>`;
+<% if (offlineAnalyticsConfigString) { %><%= use('workbox-google-analytics', 'initialize') %>(<%= offlineAnalyticsConfigString %>);<% } %>`;

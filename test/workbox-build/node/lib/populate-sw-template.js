@@ -34,13 +34,11 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const swTemplate = 'template';
     const precacheOptionsString = '{}';
-    const workboxModuleImports = ['import 1', 'import 2'];
 
     const innerStub = sinon.stub().returns('');
     const outerStub = sinon.stub().returns(innerStub);
     const populateSWTemplate = proxyquire(MODULE_PATH, {
       'lodash.template': outerStub,
-      './create-module-imports': () => workboxModuleImports,
       './runtime-caching-converter': () => runtimeCachingPlaceholder,
       '../templates/sw-template': swTemplate,
     });
@@ -48,6 +46,11 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     populateSWTemplate({});
 
     expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
+
+    // Doing a strict comparison with functions isn't easy.
+    expect(innerStub.args[0][0].use).to.be.a('function');
+    delete(innerStub.args[0][0].use);
+
     expect(innerStub.args[0]).to.eql([{
       cacheId: undefined,
       cleanupOutdatedCaches: undefined,
@@ -62,7 +65,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       precacheOptionsString,
       runtimeCaching: runtimeCachingPlaceholder,
       skipWaiting: undefined,
-      workboxModuleImports,
     }]);
   });
 
@@ -86,7 +88,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const skipWaiting = true;
     const swTemplate = 'template';
     const precacheOptionsString = '{\n  "directoryIndex": "index.html",\n  "ignoreURLParametersMatching": [/a/, /b/]\n}';
-    const workboxModuleImports = ['import 1', 'import 2'];
 
     // There are two stages in templating: creating the active template function
     // from an initial string, and passing variables to that template function
@@ -96,7 +97,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const templateCreationStub = sinon.stub().returns(templatePopulationStub);
     const populateSWTemplate = proxyquire(MODULE_PATH, {
       'lodash.template': templateCreationStub,
-      './create-module-imports': () => workboxModuleImports,
       './runtime-caching-converter': () => runtimeCachingPlaceholder,
       '../templates/sw-template': swTemplate,
     });
@@ -117,10 +117,14 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       offlineGoogleAnalytics,
       runtimeCaching,
       skipWaiting,
-      workboxModuleImports,
     });
 
     expect(templateCreationStub.alwaysCalledWith(swTemplate)).to.be.true;
+
+    // Doing a strict comparison with functions isn't easy.
+    expect(templatePopulationStub.args[0][0].use).to.be.a('function');
+    delete(templatePopulationStub.args[0][0].use);
+
     expect(templatePopulationStub.args[0]).to.eql([{
       cacheId,
       cleanupOutdatedCaches,
@@ -135,7 +139,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       runtimeCaching: runtimeCachingPlaceholder,
       precacheOptionsString,
       skipWaiting,
-      workboxModuleImports,
     }]);
   });
 
@@ -153,13 +156,11 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       },
     };
     const offlineAnalyticsConfigString = `{\n\tparameterOverrides: {\n\t\tcd1: 'offline'\n\t},\n\thitFilter: (params) => {\n        \n        params.set('cm1', params.get('qt'));\n      }\n}`;
-    const workboxModuleImports = ['import 1', 'import 2'];
 
     const innerStub = sinon.stub().returns('');
     const outerStub = sinon.stub().returns(innerStub);
     const populateSWTemplate = proxyquire(MODULE_PATH, {
       'lodash.template': outerStub,
-      './create-module-imports': () => workboxModuleImports,
       './runtime-caching-converter': () => runtimeCachingPlaceholder,
       '../templates/sw-template': swTemplate,
     });
@@ -167,6 +168,11 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     populateSWTemplate({offlineGoogleAnalytics});
 
     expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
+
+    // Doing a strict comparison with functions isn't easy.
+    expect(innerStub.args[0][0].use).to.be.a('function');
+    delete(innerStub.args[0][0].use);
+
     expect(innerStub.args[0]).to.eql([{
       cacheId: undefined,
       cleanupOutdatedCaches: undefined,
@@ -181,7 +187,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       precacheOptionsString,
       runtimeCaching: runtimeCachingPlaceholder,
       skipWaiting: undefined,
-      workboxModuleImports,
     }]);
   });
 });

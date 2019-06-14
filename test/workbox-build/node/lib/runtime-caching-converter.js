@@ -11,7 +11,10 @@ const sinon = require('sinon');
 const vm = require('vm');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const ModuleRegistry = require('../../../../packages/workbox-build/src/lib/module-registry');
 const runtimeCachingConverter = require('../../../../packages/workbox-build/src/lib/runtime-caching-converter');
+
+const moduleRegistry = new ModuleRegistry();
 
 /**
  * Validates the method calls for a given set of runtimeCachingOptions.
@@ -24,10 +27,10 @@ function validate(runtimeCachingOptions, convertedOptions) {
   expect(convertedOptions).to.have.lengthOf(runtimeCachingOptions.length);
 
   const globalScope = {
-    workbox_cacheableResponse_Plugin: sinon.spy(),
+    workbox_cacheable_response_Plugin: sinon.spy(),
     workbox_expiration_Plugin: sinon.spy(),
-    workbox_backgroundSync_Plugin: sinon.spy(),
-    workbox_broadcastUpdate_Plugin: sinon.spy(),
+    workbox_background_sync_Plugin: sinon.spy(),
+    workbox_broadcast_update_Plugin: sinon.spy(),
     workbox_routing_registerRoute: sinon.spy(),
     workbox_strategies_CacheFirst: sinon.spy(),
     workbox_strategies_CacheOnly: sinon.spy(),
@@ -91,18 +94,18 @@ function validate(runtimeCachingOptions, convertedOptions) {
       }
 
       if (options.cacheableResponse) {
-        expect(globalScope.workbox_cacheableResponse_Plugin.calledWith(options.cacheableResponse)).to.be.true;
+        expect(globalScope.workbox_cacheable_response_Plugin.calledWith(options.cacheableResponse)).to.be.true;
       }
 
       if (options.backgroundSync) {
         if ('options' in options.backgroundSync) {
           expect(
-              globalScope.workbox_backgroundSync_Plugin.calledWith(
+              globalScope.workbox_background_sync_Plugin.calledWith(
                   options.backgroundSync.name, options.backgroundSync.options)
           ).to.be.true;
         } else {
           expect(
-              globalScope.workbox_backgroundSync_Plugin.calledWith(
+              globalScope.workbox_background_sync_Plugin.calledWith(
                   options.backgroundSync.name)
           ).to.be.true;
         }
@@ -113,10 +116,10 @@ function validate(runtimeCachingOptions, convertedOptions) {
           const expectedOptions = Object.assign(
               {channelName: options.broadcastUpdate.channelName},
               options.broadcastUpdate.options);
-          expect(globalScope.workbox_broadcastUpdate_Plugin.calledWith(expectedOptions))
+          expect(globalScope.workbox_broadcast_update_Plugin.calledWith(expectedOptions))
               .to.be.true;
         } else {
-          expect(globalScope.workbox_broadcastUpdate_Plugin.calledWith(
+          expect(globalScope.workbox_broadcast_update_Plugin.calledWith(
               {channelName: options.broadcastUpdate.channelName})).to.be.true;
         }
       }
@@ -131,7 +134,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
     }];
 
     expect(() => {
-      runtimeCachingConverter(runtimeCachingOptions);
+      runtimeCachingConverter(moduleRegistry, runtimeCachingOptions);
     }).to.throw(errors['urlPattern-is-required']);
   });
 
@@ -141,13 +144,13 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
     }];
 
     expect(() => {
-      runtimeCachingConverter(runtimeCachingOptions);
+      runtimeCachingConverter(moduleRegistry, runtimeCachingOptions);
     }).to.throw(errors['handler-string-is-required']);
   });
 
   it(`should support an empty array of runtimeCaching options`, function() {
     const runtimeCachingOptions = [];
-    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    const convertedOptions = runtimeCachingConverter(moduleRegistry, runtimeCachingOptions);
     validate(runtimeCachingOptions, convertedOptions);
   });
 
@@ -157,7 +160,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       handler: 'CacheFirst',
     }];
 
-    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    const convertedOptions = runtimeCachingConverter(moduleRegistry, runtimeCachingOptions);
     validate(runtimeCachingOptions, convertedOptions);
   });
 
@@ -213,7 +216,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       },
     }];
 
-    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    const convertedOptions = runtimeCachingConverter(moduleRegistry, runtimeCachingOptions);
     validate(runtimeCachingOptions, convertedOptions);
   });
 
@@ -223,7 +226,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       handler: 'CacheFirst',
     }];
 
-    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    const convertedOptions = runtimeCachingConverter(moduleRegistry, runtimeCachingOptions);
     validate(runtimeCachingOptions, convertedOptions);
   });
 
@@ -233,7 +236,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       handler: () => {},
     }];
 
-    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    const convertedOptions = runtimeCachingConverter(moduleRegistry, runtimeCachingOptions);
     validate(runtimeCachingOptions, convertedOptions);
   });
 
@@ -244,7 +247,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       method: 'POST',
     }];
 
-    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    const convertedOptions = runtimeCachingConverter(moduleRegistry, runtimeCachingOptions);
     validate(runtimeCachingOptions, convertedOptions);
   });
 
@@ -269,7 +272,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       },
     }];
 
-    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    const convertedOptions = runtimeCachingConverter(moduleRegistry, runtimeCachingOptions);
     expect(convertedOptions[0].includes('cacheWillUpdate: async')).to.true;
     expect(convertedOptions[0].includes('cacheDidUpdate: async')).to.true;
     expect(convertedOptions[0].includes('cachedResponseWillBeUsed: async')).to.true;
@@ -295,7 +298,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       },
     }];
 
-    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    const convertedOptions = runtimeCachingConverter(moduleRegistry, runtimeCachingOptions);
     expect(convertedOptions[0].includes('// Commenting')).to.false;
     expect(convertedOptions[0].includes('/* Commenting */')).to.false;
   });
@@ -319,7 +322,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
       },
     }];
 
-    const convertedOptions = runtimeCachingConverter(runtimeCachingOptions);
+    const convertedOptions = runtimeCachingConverter(moduleRegistry, runtimeCachingOptions);
     expect(convertedOptions[0].includes('// Commenting')).to.false;
     expect(convertedOptions[0].includes('https://test.com')).to.true;
   });

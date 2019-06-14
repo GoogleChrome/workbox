@@ -9,8 +9,8 @@
 const template = require('lodash.template');
 const swTemplate = require('../templates/sw-template');
 
-const createModuleImports = require('./create-module-imports');
 const errors = require('./errors');
+const ModuleRegistry = require('./module-registry');
 const runtimeCachingConverter = require('./runtime-caching-converter');
 const stringifyWithoutComments = require('./stringify-without-comments');
 
@@ -61,24 +61,10 @@ module.exports = ({
       stringifyWithoutComments(offlineGoogleAnalytics);
   }
 
-  const workboxModuleImports = createModuleImports({
-    cacheId,
-    cleanupOutdatedCaches,
-    clientsClaim,
-    importScripts,
-    manifestEntries,
-    navigateFallback,
-    navigateFallbackBlacklist,
-    navigateFallbackWhitelist,
-    navigationPreload,
-    offlineAnalyticsConfigString,
-    precacheOptionsString,
-    runtimeCaching,
-    skipWaiting,
-  });
+  const moduleRegistry = new ModuleRegistry();
 
   try {
-    return template(swTemplate)({
+    const populatedTemplate = template(swTemplate)({
       cacheId,
       cleanupOutdatedCaches,
       clientsClaim,
@@ -90,10 +76,16 @@ module.exports = ({
       navigationPreload,
       offlineAnalyticsConfigString,
       precacheOptionsString,
+      runtimeCaching: runtimeCachingConverter(moduleRegistry, runtimeCaching),
       skipWaiting,
-      workboxModuleImports,
-      runtimeCaching: runtimeCachingConverter(runtimeCaching),
+      use: moduleRegistry.use.bind(moduleRegistry),
     });
+
+    const workboxImportStatements = moduleRegistry.getImportStatements();
+
+    // We need the import statements for all of the Workbox runtime modules
+    // prepended, so that the correct bundle can be created.
+    return workboxImportStatements.join('\n') + populatedTemplate;
   } catch (error) {
     throw new Error(
         `${errors['populating-sw-tmpl-failed']} '${error.message}'`);
