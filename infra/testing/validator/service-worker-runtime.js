@@ -18,7 +18,7 @@ function stringifyFunctionsInArray(arr) {
   return arr.map((item) => typeof item === 'function' ? item.toString() : item);
 }
 
-function setupSpiesAndContext() {
+function setupSpiesAndContextForInjectManifest() {
   const cacheableResponsePluginSpy = sinon.spy();
   class CacheableResponsePlugin {
     constructor(...args) {
@@ -101,6 +101,39 @@ function setupSpiesAndContext() {
   return {addEventListener, context, methodsToSpies};
 }
 
+function setupSpiesAndContextForGenerateSW() {
+  const addEventListener = sinon.spy();
+  const importScripts = sinon.spy();
+
+  const workboxContext = {
+    CacheFirst: sinon.stub().returns({name: 'CacheFirst'}),
+    clientsClaim: sinon.spy(),
+    enable: sinon.spy(),
+    getCacheKeyForURL: sinon.stub().returns('/urlWithCacheKey'),
+    initialize: sinon.spy(),
+    NetworkFirst: sinon.stub().returns({name: 'NetworkFirst'}),
+    Plugin: sinon.spy(),
+    Plugin$1: sinon.spy(),
+    Plugin$2: sinon.spy(),
+    precacheAndRoute: sinon.spy(),
+    registerNavigationRoute: sinon.spy(),
+    registerRoute: sinon.spy(),
+    setCacheNameDetails: sinon.spy(),
+    skipWaiting: sinon.spy(),
+  };
+
+  const context = Object.assign({
+    importScripts,
+    define: (_, scripts, callback) => {
+      importScripts(...scripts);
+      callback(workboxContext);
+    },
+  }, makeServiceWorkerEnv());
+  context.self.addEventListener = addEventListener;
+
+  return {addEventListener, context, methodsToSpies: workboxContext};
+}
+
 function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
   for (const [method, spy] of Object.entries(methodsToSpies)) {
     if (spy.called) {
@@ -132,6 +165,7 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
  */
 module.exports = async ({
   addEventListenerValidation,
+  entryPoint,
   expectedMethodCalls,
   swFile,
   swString,
@@ -143,7 +177,9 @@ module.exports = async ({
     swString = await fse.readFile(swFile, 'utf8');
   }
 
-  const {addEventListener, context, methodsToSpies} = setupSpiesAndContext();
+  const {addEventListener, context, methodsToSpies} = entryPoint === 'injectManifest' ?
+    setupSpiesAndContextForInjectManifest() :
+    setupSpiesAndContextForGenerateSW();
 
   vm.runInNewContext(swString, context);
 

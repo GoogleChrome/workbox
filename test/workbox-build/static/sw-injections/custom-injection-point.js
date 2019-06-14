@@ -6,4 +6,4 @@
   https://opensource.org/licenses/MIT.
 */
 
-workbox.precaching.precacheAndRoute(/* manifestEntries */);
+workbox.precaching.precacheAndRoute(self.__custom_injection_point);

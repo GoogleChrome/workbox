@@ -13,12 +13,12 @@ const defaults = require('./defaults');
 
 // Define some additional constraints.
 module.exports = commonGenerateSchema.keys({
+  babelPresetEnvTargets: joi.array().items(joi.string())
+      .default(defaults.babelPresetEnvTargets),
   globDirectory: joi.string().required(),
   importScripts: joi.array().items(joi.string()),
-  importWorkboxFrom: joi.string().default(defaults.importWorkboxFrom).valid(
-      'cdn',
-      'local',
-      'disabled'
-  ),
-  swDest: joi.string().required(),
+  inlineWorkboxRuntime: joi.boolean().default(defaults.inlineWorkboxRuntime),
+  mode: joi.string().default(process.env.NODE_ENV || defaults.mode),
+  sourcemap: joi.boolean().default(defaults.sourcemap),
+  swDest: joi.string().required().regex(/\.js$/),
 });

@@ -10,11 +10,10 @@ const joi = require('@hapi/joi');
 
 const baseSchema = require('./base-schema');
 const defaults = require('./defaults');
-const regExpObject = require('./reg-exp-object');
 
 module.exports = baseSchema.keys({
   globDirectory: joi.string().required(),
-  injectionPointRegexp: regExpObject.default(defaults.injectionPointRegexp),
+  injectionPoint: joi.string().default(defaults.injectionPoint),
   swSrc: joi.string().required(),
-  swDest: joi.string().required(),
+  swDest: joi.string().required().regex(/\.js$/),
 });

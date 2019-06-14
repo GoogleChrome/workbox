@@ -12,16 +12,17 @@ const errors = require('./errors');
 const stringifyWithoutComments = require('./stringify-without-comments');
 
 /**
- * Given a set of options that configures `sw-toolbox`'s behavior, convert it
- * into a string that would configure equivalent `workbox-sw` behavior.
+ * Given a set of options that configures runtime caching behavior, convert it
+ * to the equivalent Workbox method calls.
  *
+ * @param {ModuleRegistry} moduleRegistry
  * @param {Object} options See
- *        https://googlechromelabs.github.io/sw-toolbox/api.html#options
+ *        https://developers.google.com/web/tools/workbox/modules/workbox-build#generateSW-runtimeCaching
  * @return {string} A JSON string representing the equivalent options.
  *
  * @private
  */
-function getOptionsString(options = {}) {
+function getOptionsString(moduleRegistry, options = {}) {
   let plugins = [];
   if (options.plugins) {
     // Using libs because JSON.stringify won't handle functions.
@@ -46,31 +47,18 @@ function getOptionsString(options = {}) {
     }
   }
 
-  const pluginsMapping = {
-    backgroundSync: 'workbox.backgroundSync.Plugin',
-    broadcastUpdate: 'workbox.broadcastUpdate.Plugin',
-    expiration: 'workbox.expiration.Plugin',
-    cacheableResponse: 'workbox.cacheableResponse.Plugin',
-  };
-
   for (const [pluginName, pluginConfig] of Object.entries(options)) {
     // Ensure that we have some valid configuration to pass to Plugin().
     if (Object.keys(pluginConfig).length === 0) {
       continue;
     }
 
-    const pluginString = pluginsMapping[pluginName];
-    if (!pluginString) {
-      throw new Error(`${errors['bad-runtime-caching-config']} ${pluginName}`);
-    }
-
     let pluginCode;
     switch (pluginName) {
-    // Special case logic for plugins that have a required parameter, and then
-    // an additional optional config parameter.
       case 'backgroundSync': {
         const name = pluginConfig.name;
-        pluginCode = `new ${pluginString}(${JSON.stringify(name)}`;
+        const plugin = moduleRegistry.use('workbox-background-sync', 'Plugin');
+        pluginCode = `new ${plugin}(${JSON.stringify(name)}`;
         if ('options' in pluginConfig) {
           pluginCode += `, ${stringifyWithoutComments(pluginConfig.options)}`;
         }
@@ -82,17 +70,29 @@ function getOptionsString(options = {}) {
       case 'broadcastUpdate': {
         const channelName = pluginConfig.channelName;
         const opts = Object.assign({channelName}, pluginConfig.options);
-        pluginCode = `new ${pluginString}(${stringifyWithoutComments(opts)})`;
+        const plugin = moduleRegistry.use('workbox-broadcast-update', 'Plugin');
+        pluginCode = `new ${plugin}(${stringifyWithoutComments(opts)})`;
 
         break;
       }
 
-      // For plugins that just pass in an Object to the constructor, like
-      // expiration and cacheableResponse
+      case 'cacheableResponse': {
+        const plugin = moduleRegistry.use(
+            'workbox-cacheable-response', 'Plugin');
+        pluginCode = `new ${plugin}(${stringifyWithoutComments(pluginConfig)})`;
+
+        break;
+      }
+
+      case 'expiration': {
+        const plugin = moduleRegistry.use('workbox-expiration', 'Plugin');
+        pluginCode = `new ${plugin}(${stringifyWithoutComments(pluginConfig)})`;
+
+        break;
+      }
+
       default: {
-        pluginCode = `new ${pluginString}(${stringifyWithoutComments(
-            pluginConfig
-        )})`;
+        throw new Error(errors['bad-runtime-caching-config'] + pluginName);
       }
     }
 
@@ -110,7 +110,7 @@ function getOptionsString(options = {}) {
   }
 }
 
-module.exports = (runtimeCaching = []) => {
+module.exports = (moduleRegistry, runtimeCaching = []) => {
   return runtimeCaching.map((entry) => {
     const method = entry.method || 'GET';
 
@@ -135,16 +135,16 @@ module.exports = (runtimeCaching = []) => {
       JSON.stringify(entry.urlPattern) :
       entry.urlPattern;
 
+    const registerRoute = moduleRegistry.use(
+        'workbox-routing', 'registerRoute');
     if (typeof entry.handler === 'string') {
-      const optionsString = getOptionsString(entry.options || {});
-      const strategyString =
-          `new workbox.strategies.${entry.handler}(${optionsString})`;
+      const optionsString = getOptionsString(moduleRegistry, entry.options);
+      const handler = moduleRegistry.use('workbox-strategies', entry.handler);
+      const strategyString = `new ${handler}(${optionsString})`;
 
-      return `workbox.routing.registerRoute(` +
-        `${matcher}, ${strategyString}, '${method}');\n`;
+      return `${registerRoute}(${matcher}, ${strategyString}, '${method}');\n`;
     } else if (typeof entry.handler === 'function') {
-      return `workbox.routing.registerRoute(` +
-        `${matcher}, ${entry.handler}, '${method}');\n`;
+      return `${registerRoute}(${matcher}, ${entry.handler}, '${method}');\n`;
     }
   }).filter((entry) => Boolean(entry)); // Remove undefined map() return values.
 };

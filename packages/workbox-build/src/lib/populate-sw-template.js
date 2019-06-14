@@ -10,6 +10,7 @@ const template = require('lodash.template');
 const swTemplate = require('../templates/sw-template');
 
 const errors = require('./errors');
+const ModuleRegistry = require('./module-registry');
 const runtimeCachingConverter = require('./runtime-caching-converter');
 const stringifyWithoutComments = require('./stringify-without-comments');
 
@@ -21,7 +22,6 @@ module.exports = ({
   ignoreURLParametersMatching,
   importScripts,
   manifestEntries,
-  modulePathPrefix,
   navigateFallback,
   navigateFallbackBlacklist,
   navigateFallbackWhitelist,
@@ -29,7 +29,6 @@ module.exports = ({
   offlineGoogleAnalytics,
   runtimeCaching,
   skipWaiting,
-  workboxSWImport,
 }) => {
   // These are all options that can be passed to the precacheAndRoute() method.
   const precacheOptions = {
@@ -62,6 +61,8 @@ module.exports = ({
       stringifyWithoutComments(offlineGoogleAnalytics);
   }
 
+  const moduleRegistry = new ModuleRegistry();
+
   try {
     const populatedTemplate = template(swTemplate)({
       cacheId,
@@ -69,20 +70,22 @@ module.exports = ({
       clientsClaim,
       importScripts,
       manifestEntries,
-      modulePathPrefix,
       navigateFallback,
       navigateFallbackBlacklist,
       navigateFallbackWhitelist,
       navigationPreload,
       offlineAnalyticsConfigString,
       precacheOptionsString,
+      runtimeCaching: runtimeCachingConverter(moduleRegistry, runtimeCaching),
       skipWaiting,
-      runtimeCaching: runtimeCachingConverter(runtimeCaching),
-      workboxSWImport,
+      use: moduleRegistry.use.bind(moduleRegistry),
     });
 
-    // Clean up multiple blank lines.
-    return populatedTemplate.replace(/\n{3,}/g, '\n\n').trim() + '\n';
+    const workboxImportStatements = moduleRegistry.getImportStatements();
+
+    // We need the import statements for all of the Workbox runtime modules
+    // prepended, so that the correct bundle can be created.
+    return workboxImportStatements.join('\n') + populatedTemplate;
   } catch (error) {
     throw new Error(
         `${errors['populating-sw-tmpl-failed']} '${error.message}'`);
