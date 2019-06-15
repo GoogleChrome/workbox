@@ -6,7 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+
+import {WorkboxEventTarget} from './WorkboxEventTarget';
+import '../_version';
+
+
+export interface WorkboxEventProps {
+  sw?: ServiceWorker;
+  data?: any;
+  originalEvent?: Event;
+  isUpdate?: boolean;
+  wasWaitingBeforeRegister?: boolean;
+}
 
 /**
  * A minimal `Event` subclass shim.
@@ -14,14 +25,10 @@ import '../_version.mjs';
  * constructable `EventTarget`, and using a real `Event` will error.
  * @private
  */
-class WorkboxEvent {
-  /**
-   * @param {string} type
-   * @param {Object} props
-   */
-  constructor(type, props) {
-    Object.assign(this, props, {type});
+export class WorkboxEvent {
+  target: WorkboxEventTarget;
+
+  constructor(public type: string, props: WorkboxEventProps) {
+    Object.assign(this, props);
   }
 }
-
-export {WorkboxEvent};

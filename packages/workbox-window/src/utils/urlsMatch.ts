@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version';
 
 
 /**
@@ -18,8 +18,7 @@ import '../_version.mjs';
  * @param {string} url2
  * @return {boolean}
  */
-const urlsMatch = (url1, url2) => {
-  return new URL(url1, location).href === new URL(url2, location).href;
+export function urlsMatch(url1: string, url2: string): boolean {
+  const {href} = location;
+  return new URL(url1, href).href === new URL(url2, href).href;
 };
-
-export {urlsMatch};

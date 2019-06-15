@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {messageSW} from './messageSW.mjs';
-import {Workbox} from './Workbox.mjs';
-import './_version.mjs';
+import {messageSW} from './messageSW';
+import {Workbox} from './Workbox';
+import './_version';
 
 
 /**

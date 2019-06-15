@@ -6,7 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import {WorkboxEvent} from './WorkboxEvent';
+import '../_version';
+
+
+export type ListenerCallback = (event: WorkboxEvent) => void;
 
 
 /**
@@ -15,22 +19,15 @@ import '../_version.mjs';
  * `EventTarget`, so using a real `EventTarget` will error.
  * @private
  */
-class EventTargetShim {
-  /**
-   * Creates an event listener registry
-   *
-   * @private
-   */
-  constructor() {
-    // A registry of event types to listeners.
-    this._eventListenerRegistry = {};
-  }
+export class WorkboxEventTarget {
+  private _eventListenerRegistry: {[type: string]: Set<ListenerCallback>} = {};
+
   /**
    * @param {string} type
    * @param {Function} listener
    * @private
    */
-  addEventListener(type, listener) {
+  addEventListener(type: string, listener: ListenerCallback) {
     this._getEventListenersByType(type).add(listener);
   }
 
@@ -39,18 +36,21 @@ class EventTargetShim {
    * @param {Function} listener
    * @private
    */
-  removeEventListener(type, listener) {
+  removeEventListener(type: string, listener: ListenerCallback) {
     this._getEventListenersByType(type).delete(listener);
   }
 
   /**
-   * @param {Event} event
+   * @param {Object} event
    * @private
    */
-  dispatchEvent(event) {
+  dispatchEvent(event: WorkboxEvent) {
     event.target = this;
-    this._getEventListenersByType(event.type).forEach(
-        (listener) => listener(event));
+
+    const listeners = this._getEventListenersByType(event.type)
+    for (const listener of listeners) {
+      listener(event);
+    }
   }
 
   /**
@@ -58,13 +58,11 @@ class EventTargetShim {
    * If no handlers have been registered, an empty Set is returned.
    *
    * @param {string} type The event type.
-   * @return {Set} An array of handler functions.
+   * @return {Set<ListenerCallback>} An array of handler functions.
    * @private
    */
-  _getEventListenersByType(type) {
+  private _getEventListenersByType(type: string) {
     return this._eventListenerRegistry[type] =
         (this._eventListenerRegistry[type] || new Set());
   }
 }
-
-export {EventTargetShim};
