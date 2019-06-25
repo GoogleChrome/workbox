@@ -6,19 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {generateSWString} = require('workbox-build');
-const path = require('path');
+const bundle = require('workbox-build/build/lib/bundle');
+const populateSWTemplate =
+    require('workbox-build/build/lib/populate-sw-template');
 
 const convertStringToAsset = require('./lib/convert-string-to-asset');
 const getDefaultConfig = require('./lib/get-default-config');
-const formatManifestFilename = require('./lib/format-manifest-filename');
-const getAssetHash = require('./lib/get-asset-hash');
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
-const getWorkboxSWImports = require('./lib/get-workbox-sw-imports');
 const relativeToOutputPath = require('./lib/relative-to-output-path');
 const sanitizeConfig = require('./lib/sanitize-config');
-const stringifyManifest = require('./lib/stringify-manifest');
 const warnAboutConfig = require('./lib/warn-about-config');
 
 /**
@@ -48,7 +45,20 @@ class GenerateSW {
   }
 
   /**
+   * @param {Object} [compiler] default compiler object passed from webpack
+   *
+   * @private
+   */
+  apply(compiler) {
+    compiler.hooks.emit.tapPromise(
+        this.constructor.name,
+        (compilation) => this.handleEmit(compilation)
+    );
+  }
+
+  /**
    * @param {Object} compilation The webpack compilation.
+   *
    * @private
    */
   async handleEmit(compilation) {
@@ -57,72 +67,22 @@ class GenerateSW {
       compilation.warnings.push(configWarning);
     }
 
-    const workboxSWImports = await getWorkboxSWImports(
-        compilation, this.config);
-    const entries = getManifestEntriesFromCompilation(compilation, this.config);
-    const importScriptsArray = [].concat(this.config.importScripts);
-
-    const manifestString = stringifyManifest(entries);
-    const manifestAsset = convertStringToAsset(manifestString);
-    const manifestHash = getAssetHash(manifestAsset);
-
-    const manifestFilename = formatManifestFilename(
-        this.config.precacheManifestFilename, manifestHash);
-    const pathToManifestFile = relativeToOutputPath(
-        compilation, path.join(this.config.importsDirectory, manifestFilename));
-    compilation.assets[pathToManifestFile] = manifestAsset;
-
-    importScriptsArray.push((compilation.options.output.publicPath || '') +
-      pathToManifestFile.split(path.sep).join('/'));
-
-    // workboxSWImports might be null if importWorkboxFrom is 'disabled'.
-    let workboxSWImport;
-    if (workboxSWImports) {
-      if (workboxSWImports.length === 1) {
-        // When importWorkboxFrom is 'cdn' or 'local', or a chunk name
-        // that only contains one JavaScript asset, then this will be a one
-        // element array, containing just the Workbox SW code.
-        workboxSWImport = workboxSWImports[0];
-      } else {
-        // If importWorkboxFrom was a chunk name that contained multiple
-        // JavaScript assets, then we don't know which contains the Workbox SW
-        // code. Just import them first as part of the "main" importScripts().
-        importScriptsArray.unshift(...workboxSWImports);
-      }
-    }
-
     const sanitizedConfig = sanitizeConfig.forGenerateSWString(this.config);
-    // If globPatterns isn't explicitly set, then default to [], instead of
-    // the workbox-build.generateSWString() default.
-    sanitizedConfig.globPatterns = sanitizedConfig.globPatterns || [];
-    sanitizedConfig.importScripts = importScriptsArray;
-    sanitizedConfig.workboxSWImport = workboxSWImport;
-    const {swString, warnings} = await generateSWString(sanitizedConfig);
-    compilation.warnings = compilation.warnings.concat(warnings || []);
+    sanitizedConfig.manifestEntries = getManifestEntriesFromCompilation(
+        compilation, sanitizedConfig);
 
-    const relSwDest = relativeToOutputPath(compilation, this.config.swDest);
-    compilation.assets[relSwDest] = convertStringToAsset(swString);
-  }
+    const unbundledCode = populateSWTemplate(sanitizedConfig);
+    const files = await bundle({
+      babelPresetEnvTargets: ['chrome >= 56'],
+      inlineWorkboxRuntime: false,
+      mode: 'development',
+      sourcemap: true,
+      swDest: relativeToOutputPath(compilation, this.config.swDest),
+      unbundledCode,
+    });
 
-  /**
-   * @param {Object} [compiler] default compiler object passed from webpack
-   *
-   * @private
-   */
-  apply(compiler) {
-    if ('hooks' in compiler) {
-      // We're in webpack 4+.
-      compiler.hooks.emit.tapPromise(
-          this.constructor.name,
-          (compilation) => this.handleEmit(compilation)
-      );
-    } else {
-      // We're in webpack 2 or 3.
-      compiler.plugin('emit', (compilation, callback) => {
-        this.handleEmit(compilation)
-            .then(callback)
-            .catch(callback);
-      });
+    for (const file of files) {
+      compilation.assets[file.name] = convertStringToAsset(file.contents);
     }
   }
 }

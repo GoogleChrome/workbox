@@ -92,7 +92,7 @@ module.exports = async ({
 
         files.push({
           name: sourceMapFile,
-          contents: chunkOrAsset.map,
+          contents: chunkOrAsset.map.toString(),
         });
       }
 

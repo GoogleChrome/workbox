@@ -54,7 +54,7 @@ function getEntry(knownHashes, url, revision) {
  *
  * @private
  */
-function filterAssets(assetMetadata, whitelist, blacklist) {
+function filterAssets(assetMetadata, whitelist = [], blacklist = []) {
   const filteredMapping = {};
 
   for (const [file, metadata] of Object.entries(assetMetadata)) {
