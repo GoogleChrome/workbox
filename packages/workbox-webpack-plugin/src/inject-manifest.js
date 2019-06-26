@@ -6,15 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-const bundle = require('workbox-build/build/lib/bundle');
-const populateSWTemplate =
-  require('workbox-build/build/lib/populate-sw-template');
+const {ConcatSource} = require('webpack-sources');
+const path = require('path');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
 
-const convertStringToAsset = require('./lib/convert-string-to-asset');
 const getDefaultConfig = require('./lib/get-default-config');
-const relativeToOutputPath = require('./lib/relative-to-output-path');
+const getManifestEntriesFromCompilation =
+  require('./lib/get-manifest-entries-from-compilation');
 const sanitizeConfig = require('./lib/sanitize-config');
+const stringifyManifest = require('./lib/stringify-manifest');
 const warnAboutConfig = require('./lib/warn-about-config');
 
 /**
@@ -37,7 +37,9 @@ class InjectManifest {
    * for all supported options and defaults.
    */
   constructor(config = {}) {
-    this.config = Object.assign(getDefaultConfig(), config);
+    this.config = Object.assign(getDefaultConfig(), {
+      swDest: path.basename(config.swSrc),
+    }, config);
   }
 
   /**
@@ -46,9 +48,9 @@ class InjectManifest {
    * @private
    */
   apply(compiler) {
-    compiler.hooks.emit.tapPromise(
+    compiler.hooks.make.tapPromise(
         this.constructor.name,
-        (compilation) => this.handleEmit(compilation, compiler)
+        (compilation) => this.handleMake(compilation, compiler)
     );
 
     compiler.hooks.emit.tapPromise(
@@ -59,32 +61,44 @@ class InjectManifest {
 
   /**
    * @param {Object} compilation The webpack compilation.
-   * @param {Object} compiler The webpack parent compiler.
+   * @param {Object} parentCompiler The webpack parent compiler.
    *
    * @private
    */
-  async handleMake(compilation, compiler) {
+  async handleMake(compilation, parentCompiler) {
     const configWarning = warnAboutConfig(this.config);
     if (configWarning) {
       compilation.warnings.push(configWarning);
     }
 
-    // Make sure we don't pass ourselves to the child compiler.
-    const plugins = compiler.plugins.filter(
-        (plugin) => !(plugin instanceof InjectManifest));
+    const outputOptions = {
+      path: parentCompiler.options.output.path,
+      filename: this.config.swDest,
+    };
+
     const childCompiler = compilation.createChildCompiler(
-        this.constructor.name, compiler.options, plugins);
+        this.constructor.name, outputOptions);
 
-    const swEntry = new SingleEntryPlugin(compiler.context,
-        this.options.swSrc, this.constructor.name);
+    childCompiler.context = parentCompiler.context;
+    childCompiler.inputFileSystem = parentCompiler.inputFileSystem;
+    childCompiler.outputFileSystem = parentCompiler.outputFileSystem;
 
-    childCompiler.apply(swEntry);
+    new SingleEntryPlugin(
+        parentCompiler.context,
+        this.config.swSrc,
+        this.constructor.name
+    ).apply(childCompiler);
 
     await new Promise((resolve, reject) => {
-      childCompiler.runAsChild((error) => {
+      childCompiler.runAsChild((error, entries, childCompilation) => {
         if (error) {
           reject(error);
         } else {
+          compilation.warnings = compilation.warnings.concat(
+              childCompilation.warnings);
+          compilation.errors = compilation.errors.concat(
+              childCompilation.errors);
+
           resolve();
         }
       });
@@ -97,10 +111,18 @@ class InjectManifest {
    * @private
    */
   async handleEmit(compilation) {
-    const configWarning = warnAboutConfig(this.config);
-    if (configWarning) {
-      compilation.warnings.push(configWarning);
-    }
+    const swAsset = compilation.assets[this.config.swDest];
+    delete compilation.assets[this.config.swDest];
+
+    const sanitizedConfig = sanitizeConfig.forGetManifest(this.config);
+
+    const manifestEntries = getManifestEntriesFromCompilation(
+        compilation, sanitizedConfig);
+    const manifestDeclaration = stringifyManifest(manifestEntries,
+        this.config.injectionPoint);
+
+    compilation.assets[this.config.swDest] = new ConcatSource(
+        manifestDeclaration, swAsset || '');
   }
 }
 

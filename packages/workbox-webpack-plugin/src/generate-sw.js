@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
+const {RawSource} = require('webpack-sources');
 const bundle = require('workbox-build/build/lib/bundle');
 const populateSWTemplate =
-    require('workbox-build/build/lib/populate-sw-template');
+  require('workbox-build/build/lib/populate-sw-template');
 
-const convertStringToAsset = require('./lib/convert-string-to-asset');
 const getDefaultConfig = require('./lib/get-default-config');
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
@@ -82,7 +82,7 @@ class GenerateSW {
     });
 
     for (const file of files) {
-      compilation.assets[file.name] = convertStringToAsset(file.contents);
+      compilation.assets[file.name] = new RawSource(file.contents);
     }
   }
 }
