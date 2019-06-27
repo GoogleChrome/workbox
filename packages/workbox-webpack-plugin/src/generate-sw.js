@@ -10,13 +10,13 @@ const {RawSource} = require('webpack-sources');
 const bundle = require('workbox-build/build/lib/bundle');
 const populateSWTemplate =
   require('workbox-build/build/lib/populate-sw-template');
+const validate = require('workbox-build/build/entry-points/options/validate');
+const webpackGenerateSWSchema = require(
+    'workbox-build/build/entry-points/options/webpack-generate-sw-schema');
 
-const getDefaultConfig = require('./lib/get-default-config');
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
 const relativeToOutputPath = require('./lib/relative-to-output-path');
-const sanitizeConfig = require('./lib/sanitize-config');
-const warnAboutConfig = require('./lib/warn-about-config');
 
 /**
  * This class supports creating a new, ready-to-use service worker file as
@@ -37,11 +37,7 @@ class GenerateSW {
    * for all supported options and defaults.
    */
   constructor(config = {}) {
-    this.config = Object.assign(getDefaultConfig(), {
-      // Hardcode this default filename, since we don't have swSrc to read from
-      // (like we do in InjectManifest).
-      swDest: 'service-worker.js',
-    }, config);
+    this.config = config;
   }
 
   /**
@@ -50,6 +46,13 @@ class GenerateSW {
    * @private
    */
   apply(compiler) {
+    try {
+      this.config = validate(this.config, webpackGenerateSWSchema);
+    } catch (error) {
+      throw new Error(`Please check your ${this.constructor.name} plugin ` +
+        `configuration:\n${error.message}\n`);
+    }
+
     compiler.hooks.emit.tapPromise(
         this.constructor.name,
         (compilation) => this.handleEmit(compilation)
@@ -62,16 +65,10 @@ class GenerateSW {
    * @private
    */
   async handleEmit(compilation) {
-    const configWarning = warnAboutConfig(this.config);
-    if (configWarning) {
-      compilation.warnings.push(configWarning);
-    }
+    this.config.manifestEntries = getManifestEntriesFromCompilation(
+        compilation, this.config);
 
-    const sanitizedConfig = sanitizeConfig.forGenerateSWString(this.config);
-    sanitizedConfig.manifestEntries = getManifestEntriesFromCompilation(
-        compilation, sanitizedConfig);
-
-    const unbundledCode = populateSWTemplate(sanitizedConfig);
+    const unbundledCode = populateSWTemplate(this.config);
     const files = await bundle({
       babelPresetEnvTargets: ['chrome >= 56'],
       inlineWorkboxRuntime: false,

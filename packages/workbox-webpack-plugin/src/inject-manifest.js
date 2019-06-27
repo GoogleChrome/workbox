@@ -7,15 +7,14 @@
 */
 
 const {ConcatSource} = require('webpack-sources');
-const path = require('path');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
+const validate = require('workbox-build/build/entry-points/options/validate');
+const webpackInjectManifestSchema = require(
+    'workbox-build/build/entry-points/options/webpack-inject-manifest-schema');
 
-const getDefaultConfig = require('./lib/get-default-config');
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
-const sanitizeConfig = require('./lib/sanitize-config');
 const stringifyManifest = require('./lib/stringify-manifest');
-const warnAboutConfig = require('./lib/warn-about-config');
 
 /**
  * This class supports compiling a service worker file provided via `swSrc`,
@@ -37,9 +36,7 @@ class InjectManifest {
    * for all supported options and defaults.
    */
   constructor(config = {}) {
-    this.config = Object.assign(getDefaultConfig(), {
-      swDest: path.basename(config.swSrc),
-    }, config);
+    this.config = config;
   }
 
   /**
@@ -48,6 +45,13 @@ class InjectManifest {
    * @private
    */
   apply(compiler) {
+    try {
+      this.config = validate(this.config, webpackInjectManifestSchema);
+    } catch (error) {
+      throw new Error(`Please check your ${this.constructor.name} plugin ` +
+        `configuration:\n${error.message}\n`);
+    }
+
     compiler.hooks.make.tapPromise(
         this.constructor.name,
         (compilation) => this.handleMake(compilation, compiler)
@@ -66,11 +70,6 @@ class InjectManifest {
    * @private
    */
   async handleMake(compilation, parentCompiler) {
-    const configWarning = warnAboutConfig(this.config);
-    if (configWarning) {
-      compilation.warnings.push(configWarning);
-    }
-
     const outputOptions = {
       path: parentCompiler.options.output.path,
       filename: this.config.swDest,
@@ -114,10 +113,8 @@ class InjectManifest {
     const swAsset = compilation.assets[this.config.swDest];
     delete compilation.assets[this.config.swDest];
 
-    const sanitizedConfig = sanitizeConfig.forGetManifest(this.config);
-
     const manifestEntries = getManifestEntriesFromCompilation(
-        compilation, sanitizedConfig);
+        compilation, this.config);
     const manifestDeclaration = stringifyManifest(manifestEntries,
         this.config.injectionPoint);
 

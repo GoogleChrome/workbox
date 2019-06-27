@@ -10,12 +10,13 @@ const joi = require('@hapi/joi');
 
 const commonGenerateSchema = require('./common-generate-schema');
 const defaults = require('./defaults');
+const regExpObject = require('./reg-exp-object');
 
-// Define some additional constraints.
 module.exports = commonGenerateSchema.keys({
-  globDirectory: joi.string().required(),
-  globFollow: joi.boolean().default(defaults.globFollow),
-  globIgnores: joi.array().items(joi.string()).default(defaults.globIgnores),
-  globPatterns: joi.array().items(joi.string()).default(defaults.globPatterns),
-  globStrict: joi.boolean().default(defaults.globStrict),
+  chunks: joi.array().items(joi.string()),
+  exclude: joi.array().items(joi.string(), regExpObject)
+      .default(defaults.exclude),
+  excludeChunks: joi.array().items(joi.string()),
+  include: joi.array().items(joi.string(), regExpObject),
+  swDest: joi.string().default(defaults.swDestFilename),
 });
