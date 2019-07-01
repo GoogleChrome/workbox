@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError, WorkboxErrorDetails} from '../_private/WorkboxError';
-import '../_version';
+import {WorkboxError, WorkboxErrorDetails} from '../_private/WorkboxError.js';
+import '../_version.js';
 
 
 /*

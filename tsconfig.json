@@ -4,6 +4,7 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
+    "composite": true,
     "declaration": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -14,8 +15,12 @@
     "preserveConstEnums": true,
     "strictNullChecks": true
   },
-  "include": [
-    "infra/type-overrides.d.ts",
-    "packages/*/src/**/*.ts"
+  "files": [
+    "./infra/type-overrides.d.ts",
+  ],
+  "exclude": [],
+  "references": [
+    { "path": "./packages/workbox-core/" },
+    { "path": "./packages/workbox-window/" }
   ]
 }

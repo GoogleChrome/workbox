@@ -12,6 +12,7 @@
     "lint": "eslint \"**/*.{js,mjs}\" --ignore-path .gitignore",
     "local-jsdoc": "jsdoc",
     "local-lerna": "lerna",
+    "local-tsc": "tsc",
     "test": "nyc --clean false --silent mocha --timeout 60000"
   },
   "nyc": {
@@ -106,6 +107,7 @@
     "sinon": "^6.3.4",
     "tempy": "^0.2.1",
     "typescript": "^3.4.5",
+    "upath": "^1.1.2",
     "url-search-params": "^1.1.0",
     "webpack": "^4.19.1",
     "worker-plugin": "^3.1.0"

@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import './_version.mjs';
+import './_version.js';
 
 
 /**
@@ -24,12 +24,12 @@ import './_version.mjs';
  *
  * @memberof module:workbox-window
  */
-const messageSW = (sw, data) => {
+export function messageSW(sw: ServiceWorker, data: {}): Promise<any> {
   return new Promise((resolve) => {
     let messageChannel = new MessageChannel();
-    messageChannel.port1.onmessage = (evt) => resolve(evt.data);
+    messageChannel.port1.onmessage = (event: MessageEvent) => {
+      resolve(event.data);
+    };
     sw.postMessage(data, [messageChannel.port2]);
   });
 };
-
-export {messageSW};

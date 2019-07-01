@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from './WorkboxError';
-import {logger} from './logger';
-import {assert} from './assert';
-import {getFriendlyURL} from '../_private/getFriendlyURL';
-import {pluginEvents} from '../models/pluginEvents';
-import {pluginUtils, Plugin} from '../utils/pluginUtils';
-import '../_version';
+import {WorkboxError} from './WorkboxError.js';
+import {logger} from './logger.js';
+import {assert} from './assert.js';
+import {getFriendlyURL} from '../_private/getFriendlyURL.js';
+import {pluginEvents} from '../models/pluginEvents.js';
+import {pluginUtils, Plugin} from '../utils/pluginUtils.js';
+import '../_version.js';
 
 
 interface WrappedFetchOptions {

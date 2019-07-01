@@ -6,14 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from './WorkboxError';
-import {assert} from './assert';
-import {getFriendlyURL} from './getFriendlyURL';
-import {logger} from './logger';
-import {executeQuotaErrorCallbacks} from './executeQuotaErrorCallbacks';
-import {pluginEvents} from '../models/pluginEvents';
-import {pluginUtils, Plugin} from '../utils/pluginUtils';
-import '../_version';
+import {WorkboxError} from './WorkboxError.js';
+import {assert} from './assert.js';
+import {getFriendlyURL} from './getFriendlyURL.js';
+import {logger} from './logger.js';
+import {executeQuotaErrorCallbacks} from './executeQuotaErrorCallbacks.js';
+import {pluginEvents} from '../models/pluginEvents.js';
+import {pluginUtils, Plugin} from '../utils/pluginUtils.js';
+import '../_version.js';
 
 
 interface MatchWrapperOptions {

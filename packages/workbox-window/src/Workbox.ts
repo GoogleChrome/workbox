@@ -6,13 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Deferred} from 'workbox-core/_private/Deferred.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {messageSW} from './messageSW.mjs';
-import {EventTargetShim} from './utils/EventTargetShim.mjs';
-import {urlsMatch} from './utils/urlsMatch.mjs';
-import {WorkboxEvent} from './utils/WorkboxEvent.mjs';
-import './_version.mjs';
+import {Deferred} from 'workbox-core/_private/Deferred.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {messageSW} from './messageSW.js';
+import {WorkboxEventTarget} from './utils/WorkboxEventTarget.js';
+import {urlsMatch} from './utils/urlsMatch.js';
+import {WorkboxEvent} from './utils/WorkboxEvent.js';
+import './_version.js';
+
+import {WorkboxEventProps} from './utils/WorkboxEvent.js';
 
 
 // The time a SW must be in the waiting phase before we can conclude
@@ -40,7 +42,25 @@ const REGISTRATION_TIMEOUT_DURATION = 60000;
  *
  * @memberof module:workbox-window
  */
-class Workbox extends EventTargetShim {
+class Workbox extends WorkboxEventTarget {
+  private _scriptURL: string;
+  private _registerOptions: RegistrationOptions = {};
+  private _updateFoundCount: number = 0;
+
+  // Deferreds we can resolve later.
+  private _swDeferred: Deferred<ServiceWorker> = new Deferred();
+  private _activeDeferred: Deferred<ServiceWorker> = new Deferred();
+  private _controllingDeferred: Deferred<ServiceWorker> = new Deferred();
+
+  private _registrationTime: DOMHighResTimeStamp = 0;
+  private _isUpdate?: boolean;
+  private _compatibleControllingSW?: ServiceWorker;
+  private _registration?: ServiceWorkerRegistration;
+  private _sw?: ServiceWorker;
+  private _broadcastChannel?: BroadcastChannel;
+  private _externalSW?: ServiceWorker;
+  private _waitingTimeout?: number;
+
   /**
    * Creates a new Workbox instance with a script URL and service worker
    * options. The script URL and options are the same as those used when
@@ -52,23 +72,11 @@ class Workbox extends EventTargetShim {
    * @param {Object} [registerOptions] The service worker options associated
    *     with this instance.
    */
-  constructor(scriptURL, registerOptions = {}) {
+  constructor(scriptURL: 'string', registerOptions: {} = {}) {
     super();
 
     this._scriptURL = scriptURL;
     this._registerOptions = registerOptions;
-    this._updateFoundCount = 0;
-
-    // Deferreds we can resolve later.
-    this._swDeferred = new Deferred();
-    this._activeDeferred = new Deferred();
-    this._controllingDeferred = new Deferred();
-
-    // Bind event handler callbacks.
-    this._onMessage = this._onMessage.bind(this);
-    this._onStateChange = this._onStateChange.bind(this);
-    this._onUpdateFound = this._onUpdateFound.bind(this);
-    this._onControllerChange = this._onControllerChange.bind(this);
   }
 
   /**
@@ -231,10 +239,10 @@ class Workbox extends EventTargetShim {
    *
    * @return {Promise<ServiceWorker>}
    */
-  async getSW() {
+  async getSW(): Promise<ServiceWorker> {
     // If `this._sw` is set, resolve with that as we want `getSW()` to
     // return the correct (new) service worker if an update is found.
-    return this._sw || this._swDeferred.promise;
+    return this._sw !== undefined ? this._sw : this._swDeferred.promise;
   }
 
   /**
@@ -250,7 +258,7 @@ class Workbox extends EventTargetShim {
    * @param {Object} data An object to send to the service worker
    * @return {Promise<Object>}
    */
-  async messageSW(data) {
+  async messageSW(data: object) {
     const sw = await this.getSW();
     return messageSW(sw, data);
   }
@@ -266,6 +274,8 @@ class Workbox extends EventTargetShim {
     const controller = navigator.serviceWorker.controller;
     if (controller && urlsMatch(controller.scriptURL, this._scriptURL)) {
       return controller;
+    } else {
+      return undefined;
     }
   }
 
@@ -302,7 +312,7 @@ class Workbox extends EventTargetShim {
    * @param {ServiceWorker} sw
    * @private
    */
-  _reportWindowReady(sw) {
+  _reportWindowReady(sw: ServiceWorker) {
     messageSW(sw, {
       type: 'WINDOW_READY',
       meta: 'workbox-window',
@@ -312,8 +322,10 @@ class Workbox extends EventTargetShim {
   /**
    * @private
    */
-  _onUpdateFound() {
-    const installingSW = this._registration.installing;
+  _onUpdateFound = () => {
+    // `this._registration` will never be `undefined` after an update is found.
+    const registration = this._registration!;
+    const installingSW = <ServiceWorker> registration.installing;
 
     // If the script URL passed to `navigator.serviceWorker.register()` is
     // different from the current controlling SW's script URL, we know any
@@ -348,8 +360,7 @@ class Workbox extends EventTargetShim {
 
     if (updateLikelyTriggeredExternally) {
       this._externalSW = installingSW;
-      this._registration.removeEventListener(
-          'updatefound', this._onUpdateFound);
+      registration.removeEventListener('updatefound', this._onUpdateFound);
     } else {
       // If the update was not triggered externally we know the installing
       // SW is the one we registered, so we set it.
@@ -380,13 +391,15 @@ class Workbox extends EventTargetShim {
    * @private
    * @param {Event} originalEvent
    */
-  _onStateChange(originalEvent) {
-    const sw = originalEvent.target;
+  _onStateChange = (originalEvent: Event) => {
+    // `this._registration` will never be `undefined` after an update is found.
+    const registration = this._registration!;
+    const sw = <ServiceWorker>originalEvent.target;
     const {state} = sw;
     const isExternal = sw === this._externalSW;
     const eventPrefix = isExternal ? 'external' : '';
 
-    const eventProps = {sw, originalEvent};
+    const eventProps = <WorkboxEventProps> {sw, originalEvent};
     if (!isExternal && this._isUpdate) {
       eventProps.isUpdate = true;
     }
@@ -403,9 +416,9 @@ class Workbox extends EventTargetShim {
       // is very short.)
       // NOTE: we don't need separate timeouts for the own and external SWs
       // since they can't go through these phases at the same time.
-      this._waitingTimeout = setTimeout(() => {
+      this._waitingTimeout = self.setTimeout(() => {
         // Ensure the SW is still waiting (it may now be redundant).
-        if (state === 'installed' && this._registration.waiting === sw) {
+        if (state === 'installed' && registration.waiting === sw) {
           this.dispatchEvent(new WorkboxEvent(
               eventPrefix + 'waiting', eventProps));
 
@@ -464,7 +477,7 @@ class Workbox extends EventTargetShim {
    * @private
    * @param {Event} originalEvent
    */
-  _onControllerChange(originalEvent) {
+  _onControllerChange = (originalEvent: Event) => {
     const sw = this._sw;
     if (sw === navigator.serviceWorker.controller) {
       this.dispatchEvent(new WorkboxEvent('controlling', {sw, originalEvent}));
@@ -479,7 +492,7 @@ class Workbox extends EventTargetShim {
    * @private
    * @param {Event} originalEvent
    */
-  _onMessage(originalEvent) {
+  _onMessage = (originalEvent: MessageEvent) => {
     const {data} = originalEvent;
     this.dispatchEvent(new WorkboxEvent('message', {data, originalEvent}));
   }

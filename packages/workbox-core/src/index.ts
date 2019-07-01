@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {registerQuotaErrorCallback} from './registerQuotaErrorCallback';
-import * as _private from './_private';
-import {clientsClaim} from './clientsClaim';
-import {cacheNames} from './cacheNames';
-import {setCacheNameDetails} from './setCacheNameDetails';
-import {skipWaiting} from './skipWaiting';
-import './_version';
+import {registerQuotaErrorCallback} from './registerQuotaErrorCallback.js';
+import * as _private from './_private.js';
+import {clientsClaim} from './clientsClaim.js';
+import {cacheNames} from './cacheNames.js';
+import {setCacheNameDetails} from './setCacheNameDetails.js';
+import {skipWaiting} from './skipWaiting.js';
+import './_version.js';
 
 
 /**
