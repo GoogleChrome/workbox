@@ -8,11 +8,12 @@
 
 const fs = require('fs-extra');
 const gulp = require('gulp');
+const globby = require('globby');
 const ol = require('common-tags').oneLine;
-const path = require('path');
-const {rollup} = require('rollup');
-const resolve = require('rollup-plugin-node-resolve');
-const typescript2 = require('rollup-plugin-typescript2');
+const path = require('upath');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
 const packageRunnner = require('./utils/package-runner');
 const logHelper = require('../infra/utils/log-helper');
 const {AsyncDebounce} = require('../infra/utils/AsyncDebounce');
@@ -23,77 +24,40 @@ const {AsyncDebounce} = require('../infra/utils/AsyncDebounce');
  */
 const packagesDir = path.join(__dirname, '..', 'packages');
 
-
 /**
- * Returns a Rollup plugin that generates both `.js` and `.mjs` files for each
- * `.ts` source file. This is a bit of a hack, but it's needed until to solve:
- * https://github.com/rollup/rollup/issues/2847
- */
-const generateMjsOutputFiles = () => {
-  return {
-    generateBundle: (options, bundle) => {
-      const importPattern =
-          new RegExp(`((?:import|export)[^']+')([^']+?)\\.ts';`, 'g');
-
-      for (const chunkInfo of Object.values(bundle)) {
-        if (chunkInfo.fileName.endsWith('.ts')) {
-          // Rename the `.ts` imports and filenames to `.js`;
-          const assetBasename = chunkInfo.fileName.replace(/.ts$/, '');
-
-          chunkInfo.fileName = assetBasename + '.js';
-          chunkInfo.code = chunkInfo.code.replace(importPattern, `$1$2.js';`);
-
-          // Create mirror `.mjs` files for each `.js` file.
-          const mjsSource =
-              `export * from './${path.basename(assetBasename)}.js';`;
-
-          fs.outputFileSync(
-              path.join(options.dir, assetBasename + '.mjs'), mjsSource);
-        }
-      }
-    },
-  };
-};
-
-/**
- * @type {RollupCache}
- */
-let moduleBundleCache;
-
-/**
- * Transpiles a package's source TypeScript files to `.mjs` JavaScript files
- * in the root package directory, along with the corresponding definition
- * files.
+ * Transpiles a package's source TypeScript files to `.js` and `.mjs` files
+ * in the root package directory, along with the corresponding `.d.ts` files.
  *
  * @param {string} packageName
  */
 const transpilePackage = async (packageName) => {
-  const packagePath = path.join(packagesDir, packageName);
-  const input = path.join(packagePath, 'src', 'index.ts');
+  try {
+    // Compile Typescript for the given project.
+    // Reference the local `node_modules` version of `tsc` since on Windows
+    // it will call the version in `Microsoft SDKs/TypeScript`.
+    await exec(`npm run local-tsc -- -b packages/${packageName}`);
 
-  const plugins = [
-    resolve(),
-    typescript2(),
-    generateMjsOutputFiles(),
-  ];
+    // Mirror all `.ts` files with `.mjs` files.
+    const tsFiles = await globby(`**/*.ts`, {
+      cwd: path.join('packages', packageName, 'src'),
+    });
 
-  const bundle = await rollup({
-    input,
-    plugins,
-    cache: moduleBundleCache,
-    preserveModules: true,
-    // We don't need to tree shake the TS to JS conversion, as that'll happen
-    // later, and we don't need to add to the transpilation time.
-    treeshake: false,
-  });
+    for (const tsFile of tsFiles) {
+      const assetBasename = path.basename(tsFile, '.ts');
+      const mjsFile = path.join('packages',
+          packageName, path.dirname(tsFile), assetBasename + '.mjs');
 
-  // Ensure rebuilds are as fast as possible in watch mode.
-  moduleBundleCache = bundle.cache;
+      if (!(await fs.pathExists(mjsFile))) {
+        const mjsSource = `export * from './${assetBasename}.js';`;
 
-  await bundle.write({
-    dir: packagePath,
-    format: 'esm',
-  });
+        // console.log({mjsFile, tsFile, assetBasename})
+        fs.outputFileSync(mjsFile, mjsSource);
+      }
+    }
+  } catch (error) {
+    logHelper.error(error.stdout);
+    throw error;
+  }
 };
 
 /**
@@ -105,7 +69,7 @@ const transpilePackagesOrSkip = async (packagePath) => {
   // `packagePath` will be posix style because it comes from `glog()`.
   const packageName = packagePath.split('/').slice(-1)[0];
 
-  if (await fs.pathExists(path.join(packagePath, 'src'))) {
+  if (await fs.pathExists(path.join(packagePath, 'tsconfig.json'))) {
     await queueTranspile(packageName);
   } else {
     logHelper.log(ol`Skipping package '${packageName}'
@@ -157,10 +121,10 @@ const needsTranspile = (packageName) => {
 };
 
 gulp.task('transpile-typescript', gulp.series(packageRunnner(
-    'transpile-typescript', 'browser', transpilePackagesOrSkip)));
+    'transpile-typescript', 'all', transpilePackagesOrSkip)));
 
 gulp.task('transpile-typescript:watch', gulp.series(packageRunnner(
-    'transpile-typescript', 'browser', transpilePackagesOrSkip)));
+    'transpile-typescript', 'all', transpilePackagesOrSkip)));
 
 gulp.task('transpile-typescript:watch', () => {
   const watcher = gulp.watch(`./${global.packageOrStar}/workbox-*/src/**/*.ts`);

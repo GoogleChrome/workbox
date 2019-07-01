@@ -18,7 +18,12 @@ local-builds/
 firebase-debug.log
 .firebase
 
-# Generated files from TypeScript source
-packages/workbox-core/**/*.js
+
+# Generated TypeScript files and build data
+tsconfig.tsbuildinfo
+packages/workbox-*/**/*.d.ts
+packages/workbox-*/**/*.js
+
+# Individual package ignores during TypeScript migration
 packages/workbox-core/**/*.mjs
-packages/workbox-core/**/*.d.ts
+packages/workbox-window/**/*.mjs
