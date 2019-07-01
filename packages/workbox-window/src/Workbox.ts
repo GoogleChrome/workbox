@@ -43,7 +43,7 @@ const REGISTRATION_TIMEOUT_DURATION = 60000;
  * @memberof module:workbox-window
  */
 class Workbox extends WorkboxEventTarget {
-  private _scriptURL: 'string';
+  private _scriptURL: string;
   private _registerOptions: RegistrationOptions = {};
   private _updateFoundCount: number = 0;
 
@@ -53,7 +53,7 @@ class Workbox extends WorkboxEventTarget {
   private _controllingDeferred: Deferred<ServiceWorker> = new Deferred();
 
   private _registrationTime: DOMHighResTimeStamp = 0;
-  private _isUpdate?: Boolean;
+  private _isUpdate?: boolean;
   private _compatibleControllingSW?: ServiceWorker;
   private _registration?: ServiceWorkerRegistration;
   private _sw?: ServiceWorker;
@@ -258,7 +258,7 @@ class Workbox extends WorkboxEventTarget {
    * @param {Object} data An object to send to the service worker
    * @return {Promise<Object>}
    */
-  async messageSW(data: {}) {
+  async messageSW(data: object) {
     const sw = await this.getSW();
     return messageSW(sw, data);
   }
