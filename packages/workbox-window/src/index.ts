@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {messageSW} from './messageSW';
-import {Workbox} from './Workbox';
-import './_version';
+import {messageSW} from './messageSW.js';
+import {Workbox} from './Workbox.js';
+import './_version.js';
 
 
 /**

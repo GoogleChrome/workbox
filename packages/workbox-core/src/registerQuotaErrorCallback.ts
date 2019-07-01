@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from './_private/logger';
-import {assert} from './_private/assert';
-import {quotaErrorCallbacks} from './models/quotaErrorCallbacks';
-import './_version';
+import {logger} from './_private/logger.js';
+import {assert} from './_private/assert.js';
+import {quotaErrorCallbacks} from './models/quotaErrorCallbacks.js';
+import './_version.js';
 
 
 /**

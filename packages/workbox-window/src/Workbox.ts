@@ -6,15 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Deferred} from 'workbox-core/_private/Deferred';
-import {logger} from 'workbox-core/_private/logger';
-import {messageSW} from './messageSW';
-import {WorkboxEventTarget} from './utils/WorkboxEventTarget';
-import {urlsMatch} from './utils/urlsMatch';
-import {WorkboxEvent} from './utils/WorkboxEvent';
-import './_version';
+import {Deferred} from 'workbox-core/_private/Deferred.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {messageSW} from './messageSW.js';
+import {WorkboxEventTarget} from './utils/WorkboxEventTarget.js';
+import {urlsMatch} from './utils/urlsMatch.js';
+import {WorkboxEvent} from './utils/WorkboxEvent.js';
+import './_version.js';
 
-import {WorkboxEventProps} from './utils/WorkboxEvent';
+import {WorkboxEventProps} from './utils/WorkboxEvent.js';
 
 
 // The time a SW must be in the waiting phase before we can conclude

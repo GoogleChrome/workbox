@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version';
+import '../_version.js';
 
 export interface Plugin {
   cacheDidUpdate: Function;

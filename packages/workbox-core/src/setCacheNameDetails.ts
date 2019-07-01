@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from './_private/assert';
-import {cacheNames, PartialCacheNameDetails} from './_private/cacheNames';
-import {WorkboxError} from './_private/WorkboxError';
-import './_version';
+import {assert} from './_private/assert.js';
+import {cacheNames, PartialCacheNameDetails} from './_private/cacheNames.js';
+import {WorkboxError} from './_private/WorkboxError.js';
+import './_version.js';
 
 
 /**

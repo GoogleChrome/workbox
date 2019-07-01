@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version';
+import '../_version.js';
 
 
 // Callbacks to be executed whenever there's a quota error.

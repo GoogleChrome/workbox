@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {messageGenerator} from '../models/messages/messageGenerator';
-import '../_version';
+import {messageGenerator} from '../models/messages/messageGenerator.js';
+import '../_version.js';
 
 // TODO(philipwalton): remove once the switch to TypeScript is complete and
 // we no longer need the `assert` module.

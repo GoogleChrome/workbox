@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {messages} from './messages';
-import '../../_version';
+import {messages} from './messages.js';
+import '../../_version.js';
 
 const fallback = (code: string, ...args: any[]) => {
   let msg = code;

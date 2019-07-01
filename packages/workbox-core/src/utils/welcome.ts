@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from '../_private/logger';
-import '../_version';
+import {logger} from '../_private/logger.js';
+import '../_version.js';
 
 
 // A WorkboxCore instance must be exported before we can use the logger.

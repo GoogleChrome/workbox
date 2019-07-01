@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxEvent} from './WorkboxEvent';
-import '../_version';
+import {WorkboxEvent} from './WorkboxEvent.js';
+import '../_version.js';
 
 
 export type ListenerCallback = (event: WorkboxEvent) => void;

@@ -7,8 +7,8 @@
 */
 
 
-import {WorkboxEventTarget} from './WorkboxEventTarget';
-import '../_version';
+import {WorkboxEventTarget} from './WorkboxEventTarget.js';
+import '../_version.js';
 
 
 export interface WorkboxEventProps {
