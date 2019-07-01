@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {QueueStore} from './lib/QueueStore.mjs';
-import {StorableRequest} from './lib/StorableRequest.mjs';
-import './_version.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {assert} from 'workbox-core/_private/assert.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {QueueStore} from './lib/QueueStore.js';
+import {StorableRequest} from './lib/StorableRequest.js';
+import './_version.js';
 
 
 const TAG_PREFIX = 'workbox-background-sync';

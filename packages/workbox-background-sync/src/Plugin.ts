@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Queue} from './Queue.mjs';
-import './_version.mjs';
+import {Queue} from './Queue.js';
+import './_version.js';
 
 /**
  * A class implementing the `fetchDidFail` lifecycle callback. This makes it

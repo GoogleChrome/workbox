@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
-import '../_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.js';
+import '../_version.js';
 
 
 const DB_VERSION = 3;
