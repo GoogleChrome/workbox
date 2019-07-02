@@ -41,6 +41,37 @@ function checkConditions(asset, compilation, conditions = []) {
 }
 
 /**
+ * Creates a mapping of an asset name to an array of zero or more chunk names
+ * that the asset is associated with.
+ *
+ * Those chunk names comes from a combination of the `chunkName` property on the
+ * asset, but also from the `stats.namedChunkGroups` property, which is the only
+ * way to find out if an asset is associated has an implicit descendent
+ * relationship with a chunk, if it was, e.g., created by `SplitChunksPlugin`.
+ *
+ * See https://github.com/GoogleChrome/workbox/issues/1859
+ * See https://github.com/webpack/webpack/issues/7073
+ *
+ * @param {Object} stats The webpack compilation stats.
+ * @return {Object<string,Set<string>>}
+ */
+function assetToChunkNameMapping(stats) {
+  const mapping = {};
+
+  for (const asset of stats.assets) {
+    mapping[asset.name] = new Set(asset.chunkNames);
+  }
+
+  for (const [chunkName, {assets}] of Object.entries(stats.namedChunkGroups)) {
+    for (const assetName of assets) {
+      mapping[assetName].add(chunkName);
+    }
+  }
+
+  return mapping;
+}
+
+/**
  * Filters the set of assets out, based on the configuration options provided:
  * - chunks and excludeChunks, for chunkName-based criteria.
  * - include and exclude, for more general criteria.
@@ -55,6 +86,8 @@ function filterAssets(compilation, config) {
   const filteredAssets = new Set();
   const stats = compilation.getStats().toJson();
 
+  const assetNameToChunkNames = assetToChunkNameMapping(stats);
+
   // See https://webpack.js.org/api/stats/#asset-objects
   for (const asset of stats.assets) {
     // chunkName based filtering is funky because:
@@ -65,16 +98,16 @@ function filterAssets(compilation, config) {
     //   between at least one of the chunkNames and one entry, then
     //   we skip that assets as well.
     const isExcludedChunk = Array.isArray(config.excludeChunks) &&
-      asset.chunkNames.some((chunkName) => {
-        return config.excludeChunks.includes(chunkName);
+      config.excludeChunks.some((chunkName) => {
+        return assetNameToChunkNames[asset.name].has(chunkName);
       });
     if (isExcludedChunk) {
       continue;
     }
 
     const isIncludedChunk = !Array.isArray(config.chunks) ||
-      asset.chunkNames.some((chunkName) => {
-        return config.chunks.includes(chunkName);
+      config.chunks.some((chunkName) => {
+        return assetNameToChunkNames[asset.name].has(chunkName);
       });
     if (!isIncludedChunk) {
       continue;
