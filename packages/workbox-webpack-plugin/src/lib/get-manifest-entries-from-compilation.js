@@ -88,6 +88,16 @@ function filterAssets(compilation, config) {
 
   const assetNameToChunkNames = assetToChunkNameMapping(stats);
 
+  // See https://github.com/GoogleChrome/workbox/issues/1287
+  if (Array.isArray(config.chunks)) {
+    for (const chunk of config.chunks) {
+      if (!(chunk in stats.namedChunkGroups)) {
+        compilation.warnings.push(`The chunk '${chunk}' was provided in ` +
+          `your Workbox chunks config, but was not found in the compilation.`);
+      }
+    }
+  }
+
   // See https://webpack.js.org/api/stats/#asset-objects
   for (const asset of stats.assets) {
     // chunkName based filtering is funky because:
