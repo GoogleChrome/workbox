@@ -14,7 +14,6 @@ const webpackInjectManifestSchema = require(
 
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
-const propagateWebpackConfig = require('./lib/propagate-webpack-config');
 const stringifyManifest = require('./lib/stringify-manifest');
 
 /**
@@ -45,9 +44,22 @@ class InjectManifest {
    *
    * @private
    */
+  propagateWebpackConfig(compiler) {
+    // Because this.config is listed last, properties that are already set
+    // there take precedence over derived properties from the compiler.
+    this.config = Object.assign({
+      mode: compiler.mode,
+    }, this.config);
+  }
+
+  /**
+   * @param {Object} [compiler] default compiler object passed from webpack
+   *
+   * @private
+   */
   apply(compiler) {
     try {
-      this.config = propagateWebpackConfig(this.config, compiler);
+      this.propagateWebpackConfig(compiler);
       this.config = validate(this.config, webpackInjectManifestSchema);
     } catch (error) {
       throw new Error(`Please check your ${this.constructor.name} plugin ` +

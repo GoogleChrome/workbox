@@ -17,6 +17,7 @@ module.exports = joi.object().keys({
   manifestTransforms: joi.array().items(joi.func().arity(1)),
   maximumFileSizeToCacheInBytes: joi.number().min(1)
       .default(defaults.maximumFileSizeToCacheInBytes),
+  mode: joi.string().default(process.env.NODE_ENV || defaults.mode),
   modifyURLPrefix: joi.object(),
   // templatedURLs is an object where any property name is valid, and the values
   // can be either a string or an array of strings.

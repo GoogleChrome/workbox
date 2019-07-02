@@ -16,7 +16,6 @@ const webpackGenerateSWSchema = require(
 
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
-const propagateWebpackConfig = require('./lib/propagate-webpack-config');
 const relativeToOutputPath = require('./lib/relative-to-output-path');
 
 /**
@@ -46,9 +45,23 @@ class GenerateSW {
    *
    * @private
    */
+  propagateWebpackConfig(compiler) {
+    // Because this.config is listed last, properties that are already set
+    // there take precedence over derived properties from the compiler.
+    this.config = Object.assign({
+      mode: compiler.mode,
+      sourcemap: Boolean(compiler.devtool),
+    }, this.config);
+  }
+
+  /**
+   * @param {Object} [compiler] default compiler object passed from webpack
+   *
+   * @private
+   */
   apply(compiler) {
     try {
-      this.config = propagateWebpackConfig(this.config, compiler);
+      this.propagateWebpackConfig(compiler);
       this.config = validate(this.config, webpackGenerateSWSchema);
     } catch (error) {
       throw new Error(`Please check your ${this.constructor.name} plugin ` +
