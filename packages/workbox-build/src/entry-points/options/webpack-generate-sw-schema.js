@@ -10,13 +10,8 @@ const joi = require('@hapi/joi');
 
 const commonGenerateSchema = require('./common-generate-schema');
 const defaults = require('./defaults');
-const regExpObject = require('./reg-exp-object');
+const webpackCommon = require('./webpack-common');
 
-module.exports = commonGenerateSchema.keys({
-  chunks: joi.array().items(joi.string()),
-  exclude: joi.array().items(joi.string(), regExpObject)
-      .default(defaults.exclude),
-  excludeChunks: joi.array().items(joi.string()),
-  include: joi.array().items(joi.string(), regExpObject),
+module.exports = commonGenerateSchema.keys(Object.assign({
   swDest: joi.string().default(defaults.swDestFilename),
-});
+}, webpackCommon));
