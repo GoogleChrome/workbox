@@ -14,7 +14,7 @@ const regExpObject = require('./reg-exp-object');
 // Define some common constraints used by all methods.
 module.exports = joi.object().keys({
   dontCacheBustURLsMatching: regExpObject,
-  manifestTransforms: joi.array().items(joi.func().arity(1)),
+  manifestTransforms: joi.array().items(joi.func().minArity(1).maxArity(2)),
   maximumFileSizeToCacheInBytes: joi.number().min(1)
       .default(defaults.maximumFileSizeToCacheInBytes),
   mode: joi.string().default(process.env.NODE_ENV || defaults.mode),

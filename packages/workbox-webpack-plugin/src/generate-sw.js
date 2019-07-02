@@ -84,6 +84,7 @@ class GenerateSW {
         compilation, this.config);
 
     const unbundledCode = populateSWTemplate(this.config);
+
     const files = await bundle({
       babelPresetEnvTargets: this.config.babelPresetEnvTargets,
       inlineWorkboxRuntime: this.config.inlineWorkboxRuntime,

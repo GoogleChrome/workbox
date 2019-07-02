@@ -132,6 +132,7 @@ class InjectManifest {
 
     const manifestEntries = getManifestEntriesFromCompilation(
         compilation, this.config);
+
     const manifestDeclaration = stringifyManifest(manifestEntries,
         this.config.injectionPoint, this.config.mode !== 'production');
 

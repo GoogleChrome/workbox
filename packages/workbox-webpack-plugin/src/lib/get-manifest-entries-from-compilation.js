@@ -7,7 +7,7 @@
 */
 
 const {matchPart} = require('webpack/lib/ModuleFilenameHelpers');
-const prettyBytes = require('pretty-bytes');
+const transformManifest = require('workbox-build/build/lib/transform-manifest');
 
 const getAssetHash = require('./get-asset-hash');
 const resolveWebpackURL = require('./resolve-webpack-url');
@@ -93,13 +93,6 @@ function filterAssets(compilation, config) {
       continue;
     }
 
-    if (asset.size > config.maximumFileSizeToCacheInBytes) {
-      compilation.warnings.push(`${asset.name} is ${prettyBytes(asset.size)},` +
-        `and won't be precached by Workbox. Configure ` +
-        `maximumFileSizeToCacheInBytes to change this limit.`);
-      continue;
-    }
-
     // If we've gotten this far, then add the asset.
     filteredAssets.add(asset);
   }
@@ -111,22 +104,39 @@ module.exports = (compilation, config) => {
   const filteredAssets = filterAssets(compilation, config);
 
   const {publicPath} = compilation.options.output;
-  const manifestEntries = [];
+  const fileDetails = [];
 
   for (const asset of filteredAssets) {
-    const publicURL = resolveWebpackURL(publicPath, asset.name);
-    if (config.dontCacheBustURLsMatching &&
-        asset.name.match(config.dontCacheBustURLsMatching)) {
-      manifestEntries.push({url: publicURL});
-    } else {
-      manifestEntries.push({
-        revision: getAssetHash(compilation.assets[asset.name]),
-        url: publicURL,
+    // Not sure why this would be false, but checking just in case, since
+    // our original list of assets comes from compilation.getStats().toJson(),
+    // not from compilation.assets.
+    if (asset.name in compilation.assets) {
+      // This matches the format expected by transform-manifest.js.
+      fileDetails.push({
+        file: resolveWebpackURL(publicPath, asset.name),
+        hash: getAssetHash(compilation.assets[asset.name]),
+        size: asset.size,
       });
+    } else {
+      compilation.warnings.push(`Could not precache ${asset.name}, as it's ` +
+        `missing from compilation.assets. Please open a bug against Workbox ` +
+        `with details about your webpack config.`);
     }
   }
 
-  // TODO: Manifest transformations.
+  // We also get back `size` and `count`, and it would be nice to log that
+  // somewhere, but... webpack doesn't offer info-level logs?
+  // https://github.com/webpack/webpack/issues/3996
+  const {manifestEntries, warnings} = transformManifest({
+    dontCacheBustURLsMatching: config.dontCacheBustURLsMatching,
+    manifestTransforms: config.manifestTransforms,
+    maximumFileSizeToCacheInBytes: config.maximumFileSizeToCacheInBytes,
+    modifyURLPrefix: config.modifyURLPrefix,
+    transformParam: compilation,
+    fileDetails,
+  });
+
+  compilation.warnings = compilation.warnings.concat(warnings || []);
 
   return manifestEntries;
 };

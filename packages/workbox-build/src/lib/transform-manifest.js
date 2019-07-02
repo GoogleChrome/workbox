@@ -6,8 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
+const errors = require('./errors');
 const maximumSizeTransform = require('./maximum-size-transform');
-const modifyURLPrefixTranform = require('./modify-url-prefix-transform');
+const modifyURLPrefixTransform = require('./modify-url-prefix-transform');
 const noRevisionForURLsMatchingTransform =
   require('./no-revision-for-urls-matching-transform');
 
@@ -54,6 +55,8 @@ const noRevisionForURLsMatchingTransform =
  * @callback ManifestTransform
  * @param {Array<module:workbox-build.ManifestEntry>} manifestEntries The full
  * array of entries, prior to the current transformation.
+ * @param {Object} [compilation] When used in the webpack plugins, this param
+ * will be set to the current `compilation`.
  * @return {module:workbox-build.ManifestTransformResult}
  * The array of entries with the transformation applied, and optionally, any
  * warnings that should be reported back to the build tool.
@@ -67,6 +70,7 @@ module.exports = ({
   manifestTransforms,
   maximumFileSizeToCacheInBytes,
   modifyURLPrefix,
+  transformParam,
 }) => {
   let allWarnings = [];
 
@@ -87,7 +91,7 @@ module.exports = ({
   }
 
   if (modifyURLPrefix) {
-    transformsToApply.push(modifyURLPrefixTranform(modifyURLPrefix));
+    transformsToApply.push(modifyURLPrefixTransform(modifyURLPrefix));
   }
 
   if (dontCacheBustURLsMatching) {
@@ -100,9 +104,13 @@ module.exports = ({
 
   let transformedManifest = normalizedManifest;
   for (const transform of transformsToApply) {
-    const {manifest, warnings} = transform(transformedManifest);
-    transformedManifest = manifest;
-    allWarnings = allWarnings.concat(warnings || []);
+    const result = transform(transformedManifest, transformParam);
+    if (!('manifest' in result)) {
+      throw new Error(errors['bad-manifest-transforms-return-value']);
+    }
+
+    transformedManifest = result.manifest;
+    allWarnings = allWarnings.concat(result.warnings || []);
   }
 
   // Generate some metadata about the manifest before we clear out the size
