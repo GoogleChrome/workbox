@@ -12,7 +12,7 @@ module.exports = {
   clientsClaim: false,
   exclude: [
     /\.map$/,
-    /^manifest.*\.js?$/,
+    /^manifest.*\.js$/,
   ],
   globFollow: true,
   globIgnores: ['**/node_modules/**/*'],
