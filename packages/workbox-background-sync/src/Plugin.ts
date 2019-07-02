@@ -6,7 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Queue} from './Queue.js';
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {Queue, QueueOptions} from './Queue.js';
 import './_version.js';
 
 /**
@@ -15,15 +16,18 @@ import './_version.js';
  *
  * @memberof workbox.backgroundSync
  */
-class Plugin {
+class Plugin implements WorkboxPlugin {
+  private _queue: Queue;
+
   /**
-   * @param {...*} queueArgs Args to forward to the composed Queue instance.
-   *    See the [Queue]{@link workbox.backgroundSync.Queue} documentation for
-   *    parameter details.
+   * @param {string} name See the [Queue]{@link workbox.backgroundSync.Queue}
+   *     documentation for parameter details.
+   * @param {Object} [options] See the
+   *     [Queue]{@link workbox.backgroundSync.Queue} documentation for
+   *     parameter details.
    */
-  constructor(...queueArgs) {
-    this._queue = new Queue(...queueArgs);
-    this.fetchDidFail = this.fetchDidFail.bind(this);
+  constructor(name: string, options: QueueOptions) {
+    this._queue = new Queue(name, options);
   }
 
   /**
@@ -31,7 +35,7 @@ class Plugin {
    * @param {Request} options.request
    * @private
    */
-  async fetchDidFail({request}) {
+  fetchDidFail: WorkboxPlugin['fetchDidFail'] = async ({request}) => {
     await this._queue.pushRequest({request});
   }
 }

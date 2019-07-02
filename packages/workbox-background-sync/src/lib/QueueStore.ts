@@ -8,6 +8,7 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import {DBWrapper} from 'workbox-core/_private/DBWrapper.js';
+import {RequestData} from './StorableRequest.js';
 import '../_version.js';
 
 
@@ -16,6 +17,18 @@ const DB_NAME = 'workbox-background-sync';
 const OBJECT_STORE_NAME = 'requests';
 const INDEXED_PROP = 'queueName';
 
+export interface UnidentifiedQueueStoreEntry {
+  requestData: RequestData;
+  timestamp: number;
+  id?: number;
+  queueName?: string;
+  metadata?: object;
+}
+
+export interface QueueStoreEntry extends UnidentifiedQueueStoreEntry {
+  id: number;
+}
+
 /**
  * A class to manage storing requests from a Queue in IndexedbDB,
  * indexed by their queue name for easier access.
@@ -23,6 +36,9 @@ const INDEXED_PROP = 'queueName';
  * @private
  */
 export class QueueStore {
+  private _queueName: string;
+  private _db: DBWrapper;
+
   /**
    * Associates this instance with a Queue instance, so entries added can be
    * identified by their queue name.
@@ -30,7 +46,7 @@ export class QueueStore {
    * @param {string} queueName
    * @private
    */
-  constructor(queueName) {
+  constructor(queueName: string) {
     this._queueName = queueName;
     this._db = new DBWrapper(DB_NAME, DB_VERSION, {
       onupgradeneeded: this._upgradeDb,
@@ -46,15 +62,15 @@ export class QueueStore {
    * @param {Object} [entry.metadata]
    * @private
    */
-  async pushEntry(entry) {
+  async pushEntry(entry: UnidentifiedQueueStoreEntry) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(entry, 'object', {
+      assert!.isType(entry, 'object', {
         moduleName: 'workbox-background-sync',
         className: 'QueueStore',
         funcName: 'pushEntry',
         paramName: 'entry',
       });
-      assert.isType(entry.requestData, 'object', {
+      assert!.isType(entry.requestData, 'object', {
         moduleName: 'workbox-background-sync',
         className: 'QueueStore',
         funcName: 'pushEntry',
@@ -78,15 +94,15 @@ export class QueueStore {
    * @param {Object} [entry.metadata]
    * @private
    */
-  async unshiftEntry(entry) {
+  async unshiftEntry(entry: UnidentifiedQueueStoreEntry) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(entry, 'object', {
+      assert!.isType(entry, 'object', {
         moduleName: 'workbox-background-sync',
         className: 'QueueStore',
         funcName: 'unshiftEntry',
         paramName: 'entry',
       });
-      assert.isType(entry.requestData, 'object', {
+      assert!.isType(entry.requestData, 'object', {
         moduleName: 'workbox-background-sync',
         className: 'QueueStore',
         funcName: 'unshiftEntry',
@@ -116,7 +132,7 @@ export class QueueStore {
    * @return {Promise<Object>}
    * @private
    */
-  async popEntry() {
+  async popEntry(): Promise<QueueStoreEntry> {
     return this._removeEntry({direction: 'prev'});
   }
 
@@ -126,7 +142,7 @@ export class QueueStore {
    * @return {Promise<Object>}
    * @private
    */
-  async shiftEntry() {
+  async shiftEntry(): Promise<QueueStoreEntry> {
     return this._removeEntry({direction: 'next'});
   }
 
@@ -137,7 +153,7 @@ export class QueueStore {
    * @return {Promise<Array<Object>>}
    * @private
    */
-  async getAll() {
+  async getAll(): Promise<QueueStoreEntry[]> {
     return await this._db.getAllMatching(OBJECT_STORE_NAME, {
       index: INDEXED_PROP,
       query: IDBKeyRange.only(this._queueName),
@@ -155,7 +171,7 @@ export class QueueStore {
    * @private
    * @param {number} id
    */
-  async deleteEntry(id) {
+  async deleteEntry(id: number) {
     await this._db.delete(OBJECT_STORE_NAME, id);
   }
 
@@ -166,7 +182,7 @@ export class QueueStore {
    * @return {Promise<Object>}
    * @private
    */
-  async _removeEntry({direction}) {
+  async _removeEntry({direction}: {direction?: IDBCursorDirection}) {
     const [entry] = await this._db.getAllMatching(OBJECT_STORE_NAME, {
       direction,
       index: INDEXED_PROP,
@@ -186,8 +202,8 @@ export class QueueStore {
    * @param {Event} event
    * @private
    */
-  _upgradeDb(event) {
-    const db = event.target.result;
+  _upgradeDb(event: IDBVersionChangeEvent) {
+    const db = (<IDBOpenDBRequest> event.target).result;
 
     if (event.oldVersion > 0 && event.oldVersion < DB_VERSION) {
       if (db.objectStoreNames.contains(OBJECT_STORE_NAME)) {

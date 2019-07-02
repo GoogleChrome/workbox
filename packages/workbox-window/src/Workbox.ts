@@ -72,7 +72,7 @@ class Workbox extends WorkboxEventTarget {
    * @param {Object} [registerOptions] The service worker options associated
    *     with this instance.
    */
-  constructor(scriptURL: 'string', registerOptions: {} = {}) {
+  constructor(scriptURL: string, registerOptions: {} = {}) {
     super();
 
     this._scriptURL = scriptURL;

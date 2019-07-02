@@ -12,23 +12,8 @@ import '../_version.js';
 // TODO(philipwalton): remove once the switch to TypeScript is complete and
 // we no longer need the `assert` module.
 export interface WorkboxErrorDetails {
-  cacheNameId?: string;
-  className?: string;
-  expectedClass?: Function;
-  expectedMethod?: string;
-  expectedType?: string;
-  funcName?: string;
-  isReturnValueProblem?: boolean;
-  method?: string,
-  moduleName?: string;
-  paramName?: string;
-  thrownError?: Error;
-  validValueDescription?: string;
-  value?: string;
-  url?: string;
+  [propName: string]: any;
 }
-
-
 
 /**
  * Workbox errors should be thrown with this class.

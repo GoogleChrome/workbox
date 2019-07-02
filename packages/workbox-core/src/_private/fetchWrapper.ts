@@ -11,14 +11,14 @@ import {logger} from './logger.js';
 import {assert} from './assert.js';
 import {getFriendlyURL} from '../_private/getFriendlyURL.js';
 import {pluginEvents} from '../models/pluginEvents.js';
-import {pluginUtils, Plugin} from '../utils/pluginUtils.js';
+import {pluginUtils, WorkboxPlugin} from '../utils/pluginUtils.js';
 import '../_version.js';
 
 
 interface WrappedFetchOptions {
   request: Request | string,
   event?: FetchEvent | Event,
-  plugins?: Plugin[],
+  plugins?: WorkboxPlugin[],
   fetchOptions?: {}
 }
 
@@ -47,7 +47,7 @@ const wrappedFetch = async ({
   if (typeof request === 'string') {
     request = new Request(request);
   }
-  
+
   // We *should* be able to call `await event.preloadResponse` even if it's
   // undefined, but for some reason, doing so leads to errors in our Node unit
   // tests. To work around that, explicitly check preloadResponse's value first.
@@ -84,7 +84,7 @@ const wrappedFetch = async ({
   try {
     for (let plugin of plugins) {
       if (pluginEvents.REQUEST_WILL_FETCH in plugin) {
-        const pluginMethod = plugin[pluginEvents.REQUEST_WILL_FETCH];
+        const pluginMethod = plugin[pluginEvents.REQUEST_WILL_FETCH]!;
         const requestClone = (<Request> request).clone();
 
         request = <Request> (await pluginMethod.call(plugin, {
@@ -132,7 +132,7 @@ const wrappedFetch = async ({
 
     for (const plugin of plugins) {
       if (pluginEvents.FETCH_DID_SUCCEED in plugin) {
-        fetchResponse = await plugin[pluginEvents.FETCH_DID_SUCCEED]
+        fetchResponse = await plugin[pluginEvents.FETCH_DID_SUCCEED]!
             .call(plugin, {
               event,
               request: pluginFilteredRequest,
@@ -159,7 +159,7 @@ const wrappedFetch = async ({
     }
 
     for (const plugin of failedFetchPlugins) {
-      await plugin[pluginEvents.FETCH_DID_FAIL].call(plugin, {
+      await plugin[pluginEvents.FETCH_DID_FAIL]!.call(plugin, {
         error,
         event,
         originalRequest: originalRequest!.clone(),

@@ -10,7 +10,10 @@ import {assert} from 'workbox-core/_private/assert.js';
 import '../_version.js';
 
 
-const serializableProperties = [
+type SerializableProperties = 'method' | 'referrer' | 'referrerPolicy' | 'mode'
+    | 'credentials' | 'cache' | 'redirect' | 'integrity' | 'keepalive';
+
+const serializableProperties: SerializableProperties[] = [
   'method',
   'referrer',
   'referrerPolicy',
@@ -22,6 +25,13 @@ const serializableProperties = [
   'keepalive',
 ];
 
+export interface RequestData {
+  url: string;
+  headers: {[headerName: string]: any};
+  body?: ArrayBuffer;
+  [propName: string]: any;
+}
+
 
 /**
  * A class to make it easier to serialize and de-serialize requests so they
@@ -30,6 +40,8 @@ const serializableProperties = [
  * @private
  */
 class StorableRequest {
+  private _requestData: RequestData;
+
   /**
    * Converts a Request object to a plain object that can be structured
    * cloned or JSON-stringified.
@@ -39,8 +51,8 @@ class StorableRequest {
    *
    * @private
    */
-  static async fromRequest(request) {
-    const requestData = {
+  static async fromRequest(request: Request): Promise<StorableRequest> {
+    const requestData: RequestData = {
       url: request.url,
       headers: {},
     };
@@ -78,15 +90,15 @@ class StorableRequest {
    *     [requestInit]{@link https://fetch.spec.whatwg.org/#requestinit}.
    * @private
    */
-  constructor(requestData) {
+  constructor(requestData: RequestData) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(requestData, 'object', {
+      assert!.isType(requestData, 'object', {
         moduleName: 'workbox-background-sync',
         className: 'StorableRequest',
         funcName: 'constructor',
         paramName: 'requestData',
       });
-      assert.isType(requestData.url, 'string', {
+      assert!.isType(requestData.url, 'string', {
         moduleName: 'workbox-background-sync',
         className: 'StorableRequest',
         funcName: 'constructor',
@@ -110,7 +122,7 @@ class StorableRequest {
    *
    * @private
    */
-  toObject() {
+  toObject(): RequestData {
     const requestData = Object.assign({}, this._requestData);
     requestData.headers = Object.assign({}, this._requestData.headers);
     if (requestData.body) {
@@ -127,7 +139,7 @@ class StorableRequest {
    *
    * @private
    */
-  toRequest() {
+  toRequest(): Request {
     return new Request(this._requestData.url, this._requestData);
   }
 
@@ -138,7 +150,7 @@ class StorableRequest {
    *
    * @private
    */
-  clone() {
+  clone(): StorableRequest {
     return new StorableRequest(this.toObject());
   }
 }

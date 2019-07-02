@@ -17,7 +17,6 @@ type Query = IDBValidKey | IDBKeyRange | null;
 interface DBWrapperOptions {
   onupgradeneeded?: (event: IDBVersionChangeEvent) => any;
   onversionchange?: (event: IDBVersionChangeEvent) => any;
-
 }
 
 interface GetAllMatchingOptions {
@@ -109,7 +108,7 @@ export class DBWrapper {
         if (openRequestTimedOut) {
           openRequest.transaction!.abort();
           openRequest.result.close();
-        } else if (this._onupgradeneeded) {
+        } else if (typeof this._onupgradeneeded === 'function') {
           this._onupgradeneeded(evt);
         }
       };

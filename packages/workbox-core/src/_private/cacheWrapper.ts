@@ -12,7 +12,7 @@ import {getFriendlyURL} from './getFriendlyURL.js';
 import {logger} from './logger.js';
 import {executeQuotaErrorCallbacks} from './executeQuotaErrorCallbacks.js';
 import {pluginEvents} from '../models/pluginEvents.js';
-import {pluginUtils, Plugin} from '../utils/pluginUtils.js';
+import {pluginUtils, WorkboxPlugin} from '../utils/pluginUtils.js';
 import '../_version.js';
 
 
@@ -31,7 +31,7 @@ interface PutWrapperOptions extends MatchWrapperOptions {
 interface GetEffectiveRequestOptions {
   request: Request,
   mode: string,
-  plugins?: Plugin[],
+  plugins?: WorkboxPlugin[],
 }
 
 /**
@@ -122,7 +122,7 @@ const putWrapper = async ({
   }
 
   for (let plugin of updatePlugins) {
-    await plugin[pluginEvents.CACHE_DID_UPDATE].call(plugin, {
+    await plugin[pluginEvents.CACHE_DID_UPDATE]!.call(plugin, {
       cacheName,
       event,
       oldResponse,
@@ -266,7 +266,7 @@ const _isResponseSafeToCache = async ({
         }
       }
     }
-    
+
     responseToCache = responseToCache && responseToCache.status === 200 ?
         responseToCache : undefined;
   }
@@ -299,7 +299,7 @@ const _getEffectiveRequest = async ({
 
   let effectiveRequest = request;
   for (const plugin of cacheKeyWillBeUsedPlugins) {
-    effectiveRequest = await plugin[pluginEvents.CACHE_KEY_WILL_BE_USED].call(
+    effectiveRequest = await plugin[pluginEvents.CACHE_KEY_WILL_BE_USED]!.call(
         plugin, {mode, request: effectiveRequest});
 
     if (typeof effectiveRequest === 'string') {

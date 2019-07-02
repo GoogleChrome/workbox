@@ -25,5 +25,6 @@ packages/workbox-*/**/*.d.ts
 packages/workbox-*/**/*.js
 
 # Individual package ignores during TypeScript migration
+packages/workbox-background-sync/**/*.mjs
 packages/workbox-core/**/*.mjs
 packages/workbox-window/**/*.mjs
