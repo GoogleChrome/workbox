@@ -21,4 +21,5 @@ module.exports = baseSchema.keys(Object.assign({
   injectionPoint: joi.string().default(defaults.injectionPoint),
   swDest: joi.string().default(swSrcBasename),
   swSrc: joi.string().required(),
+  webpackCompilationPlugins: joi.array().items(joi.object()),
 }, webpackCommon));

@@ -16,6 +16,7 @@ const webpackGenerateSWSchema = require(
 
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
+const propagateWebpackConfig = require('./lib/propagate-webpack-config');
 const relativeToOutputPath = require('./lib/relative-to-output-path');
 
 /**
@@ -47,6 +48,7 @@ class GenerateSW {
    */
   apply(compiler) {
     try {
+      this.config = propagateWebpackConfig(this.config, compiler);
       this.config = validate(this.config, webpackGenerateSWSchema);
     } catch (error) {
       throw new Error(`Please check your ${this.constructor.name} plugin ` +
@@ -70,10 +72,10 @@ class GenerateSW {
 
     const unbundledCode = populateSWTemplate(this.config);
     const files = await bundle({
-      babelPresetEnvTargets: ['chrome >= 56'],
-      inlineWorkboxRuntime: false,
-      mode: 'development',
-      sourcemap: true,
+      babelPresetEnvTargets: this.config.babelPresetEnvTargets,
+      inlineWorkboxRuntime: this.config.inlineWorkboxRuntime,
+      mode: this.config.mode,
+      sourcemap: this.config.sourcemap,
       swDest: relativeToOutputPath(compilation, this.config.swDest),
       unbundledCode,
     });

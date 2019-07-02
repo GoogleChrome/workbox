@@ -14,6 +14,7 @@ const webpackInjectManifestSchema = require(
 
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
+const propagateWebpackConfig = require('./lib/propagate-webpack-config');
 const stringifyManifest = require('./lib/stringify-manifest');
 
 /**
@@ -46,6 +47,7 @@ class InjectManifest {
    */
   apply(compiler) {
     try {
+      this.config = propagateWebpackConfig(this.config, compiler);
       this.config = validate(this.config, webpackInjectManifestSchema);
     } catch (error) {
       throw new Error(`Please check your ${this.constructor.name} plugin ` +
@@ -76,7 +78,10 @@ class InjectManifest {
     };
 
     const childCompiler = compilation.createChildCompiler(
-        this.constructor.name, outputOptions);
+        this.constructor.name,
+        outputOptions,
+        this.config.webpackCompilationPlugins
+    );
 
     childCompiler.context = parentCompiler.context;
     childCompiler.inputFileSystem = parentCompiler.inputFileSystem;
@@ -116,7 +121,7 @@ class InjectManifest {
     const manifestEntries = getManifestEntriesFromCompilation(
         compilation, this.config);
     const manifestDeclaration = stringifyManifest(manifestEntries,
-        this.config.injectionPoint);
+        this.config.injectionPoint, this.config.mode !== 'production');
 
     compilation.assets[this.config.swDest] = new ConcatSource(
         manifestDeclaration, swAsset || '');
