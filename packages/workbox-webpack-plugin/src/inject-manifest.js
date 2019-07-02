@@ -58,22 +58,18 @@ class InjectManifest {
    * @private
    */
   apply(compiler) {
-    try {
-      this.propagateWebpackConfig(compiler);
-      this.config = validate(this.config, webpackInjectManifestSchema);
-    } catch (error) {
-      throw new Error(`Please check your ${this.constructor.name} plugin ` +
-        `configuration:\n${error.message}\n`);
-    }
+    this.propagateWebpackConfig(compiler);
 
     compiler.hooks.make.tapPromise(
         this.constructor.name,
-        (compilation) => this.handleMake(compilation, compiler)
+        (compilation) => this.handleMake(compilation, compiler).catch(
+            (error) => compilation.errors.push(error))
     );
 
     compiler.hooks.emit.tapPromise(
         this.constructor.name,
-        (compilation) => this.handleEmit(compilation)
+        (compilation) => this.handleEmit(compilation).catch(
+            (error) => compilation.errors.push(error))
     );
   }
 
@@ -84,6 +80,13 @@ class InjectManifest {
    * @private
    */
   async handleMake(compilation, parentCompiler) {
+    try {
+      this.config = validate(this.config, webpackInjectManifestSchema);
+    } catch (error) {
+      throw new Error(`Please check your ${this.constructor.name} plugin ` +
+        `configuration:\n${error.message}`);
+    }
+
     const outputOptions = {
       path: parentCompiler.options.output.path,
       filename: this.config.swDest,

@@ -60,17 +60,12 @@ class GenerateSW {
    * @private
    */
   apply(compiler) {
-    try {
-      this.propagateWebpackConfig(compiler);
-      this.config = validate(this.config, webpackGenerateSWSchema);
-    } catch (error) {
-      throw new Error(`Please check your ${this.constructor.name} plugin ` +
-        `configuration:\n${error.message}\n`);
-    }
+    this.propagateWebpackConfig(compiler);
 
     compiler.hooks.emit.tapPromise(
         this.constructor.name,
-        (compilation) => this.handleEmit(compilation)
+        (compilation) => this.handleEmit(compilation).catch(
+            (error) => compilation.errors.push(error))
     );
   }
 
@@ -80,6 +75,13 @@ class GenerateSW {
    * @private
    */
   async handleEmit(compilation) {
+    try {
+      this.config = validate(this.config, webpackGenerateSWSchema);
+    } catch (error) {
+      throw new Error(`Please check your ${this.constructor.name} plugin ` +
+        `configuration:\n${error.message}`);
+    }
+
     this.config.manifestEntries = getManifestEntriesFromCompilation(
         compilation, this.config);
 
