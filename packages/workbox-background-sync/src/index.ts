@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Queue} from './Queue.mjs';
-import {Plugin} from './Plugin.mjs';
-import './_version.mjs';
+import {Queue} from './Queue.js';
+import {Plugin} from './Plugin.js';
+import './_version.js';
 
 
 /**

@@ -6,19 +6,30 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {QueueStore} from './lib/QueueStore.mjs';
-import {StorableRequest} from './lib/StorableRequest.mjs';
-import './_version.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {assert} from 'workbox-core/_private/assert.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {UnidentifiedQueueStoreEntry, QueueStore} from './lib/QueueStore.js';
+import {StorableRequest} from './lib/StorableRequest.js';
+import './_version.js';
 
 
 const TAG_PREFIX = 'workbox-background-sync';
 const MAX_RETENTION_TIME = 60 * 24 * 7; // 7 days in minutes
 
 const queueNames = new Set();
+
+export interface QueueOptions {
+  onSync?: Function;
+  maxRetentionTime?: number;
+}
+
+interface QueueEntry {
+  request: Request;
+  timestamp?: number;
+  metadata?: object;
+}
 
 /**
  * A class to manage storing failed requests in IndexedDB and retrying them
@@ -28,6 +39,13 @@ const queueNames = new Set();
  * @memberof workbox.backgroundSync
  */
 class Queue {
+  private _name: string;
+  private _onSync: Function;
+  private _maxRetentionTime: number;
+  private _queueStore: QueueStore;
+  private _syncInProgress: boolean = false;
+  private _requestsAddedDuringSync: boolean = false;
+
   /**
    * Creates an instance of Queue with the given options
    *
@@ -47,7 +65,10 @@ class Queue {
    *     minutes) a request may be retried. After this amount of time has
    *     passed, the request will be deleted from the queue.
    */
-  constructor(name, {onSync, maxRetentionTime} = {}) {
+  constructor(name: string, {
+    onSync,
+    maxRetentionTime
+  }: QueueOptions = {}) {
     // Ensure the store name is not already being used
     if (queueNames.has(name)) {
       throw new WorkboxError('duplicate-queue-name', {name});
@@ -86,15 +107,15 @@ class Queue {
    *     for you (defaulting to `Date.now()`), but you can update it if you
    *     don't want particular requests to expire.
    */
-  async pushRequest(entry) {
+  async pushRequest(entry: QueueEntry) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(entry, 'object', {
+      assert!.isType(entry, 'object', {
         moduleName: 'workbox-background-sync',
         className: 'Queue',
         funcName: 'pushRequest',
         paramName: 'entry',
       });
-      assert.isInstance(entry.request, Request, {
+      assert!.isInstance(entry.request, Request, {
         moduleName: 'workbox-background-sync',
         className: 'Queue',
         funcName: 'pushRequest',
@@ -121,15 +142,15 @@ class Queue {
    *     for you (defaulting to `Date.now()`), but you can update it if you
    *     don't want particular requests to expire.
    */
-  async unshiftRequest(entry) {
+  async unshiftRequest(entry: QueueEntry) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(entry, 'object', {
+      assert!.isType(entry, 'object', {
         moduleName: 'workbox-background-sync',
         className: 'Queue',
         funcName: 'unshiftRequest',
         paramName: 'entry',
       });
-      assert.isInstance(entry.request, Request, {
+      assert!.isInstance(entry.request, Request, {
         moduleName: 'workbox-background-sync',
         className: 'Queue',
         funcName: 'unshiftRequest',
@@ -198,10 +219,13 @@ class Queue {
    * @param {string} operation ('push' or 'unshift')
    * @private
    */
-  async _addRequest(
-      {request, metadata, timestamp = Date.now()}, operation) {
+  async _addRequest({
+    request,
+    metadata,
+    timestamp = Date.now(),
+  }: QueueEntry, operation: 'push' | 'unshift') {
     const storableRequest = await StorableRequest.fromRequest(request.clone());
-    const entry = {
+    const entry: UnidentifiedQueueStoreEntry = {
       requestData: storableRequest.toObject(),
       timestamp,
     };
@@ -211,7 +235,8 @@ class Queue {
       entry.metadata = metadata;
     }
 
-    await this._queueStore[`${operation}Entry`](entry);
+    await this._queueStore[
+        `${operation}Entry` as 'pushEntry' | 'unshiftEntry'](entry);
 
     if (process.env.NODE_ENV !== 'production') {
       logger.log(`Request for '${getFriendlyURL(request.url)}' has ` +
@@ -236,9 +261,10 @@ class Queue {
    * @return {Object|undefined}
    * @private
    */
-  async _removeRequest(operation) {
+  async _removeRequest(operation: 'pop' | 'shift'): Promise<QueueEntry | undefined> {
     const now = Date.now();
-    const entry = await this._queueStore[`${operation}Entry`]();
+    const entry = await this._queueStore[
+        `${operation}Entry` as 'popEntry' | 'shiftEntry']();
 
     if (entry) {
       // Ignore requests older than maxRetentionTime. Call this function
@@ -249,6 +275,8 @@ class Queue {
       }
 
       return convertEntry(entry);
+    } else {
+      return undefined;
     }
   }
 
@@ -287,9 +315,9 @@ class Queue {
    * Registers a sync event with a tag unique to this instance.
    */
   async registerSync() {
-    if ('sync' in registration) {
+    if ('sync' in self.registration) {
       try {
-        await registration.sync.register(`${TAG_PREFIX}:${this._name}`);
+        await self.registration.sync.register(`${TAG_PREFIX}:${this._name}`);
       } catch (err) {
         // This means the registration failed for some reason, possibly due to
         // the user disabling it.
@@ -309,8 +337,8 @@ class Queue {
    * @private
    */
   _addSyncListener() {
-    if ('sync' in registration) {
-      self.addEventListener('sync', (event) => {
+    if ('sync' in self.registration) {
+      self.addEventListener('sync', (event: SyncEvent) => {
         if (event.tag === `${TAG_PREFIX}:${this._name}`) {
           if (process.env.NODE_ENV !== 'production') {
             logger.log(`Background sync for tag '${event.tag}'` +
@@ -380,8 +408,8 @@ class Queue {
  * @return {Object}
  * @private
  */
-const convertEntry = (queueStoreEntry) => {
-  const queueEntry = {
+const convertEntry = (queueStoreEntry: UnidentifiedQueueStoreEntry): QueueEntry => {
+  const queueEntry: QueueEntry = {
     request: new StorableRequest(queueStoreEntry.requestData).toRequest(),
     timestamp: queueStoreEntry.timestamp,
   };

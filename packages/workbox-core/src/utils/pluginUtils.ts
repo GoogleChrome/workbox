@@ -8,18 +8,18 @@
 
 import '../_version.js';
 
-export interface Plugin {
-  cacheDidUpdate: Function;
-  cacheKeyWillBeUsed: Function;
-  cacheWillUpdate: Function;
-  cachedResponseWillBeUsed: Function;
-  fetchDidFail: Function;
-  fetchDidSucceed: Function;
-  requestWillFetch: Function;
+export interface WorkboxPlugin {
+  cacheDidUpdate?: Function;
+  cacheKeyWillBeUsed?: Function;
+  cacheWillUpdate?: Function;
+  cachedResponseWillBeUsed?: Function;
+  fetchDidFail?: ({request}: {request: Request}) => Promise<void>;
+  fetchDidSucceed?: Function;
+  requestWillFetch?: Function;
 }
 
 export const pluginUtils = {
-  filter: (plugins: Plugin[], callbackName: string) => {
+  filter: (plugins: WorkboxPlugin[], callbackName: string) => {
     return plugins.filter((plugin) => callbackName in plugin);
   },
 };
