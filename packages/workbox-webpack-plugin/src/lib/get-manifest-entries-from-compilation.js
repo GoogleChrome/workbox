@@ -41,13 +41,13 @@ function checkConditions(asset, compilation, conditions = []) {
 }
 
 /**
- * Creates a mapping of an asset name to an array of zero or more chunk names
+ * Creates a mapping of an asset name to an Set of zero or more chunk names
  * that the asset is associated with.
  *
- * Those chunk names comes from a combination of the `chunkName` property on the
- * asset, but also from the `stats.namedChunkGroups` property, which is the only
- * way to find out if an asset is associated has an implicit descendent
- * relationship with a chunk, if it was, e.g., created by `SplitChunksPlugin`.
+ * Those chunk names come from a combination of the `chunkName` property on the
+ * asset, as well as the `stats.namedChunkGroups` property. That is the only
+ * way to find out if an asset has an implicit descendent relationship with a
+ * chunk, if it was, e.g., created by `SplitChunksPlugin`.
  *
  * See https://github.com/GoogleChrome/workbox/issues/1859
  * See https://github.com/webpack/webpack/issues/7073
@@ -75,7 +75,6 @@ function assetToChunkNameMapping(stats) {
  * Filters the set of assets out, based on the configuration options provided:
  * - chunks and excludeChunks, for chunkName-based criteria.
  * - include and exclude, for more general criteria.
- * - maximumFileSizeToCacheInBytes, for size-based criteria.
  *
  * @param {Compilation} compilation The webpack compilation.
  * @param {Object} config The validated configuration, obtained from the plugin.
@@ -154,7 +153,7 @@ module.exports = (compilation, config) => {
     // our original list of assets comes from compilation.getStats().toJson(),
     // not from compilation.assets.
     if (asset.name in compilation.assets) {
-      // This matches the format expected by transform-manifest.js.
+      // This matches the format expected by transformManifest().
       fileDetails.push({
         file: resolveWebpackURL(publicPath, asset.name),
         hash: getAssetHash(compilation.assets[asset.name]),
