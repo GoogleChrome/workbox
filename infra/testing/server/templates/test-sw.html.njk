@@ -47,23 +47,25 @@
       const wb = new Workbox('test-sw-runner.js.njk?v={{ uniqueID() }}');
 
       wb.addEventListener('message', (event) => {
-        self.mochaResults = event.data;
+        if (event.data && event.data.type === 'MOCHA_RESULTS') {
+          self.mochaResults = event.data.payload;
 
-        if (self.mochaResults.failures === 0) {
-          const styles = [
-            `color: hsl(150, 100%, 40%)`,
-            `font-weight: bold`,
-            `font-size: 1.5em`,
-            `padding: .25em 0`,
-          ];
-          console.log('%cAll TESTS PASS!', styles.join(';'));
-          document.getElementById('success').textContent = 'ALL TESTS PASS!';
-        } else {
-          const errors = self.mochaResults.reports.map((report) => {
-            return `${report.name}\n${report.stack}`;
-          }).join('\n\n');
+          if (self.mochaResults.failures === 0) {
+            const styles = [
+              `color: hsl(150, 100%, 40%)`,
+              `font-weight: bold`,
+              `font-size: 1.5em`,
+              `padding: .25em 0`,
+            ];
+            console.log('%cAll TESTS PASS!', styles.join(';'));
+            document.getElementById('success').textContent = 'ALL TESTS PASS!';
+          } else {
+            const errors = self.mochaResults.reports.map((report) => {
+              return `${report.name}\n${report.stack}`;
+            }).join('\n\n');
 
-          document.getElementById('errors').textContent = errors
+            document.getElementById('errors').textContent = errors
+          }
         }
       });
 

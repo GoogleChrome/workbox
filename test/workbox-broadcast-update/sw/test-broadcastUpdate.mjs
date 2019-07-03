@@ -18,6 +18,14 @@ describe(`broadcastUpdate`, function() {
   const cacheName = 'test-cache';
   const url = 'https://example.com';
 
+  beforeEach(function() {
+    sandbox.restore();
+  });
+
+  after(function() {
+    sandbox.restore();
+  });
+
   it(`should trigger the appropriate message event on a BroadcastChannel with the same channel name`, async function() {
     if (!('BroadcastChannel' in self)) this.skip();
 

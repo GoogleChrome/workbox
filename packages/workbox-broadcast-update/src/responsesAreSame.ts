@@ -10,6 +10,7 @@ import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import './_version.js';
 
+
 /**
  * Given two `Response's`, compares several header values to see if they are
  * the same or not.
@@ -22,7 +23,11 @@ import './_version.js';
  * @memberof workbox.broadcastUpdate
  * @private
  */
-const responsesAreSame = (firstResponse, secondResponse, headersToCheck) => {
+const responsesAreSame = (
+  firstResponse: Response,
+  secondResponse: Response,
+  headersToCheck: string[],
+) => {
   if (process.env.NODE_ENV !== 'production') {
     if (!(firstResponse instanceof Response &&
       secondResponse instanceof Response)) {

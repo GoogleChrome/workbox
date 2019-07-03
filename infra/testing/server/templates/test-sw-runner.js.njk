@@ -93,7 +93,10 @@ addEventListener('install', (event) => {
       });
 
       for (const win of windows) {
-        win.postMessage(results);
+        win.postMessage({
+          type: 'MOCHA_RESULTS',
+          payload: results,
+        });
       }
 
       // Fail installation if the tests don't pass.

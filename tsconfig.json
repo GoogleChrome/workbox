@@ -20,6 +20,7 @@
   ],
   "exclude": [],
   "references": [
+    { "path": "./packages/workbox-broadcast-update/" },
     { "path": "./packages/workbox-core/" },
     { "path": "./packages/workbox-window/" }
   ]
