@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.mjs';
-import './_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.js';
+import './_version.js';
 
 /**
  * This plugin will automatically broadcast a message whenever a cached response

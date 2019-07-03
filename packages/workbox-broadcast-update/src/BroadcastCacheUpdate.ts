@@ -6,17 +6,17 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {Deferred} from 'workbox-core/_private/Deferred.mjs';
-import {responsesAreSame} from './responsesAreSame.mjs';
-import {broadcastUpdate} from './broadcastUpdate.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {Deferred} from 'workbox-core/_private/Deferred.js';
+import {responsesAreSame} from './responsesAreSame.js';
+import {broadcastUpdate} from './broadcastUpdate.js';
 
 import {DEFAULT_HEADERS_TO_CHECK, DEFAULT_BROADCAST_CHANNEL_NAME,
-  DEFAULT_DEFER_NOTIFICATION_TIMEOUT} from './utils/constants.mjs';
+  DEFAULT_DEFER_NOTIFICATION_TIMEOUT} from './utils/constants.js';
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * Uses the [Broadcast Channel API]{@link https://developers.google.com/web/updates/2016/09/broadcastchannel}

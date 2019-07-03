@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
 import {CACHE_UPDATED_MESSAGE_TYPE, CACHE_UPDATED_MESSAGE_META}
-  from './utils/constants.mjs';
+  from './utils/constants.js';
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * You would not normally call this method directly; it's called automatically

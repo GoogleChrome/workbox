@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.mjs';
-import {Plugin} from './Plugin.mjs';
-import {broadcastUpdate} from './broadcastUpdate.mjs';
-import {responsesAreSame} from './responsesAreSame.mjs';
-import './_version.mjs';
+import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.js';
+import {Plugin} from './Plugin.js';
+import {broadcastUpdate} from './broadcastUpdate.js';
+import {responsesAreSame} from './responsesAreSame.js';
+import './_version.js';
 
 
 /**
