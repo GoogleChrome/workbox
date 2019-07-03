@@ -183,7 +183,7 @@ const matchWrapper = async ({
 
       if (process.env.NODE_ENV !== 'production') {
         if (cachedResponse) {
-          assert && assert.isInstance(cachedResponse, Response, {
+          assert!.isInstance(cachedResponse, Response, {
             moduleName: 'Plugin',
             funcName: pluginEvents.CACHED_RESPONSE_WILL_BE_USED,
             isReturnValueProblem: true,
@@ -236,7 +236,7 @@ const _isResponseSafeToCache = async ({
 
       if (process.env.NODE_ENV !== 'production') {
         if (responseToCache) {
-          assert && assert.isInstance(responseToCache, Response, {
+          assert!.isInstance(responseToCache, Response, {
             moduleName: 'Plugin',
             funcName: pluginEvents.CACHE_WILL_UPDATE,
             isReturnValueProblem: true,
@@ -307,7 +307,7 @@ const _getEffectiveRequest = async ({
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      assert && assert.isInstance(effectiveRequest, Request, {
+      assert!.isInstance(effectiveRequest, Request, {
         moduleName: 'Plugin',
         funcName: pluginEvents.CACHE_KEY_WILL_BE_USED,
         isReturnValueProblem: true,

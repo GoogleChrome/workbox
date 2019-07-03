@@ -21,7 +21,7 @@ import './_version.js';
  */
 function registerQuotaErrorCallback(callback: Function) {
   if (process.env.NODE_ENV !== 'production') {
-    assert && assert.isType(callback, 'function', {
+    assert!.isType(callback, 'function', {
       moduleName: 'workbox-core',
       funcName: 'register',
       paramName: 'callback',
